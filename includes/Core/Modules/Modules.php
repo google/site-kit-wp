@@ -167,7 +167,7 @@ final class Modules {
 
 					$src = add_query_arg( 'tagverify', '1', home_url() );
 
-					echo '<iframe style="display:none;" data-modules="' . esc_attr( join( '_', $modules ) ) . '" id="sitekit_fe_load_check" src="' . esc_attr( $src ) . '" sandbox="allow-same-origin"></iframe>';
+					echo '<iframe style="display:none;" data-modules="' . esc_attr( join( '_', $modules ) ) . '" id="sitekit_fe_load_check" src="' . esc_url( $src ) . '" sandbox="allow-same-origin"></iframe>';
 
 					$iframe_loaded = true;
 				}
