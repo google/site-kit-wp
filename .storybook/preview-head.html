@@ -1,0 +1,23 @@
+<style>
+  .googlesitekit-plugin-preview {
+	  padding: 50px;
+  }
+</style>
+<script>
+
+	WebFontConfig = {
+		google: { families: ['Google+Sans:300,300i,400,400i,500,500i,700,700i','Roboto:300,300i,400,400i,500,500i,700,700i'] },
+		active: function() {
+			console.log( 'backstopjs_ready' );
+		},
+	};
+
+	( function() {
+		let wf = document.createElement( 'script' );
+		wf.src = ( 'https:' === document.location.protocol ? 'https' : 'http' ) + '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+		wf.type = 'text/javascript';
+		wf.async = 'false';
+		let s = document.getElementsByTagName( 'script' )[0];
+		s.parentNode.insertBefore( wf, s );
+	} )();
+</script>

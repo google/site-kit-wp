@@ -1,0 +1,91 @@
+/**
+ * Page header styles.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-page-header {
+	margin: 0;
+
+	.googlesitekit-page-header__title {
+		display: inline-block;
+		line-height: 1;
+		margin: 0 0 -2px 0;
+		padding: 0;
+		vertical-align: middle;
+	}
+
+	.googlesitekit-page-header__icon + .googlesitekit-page-header__title {
+		margin-left: $grid-gap-phone / 2;
+	}
+
+	.googlesitekit-page-header__icon {
+		vertical-align: middle;
+	}
+
+	.googlesitekit-page-header__details {
+		align-items: center;
+		display: flex;
+		justify-content: space-between;
+
+		@media (min-width: $bp-tablet) {
+			justify-content: flex-end;
+		}
+	}
+
+	.googlesitekit-page-header__status {
+		font-size: 0.75rem;
+		line-height: 1;
+		margin: 0;
+
+		&--connected {
+			color: $c-success;
+		}
+
+		&::after {
+			background-position: center center;
+			background-repeat: no-repeat;
+			border-radius: 50%;
+			content: "";
+			display: inline-block;
+			height: 19px;
+			margin-left: $grid-gap-phone / 2;
+			margin-top: -2px;
+			vertical-align: middle;
+			width: 19px;
+		}
+
+		&--connected::after {
+			background-color: $c-success;
+			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2212%22%20viewBox%3D%220%200%2016%2012%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23FFF%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%206.414L1.415%205l5.292%205.292-1.414%201.415z%22%2F%3E%3Cpath%20d%3D%22M14.146.146l1.415%201.414L5.414%2011.707%204%2010.292z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+			background-size: 10px 8px;
+		}
+
+		&--not-connected::after {
+			background-color: $c-warning;
+			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%222%22%20height%3D%2212%22%20viewBox%3D%220%200%202%2012%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23FFF%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%200h2v7H0zM0%2010h2v2H0z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+			background-size: 2px 12px;
+		}
+	}
+
+	.googlesitekit-page-header__status + .googlesitekit-page-header__range {
+		margin-left: $grid-gap-phone;
+		margin-top: -3px;
+
+		@media (min-width: $bp-desktop) {
+			margin-left: $grid-gap-desktop;
+		}
+	}
+}

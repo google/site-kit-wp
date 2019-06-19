@@ -1,0 +1,42 @@
+.googlesitekit-wizard-module {
+	border: 1px solid $c-border-light;
+	height: 100%;
+	padding: $grid-gap-phone;
+	width: 100%;
+
+	@media (min-width: $bp-desktop) {
+		padding: $grid-gap-desktop;
+	}
+
+	.googlesitekit-wizard-module__logo {
+		align-items: flex-end;
+		display: flex;
+		height: 36px;
+
+		img {
+			display: block;
+		}
+	}
+
+	.googlesitekit-wizard-module__title {
+		margin: 15px 0 10px 0;
+	}
+
+	.googlesitekit-wizard-module__text {
+		font-size: 12px;
+		line-height: 1.58;
+		margin: 0;
+	}
+
+	.googlesitekit-wizard-module__switch {
+		float: right;
+
+		.spinner {
+			margin-top: -5px;
+		}
+	}
+
+	.googlesitekit-wizard-module__cta {
+		font-size: 12px;
+	}
+}

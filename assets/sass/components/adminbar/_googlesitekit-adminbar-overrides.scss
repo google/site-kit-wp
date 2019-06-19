@@ -1,0 +1,217 @@
+/**
+ * Adminbar overrides styles.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * Component overrides.
+ * Included here because they're specific to the "#wpadminbar *" styling.
+ */
+#wpadminbar {
+
+	.googlesitekit-plugin .googlesitekit-adminbar {
+
+		// General
+		* {
+			font-family: $f-primary;
+			line-height: normal;
+		}
+
+		// Progress Bar
+		.mdc-linear-progress {
+
+			@extend .mdc-linear-progress;
+			@include mdc-linear-progress-bar-color($c-background-brand);
+			margin: ($grid-gap-phone * 2) 0;
+
+			@media (min-width: $bp-desktop) {
+				margin: ($grid-gap-desktop * 2) 0;
+			}
+		}
+
+		.mdc-linear-progress--indeterminate {
+
+			@extend .mdc-linear-progress--indeterminate;
+		}
+
+		.mdc-linear-progress__buffering-dots {
+
+			@extend .mdc-linear-progress__buffering-dots;
+		}
+
+		.mdc-linear-progress__buffer {
+
+			@extend .mdc-linear-progress__buffer;
+		}
+
+		.mdc-linear-progress__bar {
+
+			@extend .mdc-linear-progress__bar;
+		}
+
+		.mdc-linear-progress__primary-bar {
+
+			@extend .mdc-linear-progress__primary-bar;
+		}
+
+		.mdc-linear-progress__bar-inner {
+
+			@extend .mdc-linear-progress__bar-inner;
+		}
+
+		.mdc-linear-progress__secondary-bar {
+
+			@extend .mdc-linear-progress__secondary-bar;
+		}
+
+		// Grid
+		.mdc-layout-grid {
+
+			@extend .mdc-layout-grid;
+		}
+
+		.mdc-layout-grid__inner {
+
+			@extend .mdc-layout-grid__inner;
+		}
+
+		.mdc-layout-grid__cell {
+
+			@extend .mdc-layout-grid__cell;
+		}
+
+		.mdc-layout-grid__cell--span-2 {
+
+			@extend .mdc-layout-grid__cell--span-2;
+		}
+
+		.mdc-layout-grid__cell--span-2-tablet {
+
+			@extend .mdc-layout-grid__cell--span-2-tablet;
+		}
+
+		.mdc-layout-grid__cell--span-3 {
+
+			@extend .mdc-layout-grid__cell--span-3;
+		}
+
+		.mdc-layout-grid__cell--span-3-desktop {
+
+			@extend .mdc-layout-grid__cell--span-3-desktop;
+		}
+
+		.mdc-layout-grid__cell--span-4 {
+
+			@extend .mdc-layout-grid__cell--span-4;
+		}
+
+		.mdc-layout-grid__cell--span-4-tablet {
+
+			@extend .mdc-layout-grid__cell--span-4-tablet;
+		}
+
+		.mdc-layout-grid__cell--span-6-desktop {
+
+			@extend .mdc-layout-grid__cell--span-6-desktop;
+		}
+
+		.mdc-layout-grid__cell--span-7 {
+
+			@extend .mdc-layout-grid__cell--span-7;
+		}
+
+		.mdc-layout-grid__cell--span-7-desktop {
+
+			@extend .mdc-layout-grid__cell--span-7-desktop;
+		}
+
+		.mdc-layout-grid__cell--span-8-tablet {
+
+			@extend .mdc-layout-grid__cell--span-8-tablet;
+		}
+
+		// Data Blocks
+		.googlesitekit-data-block {
+
+			@extend .googlesitekit-data-block;
+		}
+
+		.googlesitekit-data-block__title {
+
+			@extend .googlesitekit-data-block__title;
+		}
+
+		.googlesitekit-data-block__datapoint {
+
+			@extend .googlesitekit-data-block__datapoint;
+		}
+
+		.googlesitekit-data-block__change {
+
+			@extend .googlesitekit-data-block__change;
+		}
+
+		.googlesitekit-data-block__sparkline {
+
+			@extend .googlesitekit-data-block__sparkline;
+		}
+
+		.googlesitekit-data-block__arrow {
+
+			@extend .googlesitekit-data-block__arrow;
+		}
+
+		.googlesitekit-data-block__value {
+
+			@extend .googlesitekit-data-block__value;
+		}
+
+		// CTA Link
+		.googlesitekit-cta-link {
+
+			@extend .googlesitekit-cta-link;
+			height: auto;
+		}
+
+		.googlesitekit-adminbar__link {
+
+			@extend .googlesitekit-adminbar__link;
+		}
+
+		// CTA's
+		.googlesitekit-cta {
+
+			@extend .googlesitekit-cta;
+			box-sizing: border-box;
+		}
+
+		.googlesitekit-cta--error {
+
+			@extend .googlesitekit-cta--error;
+		}
+
+		.googlesitekit-cta__title {
+
+			@extend .googlesitekit-cta__title;
+		}
+
+		.googlesitekit-cta__description {
+
+			@extend .googlesitekit-cta__description;
+		}
+	}
+
+}

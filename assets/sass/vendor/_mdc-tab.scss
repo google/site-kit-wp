@@ -1,0 +1,21 @@
+// Overrides for .mdc-tab
+.googlesitekit-plugin .mdc-tab {
+
+	@include mdc-tab-text-label-color($c-primary);
+	@include mdc-tab-active-text-label-color($c-brand);
+	@include mdc-tab-ink-color($c-brand);
+	@include mdc-tab-states-color($c-brand);
+
+	&:hover {
+		text-decoration: none;
+	}
+
+	&:focus {
+		color: $c-brand;
+		outline: none;
+	}
+
+	.mdc-tab__text-label {
+		color: $c-primary;
+	}
+}

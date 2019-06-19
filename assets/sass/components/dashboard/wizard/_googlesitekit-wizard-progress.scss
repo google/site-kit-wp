@@ -1,0 +1,40 @@
+.googlesitekit-wizard-progress {
+
+	@include googlesitekit-inner-padding;
+	background-color: $c-base;
+
+	@media (min-width: $bp-tablet) {
+		border-bottom: 1px solid $c-border-light;
+	}
+
+	.googlesitekit-wizard-progress__subtitle {
+		margin: 10px 0 17px 0;
+	}
+
+	.googlesitekit-wizard-progress__title {
+		margin: 0 0 10px 0;
+
+		@media (min-width: $bp-tablet) {
+			margin: 0 0 30px 0;
+		}
+	}
+
+	.googlesitekit-wizard-progress__description {
+		font-size: 12px;
+		line-height: 1.58;
+		margin: 0 0 10px 0;
+
+		@media (min-width: $bp-tablet) {
+			margin: 0 0 30px 0;
+		}
+	}
+
+	.googlesitekit-wizard-progress__steps {
+		display: flex;
+		padding: $grid-gap-phone;
+
+		@media (min-width: $bp-desktop) {
+			padding: $grid-gap-desktop 0 0 0;
+		}
+	}
+}

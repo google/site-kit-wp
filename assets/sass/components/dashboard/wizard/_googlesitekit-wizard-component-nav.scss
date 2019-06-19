@@ -1,0 +1,23 @@
+.googlesitekit-wizard-component-nav {
+	align-items: center;
+	display: flex;
+
+	.googlesitekit-wizard-component-nav__button {
+		cursor: pointer;
+	}
+
+	.googlesitekit-wizard-component-nav__icon {
+		display: inline-block;
+		opacity: 0.6;
+
+		&:focus,
+		&:active,
+		&:hover {
+			opacity: 1;
+		}
+
+		&--reverse {
+			transform: rotate(180deg);
+		}
+	}
+}

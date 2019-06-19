@@ -1,0 +1,110 @@
+/**
+ * Setup styles.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-setup {
+
+	@include googlesitekit-inner-padding;
+	padding-top: 10px;
+
+	.googlesitekit-setup__wrapper {
+
+		@include shadow;
+		background-color: $c-base;
+	}
+
+	.googlesitekit-setup__step {
+		border-bottom: 1px solid $c-border-light;
+		margin-bottom: $grid-gap-phone;
+		padding-bottom: $grid-gap-phone;
+
+		@media (min-width: $bp-desktop) {
+			margin-bottom: $grid-gap-desktop;
+			padding-bottom: $grid-gap-desktop;
+		}
+
+		&:last-child {
+			border-bottom: none;
+			margin-bottom: 0;
+			padding-bottom: 0;
+		}
+	}
+
+	.googlesitekit-setup__intro-title {
+		margin: 0 0 17px 0;
+	}
+
+	.googlesitekit-setup__title {
+		display: inline-block;
+		font-family: $f-primary;
+		margin: 0 0 10px 0;
+	}
+
+	.googlesitekit-setup__description {
+		margin: 0;
+	}
+
+	.googlesitekit-setup__notice {
+		font-weight: 500;
+	}
+
+	.googlesitekit-setup__description + .googlesitekit-setup__notice {
+		margin-top: 1em;
+	}
+
+	.googlesitekit-setup__notice-text {
+		display: inline-block;
+		margin-left: 5px;
+		vertical-align: middle;
+	}
+
+	.googlesitekit-setup__notice-warning-icon {
+		display: inline-block;
+
+		&::before {
+			background-color: $c-warning;
+			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2222%22%20height%3D%2219%22%20viewBox%3D%220%200%2022%2019%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%2019h22L11%200%200%2019zm12-3h-2v-2h2v2zm0-4h-2V8h2v4z%22%20fill%3D%22%23FFF%22%20fill-rule%3D%22nonzero%22%2F%3E%3C%2Fsvg%3E");
+			background-position: center 4px;
+			background-repeat: no-repeat;
+			background-size: 14px 12px;
+			border-radius: 50%;
+			content: "";
+			display: inline-block;
+			height: 22px;
+			vertical-align: middle;
+			width: 22px;
+		}
+	}
+
+	.googlesitekit-setup__success-notice-icon {
+		align-items: center;
+		background-color: $c-success;
+		border-radius: 50%;
+		display: inline-flex;
+		height: 22px;
+		justify-content: center;
+		line-height: 22px;
+		margin: 0 auto;
+		position: relative;
+		width: 22px;
+		z-index: 2;
+	}
+
+	.googlesitekit-setup__footer {
+		border-top: 1px solid $c-border-light;
+	}
+}

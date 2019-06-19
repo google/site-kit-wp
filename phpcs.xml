@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<ruleset name="Site Kit by Google Project Rules">
+
+	<rule ref="WordPress-Core" />
+
+	<rule ref="WordPress-Docs" />
+
+	<rule ref="WordPress-Extra">
+		<!-- Forget about file names -->
+		<exclude name="WordPress.Files.FileName"/>
+	</rule>
+
+	<!-- Use correct textdomain -->
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" value="google-site-kit" />
+		</properties>
+	</rule>
+
+	<!-- Show details about violated sniffs -->
+	<arg value="s"/>
+
+	<!-- Iterate over all PHP files by default -->
+	<arg name="extensions" value="php"/>
+	<file>.</file>
+
+	<exclude-pattern>*/phpunit.xml*</exclude-pattern>
+	<exclude-pattern>*/languages/*</exclude-pattern>
+	<exclude-pattern>*/tests/*</exclude-pattern>
+
+	<!-- Third-party code -->
+	<exclude-pattern>*/bower-components/*</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+
+	<!-- Check for cross-version support for PHP 5.4 and higher. -->
+	<config name="testVersion" value="5.4-"/>
+	<rule ref="PHPCompatibility" />
+
+</ruleset>

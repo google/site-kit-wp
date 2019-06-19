@@ -1,0 +1,127 @@
+/**
+ * Publisher wins styles.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-publisher-win {
+
+	@include googlesitekit-inner-padding;
+	@include shadow;
+	background: $c-base;
+	opacity: 1;
+	position: relative;
+	transition:
+		opacity $t-default ease-in-out,
+		visibility $t-default ease-in-out;
+	visibility: visible;
+
+	&--win-warning {
+		border-right: 4px solid $c-warning;
+	}
+
+	&--win-error {
+		border-right: 4px solid $c-error;
+	}
+
+	&--is-closed {
+		opacity: 0;
+		visibility: hidden;
+	}
+
+	.googlesitekit-publisher-win__title {
+		margin: 0;
+	}
+
+	.googlesitekit-cta-link--external {
+		margin-right: 7px;
+	}
+
+	.googlesitekit-publisher-win__small-image {
+		max-width: 100%;
+	}
+
+	.googlesitekit-publisher-win__icons {
+		position: absolute;
+		right: 8px;
+		top: 50%;
+		transform: translateY(-50%);
+
+		@media (min-width: $bp-desktop) {
+			right: calc(#{$grid-gap-desktop} * 2);
+		}
+	}
+
+	.googlesitekit-publisher-win__image-large {
+		margin-bottom: $grid-gap-desktop;
+		text-align: center;
+
+		@media (min-width: $bp-tablet) {
+			text-align: left;
+		}
+
+		@media (min-width: $bp-desktop) {
+			text-align: center;
+		}
+
+		img {
+			display: inline-block;
+			max-width: 100%;
+		}
+	}
+
+	.googlesitekit-publisher-win__detect {
+		font-size: 0.75rem;
+
+		@media (min-width: $bp-desktop) {
+			margin-left: 48px;
+		}
+	}
+
+	.googlesitekit-publisher-win__stats {
+		margin-bottom: $grid-gap-desktop;
+	}
+
+	&.win-stats-increase {
+
+		.googlesitekit-publisher-win__stats {
+			margin-bottom: 0;
+		}
+
+		.googlesitekit-subheading-1 {
+			margin-top: 0;
+		}
+	}
+
+	.mdc-button + .googlesitekit-cta-link {
+		margin-left: $grid-gap-desktop;
+	}
+
+	.googlesitekit-publisher-win__logo {
+		display: inline-block;
+		line-height: 0;
+		margin-right: 5px;
+		vertical-align: bottom;
+	}
+
+	.googlesitekit-publisher-win__module-name {
+		display: inline-block;
+		font-size: 0.875rem;
+		line-height: 1;
+		margin-bottom: -1px;
+		vertical-align: bottom;
+	}
+
+}

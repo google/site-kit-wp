@@ -1,0 +1,67 @@
+/**
+ * PreviewTable component.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import PreviewBlock from 'GoogleComponents/preview-block';
+import PropTypes from 'prop-types';
+
+const { Component } = wp.element;
+
+class PreviewTable extends Component {
+
+	render() {
+		const {
+			rows,
+			rowHeight,
+			padding,
+		} = this.props;
+		let rowData = [];
+		for ( let x = 0; rows > x; x++ ) {
+			rowData.push(
+				<div className="googlesitekit-preview-table__row" key={ 'table-row-' + x }>
+					<PreviewBlock
+						width='100%'
+						height={ rowHeight + 'px' }
+					/>
+				</div>
+			);
+		}
+
+		return (
+			<div className={ `
+				googlesitekit-preview-table
+				${ padding ? 'googlesitekit-preview-table--padding' : '' }
+			` }>
+				{ rowData }
+			</div>
+		);
+	}
+}
+
+PreviewTable.propTypes = {
+	rows: PropTypes.number,
+	rowHeight: PropTypes.number,
+	padding: PropTypes.bool,
+};
+
+PreviewTable.defaultProps = {
+	rows: 11,
+	rowHeight: 35,
+	padding: false,
+};
+
+export default PreviewTable;

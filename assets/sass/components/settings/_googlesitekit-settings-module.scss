@@ -1,0 +1,196 @@
+/**
+ * Settings module styles.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-settings-module {
+	border-bottom: 1px solid $c-border-light;
+	position: relative;
+
+	&--error {
+		border: 3px solid $c-error;
+	}
+
+	.googlesitekit-settings-module__header {
+		cursor: pointer;
+		padding: 0 ($grid-gap-phone * 2) 0 0;
+		position: relative;
+		width: 100%;
+
+		&:hover {
+			text-decoration: none;
+		}
+
+		&:focus {
+			outline-offset: 0;
+		}
+
+		&::after {
+			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M10.6.6L12%202%206%208%200%202%201.4.6%206%205.2z%22%20fill%3D%22%235B5B61%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
+			background-position: center center;
+			background-repeat: no-repeat;
+			content: "";
+			display: block;
+			height: 20px;
+			position: absolute;
+			right: $grid-gap-phone;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 20px;
+		}
+
+		&--open::after {
+			transform: translateY(-50%) rotate(180deg);
+		}
+	}
+
+	.googlesitekit-settings-module__content {
+		display: none;
+
+		&--open {
+			display: block;
+		}
+	}
+
+	.googlesitekit-settings-module__title {
+		align-items: center;
+		display: flex;
+		margin: 0;
+	}
+
+	.googlesitekit-settings-module__title-icon {
+		height: auto;
+		margin-right: $grid-gap-phone;
+		width: 24px;
+	}
+
+	.googlesitekit-settings-module__status {
+		align-items: center;
+		display: flex;
+		font-size: 0.75rem;
+		margin: 0;
+	}
+
+	.googlesitekit-settings-module__status-icon {
+		margin-left: $grid-gap-phone;
+
+		&::before {
+			background-position: center center;
+			background-repeat: no-repeat;
+			border-radius: 50%;
+			content: "";
+			display: inline-block;
+			height: 19px;
+			vertical-align: middle;
+			width: 19px;
+		}
+
+		&--connected::before {
+			background-color: $c-success;
+			background-image: $icon-checked;
+			background-size: 10px 8px;
+		}
+
+		&--not-connected::before {
+			background-color: $c-warning;
+			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2222%22%20height%3D%2219%22%20viewBox%3D%220%200%2022%2019%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%2019h22L11%200%200%2019zm12-3h-2v-2h2v2zm0-4h-2V8h2v4z%22%20fill%3D%22%23FFF%22%20fill-rule%3D%22nonzero%22%2F%3E%3C%2Fsvg%3E");
+			background-position: center 3px;
+			background-size: 13px 11px;
+		}
+	}
+
+	.googlesitekit-settings-module__footer {
+		background-color: $c-background-subtle;
+		font-size: 0.8125rem;
+	}
+
+	.googlesitekit-settings-module__footer-cancel {
+		margin-left: $grid-gap-desktop;
+	}
+
+	.googlesitekit-settings-module__meta-header {
+		margin: 0 0 8px 0;
+	}
+
+	.googlesitekit-settings-module__meta-items {
+		align-items: center;
+		display: flex;
+		flex-wrap: wrap;
+		margin: 0;
+	}
+
+	.googlesitekit-settings-module__meta-select {
+		margin: 0 $grid-gap-phone $grid-gap-phone 0;
+
+		@media (min-width: $bp-desktop) {
+			margin: 0 $grid-gap-desktop $grid-gap-desktop 0;
+		}
+	}
+
+	.googlesitekit-settings-module__meta-item {
+		margin: 0 ($grid-gap-phone * 2) $grid-gap-phone 0;
+		width: 100%;
+
+		@media (min-width: $bp-tablet) {
+			width: auto;
+		}
+
+		@media (min-width: $bp-desktop) {
+			margin: 0 ($grid-gap-desktop * 2) $grid-gap-desktop 0;
+		}
+
+		&--nomargin {
+			margin: 0;
+		}
+	}
+
+	.googlesitekit-settings-module__meta-item-type {
+		font-size: 0.75rem;
+		margin: 0 0 8px 0;
+	}
+
+	.googlesitekit-settings-module__meta-item-data {
+		color: $c-tertiary;
+		font-size: 1rem;
+		font-weight: $fw-primary-bold;
+		margin: 0;
+
+		&--wrap {
+			word-break: break-all;
+		}
+	}
+
+	.googlesitekit-settings-module__edit-button-icon,
+	.googlesitekit-settings-module__remove-button-icon {
+		margin-left: $grid-gap-phone;
+	}
+
+	.googlesitekit-settings-module__remove-button {
+		align-items: center;
+		display: flex;
+	}
+
+	.googlesitekit-settings-module__error {
+		background-color: $c-error;
+		color: $c-base;
+		font-weight: $fw-primary-bold;
+	}
+
+	.googlesitekit-settings-module__apikey-cancel {
+		font-size: 0.75em;
+		margin-left: 24px;
+	}
+}

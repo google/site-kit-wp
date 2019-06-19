@@ -1,0 +1,138 @@
+.googlesitekit-wizard-progress-step {
+	display: none;
+	flex: 1;
+	flex-wrap: nowrap;
+	text-align: center;
+
+	@media (min-width: $bp-tablet) {
+		display: block;
+		margin-bottom: 40px;
+	}
+
+	&--current {
+		display: block;
+	}
+
+	.googlesitekit-wizard-progress-step__number-wrapper {
+		position: relative;
+
+		// Gray Line
+		&::before {
+
+			@include vertical-align;
+			background-color: $c-border-light;
+			content: "";
+			display: block;
+			height: 2px;
+			left: -$grid-gap-phone;
+			right: -$grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				left: -$grid-gap-desktop;
+				right: -$grid-gap-desktop;
+			}
+		}
+	}
+
+	// Hide Line on First & Last Step
+	&--1 .googlesitekit-wizard-progress-step__number-wrapper::after,
+	&--completeSetup .googlesitekit-wizard-progress-step__number-wrapper::after {
+
+		@media (min-width: $bp-tablet) {
+
+			@include vertical-align;
+			background-color: $c-base;
+			content: "";
+			display: block;
+			height: 4px;
+		}
+	}
+	// First Step
+	&--1 .googlesitekit-wizard-progress-step__number-wrapper::after {
+
+		@media (min-width: $bp-tablet) {
+			left: -$grid-gap-phone;
+			right: 50%;
+		}
+
+		@media (min-width: $bp-desktop) {
+			left: -$grid-gap-desktop;
+		}
+	}
+	// Last Step
+	&--completeSetup .googlesitekit-wizard-progress-step__number-wrapper::after {
+
+		@media (min-width: $bp-tablet) {
+			left: 50%;
+			right: -$grid-gap-phone;
+		}
+
+		@media (min-width: $bp-desktop) {
+			right: -$grid-gap-desktop;
+		}
+	}
+
+	.googlesitekit-wizard-progress-step__number {
+		background-color: $c-background;
+		border: 15px solid $c-base;
+		border-radius: 50%;
+		color: $c-secondary;
+		font-size: 14px;
+		height: 54px;
+		line-height: 24px;
+		margin: 0 auto;
+		position: relative;
+		width: 54px;
+		z-index: 2;
+
+		&--inprogress {
+			background-color: $c-background-brand;
+			color: $c-base;
+		}
+
+		&--warning {
+			background-color: $c-warning;
+			color: $c-base;
+		}
+
+		&--error {
+			background-color: $c-error;
+			color: $c-base;
+		}
+
+		&--completed {
+			background-color: $c-success;
+			color: $c-base;
+		}
+	}
+
+	.googlesitekit-wizard-progress-step__number-text {
+
+		&--warning,
+		&--error,
+		&--completed {
+
+			@include screen-reader-only;
+		}
+	}
+
+	.googlesitekit-wizard-progress-step__number-icon {
+		align-items: center;
+		display: flex;
+		height: 100%;
+		justify-content: center;
+	}
+
+	.googlesitekit-wizard-progress-step__text {
+		color: $c-tertiary;
+		font-size: 15px;
+		font-weight: $fw-primary-medium;
+		margin: 0;
+
+		span {
+			color: $c-error;
+			display: inline-block;
+			margin-left: 5px;
+		}
+	}
+}

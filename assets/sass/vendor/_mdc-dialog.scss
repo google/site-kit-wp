@@ -1,0 +1,33 @@
+// Overrides for .mdc-dialog
+.googlesitekit-plugin .mdc-dialog {
+	z-index: 10000;
+
+	.mdc-dialog__surface {
+		padding: $grid-gap-desktop $grid-gap-desktop * 2;
+	}
+
+	.mdc-dialog__lead,
+	.mdc-dialog__title {
+		color: $c-tertiary;
+		text-align: center;
+	}
+
+	.mdc-dialog__lead {
+		font-weight: $fw-secondary-light;
+		margin: 0;
+		max-width: 430px;
+	}
+
+	.mdc-dialog__content {
+		overflow: initial;
+		padding: 20px 16px;
+	}
+
+	.mdc-dialog__actions {
+		justify-content: flex-start;
+	}
+
+	.googlesitekit-cta-link {
+		margin-left: $grid-gap-phone;
+	}
+}

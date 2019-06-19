@@ -1,0 +1,18 @@
+.googlesitekit-wizard {
+
+	@include googlesitekit-inner-padding;
+	padding-top: 10px;
+
+	.googlesitekit-wizard__asterisk {
+		color: $c-required;
+
+		&--space {
+			margin-left: 3px;
+		}
+	}
+
+	.googlesitekit-wizard__error-text {
+		color: $c-error;
+		font-weight: 500;
+	}
+}

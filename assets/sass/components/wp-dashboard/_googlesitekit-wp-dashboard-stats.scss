@@ -1,0 +1,105 @@
+/**
+ * WP dashboard stats styles.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// This doesn't use the MDC Grid because of the WP Dashboard breakpoints.
+#google_dashboard_widget .googlesitekit-wp-dashboard-stats {
+	box-sizing: border-box;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+
+	* {
+		box-sizing: border-box;
+	}
+
+	> .googlesitekit-wp-dashboard-stats__data-table {
+		align-self: flex-end;
+		width: 48%;
+
+		@media (min-width: $bp-tablet) {
+			width: auto;
+		}
+
+		@media (min-width: $bp-wpdb1) {
+			width: 48%;
+		}
+
+		@media (min-width: $bp-wpdb2) {
+			width: auto;
+		}
+	}
+
+	&--fourup > .googlesitekit-wp-dashboard-stats__data-table {
+
+		@media (min-width: $bp-tablet) {
+			width: auto;
+		}
+
+		@media (min-width: $bp-wpdb1) {
+			width: 48%;
+		}
+
+		@media (min-width: $bp-wpdb2) {
+			width: auto;
+		}
+
+		@media (min-width: $bp-wpdb3) {
+			width: 48%;
+		}
+
+		@media (min-width: $bp-wpdb4) {
+			width: auto;
+		}
+	}
+
+	> .googlesitekit-wp-dashboard-stats__cta {
+		padding-top: 12px;
+		width: 100%;
+
+		@media (min-width: $bp-tablet) {
+			width: 50%;
+		}
+
+		@media (min-width: $bp-wpdb1) {
+			width: 100%;
+		}
+
+		@media (min-width: $bp-wpdb2) {
+			width: 50%;
+		}
+
+		// Two side by side CTA's
+		+ .googlesitekit-wp-dashboard-stats__cta {
+
+			@media (min-width: $bp-tablet) {
+				margin-left: 1px;
+				margin-right: -1px;
+			}
+
+			@media (min-width: $bp-wpdb2) {
+				margin-left: 1px;
+				margin-right: -1px;
+			}
+		}
+	}
+
+	// Regular CTA shows up when data is zero
+	.googlesitekit-cta + .googlesitekit-wp-dashboard-stats__cta {
+		width: 100%;
+	}
+}

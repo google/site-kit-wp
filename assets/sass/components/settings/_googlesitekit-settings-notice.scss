@@ -1,0 +1,58 @@
+/**
+ * Settings notice styles.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-settings-notice {
+	background-color: $c-background-notice;
+	border-radius: 4px;
+	margin: 1.5em 0;
+	padding: $grid-gap-phone;
+
+	@media (min-width: $bp-desktop) {
+		padding: $grid-gap-desktop;
+	}
+
+	&--suggestion {
+		background-color: $c-background-suggestion;
+	}
+
+	.googlesitekit-settings-notice__text {
+		color: rgba($c-black, 0.7);
+		padding-left: 30px;
+		position: relative;
+
+		&::before {
+			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%222%22%20height%3D%2212%22%20viewBox%3D%220%200%202%2012%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23f8a708%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%200h2v7H0zM0%2010h2v2H0z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+			background-position: center center;
+			background-repeat: no-repeat;
+			background-size: 2px 12px;
+			border: 2px solid $c-border-notice;
+			border-radius: 50%;
+			content: "";
+			display: block;
+			height: 22px;
+			left: 0;
+			position: absolute;
+			width: 22px;
+		}
+	}
+
+	&--suggestion .googlesitekit-settings-notice__text::before {
+		background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%222%22%20height%3D%2211%22%20viewBox%3D%220%200%202%2011%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%231872e6%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%204h2v7H0zM0%200h2v2H0z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+		border-color: $c-border-suggestion;
+	}
+}

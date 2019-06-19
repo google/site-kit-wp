@@ -1,0 +1,36 @@
+node_modules
+bower_components
+/vendor
+release
+composer.lock
+phpunit.xml
+.idea
+npm-debug.log
+/dist
+/languages
+google-site-kit.zip
+
+# Editors
+*.esproj
+*.tmproj
+*.tmproject
+tmtags
+.*.sw[a-z]
+*.un~
+Session.vim
+*.swp
+.vscode
+
+# Mac OSX
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Backstop
+tests/backstop/html_report/
+tests/backstop/tests/

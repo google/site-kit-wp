@@ -1,0 +1,173 @@
+/**
+ * Base styles.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* .googlesitekit-plugin will always wrap all
+ * of our content, so the properties below will act as defaults.
+ */
+
+.googlesitekit-plugin {
+	color: $c-primary;
+	font-family: $f-primary;
+	font-size: 1rem;
+	line-height: 1.4;
+
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
+
+	svg:not(:root) {
+		overflow: hidden;
+	}
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		color: $c-secondary;
+		font-family: $f-secondary;
+		line-height: 1.16;
+	}
+
+	h1,
+	.googlesitekit-heading-1 {
+		font-size: 1.75rem;
+		font-weight: $fw-secondary-normal;
+
+		@media (min-width: $bp-tablet) {
+			font-size: 2.25rem;
+		}
+	}
+
+	h2,
+	.googlesitekit-heading-2 {
+		font-size: 1.375rem;
+		font-weight: $fw-secondary-normal;
+
+		@media (min-width: $bp-tablet) {
+			font-size: 1.75rem;
+		}
+	}
+
+	h3,
+	.googlesitekit-heading-3 {
+		font-size: 1.25rem;
+		font-weight: $fw-secondary-normal;
+
+		@media (min-width: $bp-tablet) {
+			font-size: 1.5rem;
+		}
+	}
+
+	h4,
+	.googlesitekit-heading-4 {
+		color: $c-tertiary;
+		font-size: 1.125rem;
+		font-weight: $fw-secondary-medium;
+
+		@media (min-width: $bp-tablet) {
+			font-size: 1.25rem;
+		}
+	}
+
+	.googlesitekit-subheading-1 {
+		font-family: $f-primary;
+		font-size: 0.9375rem;
+		font-weight: $fw-primary-medium;
+
+		@media (min-width: $bp-tablet) {
+			font-size: 1rem;
+		}
+	}
+
+	.googlesitekit-subheading-2 {
+		font-family: $f-primary;
+		font-size: 0.875rem;
+		font-weight: $fw-primary-medium;
+
+		@media (min-width: $bp-tablet) {
+			font-size: 0.9375rem;
+		}
+	}
+
+	.googlesitekit-overline {
+		color: $c-primary;
+		font-size: 0.75rem;
+		font-weight: $fw-primary-medium;
+		letter-spacing: 0.16em;
+		line-height: 1.16;
+		text-transform: uppercase;
+
+		&--collapse {
+			margin: 0;
+		}
+	}
+
+	.googlesitekit-recommended {
+		color: $c-success;
+		font-size: 10px;
+		font-weight: $fw-primary-medium;
+	}
+
+	.googlesitekit-nodata {
+		display: none;
+	}
+
+	p {
+		font-size: 1rem;
+	}
+
+	a {
+		color: $c-link;
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+
+		&:focus {
+			box-shadow: none;
+			outline: 1px dashed $c-cornflower-blue;
+			outline-offset: 3px;
+		}
+	}
+
+	button {
+		background: none;
+		border: none;
+		color: $c-link;
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+
+		&:focus {
+			outline: 1px dashed $c-cornflower-blue;
+			outline-offset: 3px;
+		}
+	}
+
+	.screen-reader-only {
+
+		@include screen-reader-only;
+	}
+}

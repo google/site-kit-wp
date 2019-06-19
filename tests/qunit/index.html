@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>QUnit Tests for Site Kit</title>
+	<link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.7.0.css">
+	<script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+	<script src='https://unpkg.com/lodash@4.17.5/lodash'></script>
+	<script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en,Intl.~locale.de"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.4.4/polyfill.js"></script>
+	<script>
+		window.wp = {};
+		wp.hooks  = {};
+		window.lodash = _;
+	</script>
+	<script src='../../dist/assets/js/externals/i18n.js'></script>
+	<script src='../../dist/assets/js/externals/url.js'></script>
+	<script src='../../dist/assets/js/externals/hooks.js'></script>
+	<script src='../../dist/assets/js/googlesitekit-tests.js'></script>
+</head>
+
+<body>
+	<div id="qunit"></div>
+	<div id="qunit-fixture"></div>
+	<script src="https://code.jquery.com/qunit/qunit-2.7.0.js"></script>
+
+
+
+	<!-- Include the test scripts -->
+	<script src='utils.js'></script>
+</body>
+
+</html>

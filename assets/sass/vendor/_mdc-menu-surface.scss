@@ -1,0 +1,15 @@
+// Overrides for .mdc-menu-surface
+.googlesitekit-plugin {
+
+	.googlesitekit-dropdown-menu .mdc-menu-surface {
+		left: auto !important;
+		right: -8px;
+		top: calc(100% + 10px) !important;
+		width: calc(100% + 8px);
+	}
+}
+
+// Outside .googlesitekit-plugin because the open menu is moved to the body.
+.mdc-menu-surface--open {
+	z-index: 11;
+}

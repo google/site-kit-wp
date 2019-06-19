@@ -1,0 +1,81 @@
+<?php
+/**
+ * TestCase class.
+ *
+ * @package   Google\Site_Kit
+ * @copyright 2019 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
+
+namespace Google\Site_Kit\Tests;
+
+use Google\Site_Kit\Tests\Exception\RedirectException;
+
+class TestCase extends \WP_UnitTestCase {
+
+	// Do not preserve global state since it doesn't support closures within globals.
+	protected $preserveGlobalState = false;
+
+	/**
+	 * Runs the routine before each test is executed.
+	 */
+	public function setUp() {
+		parent::setUp();
+
+		// At this point all hooks are isolated between tests.
+
+		/**
+		 * Catch redirections with an exception.
+		 * This prevents subsequent calls to exit/die and allows us to make assertions about the redirect.
+		 */
+		add_filter( 'wp_redirect_status', function ( $status, $location ) {
+			$e = new RedirectException( "Intercepted attempt to redirect to $location" );
+			$e->set_location( $location );
+			$e->set_status( $status );
+			throw $e;
+		}, 10, 2 );
+	}
+
+	/**
+	 * Forcibly set a property of an object that would otherwise not be possible.
+	 *
+	 * @param object $instance Class instance to set the property on
+	 * @param string $property Property name
+	 * @param mixed  $value    New value to assign the property
+	 *
+	 * @throws \ReflectionException
+	 */
+	protected function force_set_property( $instance, $property, $value ) {
+		$reflection_property = new \ReflectionProperty( $instance, $property );
+		$reflection_property->setAccessible( true );
+		$reflection_property->setValue( $instance, $value );
+	}
+
+	/**
+	 * Forcibly get a property's value from an object that would otherwise not be possible.
+	 *
+	 * @param object $instance Class instance to get the property from
+	 * @param string $property Property name
+	 *
+	 * @return mixed
+	 * @throws \ReflectionException
+	 */
+	protected function force_get_property( $instance, $property ) {
+		$reflection_property = new \ReflectionProperty( $instance, $property );
+		$reflection_property->setAccessible( true );
+
+		return $reflection_property->getValue( $instance );
+	}
+
+	/**
+	 * Get the current TestCase instance.
+	 *
+	 * @see TestCase_Context_Trait
+	 *
+	 * @return TestCase
+	 */
+	protected function get_testcase() {
+		return $this;
+	}
+}

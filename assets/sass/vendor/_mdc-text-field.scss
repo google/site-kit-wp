@@ -1,0 +1,44 @@
+// Overrides for .mdc-text-field
+.googlesitekit-plugin .mdc-text-field {
+
+	@include mdc-text-field-ink-color($c-primary);
+	@include mdc-text-field-label-color($c-tertiary);
+	@include mdc-text-field-caret-color($c-primary);
+	@include mdc-text-field-focused-outline-color($c-input);
+	@include mdc-text-field-hover-outline-color($c-border);
+	@include mdc-text-field-outline-color($c-border-medium);
+	@include mdc-text-field-textarea-stroke-color($c-border-medium);
+	width: 250px;
+
+	@media (min-width: $bp-tablet) {
+		width: 350px;
+	}
+
+	&--textarea {
+		max-width: 650px;
+		width: 100%;
+	}
+
+	&--error,
+	&--error.mdc-text-field--textarea {
+
+		@include mdc-text-field-focused-outline-color($c-error);
+		@include mdc-text-field-hover-outline-color($c-error);
+		@include mdc-text-field-outline-color($c-error);
+		@include mdc-text-field-textarea-stroke-color($c-error);
+	}
+
+	&--textarea.mdc-text-field--focused {
+		border-color: $c-input;
+	}
+
+	&--textarea .mdc-text-field__input {
+		box-shadow: none;
+		padding: 8px 12px 12px 12px;
+	}
+
+	&--textarea:not(.mdc-text-field--disabled) .mdc-text-field__input:focus { // :not comes from MDC
+		border-color: $c-input;
+	}
+
+}

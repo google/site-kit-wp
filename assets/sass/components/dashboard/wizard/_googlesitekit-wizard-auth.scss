@@ -1,0 +1,31 @@
+.googlesitekit-wizard-auth {
+	border-bottom: 1px solid $c-border-light;
+	display: flex;
+	padding-bottom: 40px;
+
+	.googlesitekit-wizard-auth__image {
+		border-radius: 50%;
+		display: block;
+		flex: 0 0 auto;
+		height: 32px;
+		margin-right: $grid-gap-phone;
+		width: 32px;
+
+		@media (min-width: $bp-tablet) {
+			height: 64px;
+			width: 64px;
+		}
+
+		@media (min-width: $bp-desktop) {
+			margin-right: $grid-gap-desktop;
+		}
+	}
+
+	.googlesitekit-wizard-auth__title {
+		margin: 0 0 10px 0;
+	}
+
+	.googlesitekit-wizard-auth__text {
+		margin: 0;
+	}
+}

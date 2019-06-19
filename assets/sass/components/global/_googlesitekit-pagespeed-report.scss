@@ -1,0 +1,124 @@
+/**
+ * Pagespeed report styles.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-pagespeed-report {
+
+	&__loading {
+		text-align: center;
+	}
+
+	&__heading-wrapper {
+		align-items: flex-start;
+		display: flex;
+		flex-wrap: nowrap;
+		justify-content: space-between;
+		margin-right: $grid-gap-phone;
+
+		@media (min-width: $bp-tablet) {
+			margin-right: 0;
+		}
+
+		h3 {
+			flex: 1;
+			margin-top: 0;
+		}
+	}
+
+	&__score-category-wrapper {
+		align-items: center;
+		display: inline-flex;
+
+		&--fast {
+			color: $c-pagespeed-fast;
+		}
+
+		&--average {
+			color: $c-pagespeed-average;
+		}
+
+		&--slow {
+			color: $c-pagespeed-slow;
+		}
+	}
+
+	&__score-icon {
+		display: inline-block;
+		margin-left: 10px;
+		margin-top: 1px;
+
+		&::before {
+			background-position: center center;
+			background-repeat: no-repeat;
+			background-size: contain;
+			border-radius: 50%;
+			content: "";
+			display: inline-block;
+			height: 17px;
+			width: 17px;
+		}
+
+		&--fast::before {
+			background-color: $c-pagespeed-fast;
+			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2212%22%20viewBox%3D%220%200%2016%2012%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23FFF%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%206.414L1.415%205l5.292%205.292-1.414%201.415z%22%2F%3E%3Cpath%20d%3D%22M14.146.146l1.415%201.414L5.414%2011.707%204%2010.292z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+			border: 4px solid $c-pagespeed-fast;
+
+		}
+
+		&--average::before {
+			background-color: $c-pagespeed-average;
+			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%222%22%20height%3D%2212%22%20viewBox%3D%220%200%202%2012%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23fff%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%200h2v7H0zM0%2010h2v2H0z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+			border: 4px solid $c-pagespeed-average;
+		}
+
+		&--slow::before {
+			background-color: $c-base;
+			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2228%22%20height%3D%2225%22%20viewBox%3D%220%200%2028%2025%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M3.332%2024.75h21.335c2.182%200%203.542-2.366%202.451-4.25L16.451%202.07C15.36.184%2012.64.184%2011.549%202.07L.882%2020.5c-1.091%201.884.269%204.25%202.45%204.25zM14%2014.833a1.42%201.42%200%200%201-1.417-1.416v-2.834c0-.779.638-1.416%201.417-1.416.78%200%201.417.637%201.417%201.416v2.834A1.42%201.42%200%200%201%2014%2014.833zm1.417%205.667h-2.834v-2.833h2.834V20.5z%22%20fill%3D%22%23c7221f%22%20fill-rule%3D%22nonzero%22%2F%3E%3C%2Fsvg%3E");
+			border-radius: 0;
+		}
+	}
+
+	&__scale {
+		color: $c-primary;
+		font-size: 0.75rem;
+	}
+
+	&__scale-range {
+		color: $c-primary;
+
+		&::before {
+			border-radius: 4px;
+			content: "";
+			display: inline-block;
+			height: 8px;
+			margin: 1px 8px;
+			width: 16px;
+		}
+
+		&--fast::before {
+			background-color: $c-pagespeed-fast;
+		}
+
+		&--average::before {
+			background-color: $c-pagespeed-average;
+		}
+
+		&--slow::before {
+			background-color: $c-pagespeed-slow;
+		}
+	}
+}

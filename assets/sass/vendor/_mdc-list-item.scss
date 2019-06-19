@@ -1,0 +1,15 @@
+// Overrides for .mdc-list
+.googlesitekit-plugin {
+
+	.mdc-list-item {
+
+		// Overriding WordPress Styles
+		margin: 0;
+	}
+
+	.mdc-list.mdc-list--underlined .mdc-list-item {
+		border-bottom: 1px solid $c-border-light;
+		padding-left: 0;
+		padding-right: 0;
+	}
+}

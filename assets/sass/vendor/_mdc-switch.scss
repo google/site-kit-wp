@@ -1,0 +1,32 @@
+// Overrides for .mdc-switch
+.googlesitekit-plugin .mdc-switch {
+
+	@include mdc-switch-toggled-on-color($c-input);
+	vertical-align: middle;
+
+	// Overriding WordPress load-styles.php
+	.mdc-switch__native-control {
+		-webkit-appearance: none;
+		background: transparent;
+		border: none;
+		box-shadow: none;
+		clear: none;
+		color: $c-primary;
+		cursor: pointer;
+		display: block;
+		height: 48px;
+		line-height: normal;
+		margin: 0;
+		min-width: auto;
+		outline: 0;
+		padding: 0;
+		text-align: center;
+		transition: none;
+		vertical-align: middle;
+		width: 68px;
+	}
+
+	+ label {
+		margin-left: 10px;
+	}
+}

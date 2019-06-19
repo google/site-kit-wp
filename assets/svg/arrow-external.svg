@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="13px" height="13px" viewBox="0 0 13 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>external</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="external">
+            <path d="M11,11 L2,11 L2,2 L5,2 L5,0 L2,0 C0.89,0 0,0.9 0,2 L0,11 C0,12.1 0.89,13 2,13 L11,13 C12.1,13 13,12.1 13,11 L13,8 L11,8 L11,10 L11,11 Z" id="Path" fill="#1A73E8" fill-rule="nonzero"></path>
+            <rect id="Rectangle" fill="#1A73E8" x="7" y="0" width="6" height="2"></rect>
+            <rect id="Rectangle" fill="#1A73E8" x="11" y="2" width="2" height="4"></rect>
+            <path d="M11,2 L5,8" id="Line" stroke="#1A73E8" stroke-width="2" stroke-linecap="square"></path>
+        </g>
+    </g>
+</svg>

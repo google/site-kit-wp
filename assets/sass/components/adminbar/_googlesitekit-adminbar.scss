@@ -1,0 +1,113 @@
+/**
+ * Adminbar styles.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#wpadminbar {
+
+	.googlesitekit-plugin .googlesitekit-adminbar {
+
+		@include shadow;
+		background: $c-base;
+		color: $c-black;
+		display: none;
+		left: 0;
+		padding: 0;
+		position: absolute;
+		right: 0;
+		top: 46px;
+		z-index: 9999;
+
+		@media (min-width: $bp-wpAdminBarTablet) {
+			top: 32px;
+		}
+
+		&.--has-error {
+			display: none;
+		}
+
+		.googlesitekit-adminbar__subtitle {
+			color: $c-primary;
+			font-size: 0.75rem;
+		}
+
+		.googlesitekit-adminbar__title {
+			color: $c-secondary;
+			font-size: 1rem;
+			font-weight: $fw-primary-medium;
+			margin: 5px 0 0 0;
+		}
+
+		.googlesitekit-adminbar__loading {
+			display: none;
+			padding: 0 $grid-gap-desktop * 2;
+		}
+
+		&.googlesitekit-adminbar--loading .googlesitekit-adminbar__loading {
+			display: block;
+		}
+
+		.googlesitekit-adminbar__link {
+			display: none;
+		}
+	}
+
+	// Display sub menu on hover.
+	.googlesitekit-wp-adminbar.hover .googlesitekit-adminbar,
+	&.nojs .googlesitekit-wp-adminbar:hover .googlesitekit-adminbar {
+		display: block;
+
+		&.--has-error {
+			display: none;
+		}
+	}
+
+	// Handle links on mobile.
+	&:not(.mobile) .googlesitekit-plugin .googlesitekit-adminbar .googlesitekit-adminbar__link {
+		display: inline-block;
+
+		&--mobile {
+			display: none;
+		}
+	}
+
+	&.mobile .googlesitekit-plugin .googlesitekit-adminbar .googlesitekit-adminbar__link {
+
+		@media (min-width: $bp-desktop) {
+			display: inline-block;
+		}
+
+		&--mobile {
+			display: inline-block;
+			padding-left: $grid-gap-phone;
+			position: relative;
+			top: -$grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				display: none;
+			}
+		}
+	}
+
+	// Prevents menu from closing on mobile.
+	&.mobile .googlesitekit-plugin .googlesitekit-adminbar .mdc-layout-grid {
+		pointer-events: none;
+
+		@media (min-width: $bp-desktop) {
+			pointer-events: auto;
+		}
+	}
+}

@@ -1,0 +1,54 @@
+/**
+ * Table overflow styles.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-table-overflow {
+	position: relative;
+
+	&::after {
+
+		@media (max-width: $bp-tablet) {
+			background: linear-gradient(to right, rgba($c-base, 0) 0%, rgba($c-base, 1) 85%, rgba($c-base, 1) 100%);
+			bottom: 0;
+			content: "";
+			display: block;
+			pointer-events: none;
+			position: absolute;
+			right: 0;
+			top: 0;
+			transition: all $t-default ease-in-out;
+			width: 0;
+		}
+	}
+
+	&--gradient::after {
+
+		@media (max-width: $bp-tablet) {
+			width: 15%;
+		}
+	}
+
+	.googlesitekit-table-overflow__container {
+		overflow-x: auto;
+		white-space: nowrap;
+
+		@media (min-width: $bp-tablet) {
+			overflow-x: visible;
+			white-space: normal;
+		}
+	}
+}

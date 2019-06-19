@@ -1,0 +1,155 @@
+/**
+ * Variables.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * Colors
+ * Names from http://chir.ag/projects/name-that-color/
+ */
+
+$c-white: #fff;
+$c-alabaster: #f9f9f9;
+$c-mercury: #e6e6e6;
+$c-silver: #bbb;
+$c-jumbo: #828286; // 3.82 contrast
+$c-boulder: #757575;
+$c-scarpa-flow: #5b5b61;
+$c-cape-cod: #3c4043;
+$c-black: #000;
+$c-selago: #e7f0fc;
+$c-cornflower-blue: #4285f4; // 3.56 contrast
+$c-royal-blue: #1a73e8; // 4.5 contrast
+$c-denim: #1872e6;
+$c-allports: #0073aa;
+$c-cerulean: #00a0d2;
+$c-deep-sky-blue: #00b9eb;
+$c-scooter: #27bcd4;
+$c-golden-rod-yellow: #fafad2;
+$c-selective-yellow: #fbbc05;
+$c-sun: #f8a708;
+$c-orange-roughy: #ca4a1f;
+$c-valencia: #d53e36;
+$c-rangitoto: #2a2a21;
+$c-chateau-green: #34a853;
+$c-elm: #1b9688;
+$c-purple-heart: #673ab7;
+$c-jewel: #178239;
+$c-mango-tango: #e67700;
+$c-thunderbird: #c7221f;
+
+// PageSpeed Insights colors
+$c-pagespeed-fast: $c-jewel;
+$c-pagespeed-average: $c-mango-tango;
+$c-pagespeed-slow: $c-thunderbird;
+
+$c-base: $c-white;
+$c-primary: $c-boulder;
+$c-secondary: $c-cape-cod;
+$c-tertiary: $c-scarpa-flow;
+$c-brand: $c-royal-blue;
+$c-highlight: $c-cornflower-blue;
+$c-subtle: $c-jumbo;
+$c-link: $c-royal-blue;
+$c-link-wpdb: $c-allports;
+$c-link-wpdb-hover: $c-cerulean;
+$c-input: $c-royal-blue;
+$c-disabled: $c-silver;
+$c-required: $c-valencia;
+$c-error: $c-valencia;
+$c-warning: $c-selective-yellow;
+$c-success: $c-chateau-green;
+$c-wp-notice: $c-orange-roughy;
+$c-wp-notice-alt: $c-deep-sky-blue;
+
+$c-background: $c-mercury;
+$c-background-subtle: $c-alabaster;
+$c-background-brand: $c-royal-blue;
+$c-background-notice: $c-golden-rod-yellow;
+$c-background-suggestion: $c-selago;
+
+$c-border: $c-boulder;
+$c-border-light: $c-mercury;
+$c-border-medium: $c-silver;
+$c-border-brand: $c-royal-blue;
+$c-border-notice: $c-sun;
+$c-border-suggestion: $c-denim;
+
+$c-chart-1: $c-cornflower-blue;
+$c-chart-2: $c-scooter;
+$c-chart-3: $c-elm;
+$c-chart-4: $c-purple-heart;
+
+// Google MDC Theme Overrides
+$mdc-theme-primary: $c-brand;
+$mdc-theme-secondary: $c-brand;
+$mdc-theme-on-primary: $c-base;
+$mdc-theme-on-secondary: $c-base;
+
+// Fonts
+$f-primary: Roboto, "Helvetica Neue", Helvetica, Arial, sans-serif;
+$fw-primary-light: 300;
+$fw-primary-normal: 400;
+$fw-primary-medium: 500;
+$fw-primary-bold: 700;
+
+$f-secondary: "Google Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+$fw-secondary-light: 300;
+$fw-secondary-normal: 400;
+$fw-secondary-medium: 500;
+$fw-secondary-bold: 700;
+
+// Transitions
+$t-default: 0.2s;
+$t-speed-1: 0.1s;
+$t-speed-2: 0.3s;
+$t-speed-3: 0.5s;
+$t-speed-4: 1s;
+
+// Padding Variables
+$grid-gap-phone: 16px;
+$grid-gap-desktop: 24px;
+
+// Width Variables (breakpoints)
+$width-tablet: 600;
+$width-wpAdminBarTablet: 783;
+$width-desktop: 960;
+$width-xlarge: 1280;
+
+// Custom Media Breakpoints
+$bp-tablet: $width-tablet + px;
+$bp-wpAdminBarTablet: $width-wpAdminBarTablet + px;
+$bp-desktop: $width-desktop + px;
+$bp-xlarge: $width-xlarge + px;
+
+// Specific for WP Dashboard
+$bp-wpdb1: 800px;
+$bp-wpdb2: 1300px;
+$bp-wpdb3: 1500px;
+$bp-wpdb4: 2200px;
+
+// Google MDC Layout Grid Overrides
+
+/* stylelint-disable */
+$mdc-layout-grid-breakpoints: (
+	desktop: 961px,
+	tablet: 601px,
+	phone: 0px
+);
+/* stylelint-enable */
+
+// Base64 images for reuse
+$icon-checked: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2212%22%20viewBox%3D%220%200%2016%2012%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%20fill%3D%22%23FFF%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M0%206.414L1.415%205l5.292%205.292-1.414%201.415z%22%2F%3E%3Cpath%20d%3D%22M14.146.146l1.415%201.414L5.414%2011.707%204%2010.292z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");

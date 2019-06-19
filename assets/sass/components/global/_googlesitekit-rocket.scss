@@ -1,0 +1,74 @@
+.googlesitekit-rocket {
+	height: 170px;
+	position: relative;
+}
+
+.googlesitekit-rocket__clouds {
+	animation: clouds 5.5s backwards ease-out;
+	bottom: 0;
+	left: 30px;
+	position: absolute;
+}
+
+.googlesitekit-rocket__dust {
+	animation: dust 4s 1.5s backwards ease-in-out;
+	bottom: 0;
+	left: 0;
+	position: absolute;
+}
+
+.googlesitekit-rocket__body {
+	animation:
+		rumble 50ms 50 alternate,
+		liftoff 3s 2.5s ease-in;
+	bottom: 18px;
+	left: 65px;
+	position: absolute;
+}
+
+@keyframes clouds {
+
+	0%,
+	100% {
+		opacity: 0;
+	}
+
+	50% {
+		opacity: 1;
+	}
+}
+
+@keyframes dust {
+
+	0%,
+	100% {
+		opacity: 0;
+	}
+
+	50% {
+		opacity: 1;
+	}
+
+	100% {
+		transform: rotate(-10deg) translateY(-10px);
+	}
+}
+
+@keyframes rumble {
+
+	0% {
+		transform: rotate(2deg);
+	}
+
+	100% {
+		transform: rotate(-2deg);
+	}
+}
+
+@keyframes liftoff {
+
+	100% {
+		transform: translateY(-500px);
+	}
+}
+

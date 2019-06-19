@@ -1,0 +1,105 @@
+/**
+ * CTA styles.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-cta {
+	background-color: $c-background-brand;
+	height: 100%;
+	padding: $grid-gap-phone;
+	width: 100%;
+
+	@media (min-width: $bp-desktop) {
+		padding: $grid-gap-desktop;
+	}
+
+	&--error {
+		background-color: $c-base;
+		border: 3px solid $c-error;
+	}
+
+	.googlesitekit-adminbar-modules & {
+		padding: $grid-gap-phone;
+	}
+
+	.googlesitekit-wp-dashboard & {
+		background-color: $c-link-wpdb;
+		box-sizing: border-box;
+		height: auto;
+		margin-top: 12px;
+		padding: 12px;
+	}
+
+	.googlesitekit-wp-dashboard &--error {
+		background-color: $c-base;
+	}
+
+	// Title.
+	.googlesitekit-wp-dashboard .googlesitekit-wp-dashboard-stats__cta & {
+		margin-top: 0;
+	}
+
+	.googlesitekit-cta__title {
+		color: $c-base;
+		margin: 0 0 10px 0;
+	}
+
+	&--error .googlesitekit-cta__title {
+		color: $c-primary;
+	}
+
+	.googlesitekit-adminbar-modules .googlesitekit-cta__title {
+		font-size: 1rem;
+		font-weight: $fw-secondary-bold;
+	}
+
+	#google_dashboard_widget & .googlesitekit-cta__title {
+		color: $c-base;
+		font-weight: 700;
+	}
+
+	#google_dashboard_widget &--error .googlesitekit-cta__title {
+		color: $c-primary;
+	}
+
+	// Description.
+	.googlesitekit-cta__description {
+		color: $c-base;
+		margin: 0 0 20px 0;
+	}
+
+	&--error .googlesitekit-cta__description {
+		color: $c-primary;
+		word-break: break-all;
+	}
+
+	// Override WP link color.
+	#google_dashboard_widget .googlesitekit-wp-dashboard & a,
+	#google_dashboard_widget .googlesitekit-wp-dashboard & button {
+		background-color: transparent;
+		border: none;
+		color: $c-base;
+
+		&:hover {
+			color: $c-base;
+			text-decoration: underline;
+		}
+	}
+
+	*:last-child {
+		margin-bottom: 0;
+	}
+}

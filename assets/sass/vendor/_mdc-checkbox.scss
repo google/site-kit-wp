@@ -1,0 +1,34 @@
+// Overrides for .mdc-checkbox
+.googlesitekit-plugin .mdc-checkbox {
+
+	@include mdc-checkbox-container-colors($c-border-medium, $c-base, $c-border-brand, $c-background-brand, true);
+	@include mdc-checkbox-ink-color($c-base);
+	@include mdc-checkbox-focus-indicator-color($c-input);
+
+	box-sizing: content-box;
+
+	// Overriding WordPress load-styles.php
+	.mdc-checkbox__native-control {
+		-webkit-appearance: none;
+		background: transparent;
+		border: none;
+		border-radius: 0;
+		box-shadow: none;
+		clear: none;
+		color: $c-primary;
+		cursor: inherit;
+		display: block;
+		height: 100%;
+		line-height: normal;
+		margin: 0;
+		min-width: auto;
+		opacity: 0;
+		outline: 0;
+		padding: 0;
+		text-align: center;
+		transition: none;
+		vertical-align: middle;
+		width: 100%;
+		z-index: 1;
+	}
+}

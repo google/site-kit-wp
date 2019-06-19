@@ -1,0 +1,66 @@
+// Overrides for .mdc-select
+.googlesitekit-plugin .mdc-select {
+
+	@include mdc-select-ink-color($c-primary);
+	@include mdc-select-label-color($c-tertiary);
+	@include mdc-select-focused-label-color($c-input);
+	@include mdc-select-outline-color($c-border-medium);
+	@include mdc-select-hover-outline-color($c-border);
+	@include mdc-select-focused-outline-color($c-input);
+	@include mdc-select-focused-bottom-line-color($c-border-brand);
+
+	&--minimal {
+		background-color: transparent;
+		background-position: right center;
+		display: block;
+		height: 20px;
+		line-height: 1;
+		margin: 0 0 -6px 0;
+		padding-bottom: 6px;
+		width: 90px;
+
+		&::before {
+			background-color: transparent;
+		}
+	}
+
+	// Overriding WordPress load-styles.php
+	.mdc-select__native-control {
+		-webkit-appearance: none;
+		box-shadow: none;
+		height: 56px !important;
+		line-height: 1.75rem;
+		margin: 0;
+		padding: 20px 26px 4px 16px;
+	}
+
+	&--outlined .mdc-select__native-control {
+		background-color: transparent;
+		border: none;
+		box-shadow: none;
+		display: flex;
+		padding: 12px 26px 12px 16px;
+		z-index: 1;
+	}
+
+	&--minimal .mdc-select__selected-text {
+		border: none;
+		font-size: 0.75rem !important;
+		height: 14px !important;
+		line-height: 1;
+		min-width: 0;
+		padding: 0 18px 0 0;
+		text-align: right;
+		text-indent: 0;
+	}
+
+	// Icon
+	&--minimal .mdc-select__dropdown-icon {
+		bottom: 2px;
+		right: -5px;
+	}
+
+	&--minimal.mdc-select--focused .mdc-select__dropdown-icon {
+		transform: rotate(180deg) translateY(0);
+	}
+}

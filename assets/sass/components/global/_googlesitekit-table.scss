@@ -1,0 +1,188 @@
+/**
+ * Table styles.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-table {
+	counter-reset: table;
+	font-size: 0.875rem;
+	padding: $grid-gap-phone;
+	position: relative;
+
+	@media (min-width: $bp-desktop) {
+		padding: $grid-gap-desktop;
+	}
+
+	.googlesitekit-details-widget &,
+	.googlesitekit-alltraffic-widget &,
+	.googlesitekit-wp-dashboard &,
+	.googlesitekit-pagespeed-report & {
+		padding: 0;
+	}
+
+	.googlesitekit-table__wrapper {
+		border-collapse: collapse;
+		width: 100%;
+	}
+
+	.googlesitekit-table__head-row {
+		border-bottom: 1px solid $c-border-light;
+	}
+
+	.googlesitekit-table__head-item {
+		color: $c-secondary;
+		font-weight: $fw-primary-medium;
+		outline: 0;
+		padding: 0 ($grid-gap-phone / 2) ($grid-gap-phone / 2) ($grid-gap-phone / 2);
+		position: relative;
+		text-align: right;
+		text-decoration: none;
+
+		@media (min-width: $bp-desktop) {
+			padding: 0 ($grid-gap-desktop / 2) ($grid-gap-desktop / 2) ($grid-gap-desktop / 2);
+		}
+
+		&:first-child {
+			padding-left: 0;
+			text-align: left;
+		}
+
+		&:last-child {
+			padding-right: 0;
+		}
+
+		.googlesitekit-table-overflow &:last-child {
+			padding-right: $grid-gap-phone;
+
+			@media (min-width: $bp-tablet) {
+				padding-right: 0;
+			}
+		}
+
+		&[data-tooltip]::before {
+
+			@media (min-width: $bp-desktop) {
+				background: rgba(0, 0, 0, 0.7);
+				border-radius: 3px;
+				color: $c-base;
+				content: attr(data-tooltip);
+				display: none; // TODO Temp until we get updated verbiage.
+				font-size: 0.75rem;
+				max-width: 250px;
+				opacity: 0;
+				padding: calc(#{$grid-gap-phone} / 2) $grid-gap-desktop;
+				pointer-events: none;
+				position: absolute;
+				right: 0;
+				text-align: center;
+				top: 100%;
+				transition: opacity $t-default ease-in-out, visibility $t-default ease-in-out;
+				visibility: hidden;
+			}
+		}
+
+		&:first-child[data-tooltip]::before {
+
+			@media (min-width: $bp-desktop) {
+				left: 0;
+			}
+		}
+	}
+
+	.googlesitekit-table__body {
+		font-weight: $fw-primary-normal;
+	}
+
+	.googlesitekit-table__body-row {
+		border-bottom: 1px solid $c-border-light;
+	}
+
+	.googlesitekit-table__body-item {
+		padding: $grid-gap-phone / 2;
+		text-align: right;
+
+		@media (min-width: $bp-desktop) {
+			padding: $grid-gap-desktop / 2;
+		}
+
+		&:first-child {
+			padding-left: 0;
+			text-align: left;
+		}
+
+		&:last-child {
+			padding-right: 0;
+		}
+
+		.googlesitekit-table-overflow &:last-child {
+			padding-right: $grid-gap-phone;
+
+			@media (min-width: $bp-tablet) {
+				padding-right: 0;
+			}
+		}
+	}
+
+	&--with-list {
+
+		.googlesitekit-table__body-row {
+			transition: background-color $t-default ease-in-out;
+
+			&:last-child {
+				border-bottom: 0;
+			}
+
+			&:hover {
+				background-color: rgba($c-secondary, 0.05);
+			}
+		}
+
+		.googlesitekit-table__body-item:first-child .googlesitekit-table__body-item-content {
+			margin-left: $grid-gap-desktop;
+			position: relative;
+
+			&::before {
+				content: counter(table) ".";
+				counter-increment: table;
+				left: -$grid-gap-desktop;
+				position: absolute;
+			}
+		}
+	}
+
+	.googlesitekit-wp-dashboard & .googlesitekit-table__body-item-link {
+		background-image: none;
+	}
+
+	.googlesitekit-table__body-item-url {
+		background-image: none;
+		font-size: 0.75rem;
+	}
+
+	.googlesitekit-table__body-item-chart-wrap {
+		align-items: center;
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.googlesitekit-table__source {
+		margin-top: $grid-gap-phone;
+
+		@media (min-width: $bp-desktop) {
+			margin-top: $grid-gap-desktop;
+		}
+	}
+}

@@ -1,0 +1,242 @@
+/**
+ * Data block styles.
+ *
+ * Site Kit by Google, Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-data-block {
+	position: relative;
+	text-align: left;
+
+	.post-php & {
+		min-width: 150px;
+	}
+
+	.googlesitekit-wp-dashboard & {
+		padding-top: 12px;
+	}
+
+	.googlesitekit-dashboard-adsense-stats & {
+		align-items: flex-end;
+		display: flex;
+	}
+
+	&--button {
+		cursor: pointer;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+		justify-content: flex-end;
+		padding-bottom: $grid-gap-phone;
+		padding-top: $grid-gap-phone + 4px;
+		text-align: center;
+		transition: background-color $t-default ease-in-out;
+
+		@media (min-width: $bp-desktop) {
+			padding-bottom: $grid-gap-desktop;
+			padding-top: $grid-gap-desktop + 4px;
+		}
+	}
+
+	&--button::before {
+		content: "";
+		height: 4px;
+		left: 0;
+		opacity: 0;
+		position: absolute;
+		right: 0;
+		top: 0;
+		transition: opacity $t-default ease-in-out;
+	}
+
+	&--selected::before {
+		opacity: 1;
+	}
+
+	$buttonColors: (
+		1: $c-chart-1,
+		2: $c-chart-2,
+		3: $c-chart-3,
+		4: $c-chart-4,
+	);
+
+	@each $button, $color in $buttonColors {
+
+		&--button-#{$button} {
+
+			&:hover,
+			&:focus,
+			&:active {
+				background-color: rgba($color, 0.1);
+			}
+		}
+
+		&--button-#{$button}::before {
+			background-color: $color;
+		}
+	}
+
+	.googlesitekit-data-block__title-datapoint-wrapper {
+
+		.googlesitekit-dashboard-adsense-stats & {
+			flex: 0 0 auto;
+		}
+	}
+
+	.googlesitekit-data-block__change-source-wrapper {
+
+		.googlesitekit-dashboard-adsense-stats & {
+			flex: 0 0 auto;
+			margin-bottom: 2px;
+		}
+	}
+
+	.googlesitekit-data-block__title {
+		color: $c-primary;
+		font-weight: $fw-primary-normal;
+		letter-spacing: 0.04em;
+		margin: 0 0 12px 0;
+
+		.googlesitekit-adminbar & {
+			font-size: 0.75rem;
+			margin-bottom: 5px;
+		}
+
+		.googlesitekit-dashboard-adsense-stats & {
+			font-size: 0.75rem;
+			margin-bottom: 0;
+		}
+
+		#dashboard-widgets .googlesitekit-wp-dashboard & {
+			font-size: 0.75rem;
+		}
+	}
+
+	.googlesitekit-data-block__datapoint {
+		color: $c-secondary;
+		font-size: 1.875rem;
+		line-height: 1;
+		margin: 0;
+
+		@media (min-width: $bp-desktop) {
+			font-size: 2.625rem;
+		}
+
+		@media (min-width: $bp-xlarge) {
+			font-size: 3.625rem;
+		}
+
+		.googlesitekit-adminbar & {
+			display: inline-block;
+			font-size: 1.5625rem;
+			margin-right: 5px;
+		}
+
+		.googlesitekit-wp-dashboard & {
+			font-size: 2.125rem;
+		}
+
+		.googlesitekit-dashboard-adsense-stats & {
+			font-size: 2.25rem;
+		}
+	}
+
+	.googlesitekit-data-block__change {
+		color: $c-primary;
+		font-size: 0.75rem;
+		letter-spacing: 0;
+		line-height: 1;
+		margin-top: $grid-gap-phone;
+		text-transform: none;
+
+		.googlesitekit-adminbar & {
+			display: inline-block;
+			margin-top: 0;
+		}
+
+		.googlesitekit-wp-dashboard & {
+			margin-top: 10px;
+		}
+
+		.googlesitekit-dashboard-adsense-stats & {
+			margin-top: 0;
+		}
+	}
+
+	.googlesitekit-data-block__sparkline {
+		margin-top: $grid-gap-phone / 2;
+		max-width: 150px;
+
+		.googlesitekit-adminbar & {
+			display: none;
+		}
+
+		.googlesitekit-dashboard-adsense-stats & {
+			flex: 1 1 100%;
+			margin: 0 0 5px 0;
+			max-width: initial;
+			min-width: 10px;
+			padding: 0 ( $grid-gap-phone / 2 );
+
+			@media (min-width: $bp-desktop) {
+				padding: 0 ( $grid-gap-desktop / 2 );
+			}
+
+			@media (min-width: $bp-xlarge) {
+				padding: 0 $grid-gap-desktop;
+			}
+		}
+	}
+
+	/* stylelint-disable no-descending-specificity */
+	&--button .googlesitekit-data-block__sparkline {
+		margin: ($grid-gap-phone / 2) auto 0 auto;
+	}
+	/* stylelint-enable */
+
+	.googlesitekit-data-block__arrow {
+		display: inline-block;
+		line-height: 1;
+		margin-right: 2px;
+		vertical-align: bottom;
+
+		&--reverse {
+			transform: rotate(180deg);
+		}
+	}
+
+	#wpadminbar & .googlesitekit-data-block__arrow .svg {
+		height: 9px;
+		width: 9px;
+	}
+
+	.googlesitekit-data-block__value {
+		color: $c-primary;
+		display: inline-block;
+		font-size: 0.75rem;
+		letter-spacing: 0;
+		line-height: 1;
+		text-transform: none;
+	}
+
+	.googlesitekit-data-block__source {
+		font-size: 0.75rem;
+		margin-top: $grid-gap-phone / 2;
+
+		@media (min-width: $bp-desktop) {
+			margin-top: $grid-gap-desktop / 2;
+		}
+	}
+}

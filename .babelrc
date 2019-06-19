@@ -1,0 +1,19 @@
+{
+	"presets": [
+		[ "@babel/env", {
+			"useBuiltIns": "entry",
+			"corejs": 2
+		} ],
+		"@babel/preset-react"
+	],
+	"plugins": [
+		"@babel/plugin-syntax-dynamic-import",
+		"@babel/plugin-transform-runtime",
+		[
+			"@wordpress/babel-plugin-makepot",
+			{
+				"output": "languages/translation.pot"
+			}
+		]
+	]
+}

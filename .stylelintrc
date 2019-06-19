@@ -1,0 +1,22 @@
+{
+  "extends": "stylelint-config-wordpress",
+  "plugins": [
+    "stylelint-declaration-use-variable",
+    "stylelint-order",
+    "stylelint-scss"
+  ],
+  "rules": {
+    "string-quotes": "double",
+    "at-rule-no-unknown": null,
+    "declaration-property-unit-whitelist": null,
+    "function-url-quotes": "always",
+    "selector-class-pattern": null,
+    "sh-waqar/declaration-use-variable": [["/color/", { "ignoreValues": ["/^rgba/", "transparent"] }]],
+    "order/properties-alphabetical-order": true,
+    "scss/at-rule-no-unknown": true,
+    "value-keyword-case": [ "lower", {
+        "ignoreKeywords": ["/([A-Z])/"]
+      }
+    ]
+  }
+}
