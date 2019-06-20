@@ -8,12 +8,6 @@
 	],
 	"plugins": [
 		"@babel/plugin-syntax-dynamic-import",
-		"@babel/plugin-transform-runtime",
-		[
-			"@wordpress/babel-plugin-makepot",
-			{
-				"output": "languages/translation.pot"
-			}
-		]
+		"@babel/plugin-transform-runtime"
 	]
 }
