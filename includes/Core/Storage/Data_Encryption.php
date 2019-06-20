@@ -120,7 +120,7 @@ final class Data_Encryption {
 		}
 
 		// If this is reached, you're either not on a live site or have a serious security issue.
-		return 'das-ist-kein-geheimer-schluessel';
+		return 'this-is-not-a-secret-key';
 	}
 
 	/**
@@ -140,6 +140,6 @@ final class Data_Encryption {
 		}
 
 		// If this is reached, you're either not on a live site or have a serious security issue.
-		return 'das-ist-kein-geheimes-salz';
+		return 'this-is-not-a-secret-salt';
 	}
 }
