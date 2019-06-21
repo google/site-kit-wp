@@ -599,6 +599,7 @@ export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel
 	} = googlesitekit.admin;
 
 	const { isFirstAdmin } = googlesitekit.setup;
+	const { trimEnd }      = lodash;
 
 	if ( googlesitekit.admin.trackingOptin ) {
 		return gtag( 'event', eventName, {
@@ -606,7 +607,7 @@ export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel
 			event_category: eventCategory, /*eslint camelcase: 0*/
 			event_label: eventLabel, /*eslint camelcase: 0*/
 			event_value: eventValue, /*eslint camelcase: 0*/
-			dimension1: siteURL, // Domain.
+			dimension1: trimEnd( siteURL, '/' ), // Domain.
 			dimension2: isFirstAdmin ? 'true' : 'false', // First Admin?
 			dimension3: siteUserId, // Identifier.
 		} );
