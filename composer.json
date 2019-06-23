@@ -15,8 +15,7 @@
   "require": {
     "php": ">=5.4",
     "google/apiclient": "^2.0",
-    "guzzlehttp/guzzle": "~5.3.3",
-    "johnpbloch/wordpress-core": "^5.1"
+    "guzzlehttp/guzzle": "~5.3.3"
   },
   "autoload": {
     "psr-4": {
