@@ -29,6 +29,8 @@ if ( 'toplevel_page_googlesitekit-dashboard' !== window.pagenow && 'site-kit_pag
 }
 
 const wpLogout = document.querySelector( '#wp-admin-bar-logout a' );
-wpLogout.addEventListener( 'click', () => {
-	clearAppLocalStorage();
-} );
+if ( wpLogout ) {
+	wpLogout.addEventListener( 'click', () => {
+		clearAppLocalStorage();
+	} );
+}
