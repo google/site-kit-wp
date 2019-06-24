@@ -108,7 +108,6 @@
     "@storybook/addon-viewport": "^5.0.11",
     "@storybook/react": "^5.0.11",
     "@wordpress/api-fetch": "^2.2.8",
-    "@wordpress/babel-plugin-makepot": "^2.1.3",
     "@wordpress/browserslist-config": "^2.3.0",
     "@wordpress/components": "^7.2.0",
     "@wordpress/dom-ready": "^2.2.0",
