@@ -11,7 +11,7 @@ DB_PASS=$3
 DB_HOST=${4-localhost}
 
 WP_TESTS_DIR=${WP_TESTS_DIR-/tmp/wordpress/tests/phpunit}
-WP_DEVELOP_DIR=${WP_DEVELOP_DIR-/tmp/wordpress/src}
+WP_DEVELOP_DIR=${WP_DEVELOP_DIR-/tmp/wordpress}
 
 set -ex
 
@@ -25,7 +25,7 @@ install_test_suite() {
 
 	# set up testing suite
 	cd $WP_TESTS_DIR
-	sed $ioption "s:dirname( __FILE__ ) . '/src/':'$WP_DEVELOP_DIR/':" wp-tests-config.php
+	sed $ioption "s:dirname( __FILE__ ) . '/src/':'$WP_DEVELOP_DIR/src/':" wp-tests-config.php
 	sed $ioption "s/youremptytestdbnamehere/$DB_NAME/" wp-tests-config.php
 	sed $ioption "s/yourusernamehere/$DB_USER/" wp-tests-config.php
 	sed $ioption "s/yourpasswordhere/$DB_PASS/" wp-tests-config.php

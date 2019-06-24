@@ -43,11 +43,11 @@ before_install:
       WP_VERSION=$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//')
     fi
   - git clone --depth=1 --branch="$WP_VERSION" git://develop.git.wordpress.org/ /tmp/wordpress
-  - mv /tmp/wordpress/wp-tests-config-sample.php /tmp/wordpress/tests/phpunit/wp-tests-config.php
+  - cp /tmp/wordpress/wp-tests-config-sample.php /tmp/wordpress/tests/phpunit/wp-tests-config.php
 
 before_script:
-  - WP_DEVELOP_DIR=/tmp/wordpress/src
-  - WP_TESTS_DIR=/tmp/wordpress/tests/phpunit
+  - export WP_DEVELOP_DIR=/tmp/wordpress
+  - export WP_TESTS_DIR=/tmp/wordpress/tests/phpunit
   - npm install -g gulp-cli
   - composer install
   - bash tests/bin/install-wp-tests.sh wordpress_test root '' localhost
