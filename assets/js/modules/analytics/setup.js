@@ -787,15 +787,11 @@ class AnalyticsSetup extends Component {
 			return <ProgressBar/>;
 		}
 
-		// Accounts will always include Set up New Account option unless existing tag matches property.
-		if ( ( 1 >= accounts.length && ! existingTag ) || ( 0 >= accounts.length && existingTag ) || setupNewAccount ) {
+		if ( 0 >= accounts.length ) {
 			if ( ! isEditing ) {
 				return __( 'No account found.', 'google-site-kit' );
 			}
 			if ( ! setupComplete || isEditing ) {
-				if ( ! this.hasAccessToExistingTagProperty() && 0 < accounts.length ) {
-					return null;
-				}
 				return (
 					<Fragment>
 						{ ( setupNewAccount && 1 < accounts.length ) &&
