@@ -1052,7 +1052,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 								}
 							}
 						} else {
-							$current_url = trailingslashit( $this->context->get_reference_site_url() );
+							$current_url = untrailingslashit( $this->context->get_reference_site_url() );
+							$urls        = $this->permute_site_url( $current_url );
 							foreach ( $response['accounts'] as $account ) {
 								$properties = $this->get_data( 'get-properties', array( 'accountId' => $account->getId() ) );
 								if ( is_wp_error( $properties ) ) {
@@ -1060,8 +1061,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 								}
 								$url_matches = array_filter(
 									$properties['properties'],
-									function( $property ) use ( $current_url ) {
-										return trailingslashit( $property->getWebsiteUrl() ) === $current_url;
+									function( $property ) use ( $urls ) {
+										return in_array( untrailingslashit( $property->getWebsiteUrl() ), $urls, true );
 									}
 								);
 								if ( ! empty( $url_matches ) ) {
