@@ -17,6 +17,14 @@ npm install
 npm run build
 ```
 
+If you are looking for a .zip version of the plugin to install on your site use this link:
+
+https://sitekit.withgoogle.com/service/download/google-site-kit.zip
+
+The .zip link was obtained from this blog post:
+
+https://sitekit.withgoogle.com/news/site-kit-developer-preview/
+
 ## Requirements
 
 * WordPress >= 4.7
