@@ -1,7 +1,7 @@
 {
   "name": "googlesitekit",
   "version": "1.0.0-beta.1",
-  "description": "Site Kit for WordPress is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.",
+  "description": "Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.",
   "main": "index.js",
   "scripts": {
     "build": "npm run remove-dist && npm run build:production && npm run build:svg && npm run build:images && gulp copy-vendor",
