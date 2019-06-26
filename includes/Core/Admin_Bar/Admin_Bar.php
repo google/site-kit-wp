@@ -163,6 +163,20 @@ final class Admin_Bar {
 		}
 
 		/**
+		 * Allows admin bar on front page.
+		 */
+		if ( is_front_page() ) {
+			/**
+			 * Filters whether the Site Kit admin bar menu should be displayed on front page.
+			 *
+			 * @since 1.0.0
+			 *
+			 * @param bool $display Whether to display the admin bar menu.
+			 */
+			return apply_filters( 'googlesitekit_show_admin_bar_menu_front_page', true );
+		}
+
+		/**
 		 * Filters whether the Site Kit admin bar menu should be displayed.
 		 *
 		 * The admin bar menu is only intended for when a single published post is being visited, hence this filter is fired only
