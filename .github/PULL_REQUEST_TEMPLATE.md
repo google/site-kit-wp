@@ -6,7 +6,7 @@ This PR can be summarized in the following changelog entry:
 *
 
 <!-- Please reference the issue this PR addresses. -->
-Addresses issue #
+Fixes #
 
 ## Relevant technical choices
 <!-- Please describe your changes. -->
