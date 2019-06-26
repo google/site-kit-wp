@@ -53,7 +53,6 @@ class AnalyticsSetup extends Component {
 		} = googlesitekit.modules.analytics.settings;
 
 		this.state = {
-			setupNewAccount: false,
 			isLoading: true,
 			isSaving: false,
 			propertiesLoading: false,
@@ -148,20 +147,11 @@ class AnalyticsSetup extends Component {
 		}
 
 		// The selected value is string.
-		if ( '-1' === selectValue ) {
-			this.setState( {
-				selectedAccount: selectValue,
-				setupNewAccount: true,
-			} );
-			return;
-		}
-
 		if ( '0' === selectValue ) {
 			this.setState( {
 				selectedAccount: selectValue,
 				selectedProperty: '-1',
 				selectedProfile: '-1',
-				setupNewAccount: false,
 				properties: [ {
 					id: '-1',
 					name: __( 'Select an account', 'google-site-kit' )
@@ -178,7 +168,6 @@ class AnalyticsSetup extends Component {
 			propertiesLoading: true,
 			profilesLoading: true,
 			selectedAccount: selectValue,
-			setupNewAccount: false,
 		} );
 
 		// Track selection.
@@ -766,7 +755,6 @@ class AnalyticsSetup extends Component {
 			selectedProperty,
 			selectedProfile,
 			useSnippet,
-			setupNewAccount,
 			existingTag,
 		} = this.state;
 
@@ -787,20 +775,13 @@ class AnalyticsSetup extends Component {
 			return <ProgressBar/>;
 		}
 
-		// Accounts will always include Set up New Account option unless existing tag matches property.
-		if ( ( 1 >= accounts.length && ! existingTag ) || ( 0 >= accounts.length && existingTag ) || setupNewAccount ) {
+		if ( 0 >= accounts.length ) {
 			if ( ! isEditing ) {
 				return __( 'No account found.', 'google-site-kit' );
 			}
 			if ( ! setupComplete || isEditing ) {
-				if ( ! this.hasAccessToExistingTagProperty() && 0 < accounts.length ) {
-					return null;
-				}
 				return (
 					<Fragment>
-						{ ( setupNewAccount && 1 < accounts.length ) &&
-							<div className="googlesitekit-setup-module__inputs">{ this.accountsDropdown() }</div>
-						}
 						<div className="googlesitekit-setup-module__action">
 							<Button onClick={ AnalyticsSetup.createNewAccount }>{ __( 'Create an account', 'google-site-kit' ) }</Button>
 
