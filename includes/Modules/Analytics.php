@@ -1027,6 +1027,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					);
 
 					$found_account_id = false;
+					$matched_property = false;
 
 					// Look for existing analytics tag and verify if user has access to the property.
 					$existing_tag = $this->get_data( 'tag' );
@@ -1067,6 +1068,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 								);
 								if ( ! empty( $url_matches ) ) {
 									$found_account_id = $account->getId();
+									$matched_property = $url_matches;
 									break;
 								}
 							}
@@ -1083,9 +1085,15 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 
 					$result = array_merge( $response, $properties );
+
 					if ( $existing_tag ) {
 						$result = array_merge( $result, array( 'existingTag' => $has_access_to_property ) );
 					}
+
+					if ( $matched_property ) {
+						$result = array_merge( $result, array( 'matchedProperty' => $matched_property ) );
+					}
+
 					return $result;
 				case 'get-properties':
 					$response = array(
