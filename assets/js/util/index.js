@@ -723,12 +723,16 @@ export const findTagInIframeContent = ( iframe, module ) => {
 
 	// Check if tag present in <head>.
 	const head = iframe.contentWindow.document.querySelector( 'head' );
-	existingTag = extractTag( head.innerHTML, module );
+	if ( head ) {
+		existingTag = extractTag( head.innerHTML, module );
+	}
 
 	// If not in <head> check if tag present in <body>.
 	if ( false === existingTag ) {
 		const body = iframe.contentWindow.document.querySelector( 'body' );
-		existingTag = extractTag( body.innerHTML, module );
+		if ( body ) {
+			existingTag = extractTag( body.innerHTML, module );
+		}
 	}
 
 	return existingTag;
