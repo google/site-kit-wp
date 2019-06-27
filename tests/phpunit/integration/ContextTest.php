@@ -113,6 +113,33 @@ class ContextTest extends TestCase {
 		$this->assertEquals( $home_url, $context->get_reference_site_url() );
 	}
 
+	public function test_get_reference_permalink() {
+		remove_all_filters( 'googlesitekit_site_url' );
+		$this->set_permalink_structure( '/%postname%/' );
+		flush_rewrite_rules();
+
+		update_option( 'show_on_front', 'posts' );
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$reference_site_url  = $context->get_reference_site_url();
+
+		// By default, the reference site_url is the same with reference_permalink if post is 0.
+		$this->go_to( '/' );
+		$this->assertEquals( $reference_site_url, $context->get_reference_permalink() );
+
+		$other_url_filter = function () {
+			return 'https://test.com/';
+		};
+
+		// If the filtered value returns a non-empty value, it takes precedence.
+		add_filter( 'googlesitekit_site_url', $other_url_filter );
+		$this->assertEquals( 'https://test.com/', $context->get_reference_permalink() );
+
+		$post_id = self::factory()->post->create( array( 'post_title' => 'hello-world' ) );
+		$this->go_to( '/hello-world' );
+		$this->assertEquals( 'https://test.com/hello-world/', $context->get_reference_permalink( $post_id ) );
+	}
+
 	public function test_is_beta() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
