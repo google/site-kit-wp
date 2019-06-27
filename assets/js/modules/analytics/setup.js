@@ -38,7 +38,6 @@ const {
 	removeFilter,
 	addFilter,
 } = wp.hooks;
-const { trimEnd } = lodash;
 
 class AnalyticsSetup extends Component {
 	constructor( props ) {
@@ -307,11 +306,9 @@ class AnalyticsSetup extends Component {
 							} );
 						}
 					} else {
-
-						// Look for account, property and profile match to site URL.
-						matchedProperty = responseData.properties.filter( property => {
-							return trimEnd( property.websiteUrl, '/' ) === trimEnd( googlesitekit.admin.siteURL, '/' );
-						} );
+						if ( responseData.matchedProperty ) {
+							matchedProperty = responseData.matchedProperty;
+						}
 					}
 
 					if ( 0 < matchedProperty.length ) {
