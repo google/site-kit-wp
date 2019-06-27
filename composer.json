@@ -36,5 +36,8 @@
   "scripts": {
     "lint": "vendor/bin/phpcs",
     "lint-fix": "vendor/bin/phpcbf"
+  },
+  "replace": {
+    "phpseclib/phpseclib": "*"
   }
 }
