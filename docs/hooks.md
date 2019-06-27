@@ -179,17 +179,6 @@ $output = apply_filters( 'googlesitekit_notifications', array(), $context );
 $gtag_opt = apply_filters( 'googlesitekit_gtag_opt', array() );
 ```
 
-##### googlesitekit_modules_for_front_end_check
-```
-/**
- * Filters the array of modules that need to load the front end for additional checks during
- * setup like the presence of js tags.
- *
- * @param array $modules Array of modules thatn opt in front end checks.
- */
-$modules = apply_filters( 'googlesitekit_modules_for_front_end_check', array() );
-```
-
 #### Actions
 
 ###### googlesitekit_adminbar_modules_before

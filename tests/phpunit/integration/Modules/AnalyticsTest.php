@@ -31,7 +31,6 @@ class AnalyticsTest extends TestCase {
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 		remove_all_filters( 'googlesitekit_module_screens' );
 		remove_all_filters( 'option_googlesitekit_analytics_adsense_linked' );
-		remove_all_filters( 'googlesitekit_modules_for_front_end_check' );
 
 		$analytics->register();
 
@@ -49,7 +48,6 @@ class AnalyticsTest extends TestCase {
 
 		$this->assertFalse( get_option( 'googlesitekit_analytics_adsense_linked' ) );
 		$this->assertFalse( $analytics->is_connected() );
-		$this->assertContains( $analytics->slug, apply_filters( 'googlesitekit_modules_for_front_end_check', array() ) );
 	}
 
 	public function test_register_option_filters() {

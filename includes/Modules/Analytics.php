@@ -141,16 +141,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				return $this->amp_data_load_analytics_component( $data );
 			}
 		);
-
-		add_filter(
-			'googlesitekit_modules_for_front_end_check',
-			function( $modules ) {
-				if ( ! $this->is_connected() || ( $this->is_connected() && 'site-kit_page_googlesitekit-settings' === get_current_screen()->id ) ) {
-					$modules[] = $this->slug;
-				}
-				return $modules;
-			}
-		);
 	}
 
 	/**
@@ -419,6 +409,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			'get-properties'           => 'analytics',
 			'get-profiles'             => 'analytics',
 			'tag'                      => '',
+			'tag-permission'           => '',
 			'adsense'                  => 'analyticsreporting',
 			'site-analytics'           => 'analyticsreporting',
 			'top-pages'                => 'analyticsreporting',
@@ -571,6 +562,25 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							return $matches[1];
 						}
 						return false;
+					};
+				case 'tag-permission':
+					return function() use ( $data ) {
+						if ( ! isset( $data['tag'] ) ) {
+							/* translators: %s: Missing parameter name */
+							return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'tag' ), array( 'status' => 400 ) );
+						}
+						if ( ! isset( $data['accounts'] ) ) {
+							/* translators: %s: Missing parameter name */
+							return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accounts' ), array( 'status' => 400 ) );
+						}
+
+						$has_access_to_property = $this->has_access_to_property( $data['tag'], $data['accounts'] );
+						if ( empty( $has_access_to_property ) ) {
+							/* translators: %s: Property id of the existing tag */
+							return new WP_Error( 'google_analytics_existing_tag_permission', sprintf( __( 'We\'ve detected there\'s already an existing Analytics tag on your site (ID %s), but your account doesn\'t seem to have access to this Analytics property. You can either remove the existing tag and connect to a different account, or request access to this property from your team.', 'google-site-kit' ), $data['tag'] ), array( 'status' => 500 ) );
+						}
+
+						return true;
 					};
 				case 'adsense':
 					// Date range.
@@ -1030,7 +1040,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 					// Look for existing analytics tag and verify if user has access to the property.
 					$existing_tag = $this->get_data( 'tag' );
-
 					if ( $existing_tag ) {
 						$has_access_to_property = $this->has_access_to_property( $existing_tag, $response['accounts'] );
 
@@ -1272,7 +1281,12 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		$response = false;
 
 		foreach ( $accounts as $account ) {
-			$account_id = $account->getId();
+			if ( is_array( $account ) ) {
+				$account_id = $account['id'];
+			} else {
+				$account_id = $account->getId();
+			}
+
 			$properties = $this->get_data( 'get-properties', array( 'accountId' => $account_id ) );
 
 			if ( is_wp_error( $properties ) ) {

@@ -714,26 +714,14 @@ export const deleteCache = ( cacheType, cacheKey ) => {
 	return true;
 };
 
-export const findTagInIframeContent = ( iframe, module ) => {
+export const findTagInIframeContent = ( html, module ) => {
 	let existingTag = false;
 
-	if ( ! iframe ) {
+	if ( ! html ) {
 		return false;
 	}
 
-	// Check if tag present in <head>.
-	const head = iframe.contentWindow.document.querySelector( 'head' );
-	if ( head ) {
-		existingTag = extractTag( head.innerHTML, module );
-	}
-
-	// If not in <head> check if tag present in <body>.
-	if ( false === existingTag ) {
-		const body = iframe.contentWindow.document.querySelector( 'body' );
-		if ( body ) {
-			existingTag = extractTag( body.innerHTML, module );
-		}
-	}
+	existingTag = extractTag( html, module );
 
 	return existingTag;
 };

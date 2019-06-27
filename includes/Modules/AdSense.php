@@ -98,14 +98,6 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 
 		if ( $this->is_connected() ) {
 			remove_filter( 'option_googlesitekit_analytics_adsense_linked', '__return_false' );
-		} else {
-			add_filter(
-				'googlesitekit_modules_for_front_end_check',
-				function( $modules ) {
-					$modules[] = $this->slug;
-					return $modules;
-				}
-			);
 		}
 	}
 
