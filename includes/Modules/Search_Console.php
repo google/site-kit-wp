@@ -583,15 +583,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		$transient_key = 'googlesitekit_sc_has_data_for_post_' . $post_id;
 		$has_data      = get_transient( $transient_key );
 		if ( false === $has_data ) {
-			$post_url = get_permalink( $post_id );
-
-			// Checks if googlesitekit_site_url has been filtered.
-			$reference_site_url = untrailingslashit( $this->context->get_reference_site_url() );
-			$home_url           = untrailingslashit( home_url() );
-			if ( $reference_site_url !== $home_url ) {
-				// Replaces post_url with production domain to get real data.
-				$post_url = str_replace( $home_url, $reference_site_url, $post_url );
-			}
+			$post_url = esc_url_raw( $this->context->get_reference_permalink( $post_id ) );
 
 			$datasets = array(
 				array(
