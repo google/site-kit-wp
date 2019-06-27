@@ -140,6 +140,29 @@ final class Context {
 		return $site_url;
 	}
 
+
+	/**
+	 * Gets the permalink of the reference site to use for stats.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int|\WP_Post $post  Optional. Post ID or post object. Default is the global `$post`.
+	 *
+	 * @return string Reference permalink.
+	 */
+	public function get_reference_permalink( $post = 0 ) {
+		$orig_site_url      = untrailingslashit( home_url() );
+		$reference_site_url = untrailingslashit( $this->get_reference_site_url() );
+
+		$permalink = get_permalink( $post );
+
+		if ( $orig_site_url !== $reference_site_url ) {
+			$permalink = str_replace( $orig_site_url, $reference_site_url, $permalink );
+		}
+
+		return $permalink;
+	}
+
 	/**
 	 * Gets the current version is beta released.
 	 *
