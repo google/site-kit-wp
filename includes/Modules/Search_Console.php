@@ -586,10 +586,11 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			$post_url = get_permalink( $post_id );
 
 			// Checks if googlesitekit_site_url has been filtered.
-			$filtered_site_url = esc_url_raw( apply_filters( 'googlesitekit_site_url', '' ) );
-			if ( ! empty( $filtered_site_url ) ) {
+			$reference_site_url = untrailingslashit( $this->context->get_reference_site_url() );
+			$home_url           = untrailingslashit( home_url() );
+			if ( $reference_site_url !== $home_url ) {
 				// Replaces post_url with production domain to get real data.
-				$post_url = trailingslashit( str_replace( home_url(), $filtered_site_url, $post_url ) );
+				$post_url = str_replace( $home_url, $reference_site_url, $post_url );
 			}
 
 			$datasets = array(
