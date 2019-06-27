@@ -35,13 +35,14 @@ about: Create a report to help us improve
 
 <!-- Please add any additional information about the bug. -->
 
-<!-- Do not alter or remove anything below. The following sections will be managed by a moderator. -->
-## Workflow (internal)
+---------------
 
-### Changelog entry
+_Do not alter or remove anything below. The following sections will be managed by moderators only._
+
+## Changelog entry
 
 * <!-- One sentence summarizing the PR, to be used in the changelog. -->
 
-### Acceptance criteria
+## Acceptance criteria
 
 * <!-- One or more bullet points for acceptance criteria. -->
