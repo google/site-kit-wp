@@ -140,7 +140,6 @@ final class Context {
 		return $site_url;
 	}
 
-
 	/**
 	 * Gets the permalink of the reference site to use for stats.
 	 *
@@ -154,7 +153,12 @@ final class Context {
 		$orig_site_url      = untrailingslashit( home_url() );
 		$reference_site_url = untrailingslashit( $this->get_reference_site_url() );
 
-		$permalink = get_permalink( $post );
+		// Specific on homepage get_permalink either return the global posts or false.
+		if ( is_home() ) {
+			$permalink = $this->get_reference_site_url();
+		} else {
+			$permalink = get_permalink( $post );
+		}
 
 		if ( $orig_site_url !== $reference_site_url ) {
 			$permalink = str_replace( $orig_site_url, $reference_site_url, $permalink );
