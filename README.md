@@ -17,13 +17,7 @@ npm install
 npm run build
 ```
 
-If you are looking for a .zip version of the plugin to install on your site use this link:
-
-https://sitekit.withgoogle.com/service/download/google-site-kit.zip
-
-The .zip link was obtained from this blog post:
-
-https://sitekit.withgoogle.com/news/site-kit-developer-preview/
+You can also download a [packaged .zip version](https://sitekit.withgoogle.com/news/site-kit-developer-preview/) of the plugin to install on your site.
 
 ## Requirements
 
