@@ -194,7 +194,7 @@ final class Activation {
 										mdc-layout-grid__cell--offset-1-desktop
 										mdc-layout-grid__cell--align-middle
 									">
-										<a href="#" onClick="javascript:sendAnalyticsTrackingEvent( 'plugin_setup', 'goto_sitekit' );document.location='<?php echo esc_url( $sitekit_splash_url ); ?>';"
+										<a href="<?php echo admin_url( 'admin.php?page=googlesitekit-splash'); ?>" onClick="javascript:sendAnalyticsTrackingEvent( 'plugin_setup', 'goto_sitekit' );document.location='<?php echo esc_url( $sitekit_splash_url ); ?>';"
 											class="googlesitekit-activation__button mdc-button mdc-button--raised">
 											<?php esc_html_e( 'Start Setup', 'google-site-kit' ); ?>
 										</a>
