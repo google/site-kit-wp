@@ -479,15 +479,6 @@ final class Assets {
 			$permalink = esc_url_raw( $this->context->get_reference_permalink() );
 		}
 
-		/**
-		 * Filter the permalink.
-		 *
-		 * Enables modules to overwrite how the page permalink is retrieved.
-		 *
-		 * @param array $permalink The page permalink.
-		 */
-		$permalink = esc_url_raw( apply_filters( 'googlesitekit_permalink', $permalink ) );
-
 		if ( isset( $_GET['pageTitle'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 			$page_title = sanitize_text_field( $_GET['pageTitle'] );
 		} else {
