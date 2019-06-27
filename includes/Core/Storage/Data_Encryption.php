@@ -115,7 +115,7 @@ final class Data_Encryption {
 			return GOOGLESITEKIT_ENCRYPTION_KEY;
 		}
 
-		if ( '' !== LOGGED_IN_KEY ) {
+		if ( defined( 'LOGGED_IN_KEY' ) && '' !== LOGGED_IN_KEY ) {
 			return LOGGED_IN_KEY;
 		}
 
@@ -135,7 +135,7 @@ final class Data_Encryption {
 			return GOOGLESITEKIT_ENCRYPTION_SALT;
 		}
 
-		if ( '' !== LOGGED_IN_SALT ) {
+		if ( defined( 'LOGGED_IN_SALT' ) && '' !== LOGGED_IN_SALT ) {
 			return LOGGED_IN_SALT;
 		}
 
