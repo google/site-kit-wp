@@ -714,7 +714,7 @@ export const deleteCache = ( cacheType, cacheKey ) => {
 	return true;
 };
 
-export const findTagInIframeContent = ( html, module ) => {
+export const findTagInHtmlContent = ( html, module ) => {
 	let existingTag = false;
 
 	if ( ! html ) {
@@ -724,6 +724,39 @@ export const findTagInIframeContent = ( html, module ) => {
 	existingTag = extractTag( html, module );
 
 	return existingTag;
+};
+
+/**
+ * Looks for existing tag requesting front end html, if no existing tag was found on server side
+ * while requesting list of accounts.
+ *
+ * @param {string} module Module slug.
+ */
+export const getExistingTag = async( module ) => {
+
+	try {
+		let tagFound = data.getCache( module, 'existingTag', 3600 );
+
+		if ( ! tagFound ) {
+			const html = await fetch( googlesitekit.admin.siteURL ).then( res => {
+				return res.text();
+			} );
+
+			tagFound = findTagInHtmlContent( html, module );
+			if ( ! tagFound ) {
+				tagFound = 'no tag';
+			}
+		}
+
+		data.setCache( module, 'existingTag', tagFound );
+
+		return new Promise( ( resolve ) => {
+			resolve( tagFound );
+		} );
+	} catch ( err ) {
+
+		// nothing.
+	}
 };
 
 /**

@@ -107,7 +107,7 @@ valuesToTest.forEach( function( itemToTest ) {
 } );
 
 /**
- * Test findTagInIframeContent, also tests extractTag.
+ * Test findTagInHtmlContent, also tests extractTag.
  */
 valuesToTest = [
 	{
@@ -146,9 +146,9 @@ valuesToTest.forEach( function( itemToTest ) {
 			}
 		}
 	};
-	QUnit.test( 'findTagInIframeContent::' + itemToTest.head, function ( assert ) {
-		var value = testFunctions.findTagInIframeContent( iframe, itemToTest.module );
-		assert.equal( value, itemToTest.expected, 'Expect findTagInIframeContent( \'' + itemToTest.head + '\' ) to return ' + itemToTest.expected );
+	QUnit.test( 'findTagInHtmlContent::' + itemToTest.head, function ( assert ) {
+		var value = testFunctions.findTagInHtmlContent( iframe, itemToTest.module );
+		assert.equal( value, itemToTest.expected, 'Expect findTagInHtmlContent( \'' + itemToTest.head + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
 

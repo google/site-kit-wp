@@ -27,7 +27,7 @@ import { Select, Option } from 'SiteKitCore/material-components';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import {
 	sendAnalyticsTrackingEvent,
-	findTagInIframeContent,
+	getExistingTag,
 	toggleConfirmModuleSettings,
 } from 'GoogleUtil';
 
@@ -69,7 +69,6 @@ class AnalyticsSetup extends Component {
 			selectedinternalWebProperty: internalWebPropertyId,
 			ampClientIdOptIn: ampClientIdOptIn,
 			existingTag: false,
-			iframeLoaded: false,
 		};
 
 		this.handleAccountChange = this.handleAccountChange.bind( this );
@@ -92,7 +91,7 @@ class AnalyticsSetup extends Component {
 			if ( ! newState.existingTag && ! newState.errorCode ) {
 				const { onSettingsPage } = this.props;
 				const { useSnippet } = this.state;
-				const existingTag = await this.getExistingTag();
+				const existingTag = await getExistingTag( 'analytics' );
 
 				if ( existingTag && 'no tag' !== existingTag ) {
 					try {
@@ -244,41 +243,6 @@ class AnalyticsSetup extends Component {
 
 		// Track selection.
 		sendAnalyticsTrackingEvent( 'analytics_setup', 'profile_change', selectValue );
-	}
-
-	/**
-	 * Looks for existing tag requesting front end html, if no existing tag was found on server side
-	 * while requesting list of accounts.
-	 */
-	async getExistingTag() {
-
-		try {
-			const { existingTag } = this.state;
-			if ( existingTag ) {
-				return;
-			}
-			let tagFound = data.getCache( 'analytics', 'existingTag', 3600 );
-
-			if ( ! tagFound ) {
-				const html = await fetch( googlesitekit.admin.siteURL ).then( res => {
-					return res.text();
-				} );
-
-				tagFound = findTagInIframeContent( html, 'analytics' );
-				if ( ! tagFound ) {
-					tagFound = 'no tag';
-				}
-			}
-
-			data.setCache( 'analytics', 'existingTag', tagFound );
-
-			return new Promise( ( resolve ) => {
-				resolve( tagFound );
-			} );
-		} catch ( err ) {
-
-			// nothing.
-		}
 	}
 
 	async getAccounts() {
