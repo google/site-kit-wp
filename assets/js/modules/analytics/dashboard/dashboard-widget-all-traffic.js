@@ -69,11 +69,15 @@ class AnalyticsAllTraffic extends Component {
 
 		const dataError   = ( error || ! receivingData );
 		const wrapperClass = dataError ? 'googlesitekit-nodata' : '';
-		const { setupComplete } = googlesitekit.modules.analytics;
+		const {
+			active,
+			setupComplete,
+		} = googlesitekit.modules.analytics;
 
-		let errorDataComponent = false;
-		if ( ! setupComplete ) {
-			errorDataComponent = getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), __( 'Analytics module needs to be configured.', 'google-site-kit' ), true, true, true );
+		let errorDataComponent = null;
+
+		if ( active && ! setupComplete ) {
+			errorDataComponent = getNoDataComponent( __( 'Analytics', 'google-site-kit' ), true, true, true, 'analytics' );
 		} else {
 			errorDataComponent = ! receivingData && (
 				error ? getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( __( 'Analytics', 'google-site-kit' ), true, true, true )

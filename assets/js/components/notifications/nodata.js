@@ -18,6 +18,7 @@
 
 import CTA from 'GoogleComponents/notifications/cta';
 import Layout from 'GoogleComponents/layout/layout';
+import { getSiteKitAdminURL } from 'SiteKitCore/util';
 
 const { __, sprintf } = wp.i18n;
 const { Fragment } = wp.element;
@@ -29,10 +30,11 @@ const { Fragment } = wp.element;
  * @param {boolean} inGrid     Creates layout to fit within an existing grid with 'cell' classes. Default is half-width grid cells. Default: false.
  * @param {boolean} fullWidth  Creates layout with 'cell--span-12' to be full width. Default: false.
  * @param {boolean} createGrid Adds a full grid layout with padding. Default: false.
+ * @param {boolean} identifier Module slug. Default: false.
  */
-const getNoDataComponent = ( moduleName, inGrid = false, fullWidth = false, createGrid = false ) => {
+const getNoDataComponent = ( moduleName, inGrid = false, fullWidth = false, createGrid = false, identifier = false ) => {
 
-	const cta = <CTA
+	let cta = <CTA
 
 		/* translators: %s: Module name */
 		title={ sprintf( __( '%s Gathering Data', 'google-site-kit' ), moduleName ) }
@@ -40,6 +42,28 @@ const getNoDataComponent = ( moduleName, inGrid = false, fullWidth = false, crea
 		/* translators: %s: Module name */
 		description={ sprintf( __( '%s data is not yet available, please check back later.', 'google-site-kit' ), moduleName ) }
 	/>;
+
+	if ( identifier && googlesitekit.modules[ identifier ] ) {
+		const {
+			active,
+			setupComplete
+		} = googlesitekit.modules[ identifier ];
+
+		if ( active && ! setupComplete ) {
+			cta = <CTA
+
+				/* translators: %s: Module name */
+				title={ sprintf( __( '%s activation', 'google-site-kit' ), moduleName ) }
+
+				/* translators: %s: Module name */
+				description={ sprintf( __( '%s module needs to be configured.', 'google-site-kit' ), moduleName ) }
+				onClick={ () => {
+					window.location = getSiteKitAdminURL( `googlesitekit-module-${identifier}` );
+				} }
+				ctaLabel={ __( 'Complete activation', 'google-site-kit' ) }
+			/>;
+		}
+	}
 
 	return (
 		<Fragment>

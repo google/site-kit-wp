@@ -25,7 +25,7 @@ const {
 } = wp.hooks;
 const { each, isArray }  = lodash;
 const { Component } = wp.element;
-const { __, sprintf } = wp.i18n;
+const { __ } = wp.i18n;
 
 /**
  * A Higher order Component that provides data functionality to Components.
@@ -155,17 +155,7 @@ const withData = (
 
 				// Check to see if the returned data is an error. If so, getDataError will return a string.
 				const error = getDataError( returnedData );
-
-				if ( googlesitekit.modules[identifier] && ! googlesitekit.modules[identifier].setupComplete ) {
-					this.setState( {
-						error: sprintf( __( '%s module needs to be configured.', 'google-site-kit' ), googlesitekit.modules[identifier].name ),
-						module: identifier,
-					} );
-
-					// If the Component included a `handleDataError` helper, pass it the error message.
-					handleDataError && handleDataError( error );
-
-				} else if ( error ) {
+				if ( error ) {
 
 					// Set an error state on the Component.
 					this.setState( {
@@ -252,6 +242,11 @@ const withData = (
 
 			const moduleName = module ? googlesitekit.modules[ module ].name : __( 'Site Kit', 'google-site-kit' );
 
+			// If module is active but setup not complete.
+			if ( module && googlesitekit.modules[ module ].active && ! googlesitekit.modules[ module ].setupComplete ) {
+				return getNoDataComponent( moduleName, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid, module );
+			}
+
 			// If we have an error, display the DataErrorComponent.
 			if ( error ) {
 				return ( 'string' !== typeof error ) ? error : getDataErrorComponent( moduleName, error, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
@@ -259,7 +254,7 @@ const withData = (
 
 			// If we have zeroData, display the NoDataComponent.
 			if ( zeroData ) {
-				return getNoDataComponent( moduleName, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
+				return getNoDataComponent( moduleName, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid, module );
 			}
 
 			// Render the Component when we have data, passing the datapoint.
