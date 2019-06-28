@@ -83,8 +83,7 @@ matrix:
       php: 'nightly'
       env: WP_VERSION=master
   allow_failures:
-    - stage: test
-      php: 'nightly'
+    - php: 'nightly'
       env: WP_VERSION=master
 
 services:
