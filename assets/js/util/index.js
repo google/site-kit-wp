@@ -599,6 +599,7 @@ export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel
 	} = googlesitekit.admin;
 
 	const { isFirstAdmin } = googlesitekit.setup;
+	const { trimEnd }      = lodash;
 
 	if ( googlesitekit.admin.trackingOptin ) {
 		return gtag( 'event', eventName, {
@@ -606,7 +607,7 @@ export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel
 			event_category: eventCategory, /*eslint camelcase: 0*/
 			event_label: eventLabel, /*eslint camelcase: 0*/
 			event_value: eventValue, /*eslint camelcase: 0*/
-			dimension1: siteURL, // Domain.
+			dimension1: trimEnd( siteURL, '/' ), // Domain.
 			dimension2: isFirstAdmin ? 'true' : 'false', // First Admin?
 			dimension3: siteUserId, // Identifier.
 		} );
@@ -722,12 +723,16 @@ export const findTagInIframeContent = ( iframe, module ) => {
 
 	// Check if tag present in <head>.
 	const head = iframe.contentWindow.document.querySelector( 'head' );
-	existingTag = extractTag( head.innerHTML, module );
+	if ( head ) {
+		existingTag = extractTag( head.innerHTML, module );
+	}
 
 	// If not in <head> check if tag present in <body>.
 	if ( false === existingTag ) {
 		const body = iframe.contentWindow.document.querySelector( 'body' );
-		existingTag = extractTag( body.innerHTML, module );
+		if ( body ) {
+			existingTag = extractTag( body.innerHTML, module );
+		}
 	}
 
 	return existingTag;
