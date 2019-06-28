@@ -1,6 +1,6 @@
 {
   "name": "google/google-site-kit",
-  "description": "Site Kit is is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.",
+  "description": "Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.",
   "version": "1.0.0-beta.1",
   "license": "Apache-2.0",
   "type": "wordpress-plugin",
@@ -10,13 +10,13 @@
     "squizlabs/php_codesniffer": "^3.3",
     "wp-coding-standards/wpcs": "^1",
     "phpcompatibility/php-compatibility": "^9",
-    "dealerdirect/phpcodesniffer-composer-installer": "0.4.4"
+    "dealerdirect/phpcodesniffer-composer-installer": "0.4.4",
+    "johnpbloch/wordpress-core": "^5.2"
   },
   "require": {
     "php": ">=5.4",
     "google/apiclient": "^2.0",
-    "guzzlehttp/guzzle": "~5.3.3",
-    "johnpbloch/wordpress-core": "^5.1"
+    "guzzlehttp/guzzle": "~5.3.3"
   },
   "autoload": {
     "psr-4": {

@@ -143,14 +143,6 @@ module.exports = ( env, argv ) => {
 										'useBuiltIns': 'entry',
 										'corejs': 2
 									} ], '@babel/preset-react' ],
-									plugins: [
-										[
-											'@wordpress/babel-plugin-makepot',
-											{
-												'output': 'languages/translation.pot',
-											}
-										]
-									]
 								}
 							},
 							{
@@ -230,14 +222,6 @@ module.exports = ( env, argv ) => {
 										'useBuiltIns': 'entry',
 										'corejs': 2
 									} ], '@babel/preset-react' ],
-									plugins: [
-										[
-											'@wordpress/babel-plugin-makepot',
-											{
-												'output': 'languages/translation.pot',
-											}
-										]
-									]
 								}
 							},
 							{

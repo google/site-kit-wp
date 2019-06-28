@@ -9,11 +9,11 @@ License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager
 
-Site Kit is is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
+Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
 
 == Description ==
 
-Site Kit is is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
+Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
 
 It provides authoritative, up-to-date insights from multiple Google products directly on the WordPress dashboard for easy access.
 
