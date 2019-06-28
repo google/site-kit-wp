@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.com/google/site-kit-wp.svg?token=smY3Y9yhMfh6hWnXQ2te&branch=master)](https://travis-ci.com/google/site-kit-wp/)
 # Site Kit by Google
 
-Site Kit is is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
+Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
 
 Learn more: [https://sitekit.withgoogle.com](https://sitekit.withgoogle.com)
 
@@ -16,6 +16,8 @@ composer install
 npm install
 npm run build
 ```
+
+You can also download a [packaged .zip version](https://sitekit.withgoogle.com/news/site-kit-developer-preview/) of the plugin to install on your site.
 
 ## Requirements
 
