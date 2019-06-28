@@ -735,10 +735,10 @@ export const findTagInHtmlContent = ( html, module ) => {
 export const getExistingTag = async( module ) => {
 
 	try {
-		let tagFound = data.getCache( module, 'existingTag', 3600 );
+		let tagFound = data.getCache( module, 'existingTag', 300 );
 
 		if ( ! tagFound ) {
-			const html = await fetch( googlesitekit.admin.siteURL ).then( res => {
+			const html = await fetch( `${googlesitekit.admin.siteURL}?tagverify=1&timestamp=${Date.now()}` ).then( res => {
 				return res.text();
 			} );
 
