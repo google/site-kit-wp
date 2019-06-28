@@ -54,7 +54,6 @@ before_script:
 
 jobs:
   include:
-
     - stage: test
       php: 5.4
       env:
@@ -64,31 +63,32 @@ jobs:
         - npm install || exit 1
         - gulp phpcs || exit 1 # PHP Code Sniffer scan.
         - gulp phpunit || exit 1
-
     - stage: test
       php: 5.6
       env: WP_VERSION=latest
       script:
         - npm install || exit 1
         - gulp phpunit || exit 1
-
     - stage: test
       php: 7.3
       env: WP_VERSION=latest
       script:
         - npm install || exit 1
         - gulp phpunit || exit 1
-
     - stage: test
       php: 7.3
-      env: WP_VERSION=master
+      env: WP_VERSION=latest
       script:
         - npm install || exit 1
         - npm run test || exit 1 # Bundle size test.
         - travis_retry npm run travis:test || exit 1 # Runs QUnit, PHPUnit and BackstopJS visual regression tests.
-
+    - stage: test
+      php: 'nightly'
+      env: WP_VERSION=master
+      script:
+        - npm install || exit 1
+        - gulp phpunit || exit 1
   allow_failures:
-
     - stage: test
       php: 'nightly'
       env: WP_VERSION=master
