@@ -25,7 +25,7 @@ const {
 } = wp.hooks;
 const { each, isArray }  = lodash;
 const { Component } = wp.element;
-const { __ } = wp.i18n;
+const { __, sprintf } = wp.i18n;
 
 /**
  * A Higher order Component that provides data functionality to Components.
@@ -155,7 +155,17 @@ const withData = (
 
 				// Check to see if the returned data is an error. If so, getDataError will return a string.
 				const error = getDataError( returnedData );
-				if ( error ) {
+
+				if ( googlesitekit.modules[identifier] && ! googlesitekit.modules[identifier].setupComplete ) {
+					this.setState( {
+						error: sprintf( __( '%s module needs to be configured.', 'google-site-kit' ), googlesitekit.modules[identifier].name ),
+						module: identifier,
+					} );
+
+					// If the Component included a `handleDataError` helper, pass it the error message.
+					handleDataError && handleDataError( error );
+
+				} else if ( error ) {
 
 					// Set an error state on the Component.
 					this.setState( {
