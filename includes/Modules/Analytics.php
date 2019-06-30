@@ -408,7 +408,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			'get-accounts'             => 'analytics',
 			'get-properties'           => 'analytics',
 			'get-profiles'             => 'analytics',
-			'tag'                      => '',
 			'tag-permission'           => '',
 			'adsense'                  => 'analyticsreporting',
 			'site-analytics'           => 'analyticsreporting',
@@ -529,40 +528,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 					$service = $this->get_service( 'analytics' );
 					return $service->management_profiles->listManagementProfiles( $data['accountId'], $data['propertyId'] );
-				case 'tag':
-					return function() {
-						$output = $this->get_frontend_hook_output( 'wp_head' ) . $this->get_frontend_hook_output( 'wp_body_open' ) . $this->get_frontend_hook_output( 'wp_footer' );
-						// Detect common analytics code usage.
-						preg_match( '/__gaTracker\( ?\'create\', ?\'(.*?)\', ?\'auto\' ?\)/', $output, $matches );
-						if ( isset( $matches[1] ) ) {
-							return $matches[1];
-						}
-						// Detect ga create calls.
-						preg_match( '/ga\( ?\'create\', ?\'(.*?)\', ?\'auto\' ?\)/', $output, $matches );
-						if ( isset( $matches[1] ) ) {
-							return $matches[1];
-						}
-						// Detect gtag script calls.
-						preg_match( '/<script async src="https:\/\/www.googletagmanager.com\/gtag\/js\?id=(.*?)"><\/script>/', $output, $matches ); // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-						if ( isset( $matches[1] ) ) {
-							return $matches[1];
-						}
-						preg_match( '/_gaq.push\( ?\[ ?[\'|"]_setAccount[\'|"], ?[\'|"](.*?)[\'|"] ?] ?\)/', $output, $matches );
-						if ( isset( $matches[1] ) ) {
-							return $matches[1];
-						}
-						// Detect amp-analytics gtag.
-						preg_match( '/<amp-analytics [^>]*type="gtag"[^>]*>[^<]*<script type="application\/json">[^<]*"gtag_id":\s*"([^"]+)"/', $output, $matches );
-						if ( isset( $matches[1] ) ) {
-							return $matches[1];
-						}
-						// Detect amp-analytics googleanalytics.
-						preg_match( '/<amp-analytics [^>]*type="googleanalytics"[^>]*>[^<]*<script type="application\/json">[^<]*"account":\s*"([^"]+)"/', $output, $matches );
-						if ( isset( $matches[1] ) ) {
-							return $matches[1];
-						}
-						return false;
-					};
 				case 'tag-permission':
 					return function() use ( $data ) {
 						if ( ! isset( $data['tag'] ) ) {
@@ -1038,19 +1003,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 					$found_account_id = false;
 
-					// Look for existing analytics tag and verify if user has access to the property.
-					$existing_tag = $this->get_data( 'tag' );
-					if ( $existing_tag ) {
-						$has_access_to_property = $this->has_access_to_property( $existing_tag, $response['accounts'] );
-
-						if ( empty( $has_access_to_property ) ) {
-							/* translators: %s: Property id of the existing tag */
-							return new WP_Error( 'google_analytics_existing_tag_permission', sprintf( __( 'We\'ve detected there\'s already an existing Analytics tag on your site (ID %s), but your account doesn\'t seem to have access to this Analytics property. You can either remove the existing tag and connect to a different account, or request access to this property from your team.', 'google-site-kit' ), $existing_tag ), array( 'status' => 500 ) );
-						} else {
-							$found_account_id = $has_access_to_property['account'];
-						}
-					}
-
 					if ( empty( $found_account_id ) ) {
 						$account_id = $this->get_data( 'account-id' );
 						if ( ! is_wp_error( $account_id ) ) {
@@ -1091,9 +1043,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 
 					$result = array_merge( $response, $properties );
-					if ( $existing_tag ) {
-						$result = array_merge( $result, array( 'existingTag' => $has_access_to_property ) );
-					}
 					return $result;
 				case 'get-properties':
 					$response = array(
