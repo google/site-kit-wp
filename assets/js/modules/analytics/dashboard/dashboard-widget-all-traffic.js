@@ -61,18 +61,16 @@ class AnalyticsAllTraffic extends Component {
 		} );
 	}
 
-	render() {
-		const {
-			error,
-			receivingData,
-		} = this.state;
-
-		const dataError   = ( error || ! receivingData );
-		const wrapperClass = dataError ? 'googlesitekit-nodata' : '';
+	getErrorDataComponent() {
 		const {
 			active,
 			setupComplete,
 		} = googlesitekit.modules.analytics;
+
+		const {
+			error,
+			receivingData,
+		} = this.state;
 
 		let errorDataComponent = null;
 
@@ -83,6 +81,19 @@ class AnalyticsAllTraffic extends Component {
 				error ? getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( __( 'Analytics', 'google-site-kit' ), true, true, true )
 			);
 		}
+
+		return errorDataComponent;
+	}
+
+	render() {
+		const {
+			error,
+			receivingData,
+		} = this.state;
+
+		const dataError   = ( error || ! receivingData );
+		const wrapperClass = dataError ? 'googlesitekit-nodata' : '';
+
 		return (
 			<Fragment>
 				<div className={ `
@@ -92,7 +103,7 @@ class AnalyticsAllTraffic extends Component {
 					<DashboardModuleHeader timePeriod={ __( 'Last 28 days', 'google-site-kit' ) } description={ __( 'How people found your site.', 'google-site-kit' ) } title={ __( 'All Traffic', 'google-site-kit' ) }/>
 
 				</div>
-				{ errorDataComponent }
+				{ this.getErrorDataComponent() }
 				<div className={ `
 					mdc-layout-grid__cell
 					mdc-layout-grid__cell--span-12
