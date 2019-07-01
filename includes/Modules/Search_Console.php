@@ -585,6 +585,10 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		if ( false === $has_data ) {
 			$post_url = esc_url_raw( $this->context->get_reference_permalink( $post_id ) );
 
+			if ( false === $post_url ) {
+				return false;
+			}
+
 			$datasets = array(
 				array(
 					'identifier' => $this->slug,

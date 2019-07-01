@@ -149,6 +149,13 @@ final class Admin_Bar {
 			return false;
 		}
 
+		// Always show admin bar on front page if user has capability.
+		// We need to shortcut this here, since this method run in 2 different hooks. In *_enqueue_scripts and admin_bar_menu.
+		// Since admin_bar_menu is called very late, the get_post below return different post object.
+		if ( is_front_page() && current_user_can( Permissions::VIEW_DASHBOARD ) ) {
+			return true;
+		}
+
 		$post = get_post();
 		if ( ! $post ) {
 			return false;

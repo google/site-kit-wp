@@ -475,6 +475,8 @@ final class Assets {
 
 		if ( isset( $_GET['permaLink'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 			$permalink = esc_url_raw( $_GET['permaLink'] );
+		} elseif ( is_front_page() ) {
+			$permalink = esc_url_raw( $site_url );
 		} else {
 			$permalink = esc_url_raw( $this->context->get_reference_permalink() );
 		}

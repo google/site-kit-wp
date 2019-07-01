@@ -147,17 +147,16 @@ final class Context {
 	 *
 	 * @param int|\WP_Post $post  Optional. Post ID or post object. Default is the global `$post`.
 	 *
-	 * @return string Reference permalink.
+	 * @return string|false The  Reference permalink URL or false if post does not exist.
 	 */
 	public function get_reference_permalink( $post = 0 ) {
 		$orig_site_url      = untrailingslashit( home_url() );
 		$reference_site_url = untrailingslashit( $this->get_reference_site_url() );
 
-		// Specific on homepage get_permalink either return the global posts or false.
-		if ( is_home() ) {
-			$permalink = $this->get_reference_site_url();
-		} else {
-			$permalink = get_permalink( $post );
+		$permalink = get_permalink( $post );
+
+		if ( false === $permalink ) {
+			return $permalink;
 		}
 
 		if ( $orig_site_url !== $reference_site_url ) {
