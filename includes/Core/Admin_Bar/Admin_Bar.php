@@ -149,15 +149,14 @@ final class Admin_Bar {
 			return false;
 		}
 
-		// Always show admin bar on front page if user has capability.
-		// We need to shortcut this here, since this method run in 2 different hooks. In *_enqueue_scripts and admin_bar_menu.
-		// Since admin_bar_menu is called very late, the get_post below return different post object.
-		if ( is_front_page() && current_user_can( Permissions::VIEW_DASHBOARD ) ) {
-			return true;
+		// Gets post object. On front area we need to use get_queried_object to get the current post object.
+		if ( is_admin() ) {
+			$post = get_post();
+		} else {
+			$post = get_queried_object();
 		}
 
-		$post = get_post();
-		if ( ! $post ) {
+		if ( ! $post || ! $post instanceof \WP_Post ) {
 			return false;
 		}
 
