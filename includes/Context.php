@@ -150,10 +150,15 @@ final class Context {
 	 * @return string|false The  Reference permalink URL or false if post does not exist.
 	 */
 	public function get_reference_permalink( $post = 0 ) {
-		$orig_site_url      = untrailingslashit( home_url() );
 		$reference_site_url = untrailingslashit( $this->get_reference_site_url() );
 
-		$permalink = get_permalink( $post );
+		// Returns home page url when homepage mode is latest blog posts.
+		if ( 'posts' === get_option( 'show_on_front' ) && is_home() ) {
+			return trailingslashit( $reference_site_url );
+		}
+
+		$orig_site_url = untrailingslashit( home_url() );
+		$permalink     = get_permalink( $post );
 
 		if ( false === $permalink ) {
 			return $permalink;
