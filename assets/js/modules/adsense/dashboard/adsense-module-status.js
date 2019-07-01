@@ -49,16 +49,14 @@ class AdSenseModuleStatus extends Component {
 	}
 
 	async componentDidMount() {
-		const existingTag = await getExistingTag( 'adsense' );
+		let existingTag = await getExistingTag( 'adsense' );
+		existingTag = 'no tag' === existingTag ? false : existingTag;
 
-		this.setState(
-			{ existingTag: 'no tag' === existingTag ? false : existingTag },
-			() => {
-				getAdSenseAccountStatus( this.updateLoadStatus, this.state.existingTag ).then( ( results ) => {
-					this.setState( results );
-				} );
-			}
-		);
+		this.setState( { existingTag } );
+
+		getAdSenseAccountStatus( this.updateLoadStatus, existingTag ).then( ( results ) => {
+			this.setState( results );
+		} );
 	}
 
 	/**
