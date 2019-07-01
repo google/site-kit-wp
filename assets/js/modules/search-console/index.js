@@ -76,12 +76,9 @@ addFilter( 'googlesitekit.DashboardSearchFunnel',
 addFilter( 'googlesitekit.DashboardDetailsModule',
 	'googlesitekit.SearchConsole',
 	addDashboardDetailsSearchFunnel );
-
-if ( ! googlesitekit.permaLink ) {
-	addFilter( 'googlesitekit.DashboardDetailsModule',
-		'googlesitekit.SearchConsole',
-		addDashboardDetailsKeywords, 40 );
-}
+addFilter( 'googlesitekit.DashboardDetailsModule',
+	'googlesitekit.SearchConsole',
+	addDashboardDetailsKeywords, 40 );
 
 addFilter( 'googlesitekit.DashboardPopularity',
 	'googlesitekit.SearchConsoleDashboardPopularity',

@@ -25,13 +25,17 @@ const { __, sprintf } = wp.i18n;
 class DashboardDetailsWidgetKeywordsTable extends Component {
 
 	render() {
+		const context = googlesitekit.permaLink ? __( 'page', 'google-site-kit' ) : __( 'site', 'google-site-kit' );
+
+		/* translators: %s: Context of the top search queries, page or site. */
+		const title = sprintf( __( 'Top search queries for your %s', 'google-site-kit' ), context );
 		return (
 			<div className="
 				mdc-layout-grid__cell
 				mdc-layout-grid__cell--span-12
 			">
 				<Layout
-					title={ __( 'Top search queries for your site', 'google-site-kit' ) }
+					title={ title }
 					header
 					footer
 					footerCtaLabel={ __( 'Search Console', 'google-site-kit' ) }
