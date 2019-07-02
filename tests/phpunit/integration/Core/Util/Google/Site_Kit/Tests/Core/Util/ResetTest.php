@@ -29,6 +29,9 @@ use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\TagManager;
 use Google\Site_Kit\Tests\TestCase;
 
+/**
+ * @group Util
+ */
 class ResetTest extends TestCase {
 
 	public function test_all() {
