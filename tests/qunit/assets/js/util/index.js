@@ -21,10 +21,10 @@ googlesitekit.modules = {
 /**
  * Test showErrorNotification.
  */
-QUnit.test( 'showErrorNotification', function ( assert ) {
+QUnit.test( 'showErrorNotification!', function ( assert ) {
 	testFunctions.showErrorNotification();
 	var value = wp.hooks.applyFilters( 'googlesitekit.ErrorNotification', [] );
-	assert.equal( value.toString().replace( /(\r\n|\n|\r)/gm, '' ), 'function (r) {return React.createElement(e,a()({},r,t,{OriginalComponent:n}));}' );
+	assert.equal( value.toString().replace( /(\r\n|\n|\r)/gm, '' ), 'function InnerComponent(props) {      return React.createElement(NewComponent, _babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_1___default()({}, props, newProps, {        OriginalComponent: OriginalComponent      }));    }' );
 } );
 
 /**
@@ -261,7 +261,7 @@ var gtag = function( type, name, sendto, category, label, value ) {
 	};
 };
 
-var sendAnalyticsTrackingEventExpected = '{"type":"event","name":"name","sendto":{"event_category":"category","event_label":"label","event_value":"value"}}';
+var sendAnalyticsTrackingEventExpected = '{"type":"event","name":"name","sendto":{"event_category":"category","event_label":"label","event_value":"value","dimension1":"","dimension2":"true"}}';
 QUnit.test( 'sendAnalyticsTrackingEvent', function ( assert ) {
 	window.googlesitekit.admin.trackingOptin = true;
 	const value = JSON.stringify( testFunctions.sendAnalyticsTrackingEvent( 'category', 'name', 'label', 'value' ) );
