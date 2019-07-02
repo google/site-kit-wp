@@ -139,11 +139,23 @@ final class Reset {
 	 */
 	private function delete_all_user_metas() {
 		global $wpdb;
+
 		$user_query = new \WP_User_Query(
 			array(
-				'fields'   => 'id',
-				'meta_key' => $wpdb->prefix . OAuth_Client::OPTION_ACCESS_TOKEN,
-				'compare'  => 'EXISTS',
+				'fields'     => 'id',
+				'meta_query' => array(
+					'relation' => 'OR',
+					// Keys are un-prefixed in network mode
+					array(
+						'key'     => OAuth_Client::OPTION_ACCESS_TOKEN,
+						'compare' => 'EXISTS',
+					),
+					// Keys are prefixed in single site and multisite when not in network mode
+					array(
+						'key'     => $wpdb->get_blog_prefix() . OAuth_Client::OPTION_ACCESS_TOKEN,
+						'compare' => 'EXISTS',
+					),
+				)
 			)
 		);
 
