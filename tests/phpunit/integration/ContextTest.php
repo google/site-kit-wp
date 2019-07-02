@@ -132,6 +132,10 @@ class ContextTest extends TestCase {
 		// If the filtered value returns a non-empty value, it takes precedence.
 		add_filter( 'googlesitekit_site_url', $other_url_filter );
 		$this->assertEquals( 'https://test.com/hello-world/', $context->get_reference_permalink( $post_id ) );
+
+		update_option( 'show_on_front', 'posts' );
+		$this->go_to( '/' );
+		$this->assertEquals( 'https://test.com/', $context->get_reference_permalink() );
 	}
 
 	public function test_is_beta() {
