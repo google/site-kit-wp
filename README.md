@@ -17,6 +17,8 @@ npm install
 npm run build
 ```
 
+You can also download a [packaged .zip version](https://sitekit.withgoogle.com/news/site-kit-developer-preview/) of the plugin to install on your site.
+
 ## Requirements
 
 * WordPress >= 4.7

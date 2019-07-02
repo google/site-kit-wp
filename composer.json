@@ -18,6 +18,9 @@
     "google/apiclient": "^2.0",
     "guzzlehttp/guzzle": "~5.3.3"
   },
+  "replace": {
+    "phpseclib/phpseclib": "*"
+  },
   "autoload": {
     "psr-4": {
       "Google\\Site_Kit\\": "includes"
