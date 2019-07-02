@@ -122,12 +122,15 @@ class ContextTest extends TestCase {
 
 		$post_id = self::factory()->post->create( array( 'post_title' => 'hello-world' ) );
 		$page_id = self::factory()->post->create( array( 'post_title' => 'homepage', 'post_type' => 'page' ) );
+		self::factory()->category->create( array( 'slug' => 'postcategory' ) );
+
+		$this->go_to( '/category/postcategory' );
+		$this->assertFalse( $context->get_reference_permalink() );
 
 		update_option( 'show_on_front', 'page' );
 		update_option( 'page_on_front', $page_id );
 
 		$this->go_to( '/hello-world' );
-
 		$this->assertEquals( get_permalink(), $context->get_reference_permalink() );
 
 		$other_url_filter = function () {
@@ -139,7 +142,6 @@ class ContextTest extends TestCase {
 
 		$this->go_to( '/' );
 		$this->assertEquals( 'https://test.com/', $context->get_reference_permalink() );
-
 		$this->assertEquals( 'https://test.com/hello-world/', $context->get_reference_permalink( $post_id ) );
 	}
 
