@@ -145,17 +145,17 @@ final class Reset {
 				'fields'     => 'id',
 				'meta_query' => array(
 					'relation' => 'OR',
-					// Keys are un-prefixed in network mode
+					// Keys are un-prefixed in network mode.
 					array(
 						'key'     => OAuth_Client::OPTION_ACCESS_TOKEN,
 						'compare' => 'EXISTS',
 					),
-					// Keys are prefixed in single site and multisite when not in network mode
+					// Keys are prefixed in single site and multisite when not in network mode.
 					array(
 						'key'     => $wpdb->get_blog_prefix() . OAuth_Client::OPTION_ACCESS_TOKEN,
 						'compare' => 'EXISTS',
 					),
-				)
+				),
 			)
 		);
 
