@@ -121,6 +121,11 @@ class ContextTest extends TestCase {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
 		$post_id = self::factory()->post->create( array( 'post_title' => 'hello-world' ) );
+		$page_id = self::factory()->post->create( array( 'post_title' => 'homepage', 'post_type' => 'page' ) );
+
+		update_option( 'show_on_front', 'page' );
+		update_option( 'page_on_front', $page_id );
+
 		$this->go_to( '/hello-world' );
 
 		$this->assertEquals( get_permalink(), $context->get_reference_permalink() );
@@ -132,7 +137,6 @@ class ContextTest extends TestCase {
 		// If the filtered value returns a non-empty value, it takes precedence.
 		add_filter( 'googlesitekit_site_url', $other_url_filter );
 
-		update_option( 'show_on_front', 'posts' );
 		$this->go_to( '/' );
 		$this->assertEquals( 'https://test.com/', $context->get_reference_permalink() );
 

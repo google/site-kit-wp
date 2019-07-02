@@ -149,13 +149,6 @@ final class Admin_Bar {
 			return false;
 		}
 
-		// Shows admin bar on homepage when front page mode is latest blog posts.
-		if ( 'posts' === get_option( 'show_on_front' ) &&
-			is_home() &&
-			current_user_can( Permissions::VIEW_DASHBOARD ) ) {
-			return true;
-		}
-
 		// Gets post object. On front area we need to use get_queried_object to get the current post object.
 		if ( is_admin() ) {
 			$post = get_post();

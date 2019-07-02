@@ -151,15 +151,19 @@ final class Context {
 	 */
 	public function get_reference_permalink( $post = 0 ) {
 		$reference_site_url = untrailingslashit( $this->get_reference_site_url() );
+		$orig_site_url      = untrailingslashit( home_url() );
 
-		// Returns home page url when front page mode is latest blog posts.
-		if ( ! $post && 'posts' === get_option( 'show_on_front' ) && is_home() ) {
-			return trailingslashit( $reference_site_url );
+		// Gets post object. On front area we need to use get_queried_object to get the current post object.
+		if ( ! $post && ! is_admin() ) {
+			$post = get_queried_object();
+
+			// Fallbacks to default if $post is not a WP_Post object.
+			if ( ! $post instanceof \WP_Post ) {
+				$post = 0;
+			}
 		}
 
-		$orig_site_url = untrailingslashit( home_url() );
-		$permalink     = get_permalink( $post );
-
+		$permalink = get_permalink( $post );
 		if ( false === $permalink ) {
 			return $permalink;
 		}
