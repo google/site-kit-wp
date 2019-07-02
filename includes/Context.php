@@ -153,7 +153,7 @@ final class Context {
 		$reference_site_url = untrailingslashit( $this->get_reference_site_url() );
 
 		// Returns home page url when front page mode is latest blog posts.
-		if ( 'posts' === get_option( 'show_on_front' ) && is_home() ) {
+		if ( ! $post && 'posts' === get_option( 'show_on_front' ) && is_home() ) {
 			return trailingslashit( $reference_site_url );
 		}
 
