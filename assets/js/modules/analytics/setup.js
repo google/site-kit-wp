@@ -93,7 +93,7 @@ class AnalyticsSetup extends Component {
 				const { useSnippet } = this.state;
 				const existingTag = await getExistingTag( 'analytics' );
 
-				if ( existingTag && 'no tag' !== existingTag ) {
+				if ( existingTag && existingTag.length  ) {
 					try {
 
 						// Verify user has access to found tag.
