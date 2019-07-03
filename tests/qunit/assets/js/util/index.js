@@ -24,7 +24,7 @@ googlesitekit.modules = {
 QUnit.test( 'showErrorNotification!', function ( assert ) {
 	testFunctions.showErrorNotification();
 	var value = wp.hooks.applyFilters( 'googlesitekit.ErrorNotification', [] );
-	assert.equal( value.toString().replace( /(\r\n|\n|\r)/gm, '' ), 'function InnerComponent(props) {      return React.createElement(NewComponent, _babel_runtime_helpers_extends__WEBPACK_IMPORTED_MODULE_1___default()({}, props, newProps, {        OriginalComponent: OriginalComponent      }));    }' );
+	assert.equal( value.toString().replace( /(\r\n|\n|\r)/gm, '' ), 'function (r) {return React.createElement(e,a()({},r,t,{OriginalComponent:n}));}' );
 } );
 
 /**
