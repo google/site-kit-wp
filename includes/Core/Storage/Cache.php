@@ -118,8 +118,12 @@ final class Cache {
 	 * @param string $key The key to add.
 	 */
 	private function remove_global_cache_key( $key ) {
-		unset( $this->global_cache_keys[ $key ] );
-		update_option( self::$global_cache_keys_key, $this->global_cache_keys, false );
+		$key_index = array_search( $key, $this->global_cache_keys, true );
+
+		if ( $key_index ) {
+			unset( $this->global_cache_keys[ $key_index ] );
+			update_option( self::$global_cache_keys_key, $this->global_cache_keys, false );
+		}
 	}
 
 	/**
