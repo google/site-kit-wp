@@ -106,7 +106,7 @@ final class Cache {
 			} else {
 
 				// Remove the expired key from the global cache.
-				self::remove_global_cache_key( $key );
+				$this->remove_global_cache_key( $key );
 			}
 		}
 		return $cache_data;
