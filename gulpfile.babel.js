@@ -89,7 +89,7 @@ gulp.task( 'default', () => {
 } );
 
 gulp.task( 'qunit', function() {
-	execSync( 'node-qunit-phantomjs ./tests/qunit/index.html', { stdio: [ 0, 1, 2 ] } );
+	execSync( './node_modules/.bin/node-qunit-phantomjs ./tests/qunit/index.html', { stdio: [ 0, 1, 2 ] } );
 } );
 
 gulp.task( 'phpunit', function() {
