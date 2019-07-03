@@ -22,8 +22,6 @@ googlesitekit.modules = {
  * Test showErrorNotification.
  */
 QUnit.test( 'showErrorNotification!', function ( assert ) {
-	// test failing
-	assert.equal( 'failing', 'passing' );
 	testFunctions.showErrorNotification();
 	var value = wp.hooks.applyFilters( 'googlesitekit.ErrorNotification', [] );
 	assert.equal( value.toString().replace( /(\r\n|\n|\r)/gm, '' ), 'function (r) {return React.createElement(e,a()({},r,t,{OriginalComponent:n}));}' );
