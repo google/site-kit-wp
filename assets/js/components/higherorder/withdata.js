@@ -18,6 +18,7 @@
 
 import getNoDataComponent from 'GoogleComponents/notifications/nodata';
 import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
+import getSetupIncompleteComponent from 'GoogleComponents/notifications/setup-incomplete';
 
 const {
 	addFilter,
@@ -244,7 +245,7 @@ const withData = (
 
 			// If module is active but setup not complete.
 			if ( module && googlesitekit.modules[ module ].active && ! googlesitekit.modules[ module ].setupComplete ) {
-				return getNoDataComponent( moduleName, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid, module );
+				return getSetupIncompleteComponent( moduleName, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
 			}
 
 			// If we have an error, display the DataErrorComponent.

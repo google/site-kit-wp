@@ -22,6 +22,7 @@ import Layout from 'GoogleComponents/layout/layout';
 import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
 import getNoDataComponent from 'GoogleComponents/notifications/nodata';
 import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
+import getSetupIncompleteComponent from 'GoogleComponents/notifications/setup-incomplete';
 
 const { Component, Fragment } = wp.element;
 const { __ } = wp.i18n;
@@ -75,7 +76,7 @@ class AnalyticsAllTraffic extends Component {
 		let errorDataComponent = null;
 
 		if ( active && ! setupComplete ) {
-			errorDataComponent = getNoDataComponent( __( 'Analytics', 'google-site-kit' ), true, true, true, 'analytics' );
+			errorDataComponent = getSetupIncompleteComponent( __( 'Analytics', 'google-site-kit' ), true, true, true );
 		} else {
 			errorDataComponent = ! receivingData && (
 				error ? getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( __( 'Analytics', 'google-site-kit' ), true, true, true )
