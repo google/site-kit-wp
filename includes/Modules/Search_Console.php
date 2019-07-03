@@ -583,7 +583,11 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		$transient_key = 'googlesitekit_sc_has_data_for_post_' . $post_id;
 		$has_data      = get_transient( $transient_key );
 		if ( false === $has_data ) {
-			$post_url = get_permalink( $post_id );
+			$post_url = esc_url_raw( $this->context->get_reference_permalink( $post_id ) );
+
+			if ( false === $post_url ) {
+				return false;
+			}
 
 			$datasets = array(
 				array(

@@ -476,20 +476,8 @@ final class Assets {
 		if ( isset( $_GET['permaLink'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 			$permalink = esc_url_raw( $_GET['permaLink'] );
 		} else {
-			if ( is_home() ) {
-				$permalink = esc_url_raw( $this->context->get_reference_site_url() );
-			} else {
-				$permalink = get_permalink();
-			}
+			$permalink = esc_url_raw( $this->context->get_reference_permalink() );
 		}
-		/**
-		 * Filter the permalink.
-		 *
-		 * Enables modules to overwrite how the page permalink is retrieved.
-		 *
-		 * @param array $permalink The page permalink.
-		 */
-		$permalink = esc_url_raw( apply_filters( 'googlesitekit_permalink', $permalink ) );
 
 		if ( isset( $_GET['pageTitle'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 			$page_title = sanitize_text_field( $_GET['pageTitle'] );
