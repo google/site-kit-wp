@@ -105,14 +105,12 @@ export const readableLargeNumber = ( number, currencyCode = false ) =>  {
 	if ( isUndefined( number ) ) {
 		readableNumber = 0;
 	} else if ( 1000000 < number ) {
-		number = number / 1000000;
-		readableNumber = number.toFixed( 1 ) + 'M';
+		readableNumber = ( number / 1000000 ).toFixed( 1 ) + 'M';
 	} else if ( 1000 < number ) {
-		number = number / 1000;
-		if ( 99 < number ) {
-			readableNumber = Math.round( number ) + 'K';
+		if ( 99 < ( number / 1000 ) ) {
+			readableNumber = Math.round( number / 1000 ) + 'K';
 		} else {
-			readableNumber = number.toFixed( 1 ) + 'K';
+			readableNumber = ( number / 1000 ).toFixed( 1 ) + 'K';
 		}
 	} else {
 		readableNumber = number;
@@ -134,12 +132,10 @@ export const readableLargeNumber = ( number, currencyCode = false ) =>  {
 	// Format as amount if currencyCode is passed.
 	if ( false !== currencyCode && '' !== readableNumber ) {
 		const formatedParts = new Intl.NumberFormat( navigator.language, { style: 'currency', currency: currencyCode } ).formatToParts( number );
-
-		const decimal = formatedParts.find( part => 'decimal' === part.type ).value;
+		const decimal = ( formatedParts.find( part => 'decimal' === part.type ) || {} ).value || '.';
 		const currency = formatedParts.find( part => 'currency' === part.type ).value;
-
 		if ( 1000 > number ) {
-			readableNumber = Number.isInteger( number ) ? number : number.replace( '.', decimal );
+			readableNumber = Number.isInteger( number ) ? number : String( number ).replace( '.', decimal );
 		}
 
 		return `${currency}${readableNumber}`;

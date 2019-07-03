@@ -716,38 +716,66 @@ valuesToTest.forEach( function( itemToTest ) {
 valuesToTest = [
 	{
 		in: 123,
-		expected: '123'
+		expected: '123',
+		currencyCode: false
 	},
 	{
 		in: 1234,
-		expected: '1.2K'
+		expected: '1.2K',
+		currencyCode: false
 	},
 	{
 		in: 12345,
-		expected: '12.3K'
+		expected: '12.3K',
+		currencyCode: false
 	},
 	{
 		in: 123456,
-		expected: '123K'
+		expected: '123K',
+		currencyCode: false
 	},
 	{
 		in: 1234567,
-		expected: '1.2M'
+		expected: '1.2M',
+		currencyCode: false
 	},
 	{
 		in: 12345678,
-		expected: '12.3M'
+		expected: '12.3M',
+		currencyCode: false
 	},
 	{
 		in: 123456789,
-		expected: '123.5M'
+		expected: '123.5M',
+		currencyCode: false
 	},
+	{
+		in: 123,
+		expected: '$123',
+		currencyCode: 'USD'
+	},
+	{
+		in: 123,
+		expected: '¥123',
+		currencyCode: 'JPY'
+	},
+	{
+		in: 123456789,
+		expected: '$123.5M',
+		currencyCode: 'USD'
+	},
+	{
+		in: 123456789,
+		expected: '¥123.5M',
+		currencyCode: 'JPY'
+	},
+
 ];
 
 valuesToTest.forEach( function( itemToTest ) {
 	QUnit.test( 'readableLargeNumber::' + itemToTest.in, function ( assert ) {
-		var value = testFunctions.readableLargeNumber( itemToTest.in );
-		assert.equal( value, itemToTest.expected, 'Expect readableLargeNumber( \'' + itemToTest.in + '\' ) to return ' + itemToTest.expected );
+		var value = testFunctions.readableLargeNumber( itemToTest.in, itemToTest.currencyCode );
+		assert.equal( value, itemToTest.expected, 'Expect readableLargeNumber( \'' + itemToTest.in + ', ' + itemToTest.currencyCode + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
 
