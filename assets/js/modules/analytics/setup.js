@@ -260,22 +260,10 @@ class AnalyticsSetup extends Component {
 				if ( ! selectedAccount ) {
 					let matchedProperty = null;
 
-					if ( responseData.existingTag ) {
-
-						// Select account and property of existing tag.
-						matchedProperty = responseData.existingTag.property;
-						if ( this._isMounted ) {
-							this.setState( {
-								existingTag: responseData.existingTag.property[0].id,
-							} );
-						}
-					} else {
-
-						// Look for account, property and profile match to site URL.
-						matchedProperty = responseData.properties.filter( property => {
-							return trimEnd( property.websiteUrl, '/' ) === trimEnd( googlesitekit.admin.siteURL, '/' );
-						} );
-					}
+					// Look for account, property and profile match to site URL.
+					matchedProperty = responseData.properties.filter( property => {
+						return trimEnd( property.websiteUrl, '/' ) === trimEnd( googlesitekit.admin.siteURL, '/' );
+					} );
 
 					if ( 0 < matchedProperty.length ) {
 						selectedAccount  = matchedProperty[0].accountId;
