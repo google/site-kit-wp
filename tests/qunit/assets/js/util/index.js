@@ -261,7 +261,7 @@ var gtag = function( type, name, sendto, category, label, value ) {
 	};
 };
 
-var sendAnalyticsTrackingEventExpected = '{"type":"event","name":"name","sendto":{"event_category":"category","event_label":"label","event_value":"value","dimension1":"","dimension2":"true"}}no';
+var sendAnalyticsTrackingEventExpected = '{"type":"event","name":"name","sendto":{"event_category":"category","event_label":"label","event_value":"value","dimension1":"","dimension2":"true"}}';
 QUnit.test( 'sendAnalyticsTrackingEvent', function ( assert ) {
 	window.googlesitekit.admin.trackingOptin = true;
 	const value = JSON.stringify( testFunctions.sendAnalyticsTrackingEvent( 'category', 'name', 'label', 'value' ) );
