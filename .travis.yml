@@ -61,7 +61,7 @@ script:
   - |
     if [[ "$JS" == "1" ]]; then
       npm run build || exit 1 # Build for tests.
-      gulp qunit || exit 1 # QUnit tests
+      npx gulp qunit || exit 1 # QUnit tests
       npm run test || exit 1 # Bundle size test
       travis_retry npm run travis:visualtest || exit 1 # Visual regression tests
     else
