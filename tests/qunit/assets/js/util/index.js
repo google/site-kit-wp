@@ -111,44 +111,35 @@ valuesToTest.forEach( function( itemToTest ) {
  */
 valuesToTest = [
 	{
-		head: '<script> window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date; ga(\'create\', \'UA-XXXXX-Y\', \'auto\'); ga(\'send\', \'pageview\'); </script><script async src=\'https://www.google-analytics.com/analytics.js\'></script>',
+		html: '<script> window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date; ga(\'create\', \'UA-XXXXX-Y\', \'auto\'); ga(\'send\', \'pageview\'); </script><script async src=\'https://www.google-analytics.com/analytics.js\'></script>',
 		module: 'analytics',
 		expected: 'UA-XXXXX-Y'
 	},
 	{
-		head: '<script> (function(i,s,o,g,r,a,m){i[\'GoogleAnalyticsObject\']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,\'script\',\'https://www.google-analytics.com/analytics.js\',\'ga\'); ga(\'create\', \'UA-XXXXX-Y\', \'auto\'); ga(\'send\', \'pageview\'); </script>',
+		html: '<script> (function(i,s,o,g,r,a,m){i[\'GoogleAnalyticsObject\']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,\'script\',\'https://www.google-analytics.com/analytics.js\',\'ga\'); ga(\'create\', \'UA-XXXXX-Y\', \'auto\'); ga(\'send\', \'pageview\'); </script>',
 		module: 'analytics',
 		expected: 'UA-XXXXX-Y'
 	},
 	{
-		head: '<meta charset="UTF-8"><title>Site Kit for WordPress</title><link rel="dns-prefetch" href="//fonts.googleapis.com"></link>',
+		html: '<meta charset="UTF-8"><title>Site Kit for WordPress</title><link rel="dns-prefetch" href="//fonts.googleapis.com"></link>',
 		module: 'analytics',
 		expected: false
 	},
 	{
-		head: '<meta charset="UTF-8"><title>Site Kit for WordPress</title><link rel="dns-prefetch" href="//fonts.googleapis.com"></link>',
+		html: '<meta charset="UTF-8"><title>Site Kit for WordPress</title><link rel="dns-prefetch" href="//fonts.googleapis.com"></link>',
 		module: 'adsense',
 		expected: false
 	},
 	{
-		head: '<script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> <script> (adsbygoogle = window.adsbygoogle || []).push({ google_ad_client: "ca-pub-123456789", enable_page_level_ads: true }); </script>',
+		html: '<script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> <script> (adsbygoogle = window.adsbygoogle || []).push({ google_ad_client: "ca-pub-123456789", enable_page_level_ads: true }); </script>',
 		module: 'adsense',
 		expected: 'ca-pub-123456789'
 	},
 ]
 valuesToTest.forEach( function( itemToTest ) {
-	var iframe = {
-		contentWindow: {
-			document: {
-				querySelector: function() {
-					return { innerHTML: itemToTest.head };
-				}
-			}
-		}
-	};
-	QUnit.test( 'findTagInHtmlContent::' + itemToTest.head, function ( assert ) {
-		var value = testFunctions.findTagInHtmlContent( iframe, itemToTest.module );
-		assert.equal( value, itemToTest.expected, 'Expect findTagInHtmlContent( \'' + itemToTest.head + '\' ) to return ' + itemToTest.expected );
+	QUnit.test( 'findTagInHtmlContent::' + itemToTest.html, function ( assert ) {
+		var value = testFunctions.findTagInHtmlContent( itemToTest.html, itemToTest.module );
+		assert.equal( value, itemToTest.expected, 'Expect findTagInHtmlContent( \'' + itemToTest.html + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
 
