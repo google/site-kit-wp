@@ -237,7 +237,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 
 		$container_id = $this->get_data( 'container-id' );
 		if ( is_wp_error( $container_id ) || ! $container_id ) {
-			return;
+			return $data;
 		}
 
 		$data['amp_component_scripts']['amp-analytics'] = 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js';

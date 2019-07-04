@@ -17,10 +17,10 @@
  */
 
 import gulp from 'gulp';
-import qunit from 'node-qunit-phantomjs';
 import requireDir from 'require-dir';
 import runSequence from 'run-sequence';
 import livereload from 'gulp-livereload';
+import { execSync } from 'child_process';
 var phpunit = require( 'gulp-phpunit' );
 
 requireDir( './gulp-tasks' );
@@ -89,7 +89,7 @@ gulp.task( 'default', () => {
 } );
 
 gulp.task( 'qunit', function() {
-	qunit( './tests/qunit/index.html' );
+	execSync( 'node-qunit-phantomjs ./tests/qunit/index.html', { stdio: [ 0, 1, 2 ] } );
 } );
 
 gulp.task( 'phpunit', function() {

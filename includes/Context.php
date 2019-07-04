@@ -141,6 +141,44 @@ final class Context {
 	}
 
 	/**
+	 * Gets the permalink of the reference site to use for stats.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int|\WP_Post $post  Optional. Post ID or post object. Default is the global `$post`.
+	 *
+	 * @return string|false The  Reference permalink URL or false if post does not exist.
+	 */
+	public function get_reference_permalink( $post = 0 ) {
+		$reference_site_url = untrailingslashit( $this->get_reference_site_url() );
+		$orig_site_url      = untrailingslashit( home_url() );
+
+		// Gets post object. On front area we need to use get_queried_object to get the current post object.
+		if ( ! $post ) {
+			if ( is_admin() ) {
+				$post = get_post();
+			} else {
+				$post = get_queried_object();
+			}
+
+			if ( ! $post instanceof \WP_Post ) {
+				return false;
+			}
+		}
+
+		$permalink = get_permalink( $post );
+		if ( false === $permalink ) {
+			return $permalink;
+		}
+
+		if ( $orig_site_url !== $reference_site_url ) {
+			$permalink = str_replace( $orig_site_url, $reference_site_url, $permalink );
+		}
+
+		return $permalink;
+	}
+
+	/**
 	 * Gets the current version is beta released.
 	 *
 	 * @return bool True if the version is in beta mode, false otherwise.

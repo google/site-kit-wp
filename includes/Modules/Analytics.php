@@ -384,12 +384,12 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 		$use_snippet = $this->get_data( 'use-snippet' );
 		if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
-			return;
+			return $data;
 		}
 
 		$tracking_id = $this->get_data( 'property-id' );
 		if ( is_wp_error( $tracking_id ) ) {
-			return;
+			return $data;
 		}
 
 		$data['amp_component_scripts']['amp-analytics'] = 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js';
