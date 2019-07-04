@@ -409,6 +409,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			'get-properties'           => 'analytics',
 			'get-profiles'             => 'analytics',
 			'tag'                      => '',
+			'tag-permission'           => '',
 			'adsense'                  => 'analyticsreporting',
 			'site-analytics'           => 'analyticsreporting',
 			'top-pages'                => 'analyticsreporting',
@@ -561,6 +562,22 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							return $matches[1];
 						}
 						return false;
+					};
+				case 'tag-permission':
+					return function() use ( $data ) {
+						if ( ! isset( $data['tag'] ) ) {
+							/* translators: %s: Missing parameter name */
+							return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'tag' ), array( 'status' => 400 ) );
+						}
+						$accounts               = $this->get_data( 'get-accounts' );
+						$has_access_to_property = $this->has_access_to_property( $data['tag'], $accounts['accounts'] );
+
+						if ( empty( $has_access_to_property ) ) {
+							/* translators: %s: Property id of the existing tag */
+							return new WP_Error( 'google_analytics_existing_tag_permission', sprintf( __( 'We\'ve detected there\'s already an existing Analytics tag on your site (ID %s), but your account doesn\'t seem to have access to this Analytics property. You can either remove the existing tag and connect to a different account, or request access to this property from your team.', 'google-site-kit' ), $data['tag'] ), array( 'status' => 500 ) );
+						}
+
+						return true;
 					};
 				case 'adsense':
 					// Date range.

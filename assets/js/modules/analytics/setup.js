@@ -95,6 +95,9 @@ class AnalyticsSetup extends Component {
 
 				if ( existingTag && existingTag.length  ) {
 					try {
+
+						// Verify user has access to found tag.
+						await data.get( 'modules', 'analytics', 'tag-permission', { tag: existingTag }, false );
 						newState = Object.assign( newState, {
 							existingTag,
 							useSnippet: ( ! existingTag && ! onSettingsPage ) ? true : useSnippet,
