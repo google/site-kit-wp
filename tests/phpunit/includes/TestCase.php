@@ -78,4 +78,37 @@ class TestCase extends \WP_UnitTestCase {
 	protected function get_testcase() {
 		return $this;
 	}
+
+	protected function checkRequirements() {
+		parent::checkRequirements();
+
+		/**
+		 * Proper handling for MS group annotation handling was fixed in 5.1
+		 * @see https://core.trac.wordpress.org/ticket/43863
+		 */
+		if ( version_compare( $GLOBALS['wp_version'], '5.1', '<' ) ) {
+			$annotations = $this->getAnnotations();
+			$groups      = array();
+
+			if ( ! empty( $annotations['class']['group'] ) ) {
+				$groups = array_merge( $groups, $annotations['class']['group'] );
+			}
+			if ( ! empty( $annotations['method']['group'] ) ) {
+				$groups = array_merge( $groups, $annotations['method']['group'] );
+			}
+
+			if ( ! empty( $groups ) ) {
+				if ( in_array( 'ms-required', $groups, true ) ) {
+					if ( ! is_multisite() ) {
+						$this->markTestSkipped( 'Test only runs on Multisite' );
+					}
+				}
+				if ( in_array( 'ms-excluded', $groups, true ) ) {
+					if ( is_multisite() ) {
+						$this->markTestSkipped( 'Test does not run on Multisite' );
+					}
+				}
+			}
+		}
+	}
 }

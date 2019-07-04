@@ -114,6 +114,21 @@ class TagManagerTest extends TestCase {
 		);
 	}
 
+	public function test_amp_data_load_analytics_component() {
+		$tagmanager = new TagManager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$tagmanager->register();
+
+		$data = array( 'amp_component_scripts' => array() );
+
+		$result = apply_filters( 'amp_post_template_data', $data );
+		$this->assertSame( $data, $result );
+
+		$tagmanager->set_data( 'container-id', array( 'containerId' => '12345678' ) );
+
+		$result = apply_filters( 'amp_post_template_data', $data );
+		$this->assertArrayHasKey( 'amp-analytics', $result['amp_component_scripts'] );
+	}
+
 	/**
 	 * @return Module_With_Scopes
 	 */

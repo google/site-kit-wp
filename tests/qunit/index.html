@@ -9,11 +9,22 @@
 	<script src='https://unpkg.com/lodash@4.17.5/lodash'></script>
 	<script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en,Intl.~locale.de"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.4.4/polyfill.js"></script>
+	<script src='../../dist/assets/vendor/lodash.js'></script>
 	<script>
 		window.wp = {};
 		wp.hooks  = {};
 		window.lodash = _;
+		window.googlesitekit = {
+			initialized: true,
+			setup: {
+				isFirstAdmin: true
+			}
+		};
+		var lodash = _.noConflict();
 	</script>
+	<script src='../../dist/assets/vendor/react.development.js'></script>
+	<script src='../../dist/assets/vendor/react-dom.development.js'></script>
+	<script src='../../dist/assets/js/externals/element.js'></script>
 	<script src='../../dist/assets/js/externals/i18n.js'></script>
 	<script src='../../dist/assets/js/externals/url.js'></script>
 	<script src='../../dist/assets/js/externals/hooks.js'></script>
@@ -25,10 +36,8 @@
 	<div id="qunit-fixture"></div>
 	<script src="https://code.jquery.com/qunit/qunit-2.7.0.js"></script>
 
-
-
 	<!-- Include the test scripts -->
-	<script src='utils.js'></script>
+	<script src='assets/js/util/index.js'></script>
 </body>
 
 </html>

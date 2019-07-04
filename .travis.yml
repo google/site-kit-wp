@@ -52,49 +52,42 @@ before_script:
   - composer install
   - bash tests/bin/install-wp-tests.sh wordpress_test root '' localhost
 
-jobs:
-  include:
+script:
+  - npm install || exit 1
+  - |
+    if [[ "$SNIFF" == "1" ]]; then
+      gulp phpcs || exit 1
+    fi
+  - |
+    if [[ "$JS" == "1" ]]; then
+      npm run build || exit 1 # Build for tests.
+      npx gulp qunit || exit 1 # QUnit tests
+      npm run test || exit 1 # Bundle size test
+      travis_retry npm run travis:visualtest || exit 1 # Visual regression tests
+    else
+      gulp phpunit || exit 1
+    fi
 
+matrix:
+  include:
     - stage: test
       php: 5.4
-      env:
-        - WP_VERSION=4.7
-        - PHPCS_PHP_VERSION='5.4'
-      script:
-        - npm install || exit 1
-        - gulp phpcs || exit 1 # PHP Code Sniffer scan.
-        - gulp phpunit || exit 1
-
+      env: WP_VERSION=4.7 PHPCS_PHP_VERSION='5.4' SNIFF=1
     - stage: test
       php: 5.6
       env: WP_VERSION=latest
-      script:
-        - npm install || exit 1
-        - gulp phpunit || exit 1
-
     - stage: test
       php: 7.3
       env: WP_VERSION=latest
-      script:
-        - npm install || exit 1
-        - gulp phpunit || exit 1
-
     - stage: test
       php: 7.3
-      env: WP_VERSION=master
-      script:
-        - npm install || exit 1
-        - npm run test || exit 1 # Bundle size test.
-        - travis_retry npm run travis:test || exit 1 # Runs QUnit, PHPUnit and BackstopJS visual regression tests.
-
-  allow_failures:
-
+      env: WP_VERSION=latest JS=1
     - stage: test
       php: 'nightly'
       env: WP_VERSION=master
-      script:
-        - npm install || exit 1
-        - gulp phpunit || exit 1
+  allow_failures:
+    - php: 'nightly'
+      env: WP_VERSION=master
 
 services:
   - docker
