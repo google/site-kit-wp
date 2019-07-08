@@ -95,13 +95,4 @@ class OptionsTest extends TestCase {
 
 		$this->assertFalse( get_network_option( null, 'test_option' ) );
 	}
-
-	protected function network_activate_site_kit() {
-		add_filter(
-			'pre_site_option_active_sitewide_plugins',
-			function () {
-				return array( GOOGLESITEKIT_PLUGIN_BASENAME => true );
-			}
-		);
-	}
 }
