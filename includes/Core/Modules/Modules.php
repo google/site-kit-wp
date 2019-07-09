@@ -136,44 +136,6 @@ final class Modules {
 			}
 		);
 
-		// Conditionally (via filter) load an iframe to the frontend in the admin to check for existing tags, as needed for some modules.
-		add_action(
-			'admin_head',
-			function() {
-				/**
-				 * Filters the array of modules that need to load the front end for additional checks during setup like the presence of js tags.
-				 *
-				 * @since 1.0.0
-				 *
-				 * @param array $modules Array of modules that opt in front end checks.
-				 */
-				$modules = apply_filters( 'googlesitekit_modules_for_front_end_check', array() );
-
-				if ( empty( $modules ) || ! is_admin() ) {
-					return;
-				}
-
-				static $iframe_loaded = null;
-
-				if ( is_null( $iframe_loaded ) && is_admin() ) {
-
-					// Check if the iframe needs to load on this page for the FE check.
-					$current_page = ! empty( $_GET['page'] ) ? $_GET['page'] : '';  // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-					$pattern      = '/googlesitekit-module-(' . join( '|', $modules ) . ')$/m';
-
-					if ( ! preg_match( $pattern, $current_page ) && 'googlesitekit-settings' !== $current_page ) {
-						return;
-					}
-
-					$src = add_query_arg( 'tagverify', '1', home_url() );
-
-					echo '<iframe style="display:none;" data-modules="' . esc_attr( join( '_', $modules ) ) . '" id="sitekit_fe_load_check" src="' . esc_attr( $src ) . '" sandbox="allow-same-origin"></iframe>';
-
-					$iframe_loaded = true;
-				}
-			}
-		);
-
 		$active_modules = $this->get_active_modules();
 
 		array_walk(

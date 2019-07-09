@@ -714,28 +714,49 @@ export const deleteCache = ( cacheType, cacheKey ) => {
 	return true;
 };
 
-export const findTagInIframeContent = ( iframe, module ) => {
+export const findTagInHtmlContent = ( html, module ) => {
 	let existingTag = false;
 
-	if ( ! iframe ) {
+	if ( ! html ) {
 		return false;
 	}
 
-	// Check if tag present in <head>.
-	const head = iframe.contentWindow.document.querySelector( 'head' );
-	if ( head ) {
-		existingTag = extractTag( head.innerHTML, module );
-	}
-
-	// If not in <head> check if tag present in <body>.
-	if ( false === existingTag ) {
-		const body = iframe.contentWindow.document.querySelector( 'body' );
-		if ( body ) {
-			existingTag = extractTag( body.innerHTML, module );
-		}
-	}
+	existingTag = extractTag( html, module );
 
 	return existingTag;
+};
+
+/**
+ * Looks for existing tag requesting front end html, if no existing tag was found on server side
+ * while requesting list of accounts.
+ *
+ * @param {string} module Module slug.
+ */
+export const getExistingTag = async( module ) => {
+
+	try {
+		let tagFound = data.getCache( module, 'existingTag', 300 );
+
+		if ( false === tagFound ) {
+			const html = await fetch( `${googlesitekit.admin.homeURL}?tagverify=1&timestamp=${Date.now()}` ).then( res => {
+				return res.text();
+			} );
+
+			tagFound = findTagInHtmlContent( html, module );
+			if ( ! tagFound ) {
+				tagFound = '';
+			}
+		}
+
+		data.setCache( module, 'existingTag', tagFound );
+
+		return new Promise( ( resolve ) => {
+			resolve( tagFound );
+		} );
+	} catch ( err ) {
+
+		// nothing.
+	}
 };
 
 /**
