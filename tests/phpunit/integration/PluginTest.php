@@ -12,6 +12,9 @@ namespace Google\Site_Kit\Tests;
 
 use Google\Site_Kit\Plugin;
 
+/**
+ * @group Root
+ */
 class PluginTest extends TestCase {
 
 	/**
