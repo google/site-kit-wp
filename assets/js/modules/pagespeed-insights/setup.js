@@ -88,7 +88,7 @@ class PageSpeedInsightsSetup extends Component {
 
 	handleAPIKeyChange( e ) {
 		this.setState( {
-			apikey: e.currentTarget.value,
+			apikey: e.currentTarget.value.trim(),
 			disabled: 0 === e.currentTarget.value.length,
 		} );
 	}
