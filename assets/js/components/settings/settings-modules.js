@@ -20,6 +20,7 @@ import SettingsModule from './settings-module';
 import Layout from 'GoogleComponents/layout/layout';
 import Notification from 'GoogleComponents/notifications/notification';
 import SettingsOverlay from './settings-overlay';
+import { clearAppLocalStorage } from 'GoogleUtil/index';
 
 const { __ } = wp.i18n;
 const { map, filter, sortBy } = lodash;
@@ -91,6 +92,10 @@ class SettingsModules extends Component {
 				} );
 				return;
 			}
+
+			// Clears session and local storage on every successful setting.
+			clearAppLocalStorage();
+
 			this.setState( { isSaving: module } );
 			if ( ! modulePromise ) {
 				return;
