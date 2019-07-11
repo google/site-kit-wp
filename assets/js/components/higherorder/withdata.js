@@ -255,7 +255,7 @@ const withData = (
 
 			// If we have zeroData, display the NoDataComponent.
 			if ( zeroData ) {
-				return getNoDataComponent( moduleName, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid, module );
+				return getNoDataComponent( moduleName, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
 			}
 
 			// Render the Component when we have data, passing the datapoint.
