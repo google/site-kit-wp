@@ -95,6 +95,10 @@ class SettingsModules extends Component {
 
 			this.setState( { isSaving: module } );
 			if ( ! modulePromise ) {
+
+				// Clears session and local storage on successful setting.
+				clearAppLocalStorage();
+
 				return;
 			}
 			modulePromise.then( () => {
