@@ -37,7 +37,7 @@ if [ "$1" == '--reset-site' ]; then
 fi
 
 if [[ ! -z "$WP_VERSION" ]]; then
-	# Potentially
+	# Potentially downgrade WordPress
 	echo -e $(status_message "Downloading WordPress version $WP_VERSION...")
 	docker-compose $DOCKER_COMPOSE_FILE_OPTIONS run --rm -u 33 $CLI core download --version=${WP_VERSION} --force --quiet
 fi
@@ -70,6 +70,12 @@ if [ "$WP_VERSION" == "latest" ]; then
 	docker-compose $DOCKER_COMPOSE_FILE_OPTIONS run --rm -u 33 $CLI core update --quiet
 	echo -e $(status_message "Updating The WordPress Database...")
 	docker-compose $DOCKER_COMPOSE_FILE_OPTIONS run --rm -u 33 $CLI core update-db --quiet
+fi
+
+if [[ ! -z "$GUTENBERG_VERSION" ]]; then
+	# Potentially install Gutenberg
+	echo -e $(status_message "Installing Gutenberg version $GUTENBERG_VERSION...")
+	docker-compose $DOCKER_COMPOSE_FILE_OPTIONS run --rm -u 33 $CLI plugin install gutenberg --version=${GUTENBERG_VERSION} --activate --force --quiet
 fi
 
 # If the 'wordpress' volume wasn't during the down/up earlier, but the post port has changed, we need to update it.

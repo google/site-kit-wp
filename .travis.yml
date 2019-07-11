@@ -49,8 +49,12 @@ before_install:
     fi
 
 before_script:
-  - npm install -g gulp-cli
+  - npm install || exit 1
   - composer install
+  - |
+    if [[ "$PHP" == "1" ]] || [[ "$JS" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
+      npm install -g gulp-cli
+    fi
   - |
     if [[ "$PHP" == "1" ]]; then
       export WP_DEVELOP_DIR=/tmp/wordpress
@@ -59,7 +63,6 @@ before_script:
     fi
 
 script:
-  - npm install || exit 1
   - |
     if [[ "$SNIFF" == "1" ]]; then
       gulp phpcs || exit 1
@@ -74,6 +77,14 @@ script:
   - |
     if [[ "$PHP" == "1" ]]; then
       gulp phpunit || exit 1
+    fi
+  - |
+    if [[ "$E2E" == "1" ]]; then
+      npm run build || exit 1 # Build for tests.
+      npm run env:start
+      npm run env:reset-site
+      npm run test:e2e
+      npm run env:stop
     fi
 
 jobs:
@@ -98,27 +109,14 @@ jobs:
     - stage: test
       name: E2E Tests (WordPress latest)
       env: E2E=1
-      before_script:
-        - composer install
-        - npm install || exit 1
-      script:
-        - npm run build || exit 1 # Build for tests.
-        - npm run env:start
-        - npm run env:reset-site
-        - npm run test:e2e
     - stage: test
       name: E2E Tests (WordPress 4.7)
       env: E2E=1 WP_VERSION=4.7.13
-      before_script:
-        - composer install
-        - npm install || exit 1
-      script:
-        - npm run build || exit 1 # Build for tests.
-        - npm run env:start
-        - npm run env:reset-site
-        - npm run test:e2e
+    - stage: test
+      name: E2E Tests (WordPress 4.9, Gutenberg 4.9)
+      env: E2E=1 WP_VERSION=4.9.10 GUTENBERG_VERSION=4.9.0
   allow_failures:
-    - php: 7.4snapshot'
+    - php: 7.4snapshot
       env: WP_VERSION=master
 
 services:
