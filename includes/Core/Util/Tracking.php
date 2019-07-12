@@ -156,7 +156,7 @@ final class Tracking {
 		}
 		?>
 		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr( self::TRACKING_ID ); ?>"></script><?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+		<script async src="<?php echo esc_url( 'https://www.googletagmanager.com/gtag/js?id=' . self::TRACKING_ID ); ?>"></script><?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
 		<script>
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
