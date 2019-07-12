@@ -22,10 +22,8 @@ import { getAdSenseAccountStatus } from '../util';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import AdSenseSetupInstructions from '../setup/adsense-setup-instructions';
 import AdSenseInProcessStatus from './adsense-in-process-status';
-import data from 'GoogleComponents/data';
 import {
-	isFrontendIframeLoaded,
-	findTagInIframeContent,
+	getExistingTag,
 } from 'GoogleUtil';
 
 const { Component, Fragment } = wp.element;
@@ -37,7 +35,6 @@ class AdSenseModuleStatus extends Component {
 		super( props );
 		this.state = {
 			loadStatus: __( 'Loading…', 'google-site-kit' ),
-			iframeLoaded: false,
 			existingTag: false,
 		};
 		this.updateLoadStatus      = this.updateLoadStatus.bind( this );
@@ -52,43 +49,14 @@ class AdSenseModuleStatus extends Component {
 	}
 
 	async componentDidMount() {
-		this.iframeLoad();
-
-		await this.getExistingTag();
-
-		getAdSenseAccountStatus( this.updateLoadStatus, this.state.existingTag ).then( ( results ) => {
-			this.setState( results );
-		} );
-	}
-
-	/**
-	 * Save iframe for tag verification in state.
-	 */
-	iframeLoad() {
-		const iframe = isFrontendIframeLoaded();
-
-		if ( iframe && -1 !== iframe.dataset.modules.indexOf( 'adsense' ) ) {
-			const iFrameIsLoaded = iframe.contentDocument || ( iframe.contentWindow && iframe.contentWindow.document ) ;
-
-			if ( iFrameIsLoaded ) {
-				this.setState( { iframeLoaded: iframe } );
-			} else {
-				iframe.onload = async() => {
-					this.setState( { iframeLoaded: iframe } );
-				};
-			}
-		}
-	}
-
-	async getExistingTag() {
-		let existingTag = await data.get( 'modules', 'adsense', 'tag', { tagverify: 1 }, false );
-
-		// If tag not detected from wp_head, try detect from iframe.
-		if ( false === existingTag && this.state.iframeLoaded ) {
-			existingTag = findTagInIframeContent( this.state.iframeLoaded, 'adsense' );
-		}
+		let existingTag = await getExistingTag( 'adsense' );
+		existingTag = existingTag.length ? existingTag : false;
 
 		this.setState( { existingTag } );
+
+		getAdSenseAccountStatus( this.updateLoadStatus, existingTag ).then( ( results ) => {
+			this.setState( results );
+		} );
 	}
 
 	/**

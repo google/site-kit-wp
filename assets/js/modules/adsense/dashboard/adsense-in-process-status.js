@@ -29,6 +29,7 @@ class AdSenseInProcessStatus extends Component {
 		const { status } = this.props;
 		const { siteURL } = googlesitekit.admin;
 		const siteURLURL = new URL( siteURL );
+		const adsenseURL = `https://www.google.com/adsense/new/sites?url=${ siteURLURL.hostname }&source=site-kit`;
 		const actionableItems = [
 			{
 				id: 1,
@@ -36,7 +37,7 @@ class AdSenseInProcessStatus extends Component {
 				/* translators: %s: Site URL */
 				text: sprintf( __( 'Added your site %s in ', 'google-site-kit' ), siteURLURL.hostname ),
 				linkText: __( 'Sites', 'google-site-kit' ),
-				linkURL: `https://www.google.com/adsense/new/sites?url=${ siteURL }&source=site-kit`,
+				linkURL: adsenseURL,
 			},
 			{
 				id: 2,
@@ -99,7 +100,6 @@ class AdSenseInProcessStatus extends Component {
 			</div>
 		);
 
-		const adsenseURL = `https://www.google.com/adsense/new/sites?url=${ siteURL }&source=site-kit`;
 		const ctaList = {
 			incomplete: null,
 

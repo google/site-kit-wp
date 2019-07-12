@@ -471,6 +471,7 @@ final class Assets {
 				'picture' => get_avatar_url( $current_user->user_email ),
 			),
 			'AMPenabled'       => function_exists( 'is_amp_endpoint' ),
+			'homeURL'          => home_url(),
 		);
 
 		if ( isset( $_GET['permaLink'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
