@@ -112,6 +112,23 @@ class TestCase extends \WP_UnitTestCase {
 		}
 	}
 
+	/**
+	 * Capture the output of an action.
+	 *
+	 * @param string $tag The name of the action to be executed.
+	 * @param mixed $arg,... Optional. Additional arguments which are passed on to the
+	 *                        functions hooked to the action. Default empty.
+	 *
+	 * @return false|string
+	 */
+	protected function capture_action( $tag, $arg = '' ) {
+		ob_start();
+
+		call_user_func_array( 'do_action', func_get_args() );
+
+		return ob_get_clean();
+	}
+
 	protected function network_activate_site_kit() {
 		add_filter(
 			'pre_site_option_active_sitewide_plugins',
