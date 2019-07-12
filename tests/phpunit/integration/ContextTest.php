@@ -14,7 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Screens;
 
 /**
- * @group context
+ * @group Root
  */
 class ContextTest extends TestCase {
 
