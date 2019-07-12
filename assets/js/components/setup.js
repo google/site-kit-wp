@@ -235,22 +235,22 @@ class Setup extends Component {
 														mdc-layout-grid__cell
 														mdc-layout-grid__cell--span-12
 													">
-													<div className="googlesitekit-wizard-progress__steps">
-														{ Object.keys( progressSteps ).map( ( step, stepIndex ) => {
-															return (
-																<WizardProgressStep
-																	key={ progressSteps[ step ].title }
-																	currentStep={ currentStep === step }
-																	title={ progressSteps[ step ].title }
-																	step={ stepIndex + 1 }
-																	status={ this.stepStatus( progressSteps, step ) }
-																	warning={ progressSteps[ step ].warning }
-																	error={ progressSteps[ step ].error }
-																	stepKey={ step }
-																/>
-															);
-														} ) }
-													</div>
+														<div className="googlesitekit-wizard-progress__steps">
+															{ Object.keys( progressSteps ).map( ( step, stepIndex ) => {
+																return (
+																	<WizardProgressStep
+																		key={ progressSteps[ step ].title }
+																		currentStep={ currentStep === step }
+																		title={ progressSteps[ step ].title }
+																		step={ stepIndex + 1 }
+																		status={ this.stepStatus( progressSteps, step ) }
+																		warning={ progressSteps[ step ].warning }
+																		error={ progressSteps[ step ].error }
+																		stepKey={ step }
+																	/>
+																);
+															} ) }
+														</div>
 													</div>
 												}
 											</div>
