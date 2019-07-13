@@ -471,3 +471,19 @@ export const isAdsenseConnectedAnalytics = async() => {
 		resolve( adsenseConnect );
 	} );
 };
+
+/**
+ * Check for any value higher than 0 in values from AdSense data.
+ *
+ * @param {array} data Data returned from the AdSense.
+ * @returns {boolean}
+ */
+export const isDataZeroAdSense = ( data ) => {
+	let totals = data.totals;
+
+	// Look for any value > 0.
+	totals = totals.filter( ( total ) => {
+		return 0 < total;
+	} );
+	return 0 === totals.length;
+};
