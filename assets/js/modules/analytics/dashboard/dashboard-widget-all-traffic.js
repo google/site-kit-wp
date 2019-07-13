@@ -73,17 +73,15 @@ class AnalyticsAllTraffic extends Component {
 			receivingData,
 		} = this.state;
 
-		let errorDataComponent = null;
-
 		if ( active && ! setupComplete ) {
-			errorDataComponent = getSetupIncompleteComponent( __( 'Analytics', 'google-site-kit' ), true, true, true );
-		} else {
-			errorDataComponent = ! receivingData && (
-				error ? getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( __( 'Analytics', 'google-site-kit' ), true, true, true )
-			);
+			return getSetupIncompleteComponent( __( 'Analytics', 'google-site-kit' ), true, true, true );
 		}
 
-		return errorDataComponent;
+		if ( ! receivingData ) {
+			return error ? getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( __( 'Analytics', 'google-site-kit' ), true, true, true );
+		}
+
+		return null;
 	}
 
 	render() {
