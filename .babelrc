@@ -1,9 +1,7 @@
 {
 	"presets": [
-		[ "@babel/env", {
-			"useBuiltIns": "entry",
-			"corejs": 2
-		} ],
+		"@babel/env",
+		"@wordpress/default",
 		"@babel/preset-react"
 	],
 	"plugins": [
