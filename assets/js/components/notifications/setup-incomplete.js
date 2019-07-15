@@ -1,5 +1,6 @@
+
 /**
- * getDataErrorComponent function.
+ * getSetupIncompleteComponents function.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -18,35 +19,30 @@
 
 import CTA from 'GoogleComponents/notifications/cta';
 import ctaWrapper from 'GoogleComponents/notifications/cta-wrapper';
-import { showErrorNotification } from 'GoogleUtil';
-import InvalidCredentialsWarning
-	from 'SiteKitCore/components/notifications/invalid-credentials-warning';
 
 const { __, sprintf } = wp.i18n;
 
 /**
- * Creates a CTA component when there's a data error. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
+ * Creates a CTA component when modue needs to be configured. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
  *
  * @param {string}  moduleName Name of module, translated.
- * @param {string}  error      Description of error.
  * @param {boolean} inGrid     Creates layout to fit within an existing grid with 'cell' classes. Default is half-width grid cells. Default: false.
  * @param {boolean} fullWidth  Creates layout with 'cell--span-12' to be full width. Default: false.
  * @param {boolean} createGrid Adds a full grid layout with padding. Default: false.
  */
-const getDataErrorComponent = ( moduleName, error, inGrid = false, fullWidth = false, createGrid = false ) => {
+const getSetupIncompleteComponent = ( moduleName, inGrid = false, fullWidth = false, createGrid = false ) => {
 
 	const cta = <CTA
-		title={ sprintf( __( 'Data error in %s', 'google-site-kit' ), moduleName ) }
-		description={ error }
-		error
+
+		/* translators: %s: Module name */
+		title={ sprintf( __( '%s activation', 'google-site-kit' ), moduleName ) }
+
+		/* translators: %s: Module name */
+		description={ sprintf( __( '%s module needs to be configured', 'google-site-kit' ), moduleName ) }
+		ctaLabel={ __( 'Complete activation', 'google-site-kit' ) }
 	/>;
 
-	// This is to handle token expired error specifically.
-	if ( 'Invalid Credentials' === error ) {
-		showErrorNotification( InvalidCredentialsWarning );
-	}
-
-	return ctaWrapper( cta, inGrid, fullWidth, createGrid);
+	return ctaWrapper( cta, inGrid, fullWidth, createGrid );
 };
 
-export default getDataErrorComponent;
+export default getSetupIncompleteComponent;
