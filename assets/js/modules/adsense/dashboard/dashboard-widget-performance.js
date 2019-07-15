@@ -23,6 +23,7 @@ import {
 	getTimeInSeconds,
 	readableLargeNumber,
 } from 'GoogleUtil';
+import { isDataZeroAdSense } from '../util';
 
 const { __ } = wp.i18n;
 const { Component } = wp.element;
@@ -64,13 +65,7 @@ class AdSensePerformanceWidget extends Component {
 					callback: ( result ) => {
 
 						// If there are no impressions, the site is not yet displaying ads.
-						if (
-							result && result.totals &&
-							(
-								null === result.totals[2] ||
-								0    === result.totals[2]
-							)
-						) {
+						if ( result && isDataZeroAdSense( result ) ) {
 							handleZeroData();
 						}
 

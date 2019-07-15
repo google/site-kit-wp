@@ -479,7 +479,10 @@ export const isAdsenseConnectedAnalytics = async() => {
  * @returns {boolean}
  */
 export const isDataZeroAdSense = ( data ) => {
-	let totals = data.totals;
+	let totals = [];
+	if ( data.totals ) {
+		totals = data.totals;
+	}
 
 	// Look for any value > 0.
 	totals = totals.filter( ( total ) => {
