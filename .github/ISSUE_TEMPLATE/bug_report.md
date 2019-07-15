@@ -16,10 +16,6 @@ about: Create a report to help us improve
 3. Scroll down to '....'
 4. See error
 
-## Expected behavior
-
-<!-- Please describe clear and concisely what you expected to happen. -->
-
 ## Screenshots
 
 <!-- If applicable, please add screenshots to help explain your problem. -->
@@ -39,10 +35,14 @@ about: Create a report to help us improve
 
 _Do not alter or remove anything below. The following sections will be managed by moderators only._
 
-## Changelog entry
-
-* <!-- One sentence summarizing the PR, to be used in the changelog. -->
-
 ## Acceptance criteria
 
 * <!-- One or more bullet points for acceptance criteria. -->
+
+## Implementation Brief
+
+* <!-- One or more bullet points for how to technically resolve the issue. -->
+
+## Changelog entry
+
+* <!-- One sentence summarizing the PR, to be used in the changelog. -->

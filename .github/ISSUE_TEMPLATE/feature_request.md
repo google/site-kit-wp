@@ -8,26 +8,18 @@ about: Suggest an idea for this project
 
 <!-- Please describe clear and concisely which problem the feature would solve or which publisher needs it would address. -->
 
-## Proposed solution
-
-<!-- Please describe the solution you'd like. -->
-
-## Alternative approaches
-
-<!-- Please describe alternative solutions or features you've considered. -->
-
-## Additional Context
-
-<!-- Please add any additional information or screenshots about the feature request. -->
-
 ---------------
 
 _Do not alter or remove anything below. The following sections will be managed by moderators only._
 
-## Changelog entry
-
-* <!-- One sentence summarizing the PR, to be used in the changelog. -->
-
 ## Acceptance criteria
 
 * <!-- One or more bullet points for acceptance criteria. -->
+
+## Implementation Brief
+
+* <!-- One or more bullet points for how to technically resolve the issue. -->
+
+## Changelog entry
+
+* <!-- One sentence summarizing the PR, to be used in the changelog. -->

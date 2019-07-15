@@ -1,6 +1,6 @@
 {
   "name": "googlesitekit",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.1.0.1",
   "description": "Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.",
   "main": "index.js",
   "scripts": {
@@ -20,9 +20,6 @@
     "test:visualtest": "npm run build && start-server-and-test storybook http-get://localhost:9001 backstopjs",
     "test:visualapprove": "backstop approve --config=backstop.js",
     "test:analyze": "webpack -p --mode=production --env.analyze=true --json --progress --profile > /tmp/stats.json && cp ./dist/assets/js/*.js /tmp && webpack-bundle-analyzer /tmp/stats.json",
-    "travis:test": "npm run build && npm run travis:qunit && npm run travis:phpunit && npm run travis:visualtest",
-    "travis:qunit": "gulp qunit",
-    "travis:phpunit": "gulp phpunit",
     "travis:visualtest": "start-server-and-test storybook http-get://localhost:9001 travis:backstopjs",
     "storybook": "start-storybook -s ./dist -p 9001 -c .storybook",
     "backstopjs": "backstop test --config=backstop.js --docker",

@@ -149,8 +149,14 @@ final class Admin_Bar {
 			return false;
 		}
 
-		$post = get_post();
-		if ( ! $post ) {
+		// Gets post object. On front area we need to use get_queried_object to get the current post object.
+		if ( is_admin() ) {
+			$post = get_post();
+		} else {
+			$post = get_queried_object();
+		}
+
+		if ( ! $post || ! $post instanceof \WP_Post ) {
 			return false;
 		}
 

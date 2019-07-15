@@ -32,7 +32,6 @@ class AdSenseTest extends TestCase {
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 		remove_all_filters( 'googlesitekit_module_screens' );
 		remove_all_filters( 'option_' . AdSense::OPTION );
-		remove_all_filters( 'googlesitekit_modules_for_front_end_check' );
 		remove_all_filters( 'googlesitekit_adsense_account_id' );
 
 		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
