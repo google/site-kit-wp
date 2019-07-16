@@ -106,8 +106,7 @@ class AdSenseTest extends TestCase {
 		$options  = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$settings = $options->get( AdSense::OPTION );
 
-		$this->assertNotFalse( $settings );
-		$this->assertEmpty( $settings['setupComplete'] );
+		$this->assertFalse( $settings );
 		$this->assertFalse( $adsense->is_connected() );
 
 		$options->set( AdSense::OPTION, array( 'setupComplete' => true ) );
