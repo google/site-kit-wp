@@ -1,8 +1,9 @@
 {
 	"extends": [
 		"eslint:recommended",
-    "plugin:react/recommended",
-    "wordpress"
+		"plugin:react/recommended",
+		"wordpress",
+		"plugin:jest/recommended"
 	],
 	"parser": "babel-eslint",
 	"env": {
