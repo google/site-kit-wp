@@ -32,7 +32,6 @@ class AdSenseTest extends TestCase {
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 		remove_all_filters( 'googlesitekit_module_screens' );
 		remove_all_filters( 'option_' . AdSense::OPTION );
-		remove_all_filters( 'googlesitekit_modules_for_front_end_check' );
 		remove_all_filters( 'googlesitekit_adsense_account_id' );
 
 		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
@@ -107,7 +106,7 @@ class AdSenseTest extends TestCase {
 		$options  = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$settings = $options->get( AdSense::OPTION );
 
-		$this->assertEmpty( $settings['setupComplete'] );
+		$this->assertFalse( $settings );
 		$this->assertFalse( $adsense->is_connected() );
 
 		$options->set( AdSense::OPTION, array( 'setupComplete' => true ) );

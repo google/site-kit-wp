@@ -27,8 +27,7 @@ import { Select, Option } from 'SiteKitCore/material-components';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import {
 	sendAnalyticsTrackingEvent,
-	isFrontendIframeLoaded,
-	findTagInIframeContent,
+	getExistingTag,
 	toggleConfirmModuleSettings,
 } from 'GoogleUtil';
 
@@ -69,7 +68,6 @@ class AnalyticsSetup extends Component {
 			selectedinternalWebProperty: internalWebPropertyId,
 			ampClientIdOptIn: ampClientIdOptIn,
 			existingTag: false,
-			iframeLoaded: false,
 		};
 
 		this.handleAccountChange = this.handleAccountChange.bind( this );
@@ -86,11 +84,36 @@ class AnalyticsSetup extends Component {
 	async componentDidMount() {
 		this._isMounted = true;
 
-		this.iframeLoad();
+		await this.getAccounts().then( async( newState ) => {
 
-		await this.getAccounts();
+			// If tag hasn't been detected in wp_head, look for existing tag in the html.
+			if ( ! newState.existingTag && ! newState.errorCode ) {
+				const { onSettingsPage } = this.props;
+				const { useSnippet } = this.state;
+				const existingTag = await getExistingTag( 'analytics' );
 
-		this.getExistingTag();
+				if ( existingTag && existingTag.length  ) {
+					try {
+						newState = Object.assign( newState, {
+							existingTag,
+							useSnippet: ( ! existingTag && ! onSettingsPage ) ? true : useSnippet,
+						} );
+					} catch ( err ) {
+						newState = {
+							isLoading: false,
+							errorCode: err.code,
+							errorMsg: err.message,
+							errorReason: err.data && err.data.reason ? err.data.reason : false,
+						};
+						data.deleteCache( 'analytics', 'existingTag' );
+					}
+				}
+			}
+
+			if ( this._isMounted ) {
+				this.setState( newState );
+			}
+		} );
 
 		// Handle save hook from the settings page.
 		addFilter( 'googlekit.SettingsConfirmed',
@@ -218,66 +241,6 @@ class AnalyticsSetup extends Component {
 		sendAnalyticsTrackingEvent( 'analytics_setup', 'profile_change', selectValue );
 	}
 
-	/**
-	 * Looks for existing tag in iframe front end load if no existing tag was found on server side
-	 * while requesting list of accounts.
-	 */
-	async getExistingTag() {
-		const { onSettingsPage } = this.props;
-		const {
-			useSnippet,
-			existingTag,
-			iframeLoaded,
-		} = this.state;
-
-		if ( existingTag ) {
-			return;
-		}
-
-		let tagFound = false;
-
-		// Try detect analytics tag from iframe.
-		if ( iframeLoaded ) {
-			tagFound = findTagInIframeContent( this.state.iframeLoaded, 'analytics' );
-		}
-
-		// Double check existing tag from accounts cached data and remove cache if data needs to be updated.
-		if ( false === tagFound ) {
-			let accountsData = data.getCache( 'analytics', 'get-accounts', 3600 );
-			if ( accountsData && accountsData.existingTag ) {
-				data.deleteCache( 'analytics', 'get-accounts' );
-			}
-		}
-
-		if ( this._isMounted ) {
-			this.setState( {
-				existingTag: tagFound,
-
-				// Set useSnippet default as true while setting up analytics if there is no existing tag.
-				useSnippet: ( ! tagFound && ! onSettingsPage ) ? true : useSnippet,
-			} );
-		}
-	}
-
-	/**
-	 * Save iframe for tag verification in state.
-	 */
-	iframeLoad() {
-		const iframe = isFrontendIframeLoaded();
-
-		if ( iframe && -1 !== iframe.dataset.modules.indexOf( 'analytics' ) ) {
-			const iFrameIsLoaded = iframe.contentDocument || ( iframe.contentWindow && iframe.contentWindow.document ) ;
-
-			if ( iFrameIsLoaded ) {
-				this.setState( { iframeLoaded: iframe } );
-			} else {
-				iframe.onload = async() => {
-					this.setState( { iframeLoaded: iframe } );
-				};
-			}
-		}
-	}
-
 	async getAccounts() {
 		const { isEditing } = this.props;
 
@@ -395,6 +358,7 @@ class AnalyticsSetup extends Component {
 				selectedProfile: selectedProfile,
 				properties: [ chooseAccount ],
 				profiles: [ chooseAccount ],
+				existingTag: responseData.existingTag ? responseData.existingTag.property[0].id : false,
 			};
 
 			if ( selectedAccount && '0' !== selectedAccount ) {
@@ -405,18 +369,20 @@ class AnalyticsSetup extends Component {
 				} );
 			}
 
-			if ( this._isMounted ) {
-				this.setState( newState );
-			}
+			return new Promise( ( resolve ) => {
+				resolve( newState );
+			} );
 		} catch ( err ) {
-			if ( this._isMounted ) {
-				this.setState( {
-					isLoading: false,
-					errorCode: err.code,
-					errorMsg: err.message,
-					errorReason: err.data && err.data.reason ? err.data.reason : false,
-				} );
-			}
+			const errState = {
+				isLoading: false,
+				errorCode: err.code,
+				errorMsg: err.message,
+				errorReason: err.data && err.data.reason ? err.data.reason : false,
+			};
+
+			return new Promise( ( resolve ) => {
+				resolve( errState );
+			} );
 		}
 	}
 

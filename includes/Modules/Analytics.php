@@ -141,16 +141,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				return $this->amp_data_load_analytics_component( $data );
 			}
 		);
-
-		add_filter(
-			'googlesitekit_modules_for_front_end_check',
-			function( $modules ) {
-				if ( ! $this->is_connected() || ( $this->is_connected() && 'site-kit_page_googlesitekit-settings' === get_current_screen()->id ) ) {
-					$modules[] = $this->slug;
-				}
-				return $modules;
-			}
-		);
 	}
 
 	/**
@@ -1031,7 +1021,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 					// Look for existing analytics tag and verify if user has access to the property.
 					$existing_tag = $this->get_data( 'tag' );
-
 					if ( $existing_tag ) {
 						$has_access_to_property = $this->has_access_to_property( $existing_tag, $response['accounts'] );
 
