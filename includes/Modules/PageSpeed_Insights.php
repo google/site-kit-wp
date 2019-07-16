@@ -31,7 +31,7 @@ final class PageSpeed_Insights extends Module {
 	const OPTION = 'googlesitekit_pagespeed_insights_settings';
 
 	/**
-	 * Register.
+	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
 	 */

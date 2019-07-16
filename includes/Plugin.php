@@ -124,7 +124,7 @@ final class Plugin {
 				( new Core\Admin\Notices() )->register();
 				( new Core\Admin\Dashboard( $this->context, $assets ) )->register();
 
-				// Unschedule site kit cron events as Core\Util\Cron has been removed. Lines to be removed on future release.
+				// TODO: Unschedule site kit cron events as Core\Util\Cron has been removed. Lines to be removed on future release.
 				wp_clear_scheduled_hook( 'googlesitekit_cron_daily', array( 'interval' => 'daily' ) );
 				wp_clear_scheduled_hook( 'googlesitekit_cron_hourly', array( 'interval' => 'hourly' ) );
 
