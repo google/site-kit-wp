@@ -90,6 +90,8 @@ script:
     fi
 
 jobs:
+  allow_failures:
+    - php: 7.4snapshot
   include:
     - stage: test
       name: Lint
@@ -117,9 +119,6 @@ jobs:
     - stage: test
       name: E2E Tests (WordPress 4.9, Gutenberg 4.9)
       env: E2E=1 WP_VERSION=4.9.10 GUTENBERG_VERSION=4.9.0
-  allow_failures:
-    - php: 7.4snapshot
-      env: WP_VERSION=master
 
 services:
   - docker
