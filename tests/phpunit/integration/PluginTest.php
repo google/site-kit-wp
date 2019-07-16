@@ -51,6 +51,9 @@ class PluginTest extends TestCase {
 		remove_all_actions( 'login_head' );
 		$GLOBALS['wp_actions'] = [];
 
+		wp_schedule_event( time(), 'daily', 'googlesitekit_cron_daily', array( 'interval' => 'daily' ) );
+		wp_schedule_event( time(), 'hourly', 'googlesitekit_cron_hourly', array( 'interval' => 'hourly' ) );
+
 		$plugin->register();
 
 		$this->assertActionRendersGeneratorTag( 'wp_head' );
@@ -64,6 +67,10 @@ class PluginTest extends TestCase {
 		$this->assertEquals( 0, did_action( 'googlesitekit_init' ) );
 		do_action( 'init' );
 		$this->assertEquals( 1, did_action( 'googlesitekit_init' ) );
+
+		// Ensure googlesitekit cron events are cleared.
+		$this->assertFalse( wp_get_schedule( 'googlesitekit_cron_daily', array( 'interval' => 'daily' ) ) );
+		$this->assertFalse( wp_get_schedule( 'googlesitekit_cron_hourly', array( 'interval' => 'hourly' ) ) );
 	}
 
 	protected function assertActionRendersGeneratorTag( $action ) {
