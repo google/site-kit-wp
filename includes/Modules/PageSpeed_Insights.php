@@ -31,33 +31,11 @@ final class PageSpeed_Insights extends Module {
 	const OPTION = 'googlesitekit_pagespeed_insights_settings';
 
 	/**
-	 * Registers functionality through WordPress hooks.
+	 * Register.
 	 *
 	 * @since 1.0.0
 	 */
-	public function register() {
-		add_filter(
-			'googlesitekit_cron_hourly_requests',
-			function ( $requests ) {
-				if ( ! $this->is_connected() ) {
-					return $requests;
-				}
-
-				$requests[] = array(
-					'dataObject' => 'modules',
-					'identifier' => $this->slug,
-					'datapoint'  => 'site-pagespeed-mobile',
-				);
-				$requests[] = array(
-					'dataObject' => 'modules',
-					'identifier' => $this->slug,
-					'datapoint'  => 'site-pagespeed-desktop',
-				);
-
-				return $requests;
-			}
-		);
-	}
+	public function register() {}
 
 	/**
 	 * Checks whether the module is connected.
