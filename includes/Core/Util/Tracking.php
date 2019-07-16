@@ -182,14 +182,12 @@ final class Tracking {
 				return;
 			}
 
-			<?php if ( ! empty( $track_id ) ) { ?>
-				if ( window.googlesitekitTrackingEnabled ) {
-					gtag( 'event', eventName, {
-						send_to: '<?php echo esc_attr( self::TRACKING_ID ); ?>', /*eslint camelcase: 0*/
-						event_category: eventCategory, /*eslint camelcase: 0*/
-					} );
-				}
-			<?php } ?>
+			if ( window.googlesitekitTrackingEnabled ) {
+				gtag( 'event', eventName, {
+					send_to: '<?php echo esc_attr( self::TRACKING_ID ); ?>', /*eslint camelcase: 0*/
+					event_category: eventCategory, /*eslint camelcase: 0*/
+				} );
+			}
 		};
 		</script>
 		<?php
