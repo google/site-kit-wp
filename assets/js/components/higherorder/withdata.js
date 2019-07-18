@@ -245,7 +245,7 @@ const withData = (
 
 			// If module is active but setup not complete.
 			if ( module && googlesitekit.modules[ module ].active && ! googlesitekit.modules[ module ].setupComplete ) {
-				return getSetupIncompleteComponent( moduleName, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
+				return getSetupIncompleteComponent( module, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
 			}
 
 			// If we have an error, display the DataErrorComponent.
