@@ -20,37 +20,6 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class PageSpeed_InsightsTest extends TestCase {
 
-	public function test_register() {
-		$pagespeed = new PageSpeed_Insights( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		remove_all_filters( 'googlesitekit_cron_hourly_requests' );
-
-		$pagespeed->register();
-
-		// Test no requests are added when unconnected
-		$this->assertFalse( $pagespeed->is_connected() );
-		$this->assertEmpty( apply_filters( 'googlesitekit_cron_hourly_requests', array() ) );
-		add_filter( 'googlesitekit_api_key', '__return_true' );
-		// Ensure requests are added when connected
-		$this->assertTrue( $pagespeed->is_connected() );
-		$requests = apply_filters( 'googlesitekit_cron_hourly_requests', array() );
-		$this->assertContains(
-			array(
-				'dataObject' => 'modules',
-				'identifier' => 'pagespeed-insights',
-				'datapoint'  => 'site-pagespeed-mobile',
-			),
-			$requests
-		);
-		$this->assertContains(
-			array(
-				'dataObject' => 'modules',
-				'identifier' => 'pagespeed-insights',
-				'datapoint'  => 'site-pagespeed-desktop',
-			),
-			$requests
-		);
-	}
-
 	public function test_is_connected() {
 		$pagespeed = new PageSpeed_Insights( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 

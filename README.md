@@ -1,27 +1,15 @@
-[![Build Status](https://travis-ci.com/google/site-kit-wp.svg?token=smY3Y9yhMfh6hWnXQ2te&branch=master)](https://travis-ci.com/google/site-kit-wp/)
+[![Build Status](https://travis-ci.com/google/site-kit-wp.svg?token=smY3Y9yhMfh6hWnXQ2te&branch=develop)](https://travis-ci.com/google/site-kit-wp/)
 # Site Kit by Google
 
 Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
 
 Learn more: [https://sitekit.withgoogle.com](https://sitekit.withgoogle.com)
 
-## Getting started
+## Contributing
 
-When installing from GitHub, make sure to run the following:
-
-```
-git clone git@github.com:google/site-kit-wp.git wp-content/plugins/google-site-kit
-cd wp-content/plugins/google-site-kit
-composer install
-npm install
-npm run build
-```
+Any kind of contributions to Site Kit by Google are welcome. Head over to the [Contributor Handhook](https://github.com/google/site-kit-wp/wiki) to get started, or directly to the [Engineering set up quickstart](https://github.com/google/site-kit-wp/wiki/Engineering#set-up-site-kit-project) to set up Sit Kit locally. :wink:
 
 ## Requirements
 
 * WordPress >= 4.7
 * PHP >= 5.4
-
-## Contributing
-
-Any kind of contributions to Site Kit by Google are welcome. Please [read the contributing guidelines](https://github.com/google/site-kit-wp/blob/master/CONTRIBUTING.md) to get started.

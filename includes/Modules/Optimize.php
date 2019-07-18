@@ -181,7 +181,6 @@ final class Optimize extends Module {
 		}
 
 		$data['amp_component_scripts']['amp-experiment'] = 'https://cdn.ampproject.org/v0/amp-experiment-0.1.js';
-
 		return $data;
 	}
 

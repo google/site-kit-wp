@@ -738,7 +738,7 @@ export const getExistingTag = async( module ) => {
 		let tagFound = data.getCache( module, 'existingTag', 300 );
 
 		if ( false === tagFound ) {
-			const html = await fetch( `${googlesitekit.admin.siteURL}?tagverify=1&timestamp=${Date.now()}` ).then( res => {
+			const html = await fetch( `${googlesitekit.admin.homeURL}?tagverify=1&timestamp=${Date.now()}` ).then( res => {
 				return res.text();
 			} );
 

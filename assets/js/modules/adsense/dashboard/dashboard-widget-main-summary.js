@@ -26,7 +26,10 @@ import {
 } from 'GoogleUtil';
 import DataBlock from 'GoogleComponents/data-block';
 import Sparkline from 'GoogleComponents/sparkline';
-import { reduceAdSenseData } from '../util';
+import {
+	reduceAdSenseData,
+	isDataZeroAdSense,
+} from '../util';
 import Layout from 'GoogleComponents/layout/layout';
 
 const { __ } = wp.i18n;
@@ -200,10 +203,8 @@ const isDataZero = ( data, datapoint ) => {
 	if ( 'earnings-this-period' !== datapoint ) {
 		return false;
 	}
-	if ( 0 === data.totals.length || 0 === data.totals[0] ) {
-		return true;
-	}
-	return false;
+
+	return isDataZeroAdSense( data );
 };
 
 export default withData(

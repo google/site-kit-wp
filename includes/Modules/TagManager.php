@@ -192,7 +192,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 		?>
 		<!-- Google Tag Manager (noscript) added by Site Kit -->
 		<noscript>
-			<iframe src="https://www.googletagmanager.com/ns.html?id=<?php echo esc_attr( $container_id ); ?>" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+			<iframe src="<?php echo esc_url( "https://www.googletagmanager.com/ns.html?id=$container_id" ); ?>" height="0" width="0" style="display:none;visibility:hidden"></iframe>
 		</noscript>
 		<!-- End Google Tag Manager (noscript) -->
 		<?php
@@ -215,7 +215,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 
 		?>
 		<!-- Google Tag Manager added by Site Kit -->
-		<amp-analytics config="https://www.googletagmanager.com/amp.json?id=<?php echo esc_attr( $container_id ); ?>" data-credentials="include"></amp-analytics>
+		<amp-analytics config="<?php echo esc_url( "https://www.googletagmanager.com/amp.json?id=$container_id" ); ?>" data-credentials="include"></amp-analytics>
 		<!-- End Google Tag Manager -->
 		<?php
 	}
@@ -237,7 +237,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 
 		$container_id = $this->get_data( 'container-id' );
 		if ( is_wp_error( $container_id ) || ! $container_id ) {
-			return;
+			return $data;
 		}
 
 		$data['amp_component_scripts']['amp-analytics'] = 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js';

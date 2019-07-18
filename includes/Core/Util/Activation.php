@@ -155,7 +155,9 @@ final class Activation {
 					ob_start();
 					?>
 					<script type="text/javascript">
-					sendAnalyticsTrackingEvent( 'plugin_setup', 'plugin_activated' );
+					if( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
+						sendAnalyticsTrackingEvent( 'plugin_setup', 'plugin_activated' );
+					}
 					</script>
 					<div class="googlesitekit-plugin">
 						<div class="googlesitekit-activation">
@@ -194,7 +196,7 @@ final class Activation {
 										mdc-layout-grid__cell--offset-1-desktop
 										mdc-layout-grid__cell--align-middle
 									">
-										<a href="#" onClick="javascript:sendAnalyticsTrackingEvent( 'plugin_setup', 'goto_sitekit' );document.location='<?php echo esc_url( $sitekit_splash_url ); ?>';"
+										<a href="#" onClick="javascript:if( 'undefined' !== typeof sendAnalyticsTrackingEvent ) { sendAnalyticsTrackingEvent( 'plugin_setup', 'goto_sitekit' ) };document.location='<?php echo esc_url( $sitekit_splash_url ); ?>';"
 											class="googlesitekit-activation__button mdc-button mdc-button--raised">
 											<?php esc_html_e( 'Start Setup', 'google-site-kit' ); ?>
 										</a>

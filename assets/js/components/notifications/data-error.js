@@ -17,13 +17,12 @@
  */
 
 import CTA from 'GoogleComponents/notifications/cta';
-import Layout from 'GoogleComponents/layout/layout';
+import ctaWrapper from 'GoogleComponents/notifications/cta-wrapper';
 import { showErrorNotification } from 'GoogleUtil';
 import InvalidCredentialsWarning
 	from 'SiteKitCore/components/notifications/invalid-credentials-warning';
 
 const { __, sprintf } = wp.i18n;
-const { Fragment } = wp.element;
 
 /**
  * Creates a CTA component when there's a data error. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
@@ -47,72 +46,7 @@ const getDataErrorComponent = ( moduleName, error, inGrid = false, fullWidth = f
 		showErrorNotification( InvalidCredentialsWarning );
 	}
 
-	return (
-		<Fragment>
-			{ inGrid && fullWidth && createGrid &&
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12
-				">
-					<Layout fill>
-						<div className="mdc-layout-grid mdc-layout-grid--fill">
-							<div className="mdc-layout-grid__inner">
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-									{ cta }
-								</div>
-							</div>
-						</div>
-					</Layout>
-				</div>
-			}
-			{ inGrid && ! fullWidth && createGrid &&
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-6-desktop
-					mdc-layout-grid__cell--span-4-tablet
-				">
-					<Layout fill>
-						<div className="mdc-layout-grid mdc-layout-grid--fill">
-							<div className="mdc-layout-grid__inner">
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-									{ cta }
-								</div>
-							</div>
-						</div>
-					</Layout>
-				</div>
-			}
-			{ inGrid && fullWidth && ! createGrid &&
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12
-				">
-					{ cta }
-				</div>
-			}
-			{ inGrid && ! fullWidth && ! createGrid &&
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-6-desktop
-					mdc-layout-grid__cell--span-4-tablet
-				">
-					{ cta }
-				</div>
-			}
-			{ ! inGrid && ! fullWidth && createGrid &&
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-							{ cta }
-						</div>
-					</div>
-				</div>
-			}
-			{ ! inGrid && ! fullWidth && ! createGrid &&
-				cta
-			}
-		</Fragment>
-	);
+	return ctaWrapper( cta, inGrid, fullWidth, createGrid);
 };
 
 export default getDataErrorComponent;

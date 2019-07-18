@@ -18,8 +18,12 @@
 
 import DataBlock from 'GoogleComponents/data-block.js';
 import PreviewBlock from 'GoogleComponents/preview-block';
-import { getTimeInSeconds, readableLargeNumber, } from 'GoogleUtil';
+import {
+	getTimeInSeconds,
+	readableLargeNumber,
+} from 'GoogleUtil';
 import withData from 'GoogleComponents/higherorder/withdata';
+import { isDataZeroAdSense } from '../util';
 
 const { __ } = wp.i18n;
 const { Component } = wp.element;
@@ -284,11 +288,8 @@ const isDataZero = ( data, datapoint ) => {
 	if ( 'earning-28days' !== datapoint ) {
 		return false;
 	}
-	const {
-		totals,
-	} = data;
 
-	return 0 === totals.length || 0 === totals[0];
+	return isDataZeroAdSense( data );
 };
 
 export default withData(

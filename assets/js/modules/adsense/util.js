@@ -181,7 +181,8 @@ export async function getAdSenseAccountStatus( statusUpdateCallback, existingTag
 				for ( let account of accounts ) {
 					const accountId = account.id;
 					const urlchannels = await data.get( 'modules', 'adsense', 'urlchannels', { clientId: accountId } ).then( res => res ).catch( e => e );
-					const matches = urlchannels && urlchannels.length ? filter( urlchannels, { urlPattern: googlesitekit.admin.siteURL } ) : [];
+					const parsedUrl = new URL( googlesitekit.admin.siteURL );
+					const matches = urlchannels && urlchannels.length ? filter( urlchannels, { urlPattern: parsedUrl.hostname } ) : [];
 
 					if ( 0 === matches.length ) {
 						accountStatus  = 'account-pending-review';
@@ -469,4 +470,23 @@ export const isAdsenseConnectedAnalytics = async() => {
 	return new Promise( ( resolve ) => {
 		resolve( adsenseConnect );
 	} );
+};
+
+/**
+ * Check for any value higher than 0 in values from AdSense data.
+ *
+ * @param {array} data Data returned from the AdSense.
+ * @returns {boolean}
+ */
+export const isDataZeroAdSense = ( data ) => {
+	let totals = [];
+	if ( data.totals ) {
+		totals = data.totals;
+	}
+
+	// Look for any value > 0.
+	totals = totals.filter( ( total ) => {
+		return 0 < total;
+	} );
+	return 0 === totals.length;
 };

@@ -4,14 +4,22 @@ about: Suggest an idea for this project
 
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+## Feature Description
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+<!-- Please describe clear and concisely which problem the feature would solve or which publisher needs it would address. -->
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+---------------
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+_Do not alter or remove anything below. The following sections will be managed by moderators only._
+
+## Acceptance criteria
+
+* <!-- One or more bullet points for acceptance criteria. -->
+
+## Implementation Brief
+
+* <!-- One or more bullet points for how to technically resolve the issue. -->
+
+## Changelog entry
+
+* <!-- One sentence summarizing the PR, to be used in the changelog. -->
