@@ -19,27 +19,34 @@
 
 import CTA from 'GoogleComponents/notifications/cta';
 import ctaWrapper from 'GoogleComponents/notifications/cta-wrapper';
+import { getSiteKitAdminURL } from 'GoogleUtil';
 
 const { __, sprintf } = wp.i18n;
 
 /**
  * Creates a CTA component when modue needs to be configured. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
  *
- * @param {string}  moduleName Name of module, translated.
+ * @param {string}  module     Module slug.
  * @param {boolean} inGrid     Creates layout to fit within an existing grid with 'cell' classes. Default is half-width grid cells. Default: false.
  * @param {boolean} fullWidth  Creates layout with 'cell--span-12' to be full width. Default: false.
  * @param {boolean} createGrid Adds a full grid layout with padding. Default: false.
  */
-const getSetupIncompleteComponent = ( moduleName, inGrid = false, fullWidth = false, createGrid = false ) => {
-
+const getSetupIncompleteComponent = ( module, inGrid = false, fullWidth = false, createGrid = false ) => {
+	const { name } = googlesitekit.modules[ module ];
 	const cta = <CTA
 
 		/* translators: %s: Module name */
-		title={ sprintf( __( '%s activation', 'google-site-kit' ), moduleName ) }
+		title={ sprintf( __( '%s activation', 'google-site-kit' ), name ) }
 
 		/* translators: %s: Module name */
-		description={ sprintf( __( '%s module needs to be configured', 'google-site-kit' ), moduleName ) }
+		description={ sprintf( __( '%s module needs to be configured', 'google-site-kit' ), name ) }
 		ctaLabel={ __( 'Complete activation', 'google-site-kit' ) }
+		onClick={ () => {
+			window.location = getSiteKitAdminURL( `googlesitekit-module-${module}`, {
+				reAuth: true,
+				slug: module,
+			} );
+		} }
 	/>;
 
 	return ctaWrapper( cta, inGrid, fullWidth, createGrid );

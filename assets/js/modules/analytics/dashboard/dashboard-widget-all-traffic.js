@@ -74,7 +74,7 @@ class AnalyticsAllTraffic extends Component {
 		} = this.state;
 
 		if ( active && ! setupComplete ) {
-			return getSetupIncompleteComponent( __( 'Analytics', 'google-site-kit' ), true, true, true );
+			return getSetupIncompleteComponent( 'analytics', true, true, true );
 		}
 
 		if ( ! receivingData ) {
