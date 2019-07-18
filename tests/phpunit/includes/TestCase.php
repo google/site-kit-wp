@@ -40,32 +40,32 @@ class TestCase extends \WP_UnitTestCase {
 	/**
 	 * Forcibly set a property of an object that would otherwise not be possible.
 	 *
-	 * @param object $instance Class instance to set the property on
+	 * @param object|string $class Class instance to set the property on, or class name containing the property.
 	 * @param string $property Property name
-	 * @param mixed  $value    New value to assign the property
+	 * @param mixed $value New value to assign the property
 	 *
 	 * @throws \ReflectionException
 	 */
-	protected function force_set_property( $instance, $property, $value ) {
-		$reflection_property = new \ReflectionProperty( $instance, $property );
+	protected function force_set_property( $class, $property, $value ) {
+		$reflection_property = new \ReflectionProperty( $class, $property );
 		$reflection_property->setAccessible( true );
-		$reflection_property->setValue( $instance, $value );
+		$reflection_property->setValue( $class, $value );
 	}
 
 	/**
 	 * Forcibly get a property's value from an object that would otherwise not be possible.
 	 *
-	 * @param object $instance Class instance to get the property from
+	 * @param object|string $class Class instance to get the property from, or class name containing the property.
 	 * @param string $property Property name
 	 *
 	 * @return mixed
 	 * @throws \ReflectionException
 	 */
-	protected function force_get_property( $instance, $property ) {
-		$reflection_property = new \ReflectionProperty( $instance, $property );
+	protected function force_get_property( $class, $property ) {
+		$reflection_property = new \ReflectionProperty( $class, $property );
 		$reflection_property->setAccessible( true );
 
-		return $reflection_property->getValue( $instance );
+		return $reflection_property->getValue( $class );
 	}
 
 	/**
@@ -77,5 +77,64 @@ class TestCase extends \WP_UnitTestCase {
 	 */
 	protected function get_testcase() {
 		return $this;
+	}
+
+	protected function checkRequirements() {
+		parent::checkRequirements();
+
+		/**
+		 * Proper handling for MS group annotation handling was fixed in 5.1
+		 * @see https://core.trac.wordpress.org/ticket/43863
+		 */
+		if ( version_compare( $GLOBALS['wp_version'], '5.1', '<' ) ) {
+			$annotations = $this->getAnnotations();
+			$groups      = array();
+
+			if ( ! empty( $annotations['class']['group'] ) ) {
+				$groups = array_merge( $groups, $annotations['class']['group'] );
+			}
+			if ( ! empty( $annotations['method']['group'] ) ) {
+				$groups = array_merge( $groups, $annotations['method']['group'] );
+			}
+
+			if ( ! empty( $groups ) ) {
+				if ( in_array( 'ms-required', $groups, true ) ) {
+					if ( ! is_multisite() ) {
+						$this->markTestSkipped( 'Test only runs on Multisite' );
+					}
+				}
+				if ( in_array( 'ms-excluded', $groups, true ) ) {
+					if ( is_multisite() ) {
+						$this->markTestSkipped( 'Test does not run on Multisite' );
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Capture the output of an action.
+	 *
+	 * @param string $tag The name of the action to be executed.
+	 * @param mixed $arg,... Optional. Additional arguments which are passed on to the
+	 *                        functions hooked to the action. Default empty.
+	 *
+	 * @return false|string
+	 */
+	protected function capture_action( $tag, $arg = '' ) {
+		ob_start();
+
+		call_user_func_array( 'do_action', func_get_args() );
+
+		return ob_get_clean();
+	}
+
+	protected function network_activate_site_kit() {
+		add_filter(
+			'pre_site_option_active_sitewide_plugins',
+			function () {
+				return array( GOOGLESITEKIT_PLUGIN_BASENAME => true );
+			}
+		);
 	}
 }

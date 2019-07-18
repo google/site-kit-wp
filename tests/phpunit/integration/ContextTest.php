@@ -14,7 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Screens;
 
 /**
- * @group context
+ * @group Root
  */
 class ContextTest extends TestCase {
 
@@ -111,6 +111,38 @@ class ContextTest extends TestCase {
 		// If the filtered value returns an empty value, it falls back to the home_url.
 		add_filter( 'googlesitekit_site_url', '__return_empty_string' );
 		$this->assertEquals( $home_url, $context->get_reference_site_url() );
+	}
+
+	public function test_get_reference_permalink() {
+		remove_all_filters( 'googlesitekit_site_url' );
+		$this->set_permalink_structure( '/%postname%/' );
+		flush_rewrite_rules();
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		$post_id = self::factory()->post->create( array( 'post_title' => 'hello-world' ) );
+		$page_id = self::factory()->post->create( array( 'post_title' => 'homepage', 'post_type' => 'page' ) );
+		self::factory()->category->create( array( 'slug' => 'postcategory' ) );
+
+		$this->go_to( '/category/postcategory' );
+		$this->assertFalse( $context->get_reference_permalink() );
+
+		update_option( 'show_on_front', 'page' );
+		update_option( 'page_on_front', $page_id );
+
+		$this->go_to( '/hello-world' );
+		$this->assertEquals( get_permalink(), $context->get_reference_permalink() );
+
+		$other_url_filter = function () {
+			return 'https://test.com/';
+		};
+
+		// If the filtered value returns a non-empty value, it takes precedence.
+		add_filter( 'googlesitekit_site_url', $other_url_filter );
+
+		$this->go_to( '/' );
+		$this->assertEquals( 'https://test.com/', $context->get_reference_permalink() );
+		$this->assertEquals( 'https://test.com/hello-world/', $context->get_reference_permalink( $post_id ) );
 	}
 
 	public function test_is_beta() {

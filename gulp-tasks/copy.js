@@ -32,7 +32,6 @@ gulp.task( 'copy', () => {
 			'vendor/google/apiclient-services/src/Google/Service/PeopleService.php',
 			'vendor/google/apiclient-services/src/Google/Service/PeopleService/**/*',
 			'vendor/firebase/**/*',
-			'vendor/phpseclib/**/*',
 			'vendor/guzzlehttp/**/*',
 			'vendor/psr/**/*',
 			'vendor/monolog/**/*',

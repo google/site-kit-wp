@@ -156,7 +156,7 @@ final class Tracking {
 		}
 		?>
 		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=<?php echo esc_attr( self::TRACKING_ID ); ?>"></script><?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+		<script async src="<?php echo esc_url( 'https://www.googletagmanager.com/gtag/js?id=' . self::TRACKING_ID ); ?>"></script><?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
 		<script>
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
@@ -182,14 +182,12 @@ final class Tracking {
 				return;
 			}
 
-			<?php if ( ! empty( $track_id ) ) { ?>
-				if ( window.googlesitekitTrackingEnabled ) {
-					gtag( 'event', eventName, {
-						send_to: '<?php echo esc_attr( self::TRACKING_ID ); ?>', /*eslint camelcase: 0*/
-						event_category: eventCategory, /*eslint camelcase: 0*/
-					} );
-				}
-			<?php } ?>
+			if ( window.googlesitekitTrackingEnabled ) {
+				gtag( 'event', eventName, {
+					send_to: '<?php echo esc_attr( self::TRACKING_ID ); ?>', /*eslint camelcase: 0*/
+					event_category: eventCategory, /*eslint camelcase: 0*/
+				} );
+			}
 		};
 		</script>
 		<?php

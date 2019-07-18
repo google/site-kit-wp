@@ -22,6 +22,7 @@ import Layout from 'GoogleComponents/layout/layout';
 import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
 import getNoDataComponent from 'GoogleComponents/notifications/nodata';
 import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
+import getSetupIncompleteComponent from 'GoogleComponents/notifications/setup-incomplete';
 
 const { Component, Fragment } = wp.element;
 const { __ } = wp.i18n;
@@ -61,6 +62,28 @@ class AnalyticsAllTraffic extends Component {
 		} );
 	}
 
+	getErrorDataComponent() {
+		const {
+			active,
+			setupComplete,
+		} = googlesitekit.modules.analytics;
+
+		const {
+			error,
+			receivingData,
+		} = this.state;
+
+		if ( active && ! setupComplete ) {
+			return getSetupIncompleteComponent( 'analytics', true, true, true );
+		}
+
+		if ( ! receivingData ) {
+			return error ? getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( __( 'Analytics', 'google-site-kit' ), true, true, true );
+		}
+
+		return null;
+	}
+
 	render() {
 		const {
 			error,
@@ -69,6 +92,7 @@ class AnalyticsAllTraffic extends Component {
 
 		const dataError   = ( error || ! receivingData );
 		const wrapperClass = dataError ? 'googlesitekit-nodata' : '';
+
 		return (
 			<Fragment>
 				<div className={ `
@@ -78,9 +102,7 @@ class AnalyticsAllTraffic extends Component {
 					<DashboardModuleHeader timePeriod={ __( 'Last 28 days', 'google-site-kit' ) } description={ __( 'How people found your site.', 'google-site-kit' ) } title={ __( 'All Traffic', 'google-site-kit' ) }/>
 
 				</div>
-				{ ! receivingData && (
-					error ? getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( __( 'Analytics', 'google-site-kit' ), true, true, true )
-				) }
+				{ this.getErrorDataComponent() }
 				<div className={ `
 					mdc-layout-grid__cell
 					mdc-layout-grid__cell--span-12
