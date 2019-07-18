@@ -17,7 +17,7 @@
  */
 
 import {
-	getSiteKitAdminURL,
+	getReAuthUrl,
 } from 'GoogleUtil';
 import Link from 'GoogleComponents/link';
 import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
@@ -30,7 +30,6 @@ class ModuleSetupIncomplete extends Component {
 
 	render() {
 		const {
-			screenId,
 			slug,
 		} = this.props;
 
@@ -41,13 +40,7 @@ class ModuleSetupIncomplete extends Component {
 				<Link
 					className="googlesitekit-settings-module__edit-button"
 					onClick={ () => {
-
-						const page = screenId ? screenId : 'googlesitekit-dashboard';
-
-						window.location = getSiteKitAdminURL( page, {
-							reAuth: true,
-							slug,
-						} );
+						window.location = getReAuthUrl( slug, true );
 					} }
 					inherit
 				>

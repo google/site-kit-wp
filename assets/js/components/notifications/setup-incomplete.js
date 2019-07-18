@@ -19,7 +19,7 @@
 
 import CTA from 'GoogleComponents/notifications/cta';
 import ctaWrapper from 'GoogleComponents/notifications/cta-wrapper';
-import { getSiteKitAdminURL } from 'GoogleUtil';
+import { getReAuthUrl } from 'GoogleUtil';
 
 const { __, sprintf } = wp.i18n;
 
@@ -42,10 +42,7 @@ const getSetupIncompleteComponent = ( module, inGrid = false, fullWidth = false,
 		description={ sprintf( __( '%s module needs to be configured', 'google-site-kit' ), name ) }
 		ctaLabel={ __( 'Complete activation', 'google-site-kit' ) }
 		onClick={ () => {
-			window.location = getSiteKitAdminURL( `googlesitekit-module-${module}`, {
-				reAuth: true,
-				slug: module,
-			} );
+			window.location = getReAuthUrl( module, true );
 		} }
 	/>;
 
