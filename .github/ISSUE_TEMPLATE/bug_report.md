@@ -6,7 +6,7 @@ about: Create a report to help us improve
 
 ## Bug Description
 
-<!-- Please describe clear and concisely what the bug is. -->
+<!-- Please describe clearly and concisely what the bug is. -->
 
 ## Steps to reproduce
 
