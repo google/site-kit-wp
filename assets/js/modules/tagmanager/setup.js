@@ -130,9 +130,8 @@ class TagmanagerSetup extends Component {
 				accountId: selectedAccount,
 			};
 
-			let errorCode = false;
-			let errorMsg = '';
-
+			let errorCode    = false;
+			let errorMsg     = '';
 			let responseData = await data.get( 'modules', 'tagmanager', 'list-accounts', queryArgs, false );
 
 			// Verify if user has access to the selected account.
