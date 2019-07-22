@@ -142,36 +142,30 @@ class TagmanagerSetup extends Component {
 				} );
 
 				if ( 0 === hasAccessToAccount.length ) {
+					data.deleteCache( 'tagmanager', 'list-accounts' );
+
 					errorCode = 'insufficientPermissions';
 					errorMsg  = __( 'You currently don\'t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.', 'google-site-kit' );
 				}
-				if ( this._isMounted ) {
-					this.setState( {
-						isLoading: false,
-						accounts: responseData.accounts,
-						refetch: false,
-						errorCode,
-						errorMsg,
-					} );
-				}
-			} else {
+			}
 
-				const chooseContainer = {
-					containerId: 0,
-					publicId: 0
-				};
-				responseData.containers.push( chooseContainer );
+			const chooseContainer = {
+				containerId: 0,
+				publicId: 0
+			};
+			responseData.containers.push( chooseContainer );
 
-				if ( this._isMounted ) {
-					this.setState( {
-						isLoading: false,
-						accounts: responseData.accounts,
-						selectedAccount: ( selectedAccount ) ? selectedAccount : responseData.accounts[0].accountId,
-						containers: responseData.containers,
-						selectedContainer: ( selectedContainer ) ? selectedContainer : responseData.containers[0].publicId,
-						refetch: false,
-					} );
-				}
+			if ( this._isMounted ) {
+				this.setState( {
+					isLoading: false,
+					accounts: responseData.accounts,
+					selectedAccount: ( selectedAccount ) ? selectedAccount : responseData.accounts[0].accountId,
+					containers: responseData.containers,
+					selectedContainer: ( selectedContainer ) ? selectedContainer : responseData.containers[0].publicId,
+					refetch: false,
+					errorCode,
+					errorMsg,
+				} );
 			}
 		} catch ( err ) {
 			if ( this._isMounted ) {
@@ -315,9 +309,14 @@ class TagmanagerSetup extends Component {
 
 	renderSettingsInfo() {
 		const {
+			isLoading,
 			selectedAccount,
 			selectedContainer,
 		} = this.state;
+
+		if ( isLoading ) {
+			return <ProgressBar/>;
+		}
 
 		return (
 			<Fragment>
