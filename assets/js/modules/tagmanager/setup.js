@@ -133,7 +133,7 @@ class TagmanagerSetup extends Component {
 			let errorCode = false;
 			let errorMsg = '';
 
-			let responseData = await data.get( 'modules', 'tagmanager', 'list-accounts', queryArgs );
+			let responseData = await data.get( 'modules', 'tagmanager', 'list-accounts', queryArgs, false );
 
 			// Verify if user has access to the selected account.
 			if ( selectedAccount ) {
@@ -145,25 +145,33 @@ class TagmanagerSetup extends Component {
 					errorCode = 'insufficientPermissions';
 					errorMsg  = __( 'You currently don\'t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.', 'google-site-kit' );
 				}
-			}
+				if ( this._isMounted ) {
+					this.setState( {
+						isLoading: false,
+						accounts: responseData.accounts,
+						refetch: false,
+						errorCode,
+						errorMsg,
+					} );
+				}
+			} else {
 
-			const chooseContainer = {
-				containerId: 0,
-				publicId: 0
-			};
-			responseData.containers.push( chooseContainer );
+				const chooseContainer = {
+					containerId: 0,
+					publicId: 0
+				};
+				responseData.containers.push( chooseContainer );
 
-			if ( this._isMounted ) {
-				this.setState( {
-					isLoading: false,
-					accounts: responseData.accounts,
-					selectedAccount: ( selectedAccount ) ? selectedAccount : responseData.accounts[0].accountId,
-					containers: responseData.containers,
-					selectedContainer: ( selectedContainer ) ? selectedContainer : responseData.containers[0].publicId,
-					refetch: false,
-					errorCode,
-					errorMsg,
-				} );
+				if ( this._isMounted ) {
+					this.setState( {
+						isLoading: false,
+						accounts: responseData.accounts,
+						selectedAccount: ( selectedAccount ) ? selectedAccount : responseData.accounts[0].accountId,
+						containers: responseData.containers,
+						selectedContainer: ( selectedContainer ) ? selectedContainer : responseData.containers[0].publicId,
+						refetch: false,
+					} );
+				}
 			}
 		} catch ( err ) {
 			if ( this._isMounted ) {
