@@ -46,8 +46,8 @@ class TagmanagerSetup extends Component {
 			isLoading: true,
 			accounts: [],
 			containers: [],
-			error: false,
-			message: '',
+			errorCode: false,
+			errorMsg: '',
 			refetch: false,
 			selectedAccount: accountId ? accountId : 0,
 			selectedContainer: containerId ? containerId : 0,
@@ -130,7 +130,22 @@ class TagmanagerSetup extends Component {
 				accountId: selectedAccount,
 			};
 
+			let errorCode = false;
+			let errorMsg = '';
+
 			let responseData = await data.get( 'modules', 'tagmanager', 'list-accounts', queryArgs );
+
+			// Verify if user has access to the selected account.
+			if ( selectedAccount ) {
+				const hasAccessToAccount = responseData.accounts.filter( account => {
+					return account.accountId === selectedAccount;
+				} );
+
+				if ( 0 === hasAccessToAccount.length ) {
+					errorCode = 'insufficientPermissions';
+					errorMsg  = __( 'You currently don\'t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.', 'google-site-kit' );
+				}
+			}
 
 			const chooseContainer = {
 				containerId: 0,
@@ -146,15 +161,16 @@ class TagmanagerSetup extends Component {
 					containers: responseData.containers,
 					selectedContainer: ( selectedContainer ) ? selectedContainer : responseData.containers[0].publicId,
 					refetch: false,
-					error: false,
+					errorCode,
+					errorMsg,
 				} );
 			}
 		} catch ( err ) {
 			if ( this._isMounted ) {
 				this.setState( {
 					isLoading: false,
-					error: err.code,
-					message: err.message,
+					errorCode: err.code,
+					errorMsg: err.message,
 					refetch: false,
 				} );
 			}
@@ -184,14 +200,14 @@ class TagmanagerSetup extends Component {
 					containersLoading: false,
 					containers: responseData.containers,
 					selectedContainer: responseData.containers[0].publicId,
-					error: false,
+					errorCode: false,
 				} );
 			}
 		} catch ( err ) {
 			if ( this._isMounted ) {
 				this.setState( {
-					error: err.code,
-					message: err.message,
+					errorCode: err.code,
+					errorMsg: err.message,
 				} );
 			}
 		}
@@ -232,8 +248,8 @@ class TagmanagerSetup extends Component {
 			if ( this._isMounted ) {
 				this.setState( {
 					isLoading: false,
-					error: true,
-					message: err.message
+					errorCode: true,
+					errorMsg: err.message
 				} );
 			}
 		}
@@ -284,7 +300,7 @@ class TagmanagerSetup extends Component {
 			this.setState( {
 				isLoading: true,
 				refetch: true,
-				error: false,
+				errorCode: false,
 			} );
 		}
 	}
@@ -406,12 +422,52 @@ class TagmanagerSetup extends Component {
 		);
 	}
 
-	render() {
+	/**
+	 * Render Error or Notice format depending on the errorCode.
+	 */
+	renderErrorOrNotice() {
 		const {
-			error,
-			message
+			errorCode,
+			errorMsg,
 		} = this.state;
 
+		const {
+			onSettingsPage,
+		} = this.props;
+
+		if ( ! errorCode ) {
+			return null;
+		}
+
+		let showError = true; // default error message.
+		let showNotice = false;
+		let message = errorMsg;
+
+		switch ( true ) {
+				case onSettingsPage && 'insufficientPermissions' === errorCode:
+					showError = false;
+					showNotice = true;
+					break;
+		}
+
+		if ( showError && 0 < message.length ) {
+			return (
+				<div className="googlesitekit-error-text">
+					<p>{ __( 'Error:', 'google-site-kit' ) } { message }</p>
+				</div>
+			);
+		}
+
+		if ( showNotice && 0 < message.length ) {
+			return (
+				<div>
+					<p>{ message }</p>
+				</div>
+			);
+		}
+	}
+
+	render() {
 		const {
 			onSettingsPage,
 			isEditing
@@ -434,11 +490,7 @@ class TagmanagerSetup extends Component {
 					</Fragment>
 				}
 
-				{ error && 0 < message.length &&
-				<div className="googlesitekit-error-text">
-					<p>{ __( 'Error:', 'google-site-kit' ) } { message }</p>
-				</div>
-				}
+				{ this.renderErrorOrNotice() }
 
 				{ isEditing && this.renderAccountDropdownForm() }
 
