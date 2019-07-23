@@ -292,7 +292,7 @@ class AnalyticsSetup extends Component {
 				} else {
 
 					// Verify user has access to selected property.
-					if ( ! responseData.accounts.find( account => account.id === selectedAccount ) ) {
+					if ( selectedAccount && ! responseData.accounts.find( account => account.id === selectedAccount ) ) {
 						data.deleteCache( 'analytics', 'get-accounts' );
 
 						responseData.accounts.unshift( {
