@@ -292,11 +292,7 @@ class AnalyticsSetup extends Component {
 				} else {
 
 					// Verify user has access to selected property.
-					const hasAccessToAccount = responseData.accounts.filter( account => {
-						return account.id === selectedAccount;
-					} );
-
-					if ( 0 === hasAccessToAccount.length ) {
+					if ( ! responseData.accounts.find( account => account.id === selectedAccount ) ) {
 						data.deleteCache( 'analytics', 'get-accounts' );
 
 						responseData.accounts.unshift( {
@@ -887,42 +883,38 @@ class AnalyticsSetup extends Component {
 			return null;
 		}
 
-		let showError = true; // default error message.
-		let showNotice = false;
+		let showErrorFormat = true; // default error message.
 		let message = errorMsg;
 
 		switch ( true ) {
 				case 'google_analytics_existing_tag_permission' === errorCode:
-					showError = false;
-					showNotice = true;
+					showErrorFormat = false;
 					break;
 				case onSettingsPage && errorCode && 'insufficientPermissions' === errorReason:
-					showError = false;
-					showNotice = true;
+					showErrorFormat = false;
 					message = __( 'You currently don\'t have access to this account.You can either request access from your team, or remove this Analytics tag and connect to a different account.', 'google-site-kit' );
 					break;
 				case ! onSettingsPage && 0 === accounts.length:
-					showError = false;
-					showNotice = true;
+					showErrorFormat = false;
 					message = __( 'Looks like you don\'t have Analytics account yet. Once you create it click "Re-fetch my account" and Site Kit will locate it.', 'google-site-kit' );
 					break;
 		}
 
-		if ( showError && 0 < message.length ) {
-			return (
-				<div className="googlesitekit-error-text">
-					<p>{ __( 'Error:', 'google-site-kit' ) } { message }</p>
-				</div>
-			);
+		if ( 0 === message.length ) {
+			return null;
 		}
 
-		if ( showNotice && 0 < message.length ) {
-			return (
-				<div>
-					<p>{ message }</p>
-				</div>
-			);
-		}
+		return (
+			<div className={ showErrorFormat ? 'googlesitekit-error-text' : '' }>
+				<p>{
+					sprintf(
+						'%s %s',
+						showErrorFormat ? __( 'Error:', 'google-site-kit' ) : '',
+						message
+					)
+				}</p>
+			</div>
+		);
 	}
 
 	render() {
