@@ -25,7 +25,7 @@ import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
 import { toggleConfirmModuleSettings } from 'GoogleUtil';
 
-const { __ } = wp.i18n;
+const { __, sprintf } = wp.i18n;
 const { Component, Fragment } = wp.element;
 const {
 	removeFilter,
@@ -135,17 +135,10 @@ class TagmanagerSetup extends Component {
 			let responseData = await data.get( 'modules', 'tagmanager', 'list-accounts', queryArgs, false );
 
 			// Verify if user has access to the selected account.
-			if ( selectedAccount ) {
-				const hasAccessToAccount = responseData.accounts.filter( account => {
-					return account.accountId === selectedAccount;
-				} );
-
-				if ( 0 === hasAccessToAccount.length ) {
-					data.deleteCache( 'tagmanager', 'list-accounts' );
-
-					errorCode = 'insufficientPermissions';
-					errorMsg  = __( 'You currently don\'t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.', 'google-site-kit' );
-				}
+			if ( selectedAccount && ! responseData.accounts.find( account => account.accountId === selectedAccount ) ) {
+				data.deleteCache( 'tagmanager', 'list-accounts' );
+				errorCode = 'insufficientPermissions';
+				errorMsg  = __( 'You currently don\'t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.', 'google-site-kit' );
 			}
 
 			const chooseContainer = {
@@ -441,36 +434,23 @@ class TagmanagerSetup extends Component {
 			onSettingsPage,
 		} = this.props;
 
-		if ( ! errorCode ) {
+		if ( 0 === errorMsg.length ) {
 			return null;
 		}
 
-		let showError = true; // default error message.
-		let showNotice = false;
-		let message = errorMsg;
+		const showErrorFormat = onSettingsPage && 'insufficientPermissions' === errorCode ? false : true; // default error format.
 
-		switch ( true ) {
-				case onSettingsPage && 'insufficientPermissions' === errorCode:
-					showError = false;
-					showNotice = true;
-					break;
-		}
-
-		if ( showError && 0 < message.length ) {
-			return (
-				<div className="googlesitekit-error-text">
-					<p>{ __( 'Error:', 'google-site-kit' ) } { message }</p>
-				</div>
-			);
-		}
-
-		if ( showNotice && 0 < message.length ) {
-			return (
-				<div>
-					<p>{ message }</p>
-				</div>
-			);
-		}
+		return (
+			<div className={ showErrorFormat ? 'googlesitekit-error-text' : '' }>
+				<p>{
+					sprintf(
+						'%s %s',
+						showErrorFormat ? __( 'Error:', 'google-site-kit' ) : '',
+						errorMsg
+					)
+				}</p>
+			</div>
+		);
 	}
 
 	render() {
