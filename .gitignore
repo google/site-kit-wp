@@ -34,3 +34,6 @@ Desktop.ini
 # Backstop
 tests/backstop/html_report/
 tests/backstop/tests/
+
+# Environment variables
+.env
