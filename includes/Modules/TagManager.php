@@ -400,7 +400,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 							$orig_defer = $client->shouldDefer();
 							$client->setDefer( false );
 							$container = new \Google_Service_TagManager_Container();
-							$container->setName( get_bloginfo( 'name' ) );
+							$container->setName( remove_accents( get_bloginfo( 'name' ) ) );
 							$container->setUsageContext( array( 'web' ) );
 							try {
 								$container = $this->get_service( 'tagmanager' )->accounts_containers->create( "accounts/{$data['accountId']}", $container );
