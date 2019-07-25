@@ -16,10 +16,6 @@ describe( 'Providing client configuration', () => {
 
 		const proceedButton = await page.$$eval( '#wizard-step-one-proceed', el => el.map( x => x.hasAttribute( 'disabled' ) ) );
 
-		// const proceedButton = await page.$x(
-		// 	'//button[@disabled][contains(@id,"wizard-step-one-proceed")]'
-		// );
-
 		expect( proceedButton.length ).not.toEqual( 0 );
 	} );
 
@@ -30,14 +26,12 @@ describe( 'Providing client configuration', () => {
 		page.click( '#client-configuration' );
 		await page.keyboard.type( 'This is not valid JSON' );
 
-		//error
 		await page.waitForSelector( '.googlesitekit-error-text' );
 		const errorMessage = await page.$x(
 			'//p[contains(@class,"googlesitekit-error-text") and contains(text(), "Unable to parse client configuration values.")]'
 		);
 		expect( errorMessage.length ).not.toEqual( 0 );
 
-		// button
 		const proceedButton = await page.$$eval( '#wizard-step-one-proceed', el => el.map( x => x.hasAttribute( 'disabled' ) ) );
 		expect( proceedButton.length ).not.toEqual( 0 );
 	} );
@@ -60,6 +54,11 @@ describe( 'Providing client configuration', () => {
 			}
 		}`;
 		await page.keyboard.type( configJSON );
+
+		const errorMessage = await page.$x(
+			'//p[contains(@class,"googlesitekit-error-text") and contains(text(), "Unable to parse client configuration values.")]'
+		);
+		expect( errorMessage.length ).toEqual( 0 );
 
 		const proceedButton = await page.$x(
 			'//button[not(@disabled)][contains(@id,"wizard-step-one-proceed")]'
