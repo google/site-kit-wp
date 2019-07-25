@@ -443,11 +443,11 @@ class TagmanagerSetup extends Component {
 		return (
 			<div className={ showErrorFormat ? 'googlesitekit-error-text' : '' }>
 				<p>{
-					sprintf(
-						'%s %s',
-						showErrorFormat ? __( 'Error:', 'google-site-kit' ) : '',
+					showErrorFormat ?
+
+						/* translators: %s: Error message */
+						sprintf( __( 'Error: %s', 'google-site-kit' ), errorMsg ) :
 						errorMsg
-					)
 				}</p>
 			</div>
 		);
