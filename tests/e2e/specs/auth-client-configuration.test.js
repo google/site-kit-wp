@@ -33,10 +33,8 @@ describe( 'Providing client configuration', () => {
 		await page.keyboard.type( 'This is not valid JSON' );
 
 		await page.waitForSelector( '.googlesitekit-error-text' );
-		const errorMessage = await page.$x(
-			'//p[contains(@class,"googlesitekit-error-text") and contains(text(), "Unable to parse client configuration values.")]'
-		);
-		expect( errorMessage.length ).not.toEqual( 0 );
+		await expect( page ).toMatchElement( '.googlesitekit-error-text', { text: 'Unable to parse client configuration values' } );
+
 		expect( await page.$eval( '#wizard-step-one-proceed', ( el ) => el.matches( '[disabled]' ) ) ).toBe( true );
 
 	} );
