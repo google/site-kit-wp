@@ -21,19 +21,14 @@ describe( 'PageSpeed Insights Activation', () => {
 			'//h3 [ contains( @class,"googlesitekit-cta__title") and contains( text(), "Activate PageSpeed Insights.")]'
 		);
 		expect( welcomeTitle.length ).not.toEqual( 0 );
-
 	} );
 
-	it( 'Setup button should lead you to the activation page', async() => {
+	it( 'Setup PSI button should lead you to the activation page', async() => {
 		const setupButton = await page.$x(
 			'//a[contains(@class,"googlesitekit-cta-link" ) and contains( text(), "Activate PageSpeed Insights")]'
 		);
 
 		expect( setupButton.length ).not.toEqual( 0 );
-
-		// PSI CTA is the second CTA on the screen, link index 1.
-		const buttonText = await page.evaluate( a => a.textContent, setupButton[0] );
-		expect( buttonText ).toEqual( 'Activate PageSpeed Insights' );
 
 		await setupButton[0].click();
 		await page.waitForSelector( '.googlesitekit-setup-module__title' );
@@ -47,10 +42,9 @@ describe( 'PageSpeed Insights Activation', () => {
 	} );
 
 	it ( 'Activating should submit the entered key.', async() => {
-		try {
 
 		// Enter the actication key.
-		await page.type( 'input.mdc-text-field__input', 'PSIKEYTOSUBMIT' );
+		await page.type( 'input.mdc-text-field__input', 'PSIKEYTOSUBMITANDTEST' );
 
 		const submit = await page.$x( '//button [contains( @class,"mdc-button" ) and contains( span, "Proceed" ) ]' );
 
@@ -67,7 +61,6 @@ describe( 'PageSpeed Insights Activation', () => {
 			'//button[contains(@class,"mdc-tab" ) ]'
 		);
 
-
 		// Open the Admin tab.
 		await tabs[2].click();
 
@@ -77,11 +70,6 @@ describe( 'PageSpeed Insights Activation', () => {
 		);
 		const apiKeyText = await page.evaluate( h5 => h5.textContent, apiKeyTextField[2] );
 
-		expect( apiKeyText ).toEqual( 'PSIKEYTOSUBMIT' );
-		} catch ( e ) {
-			await jestPuppeteer.debug();
-			throw e;
-		}
-
+		expect( apiKeyText ).toEqual( 'PSIKEYTOSUBMITANDTEST' );
 	} );
 } );
