@@ -2,6 +2,7 @@
  * WordPress dependencies
  */
 import { switchUserToAdmin, visitAdminPage, activatePlugin, deactivatePlugin } from '@wordpress/e2e-test-utils';
+import { resetSiteKit } from '../utils/reset';
 
 describe( 'PageSpeed Insights Activation', () => {
 	beforeEach( async() => {
@@ -12,9 +13,7 @@ describe( 'PageSpeed Insights Activation', () => {
 
 	it( 'Dashboard should display Activate PageSpeed Insights CTA', async() => {
 
-		await switchUserToAdmin();
-		await activatePlugin( 'e2e-tests-reset-plugin' );
-		await deactivatePlugin( 'e2e-tests-reset-plugin' );
+		await resetSiteKit();
 		await activatePlugin( 'e2e-tests-auth-plugin' );
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 		await page.waitForSelector( '.googlesitekit-cta__title' );
