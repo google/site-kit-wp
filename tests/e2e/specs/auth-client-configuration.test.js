@@ -44,7 +44,7 @@ describe( 'Providing client configuration', () => {
 		await page.waitForSelector( '#client-configuration' );
 		page.click( '#client-configuration' );
 
-		await page.waitFor( 1000 );
+		await page.waitForSelector( '.mdc-text-field--focused' );
 
 		const configJSON = `{
 			"web": {
