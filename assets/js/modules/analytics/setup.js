@@ -314,16 +314,6 @@ class AnalyticsSetup extends Component {
 				}
 			}
 
-			// Return only existing tag account and property for dropdown options.
-			if ( responseData.existingTag ) {
-				responseData.accounts = responseData.accounts.filter( ( account ) => {
-					return responseData.existingTag.account === account.id;
-				} );
-				responseData.properties = responseData.properties.filter( ( property ) => {
-					return responseData.existingTag.property[0].id === property.id;
-				} );
-			}
-
 			const chooseAccount = {
 				id: '-1',
 				name: __( 'Select an account', 'google-site-kit' )
