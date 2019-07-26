@@ -342,12 +342,17 @@ final class TagManager extends Module implements Module_With_Scopes {
 					$service = $this->get_service( 'tagmanager' );
 					return $service->accounts->listAccounts();
 				case 'list-containers':
-					if ( ! isset( $data['accountId'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
-					}
-					$service = $this->get_service( 'tagmanager' );
-					return $service->accounts_containers->listAccountsContainers( "accounts/{$data['accountId']}" );
+					return function() use ( $data ) {
+						if ( ! isset( $data['accountId'] ) ) {
+							/* translators: %s: Missing parameter name */
+							return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
+						}
+						$service = $this->get_service( 'tagmanager' );
+						return array(
+							'containers' => $service->accounts_containers->listAccountsContainers( "accounts/{$data['accountId']}" ),
+							'accountId'  => $data['accountId'],
+						);
+					};
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
@@ -483,26 +488,25 @@ final class TagManager extends Module implements Module_With_Scopes {
 
 					$containers = $this->get_data( 'list-containers', array( 'accountId' => $account_id ) );
 
-					// If empty containers, attempt to create a new container.
-					if ( is_wp_error( $containers ) && isset( $containers->errors['google_tagmanager_container_empty'] ) ) {
-						$new_container = $this->create_container( $account_id );
-						if ( ! is_wp_error( $new_container ) ) {
-							$containers = $this->get_data( 'list-containers', array( 'accountId' => $account_id ) );
-						}
-					}
-
 					if ( is_wp_error( $containers ) ) {
 						return $response;
 					}
 
 					return array_merge( $response, $containers );
 				case 'list-containers':
-					$response = array(
+					$account_id = $response['accountId'];
+					$response   = array(
 						// TODO: Parse this response to a regular array.
-						'containers' => $response->getContainer(),
+						'containers' => $response['containers']->getContainer(),
 					);
+
 					if ( 0 === count( $response['containers'] ) ) {
-						return new WP_Error( 'google_tagmanager_container_empty', __( 'No Google Tag Manager Containers Found.', 'google-site-kit' ), array( 'status' => 500 ) );
+						// If empty containers, attempt to create a new container.
+						$new_container = $this->create_container( $account_id );
+						if ( is_wp_error( $new_container ) ) {
+							return new WP_Error( 'google_tagmanager_container_empty', __( 'No Google Tag Manager Containers Found.', 'google-site-kit' ), array( 'status' => 500 ) );
+						}
+						return $this->get_data( 'list-containers', array( 'accountId' => $account_id ) );
 					}
 					return $response;
 			}
