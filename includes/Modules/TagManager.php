@@ -396,27 +396,12 @@ final class TagManager extends Module implements Module_With_Scopes {
 					}
 					return function() use ( $data ) {
 						if ( '0' === $data['containerId'] ) {
-							$client     = $this->get_client();
-							$orig_defer = $client->shouldDefer();
-							$client->setDefer( false );
-							$container = new \Google_Service_TagManager_Container();
-							$container->setName( remove_accents( get_bloginfo( 'name' ) ) );
-							$container->setUsageContext( array( 'web' ) );
-							try {
-								$container = $this->get_service( 'tagmanager' )->accounts_containers->create( "accounts/{$data['accountId']}", $container );
-							} catch ( Google_Service_Exception $e ) {
-								$client->setDefer( $orig_defer );
-								$message = $e->getErrors();
-								if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-									$message = $message[0]['message'];
-								}
-								return new WP_Error( $e->getCode(), $message );
-							} catch ( Exception $e ) {
-								$client->setDefer( $orig_defer );
-								return new WP_Error( $e->getCode(), $e->getMessage() );
+							$response = $this->create_container( $data['accountId'] );
+							if ( is_wp_error( $response ) ) {
+								return $response;
 							}
-							$client->setDefer( $orig_defer );
-							$data['containerId'] = $container->getPublicId();
+
+							$data['containerId'] = $response;
 						}
 						$option = array(
 							'accountId'   => $data['accountId'],
@@ -429,6 +414,42 @@ final class TagManager extends Module implements Module_With_Scopes {
 		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
+	}
+
+	/**
+	 * Creates GTM Container.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $account_id  The account ID.
+	 * @return mixed Container ID on success, or WP_Error on failure.
+	 */
+	protected function create_container( $account_id ) {
+		$client     = $this->get_client();
+		$orig_defer = $client->shouldDefer();
+
+		$client->setDefer( false );
+
+		$container = new \Google_Service_TagManager_Container();
+		$container->setName( remove_accents( get_bloginfo( 'name' ) ) );
+		$container->setUsageContext( array( 'web' ) );
+
+		try {
+			$container = $this->get_service( 'tagmanager' )->accounts_containers->create( "accounts/{$account_id}", $container );
+		} catch ( Google_Service_Exception $e ) {
+			$client->setDefer( $orig_defer );
+			$message = $e->getErrors();
+			if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
+				$message = $message[0]['message'];
+			}
+			return new WP_Error( $e->getCode(), $message );
+		} catch ( Exception $e ) {
+			$client->setDefer( $orig_defer );
+			return new WP_Error( $e->getCode(), $e->getMessage() );
+		}
+
+		$client->setDefer( $orig_defer );
+		return $container->getPublicId();
 	}
 
 	/**
@@ -459,10 +480,21 @@ final class TagManager extends Module implements Module_With_Scopes {
 					} else {
 						$account_id = $response['accounts'][0]->getAccountId();
 					}
+
 					$containers = $this->get_data( 'list-containers', array( 'accountId' => $account_id ) );
+
+					// If empty containers, attempt to create a new container.
+					if ( is_wp_error( $containers ) && isset( $containers->errors['google_tagmanager_container_empty'] ) ) {
+						$new_container = $this->create_container( $account_id );
+						if ( ! is_wp_error( $new_container ) ) {
+							$containers = $this->get_data( 'list-containers', array( 'accountId' => $account_id ) );
+						}
+					}
+
 					if ( is_wp_error( $containers ) ) {
 						return $response;
 					}
+
 					return array_merge( $response, $containers );
 				case 'list-containers':
 					$response = array(
