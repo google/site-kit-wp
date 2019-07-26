@@ -43,7 +43,7 @@ describe( 'PageSpeed Insights Activation', () => {
 
 	it ( 'Activating should submit the entered key.', async() => {
 
-		// Enter the actication key.
+		// Enter the actication key. Note: component requires actual typing to trigger events that enable submission.
 		await page.type( 'input.mdc-text-field__input', 'PSIKEYTOSUBMITANDTEST' );
 
 		const submit = await page.$x( '//button [contains( @class,"mdc-button" ) and contains( span, "Proceed" ) ]' );
