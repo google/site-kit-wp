@@ -21,9 +21,8 @@ describe( 'Providing client configuration', () => {
 
 		await page.waitForSelector( '#wizard-step-one-proceed' );
 
-		const proceedButton = await page.$$eval( '#wizard-step-one-proceed', el => el.map( x => x.hasAttribute( 'disabled' ) ) );
+		expect( await page.$eval( '#wizard-step-one-proceed', ( el ) => el.matches( '[disabled]' ) ) ).toBe( true );
 
-		expect( proceedButton.length ).not.toEqual( 0 );
 	} );
 
 
@@ -38,9 +37,8 @@ describe( 'Providing client configuration', () => {
 			'//p[contains(@class,"googlesitekit-error-text") and contains(text(), "Unable to parse client configuration values.")]'
 		);
 		expect( errorMessage.length ).not.toEqual( 0 );
+		expect( await page.$eval( '#wizard-step-one-proceed', ( el ) => el.matches( '[disabled]' ) ) ).toBe( true );
 
-		const proceedButton = await page.$$eval( '#wizard-step-one-proceed', el => el.map( x => x.hasAttribute( 'disabled' ) ) );
-		expect( proceedButton.length ).not.toEqual( 0 );
 	} );
 
 	it( 'Should have enabled button valid value', async() => {
@@ -67,10 +65,7 @@ describe( 'Providing client configuration', () => {
 		);
 		expect( errorMessage.length ).toEqual( 0 );
 
-		const proceedButton = await page.$x(
-			'//button[not(@disabled)][contains(@id,"wizard-step-one-proceed")]'
-		);
-		expect( proceedButton.length ).not.toEqual( 0 );
+		expect( await page.$eval( '#wizard-step-one-proceed', ( el ) => el.matches( '[disabled]' ) ) ).toBe( false );
 
 		page.click( '#wizard-step-one-proceed' );
 
