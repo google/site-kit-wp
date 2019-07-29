@@ -28,14 +28,14 @@ describe( 'Providing client configuration', () => {
 
 		await page.waitForSelector( '#opt-in' );
 
-		expect( await page.$eval( '#opt-in', ( el ) => el.matches( '[checked]' ) ) ).toBe( true );
+		expect( await page.$eval( '#opt-in', el => el.checked ) ).toBe( true );
 
 	} );
 	it( 'Should have tracking code when opted in', async() => {
 
 		await page.waitForSelector( '#opt-in' );
 
-		expect( await page.$eval( '#opt-in', ( el ) => el.matches( '[checked]' ) ) ).toBe( true );
+		expect( await page.$eval( '#opt-in', el => el.checked ) ).toBe( true );
 
 		const analyticsScriptTag = await page.$x(
 			'//script[contains(@src,"https://www.google-analytics.com/analytics.js")]'
