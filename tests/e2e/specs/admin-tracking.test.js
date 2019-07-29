@@ -19,7 +19,6 @@ describe( 'Providing client configuration', () => {
 	} );
 
 	afterAll( async() => {
-
 		await resetSiteKit();
 		await deactivatePlugin( 'google-site-kit' );
 		await deactivatePlugin( 'e2e-tests-auth-plugin' );
@@ -56,22 +55,26 @@ describe( 'Providing client configuration', () => {
 
 		await page.$eval( '#opt-in', elem => elem.click() );
 
-		// page.click( '#opt-in', {
-		// 	delay: 10,
-		// 	clickCount: 1,
-		// } );
+		await page.waitFor( 3000 );
 
-		// page.waitForSelector( '.mdc-ripple-upgraded--background-focused' );
-		page.waitFor( 1000 );
+		await page.waitForSelector( '.mdc-checkbox:not(.mdc-checkbox--selected) #opt-in' );
 
-		expect( await page.$eval( '#opt-in', ( el ) => el.matches( '[checked]' ) ) ).not.toBe( true );
+		const optinChecked = await page.$( '.mdc-checkbox--selected #opt-in' );
+		expect( optinChecked ).toBeNull();
+
+		const optinUnChecked = await page.$( '.mdc-checkbox:not(.mdc-checkbox--selected) #opt-in' );
+		expect( optinUnChecked.length ).not.toEqual( 0 );
 	} );
 
 	it( 'Should not have tracking code when not opted in', async() => {
 
 		await page.waitForSelector( '#opt-in' );
 
-		expect( await page.$eval( '#opt-in', ( el ) => el.matches( '[checked]' ) ) ).not.toBe( true );
+		const optinChecked = await page.$( '.mdc-checkbox--selected #opt-in' );
+		expect( optinChecked ).toBeNull();
+
+		const optinUnChecked = await page.$( '.mdc-checkbox:not(.mdc-checkbox--selected) #opt-in' );
+		expect( optinUnChecked.length ).not.toEqual( 0 );
 
 		const analyticsScriptTag = await page.$x(
 			'//script[contains(@src,"https://www.google-analytics.com/analytics.js")]'
