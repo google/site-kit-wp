@@ -906,13 +906,13 @@ class AnalyticsSetup extends Component {
 
 		return (
 			<div className={ showErrorFormat ? 'googlesitekit-error-text' : '' }>
-				<p><p>{
+				<p>{
 					showErrorFormat ?
 
 						/* translators: %s: Error message */
 						sprintf( __( 'Error: %s', 'google-site-kit' ), message ) :
 						message
-				}</p></p>
+				}</p>
 			</div>
 		);
 	}
