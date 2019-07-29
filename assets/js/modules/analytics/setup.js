@@ -896,7 +896,7 @@ class AnalyticsSetup extends Component {
 					break;
 				case ! onSettingsPage && 0 === accounts.length:
 					showErrorFormat = false;
-					message = __( 'Looks like you don\'t have Analytics account yet. Once you create it click "Re-fetch my account" and Site Kit will locate it.', 'google-site-kit' );
+					message = __( 'Looks like you don\'t have an Analytics account yet. Once you create it, click on "Re-fetch my account" and Site Kit will locate it.', 'google-site-kit' );
 					break;
 		}
 
