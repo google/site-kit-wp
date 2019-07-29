@@ -19,8 +19,8 @@ describe( 'Reset plugin', () => {
 		await page.waitForSelector( '.mdc-tab-scroller__scroll-content' );
 
 		// Click on Admin Settings Tab.
-		await page.evaluate( () => {
-			Array.apply( null, document.querySelectorAll( '.mdc-tab-scroller__scroll-content button' ) )
+		await page.$$eval( '.mdc-tab-scroller__scroll-content button', tabs => {
+			Array.apply( null, tabs )
 				.find( element => 'Admin Settings' === element.textContent )
 				.click();
 		} );
@@ -31,27 +31,62 @@ describe( 'Reset plugin', () => {
 				'//button[contains(text(), "Reset Site Kit")]', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null
 			).singleNodeValue.click();
 		} );
-
-		await page.waitFor( 1000 );
 	} );
 
 	it( 'On Reset Site Kit click, confirm dialog displays', async() => {
-		const hidden = await page.evaluate( () => {
-			return Array.apply( null, document.querySelectorAll( '.mdc-button__label' ) )
-				.find( element => 'Reset' === element.textContent )
-				.closest( 'div.mdc-dialog' )
-				.getAttribute( 'aria-hidden' );
+		await page.waitForSelector( '.mdc-dialog[aria-hidden="false"]' );
+
+		const isHidden = await page.$eval( '.mdc-dialog[aria-hidden="false"]', dialog => {
+			if ( dialog && 'Reset' === dialog.querySelector( '.mdc-button__label' ).textContent ) {
+				return false;
+			}
+
+			return true;
 		} );
 
-		expect( hidden ).toBe( true );
+		expect( isHidden ).toBe( false );
+	} );
+
+	it( 'On Reset Site Kit click, confirm dialog hides when cancel', async() => {
+		await page.waitForSelector( '.mdc-dialog[aria-hidden="false"]' );
+
+		const resetDialogFound = await page.$eval( '.mdc-dialog[aria-hidden="false"]', dialog => {
+			if ( dialog && 'Reset' === dialog.querySelector( '.mdc-button__label' ).textContent ) {
+				dialog.querySelector( '.mdc-dialog__cancel-button' ).click();
+			}
+
+			return dialog;
+		} );
+
+		expect( resetDialogFound ).not.toEqual( null );
+
+		const isHidden = await page.$$eval( '.mdc-dialog[aria-hidden="true"]', dialogs => {
+
+			// Check reset dialog is hidden.
+			const dialog = Array.apply( dialogs ).filter( dialog => {
+				const button = dialog.querySelector( '.mdc-button__label' );
+				return button && 'Reset' === button.textContent;
+			} );
+			if ( dialog ) {
+				return true;
+			}
+
+			return false;
+		} );
+
+		expect( isHidden ).toBe( true );
 	} );
 
 	it( 'Reset dialog button disconnects site kit', async() => {
-		await page.waitForSelector( '.mdc-dialog__actions' );
-		await page.evaluate( () => {
-			Array.apply( null, document.querySelectorAll( '.mdc-dialog__actions button .mdc-button__label' ) )
-				.find( element => 'Reset' === element.textContent )
-				.click();
+
+		// Click Reset button.
+		await page.$$eval( '.mdc-dialog__actions button', buttons => {
+			Array.apply( null, buttons ).map( button => {
+				const label = button.querySelector( '.mdc-button__label' );
+				if ( label && 'Reset' === label.textContent  ) {
+					button.click();
+				}
+			} );
 		} );
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
