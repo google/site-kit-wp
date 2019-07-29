@@ -3,15 +3,19 @@
  */
 import { visitAdminPage, activatePlugin, deactivatePlugin } from '@wordpress/e2e-test-utils';
 
+/**
+ * Internal dependencies
+ */
+import { resetSiteKit } from '../utils';
+
 describe( 'PageSpeed Insights Activation', () => {
 	beforeEach( async() => {
-		await activatePlugin( 'e2e-tests-reset-plugin' );
+		await resetSiteKit();
 		await activatePlugin( 'e2e-tests-auth-plugin' );
 	} );
 
 	afterEach( async() => {
 		await deactivatePlugin( 'e2e-tests-auth-plugin' );
-		await deactivatePlugin( 'e2e-tests-reset-plugin' );
 	} );
 
 	it( 'should lead you to the activation page', async() => {
