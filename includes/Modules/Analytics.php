@@ -1010,36 +1010,32 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					);
 
 					$found_account_id = false;
-					$matched_property = false;
+					$account_id       = $this->get_data( 'account-id' );
 
-					if ( empty( $found_account_id ) ) {
-						$account_id = $this->get_data( 'account-id' );
-						if ( ! is_wp_error( $account_id ) ) {
-							foreach ( $response['accounts'] as $account ) {
-								if ( $account->getId() === $account_id ) {
-									$found_account_id = $account->getId();
-									break;
-								}
+					if ( ! is_wp_error( $account_id ) ) {
+						foreach ( $response['accounts'] as $account ) {
+							if ( $account->getId() === $account_id ) {
+								$found_account_id = $account->getId();
+								break;
 							}
-						} else {
-							$current_url = untrailingslashit( $this->context->get_reference_site_url() );
-							$urls        = $this->permute_site_url( $current_url );
-							foreach ( $response['accounts'] as $account ) {
-								$properties = $this->get_data( 'get-properties', array( 'accountId' => $account->getId() ) );
-								if ( is_wp_error( $properties ) ) {
-									continue;
+						}
+					} else {
+						$current_url = untrailingslashit( $this->context->get_reference_site_url() );
+						$urls        = $this->permute_site_url( $current_url );
+						foreach ( $response['accounts'] as $account ) {
+							$properties = $this->get_data( 'get-properties', array( 'accountId' => $account->getId() ) );
+							if ( is_wp_error( $properties ) ) {
+								continue;
+							}
+							$url_matches = array_filter(
+								$properties['properties'],
+								function( $property ) use ( $urls ) {
+									return in_array( untrailingslashit( $property->getWebsiteUrl() ), $urls, true );
 								}
-								$url_matches = array_filter(
-									$properties['properties'],
-									function( $property ) use ( $urls ) {
-										return in_array( untrailingslashit( $property->getWebsiteUrl() ), $urls, true );
-									}
-								);
-								if ( ! empty( $url_matches ) ) {
-									$found_account_id = $account->getId();
-									$matched_property = $url_matches;
-									break;
-								}
+							);
+							if ( ! empty( $url_matches ) ) {
+								$found_account_id = $account->getId();
+								break;
 							}
 						}
 					}
