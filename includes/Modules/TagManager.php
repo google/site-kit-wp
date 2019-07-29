@@ -45,6 +45,16 @@ final class TagManager extends Module implements Module_With_Scopes {
 	private $_list_accounts_data = null;
 
 	/**
+	 * Temporary storage for requested account ID while retrieving containers.
+	 *
+	 * Bad to have, but works for now.
+	 *
+	 * @since 1.0.0
+	 * @var string|null
+	 */
+	private $_containers_account_id = null;
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -342,17 +352,14 @@ final class TagManager extends Module implements Module_With_Scopes {
 					$service = $this->get_service( 'tagmanager' );
 					return $service->accounts->listAccounts();
 				case 'list-containers':
-					return function() use ( $data ) {
-						if ( ! isset( $data['accountId'] ) ) {
-							/* translators: %s: Missing parameter name */
-							return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
-						}
-						$service = $this->get_service( 'tagmanager' );
-						return array(
-							'containers' => $service->accounts_containers->listAccountsContainers( "accounts/{$data['accountId']}" ),
-							'accountId'  => $data['accountId'],
-						);
-					};
+					if ( ! isset( $data['accountId'] ) ) {
+						/* translators: %s: Missing parameter name */
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
+					}
+					$this->_containers_account_id = $data['accountId'];
+
+					$service = $this->get_service( 'tagmanager' );
+					return $service->accounts_containers->listAccountsContainers( "accounts/{$data['accountId']}" );
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
@@ -494,10 +501,10 @@ final class TagManager extends Module implements Module_With_Scopes {
 
 					return array_merge( $response, $containers );
 				case 'list-containers':
-					$account_id = $response['accountId'];
+					$account_id = $this->_containers_account_id;
 					$response   = array(
 						// TODO: Parse this response to a regular array.
-						'containers' => $response['containers']->getContainer(),
+						'containers' => $response->getContainer(),
 					);
 
 					if ( 0 === count( $response['containers'] ) ) {
