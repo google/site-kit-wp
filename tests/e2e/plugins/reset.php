@@ -11,12 +11,12 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Reset;
 
 /**
- * Trigger a full reset on Site Kit init and self-deactivate.
+ * Trigger a full reset on Site Kit init.
  */
-add_action( 'googlesitekit_init', function () {
+add_action( 'googlesitekit_init', static function () {
+	//( new Reset( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )->all();
+} );
+
+register_activation_hook( __FILE__, static function () {
 	( new Reset( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )->all();
-
-	require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
-
-	deactivate_plugins( plugin_basename( __FILE__ ), true );
 } );

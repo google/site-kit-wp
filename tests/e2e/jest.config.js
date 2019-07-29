@@ -4,6 +4,7 @@ module.exports = {
 	preset: 'jest-puppeteer',
 	setupFilesAfterEnv: [
 		'<rootDir>/config/bootstrap.js',
+		'expect-puppeteer',
 	],
 	testMatch: [
 		'<rootDir>/specs/**/__tests__/**/*.js',
