@@ -451,7 +451,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 		} catch ( Google_Service_Exception $e ) {
 			$client->setDefer( $orig_defer );
 			$message = $e->getErrors();
-			if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
+			if ( isset( $message[0]['message'] ) ) {
 				$message = $message[0]['message'];
 			}
 			return new WP_Error( $e->getCode(), $message );
