@@ -2,6 +2,7 @@
  * WordPress dependencies
  */
 import { activatePlugin, deactivatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { URL } from 'url';
 import { resetSiteKit } from '../utils';
 
 describe( 'Providing client configuration', () => {
@@ -55,7 +56,11 @@ describe( 'Providing client configuration', () => {
 
 		await page.$eval( '#opt-in', elem => elem.click() );
 
-		await page.waitFor( 3000 );
+		await page.waitForResponse( res => {
+			const reqURL = new URL( res.url() );
+
+			return '/wp-json/wp/v2/settings' === reqURL.pathname;
+		} );
 
 		await page.waitForSelector( '.mdc-checkbox:not(.mdc-checkbox--selected) #opt-in' );
 
