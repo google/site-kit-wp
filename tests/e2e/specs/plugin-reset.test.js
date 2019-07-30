@@ -45,10 +45,6 @@ describe( 'Reset plugin', () => {
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
-		const setupFlow = await page.$x(
-			'//div[contains(@class,"googlesitekit-wizard")]'
-		);
-
-		expect( setupFlow.length ).not.toEqual( 0 );
+		await expect( page ).toMatchElement( '.googlesitekit-wizard' );
 	} );
 } );
