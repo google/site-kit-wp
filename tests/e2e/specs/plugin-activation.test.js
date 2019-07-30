@@ -17,11 +17,7 @@ describe( 'Plugin Activation Notice', () => {
 
 		await page.waitForSelector( '.googlesitekit-activation' );
 
-		const activationTitle = await page.$x(
-			'//h3[contains(@class,"googlesitekit-activation__title") and contains(text(), "Congratulations, the Site Kit plugin is now activated.")]'
-		);
-
-		expect( activationTitle.length ).not.toEqual( 0 );
+		await expect( page ).toMatchElement( 'h3.googlesitekit-activation__title', { text: 'Congratulations, the Site Kit plugin is now activated.' } );
 
 		await deactivatePlugin( 'google-site-kit' );
 	} );
@@ -31,22 +27,13 @@ describe( 'Plugin Activation Notice', () => {
 
 		await page.waitForSelector( '.googlesitekit-activation' );
 
-		const setupButton = await page.$x(
-			'//a[contains(@class,"googlesitekit-activation__button") and contains(text(), "Start Setup")]'
-		);
-
-		expect( setupButton.length ).not.toEqual( 0 );
+		await expect( page ).toMatchElement( '.googlesitekit-activation__button', { text: 'Start Setup' } );
 
 		await page.click( '.googlesitekit-activation__button' );
 		await page.waitForSelector( '.googlesitekit-wizard-step__title' );
 
-		const welcomeTitle = await page.$x(
-			'//h2[contains(@class,"googlesitekit-wizard-step__title") and contains(text(), "Welcome to Site Kit beta for developers.")]'
-		);
-
-		expect( welcomeTitle.length ).not.toEqual( 0 );
+		await expect( page ).toMatchElement( 'h2.googlesitekit-wizard-step__title', { text: 'Welcome to Site Kit beta for developers.' } );
 
 		await deactivatePlugin( 'google-site-kit' );
-
 	} );
 } );
