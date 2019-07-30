@@ -45,6 +45,16 @@ final class TagManager extends Module implements Module_With_Scopes {
 	private $_list_accounts_data = null;
 
 	/**
+	 * Temporary storage for requested account ID while retrieving containers.
+	 *
+	 * Bad to have, but works for now.
+	 *
+	 * @since 1.0.0
+	 * @var string|null
+	 */
+	private $_containers_account_id = null;
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -346,6 +356,8 @@ final class TagManager extends Module implements Module_With_Scopes {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
 					}
+					$this->_containers_account_id = $data['accountId'];
+
 					$service = $this->get_service( 'tagmanager' );
 					return $service->accounts_containers->listAccountsContainers( "accounts/{$data['accountId']}" );
 			}
@@ -396,27 +408,12 @@ final class TagManager extends Module implements Module_With_Scopes {
 					}
 					return function() use ( $data ) {
 						if ( '0' === $data['containerId'] ) {
-							$client     = $this->get_client();
-							$orig_defer = $client->shouldDefer();
-							$client->setDefer( false );
-							$container = new \Google_Service_TagManager_Container();
-							$container->setName( get_bloginfo( 'name' ) );
-							$container->setUsageContext( array( 'web' ) );
-							try {
-								$container = $this->get_service( 'tagmanager' )->accounts_containers->create( "accounts/{$data['accountId']}", $container );
-							} catch ( Google_Service_Exception $e ) {
-								$client->setDefer( $orig_defer );
-								$message = $e->getErrors();
-								if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-									$message = $message[0]['message'];
-								}
-								return new WP_Error( $e->getCode(), $message );
-							} catch ( Exception $e ) {
-								$client->setDefer( $orig_defer );
-								return new WP_Error( $e->getCode(), $e->getMessage() );
+							$response = $this->create_container( $data['accountId'] );
+							if ( is_wp_error( $response ) ) {
+								return $response;
 							}
-							$client->setDefer( $orig_defer );
-							$data['containerId'] = $container->getPublicId();
+
+							$data['containerId'] = $response;
 						}
 						$option = array(
 							'accountId'   => $data['accountId'],
@@ -429,6 +426,42 @@ final class TagManager extends Module implements Module_With_Scopes {
 		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
+	}
+
+	/**
+	 * Creates GTM Container.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $account_id  The account ID.
+	 * @return mixed Container ID on success, or WP_Error on failure.
+	 */
+	protected function create_container( $account_id ) {
+		$client     = $this->get_client();
+		$orig_defer = $client->shouldDefer();
+
+		$client->setDefer( false );
+
+		$container = new \Google_Service_TagManager_Container();
+		$container->setName( remove_accents( get_bloginfo( 'name' ) ) );
+		$container->setUsageContext( array( 'web' ) );
+
+		try {
+			$container = $this->get_service( 'tagmanager' )->accounts_containers->create( "accounts/{$account_id}", $container );
+		} catch ( Google_Service_Exception $e ) {
+			$client->setDefer( $orig_defer );
+			$message = $e->getErrors();
+			if ( isset( $message[0]['message'] ) ) {
+				$message = $message[0]['message'];
+			}
+			return new WP_Error( $e->getCode(), $message );
+		} catch ( Exception $e ) {
+			$client->setDefer( $orig_defer );
+			return new WP_Error( $e->getCode(), $e->getMessage() );
+		}
+
+		$client->setDefer( $orig_defer );
+		return $container->getPublicId();
 	}
 
 	/**
@@ -459,18 +492,34 @@ final class TagManager extends Module implements Module_With_Scopes {
 					} else {
 						$account_id = $response['accounts'][0]->getAccountId();
 					}
+
 					$containers = $this->get_data( 'list-containers', array( 'accountId' => $account_id ) );
+
 					if ( is_wp_error( $containers ) ) {
 						return $response;
 					}
+
 					return array_merge( $response, $containers );
 				case 'list-containers':
+					$account_id = null;
+					if ( ! empty( $this->_containers_account_id ) ) {
+						$account_id = $this->_containers_account_id;
+
+						$this->_containers_account_id = null;
+					}
+
 					$response = array(
 						// TODO: Parse this response to a regular array.
 						'containers' => $response->getContainer(),
 					);
-					if ( 0 === count( $response['containers'] ) ) {
-						return new WP_Error( 'google_tagmanager_container_empty', __( 'No Google Tag Manager Containers Found.', 'google-site-kit' ), array( 'status' => 500 ) );
+
+					if ( 0 === count( $response['containers'] ) && ! empty( $account_id ) ) {
+						// If empty containers, attempt to create a new container.
+						$new_container = $this->create_container( $account_id );
+						if ( is_wp_error( $new_container ) ) {
+							return new WP_Error( 'google_tagmanager_container_empty', __( 'No Google Tag Manager Containers Found.', 'google-site-kit' ), array( 'status' => 500 ) );
+						}
+						return $this->get_data( 'list-containers', array( 'accountId' => $account_id ) );
 					}
 					return $response;
 			}
