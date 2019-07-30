@@ -64,6 +64,7 @@ describe( 'Site Kit set up flow for the first time', () => {
 		page.removeListener( 'request', stubGoogleSignIn );
 		await page.setRequestInterception( false );
 
+		expect( page ).toMatchElement( '#js-googlesitekit-dashboard' );
 		expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: 'Congrats on completing the setup for Site Kit!' } );
 	} );
 } );
