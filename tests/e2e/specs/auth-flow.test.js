@@ -35,7 +35,7 @@ function stubGoogleSignIn( request ) {
 	}
 }
 
-describe( 'authenticating with Google', () => {
+describe( 'Site Kit set up flow for the first time', () => {
 
 	beforeAll( async() => {
 		await deactivateAllOtherPlugins();
