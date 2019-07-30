@@ -3,7 +3,7 @@
  */
 import { deactivatePlugin, activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 
-describe( 'Reset plugin', () => {
+describe( 'Plugin Reset', () => {
 	beforeAll( async() => {
 		await activatePlugin( 'e2e-tests-auth-plugin' );
 	} );
@@ -23,7 +23,7 @@ describe( 'Reset plugin', () => {
 		await page.waitForSelector( '.googlesitekit-settings-module__footer' );
 	} );
 
-	it( 'On Reset Site Kit click, confirm dialog displays.', async() => {
+	it( 'displays a confirmation dialog when clicking the "Reset Site Kit" link', async() => {
 
 		await expect( page ).toClick( 'button.googlesitekit-cta-link', { text: 'Reset Site Kit' } );
 		await page.waitForSelector( '.mdc-dialog--open' );
@@ -31,14 +31,14 @@ describe( 'Reset plugin', () => {
 		await expect( page ).toMatchElement( '.mdc-dialog.mdc-dialog--open .mdc-button', { text: 'Reset' } );
 	} );
 
-	it( 'On Reset Site Kit click, confirm dialog hides when cancel', async() => {
+	it( 'dismisses the reset confirmation dialog when clicking "Cancel"', async() => {
 		await expect( page ).toClick( 'button.googlesitekit-cta-link', { text: 'Reset Site Kit' } );
 		await page.waitForSelector( '.mdc-dialog--open' );
 
 		await expect( page ).toClick( '.mdc-dialog.mdc-dialog--open button', { text: 'Cancel' } );
 	} );
 
-	it( 'Reset dialog button disconnects site kit', async() => {
+	it( 'disconnects Site Kit by clicking the "Reset" button in the confirmation dialog', async() => {
 		await expect( page ).toClick( 'button.googlesitekit-cta-link', { text: 'Reset Site Kit' } );
 		await page.waitForSelector( '.mdc-dialog--open' );
 		await expect( page ).toClick( '.mdc-dialog.mdc-dialog--open .mdc-button', { text: 'Reset' } );
