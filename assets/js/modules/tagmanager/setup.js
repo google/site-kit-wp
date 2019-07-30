@@ -221,31 +221,28 @@ class TagmanagerSetup extends Component {
 				containerId: selectedContainer,
 			};
 
-			return await data.set( 'modules', 'tagmanager', 'save', optionData )
-				.then( ( responseData ) => {
+			const responseData = await data.set( 'modules', 'tagmanager', 'save', optionData );
+			if ( finishSetup ) {
+				finishSetup();
+			}
 
-					if ( finishSetup ) {
-						finishSetup();
-					}
+			googlesitekit.modules.tagmanager.settings = {
+				accountId: responseData.accountId,
+				containerId: responseData.containerId,
+			};
 
-					googlesitekit.modules.tagmanager.settings = {
-						accountId: responseData.accountId,
-						containerId: responseData.containerId,
-					};
-					if ( this._isMounted ) {
-						this.setState( {
-							isSaving: false
-						} );
-					}
-				} );
-		} catch ( err ) {
 			if ( this._isMounted ) {
 				this.setState( {
-					isLoading: false,
-					errorCode: true,
-					errorMsg: err.message
+					isSaving: false
 				} );
 			}
+
+		} catch ( err ) {
+
+			// Catches error in handleButtonAction from <SettingsModules> component.
+			return new Promise( ( resolve, reject ) => {
+				reject( err );
+			} );
 		}
 	}
 

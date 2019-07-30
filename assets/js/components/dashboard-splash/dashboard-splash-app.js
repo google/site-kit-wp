@@ -48,12 +48,14 @@ class DashboardSplashApp extends Component {
 			canAuthenticate,
 			canSetup,
 			canViewDashboard,
+			canPublishPosts,
 		} = googlesitekit.permissions;
 
 		this.state = {
 			showAuthenticationSetupWizard: canSetup && ( ! isAuthenticated || ! isVerified || ! hasSearchConsoleProperty ),
-			showModuleSetupWizard: showModuleSetupWizard,
-			canViewDashboard: canViewDashboard,
+			showModuleSetupWizard,
+			canViewDashboard,
+			canPublishPosts,
 			buttonMode: 0,
 			connectUrl,
 		};
@@ -116,7 +118,11 @@ class DashboardSplashApp extends Component {
 						if ( this.state.canViewDashboard ) {
 							introDescription = __( 'Start gaining insights on how your site is performing in search by visiting the dashboard.', 'google-site-kit' );
 						} else {
-							introDescription = __( 'Start gaining insights on how your site is performing in search by editing one of your posts.', 'google-site-kit' );
+							if ( this.state.canPublishPosts ) {
+								introDescription = __( 'Start gaining insights on how your site is performing in search by editing one of your posts.', 'google-site-kit' );
+							} else {
+								introDescription = __( 'Start gaining insights on how your site is performing in search by viewing one of your published posts.', 'google-site-kit' );
+							}
 						}
 			}
 

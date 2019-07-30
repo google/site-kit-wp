@@ -30,6 +30,7 @@ final class Permissions {
 	const VIEW_DASHBOARD      = 'googlesitekit_view_dashboard';
 	const VIEW_MODULE_DETAILS = 'googlesitekit_view_module_details';
 	const MANAGE_OPTIONS      = 'googlesitekit_manage_options';
+	const PUBLISH_POSTS       = 'googlesitekit_publish_posts';
 
 	/*
 	 * Custom meta capabilities.
@@ -116,6 +117,9 @@ final class Permissions {
 			// Allow administrators and up to manage options and set up the plugin.
 			self::MANAGE_OPTIONS      => 'manage_options',
 			self::SETUP               => 'manage_options',
+
+			// Allow to differentiate between authors and contributors.
+			self::PUBLISH_POSTS       => 'publish_posts',
 		);
 
 		$this->meta_to_core = array(
