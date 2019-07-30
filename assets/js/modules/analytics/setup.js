@@ -895,11 +895,11 @@ class AnalyticsSetup extends Component {
 					break;
 				case onSettingsPage && errorCode && 'insufficientPermissions' === errorReason:
 					showErrorFormat = false;
-					message = __( 'You currently don\'t have access to this account.You can either request access from your team, or remove this Analytics tag and connect to a different account.', 'google-site-kit' );
+					message = __( 'You currently don\'t have access to this account. You can either request access from your team, or remove this Analytics tag and connect to a different account.', 'google-site-kit' );
 					break;
 				case ! onSettingsPage && 0 === accounts.length:
 					showErrorFormat = false;
-					message = __( 'Looks like you don\'t have Analytics account yet. Once you create it click "Re-fetch my account" and Site Kit will locate it.', 'google-site-kit' );
+					message = __( 'Looks like you don\'t have an Analytics account yet. Once you create it, click on "Re-fetch my account" and Site Kit will locate it.', 'google-site-kit' );
 					break;
 		}
 
