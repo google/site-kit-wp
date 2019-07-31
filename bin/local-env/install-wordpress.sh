@@ -94,6 +94,10 @@ docker-compose $DOCKER_COMPOSE_FILE_OPTIONS run --rm $CONTAINER touch /var/www/h
 echo -e $(status_message "Activating Google Site Kit plugin...")
 docker-compose $DOCKER_COMPOSE_FILE_OPTIONS run --rm -u 33 $CLI plugin activate google-site-kit --quiet
 
+# Set pretty permalinks.
+echo -e $(status_message "Setting permalink structure...")
+docker-compose $DOCKER_COMPOSE_FILE_OPTIONS run --rm -u 33 $CLI rewrite structure '%postname%' --hard
+
 # Configure site constants.
 echo -e $(status_message "Configuring site constants...")
 WP_DEBUG_CURRENT=$(docker-compose $DOCKER_COMPOSE_FILE_OPTIONS run -T --rm -u 33 $CLI config get --type=constant --format=json WP_DEBUG)
