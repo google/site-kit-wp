@@ -25,7 +25,7 @@ import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
 import { toggleConfirmModuleSettings } from 'GoogleUtil';
 
-const { __ } = wp.i18n;
+const { __, sprintf } = wp.i18n;
 const { Component, Fragment } = wp.element;
 const {
 	removeFilter,
@@ -46,8 +46,8 @@ class TagmanagerSetup extends Component {
 			isLoading: true,
 			accounts: [],
 			containers: [],
-			error: false,
-			message: '',
+			errorCode: false,
+			errorMsg: '',
 			refetch: false,
 			selectedAccount: accountId ? accountId : 0,
 			selectedContainer: containerId ? containerId : 0,
@@ -130,7 +130,16 @@ class TagmanagerSetup extends Component {
 				accountId: selectedAccount,
 			};
 
-			let responseData = await data.get( 'modules', 'tagmanager', 'list-accounts', queryArgs );
+			let errorCode    = false;
+			let errorMsg     = '';
+			let responseData = await data.get( 'modules', 'tagmanager', 'list-accounts', queryArgs, false );
+
+			// Verify if user has access to the selected account.
+			if ( selectedAccount && ! responseData.accounts.find( account => account.accountId === selectedAccount ) ) {
+				data.deleteCache( 'tagmanager', 'list-accounts' );
+				errorCode = 'insufficientPermissions';
+				errorMsg  = __( 'You currently don\'t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.', 'google-site-kit' );
+			}
 
 			const chooseContainer = {
 				containerId: 0,
@@ -146,15 +155,16 @@ class TagmanagerSetup extends Component {
 					containers: responseData.containers,
 					selectedContainer: ( selectedContainer ) ? selectedContainer : responseData.containers[0].publicId,
 					refetch: false,
-					error: false,
+					errorCode,
+					errorMsg,
 				} );
 			}
 		} catch ( err ) {
 			if ( this._isMounted ) {
 				this.setState( {
 					isLoading: false,
-					error: err.code,
-					message: err.message,
+					errorCode: err.code,
+					errorMsg: err.message,
 					refetch: false,
 				} );
 			}
@@ -184,14 +194,14 @@ class TagmanagerSetup extends Component {
 					containersLoading: false,
 					containers: responseData.containers,
 					selectedContainer: responseData.containers[0].publicId,
-					error: false,
+					errorCode: false,
 				} );
 			}
 		} catch ( err ) {
 			if ( this._isMounted ) {
 				this.setState( {
-					error: err.code,
-					message: err.message,
+					errorCode: err.code,
+					errorMsg: err.message,
 				} );
 			}
 		}
@@ -288,16 +298,21 @@ class TagmanagerSetup extends Component {
 			this.setState( {
 				isLoading: true,
 				refetch: true,
-				error: false,
+				errorCode: false,
 			} );
 		}
 	}
 
 	renderSettingsInfo() {
 		const {
+			isLoading,
 			selectedAccount,
 			selectedContainer,
 		} = this.state;
+
+		if ( isLoading ) {
+			return <ProgressBar/>;
+		}
 
 		return (
 			<Fragment>
@@ -410,12 +425,39 @@ class TagmanagerSetup extends Component {
 		);
 	}
 
-	render() {
+	/**
+	 * Render Error or Notice format depending on the errorCode.
+	 */
+	renderErrorOrNotice() {
 		const {
-			error,
-			message
+			errorCode,
+			errorMsg,
 		} = this.state;
 
+		const {
+			onSettingsPage,
+		} = this.props;
+
+		if ( 0 === errorMsg.length ) {
+			return null;
+		}
+
+		const showErrorFormat = onSettingsPage && 'insufficientPermissions' === errorCode ? false : true; // default error format.
+
+		return (
+			<div className={ showErrorFormat ? 'googlesitekit-error-text' : '' }>
+				<p>{
+					showErrorFormat ?
+
+						/* translators: %s: Error message */
+						sprintf( __( 'Error: %s', 'google-site-kit' ), errorMsg ) :
+						errorMsg
+				}</p>
+			</div>
+		);
+	}
+
+	render() {
 		const {
 			onSettingsPage,
 			isEditing
@@ -438,11 +480,7 @@ class TagmanagerSetup extends Component {
 					</Fragment>
 				}
 
-				{ error && 0 < message.length &&
-				<div className="googlesitekit-error-text">
-					<p>{ __( 'Error:', 'google-site-kit' ) } { message }</p>
-				</div>
-				}
+				{ this.renderErrorOrNotice() }
 
 				{ isEditing && this.renderAccountDropdownForm() }
 
