@@ -277,7 +277,7 @@ class AnalyticsSetup extends Component {
 						}
 					}
 
-					if ( 0 < matchedProperty.length ) {
+					if ( matchedProperty && matchedProperty.length ) {
 						selectedAccount  = matchedProperty[0].accountId;
 						selectedProperty = matchedProperty[0].id;
 						const matchedProfile = responseData.profiles.filter( profile => {
