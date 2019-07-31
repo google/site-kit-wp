@@ -260,7 +260,7 @@ class AnalyticsSetup extends Component {
 			} else {
 
 				if ( ! selectedAccount ) {
-					let matchedProperty = null;
+					let matchedProperty = [];
 
 					if ( responseData.existingTag ) {
 
