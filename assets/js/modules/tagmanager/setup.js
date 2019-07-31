@@ -238,6 +238,13 @@ class TagmanagerSetup extends Component {
 			}
 
 		} catch ( err ) {
+			if ( this._isMounted ) {
+				this.setState( {
+					isLoading: false,
+					error: true,
+					message: err.message
+				} );
+			}
 
 			// Catches error in handleButtonAction from <SettingsModules> component.
 			return new Promise( ( resolve, reject ) => {
