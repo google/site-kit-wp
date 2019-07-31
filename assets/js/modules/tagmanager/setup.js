@@ -241,8 +241,8 @@ class TagmanagerSetup extends Component {
 			if ( this._isMounted ) {
 				this.setState( {
 					isLoading: false,
-					error: true,
-					message: err.message
+					errorCode: true,
+					errorMsg: err.message
 				} );
 			}
 
