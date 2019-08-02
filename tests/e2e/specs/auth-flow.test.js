@@ -27,7 +27,7 @@ function stubGoogleSignIn( request ) {
 		request.respond( {
 			status: 302,
 			headers: {
-				location: createURL( '/', 'oauth2callback=1&code=valid-test-code' )
+				location: createURL( '/', 'oauth2callback=1&code=valid-test-code&e2e-site-verification=1' )
 			}
 		} );
 	} else {
