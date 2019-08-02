@@ -16,6 +16,9 @@ export async function deactivateAllOtherPlugins() {
 
 	// Bulk deactivate
 	await page.select( 'select#bulk-action-selector-bottom', 'deactivate-selected' );
-	await page.click( '#doaction2' );
+	await Promise.all( [
+		page.click( '#doaction2' ),
+		page.waitForNavigation(),
+	] );
 	await switchUserToTest();
 }
