@@ -42,7 +42,12 @@ gulp.task( 'copy', () => {
 			'vendor/autoload.php',
 			'!vendor/**/**/{tests,Tests,doc?(s),examples}/**/*',
 			'!vendor/**/**/{*.md,*.yml,phpunit.*}',
-			'!**/*.map'
+			'!**/*.map',
+			'!bin/local-env/**/*',
+			'!bin/local-env/',
+			'!dist/admin.js',
+			'!dist/adminbar.js',
+			'!dist/wpdashboard.js',
 		],
 		{ base: '.' }
 	)
