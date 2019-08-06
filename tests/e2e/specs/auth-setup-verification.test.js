@@ -1,7 +1,5 @@
 /* eslint-env node */
-/* global page, jestPuppeteer */
-
-/* eslint-disable no-console */
+/* global page */
 
 /**
  * WordPress dependencies
