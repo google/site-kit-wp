@@ -94,12 +94,9 @@ class Setup extends Component {
 		} );
 	}
 
-	siteVerificationSetup( status, searchConsoleProperty = false ) {
+	siteVerificationSetup( status ) {
 		this.setState( {
-			isVerified: status,
-
-			// @todo this happens instantly on site verification. We need some kind of delay/animation.
-			hasSearchConsoleProperty: searchConsoleProperty,
+			isVerified: status
 		} );
 	}
 

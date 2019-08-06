@@ -46,59 +46,14 @@ class SiteVerification extends Component {
 		this.onProceed = this.onProceed.bind( this );
 	}
 
-	async componentDidMount() {
+	componentDidMount() {
 		const { isAuthenticated, shouldSetup } = this.props;
 
 		if ( ! isAuthenticated || ! shouldSetup ) {
 			return;
 		}
 
-		try {
-
-			const isSiteExist = await this.isSiteExist();
-			if ( isSiteExist && true === isSiteExist.verified ) {
-				const savePropertyResponse = await this.saveProperty( isSiteExist.siteURL );
-
-				if ( true === savePropertyResponse.status ) {
-					return this.props.siteVerificationSetup( true, isSiteExist.siteURL );
-				}
-			}
-
-			// Fallback to request site verification process.
-			this.requestSitePropertyList();
-		} catch {
-
-			// Fallback to request site verification process.
-			this.requestSitePropertyList();
-		}
-	}
-
-	async isSiteExist() {
-		try {
-			const responseData = await data.get( 'modules', 'search-console', 'is-site-exist' );
-
-			return new Promise( ( resolve ) => {
-				resolve( responseData );
-			} );
-		} catch {
-
-			// do nothing when error return, since we are going to continue to extra step for verification.
-			return false;
-		}
-	}
-
-	async saveProperty( siteURL ) {
-		try {
-			const responseData = await data.set( 'modules', 'search-console', 'save-property', { siteURL } );
-
-			return new Promise( ( resolve ) => {
-				resolve( responseData );
-			} );
-		} catch {
-
-			// do nothing when error return, since we are going to continue to extra step for verification.
-			return false;
-		}
+		this.requestSitePropertyList();
 	}
 
 	requestSitePropertyList() {
@@ -146,18 +101,6 @@ class SiteVerification extends Component {
 		} )();
 	}
 
-	/**
-	 * Insert siteURL to the option through the API
-	 * @param { string } siteURL
-	 */
-	async insertPropertyToSearchConsole( siteURL ) {
-		try {
-			data.set( 'modules', 'search-console', 'insert', { siteURL } );
-		} catch ( err ) {
-			throw err;
-		}
-	}
-
 	async insertSiteVerification( siteURL ) {
 		try {
 			const { shouldSetup } = this.props;
@@ -189,18 +132,12 @@ class SiteVerification extends Component {
 
 		try {
 
-			// Ensure the site is added to Search Console.
-			await this.insertPropertyToSearchConsole( siteURL );
-
 			const response = await this.insertSiteVerification( siteURL );
 
 			if ( true === response.updated ) {
 
-				// Save the site URL.
-				await data.set( 'modules', 'search-console', 'save-property', { siteURL } );
-
 				// We have everything we need here. go to next step.
-				this.props.siteVerificationSetup( true, siteURL );
+				this.props.siteVerificationSetup( true );
 			}
 		} catch ( err ) {
 			let message = err.message;

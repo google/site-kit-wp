@@ -48,10 +48,24 @@ class SearchConsole extends Component {
 		this.submitPropertyEventHandler = this.submitPropertyEventHandler.bind( this );
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		const { isAuthenticated, shouldSetup } = this.props;
 
-		if ( isAuthenticated && shouldSetup ) {
+		if ( ! isAuthenticated || ! shouldSetup ) {
+			return;
+		}
+
+		try {
+			const isSiteExist = await this.isSiteExist();
+			if ( isSiteExist && true === isSiteExist.verified ) {
+				const savePropertyResponse = await this.saveProperty( isSiteExist.siteURL );
+				if ( true === savePropertyResponse.status ) {
+					return this.props.searchConsoleSetup( isSiteExist.siteURL );
+				}
+			}
+		} catch {
+
+			// Fallback to request match sites and exact match site.
 			this.requestSearchConsoleSiteList();
 		}
 	}
@@ -128,6 +142,37 @@ class SearchConsole extends Component {
 				loading: false,
 				connected: true,
 				sites: response.sites,
+			} );
+		} catch ( err ) {
+			throw err;
+		}
+	}
+
+	/**
+	 * Save Search Console property.
+	 * @param { string } siteURL
+	 */
+	async saveProperty( siteURL ) {
+		try {
+			const responseData = await data.set( 'modules', 'search-console', 'save-property', { siteURL } );
+
+			return new Promise( ( resolve ) => {
+				resolve( responseData );
+			} );
+		} catch ( err ) {
+			throw err;
+		}
+	}
+
+	/**
+	 * Check whether a property for the site exists in Search Console.
+	 */
+	async isSiteExist() {
+		try {
+			const responseData = await data.get( 'modules', 'search-console', 'is-site-exist' );
+
+			return new Promise( ( resolve ) => {
+				resolve( responseData );
 			} );
 		} catch ( err ) {
 			throw err;
