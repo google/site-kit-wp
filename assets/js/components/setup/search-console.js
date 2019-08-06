@@ -63,23 +63,14 @@ class SearchConsole extends Component {
 					return this.props.searchConsoleSetup( isSiteExist.siteURL );
 				}
 			}
+
+			// Fallback to request match sites and exact match site.
+			this.requestSearchConsoleSiteList();
 		} catch {
 
 			// Fallback to request match sites and exact match site.
 			this.requestSearchConsoleSiteList();
 		}
-	}
-
-	shouldComponentUpdate( nextProps ) {
-		const { isAuthenticated, shouldSetup } = nextProps;
-		const { sites } = this.state;
-
-		if ( isAuthenticated && shouldSetup && false === sites ) {
-
-			this.requestSearchConsoleSiteList();
-		}
-
-		return true;
 	}
 
 	/**
