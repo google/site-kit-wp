@@ -85,7 +85,7 @@ script:
       npm run build || exit 1 # Build for tests.
       npm run env:start
       npm run env:reset-site
-      npm run test:e2e
+      npm run test:e2e:ci
       npm run env:stop
     fi
 

@@ -21,6 +21,8 @@
     "test:visualapprove": "backstop approve --config=backstop.js",
     "test:analyze": "webpack -p --mode=production --env.analyze=true --json --progress --profile > /tmp/stats.json && cp ./dist/assets/js/*.js /tmp && webpack-bundle-analyzer /tmp/stats.json",
     "test:e2e": "WP_BASE_URL=http://localhost:9002 wp-scripts test-e2e --config=tests/e2e/jest.config.js",
+    "test:e2e:interactive": "npm run test:e2e -- --puppeteer-interactive",
+    "test:e2e:ci": "npm run test:e2e -- --runInBand",
     "travis:visualtest": "start-server-and-test storybook http-get://localhost:9001 travis:backstopjs",
     "storybook": "start-storybook -s ./dist -p 9001 -c .storybook",
     "backstopjs": "backstop test --config=backstop.js --docker",
