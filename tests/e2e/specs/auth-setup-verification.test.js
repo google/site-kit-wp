@@ -24,6 +24,16 @@ const oauthClientConfig = JSON.stringify( {
 	}
 } );
 
+/**
+ * @link https://stackoverflow.com/a/46012210/1037938
+ */
+async function simulatePastingClientConfiguration() {
+	await page.$eval( '#client-configuration', ( textarea, config ) => {
+		Object.getOwnPropertyDescriptor( window.HTMLTextAreaElement.prototype, 'value' ).set.call( textarea, config );
+		textarea.dispatchEvent( new Event( 'input', { bubbles: true } ) );
+	}, oauthClientConfig );
+}
+
 describe( 'Site Kit set up flow for the first time with site verification', () => {
 
 	beforeAll( async() => {
@@ -63,7 +73,7 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 		await page.waitForSelector( '#client-configuration' );
 
-		await expect( page ).toFill( '#client-configuration', oauthClientConfig );
+		await simulatePastingClientConfiguration();
 		await expect( page ).toClick( '#wizard-step-one-proceed' );
 		await page.waitForSelector( '.googlesitekit-wizard-step--two button' );
 
@@ -86,7 +96,7 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Site Kit!/i } );
 	} );
 
-	it.only( 'does not prompt for verification if the user is already verified for the site', async() => {
+	it( 'does not prompt for verification if the user is already verified for the site', async() => {
 
 		// Wait until apiFetch is available
 		await page.waitForFunction( () => window.wp !== undefined );
@@ -103,7 +113,7 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 		await page.waitForSelector( '#client-configuration' );
 
-		await expect( page ).toFill( '#client-configuration', oauthClientConfig );
+		await simulatePastingClientConfiguration();
 		await expect( page ).toClick( '#wizard-step-one-proceed' );
 		await page.waitForSelector( '.googlesitekit-wizard-step--two button' );
 
