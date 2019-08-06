@@ -32,7 +32,7 @@ add_action( 'init', function () {
 
 	$plugins_to_activate = array( __DIR__ . '/auth.php' );
 
-	if ( $_GET['e2e-site-verification'] ) {
+	if ( ! empty( $_GET['e2e-site-verification'] ) ) {
 		$plugins_to_activate[] = __DIR__ . '/site-verification.php';
 	}
 
