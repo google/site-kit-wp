@@ -326,7 +326,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		);
 
 		/**
-		 * Filters the gtag configuration options for the object that is passed to amp-analytics as a JSON component.
+		 * Filters the gtag configuration options for the amp-analytics tag.
 		 *
 		 * @since 1.0.0
 		 *
@@ -338,7 +338,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 		// Ensure gtag_id is set to the correct value.
 		if ( ! is_array( $gtag_amp_opt_filtered ) ) {
-			$gtag_amp_opt_filtered = array();
+			$gtag_amp_opt_filtered = $gtag_amp_opt;
 		}
 
 		if ( ! isset( $gtag_amp_opt_filtered['vars'] ) || ! is_array( $gtag_amp_opt_filtered['vars'] ) ) {
