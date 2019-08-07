@@ -445,8 +445,8 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 							);
 						}
 						if ( 'INET_DOMAIN' === $site->getType() ) {
-							$host = str_replace( array( 'http://', 'https://' ), '', trailingslashit( $site->getIdentifier() ) );
-							if ( ! empty( $host ) && false !== strpos( trailingslashit( $current_url ), $host ) ) {
+							$host = str_replace( array( 'http://', 'https://' ), '', $site->getIdentifier() );
+							if ( ! empty( $host ) && false !== strpos( trailingslashit( $current_url ), trailingslashit( $host ) ) ) {
 								$response = array(
 									'identifier' => $site->getIdentifier(),
 									'type'       => $site->getType(),
