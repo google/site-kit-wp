@@ -267,6 +267,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		/**
 		 * Filters the gtag configuration options for the Analytics snippet.
 		 *
+		 * You can use the {@see 'googlesitekit_amp_gtag_opt'} filter to do the same for gtag in AMP.
+		 *
 		 * @since 1.0.0
 		 *
 		 * @see https://developers.google.com/gtagjs/devguide/configure
@@ -328,11 +330,13 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		/**
 		 * Filters the gtag configuration options for the amp-analytics tag.
 		 *
+		 * You can use the {@see 'googlesitekit_gtag_opt'} filter to do the same for gtag in non-AMP.
+		 *
 		 * @since 1.0.0
 		 *
 		 * @see https://developers.google.com/gtagjs/devguide/amp
 		 *
-		 * @param array $gtag_amp_opt gtag amp options.
+		 * @param array $gtag_amp_opt gtag config options for AMP.
 		 */
 		$gtag_amp_opt_filtered = apply_filters( 'googlesitekit_amp_gtag_opt', $gtag_amp_opt );
 
