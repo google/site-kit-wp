@@ -102,17 +102,7 @@ class SiteVerification extends Component {
 	}
 
 	async insertSiteVerification( siteURL ) {
-		try {
-			const { shouldSetup } = this.props;
-
-			if ( ! shouldSetup ) {
-				return;
-			}
-
-			return await data.set( 'modules', 'search-console', 'siteverification', { siteURL } );
-		} catch ( err ) {
-			throw err;
-		}
+		return await data.set( 'modules', 'search-console', 'siteverification', { siteURL } );
 	}
 
 	async onProceed() {
