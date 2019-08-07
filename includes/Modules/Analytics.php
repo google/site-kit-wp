@@ -326,7 +326,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		);
 
 		/**
-		 * Filters configuration options for the object that is passed to amp-analytics as a JSON component.
+		 * Filters the gtag configuration options for the object that is passed to amp-analytics as a JSON component.
 		 *
 		 * @since 1.0.0
 		 *
@@ -334,18 +334,22 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		 *
 		 * @param array $gtag_amp_opt gtag amp options.
 		 */
-		$config = apply_filters( 'googlesitekit_amp_gtag_opt', $gtag_amp_opt );
+		$gtag_amp_opt_filtered = apply_filters( 'googlesitekit_amp_gtag_opt', $gtag_amp_opt );
 
 		// Ensure gtag_id is set to the correct value.
-		if ( ! is_array( $config ) ) {
-			return;
+		if ( ! is_array( $gtag_amp_opt_filtered ) ) {
+			$gtag_amp_opt_filtered = array();
 		}
-		$config['vars']            = isset( $config['vars'] ) && is_array( $config['vars'] ) ? $config['vars'] : $gtag_amp_opt['vars'];
-		$config['vars']['gtag_id'] = $tracking_id;
+
+		if ( ! isset( $gtag_amp_opt_filtered['vars'] ) || ! is_array( $gtag_amp_opt_filtered['vars'] ) ) {
+			$gtag_amp_opt_filtered['vars'] = $gtag_amp_opt['vars'];
+		}
+
+		$gtag_amp_opt_filtered['vars']['gtag_id'] = $tracking_id;
 		?>
 		<amp-analytics type="gtag" data-credentials="include">
 			<script type="application/json">
-				<?php echo wp_json_encode( $config ); ?>
+				<?php echo wp_json_encode( $gtag_amp_opt_filtered ); ?>
 			</script>
 		</amp-analytics>
 		<?php
