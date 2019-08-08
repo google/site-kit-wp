@@ -1,18 +1,28 @@
 /**
+ * External dependencies
+ */
+import { URL } from 'url';
+
+/**
  * WordPress dependencies
  */
 import { activatePlugin, deactivatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
-import { URL } from 'url';
+
+/**
+ * Internal dependencies
+ */
 import { resetSiteKit } from '../utils';
 
 describe( 'Providing client configuration', () => {
 
 	beforeAll( async() => {
 		await activatePlugin( 'e2e-tests-auth-plugin' );
-		await resetSiteKit();
+		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 	} );
 
 	beforeEach( async() => {
+		await resetSiteKit();
+
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await page.waitForSelector( '.mdc-tab-bar' );
 
@@ -21,8 +31,8 @@ describe( 'Providing client configuration', () => {
 	} );
 
 	afterAll( async() => {
-		await resetSiteKit();
 		await deactivatePlugin( 'e2e-tests-auth-plugin' );
+		await deactivatePlugin( 'e2e-tests-site-verification-plugin' );
 	} );
 
 	it( 'should select opt-in by default', async() => {
@@ -57,7 +67,6 @@ describe( 'Providing client configuration', () => {
 
 		await page.waitForSelector( '#opt-in' );
 
-		// await page.$eval( '#opt-in', elem => elem.click() );
 		await expect( page ).toClick( '#opt-in' );
 
 		await page.waitForResponse( res => {
@@ -68,23 +77,23 @@ describe( 'Providing client configuration', () => {
 
 		await page.waitForSelector( '.mdc-checkbox:not(.mdc-checkbox--selected) #opt-in' );
 
-		// Ensure no checked checkbox exists.
-		const optinChecked = await page.$( '.mdc-checkbox--selected #opt-in' );
-		expect( optinChecked ).toBeNull();
-
 		// Ensure unchecked checkbox exists.
 		const optinUnChecked = await page.$( '.mdc-checkbox:not(.mdc-checkbox--selected) #opt-in' );
 		expect( optinUnChecked.length ).not.toEqual( 0 );
-
 	} );
 
 	it( 'should not have tracking code when not opted in', async() => {
-
 		await page.waitForSelector( '#opt-in' );
 
-		// Ensure no checked checkbox exists.
-		const optinChecked = await page.$( '.mdc-checkbox--selected #opt-in' );
-		expect( optinChecked ).toBeNull();
+		await expect( page ).toClick( '#opt-in' );
+
+		await page.waitForResponse( res => {
+			const reqURL = new URL( res.url() );
+
+			return '/wp-json/wp/v2/settings' === reqURL.pathname;
+		} );
+
+		await page.reload();
 
 		// Ensure unchecked checkbox exists.
 		const optinUnChecked = await page.$( '.mdc-checkbox:not(.mdc-checkbox--selected) #opt-in' );
@@ -101,7 +110,6 @@ describe( 'Providing client configuration', () => {
 			'//script[contains(@src,"https://www.googletagmanager.com/gtag/js?id=UA-130569087-3")]'
 		);
 		expect( tagManagerScriptTag.length ).toEqual( 0 );
-
 	} );
 
 } );

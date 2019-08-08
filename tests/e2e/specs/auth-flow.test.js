@@ -1,15 +1,12 @@
-/* eslint-env node */
-/* global page, jestPuppeteer */
-
 /**
  * WordPress dependencies
  */
-import { activatePlugin, deactivatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
  */
-import { deactivateAllOtherPlugins, resetSiteKit } from '../utils';
+import { pasteText } from '../utils';
 
 const oauthClientConfig = JSON.stringify( {
 	'web': {
@@ -27,7 +24,7 @@ function stubGoogleSignIn( request ) {
 		request.respond( {
 			status: 302,
 			headers: {
-				location: createURL( '/', 'oauth2callback=1&code=valid-test-code' )
+				location: createURL( '/', 'oauth2callback=1&code=valid-test-code&e2e-site-verification=1' )
 			}
 		} );
 	} else {
@@ -38,21 +35,14 @@ function stubGoogleSignIn( request ) {
 describe( 'Site Kit set up flow for the first time', () => {
 
 	beforeAll( async() => {
-		await deactivateAllOtherPlugins();
-		await resetSiteKit();
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
-	} );
-
-	afterAll( async() => {
-		await deactivateAllOtherPlugins();
-		await resetSiteKit();
 	} );
 
 	it( 'authenticates from splash page', async() => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 		await page.waitForSelector( '#client-configuration' );
 
-		await page.type( '#client-configuration', oauthClientConfig );
+		await pasteText( '#client-configuration', oauthClientConfig );
 		await page.click( '#wizard-step-one-proceed' );
 		await page.waitForSelector( '.googlesitekit-wizard-step--two .mdc-button' );
 

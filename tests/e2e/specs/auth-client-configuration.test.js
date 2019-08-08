@@ -1,20 +1,17 @@
 /**
  * WordPress dependencies
  */
-import { activatePlugin, deactivatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { visitAdminPage } from '@wordpress/e2e-test-utils';
+
+/**
+ * Internal dependencies
+ */
+import { pasteText } from '../utils';
 
 describe( 'Providing client configuration', () => {
 
-	beforeAll( async() => {
-		await activatePlugin( 'google-site-kit' );
-	} );
-
 	beforeEach( async() => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
-	} );
-
-	afterAll( async() => {
-		await deactivatePlugin( 'google-site-kit' );
 	} );
 
 	it( 'Should have disabled button on load', async() => {
@@ -29,8 +26,7 @@ describe( 'Providing client configuration', () => {
 	it( 'Should have disabled button and display error when input is invalid', async() => {
 
 		await page.waitForSelector( '#client-configuration' );
-		page.click( '#client-configuration' );
-		await page.keyboard.type( 'This is not valid JSON' );
+		await pasteText( '#client-configuration', '{ invalid json }' );
 
 		await page.waitForSelector( '.googlesitekit-error-text' );
 		await expect( page ).toMatchElement( '.googlesitekit-error-text', { text: 'Unable to parse client configuration values' } );
@@ -42,9 +38,6 @@ describe( 'Providing client configuration', () => {
 	it( 'Should have enabled button with valid value', async() => {
 
 		await page.waitForSelector( '#client-configuration' );
-		page.click( '#client-configuration' );
-
-		await page.waitForSelector( '.mdc-text-field--focused' );
 
 		const configJSON = `{
 			"web": {
@@ -56,13 +49,13 @@ describe( 'Providing client configuration', () => {
 				"client_secret": "this_is_not_real"
 			}
 		}`;
-		await page.keyboard.type( configJSON );
+		await pasteText( '#client-configuration', configJSON );
 
 		await expect( page ).not.toMatchElement( '.googlesitekit-error-text', { text: 'Unable to parse client configuration values' } );
 
 		expect( await page.$eval( '#wizard-step-one-proceed', ( el ) => el.matches( '[disabled]' ) ) ).toBe( false );
 
-		page.click( '#wizard-step-one-proceed' );
+		await page.click( '#wizard-step-one-proceed' );
 
 		await page.waitForSelector( '.googlesitekit-wizard-step--two' );
 

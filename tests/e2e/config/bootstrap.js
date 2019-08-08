@@ -13,6 +13,11 @@ import {
 } from '@wordpress/e2e-test-utils';
 
 /**
+ * Internal dependencies
+ */
+import { resetSiteKit, deactivateAllOtherPlugins } from '../utils';
+
+/**
  * Environment variables
  */
 const { PUPPETEER_TIMEOUT } = process.env;
@@ -122,6 +127,33 @@ function observeConsoleLogging() {
 	} );
 }
 
+/**
+ * Observe the given REST request.
+ */
+function observeRestRequest( req ) {
+	if ( req.url().match( 'wp-json' ) ) {
+		// eslint-disable-next-line no-console
+		console.log( '>>>', req.method(), req.url(), req.postData() );
+	}
+}
+
+/**
+ * Observe the given REST response.
+ */
+async function observeRestResponse( res ) {
+	if ( res.url().match( 'wp-json' ) ) {
+		const args = [ res.status(), res.request().method(), res.url() ];
+
+		// The response may fail to resolve if the test ends before it completes.
+		try {
+			args.push( await res.text() );
+		} catch ( err ) {} // eslint-disable-line no-empty
+
+		// eslint-disable-next-line no-console
+		console.log( ...args );
+	}
+}
+
 // Before every test suite run, delete all content created by the test. This ensures
 // other posts/comments/etc. aren't dirtying tests and tests don't depend on
 // each other's side-effects.
@@ -129,7 +161,14 @@ beforeAll( async() => {
 	capturePageEventsForTearDown();
 	enablePageDialogAccept();
 	observeConsoleLogging();
+	if ( process.env.DEBUG_REST ) {
+		page.on( 'request', observeRestRequest );
+		page.on( 'response', observeRestResponse );
+	}
 	await setBrowserViewport( 'large' );
+
+	await deactivateAllOtherPlugins();
+	await resetSiteKit();
 } );
 
 afterEach( async() => {
@@ -137,6 +176,9 @@ afterEach( async() => {
 	await setBrowserViewport( 'large' );
 } );
 
-afterAll( () => {
+afterAll( async() => {
 	removePageEvents();
+
+	await deactivateAllOtherPlugins();
+	await resetSiteKit();
 } );

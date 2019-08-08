@@ -30,8 +30,14 @@ add_action( 'init', function () {
 		)
 	);
 
-	activate_plugin(
-		__DIR__ . '/auth.php',
+	$plugins_to_activate = array( __DIR__ . '/auth.php' );
+
+	if ( ! empty( $_GET['e2e-site-verification'] ) ) {
+		$plugins_to_activate[] = __DIR__ . '/site-verification.php';
+	}
+
+	activate_plugins(
+		$plugins_to_activate,
 		$success_redirect,
 		false,
 		true
