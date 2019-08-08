@@ -3,6 +3,11 @@
  */
 import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-utils';
 
+/**
+ * Internal dependencies
+ */
+import { resetSiteKit, deactivateAllOtherPlugins } from '../utils';
+
 const oauthClientConfig = JSON.stringify( {
 	'web': {
 		'client_id': 'test-client-id',
@@ -49,6 +54,11 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 	beforeEach( async() => {
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
+	} );
+
+	afterEach( async() => {
+		await deactivateAllOtherPlugins();
+		await resetSiteKit();
 	} );
 
 	afterAll( async() => {

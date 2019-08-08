@@ -1,7 +1,13 @@
 /**
  * WordPress dependencies
  */
-import { visitAdminPage, activatePlugin, deactivatePlugin } from '@wordpress/e2e-test-utils';
+import { visitAdminPage, activatePlugin } from '@wordpress/e2e-test-utils';
+
+/**
+ * Internal dependencies
+ */
+import { resetSiteKit, deactivateAllOtherPlugins } from '../utils';
+
 
 describe( 'PageSpeed Insights Activation', () => {
 	beforeEach( async() => {
@@ -10,8 +16,8 @@ describe( 'PageSpeed Insights Activation', () => {
 	} );
 
 	afterEach( async() => {
-		await deactivatePlugin( 'e2e-tests-auth-plugin' );
-		await deactivatePlugin( 'e2e-tests-site-verification-plugin' );
+		await deactivateAllOtherPlugins();
+		await resetSiteKit();
 	} );
 
 	it( 'should lead you to the activation page', async() => {
