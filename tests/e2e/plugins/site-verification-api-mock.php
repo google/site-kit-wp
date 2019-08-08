@@ -83,7 +83,7 @@ add_action( 'rest_api_init', function () {
 
 				return array(
 					'updated'    => true,
-					'sites'      => array( $data['siteURL'] ),
+					'sites'      => array(),
 					'identifier' => $data['siteURL'],
 				);
 			}
