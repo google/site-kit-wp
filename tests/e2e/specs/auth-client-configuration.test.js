@@ -1,20 +1,12 @@
 /**
  * WordPress dependencies
  */
-import { activatePlugin, deactivatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { visitAdminPage } from '@wordpress/e2e-test-utils';
 
 describe( 'Providing client configuration', () => {
 
-	beforeAll( async() => {
-		await activatePlugin( 'google-site-kit' );
-	} );
-
 	beforeEach( async() => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
-	} );
-
-	afterAll( async() => {
-		await deactivatePlugin( 'google-site-kit' );
 	} );
 
 	it( 'Should have disabled button on load', async() => {
