@@ -56,7 +56,6 @@ describe( 'Providing client configuration', () => {
 
 		await page.waitForSelector( '#opt-in' );
 
-		// await page.$eval( '#opt-in', elem => elem.click() );
 		await expect( page ).toClick( '#opt-in' );
 
 		await page.waitForResponse( res => {
@@ -67,23 +66,23 @@ describe( 'Providing client configuration', () => {
 
 		await page.waitForSelector( '.mdc-checkbox:not(.mdc-checkbox--selected) #opt-in' );
 
-		// Ensure no checked checkbox exists.
-		const optinChecked = await page.$( '.mdc-checkbox--selected #opt-in' );
-		expect( optinChecked ).toBeNull();
-
 		// Ensure unchecked checkbox exists.
 		const optinUnChecked = await page.$( '.mdc-checkbox:not(.mdc-checkbox--selected) #opt-in' );
 		expect( optinUnChecked.length ).not.toEqual( 0 );
-
 	} );
 
 	it( 'should not have tracking code when not opted in', async() => {
-
 		await page.waitForSelector( '#opt-in' );
 
-		// Ensure no checked checkbox exists.
-		const optinChecked = await page.$( '.mdc-checkbox--selected #opt-in' );
-		expect( optinChecked ).toBeNull();
+		await expect( page ).toClick( '#opt-in' );
+
+		await page.waitForResponse( res => {
+			const reqURL = new URL( res.url() );
+
+			return '/wp-json/wp/v2/settings' === reqURL.pathname;
+		} );
+
+		await page.reload();
 
 		// Ensure unchecked checkbox exists.
 		const optinUnChecked = await page.$( '.mdc-checkbox:not(.mdc-checkbox--selected) #opt-in' );
@@ -100,7 +99,6 @@ describe( 'Providing client configuration', () => {
 			'//script[contains(@src,"https://www.googletagmanager.com/gtag/js?id=UA-130569087-3")]'
 		);
 		expect( tagManagerScriptTag.length ).toEqual( 0 );
-
 	} );
 
 } );
