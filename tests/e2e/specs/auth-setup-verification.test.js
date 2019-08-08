@@ -80,7 +80,7 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 
 		await page.waitForSelector( '.googlesitekit-wizard-step__inputs [name="siteProperty"]' );
 
-		await expect ( page ).toClick( '.googlesitekit-wizard-step__action button', { text: /Continue/i } );
+		await expect( page ).toClick( '.googlesitekit-wizard-step__action button', { text: /Continue/i } );
 
 		await page.waitForSelector( '.googlesitekit-wizard-step__action button' );
 
