@@ -8,7 +8,6 @@
  */
 
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Plugin;
 
 register_activation_hook( __FILE__, function () {
 	delete_transient( 'gsk_e2e_site_verified' );
@@ -19,23 +18,15 @@ register_deactivation_hook( __FILE__, function () {
 
 add_action( 'rest_api_init', function () {
 
-	$get_site_url = function ($data) {
-		if ( (bool) get_transient( 'gsk_e2e_site_verified' ) ) {
-			return Plugin::instance()->context()->get_reference_site_url();
-		}
-
-		return isset( $data['siteURL'] ) ? $data['siteURL'] : '';
-	};
-
 	register_rest_route(
 		REST_Routes::REST_ROOT,
 		'modules/search-console/data/is-site-exist',
 		array(
-			'callback' => function ( WP_REST_Request $request ) use ( $get_site_url ) {
+			'callback' => function ( WP_REST_Request $request ) {
 				$data = $request->get_param( 'data' );
 
 				return array(
-					'siteURL'  => $get_site_url( $data ),
+					'siteURL'  => $data['siteURL'],
 					'verified' => (bool) get_transient( 'gsk_e2e_site_verified' ),
 				);
 			}
@@ -47,12 +38,10 @@ add_action( 'rest_api_init', function () {
 		REST_Routes::REST_ROOT,
 		'modules/search-console/data/siteverification-list',
 		array(
-			'callback' => function ( WP_REST_Request $request ) use ( $get_site_url ) {
-				$data = $request->get_param( 'data' );
-
+			'callback' => function () {
 				return array(
 					'type'       => 'SITE',
-					'identifier' => $get_site_url( $data ),
+					'identifier' => home_url( '/' ),
 					'verified'   => (bool) get_transient( 'gsk_e2e_site_verified' ),
 				);
 			}
