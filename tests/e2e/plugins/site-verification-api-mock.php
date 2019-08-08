@@ -104,6 +104,25 @@ add_action( 'rest_api_init', function () {
 
 	register_rest_route(
 		REST_Routes::REST_ROOT,
+		'modules/search-console/data/matched-sites',
+		array(
+			'callback' => function ( WP_REST_Request $request ) {
+				$data = $request->get_param( 'data' );
+				update_user_option(
+					get_current_user_id(),
+					'googlesitekit_search_console_property',
+					'verified'
+				);
+				return array(
+					'exact_match' => site_url( '/' ),
+				);
+			}
+		),
+		true
+	);
+
+	register_rest_route(
+		REST_Routes::REST_ROOT,
 		'e2e/verify-site',
 		array(
 			'methods'  => 'POST',
