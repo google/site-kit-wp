@@ -1,8 +1,17 @@
 /**
+ * External dependencies
+ */
+import { URL } from 'url';
+
+/**
  * WordPress dependencies
  */
 import { activatePlugin, deactivatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
-import { URL } from 'url';
+
+/**
+ * Internal dependencies
+ */
+import { resetSiteKit } from '../utils';
 
 describe( 'Providing client configuration', () => {
 
@@ -12,6 +21,8 @@ describe( 'Providing client configuration', () => {
 	} );
 
 	beforeEach( async() => {
+		await resetSiteKit();
+
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await page.waitForSelector( '.mdc-tab-bar' );
 
