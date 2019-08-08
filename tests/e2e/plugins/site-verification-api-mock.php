@@ -88,7 +88,7 @@ add_action( 'rest_api_init', function () {
 
 				update_user_option(
 					get_current_user_id(),
-					'googlesitekit_search_console_property',
+					'googlesitekit_site_verified_meta',
 					'verified'
 				);
 
