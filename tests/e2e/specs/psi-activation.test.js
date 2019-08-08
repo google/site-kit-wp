@@ -12,10 +12,12 @@ describe( 'PageSpeed Insights Activation', () => {
 	beforeEach( async() => {
 		await resetSiteKit();
 		await activatePlugin( 'e2e-tests-auth-plugin' );
+		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 	} );
 
 	afterEach( async() => {
 		await deactivatePlugin( 'e2e-tests-auth-plugin' );
+		await deactivatePlugin( 'e2e-tests-site-verification-plugin' );
 	} );
 
 	it( 'should lead you to the activation page', async() => {
