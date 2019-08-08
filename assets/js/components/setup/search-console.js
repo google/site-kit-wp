@@ -48,24 +48,29 @@ class SearchConsole extends Component {
 		this.submitPropertyEventHandler = this.submitPropertyEventHandler.bind( this );
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		const { isAuthenticated, shouldSetup } = this.props;
 
-		if ( isAuthenticated && shouldSetup ) {
-			this.requestSearchConsoleSiteList();
-		}
-	}
-
-	shouldComponentUpdate( nextProps ) {
-		const { isAuthenticated, shouldSetup } = nextProps;
-		const { sites } = this.state;
-
-		if ( isAuthenticated && shouldSetup && false === sites ) {
-
-			this.requestSearchConsoleSiteList();
+		if ( ! isAuthenticated || ! shouldSetup ) {
+			return;
 		}
 
-		return true;
+		try {
+			const isSiteExist = await data.get( 'modules', 'search-console', 'is-site-exist' );
+			if ( isSiteExist && true === isSiteExist.verified ) {
+				const savePropertyResponse = await data.set( 'modules', 'search-console', 'save-property', { siteURL: isSiteExist.siteURL } );
+				if ( true === savePropertyResponse.status ) {
+					return this.props.searchConsoleSetup( isSiteExist.siteURL );
+				}
+			}
+
+			// Fallback to request match sites and exact match site.
+			this.requestSearchConsoleSiteList();
+		} catch {
+
+			// Fallback to request match sites and exact match site.
+			this.requestSearchConsoleSiteList();
+		}
 	}
 
 	/**
@@ -122,16 +127,12 @@ class SearchConsole extends Component {
 	 * @param { string } siteURL
 	 */
 	async insertPropertyToSearchConsole( siteURL ) {
-		try {
-			let response = await data.set( 'modules', 'search-console', 'insert', { siteURL } );
-			this.setState( {
-				loading: false,
-				connected: true,
-				sites: response.sites,
-			} );
-		} catch ( err ) {
-			throw err;
-		}
+		const response = await data.set( 'modules', 'search-console', 'insert', { siteURL } );
+		this.setState( {
+			loading: false,
+			connected: true,
+			sites: response.sites,
+		} );
 	}
 
 	/**
@@ -144,11 +145,6 @@ class SearchConsole extends Component {
 		( async() => {
 			try {
 				await this.insertPropertyToSearchConsole( siteURL );
-
-				this.setState( {
-					loading: false,
-					connected: true,
-				} );
 
 				setErrorMessage( '' );
 				this.props.searchConsoleSetup( siteURL );
@@ -274,8 +270,18 @@ class SearchConsole extends Component {
 
 	render() {
 
-		const { isAuthenticated, shouldSetup } = this.props;
-		const { errorMsg } = this.state;
+		const {
+			isAuthenticated,
+			shouldSetup,
+		} = this.props;
+		const {
+			errorMsg,
+			connected,
+		} = this.state;
+
+		if ( ! shouldSetup || connected ) {
+			return SearchConsole.connected();
+		}
 
 		return (
 			<section className="googlesitekit-setup-module googlesitekit-setup-module--search-console">
@@ -285,8 +291,6 @@ class SearchConsole extends Component {
 				">
 					{ __( 'Search Console', 'google-site-kit' ) }
 				</h2>
-
-				{ ! shouldSetup && <p className="googlesitekit-setup-module__text--no-margin">{ __( 'We will connect Search Console. No account? Don’t worry, we will create one here.', 'google-site-kit' ) }</p> }
 
 				{
 					errorMsg && 0 < errorMsg.length &&
