@@ -6,7 +6,7 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
 /**
  * Internal dependencies
  */
-import { resetSiteKit, deactivateAllOtherPlugins } from '../utils';
+import { resetSiteKit, deactivateAllOtherPlugins, pasteText } from '../utils';
 
 const oauthClientConfig = JSON.stringify( {
 	'web': {
@@ -18,16 +18,6 @@ const oauthClientConfig = JSON.stringify( {
 		'auth_provider_x509_cert_url': 'https://www.googleapis.com/oauth2/v1/certs'
 	}
 } );
-
-/**
- * @link https://stackoverflow.com/a/46012210/1037938
- */
-async function simulatePastingClientConfiguration() {
-	await page.$eval( '#client-configuration', ( textarea, config ) => {
-		Object.getOwnPropertyDescriptor( window.HTMLTextAreaElement.prototype, 'value' ).set.call( textarea, config );
-		textarea.dispatchEvent( new Event( 'input', { bubbles: true } ) );
-	}, oauthClientConfig );
-}
 
 describe( 'Site Kit set up flow for the first time with site verification', () => {
 
@@ -69,7 +59,7 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 		await page.waitForSelector( '#client-configuration' );
 
-		await simulatePastingClientConfiguration();
+		await pasteText( '#client-configuration', oauthClientConfig );
 		await expect( page ).toClick( '#wizard-step-one-proceed' );
 		await page.waitForSelector( '.googlesitekit-wizard-step--two button' );
 
@@ -109,7 +99,7 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 		await page.waitForSelector( '#client-configuration' );
 
-		await simulatePastingClientConfiguration();
+		await pasteText( '#client-configuration', oauthClientConfig );
 		await expect( page ).toClick( '#wizard-step-one-proceed' );
 		await page.waitForSelector( '.googlesitekit-wizard-step--two button' );
 
