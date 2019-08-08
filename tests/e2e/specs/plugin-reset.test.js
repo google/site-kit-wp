@@ -6,10 +6,12 @@ import { deactivatePlugin, activatePlugin, visitAdminPage } from '@wordpress/e2e
 describe( 'Plugin Reset', () => {
 	beforeAll( async() => {
 		await activatePlugin( 'e2e-tests-auth-plugin' );
+		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 	} );
 
 	afterAll( async() => {
 		await deactivatePlugin( 'e2e-tests-auth-plugin' );
+		await deactivatePlugin( 'e2e-tests-site-verification-plugin' );
 	} );
 
 	beforeEach( async() => {
