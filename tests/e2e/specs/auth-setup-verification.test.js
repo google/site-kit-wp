@@ -1,6 +1,3 @@
-/* eslint-env node */
-/* global page */
-
 /**
  * WordPress dependencies
  */
