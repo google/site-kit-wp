@@ -3,11 +3,6 @@
  */
 import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-utils';
 
-/**
- * Internal dependencies
- */
-import { deactivateAllOtherPlugins, resetSiteKit } from '../utils';
-
 const oauthClientConfig = JSON.stringify( {
 	'web': {
 		'client_id': 'test-client-id',
@@ -35,14 +30,7 @@ function stubGoogleSignIn( request ) {
 describe( 'Site Kit set up flow for the first time', () => {
 
 	beforeAll( async() => {
-		await deactivateAllOtherPlugins();
-		await resetSiteKit();
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
-	} );
-
-	afterAll( async() => {
-		await deactivateAllOtherPlugins();
-		await resetSiteKit();
 	} );
 
 	it( 'authenticates from splash page', async() => {

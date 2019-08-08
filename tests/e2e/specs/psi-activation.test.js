@@ -3,14 +3,8 @@
  */
 import { visitAdminPage, activatePlugin, deactivatePlugin } from '@wordpress/e2e-test-utils';
 
-/**
- * Internal dependencies
- */
-import { resetSiteKit } from '../utils';
-
 describe( 'PageSpeed Insights Activation', () => {
 	beforeEach( async() => {
-		await resetSiteKit();
 		await activatePlugin( 'e2e-tests-auth-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 	} );

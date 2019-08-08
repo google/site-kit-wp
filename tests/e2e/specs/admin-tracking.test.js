@@ -3,14 +3,12 @@
  */
 import { activatePlugin, deactivatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 import { URL } from 'url';
-import { resetSiteKit } from '../utils';
 
 describe( 'Providing client configuration', () => {
 
 	beforeAll( async() => {
 		await activatePlugin( 'e2e-tests-auth-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-plugin' );
-		await resetSiteKit();
 	} );
 
 	beforeEach( async() => {
@@ -22,7 +20,6 @@ describe( 'Providing client configuration', () => {
 	} );
 
 	afterAll( async() => {
-		await resetSiteKit();
 		await deactivatePlugin( 'e2e-tests-auth-plugin' );
 		await deactivatePlugin( 'e2e-tests-site-verification-plugin' );
 	} );

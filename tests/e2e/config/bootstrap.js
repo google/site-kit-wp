@@ -13,6 +13,11 @@ import {
 } from '@wordpress/e2e-test-utils';
 
 /**
+ * Internal dependencies
+ */
+import { resetSiteKit, deactivateAllOtherPlugins } from '../utils';
+
+/**
  * Environment variables
  */
 const { PUPPETEER_TIMEOUT } = process.env;
@@ -161,6 +166,12 @@ beforeAll( async() => {
 		page.on( 'response', observeRestResponse );
 	}
 	await setBrowserViewport( 'large' );
+
+	await deactivateAllOtherPlugins();
+} );
+
+beforeEach( async() => {
+	await resetSiteKit();
 } );
 
 afterEach( async() => {
@@ -168,6 +179,9 @@ afterEach( async() => {
 	await setBrowserViewport( 'large' );
 } );
 
-afterAll( () => {
+afterAll( async() => {
 	removePageEvents();
+
+	await deactivateAllOtherPlugins();
+	await resetSiteKit();
 } );
