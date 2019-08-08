@@ -168,9 +168,6 @@ beforeAll( async() => {
 	await setBrowserViewport( 'large' );
 
 	await deactivateAllOtherPlugins();
-} );
-
-beforeEach( async() => {
 	await resetSiteKit();
 } );
 
