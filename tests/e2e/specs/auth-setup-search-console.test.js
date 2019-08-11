@@ -44,7 +44,6 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 	beforeEach( async() => {
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
-		await activatePlugin( 'e2e-tests-search-console-api-mock' );
 
 		// Wait until apiFetch is available
 		await page.waitForFunction( () => window.wp !== undefined );
