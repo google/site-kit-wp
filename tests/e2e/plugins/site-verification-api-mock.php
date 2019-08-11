@@ -20,22 +20,6 @@ add_action( 'rest_api_init', function () {
 
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'modules/search-console/data/is-site-exist',
-		array(
-			'callback' => function ( WP_REST_Request $request ) {
-				$data = $request->get_param( 'data' );
-
-				return array(
-					'siteURL'  => $data['siteURL'],
-					'verified' => (bool) get_transient( 'gsk_e2e_site_verified' ),
-				);
-			}
-		),
-		true
-	);
-
-	register_rest_route(
-		REST_Routes::REST_ROOT,
 		'modules/search-console/data/siteverification-list',
 		array(
 			'callback' => function () {
@@ -43,24 +27,6 @@ add_action( 'rest_api_init', function () {
 					'type'       => 'SITE',
 					'identifier' => home_url( '/' ),
 					'verified'   => (bool) get_transient( 'gsk_e2e_site_verified' ),
-				);
-			}
-		),
-		true
-	);
-
-	register_rest_route(
-		REST_Routes::REST_ROOT,
-		'modules/search-console/data/insert',
-		array(
-			'methods'  => 'POST',
-			'callback' => function ( WP_REST_Request $request ) {
-				$data = $request->get_param( 'data' );
-
-				update_option( 'googlesitekit_search_console_property', $data['siteURL'] );
-
-				return array(
-					'sites' => array( $data['siteURL'] ),
 				);
 			}
 		),
