@@ -63,9 +63,10 @@ function capturePageEventsForTearDown() {
  * Removes all bound page event handlers.
  */
 function removePageEvents() {
-	pageEvents.forEach( ( [ eventName, handler ] ) => {
+	while ( pageEvents.length ) {
+		const [ eventName, handler ] = pageEvents.pop();
 		page.removeListener( eventName, handler );
-	} );
+	}
 }
 
 /**
