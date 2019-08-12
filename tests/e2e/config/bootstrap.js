@@ -177,8 +177,7 @@ afterEach( async() => {
 } );
 
 afterAll( async() => {
-	removePageEvents();
-
 	await deactivateAllOtherPlugins();
 	await resetSiteKit();
+	removePageEvents();
 } );
