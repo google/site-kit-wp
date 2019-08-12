@@ -68,6 +68,7 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 	} );
 
 	it( 'inserts property to search console when site does not exist', async() => {
+
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 		await page.waitForSelector( '#client-configuration' );
 
@@ -78,6 +79,7 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 		await expect( page ).toClick( '.googlesitekit-wizard-step--two button', { text: /sign in with Google/i } );
 		await page.waitForNavigation();
 
+		await page.waitForSelector( '.googlesitekit-setup-module__title' );
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Search Console/i } );
 
 		await page.waitForSelector( '.googlesitekit-wizard-step__action button' );
@@ -109,6 +111,7 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 		await expect( page ).toClick( '.googlesitekit-wizard-step--two button', { text: /sign in with Google/i } );
 		await page.waitForNavigation();
 
+		await page.waitForSelector( '.googlesitekit-setup-module__title' );
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Search Console/i } );
 
 		await page.waitForSelector( '.googlesitekit-wizard-step__action button' );
