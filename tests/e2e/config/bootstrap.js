@@ -186,4 +186,5 @@ afterAll( async() => {
 	await deactivateAllOtherPlugins();
 	await resetSiteKit();
 	removePageEvents();
+	await page.setRequestInterception( false );
 } );
