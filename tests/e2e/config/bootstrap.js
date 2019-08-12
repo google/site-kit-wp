@@ -15,7 +15,11 @@ import {
 /**
  * Internal dependencies
  */
-import { resetSiteKit, deactivateAllOtherPlugins } from '../utils';
+import {
+	clearSessionStorage,
+	deactivateAllOtherPlugins,
+	resetSiteKit,
+} from '../utils';
 
 /**
  * Environment variables
@@ -173,6 +177,7 @@ beforeAll( async() => {
 
 afterEach( async() => {
 	await clearLocalStorage();
+	await clearSessionStorage();
 	await setBrowserViewport( 'large' );
 } );
 
