@@ -20,7 +20,11 @@ const oauthClientConfig = JSON.stringify( {
 } );
 
 function stubGoogleSignIn( request ) {
-	if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
+	if ( ! request._allowInterception ) {
+
+		// prevent errors for requests that happen after interception is disabled
+		return;
+	} else if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
 		request.respond( {
 			status: 302,
 			headers: {
