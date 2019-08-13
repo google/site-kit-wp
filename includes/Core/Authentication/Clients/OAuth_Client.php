@@ -574,7 +574,8 @@ final class OAuth_Client {
 				$message = __( 'Unable to receive access token because of an unsupported grant type.', 'google-site-kit' );
 				break;
 			default:
-				$message = __( 'Unknown Error', 'google-site-kit' );
+				/* translators: %s: error code from API */
+				$message = sprintf( __( 'Unknown Error (code: %s).', 'google-site-kit' ), (string) $error_code );
 				break;
 		}
 
