@@ -40,6 +40,19 @@ fi
 echo -e $(status_message "Installing WordPress...")
 wp core install --title="$SITE_TITLE" --admin_user=admin --admin_password=password --admin_email=test@test.com --skip-email --url=http://localhost:$HOST_PORT  --quiet
 
+# Install additional Users.
+echo -e $(status_message "Installing additional users...")
+wp user create admin-2 admin-2@example.com --role=administrator --user_pass=password --quiet
+echo -e $(status_message "Admin 2 created! Username: admin-2 Password: password")
+wp user create editor editor@example.com --role=editor --user_pass=password --quiet
+echo -e $(status_message "Editor created! Username: editor Password: password")
+wp user create author author@example.com --role=author --user_pass=password --quiet
+echo -e $(status_message "Author created! Username: author Password: password")
+wp user create contributor contributor@example.com --role=contributor --user_pass=password --quiet
+echo -e $(status_message "Contributor created! Username: contributor Password: password")
+# Assign the existing Hello World post to the author.
+wp post update 1 --post_author=2 --quiet
+
 # Make sure the uploads and upgrade folders exist and we have permissions to add files.
 echo -e $(status_message "Ensuring that files can be uploaded...")
 container mkdir -p \
