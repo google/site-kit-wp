@@ -6,7 +6,7 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
 /**
  * Internal dependencies
  */
-import { wpApiFetch, deactivateAllOtherPlugins, resetSiteKit } from '../utils';
+import { wpApiFetch, deactivateAllOtherPlugins, resetSiteKit } from '../../../utils';
 
 async function proceedToSetUpAnalytics() {
 	await Promise.all( [
