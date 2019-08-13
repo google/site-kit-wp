@@ -20,4 +20,4 @@ fi
 
 # Stop existing containers.
 echo -e $(status_message "Stopping Docker containers...")
-docker-compose $DOCKER_COMPOSE_FILE_OPTIONS down --remove-orphans >/dev/null 2>&1
+dc down --remove-orphans >/dev/null 2>&1

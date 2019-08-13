@@ -17,7 +17,7 @@ cd "$(dirname "$0")/../.."
 # done on every time `npm run test-e2e` is run.
 . "$(dirname "$0")/install-wordpress.sh"
 
-CURRENT_URL=$(docker-compose $DOCKER_COMPOSE_FILE_OPTIONS run -T --rm cli option get siteurl)
+CURRENT_URL=$(wp option get siteurl)
 
 echo -e "\nWelcome to...\n"
 echo -e "\033[95mGoogle Site Kit\033[0m"
