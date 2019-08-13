@@ -3,9 +3,6 @@
 # Exit if any command fails.
 set -e
 
-# Common variables.
-DOCKER_COMPOSE_FILE_OPTIONS="-f $(dirname "$0")/docker-compose.yml"
-
 # Include useful functions.
 . "$(dirname "$0")/includes.sh"
 

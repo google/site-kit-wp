@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Common variables.
+DOCKER_COMPOSE_FILE_OPTIONS="-f $(dirname "$0")/docker-compose.yml"
+# These are the containers and values for the development site.
+CLI='cli'
+CONTAINER='wordpress'
+SITE_TITLE='Google Site Kit Dev'
+
 ##
 # Ask a Yes/No question, and way for a reply.
 #

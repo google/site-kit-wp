@@ -4,18 +4,12 @@
 set -e
 
 # Common variables.
-DOCKER_COMPOSE_FILE_OPTIONS="-f $(dirname "$0")/docker-compose.yml"
 WP_DEBUG=${WP_DEBUG-false}
 SCRIPT_DEBUG=${SCRIPT_DEBUG-true}
 WP_VERSION=${WP_VERSION-"latest"}
 
 # Include useful functions
 . "$(dirname "$0")/includes.sh"
-
-# These are the containers and values for the development site.
-CLI='cli'
-CONTAINER='wordpress'
-SITE_TITLE='Google Site Kit Dev'
 
 # Get the host port for the WordPress container.
 HOST_PORT=$(docker-compose $DOCKER_COMPOSE_FILE_OPTIONS port $CONTAINER 80 | awk -F : '{printf $2}')
