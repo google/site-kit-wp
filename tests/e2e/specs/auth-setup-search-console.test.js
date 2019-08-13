@@ -24,6 +24,12 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 	beforeAll( async() => {
 		await page.setRequestInterception( true );
 		page.on( 'request', request => {
+			if ( ! request._allowInterception ) {
+
+				// prevent errors for requests that happen after interception is disabled.
+				return;
+			}
+
 			if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
 				request.respond( {
 					status: 302,

@@ -33,8 +33,6 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			if ( ! request._allowInterception ) {
 
 				// prevent errors for requests that happen after interception is disabled.
-				request.continue();
-
 				return;
 			}
 
