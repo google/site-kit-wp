@@ -69,6 +69,6 @@ add_action( 'init', function () {
 		true
 	);
 
-	wp_redirect( esc_url( $success_redirect ) );
+	wp_redirect( esc_url_raw( $success_redirect ) );
 	exit;
 }, 0 );
