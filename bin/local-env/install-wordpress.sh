@@ -11,6 +11,9 @@ WP_VERSION=${WP_VERSION-"latest"}
 # Include useful functions
 . "$(dirname "$0")/includes.sh"
 
+# Make sure Docker containers are running
+dc up -d >/dev/null 2>&1
+
 # Get the host port for the WordPress container.
 HOST_PORT=$(dc port $CONTAINER 80 | awk -F : '{printf $2}')
 
