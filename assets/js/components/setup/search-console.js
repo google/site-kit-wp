@@ -22,6 +22,7 @@ import { Select, TextField, Input } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
 import Button from 'SiteKitCore/components/button';
 import HelpLink from 'GoogleComponents/help-link';
+import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 
 const { __, sprintf } = wp.i18n;
 const { Component, Fragment } = wp.element;
@@ -128,6 +129,8 @@ class SearchConsole extends Component {
 	 */
 	async insertPropertyToSearchConsole( siteURL ) {
 		const response = await data.set( 'modules', 'search-console', 'insert', { siteURL } );
+		sendAnalyticsTrackingEvent( 'search_console_setup', 'add_new_sc_property' );
+
 		this.setState( {
 			loading: false,
 			connected: true,
