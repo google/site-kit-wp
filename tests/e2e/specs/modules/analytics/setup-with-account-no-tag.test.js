@@ -16,15 +16,29 @@ async function proceedToSetUpAnalytics() {
 	] );
 }
 
+const setReferenceUrl = async() => {
+	return wpApiFetch( {
+		path: 'google-site-kit/v1/e2e/reference-url',
+		method: 'post',
+		data: {
+			url: 'http://non-matching-url.test'
+		}
+	} );
+};
+
 describe( 'setting up the Analytics module with an existing account and no existing tag', () => {
 	beforeAll( async() => {
 		await page.setRequestInterception( true );
 		page.on( 'request', request => {
 			if ( ! request._allowInterception ) {
 
-				// prevent errors for requests that happen after interception is disabled
+				// prevent errors for requests that happen after interception is disabled.
+				request.continue();
+
 				return;
-			} else if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
+			}
+
+			if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
 				request.respond( {
 					status: 302,
 					headers: {
@@ -103,14 +117,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 	} );
 
 	it( 'prompts for account and property if the site URL does not match a property belonging to the user', async() => {
-
-		await wpApiFetch( {
-			path: 'google-site-kit/v1/e2e/reference-url',
-			method: 'post',
-			data: {
-				url: 'http://non-matching-url.test'
-			}
-		} );
+		await setReferenceUrl();
 
 		await proceedToSetUpAnalytics();
 
