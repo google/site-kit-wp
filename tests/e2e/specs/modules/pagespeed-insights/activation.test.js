@@ -6,8 +6,7 @@ import { visitAdminPage, activatePlugin } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { resetSiteKit, deactivateAllOtherPlugins } from '../utils';
-
+import { resetSiteKit, deactivateAllOtherPlugins } from '../../../utils';
 
 describe( 'PageSpeed Insights Activation', () => {
 	beforeEach( async() => {

@@ -15,7 +15,11 @@ import {
 /**
  * Internal dependencies
  */
-import { resetSiteKit, deactivateAllOtherPlugins } from '../utils';
+import {
+	clearSessionStorage,
+	deactivateAllOtherPlugins,
+	resetSiteKit,
+} from '../utils';
 
 /**
  * Environment variables
@@ -59,9 +63,10 @@ function capturePageEventsForTearDown() {
  * Removes all bound page event handlers.
  */
 function removePageEvents() {
-	pageEvents.forEach( ( [ eventName, handler ] ) => {
+	while ( pageEvents.length ) {
+		const [ eventName, handler ] = pageEvents.pop();
 		page.removeListener( eventName, handler );
-	} );
+	}
 }
 
 /**
@@ -161,7 +166,7 @@ beforeAll( async() => {
 	capturePageEventsForTearDown();
 	enablePageDialogAccept();
 	observeConsoleLogging();
-	if ( process.env.DEBUG_REST ) {
+	if ( '1' === process.env.DEBUG_REST ) {
 		page.on( 'request', observeRestRequest );
 		page.on( 'response', observeRestResponse );
 	}
@@ -173,12 +178,13 @@ beforeAll( async() => {
 
 afterEach( async() => {
 	await clearLocalStorage();
+	await clearSessionStorage();
 	await setBrowserViewport( 'large' );
 } );
 
 afterAll( async() => {
-	removePageEvents();
-
 	await deactivateAllOtherPlugins();
 	await resetSiteKit();
+	removePageEvents();
+	await page.setRequestInterception( false );
 } );
