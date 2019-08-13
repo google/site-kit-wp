@@ -166,7 +166,7 @@ beforeAll( async() => {
 	capturePageEventsForTearDown();
 	enablePageDialogAccept();
 	observeConsoleLogging();
-	if ( +process.env.DEBUG_REST ) {
+	if ( '1' === process.env.DEBUG_REST ) {
 		page.on( 'request', observeRestRequest );
 		page.on( 'response', observeRestResponse );
 	}
