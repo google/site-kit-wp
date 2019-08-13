@@ -6,7 +6,7 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
 /**
  * Internal dependencies
  */
-import { resetSiteKit, deactivateAllOtherPlugins, pasteText } from '../utils';
+import { resetSiteKit, deactivateAllOtherPlugins, pasteText, wpApiFetch } from '../utils';
 
 const oauthClientConfig = JSON.stringify( {
 	'web': {
@@ -45,16 +45,10 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
 
-		// Wait until apiFetch is available
-		await page.waitForFunction( () => window.wp !== undefined );
-		await page.waitForFunction( () => window.wp.apiFetch !== undefined );
-
 		// Simulate that the user is already verified.
-		await page.evaluate( () => {
-			return window.wp.apiFetch( {
-				path: 'google-site-kit/v1/e2e/verify-site',
-				method: 'post',
-			} );
+		await wpApiFetch( {
+			path: 'google-site-kit/v1/e2e/verify-site',
+			method: 'post',
 		} );
 	} );
 
@@ -94,11 +88,9 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 	it( 'saves search console property when site exists', async() => {
 
 		// Simulate that site exists.
-		await page.evaluate( () => {
-			return window.wp.apiFetch( {
-				path: 'google-site-kit/v1/e2e/sc-site-exists',
-				method: 'post',
-			} );
+		await wpApiFetch( {
+			path: 'google-site-kit/v1/e2e/sc-site-exists',
+			method: 'post',
 		} );
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
