@@ -65,9 +65,6 @@ describe( 'Site Kit set up flow for the first time', () => {
 		await page.click( '.googlesitekit-wizard-step--two .mdc-button' );
 		await page.waitForNavigation();
 
-		await expect( page ).toClick( '.googlesitekit-wizard-step__action button', { text: /Go to Dashboard/i } );
-		await page.waitForNavigation();
-
 		await expect( page ).toMatchElement( '#js-googlesitekit-dashboard' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Site Kit!/i } );
 	} );
