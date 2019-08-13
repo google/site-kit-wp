@@ -139,3 +139,30 @@ action_format() {
 command_exists() {
 	type -t "$1" >/dev/null 2>&1
 }
+
+##
+# Docker Compose helper
+#
+# Calls docker-compose with common options.
+##
+dc() {
+	docker-compose $DOCKER_COMPOSE_FILE_OPTIONS "$@"
+}
+
+##
+# WP CLI
+#
+# Executes a WP CLI request in the CLI container.
+##
+wp() {
+	dc exec -u xfs $CLI wp "$@"
+}
+
+##
+# WordPress Container helper.
+#
+# Executes the given command in the wordpress container.
+##
+container() {
+	dc exec $CONTAINER "$@"
+}
