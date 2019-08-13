@@ -152,10 +152,8 @@ async function observeRestResponse( res ) {
 		// The response may fail to resolve if the test ends before it completes.
 		try {
 			args.push( await res.text() );
+			console.log( ...args ); // eslint-disable-line no-console
 		} catch ( err ) {} // eslint-disable-line no-empty
-
-		// eslint-disable-next-line no-console
-		console.log( ...args );
 	}
 }
 
