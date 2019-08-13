@@ -42,14 +42,6 @@ echo -e $(status_message "Installing WordPress...")
 # prevents permissions errors. See: https://github.com/WordPress/gutenberg/pull/8427#issuecomment-410232369
 docker-compose $DOCKER_COMPOSE_FILE_OPTIONS run --rm -u 33 $CLI core install --title="$SITE_TITLE" --admin_user=admin --admin_password=password --admin_email=test@test.com --skip-email --url=http://localhost:$HOST_PORT --quiet
 
-if [ "$E2E_ROLE" = "author" ]; then
-	echo -e $(status_message "Creating an additional author user for testing...")
-	# Create an additional author user for testing.
-	docker-compose $DOCKER_COMPOSE_FILE_OPTIONS run --rm -u 33 $CLI user create author author@example.com --role=author --user_pass=authpass --quiet
-	# Assign the existing Hello World post to the author.
-	docker-compose $DOCKER_COMPOSE_FILE_OPTIONS run --rm -u 33 $CLI post update 1 --post_author=2 --quiet
-fi
-
 # Make sure the uploads and upgrade folders exist and we have permissions to add files.
 echo -e $(status_message "Ensuring that files can be uploaded...")
 docker-compose $DOCKER_COMPOSE_FILE_OPTIONS run --rm $CONTAINER mkdir -p /var/www/html/wp-content/uploads /var/www/html/wp-content/upgrade
