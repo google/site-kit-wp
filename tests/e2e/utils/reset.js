@@ -1,7 +1,8 @@
 /**
  * Internal dependencies
  */
-import { activatePlugin, deactivatePlugin } from '@wordpress/e2e-test-utils';
+import { activatePlugin, deactivatePlugin, clearLocalStorage } from '@wordpress/e2e-test-utils';
+import { clearSessionStorage } from './clear-session-storage';
 
 const PLUGIN_SLUG = 'e2e-tests-reset-plugin';
 
@@ -10,5 +11,7 @@ const PLUGIN_SLUG = 'e2e-tests-reset-plugin';
  */
 export async function resetSiteKit() {
 	await activatePlugin( PLUGIN_SLUG );
+	clearLocalStorage();
+	clearSessionStorage();
 	await deactivatePlugin( PLUGIN_SLUG );
 }
