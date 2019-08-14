@@ -15,6 +15,10 @@ use Google\Site_Kit\Plugin;
  * Intercept test oAuth request before Site Kit, enable auth plugin, and redirect to auth success URL.
  */
 add_action( 'init', function () {
+	if ( ! defined( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE' ) ) {
+		return;
+	}
+
 	$context      = Plugin::instance()->context();
 	$user_options = new User_Options( $context );
 
@@ -65,6 +69,6 @@ add_action( 'init', function () {
 		true
 	);
 
-	wp_redirect( esc_url( $success_redirect ) );
+	wp_redirect( esc_url_raw( $success_redirect ) );
 	exit;
 }, 0 );

@@ -1,17 +1,24 @@
 /**
  * WordPress dependencies
  */
-import { deactivatePlugin, activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { visitAdminPage } from '@wordpress/e2e-test-utils';
+
+/**
+ * Internal dependencies
+ */
+import {
+	setAuthToken,
+	setClientConfig,
+	setSearchConsoleProperty,
+	setSiteVerification,
+} from '../utils';
 
 describe( 'Plugin Reset', () => {
 	beforeAll( async() => {
-		await activatePlugin( 'e2e-tests-auth-plugin' );
-		await activatePlugin( 'e2e-tests-site-verification-plugin' );
-	} );
-
-	afterAll( async() => {
-		await deactivatePlugin( 'e2e-tests-auth-plugin' );
-		await deactivatePlugin( 'e2e-tests-site-verification-plugin' );
+		await setClientConfig();
+		await setAuthToken();
+		await setSiteVerification();
+		await setSearchConsoleProperty();
 	} );
 
 	beforeEach( async() => {
@@ -43,10 +50,13 @@ describe( 'Plugin Reset', () => {
 	it( 'disconnects Site Kit by clicking the "Reset" button in the confirmation dialog', async() => {
 		await expect( page ).toClick( 'button.googlesitekit-cta-link', { text: 'Reset Site Kit' } );
 		await page.waitForSelector( '.mdc-dialog--open .mdc-button' );
-		await expect( page ).toClick( '.mdc-dialog--open .mdc-button', { text: 'Reset' } );
 
-		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
+		await Promise.all( [
+			page.waitForNavigation(),
+			expect( page ).toClick( '.mdc-dialog--open .mdc-button', { text: 'Reset' } ),
+		] );
 
-		await expect( page ).toMatchElement( '.googlesitekit-wizard' );
+		await page.waitForSelector( '.googlesitekit-wizard-step--one' );
+		await expect( page ).toMatchElement( '.googlesitekit-wizard-step__title', { text: /Welcome to Site Kit beta for developers/i } );
 	} );
 } );

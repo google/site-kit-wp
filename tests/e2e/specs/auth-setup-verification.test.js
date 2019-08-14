@@ -6,7 +6,7 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
 /**
  * Internal dependencies
  */
-import { resetSiteKit, deactivateAllOtherPlugins, pasteText } from '../utils';
+import { resetSiteKit, deactivateAllOtherPlugins, pasteText, useRequestInterception } from '../utils';
 
 const oauthClientConfig = JSON.stringify( {
 	'web': {
@@ -23,12 +23,8 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 
 	beforeAll( async() => {
 		await page.setRequestInterception( true );
-		page.on( 'request', request => {
-			if ( ! request._allowInterception ) {
-
-				// prevent errors for requests that happen after interception is disabled
-				return;
-			} else if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
+		useRequestInterception( request => {
+			if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
 				request.respond( {
 					status: 302,
 					headers: {

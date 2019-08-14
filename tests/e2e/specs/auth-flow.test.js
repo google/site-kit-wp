@@ -6,25 +6,10 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
 /**
  * Internal dependencies
  */
-import { pasteText } from '../utils';
-
-const oauthClientConfig = JSON.stringify( {
-	'web': {
-		'client_id': 'test-client-id',
-		'client_secret': 'test-client-secret',
-		'project_id': 'test-project-id',
-		'auth_uri': 'https://accounts.google.com/o/oauth2/auth',
-		'token_uri': 'https://accounts.google.com/o/oauth2/token',
-		'auth_provider_x509_cert_url': 'https://www.googleapis.com/oauth2/v1/certs'
-	}
-} );
+import { pasteText, testClientConfig, useRequestInterception } from '../utils';
 
 function stubGoogleSignIn( request ) {
-	if ( ! request._allowInterception ) {
-
-		// prevent errors for requests that happen after interception is disabled
-		return;
-	} else if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
+	if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
 		request.respond( {
 			status: 302,
 			headers: {
@@ -55,17 +40,14 @@ describe( 'Site Kit set up flow for the first time', () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 		await page.waitForSelector( '#client-configuration' );
 
-		await pasteText( '#client-configuration', oauthClientConfig );
+		await pasteText( '#client-configuration', JSON.stringify( testClientConfig ) );
 		await page.click( '#wizard-step-one-proceed' );
 		await page.waitForSelector( '.googlesitekit-wizard-step--two .mdc-button' );
 
 		// Sign in with Google
 		await page.setRequestInterception( true );
-		page.on( 'request', stubGoogleSignIn );
+		useRequestInterception( stubGoogleSignIn );
 		await page.click( '.googlesitekit-wizard-step--two .mdc-button' );
-		await page.waitForNavigation();
-
-		await expect( page ).toClick( '.googlesitekit-wizard-step__action button', { text: /Go to Dashboard/i } );
 		await page.waitForNavigation();
 
 		await expect( page ).toMatchElement( '#js-googlesitekit-dashboard' );
