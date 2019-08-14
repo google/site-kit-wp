@@ -53,8 +53,6 @@ wp user create author author@example.com --role=author --user_pass=password --qu
 echo -e $(status_message "Author created! Username: author Password: password")
 wp user create contributor contributor@example.com --role=contributor --user_pass=password --quiet
 echo -e $(status_message "Contributor created! Username: contributor Password: password")
-# Assign the existing Hello World post to the author.
-wp post update 1 --post_author=2 --quiet
 
 # Make sure the uploads and upgrade folders exist and we have permissions to add files.
 echo -e $(status_message "Ensuring that files can be uploaded...")
