@@ -97,7 +97,7 @@ fi
 # Install a dummy favicon to avoid 404 errors.
 echo -e $(status_message "Installing a dummy favicon...")
 container touch /var/www/html/favicon.ico
-container chmod 755 /var/www/html/favicon.ico
+container chmod 767 /var/www/html/favicon.ico
 
 # Activate Google Site Kit plugin.
 echo -e $(status_message "Activating Google Site Kit plugin...")
