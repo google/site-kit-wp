@@ -21,7 +21,10 @@ import Button from 'GoogleComponents/button';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import { TextField, Input } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
-import { validateJSON } from 'GoogleUtil';
+import {
+	validateJSON,
+	sendAnalyticsTrackingEvent,
+} from 'GoogleUtil';
 import HelpLink from 'GoogleComponents/help-link';
 
 const { __ } = wp.i18n;
@@ -68,11 +71,15 @@ class SiteVerification extends Component {
 
 				// Our current siteURL has been verified. Proceed to next step.
 				if ( verified ) {
+					sendAnalyticsTrackingEvent( 'verification_setup', 'verification_check_true' );
+
 					const response = await this.insertSiteVerification( identifier );
 					if ( true === response.updated ) {
 						this.props.siteVerificationSetup( true );
 						return true;
 					}
+				} else {
+					sendAnalyticsTrackingEvent( 'verification_setup', 'verification_check_false' );
 				}
 
 				this.setState( {
@@ -125,6 +132,7 @@ class SiteVerification extends Component {
 			const response = await this.insertSiteVerification( siteURL );
 
 			if ( true === response.updated ) {
+				sendAnalyticsTrackingEvent( 'verification_setup', 'verification_insert_tag' );
 
 				// We have everything we need here. go to next step.
 				this.props.siteVerificationSetup( true );
