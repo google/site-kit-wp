@@ -261,9 +261,9 @@ class OAuth_ClientTest extends TestCase {
 	public function test_get_error_message_unknown() {
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertContains( 'Unknown Error', $client->get_error_message( 'unknown_code' ) );
-		$this->assertContains( 'Unknown Error', $client->get_error_message( '' ) );
-		$this->assertContains( 'Unknown Error', $client->get_error_message( 123 ) );
+		$this->assertContains( 'Unknown Error (code: unknown_code)', $client->get_error_message( 'unknown_code' ) );
+		$this->assertContains( 'Unknown Error (code: )', $client->get_error_message( '' ) );
+		$this->assertContains( 'Unknown Error (code: 123)', $client->get_error_message( 123 ) );
 	}
 
 	/**
