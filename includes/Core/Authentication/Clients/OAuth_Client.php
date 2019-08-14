@@ -575,7 +575,7 @@ final class OAuth_Client {
 				break;
 			default:
 				/* translators: %s: error code from API */
-				$message = sprintf( __( 'Unknown Error (code: %s).', 'google-site-kit' ), (string) $error_code );
+				$message = sprintf( __( 'Unknown Error (code: %s).', 'google-site-kit' ), $error_code );
 				break;
 		}
 
