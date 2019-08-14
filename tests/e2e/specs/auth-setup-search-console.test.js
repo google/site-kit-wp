@@ -63,10 +63,6 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 		await resetSiteKit();
 	} );
 
-	afterAll( async() => {
-		await page.setRequestInterception( false );
-	} );
-
 	it( 'inserts property to search console when site does not exist', async() => {
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
