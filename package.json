@@ -1,6 +1,6 @@
 {
   "name": "googlesitekit",
-  "version": "1.0.0-beta.1.0.3",
+  "version": "1.0.0-beta.1.0.4",
   "description": "Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.",
   "main": "index.js",
   "scripts": {
