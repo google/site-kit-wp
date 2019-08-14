@@ -127,6 +127,21 @@ final class Screens {
 		add_action( 'admin_notices', $remove_notices_callback, -9999 );
 		add_action( 'network_admin_notices', $remove_notices_callback, -9999 );
 		add_action( 'all_admin_notices', $remove_notices_callback, -9999 );
+
+		add_filter( 'custom_menu_order', '__return_true' );
+		add_filter(
+			'menu_order',
+			function( array $menu_order ) {
+				$new_order = array();
+				foreach ( $menu_order as $index => $item ) {
+					if ( 'index.php' === $item || 0 === strpos( $item, self::PREFIX ) ) {
+						$new_order[] = $item;
+						unset( $menu_order[ $index ] );
+					}
+				}
+				return array_values( array_merge( $new_order, $menu_order ) );
+			}
+		);
 	}
 
 	/**

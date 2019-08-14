@@ -95,4 +95,31 @@ class ScreensTest extends TestCase {
 		do_action( $hookname );
 		$this->assertNotEmpty( ob_get_clean() );
 	}
+
+	public function test_menu_order() {
+		$menu_order = array(
+			'index.php',
+			'third-party-plugin',
+			'edit.php',
+			'options-general.php',
+			'googlesitekit-dashboard',
+		);
+
+		$this->screens->register();
+
+		// Imitate WordPress core running these filters.
+		if ( apply_filters( 'custom_menu_order', false ) ) {
+			$menu_order = apply_filters( 'menu_order', $menu_order );
+		}
+
+		$expected_order = array(
+			'index.php',
+			'googlesitekit-dashboard',
+			'third-party-plugin',
+			'edit.php',
+			'options-general.php',
+		);
+
+		$this->assertEquals( $expected_order, $menu_order );
+	}
 }

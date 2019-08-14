@@ -129,8 +129,7 @@ final class Screen {
 						function() use ( $context ) {
 							$this->render( $context );
 						},
-						$context->url( 'dist/assets/images/logo-g_white_small.png' ),
-						3
+						$context->url( 'dist/assets/images/logo-g_white_small.png' )
 					);
 					$menu_slug = $this->slug;
 				}
