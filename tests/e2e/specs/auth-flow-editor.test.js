@@ -16,30 +16,25 @@ import {
 	setClientConfig,
 	setSearchConsoleProperty,
 	setSiteVerification,
+	useRequestInterception,
 } from '../utils';
-
-function requestHandler( request ) {
-	if ( ! request._allowInterception ) {
-
-		// prevent errors for requests that happen after interception is disabled
-		return;
-	} else if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
-		request.respond( {
-			status: 302,
-			headers: {
-				location: createURL( '/', 'oauth2callback=1&code=valid-test-code' )
-			}
-		} );
-	} else {
-		request.continue();
-	}
-}
 
 describe( 'the set up flow for an editor', () => {
 
 	beforeAll( async() => {
 		await page.setRequestInterception( true );
-		page.on( 'request', requestHandler );
+		useRequestInterception( request => {
+			if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
+				request.respond( {
+					status: 302,
+					headers: {
+						location: createURL( '/', 'oauth2callback=1&code=valid-test-code' )
+					}
+				} );
+			} else {
+				request.continue();
+			}
+		} );
 	} );
 
 	beforeEach( async() => {
