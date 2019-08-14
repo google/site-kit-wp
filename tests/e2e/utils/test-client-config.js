@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 export const testClientConfig = {
 	web: {
 		client_id: '1234567890-asdfasdfasdfasdfzxcvzxcvzxcvzxcv.apps.googleusercontent.com',
