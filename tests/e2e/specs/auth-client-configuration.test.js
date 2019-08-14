@@ -6,7 +6,7 @@ import { visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { pasteText } from '../utils';
+import { pasteText, testClientConfig } from '../utils';
 
 describe( 'Providing client configuration', () => {
 
@@ -38,18 +38,7 @@ describe( 'Providing client configuration', () => {
 	it( 'Should have enabled button with valid value', async() => {
 
 		await page.waitForSelector( '#client-configuration' );
-
-		const configJSON = `{
-			"web": {
-				"client_id": "123-456.apps.googleusercontent.com",
-				"project_id": "lorem-ipsum-123456",
-				"auth_uri": "https://accounts.google.com/o/oauth2/auth",
-				"token_uri": "https://accounts.google.com/o/oauth2/token",
-				"auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-				"client_secret": "this_is_not_real"
-			}
-		}`;
-		await pasteText( '#client-configuration', configJSON );
+		await pasteText( '#client-configuration', JSON.stringify( testClientConfig ) );
 
 		await expect( page ).not.toMatchElement( '.googlesitekit-error-text', { text: 'Unable to parse client configuration values' } );
 
