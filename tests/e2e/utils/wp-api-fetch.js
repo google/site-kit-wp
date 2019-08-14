@@ -2,7 +2,7 @@
  * Proxy calls to wp.apiFetch within the page context.
  *
  * @link https://github.com/WordPress/gutenberg/blob/master/packages/api-fetch/README.md
- * @return Promise
+ * @returns {*} resolved value from apiFetch promise.
  */
 export async function wpApiFetch( options ) {
 
