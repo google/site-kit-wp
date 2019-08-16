@@ -89,7 +89,7 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 		await page.waitForSelector( '#client-configuration' );
 
-		await pasteText( '#client-configuration', oauthClientConfig );
+		await pasteText( '#client-configuration', JSON.stringify( testClientConfig ) );
 		await expect( page ).toClick( '#wizard-step-one-proceed' );
 		await page.waitForSelector( '.googlesitekit-wizard-step--two button' );
 
