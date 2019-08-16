@@ -12,6 +12,7 @@ import {
  * Internal dependencies
  */
 import {
+	logoutUser,
 	setAuthToken,
 	setClientConfig,
 	setSearchConsoleProperty,
@@ -46,6 +47,7 @@ describe( 'the set up flow for an editor', () => {
 	} );
 
 	afterEach( async() => {
+		await logoutUser();
 
 		// Restore the default/admin user
 		// (switchToAdmin will not work as it is not aware of the current user)
