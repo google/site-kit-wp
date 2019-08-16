@@ -43,8 +43,8 @@ fi
 echo -e $(status_message "Installing WordPress...")
 wp core install --title="$SITE_TITLE" --admin_user=admin --admin_password=password --admin_email=test@test.com --skip-email --url=http://localhost:$HOST_PORT  --quiet
 
-# Install additional Users.
-echo -e $(status_message "Installing additional users...")
+# Create additional Users.
+echo -e $(status_message "Creating additional users...")
 wp user create admin-2 admin-2@example.com --role=administrator --user_pass=password --quiet
 echo -e $(status_message "Admin 2 created! Username: admin-2 Password: password")
 wp user create editor editor@example.com --role=editor --user_pass=password --quiet
@@ -67,7 +67,7 @@ container chmod 767 \
 	/var/www/html/wp-content/uploads \
 	/var/www/html/wp-content/upgrade
 
-CURRENT_WP_VERSION=$(wp core version)
+CURRENT_WP_VERSION=$(wp core version | tr -d '\r')
 echo -e $(status_message "Current WordPress version: $CURRENT_WP_VERSION...")
 
 if [ "$WP_VERSION" == "latest" ]; then
@@ -86,7 +86,7 @@ fi
 
 # If the 'wordpress' volume wasn't during the down/up earlier, but the post port has changed, we need to update it.
 echo -e $(status_message "Checking the site's url...")
-CURRENT_URL=$(wp option get siteurl)
+CURRENT_URL=$(wp option get siteurl | tr -d '\r')
 if [ "$CURRENT_URL" != "http://localhost:$HOST_PORT" ]; then
 	wp option update home "http://localhost:$HOST_PORT" --quiet
 	wp option update siteurl "http://localhost:$HOST_PORT" --quiet
@@ -107,17 +107,17 @@ wp rewrite structure '%postname%' --hard --quiet
 
 # Configure site constants.
 echo -e $(status_message "Configuring site constants...")
-WP_DEBUG_CURRENT=$(wp config get --type=constant --format=json WP_DEBUG)
+WP_DEBUG_CURRENT=$(wp config get --type=constant --format=json WP_DEBUG | tr -d '\r')
 
 if [ "$WP_DEBUG" != $WP_DEBUG_CURRENT ]; then
 	wp config set WP_DEBUG $WP_DEBUG --raw --type=constant --quiet
-	WP_DEBUG_RESULT=$(wp config get --type=constant --format=json WP_DEBUG)
+	WP_DEBUG_RESULT=$(wp config get --type=constant --format=json WP_DEBUG | tr -d '\r')
 	echo -e $(status_message "WP_DEBUG: $WP_DEBUG_RESULT...")
 fi
 
-SCRIPT_DEBUG_CURRENT=$(wp config get --type=constant --format=json SCRIPT_DEBUG)
+SCRIPT_DEBUG_CURRENT=$(wp config get --type=constant --format=json SCRIPT_DEBUG | tr -d '\r')
 if [ "$SCRIPT_DEBUG" != $SCRIPT_DEBUG_CURRENT ]; then
 	wp config set SCRIPT_DEBUG $SCRIPT_DEBUG --raw --type=constant --quiet
-	SCRIPT_DEBUG_RESULT=$(wp config get --type=constant --format=json SCRIPT_DEBUG)
+	SCRIPT_DEBUG_RESULT=$(wp config get --type=constant --format=json SCRIPT_DEBUG | tr -d '\r')
 	echo -e $(status_message "SCRIPT_DEBUG: $SCRIPT_DEBUG_RESULT...")
 fi
