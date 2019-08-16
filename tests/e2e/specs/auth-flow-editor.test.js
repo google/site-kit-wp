@@ -44,18 +44,16 @@ describe( 'the set up flow for an editor', () => {
 		await setAuthToken();
 		await setSiteVerification();
 		await setSearchConsoleProperty();
+		await loginUser( 'editor', 'password' );
 	} );
 
 	afterEach( async() => {
-		await logoutUser();
 
 		// Restore the default/admin user
-		// (switchToAdmin will not work as it is not aware of the current user)
 		await loginUser();
 	} );
 
 	it( 'allows an editor to connect their Google account from the splash page', async() => {
-		await loginUser( 'editor', 'password' );
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 
 		await page.waitForSelector( '.googlesitekit-splash-intro button' );
