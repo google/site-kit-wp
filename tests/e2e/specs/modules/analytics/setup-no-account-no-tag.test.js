@@ -61,13 +61,26 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		await expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } );
 		await page.waitForSelector( '.googlesitekit-setup-module__action .mdc-button' );
 
+		// Intercept the call to window.open and call our API to simulate a created account.
+		await page.evaluate( () => {
+			window.open = () => {
+				window.wp.apiFetch( {
+					path: 'google-site-kit/v1/e2e/analytics/account-created',
+					method: 'post'
+				} );
+			};
+		} );
 
-		await page.waitForSelector( '.googlesitekit-settings-module__edit-button' );
-		await expect( page ).toClick( '.googlesitekit-settings-module__edit-button', { text: /continue module setup/i } );
+		// Clicking Create Account button will switch API mock plugins on the server to the one that has accounts.
+		await Promise.all( [
+			page.waitForResponse( res => res.url().match( 'google-site-kit/v1/e2e/analytics/account-created' ) ),
+			expect( page ).toClick( '.mdc-button', { text: /Create an account/i } ),
+		] );
 
-		// wait for create account button
-		await page.waitForSelector( '.googlesitekit-setup-module__action .googlesitekit-cta-link' );
-		await expect( page ).toClick( '.googlesitekit-cta-link', { text: /Re-fetch My Account/i } );
+		await Promise.all( [
+			page.waitForResponse( req => req.url().match( 'analytics/data/get-accounts' ) ),
+			expect( page ).toClick( '.googlesitekit-cta-link', { text: /Re-fetch My Account/i } ),
+		] );
 
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
@@ -75,6 +88,10 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test property x/i } );
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test profile x/i } );
 
+		await Promise.all( [
+			expect( page ).toClick( 'button', { text: /configure analytics/i } ),
+			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
+		] );
 
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
 	} );
