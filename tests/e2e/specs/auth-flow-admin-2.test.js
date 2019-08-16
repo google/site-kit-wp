@@ -12,6 +12,7 @@ import {
  * Internal dependencies
  */
 import {
+	logoutUser,
 	setAuthToken,
 	setClientConfig,
 	setSearchConsoleProperty,
@@ -45,23 +46,25 @@ describe( 'the set up flow for the second administrator', () => {
 		await setAuthToken();
 		await setSiteVerification();
 		await setSearchConsoleProperty();
-		await loginUser( 'admin-2', 'password' );
+		await logoutUser();
 	} );
 
 	afterEach( async() => {
+		await logoutUser();
 
-		// Restore the default/admin user.
+		// Restore the default/admin user
+		// (switchToAdmin will not work as it is not aware of the current user)
 		await loginUser();
 	} );
 
 	it( 'admin 2', async() => {
+		await loginUser( 'admin-2', 'password' );
 
 		// Simulate that the user is already verified.
 		await wpApiFetch( {
 			path: 'google-site-kit/v1/e2e/verify-site',
 			method: 'post',
 		} );
-
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 
 		await expect( page ).toMatchElement( '.googlesitekit-wizard-step__title', { text: /Authenticate with Google/i } );
