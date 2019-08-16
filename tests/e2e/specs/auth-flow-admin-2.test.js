@@ -74,6 +74,7 @@ describe( 'the set up flow for the second administrator', () => {
 			page.waitForNavigation(),
 		] );
 
+		await page.waitForSelector( '.googlesitekit-wizard-step button' );
 		await expect( page ).toMatchElement( '.googlesitekit-wizard-step__title', { text: /congratulations!/i } );
 
 		await Promise.all( [
