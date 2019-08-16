@@ -58,6 +58,7 @@ describe( 'the set up flow for an editor', () => {
 		await loginUser( 'editor', 'password' );
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 
+		await page.waitForSelector( '.googlesitekit-splash-intro button' );
 		await expect( page ).toMatchElement( '.googlesitekit-splash-intro__title', { text: /Welcome to Site Kit/i } );
 
 		await Promise.all( [
