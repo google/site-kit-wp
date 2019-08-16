@@ -31,7 +31,11 @@ add_action( 'rest_api_init', function () {
 		'modules/analytics/data/get-accounts',
 		array(
 			'callback' => function () {
-				$response = [];
+				$response = [
+					'accounts' => [],
+					'properties' => [],
+					'profiles' => []
+				];
 
 				return $response;
 			}
