@@ -5,6 +5,11 @@
  * Description: Utility plugin for bypassing set up and authentication during E2E tests.
  * Author:      Google
  * Author URI:  https://opensource.google.com
+ *
+ * @package   Google\Site_Kit
+ * @copyright 2019 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
  */
 
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;

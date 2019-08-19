@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name: E2E Site Verification Endpoint
- * Description: REST Endpoint for setting the site verification status of the current user during E2E tests.
+ * Plugin Name: E2E Access Token Endpoint
+ * Description: REST Endpoint for setting the access token for Site Kit during E2E tests.
  *
  * @package   Google\Site_Kit
  * @copyright 2019 Google LLC
@@ -18,20 +18,19 @@ add_action( 'rest_api_init', function () {
 
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'e2e/setup/site-verification',
+		'e2e/analytics/existing-property-id',
 		array(
 			'methods'  => WP_REST_Server::EDITABLE,
 			'callback' => function ( WP_REST_Request $request ) {
-				if ( $request['verified'] ) {
-					update_user_option(
-						get_current_user_id(),
-						'googlesitekit_site_verified_meta',
-						'verified'
-					);
+				if ( $request['id'] ) {
+					update_option( 'googlesitekit_e2e_analytics_existing_property_id', $request['id'] );
 				} else {
-					delete_user_option( get_current_user_id(), 'googlesitekit_site_verified_meta' );
+					delete_option( 'googlesitekit_e2e_analytics_existing_property_id' );
 				}
+
+				return array( 'success' => true, 'id' => $request['id'] );
 			}
 		)
 	);
 }, 0 );
+
