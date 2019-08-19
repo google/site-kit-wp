@@ -18,9 +18,10 @@ import {
 	setSearchConsoleProperty,
 	setSiteVerification,
 	useRequestInterception,
+	wpApiFetch,
 } from '../utils';
 
-describe( 'the set up flow for an editor', () => {
+describe( 'the set up flow for the second administrator', () => {
 
 	beforeAll( async() => {
 		await page.setRequestInterception( true );
@@ -40,10 +41,12 @@ describe( 'the set up flow for an editor', () => {
 
 	beforeEach( async() => {
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
+		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
 		await setClientConfig();
 		await setAuthToken();
 		await setSiteVerification();
 		await setSearchConsoleProperty();
+		await logoutUser();
 	} );
 
 	afterEach( async() => {
@@ -54,19 +57,33 @@ describe( 'the set up flow for an editor', () => {
 		await loginUser();
 	} );
 
-	it( 'allows an editor to connect their Google account from the splash page', async() => {
-		await loginUser( 'editor', 'password' );
+	it( 'admin 2', async() => {
+		await loginUser( 'admin-2', 'password' );
+
+		// Simulate that the user is already verified.
+		await wpApiFetch( {
+			path: 'google-site-kit/v1/e2e/verify-site',
+			method: 'post',
+		} );
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 
-		await page.waitForSelector( '.googlesitekit-splash-intro button' );
-		await expect( page ).toMatchElement( '.googlesitekit-splash-intro__title', { text: /Welcome to Site Kit/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-wizard-step__title', { text: /Authenticate with Google/i } );
 
 		await Promise.all( [
-			expect( page ).toClick( '.googlesitekit-splash-intro button', { text: /connect your account/i } ),
+			expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with google/i } ),
+			page.waitForNavigation(),
+		] );
+
+		await page.waitForSelector( '.googlesitekit-wizard-step button' );
+		await expect( page ).toMatchElement( '.googlesitekit-wizard-step__title', { text: /congratulations!/i } );
+
+		await Promise.all( [
+			expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /go to dashboard/i } ),
 			page.waitForNavigation(),
 		] );
 
 		await expect( page ).toMatchElement( '#js-googlesitekit-dashboard' );
+		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Site Kit!/i } );
 	} );
 } );
 
