@@ -9,12 +9,12 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 import {
 	deactivateAllOtherPlugins,
 	resetSiteKit,
-	useRequestInterception,
 	setAnalyticsExistingPropertyId,
 	setAuthToken,
 	setClientConfig,
 	setSearchConsoleProperty,
 	setSiteVerification,
+	useRequestInterception,
 } from '../../../utils';
 
 async function proceedToSetUpAnalytics() {
@@ -26,7 +26,6 @@ async function proceedToSetUpAnalytics() {
 }
 
 const EXISTING_PROPERTY_ID = 'UA-00000001-1';
-const EXISTING_NO_MATCH_PROPERTY_ID = 'UA-99999999-1';
 
 let getAccountsRequestHandler;
 let tagPermissionRequestHandler;
@@ -88,7 +87,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await expect( page ).toMatchElement( '.mdc-select--disabled .mdc-select__selected-text', { text: /test property x/i } );
 		await expect( page ).toMatchElement( '.mdc-select:not(.mdc-select--disabled) .mdc-select__selected-text', { text: /test profile x/i } );
 
-		// Ensure that Views are not disabled
+		// Ensure that Views dropdown is not disabled
 		await expect( page ).toClick( '.mdc-select', { text: /test profile x/i } );
 		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test profile x/i } ),
 
@@ -111,7 +110,6 @@ describe( 'setting up the Analytics module with an existing account and existing
 			} );
 		};
 
-		await setAnalyticsExistingPropertyId( EXISTING_NO_MATCH_PROPERTY_ID );
 		await proceedToSetUpAnalytics();
 
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module--analytics p', { text: /google_analytics_existing_tag_permission/i } );
