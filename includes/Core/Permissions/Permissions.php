@@ -226,6 +226,11 @@ final class Permissions {
 					$prevent_access = ! $this->authentication->verification()->has();
 				}
 
+				// For all users, require setup to have been completed.
+				if ( ! $prevent_access ) {
+					$prevent_access = ! $this->is_setup_complete();
+				}
+
 				if ( $prevent_access ) {
 					$caps[] = 'do_not_allow';
 				}
