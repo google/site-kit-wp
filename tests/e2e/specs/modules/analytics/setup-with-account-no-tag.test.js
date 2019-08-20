@@ -6,7 +6,13 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
 /**
  * Internal dependencies
  */
-import { wpApiFetch, deactivateAllOtherPlugins, resetSiteKit } from '../../../utils';
+import {
+	deactivateAllOtherPlugins,
+	resetSiteKit,
+	setSearchConsoleProperty,
+	wpApiFetch,
+	useRequestInterception,
+} from '../../../utils';
 
 async function proceedToSetUpAnalytics() {
 	await Promise.all( [
@@ -29,13 +35,7 @@ const setReferenceUrl = async() => {
 describe( 'setting up the Analytics module with an existing account and no existing tag', () => {
 	beforeAll( async() => {
 		await page.setRequestInterception( true );
-		page.on( 'request', request => {
-			if ( ! request._allowInterception ) {
-
-				// prevent errors for requests that happen after interception is disabled.
-				return;
-			}
-
+		useRequestInterception( request => {
 			if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
 				request.respond( {
 					status: 302,
@@ -63,6 +63,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
+		await setSearchConsoleProperty();
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await page.waitForSelector( '.mdc-tab-bar' );
