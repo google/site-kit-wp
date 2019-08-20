@@ -135,10 +135,14 @@ export const readableLargeNumber = ( number, currencyCode = false ) =>  {
 	if ( false !== currencyCode && '' !== readableNumber ) {
 		const formatedParts = new Intl.NumberFormat( navigator.language, { style: 'currency', currency: currencyCode } ).formatToParts( number );
 
-		const decimal = formatedParts.find( part => 'decimal' === part.type ).value;
+		let decimal = formatedParts.find( part => 'decimal' === part.type );
+		if ( ! isUndefined( decimal ) ) {
+			decimal = decimal.value;
+		}
+
 		const currency = formatedParts.find( part => 'currency' === part.type ).value;
 
-		if ( 1000 > number ) {
+		if ( 1000 > number && ! isUndefined( decimal ) ) {
 			readableNumber = Number.isInteger( number ) ? number : number.replace( '.', decimal );
 		}
 
