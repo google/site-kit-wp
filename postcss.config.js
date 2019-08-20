@@ -20,8 +20,8 @@ module.exports = {
 	parser: false,
 	plugins: {
 		'postcss-preset-env': {},
-		'autoprefixer': { grid: true },
-		'cssnano': process.env.NODE_ENV === 'production'  ? {} : false
-	}
+		autoprefixer: { grid: true },
+		cssnano: process.env.NODE_ENV === 'production' ? {} : false,
+	},
 };
 

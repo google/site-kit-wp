@@ -129,6 +129,7 @@
     "backstopjs": "^3.8.8",
     "browser-sync": "^2.26.3",
     "bundlesize": "^0.17.1",
+    "classnames": "^2.2.6",
     "core-js": "^3.1.4",
     "css-loader": "^1.0.1",
     "cssnano": "^4.1.10",
