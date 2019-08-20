@@ -1,9 +1,4 @@
 /**
- * External dependencies
- */
-import { URL } from 'url';
-
-/**
  * WordPress dependencies
  */
 import { activatePlugin, deactivatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
@@ -11,9 +6,9 @@ import { activatePlugin, deactivatePlugin, visitAdminPage } from '@wordpress/e2e
 /**
  * Internal dependencies
  */
-import { resetSiteKit } from '../utils';
+import { resetSiteKit, setSearchConsoleProperty } from '../utils';
 
-describe( 'Providing client configuration', () => {
+describe( 'management of tracking opt-in/out via settings page', () => {
 
 	beforeAll( async() => {
 		await activatePlugin( 'e2e-tests-auth-plugin' );
@@ -21,13 +16,17 @@ describe( 'Providing client configuration', () => {
 	} );
 
 	beforeEach( async() => {
-		await resetSiteKit();
+		await setSearchConsoleProperty();
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await page.waitForSelector( '.mdc-tab-bar' );
 
 		// Click on Admin Settings Tab.
 		await expect( page ).toClick( 'button.mdc-tab', { text: 'Admin Settings' } );
+	} );
+
+	afterEach( async() => {
+		await resetSiteKit();
 	} );
 
 	afterAll( async() => {
@@ -39,7 +38,7 @@ describe( 'Providing client configuration', () => {
 
 		await page.waitForSelector( '#opt-in' );
 
-		await expect( page ).toMatchElement( '#opt-in[checked]' );
+		expect( await page.$eval( '#opt-in', el => el.checked ) ).toBe( true );
 
 	} );
 
@@ -47,69 +46,48 @@ describe( 'Providing client configuration', () => {
 
 		await page.waitForSelector( '#opt-in' );
 
-		await expect( page ).toMatchElement( '#opt-in[checked]' );
+		expect( await page.$eval( '#opt-in', el => el.checked ) ).toBe( true );
 
 		// Ensure analytics script tag exists.
-		const analyticsScriptTag = await page.$x(
-			'//script[contains(@src,"https://www.google-analytics.com/analytics.js")]'
-		);
-		expect( analyticsScriptTag.length ).not.toEqual( 0 );
+		await expect( page ).toMatchElement( 'script[src^="https://www.google-analytics.com/analytics.js"]' );
 
 		// Ensure tag manager script tag exists.
-		const tagManagerScriptTag = await page.$x(
-			'//script[contains(@src,"https://www.googletagmanager.com/gtag/js?id=UA-130569087-3")]'
-		);
-		expect( tagManagerScriptTag.length ).not.toEqual( 0 );
-
+		await expect( page ).toMatchElement( 'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]' );
 	} );
 
 	it( 'should uncheck opt-in box when clicked', async() => {
 
 		await page.waitForSelector( '#opt-in' );
 
-		await expect( page ).toClick( '#opt-in' );
-
-		await page.waitForResponse( res => {
-			const reqURL = new URL( res.url() );
-
-			return '/wp-json/wp/v2/settings' === reqURL.pathname;
-		} );
+		await Promise.all( [
+			page.waitForResponse( res => res.url().match( 'wp/v2/settings' ) ),
+			expect( page ).toClick( '#opt-in' ),
+		] );
 
 		await page.waitForSelector( '.mdc-checkbox:not(.mdc-checkbox--selected) #opt-in' );
 
 		// Ensure unchecked checkbox exists.
-		const optinUnChecked = await page.$( '.mdc-checkbox:not(.mdc-checkbox--selected) #opt-in' );
-		expect( optinUnChecked.length ).not.toEqual( 0 );
+		await expect( page ).toMatchElement( '.mdc-checkbox:not(.mdc-checkbox--selected) #opt-in' );
 	} );
 
 	it( 'should not have tracking code when not opted in', async() => {
 		await page.waitForSelector( '#opt-in' );
 
-		await expect( page ).toClick( '#opt-in' );
-
-		await page.waitForResponse( res => {
-			const reqURL = new URL( res.url() );
-
-			return '/wp-json/wp/v2/settings' === reqURL.pathname;
-		} );
+		await Promise.all( [
+			page.waitForResponse( res => res.url().match( 'wp/v2/settings' ) ),
+			expect( page ).toClick( '#opt-in' ),
+		] );
 
 		await page.reload();
 
 		// Ensure unchecked checkbox exists.
-		const optinUnChecked = await page.$( '.mdc-checkbox:not(.mdc-checkbox--selected) #opt-in' );
-		expect( optinUnChecked.length ).not.toEqual( 0 );
+		await expect( page ).toMatchElement( '.mdc-checkbox:not(.mdc-checkbox--selected) #opt-in' );
 
 		// Ensure no analytics script tag exists.
-		const analyticsScriptTag = await page.$x(
-			'//script[contains(@src,"https://www.google-analytics.com/analytics.js")]'
-		);
-		expect( analyticsScriptTag.length ).toEqual( 0 );
+		await expect( page ).not.toMatchElement( 'script[src^="https://www.google-analytics.com/analytics.js"]' );
 
 		// Ensure no tag manager script exists.
-		const tagManagerScriptTag = await page.$x(
-			'//script[contains(@src,"https://www.googletagmanager.com/gtag/js?id=UA-130569087-3")]'
-		);
-		expect( tagManagerScriptTag.length ).toEqual( 0 );
+		await expect( page ).not.toMatchElement( 'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]' );
 	} );
 
 } );
