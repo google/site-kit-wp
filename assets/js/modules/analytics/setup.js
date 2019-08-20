@@ -251,6 +251,7 @@ class AnalyticsSetup extends Component {
 			selectedProfile,
 		} = this.state;
 		const { isEditing } = this.props;
+		let newState;
 
 		try {
 			let responseData = await data.get( 'modules', 'analytics', 'get-accounts', {}, false );
@@ -343,7 +344,7 @@ class AnalyticsSetup extends Component {
 			};
 			responseData.profiles.push( chooseProfile );
 
-			let newState = {
+			newState = {
 				isLoading: false,
 				accounts: responseData.accounts,
 				errorCode: this.state.errorCode,
@@ -362,22 +363,22 @@ class AnalyticsSetup extends Component {
 					selectedinternalWebProperty: ( responseData.properties[0] ) ? responseData.properties[0].internalWebPropertyId : 0,
 				} );
 			}
-
-			return new Promise( ( resolve ) => {
-				resolve( newState );
-			} );
 		} catch ( err ) {
-			const errState = {
+			newState = {
 				isLoading: false,
 				errorCode: err.code,
 				errorMsg: err.message,
 				errorReason: err.data && err.data.reason ? err.data.reason : false,
 			};
-
-			return new Promise( ( resolve ) => {
-				resolve( errState );
-			} );
 		}
+
+		return new Promise( ( resolve ) => {
+			if ( this._isMounted ) {
+				resolve( newState );
+			} else {
+				resolve( newState );
+			}
+		} );
 	}
 
 	async processAccountChange( selectValue ) {
