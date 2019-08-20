@@ -65,7 +65,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		await page.evaluate( () => {
 			window.open = () => {
 				window.wp.apiFetch( {
-					path: 'google-site-kit/v1/e2e/analytics/account-created',
+					path: 'google-site-kit/v1/e2e/setup/analytics/account-created',
 					method: 'post'
 				} );
 			};
@@ -73,7 +73,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 
 		// Clicking Create Account button will switch API mock plugins on the server to the one that has accounts.
 		await Promise.all( [
-			page.waitForResponse( res => res.url().match( 'google-site-kit/v1/e2e/analytics/account-created' ) ),
+			page.waitForResponse( res => res.url().match( 'google-site-kit/v1/e2e/setup/analytics/account-created' ) ),
 			expect( page ).toClick( '.mdc-button', { text: /Create an account/i } ),
 		] );
 
