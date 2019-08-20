@@ -259,65 +259,58 @@ class AnalyticsSetup extends Component {
 
 				// clear the cache.
 				data.deleteCache( 'analytics', 'get-accounts' );
-			} else {
+			} else if ( ! selectedAccount ) {
+				let matchedProperty = null;
 
-				if ( ! selectedAccount ) {
-					let matchedProperty = null;
+				if ( responseData.existingTag ) {
 
-					if ( responseData.existingTag ) {
-
-						// Select account and property of existing tag.
-						matchedProperty = responseData.existingTag.property;
-						if ( this._isMounted ) {
-							this.setState( {
-								existingTag: responseData.existingTag.property[0].id,
-							} );
-						}
-					} else {
-						if ( responseData.matchedProperty ) {
-							matchedProperty = responseData.matchedProperty;
-						}
-					}
-
-					if ( matchedProperty && matchedProperty.length ) {
-						selectedAccount  = matchedProperty[0].accountId;
-						selectedProperty = matchedProperty[0].id;
-						const matchedProfile = responseData.profiles.filter( profile => {
-							return profile.accountId === selectedAccount;
-						} );
-						if ( 0 < matchedProfile.length ) {
-							selectedProfile = matchedProfile[0].id;
-						}
-					} else {
-						responseData.accounts.unshift( {
-							id: 0,
-							name: __( 'Select one...', 'google-site-kit' )
+					// Select account and property of existing tag.
+					matchedProperty = responseData.existingTag.property;
+					if ( this._isMounted ) {
+						this.setState( {
+							existingTag: responseData.existingTag.property[0].id,
 						} );
 					}
 				} else {
-
-					// Verify user has access to selected property.
-					if ( selectedAccount && ! responseData.accounts.find( account => account.id === selectedAccount ) ) {
-						data.deleteCache( 'analytics', 'get-accounts' );
-
-						responseData.accounts.unshift( {
-							id: 0,
-							name: __( 'Select one...', 'google-site-kit' )
-						} );
-
-						if ( isEditing ) {
-							selectedAccount = '0';
-							selectedProperty = '-1';
-							selectedProfile = '-1';
-						}
-
-						if ( this._isMounted ) {
-							this.setState( {
-								errorCode: true,
-								errorReason: 'insufficientPermissions',
-							} );
-						}
+					if ( responseData.matchedProperty ) {
+						matchedProperty = responseData.matchedProperty;
 					}
+				}
+
+				if ( matchedProperty && matchedProperty.length ) {
+					selectedAccount  = matchedProperty[0].accountId;
+					selectedProperty = matchedProperty[0].id;
+					const matchedProfile = responseData.profiles.filter( profile => {
+						return profile.accountId === selectedAccount;
+					} );
+					if ( 0 < matchedProfile.length ) {
+						selectedProfile = matchedProfile[0].id;
+					}
+				} else {
+					responseData.accounts.unshift( {
+						id: 0,
+						name: __( 'Select one...', 'google-site-kit' )
+					} );
+				}
+			} else if ( selectedAccount && ! responseData.accounts.find( account => account.id === selectedAccount ) ) {
+				data.deleteCache( 'analytics', 'get-accounts' );
+
+				responseData.accounts.unshift( {
+					id: 0,
+					name: __( 'Select one...', 'google-site-kit' )
+				} );
+
+				if ( isEditing ) {
+					selectedAccount = '0';
+					selectedProperty = '-1';
+					selectedProfile = '-1';
+				}
+
+				if ( this._isMounted ) {
+					this.setState( {
+						errorCode: true,
+						errorReason: 'insufficientPermissions',
+					} );
 				}
 			}
 
