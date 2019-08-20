@@ -6,7 +6,12 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
 /**
  * Internal dependencies
  */
-import { pasteText, testClientConfig, useRequestInterception } from '../utils';
+import {
+	pasteText,
+	setSearchConsoleProperty,
+	testClientConfig,
+	useRequestInterception,
+} from '../utils';
 
 function stubGoogleSignIn( request ) {
 	if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
@@ -34,6 +39,7 @@ describe( 'Site Kit set up flow for the first time', () => {
 
 	beforeAll( async() => {
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
+		await setSearchConsoleProperty();
 	} );
 
 	it( 'authenticates from splash page', async() => {
