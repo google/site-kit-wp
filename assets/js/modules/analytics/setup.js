@@ -220,7 +220,7 @@ class AnalyticsSetup extends Component {
 			selectedProfile,
 			useSnippet,
 		} = this.state;
-		const { isEditing, onSettingsPage } = this.props;
+		const { isEditing } = this.props;
 		let newState = {};
 
 		try {
@@ -341,7 +341,7 @@ class AnalyticsSetup extends Component {
 					await data.get( 'modules', 'analytics', 'tag-permission', { tag: existingTag }, false );
 					newState = Object.assign( newState, {
 						existingTag,
-						useSnippet: ( ! existingTag && ! onSettingsPage ) ? true : useSnippet,
+						useSnippet,
 					} );
 				}
 			}
