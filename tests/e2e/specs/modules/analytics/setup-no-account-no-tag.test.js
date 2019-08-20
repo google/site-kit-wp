@@ -57,9 +57,10 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		await expect( page ).toClick( '.mdc-tab', { text: /connect more services/i } );
 		await page.waitForSelector( '.googlesitekit-settings-connect-module--analytics' );
 
-		// await proceedToSetUpAnalytics();
-		await expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } );
-		await page.waitForSelector( '.googlesitekit-setup-module__action .mdc-button' );
+		await Promise.all( [
+			page.waitForSelector( '.googlesitekit-setup-module__action .mdc-button' ),
+			expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } ),
+		] );
 
 		// Intercept the call to window.open and call our API to simulate a created account.
 		await page.evaluate( () => {
