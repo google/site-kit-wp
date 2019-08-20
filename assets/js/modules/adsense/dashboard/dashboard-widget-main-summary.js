@@ -109,6 +109,8 @@ class AdSenseDashboardMainSummary extends Component {
 			{}
 		);
 
+		const currency = period.headers.find( header => null !== header.currency && 0 < header.currency.length ).currency;
+
 		return (
 			<Fragment>
 				<div className="
@@ -126,7 +128,7 @@ class AdSenseDashboardMainSummary extends Component {
 									<DataBlock
 										className="overview-adsense-rpm"
 										title={ __( 'RPM', 'google-site-kit' ) }
-										datapoint={ readableLargeNumber( period.totals[1] ) }
+										datapoint={ readableLargeNumber( period.totals[1], currency ) }
 										source={ {
 											name: __( 'AdSense', 'google-site-kit' ),
 											link: href,
@@ -149,7 +151,7 @@ class AdSenseDashboardMainSummary extends Component {
 									<DataBlock
 										className="overview-adsense-earnings"
 										title={ __( 'Total Earnings', 'google-site-kit' ) }
-										datapoint={ readableLargeNumber( period.totals[0] ) }
+										datapoint={ readableLargeNumber( period.totals[0], currency ) }
 										source={ {
 											name: __( 'AdSense', 'google-site-kit' ),
 											link: href,
