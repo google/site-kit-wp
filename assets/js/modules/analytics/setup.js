@@ -84,39 +84,7 @@ class AnalyticsSetup extends Component {
 	async componentDidMount() {
 		this._isMounted = true;
 
-		await this.getAccounts().then( async( newState ) => {
-
-			// If tag hasn't been detected in wp_head, look for existing tag in the html.
-			if ( ! newState.existingTag && ! newState.errorCode ) {
-				const { onSettingsPage } = this.props;
-				const { useSnippet } = this.state;
-				const existingTag = await getExistingTag( 'analytics' );
-
-				if ( existingTag && existingTag.length  ) {
-					try {
-
-						// Verify the user has access to existing tag if found. If no access request will return 403 error and catch err.
-						await data.get( 'modules', 'analytics', 'tag-permission', { tag: existingTag }, false );
-						newState = Object.assign( newState, {
-							existingTag,
-							useSnippet: ( ! existingTag && ! onSettingsPage ) ? true : useSnippet,
-						} );
-					} catch ( err ) {
-						newState = {
-							isLoading: false,
-							errorCode: err.code,
-							errorMsg: err.message,
-							errorReason: err.data && err.data.reason ? err.data.reason : false,
-						};
-						data.deleteCache( 'analytics', 'existingTag' );
-					}
-				}
-			}
-
-			if ( this._isMounted ) {
-				this.setState( newState );
-			}
-		} );
+		await this.getAccounts();
 
 		// Handle save hook from the settings page.
 		addFilter( 'googlekit.SettingsConfirmed',
@@ -245,78 +213,74 @@ class AnalyticsSetup extends Component {
 	}
 
 	async getAccounts() {
+		let {
+			errorCode,
+			selectedAccount,
+			selectedProperty,
+			selectedProfile,
+			useSnippet,
+		} = this.state;
 		const { isEditing } = this.props;
+		let newState = {};
 
 		try {
 			let responseData = await data.get( 'modules', 'analytics', 'get-accounts', {}, false );
-			let selectedAccount = this.state.selectedAccount;
-			let selectedProperty = this.state.selectedProperty;
-			let selectedProfile = this.state.selectedProfile;
 
 			if ( 0 === responseData.accounts.length ) {
 
 				// clear the cache.
 				data.deleteCache( 'analytics', 'get-accounts' );
-			} else {
+			} else if ( ! selectedAccount ) {
+				let matchedProperty = null;
 
-				if ( ! selectedAccount ) {
-					let matchedProperty = null;
+				if ( responseData.existingTag ) {
 
-					if ( responseData.existingTag ) {
-
-						// Select account and property of existing tag.
-						matchedProperty = responseData.existingTag.property;
-						if ( this._isMounted ) {
-							this.setState( {
-								existingTag: responseData.existingTag.property[0].id,
-							} );
-						}
-					} else {
-						if ( responseData.matchedProperty ) {
-							matchedProperty = responseData.matchedProperty;
-						}
-					}
-
-					if ( matchedProperty && matchedProperty.length ) {
-						selectedAccount  = matchedProperty[0].accountId;
-						selectedProperty = matchedProperty[0].id;
-						const matchedProfile = responseData.profiles.filter( profile => {
-							return profile.accountId === selectedAccount;
-						} );
-						if ( 0 < matchedProfile.length ) {
-							selectedProfile = matchedProfile[0].id;
-						}
-					} else {
-						responseData.accounts.unshift( {
-							id: 0,
-							name: __( 'Select one...', 'google-site-kit' )
-						} );
-					}
+					// Select account and property of existing tag.
+					matchedProperty = responseData.existingTag.property;
+					newState = {
+						...newState,
+						existingTag: responseData.existingTag.property[0].id,
+					};
 				} else {
-
-					// Verify user has access to selected property.
-					if ( selectedAccount && ! responseData.accounts.find( account => account.id === selectedAccount ) ) {
-						data.deleteCache( 'analytics', 'get-accounts' );
-
-						responseData.accounts.unshift( {
-							id: 0,
-							name: __( 'Select one...', 'google-site-kit' )
-						} );
-
-						if ( isEditing ) {
-							selectedAccount = '0';
-							selectedProperty = '-1';
-							selectedProfile = '-1';
-						}
-
-						if ( this._isMounted ) {
-							this.setState( {
-								errorCode: true,
-								errorReason: 'insufficientPermissions',
-							} );
-						}
+					if ( responseData.matchedProperty ) {
+						matchedProperty = responseData.matchedProperty;
 					}
 				}
+
+				if ( matchedProperty && matchedProperty.length ) {
+					selectedAccount  = matchedProperty[0].accountId;
+					selectedProperty = matchedProperty[0].id;
+					const matchedProfile = responseData.profiles.filter( profile => {
+						return profile.accountId === selectedAccount;
+					} );
+					if ( 0 < matchedProfile.length ) {
+						selectedProfile = matchedProfile[0].id;
+					}
+				} else {
+					responseData.accounts.unshift( {
+						id: 0,
+						name: __( 'Select one...', 'google-site-kit' )
+					} );
+				}
+			} else if ( selectedAccount && ! responseData.accounts.find( account => account.id === selectedAccount ) ) {
+				data.deleteCache( 'analytics', 'get-accounts' );
+
+				responseData.accounts.unshift( {
+					id: 0,
+					name: __( 'Select one...', 'google-site-kit' )
+				} );
+
+				if ( isEditing ) {
+					selectedAccount = '0';
+					selectedProperty = '-1';
+					selectedProfile = '-1';
+				}
+
+				newState = {
+					...newState,
+					errorCode: true,
+					errorReason: 'insufficientPermissions',
+				};
 			}
 
 			// Return only existing tag account and property for dropdown options.
@@ -335,26 +299,25 @@ class AnalyticsSetup extends Component {
 			};
 
 			if ( ! this.state.existingTag ) {
-				const chooseProperty = {
+				responseData.properties.push( {
 					id: 0,
 					name: __( 'Setup a New Property', 'google-site-kit' )
-				};
-				responseData.properties.push( chooseProperty );
+				} );
 			}
 
-			const chooseProfile = {
+			responseData.profiles.push( {
 				id: 0,
 				name: __( 'Setup a New Profile', 'google-site-kit' )
-			};
-			responseData.profiles.push( chooseProfile );
+			} );
 
-			let newState = {
+			newState = {
+				...newState,
 				isLoading: false,
 				accounts: responseData.accounts,
-				errorCode: this.state.errorCode,
-				selectedAccount: selectedAccount,
-				selectedProperty: selectedProperty,
-				selectedProfile: selectedProfile,
+				errorCode: errorCode || newState.errorCode,
+				selectedAccount,
+				selectedProperty,
+				selectedProfile,
 				properties: [ chooseAccount ],
 				profiles: [ chooseAccount ],
 				existingTag: responseData.existingTag ? responseData.existingTag.property[0].id : false,
@@ -368,21 +331,37 @@ class AnalyticsSetup extends Component {
 				} );
 			}
 
-			return new Promise( ( resolve ) => {
-				resolve( newState );
-			} );
+			// If tag hasn't been detected in wp_head, look for existing tag in the html.
+			if ( ! newState.existingTag && ! newState.errorCode ) {
+				const existingTag = await getExistingTag( 'analytics' );
+
+				if ( existingTag && existingTag.length  ) {
+
+					// Verify the user has access to existing tag if found. If no access request will return 403 error and catch err.
+					await data.get( 'modules', 'analytics', 'tag-permission', { tag: existingTag }, false );
+					newState = Object.assign( newState, {
+						existingTag,
+						useSnippet,
+					} );
+				}
+			}
 		} catch ( err ) {
-			const errState = {
+			newState = {
 				isLoading: false,
 				errorCode: err.code,
 				errorMsg: err.message,
 				errorReason: err.data && err.data.reason ? err.data.reason : false,
 			};
-
-			return new Promise( ( resolve ) => {
-				resolve( errState );
-			} );
+			data.deleteCache( 'analytics', 'existingTag' );
 		}
+
+		return new Promise( ( resolve ) => {
+			if ( this._isMounted ) {
+				this.setState( newState, resolve );
+			} else {
+				resolve();
+			}
+		} );
 	}
 
 	async processAccountChange( selectValue ) {
