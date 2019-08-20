@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import PropTypes from 'prop-types';
 import DataBlock from 'GoogleComponents/data-block';
 import Button from 'GoogleComponents/button';
@@ -33,7 +36,7 @@ class Notification extends Component {
 		super( props );
 
 		this.state = {
-			isClosed: false
+			isClosed: false,
 		};
 
 		this.cardRef = createRef();
@@ -56,7 +59,7 @@ class Notification extends Component {
 		e.preventDefault();
 
 		this.setState( {
-			isClosed: ! isClosed
+			isClosed: ! isClosed,
 		} );
 
 		setTimeout( () => {
@@ -66,7 +69,6 @@ class Notification extends Component {
 			const event = new Event( 'notificationDismissed' );
 			document.dispatchEvent( event );
 		}, 350 );
-
 	}
 
 	expireDismiss() {
@@ -135,7 +137,6 @@ class Notification extends Component {
 						'mdc-layout-grid__cell--span-5-tablet ' +
 						'mdc-layout-grid__cell--span-8-desktop ';
 			}
-
 		} else if ( 'small' === format ) {
 			layout = 'mdc-layout-grid__cell--span-11-desktop ' +
 				'mdc-layout-grid__cell--span-7-tablet ' +
@@ -144,9 +145,9 @@ class Notification extends Component {
 
 		let icon;
 		if ( 'win-warning' === type ) {
-			icon = <Warning/>;
+			icon = <Warning />;
 		} else if ( 'win-error' === type ) {
-			icon = <Error/>;
+			icon = <Error />;
 		} else {
 			icon = '';
 		}
@@ -200,14 +201,14 @@ class Notification extends Component {
 			</Fragment>
 		);
 
-		const logoSVG = module ? <SvgIcon id={ module } height="19" width="19"/> :  <SvgIcon id={ 'logo-g' } height="34" width="32"/>;
+		const logoSVG = module ? <SvgIcon id={ module } height="19" width="19" /> : <SvgIcon id={ 'logo-g' } height="34" width="32" />;
 
 		return (
 			<section ref={ this.cardRef } className={ `
 				googlesitekit-publisher-win
-				${ format ? `googlesitekit-publisher-win--${format}` : '' }
-				${ type ? `googlesitekit-publisher-win--${type}` : '' }
-				${ closedClass ? `googlesitekit-publisher-win--${closedClass}` : '' }
+				${ format ? `googlesitekit-publisher-win--${ format }` : '' }
+				${ type ? `googlesitekit-publisher-win--${ type }` : '' }
+				${ closedClass ? `googlesitekit-publisher-win--${ closedClass }` : '' }
 			` }>
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
@@ -230,7 +231,7 @@ class Notification extends Component {
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-1
 							">
-								<img className="googlesitekit-publisher-win__small-image" alt="" src={ smallImage }/>
+								<img className="googlesitekit-publisher-win__small-image" alt="" src={ smallImage } />
 							</div>
 						}
 
@@ -273,7 +274,7 @@ class Notification extends Component {
 								mdc-layout-grid__cell--span-4-desktop
 							">
 								<div className="googlesitekit-publisher-win__image-large">
-									<img alt="" src={ winImage }/>
+									<img alt="" src={ winImage } />
 								</div>
 							</div>
 						}

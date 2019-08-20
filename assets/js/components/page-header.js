@@ -15,6 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * External dependencies
+ */
 import DateRangeSelector from 'GoogleComponents/date-range-selector';
 
 import PropTypes from 'prop-types';
@@ -55,7 +58,7 @@ class PageHeader extends Component {
 					{ title &&
 						<div className={ widthClasses }>
 							{ icon &&
-								<SvgIcon id={ iconId } height={ iconHeight } width={ iconWidth } className="googlesitekit-page-header__icon"/>
+								<SvgIcon id={ iconId } height={ iconHeight } width={ iconWidth } className="googlesitekit-page-header__icon" />
 							}
 							<h1 className={ `googlesitekit-page-header__title ${ className }` }>
 								{ title }
@@ -82,7 +85,7 @@ class PageHeader extends Component {
 								}
 								{ showDateRangeSelector &&
 									<span className="googlesitekit-page-header__range">
-										<DateRangeSelector/>
+										<DateRangeSelector />
 									</span>
 								}
 							</div>

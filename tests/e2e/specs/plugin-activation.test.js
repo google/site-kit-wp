@@ -4,15 +4,15 @@
 import { deactivatePlugin, activatePlugin } from '@wordpress/e2e-test-utils';
 
 describe( 'Plugin Activation Notice', () => {
-	beforeEach( async() => {
+	beforeEach( async () => {
 		await deactivatePlugin( 'google-site-kit' );
 	} );
 
-	afterEach( async() => {
+	afterEach( async () => {
 		await activatePlugin( 'google-site-kit' );
 	} );
 
-	it( 'Should be displayed', async() => {
+	it( 'Should be displayed', async () => {
 		await activatePlugin( 'google-site-kit' );
 
 		await page.waitForSelector( '.googlesitekit-activation' );
@@ -22,7 +22,7 @@ describe( 'Plugin Activation Notice', () => {
 		await deactivatePlugin( 'google-site-kit' );
 	} );
 
-	it( 'Should lead you to the setup wizard', async() => {
+	it( 'Should lead you to the setup wizard', async () => {
 		await activatePlugin( 'google-site-kit' );
 
 		await page.waitForSelector( '.googlesitekit-activation' );

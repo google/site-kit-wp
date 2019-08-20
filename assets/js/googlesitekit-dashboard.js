@@ -16,10 +16,13 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import {
 	addPerformanceMonitoring,
 	clearAppLocalStorage,
-}  from 'GoogleUtil';
+} from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
 import Setup from 'GoogleComponents/setup/setup-wrapper';
 import DashboardApp from 'GoogleComponents/dashboard/dashboard-app';
@@ -30,7 +33,6 @@ const { Component, render, Fragment } = wp.element;
 const { doAction } = wp.hooks;
 
 class GoogleSitekitDashboard extends Component {
-
 	constructor( props ) {
 		super( props );
 		this.state = {
@@ -64,7 +66,7 @@ class GoogleSitekitDashboard extends Component {
 
 		if ( showModuleSetupWizard ) {
 			return (
-				<Setup/>
+				<Setup />
 			);
 		}
 
@@ -98,14 +100,12 @@ class GoogleSitekitDashboard extends Component {
 
 // Initialize the app once the DOM is ready.
 wp.domReady( function() {
-
-	if (  googlesitekit.admin.resetSession ) {
+	if ( googlesitekit.admin.resetSession ) {
 		clearAppLocalStorage();
 	}
 
 	const dashboard = document.getElementById( 'js-googlesitekit-dashboard' );
 	if ( null !== dashboard ) {
-
 		// Render the Dashboard App.
 		render( <GoogleSitekitDashboard />, dashboard );
 

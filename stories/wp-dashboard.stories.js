@@ -1,6 +1,12 @@
+/**
+ * External dependencies
+ */
 import { storiesOf } from '@storybook/react';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import WPDashboardMain from 'GoogleComponents/wp-dashboard/wp-dashboard-main';
+/**
+ * Internal dependencies
+ */
 import { googlesitekit as wpDashboardData } from '../.storybook/data/wp-admin-index.php--googlesitekit';
 import WPSearchConsoleDashboardWidget from 'GoogleModules/search-console/wp-dashboard/wp-dashboard-widget';
 import { createAddToFilter } from 'GoogleUtil/helpers';
@@ -11,8 +17,8 @@ storiesOf( 'WordPress', module )
 	.add( 'WordPress Dashboard', () => {
 		window.googlesitekit = wpDashboardData;
 		window.googlesitekit.admin.assetsRoot = '/assets/';
-		const addWPSearchConsoleDashboardWidget          = createAddToFilter( <WPSearchConsoleDashboardWidget /> );
-		const addWPAnalyticsDashboardWidgetOverview      = createAddToFilter( <WPAnalyticsDashboardWidgetOverview /> );
+		const addWPSearchConsoleDashboardWidget = createAddToFilter( <WPSearchConsoleDashboardWidget /> );
+		const addWPAnalyticsDashboardWidgetOverview = createAddToFilter( <WPAnalyticsDashboardWidgetOverview /> );
 		const addWPAnalyticsDashboardWidgetTopPagesTable = createAddToFilter( <WPAnalyticsDashboardWidgetTopPagesTable /> );
 
 		wp.hooks.removeAllFilters( 'googlesitekit.WPDashboardHeader' );
@@ -32,7 +38,6 @@ storiesOf( 'WordPress', module )
 				'googlesitekit.moduleLoaded',
 				'WPDashboard'
 			);
-
 		}, 250 );
 
 		return (
@@ -47,7 +52,7 @@ storiesOf( 'WordPress', module )
 						</h2>
 						<div className="inside">
 							<div id="js-googlesitekit-wp-dashboard">
-								<WPDashboardMain/>
+								<WPDashboardMain />
 							</div>
 						</div>
 					</div>
@@ -58,5 +63,5 @@ storiesOf( 'WordPress', module )
 		options: {
 			readySelector: '.googlesitekit-data-block',
 			delay: 2000, // Wait for table overlay to animate.
-		}
+		},
 	} );

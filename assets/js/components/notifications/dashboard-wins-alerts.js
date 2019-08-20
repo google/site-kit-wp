@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Notification from 'GoogleComponents/notifications/notification';
 import { winsNotificationsToRequest, getWinsNotifications } from 'GoogleComponents/notifications/util';
 
@@ -31,18 +34,16 @@ class DashboardWinsAlerts extends Component {
 		super( props );
 
 		this.state = {
-			data: false
+			data: false,
 		};
 	}
 
 	componentWillMount() {
-
 		// Wait until data is fully loaded before requesting wins data.
 		addAction(
 			'googlesitekit.dataLoaded',
 			'googlesitekit.dataLoadedGetNotifications',
 			() => {
-
 				// Only handle the first completed data load.
 				removeAction(
 					'googlesitekit.dataLoaded',
@@ -53,7 +54,7 @@ class DashboardWinsAlerts extends Component {
 				if ( wins ) {
 					getWinsNotifications( wins ).then( ( response ) => {
 						this.setState( {
-							data: response.results
+							data: response.results,
 						} );
 					} );
 				}
@@ -70,10 +71,8 @@ class DashboardWinsAlerts extends Component {
 
 		const notifications = [];
 
-		Object.keys( data ).map( key => {
-
-			each( data[ key ], notification => {
-
+		Object.keys( data ).map( ( key ) => {
+			each( data[ key ], ( notification ) => {
 				notifications.push(
 					<Notification
 						key={ notification.id }
@@ -99,7 +98,6 @@ class DashboardWinsAlerts extends Component {
 					/>
 				);
 			} );
-
 		} );
 		return (
 			<Fragment>

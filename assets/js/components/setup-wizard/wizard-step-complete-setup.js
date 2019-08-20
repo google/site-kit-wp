@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import PropTypes from 'prop-types';
 import Button from 'GoogleComponents/button';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
@@ -70,9 +73,9 @@ class WizardStepCompleteSetup extends Component {
 							mdc-layout-grid__cell--span-3-desktop
 						">
 							<div className="googlesitekit-rocket">
-								<img className="googlesitekit-rocket__body" alt="" src={ googlesitekit.admin.assetsRoot + 'images/rocket-body.png' }/>
-								<img className="googlesitekit-rocket__clouds" alt="" src={ googlesitekit.admin.assetsRoot + 'images/rocket-clouds.png' }/>
-								<img className="googlesitekit-rocket__dust" alt="" src={ googlesitekit.admin.assetsRoot + 'images/rocket-dust.png' }/>
+								<img className="googlesitekit-rocket__body" alt="" src={ googlesitekit.admin.assetsRoot + 'images/rocket-body.png' } />
+								<img className="googlesitekit-rocket__clouds" alt="" src={ googlesitekit.admin.assetsRoot + 'images/rocket-clouds.png' } />
+								<img className="googlesitekit-rocket__dust" alt="" src={ googlesitekit.admin.assetsRoot + 'images/rocket-dust.png' } />
 							</div>
 						</div>
 					</div>
@@ -83,7 +86,7 @@ class WizardStepCompleteSetup extends Component {
 }
 
 WizardStepCompleteSetup.propTypes = {
-	completeSetup: PropTypes.func.isRequired
+	completeSetup: PropTypes.func.isRequired,
 };
 
 export default WizardStepCompleteSetup;

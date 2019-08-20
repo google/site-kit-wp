@@ -6,8 +6,8 @@ import { wpApiFetch } from './wp-api-fetch';
 /**
  * Set the site verification state of the current user.
  *
- * @param {Boolean} verified
- * @returns {*} resolved value from apiFetch promise
+ * @param {boolean} verified
+ * @return {*} resolved value from apiFetch promise
  */
 export async function setSiteVerification( verified = true ) {
 	return await wpApiFetch( {

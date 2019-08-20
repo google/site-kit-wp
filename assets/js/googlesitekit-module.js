@@ -16,11 +16,17 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import ProgressBar from 'GoogleComponents/progress-bar';
 import { addPerformanceMonitoring } from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
 
 // Load the data module.
+/**
+ * Internal dependencies
+ */
 import './components/data.js';
 
 /**
@@ -34,7 +40,6 @@ const { Component, render, Fragment } = wp.element;
 const { lazy, Suspense } = React;
 
 class GoogleSitekitModule extends Component {
-
 	constructor( props ) {
 		super( props );
 		this.state = { hasError: false };
@@ -51,9 +56,8 @@ class GoogleSitekitModule extends Component {
 		} = googlesitekit.setup;
 
 		this.state = {
-			showModuleSetupWizard
+			showModuleSetupWizard,
 		};
-
 	}
 
 	componentDidCatch( error, info ) {
@@ -99,7 +103,6 @@ class GoogleSitekitModule extends Component {
 		const moduleHasSetupWizard = applyFilters( 'googlesitekit.moduleHasSetupWizard', true, currentAdminPage );
 
 		if ( showModuleSetupWizard && moduleHasSetupWizard ) {
-
 			// Set webpackPublicPath on-the-fly.
 			if ( window.googlesitekit && window.googlesitekit.publicPath ) {
 				// eslint-disable-next-line no-undef
@@ -125,7 +128,7 @@ class GoogleSitekitModule extends Component {
 														mdc-layout-grid__cell
 														mdc-layout-grid__cell--span-12
 													">
-														<ProgressBar/>
+														<ProgressBar />
 													</div>
 												</div>
 											</div>
@@ -136,13 +139,13 @@ class GoogleSitekitModule extends Component {
 						</div>
 					</Fragment>
 				}>
-					<Setup/>
+					<Setup />
 				</Suspense>
 			);
 		}
 
 		return (
-			<ModuleApp/>
+			<ModuleApp />
 		);
 	}
 }
@@ -151,7 +154,6 @@ class GoogleSitekitModule extends Component {
 wp.domReady( function() {
 	const siteKitModule = document.getElementById( 'js-googlesitekit-module' );
 	if ( null !== siteKitModule ) {
-
 		// Render the Dashboard App.
 		render( <GoogleSitekitModule />, siteKitModule );
 

@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import { getQueryParameter } from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
 import ModulesList from 'GoogleComponents/modules-list';
@@ -25,9 +28,7 @@ const { __, sprintf } = wp.i18n;
 const { applyFilters } = wp.hooks;
 
 class DashboardSetupAlerts extends Component {
-
 	render() {
-
 		// Only show the connected win when the user completes setup flow.
 		const notification = getQueryParameter( 'notification' );
 		if ( ( ! notification ) || '' === notification ) {
@@ -42,64 +43,64 @@ class DashboardSetupAlerts extends Component {
 				label: '',
 				url: '',
 				description: '',
-			}
+			},
 		};
 
 		const slug = getQueryParameter( 'slug' );
 		const { canManageOptions } = googlesitekit.permissions;
 
 		switch ( notification ) {
-				case 'authentication_success':
-					if ( ! canManageOptions ) {
-						return null;
-					}
+			case 'authentication_success':
+				if ( ! canManageOptions ) {
+					return null;
+				}
 
-					if ( slug && googlesitekit.modules[ slug ] && ! googlesitekit.modules[ slug ].active ) {
-						return null;
-					}
+				if ( slug && googlesitekit.modules[ slug ] && ! googlesitekit.modules[ slug ].active ) {
+					return null;
+				}
 
-					if ( slug && googlesitekit.modules[ slug ] ) {
-						winData.id = `${winData.id}-${slug}`;
-						winData.setupTitle  = googlesitekit.modules[ slug ].name;
-						winData.description = __( 'Here are some other services you can connect to see even more stats:', 'google-site-kit' );
+				if ( slug && googlesitekit.modules[ slug ] ) {
+					winData.id = `${ winData.id }-${ slug }`;
+					winData.setupTitle = googlesitekit.modules[ slug ].name;
+					winData.description = __( 'Here are some other services you can connect to see even more stats:', 'google-site-kit' );
 
-						winData = applyFilters( `googlesitekit.SetupWinNotification-${slug}`, winData );
-					}
+					winData = applyFilters( `googlesitekit.SetupWinNotification-${ slug }`, winData );
+				}
 
-					return (
-						<Fragment>
-							<Notification
-								id={ winData.id }
-								title={ sprintf( __( 'Congrats on completing the setup for %s!', 'google-site-kit' ), winData.setupTitle ) }
-								description={ winData.description }
-								handleDismiss={ () => {} }
-								winImage={ googlesitekit.admin.assetsRoot + 'images/rocket.png' }
-								dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-								format="large"
-								type="win-success"
-								learnMoreLabel={ winData.learnMore.label }
-								learnMoreDescription={ winData.learnMore.description }
-								learnMoreUrl={ winData.learnMore.url }
-							>
-								<ModulesList/>
-							</Notification>
-						</Fragment>
-					);
+				return (
+					<Fragment>
+						<Notification
+							id={ winData.id }
+							title={ sprintf( __( 'Congrats on completing the setup for %s!', 'google-site-kit' ), winData.setupTitle ) }
+							description={ winData.description }
+							handleDismiss={ () => {} }
+							winImage={ googlesitekit.admin.assetsRoot + 'images/rocket.png' }
+							dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+							format="large"
+							type="win-success"
+							learnMoreLabel={ winData.learnMore.label }
+							learnMoreDescription={ winData.learnMore.description }
+							learnMoreUrl={ winData.learnMore.url }
+						>
+							<ModulesList />
+						</Notification>
+					</Fragment>
+				);
 
-				case 'authentication_failure':
-					return (
-						<Fragment>
-							<Notification
-								id="connection error"
-								title={ __( 'There was a problem connecting to Google!', 'google-site-kit' ) }
-								description={ '' }
-								handleDismiss={ () => {} }
-								format="small"
-								type="win-error"
-							/>
+			case 'authentication_failure':
+				return (
+					<Fragment>
+						<Notification
+							id="connection error"
+							title={ __( 'There was a problem connecting to Google!', 'google-site-kit' ) }
+							description={ '' }
+							handleDismiss={ () => {} }
+							format="small"
+							type="win-error"
+						/>
 
-						</Fragment>
-					);
+					</Fragment>
+				);
 		}
 	}
 }

@@ -17,7 +17,10 @@
  */
 /* eslint camelcase:[0] */
 
-import { addPerformanceMonitoring }  from 'GoogleUtil';
+/**
+ * External dependencies
+ */
+import { addPerformanceMonitoring } from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
 
 const { setLocaleData } = wp.i18n;
@@ -30,7 +33,6 @@ const { Component, render } = wp.element;
 import DashboardDetailsApp from 'GoogleComponents/dashboard-details/dashboard-details-app';
 
 class GoogleSitekitDashboardDetails extends Component {
-
 	constructor( props ) {
 		super( props );
 		this.state = { hasError: false };
@@ -83,7 +85,6 @@ class GoogleSitekitDashboardDetails extends Component {
 wp.domReady( function() {
 	const dashboardDetails = document.getElementById( 'js-googlesitekit-dashboard-details' );
 	if ( null !== dashboardDetails ) {
-
 		// Render the Dashboard App.
 		render( <GoogleSitekitDashboardDetails />, dashboardDetails );
 

@@ -1,5 +1,11 @@
+/**
+ * External dependencies
+ */
 import { storiesOf } from '@storybook/react';
 import { GoogleSitekitAdminbar } from 'SiteKitCore/googlesitekit-adminbar';
+/**
+ * Internal dependencies
+ */
 import { googlesitekit as wpAdminBarData } from '../.storybook/data/blog---googlesitekit';
 import AnalyticsAdminbarWidget from 'GoogleModules/analytics/adminbar/adminbar-widget';
 import GoogleSitekitSearchConsoleAdminbarWidget from 'GoogleModules/search-console/adminbar/adminbar-widget';
@@ -8,9 +14,8 @@ import { createAddToFilter } from 'GoogleUtil/helpers';
 storiesOf( 'Global', module )
 	.add( 'Admin Bar', () => {
 		window.googlesitekit = wpAdminBarData;
-		const addGoogleSitekitSearchConsoleAdminbarWidget  = createAddToFilter( <GoogleSitekitSearchConsoleAdminbarWidget /> );
+		const addGoogleSitekitSearchConsoleAdminbarWidget = createAddToFilter( <GoogleSitekitSearchConsoleAdminbarWidget /> );
 		const addAnalyticsAdminbarWidget = createAddToFilter( <AnalyticsAdminbarWidget /> );
-
 
 		wp.hooks.removeAllFilters( 'googlesitekit.AdminbarModules' );
 		wp.hooks.addFilter( 'googlesitekit.AdminbarModules',
@@ -34,7 +39,7 @@ storiesOf( 'Global', module )
 				<div className="googlesitekit-plugin">
 					<div id="js-googlesitekit-adminbar" className="ab-sub-wrapper googlesitekit-adminbar" style={ { display: 'block' } }>
 						<section id="js-googlesitekit-adminbar-modules" className="googlesitekit-adminbar-modules">
-							<GoogleSitekitAdminbar/>
+							<GoogleSitekitAdminbar />
 						</section>
 					</div>
 				</div>
@@ -43,5 +48,5 @@ storiesOf( 'Global', module )
 	}, {
 		options: {
 			readySelector: '.googlesitekit-data-block',
-		}
+		},
 	} );

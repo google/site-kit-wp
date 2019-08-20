@@ -18,8 +18,8 @@ function stubGoogleSignIn( request ) {
 		request.respond( {
 			status: 302,
 			headers: {
-				location: createURL( '/', 'oauth2callback=1&code=valid-test-code&e2e-site-verification=1' )
-			}
+				location: createURL( '/', 'oauth2callback=1&code=valid-test-code&e2e-site-verification=1' ),
+			},
 		} );
 	} else if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/is-site-exist' ) ) {
 		request.respond( {
@@ -28,7 +28,7 @@ function stubGoogleSignIn( request ) {
 			body: JSON.stringify( {
 				siteURL: process.env.WP_BASE_URL,
 				verified: true,
-			} )
+			} ),
 		} );
 	} else {
 		request.continue();
@@ -36,13 +36,12 @@ function stubGoogleSignIn( request ) {
 }
 
 describe( 'Site Kit set up flow for the first time', () => {
-
-	beforeAll( async() => {
+	beforeAll( async () => {
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await setSearchConsoleProperty();
 	} );
 
-	it( 'authenticates from splash page', async() => {
+	it( 'authenticates from splash page', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 		await page.waitForSelector( '#client-configuration' );
 

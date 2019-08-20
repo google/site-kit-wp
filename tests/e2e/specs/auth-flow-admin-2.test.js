@@ -22,16 +22,15 @@ import {
 } from '../utils';
 
 describe( 'the set up flow for the second administrator', () => {
-
-	beforeAll( async() => {
+	beforeAll( async () => {
 		await page.setRequestInterception( true );
-		useRequestInterception( request => {
+		useRequestInterception( ( request ) => {
 			if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
 				request.respond( {
 					status: 302,
 					headers: {
-						location: createURL( '/', 'oauth2callback=1&code=valid-test-code' )
-					}
+						location: createURL( '/', 'oauth2callback=1&code=valid-test-code' ),
+					},
 				} );
 			} else {
 				request.continue();
@@ -39,7 +38,7 @@ describe( 'the set up flow for the second administrator', () => {
 		} );
 	} );
 
-	beforeEach( async() => {
+	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
 		await setClientConfig();
@@ -49,7 +48,7 @@ describe( 'the set up flow for the second administrator', () => {
 		await logoutUser();
 	} );
 
-	afterEach( async() => {
+	afterEach( async () => {
 		await logoutUser();
 
 		// Restore the default/admin user
@@ -57,7 +56,7 @@ describe( 'the set up flow for the second administrator', () => {
 		await loginUser();
 	} );
 
-	it( 'admin 2', async() => {
+	it( 'admin 2', async () => {
 		await loginUser( 'admin-2', 'password' );
 
 		// Simulate that the user is already verified.

@@ -1,4 +1,7 @@
 
+/**
+ * WordPress dependencies
+ */
 import { switchUserToAdmin, visitAdminPage, switchUserToTest, isCurrentURL } from '@wordpress/e2e-test-utils';
 
 /**
@@ -13,11 +16,11 @@ export async function deactivateAllOtherPlugins() {
 
 	await page.waitForSelector( 'input[type="checkbox"][value="google-site-kit/google-site-kit.php"]' );
 	const activePlugins = await page.$$eval( '.active[data-plugin]', ( rows ) => {
-		return rows.map( row => row.dataset.plugin );
+		return rows.map( ( row ) => row.dataset.plugin );
 	} );
 
 	// Bail if there are no plugins to deactivate
-	if ( 1 === activePlugins.length && 'google-site-kit/google-site-kit.php' === activePlugins[0] ) {
+	if ( 1 === activePlugins.length && 'google-site-kit/google-site-kit.php' === activePlugins[ 0 ] ) {
 		return;
 	}
 

@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import {
 	activateOrDeactivateModule,
 	refreshAuthentication,
@@ -44,7 +47,6 @@ class AnalyticsInactiveCTA extends Component {
 			// Redirect to ReAuthentication URL
 			window.location = getReAuthUrl( 'analytics', true );
 		} catch ( err ) {
-
 			showErrorNotification( GenericError, {
 				id: 'analytics-setup-error',
 				title: __( 'Internal Server Error', 'google-site-kit' ),

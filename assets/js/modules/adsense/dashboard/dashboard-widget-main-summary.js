@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import withData from 'GoogleComponents/higherorder/withdata';
 import PreviewBlock from 'GoogleComponents/preview-block';
 import {
@@ -26,6 +29,9 @@ import {
 } from 'GoogleUtil';
 import DataBlock from 'GoogleComponents/data-block';
 import Sparkline from 'GoogleComponents/sparkline';
+/**
+ * Internal dependencies
+ */
 import {
 	reduceAdSenseData,
 	isDataZeroAdSense,
@@ -96,7 +102,7 @@ class AdSenseDashboardMainSummary extends Component {
 					mdc-layout-grid__cell--span-4-tablet
 				">
 					<Layout className="googlesitekit-dashboard-adsense-stats" fill>
-						<PreviewBlock width='100%' height='276px' padding />
+						<PreviewBlock width="100%" height="276px" padding />
 					</Layout>
 				</div>
 			);
@@ -126,7 +132,7 @@ class AdSenseDashboardMainSummary extends Component {
 									<DataBlock
 										className="overview-adsense-rpm"
 										title={ __( 'RPM', 'google-site-kit' ) }
-										datapoint={ readableLargeNumber( period.totals[1] ) }
+										datapoint={ readableLargeNumber( period.totals[ 1 ] ) }
 										source={ {
 											name: __( 'AdSense', 'google-site-kit' ),
 											link: href,
@@ -135,7 +141,7 @@ class AdSenseDashboardMainSummary extends Component {
 											<Sparkline
 												data={ extractForSparkline( processedData.dataMap, 2 ) }
 												change={ 1 }
-												id='adsense-rpm-sparkline'
+												id="adsense-rpm-sparkline"
 												loadSmall={ false }
 											/>
 										}
@@ -149,18 +155,18 @@ class AdSenseDashboardMainSummary extends Component {
 									<DataBlock
 										className="overview-adsense-earnings"
 										title={ __( 'Total Earnings', 'google-site-kit' ) }
-										datapoint={ readableLargeNumber( period.totals[0] ) }
+										datapoint={ readableLargeNumber( period.totals[ 0 ] ) }
 										source={ {
 											name: __( 'AdSense', 'google-site-kit' ),
 											link: href,
 										} }
-										change={ today.totals[0] }
+										change={ today.totals[ 0 ] }
 										changeDataUnit={ '$' }
 										sparkline={ daily &&
 											<Sparkline
 												data={ extractForSparkline( processedData.dataMap, 1 ) }
 												change={ 1 }
-												id='adsense-earnings-sparkline'
+												id="adsense-earnings-sparkline"
 												loadSmall={ false }
 											/>
 										}
@@ -174,7 +180,7 @@ class AdSenseDashboardMainSummary extends Component {
 									<DataBlock
 										className="overview-adsense-impressions"
 										title={ __( 'Ad Impressions', 'google-site-kit' ) }
-										datapoint={ readableLargeNumber( period.totals[2] ) }
+										datapoint={ readableLargeNumber( period.totals[ 2 ] ) }
 										source={ {
 											name: __( 'AdSense', 'google-site-kit' ),
 											link: href,
@@ -183,7 +189,7 @@ class AdSenseDashboardMainSummary extends Component {
 											<Sparkline
 												data={ extractForSparkline( processedData.dataMap, 3 ) }
 												change={ 1 }
-												id='adsense-impressions-sparkline'
+												id="adsense-impressions-sparkline"
 												loadSmall={ false }
 											/>
 										}
@@ -216,7 +222,7 @@ export default withData(
 			datapoint: 'earning-today',
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
-			context: 'Dashboard'
+			context: 'Dashboard',
 		},
 		{
 			dataObject: 'modules',
@@ -233,7 +239,7 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
-		}
+		},
 	],
 	<div className="
 		mdc-layout-grid__cell
@@ -241,7 +247,7 @@ export default withData(
 		mdc-layout-grid__cell--span-4-tablet
 	">
 		<Layout className="googlesitekit-dashboard-adsense-stats" fill>
-			<PreviewBlock width='100%' height='276px' padding />
+			<PreviewBlock width="100%" height="276px" padding />
 		</Layout>
 	</div>,
 	{

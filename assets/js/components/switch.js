@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import { MDCSwitch } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
 

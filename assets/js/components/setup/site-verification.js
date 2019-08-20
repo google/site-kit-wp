@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import data from 'GoogleComponents/data';
 import Button from 'GoogleComponents/button';
 import ProgressBar from 'GoogleComponents/progress-bar';
@@ -31,7 +34,6 @@ const { __ } = wp.i18n;
 const { Component, Fragment } = wp.element;
 
 class SiteVerification extends Component {
-
 	constructor( props ) {
 		super( props );
 
@@ -62,9 +64,9 @@ class SiteVerification extends Component {
 	requestSitePropertyList() {
 		const { setErrorMessage } = this.props;
 
-		( async() => {
+		( async () => {
 			try {
-				let responseData = await data.get( 'modules', 'search-console',
+				const responseData = await data.get( 'modules', 'search-console',
 					'siteverification-list' );
 
 				const { verified, identifier } = responseData;
@@ -86,9 +88,7 @@ class SiteVerification extends Component {
 					loading: false,
 					siteURL: responseData.identifier,
 				} );
-
 			} catch ( err ) {
-
 				let message = err.message;
 
 				if ( validateJSON( err.message ) ) {
@@ -128,7 +128,6 @@ class SiteVerification extends Component {
 		} );
 
 		try {
-
 			const response = await this.insertSiteVerification( siteURL );
 
 			if ( true === response.updated ) {
@@ -150,10 +149,9 @@ class SiteVerification extends Component {
 			this.setState( {
 				loading: false,
 				errorCode: err.code,
-				errorMsg: message
+				errorMsg: message,
 			} );
 		}
-
 	}
 
 	renderForm() {
@@ -164,7 +162,7 @@ class SiteVerification extends Component {
 				{ loadingMsg &&
 					<p>{ loadingMsg }</p>
 				}
-				<ProgressBar/>
+				<ProgressBar />
 			</Fragment>
 		);
 
@@ -190,7 +188,7 @@ class SiteVerification extends Component {
 				</div>
 				<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
 					<Button onClick={ this.onProceed }>{ __( 'Continue', 'google-site-kit' ) }</Button>
-					<HelpLink/>
+					<HelpLink />
 				</div>
 			</Fragment>
 		);

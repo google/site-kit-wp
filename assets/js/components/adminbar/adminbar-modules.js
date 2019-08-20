@@ -20,10 +20,7 @@ const { withFilters } = wp.components;
 const { Component, Fragment } = wp.element;
 
 class AdminbarModules extends Component {
-
-
 	render() {
-
 		return (
 			<Fragment />
 		);

@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import PropTypes from 'prop-types';
 import SearchConsole from 'GoogleComponents/setup/search-console';
 
@@ -23,7 +26,6 @@ import SearchConsole from 'GoogleComponents/setup/search-console';
  * WordPress dependencies.
  */
 const { Component } = wp.element;
-
 
 class WizardStepSearchConsoleProperty extends Component {
 	constructor( props ) {
@@ -55,9 +57,8 @@ class WizardStepSearchConsoleProperty extends Component {
 	}
 }
 
-
 WizardStepSearchConsoleProperty.propTypes = {
-	searchConsoleSetup: PropTypes.func.isRequired
+	searchConsoleSetup: PropTypes.func.isRequired,
 };
 
 export default WizardStepSearchConsoleProperty;

@@ -16,8 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import data from 'GoogleComponents/data';
 import { getTimeInSeconds } from 'GoogleUtil';
+/**
+ * Internal dependencies
+ */
 import WinsWithData from './wins-withdata';
 import { getDaysBetweenDates } from 'GoogleUtil';
 
@@ -39,7 +45,6 @@ export const modulesNotificationsToRequest = () => {
  * otherwise make the requests to get modules and page wins notifications.
  */
 export async function getTotalNotifications() {
-
 	const { setup } = window.googlesitekit;
 
 	if ( ! setup.isSiteKitConnected || ! setup.isAuthenticated && ! setup.isVerified ) {
@@ -70,7 +75,7 @@ export async function getTotalNotifications() {
 /**
  * Removes dismissed notifications from list.
  *
- * @param {array} notifications
+ * @param {Array} notifications
  */
 const removeDismissed = ( notifications ) => {
 	if ( ! notifications.length ) {
@@ -79,7 +84,7 @@ const removeDismissed = ( notifications ) => {
 
 	return notifications.filter( ( notification ) => {
 		const storageType = notification.storageType || 'sessionStorage';
-		const dismissed = window[ storageType ].getItem( `notification::dismissed::${notification.id}` );
+		const dismissed = window[ storageType ].getItem( `notification::dismissed::${ notification.id }` );
 		return null === dismissed;
 	} );
 };
@@ -88,10 +93,10 @@ const removeDismissed = ( notifications ) => {
  * Remove displayed wins set to show once.
  * We display 1 win at a time so we have sometihng new for the user each time.
  *
- * @param {array} notifications
+ * @param {Array} notifications
  */
 const removeDisplayedWins = ( wins ) => {
-	const firstWin = ( items ) =>  Object.keys( items ).slice( 0, 1 ).map( i => {
+	const firstWin = ( items ) => Object.keys( items ).slice( 0, 1 ).map( ( i ) => {
 		return items[ i ];
 	} );
 
@@ -100,8 +105,8 @@ const removeDisplayedWins = ( wins ) => {
 	}
 
 	// Get only the wins that haven't been displayed yet.
-	const notDisplayed =  Object.values( wins ).filter(  win => {
-		const displayed = sessionStorage.getItem( `notification::displayed::${win[0].id}` );
+	const notDisplayed = Object.values( wins ).filter( ( win ) => {
+		const displayed = sessionStorage.getItem( `notification::displayed::${ win[ 0 ].id }` );
 
 		if ( displayed ) {
 			const displayedDate = new Date( displayed );
@@ -118,7 +123,7 @@ const removeDisplayedWins = ( wins ) => {
 			// Remove the displayed storage if it has been displayed a week ago.
 			const days = getDaysBetweenDates( displayedDate, today );
 			if ( 7 <= days ) {
-				sessionStorage.removeItem( `notification::displayed::${win[0].id}` );
+				sessionStorage.removeItem( `notification::displayed::${ win[ 0 ].id }` );
 			}
 		}
 
@@ -126,17 +131,17 @@ const removeDisplayedWins = ( wins ) => {
 	} );
 
 	let first = null;
-	let result = [];
+	const result = [];
 
 	// Return 1st value if we have more than 1 win to show.
 	if ( 0 < Object.keys( notDisplayed ).length ) {
 		first = firstWin( notDisplayed );
-		return result[ Object.keys( notDisplayed )[0] ] = first;
+		return result[ Object.keys( notDisplayed )[ 0 ] ] = first;
 	}
 
 	// At least return 1st value if all have been displayed before.
 	first = firstWin( wins );
-	return result[ Object.keys( wins )[0] ] = first;
+	return result[ Object.keys( wins )[ 0 ] ] = first;
 };
 
 /**
@@ -150,9 +155,9 @@ export async function getModulesNotifications() {
 	const modules = await modulesNotificationsToRequest();
 	const promises = [];
 
-	modules.map( async( module ) => {
-		const promise = new Promise( async( resolve ) => {
-			const { identifier } =  module;
+	modules.map( async ( module ) => {
+		const promise = new Promise( async ( resolve ) => {
+			const { identifier } = module;
 			let notifications = [];
 
 			const response = await data.getNotifications( identifier, getTimeInSeconds( 'day' ) );
@@ -196,10 +201,9 @@ export async function getWinsNotifications() {
 	const winsWithData = await new WinsWithData( wins ).get();
 	const promises = [];
 
-	wins.map( async( win ) => {
-
-		const promise = new Promise( async( resolve ) => {
-			const { identifier } =  win;
+	wins.map( async ( win ) => {
+		const promise = new Promise( async ( resolve ) => {
+			const { identifier } = win;
 			const callback = win.callback || camelCase( identifier );
 			let notificationData = null;
 			let notifications = [];
@@ -244,7 +248,7 @@ export const incrementCount = ( state ) => {
 	const value = Math.abs( state.count ) + 1;
 	localStorage.setItem( 'googlesitekit::total-notifications', value );
 	return {
-		count: value
+		count: value,
 	};
 };
 
@@ -252,6 +256,6 @@ export const decrementCount = ( state ) => {
 	const value = Math.max( 0, Math.abs( state.count ) - 1 );
 	localStorage.setItem( 'googlesitekit::total-notifications', value );
 	return {
-		count: value
+		count: value,
 	};
 };

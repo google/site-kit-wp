@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import { fillFilterWithComponent } from 'GoogleUtil';
 import OptimizeSetup from 'GoogleModules/optimize/setup';
 const { addFilter } = wp.hooks;
@@ -23,11 +26,10 @@ const { __ } = wp.i18n;
 const slug = 'optimize';
 
 if ( googlesitekit.modules.optimize.active ) {
-
 	/**
 	 * Add components to the settings page.
 	 */
-	addFilter( `googlesitekit.ModuleSettingsDetails-${slug}`,
+	addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
 		'googlesitekit.OptimizeModuleSettingsDetails',
 		fillFilterWithComponent( OptimizeSetup, {
 			onSettingsPage: true,
@@ -36,7 +38,7 @@ if ( googlesitekit.modules.optimize.active ) {
 	/**
 	 * Add component to the setup wizard
 	 */
-	addFilter( `googlesitekit.ModuleSetup-${slug}`,
+	addFilter( `googlesitekit.ModuleSetup-${ slug }`,
 		'googlesitekit.OptimizeModuleSetupWizard',
 		fillFilterWithComponent( OptimizeSetup, {
 			onSettingsPage: false,
@@ -45,7 +47,7 @@ if ( googlesitekit.modules.optimize.active ) {
 	/**
 	 * Add data to the congrats setup Win Notification for display.
 	 */
-	addFilter( `googlesitekit.SetupWinNotification-${slug}`,
+	addFilter( `googlesitekit.SetupWinNotification-${ slug }`,
 		'googlesitekit.OptimizeSetupWinNotification', ( winData ) => {
 			winData.description = __( 'To set up experiments and see the results, go to ', 'google-site-kit' );
 			winData.learnMore.label = 'Optimize';

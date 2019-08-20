@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import DashboardModules from './dashboard-modules';
 const { Component, Fragment } = wp.element;
 

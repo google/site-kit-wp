@@ -16,11 +16,17 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import GoogleChart from 'GoogleComponents/google-chart';
 import {
 	getTimeInSeconds,
 } from 'GoogleUtil';
 import withData from 'GoogleComponents/higherorder/withdata';
+/**
+ * Internal dependencies
+ */
 import { extractAnalyticsDashboardData } from '../util';
 import PreviewBlock from 'GoogleComponents/preview-block';
 
@@ -41,14 +47,14 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 
 		const options = {
 			chart: {
-				title: pageTitle
+				title: pageTitle,
 			},
 			curveType: 'line',
 			height: 270,
 			width: '100%',
 			chartArea: {
-				'height': '80%',
-				'width': '87%',
+				height: '80%',
+				width: '87%',
 			},
 			legend: {
 				position: 'top',
@@ -83,7 +89,7 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 					fontSize: 12,
 					italic: false,
 				},
-			}
+			},
 		};
 
 		options.series = series;
@@ -100,7 +106,7 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 			return null;
 		}
 
-		const days = dateRangeFrom ? dateRangeFrom.match( /\d+/ ).map( Number ) [ 0 ] : 28;
+		const days = dateRangeFrom ? dateRangeFrom.match( /\d+/ ).map( Number )[ 0 ] : 28;
 
 		const dataMap = extractAnalyticsDashboardData( data, selectedStats, days );
 
@@ -134,8 +140,8 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Single',
-		}
+		},
 	],
-	<PreviewBlock width='100%' height='270px' padding />,
+	<PreviewBlock width="100%" height="270px" padding />,
 	{ createGrid: true }
 );

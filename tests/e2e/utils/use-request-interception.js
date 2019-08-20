@@ -5,8 +5,7 @@
  * @param {Function} cleanup Function to remove the added handler function.
  */
 export function useRequestInterception( callback ) {
-	const requestHandler = request => {
-
+	const requestHandler = ( request ) => {
 		// Prevent errors for requests that happen after interception is disabled.
 		if ( ! request._allowInterception ) {
 			return;

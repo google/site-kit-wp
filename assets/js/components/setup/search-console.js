@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import data from 'GoogleComponents/data';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import { Select, TextField, Input } from 'SiteKitCore/material-components';
@@ -28,7 +31,6 @@ const { __, sprintf } = wp.i18n;
 const { Component, Fragment } = wp.element;
 
 class SearchConsole extends Component {
-
 	constructor( props ) {
 		super( props );
 
@@ -38,7 +40,7 @@ class SearchConsole extends Component {
 			loading: true,
 			sites: false,
 			selectedUrl: siteURL,
-			siteURL: siteURL,
+			siteURL,
 			connected: false,
 			errorCode: false,
 			errorMsg: '',
@@ -68,7 +70,6 @@ class SearchConsole extends Component {
 			// Fallback to request match sites and exact match site.
 			this.requestSearchConsoleSiteList();
 		} catch {
-
 			// Fallback to request match sites and exact match site.
 			this.requestSearchConsoleSiteList();
 		}
@@ -83,9 +84,9 @@ class SearchConsole extends Component {
 			return;
 		}
 		const { setErrorMessage } = this.props;
-		( async() => {
+		( async () => {
 			try {
-				let sitePropertyData = await data.get( 'modules', 'search-console', 'matched-sites' );
+				const sitePropertyData = await data.get( 'modules', 'search-console', 'matched-sites' );
 
 				// We found exact match, continue the process in the background.
 				if ( sitePropertyData.exact_match ) {
@@ -100,7 +101,7 @@ class SearchConsole extends Component {
 
 				let errorMessage = '';
 				if ( 1 < sitePropertyData.property_matches.length ) {
-					errorMessage = sprintf( __( 'We found %d existing accounts. We recommend using the account  “%s”. Please confirm or change below to use.', 'google-site-kit' ), sitePropertyData.property_matches.length, sitePropertyData.property_matches[0] );
+					errorMessage = sprintf( __( 'We found %d existing accounts. We recommend using the account  “%s”. Please confirm or change below to use.', 'google-site-kit' ), sitePropertyData.property_matches.length, sitePropertyData.property_matches[ 0 ] );
 				} else {
 					errorMessage = __( 'We found no verified accounts, would you like to verify this URL?', 'google-site-kit' );
 				}
@@ -145,18 +146,18 @@ class SearchConsole extends Component {
 		const siteURL = this.state.selectedUrl;
 		const { setErrorMessage } = this.props;
 
-		( async() => {
+		( async () => {
 			try {
 				await this.insertPropertyToSearchConsole( siteURL );
 
 				setErrorMessage( '' );
 				this.props.searchConsoleSetup( siteURL );
 			} catch ( err ) {
-				setErrorMessage( err.message[0].message );
+				setErrorMessage( err.message[ 0 ].message );
 				this.setState( {
 					loading: false,
 					errorCode: err.code,
-					errorMsg: err.message[0].message,
+					errorMsg: err.message[ 0 ].message,
 				} );
 			}
 		} )();
@@ -164,7 +165,7 @@ class SearchConsole extends Component {
 
 	handleUrlSelect( index, item ) {
 		this.setState( {
-			selectedUrl: item.getAttribute( 'data-value' )
+			selectedUrl: item.getAttribute( 'data-value' ),
 		} );
 	}
 
@@ -205,7 +206,7 @@ class SearchConsole extends Component {
 				</div>
 				<div className="googlesitekit-setup-module__action googlesitekit-setup-module__action--justify">
 					<Button onClick={ this.submitPropertyEventHandler }>{ __( 'Continue', 'google-site-kit' ) }</Button>
-					<HelpLink/>
+					<HelpLink />
 				</div>
 			</Fragment>
 		);
@@ -246,7 +247,7 @@ class SearchConsole extends Component {
 				</div>
 				<div className="googlesitekit-setup-module__action googlesitekit-setup-module__action--justify">
 					<Button onClick={ this.submitPropertyEventHandler }>{ __( 'Continue', 'google-site-kit' ) }</Button>
-					<HelpLink/>
+					<HelpLink />
 				</div>
 			</Fragment>
 		);
@@ -259,7 +260,7 @@ class SearchConsole extends Component {
 			return (
 				<Fragment>
 					<p>{ __( 'We’re locating your Search Console account.', 'google-site-kit' ) }</p>
-					<ProgressBar/>
+					<ProgressBar />
 				</Fragment>
 			);
 		}
@@ -272,7 +273,6 @@ class SearchConsole extends Component {
 	}
 
 	render() {
-
 		const {
 			isAuthenticated,
 			shouldSetup,

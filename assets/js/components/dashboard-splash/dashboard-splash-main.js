@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import DashboardSplashIntro from './dashboard-splash-intro';
 import DashboardSplashService from './dashboard-splash-service';
 import DashboardSplashOutro from './dashboard-splash-outro';
@@ -25,7 +28,6 @@ const { Component } = wp.element;
 const { __ } = wp.i18n;
 
 class DashboardSplashMain extends Component {
-
 	constructor( props ) {
 		super( props );
 
@@ -87,7 +89,7 @@ class DashboardSplashMain extends Component {
 
 		return (
 			<div className="googlesitekit-splash">
-				<DashboardSplashIntro description={ introDescription } buttonLabel={ buttonLabel } onButtonClick={ this.handleButtonClick }/>
+				<DashboardSplashIntro description={ introDescription } buttonLabel={ buttonLabel } onButtonClick={ this.handleButtonClick } />
 				<section className="googlesitekit-splash__wrapper">
 					<div className="mdc-layout-grid">
 						<div className="mdc-layout-grid__inner">
@@ -102,18 +104,18 @@ class DashboardSplashMain extends Component {
 									{ __( 'Powerful tools integrated into your WordPress dashboard.', 'google-site-kit' ) }
 								</h2>
 							</div>
-							{ Object.keys( splashModules ).map( module => {
+							{ Object.keys( splashModules ).map( ( module ) => {
 								return (
-									<div key={ splashModules[module].title } className="
+									<div key={ splashModules[ module ].title } className="
 											mdc-layout-grid__cell
 											mdc-layout-grid__cell--span-2-phone
 											mdc-layout-grid__cell--span-2-tablet
 											mdc-layout-grid__cell--span-3-desktop
 										">
 										<DashboardSplashModule
-											icon={ splashModules[module].icon }
-											title={ splashModules[module].title }
-											content={ splashModules[module].content }
+											icon={ splashModules[ module ].icon }
+											title={ splashModules[ module ].title }
+											content={ splashModules[ module ].content }
 										/>
 									</div>
 								);
@@ -122,26 +124,26 @@ class DashboardSplashMain extends Component {
 					</div>
 					<section className="mdc-layout-grid">
 						<div className="mdc-layout-grid__inner">
-							{ Object.keys( splashServices ).map( service => {
+							{ Object.keys( splashServices ).map( ( service ) => {
 								return (
-									<div key={ splashServices[service].title } className="
+									<div key={ splashServices[ service ].title } className="
 										mdc-layout-grid__cell
 										mdc-layout-grid__cell--span-12
 									">
 										<DashboardSplashService
-											image={ splashServices[service].image }
-											title={ splashServices[service].title }
-											content={ splashServices[service].content }
-											link={ splashServices[service].link }
-											linkText={ splashServices[service].linkText }
-											opposite={ splashServices[service].opposite }/>
+											image={ splashServices[ service ].image }
+											title={ splashServices[ service ].title }
+											content={ splashServices[ service ].content }
+											link={ splashServices[ service ].link }
+											linkText={ splashServices[ service ].linkText }
+											opposite={ splashServices[ service ].opposite } />
 									</div>
 								);
 							} ) }
 						</div>
 					</section>
 				</section>
-				<DashboardSplashOutro description={ outroDescription } buttonLabel={ buttonLabel } onButtonClick={ this.handleButtonClick }/>
+				<DashboardSplashOutro description={ outroDescription } buttonLabel={ buttonLabel } onButtonClick={ this.handleButtonClick } />
 			</div>
 		);
 	}

@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Button from 'GoogleComponents/button';
 import Link from 'GoogleComponents/link';
 import data from 'GoogleComponents/data';
@@ -29,7 +32,6 @@ const { __ } = wp.i18n;
 const { Component, Fragment } = wp.element;
 
 class PageSpeedInsightsSetup extends Component {
-
 	constructor( props ) {
 		super( props );
 		this.state = {
@@ -38,14 +40,14 @@ class PageSpeedInsightsSetup extends Component {
 		};
 
 		this.handleAPIKeyChange = this.handleAPIKeyChange.bind( this );
-		this.handleAPIKeyEntry  = this.handleAPIKeyEntry.bind( this );
+		this.handleAPIKeyEntry = this.handleAPIKeyEntry.bind( this );
 		this.handleEditKeyClick = this.handleEditKeyClick.bind( this );
 	}
 
 	componentDidMount() {
-		const apikey       = googlesitekit.admin.settings ? googlesitekit.admin.settings.apikey : '';
-		const disabled     = ! apikey || 0 === apikey.length;
-		const editing      = disabled;
+		const apikey = googlesitekit.admin.settings ? googlesitekit.admin.settings.apikey : '';
+		const disabled = ! apikey || 0 === apikey.length;
+		const editing = disabled;
 		const startedEmpty = disabled;
 
 		// Load the inital value.
@@ -73,7 +75,6 @@ class PageSpeedInsightsSetup extends Component {
 			if ( startedEmpty ) {
 				document.location = getSiteKitAdminURL( 'googlesitekit-dashboard' );
 			} else {
-
 				// Otherwise, end the edit mode.
 				this.setState( { editing: false } );
 			}
@@ -114,7 +115,7 @@ class PageSpeedInsightsSetup extends Component {
 					! onSettingsPage &&
 					<Fragment>
 						<div className="googlesitekit-setup-module__logo">
-							<img src={ googlesitekit.admin.assetsRoot + 'images/icon-pagespeed.png' } width={ 33 } alt=""/>
+							<img src={ googlesitekit.admin.assetsRoot + 'images/icon-pagespeed.png' } width={ 33 } alt="" />
 						</div>
 						<h2 className="
 							googlesitekit-heading-3
@@ -142,7 +143,7 @@ class PageSpeedInsightsSetup extends Component {
 									<p>
 										{ __( 'Please generate an API key on ', 'google-site-kit' ) }
 										<Link
-											href= { externalAPIKeyURL }
+											href={ externalAPIKeyURL }
 											target="_blank"
 											rel="noopener noreferrer"
 											external

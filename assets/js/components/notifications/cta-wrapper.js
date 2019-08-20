@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Layout from 'GoogleComponents/layout/layout';
 
 const { Fragment } = wp.element;

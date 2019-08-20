@@ -1,7 +1,16 @@
+/**
+ * External dependencies
+ */
 import { storiesOf } from '@storybook/react';
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import Layout from 'GoogleComponents/layout/layout';
 import AnalyticsDashboardWidgetTopPagesTable from 'GoogleModules/analytics/dashboard/dashboard-widget-top-pages-table.js';
+/**
+ * Internal dependencies
+ */
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 
 storiesOf( 'Global', module )
@@ -32,5 +41,5 @@ storiesOf( 'Global', module )
 		options: {
 			readySelector: '.googlesitekit-table-overflow',
 			delay: 2000, // Wait for table overflow to animate.
-		}
+		},
 	} );

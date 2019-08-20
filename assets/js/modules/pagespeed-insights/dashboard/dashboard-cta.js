@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import CTA from 'GoogleComponents/notifications/cta';
 import data from 'GoogleComponents/data';
 import {
@@ -13,7 +16,7 @@ const PageSpeedInsightsCTA = () => {
 	const {
 		active,
 		setupComplete,
-	} = googlesitekit.modules['pagespeed-insights'];
+	} = googlesitekit.modules[ 'pagespeed-insights' ];
 
 	const { canManageOptions } = googlesitekit.permissions;
 
@@ -21,7 +24,7 @@ const PageSpeedInsightsCTA = () => {
 		return null;
 	}
 
-	const handleSetUpClick = async() => {
+	const handleSetUpClick = async () => {
 		try {
 			await activateOrDeactivateModule( data, 'pagespeed-insights', true );
 

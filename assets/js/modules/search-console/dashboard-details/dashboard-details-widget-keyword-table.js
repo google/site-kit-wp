@@ -16,16 +16,21 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import SearchConsoleDashboardWidgetKeywordTable from '../dashboard/dashboard-widget-keyword-table';
+/**
+ * External dependencies
+ */
 import Layout from 'GoogleComponents/layout/layout';
 
 const { Component } = wp.element;
 const { __, sprintf } = wp.i18n;
 
 class DashboardDetailsWidgetKeywordsTable extends Component {
-
 	render() {
-		const title = googlesitekit.permaLink ?  __( 'Top search queries for your page', 'google-site-kit' ) : __( 'Top search queries for your site', 'google-site-kit' );
+		const title = googlesitekit.permaLink ? __( 'Top search queries for your page', 'google-site-kit' ) : __( 'Top search queries for your site', 'google-site-kit' );
 
 		return (
 			<div className="
@@ -41,7 +46,7 @@ class DashboardDetailsWidgetKeywordsTable extends Component {
 						sprintf( 'https://search.google.com/u/1/search-console?resource_id=%s', googlesitekit.admin.siteURL )
 					}
 				>
-					<SearchConsoleDashboardWidgetKeywordTable/>
+					<SearchConsoleDashboardWidgetKeywordTable />
 				</Layout>
 			</div>
 		);

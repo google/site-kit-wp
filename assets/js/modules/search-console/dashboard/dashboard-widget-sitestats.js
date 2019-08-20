@@ -16,9 +16,15 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import GoogleChart from 'GoogleComponents/google-chart.js';
 import { getTimeInSeconds } from 'GoogleUtil';
 import withData from 'GoogleComponents/higherorder/withdata';
+/**
+ * Internal dependencies
+ */
 import { extractSearchConsoleDashboardData } from './util';
 import PreviewBlock from 'GoogleComponents/preview-block';
 import { decodeHtmlEntity } from 'GoogleUtil';
@@ -40,14 +46,14 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 
 		const options = {
 			chart: {
-				title: pageTitle
+				title: pageTitle,
 			},
 			curveType: 'line',
 			height: 270,
 			width: '100%',
 			chartArea: {
-				'height': '80%',
-				'width': '87%',
+				height: '80%',
+				width: '87%',
 			},
 			legend: {
 				position: 'top',
@@ -82,7 +88,7 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 					fontSize: 12,
 					italic: false,
 				},
-			}
+			},
 		};
 
 		options.series = series;
@@ -137,8 +143,8 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Single',
-		}
+		},
 	],
-	<PreviewBlock width='100%' height='270px' padding />,
+	<PreviewBlock width="100%" height="270px" padding />,
 	{ createGrid: true }
 );

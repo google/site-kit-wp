@@ -22,16 +22,15 @@ const fs = require( 'fs' );
 const readline = require( 'readline' );
 
 const dataCacheBase = 'https://googlekit.10uplabs.com/';
-const adminPath     = 'wp-admin/';
+const adminPath = 'wp-admin/';
 
 const rl = readline.createInterface( {
 	input: process.stdin,
-	output: process.stdout
+	output: process.stdout,
 } );
 
 rl.question( 'Username: ', ( username ) => {
 	rl.question( 'Password: ', ( password ) => {
-
 		console.log( 'Starting data caching process...' ); // eslint-disable-line no-console
 
 		const endpoints = [
@@ -47,7 +46,7 @@ rl.question( 'Username: ', ( username ) => {
 		];
 
 		// Grab the data...
-		( async() => {
+		( async () => {
 			const browser = await puppeteer.launch();
 			const page = await browser.newPage();
 			await page.goto( dataCacheBase + adminPath, { waitUntil: 'networkidle0' } );
@@ -59,7 +58,7 @@ rl.question( 'Username: ', ( username ) => {
 			await ( page.tap( '#wp-submit' ) );
 
 			// Go thru each endpoint from the predefined list.
-			for ( let endpoint of endpoints ) {
+			for ( const endpoint of endpoints ) {
 				console.log( 'Caching %s', endpoint ); // eslint-disable-line no-console
 
 				// Once to cache.
@@ -96,29 +95,26 @@ rl.question( 'Username: ', ( username ) => {
 				// Asset root.
 				html = html.replace( /"assetsRoot":"(.*?)"/gi, '"assetsRoot":"/assets/"' );
 
-
 				// Store one file for each localized variable used by the plugin.
 				const scriptsToMatch = [
 					'googlesitekit',
 					'googlesitekitCurrentModule',
 					'googlesitekitAdminbar',
 				];
-				for ( let scriptName of scriptsToMatch ) {
-
+				for ( const scriptName of scriptsToMatch ) {
 					// A regex that looks for the localized variable.
 					const matchStringRegex = '[window.|var ]' + scriptName + ' = (.*)';
 					const matches = html.match( matchStringRegex );
 					if ( matches ) {
-
 						// Clean up the file name to make it a loadable file.
-						let shortname = endpoint
+						const shortname = endpoint
 							.replace( dataCacheBase, '' )
 							.replace( '/', '-' )
 							.replace( '?', '-' );
 						const filename = '.storybook/data/' + shortname + '-' + scriptName + '.js';
 
 						// The file contains a single line defining the localized variable.
-						const toWrite = 'export const ' + scriptName + ' = ' + matches[1];
+						const toWrite = 'export const ' + scriptName + ' = ' + matches[ 1 ];
 						fs.writeFile(
 							filename,
 							toWrite,
@@ -134,10 +130,8 @@ rl.question( 'Username: ', ( username ) => {
 			}
 			await browser.close();
 			console.log( 'Data capture complete!' ); // eslint-disable-line no-console
-
 		} )();
 		rl.close();
-
 	} );
 } );
 

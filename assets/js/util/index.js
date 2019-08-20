@@ -15,6 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * External dependencies
+ */
 import data from 'GoogleComponents/data';
 import SvgIcon from 'GoogleUtil/svg-icon';
 
@@ -54,20 +57,18 @@ const { __ } = wp.i18n;
 const removeURLFallBack = ( url, parameter ) => {
 	const urlparts = url.split( '?' );
 	if ( 2 <= urlparts.length ) {
-
 		const prefix = encodeURIComponent( parameter ) + '=';
-		const pars = urlparts[1].split( /[&;]/g );
+		const pars = urlparts[ 1 ].split( /[&;]/g );
 
 		//reverse iteration as may be destructive
-		const newPars = pars.filter( param => {
+		const newPars = pars.filter( ( param ) => {
 			return -1 === param.lastIndexOf( prefix, 0 );
 		} );
 
-		url = urlparts[0] + '/' + ( 0 < newPars.length ? '?' + newPars.join( '&' ) : '' );
-		return url;
-	} else {
+		url = urlparts[ 0 ] + '/' + ( 0 < newPars.length ? '?' + newPars.join( '&' ) : '' );
 		return url;
 	}
+	return url;
 };
 
 /**
@@ -95,10 +96,9 @@ export const removeURLParameter = ( url, parameter ) => {
  * @param {number}         number       The large number to format.
  * @param {string|boolean} currencyCode Optional currency code to format as amount.
  *
- * @returns {string} The formatted number.
+ * @return {string} The formatted number.
  */
-export const readableLargeNumber = ( number, currencyCode = false ) =>  {
-
+export const readableLargeNumber = ( number, currencyCode = false ) => {
 	let readableNumber;
 
 	// Handle passed data undefined.
@@ -155,7 +155,7 @@ export const readableLargeNumber = ( number, currencyCode = false ) =>  {
  * @param {number} number The number to format.
  * @param {string} locale Optional, locale to format as amount, default to Browser's locale.
  *
- * @returns {string} The formatted number.
+ * @return {string} The formatted number.
  */
 export const numberFormat = ( number, locale = '' ) => {
 	if ( ! locale ) {
@@ -177,29 +177,29 @@ export const numberFormat = ( number, locale = '' ) => {
  */
 export const getTimeInSeconds = ( period ) => {
 	const minute = 60;
-	const hour   = minute * 60;
-	const day    = hour * 24;
-	const week   = day * 7;
-	const month  = day * 30;
-	const year   = day * 365;
+	const hour = minute * 60;
+	const day = hour * 24;
+	const week = day * 7;
+	const month = day * 30;
+	const year = day * 365;
 	switch ( period ) {
-			case 'minute':
-				return minute;
+		case 'minute':
+			return minute;
 
-			case 'hour':
-				return hour;
+		case 'hour':
+			return hour;
 
-			case 'day':
-				return day;
+		case 'day':
+			return day;
 
-			case 'week':
-				return week;
+		case 'week':
+			return week;
 
-			case 'month':
-				return month;
+		case 'month':
+			return month;
 
-			case 'year':
-				return year;
+		case 'year':
+			return year;
 	}
 };
 
@@ -209,7 +209,7 @@ export const getTimeInSeconds = ( period ) => {
  *
  * For example, passing 65 returns '1m 5s'.
  *
- * @param {int} seconds The number of seconds.
+ * @param {number} seconds The number of seconds.
  */
 export const prepareSecondsForDisplay = ( seconds ) => {
 	seconds = parseInt( seconds, 10 );
@@ -222,7 +222,6 @@ export const prepareSecondsForDisplay = ( seconds ) => {
 	results.minutes = Math.floor( ( seconds / 60 ) % 60 );
 	results.seconds = Math.floor( seconds % 60 );
 
-
 	const returnString =
 		( results.hours ? results.hours + 'h ' : '' ) +
 		( results.minutes ? results.minutes + 'm ' : '' ) +
@@ -234,8 +233,8 @@ export const prepareSecondsForDisplay = ( seconds ) => {
 /**
  * Retrieve number of days between 2 dates.
  *
- * @param {object} dateStart
- * @param {object} dateEnd
+ * @param {Object} dateStart
+ * @param {Object} dateEnd
  *
  * @return {number} The number of days.
  */
@@ -250,13 +249,12 @@ export const getDaysBetweenDates = ( dateStart, dateEnd ) => {
 /**
  * Calculate the percent change between two values.
  *
- * @param {int} previous The previous value.
- * @param {int} current  The current value.
+ * @param {number} previous The previous value.
+ * @param {number} current  The current value.
  *
- * @returns {int|string} The percent change.
+ * @return {number|string} The percent change.
  */
 export const changeToPercent = ( previous, current ) => {
-
 	// Prevent divide by zero errors.
 	if ( '0' === previous || 0 === previous || isNaN( previous ) ) {
 		return '';
@@ -272,7 +270,7 @@ export const changeToPercent = ( previous, current ) => {
 };
 
 export function addPerformanceMonitoring() {
-	let googlesitekitPerformance = window.googlesitekitPerformance || {};
+	const googlesitekitPerformance = window.googlesitekitPerformance || {};
 	addAction( 'googlesitekit.moduleLoaded', 'googlesitekit.PerformanceMetrics.moduleLoaded', function( context ) {
 		googlesitekitPerformance.loadedActionTriggered = ( new Date() ).getTime();
 		const elapsed = ( googlesitekitPerformance.loadedActionTriggered - googlesitekitPerformance.domReady ) + 'ms';
@@ -282,8 +280,8 @@ export function addPerformanceMonitoring() {
 	} );
 
 	addAction( 'googlesitekit.dataReceived', 'googlesitekit.PerformanceMetrics.dataReceived', function( datapoint ) {
-		const currentlyAt                        = ( new Date() ).getTime();
-		googlesitekitPerformance.dataReceived        = googlesitekitPerformance.dataReceived || [];
+		const currentlyAt = ( new Date() ).getTime();
+		googlesitekitPerformance.dataReceived = googlesitekitPerformance.dataReceived || [];
 		googlesitekitPerformance._timeToDataReceived = googlesitekitPerformance._timeToDataReceived || [];
 		googlesitekitPerformance.dataReceived.push( currentlyAt );
 		const elapsed = ( currentlyAt - googlesitekitPerformance.domReady ) + 'ms';
@@ -292,13 +290,13 @@ export function addPerformanceMonitoring() {
 	} );
 
 	addAction( 'googlesitekit.cachedDataUsed', 'googlesitekit.PerformanceMetrics.cachedDataUsed', function( datapoint ) {
-		const currentlyAt                          = ( new Date() ).getTime();
-		googlesitekitPerformance.cachedDataUsed        = googlesitekitPerformance.cachedDataUsed || [];
+		const currentlyAt = ( new Date() ).getTime();
+		googlesitekitPerformance.cachedDataUsed = googlesitekitPerformance.cachedDataUsed || [];
 		googlesitekitPerformance._timeToCachedDataUsed = googlesitekitPerformance._timeToCachedDataUsed || [];
 		googlesitekitPerformance.cachedDataUsed.push( currentlyAt );
 		const elapsed = ( currentlyAt - googlesitekitPerformance.domReady ) + 'ms';
 		googlesitekitPerformance._timeToCachedDataUsed.push( elapsed );
-		console.log( 'Performance Metrics: Cached Data loaded: ' + datapoint,  elapsed ); // eslint-disable-line no-console
+		console.log( 'Performance Metrics: Cached Data loaded: ' + datapoint, elapsed ); // eslint-disable-line no-console
 	} );
 
 	addAction( 'googlesitekit.rootAppDidMount', 'googlesitekit.PerformanceMetrics.rootAppDidMount', function() {
@@ -307,7 +305,6 @@ export function addPerformanceMonitoring() {
 		googlesitekitPerformance._timeToAppMounted = elapsed;
 		console.log( 'Performance Metrics: App mounted', elapsed ); // eslint-disable-line no-console
 	} );
-
 }
 
 /**
@@ -316,15 +313,15 @@ export function addPerformanceMonitoring() {
  * Used when URL.searchParams is unavailable.
  *
  * @param {string} name Query param to search for.
- * @returns {string}
+ * @return {string}
  */
 const fallbackGetQueryParamater = ( name ) => {
-	var queryDict = {},
+	let queryDict = {},
 		i,
 		queries = location.search.substr( 1 ).split( '&' );
 
 	for ( i = 0; i < queries.length; i++ ) {
-		queryDict[queries[ i ].split( '=' )[ 0 ] ] = decodeURIComponent( queries[ i ].split( '=' )[ 1 ] );
+		queryDict[ queries[ i ].split( '=' )[ 0 ] ] = decodeURIComponent( queries[ i ].split( '=' )[ 1 ] );
 	}
 
 	// If the name is specified, return that specific get parameter
@@ -339,7 +336,7 @@ const fallbackGetQueryParamater = ( name ) => {
  * Get query parameter from the current URL.
  *
  * @param {string} name Query param to search for.
- * @returns {string}
+ * @return {string}
  */
 export const getQueryParameter = ( name ) => {
 	const url = new URL( location.href );
@@ -359,23 +356,23 @@ export const getQueryParameter = ( name ) => {
 /**
  * Extract a single column of data for a sparkline from a dataset prepared for google charts.
  *
- * @param {array} data    An array of google charts row data.
- * @param {Number} column The column to extract for the sparkline.
+ * @param {Array} data    An array of google charts row data.
+ * @param {number} column The column to extract for the sparkline.
  */
 export const extractForSparkline = ( data, column ) => {
 	return map( data, ( row, i ) => {
 		return [
-			row[0],        // row[0] always contains the x axis value (typically date).
+			row[ 0 ], // row[0] always contains the x axis value (typically date).
 			row[ column ] ? row[ column ] : ( 0 === i ? '' : 0 ), // the data for the sparkline.
 		];
 	} );
 };
 
-export const refreshAuthentication = async() => {
+export const refreshAuthentication = async () => {
 	try {
 		const response = await data.get( 'core', 'user', 'authentication' );
 
-		const requiredAndGrantedScopes = response.grantedScopes.filter( scope => {
+		const requiredAndGrantedScopes = response.grantedScopes.filter( ( scope ) => {
 			return -1 !== response.requiredScopes.indexOf( scope );
 		} );
 
@@ -404,7 +401,7 @@ export const getReAuthUrl = ( slug, status ) => {
 
 	const { needReauthenticate } = window.googlesitekit.setup;
 
-	let { screenId } = googlesitekit.modules[ slug ];
+	const { screenId } = googlesitekit.modules[ slug ];
 
 	// For PageSpeedInsights, there is no setup needed if an API key already exists.
 	const reAuth = ( 'pagespeed-insights' === slug && apikey && apikey.length ) ? false : status;
@@ -451,7 +448,7 @@ export const getReAuthUrl = ( slug, status ) => {
  * 		} ) );
  *
  * @param {Component} NewComponent The component to render in place of the filtered component.
- * @param {object}    newProps     The props to pass down to the new component.
+ * @param {Object}    newProps     The props to pass down to the new component.
  */
 export const fillFilterWithComponent = ( NewComponent, newProps ) => {
 	return ( OriginalComponent ) => {
@@ -467,9 +464,9 @@ export const fillFilterWithComponent = ( NewComponent, newProps ) => {
  * Get Site Kit Admin URL Helper
  *
  * @param { string } page The page slug. Optional. Default is 'googlesitekit-dashboard'.
- * @param { object } args Optional. Object of argiments to add to the URL.
+ * @param { Object } args Optional. Object of argiments to add to the URL.
  *
- * @returns string
+ * @return string
  */
 export const getSiteKitAdminURL = ( page, args ) => {
 	const { adminRoot } = googlesitekit.admin;
@@ -501,7 +498,7 @@ export const isFrontendIframeLoaded = () => {
  *
  * @param { string } stringToValidate The string to validate.
  *
- * @returns boolean Whether JSON is valid.
+ * @return boolean Whether JSON is valid.
  */
 export const validateJSON = ( stringToValidate ) => {
 	try {
@@ -516,7 +513,7 @@ export const validateJSON = ( stringToValidate ) => {
  *
  * @param { string } stringToValidate The string to validate.
  *
- * @returns boolean
+ * @return boolean
  */
 export const validateOptimizeID = ( stringToValidate ) => {
 	return ( stringToValidate.match( /^GTM-[a-zA-Z\d]{7}$/ ) );
@@ -548,7 +545,7 @@ export const appendNotificationsCount = ( count = 0 ) => {
 	}
 
 	const wrapper = document.createElement( 'span' );
-	wrapper.setAttribute( 'class', `googlesitekit-notifications-counter update-plugins count-${count}` );
+	wrapper.setAttribute( 'class', `googlesitekit-notifications-counter update-plugins count-${ count }` );
 	wrapper.setAttribute( 'id', 'googlesitekit-notifications-counter' );
 
 	const pluginCount = document.createElement( 'span' );
@@ -600,7 +597,7 @@ export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel
 	} = googlesitekit.admin;
 
 	const { isFirstAdmin } = googlesitekit.setup;
-	const { trimEnd }      = lodash;
+	const { trimEnd } = lodash;
 
 	if ( googlesitekit.admin.trackingOptin ) {
 		return gtag( 'event', eventName, {
@@ -619,10 +616,10 @@ export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel
  * Detect whether browser storage is both supported and available.
  *
  * @param {string} type Browser storage to test. ex localStorage or sessionStorage.
- * @returns {boolean}
+ * @return {boolean}
  */
 export const storageAvailable = ( type ) => {
-	const storage = window[type];
+	const storage = window[ type ];
 	if ( ! storage ) {
 		return false;
 	}
@@ -659,7 +656,7 @@ export const storageAvailable = ( type ) => {
  * @param {string} cacheType Browser storage.
  * @param {string} cacheKey  Cache key.
  * @param {*}      data      Cache data to store.
- * @returns {boolean}
+ * @return {boolean}
  */
 export const setCache = ( cacheType, cacheKey, data ) => {
 	if ( 0 > indexOf( [ 'localStorage', 'sessionStorage' ], cacheType ) ) {
@@ -680,7 +677,7 @@ export const setCache = ( cacheType, cacheKey, data ) => {
  *
  * @param {string} cacheType Browser storage.
  * @param {string} cacheKey  Cache key.
- * @returns {*}
+ * @return {*}
  */
 export const getCache = ( cacheType, cacheKey ) => {
 	if ( 0 > indexOf( [ 'localStorage', 'sessionStorage' ], cacheType ) ) {
@@ -699,7 +696,7 @@ export const getCache = ( cacheType, cacheKey ) => {
  *
  * @param {string} cacheType Browser storage.
  * @param {string} cacheKey  Cache key.
- * @returns {*}
+ * @return {*}
  */
 export const deleteCache = ( cacheType, cacheKey ) => {
 	if ( 0 > indexOf( [ 'localStorage', 'sessionStorage' ], cacheType ) ) {
@@ -733,13 +730,12 @@ export const findTagInHtmlContent = ( html, module ) => {
  *
  * @param {string} module Module slug.
  */
-export const getExistingTag = async( module ) => {
-
+export const getExistingTag = async ( module ) => {
 	try {
 		let tagFound = data.getCache( module, 'existingTag', 300 );
 
 		if ( false === tagFound ) {
-			const html = await fetch( `${googlesitekit.admin.homeURL}?tagverify=1&timestamp=${Date.now()}` ).then( res => {
+			const html = await fetch( `${ googlesitekit.admin.homeURL }?tagverify=1&timestamp=${ Date.now() }` ).then( ( res ) => {
 				return res.text();
 			} );
 
@@ -769,42 +765,41 @@ export const getExistingTag = async( module ) => {
  * @return string|bool The tag id if found, otherwise false.
  */
 export const extractTag = ( string, tag ) => {
-
 	let result = false;
 	let reg = null;
 	switch ( tag ) {
-			case 'analytics':
+		case 'analytics':
 
-				// Detect analytics tag variations.
-				reg = new RegExp( /<script async(?:="")? src=['|"]https:\/\/www.googletagmanager.com\/gtag\/js\?id=(.*?)['|"]><\/script>/gm );
+			// Detect analytics tag variations.
+			reg = new RegExp( /<script async(?:="")? src=['|"]https:\/\/www.googletagmanager.com\/gtag\/js\?id=(.*?)['|"]><\/script>/gm );
+			result = reg.exec( string );
+			result = result ? result[ 1 ] : false;
+
+			if ( ! result ) {
+				reg = new RegExp( /__gaTracker\( ?['|"]create['|"], ?['|"](.*?)['|"], ?['|"]auto['|"] ?\)/gm );
 				result = reg.exec( string );
-				result = result ? result[1] : false;
+				result = result ? result[ 1 ] : false;
+			}
 
-				if ( ! result ) {
-					reg = new RegExp( /__gaTracker\( ?['|"]create['|"], ?['|"](.*?)['|"], ?['|"]auto['|"] ?\)/gm );
-					result = reg.exec( string );
-					result = result ? result[1] : false;
-				}
-
-				if ( ! result ) {
-					reg = new RegExp( /ga\( ?['|"]create['|"], ?['|"](.*?)['|"], ?['|"]auto['|"] ?\)/gm );
-					result = reg.exec( string );
-					result = result ? result[1] : false;
-				}
-
-				if ( ! result ) {
-					reg = new RegExp( /_gaq.push\( ?\[ ?['|"]_setAccount['|"], ?['|"](.*?)['|"] ?] ?\)/gm );
-					result = reg.exec( string );
-					result = result ? result[1] : false;
-				}
-
-				break;
-
-			case 'adsense':
-				reg = new RegExp( /google_ad_client: ?["|'](.*?)["|']/gm );
+			if ( ! result ) {
+				reg = new RegExp( /ga\( ?['|"]create['|"], ?['|"](.*?)['|"], ?['|"]auto['|"] ?\)/gm );
 				result = reg.exec( string );
-				result = result ? result[1] : false;
-				break;
+				result = result ? result[ 1 ] : false;
+			}
+
+			if ( ! result ) {
+				reg = new RegExp( /_gaq.push\( ?\[ ?['|"]_setAccount['|"], ?['|"](.*?)['|"] ?] ?\)/gm );
+				result = reg.exec( string );
+				result = result ? result[ 1 ] : false;
+			}
+
+			break;
+
+		case 'adsense':
+			reg = new RegExp( /google_ad_client: ?["|'](.*?)["|']/gm );
+			result = reg.exec( string );
+			result = result ? result[ 1 ] : false;
+			break;
 	}
 
 	return result;
@@ -813,15 +808,15 @@ export const extractTag = ( string, tag ) => {
 /**
  * Activate or Deactivate a Module.
  *
- * @param {object}  restApiClient Rest API client from data module, this needed so we don't need to import data module in helper.
+ * @param {Object}  restApiClient Rest API client from data module, this needed so we don't need to import data module in helper.
  * @param {string}  moduleSlug    Module slug to activate or deactivate.
  * @param {boolean} status        True if module should be activated, false if it should be deactivated.
- * @returns {Promise}
+ * @return {Promise}
  */
 export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) => {
 	return restApiClient.setModuleData( moduleSlug, 'active', status ).then( ( responseData ) => {
 		sendAnalyticsTrackingEvent(
-			`${moduleSlug}_setup`,
+			`${ moduleSlug }_setup`,
 			! responseData.active ? 'module_deactivate' : 'module_activate',
 			moduleSlug,
 		);
@@ -837,35 +832,34 @@ export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) 
  * depending on the module changed settings.
  *
  * @param {string} moduleSlug      The module slug being edited.
- * @param {object} settingsMapping The mapping between form settings names and saved settings.
- * @param {object} settingsState   The changed settings component state to compare with.
- * @param {object} skipDOM         Skip DOm checks/modifications, used for testing.
+ * @param {Object} settingsMapping The mapping between form settings names and saved settings.
+ * @param {Object} settingsState   The changed settings component state to compare with.
+ * @param {Object} skipDOM         Skip DOm checks/modifications, used for testing.
  */
 export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false ) => {
-
 	const { settings, setupComplete } = googlesitekit.modules[ moduleSlug ];
-	const confirm = skipDOM || document.getElementById( `confirm-changes-${moduleSlug}` );
+	const confirm = skipDOM || document.getElementById( `confirm-changes-${ moduleSlug }` );
 
 	if ( ! setupComplete || ! confirm ) {
 		return;
 	}
 
 	const currentSettings = [];
-	Object.keys( settingsState ).forEach( key => {
+	Object.keys( settingsState ).forEach( ( key ) => {
 		if ( -1 < Object.keys( settingsMapping ).indexOf( key ) ) {
-			currentSettings[ settingsMapping[key] ] = settingsState[ key ];
+			currentSettings[ settingsMapping[ key ] ] = settingsState[ key ];
 		}
 	} );
 
 	const savedSettings = [];
-	Object.keys( settings ).forEach( key => {
+	Object.keys( settings ).forEach( ( key ) => {
 		if ( -1 < Object.values( settingsMapping ).indexOf( key ) ) {
 			savedSettings[ key ] = settings[ key ];
 		}
 	} );
 
-	const changed = Object.keys( savedSettings ).filter( key => {
-		if ( savedSettings[key] !== currentSettings[ key ] ) {
+	const changed = Object.keys( savedSettings ).filter( ( key ) => {
+		if ( savedSettings[ key ] !== currentSettings[ key ] ) {
 			return true;
 		}
 	} );
@@ -887,7 +881,7 @@ export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settin
  * Trigger error notification on top of the page.
  *
  * @param {Component} ErrorComponent The error component to render in place.
- * @param {object}    props          The props to pass down to the error component. Optional.
+ * @param {Object}    props          The props to pass down to the error component. Optional.
  */
 export const showErrorNotification = ( ErrorComponent, props = {} ) => {
 	addFilter( 'googlesitekit.ErrorNotification',
@@ -906,7 +900,7 @@ export const showErrorNotification = ( ErrorComponent, props = {} ) => {
  * @return {string}
  */
 export const decodeHtmlEntity = ( str ) => {
-	const decoded =  str.replace( /&#(\d+);/g, function( match, dec ) {
+	const decoded = str.replace( /&#(\d+);/g, function( match, dec ) {
 		return String.fromCharCode( dec );
 	} ).replace( /(\\)/g, '' );
 
@@ -943,18 +937,17 @@ export function getDateRangeFrom() {
  * @param {string}  class                 Class string to use for icon.
  */
 export function moduleIcon( module, blockedByParentModule, width = '33', height = '33', useClass = '' ) {
-
 	if ( ! googlesitekit ) {
 		return;
 	}
 
 	/* Set module icons. Page Speed Insights is a special case because only a .png is available. */
-	let moduleIcon = <SvgIcon id={ module } width={ width } height={ height } className={ useClass }/>;
+	let moduleIcon = <SvgIcon id={ module } width={ width } height={ height } className={ useClass } />;
 
 	if ( blockedByParentModule ) {
-		moduleIcon = <SvgIcon id={ `${ module }-disabled` } width={ width } height={ height } className={ useClass }/>;
+		moduleIcon = <SvgIcon id={ `${ module }-disabled` } width={ width } height={ height } className={ useClass } />;
 	} else if ( 'pagespeed-insights' === module ) {
-		moduleIcon = <img src={ googlesitekit.admin.assetsRoot + 'images/icon-pagespeed.png' } width={ width } alt="" className={ useClass }/>;
+		moduleIcon = <img src={ googlesitekit.admin.assetsRoot + 'images/icon-pagespeed.png' } width={ width } alt="" className={ useClass } />;
 	}
 
 	return moduleIcon;

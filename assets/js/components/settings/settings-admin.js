@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Layout from 'GoogleComponents/layout/layout';
 import Link from 'GoogleComponents/link';
 import Dialog from 'GoogleComponents/dialog';
@@ -39,7 +42,7 @@ class SettingsAdmin extends Component {
 
 		this.state = {
 			data: {
-				email: email,
+				email,
 				img: picture,
 				user: name,
 			},
@@ -60,7 +63,7 @@ class SettingsAdmin extends Component {
 	}
 
 	handleDialog() {
-		this.setState( prevState => {
+		this.setState( ( prevState ) => {
 			return {
 				dialogActive: ! prevState.dialogActive,
 			};

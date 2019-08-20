@@ -160,7 +160,7 @@ async function observeRestResponse( res ) {
 // Before every test suite run, delete all content created by the test. This ensures
 // other posts/comments/etc. aren't dirtying tests and tests don't depend on
 // each other's side-effects.
-beforeAll( async() => {
+beforeAll( async () => {
 	capturePageEventsForTearDown();
 	enablePageDialogAccept();
 	observeConsoleLogging();
@@ -174,13 +174,13 @@ beforeAll( async() => {
 	await resetSiteKit();
 } );
 
-afterEach( async() => {
+afterEach( async () => {
 	await clearLocalStorage();
 	await clearSessionStorage();
 	await setBrowserViewport( 'large' );
 } );
 
-afterAll( async() => {
+afterAll( async () => {
 	await deactivateAllOtherPlugins();
 	await resetSiteKit();
 	removePageEvents();

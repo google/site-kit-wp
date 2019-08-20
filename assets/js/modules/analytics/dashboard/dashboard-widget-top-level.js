@@ -16,8 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import DataBlock from 'GoogleComponents/data-block.js';
 import withData from 'GoogleComponents/higherorder/withdata';
+/**
+ * Internal dependencies
+ */
 import { extractAnalyticsDashboardSparklineData } from '../util';
 import Sparkline from 'GoogleComponents/sparkline';
 import CTA from 'GoogleComponents/notifications/cta';
@@ -40,7 +46,6 @@ const { Component, Fragment } = wp.element;
 const { isEmpty } = lodash;
 
 class AnalyticsDashboardWidgetTopLevel extends Component {
-
 	constructor( props ) {
 		super( props );
 		this.state = {
@@ -58,7 +63,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 	componentDidUpdate( prevProps ) {
 		const {
 			data,
-			datapoint
+			datapoint,
 		} = this.props;
 
 		this.processCallbackData( data, datapoint, prevProps );
@@ -67,7 +72,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 	componentDidMount() {
 		const {
 			data,
-			datapoint
+			datapoint,
 		} = this.props;
 
 		this.processCallbackData( data, datapoint, {} );
@@ -76,10 +81,10 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 	/**
 	 * Process callback data received from the API.
 	 *
-	 * @param {object} data Response data from the API.
+	 * @param {Object} data Response data from the API.
 	 * @param {string} datapoint data point for the callback conditional.
-	 * @param {object} prevProps previous props when component did update.
-	 * @returns {null}
+	 * @param {Object} prevProps previous props when component did update.
+	 * @return {null}
 	 */
 	processCallbackData( data, datapoint, prevProps = {} ) {
 		if ( ! data ) {
@@ -87,15 +92,15 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 		}
 
 		switch ( datapoint ) {
-				case 'site-analytics':
-					this.setAnalyticsData( data, prevProps );
-					break;
-				case 'goals':
-					this.setGoalsData( data, prevProps );
-					break;
-				case 'overview':
-					this.setOverviewData( data, prevProps );
-					break;
+			case 'site-analytics':
+				this.setAnalyticsData( data, prevProps );
+				break;
+			case 'goals':
+				this.setGoalsData( data, prevProps );
+				break;
+			case 'overview':
+				this.setOverviewData( data, prevProps );
+				break;
 		}
 	}
 
@@ -274,7 +279,6 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 }
 
 const isDataZero = ( data, datapoint ) => {
-
 	if ( 'overview' !== datapoint ) {
 		return false;
 	}

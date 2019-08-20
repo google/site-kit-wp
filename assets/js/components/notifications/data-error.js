@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import CTA from 'GoogleComponents/notifications/cta';
 import ctaWrapper from 'GoogleComponents/notifications/cta-wrapper';
 import { showErrorNotification } from 'GoogleUtil';
@@ -34,7 +37,6 @@ const { __, sprintf } = wp.i18n;
  * @param {boolean} createGrid Adds a full grid layout with padding. Default: false.
  */
 const getDataErrorComponent = ( moduleName, error, inGrid = false, fullWidth = false, createGrid = false ) => {
-
 	const cta = <CTA
 		title={ sprintf( __( 'Data error in %s', 'google-site-kit' ), moduleName ) }
 		description={ error }
@@ -46,7 +48,7 @@ const getDataErrorComponent = ( moduleName, error, inGrid = false, fullWidth = f
 		showErrorNotification( InvalidCredentialsWarning );
 	}
 
-	return ctaWrapper( cta, inGrid, fullWidth, createGrid);
+	return ctaWrapper( cta, inGrid, fullWidth, createGrid );
 };
 
 export default getDataErrorComponent;

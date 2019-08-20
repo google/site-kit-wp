@@ -36,7 +36,6 @@ const { createElement, Fragment } = wp.element;
 export const createAddToFilter = ( NewComponent ) => {
 	return ( OriginalComponent ) => {
 		return function FilteredComponent( props ) {
-
 			return (
 				createElement(
 					Fragment,

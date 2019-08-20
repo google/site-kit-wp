@@ -14,14 +14,14 @@ import {
 } from '../utils';
 
 describe( 'Plugin Reset', () => {
-	beforeAll( async() => {
+	beforeAll( async () => {
 		await setClientConfig();
 		await setAuthToken();
 		await setSiteVerification();
 		await setSearchConsoleProperty();
 	} );
 
-	beforeEach( async() => {
+	beforeEach( async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await expect( page ).toMatchElement( '.googlesitekit-page-header__title', { text: 'Settings' } );
 
@@ -32,22 +32,21 @@ describe( 'Plugin Reset', () => {
 		await page.waitForSelector( '.googlesitekit-settings-module__footer' );
 	} );
 
-	it( 'displays a confirmation dialog when clicking the "Reset Site Kit" link', async() => {
-
+	it( 'displays a confirmation dialog when clicking the "Reset Site Kit" link', async () => {
 		await expect( page ).toClick( 'button.googlesitekit-cta-link', { text: 'Reset Site Kit' } );
 		await page.waitForSelector( '.mdc-dialog--open .mdc-button' );
 
 		await expect( page ).toMatchElement( '.mdc-dialog--open .mdc-button', { text: 'Reset' } );
 	} );
 
-	it( 'dismisses the reset confirmation dialog when clicking "Cancel"', async() => {
+	it( 'dismisses the reset confirmation dialog when clicking "Cancel"', async () => {
 		await expect( page ).toClick( 'button.googlesitekit-cta-link', { text: 'Reset Site Kit' } );
 		await page.waitForSelector( '.mdc-dialog--open button' );
 
 		await expect( page ).toClick( '.mdc-dialog--open button', { text: 'Cancel' } );
 	} );
 
-	it( 'disconnects Site Kit by clicking the "Reset" button in the confirmation dialog', async() => {
+	it( 'disconnects Site Kit by clicking the "Reset" button in the confirmation dialog', async () => {
 		await expect( page ).toClick( 'button.googlesitekit-cta-link', { text: 'Reset Site Kit' } );
 		await page.waitForSelector( '.mdc-dialog--open .mdc-button' );
 

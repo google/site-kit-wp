@@ -1,5 +1,5 @@
-var valuesToTest;
-var testFunctions = window.googlesitekit.testFunctions;
+let valuesToTest;
+const testFunctions = window.googlesitekit.testFunctions;
 
 QUnit.module( 'Utility function tests' );
 
@@ -11,19 +11,19 @@ googlesitekit.admin = {
 
 googlesitekit.modules = {
 	'search-console': {
-		screenId: 'googlesitekit-module-search-console'
+		screenId: 'googlesitekit-module-search-console',
 	},
 	'pagespeed-insights': {
-		screenId: 'googlesitekit-module-pagespeed-insights'
-	}
+		screenId: 'googlesitekit-module-pagespeed-insights',
+	},
 };
 
 /**
  * Test showErrorNotification.
  */
-QUnit.test( 'showErrorNotification!', function ( assert ) {
+QUnit.test( 'showErrorNotification!', function( assert ) {
 	testFunctions.showErrorNotification();
-	var value = wp.hooks.applyFilters( 'googlesitekit.ErrorNotification', [] );
+	const value = wp.hooks.applyFilters( 'googlesitekit.ErrorNotification', [] );
 	assert.equal( value.toString().replace( /(\r\n|\n|\r)/gm, '' ), 'function (r) {return React.createElement(e,a()({},r,t,{OriginalComponent:n}));}' );
 } );
 
@@ -34,19 +34,18 @@ valuesToTest = [
 	{
 		moduleSlug: 'analytics',
 		settingsState: { selectedAccount: '12345678' },
-		expected: false
+		expected: false,
 	},
 	{
 		moduleSlug: 'analytics',
 		settingsState: { selectedAccount: '99999999' },
-		expected: true
+		expected: true,
 	},
 ];
 
 valuesToTest.forEach( function( itemToTest ) {
-
-	QUnit.test( 'toggleConfirmModuleSettings::' + itemToTest.moduleSlug, function ( assert ) {
-		assert.equal ( '', '', '' );
+	QUnit.test( 'toggleConfirmModuleSettings::' + itemToTest.moduleSlug, function( assert ) {
+		assert.equal( '', '', '' );
 		window.googlesitekit.modules = window.googlesitekit.modules || {};
 		window.googlesitekit.modules.analytics = {
 			settings: { accountId: '12345678' },
@@ -60,7 +59,7 @@ valuesToTest.forEach( function( itemToTest ) {
 			confirm: true,
 		};
 
-		var value = testFunctions.toggleConfirmModuleSettings( itemToTest.moduleSlug, { selectedAccount: 'accountId' }, itemToTest.settingsState, true );
+		const value = testFunctions.toggleConfirmModuleSettings( itemToTest.moduleSlug, { selectedAccount: 'accountId' }, itemToTest.settingsState, true );
 		assert.equal( value, itemToTest.expected, 'Expect toggleConfirmModuleSettings( \'' + itemToTest.moduleSlug + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
@@ -72,36 +71,36 @@ valuesToTest = [
 	{
 		moduleSlug: 'analytics',
 		status: true,
-		expected: true
+		expected: true,
 	},
 	{
 		moduleSlug: 'analytics',
 		status: false,
-		expected: false
+		expected: false,
 	},
 	{
 		moduleSlug: 'adsense',
 		status: true,
-		expected: true
+		expected: true,
 	},
 	{
 		moduleSlug: 'adsense',
 		status: false,
-		expected: false
+		expected: false,
 	},
-]
+];
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'activateOrDeactivateModule::' + itemToTest.head, function ( assert ) {
-		var restApiClient = {
-			setModuleData: function( slug, type, status ) {
+	QUnit.test( 'activateOrDeactivateModule::' + itemToTest.head, function( assert ) {
+		const restApiClient = {
+			setModuleData( slug, type, status ) {
 				return {
-					then: function() {
+					then() {
 						return status;
-					}
+					},
 				};
-			}
-		}
-		var value = testFunctions.activateOrDeactivateModule( restApiClient, itemToTest.moduleSlug, itemToTest.status );
+			},
+		};
+		const value = testFunctions.activateOrDeactivateModule( restApiClient, itemToTest.moduleSlug, itemToTest.status );
 		assert.equal( value, itemToTest.expected, 'Expect activateOrDeactivateModule( \'' + itemToTest.status + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
@@ -113,32 +112,32 @@ valuesToTest = [
 	{
 		html: '<script> window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date; ga(\'create\', \'UA-XXXXX-Y\', \'auto\'); ga(\'send\', \'pageview\'); </script><script async src=\'https://www.google-analytics.com/analytics.js\'></script>',
 		module: 'analytics',
-		expected: 'UA-XXXXX-Y'
+		expected: 'UA-XXXXX-Y',
 	},
 	{
 		html: '<script> (function(i,s,o,g,r,a,m){i[\'GoogleAnalyticsObject\']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,\'script\',\'https://www.google-analytics.com/analytics.js\',\'ga\'); ga(\'create\', \'UA-XXXXX-Y\', \'auto\'); ga(\'send\', \'pageview\'); </script>',
 		module: 'analytics',
-		expected: 'UA-XXXXX-Y'
+		expected: 'UA-XXXXX-Y',
 	},
 	{
 		html: '<meta charset="UTF-8"><title>Site Kit for WordPress</title><link rel="dns-prefetch" href="//fonts.googleapis.com"></link>',
 		module: 'analytics',
-		expected: false
+		expected: false,
 	},
 	{
 		html: '<meta charset="UTF-8"><title>Site Kit for WordPress</title><link rel="dns-prefetch" href="//fonts.googleapis.com"></link>',
 		module: 'adsense',
-		expected: false
+		expected: false,
 	},
 	{
 		html: '<script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> <script> (adsbygoogle = window.adsbygoogle || []).push({ google_ad_client: "ca-pub-123456789", enable_page_level_ads: true }); </script>',
 		module: 'adsense',
-		expected: 'ca-pub-123456789'
+		expected: 'ca-pub-123456789',
 	},
-]
+];
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'findTagInHtmlContent::' + itemToTest.html, function ( assert ) {
-		var value = testFunctions.findTagInHtmlContent( itemToTest.html, itemToTest.module );
+	QUnit.test( 'findTagInHtmlContent::' + itemToTest.html, function( assert ) {
+		const value = testFunctions.findTagInHtmlContent( itemToTest.html, itemToTest.module );
 		assert.equal( value, itemToTest.expected, 'Expect findTagInHtmlContent( \'' + itemToTest.html + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
@@ -153,7 +152,7 @@ valuesToTest = [
 		data: 'testdata',
 		expected: 'testdata',
 		deleteExpected: true,
-		setCacheExpected: true
+		setCacheExpected: true,
 	},
 	{
 		cacheType: 'sessionStorage',
@@ -161,7 +160,7 @@ valuesToTest = [
 		data: 'testdata',
 		expected: 'testdata',
 		deleteExpected: true,
-		setCacheExpected: true
+		setCacheExpected: true,
 	},
 	{
 		cacheType: 'nonExistantStorage',
@@ -169,28 +168,26 @@ valuesToTest = [
 		data: 'testdata',
 		expected: undefined,
 		deleteExpected: undefined,
-		setCacheExpected: undefined
+		setCacheExpected: undefined,
 	},
 
 ];
 
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'setCache/getCache::' + itemToTest.cacheType, function ( assert ) {
-
+	QUnit.test( 'setCache/getCache::' + itemToTest.cacheType, function( assert ) {
 		// Test setCache.
-		var setCacheResult = testFunctions.setCache( itemToTest.cacheType, itemToTest.cacheKey, itemToTest.data );
+		const setCacheResult = testFunctions.setCache( itemToTest.cacheType, itemToTest.cacheKey, itemToTest.data );
 		assert.equal( setCacheResult, itemToTest.setCacheExpected, 'Expect setCache result to be ' + itemToTest.setCacheExpected );
 
 		// Test getCache.
-		var value = testFunctions.getCache( itemToTest.cacheType, itemToTest.cacheKey );
+		const value = testFunctions.getCache( itemToTest.cacheType, itemToTest.cacheKey );
 		assert.equal( value, itemToTest.expected, 'Expect getCache( \'' + itemToTest.cacheType + '\' ) to return ' + itemToTest.expected );
 
 		// Test deleteCahe
-		var deleteResult = testFunctions.deleteCache( itemToTest.cacheType, itemToTest.cacheKey );
+		const deleteResult = testFunctions.deleteCache( itemToTest.cacheType, itemToTest.cacheKey );
 		assert.equal( deleteResult, itemToTest.deleteExpected, 'Expect deleteCache( \'' + itemToTest.cacheType + '\' ) to return ' + itemToTest.expected );
-		var afterDeleteValue = testFunctions.getCache( itemToTest.cacheType, itemToTest.cacheKey );
+		const afterDeleteValue = testFunctions.getCache( itemToTest.cacheType, itemToTest.cacheKey );
 		assert.equal( afterDeleteValue, undefined, 'Expect after deleteCache value to be undefined' );
-
 	} );
 } );
 
@@ -201,38 +198,39 @@ valuesToTest = [
 	{
 		type: 'localStorage',
 		expected: true,
-		disableStorage: false
+		disableStorage: false,
 	},
 	{
 		type: 'sessionStorage',
 		expected: true,
-		disableStorage: false
+		disableStorage: false,
 	},
 	{
 		type: 'localStorage',
 		expected: false,
-		disableStorage: true
+		disableStorage: true,
 	},
 	{
 		type: 'sessionStorage',
 		expected: false,
-		disableStorage: true
+		disableStorage: true,
 	},
 	{
 		type: 'nonExistantStorage',
 		expected: false,
-		disableStorage: false
+		disableStorage: false,
 	},
 
-]
+];
 const setItem = Storage.prototype.setItem;
 valuesToTest.forEach( function( itemToTest ) {
-
-	QUnit.test( 'storageAvailable::' + itemToTest.type, function ( assert ) {
+	QUnit.test( 'storageAvailable::' + itemToTest.type, function( assert ) {
 		if ( itemToTest.disableStorage ) {
-			Storage.prototype.setItem = function () { throw new Error( 'error' ); };
+			Storage.prototype.setItem = function() {
+				throw new Error( 'error' );
+			};
 		}
-		var value = testFunctions.storageAvailable( itemToTest.type );
+		const value = testFunctions.storageAvailable( itemToTest.type );
 		Storage.prototype.setItem = setItem;
 		assert.equal( value, itemToTest.expected, 'Expect storageAvailable( \'' + itemToTest.type + '\' ) to return ' + itemToTest.expected );
 	} );
@@ -241,19 +239,19 @@ valuesToTest.forEach( function( itemToTest ) {
 /**
  * Test sendAnalyticsTrackingEvent.
  */
-var gtag = function( type, name, sendto, category, label, value ) {
+const gtag = function( type, name, sendto, category, label, value ) {
 	return {
-		type: type,
-		name: name,
-		sendto: sendto,
-		category: category,
-		label: label,
-		value: value
+		type,
+		name,
+		sendto,
+		category,
+		label,
+		value,
 	};
 };
 
-var sendAnalyticsTrackingEventExpected = '{"type":"event","name":"name","sendto":{"event_category":"category","event_label":"label","event_value":"value","dimension1":"","dimension2":"true"}}';
-QUnit.test( 'sendAnalyticsTrackingEvent', function ( assert ) {
+const sendAnalyticsTrackingEventExpected = '{"type":"event","name":"name","sendto":{"event_category":"category","event_label":"label","event_value":"value","dimension1":"","dimension2":"true"}}';
+QUnit.test( 'sendAnalyticsTrackingEvent', function( assert ) {
 	window.googlesitekit.admin.trackingOptin = true;
 	const value = JSON.stringify( testFunctions.sendAnalyticsTrackingEvent( 'category', 'name', 'label', 'value' ) );
 	assert.equal( value, sendAnalyticsTrackingEventExpected, 'Expect sendAnalyticsTrackingEvent( \'category\', \'name\', \'label\', \'value\' ) to return ' + sendAnalyticsTrackingEventExpected );
@@ -262,7 +260,7 @@ QUnit.test( 'sendAnalyticsTrackingEvent', function ( assert ) {
 /**
  * Test appendNotificationsCount.
  */
-var appendNotificationsCountexpected = '<span class="plugin-count" aria-hidden="true">1</span><span class="screen-reader-text">1 notification</span>';
+const appendNotificationsCountexpected = '<span class="plugin-count" aria-hidden="true">1</span><span class="screen-reader-text">1 notification</span>';
 const wrapper = document.createElement( 'span' );
 wrapper.setAttribute( 'id', 'wp-admin-bar-google-site-kit' );
 const inner = document.createElement( 'span' );
@@ -271,8 +269,8 @@ wrapper.appendChild( inner );
 
 document.body.appendChild( wrapper );
 
-QUnit.test( 'appendNotificationsCount', function ( assert ) {
-	var value = testFunctions.appendNotificationsCount( 1 ).innerHTML;
+QUnit.test( 'appendNotificationsCount', function( assert ) {
+	const value = testFunctions.appendNotificationsCount( 1 ).innerHTML;
 	assert.equal( value, appendNotificationsCountexpected, 'Expect appendNotificationsCount() to return ' + appendNotificationsCountexpected );
 } );
 
@@ -282,30 +280,30 @@ QUnit.test( 'appendNotificationsCount', function ( assert ) {
 valuesToTest = [
 	{
 		stringToValidate: 'GTM-XXXXXXX',
-		expected: true
+		expected: true,
 	},
 	{
 		stringToValidate: 'GTM-XXXXXX',
-		expected: false
+		expected: false,
 	},
 	{
 		stringToValidate: 'GTM-1234567',
-		expected: true
+		expected: true,
 	},
 	{
 		stringToValidate: 'GTMXXXXXXXX',
-		expected: false
+		expected: false,
 	},
 	{
 		stringToValidate: 'gtm-xxxxxxx',
-		expected: false
+		expected: false,
 	},
 
-]
+];
 
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'validateOptimizeID::' + itemToTest.stringToValidate, function ( assert ) {
-		var value = testFunctions.validateOptimizeID( itemToTest.stringToValidate );
+	QUnit.test( 'validateOptimizeID::' + itemToTest.stringToValidate, function( assert ) {
+		const value = testFunctions.validateOptimizeID( itemToTest.stringToValidate );
 		assert.equal( !! value, itemToTest.expected, 'Expect validateOptimizeID( \'' + itemToTest.stringToValidate + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
@@ -316,29 +314,29 @@ valuesToTest.forEach( function( itemToTest ) {
 valuesToTest = [
 	{
 		stringToValidate: '{"foo":"bar"}',
-		expected: true
+		expected: true,
 	},
 	{
 		stringToValidate: '{"foo":"bar","x":1,"y":true}',
-		expected: true
+		expected: true,
 	},
 	{
 		stringToValidate: '{"foo":"bar"',
-		expected: false
+		expected: false,
 	},
 	{
 		stringToValidate: '',
-		expected: false
+		expected: false,
 	},
 	{
 		stringToValidate: false,
-		expected: false
+		expected: false,
 	},
 ];
 
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'validateJSON::' + itemToTest.stringToValidate, function ( assert ) {
-		var value = testFunctions.validateJSON( itemToTest.stringToValidate );
+	QUnit.test( 'validateJSON::' + itemToTest.stringToValidate, function( assert ) {
+		const value = testFunctions.validateJSON( itemToTest.stringToValidate );
 		assert.equal( value, itemToTest.expected, 'Expect validateJSON( \'' + itemToTest.stringToValidate + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
@@ -347,24 +345,24 @@ valuesToTest.forEach( function( itemToTest ) {
  * Test isFrontendIframeLoaded.
  */
 var document = {
-	getElementById: function() {
+	getElementById() {
 		return false;
-	}
+	},
 };
 
-QUnit.test( 'isFrontendIframeLoaded', function ( assert ) {
-	var value = testFunctions.isFrontendIframeLoaded();
+QUnit.test( 'isFrontendIframeLoaded', function( assert ) {
+	const value = testFunctions.isFrontendIframeLoaded();
 	assert.equal( value, false, 'Expect isFrontendIframeLoaded() to return false' );
 } );
 
 document = {
-	getElementById: function( id ) {
+	getElementById( id ) {
 		return 'sitekit_fe_load_check' === id;
-	}
+	},
 };
 
-QUnit.test( 'isFrontendIframeLoaded', function ( assert ) {
-	var value = testFunctions.isFrontendIframeLoaded();
+QUnit.test( 'isFrontendIframeLoaded', function( assert ) {
+	const value = testFunctions.isFrontendIframeLoaded();
 	assert.equal( value, false, 'Expect isFrontendIframeLoaded() to return false' );
 } );
 
@@ -375,50 +373,50 @@ valuesToTest = [
 	{
 		page: 'googlesitekit-dashboard',
 		args: { foo: 'bar' },
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&foo=bar'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&foo=bar',
 	},
 	{
 		page: 'googlesitekit-dashboard',
 		args: { foo: 'bar' },
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&foo=bar'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&foo=bar',
 	},
 	{
 		page: 'googlesitekit-dashboard',
 		args: { foo: 'bar', x: 1 },
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&foo=bar&x=1'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&foo=bar&x=1',
 	},
 	{
 		page: 'googlesitekit-search-console',
 		args: { foo: 'bar' },
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-search-console&foo=bar'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-search-console&foo=bar',
 	},
 	{
 		page: 'googlesitekit-dashboard',
 		args: { bar: 'foo' },
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&bar=foo'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&bar=foo',
 	},
 	{
 		page: undefined,
 		args: {},
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard',
 	},
 ];
 
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'getSiteKitAdminURL::' + itemToTest.page, function ( assert ) {
-		var value = testFunctions.getSiteKitAdminURL( itemToTest.page,  itemToTest.args );
-		assert.equal( value, itemToTest.expected, 'Expect getSiteKitAdminURL( \'' + itemToTest.page + ', ' +  itemToTest.args +  '\' ) to return ' + itemToTest.expected );
+	QUnit.test( 'getSiteKitAdminURL::' + itemToTest.page, function( assert ) {
+		const value = testFunctions.getSiteKitAdminURL( itemToTest.page, itemToTest.args );
+		assert.equal( value, itemToTest.expected, 'Expect getSiteKitAdminURL( \'' + itemToTest.page + ', ' + itemToTest.args + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
 
 /**
  * Test fillFilterWithComponent.
  */
-var filterTester = function( value ) {
+const filterTester = function( value ) {
 	return '::added::';
 };
 
-var React = {};
+const React = {};
 React.createElement = function( a ) {
 	return a( '' );
 };
@@ -427,9 +425,8 @@ wp.hooks.addFilter( 'googlesitekit.Test',
 	'googlesitekit.AdSenseModuleSettingsDetails',
 	testFunctions.fillFilterWithComponent( filterTester, {} ) );
 
-
-QUnit.test( 'fillFilterWithComponent::', function ( assert ) {
-	var value = wp.hooks.applyFilters( 'googlesitekit.Test', 'test' )();
+QUnit.test( 'fillFilterWithComponent::', function( assert ) {
+	const value = wp.hooks.applyFilters( 'googlesitekit.Test', 'test' )();
 	assert.equal( value, '::added::', 'Expect fillFilterWithComponent to return ::added::' );
 } );
 
@@ -442,51 +439,49 @@ valuesToTest = [
 		slug: 'pagespeed-insights',
 		status: false,
 		apikey: false,
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&reAuth=false&slug=pagespeed-insights'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&reAuth=false&slug=pagespeed-insights',
 	},
 	{
 		slug: 'pagespeed-insights',
 		status: true,
 		apikey: false,
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=false&slug=pagespeed-insights'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=false&slug=pagespeed-insights',
 	},
 	{
 		slug: 'pagespeed-insights',
 		status: false,
 		apikey: 'abc123',
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&reAuth=false&slug=pagespeed-insights'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&reAuth=false&slug=pagespeed-insights',
 	},
 	{
 		slug: 'pagespeed-insights',
 		status: true,
 		apikey: 'abc123',
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=false&slug=pagespeed-insights'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=false&slug=pagespeed-insights',
 	},
 ];
 
 // Replace addQueryArgs to avoid webpack issue.
 const addQueryArgs = function( url, args ) {
-	var add = '';
+	let add = '';
 	_.forEach( args, function( arg, key ) {
 		if ( arg ) {
 			add = add + key + '=' + arg + '&';
 		}
 	} );
 
-	var toReturn = ( url + '?' + add );
+	const toReturn = ( url + '?' + add );
 	return toReturn.substr( 0, toReturn.length - 1 );
 };
 
 valuesToTest.forEach( function( itemToTest ) {
 	googlesitekit.admin.apikey = itemToTest.apikey;
-	QUnit.test( 'getReAuthUrl::' + itemToTest.slug, function ( assert ) {
-
+	QUnit.test( 'getReAuthUrl::' + itemToTest.slug, function( assert ) {
 		wp.url.addQueryArgs = addQueryArgs;
-		var value = testFunctions.getReAuthUrl( itemToTest.slug, itemToTest.status );
-		assert.equal( value, itemToTest.expected, 'Expect getReAuthUrl( \'' + itemToTest.slug + ', ' + itemToTest.status + ', ' + itemToTest.apikey  + '\' ) to return ' + itemToTest.expected );
+		const value = testFunctions.getReAuthUrl( itemToTest.slug, itemToTest.status );
+		assert.equal( value, itemToTest.expected, 'Expect getReAuthUrl( \'' + itemToTest.slug + ', ' + itemToTest.status + ', ' + itemToTest.apikey + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
-
 
 /**
  * Test extractForSparkline.
@@ -494,54 +489,54 @@ valuesToTest.forEach( function( itemToTest ) {
 valuesToTest = [
 	{
 		data: [
-			[ '1/1/2019', 1, 2, 3, ],
-			[ '1/2/2019', 4, 5, 6, ],
+			[ '1/1/2019', 1, 2, 3 ],
+			[ '1/2/2019', 4, 5, 6 ],
 		],
 		column: 1,
 		expected: [
 			[ '1/1/2019', 1 ],
-			[ '1/2/2019', 4 ]
-		]
+			[ '1/2/2019', 4 ],
+		],
 	},
 	{
 		data: [
-			[ '1/1/2019', 1, 2, 3, ],
-			[ '1/2/2019', 4, 5, 6, ],
+			[ '1/1/2019', 1, 2, 3 ],
+			[ '1/2/2019', 4, 5, 6 ],
 		],
 		column: 2,
 		expected: [
 			[ '1/1/2019', 2 ],
-			[ '1/2/2019', 5 ]
-		]
+			[ '1/2/2019', 5 ],
+		],
 	},
 	{
 		data: [
-			[ '1/1/2019', 1, 2, 3, ],
-			[ '1/2/2019', 4, 5, 6, ],
+			[ '1/1/2019', 1, 2, 3 ],
+			[ '1/2/2019', 4, 5, 6 ],
 		],
 		column: 3,
 		expected: [
 			[ '1/1/2019', 3 ],
-			[ '1/2/2019', 6 ]
-		]
+			[ '1/2/2019', 6 ],
+		],
 	},
 	{
 		data: [
-			[ '1/1/2019', 1, 2, 3, ],
-			[ '1/2/2019', 4, 5, 6, ],
+			[ '1/1/2019', 1, 2, 3 ],
+			[ '1/2/2019', 4, 5, 6 ],
 		],
 		column: 0,
 		expected: [
 			[ '1/1/2019', '1/1/2019' ],
-			[ '1/2/2019', '1/2/2019' ]
-		]
+			[ '1/2/2019', '1/2/2019' ],
+		],
 	},
 ];
 
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'extractForSparkline::' + itemToTest.data, function ( assert ) {
+	QUnit.test( 'extractForSparkline::' + itemToTest.data, function( assert ) {
 		window.history.pushState( {}, '', itemToTest.search );
-		var value = testFunctions.extractForSparkline( itemToTest.data, itemToTest.column );
+		const value = testFunctions.extractForSparkline( itemToTest.data, itemToTest.column );
 		assert.deepEqual( value, itemToTest.expected, 'Expect extractForSparkline( \'' + itemToTest.data + ', ' + itemToTest.column + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
@@ -553,29 +548,29 @@ valuesToTest = [
 	{
 		search: '?foo=bar&x=1',
 		parameter: 'foo',
-		expected: 'bar'
+		expected: 'bar',
 	},
 	{
 		search: '?bar=foo&x=1',
 		parameter: 'bar',
-		expected: 'foo'
+		expected: 'foo',
 	},
 	{
 		search: '?foo=bar&x=1',
 		parameter: 'x',
-		expected: '1'
+		expected: '1',
 	},
 	{
 		search: '?foo=bar&y=2&x=1',
 		parameter: 'y',
-		expected: '2'
+		expected: '2',
 	},
 ];
 
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'getQueryParameter::' + itemToTest.parameter, function ( assert ) {
+	QUnit.test( 'getQueryParameter::' + itemToTest.parameter, function( assert ) {
 		window.history.pushState( {}, '', itemToTest.search );
-		var value = testFunctions.getQueryParameter( itemToTest.parameter );
+		const value = testFunctions.getQueryParameter( itemToTest.parameter );
 		assert.equal( value, itemToTest.expected, 'Expect getQueryParameter( \'' + itemToTest.parameter + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
@@ -586,35 +581,35 @@ valuesToTest.forEach( function( itemToTest ) {
 valuesToTest = [
 	{
 		dateStart: new Date( 'January 1, 2000 00:00:00' ),
-		dateEnd:   new Date( 'January 2, 2000 00:00:00' ),
-		expected: 1
+		dateEnd: new Date( 'January 2, 2000 00:00:00' ),
+		expected: 1,
 	},
 	{
 		dateStart: new Date( 'January 1, 2000 00:00:00' ),
-		dateEnd:   new Date( 'Feb 1, 2000 00:00:00' ),
-		expected: 31
+		dateEnd: new Date( 'Feb 1, 2000 00:00:00' ),
+		expected: 31,
 	},
 	{
 		dateStart: new Date( 'January 1, 2000 00:00:00' ),
-		dateEnd:   new Date( 'January 1, 2001 00:00:00' ),
-		expected: 366
+		dateEnd: new Date( 'January 1, 2001 00:00:00' ),
+		expected: 366,
 	},
 	{
 		dateStart: new Date( 'January 1, 2000 00:00:00' ),
-		dateEnd:   new Date( 'July 15, 2000 00:00:00' ),
-		expected: 196
+		dateEnd: new Date( 'July 15, 2000 00:00:00' ),
+		expected: 196,
 	},
 	{
 		dateStart: new Date( 'January 1, 2000 00:00:00' ),
-		dateEnd:   new Date( 'April 7, 2012 00:00:00' ),
-		expected: 4480
+		dateEnd: new Date( 'April 7, 2012 00:00:00' ),
+		expected: 4480,
 	},
 
 ];
 
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'getDaysBetweenDates::' + itemToTest.dateStart + itemToTest.dateEnd, function ( assert ) {
-		var value = testFunctions.getDaysBetweenDates( itemToTest.dateStart, itemToTest.dateEnd );
+	QUnit.test( 'getDaysBetweenDates::' + itemToTest.dateStart + itemToTest.dateEnd, function( assert ) {
+		const value = testFunctions.getDaysBetweenDates( itemToTest.dateStart, itemToTest.dateEnd );
 		assert.equal( value, itemToTest.expected, 'Expect getDaysBetweenDates( \'' + itemToTest.dateStart + ', ' + itemToTest.dateEnd + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
@@ -695,8 +690,8 @@ valuesToTest = [
 	},
 ];
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'numberFormat::' + itemToTest.in, function ( assert ) {
-		var value = testFunctions.numberFormat( itemToTest.in, itemToTest.locale );
+	QUnit.test( 'numberFormat::' + itemToTest.in, function( assert ) {
+		const value = testFunctions.numberFormat( itemToTest.in, itemToTest.locale );
 		assert.equal( value, itemToTest.expected, 'Expect numberFormat( \'' + itemToTest.in + ', ' + itemToTest.locale + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
@@ -707,37 +702,37 @@ valuesToTest.forEach( function( itemToTest ) {
 valuesToTest = [
 	{
 		in: 123,
-		expected: '123'
+		expected: '123',
 	},
 	{
 		in: 1234,
-		expected: '1.2K'
+		expected: '1.2K',
 	},
 	{
 		in: 12345,
-		expected: '12.3K'
+		expected: '12.3K',
 	},
 	{
 		in: 123456,
-		expected: '123K'
+		expected: '123K',
 	},
 	{
 		in: 1234567,
-		expected: '1.2M'
+		expected: '1.2M',
 	},
 	{
 		in: 12345678,
-		expected: '12.3M'
+		expected: '12.3M',
 	},
 	{
 		in: 123456789,
-		expected: '123.5M'
+		expected: '123.5M',
 	},
 ];
 
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'readableLargeNumber::' + itemToTest.in, function ( assert ) {
-		var value = testFunctions.readableLargeNumber( itemToTest.in );
+	QUnit.test( 'readableLargeNumber::' + itemToTest.in, function( assert ) {
+		const value = testFunctions.readableLargeNumber( itemToTest.in );
 		assert.equal( value, itemToTest.expected, 'Expect readableLargeNumber( \'' + itemToTest.in + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
@@ -748,32 +743,32 @@ valuesToTest.forEach( function( itemToTest ) {
 valuesToTest = [
 	{
 		in: 'minute',
-		expected: 60
+		expected: 60,
 	},
 	{
 		in: 'hour',
-		expected: 60 * 60
+		expected: 60 * 60,
 	},
 	{
 		in: 'day',
-		expected: 60 * 60 * 24
+		expected: 60 * 60 * 24,
 	},
 	{
 		in: 'week',
-		expected: 60 * 60 * 24 * 7
+		expected: 60 * 60 * 24 * 7,
 	},
 	{
 		in: 'month',
-		expected: 60 * 60 * 24 * 30
+		expected: 60 * 60 * 24 * 30,
 	},
 	{
 		in: 'year',
-		expected: 60 * 60 * 24 * 365
+		expected: 60 * 60 * 24 * 365,
 	},
 ];
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'getTimeInSeconds::' + itemToTest.in, function ( assert ) {
-		var value = testFunctions.getTimeInSeconds( itemToTest.in );
+	QUnit.test( 'getTimeInSeconds::' + itemToTest.in, function( assert ) {
+		const value = testFunctions.getTimeInSeconds( itemToTest.in );
 		assert.equal( value, itemToTest.expected, 'Expect getTimeInSeconds( \'' + itemToTest.in + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
@@ -785,49 +780,49 @@ valuesToTest = [
 	{
 		previous: 100,
 		current: 110,
-		expected: 10.0
+		expected: 10.0,
 	},
 	{
 		previous: 100,
 		current: 90,
-		expected: -10.0
+		expected: -10.0,
 	},
 	{
 		previous: 100,
 		current: 121,
-		expected: 21.0
+		expected: 21.0,
 	},
 	{
 		previous: 100,
 		current: 101,
-		expected: 1.0
+		expected: 1.0,
 	},
 	{
 		previous: 110,
 		current: 111,
-		expected: 0.9
+		expected: 0.9,
 	},
 	{
 		previous: 110,
 		current: 115,
-		expected: 4.5
+		expected: 4.5,
 	},
 	{
 		previous: 110,
 		current: 121,
-		expected: 10.0
+		expected: 10.0,
 	},
 	{
 		previous: 121,
 		current: 110,
-		expected: -9.1
+		expected: -9.1,
 	},
 
 ];
 
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'changeToPercent::' + itemToTest.previous + ':' + itemToTest.current + '', function ( assert ) {
-		var value = testFunctions.changeToPercent( itemToTest.previous, itemToTest.current );
+	QUnit.test( 'changeToPercent::' + itemToTest.previous + ':' + itemToTest.current + '', function( assert ) {
+		const value = testFunctions.changeToPercent( itemToTest.previous, itemToTest.current );
 		assert.equal( value, itemToTest.expected, 'Expect changeToPercent( \'' + itemToTest.previous + ', ' + itemToTest.current + ' \' ) to return ' + itemToTest.expected );
 	} );
 } );
@@ -838,31 +833,31 @@ valuesToTest.forEach( function( itemToTest ) {
 valuesToTest = [
 	{
 		in: 65,
-		expected: '1m 5s'
+		expected: '1m 5s',
 	},
 	{
 		in: 125,
-		expected: '2m 5s'
+		expected: '2m 5s',
 	},	{
 		in: 35,
-		expected: '35s'
+		expected: '35s',
 	},	{
 		in: 60,
-		expected: '1m'
+		expected: '1m',
 	},	{
 		in: 65,
-		expected: '1m 5s'
+		expected: '1m 5s',
 	},	{
 		in: 60 * 60 * 3 + 60 * 5 + 12,
-		expected: '3h 5m 12s'
+		expected: '3h 5m 12s',
 	},	{
 		in: 60 * 60 * 7 + 60 * 2 + 42,
-		expected: '7h 2m 42s'
+		expected: '7h 2m 42s',
 	},
 ];
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'prepareSecondsForDisplay::' + itemToTest.in, function ( assert ) {
-		var value = testFunctions.prepareSecondsForDisplay( itemToTest.in );
+	QUnit.test( 'prepareSecondsForDisplay::' + itemToTest.in, function( assert ) {
+		const value = testFunctions.prepareSecondsForDisplay( itemToTest.in );
 		assert.equal( value, itemToTest.expected, 'Expect prepareSecondsForDisplay( \'' + itemToTest.in + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
@@ -874,39 +869,38 @@ valuesToTest = [
 	{
 		url: 'https://google.com?message=toast&topping=butter',
 		parameter: 'message',
-		expected: 'https://google.com/?topping=butter'
+		expected: 'https://google.com/?topping=butter',
 	},
 	{
 		url: 'https://google.com?success=true&message=toast&topping=butter',
 		parameter: 'message',
-		expected: 'https://google.com/?success=true&topping=butter'
+		expected: 'https://google.com/?success=true&topping=butter',
 	},
 	{
 		url: 'https://google.com?message=toast&topping=butter',
 		parameter: 'topping',
-		expected: 'https://google.com/?message=toast'
+		expected: 'https://google.com/?message=toast',
 	},
 	{
 		url: 'https://google.com?success=true&message=toast&topping=butter',
 		parameter: 'topping',
-		expected: 'https://google.com/?success=true&message=toast'
+		expected: 'https://google.com/?success=true&message=toast',
 	},
 	{
 		url: 'https://google.com?success=true&message=toast&topping=butter',
 		parameter: 'success',
-		expected: 'https://google.com/?message=toast&topping=butter'
+		expected: 'https://google.com/?message=toast&topping=butter',
 	},
 
 ];
 
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'removeURLParameter::' + itemToTest.url + ':' + itemToTest.parameter + '', function ( assert ) {
-		var value = testFunctions.removeURLParameter( itemToTest.url, itemToTest.parameter );
+	QUnit.test( 'removeURLParameter::' + itemToTest.url + ':' + itemToTest.parameter + '', function( assert ) {
+		const value = testFunctions.removeURLParameter( itemToTest.url, itemToTest.parameter );
 
 		assert.equal( value, itemToTest.expected, 'Expect removeURLParameter( \'' + itemToTest.url + ', ' + itemToTest.parameter + ' \' ) to return ' + itemToTest.expected );
 	} );
 } );
-
 
 /**
  * Test decodeHtmlEntity.
@@ -914,20 +908,20 @@ valuesToTest.forEach( function( itemToTest ) {
 valuesToTest = [
 	{
 		in: '&quot;Here are some pictures of things we&#039;ve done &amp; enjoyed&quot;',
-		expected: '"Here are some pictures of things we\'ve done & enjoyed"'
+		expected: '"Here are some pictures of things we\'ve done & enjoyed"',
 	},
 	{
 		in: 'Greater &gt; &#62; and &lt; &#60; less',
-		expected: 'Greater > > and < < less'
+		expected: 'Greater > > and < < less',
 	},
 	{
 		in: 'Symbols &#162; &#163; &#8364; &#165; &#169; &#174;',
-		expected: 'Symbols ¢ £ € ¥ © ®'
+		expected: 'Symbols ¢ £ € ¥ © ®',
 	},
 ];
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'decodeHtmlEntity::' + itemToTest.in, function ( assert ) {
-		var value = testFunctions.decodeHtmlEntity( itemToTest.in );
+	QUnit.test( 'decodeHtmlEntity::' + itemToTest.in, function( assert ) {
+		const value = testFunctions.decodeHtmlEntity( itemToTest.in );
 		assert.equal( value, itemToTest.expected, 'Expect decodeHtmlEntity( \'' + itemToTest.in + '\' ) to return ' + itemToTest.expected );
 	} );
 } );

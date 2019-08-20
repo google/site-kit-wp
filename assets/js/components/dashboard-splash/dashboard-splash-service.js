@@ -16,7 +16,13 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import PropTypes from 'prop-types';
+/**
+ * Internal dependencies
+ */
 import Link from '../link';
 
 const { Component } = wp.element;
@@ -27,7 +33,7 @@ class DashboardSplashService extends Component {
 		const { image, title, content, link, linkText, opposite } = this.props;
 
 		return (
-			<div className={ `googlesitekit-splash-service ${ opposite ? 'googlesitekit-splash-service--opposite' : '' }` } style={ { backgroundImage: `url(${imagePath}service-${image}.jpg)` } }>
+			<div className={ `googlesitekit-splash-service ${ opposite ? 'googlesitekit-splash-service--opposite' : '' }` } style={ { backgroundImage: `url(${ imagePath }service-${ image }.jpg)` } }>
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
 						<div className={ `
