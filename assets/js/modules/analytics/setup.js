@@ -330,27 +330,25 @@ class AnalyticsSetup extends Component {
 			};
 
 			if ( ! this.state.existingTag ) {
-				const chooseProperty = {
+				responseData.properties.push( {
 					id: 0,
 					name: __( 'Setup a New Property', 'google-site-kit' )
-				};
-				responseData.properties.push( chooseProperty );
+				} );
 			}
 
-			const chooseProfile = {
+			responseData.profiles.push( {
 				id: 0,
 				name: __( 'Setup a New Profile', 'google-site-kit' )
-			};
-			responseData.profiles.push( chooseProfile );
+			} );
 
 			newState = {
 				...newState,
 				isLoading: false,
 				accounts: responseData.accounts,
 				errorCode: errorCode || newState.errorCode,
-				selectedAccount: selectedAccount,
-				selectedProperty: selectedProperty,
-				selectedProfile: selectedProfile,
+				selectedAccount,
+				selectedProperty,
+				selectedProfile,
 				properties: [ chooseAccount ],
 				profiles: [ chooseAccount ],
 				existingTag: responseData.existingTag ? responseData.existingTag.property[0].id : false,
