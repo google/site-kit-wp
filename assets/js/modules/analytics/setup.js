@@ -245,13 +245,15 @@ class AnalyticsSetup extends Component {
 	}
 
 	async getAccounts() {
+		let {
+			selectedAccount,
+			selectedProperty,
+			selectedProfile,
+		} = this.state;
 		const { isEditing } = this.props;
 
 		try {
 			let responseData = await data.get( 'modules', 'analytics', 'get-accounts', {}, false );
-			let selectedAccount = this.state.selectedAccount;
-			let selectedProperty = this.state.selectedProperty;
-			let selectedProfile = this.state.selectedProfile;
 
 			if ( 0 === responseData.accounts.length ) {
 
