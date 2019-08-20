@@ -246,12 +246,13 @@ class AnalyticsSetup extends Component {
 
 	async getAccounts() {
 		let {
+			errorCode,
 			selectedAccount,
 			selectedProperty,
 			selectedProfile,
 		} = this.state;
 		const { isEditing } = this.props;
-		let newState;
+		let newState = {};
 
 		try {
 			let responseData = await data.get( 'modules', 'analytics', 'get-accounts', {}, false );
@@ -267,11 +268,10 @@ class AnalyticsSetup extends Component {
 
 					// Select account and property of existing tag.
 					matchedProperty = responseData.existingTag.property;
-					if ( this._isMounted ) {
-						this.setState( {
-							existingTag: responseData.existingTag.property[0].id,
-						} );
-					}
+					newState = {
+						...newState,
+						existingTag: responseData.existingTag.property[0].id,
+					};
 				} else {
 					if ( responseData.matchedProperty ) {
 						matchedProperty = responseData.matchedProperty;
@@ -307,12 +307,11 @@ class AnalyticsSetup extends Component {
 					selectedProfile = '-1';
 				}
 
-				if ( this._isMounted ) {
-					this.setState( {
-						errorCode: true,
-						errorReason: 'insufficientPermissions',
-					} );
-				}
+				newState = {
+					...newState,
+					errorCode: true,
+					errorReason: 'insufficientPermissions',
+				};
 			}
 
 			// Return only existing tag account and property for dropdown options.
@@ -345,9 +344,10 @@ class AnalyticsSetup extends Component {
 			responseData.profiles.push( chooseProfile );
 
 			newState = {
+				...newState,
 				isLoading: false,
 				accounts: responseData.accounts,
-				errorCode: this.state.errorCode,
+				errorCode: errorCode || newState.errorCode,
 				selectedAccount: selectedAccount,
 				selectedProperty: selectedProperty,
 				selectedProfile: selectedProfile,
@@ -374,9 +374,9 @@ class AnalyticsSetup extends Component {
 
 		return new Promise( ( resolve ) => {
 			if ( this._isMounted ) {
-				resolve( newState );
+				this.setState( newState, resolve );
 			} else {
-				resolve( newState );
+				resolve();
 			}
 		} );
 	}
