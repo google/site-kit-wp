@@ -84,39 +84,7 @@ class AnalyticsSetup extends Component {
 	async componentDidMount() {
 		this._isMounted = true;
 
-		await this.getAccounts().then( async( newState ) => {
-
-			// If tag hasn't been detected in wp_head, look for existing tag in the html.
-			if ( ! newState.existingTag && ! newState.errorCode ) {
-				const { onSettingsPage } = this.props;
-				const { useSnippet } = this.state;
-				const existingTag = await getExistingTag( 'analytics' );
-
-				if ( existingTag && existingTag.length  ) {
-					try {
-
-						// Verify the user has access to existing tag if found. If no access request will return 403 error and catch err.
-						await data.get( 'modules', 'analytics', 'tag-permission', { tag: existingTag }, false );
-						newState = Object.assign( newState, {
-							existingTag,
-							useSnippet: ( ! existingTag && ! onSettingsPage ) ? true : useSnippet,
-						} );
-					} catch ( err ) {
-						newState = {
-							isLoading: false,
-							errorCode: err.code,
-							errorMsg: err.message,
-							errorReason: err.data && err.data.reason ? err.data.reason : false,
-						};
-						data.deleteCache( 'analytics', 'existingTag' );
-					}
-				}
-			}
-
-			if ( this._isMounted ) {
-				this.setState( newState );
-			}
-		} );
+		await this.getAccounts();
 
 		// Handle save hook from the settings page.
 		addFilter( 'googlekit.SettingsConfirmed',
@@ -250,8 +218,9 @@ class AnalyticsSetup extends Component {
 			selectedAccount,
 			selectedProperty,
 			selectedProfile,
+			useSnippet,
 		} = this.state;
-		const { isEditing } = this.props;
+		const { isEditing, onSettingsPage } = this.props;
 		let newState = {};
 
 		try {
@@ -361,6 +330,21 @@ class AnalyticsSetup extends Component {
 					selectedinternalWebProperty: ( responseData.properties[0] ) ? responseData.properties[0].internalWebPropertyId : 0,
 				} );
 			}
+
+			// If tag hasn't been detected in wp_head, look for existing tag in the html.
+			if ( ! newState.existingTag && ! newState.errorCode ) {
+				const existingTag = await getExistingTag( 'analytics' );
+
+				if ( existingTag && existingTag.length  ) {
+
+					// Verify the user has access to existing tag if found. If no access request will return 403 error and catch err.
+					await data.get( 'modules', 'analytics', 'tag-permission', { tag: existingTag }, false );
+					newState = Object.assign( newState, {
+						existingTag,
+						useSnippet: ( ! existingTag && ! onSettingsPage ) ? true : useSnippet,
+					} );
+				}
+			}
 		} catch ( err ) {
 			newState = {
 				isLoading: false,
@@ -368,6 +352,7 @@ class AnalyticsSetup extends Component {
 				errorMsg: err.message,
 				errorReason: err.data && err.data.reason ? err.data.reason : false,
 			};
+			data.deleteCache( 'analytics', 'existingTag' );
 		}
 
 		return new Promise( ( resolve ) => {
