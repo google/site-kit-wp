@@ -140,7 +140,8 @@ export const readableLargeNumber = ( number, currencyCode = false ) =>  {
 			readableNumber = Number.isInteger( number ) ? number : number.replace( '.', decimal.value );
 		}
 
-		const currency = formatedParts.find( part => 'currency' === part.type ).value;
+		const currencyFound = formatedParts.find( part => 'currency' === part.type );
+		const currency = currencyFound ? currencyFound.value : '';
 
 		return `${currency}${readableNumber}`;
 	}
