@@ -62,4 +62,27 @@
 			width: 206px;
 		}
 	}
+
+	&--mini {
+
+		.googlesitekit-logo__logo-g,
+		.googlesitekit-svg-logo-g {
+			height: 19px;
+			width: 19px;
+		}
+
+		.googlesitekit-logo__logo-sitekit,
+		.googlesitekit-svg-logo-sitekit {
+			height: 17px;
+			margin-left: $grid-gap-phone / 4;
+			width: 78px;
+		}
+
+		.googlesitekit-logo__logo-sitekit--beta,
+		.googlesitekit-svg-logo-sitekit-beta {
+			height: 17px;
+			margin-left: $grid-gap-phone / 2;
+			width: 102px;
+		}
+	}
 }
