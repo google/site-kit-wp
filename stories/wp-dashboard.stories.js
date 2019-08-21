@@ -40,10 +40,10 @@ storiesOf( 'WordPress', module )
 				<div className="metabox-holder">
 					<div id="google_dashboard_widget" className="postbox">
 						<h2 className="hndle ui-sortable-handle">
-							<span><div className="googlesitekit-logo googlesitekit-logo-mini">
+							<span><span className="googlesitekit-logo googlesitekit-logo--mini">
 								<SvgIcon id="logo-g" height="19" width="19" />
 								<SvgIcon id="logo-sitekit" height="17" width="78" />
-							</div></span>
+							</span></span>
 						</h2>
 						<div className="inside">
 							<div id="js-googlesitekit-wp-dashboard">

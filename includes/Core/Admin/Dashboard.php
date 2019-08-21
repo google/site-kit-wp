@@ -116,7 +116,7 @@ final class Dashboard {
 
 		wp_add_dashboard_widget(
 			'google_dashboard_widget',
-			'<div class="googlesitekit-logo googlesitekit-logo-mini">' . $logo . $logo_text . '</div>',
+			'<span class="googlesitekit-logo googlesitekit-logo--mini">' . $logo . $logo_text . '</span>',
 			function () {
 				$this->render_googlesitekit_wp_dashboard();
 			}
