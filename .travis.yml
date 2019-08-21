@@ -103,6 +103,9 @@ jobs:
     - name: PHP Tests (PHP 7.3, WordPress latest)
       php: 7.3
       env: WP_VERSION=latest PHP=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+    - name: PHP Tests (PHP 7.3, WordPress Multisite latest)
+      php: 7.3
+      env: WP_VERSION=latest WP_MULTISITE=1 PHP=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
     - name: JS Tests
       php: 7.3
       env: WP_VERSION=latest JS=1
