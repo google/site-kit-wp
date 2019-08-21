@@ -19,14 +19,16 @@
 /**
  * External dependencies
  */
+import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
 import Button from 'GoogleComponents/button';
 import Link from 'GoogleComponents/link';
 import data from 'GoogleComponents/data';
-import PropTypes from 'prop-types';
-
+import { getSiteKitAdminURL, sendAnalyticsTrackingEvent } from 'GoogleUtil';
 import { Input, TextField } from 'SiteKitCore/material-components';
-import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
-import { getSiteKitAdminURL } from 'GoogleUtil';
 
 const { __ } = wp.i18n;
 const { Component, Fragment } = wp.element;

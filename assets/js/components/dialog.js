@@ -87,7 +87,7 @@ class Dialog extends Component {
 									</p>
 								}
 								<section id="remove-module-dialog-description" className="mdc-dialog__content">
-									<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive" aria-orientation="vertical">
+									<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive">
 										{ provides && provides.map( ( attribute ) => (
 											<li className="mdc-list-item" key={ attribute }>
 												<span className="mdc-list-item__text">{ attribute }</span>

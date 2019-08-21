@@ -20,12 +20,11 @@
  * External dependencies
  */
 import data from 'GoogleComponents/data';
-import { getTimeInSeconds } from 'GoogleUtil';
+import { getDaysBetweenDates, getTimeInSeconds } from 'GoogleUtil';
 /**
  * Internal dependencies
  */
 import WinsWithData from './wins-withdata';
-import { getDaysBetweenDates } from 'GoogleUtil';
 
 const { applyFilters } = wp.hooks;
 const { camelCase } = lodash;
@@ -47,7 +46,10 @@ export const modulesNotificationsToRequest = () => {
 export async function getTotalNotifications() {
 	const { setup } = window.googlesitekit;
 
-	if ( ! setup.isSiteKitConnected || ! setup.isAuthenticated && ! setup.isVerified ) {
+	if (
+		! setup.isSiteKitConnected ||
+		( ! setup.isAuthenticated && ! setup.isVerified )
+	) {
 		return 0;
 	}
 
@@ -179,7 +181,7 @@ export async function getModulesNotifications() {
 	} );
 
 	await Promise.all( promises ).then( ( res ) => {
-		res.map( ( r ) => {
+		res.forEach( ( r ) => {
 			if ( r.notifications.length ) {
 				total = total + r.notifications.length;
 				results[ r.identifier ] = r.notifications;
@@ -231,7 +233,7 @@ export async function getWinsNotifications() {
 	} );
 
 	await Promise.all( promises ).then( ( res ) => {
-		res.map( ( r ) => {
+		res.forEach( ( r ) => {
 			if ( r.notifications.length ) {
 				results[ r.identifier ] = r.notifications;
 			}

@@ -144,10 +144,10 @@ class WizardStepClientCredentials extends Component {
 			return;
 		}
 
-		let data = false;
+		let clientData = false;
 		try {
-			data = JSON.parse( value );
-		} catch ( e ) {
+			clientData = JSON.parse( value );
+		} catch ( error ) {
 			this.setState( {
 				errorMsg: __( 'Unable to parse client configuration values.', 'google-site-kit' ),
 				clientID: '',
@@ -156,14 +156,14 @@ class WizardStepClientCredentials extends Component {
 			} );
 		}
 
-		if ( data && data.web ) {
+		if ( clientData && clientData.web ) {
 			const {
 				web: {
 					client_id: clientID,
 					client_secret: clientSecret,
 					project_id: projectID,
 				},
-			} = data;
+			} = clientData;
 
 			this.setState( {
 				errorMsg: '',

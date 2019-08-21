@@ -25,11 +25,10 @@ import withData from 'GoogleComponents/higherorder/withdata';
 /**
  * Internal dependencies
  */
-import { extractAnalyticsDataForTrafficChart } from '../util';
 import PropTypes from 'prop-types';
 import Link from 'GoogleComponents/link';
 import PreviewBlock from 'GoogleComponents/preview-block';
-import { getAnalyticsErrorMessageFromData, isDataZeroForTrafficSources } from '../util';
+import { extractAnalyticsDataForTrafficChart, getAnalyticsErrorMessageFromData, isDataZeroForTrafficSources } from '../util';
 
 const { Component } = wp.element;
 const { __ } = wp.i18n;

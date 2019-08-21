@@ -34,10 +34,6 @@ const { Component } = wp.element;
 const { __ } = wp.i18n;
 
 class AnalyticsInactiveCTA extends Component {
-	constructor( props ) {
-		super( props );
-	}
-
 	static async setupAnalyticsClick() {
 		try {
 			await activateOrDeactivateModule( data, 'analytics', true );

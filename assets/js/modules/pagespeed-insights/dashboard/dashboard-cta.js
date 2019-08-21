@@ -3,12 +3,12 @@
  */
 import CTA from 'GoogleComponents/notifications/cta';
 import data from 'GoogleComponents/data';
+import GenericError from 'GoogleComponents/notifications/generic-error';
 import {
 	activateOrDeactivateModule,
+	getReAuthUrl,
 	showErrorNotification,
 } from 'GoogleUtil';
-import GenericError from 'GoogleComponents/notifications/generic-error';
-import { getReAuthUrl } from 'GoogleUtil';
 
 const { __ } = wp.i18n;
 

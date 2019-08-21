@@ -19,15 +19,15 @@
 /**
  * External dependencies
  */
-import GoogleChart from 'GoogleComponents/google-chart.js';
-import { getTimeInSeconds } from 'GoogleUtil';
 import withData from 'GoogleComponents/higherorder/withdata';
+import GoogleChart from 'GoogleComponents/google-chart.js';
+import PreviewBlock from 'GoogleComponents/preview-block';
+import { decodeHtmlEntity, getTimeInSeconds } from 'GoogleUtil';
+
 /**
  * Internal dependencies
  */
 import { extractSearchConsoleDashboardData } from './util';
-import PreviewBlock from 'GoogleComponents/preview-block';
-import { decodeHtmlEntity } from 'GoogleUtil';
 
 const { __, sprintf } = wp.i18n;
 const { Component } = wp.element;
@@ -108,12 +108,12 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 
 	render() {
 		const { data, selectedStats } = this.props;
-		const options = this.setOptions();
 
 		if ( ! data || ! data.length ) {
 			return null;
 		}
 
+		const options = this.setOptions();
 		const processedData = extractSearchConsoleDashboardData( data );
 
 		return (

@@ -24,10 +24,6 @@ import SearchConsoleAdminbarWidgetOverview from './adminbar-widget-overview';
 const { Component } = wp.element;
 
 class GoogleSitekitSearchConsoleAdminbarWidget extends Component {
-	constructor( props ) {
-		super( props );
-	}
-
 	render() {
 		if ( typeof googlesitekit.permaLink !== typeof undefined && '' === googlesitekit.permaLink ) {
 			return null;

@@ -66,8 +66,8 @@ if ( ! wp.sanitize ) {
 		 * @return Sanitized text. False on failure.
 		 */
 		stripTagsAndEncodeText( text ) {
-			let _text = wp.sanitize.stripTags( text ),
-				textarea = document.createElement( 'textarea' );
+			const textarea = document.createElement( 'textarea' );
+			let _text = wp.sanitize.stripTags( text );
 
 			try {
 				textarea.innerHTML = _text;

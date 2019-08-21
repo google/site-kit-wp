@@ -72,24 +72,22 @@ class GoogleChart extends Component {
 
 			// Set the `src` to begin transport
 			script.src = 'https://www.gstatic.com/charts/loader.js';
-		} else {
+		} else if ( ! window.google || ! window.google.charts ) {
 			// When the google chart object not loaded, load draw chart later.
-			if ( ! window.google || ! window.google.charts ) {
-				addAction( 'googlesitekit.ChartLoaderLoaded', 'googlesitekit.HandleChartLoaderLoaded', () => {
-					window.google.charts.setOnLoadCallback( () => {
-						this.getData();
-						this.prepareChart();
-						this.drawChart();
-					} );
-				} );
-			} else {
-				// When the google chart object loaded, draw chart now.
+			addAction( 'googlesitekit.ChartLoaderLoaded', 'googlesitekit.HandleChartLoaderLoaded', () => {
 				window.google.charts.setOnLoadCallback( () => {
 					this.getData();
 					this.prepareChart();
 					this.drawChart();
 				} );
-			}
+			} );
+		} else {
+			// When the google chart object loaded, draw chart now.
+			window.google.charts.setOnLoadCallback( () => {
+				this.getData();
+				this.prepareChart();
+				this.drawChart();
+			} );
 		}
 	}
 

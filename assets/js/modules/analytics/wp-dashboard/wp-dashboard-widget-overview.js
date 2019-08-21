@@ -21,18 +21,18 @@
  */
 import PreviewBlocks from 'GoogleComponents/preview-blocks';
 import DataBlock from 'GoogleComponents/data-block.js';
+import CTA from 'GoogleComponents/notifications/cta';
 import withData from 'GoogleComponents/higherorder/withdata';
 import {
 	getTimeInSeconds,
 	prepareSecondsForDisplay,
 	readableLargeNumber,
 } from 'GoogleUtil';
+
 /**
  * Internal dependencies
  */
-import { calculateOverviewData, isDataZeroForReporting } from '../util';
-import CTA from 'GoogleComponents/notifications/cta';
-import { getAnalyticsErrorMessageFromData } from '../util';
+import { calculateOverviewData, getAnalyticsErrorMessageFromData, isDataZeroForReporting } from '../util';
 
 const { __ } = wp.i18n;
 const { Component, Fragment } = wp.element;

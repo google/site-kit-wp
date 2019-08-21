@@ -1,3 +1,10 @@
+/* global QUnit */
+
+/**
+ * External dependencies
+ */
+import { forEach } from 'lodash';
+
 let valuesToTest;
 const testFunctions = window.googlesitekit.testFunctions;
 
@@ -236,20 +243,6 @@ valuesToTest.forEach( function( itemToTest ) {
 	} );
 } );
 
-/**
- * Test sendAnalyticsTrackingEvent.
- */
-const gtag = function( type, name, sendto, category, label, value ) {
-	return {
-		type,
-		name,
-		sendto,
-		category,
-		label,
-		value,
-	};
-};
-
 const sendAnalyticsTrackingEventExpected = '{"type":"event","name":"name","sendto":{"event_category":"category","event_label":"label","event_value":"value","dimension1":"","dimension2":"true"}}';
 QUnit.test( 'sendAnalyticsTrackingEvent', function( assert ) {
 	window.googlesitekit.admin.trackingOptin = true;
@@ -344,7 +337,7 @@ valuesToTest.forEach( function( itemToTest ) {
 /**
  * Test isFrontendIframeLoaded.
  */
-var document = {
+let document = {
 	getElementById() {
 		return false;
 	},
@@ -412,7 +405,7 @@ valuesToTest.forEach( function( itemToTest ) {
 /**
  * Test fillFilterWithComponent.
  */
-const filterTester = function( value ) {
+const filterTester = function() {
 	return '::added::';
 };
 
@@ -464,7 +457,7 @@ valuesToTest = [
 // Replace addQueryArgs to avoid webpack issue.
 const addQueryArgs = function( url, args ) {
 	let add = '';
-	_.forEach( args, function( arg, key ) {
+	forEach( args, function( arg, key ) {
 		if ( arg ) {
 			add = add + key + '=' + arg + '&';
 		}
@@ -848,10 +841,10 @@ valuesToTest = [
 		in: 65,
 		expected: '1m 5s',
 	},	{
-		in: 60 * 60 * 3 + 60 * 5 + 12,
+		in: ( 60 * 60 * 3 ) + ( 60 * 5 ) + 12,
 		expected: '3h 5m 12s',
 	},	{
-		in: 60 * 60 * 7 + 60 * 2 + 42,
+		in: ( 60 * 60 * 7 ) + ( 60 * 2 ) + 42,
 		expected: '7h 2m 42s',
 	},
 ];

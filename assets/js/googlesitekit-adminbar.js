@@ -22,10 +22,10 @@
  * External dependencies
  */
 import Link from 'GoogleComponents/link';
-import { getSiteKitAdminURL } from 'GoogleUtil';
 import {
-	sendAnalyticsTrackingEvent,
 	decodeHtmlEntity,
+	getSiteKitAdminURL,
+	sendAnalyticsTrackingEvent,
 } from 'GoogleUtil';
 
 const { doAction } = wp.hooks;

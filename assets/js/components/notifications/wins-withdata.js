@@ -37,6 +37,8 @@ class WinsWithData {
 				};
 				return win.withData;
 			}
+
+			return false;
 		} ) );
 
 		await data.combinedGetFromCache( batchRequests );

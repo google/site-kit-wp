@@ -24,9 +24,8 @@ import Link from 'GoogleComponents/link';
 import Dialog from 'GoogleComponents/dialog';
 import Optin from 'GoogleComponents/optin';
 import data from 'GoogleComponents/data';
-import { clearAppLocalStorage } from 'GoogleUtil';
-
 import {
+	clearAppLocalStorage,
 	moduleIcon,
 	getSiteKitAdminURL,
 } from 'GoogleUtil';

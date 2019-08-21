@@ -121,36 +121,38 @@ class ModulesList extends Component {
 								</h3>
 							</div>
 							<ModuleSettingsWarning slug={ slug } context="modules-list" />
-							{
-								isConnected ?
-									<span className="googlesitekit-settings-module__status">
-										<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected">
-											<span className="screen-reader-text">
-												{
-													__( 'Connected', 'google-site-kit' )
-												}
-											</span>
-										</span>
-										{
-											__( 'Connected', 'google-site-kit' )
-										}
-									</span> :
-									! blockedByParentModule ?
-										<Link
-											arrow
-											small
-											inherit
-											onClick={ () => {
-												this.setupModuleClick( slug );
-											} }
-										> {
-												__( 'Connect Service', 'google-site-kit' )
+							{ isConnected && (
+								<span className="googlesitekit-settings-module__status">
+									<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected">
+										<span className="screen-reader-text">
+											{
+												__( 'Connected', 'google-site-kit' )
 											}
-										</Link> :
-										<Link disabled small inherit>{
-											sprintf( __( 'Enable %s to start setup', 'google-site-kit' ), parentBlockerName )
-										}</Link>
-							}
+										</span>
+									</span>
+									{
+										__( 'Connected', 'google-site-kit' )
+									}
+								</span>
+							) }
+							{ ! isConnected && ! blockedByParentModule && (
+								<Link
+									arrow
+									small
+									inherit
+									onClick={ () => {
+										this.setupModuleClick( slug );
+									} }
+								> {
+										__( 'Connect Service', 'google-site-kit' )
+									}
+								</Link>
+							) }
+							{ ! isConnected && blockedByParentModule && (
+								<Link disabled small inherit>
+									{ sprintf( __( 'Enable %s to start setup', 'google-site-kit' ), parentBlockerName ) }
+								</Link>
+							) }
 						</div>
 					);
 				} ) }

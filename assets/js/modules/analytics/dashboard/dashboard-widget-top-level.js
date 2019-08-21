@@ -21,23 +21,22 @@
  */
 import DataBlock from 'GoogleComponents/data-block.js';
 import withData from 'GoogleComponents/higherorder/withdata';
+
 /**
  * Internal dependencies
  */
-import { extractAnalyticsDashboardSparklineData } from '../util';
 import Sparkline from 'GoogleComponents/sparkline';
 import CTA from 'GoogleComponents/notifications/cta';
 import PreviewBlock from 'GoogleComponents/preview-block';
-
 import {
 	getTimeInSeconds,
 	readableLargeNumber,
 	extractForSparkline,
 	getSiteKitAdminURL,
 } from 'GoogleUtil';
-
 import {
 	calculateOverviewData,
+	extractAnalyticsDashboardSparklineData,
 	getAnalyticsErrorMessageFromData,
 } from '../util';
 
@@ -216,13 +215,12 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 					mdc-layout-grid__cell--span-3-desktop
 				">
 					{
-
 						/**
 						 * The forth block shows goals for general view, and average time on page for detail view.
 						 */
 					}
 					{
-						permaLink ?
+						permaLink && (
 							<DataBlock
 								className="overview-average-time-on-page"
 								title={ __( 'Average Session Duration', 'google-site-kit' ) }
@@ -242,36 +240,41 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 											id="analytics-sessions-sparkline"
 										/>
 								}
-							/> :
-							goals ?
-								isEmpty( goals.items ) ?
-									<CTA
-										title={ __( 'Use goals to measure success. ', 'google-site-kit' ) }
-										description={ __( 'Goals measure how well your site or app fulfills your target objectives.', 'google-site-kit' ) }
-										ctaLink={ goalURL }
-										ctaLabel={ __( 'Create a new goal', 'google-site-kit' ) }
-									/> :
-									<DataBlock
-										className="overview-goals-completed"
-										title={ __( 'Goals Completed', 'google-site-kit' ) }
-										datapoint={ readableLargeNumber( goalCompletions ) }
-										change={ goalCompletionsChange }
-										changeDataUnit="%"
-										source={ {
-											name: __( 'Analytics', 'google-site-kit' ),
-											link: href,
-										} }
-										sparkline={
-											extractedAnalytics &&
-												<Sparkline
-													data={ extractForSparkline( extractedAnalytics, 3 ) }
-													change={ goalCompletionsChange }
-													id="analytics-sessions-sparkline"
-												/>
-										}
-									/> :
-								<PreviewBlock width="100%" height="202px" />
+							/>
+						) }
+					{ ! permaLink && goals && isEmpty( goals.items ) && (
+						<CTA
+							title={ __( 'Use goals to measure success. ', 'google-site-kit' ) }
+							description={ __( 'Goals measure how well your site or app fulfills your target objectives.', 'google-site-kit' ) }
+							ctaLink={ goalURL }
+							ctaLabel={ __( 'Create a new goal', 'google-site-kit' ) }
+						/>
+					)
 					}
+					{ ! permaLink && goals && ! isEmpty( goals.items ) && (
+						<DataBlock
+							className="overview-goals-completed"
+							title={ __( 'Goals Completed', 'google-site-kit' ) }
+							datapoint={ readableLargeNumber( goalCompletions ) }
+							change={ goalCompletionsChange }
+							changeDataUnit="%"
+							source={ {
+								name: __( 'Analytics', 'google-site-kit' ),
+								link: href,
+							} }
+							sparkline={
+								extractedAnalytics &&
+								<Sparkline
+									data={ extractForSparkline( extractedAnalytics, 3 ) }
+									change={ goalCompletionsChange }
+									id="analytics-sessions-sparkline"
+								/>
+							}
+						/>
+					) }
+					{ ! permaLink && ! goals && (
+						<PreviewBlock width="100%" height="202px" />
+					) }
 				</div>
 			</Fragment>
 		);

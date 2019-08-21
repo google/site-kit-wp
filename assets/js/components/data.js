@@ -65,7 +65,7 @@ const data = {
 	 *
  	 * @param {Array.<{ maxAge: timestamp, dataObject: string, identifier: string, datapoint: string, datapointId: number, callback: function }>} combinedRequest An array of data requests to resolve.
 	 *
-	 * @return Promise
+	 * @return {Promise}
 	 */
 	combinedGetFromCache( combinedRequest ) {
 		return new Promise( ( resolve, reject ) => {
@@ -137,7 +137,7 @@ const data = {
  	 * @param {Array.<{ maxAge: timestamp, dataObject: string, identifier: string, datapoint: string, datapointId: number, callback: function }>} combinedRequest An array of data requests to resolve.
 	 * @param {boolean} secondaryRequest Is this the second (or more) request?
 	 *
-	 * @return void
+	 * @return {void}
 	 */
 	combinedGet( combinedRequest, secondaryRequest = false ) {
 		// First, resolve any cache matches immediately, queue resolution of the rest.
@@ -309,6 +309,9 @@ const data = {
 
 	/**
 	 * Resolve a request.
+	 *
+	 * @param {Object} request Request object to resolve.
+	 * @param {any}    result  Result to resolve this request with.
 	 */
 	resolve( request, result ) {
 		// Call the resolver callback with the data.

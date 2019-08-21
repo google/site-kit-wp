@@ -28,10 +28,6 @@ import SiteVerification from 'GoogleComponents/setup/site-verification';
 const { Component } = wp.element;
 
 class WizardStepVerification extends Component {
-	constructor( props ) {
-		super( props );
-	}
-
 	render() {
 		const { isVerified } = this.props;
 		const shouldSetup = ! isVerified;

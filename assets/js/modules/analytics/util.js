@@ -39,13 +39,15 @@ export const extractAnalyticsDataForTrafficChart = ( reports ) => {
 
 	each( rows, ( row ) => {
 		const sessions = row.metrics[ 0 ].values[ 0 ];
-		const source = row.dimensions[ 0 ].replace( /\(none\)/gi, 'direct' );
 		const percent = ( sessions / totalSessions );
 
 		// Exclude sources below 1%.
 		if ( 1 > ( percent * 100 ) ) {
 			return false;
 		}
+
+		const source = row.dimensions[ 0 ].replace( /\(none\)/gi, 'direct' );
+
 		dataMap.push( [ source, percent ] );
 	} );
 
@@ -91,8 +93,6 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 	if ( ! reports || ! reports.length ) {
 		return null;
 	}
-	const { __ } = wp.i18n;
-
 	// Data is returned as an object.
 	const rows = reports[ 0 ].data.rows;
 

@@ -30,9 +30,9 @@ storiesOf( 'WordPress', module )
 								mdc-layout-grid__cell--offset-1-desktop
 								mdc-layout-grid__cell--align-middle
 							">
-								<a href="#" className="googlesitekit-activation__button mdc-button mdc-button--raised">
+								<button className="googlesitekit-activation__button mdc-button mdc-button--raised">
 									{ __( 'Start Setup', 'google-site-kit' ) }
-								</a>
+								</button>
 							</div>
 						</div>
 					</div>

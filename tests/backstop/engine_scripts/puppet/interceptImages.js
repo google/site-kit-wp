@@ -20,8 +20,8 @@ const IMAGE_STUB_URL = path.resolve( __dirname, '../../imageStub.jpg' );
 const IMAGE_DATA_BUFFER = fs.readFileSync( IMAGE_STUB_URL );
 const HEADERS_STUB = {};
 
-module.exports = async function( page, scenario ) {
-	const intercept = async ( request, targetUrl ) => {
+module.exports = async function( page ) {
+	const intercept = async ( request ) => {
 		if ( IMAGE_URL_RE.test( request.url() ) ) {
 			await request.respond( {
 				body: IMAGE_DATA_BUFFER,

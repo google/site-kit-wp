@@ -59,7 +59,7 @@ class DashboardModulesAlerts extends Component {
 
 		const notifications = [];
 
-		Object.keys( data ).map( ( key ) => {
+		Object.keys( data ).forEach( ( key ) => {
 			each( data[ key ], ( notification ) => {
 				notifications.push(
 					<Notification

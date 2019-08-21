@@ -215,14 +215,16 @@ class AnalyticsSetup extends Component {
 	}
 
 	async getAccounts() {
-		let {
+		const { isEditing } = this.props;
+		const {
 			errorCode,
+			useSnippet,
+		} = this.state;
+		let {
 			selectedAccount,
 			selectedProperty,
 			selectedProfile,
-			useSnippet,
 		} = this.state;
-		const { isEditing } = this.props;
 		let newState = {};
 
 		try {
@@ -427,7 +429,9 @@ class AnalyticsSetup extends Component {
 	}
 
 	async handleSubmit( e ) {
-		e && e.preventDefault();
+		if ( e ) {
+			e.preventDefault();
+		}
 
 		if ( ! this.state.selectedAccount || '-1' === this.state.selectedAccount ) {
 			return;
@@ -579,14 +583,14 @@ class AnalyticsSetup extends Component {
 								</Fragment>
 							}
 							{ onSettingsPage && ! existingTag && ! useSnippet && useSnippetSettings &&
-								<p>{ sprintf( __( 'If the code snippet is removed, you will no longer be able to gather Analytics insights about your site.', 'google-site-kit' ), existingTag ) }</p>
+								<p>{ __( 'If the code snippet is removed, you will no longer be able to gather Analytics insights about your site.', 'google-site-kit' ) }</p>
 							}
 						</Fragment>
 				}
 				{ onSettingsPage &&
 					<Fragment>
 						{ existingTag &&
-							<p>{ sprintf( __( 'Placing two tags at the same time is not recommended.', 'google-site-kit' ), existingTag ) }</p>
+							<p>{ __( 'Placing two tags at the same time is not recommended.', 'google-site-kit' ) }</p>
 						}
 						<Radio
 							onClick={ this.handleRadioClick }

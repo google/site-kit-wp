@@ -100,19 +100,19 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 
 	render() {
 		const { data, selectedStats, dateRangeFrom } = this.props;
-		const options = this.setOptions();
 
 		if ( ! data || ! data.length ) {
 			return null;
 		}
 
 		const days = dateRangeFrom ? dateRangeFrom.match( /\d+/ ).map( Number )[ 0 ] : 28;
-
 		const dataMap = extractAnalyticsDashboardData( data, selectedStats, days );
 
 		if ( ! dataMap ) {
 			return null;
 		}
+
+		const options = this.setOptions();
 
 		return (
 			<section className="mdc-layout-grid">

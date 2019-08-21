@@ -156,11 +156,11 @@ class Setup extends Component {
 	}
 
 	stepStatus( applicableSteps, step ) {
-		const currentStep = this.currentStep( applicableSteps );
-
 		if ( applicableSteps[ step ].isCompleted( this.state ) ) {
 			return 'completed';
 		}
+
+		const currentStep = this.currentStep( applicableSteps );
 
 		if ( step === currentStep ) {
 			return 'inprogress';

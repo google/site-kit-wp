@@ -91,7 +91,7 @@ class SettingsModule extends Component {
 			await refreshAuthentication();
 
 			if ( false === newActiveState ) {
-				Object.keys( window.sessionStorage ).map( ( key ) => {
+				Object.keys( window.sessionStorage ).forEach( ( key ) => {
 					if ( -1 < key.indexOf( `${ this.props.slug }::` ) ) {
 						sessionStorage.removeItem( key );
 					}
@@ -150,12 +150,13 @@ class SettingsModule extends Component {
 		const { modules } = googlesitekit;
 		const dependants = {};
 
-		modules[ slug ].dependants && modules[ slug ].dependants.forEach( ( dependantSlug ) => {
-			if ( ! modules[ dependantSlug ] ) {
-				return;
-			}
-			dependants[ dependantSlug ] = modules[ dependantSlug ];
-		} );
+		if ( modules[ slug ].dependants ) {
+			modules[ slug ].dependants.forEach( ( dependantSlug ) => {
+				if ( modules[ dependantSlug ] ) {
+					dependants[ dependantSlug ] = modules[ dependantSlug ];
+				}
+			} );
+		}
 
 		return dependants;
 	}
@@ -193,6 +194,9 @@ class SettingsModule extends Component {
 		const subtitle = sprintf( __( 'By disconnecting the %s module from Site Kit, you will no longer have access to:', 'google-site-kit' ), name );
 
 		const isSavingModule = isSaving === `${ slug }-module`;
+		// Disabled because this rule doesn't acknowledge our use of the variable
+		// as a component in JSX.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const FilteredModuleSettingsDetails = withFilters( `googlesitekit.ModuleSettingsDetails-${ slug }` )( ModuleSettingsDetails );
 
 		// Disable other modules during editing
@@ -202,6 +206,16 @@ class SettingsModule extends Component {
 		const dependentModules = map( this.getDependentModules(), 'name' ).join( ', ' );
 
 		const nothingToSave = 'pagespeed-insights' === slug;
+
+		// Set button text based on state.
+		let buttonText = __( 'Close', 'google-site-kit' );
+		if ( hasSettings && setupComplete ) {
+			if ( isSavingModule ) {
+				buttonText = __( 'Saving...', 'google-site-kit' );
+			} else if ( nothingToSave === false ) {
+				buttonText = __( 'Confirm Changes', 'google-site-kit' );
+			}
+		}
 
 		return (
 			<Fragment>
@@ -333,15 +347,7 @@ class SettingsModule extends Component {
 														disabled={ isSavingModule }
 														id={ hasSettings && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
 													>
-														{
-															hasSettings && setupComplete ?
-																( isSavingModule ?
-																	__( 'Saving...', 'google-site-kit' ) :
-																	nothingToSave ?
-																		__( 'Close', 'google-site-kit' ) :
-																		__( 'Confirm Changes', 'google-site-kit' )
-																) :
-																__( 'Close', 'google-site-kit' ) }
+														{ buttonText }
 													</Button>
 													<Spinner isSaving={ isSavingModule } />
 													{ hasSettings &&
@@ -380,24 +386,23 @@ class SettingsModule extends Component {
 											mdc-layout-grid__cell--align-middle
 											mdc-layout-grid__cell--align-right-desktop
 										">
-											{ isEditing[ moduleKey ] ? (
-												! autoActivate ?
-													<Link
-														className="googlesitekit-settings-module__remove-button"
-														onClick={ this.handleDialog }
-														inherit
-														danger
-													>
-														{ sprintf( __( 'Disconnect %s from Site Kit', 'google-site-kit' ), name ) }
-														<SvgIcon
-															className="googlesitekit-settings-module__remove-button-icon"
-															id="trash"
-															width="13"
-															height="13"
-														/>
-													</Link> :
-													null
-											) : (
+											{ isEditing[ moduleKey ] && ! autoActivate && (
+												<Link
+													className="googlesitekit-settings-module__remove-button"
+													onClick={ this.handleDialog }
+													inherit
+													danger
+												>
+													{ sprintf( __( 'Disconnect %s from Site Kit', 'google-site-kit' ), name ) }
+													<SvgIcon
+														className="googlesitekit-settings-module__remove-button-icon"
+														id="trash"
+														width="13"
+														height="13"
+													/>
+												</Link>
+											) }
+											{ ! isEditing[ moduleKey ] && (
 												<Link
 													href={ homepage }
 													className="googlesitekit-settings-module__cta-button"

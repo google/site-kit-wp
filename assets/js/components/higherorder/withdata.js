@@ -165,16 +165,20 @@ const withData = (
 					} );
 
 					// If the Component included a `handleDataError` helper, pass it the error message.
-					handleDataError && handleDataError( error );
+					if ( handleDataError ) {
+						handleDataError( error );
+					}
 				} else if ( isDataZero( returnedData, datapoint ) ) { // No data error, next check for zero data.
 					// If we have a `handleDataError` call it without any parameters (indicating empty data).
-					handleDataError && handleDataError( error );
+					if ( handleDataError ) {
+						handleDataError( error );
+					}
 
 					// Set a zeroData state on the Component.
 					this.setState( { zeroData: true } );
-				} else {
+				} else if ( handleDataSuccess ) {
 					// Success! `handleDataSuccess` will be called (ie. not error or zero).
-					handleDataSuccess && handleDataSuccess();
+					handleDataSuccess();
 				}
 
 				// Resolve the returned data my setting state on the Component.

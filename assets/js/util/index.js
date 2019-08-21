@@ -316,11 +316,10 @@ export function addPerformanceMonitoring() {
  * @return {string}
  */
 const fallbackGetQueryParamater = ( name ) => {
-	let queryDict = {},
-		i,
-		queries = location.search.substr( 1 ).split( '&' );
+	const queries = location.search.substr( 1 ).split( '&' );
+	const queryDict = {};
 
-	for ( i = 0; i < queries.length; i++ ) {
+	for ( let i = 0; i < queries.length; i++ ) {
 		queryDict[ queries[ i ].split( '=' )[ 0 ] ] = decodeURIComponent( queries[ i ].split( '=' )[ 1 ] );
 	}
 
@@ -356,14 +355,14 @@ export const getQueryParameter = ( name ) => {
 /**
  * Extract a single column of data for a sparkline from a dataset prepared for google charts.
  *
- * @param {Array} data    An array of google charts row data.
+ * @param {Array}  rowData   An array of google charts row data.
  * @param {number} column The column to extract for the sparkline.
  */
-export const extractForSparkline = ( data, column ) => {
-	return map( data, ( row, i ) => {
+export const extractForSparkline = ( rowData, column ) => {
+	return map( rowData, ( row, i ) => {
 		return [
 			row[ 0 ], // row[0] always contains the x axis value (typically date).
-			row[ column ] ? row[ column ] : ( 0 === i ? '' : 0 ), // the data for the sparkline.
+			row[ column ] || ( 0 === i ? '' : 0 ), // the data for the sparkline.
 		];
 	} );
 };
@@ -655,10 +654,10 @@ export const storageAvailable = ( type ) => {
  *
  * @param {string} cacheType Browser storage.
  * @param {string} cacheKey  Cache key.
- * @param {*}      data      Cache data to store.
+ * @param {*}      cacheData Cache data to store.
  * @return {boolean}
  */
-export const setCache = ( cacheType, cacheKey, data ) => {
+export const setCache = ( cacheType, cacheKey, cacheData ) => {
 	if ( 0 > indexOf( [ 'localStorage', 'sessionStorage' ], cacheType ) ) {
 		return;
 	}
@@ -667,7 +666,7 @@ export const setCache = ( cacheType, cacheKey, data ) => {
 		return;
 	}
 
-	window[ cacheType ].setItem( cacheKey, data );
+	window[ cacheType ].setItem( cacheKey, cacheData );
 
 	return true;
 };
@@ -862,6 +861,8 @@ export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settin
 		if ( savedSettings[ key ] !== currentSettings[ key ] ) {
 			return true;
 		}
+
+		return false;
 	} );
 
 	if ( 0 < changed.length ) {
@@ -942,15 +943,15 @@ export function moduleIcon( module, blockedByParentModule, width = '33', height 
 	}
 
 	/* Set module icons. Page Speed Insights is a special case because only a .png is available. */
-	let moduleIcon = <SvgIcon id={ module } width={ width } height={ height } className={ useClass } />;
+	let iconComponent = <SvgIcon id={ module } width={ width } height={ height } className={ useClass } />;
 
 	if ( blockedByParentModule ) {
-		moduleIcon = <SvgIcon id={ `${ module }-disabled` } width={ width } height={ height } className={ useClass } />;
+		iconComponent = <SvgIcon id={ `${ module }-disabled` } width={ width } height={ height } className={ useClass } />;
 	} else if ( 'pagespeed-insights' === module ) {
-		moduleIcon = <img src={ googlesitekit.admin.assetsRoot + 'images/icon-pagespeed.png' } width={ width } alt="" className={ useClass } />;
+		iconComponent = <img src={ googlesitekit.admin.assetsRoot + 'images/icon-pagespeed.png' } width={ width } alt="" className={ useClass } />;
 	}
 
-	return moduleIcon;
+	return iconComponent;
 }
 
 /**

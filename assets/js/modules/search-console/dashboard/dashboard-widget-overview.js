@@ -36,10 +36,6 @@ const { __ } = wp.i18n;
 const { Component, Fragment } = wp.element;
 
 class SearchConsoleDashboardWidgetOverview extends Component {
-	constructor( props ) {
-		super( props );
-	}
-
 	render() {
 		const { data, selectedStats, handleStatSelection } = this.props;
 

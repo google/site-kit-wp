@@ -25,5 +25,6 @@ module.exports = async ( page, scenario ) => {
 		);
 	};
 	await setCookies();
+	// eslint-disable-next-line no-console
 	console.log( 'Cookie state restored with:', JSON.stringify( cookies, null, 2 ) );
 };

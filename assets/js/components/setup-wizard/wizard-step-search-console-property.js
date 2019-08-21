@@ -28,10 +28,6 @@ import SearchConsole from 'GoogleComponents/setup/search-console';
 const { Component } = wp.element;
 
 class WizardStepSearchConsoleProperty extends Component {
-	constructor( props ) {
-		super( props );
-	}
-
 	render() {
 		const { isVerified, hasSearchConsoleProperty } = this.props;
 		const shouldSetup = isVerified && ! hasSearchConsoleProperty;

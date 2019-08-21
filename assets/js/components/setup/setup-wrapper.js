@@ -116,12 +116,18 @@ class SetupWrapper extends Component {
 	}
 
 	static loadSetupModule( slug ) {
+		// Disabled because this rule doesn't acknowledge our use of the variable
+		// as a component in JSX.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const FilteredModuleSetup = withFilters( `googlesitekit.ModuleSetup-${ slug }` )( BaseComponent );
 
-		return <FilteredModuleSetup
-			finishSetup={ SetupWrapper.finishSetup }
-			onSettingsPage={ false }
-			isEditing={ true } />;
+		return (
+			<FilteredModuleSetup
+				finishSetup={ SetupWrapper.finishSetup }
+				onSettingsPage={ false }
+				isEditing={ true }
+			/>
+		);
 	}
 
 	/**

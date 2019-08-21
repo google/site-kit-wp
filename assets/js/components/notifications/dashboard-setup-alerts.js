@@ -46,7 +46,6 @@ class DashboardSetupAlerts extends Component {
 			},
 		};
 
-		const slug = getQueryParameter( 'slug' );
 		const { canManageOptions } = googlesitekit.permissions;
 
 		switch ( notification ) {
@@ -54,6 +53,8 @@ class DashboardSetupAlerts extends Component {
 				if ( ! canManageOptions ) {
 					return null;
 				}
+
+				const slug = getQueryParameter( 'slug' );
 
 				if ( slug && googlesitekit.modules[ slug ] && ! googlesitekit.modules[ slug ].active ) {
 					return null;
