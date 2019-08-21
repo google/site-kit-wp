@@ -3,10 +3,10 @@
 /**
  * External dependencies
  */
-import { forEach } from 'lodash';
 
-let valuesToTest;
+const { forEach } = window._;
 const testFunctions = window.googlesitekit.testFunctions;
+let valuesToTest;
 
 QUnit.module( 'Utility function tests' );
 
