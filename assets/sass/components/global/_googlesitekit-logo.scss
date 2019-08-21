@@ -63,3 +63,23 @@
 		}
 	}
 }
+
+.googlesitekit-logo.googlesitekit-logo-mini {
+
+	.googlesitekit-svg-logo-g {
+		height: 19px;
+		width: 19px;
+	}
+
+	.googlesitekit-svg-logo-sitekit {
+		height: 17px;
+		margin-left: $grid-gap-phone / 2;
+		width: 78px;
+	}
+
+	.googlesitekit-svg-logo-sitekit-beta {
+		height: 17px;
+		margin-left: $grid-gap-phone / 2;
+		width: 102px;
+	}
+}
