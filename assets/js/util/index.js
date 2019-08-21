@@ -907,7 +907,7 @@ export const showErrorNotification = ( ErrorComponent, props = {} ) => {
 export const decodeHtmlEntity = ( str ) => {
 	const decoded =  str.replace( /&#(\d+);/g, function( match, dec ) {
 		return String.fromCharCode( dec );
-	} );
+	} ).replace( /(\\)/g, '' );
 
 	return unescape( decoded );
 };
