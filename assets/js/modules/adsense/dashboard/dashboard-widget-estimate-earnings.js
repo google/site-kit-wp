@@ -239,39 +239,40 @@ class AdSenseEstimateEarningsWidget extends Component {
 			return null;
 		}
 
-		const currency = today.headers.find( header => null !== header.currency && 0 < header.currency.length ).currency;
+		const currencyHeader = today.headers.find( header => null !== header.currency && 0 < header.currency.length );
+		const currencyCode = currencyHeader ? currencyHeader.currency : false;
 
 		const dataBlocks = today.totals ? [
 			{
 				className: 'googlesitekit-data-block--today',
 				title: __( 'Today so far', 'google-site-kit' ),
-				datapoint: readableLargeNumber( today.totals[0], currency ),
+				datapoint: readableLargeNumber( today.totals[0], currencyCode ),
 			},
 			{
 				className: 'googlesitekit-data-block--yesterday',
 				title: __( 'Yesterday', 'google-site-kit' ),
-				datapoint: readableLargeNumber( yesterday.totals[0], currency ),
+				datapoint: readableLargeNumber( yesterday.totals[0], currencyCode ),
 				change: sameDayLastWeek.totals[0],
 				changeDataUnit: '%',
 			},
 			{
 				className: 'googlesitekit-data-block--7days',
 				title: __( 'Last 7 days', 'google-site-kit' ),
-				datapoint: readableLargeNumber( sevenDays.totals[0], currency ),
+				datapoint: readableLargeNumber( sevenDays.totals[0], currencyCode ),
 				change: prev7Days.totals[0],
 				changeDataUnit: '%',
 			},
 			{
 				className: 'googlesitekit-data-block--month',
 				title: __( 'This month', 'google-site-kit' ),
-				datapoint: readableLargeNumber( month.totals[0], currency ),
+				datapoint: readableLargeNumber( month.totals[0], currencyCode ),
 				change: monthLastYear.totals[0],
 				changeDataUnit: '%',
 			},
 			{
 				className: 'googlesitekit-data-block--28days',
 				title: __( 'Last 28 days', 'google-site-kit' ),
-				datapoint: readableLargeNumber( twentyEightDays.totals[0], currency ),
+				datapoint: readableLargeNumber( twentyEightDays.totals[0], currencyCode ),
 				change: prev28Days.totals[0],
 				changeDataUnit: '%',
 			},
