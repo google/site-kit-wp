@@ -50,7 +50,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		await resetSiteKit();
 	} );
 
-	it( 'display create account when user has no analytics account', async() => {
+	it( 'displays account creation form when user has no Analytics account', async() => {
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await page.waitForSelector( '.mdc-tab-bar' );
