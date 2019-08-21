@@ -5,6 +5,11 @@
  * Description: Utility plugin for mocking Analytics Setup API requests during E2E tests.
  * Author:      Google
  * Author URI:  https://opensource.google.com
+ *
+ * @package   Google\Site_Kit
+ * @copyright 2019 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
  */
 
 namespace Google\Site_Kit\Tests\E2E\Modules\AnalyticsNoAccount;
