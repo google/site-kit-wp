@@ -39,7 +39,11 @@ storiesOf( 'WordPress', module )
 			<div id="dashboard-widgets">
 				<div className="metabox-holder">
 					<div id="google_dashboard_widget" className="postbox">
-						<h2 className="hndle ui-sortable-handle"><span><SvgIcon id="logo-g" height="19" width="19" /><SvgIcon id="logo-sitekit" height="17" width="78" /></span>
+						<h2 className="hndle ui-sortable-handle">
+							<span><div className="googlesitekit-logo googlesitekit-logo-mini">
+								<SvgIcon id="logo-g" height="19" width="19" />
+								<SvgIcon id="logo-sitekit" height="17" width="78" />
+							</div></span>
 						</h2>
 						<div className="inside">
 							<div id="js-googlesitekit-wp-dashboard">
