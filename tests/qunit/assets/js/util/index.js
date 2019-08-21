@@ -4,7 +4,7 @@
  * External dependencies
  */
 
-const { forEach } = window._;
+const forEach = window._.forEach;
 const testFunctions = window.googlesitekit.testFunctions;
 let valuesToTest;
 
