@@ -446,20 +446,6 @@ export const getSiteKitAdminURL = ( page, args ) => {
 };
 
 /**
- * Verifies if the Front End site has been loaded in the iframe to check for tag presence.
- *
- * @return mixed Returns the iframe if it's loaded, false if not loaded.
- */
-export const isFrontendIframeLoaded = () => {
-	const iframe = document.getElementById( 'sitekit_fe_load_check' );
-	if ( iframe ) {
-		return iframe;
-	}
-
-	return false;
-};
-
-/**
  * Verifies whether JSON is valid.
  *
  * @param { string } stringToValidate The string to validate.

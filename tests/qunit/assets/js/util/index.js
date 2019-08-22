@@ -314,31 +314,6 @@ valuesToTest.forEach( function( itemToTest ) {
 } );
 
 /**
- * Test isFrontendIframeLoaded.
- */
-var document = {
-	getElementById: function() {
-		return false;
-	}
-};
-
-QUnit.test( 'isFrontendIframeLoaded', function ( assert ) {
-	var value = testFunctions.isFrontendIframeLoaded();
-	assert.equal( value, false, 'Expect isFrontendIframeLoaded() to return false' );
-} );
-
-document = {
-	getElementById: function( id ) {
-		return 'sitekit_fe_load_check' === id;
-	}
-};
-
-QUnit.test( 'isFrontendIframeLoaded', function ( assert ) {
-	var value = testFunctions.isFrontendIframeLoaded();
-	assert.equal( value, false, 'Expect isFrontendIframeLoaded() to return false' );
-} );
-
-/**
  * Test getSiteKitAdminURL.
  */
 valuesToTest = [
