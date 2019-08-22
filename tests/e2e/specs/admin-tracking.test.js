@@ -43,7 +43,7 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 	it( 'should have tracking code when opted in', async () => {
 		await page.waitForSelector( '#opt-in' );
 
-		expect( await page.$eval( '#opt-in', el => el.checked ) ).toBe( true );
+		expect( await page.$eval( '#opt-in', ( el ) => el.checked ) ).toBe( true );
 
 		// Ensure analytics script tag exists.
 		await expect( page ).toMatchElement( 'script[src^="https://www.google-analytics.com/analytics.js"]' );
@@ -56,7 +56,7 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 		await page.waitForSelector( '#opt-in' );
 
 		await Promise.all( [
-			page.waitForResponse( res => res.url().match( 'wp/v2/settings' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'wp/v2/settings' ) ),
 			expect( page ).toClick( '#opt-in' ),
 		] );
 
@@ -70,7 +70,7 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 		await page.waitForSelector( '#opt-in' );
 
 		await Promise.all( [
-			page.waitForResponse( res => res.url().match( 'wp/v2/settings' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'wp/v2/settings' ) ),
 			expect( page ).toClick( '#opt-in' ),
 		] );
 

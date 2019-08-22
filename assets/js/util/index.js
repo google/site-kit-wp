@@ -135,15 +135,15 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
 	if ( false !== currencyCode && '' !== readableNumber ) {
 		const formatedParts = new Intl.NumberFormat( navigator.language, { style: 'currency', currency: currencyCode } ).formatToParts( number );
 
-		const decimal = formatedParts.find( part => 'decimal' === part.type );
+		const decimal = formatedParts.find( ( part ) => 'decimal' === part.type );
 		if ( ! isUndefined( decimal ) && ! isUndefined( decimal.value ) && 1000 > number ) {
 			readableNumber = Number.isInteger( number ) ? number : number.replace( '.', decimal.value );
 		}
 
-		const currencyFound = formatedParts.find( part => 'currency' === part.type );
+		const currencyFound = formatedParts.find( ( part ) => 'currency' === part.type );
 		const currency = currencyFound ? currencyFound.value : '';
 
-		return `${currency}${readableNumber}`;
+		return `${ currency }${ readableNumber }`;
 	}
 
 	return readableNumber;
