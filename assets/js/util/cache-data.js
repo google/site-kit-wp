@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* global require, process */
 
 const puppeteer = require( 'puppeteer' );
 const fs = require( 'fs' );
