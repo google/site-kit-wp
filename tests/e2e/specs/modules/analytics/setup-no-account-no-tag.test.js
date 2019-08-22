@@ -10,6 +10,7 @@ import {
 	deactivateAllOtherPlugins,
 	resetSiteKit,
 	useRequestInterception,
+	setSearchConsoleProperty,
 } from '../../../utils';
 
 describe( 'setting up the Analytics module with no existing account and no existing tag', () => {
@@ -43,6 +44,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock-no-account' );
+		await setSearchConsoleProperty();
 	} );
 
 	afterEach( async () => {

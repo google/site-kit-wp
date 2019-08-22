@@ -199,12 +199,8 @@ final class REST_Routes {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$gcp_project = $this->authentication->gcp_project();
-							if ( ! $gcp_project->has() ) {
-								return new WP_Error( 'gcp_project_not_set', __( 'GCP project not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-							}
-							return new WP_REST_Response( $gcp_project->get() );
+						'callback'            => function() {
+							return new WP_REST_Response( $this->authentication->gcp_project()->get() );
 						},
 						'permission_callback' => $can_setup,
 					),
@@ -241,12 +237,8 @@ final class REST_Routes {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$api_key = $this->authentication->api_key();
-							if ( ! $api_key->has() ) {
-								return new WP_Error( 'api_key_not_set', __( 'API key not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-							}
-							return new WP_REST_Response( $api_key->get() );
+						'callback'            => function() {
+							return new WP_REST_Response( $this->authentication->api_key()->get() ?: '' );
 						},
 						'permission_callback' => $can_setup,
 					),
@@ -279,12 +271,8 @@ final class REST_Routes {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$credentials = $this->authentication->credentials();
-							if ( ! $credentials->has() ) {
-								return new WP_Error( 'credentials_not_set', __( 'Credentials not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-							}
-							return new WP_REST_Response( $credentials->get() );
+						'callback'            => function() {
+							return new WP_REST_Response( $this->authentication->credentials()->get() );
 						},
 						'permission_callback' => $can_setup,
 					),

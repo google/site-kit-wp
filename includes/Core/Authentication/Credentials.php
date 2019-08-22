@@ -54,7 +54,9 @@ final class Credentials {
 	 * @return array|bool Value set for the credentials, or false if not set.
 	 */
 	public function get() {
-		return $this->encrypted_options->get( self::OPTION );
+		return $this->parse_defaults(
+			$this->encrypted_options->get( self::OPTION )
+		);
 	}
 
 	/**
@@ -83,5 +85,26 @@ final class Credentials {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Parses Credentials data and merges with its defaults.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param mixed $data Credentials data.
+	 * @return array Parsed $data.
+	 */
+	private function parse_defaults( $data ) {
+		$defaults = array(
+			'oauth2_client_id'     => '',
+			'oauth2_client_secret' => '',
+		);
+
+		if ( ! is_array( $data ) ) {
+			return $defaults;
+		}
+
+		return wp_parse_args( $data, $defaults );
 	}
 }

@@ -54,7 +54,7 @@ class WizardStepClientCredentials extends Component {
 		this.onProceed = this.onProceed.bind( this );
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		const {
 			isSiteKitConnected,
 			siteConnectedSetup,
@@ -64,17 +64,12 @@ class WizardStepClientCredentials extends Component {
 
 		// Double check isSiteKitConnected.
 		if ( ! isSiteKitConnected ) {
-			( async () => {
-				let response;
-				try {
-					response = await data.get( 'core', 'site', 'credentials' );
-				} catch ( e ) { // eslint-disable-line no-empty
-				}
-				if ( response ) {
-					googlesitekit.setup.isSiteKitConnected = true;
-					siteConnectedSetup( true );
-				}
-			} )();
+			const response = await data.get( 'core', 'site', 'credentials' );
+
+			if ( response && response.oauth2_client_id && response.oauth2_client_secret ) {
+				googlesitekit.setup.isSiteKitConnected = true;
+				siteConnectedSetup( true );
+			}
 		}
 	}
 
