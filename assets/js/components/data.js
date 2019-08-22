@@ -77,14 +77,15 @@ const data = {
 	},
 
 	/**
-	 * Retrieve an array of data objects.
+	 * Gets data for multiple requests from the cache in a single batch process.
+	 *
 	 * This is a replica of combinedGet but only fetching data from cache. No requests are done.
 	 * Solves issue for publisher wins to retrieve data without performing additional requests.
 	 * Likely this will be removed after refactoring.
 	 *
  	 * @param {Array.<{ maxAge: timestamp, type: string, identifier: string, datapoint: string, datapointId: int, callback: function }>} combinedRequest An array of data requests to resolve.
 	 *
-	 * @return Promise
+	 * @return {Promise} A promise for the cache lookup.
 	 */
 	combinedGetFromCache( combinedRequest ) {
 		return new Promise( ( resolve, reject ) => {
@@ -153,12 +154,10 @@ const data = {
 	},
 
 	/**
-	 * Retrieve an array of data objects.
+	 * Gets data for multiple requests from the REST API using a single batch process.
 	 *
  	 * @param {Array.<{ maxAge: timestamp, type: string, identifier: string, datapoint: string, datapointId: int, callback: function }>} combinedRequest An array of data requests to resolve.
 	 * @param {boolean} secondaryRequest Is this the second (or more) request?
-	 *
-	 * @return void
 	 */
 	combinedGet( combinedRequest, secondaryRequest = false ) {
 
@@ -344,7 +343,7 @@ const data = {
 	},
 
 	/**
-	 * Resolve a request.
+	 * Resolves a request.
 	 */
 	resolve( request, result ) {
 
@@ -355,7 +354,7 @@ const data = {
 	},
 
 	/**
-	 * Set cache to window sessionStorage.
+	 * Sets data in the cache.
 	 *
 	 * @param {object} type  The data object.
 	 * @param {string} key   The cache key,
@@ -376,10 +375,13 @@ const data = {
 	},
 
 	/**
+	 * Gets data from the cache.
 	 *
 	 * @param {object} type   The data object.
 	 * @param {string} key    The cache key,
 	 * @param {int}    maxAge The cache TTL in seconds.
+	 *
+	 * @return {mixed} Cached data, or false if lookup failed.
 	 */
 	getCache( type, key, maxAge, hashlessKey = '' ) {
 
@@ -418,7 +420,7 @@ const data = {
 	},
 
 	/**
-	 * Remove cache.
+	 * Removes data from the cache.
 	 *
 	 * @param {object} type The data object.
 	 * @param {string} key  The cache key,
@@ -454,17 +456,17 @@ const data = {
 	},
 
 	/**
-	 * Get a data object.
+	 * Gets data using the REST API.
 	 *
-	 * @param {string} type       The data object to access. One of 'modules' or 'settings'.
-	 * @param {string} identifier The data item identifier.
-	 * @param {string} datapoint  The data point to retrieve. Optional, otherwise returns all data.
-	 * @param {object} queryArgs  The data query arguments.
+	 * @param {string} type       The data to access. One of 'core' or 'modules'.
+	 * @param {string} identifier The data identifier, for example a module slug.
+	 * @param {string} datapoint  The datapoint.
+	 * @param {object} data       Optional arguments to pass along.
 	 * @param {bool}   nocache    Set to true to bypass cache, default: true.
 	 *
-	 * @returns Promise A promise for the fetch request.
+	 * @return {Promise} A promise for the fetch request.
 	 */
-	get( type, identifier, datapoint, queryArgs = {}, nocache = true ) {
+	get( type, identifier, datapoint, data = {}, nocache = true ) {
 
 		if ( ! nocache ) {
 			const cache = this.getCache( identifier, datapoint, 3600 );
@@ -481,9 +483,9 @@ const data = {
 			}
 		}
 
-		// Make an API request to retrieve the value.
+		// Make an API request to retrieve the results.
 		return wp.apiFetch( {
-			path: addQueryArgs( `/google-site-kit/v1/${type}/${identifier}/data/${datapoint}`, queryArgs )
+			path: addQueryArgs( `/google-site-kit/v1/${type}/${identifier}/data/${datapoint}`, data )
 		} ).then( ( results ) => {
 			if ( ! nocache ) {
 				this.setCache( identifier, datapoint, results );
@@ -509,11 +511,11 @@ const data = {
 	},
 
 	/**
-	 * Get notifications from Rest API.
+	 * Gets notifications from Rest API.
 	 *
 	 * @param {string} moduleSlug Slug of the module to get notifications for.
 	 *
-	 * @returns Promise A promise for the fetch request.
+	 * @return {Promise} A promise for the fetch request.
 	 */
 	async getNotifications( moduleSlug, time = 0 ) {
 		let notifications = [];
@@ -526,7 +528,7 @@ const data = {
 
 		if ( ! notifications || 0 === notifications.length ) {
 
-			// Make an API request to retrieve the value.
+			// Make an API request to retrieve the notifications.
 			notifications = await wp.apiFetch( {
 				path: `/google-site-kit/v1/modules/${ moduleSlug }/notifications/`
 			} );
@@ -538,27 +540,25 @@ const data = {
 	},
 
 	/**
-	 * Set an object value.
-	 *
-	 * Calls the REST API to store the module value.
+	 * Sets data using the REST API.
 	 *
 	 * @param {string} type       The data to access. One of 'core' or 'modules'.
-	 * @param {string} identifier The data item identifier.
-	 * @param {string} datapoint  The data point to set.
-	 * @param {object} value      The value to store.
+	 * @param {string} identifier The data identifier, for example a module slug.
+	 * @param {string} datapoint  The datapoint.
+	 * @param {object} data       The data to set.
 	 *
-	 * @returns Promise A promise for the fetch request.
+	 * @return {Promise} A promise for the fetch request.
 	 */
-	set( type, identifier, datapoint, value ) {
+	set( type, identifier, datapoint, data ) {
 
 		if ( googlesitekit[ type ] && googlesitekit[ type ][ identifier ] ) {
-			googlesitekit[ type ][ identifier ][ datapoint ] = value;
+			googlesitekit[ type ][ identifier ][ datapoint ] = data;
 		}
 
 		const body  = {};
-		body.data   = value;
+		body.data   = data;
 
-		// Make an API request to store the value.
+		// Make an API request to store the data.
 		return wp.apiFetch( { path: `/google-site-kit/v1/${type}/${identifier}/data/${datapoint}`,
 			data: body,
 			method: 'POST',
@@ -600,19 +600,19 @@ const data = {
 	},
 
 	/**
-	 * Get module data.
+	 * Gets module data.
 	 *
 	 * @param {string} module The data item identifier.
 	 * @param {string} datapoint The data point to retrieve. Optional, otherwise returns all data.
 	 *
-	 * @returns Promise A promise for the fetch request.
+	 * @return {Promise} A promise for the fetch request.
 	 */
 	getModuleData( module, datapoint ) {
 		return this.get( 'modules', module, datapoint );
 	},
 
 	/**
-	 * Set module data value.
+	 * Sets module data value.
 	 *
 	 * Calls the REST API to store the module value.
 	 *
@@ -620,7 +620,7 @@ const data = {
 	 * @param {string} datapoint  The data point to set
 	 * @param {mixed}  value      The value to store.
 	 *
-	 * @returns Promise A promise for the fetch request.
+	 * @return {Promise} A promise for the fetch request.
 	 */
 	setModuleData( identifier, datapoint, value, storeLocaly = true ) {
 
