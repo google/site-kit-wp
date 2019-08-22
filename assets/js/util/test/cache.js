@@ -24,9 +24,9 @@ const valuesToTest = [
 		'nonExistantStorage',
 		'testKey',
 		'testdata',
-		null,
-		null,
-		null
+		undefined,
+		undefined,
+		undefined
 	]
 ];
 
@@ -45,6 +45,6 @@ describe( 'setCache / deleteCache / getCache', () => {
 		const deleteResult = deleteCache( cacheType, cacheKey );
 		expect( deleteResult ).toStrictEqual( deleteExpected );
 		const afterDeleteValue = getCache( cacheType, cacheKey );
-		expect( afterDeleteValue ).toBeUndefined();
+		expect( afterDeleteValue ).toBeFalsy();
 	} );
 } );
