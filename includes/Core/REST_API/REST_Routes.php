@@ -279,12 +279,8 @@ final class REST_Routes {
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$credentials = $this->authentication->credentials();
-							if ( ! $credentials->has() ) {
-								return new WP_Error( 'credentials_not_set', __( 'Credentials not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-							}
-							return new WP_REST_Response( $credentials->get() );
+						'callback'            => function() {
+							return new WP_REST_Response( $this->authentication->credentials()->get() );
 						},
 						'permission_callback' => $can_setup,
 					),
