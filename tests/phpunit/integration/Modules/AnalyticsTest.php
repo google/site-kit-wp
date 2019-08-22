@@ -186,7 +186,6 @@ class AnalyticsTest extends TestCase {
 				'get-accounts',
 				'get-properties',
 				'get-profiles',
-				'tag',
 				'tag-permission',
 				'adsense',
 				'site-analytics',

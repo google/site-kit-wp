@@ -142,7 +142,6 @@ class AdSenseTest extends TestCase {
 				'alerts',
 				'clients',
 				'urlchannels',
-				'tag',
 				'earning-today',
 				'earning-yesterday',
 				'earning-samedaylastweek',
