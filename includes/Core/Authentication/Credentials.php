@@ -88,11 +88,11 @@ final class Credentials {
 	}
 
 	/**
-	 * Parses GCP project data with its defaults.
+	 * Parses Credentials data and merges with its defaults.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param mixed $data Project data.
+	 * @param mixed $data Credentials data.
 	 * @return array Parsed $data.
 	 */
 	private function parse_defaults( $data ) {
