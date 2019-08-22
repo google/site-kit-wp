@@ -91,8 +91,8 @@ gulp.task( 'default', () => {
 	);
 } );
 
-gulp.task( 'qunit', function() {
-	execSync( 'node-qunit-phantomjs ./tests/qunit/index.html', { stdio: [ 0, 1, 2 ] } );
+gulp.task( 'jest', function() {
+	execSync( 'npm run test:js', { stdio: [ 0, 1, 2 ] } );
 } );
 
 gulp.task( 'phpunit', function() {
@@ -105,7 +105,7 @@ gulp.task( 'phpunit', function() {
  */
 gulp.task( 'test', () => {
 	runSequence(
-		'qunit',
+		'jest',
 		'phpunit'
 	);
 } );
