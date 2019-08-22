@@ -17,9 +17,10 @@ module.exports = {
 		'<rootDir>/node_modules',
 		'<rootDir>/build',
 	],
+
 	// Matches aliases in webpack.config.js.
 	moduleNameMapper: {
-		'^SiteKitCore/(.*)$': '<rootDir>assets/js/$1.js',
+		'^SiteKitCore/(.*)$': '<rootDir>assets/js/$1',
 		'^GoogleComponents/(.*)$': '<rootDir>assets/js/components/$1.js',
 		'^GoogleUtil/(.*)$': '<rootDir>assets/js/util/$1.js',
 		'^GoogleModules/(.*)$': '<rootDir>assets/js/modules/$1.js',
