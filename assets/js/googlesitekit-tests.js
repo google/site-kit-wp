@@ -44,7 +44,13 @@ import {
 	toggleConfirmModuleSettings,
 	showErrorNotification,
 } from 'GoogleUtil';
+import data from 'GoogleComponents/data';
+import md5 from 'md5';
+
+const { getCacheKey } = data;
+
 window.googlesitekit = window.googlesitekit || {};
+
 googlesitekit.testFunctions = {
 	getTimeInSeconds,
 	changeToPercent,
@@ -72,4 +78,9 @@ googlesitekit.testFunctions = {
 	activateOrDeactivateModule,
 	toggleConfirmModuleSettings,
 	showErrorNotification,
+	getCacheKey,
+};
+
+googlesitekit.testUtilities = {
+	md5,
 };

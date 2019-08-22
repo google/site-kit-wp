@@ -17,6 +17,7 @@
  */
 import DashboardAuthAlert from 'GoogleComponents/notifications/dashboard-auth-alert';
 import DashboardPermissionAlert from 'GoogleComponents/notifications/dashboard-permission-alert';
+import md5 from 'md5';
 
 import {
 	setCache,
@@ -34,6 +35,27 @@ const {
 	removeFilter,
 } = wp.hooks;
 const { __ } = wp.i18n;
+
+/**
+ * Sorts an object by its keys.
+ *
+ * The returned value will be a sorted copy of the input object.
+ * Any inner objects will also be sorted recursively.
+ *
+ * @param {object} data The data object to sort.
+ * @return {object} The sorted data object.
+ */
+const sortObjectProperties = ( data ) => {
+	const orderedData = {};
+	Object.keys( data ).sort().forEach( ( key ) => {
+		let val = data[ key ];
+		if ( val && 'object' === typeof val && ! Array.isArray( val ) ) {
+			val = sortObjectProperties( val );
+		}
+		orderedData[ key ] = val;
+	} );
+	return orderedData;
+};
 
 const data = {
 
@@ -520,7 +542,7 @@ const data = {
 	 *
 	 * Calls the REST API to store the module value.
 	 *
-	 * @param {string} dataObject  The data to access. One of 'modules' or 'settings'.
+	 * @param {string} dataObject  The data to access. One of 'core' or 'modules'.
 	 * @param {string} identifier  The data item identifier.
 	 * @param {string} datapoint   The data point to set.
 	 * @param {object} value       The value to store.
@@ -541,6 +563,40 @@ const data = {
 			data: body,
 			method: 'POST',
 		} );
+	},
+
+	/**
+	 * Returns a consistent cache key for the given arguments.
+	 *
+	 * @param {string}  type       The data type. Either 'core' or 'modules'.
+	 * @param {string}  identifier The data identifier, for example a module slug.
+	 * @param {string}  datapoint  The datapoint.
+	 * @param {object?} data       Optional arguments to pass along.
+	 * @return {string} The cache key to use.
+	 */
+	getCacheKey( type, identifier, datapoint, data = null ) {
+		let key = '';
+		if ( ! type || ! type.length ) {
+			return key;
+		}
+
+		key = type;
+		if ( ! identifier || ! identifier.length ) {
+			return key;
+		}
+
+		key += '::' + identifier;
+		if ( ! datapoint || ! datapoint.length ) {
+			return key;
+		}
+
+		key += '::' + datapoint;
+		if ( ! data || ! Object.keys( data ).length ) {
+			return key;
+		}
+
+		key += '::' + md5( JSON.stringify( sortObjectProperties( data ) ) );
+		return key;
 	},
 
 	/**
