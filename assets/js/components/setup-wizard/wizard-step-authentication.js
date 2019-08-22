@@ -31,8 +31,8 @@ import HelpLink from 'GoogleComponents/help-link';
 /**
  * WordPress dependencies.
  */
-const { __ } = wp.i18n;
-const { Component } = wp.element;
+import { __ } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
 
 class WizardStepAuthentication extends Component {
 	render() {

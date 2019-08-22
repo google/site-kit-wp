@@ -23,8 +23,8 @@ import SvgIcon from 'GoogleUtil/svg-icon';
 import Button from 'GoogleComponents/button';
 import PropTypes from 'prop-types';
 
-const { Component } = wp.element;
-const { __ } = wp.i18n;
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class DashboardSplashOutro extends Component {
 	render() {

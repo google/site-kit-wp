@@ -22,7 +22,7 @@
 import { MDCFormField, MDCCheckbox } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
 
-const { Component, createRef } = wp.element;
+import { Component, createRef } from '@wordpress/element';
 
 class Checkbox extends Component {
 	constructor( props ) {

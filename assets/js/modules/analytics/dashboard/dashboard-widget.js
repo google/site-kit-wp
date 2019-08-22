@@ -39,8 +39,8 @@ import { isAdsenseConnectedAnalytics } from 'GoogleModules/adsense/util';
 import { getDateRangeFrom } from 'GoogleUtil';
 import HelpLink from 'GoogleComponents/help-link';
 
-const { Component, Fragment } = wp.element;
-const { __, sprintf } = wp.i18n;
+import { Component, Fragment } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 class AnalyticsDashboardWidget extends Component {
 	constructor( props ) {

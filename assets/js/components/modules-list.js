@@ -17,12 +17,9 @@
  */
 
 /**
- * Internal dependencies
- */
-import Link from './link';
-/**
  * External dependencies
  */
+import { map } from 'lodash';
 import data from 'SiteKitCore/components/data';
 import {
 	refreshAuthentication,
@@ -34,9 +31,16 @@ import {
 import GenericError from 'GoogleComponents/notifications/generic-error';
 import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
 
-const { Component } = wp.element;
-const { __, sprintf } = wp.i18n;
-const { map } = lodash;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Link from './link';
 
 class ModulesList extends Component {
 	constructor( props ) {

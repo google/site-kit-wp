@@ -39,8 +39,8 @@ import {
 import PreviewBlock from 'GoogleComponents/preview-block';
 import PropTypes from 'prop-types';
 
-const { __ } = wp.i18n;
-const { Component } = wp.element;
+import { __ } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
 
 class AnalyticsDashboardWidgetOverview extends Component {
 	render() {

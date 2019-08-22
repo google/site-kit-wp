@@ -27,14 +27,14 @@ import {
 	getSiteKitAdminURL,
 } from 'GoogleUtil';
 
-const { Component } = wp.element;
-const {
+import { Component } from '@wordpress/element';
+import {
 	map,
 	find,
 	debounce,
 	trim,
-} = lodash;
-const { __ } = wp.i18n;
+} from 'lodash';
+import { __ } from '@wordpress/i18n';
 
 // Shim wp.sanitize for WordPress < 4.9 when it was introduced.
 // @todo remove this when the plugin drops support for WordPress < 4.9.
@@ -81,6 +81,10 @@ if ( ! wp.sanitize ) {
 		},
 	};
 }
+<<<<<<< HEAD
+=======
+import { stripTags } from '@wordpress/sanitize';
+>>>>>>> Use proper module imports
 
 class PostSearcher extends Component {
 	constructor( props ) {

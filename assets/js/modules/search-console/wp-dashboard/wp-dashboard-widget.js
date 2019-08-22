@@ -21,7 +21,7 @@
  */
 import WPSearchConsoleDashboardWidgetOverview from './wp-dashboard-widget-overview';
 
-const { Component, Fragment } = wp.element;
+import { Component, Fragment } from '@wordpress/element';
 
 class WPSearchConsoleDashboardWidget extends Component {
 	render() {

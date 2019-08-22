@@ -26,8 +26,8 @@ import DashboardSpeedInner from './dashboard-widget-speed-inner';
 import Layout from 'GoogleComponents/layout/layout';
 import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
 
-const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class DashboardSpeed extends Component {
 	render() {

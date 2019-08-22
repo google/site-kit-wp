@@ -22,7 +22,7 @@
 import { getTimeInSeconds, readableLargeNumber } from 'GoogleUtil';
 import { calculateOverviewData } from 'GoogleModules/analytics/util';
 
-const { __ } = wp.i18n;
+import { __ } from '@wordpress/i18n';
 
 const trafficIncrease = ( data, id ) => {
 	if ( ! googlesitekit.modules.analytics || ! googlesitekit.modules.analytics.active ) {

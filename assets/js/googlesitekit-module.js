@@ -34,10 +34,17 @@ import './components/data.js';
  */
 import ModuleApp from './components/module-app';
 
+<<<<<<< HEAD
 const { setLocaleData } = wp.i18n;
 const { doAction, applyFilters } = wp.hooks;
 const { Component, render, Fragment } = wp.element;
 let { Suspense, lazy } = wp.element;
+=======
+import { setLocaleData } from '@wordpress/i18n';
+import { doAction, applyFilters } from '@wordpress/hooks';
+import { Component, render, Fragment } from '@wordpress/element';
+const { lazy, Suspense } = React;
+>>>>>>> Use proper module imports
 
 // Check for `Suspense` and `lazy` in `wp.element`; versions before 2.4.0 did
 // not include either, so we need to fallback to the React versions. See:

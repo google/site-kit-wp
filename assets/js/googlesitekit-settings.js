@@ -23,9 +23,9 @@
 import SettingsApp from 'GoogleComponents/settings/settings-app';
 import Notification from 'GoogleComponents/notifications/notification';
 
-const { setLocaleData } = wp.i18n;
-const { doAction } = wp.hooks;
-const { Component, render } = wp.element;
+import { setLocaleData } from '@wordpress/i18n';
+import { doAction } from '@wordpress/hooks';
+import { Component, render } from '@wordpress/element';
 
 class GoogleSitekitSettings extends Component {
 	constructor( props ) {

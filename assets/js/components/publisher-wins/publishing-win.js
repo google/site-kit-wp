@@ -22,7 +22,7 @@
 import { extractSearchConsoleDashboardData } from 'GoogleModules/search-console/dashboard/util';
 import { readableLargeNumber } from 'GoogleUtil';
 
-const { __ } = wp.i18n;
+import { __ } from '@wordpress/i18n';
 
 const publishingWin = ( data, id ) => {
 	const showNotification = 5 === parseInt( googlesitekit.admin.newSitePosts, 10 );

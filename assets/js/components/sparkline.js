@@ -22,7 +22,7 @@
 import GoogleChart from 'GoogleComponents/google-chart';
 import PropTypes from 'prop-types';
 
-const { Component } = wp.element;
+import { Component } from '@wordpress/element';
 
 class Sparkline extends Component {
 	render() {

@@ -24,12 +24,15 @@ import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-h
 import Layout from 'GoogleComponents/layout/layout';
 
 /**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import DashboardSearchFunnelInner from '../dashboard/dashboard-widget-search-funnel-inner';
-
-const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
 
 class DashboardDetailsSearchFunnel extends Component {
 	render() {

@@ -31,12 +31,9 @@ import {
 	toggleConfirmModuleSettings,
 } from 'GoogleUtil';
 
-const { __ } = wp.i18n;
-const { Component, Fragment } = wp.element;
-const {
-	removeFilter,
-	addFilter,
-} = wp.hooks;
+import { __ } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
+import { addFilter, removeFilter } from '@wordpress/hooks';
 
 class OptimizeSetup extends Component {
 	constructor( props ) {

@@ -25,8 +25,8 @@ import Link from 'GoogleComponents/link';
 import { MDCDialog } from 'SiteKitCore/material-components';
 import FocusTrap from 'focus-trap-react';
 
-const { Component, createRef } = wp.element;
-const { __ } = wp.i18n;
+import { Component, createRef } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class Dialog extends Component {
 	constructor() {

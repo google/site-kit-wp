@@ -34,9 +34,9 @@ import MiniChart from 'GoogleComponents/mini-chart';
  */
 import { trafficSourcesReportDataDefaults } from '../util';
 
-const { __, sprintf } = wp.i18n;
-const { map } = lodash;
-const { Component, Fragment } = wp.element;
+import { __, sprintf } from '@wordpress/i18n';
+import { map } from 'lodash';
+import { Component, Fragment } from '@wordpress/element';
 
 class AnalyticsDashboardWidgetTopAcquisitionSources extends Component {
 	render() {

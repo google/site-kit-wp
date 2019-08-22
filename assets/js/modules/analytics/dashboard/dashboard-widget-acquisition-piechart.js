@@ -31,8 +31,8 @@ import Link from 'GoogleComponents/link';
 import PreviewBlock from 'GoogleComponents/preview-block';
 import { extractAnalyticsDataForTrafficChart, getAnalyticsErrorMessageFromData, trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../util';
 
-const { Component } = wp.element;
-const { __ } = wp.i18n;
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class DashboardAcquisitionPieChart extends Component {
 	render() {

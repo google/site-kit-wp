@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  */
 import Link from '../link';
 
-const { Component } = wp.element;
+import { Component } from '@wordpress/element';
 
 class DashboardSplashService extends Component {
 	render() {

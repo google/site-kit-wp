@@ -30,8 +30,8 @@ import { decodeHtmlEntity, getTimeInSeconds } from 'GoogleUtil';
  */
 import { extractSearchConsoleDashboardData } from './util';
 
-const { __, sprintf } = wp.i18n;
-const { Component } = wp.element;
+import { __, sprintf } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
 
 class SearchConsoleDashboardWidgetSiteStats extends Component {
 	constructor( props ) {

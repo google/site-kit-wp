@@ -31,8 +31,8 @@ import { PageSpeedReportScale } from './util';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
 
-const { Component, Fragment } = wp.element;
-const { __, sprintf } = wp.i18n;
+import { Component, Fragment } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 	constructor( props ) {

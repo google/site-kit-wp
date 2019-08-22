@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-const { Component } = wp.element;
-const { __ } = wp.i18n;
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 const { siteURL } = googlesitekit.admin;
 
 class SearchConsoleSettingStatus extends Component {

@@ -22,7 +22,7 @@
 import PropTypes from 'prop-types';
 import SvgIcon from 'GoogleUtil/svg-icon';
 
-const { Component } = wp.element;
+import { Component } from '@wordpress/element';
 
 class DashboardSplashModule extends Component {
 	render() {

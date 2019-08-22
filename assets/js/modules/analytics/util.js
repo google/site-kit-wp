@@ -20,9 +20,12 @@
  * External dependencies
  */
 import { changeToPercent } from 'GoogleUtil';
+import { each } from 'lodash';
 
-const { each } = lodash;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 export const extractAnalyticsDataForTrafficChart = ( reports ) => {
 	if ( ! reports || ! reports.length ) {

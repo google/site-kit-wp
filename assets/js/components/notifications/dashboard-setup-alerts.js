@@ -23,9 +23,9 @@ import { getQueryParameter } from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
 import ModulesList from 'GoogleComponents/modules-list';
 
-const { Component, Fragment } = wp.element;
-const { __, sprintf } = wp.i18n;
-const { applyFilters } = wp.hooks;
+import { Component, Fragment } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+import { applyFilters } from '@wordpress/hooks';
 
 class DashboardSetupAlerts extends Component {
 	render() {

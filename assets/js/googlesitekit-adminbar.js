@@ -28,9 +28,9 @@ import {
 	sendAnalyticsTrackingEvent,
 } from 'GoogleUtil';
 
-const { doAction } = wp.hooks;
-const { Component, Fragment, render } = wp.element;
-const { __ } = wp.i18n;
+import { doAction } from '@wordpress/hooks';
+import { Component, Fragment, render } from '@wordpress/element';
+import { setLocaleData, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies.
@@ -40,7 +40,6 @@ import AdminbarModules from 'GoogleComponents/adminbar/adminbar-modules';
 export class GoogleSitekitAdminbar extends Component {
 	constructor( props ) {
 		super( props );
-		const { setLocaleData } = wp.i18n;
 
 		// Set up translations.
 		setLocaleData( googlesitekit.locale, 'google-site-kit' );

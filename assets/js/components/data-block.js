@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
 import SourceLink from 'GoogleComponents/source-link';
 import SvgIcon from 'GoogleUtil/svg-icon';
 
-const { Component, Fragment } = wp.element;
+import { Component, Fragment } from '@wordpress/element';
 
 class DataBlock extends Component {
 	constructor( props ) {

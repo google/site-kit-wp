@@ -35,8 +35,8 @@ import {
  */
 import { calculateOverviewData, getAnalyticsErrorMessageFromData, isDataZeroForReporting, overviewReportDataDefaults } from '../util';
 
-const { __ } = wp.i18n;
-const { Component, Fragment } = wp.element;
+import { __ } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
 
 class WPAnalyticsDashboardWidgetOverview extends Component {
 	render() {

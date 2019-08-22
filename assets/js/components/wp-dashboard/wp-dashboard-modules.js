@@ -26,8 +26,8 @@ import WPDashboardHeader from './wp-dashboard-header';
  */
 import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
 
-const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class WPDashboardModules extends Component {
 	render() {

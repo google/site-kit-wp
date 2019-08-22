@@ -31,8 +31,8 @@ import { decodeHtmlEntity } from 'GoogleUtil';
 import DateRangeSelector from 'GoogleComponents/date-range-selector';
 import HelpLink from 'GoogleComponents/help-link';
 
-const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class DashboardDetailsApp extends Component {
 	constructor( props ) {

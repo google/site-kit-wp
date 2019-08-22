@@ -34,12 +34,9 @@ import {
 	toggleConfirmModuleSettings,
 } from 'GoogleUtil';
 
-const { __, sprintf } = wp.i18n;
-const { Component, Fragment } = wp.element;
-const {
-	removeFilter,
-	addFilter,
-} = wp.hooks;
+import { __, sprintf } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
+import { addFilter, removeFilter } from '@wordpress/hooks';
 
 class AnalyticsSetup extends Component {
 	constructor( props ) {

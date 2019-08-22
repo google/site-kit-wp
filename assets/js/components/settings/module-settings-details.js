@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-const { Component } = wp.element;
+import { Component } from '@wordpress/element';
 
 /**
  * A filterable component that modules use to display their settings in non-edit mode.

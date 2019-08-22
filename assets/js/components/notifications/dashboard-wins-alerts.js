@@ -22,13 +22,10 @@
 import Notification from 'GoogleComponents/notifications/notification';
 import { winsNotificationsToRequest, getWinsNotifications } from 'GoogleComponents/notifications/util';
 
-const { Component, Fragment } = wp.element;
-const { each } = lodash;
-const { __ } = wp.i18n;
-const {
-	addAction,
-	removeAction,
-} = wp.hooks;
+import { Component, Fragment } from '@wordpress/element';
+import { each } from 'lodash';
+import { __ } from '@wordpress/i18n';
+import { addAction, removeAction } from '@wordpress/hooks';
 class DashboardWinsAlerts extends Component {
 	constructor( props ) {
 		super( props );

@@ -31,7 +31,7 @@ import AdSenseModuleStatus from './dashboard/adsense-module-status';
 import AdSenseSettingsStatus from './settings/adsense-settings-status';
 import AdSenseSettingsWarning from './settings/adsense-settings-warning';
 
-const { addFilter } = wp.hooks;
+import { addFilter } from '@wordpress/hooks';
 const slug = 'adsense';
 
 /**

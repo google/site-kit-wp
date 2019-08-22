@@ -27,7 +27,7 @@ import * as publisherWinCallbacks from 'GoogleComponents/publisher-wins/callback
  */
 import { overviewReportDataDefaults } from '../../modules/analytics/util';
 
-const { addFilter } = wp.hooks;
+import { addFilter } from '@wordpress/hooks';
 const notification = getQueryParameter( 'notification' );
 
 if ( 'authentication_success' !== notification && 'authentication_failure' !== notification ) {

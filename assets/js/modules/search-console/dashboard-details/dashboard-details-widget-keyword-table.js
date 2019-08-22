@@ -23,12 +23,15 @@ import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-h
 import Layout from 'GoogleComponents/layout/layout';
 
 /**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import SearchConsoleDashboardWidgetKeywordTable from '../dashboard/dashboard-widget-keyword-table';
-
-const { Component, Fragment } = wp.element;
-const { __, sprintf } = wp.i18n;
 
 class DashboardDetailsWidgetKeywordsTable extends Component {
 	render() {

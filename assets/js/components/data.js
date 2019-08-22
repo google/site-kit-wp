@@ -21,7 +21,6 @@
 import DashboardAuthAlert from 'GoogleComponents/notifications/dashboard-auth-alert';
 import DashboardPermissionAlert from 'GoogleComponents/notifications/dashboard-permission-alert';
 import md5 from 'md5';
-
 import {
 	getStorage,
 	getCurrentDateRangeSlug,
@@ -29,16 +28,14 @@ import {
 	getQueryParameter,
 	sortObjectProperties,
 } from 'SiteKitCore/util';
+import { each, sortBy } from 'lodash';
 
-const { cloneDeep, each, sortBy } = lodash;
-const { addQueryArgs } = wp.url;
-const {
-	addAction,
-	applyFilters,
-	doAction,
-	addFilter,
-	removeFilter,
-} = wp.hooks;
+/**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+import { addAction, applyFilters, doAction, addFilter, removeFilter } from '@wordpress/hooks';
+import { __ } from '@wordpress/i18n';
 
 export const TYPE_CORE = 'core';
 export const TYPE_MODULES = 'modules';

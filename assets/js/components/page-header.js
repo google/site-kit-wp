@@ -23,8 +23,8 @@ import DateRangeSelector from 'GoogleComponents/date-range-selector';
 import PropTypes from 'prop-types';
 import SvgIcon from 'GoogleUtil/svg-icon';
 
-const { Component } = wp.element;
-const { applyFilters } = wp.hooks;
+import { Component } from '@wordpress/element';
+import { applyFilters } from '@wordpress/hooks';
 
 class PageHeader extends Component {
 	render() {

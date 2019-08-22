@@ -32,8 +32,8 @@ import {
 	getExistingTag,
 } from 'GoogleUtil';
 
-const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class AdSenseModuleStatus extends Component {
 	constructor( props ) {

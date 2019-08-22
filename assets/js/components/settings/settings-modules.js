@@ -28,10 +28,10 @@ import Notification from 'GoogleComponents/notifications/notification';
 import SettingsOverlay from './settings-overlay';
 import { clearAppLocalStorage } from 'GoogleUtil/index';
 
-const { __ } = wp.i18n;
-const { map, filter, sortBy } = lodash;
-const { Component, Fragment } = wp.element;
-const { applyFilters } = wp.hooks;
+import { __ } from '@wordpress/i18n';
+import { map, filter, sortBy } from 'lodash';
+import { Component, Fragment } from '@wordpress/element';
+import { applyFilters } from '@wordpress/hooks';
 
 class SettingsModules extends Component {
 	constructor( props ) {

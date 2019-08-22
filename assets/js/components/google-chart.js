@@ -22,10 +22,10 @@
 import ProgressBar from 'GoogleComponents/progress-bar';
 import PropTypes from 'prop-types';
 
-const { __ } = wp.i18n;
-const { Component, createRef } = wp.element;
-const { doAction, addAction } = wp.hooks;
-const { debounce } = lodash;
+import { __ } from '@wordpress/i18n';
+import { Component, createRef } from '@wordpress/element';
+import { doAction, addAction } from '@wordpress/hooks';
+import { debounce } from 'lodash';
 
 class GoogleChart extends Component {
 	constructor( props ) {

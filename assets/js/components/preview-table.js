@@ -22,7 +22,7 @@
 import PreviewBlock from 'GoogleComponents/preview-block';
 import PropTypes from 'prop-types';
 
-const { Component } = wp.element;
+import { Component } from '@wordpress/element';
 
 class PreviewTable extends Component {
 	render() {

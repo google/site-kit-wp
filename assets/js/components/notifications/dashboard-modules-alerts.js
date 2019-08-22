@@ -22,9 +22,9 @@
 import Notification from 'GoogleComponents/notifications/notification';
 import { modulesNotificationsToRequest, getModulesNotifications } from 'GoogleComponents/notifications/util';
 
-const { Component, Fragment } = wp.element;
-const { each } = lodash;
-const { __ } = wp.i18n;
+import { Component, Fragment } from '@wordpress/element';
+import { each } from 'lodash';
+import { __ } from '@wordpress/i18n';
 
 class DashboardModulesAlerts extends Component {
 	constructor( props ) {

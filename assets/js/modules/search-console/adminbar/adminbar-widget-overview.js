@@ -29,8 +29,8 @@ import { getTimeInSeconds } from 'GoogleUtil';
 import { extractSearchConsoleDashboardData, isDataZeroSearchConsole } from '../dashboard/util';
 import PreviewBlock from 'GoogleComponents/preview-block';
 
-const { __ } = wp.i18n;
-const { Component, Fragment } = wp.element;
+import { __ } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
 
 class SearchConsoleAdminbarWidgetOverview extends Component {
 	render() {

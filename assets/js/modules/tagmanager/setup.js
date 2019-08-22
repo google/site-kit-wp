@@ -28,12 +28,9 @@ import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
 import { toggleConfirmModuleSettings } from 'GoogleUtil';
 
-const { __, sprintf } = wp.i18n;
-const { Component, Fragment } = wp.element;
-const {
-	removeFilter,
-	addFilter,
-} = wp.hooks;
+import { __, sprintf } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
+import { addFilter, removeFilter } from '@wordpress/hooks';
 
 class TagmanagerSetup extends Component {
 	constructor( props ) {

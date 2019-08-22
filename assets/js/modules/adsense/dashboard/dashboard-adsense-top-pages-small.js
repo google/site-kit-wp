@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-const { withFilters } = wp.components;
-const { Component } = wp.element;
+import { withFilters } from '@wordpress/components';
+import { Component } from '@wordpress/element';
 
 class DashboardAdSenseTopEarningPagesSmall extends Component {
 	render() {

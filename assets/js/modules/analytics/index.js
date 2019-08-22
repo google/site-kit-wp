@@ -36,7 +36,7 @@ import AnalyticsDashboardWidgetPopularPagesTable from './dashboard/dashboard-wid
 import AdSenseDashboardWidgetTopPagesTableSmall from './dashboard/dashboard-widget-top-earning-pages-small';
 import AnalyticsSetup from './setup';
 
-const { addFilter } = wp.hooks;
+import { addFilter } from '@wordpress/hooks';
 const slug = 'analytics';
 
 const addAnalyticsAdminbarWidget = createAddToFilter( <AnalyticsAdminbarWidget /> );

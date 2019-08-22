@@ -27,13 +27,16 @@ import Layout from 'GoogleComponents/layout/layout';
 import PreviewTable from 'GoogleComponents/preview-table';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { map } from 'lodash';
+import { Component } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { analyticsAdsenseReportDataDefaults } from '../util';
-
-const { __ } = wp.i18n;
-const { map } = lodash;
-const { Component } = wp.element;
 
 class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
 	static renderLayout( component ) {

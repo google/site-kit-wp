@@ -28,7 +28,7 @@ import DashboardSpeed from './dashboard/dashboard-widget-speed';
 import PageSpeedInsightsDashboardWidgetHomepageSpeed from './dashboard/dashboard-widget-homepage-speed';
 import PageSpeedInsightsCTA from './dashboard/dashboard-cta';
 
-const { addFilter } = wp.hooks;
+import { addFilter } from '@wordpress/hooks';
 const {
 	active,
 	setupComplete,

@@ -20,7 +20,7 @@
  * External dependencies
  */
 import SvgIcon from 'GoogleUtil/svg-icon';
-const { __ } = wp.i18n;
+import { __ } from '@wordpress/i18n';
 
 const Logo = ( props ) => {
 	const { beta = true } = props;

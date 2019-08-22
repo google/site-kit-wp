@@ -22,9 +22,9 @@
 import { clearAppLocalStorage } from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
 
-const { setLocaleData } = wp.i18n;
-const { Component, render, Fragment } = wp.element;
-const { doAction } = wp.hooks;
+import { setLocaleData } from '@wordpress/i18n';
+import { Component, render, Fragment } from '@wordpress/element';
+import { doAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies

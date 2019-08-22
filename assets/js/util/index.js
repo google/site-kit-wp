@@ -18,18 +18,7 @@
 /**
  * External dependencies
  */
-import data, { TYPE_CORE } from 'GoogleComponents/data';
-import SvgIcon from 'GoogleUtil/svg-icon';
-
-export * from './storage';
-
-const { apiFetch } = wp;
-const {
-	addFilter,
-	applyFilters,
-} = wp.hooks;
-
-const {
+import {
 	map,
 	isNull,
 	isUndefined,
@@ -37,15 +26,27 @@ const {
 	deburr,
 	toLower,
 	trim,
-} = lodash;
+	trimEnd,
+} from 'lodash';
+import data, { TYPE_CORE } from 'GoogleComponents/data';
+import SvgIcon from 'GoogleUtil/svg-icon';
 
-const {
+/**
+ * WordPress dependencies
+ */
+import apiFetch from '@wordpress/api-fetch';
+import {
+	addFilter,
+	applyFilters,
+} from '@wordpress/hooks';
+import {
+	__,
 	_n,
 	sprintf,
-} = wp.i18n;
+} from '@wordpress/i18n';
+import { addQueryArgs, getQueryString } from '@wordpress/url';
 
-const { addQueryArgs, getQueryString } = wp.url;
-const { __ } = wp.i18n;
+export * from './storage';
 
 /**
  * Remove a parameter from a URL string.
@@ -549,7 +550,6 @@ export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel
 	} = googlesitekit.admin;
 
 	const { isFirstAdmin } = googlesitekit.setup;
-	const { trimEnd } = lodash;
 
 	if ( googlesitekit.admin.trackingOptin ) {
 		return gtag( 'event', eventName, {

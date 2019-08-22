@@ -30,9 +30,9 @@ import PropTypes from 'prop-types';
  */
 import { getTopPagesReportDataDefaults } from '../util';
 
-const { __ } = wp.i18n;
-const { map } = lodash;
-const { Component, Fragment } = wp.element;
+import { __ } from '@wordpress/i18n';
+import { map } from 'lodash';
+import { Component, Fragment } from '@wordpress/element';
 
 class AnalyticsDashboardWidgetTopPagesTable extends Component {
 	/**

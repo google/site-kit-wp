@@ -25,7 +25,7 @@ import SearchConsole from 'GoogleComponents/setup/search-console';
 /**
  * WordPress dependencies.
  */
-const { Component } = wp.element;
+import { Component } from '@wordpress/element';
 
 class WizardStepSearchConsoleProperty extends Component {
 	render() {

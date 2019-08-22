@@ -27,12 +27,9 @@ import {
 	toggleConfirmModuleSettings,
 } from 'GoogleUtil';
 
-const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
-const {
-	removeFilter,
-	addFilter,
-} = wp.hooks;
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+import { addFilter, removeFilter } from '@wordpress/hooks';
 
 class AdSenseSettings extends Component {
 	constructor( props ) {

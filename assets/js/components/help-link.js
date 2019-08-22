@@ -17,12 +17,16 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Link from './link';
 
 const HelpLink = () => {
-	const { __ } = wp.i18n;
 	const label = __( 'Need help?', 'google-site-kit' );
 
 	const url = 'https://sitekit.withgoogle.com/documentation/';

@@ -22,7 +22,7 @@
 import { MDCSwitch } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
 
-const { Component, Fragment, createRef } = wp.element;
+import { Component, Fragment, createRef } from '@wordpress/element';
 
 class Switch extends Component {
 	constructor( props ) {

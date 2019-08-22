@@ -21,12 +21,9 @@
  */
 import { getTotalNotifications, incrementCount, decrementCount } from 'GoogleComponents/notifications/util';
 
-const { Component, createPortal } = wp.element;
-const { _n, sprintf } = wp.i18n;
-const {
-	addAction,
-	removeAction,
-} = wp.hooks;
+import { Component, createPortal } from '@wordpress/element';
+import { _n, sprintf } from '@wordpress/i18n';
+import { addAction, removeAction } from '@wordpress/hooks';
 
 class NotificationCounter extends Component {
 	constructor( props ) {
