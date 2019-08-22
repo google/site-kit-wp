@@ -11,5 +11,9 @@ global.googlesitekit = {
 		'pagespeed-insights': {
 			screenId: 'googlesitekit-module-pagespeed-insights'
 		}
-	}
+	},
+
+	setup: {
+
+	},
 };
