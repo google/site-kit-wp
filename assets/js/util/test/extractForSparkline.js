@@ -1,0 +1,121 @@
+/**
+ * Internal dependencies
+ */
+import { extractForSparkline } from '../';
+
+const valuesToTest = [
+	[
+		[
+			[
+				'1/1/2019',
+				1,
+				2,
+				3
+			],
+			[
+				'1/2/2019',
+				4,
+				5,
+				6
+			]
+		],
+		1,
+		[
+			[
+				'1/1/2019',
+				1
+			],
+			[
+				'1/2/2019',
+				4
+			]
+		]
+	],
+	[
+		[
+			[
+				'1/1/2019',
+				1,
+				2,
+				3
+			],
+			[
+				'1/2/2019',
+				4,
+				5,
+				6
+			]
+		],
+		2,
+		[
+			[
+				'1/1/2019',
+				2
+			],
+			[
+				'1/2/2019',
+				5
+			]
+		]
+	],
+	[
+		[
+			[
+				'1/1/2019',
+				1,
+				2,
+				3
+			],
+			[
+				'1/2/2019',
+				4,
+				5,
+				6
+			]
+		],
+		3,
+		[
+			[
+				'1/1/2019',
+				3
+			],
+			[
+				'1/2/2019',
+				6
+			]
+		]
+	],
+	[
+		[
+			[
+				'1/1/2019',
+				1,
+				2,
+				3
+			],
+			[
+				'1/2/2019',
+				4,
+				5,
+				6
+			]
+		],
+		0,
+		[
+			[
+				'1/1/2019',
+				'1/1/2019'
+			],
+			[
+				'1/2/2019',
+				'1/2/2019'
+			]
+		]
+	]
+];
+
+describe( 'extractForSparkline', () => {
+	it.each( valuesToTest )( 'for start date %s and end date %s should returns %s', ( data, column, expected ) => {
+		expect( extractForSparkline( data, column ) ).toStrictEqual( expected );
+	} );
+} );

@@ -19,7 +19,7 @@ const valuesToTest = [
 ];
 
 describe( 'decodeHtmlEntity', () => {
-	it.each( valuesToTest )( 'should return %2$s for %1$s', ( value, expected ) => {
+	it.each( valuesToTest )( 'for %s should return %s', ( value, expected ) => {
 		expect( decodeHtmlEntity( value ) ).toStrictEqual( expected );
 	} );
 } );
