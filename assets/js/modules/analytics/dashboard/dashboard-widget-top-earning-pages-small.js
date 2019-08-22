@@ -147,7 +147,7 @@ export default withData(
 	AdSenseDashboardWidgetTopPagesTableSmall,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'analytics',
 			datapoint: 'adsense',
 			priority: 1,

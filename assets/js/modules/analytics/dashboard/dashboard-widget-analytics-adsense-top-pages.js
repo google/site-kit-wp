@@ -154,7 +154,7 @@ export default withData(
 	AnalyticsAdSenseDashboardWidgetTopPagesTable,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'analytics',
 			datapoint: 'adsense',
 			priority: 1,

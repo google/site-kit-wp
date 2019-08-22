@@ -98,7 +98,7 @@ export default withData(
 	AnalyticsDashboardWidgetPopularPagesTable,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'analytics',
 			datapoint: 'top-pages',
 			priority: 1,

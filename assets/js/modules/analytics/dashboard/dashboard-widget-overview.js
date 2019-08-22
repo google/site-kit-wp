@@ -150,7 +150,7 @@ export default withData(
 	AnalyticsDashboardWidgetOverview,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'analytics',
 			datapoint: 'overview',
 			priority: 1,

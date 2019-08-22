@@ -91,7 +91,7 @@ export default withData(
 	AnalyticsAdminbarWidgetOverview,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'analytics',
 			datapoint: 'overview',
 			permaLink: googlesitekit.permaLink,

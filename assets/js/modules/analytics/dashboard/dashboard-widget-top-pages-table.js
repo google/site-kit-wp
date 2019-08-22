@@ -122,7 +122,7 @@ export default withData(
 	AnalyticsDashboardWidgetTopPagesTable,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'analytics',
 			datapoint: 'top-pages',
 			priority: 1,

@@ -108,7 +108,7 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedMobile = withData(
 	PageSpeedInsightsDashboardWidgetHomepageSpeedColumn,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'pagespeed-insights',
 			datapoint: 'site-pagespeed-mobile',
 			permaLink: googlesitekit.permaLink,
@@ -127,7 +127,7 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedDesktop = withData(
 	PageSpeedInsightsDashboardWidgetHomepageSpeedColumn,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'pagespeed-insights',
 			datapoint: 'site-pagespeed-desktop',
 			permaLink: googlesitekit.permaLink,

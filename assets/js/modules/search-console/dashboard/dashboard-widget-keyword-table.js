@@ -84,7 +84,7 @@ export default withData(
 	SearchConsoleDashboardWidgetKeywordTable,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'search-console',
 			datapoint: 'search-keywords',
 			permaLink: googlesitekit.permaLink,

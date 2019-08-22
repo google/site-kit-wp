@@ -297,7 +297,7 @@ export default withData(
 	AdSenseEstimateEarningsWidget,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'adsense',
 			datapoint: 'earning-today',
 			priority: 1,
@@ -305,7 +305,7 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ]
 		},
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'adsense',
 			datapoint: 'earning-yesterday',
 			priority: 1,
@@ -313,7 +313,7 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ]
 		},
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'adsense',
 			datapoint: 'earning-samedaylastweek',
 			priority: 1,
@@ -321,7 +321,7 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ]
 		},
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'adsense',
 			datapoint: 'earning-7days',
 			priority: 1,
@@ -329,7 +329,7 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ]
 		},
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'adsense',
 			datapoint: 'earning-prev7days',
 			priority: 1,
@@ -337,7 +337,7 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ]
 		},
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'adsense',
 			datapoint: 'earning-this-month',
 			priority: 1,
@@ -345,7 +345,7 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ]
 		},
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'adsense',
 			datapoint: 'earning-this-month-last-year',
 			priority: 1,
@@ -353,7 +353,7 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ]
 		},
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'adsense',
 			datapoint: 'earning-28days',
 			priority: 1,
@@ -361,7 +361,7 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ]
 		},
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'adsense',
 			datapoint: 'earning-prev28days',
 			priority: 1,

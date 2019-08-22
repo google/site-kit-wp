@@ -128,7 +128,7 @@ export default withData(
 	AnalyticsDashboardWidgetSiteStats,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'analytics',
 			datapoint: 'site-analytics',
 			priority: 1,

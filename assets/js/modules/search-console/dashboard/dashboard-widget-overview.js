@@ -142,7 +142,7 @@ export default withData(
 	SearchConsoleDashboardWidgetOverview,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'search-console',
 			datapoint: 'sc-site-analytics',
 			priority: 1,

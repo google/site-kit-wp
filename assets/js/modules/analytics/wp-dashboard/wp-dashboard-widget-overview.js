@@ -90,7 +90,7 @@ export default withData(
 	WPAnalyticsDashboardWidgetOverview,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'analytics',
 			datapoint: 'overview',
 			priority: 1,

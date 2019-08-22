@@ -82,7 +82,7 @@ const data = {
 	 * Solves issue for publisher wins to retrieve data without performing additional requests.
 	 * Likely this will be removed after refactoring.
 	 *
- 	 * @param {Array.<{ maxAge: timestamp, dataObject: string, identifier: string, datapoint: string, datapointId: int, callback: function }>} combinedRequest An array of data requests to resolve.
+ 	 * @param {Array.<{ maxAge: timestamp, type: string, identifier: string, datapoint: string, datapointId: int, callback: function }>} combinedRequest An array of data requests to resolve.
 	 *
 	 * @return Promise
 	 */
@@ -133,7 +133,7 @@ const data = {
 
 					// Store key for later reuse.
 					request.key = key;
-					const cache = this.getCache( request.dataObject, key, request.maxAge, hashlessKey );
+					const cache = this.getCache( request.type, key, request.maxAge, hashlessKey );
 					if ( cache ) {
 						responseData[ hashlessKey ] = cache;
 
@@ -155,7 +155,7 @@ const data = {
 	/**
 	 * Retrieve an array of data objects.
 	 *
- 	 * @param {Array.<{ maxAge: timestamp, dataObject: string, identifier: string, datapoint: string, datapointId: int, callback: function }>} combinedRequest An array of data requests to resolve.
+ 	 * @param {Array.<{ maxAge: timestamp, type: string, identifier: string, datapoint: string, datapointId: int, callback: function }>} combinedRequest An array of data requests to resolve.
 	 * @param {boolean} secondaryRequest Is this the second (or more) request?
 	 *
 	 * @return void
@@ -207,7 +207,7 @@ const data = {
 
 			// Store key for later reuse.
 			request.key = key;
-			const cache = this.getCache( request.dataObject, key, request.maxAge, hashlessKey );
+			const cache = this.getCache( request.type, key, request.maxAge, hashlessKey );
 			if ( cache ) {
 
 				setTimeout( () => {
@@ -324,7 +324,7 @@ const data = {
 
 						doAction( 'googlesitekit.dataReceived', request.key );
 
-						this.setCache( request.dataObject, request.key, result );
+						this.setCache( request.type, request.key, result );
 						this.resolve( request, result );
 					} );
 				}
@@ -357,11 +357,11 @@ const data = {
 	/**
 	 * Set cache to window sessionStorage.
 	 *
-	 * @param {object} dataObject The data object.
-	 * @param {string} key        The cache key,
-	 * @param {object} value      The value to cache.
+	 * @param {object} type  The data object.
+	 * @param {string} key   The cache key,
+	 * @param {object} value The value to cache.
 	 */
-	setCache( dataObject, key, value ) {
+	setCache( type, key, value ) {
 		if ( value.error || value.errors ) {
 			return;
 		}
@@ -371,17 +371,17 @@ const data = {
 				value,
 				date: Date.now() / 1000
 			};
-			setCache( 'sessionStorage', dataObject + '::' + key, JSON.stringify( toStore ) );
+			setCache( 'sessionStorage', type + '::' + key, JSON.stringify( toStore ) );
 		}
 	},
 
 	/**
 	 *
-	 * @param {object} dataObject The data object.
-	 * @param {string} key        The cache key,
-	 * @param {int}    maxAge     The cache TTL in seconds.
+	 * @param {object} type   The data object.
+	 * @param {string} key    The cache key,
+	 * @param {int}    maxAge The cache TTL in seconds.
 	 */
-	getCache( dataObject, key, maxAge, hashlessKey = '' ) {
+	getCache( type, key, maxAge, hashlessKey = '' ) {
 
 		// Skip if js caching is disabled.
 		if ( googlesitekit.admin.nojscache ) {
@@ -393,7 +393,7 @@ const data = {
 			return false;
 		}
 
-		const cache = JSON.parse( window.sessionStorage.getItem( dataObject + '::' + key ) );
+		const cache = JSON.parse( window.sessionStorage.getItem( type + '::' + key ) );
 		const datacache = googlesitekit.admin.datacache && JSON.parse( googlesitekit.admin.datacache );
 
 		// Check the datacache, which only includes fresh data at load.
@@ -420,12 +420,12 @@ const data = {
 	/**
 	 * Remove cache.
 	 *
-	 * @param {object} dataObject The data object.
-	 * @param {string} key        The cache key,
+	 * @param {object} type The data object.
+	 * @param {string} key  The cache key,
 	 */
-	deleteCache( dataObject, key ) {
+	deleteCache( type, key ) {
 		if ( window.sessionStorage ) {
-			window.sessionStorage.removeItem( dataObject + '::' + key );
+			window.sessionStorage.removeItem( type + '::' + key );
 		}
 	},
 
@@ -456,47 +456,47 @@ const data = {
 	/**
 	 * Get a data object.
 	 *
-	 * @param {string} dataObject  The data object to access. One of 'modules' or 'settings'.
-	 * @param {string} identifier  The data item identifier.
-	 * @param {string} datapoint   The data point to retrieve. Optional, otherwise returns all data.
-	 * @param {object} queryArgs   The data query arguments.
-	 * @param {bool}   nocache     Set to true to bypass cache, default: true.
+	 * @param {string} type       The data object to access. One of 'modules' or 'settings'.
+	 * @param {string} identifier The data item identifier.
+	 * @param {string} datapoint  The data point to retrieve. Optional, otherwise returns all data.
+	 * @param {object} queryArgs  The data query arguments.
+	 * @param {bool}   nocache    Set to true to bypass cache, default: true.
 	 *
 	 * @returns Promise A promise for the fetch request.
 	 */
-	get( dataObject, identifier, datapoint, queryArgs = {}, nocache = true ) {
+	get( type, identifier, datapoint, queryArgs = {}, nocache = true ) {
 
 		if ( ! nocache ) {
 			const cache = this.getCache( identifier, datapoint, 3600 );
 
 			if ( cache ) {
-				googlesitekit[ dataObject ][ identifier ][ datapoint ] = cache;
+				googlesitekit[ type ][ identifier ][ datapoint ] = cache;
 			}
-			if ( googlesitekit[ dataObject ] &&
-				googlesitekit[ dataObject ][ identifier ] &&
-				googlesitekit[ dataObject ][ identifier ][ datapoint ] ) {
+			if ( googlesitekit[ type ] &&
+				googlesitekit[ type ][ identifier ] &&
+				googlesitekit[ type ][ identifier ][ datapoint ] ) {
 				return new Promise( ( resolve ) => {
-					resolve( googlesitekit[ dataObject ][ identifier ][ datapoint ] );
+					resolve( googlesitekit[ type ][ identifier ][ datapoint ] );
 				} );
 			}
 		}
 
 		// Make an API request to retrieve the value.
 		return wp.apiFetch( {
-			path: addQueryArgs( `/google-site-kit/v1/${dataObject}/${identifier}/data/${datapoint}`, queryArgs )
+			path: addQueryArgs( `/google-site-kit/v1/${type}/${identifier}/data/${datapoint}`, queryArgs )
 		} ).then( ( results ) => {
 			if ( ! nocache ) {
 				this.setCache( identifier, datapoint, results );
 			}
 
-			if ( googlesitekit[ dataObject ] &&
-					googlesitekit[ dataObject ][ identifier ] &&
-					googlesitekit[ dataObject ][ identifier ][ datapoint ] ) {
+			if ( googlesitekit[ type ] &&
+					googlesitekit[ type ][ identifier ] &&
+					googlesitekit[ type ][ identifier ][ datapoint ] ) {
 
-				googlesitekit[dataObject][identifier][datapoint] = results;
+				googlesitekit[type][identifier][datapoint] = results;
 
 				return new Promise( ( resolve ) => {
-					resolve( googlesitekit[dataObject][identifier][datapoint] );
+					resolve( googlesitekit[type][identifier][datapoint] );
 				} );
 			}
 
@@ -542,24 +542,24 @@ const data = {
 	 *
 	 * Calls the REST API to store the module value.
 	 *
-	 * @param {string} dataObject  The data to access. One of 'core' or 'modules'.
-	 * @param {string} identifier  The data item identifier.
-	 * @param {string} datapoint   The data point to set.
-	 * @param {object} value       The value to store.
+	 * @param {string} type       The data to access. One of 'core' or 'modules'.
+	 * @param {string} identifier The data item identifier.
+	 * @param {string} datapoint  The data point to set.
+	 * @param {object} value      The value to store.
 	 *
 	 * @returns Promise A promise for the fetch request.
 	 */
-	set( dataObject, identifier, datapoint, value ) {
+	set( type, identifier, datapoint, value ) {
 
-		if ( googlesitekit[ dataObject ] && googlesitekit[ dataObject ][ identifier ] ) {
-			googlesitekit[ dataObject ][ identifier ][ datapoint ] = value;
+		if ( googlesitekit[ type ] && googlesitekit[ type ][ identifier ] ) {
+			googlesitekit[ type ][ identifier ][ datapoint ] = value;
 		}
 
 		const body  = {};
 		body.data   = value;
 
 		// Make an API request to store the value.
-		return wp.apiFetch( { path: `/google-site-kit/v1/${dataObject}/${identifier}/data/${datapoint}`,
+		return wp.apiFetch( { path: `/google-site-kit/v1/${type}/${identifier}/data/${datapoint}`,
 			data: body,
 			method: 'POST',
 		} );
@@ -624,19 +624,19 @@ const data = {
 	 */
 	setModuleData( identifier, datapoint, value, storeLocaly = true ) {
 
-		const dataObject = 'modules';
-		const originalValue = googlesitekit[ dataObject ][ identifier ][ datapoint ];
+		const type = 'modules';
+		const originalValue = googlesitekit[ type ][ identifier ][ datapoint ];
 
 		// Optimistically store the value locally, capturing the current value in case of failure.
 		if ( storeLocaly ) {
-			googlesitekit[ dataObject ][ identifier ][ datapoint ] = value;
+			googlesitekit[ type ][ identifier ][ datapoint ] = value;
 		}
 
 		const body      = {};
 		body[datapoint] = value;
 
 		// Make an API request to store the value.
-		return wp.apiFetch( { path: `/google-site-kit/v1/${dataObject}/${identifier}`,
+		return wp.apiFetch( { path: `/google-site-kit/v1/${type}/${identifier}`,
 			data: body,
 			method: 'POST',
 		} ).then( ( response ) => {
@@ -647,7 +647,7 @@ const data = {
 
 			// Restore the original data when an error occurs.
 			if ( storeLocaly ) {
-				googlesitekit[ dataObject ][ identifier ][ datapoint ] = originalValue;
+				googlesitekit[ type ][ identifier ][ datapoint ] = originalValue;
 			}
 			return Promise.reject( err );
 		} );

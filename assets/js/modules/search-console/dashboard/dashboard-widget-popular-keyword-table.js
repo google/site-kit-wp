@@ -106,7 +106,7 @@ export default withData(
 	DashboardWidgetPopularKeywordsTable,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'search-console',
 			datapoint: 'search-keywords-sort-by-impressions',
 			priority: 1,

@@ -80,7 +80,7 @@ export default withData(
 	SearchConsoleAdminbarWidgetOverview,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'search-console',
 			datapoint: 'page-analytics',
 			permaLink: googlesitekit.permaLink,

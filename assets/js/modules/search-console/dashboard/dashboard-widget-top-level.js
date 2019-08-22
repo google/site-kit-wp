@@ -160,7 +160,7 @@ export default withData(
 	SearchConsoleDashboardWidgetTopLevel,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'search-console',
 			datapoint: 'sc-site-analytics',
 			permaLink: googlesitekit.permaLink,

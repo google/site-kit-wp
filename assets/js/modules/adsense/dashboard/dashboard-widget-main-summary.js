@@ -214,7 +214,7 @@ export default withData(
 	AdSenseDashboardMainSummary,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'adsense',
 			datapoint: 'earning-today',
 			priority: 1,
@@ -222,7 +222,7 @@ export default withData(
 			context: 'Dashboard'
 		},
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'adsense',
 			datapoint: 'earnings-this-period',
 			priority: 1,
@@ -230,7 +230,7 @@ export default withData(
 			context: 'Dashboard',
 		},
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'adsense',
 			datapoint: 'earning-daily-this-month',
 			priority: 1,

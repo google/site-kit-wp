@@ -102,7 +102,7 @@ export default withData(
 	AnalyticsDashboardWidgetTopAcquisitionSources,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'analytics',
 			datapoint: 'traffic-sources',
 			permaLink: googlesitekit.permaLink,

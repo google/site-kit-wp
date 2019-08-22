@@ -56,7 +56,7 @@ class AdSensePerformanceWidget extends Component {
 		try {
 			const batchRequests = [
 				{
-					dataObject: 'modules',
+					type: 'modules',
 					identifier: 'adsense',
 					datapoint: 'earning-28days',
 					priority: 1,
@@ -75,7 +75,7 @@ class AdSensePerformanceWidget extends Component {
 					},
 				},
 				{
-					dataObject: 'modules',
+					type: 'modules',
 					identifier: 'adsense',
 					datapoint: 'earning-prev28days',
 					priority: 1,

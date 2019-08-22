@@ -104,7 +104,7 @@ export default withData(
 	DashboardAcquisitionPieChart,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'analytics',
 			datapoint: 'traffic-sources',
 			permaLink: googlesitekit.permaLink,

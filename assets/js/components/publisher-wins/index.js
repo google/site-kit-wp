@@ -51,7 +51,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 				identifier: 'publishing-win',
 				storageType: 'localStorage',
 				withData: {
-					dataObject: 'modules',
+					type: 'modules',
 					identifier: 'search-console',
 					datapoint: 'sc-site-analytics',
 					priority: 1,
@@ -70,7 +70,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 				identifier: 'total-stats',
 				storageType: 'localStorage',
 				withData: {
-					dataObject: 'modules',
+					type: 'modules',
 					identifier: 'search-console',
 					datapoint: 'sc-site-analytics',
 					priority: 1,
@@ -90,7 +90,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 					identifier: 'pageview-increase',
 					storageType: 'localStorage',
 					withData: {
-						dataObject: 'modules',
+						type: 'modules',
 						identifier: 'analytics',
 						datapoint: 'overview',
 						priority: 1,
@@ -109,7 +109,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 					identifier: 'traffic-increase',
 					storageType: 'localStorage',
 					withData: {
-						dataObject: 'modules',
+						type: 'modules',
 						identifier: 'analytics',
 						datapoint: 'overview',
 						priority: 1,

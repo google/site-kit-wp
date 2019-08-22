@@ -308,7 +308,7 @@ export default withData(
 	AnalyticsDashboardWidgetTopLevel,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'analytics',
 			permaLink: googlesitekit.permaLink,
 			datapoint: 'overview',
@@ -317,7 +317,7 @@ export default withData(
 			context: 'Dashboard',
 		},
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'analytics',
 			permaLink: googlesitekit.permaLink,
 			datapoint: 'site-analytics',
@@ -326,7 +326,7 @@ export default withData(
 			context: 'Dashboard',
 		},
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'analytics',
 			permaLink: googlesitekit.permaLink,
 			datapoint: 'goals',

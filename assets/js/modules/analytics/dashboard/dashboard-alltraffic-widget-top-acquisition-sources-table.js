@@ -79,7 +79,7 @@ export default withData(
 	AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources,
 	[
 		{
-			dataObject: 'modules',
+			type: 'modules',
 			identifier: 'analytics',
 			datapoint: 'traffic-sources',
 			priority: 1,
