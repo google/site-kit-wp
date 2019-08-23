@@ -648,37 +648,15 @@ const dataAPI = {
 	},
 
 	/**
-	 * Gets module data.
+	 * Sets a module to activated or deactivated using the REST API.
 	 *
-	 * @param {string} module The data item identifier.
-	 * @param {string} datapoint The data point to retrieve. Optional, otherwise returns all data.
-	 *
-	 * @return {Promise} A promise for the fetch request.
+	 * @param {string}  moduleSlug The module slug.
+	 * @param {boolean} active     Whether the module should be active or not.
 	 */
-	getModuleData( module, datapoint ) {
-		return this.get( 'modules', module, datapoint );
-	},
-
-	/**
-	 * Sets module data value.
-	 *
-	 * Calls the REST API to store the module value.
-	 *
-	 * @param {string} identifier The  module.
-	 * @param {string} datapoint  The data point to set
-	 * @param {mixed}  value      The value to store.
-	 *
-	 * @return {Promise} A promise for the fetch request.
-	 */
-	setModuleData( identifier, datapoint, value ) {
-		const type = 'modules';
-
-		const body = {};
-		body[ datapoint ] = value;
-
+	setModuleActive( moduleSlug, active ) {
 		// Make an API request to store the value.
-		return wp.apiFetch( { path: `/google-site-kit/v1/${ type }/${ identifier }`,
-			data: body,
+		return wp.apiFetch( { path: `/google-site-kit/v1/modules/${ moduleSlug }`,
+			data: { active },
 			method: 'POST',
 		} ).then( ( response ) => {
 			return new Promise( ( resolve ) => {

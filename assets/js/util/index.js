@@ -750,7 +750,12 @@ export const extractTag = ( string, tag ) => {
  * @return {Promise}
  */
 export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) => {
-	return restApiClient.setModuleData( moduleSlug, 'active', status ).then( ( responseData ) => {
+	return restApiClient.setModuleActive( moduleSlug, status ).then( ( responseData ) => {
+		// We should really be using state management. This is terrible.
+		if ( window.googlesitekit.modules && window.googlesitekit.modules[ moduleSlug ] ) {
+			window.googlesitekit.modules[ moduleSlug ].active = responseData.active;
+		}
+
 		sendAnalyticsTrackingEvent(
 			`${ moduleSlug }_setup`,
 			! responseData.active ? 'module_deactivate' : 'module_activate',
