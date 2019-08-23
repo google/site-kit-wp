@@ -16,7 +16,6 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 
 	beforeEach( async () => {
 		await setSearchConsoleProperty();
-		await resetSiteKit();
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await page.waitForSelector( '.mdc-tab-bar' );
@@ -37,7 +36,7 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 	it( 'should select opt-in by default', async () => {
 		await page.waitForSelector( '#opt-in' );
 
-		await expect( page ).toMatchElement( '#opt-in[checked]' );
+		expect( await page.$eval( '#opt-in', ( el ) => el.checked ) ).toBe( true );
 	} );
 
 	it( 'should have tracking code when opted in', async () => {
