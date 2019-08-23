@@ -42,6 +42,7 @@ import {
 	findTagInHtmlContent,
 	activateOrDeactivateModule,
 	toggleConfirmModuleSettings,
+	showErrorNotification,
 } from 'GoogleUtil';
 import data from 'GoogleComponents/data';
 import md5 from 'md5';
@@ -73,6 +74,7 @@ googlesitekit.testFunctions = {
 	findTagInHtmlContent,
 	activateOrDeactivateModule,
 	toggleConfirmModuleSettings,
+	showErrorNotification,
 
 	// Data functions.
 	setCache,
