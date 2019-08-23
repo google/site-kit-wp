@@ -26,7 +26,7 @@ async function proceedToSetUpAnalytics() {
 }
 
 const EXISTING_PROPERTY_ID = 'UA-00000001-1';
-const EXISTING_ACCOUNT_ID  = '100';
+const EXISTING_ACCOUNT_ID = '100';
 
 let getAccountsRequestHandler;
 let tagPermissionRequestHandler;
@@ -77,7 +77,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 			request.respond( {
 				status: 200,
 				body: JSON.stringify( {
-					account:  EXISTING_ACCOUNT_ID,
+					account: EXISTING_ACCOUNT_ID,
 					property: EXISTING_PROPERTY_ID,
 				} ),
 			} );
