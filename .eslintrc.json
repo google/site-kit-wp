@@ -13,21 +13,19 @@
     }
   },
   "globals": {
-    "React": true,
-    "googlesitekit": true,
-    "googlesitekitAdminbar": true,
-    "googlesitekitDashboard": true,
-    "googlesitekitSettings": true,
-    "lodash": true,
-    "googlesitekitCurrentModule": true,
-    "gtag": true,
-    "process": true,
-    "wp": true
+    "React": "readonly",
+    "googlesitekit": "readonly",
+    "googlesitekitAdminbar": "readonly",
+    "googlesitekitDashboard": "readonly",
+    "googlesitekitSettings": "readonly",
+    "lodash": "readonly",
+    "googlesitekitCurrentModule": "readonly",
+    "gtag": "readonly",
+    "process": "readonly",
+    "wp": "readonly"
   },
   "rules": {
-    "valid-jsdoc": [
-      "warn"
-    ]
+    "valid-jsdoc": "warn"
   },
   "overrides": [
     {
