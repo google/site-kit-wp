@@ -1306,7 +1306,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			if ( ! empty( $existing_property_match ) ) {
 				$response = array(
 					'account'  => $account_id,
-					'property' => array_values( $existing_property_match ),
+					'property' => $property_id,
 				);
 				break;
 			}

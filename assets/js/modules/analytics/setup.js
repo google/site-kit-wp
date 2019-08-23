@@ -254,7 +254,7 @@ class AnalyticsSetup extends Component {
 			// Send existing tag data to get account.
 			const queryArgs = existingTagData ? {
 				account: existingTagData.account,
-				property: existingTagData.property[ 0 ].id,
+				property: existingTagData.property,
 			} : {};
 
 			const responseData = await data.get( 'modules', 'analytics', 'get-accounts', queryArgs, false );
@@ -330,7 +330,7 @@ class AnalyticsSetup extends Component {
 				selectedProfile,
 				properties: [ chooseAccount ],
 				profiles: [ chooseAccount ],
-				existingTag: existingTagData ? existingTagData.property[ 0 ].id : false,
+				existingTag: existingTagData ? existingTagData.property : false,
 				useSnippet: ( ! existingTagData && ! onSettingsPage ) ? true : useSnippet,
 			};
 
