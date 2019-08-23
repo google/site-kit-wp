@@ -91,9 +91,9 @@ valuesToTest = [
 	},
 ]
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'activateOrDeactivateModule::' + itemToTest.head, function ( assert ) {
+	QUnit.test( 'activateOrDeactivateModule::' + itemToTest.moduleSlug, function ( assert ) {
 		var restApiClient = {
-			setModuleData: function( slug, type, status ) {
+			setModuleActive: function( slug, status ) {
 				return {
 					then: function() {
 						return status;
