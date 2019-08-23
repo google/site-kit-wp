@@ -91,11 +91,7 @@ class SettingsModule extends Component {
 			await refreshAuthentication();
 
 			if ( false === newActiveState ) {
-				Object.keys( window.sessionStorage ).forEach( ( key ) => {
-					if ( -1 < key.indexOf( `${ this.props.slug }::` ) ) {
-						sessionStorage.removeItem( key );
-					}
-				} );
+				data.invalidateCacheGroup( 'modules', this.props.slug );
 			}
 
 			this.setState( {

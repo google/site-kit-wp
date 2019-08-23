@@ -107,7 +107,7 @@ const removeDisplayedWins = ( wins ) => {
 
 	// Get only the wins that haven't been displayed yet.
 	const notDisplayed = Object.values( wins ).filter( ( win ) => {
-		const displayed = sessionStorage.getItem( `notification::displayed::${ win[ 0 ].id }` );
+		const displayed = data.getCache( `notification::displayed::${ win[ 0 ].id }` );
 
 		if ( displayed ) {
 			const displayedDate = new Date( displayed );
@@ -124,7 +124,7 @@ const removeDisplayedWins = ( wins ) => {
 			// Remove the displayed storage if it has been displayed a week ago.
 			const days = getDaysBetweenDates( displayedDate, today );
 			if ( 7 <= days ) {
-				sessionStorage.removeItem( `notification::displayed::${ win[ 0 ].id }` );
+				data.deleteCache( `notification::displayed::${ win[ 0 ].id }` );
 			}
 		}
 
