@@ -16,7 +16,13 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import SettingsModules from './settings-modules';
+/**
+ * External dependencies
+ */
 import Header from 'GoogleComponents/header';
 import PageHeader from 'GoogleComponents/page-header';
 import Layout from 'GoogleComponents/layout/layout';
@@ -29,13 +35,12 @@ const { Component, Fragment } = wp.element;
 const { __ } = wp.i18n;
 
 class SettingsApp extends Component {
-
 	constructor( props ) {
 		super( props );
 		const hashedTab = window.location.hash.replace( '#', '' );
 
 		this.state = {
-			activeTab: hashedTab ? Number( hashedTab ) : 0
+			activeTab: hashedTab ? Number( hashedTab ) : 0,
 		};
 
 		this.handleTabUpdate = this.handleTabUpdate.bind( this );
@@ -45,7 +50,7 @@ class SettingsApp extends Component {
 		const activeTab = -1 === tabIndex ? 0 : tabIndex; // Check for invalid index.
 		window.location.hash = activeTab;
 		this.setState( {
-			activeTab: activeTab
+			activeTab,
 		} );
 	}
 
@@ -53,12 +58,12 @@ class SettingsApp extends Component {
 		const { activeTab } = this.state;
 		return (
 			<Fragment>
-				<Header/>
+				<Header />
 				<div className="googlesitekit-module-page">
 					<div className="mdc-layout-grid">
 						<div className="mdc-layout-grid__inner">
 							<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-								<PageHeader title={ __( 'Settings', 'google-site-kit' ) }/>
+								<PageHeader title={ __( 'Settings', 'google-site-kit' ) } />
 							</div>
 							<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 								<Layout>
@@ -67,13 +72,13 @@ class SettingsApp extends Component {
 										handleActiveIndexUpdate={ this.handleTabUpdate }
 									>
 										<Tab>
-											<span className='mdc-tab__text-label'>{ __( 'Connected Services', 'google-site-kit' ) }</span>
+											<span className="mdc-tab__text-label">{ __( 'Connected Services', 'google-site-kit' ) }</span>
 										</Tab>
 										<Tab>
-											<span className='mdc-tab__text-label'>{ __( 'Connect More Services', 'google-site-kit' ) }</span>
+											<span className="mdc-tab__text-label">{ __( 'Connect More Services', 'google-site-kit' ) }</span>
 										</Tab>
 										<Tab>
-											<span className='mdc-tab__text-label'>{ __( 'Admin Settings', 'google-site-kit' ) }</span>
+											<span className="mdc-tab__text-label">{ __( 'Admin Settings', 'google-site-kit' ) }</span>
 										</Tab>
 									</TabBar>
 								</Layout>
@@ -83,7 +88,7 @@ class SettingsApp extends Component {
 							}
 							{ 2 === activeTab && // If we're on Settings tab.
 								<Fragment>
-									<SettingsAdmin/>
+									<SettingsAdmin />
 								</Fragment>
 							}
 							<div className="
@@ -91,7 +96,7 @@ class SettingsApp extends Component {
 								mdc-layout-grid__cell--span-12
 								mdc-layout-grid__cell--align-right
 							">
-								<HelpLink/>
+								<HelpLink />
 							</div>
 						</div>
 					</div>

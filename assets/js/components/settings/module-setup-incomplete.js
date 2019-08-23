@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import {
 	getReAuthUrl,
 } from 'GoogleUtil';
@@ -27,7 +30,6 @@ const { Component } = wp.element;
 const { __ } = wp.i18n;
 
 class ModuleSetupIncomplete extends Component {
-
 	render() {
 		const {
 			slug,
@@ -36,7 +38,7 @@ class ModuleSetupIncomplete extends Component {
 		return (
 			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 				<ModuleSettingsWarning slug={ slug } context="settings" />
-				{  __( 'Setup incomplete: ', 'google-site-kit' ) }
+				{ __( 'Setup incomplete: ', 'google-site-kit' ) }
 				<Link
 					className="googlesitekit-settings-module__edit-button"
 					onClick={ () => {
@@ -44,7 +46,7 @@ class ModuleSetupIncomplete extends Component {
 					} }
 					inherit
 				>
-					{  __( 'continue module setup', 'google-site-kit' ) }
+					{ __( 'continue module setup', 'google-site-kit' ) }
 				</Link>
 			</div>
 		);

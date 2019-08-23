@@ -16,20 +16,19 @@ import {
 } from '../utils';
 
 describe( 'Site Kit set up flow for the first time with site verification', () => {
-
-	beforeAll( async() => {
+	beforeAll( async () => {
 		await page.setRequestInterception( true );
-		useRequestInterception( request => {
+		useRequestInterception( ( request ) => {
 			if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
 				request.respond( {
 					status: 302,
 					headers: {
-						location: createURL( '/', 'oauth2callback=1&code=valid-test-code' )
-					}
+						location: createURL( '/', 'oauth2callback=1&code=valid-test-code' ),
+					},
 				} );
 			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
 				request.respond( {
-					status: 200
+					status: 200,
 				} );
 			} else {
 				request.continue();
@@ -37,21 +36,21 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 		} );
 	} );
 
-	beforeEach( async() => {
+	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
 	} );
 
-	afterEach( async() => {
+	afterEach( async () => {
 		await deactivateAllOtherPlugins();
 		await resetSiteKit();
 	} );
 
-	afterAll( async() => {
+	afterAll( async () => {
 		await page.setRequestInterception( false );
 	} );
 
-	it( 'prompts for confirmation if user is not verified for the site', async() => {
+	it( 'prompts for confirmation if user is not verified for the site', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 		await page.waitForSelector( '#client-configuration' );
 
@@ -78,8 +77,7 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Site Kit!/i } );
 	} );
 
-	it( 'does not prompt for verification if the user is already verified for the site', async() => {
-
+	it( 'does not prompt for verification if the user is already verified for the site', async () => {
 		// Simulate that the user is already verified.
 		await wpApiFetch( {
 			path: 'google-site-kit/v1/e2e/verify-site',

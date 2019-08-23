@@ -1,4 +1,10 @@
+/**
+ * External dependencies
+ */
 import { storiesOf } from '@storybook/react';
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
 import CTA from 'GoogleComponents/notifications/cta';
@@ -13,6 +19,9 @@ import AnalyticsDashboardWidgetTopLevel from 'GoogleModules/analytics/dashboard/
 import SearchConsoleDashboardWidgetTopLevel from 'GoogleModules/search-console/dashboard/dashboard-widget-top-level';
 import PostSearcher from 'GoogleComponents/post-searcher';
 
+/**
+ * Internal dependencies
+ */
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
 
@@ -44,7 +53,7 @@ storiesOf( 'Dashboard', module )
 							mdc-layout-grid__cell--span-4-tablet
 							mdc-layout-grid__cell--span-4-phone
 						">
-							<DashboardAcquisitionPieChart source/>
+							<DashboardAcquisitionPieChart source />
 						</div>
 						<div className="
 							mdc-layout-grid__cell
@@ -52,7 +61,7 @@ storiesOf( 'Dashboard', module )
 							mdc-layout-grid__cell--span-4-tablet
 							mdc-layout-grid__cell--span-4-phone
 						">
-							<AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources/>
+							<AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources />
 						</div>
 					</div>
 				</div>
@@ -83,10 +92,10 @@ storiesOf( 'Dashboard', module )
 		options: {
 			readySelector: '.googlesitekit-pagespeed-report__score-gauge',
 			delay: 1000, // Wait for table overlay to animate.
-		}
+		},
 	} )
 	.add( 'Post Searcher', () => (
-		<PostSearcher/>
+		<PostSearcher />
 	) )
 	.add( 'Search Funnel Analytics Inactive', () => {
 		window.googlesitekit = analyticsDashboardData;
@@ -111,7 +120,7 @@ storiesOf( 'Dashboard', module )
 			<Layout className="googlesitekit-analytics-search-funnel">
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
-						<DashboardSearchFunnelInner/>
+						<DashboardSearchFunnelInner />
 						<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-4-phone
@@ -134,7 +143,7 @@ storiesOf( 'Dashboard', module )
 	.add( 'Search Funnel', () => {
 		window.googlesitekit = analyticsDashboardData;
 
-		const addAnalyticsDashboardWidgetTopLevel     = createAddToFilter( <AnalyticsDashboardWidgetTopLevel /> );
+		const addAnalyticsDashboardWidgetTopLevel = createAddToFilter( <AnalyticsDashboardWidgetTopLevel /> );
 		const addSearchConsoleDashboardWidgetTopLevel = createAddToFilter( <SearchConsoleDashboardWidgetTopLevel /> );
 
 		wp.hooks.removeAllFilters( 'googlesitekit.DashboardSearchFunnel' );
@@ -147,7 +156,7 @@ storiesOf( 'Dashboard', module )
 			addSearchConsoleDashboardWidgetTopLevel );
 
 		// Manual set some missing goals data;
-		var cache = JSON.parse( googlesitekit.admin.datacache );
+		const cache = JSON.parse( googlesitekit.admin.datacache );
 		cache[ 'googlesitekit_modules::analytics::goals::last-28-days' ] = JSON.parse( '{"itemsPerPage":1000,"kind":"analytics#goals","nextLink":null,"previousLink":null,"startIndex":1,"totalResults":5,"username":"user.name@gmail.com","items":[{"accountId":"XXXXXX","active":true,"created":"2016-12-06T15:36:07.002Z","id":"1","internalWebPropertyId":"XXXXXXX","kind":"analytics#goal","name":"Basic","profileId":"XXXXXXXX","selfLink":"https://www.googleapis.com/analytics/v3/management/accounts/XXXXXX/webproperties/UA-XXXXXX-3/profiles/XXXXXXXX/goals/1","type":"URL_DESTINATION","updated":"2016-12-06T21:40:31.531Z","value":299,"webPropertyId":"UA-XXXXXX-3","parentLink":{"href":"https://www.googleapis.com/analytics/v3/management/accounts/XXXXXX/webproperties/UA-XXXXXX-3/profiles/XXXXXXXX","type":"analytics#profile"},"urlDestinationDetails":{"caseSensitive":false,"firstStepRequired":true,"matchType":"EXACT","url":"/thankyou","steps":[{"name":"Basic Button","number":1,"url":"/pricing-basic"}]}},{"accountId":"XXXXXX","active":true,"created":"2016-12-06T16:30:57.626Z","id":"2","internalWebPropertyId":"XXXXXXX","kind":"analytics#goal","name":"Professional","profileId":"XXXXXXXX","selfLink":"https://www.googleapis.com/analytics/v3/management/accounts/XXXXXX/webproperties/UA-XXXXXX-3/profiles/XXXXXXXX/goals/2","type":"URL_DESTINATION","updated":"2016-12-06T21:40:43.894Z","value":699,"webPropertyId":"UA-XXXXXX-3","parentLink":{"href":"https://www.googleapis.com/analytics/v3/management/accounts/XXXXXX/webproperties/UA-XXXXXX-3/profiles/XXXXXXXX","type":"analytics#profile"},"urlDestinationDetails":{"caseSensitive":false,"firstStepRequired":true,"matchType":"EXACT","url":"/thankyou","steps":[{"name":"Professional Button","number":1,"url":"/pricing-professional"}]}},{"accountId":"XXXXXX","active":true,"created":"2016-12-06T16:31:32.429Z","id":"3","internalWebPropertyId":"XXXXXXX","kind":"analytics#goal","name":"Enterprise","profileId":"XXXXXXXX","selfLink":"https://www.googleapis.com/analytics/v3/management/accounts/XXXXXX/webproperties/UA-XXXXXX-3/profiles/XXXXXXXX/goals/3","type":"URL_DESTINATION","updated":"2016-12-06T21:40:55.366Z","value":999,"webPropertyId":"UA-XXXXXX-3","parentLink":{"href":"https://www.googleapis.com/analytics/v3/management/accounts/XXXXXX/webproperties/UA-XXXXXX-3/profiles/XXXXXXXX","type":"analytics#profile"},"urlDestinationDetails":{"caseSensitive":false,"firstStepRequired":true,"matchType":"EXACT","url":"/thankyou","steps":[{"name":"Enterprise Button","number":1,"url":"/pricing-enterprise"}]}},{"accountId":"XXXXXX","active":true,"created":"2016-12-06T16:32:17.667Z","id":"4","internalWebPropertyId":"XXXXXXX","kind":"analytics#goal","name":"Form Success (non-funnel)","profileId":"XXXXXXXX","selfLink":"https://www.googleapis.com/analytics/v3/management/accounts/XXXXXX/webproperties/UA-XXXXXX-3/profiles/XXXXXXXX/goals/4","type":"URL_DESTINATION","updated":"2016-12-06T16:53:22.277Z","value":0,"webPropertyId":"UA-XXXXXX-3","parentLink":{"href":"https://www.googleapis.com/analytics/v3/management/accounts/XXXXXX/webproperties/UA-XXXXXX-3/profiles/XXXXXXXX","type":"analytics#profile"},"urlDestinationDetails":{"caseSensitive":false,"firstStepRequired":false,"matchType":"EXACT","url":"/thankyou"}},{"accountId":"XXXXXX","active":true,"created":"2016-12-06T16:41:10.580Z","id":"5","internalWebPropertyId":"XXXXXXX","kind":"analytics#goal","name":"Get Started","profileId":"XXXXXXXX","selfLink":"https://www.googleapis.com/analytics/v3/management/accounts/XXXXXX/webproperties/UA-XXXXXX-3/profiles/XXXXXXXX/goals/5","type":"URL_DESTINATION","updated":"2016-12-06T16:53:14.486Z","value":0,"webPropertyId":"UA-XXXXXX-3","parentLink":{"href":"https://www.googleapis.com/analytics/v3/management/accounts/XXXXXX/webproperties/UA-XXXXXX-3/profiles/XXXXXXXX","type":"analytics#profile"},"urlDestinationDetails":{"caseSensitive":false,"firstStepRequired":true,"matchType":"EXACT","url":"/thankyou","steps":[{"name":"Get Started Header Button","number":1,"url":"/get-started"}]}}]}' );
 
 		googlesitekit.admin.datacache = JSON.stringify( cache );
@@ -164,13 +173,13 @@ storiesOf( 'Dashboard', module )
 			<Layout className="googlesitekit-analytics-search-funnel">
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
-						<DashboardSearchFunnelInner/>
+						<DashboardSearchFunnelInner />
 					</div>
 				</div>
 			</Layout>
 		);
 	}, {
 		options: {
-			readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]'
-		}
+			readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+		},
 	} );

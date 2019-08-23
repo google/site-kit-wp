@@ -20,7 +20,6 @@ const { withFilters } = wp.components;
 const { Component } = wp.element;
 
 class DashboardAdSenseTopEarningPagesSmall extends Component {
-
 	render() {
 		return null;
 	}

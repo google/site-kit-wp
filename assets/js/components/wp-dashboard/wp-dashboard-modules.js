@@ -16,8 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import WPDashboardModule from './wp-dashboard-module';
 import WPDashboardHeader from './wp-dashboard-header';
+/**
+ * External dependencies
+ */
 import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
 
 const { Component, Fragment } = wp.element;
@@ -25,7 +31,6 @@ const { __ } = wp.i18n;
 
 class WPDashboardModules extends Component {
 	render() {
-
 		return (
 			<Fragment>
 				<div className={ `
@@ -41,7 +46,7 @@ class WPDashboardModules extends Component {
 							<AnalyticsInactiveCTA
 								title={ __( 'See unique vistors, goal completions, top pages and more.', 'google-site-kit' ) }
 								ctaLabel={ __( 'Set up analytics', 'google-site-kit' ) }
-								description=''
+								description=""
 							/>
 						</div>
 					}

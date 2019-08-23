@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import SvgIcon from 'GoogleUtil/svg-icon';
 import Button from 'GoogleComponents/button';
 import PropTypes from 'prop-types';

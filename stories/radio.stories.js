@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { storiesOf } from '@storybook/react';
 import Radio from 'GoogleComponents/radio';
 

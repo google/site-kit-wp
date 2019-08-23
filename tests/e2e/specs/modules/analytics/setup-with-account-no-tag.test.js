@@ -18,24 +18,25 @@ async function proceedToSetUpAnalytics() {
 	await Promise.all( [
 		expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } ),
 		page.waitForSelector( '.googlesitekit-setup-module__inputs' ),
-		page.waitForRequest( req => req.url().match( 'analytics/data' ) ),
+		page.waitForRequest( ( req ) => req.url().match( 'analytics/data' ) ),
 	] );
 }
 
-const setReferenceUrl = async() => {
+const setReferenceUrl = async () => {
 	return wpApiFetch( {
 		path: 'google-site-kit/v1/e2e/reference-url',
 		method: 'post',
 		data: {
-			url: 'http://non-matching-url.test'
-		}
+			url: 'http://non-matching-url.test',
+		},
 	} );
 };
 
 describe( 'setting up the Analytics module with an existing account and no existing tag', () => {
-	beforeAll( async() => {
+	beforeAll( async () => {
 		await page.setRequestInterception( true );
-		useRequestInterception( request => {
+
+		useRequestInterception( ( request ) => {
 			if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
 				request.respond( {
 					status: 302,
@@ -45,12 +46,12 @@ describe( 'setting up the Analytics module with an existing account and no exist
 							'code=valid-test-code',
 							'e2e-site-verification=1',
 							'scope=TEST_ALL_SCOPES',
-						].join( '&' ) )
-					}
+						].join( '&' ) ),
+					},
 				} );
 			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
 				request.respond( {
-					status: 200
+					status: 200,
 				} );
 			} else {
 				request.continue();
@@ -58,7 +59,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		} );
 	} );
 
-	beforeEach( async() => {
+	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-auth-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
@@ -71,12 +72,12 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await page.waitForSelector( '.googlesitekit-settings-connect-module--analytics' );
 	} );
 
-	afterEach( async() => {
+	afterEach( async () => {
 		await deactivateAllOtherPlugins();
 		await resetSiteKit();
 	} );
 
-	it( 'pre-selects account and property if the tag matches one belonging to the user', async() => {
+	it( 'pre-selects account and property if the tag matches one belonging to the user', async () => {
 		await proceedToSetUpAnalytics();
 
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account a/i } );
@@ -87,7 +88,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await expect( page ).toClick( '.mdc-select', { text: /test account a/i } );
 		await Promise.all( [
 			expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test account b/i } ),
-			page.waitForResponse( res => res.url().match( 'modules/analytics/data' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'modules/analytics/data' ) ),
 		] );
 
 		// Selects reload with properties and profiles for Test Account B
@@ -99,7 +100,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await expect( page ).toClick( '.mdc-select', { text: /test property y/i } );
 		await Promise.all( [
 			expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test property z/i } ),
-			page.waitForResponse( res => res.url().match( 'modules/analytics/data' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'modules/analytics/data' ) ),
 		] );
 
 		// Selects reload with properties and profiles for Test Profile Z
@@ -115,7 +116,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
 	} );
 
-	it( 'prompts for account and property if the site URL does not match a property belonging to the user', async() => {
+	it( 'prompts for account and property if the site URL does not match a property belonging to the user', async () => {
 		await setReferenceUrl();
 
 		await proceedToSetUpAnalytics();
@@ -128,7 +129,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await expect( page ).toClick( '.mdc-select', { text: /select one\.\.\./i } );
 		await Promise.all( [
 			expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test account a/i } ),
-			page.waitForResponse( res => res.url().match( 'modules/analytics/data' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'modules/analytics/data' ) ),
 		] );
 
 		// See the selects populate

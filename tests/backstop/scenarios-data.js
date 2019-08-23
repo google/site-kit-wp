@@ -1,13 +1,12 @@
 const storybookStories = require( '../../.storybook/storybook-data' );
 
 const scenariosData = ( rootURL ) => {
-
-	let scenarios = [];
+	const scenarios = [];
 
 	storybookStories.forEach( ( story ) => {
 		scenarios.push(
 			{
-				label: `${story.kind}/${story.name}`,
+				label: `${ story.kind }/${ story.name }`,
 				url: `${ rootURL }${ story.id }`,
 				readySelector: story.parameters.options.readySelector,
 				hoverSelector: story.parameters.options.hoverSelector,

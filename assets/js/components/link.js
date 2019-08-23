@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import PropTypes from 'prop-types';
 
 const { Component } = wp.element;
@@ -59,7 +62,7 @@ class Link extends Component {
 				id={ id }
 				href={ href ? href : undefined }
 				target={ external ? '_blank' : undefined }
-				rel={ external ? 'noopener noreferrer' : undefined  }
+				rel={ external ? 'noopener noreferrer' : undefined }
 			>
 				{ children }
 			</SemanticLink>

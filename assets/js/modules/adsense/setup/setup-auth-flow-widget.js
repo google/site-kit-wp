@@ -16,13 +16,15 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Button from 'GoogleComponents/button';
 
 const { Component, Fragment } = wp.element;
 const { __ } = wp.i18n;
 
 class AdSenseSetupAuthFlowWidget extends Component {
-
 	constructor( props ) {
 		super( props );
 

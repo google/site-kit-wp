@@ -16,10 +16,16 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import PropTypes from 'prop-types';
 import Link from 'GoogleComponents/link';
 import { TextField, Input } from 'SiteKitCore/material-components';
 import Button from 'GoogleComponents/button';
+/**
+ * Internal dependencies
+ */
 import data from '../data';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 import HelpLink from 'GoogleComponents/help-link';
@@ -48,7 +54,7 @@ class WizardStepClientCredentials extends Component {
 		this.onProceed = this.onProceed.bind( this );
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		const {
 			isSiteKitConnected,
 			siteConnectedSetup,
@@ -58,17 +64,12 @@ class WizardStepClientCredentials extends Component {
 
 		// Double check isSiteKitConnected.
 		if ( ! isSiteKitConnected ) {
-			( async() => {
-				let response;
-				try {
-					response = await data.get( 'core', 'site', 'credentials' );
-				} catch ( e ) { // eslint-disable-line no-empty
-				}
-				if ( response ) {
-					googlesitekit.setup.isSiteKitConnected = true;
-					siteConnectedSetup( true );
-				}
-			} )();
+			const response = await data.get( 'core', 'site', 'credentials' );
+
+			if ( response && response.oauth2_client_id && response.oauth2_client_secret ) {
+				googlesitekit.setup.isSiteKitConnected = true;
+				siteConnectedSetup( true );
+			}
 		}
 	}
 
@@ -111,11 +112,10 @@ class WizardStepClientCredentials extends Component {
 
 			// Go to next step.
 			this.props.siteConnectedSetup( true );
-
 		} catch ( err ) {
 			if ( this._isMounted ) {
 				this.setState( {
-					errorMsg: err.message
+					errorMsg: err.message,
 				} );
 			}
 
@@ -139,10 +139,10 @@ class WizardStepClientCredentials extends Component {
 			return;
 		}
 
-		let data = false;
+		let clientData = false;
 		try {
-			data = JSON.parse( value );
-		} catch ( e ) {
+			clientData = JSON.parse( value );
+		} catch ( error ) {
 			this.setState( {
 				errorMsg: __( 'Unable to parse client configuration values.', 'google-site-kit' ),
 				clientID: '',
@@ -151,14 +151,14 @@ class WizardStepClientCredentials extends Component {
 			} );
 		}
 
-		if ( data && data.web ) {
+		if ( clientData && clientData.web ) {
 			const {
 				web: {
 					client_id: clientID,
 					client_secret: clientSecret,
 					project_id: projectID,
-				}
-			} = data;
+				},
+			} = clientData;
 
 			this.setState( {
 				errorMsg: '',
@@ -253,7 +253,7 @@ class WizardStepClientCredentials extends Component {
 }
 
 WizardStepClientCredentials.propTypes = {
-	siteConnectedSetup: PropTypes.func.isRequired
+	siteConnectedSetup: PropTypes.func.isRequired,
 };
 
 export default WizardStepClientCredentials;

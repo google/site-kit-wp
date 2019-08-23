@@ -16,22 +16,27 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import DataBlock from 'GoogleComponents/data-block.js';
 import withData from 'GoogleComponents/higherorder/withdata';
-import { extractAnalyticsDashboardSparklineData } from '../util';
+
+/**
+ * Internal dependencies
+ */
 import Sparkline from 'GoogleComponents/sparkline';
 import CTA from 'GoogleComponents/notifications/cta';
 import PreviewBlock from 'GoogleComponents/preview-block';
-
 import {
 	getTimeInSeconds,
 	readableLargeNumber,
 	extractForSparkline,
 	getSiteKitAdminURL,
 } from 'GoogleUtil';
-
 import {
 	calculateOverviewData,
+	extractAnalyticsDashboardSparklineData,
 	getAnalyticsErrorMessageFromData,
 } from '../util';
 
@@ -40,7 +45,6 @@ const { Component, Fragment } = wp.element;
 const { isEmpty } = lodash;
 
 class AnalyticsDashboardWidgetTopLevel extends Component {
-
 	constructor( props ) {
 		super( props );
 		this.state = {
@@ -58,7 +62,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 	componentDidUpdate( prevProps ) {
 		const {
 			data,
-			datapoint
+			datapoint,
 		} = this.props;
 
 		this.processCallbackData( data, datapoint, prevProps );
@@ -67,7 +71,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 	componentDidMount() {
 		const {
 			data,
-			datapoint
+			datapoint,
 		} = this.props;
 
 		this.processCallbackData( data, datapoint, {} );
@@ -76,10 +80,10 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 	/**
 	 * Process callback data received from the API.
 	 *
-	 * @param {object} data Response data from the API.
+	 * @param {Object} data Response data from the API.
 	 * @param {string} datapoint data point for the callback conditional.
-	 * @param {object} prevProps previous props when component did update.
-	 * @returns {null}
+	 * @param {Object} prevProps previous props when component did update.
+	 * @return {null}
 	 */
 	processCallbackData( data, datapoint, prevProps = {} ) {
 		if ( ! data ) {
@@ -87,15 +91,15 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 		}
 
 		switch ( datapoint ) {
-				case 'site-analytics':
-					this.setAnalyticsData( data, prevProps );
-					break;
-				case 'goals':
-					this.setGoalsData( data, prevProps );
-					break;
-				case 'overview':
-					this.setOverviewData( data, prevProps );
-					break;
+			case 'site-analytics':
+				this.setAnalyticsData( data, prevProps );
+				break;
+			case 'goals':
+				this.setGoalsData( data, prevProps );
+				break;
+			case 'overview':
+				this.setOverviewData( data, prevProps );
+				break;
 		}
 	}
 
@@ -211,13 +215,12 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 					mdc-layout-grid__cell--span-3-desktop
 				">
 					{
-
 						/**
 						 * The forth block shows goals for general view, and average time on page for detail view.
 						 */
 					}
 					{
-						permaLink ?
+						permaLink && (
 							<DataBlock
 								className="overview-average-time-on-page"
 								title={ __( 'Average Session Duration', 'google-site-kit' ) }
@@ -237,36 +240,41 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 											id="analytics-sessions-sparkline"
 										/>
 								}
-							/> :
-							goals ?
-								isEmpty( goals.items ) ?
-									<CTA
-										title={ __( 'Use goals to measure success. ', 'google-site-kit' ) }
-										description={ __( 'Goals measure how well your site or app fulfills your target objectives.', 'google-site-kit' ) }
-										ctaLink={ goalURL }
-										ctaLabel={ __( 'Create a new goal', 'google-site-kit' ) }
-									/> :
-									<DataBlock
-										className="overview-goals-completed"
-										title={ __( 'Goals Completed', 'google-site-kit' ) }
-										datapoint={ readableLargeNumber( goalCompletions ) }
-										change={ goalCompletionsChange }
-										changeDataUnit="%"
-										source={ {
-											name: __( 'Analytics', 'google-site-kit' ),
-											link: href,
-										} }
-										sparkline={
-											extractedAnalytics &&
-												<Sparkline
-													data={ extractForSparkline( extractedAnalytics, 3 ) }
-													change={ goalCompletionsChange }
-													id="analytics-sessions-sparkline"
-												/>
-										}
-									/> :
-								<PreviewBlock width="100%" height="202px" />
+							/>
+						) }
+					{ ! permaLink && goals && isEmpty( goals.items ) && (
+						<CTA
+							title={ __( 'Use goals to measure success. ', 'google-site-kit' ) }
+							description={ __( 'Goals measure how well your site or app fulfills your target objectives.', 'google-site-kit' ) }
+							ctaLink={ goalURL }
+							ctaLabel={ __( 'Create a new goal', 'google-site-kit' ) }
+						/>
+					)
 					}
+					{ ! permaLink && goals && ! isEmpty( goals.items ) && (
+						<DataBlock
+							className="overview-goals-completed"
+							title={ __( 'Goals Completed', 'google-site-kit' ) }
+							datapoint={ readableLargeNumber( goalCompletions ) }
+							change={ goalCompletionsChange }
+							changeDataUnit="%"
+							source={ {
+								name: __( 'Analytics', 'google-site-kit' ),
+								link: href,
+							} }
+							sparkline={
+								extractedAnalytics &&
+								<Sparkline
+									data={ extractForSparkline( extractedAnalytics, 3 ) }
+									change={ goalCompletionsChange }
+									id="analytics-sessions-sparkline"
+								/>
+							}
+						/>
+					) }
+					{ ! permaLink && ! goals && (
+						<PreviewBlock width="100%" height="202px" />
+					) }
 				</div>
 			</Fragment>
 		);
@@ -274,7 +282,6 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 }
 
 const isDataZero = ( data, datapoint ) => {
-
 	if ( 'overview' !== datapoint ) {
 		return false;
 	}

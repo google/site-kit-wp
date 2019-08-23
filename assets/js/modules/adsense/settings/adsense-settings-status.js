@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import {
 	getSiteKitAdminURL,
 } from 'GoogleUtil';
@@ -34,7 +37,7 @@ class AdSenseSettingsStatus extends Component {
 
 		const { accountStatus } = googlesitekit.modules.adsense.settings;
 
-		if ( ! accountStatus || 'adsense' !==  slug ) {
+		if ( ! accountStatus || 'adsense' !== slug ) {
 			return <OriginalComponent { ...this.props } />;
 		}
 
@@ -46,14 +49,13 @@ class AdSenseSettingsStatus extends Component {
 					<Link
 						className="googlesitekit-settings-module__edit-button"
 						onClick={ () => {
-
 							const page = screenId ? screenId : 'googlesitekit-dashboard';
 
 							window.location = getSiteKitAdminURL( page, { reAuth: true, slug } );
 						} }
 						inherit
 					>
-						{  __( 'check module page', 'google-site-kit' ) }
+						{ __( 'check module page', 'google-site-kit' ) }
 					</Link>
 				</div> );
 		}

@@ -16,9 +16,15 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import { createAddToFilter } from 'GoogleUtil/helpers';
 import { fillFilterWithComponent } from 'GoogleUtil';
 import PageSpeedInsightsSetup from 'GoogleModules/pagespeed-insights/setup';
+/**
+ * Internal dependencies
+ */
 import DashboardSpeed from './dashboard/dashboard-widget-speed';
 import PageSpeedInsightsDashboardWidgetHomepageSpeed from './dashboard/dashboard-widget-homepage-speed';
 import PageSpeedInsightsCTA from './dashboard/dashboard-cta';
@@ -27,11 +33,11 @@ const { addFilter } = wp.hooks;
 const {
 	active,
 	setupComplete,
-} = googlesitekit.modules['pagespeed-insights'];
+} = googlesitekit.modules[ 'pagespeed-insights' ];
 const slug = 'pagespeed-insights';
 
 if ( active && setupComplete ) {
-	const addDashboardSpeed                                = createAddToFilter( <DashboardSpeed /> );
+	const addDashboardSpeed = createAddToFilter( <DashboardSpeed /> );
 	const addPageSpeedInsightsDashboardWidgetHomepageSpeed = createAddToFilter( <PageSpeedInsightsDashboardWidgetHomepageSpeed /> );
 
 	/**
@@ -52,7 +58,7 @@ if ( active && setupComplete ) {
 	/**
 	 * Add component to the setup wizard
 	 */
-	addFilter( `googlesitekit.ModuleSetup-${slug}`,
+	addFilter( `googlesitekit.ModuleSetup-${ slug }`,
 		'googlesitekit.PageSpeedInsightsModuleSetupWizard',
 		fillFilterWithComponent( PageSpeedInsightsSetup, {
 			onSettingsPage: false,

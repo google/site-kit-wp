@@ -16,12 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import WPSearchConsoleDashboardWidgetOverview from './wp-dashboard-widget-overview';
 
 const { Component, Fragment } = wp.element;
 
 class WPSearchConsoleDashboardWidget extends Component {
-
 	render() {
 		return (
 			<Fragment>

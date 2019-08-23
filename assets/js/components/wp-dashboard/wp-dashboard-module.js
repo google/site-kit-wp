@@ -23,7 +23,6 @@ const { withFilters } = wp.components;
  * A single module. Keeps track of its own active state and settings.
  */
 class WPDashboardModule extends Component {
-
 	render() {
 		return null;
 	}

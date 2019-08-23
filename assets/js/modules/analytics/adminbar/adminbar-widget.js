@@ -16,15 +16,19 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import AnalyticsAdminbarWidgetOverview from './adminbar-widget-overview';
+/**
+ * External dependencies
+ */
 import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
 
 const { Component, Fragment } = wp.element;
 
 class AnalyticsAdminbarWidget extends Component {
-
 	render() {
-
 		if ( typeof googlesitekit.permaLink !== typeof undefined && '' === googlesitekit.permaLink ) {
 			return null;
 		}
@@ -44,7 +48,7 @@ class AnalyticsAdminbarWidget extends Component {
 		}
 
 		return (
-			<AnalyticsAdminbarWidgetOverview/>
+			<AnalyticsAdminbarWidgetOverview />
 		);
 	}
 }

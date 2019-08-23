@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import { getTotalNotifications, incrementCount, decrementCount } from 'GoogleComponents/notifications/util';
 
 const { Component, createPortal } = wp.element;
@@ -38,13 +41,11 @@ class NotificationCounter extends Component {
 	}
 
 	componentDidMount() {
-
 		// Wait until data is fully loaded before requesting notifications data.
 		addAction(
 			'googlesitekit.dataLoaded',
 			'googlesitekit.dataLoadedGetNotifications',
 			() => {
-
 				// Only handle the first completed data load.
 				removeAction(
 					'googlesitekit.dataLoaded',

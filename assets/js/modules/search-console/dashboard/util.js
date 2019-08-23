@@ -16,9 +16,12 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import { changeToPercent, readableLargeNumber } from 'GoogleUtil';
 
-const { each }  = lodash;
+const { each } = lodash;
 let searchConsoleData = false;
 
 function reduceSearchConsoleData( rows ) {
@@ -29,7 +32,7 @@ function reduceSearchConsoleData( rows ) {
 			{ type: 'number', label: 'Impressions' },
 			{ type: 'number', label: 'CTR' },
 			{ type: 'number', label: 'Position' },
-		]
+		],
 	];
 
 	let totalClicks = 0;
@@ -38,7 +41,7 @@ function reduceSearchConsoleData( rows ) {
 	let totalPosition = 0;
 	const count = rows.length;
 	each( rows, ( row ) => {
-		const date = new Date( row.keys[0] );
+		const date = new Date( row.keys[ 0 ] );
 		dataMap.push( [
 			( date.getMonth() + 1 ) + '/' + date.getUTCDate(),
 			row.clicks,
@@ -75,7 +78,6 @@ function reduceSearchConsoleData( rows ) {
 }
 
 export const extractSearchConsoleDashboardData = ( rows ) => {
-
 	// Split the results in two chunks.
 	const half = Math.floor( rows.length / 2 );
 	const lastMonthRows = rows.slice( rows.length - half, rows.length );
@@ -106,11 +108,10 @@ export const extractSearchConsoleDashboardData = ( rows ) => {
 /**
  * Check for Zero data from Search Console API.
  *
- * @param {object} data The data returned from the Search Console API call.
- * @returns {boolean}
+ * @param {Object} data The data returned from the Search Console API call.
+ * @return {boolean}
  */
 export const isDataZeroSearchConsole = ( data ) => {
-
 	if ( ! data.length ) {
 		return true;
 	}
@@ -130,5 +131,4 @@ export const isDataZeroSearchConsole = ( data ) => {
 			0 === parseInt( averageCTR ) &&
 			0 === parseInt( averagePosition )
 	);
-
 };

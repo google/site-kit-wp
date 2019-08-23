@@ -16,12 +16,15 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import gulp from 'gulp';
 import requireDir from 'require-dir';
 import runSequence from 'run-sequence';
 import livereload from 'gulp-livereload';
 import { execSync } from 'child_process';
-var phpunit = require( 'gulp-phpunit' );
+const phpunit = require( 'gulp-phpunit' );
 
 requireDir( './gulp-tasks' );
 

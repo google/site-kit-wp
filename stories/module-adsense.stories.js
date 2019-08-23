@@ -1,10 +1,19 @@
+/**
+ * External dependencies
+ */
 import { storiesOf } from '@storybook/react';
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import Layout from 'GoogleComponents/layout/layout';
 import AdSenseEstimateEarningsWidget
 	from 'GoogleModules/adsense/dashboard/dashboard-widget-estimate-earnings';
 import AdSensePerformanceWidget from 'GoogleModules/adsense/dashboard/dashboard-widget-performance';
 import AdSenseDashboardOutro from 'GoogleModules/adsense/dashboard/dashboard-outro';
+/**
+ * Internal dependencies
+ */
 import { googlesitekit as adSenseData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-adsense-googlesitekit';
 
 storiesOf( 'AdSense Module', module )
@@ -35,7 +44,7 @@ storiesOf( 'AdSense Module', module )
 	}, {
 		options: {
 			readySelector: '.googlesitekit-data-block',
-		}
+		},
 	} )
 	.add( 'Performance', () => {
 		window.googlesitekit = adSenseData;

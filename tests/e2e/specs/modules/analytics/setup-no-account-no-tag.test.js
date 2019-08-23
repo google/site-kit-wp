@@ -10,12 +10,13 @@ import {
 	deactivateAllOtherPlugins,
 	resetSiteKit,
 	useRequestInterception,
+	setSearchConsoleProperty,
 } from '../../../utils';
 
 describe( 'setting up the Analytics module with no existing account and no existing tag', () => {
-	beforeAll( async() => {
+	beforeAll( async () => {
 		await page.setRequestInterception( true );
-		useRequestInterception( request => {
+		useRequestInterception( ( request ) => {
 			if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
 				request.respond( {
 					status: 302,
@@ -25,12 +26,12 @@ describe( 'setting up the Analytics module with no existing account and no exist
 							'code=valid-test-code',
 							'e2e-site-verification=1',
 							'scope=TEST_ALL_SCOPES',
-						].join( '&' ) )
-					}
+						].join( '&' ) ),
+					},
 				} );
 			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
 				request.respond( {
-					status: 200
+					status: 200,
 				} );
 			} else {
 				request.continue();
@@ -38,20 +39,20 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		} );
 	} );
 
-	beforeEach( async() => {
+	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-auth-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock-no-account' );
+		await setSearchConsoleProperty();
 	} );
 
-	afterEach( async() => {
+	afterEach( async () => {
 		await deactivateAllOtherPlugins();
 		await resetSiteKit();
 	} );
 
-	it( 'displays account creation form when user has no Analytics account', async() => {
-
+	it( 'displays account creation form when user has no Analytics account', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await page.waitForSelector( '.mdc-tab-bar' );
 		await expect( page ).toClick( '.mdc-tab', { text: /connect more services/i } );
@@ -67,19 +68,19 @@ describe( 'setting up the Analytics module with no existing account and no exist
 			window.open = () => {
 				window.wp.apiFetch( {
 					path: 'google-site-kit/v1/e2e/setup/analytics/account-created',
-					method: 'post'
+					method: 'post',
 				} );
 			};
 		} );
 
 		// Clicking Create Account button will switch API mock plugins on the server to the one that has accounts.
 		await Promise.all( [
-			page.waitForResponse( res => res.url().match( 'google-site-kit/v1/e2e/setup/analytics/account-created' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/e2e/setup/analytics/account-created' ) ),
 			expect( page ).toClick( '.mdc-button', { text: /Create an account/i } ),
 		] );
 
 		await Promise.all( [
-			page.waitForResponse( req => req.url().match( 'analytics/data/get-accounts' ) ),
+			page.waitForResponse( ( req ) => req.url().match( 'analytics/data/get-accounts' ) ),
 			expect( page ).toClick( '.googlesitekit-cta-link', { text: /Re-fetch My Account/i } ),
 		] );
 
@@ -96,5 +97,4 @@ describe( 'setting up the Analytics module with no existing account and no exist
 
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
 	} );
-
 } );

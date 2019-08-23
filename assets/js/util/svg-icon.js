@@ -16,17 +16,20 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import PropTypes from 'prop-types';
 
 const SvgIcon = ( { id, className, height, width } ) => {
 	const svgPath = `${ googlesitekit.admin.assetsRoot }svg/svg.svg`;
 	return (
 		<svg
-			className={ `${'svg'} ${className}` }
+			className={ `${ 'svg' } ${ className }` }
 			height={ height }
 			width={ width }
 		>
-			<use xlinkHref={ `${svgPath}#${id}` }/>
+			<use xlinkHref={ `${ svgPath }#${ id }` } />
 		</svg>
 	);
 };
@@ -35,13 +38,13 @@ SvgIcon.propTypes = {
 	id: PropTypes.string.isRequired,
 	className: PropTypes.string,
 	height: PropTypes.string,
-	width: PropTypes.string
+	width: PropTypes.string,
 };
 
 SvgIcon.defaultProps = {
 	className: '',
 	height: 20,
-	width: 20
+	width: 20,
 };
 
 export default SvgIcon;

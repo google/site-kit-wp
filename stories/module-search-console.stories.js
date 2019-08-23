@@ -1,8 +1,17 @@
+/**
+ * External dependencies
+ */
 import { storiesOf } from '@storybook/react';
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import Layout from 'GoogleComponents/layout/layout';
 import SearchConsoleDashboardWidgetOverview from 'GoogleModules/search-console/dashboard/dashboard-widget-overview';
 import SearchConsoleDashboardWidgetSiteStats from 'GoogleModules/search-console/dashboard/dashboard-widget-sitestats';
+/**
+ * Internal dependencies
+ */
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 
 storiesOf( 'Search Console Module', module )
@@ -11,25 +20,25 @@ storiesOf( 'Search Console Module', module )
 
 		const selectedStats = [
 			0,
-			1
+			1,
 		];
 		const series = [
 			{
-				'color': '#4285f4',
-				'targetAxisIndex': 0
+				color: '#4285f4',
+				targetAxisIndex: 0,
 			},
 			{
-				'color': '#27bcd4',
-				'targetAxisIndex': 1
-			}
+				color: '#27bcd4',
+				targetAxisIndex: 1,
+			},
 		];
 		const vAxes = [
 			{
-				'title': 'Clicks'
+				title: 'Clicks',
 			},
 			{
-				'title': 'Impressions'
-			}
+				title: 'Impressions',
+			},
 		];
 
 		// Load the datacache with data.
@@ -50,7 +59,7 @@ storiesOf( 'Search Console Module', module )
 				<SearchConsoleDashboardWidgetOverview
 					selectedStats={ selectedStats }
 				/>
-				<SearchConsoleDashboardWidgetSiteStats selectedStats={ selectedStats } series={ series } vAxes={ vAxes }/>
+				<SearchConsoleDashboardWidgetSiteStats selectedStats={ selectedStats } series={ series } vAxes={ vAxes } />
 			</Layout>
 		);
 	},

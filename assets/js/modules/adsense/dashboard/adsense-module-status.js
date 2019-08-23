@@ -16,8 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import PropTypes from 'prop-types';
 import SvgIcon from 'GoogleUtil/svg-icon';
+/**
+ * Internal dependencies
+ */
 import { getAdSenseAccountStatus } from '../util';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import AdSenseSetupInstructions from '../setup/adsense-setup-instructions';
@@ -30,17 +36,16 @@ const { Component, Fragment } = wp.element;
 const { __ } = wp.i18n;
 
 class AdSenseModuleStatus extends Component {
-
 	constructor( props ) {
 		super( props );
 		this.state = {
 			loadStatus: __( 'Loading…', 'google-site-kit' ),
 			existingTag: false,
 		};
-		this.updateLoadStatus      = this.updateLoadStatus.bind( this );
+		this.updateLoadStatus = this.updateLoadStatus.bind( this );
 		this.handleComponentRender = this.handleComponentRender.bind( this );
-		this.continueSetup         = this.continueSetup.bind( this );
-		this.goBack                = this.goBack.bind( this );
+		this.continueSetup = this.continueSetup.bind( this );
+		this.goBack = this.goBack.bind( this );
 	}
 
 	// Update the load status as the user status is determined.
@@ -88,7 +93,7 @@ class AdSenseModuleStatus extends Component {
 			return (
 				<Fragment>
 					<div className="googlesitekit-settings-module-warning">
-						<SvgIcon id="error" height="20" width="23"/> { __( 'Ad blocker detected, you need to disable it in order to setup AdSense.', 'google-site-kit' ) }
+						<SvgIcon id="error" height="20" width="23" /> { __( 'Ad blocker detected, you need to disable it in order to setup AdSense.', 'google-site-kit' ) }
 					</div>
 				</Fragment>
 			);
@@ -98,25 +103,25 @@ class AdSenseModuleStatus extends Component {
 			return (
 				<Fragment>
 					{ loadStatus }
-					<ProgressBar/>
+					<ProgressBar />
 				</Fragment>
 			);
 		}
 		if ( 'account-pending-review' === accountStatus ) {
 			return (
-				<AdSenseInProcessStatus status='incomplete' />
+				<AdSenseInProcessStatus status="incomplete" />
 			);
 		}
 
 		if ( 'account-required-action' === accountStatus ) {
 			return (
-				<AdSenseInProcessStatus status='requiredAction' />
+				<AdSenseInProcessStatus status="requiredAction" />
 			);
 		}
 
 		if ( 'ads-display-pending' === accountStatus ) {
 			return (
-				<AdSenseInProcessStatus status='adsDisplayPending' />
+				<AdSenseInProcessStatus status="adsDisplayPending" />
 			);
 		}
 
@@ -134,7 +139,7 @@ class AdSenseModuleStatus extends Component {
 			<div className="googlesitekit-setup-module googlesitekit-setup-module--adsense">
 				<div className="googlesitekit-setup-module__step">
 					<div className="googlesitekit-setup-module__logo">
-						<SvgIcon id="adsense" width="33" height="33"/>
+						<SvgIcon id="adsense" width="33" height="33" />
 					</div>
 					<h2 className="
 							googlesitekit-heading-3
@@ -153,7 +158,7 @@ class AdSenseModuleStatus extends Component {
 
 AdSenseModuleStatus.propTypes = {
 	status: PropTypes.string,
-	module: PropTypes.string
+	module: PropTypes.string,
 };
 
 export default AdSenseModuleStatus;

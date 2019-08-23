@@ -18,6 +18,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import {
 	appendNotificationsCount,
 	clearAppLocalStorage,

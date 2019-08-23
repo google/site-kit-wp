@@ -20,7 +20,6 @@ const { withFilters } = wp.components;
 const { Component } = wp.element;
 
 class DashboardSpeedInner extends Component {
-
 	render() {
 		return null;
 	}

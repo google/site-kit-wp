@@ -1,7 +1,6 @@
 const viewPorts = require( './viewports' );
 
 const backstopOptions = ( scenarios ) => {
-
 	const options = {
 		onBeforeScript: 'puppet/onBefore.js',
 		asyncCaptureLimit: 5,
@@ -10,7 +9,7 @@ const backstopOptions = ( scenarios ) => {
 		debugWindow: false,
 		engine: 'puppeteer',
 		engineOptions: {
-			args: [ '--no-sandbox' ]
+			args: [ '--no-sandbox' ],
 		},
 		id: 'google-site-kit',
 		paths: {
@@ -18,10 +17,10 @@ const backstopOptions = ( scenarios ) => {
 			bitmaps_test: 'tests/backstop/tests',
 			engine_scripts: 'tests/backstop/engine_scripts',
 			html_report: 'tests/backstop/html_report',
-			ci_report: 'tests/backstop/ci_report'
+			ci_report: 'tests/backstop/ci_report',
 		},
 		report: [ 'browser' ],
-		scenarios: scenarios,
+		scenarios,
 		viewports: viewPorts,
 		readyEvent: 'backstopjs_ready',
 		misMatchThreshold: 0.05, // @todo change to 0, resolve SVG issue.

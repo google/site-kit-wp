@@ -1,54 +1,37 @@
 {
-	"extends": [
-		"eslint:recommended",
-		"plugin:react/recommended",
-		"wordpress",
-		"plugin:jest/recommended"
-	],
-	"parser": "babel-eslint",
-	"env": {
-	  "browser": true,
-	  "es6": true
-	},
-	"rules": {
-    "yoda": [ 1 ],
-    "comma-dangle": [ 0 ],
-    "indent": [ 1, "tab", { "SwitchCase": 2 } ],
-    "linebreak-style": [ 1, "unix" ],
-    "quotes": [ 1, "single" ],
-    "space-in-parens": [ 1, "always" ],
-    "object-curly-spacing": [ 1, "always" ],
-    "no-console": [ 1 ],
-    "no-alert": [ 1 ],
-    "camelcase": [ 1 ],
-    "no-debugger": [ 1 ],
-    "no-extra-boolean-cast": [ 1 ],
-    "react/react-in-jsx-scope": [ 0 ],
-    "react/jsx-curly-spacing": [ 2, { "when": "always", "children": true } ],
-    "no-unused-vars": [ "error", { "varsIgnorePattern": "React" } ],
-    "react/prop-types": [ 0 ],
-    "function-paren-newline": [ "error", "consistent" ],
-		"array-bracket-spacing": [ "error", "always" ]
-	},
+  "extends": [
+    "plugin:@wordpress/eslint-plugin/recommended",
+    "plugin:jest/recommended"
+  ],
+  "env": {
+    "browser": true,
+    "es6": true
+  },
   "settings": {
     "react": {
       "version": "16.2.0"
     }
   },
   "globals": {
-    "React": true,
-    "googlesitekit": true,
-    "googlesitekitAdminbar": true,
-    "googlesitekitDashboard": true,
-    "googlesitekitSettings": true,
-    "lodash": true,
-    "googlesitekitCurrentModule": true,
-    "gtag": true,
-    "process": true
+    "React": "readonly",
+    "googlesitekit": "readonly",
+    "googlesitekitAdminbar": "readonly",
+    "googlesitekitDashboard": "readonly",
+    "googlesitekitSettings": "readonly",
+    "lodash": "readonly",
+    "googlesitekitCurrentModule": "readonly",
+    "gtag": "readonly",
+    "process": "readonly",
+    "wp": "readonly"
+  },
+  "rules": {
+    "valid-jsdoc": "warn"
   },
   "overrides": [
     {
-      "files": [ "tests/e2e/**/*.js" ],
+      "files": [
+        "tests/e2e/**/*.js"
+      ],
       "env": {
         "browser": true
       },

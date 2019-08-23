@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Notification from 'GoogleComponents/notifications/notification';
 
 const { Component } = wp.element;

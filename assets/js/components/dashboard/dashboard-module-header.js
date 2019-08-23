@@ -15,6 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * External dependencies
+ */
 import DateRangeSelector from 'GoogleComponents/date-range-selector';
 
 import PropTypes from 'prop-types';
@@ -27,25 +30,25 @@ class DashboardModuleHeader extends Component {
 			<header className="googlesitekit-dashboard-module-header">
 				<div className="mdc-layout-grid__inner">
 					{ title &&
-							<div className="
+					<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-10-desktop
 								mdc-layout-grid__cell--span-6-tablet
 								mdc-layout-grid__cell--span-2-phone
 							">
-								<h3 className="
+						<h3 className="
 									googlesitekit-heading-3
 									googlesitekit-dashboard-module-header__title
 								">
-									{ title }
-								</h3>
-								{ description &&
-								<p className="googlesitekit-dashboard-module-header__description">{ description }</p>
-								}
-							</div>
+							{ title }
+						</h3>
+						{ description &&
+						<p className="googlesitekit-dashboard-module-header__description">{ description }</p>
+						}
+					</div>
 					}
 					{ timePeriod &&
-							<div className="
+					<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-2-desktop
 								mdc-layout-grid__cell--span-2-tablet
@@ -53,10 +56,10 @@ class DashboardModuleHeader extends Component {
 								mdc-layout-grid__cell--align-bottom
 								mdc-layout-grid__cell--align-right
 							">
-								<div className="googlesitekit-dashboard-module-header__time">
-									<DateRangeSelector />
-								</div>
-							</div>
+						<div className="googlesitekit-dashboard-module-header__time">
+							<DateRangeSelector />
+						</div>
+					</div>
 					}
 				</div>
 			</header>

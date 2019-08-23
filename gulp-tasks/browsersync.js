@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import gulp from 'gulp';
 import browserSync from 'browser-sync';
 
@@ -5,7 +8,7 @@ browserSync.create();
 
 gulp.task( 'browser-sync', function() {
 	browserSync.init( {
-		proxy: 'googlekitlocal.10uplabs.com'
+		proxy: 'googlekitlocal.10uplabs.com',
 	} );
 
 	gulp.watch( './assets/sass/**/*.scss', [ 'build' ] );
