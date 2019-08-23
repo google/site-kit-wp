@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import PropTypes from 'prop-types';
 import Button from 'GoogleComponents/button';
 import Link from 'GoogleComponents/link';
@@ -85,7 +88,7 @@ class WizardStepAuthentication extends Component {
 									id="opt-in"
 									name="optin"
 								/>
-								<HelpLink/>
+								<HelpLink />
 							</div>
 						</div>
 					</div>

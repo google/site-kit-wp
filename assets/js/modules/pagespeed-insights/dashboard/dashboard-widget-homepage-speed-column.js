@@ -16,12 +16,18 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import withData from 'GoogleComponents/higherorder/withdata';
 import { getTimeInSeconds } from 'GoogleUtil';
 import {
 	getDataTableFromData,
 	TableOverflowContainer,
 } from 'GoogleComponents/data-table';
+/**
+ * Internal dependencies
+ */
 import {
 	getScoreCategoryLabel,
 	PageSpeedReportScoreCategoryWrapper,
@@ -35,14 +41,12 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
 	componentDidMount() {
 		const {
 			data,
-			handleDataLoaded
+			handleDataLoaded,
 		} = this.props;
-
 
 		if ( data && handleDataLoaded ) {
 			handleDataLoaded();
 		}
-
 	}
 	render() {
 		const { data } = this.props;
@@ -62,9 +66,9 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
 
 		const title = 'mobile' === data.configSettings.emulatedFormFactor ? __( 'Mobile', 'google-site-kit' ) : __( 'Desktop', 'google-site-kit' );
 
-		const score         = data.categories.performance.score;
+		const score = data.categories.performance.score;
 		const scoreCategory = getScoreCategoryLabel( score );
-		const interactive   = data.audits.interactive.displayValue;
+		const interactive = data.audits.interactive.displayValue;
 
 		const dataTable = getDataTableFromData(
 			[

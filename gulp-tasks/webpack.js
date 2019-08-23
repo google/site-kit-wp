@@ -1,10 +1,16 @@
+/**
+ * External dependencies
+ */
 import gulp from 'gulp';
-import config from '../webpack.config.js';
 import webpack from 'webpack';
 import gutil from 'gulp-util';
 
-gulp.task( 'webpack', function( callback ) {
+/**
+ * Internal dependencies
+ */
+import config from '../webpack.config.js';
 
+gulp.task( 'webpack', function( callback ) {
 	// run webpack
 	webpack(
 		config(),

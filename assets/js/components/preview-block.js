@@ -16,12 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import PropTypes from 'prop-types';
 
 const { Component } = wp.element;
 
 class PreviewBlock extends Component {
-
 	render() {
 		const {
 			width,

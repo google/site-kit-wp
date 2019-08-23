@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { storiesOf } from '@storybook/react';
 import Button from 'GoogleComponents/button';
 
@@ -44,5 +47,5 @@ storiesOf( 'Global', module )
 			hoverSelector: '.googlesitekit-button--hover',
 			postInteractionWait: 3000, // Wait for shadows to animate.
 			onReadyScript: 'mouse.js',
-		}
+		},
 	} );

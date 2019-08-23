@@ -16,7 +16,13 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Header from 'GoogleComponents/header';
+/**
+ * Internal dependencies
+ */
 import AnalyticsDashboardWidgetSiteStats from './dashboard-widget-sitestats';
 import AnalyticsDashboardWidgetTopPagesTable from './dashboard-widget-top-pages-table';
 import AnalyticsDashboardWidgetOverview from './dashboard-widget-overview';
@@ -37,7 +43,6 @@ const { Component, Fragment } = wp.element;
 const { __, sprintf } = wp.i18n;
 
 class AnalyticsDashboardWidget extends Component {
-
 	constructor( props ) {
 		super( props );
 
@@ -93,7 +98,7 @@ class AnalyticsDashboardWidget extends Component {
 		this.setState( {
 			receivingData: false,
 			loading: false,
-			error
+			error,
 		} );
 	}
 
@@ -119,11 +124,11 @@ class AnalyticsDashboardWidget extends Component {
 
 		return {
 			0: {
-				color: colorMap[selectedStats],
+				color: colorMap[ selectedStats ],
 				targetAxisIndex: 0,
 			},
 			1: {
-				color: colorMap[selectedStats],
+				color: colorMap[ selectedStats ],
 				targetAxisIndex: 0,
 				lineDashStyle: [ 3, 3 ],
 				lineWidth: 1,
@@ -149,8 +154,8 @@ class AnalyticsDashboardWidget extends Component {
 
 		return (
 			<Fragment>
-				<Header/>
-				<Alert module='analytics'/>
+				<Header />
+				<Alert module="analytics" />
 				<div className="googlesitekit-module-page googlesitekit-module-page--analytics">
 					<div className="mdc-layout-grid">
 						<div className="mdc-layout-grid__inner">
@@ -229,7 +234,7 @@ class AnalyticsDashboardWidget extends Component {
 												mdc-layout-grid__cell--span-8-tablet
 												mdc-layout-grid__cell--span-4-phone
 											">
-												<DashboardAcquisitionPieChart/>
+												<DashboardAcquisitionPieChart />
 											</div>
 											<div className="
 												mdc-layout-grid__cell
@@ -237,7 +242,7 @@ class AnalyticsDashboardWidget extends Component {
 												mdc-layout-grid__cell--span-8-tablet
 												mdc-layout-grid__cell--span-4-phone
 											">
-												<AnalyticsDashboardWidgetTopAcquisitionSources/>
+												<AnalyticsDashboardWidgetTopAcquisitionSources />
 											</div>
 										</div>
 									</div>
@@ -248,7 +253,7 @@ class AnalyticsDashboardWidget extends Component {
 								mdc-layout-grid__cell--span-12
 								mdc-layout-grid__cell--align-right
 							">
-								<HelpLink/>
+								<HelpLink />
 							</div>
 						</div>
 					</div>

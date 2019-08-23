@@ -1,4 +1,10 @@
+/**
+ * External dependencies
+ */
 import { storiesOf } from '@storybook/react';
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import Notification from 'GoogleComponents/notifications/notification';
 import ModulesList from 'GoogleComponents/modules-list';
@@ -9,12 +15,12 @@ storiesOf( 'Global/Notifications', module )
 			id="notification-id"
 			title={ __( 'Congrats on completing the setup for Analytics!', 'google-site-kit' ) }
 			handleDismiss={ () => {} }
-			winImage={ `${googlesitekit.admin.assetsRoot}images/rocket.png` }
+			winImage={ `${ googlesitekit.admin.assetsRoot }images/rocket.png` }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="large"
 			type="win-success"
 		>
-			<ModulesList/>
+			<ModulesList />
 		</Notification>
 	) )
 	.add( 'Small with Image', () => (
@@ -25,7 +31,7 @@ storiesOf( 'Global/Notifications', module )
 			learnMore={ __( 'Learn more', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="small"
-			smallImage={ `${googlesitekit.admin.assetsRoot}images/thumbs-up.png` }
+			smallImage={ `${ googlesitekit.admin.assetsRoot }images/thumbs-up.png` }
 			type="win-success"
 		/>
 	) )
@@ -78,7 +84,7 @@ storiesOf( 'Global/Notifications', module )
 			description={ __( 'You had a record-high amount of visitors to your website yesterday.', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="large"
-			winImage={ `${googlesitekit.admin.assetsRoot}images/sun.png` }
+			winImage={ `${ googlesitekit.admin.assetsRoot }images/sun.png` }
 			logo
 			module="analytics"
 			moduleName="Analytics"
@@ -87,12 +93,12 @@ storiesOf( 'Global/Notifications', module )
 					{
 						title: 'Site Visitors',
 						datapoint: '23,780',
-						datapointUnit: ''
+						datapointUnit: '',
 					},
 					{
 						title: 'Increase',
 						datapoint: 25,
-						datapointUnit: '%'
+						datapointUnit: '%',
 					},
 				]
 			}
@@ -107,18 +113,18 @@ storiesOf( 'Global/Notifications', module )
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="large"
 			logo={ true }
-			winImage={ `${googlesitekit.admin.assetsRoot}images/sun-small.png` }
+			winImage={ `${ googlesitekit.admin.assetsRoot }images/sun-small.png` }
 			blockData={
 				[
 					{
 						title: 'Total Page Views',
 						datapoint: '413',
-						datapointUnit: ''
+						datapointUnit: '',
 					},
 					{
 						title: 'Increase',
 						datapoint: 15,
-						datapointUnit: '%'
+						datapointUnit: '%',
 					},
 				]
 			}
@@ -132,24 +138,24 @@ storiesOf( 'Global/Notifications', module )
 			description={ __( 'Thats out of this world. Here are the combined stats for your posts', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="large"
-			winImage={ `${googlesitekit.admin.assetsRoot}images/rocket.png` }
+			winImage={ `${ googlesitekit.admin.assetsRoot }images/rocket.png` }
 			blockData={
 				[
 					{
 						title: 'Total Views',
 						datapoint: 413,
-						datapointUnit: ''
+						datapointUnit: '',
 					},
 					{
 						title: 'Average Impressions',
 						datapoint: 735,
-						datapointUnit: ''
+						datapointUnit: '',
 					},
 					{
 						title: 'Average CTR',
 						datapoint: 12.9,
-						datapointUnit: '%'
-					}
+						datapointUnit: '%',
+					},
 				]
 			}
 			type="win-stats"
@@ -162,7 +168,7 @@ storiesOf( 'Global/Notifications', module )
 			description={ __( 'Last month was great! Here are some high level stats', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="large"
-			winImage={ `${googlesitekit.admin.assetsRoot}images/g-win.png` }
+			winImage={ `${ googlesitekit.admin.assetsRoot }images/g-win.png` }
 			blockData={
 				[
 					{
@@ -171,7 +177,7 @@ storiesOf( 'Global/Notifications', module )
 						datapointUnit: 'K',
 						change: 20,
 						changeDataUnit: '%',
-						period: 'for month'
+						period: 'for month',
 					},
 					{
 						title: 'Total Impressions',
@@ -179,7 +185,7 @@ storiesOf( 'Global/Notifications', module )
 						datapointUnit: 'm',
 						change: 13,
 						changeDataUnit: '%',
-						period: 'for month'
+						period: 'for month',
 					},
 					{
 						title: 'Average CTR',
@@ -187,8 +193,8 @@ storiesOf( 'Global/Notifications', module )
 						datapointUnit: '%',
 						change: 5,
 						changeDataUnit: '%',
-						period: 'for month'
-					}
+						period: 'for month',
+					},
 				]
 			}
 			type="win-stats"

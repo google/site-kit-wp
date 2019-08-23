@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Switch from 'GoogleComponents/switch';
 import data from 'GoogleComponents/data';
 import PropTypes from 'prop-types';
@@ -32,7 +35,6 @@ const {
 } = wp.hooks;
 
 class AdSenseSettings extends Component {
-
 	constructor( props ) {
 		super( props );
 		const { adsenseTagEnabled = true } = googlesitekit.modules.adsense.settings;
@@ -77,7 +79,7 @@ class AdSenseSettings extends Component {
 		const { adsenseTagEnabled } = this.state;
 		if ( this._isMounted ) {
 			this.setState( {
-				adsenseTagEnabled
+				adsenseTagEnabled,
 			} );
 		}
 
@@ -90,7 +92,7 @@ class AdSenseSettings extends Component {
 			googlesitekit.modules.adsense.settings.adsenseTagEnabled = adsenseTagEnabled;
 		}
 
-		return data.set( 'modules', 'adsense', 'adsense-tag-enabled', toSave ).then( res => res ).catch( e => e );
+		return data.set( 'modules', 'adsense', 'adsense-tag-enabled', toSave ).then( ( res ) => res ).catch( ( e ) => e );
 	}
 
 	handleadsenseTagEnabledSwitch( ) {
@@ -100,7 +102,7 @@ class AdSenseSettings extends Component {
 
 		if ( this._isMounted ) {
 			this.setState( {
-				adsenseTagEnabled
+				adsenseTagEnabled,
 			} );
 		}
 
@@ -108,7 +110,7 @@ class AdSenseSettings extends Component {
 		sendAnalyticsTrackingEvent( 'adsense_setup', adsenseTagEnabled ? 'adsense_tag_enabled' : 'adsense_tag_disabled' );
 
 		if ( saveOnChange ) {
-			data.set( 'modules', 'adsense', 'adsense-tag-enabled', { adsenseTagEnabled } ).then( res => res ).catch( e => e );
+			data.set( 'modules', 'adsense', 'adsense-tag-enabled', { adsenseTagEnabled } ).then( ( res ) => res ).catch( ( e ) => e );
 		}
 	}
 
@@ -116,7 +118,6 @@ class AdSenseSettings extends Component {
 	 * Toggle confirm changes button disable/enabble depending on the changed settings.
 	 */
 	toggleConfirmChangesButton() {
-
 		if ( ! this.props.isEditing ) {
 			return;
 		}
@@ -204,6 +205,5 @@ AdSenseSettings.defaultProps = {
 	switchOnMessage: '',
 	switchOffMessage: '',
 };
-
 
 export default AdSenseSettings;

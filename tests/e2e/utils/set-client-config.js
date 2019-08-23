@@ -8,7 +8,7 @@ import { testClientConfig } from './test-client-config';
  * Set oAuth client configuration used by Site Kit.
  *
  * @param {Object} [config] Client configuration object.
- * @returns {*} resolved value from apiFetch promise.
+ * @return {*} resolved value from apiFetch promise.
  */
 export async function setClientConfig( config = testClientConfig ) {
 	return await wpApiFetch( {

@@ -1,4 +1,10 @@
+/**
+ * External dependencies
+ */
 import { storiesOf } from '@storybook/react';
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import DashboardSplashIntro from 'GoogleComponents/dashboard-splash/dashboard-splash-intro';
 import DashboardSplashModule from 'GoogleComponents/dashboard-splash/dashboard-splash-module';

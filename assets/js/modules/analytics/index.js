@@ -16,8 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import { fillFilterWithComponent, getSiteKitAdminURL } from 'GoogleUtil';
 import { createAddToFilter } from 'GoogleUtil/helpers';
+/**
+ * Internal dependencies
+ */
 import AnalyticsDashboardWidget from './dashboard/dashboard-widget';
 import AnalyticsAdminbarWidget from './adminbar/adminbar-widget';
 import AnalyticsAllTraffic from './dashboard/dashboard-widget-all-traffic';
@@ -50,7 +56,6 @@ if ( ! googlesitekit.modules[ slug ].setupComplete ) {
 	} = googlesitekit.admin;
 	const id = currentScreen ? currentScreen.id : null;
 	if ( ! reAuth && 'site-kit_page_googlesitekit-module-analytics' === id ) {
-
 		// Setup incomplete: redirect to the setup flow.
 		window.location = getSiteKitAdminURL(
 			`googlesitekit-module-${ slug }`,
@@ -63,15 +68,14 @@ if ( ! googlesitekit.modules[ slug ].setupComplete ) {
 }
 
 if ( googlesitekit.modules.analytics.active ) {
-
-	const addAnalyticsDashboardWidget                       = createAddToFilter( <AnalyticsDashboardWidget /> );
-	const addAnalyticsAllTraffic                            = createAddToFilter( <AnalyticsAllTraffic /> );
-	const addWPAnalyticsDashboardWidgetOverview             = createAddToFilter( <WPAnalyticsDashboardWidgetOverview /> );
-	const addWPAnalyticsDashboardWidgetTopPagesTable        = createAddToFilter( <WPAnalyticsDashboardWidgetTopPagesTable /> );
-	const addAnalyticsDashboardWidgetTopLevel               = createAddToFilter( <AnalyticsDashboardWidgetTopLevel /> );
-	const addAnalyticsDashboardDetailsWidget                = createAddToFilter( <AnalyticsDashboardDetailsWidgetTopAcquisitionSources /> );
-	const addAnalyticsAdSenseTopPagesWidget                 = createAddToFilter( <AnalyticsAdSenseDashboardWidgetTopPagesTable /> );
-	const addAnalyticsDashboardWidgetPopularPagesTable      = createAddToFilter( <AnalyticsDashboardWidgetPopularPagesTable /> );
+	const addAnalyticsDashboardWidget = createAddToFilter( <AnalyticsDashboardWidget /> );
+	const addAnalyticsAllTraffic = createAddToFilter( <AnalyticsAllTraffic /> );
+	const addWPAnalyticsDashboardWidgetOverview = createAddToFilter( <WPAnalyticsDashboardWidgetOverview /> );
+	const addWPAnalyticsDashboardWidgetTopPagesTable = createAddToFilter( <WPAnalyticsDashboardWidgetTopPagesTable /> );
+	const addAnalyticsDashboardWidgetTopLevel = createAddToFilter( <AnalyticsDashboardWidgetTopLevel /> );
+	const addAnalyticsDashboardDetailsWidget = createAddToFilter( <AnalyticsDashboardDetailsWidgetTopAcquisitionSources /> );
+	const addAnalyticsAdSenseTopPagesWidget = createAddToFilter( <AnalyticsAdSenseDashboardWidgetTopPagesTable /> );
+	const addAnalyticsDashboardWidgetPopularPagesTable = createAddToFilter( <AnalyticsDashboardWidgetPopularPagesTable /> );
 	const addAnalyticsDashboardWidgetPopularPagesTableSmall = createAddToFilter( <AdSenseDashboardWidgetTopPagesTableSmall /> );
 
 	/**
@@ -124,7 +128,7 @@ if ( googlesitekit.modules.analytics.active ) {
 	/**
 	 * Add components to the settings page.
 	 */
-	addFilter( `googlesitekit.ModuleSettingsDetails-${slug}`,
+	addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
 		'googlesitekit.AnalyticsModuleSettingsDetails',
 		fillFilterWithComponent( AnalyticsSetup, {
 			onSettingsPage: true,
@@ -137,7 +141,7 @@ if ( googlesitekit.modules.analytics.active ) {
 	/**
 	 * Add component to the setup wizard
 	 */
-	addFilter( `googlesitekit.ModuleSetup-${slug}`,
+	addFilter( `googlesitekit.ModuleSetup-${ slug }`,
 		'googlesitekit.AnalyticsModuleSetupWizard',
 		fillFilterWithComponent( AnalyticsSetup, {
 			onSettingsPage: false,

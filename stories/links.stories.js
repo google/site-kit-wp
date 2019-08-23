@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { storiesOf } from '@storybook/react';
 import Link from 'GoogleComponents/link';
 
@@ -115,5 +118,5 @@ storiesOf( 'Global', module )
 		options: {
 			hoverSelector: '.googlesitekit-cta-link--hover',
 			onReadyScript: 'mouse.js',
-		}
+		},
 	} );

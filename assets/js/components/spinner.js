@@ -22,7 +22,6 @@ const { Component } = wp.element;
  * A single module. Keeps track of its own active state and settings.
  */
 class Spinner extends Component {
-
 	render() {
 		const { isSaving } = this.props;
 		return (

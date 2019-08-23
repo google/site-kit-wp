@@ -1,5 +1,11 @@
+/**
+ * External dependencies
+ */
 import { storiesOf } from '@storybook/react';
 import { TextField, Input } from 'SiteKitCore/material-components';
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 
 storiesOf( 'Global', module )

@@ -16,10 +16,13 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import {
 	addPerformanceMonitoring,
 	clearAppLocalStorage,
-}  from 'GoogleUtil';
+} from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
 
 const { setLocaleData } = wp.i18n;
@@ -27,13 +30,12 @@ const { Component, render, Fragment } = wp.element;
 const { doAction } = wp.hooks;
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
 import DashboardSplashApp from './components/dashboard-splash/dashboard-splash-app';
 import NotificationCounter from './components/notifications/notification-counter';
 
 class GoogleSitekitDashboardSplash extends Component {
-
 	constructor( props ) {
 		super( props );
 		this.state = {
@@ -91,14 +93,12 @@ class GoogleSitekitDashboardSplash extends Component {
 
 // Initialize the app once the DOM is ready.
 wp.domReady( function() {
-
-	if (  googlesitekit.admin.resetSession ) {
+	if ( googlesitekit.admin.resetSession ) {
 		clearAppLocalStorage();
 	}
 
 	const dashboardSplash = document.getElementById( 'js-googlesitekit-dashboard-splash' );
 	if ( null !== dashboardSplash ) {
-
 		// Render the Dashboard Splash App.
 		render( <GoogleSitekitDashboardSplash />, dashboardSplash );
 

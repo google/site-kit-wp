@@ -134,6 +134,8 @@ function observeConsoleLogging() {
 
 /**
  * Observe the given REST request.
+ *
+ * @param {Object} req HTTP request object from the REST API request.
  */
 function observeRestRequest( req ) {
 	if ( req.url().match( 'wp-json' ) ) {
@@ -144,6 +146,8 @@ function observeRestRequest( req ) {
 
 /**
  * Observe the given REST response.
+ *
+ * @param {Object} res HTTP response object from the REST API request.
  */
 async function observeRestResponse( res ) {
 	if ( res.url().match( 'wp-json' ) ) {
@@ -160,7 +164,7 @@ async function observeRestResponse( res ) {
 // Before every test suite run, delete all content created by the test. This ensures
 // other posts/comments/etc. aren't dirtying tests and tests don't depend on
 // each other's side-effects.
-beforeAll( async() => {
+beforeAll( async () => {
 	capturePageEventsForTearDown();
 	enablePageDialogAccept();
 	observeConsoleLogging();
@@ -174,13 +178,13 @@ beforeAll( async() => {
 	await resetSiteKit();
 } );
 
-afterEach( async() => {
+afterEach( async () => {
 	await clearLocalStorage();
 	await clearSessionStorage();
 	await setBrowserViewport( 'large' );
 } );
 
-afterAll( async() => {
+afterAll( async () => {
 	await deactivateAllOtherPlugins();
 	await resetSiteKit();
 	removePageEvents();

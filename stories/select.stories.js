@@ -1,5 +1,11 @@
+/**
+ * External dependencies
+ */
 import { storiesOf } from '@storybook/react';
 import { Select, Option } from 'SiteKitCore/material-components';
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 
 storiesOf( 'Global', module )
@@ -85,5 +91,5 @@ storiesOf( 'Global', module )
 			clickSelector: '.googlesitekit-story-select-click',
 			postInteractionWait: 3000, // Wait for overlay and selects to animate.
 			onReadyScript: 'mouse.js',
-		}
+		},
 	} );

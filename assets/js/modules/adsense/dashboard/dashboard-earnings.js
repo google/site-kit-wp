@@ -16,7 +16,13 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
+/**
+ * Internal dependencies
+ */
 import DashboardAdSenseTopEarningPagesSmall from './dashboard-adsense-top-pages-small';
 import AdSenseDashboardMainSummary from './dashboard-widget-main-summary';
 import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
@@ -25,7 +31,6 @@ const { Component, Fragment } = wp.element;
 const { __ } = wp.i18n;
 
 class DashboardEarnings extends Component {
-
 	render() {
 		return (
 			<Fragment>
@@ -40,8 +45,8 @@ class DashboardEarnings extends Component {
 					/>
 					<ModuleSettingsWarning slug="adsense" context="module-sitekit-dashboard" />
 				</div>
-				<AdSenseDashboardMainSummary/>
-				<DashboardAdSenseTopEarningPagesSmall/>
+				<AdSenseDashboardMainSummary />
+				<DashboardAdSenseTopEarningPagesSmall />
 			</Fragment>
 		);
 	}

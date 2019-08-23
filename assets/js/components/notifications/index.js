@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import DashboardSetupAlerts from 'GoogleComponents/notifications/dashboard-setup-alerts';
 import DashboardModulesAlerts from 'GoogleComponents/notifications/dashboard-modules-alerts';
 import DashboardWinsAlerts from 'GoogleComponents/notifications/dashboard-wins-alerts';

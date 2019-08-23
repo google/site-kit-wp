@@ -21,16 +21,15 @@ import {
 } from '../utils';
 
 describe( 'the set up flow for an editor', () => {
-
-	beforeAll( async() => {
+	beforeAll( async () => {
 		await page.setRequestInterception( true );
-		useRequestInterception( request => {
+		useRequestInterception( ( request ) => {
 			if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
 				request.respond( {
 					status: 302,
 					headers: {
-						location: createURL( '/', 'oauth2callback=1&code=valid-test-code' )
-					}
+						location: createURL( '/', 'oauth2callback=1&code=valid-test-code' ),
+					},
 				} );
 			} else {
 				request.continue();
@@ -38,7 +37,7 @@ describe( 'the set up flow for an editor', () => {
 		} );
 	} );
 
-	beforeEach( async() => {
+	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await setClientConfig();
 		await setAuthToken();
@@ -46,7 +45,7 @@ describe( 'the set up flow for an editor', () => {
 		await setSearchConsoleProperty();
 	} );
 
-	afterEach( async() => {
+	afterEach( async () => {
 		await logoutUser();
 
 		// Restore the default/admin user
@@ -54,7 +53,7 @@ describe( 'the set up flow for an editor', () => {
 		await loginUser();
 	} );
 
-	it( 'allows an editor to connect their Google account from the splash page', async() => {
+	it( 'allows an editor to connect their Google account from the splash page', async () => {
 		await loginUser( 'editor', 'password' );
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 

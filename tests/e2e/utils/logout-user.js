@@ -1,5 +1,5 @@
 /**
- * WordPress dependencies.
+ * WordPress dependencies
  */
 import { createURL, isCurrentURL } from '@wordpress/e2e-test-utils';
 

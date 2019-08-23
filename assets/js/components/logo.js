@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import SvgIcon from 'GoogleUtil/svg-icon';
 const { __ } = wp.i18n;
 

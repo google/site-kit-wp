@@ -1,4 +1,10 @@
+/**
+ * External dependencies
+ */
 import { storiesOf } from '@storybook/react';
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import Layout from 'GoogleComponents/layout/layout';
 

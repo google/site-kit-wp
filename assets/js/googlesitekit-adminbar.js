@@ -18,11 +18,14 @@
 
 /* eslint camelcase:[0] */
 
+/**
+ * External dependencies
+ */
 import Link from 'GoogleComponents/link';
-import { getSiteKitAdminURL } from 'GoogleUtil';
 import {
-	sendAnalyticsTrackingEvent,
 	decodeHtmlEntity,
+	getSiteKitAdminURL,
+	sendAnalyticsTrackingEvent,
 } from 'GoogleUtil';
 
 const { doAction } = wp.hooks;
@@ -35,7 +38,6 @@ const { __ } = wp.i18n;
 import AdminbarModules from 'GoogleComponents/adminbar/adminbar-modules';
 
 export class GoogleSitekitAdminbar extends Component {
-
 	constructor( props ) {
 		super( props );
 		const { setLocaleData } = wp.i18n;
@@ -44,7 +46,6 @@ export class GoogleSitekitAdminbar extends Component {
 		setLocaleData( googlesitekit.locale, 'google-site-kit' );
 
 		this.handleMoreDetailsLink = this.handleMoreDetailsLink.bind( this );
-
 	}
 
 	handleMoreDetailsLink() {
@@ -57,10 +58,10 @@ export class GoogleSitekitAdminbar extends Component {
 		const href = getSiteKitAdminURL(
 			'googlesitekit-dashboard',
 			{
-				permaLink: permaLink,
+				permaLink,
 				id: postID,
-				postType: postType,
-				pageTitle: pageTitle,
+				postType,
+				pageTitle,
 			}
 		);
 
@@ -88,7 +89,7 @@ export class GoogleSitekitAdminbar extends Component {
 							mdc-layout-grid__cell--align-middle
 						">
 							<div className="mdc-layout-grid__inner">
-								<AdminbarModules/>
+								<AdminbarModules />
 							</div>
 						</div>
 						<div className="
@@ -122,7 +123,6 @@ export class GoogleSitekitAdminbar extends Component {
 export function init() {
 	const adminbarModules = document.getElementById( 'js-googlesitekit-adminbar-modules' );
 	if ( null !== adminbarModules ) {
-
 		// Render the Adminbar App.
 		render( <GoogleSitekitAdminbar />, document.getElementById( 'js-googlesitekit-adminbar-modules' ) );
 

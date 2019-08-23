@@ -7,8 +7,8 @@ import { wpApiFetch } from './wp-api-fetch';
 /**
  * Set the property ID to render on the site, outside of Site Kit.
  *
- * @param {string} token Access token to set.
- * @returns {*} resolved value from apiFetch promise.
+ * @param {string} id Analytics property ID (e.g. UA-00000000-1).
+ * @return {*} resolved value from apiFetch promise.
  */
 export async function setAnalyticsExistingPropertyId( id ) {
 	return await wpApiFetch( {

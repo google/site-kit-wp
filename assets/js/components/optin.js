@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Checkbox from 'GoogleComponents/checkbox';
 import PropTypes from 'prop-types';
 
@@ -35,16 +38,15 @@ class Optin extends Component {
 	}
 
 	handleOptIn( e ) {
-
 		const checked = e.target.checked;
 
-		const body      = {
-			'googlesitekit_tracking_optin': checked,
+		const body = {
+			googlesitekit_tracking_optin: checked,
 		};
 
 		wp.apiFetch( { path: '/wp/v2/settings',
 			headers: {
-				'Content-Type': 'application/json; charset=UTF-8'
+				'Content-Type': 'application/json; charset=UTF-8',
 			},
 			body: JSON.stringify( body ),
 			method: 'POST',

@@ -16,10 +16,16 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import PreviewBlocks from 'GoogleComponents/preview-blocks';
 import DataBlock from 'GoogleComponents/data-block.js';
 import withData from 'GoogleComponents/higherorder/withdata';
 import { getTimeInSeconds } from 'GoogleUtil';
+/**
+ * Internal dependencies
+ */
 import {
 	extractSearchConsoleDashboardData,
 	isDataZeroSearchConsole,
@@ -30,7 +36,6 @@ const { __ } = wp.i18n;
 const { Component, Fragment } = wp.element;
 
 class WPSearchConsoleDashboardWidgetOverview extends Component {
-
 	render() {
 		const { data } = this.props;
 
@@ -63,14 +68,14 @@ class WPSearchConsoleDashboardWidgetOverview extends Component {
 							title={ __( 'Total Impressions', 'google-site-kit' ) }
 							datapoint={ totalImpressions }
 							change={ totalImpressionsChange }
-							changeDataUnit='%'
+							changeDataUnit="%"
 						/>
 						<DataBlock
 							className="googlesitekit-wp-dashboard-stats__data-table overview-total-clicks"
 							title={ __( 'Total Clicks', 'google-site-kit' ) }
 							datapoint={ totalClicks }
 							change={ totalClicksChange }
-							changeDataUnit='%'
+							changeDataUnit="%"
 						/>
 					</Fragment>
 				}
@@ -89,11 +94,11 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'WPDashboard' ],
-		}
+		},
 	],
 	<PreviewBlocks
-		width='23%'
-		height='94px'
+		width="23%"
+		height="94px"
 		count={ 2 }
 	/>,
 	{},

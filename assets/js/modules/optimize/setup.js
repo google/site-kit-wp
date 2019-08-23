@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Button from 'GoogleComponents/button';
 import Link from 'GoogleComponents/link';
 import data from 'GoogleComponents/data';
@@ -46,7 +49,7 @@ class OptimizeSetup extends Component {
 		} = googlesitekit.modules.optimize.settings;
 
 		const {
-			settings: analyticsSettings
+			settings: analyticsSettings,
 		} = googlesitekit.modules.analytics || {};
 
 		const {
@@ -108,7 +111,6 @@ class OptimizeSetup extends Component {
 	 * Toggle confirm changes button disable/enabble depending on the changed settings.
 	 */
 	toggleConfirmChangesButton() {
-
 		if ( ! this.props.isEditing ) {
 			return;
 		}
@@ -125,7 +127,7 @@ class OptimizeSetup extends Component {
 		const {
 			optimizeId,
 			ampExperimentJson,
-			OptimizeIDValidated
+			OptimizeIDValidated,
 		} = this.state;
 		const { finishSetup } = this.props;
 
@@ -135,7 +137,7 @@ class OptimizeSetup extends Component {
 
 		const optimizeAccount = {
 			optimizeId,
-			ampExperimentJson: ampExperimentJson,
+			ampExperimentJson,
 		};
 
 		return await data.set( 'modules', 'optimize', 'save', optimizeAccount ).then( () => {
@@ -150,11 +152,11 @@ class OptimizeSetup extends Component {
 					isSaving: false,
 				} );
 			}
-		} ).catch( err => {
+		} ).catch( ( err ) => {
 			if ( this._isMounted ) {
 				this.setState( {
 					errorCode: true,
-					errorMsg: err.errorMsg
+					errorMsg: err.errorMsg,
 				} );
 			}
 		} );
@@ -201,7 +203,7 @@ class OptimizeSetup extends Component {
 		const {
 			analyticsUseSnippet,
 			gtmUseSnippet,
-			optimizeId
+			optimizeId,
 		} = this.state;
 
 		// If we don't use auto insert gtag, but use auto insert gtm. Show instruction of how to implement it on GTM.
@@ -251,7 +253,7 @@ class OptimizeSetup extends Component {
 						<TextField
 							className={ `
 								mdc-text-field
-								${ampExperimentJsonValidated ? '' : 'mdc-text-field--error' }
+								${ ampExperimentJsonValidated ? '' : 'mdc-text-field--error' }
 							` }
 							name="amp-experiment"
 							onChange={ this.handleAMPOptimizeEntry }
@@ -329,24 +331,24 @@ class OptimizeSetup extends Component {
 	render() {
 		const {
 			onSettingsPage,
-			isEditing
+			isEditing,
 		} = this.props;
 
 		return (
 			<div className="googlesitekit-setup-module googlesitekit-setup-module--optimize">
 				{
 					! onSettingsPage &&
-							<Fragment>
-								<div className="googlesitekit-setup-module__logo">
-									<SvgIcon id="optimize" width="33" height="33"/>
-								</div>
-								<h2 className="
+					<Fragment>
+						<div className="googlesitekit-setup-module__logo">
+							<SvgIcon id="optimize" width="33" height="33" />
+						</div>
+						<h2 className="
 									googlesitekit-heading-3
 									googlesitekit-setup-module__title
 								">
-									{ __( 'Optimize', 'google-site-kit' ) }
-								</h2>
-							</Fragment>
+							{ __( 'Optimize', 'google-site-kit' ) }
+						</h2>
+					</Fragment>
 				}
 
 				{ isEditing && this.renderForm() }

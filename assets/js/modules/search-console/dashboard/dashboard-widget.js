@@ -16,7 +16,13 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Header from 'GoogleComponents/header';
+/**
+ * Internal dependencies
+ */
 import SearchConsoleDashboardWidgetSiteStats from './dashboard-widget-sitestats';
 import SearchConsoleDashboardWidgetKeywordTable from './dashboard-widget-keyword-table';
 import SearchConsoleDashboardWidgetOverview from './dashboard-widget-overview';
@@ -85,7 +91,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 		let newStats = selectedStats.slice();
 
 		if ( selectedStats.includes( stat ) ) {
-			newStats = selectedStats.filter( selected => stat !== selected );
+			newStats = selectedStats.filter( ( selected ) => stat !== selected );
 		} else {
 			newStats.push( stat );
 		}
@@ -108,7 +114,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 		};
 
 		return selectedStats.map( function( stat, i ) {
-			return { color: colorMap[stat], targetAxisIndex: i };
+			return { color: colorMap[ stat ], targetAxisIndex: i };
 		} );
 	}
 
@@ -123,7 +129,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 		};
 
 		return selectedStats.map( function( stat ) {
-			return { title: vAxesMap[stat] };
+			return { title: vAxesMap[ stat ] };
 		} );
 	}
 
@@ -146,8 +152,8 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 
 		return (
 			<Fragment>
-				<Header/>
-				<Alert module='search-console'/>
+				<Header />
+				<Alert module="search-console" />
 				<div className="googlesitekit-module-page googlesitekit-module-page--search-console">
 					<div className="mdc-layout-grid">
 						<div className="mdc-layout-grid__inner">
@@ -179,7 +185,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 										handleDataError={ this.handleDataError }
 										handleDataSuccess={ this.handleDataSuccess }
 									/>
-									<SearchConsoleDashboardWidgetSiteStats selectedStats={ selectedStats } series={ series } vAxes={ vAxes }/>
+									<SearchConsoleDashboardWidgetSiteStats selectedStats={ selectedStats } series={ series } vAxes={ vAxes } />
 								</Layout>
 							</div>
 							<div className={ `
@@ -196,7 +202,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 									footerCtaLabel={ __( 'Search Console', 'google-site-kit' ) }
 									footerCtaLink={ searchConsoleDeepLink }
 								>
-									<SearchConsoleDashboardWidgetKeywordTable/>
+									<SearchConsoleDashboardWidgetKeywordTable />
 								</Layout>
 							</div>
 							<div className="
@@ -204,7 +210,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 								mdc-layout-grid__cell--span-12
 								mdc-layout-grid__cell--align-right
 							">
-								<HelpLink/>
+								<HelpLink />
 							</div>
 						</div>
 					</div>

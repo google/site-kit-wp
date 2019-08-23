@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import TextField, { HelperText, Input } from '@material/react-text-field';
 import { MDCRipple } from '@material/ripple';
 import { MDCFormField } from '@material/form-field';
@@ -38,5 +41,5 @@ export {
 	MDCSwitch,
 	MDCDialog,
 	MDCCheckbox,
-	MDCMenu
+	MDCMenu,
 };

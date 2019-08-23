@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import { getTimeInSeconds, getQueryParameter } from 'GoogleUtil';
 import * as publisherWinCallbacks from 'GoogleComponents/publisher-wins/callbacks';
 
@@ -23,7 +26,6 @@ const { addFilter } = wp.hooks;
 const notification = getQueryParameter( 'notification' );
 
 if ( 'authentication_success' !== notification && 'authentication_failure' !== notification ) {
-
 	addFilter( 'googlesitekit.winCallbacks',
 		'googlesitekit.publisherwinCallbacks',
 		( callbacks ) => {
@@ -36,7 +38,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 	addFilter( 'googlesitekit.WinsNotificationsRequest',
 		'googlesitekit.PublisherWinsNotification',
 		( wins ) => {
-			const data =  {
+			const data = {
 				identifier: 'first-post-win',
 				storageType: 'localStorage',
 			};
@@ -47,7 +49,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 	addFilter( 'googlesitekit.WinsNotificationsRequest',
 		'googlesitekit.PublisherWinsNotification',
 		( wins ) => {
-			const data =  {
+			const data = {
 				identifier: 'publishing-win',
 				storageType: 'localStorage',
 				withData: {
@@ -57,7 +59,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 					priority: 1,
 					maxAge: getTimeInSeconds( 'day' ),
 					context: 'Dashboard',
-				}
+				},
 			};
 			wins.push( data );
 			return wins;
@@ -66,7 +68,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 	addFilter( 'googlesitekit.WinsNotificationsRequest',
 		'googlesitekit.PublisherWinsNotification',
 		( wins ) => {
-			const data =  {
+			const data = {
 				identifier: 'total-stats',
 				storageType: 'localStorage',
 				withData: {
@@ -76,7 +78,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 					priority: 1,
 					maxAge: getTimeInSeconds( 'day' ),
 					context: 'Dashboard',
-				}
+				},
 			};
 			wins.push( data );
 			return wins;
@@ -86,7 +88,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 		addFilter( 'googlesitekit.WinsNotificationsRequest',
 			'googlesitekit.PublisherWinsNotification',
 			( wins ) => {
-				const data =  {
+				const data = {
 					identifier: 'pageview-increase',
 					storageType: 'localStorage',
 					withData: {
@@ -96,7 +98,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 						priority: 1,
 						maxAge: getTimeInSeconds( 'day' ),
 						context: 'Dashboard',
-					}
+					},
 				};
 				wins.push( data );
 				return wins;
@@ -105,7 +107,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 		addFilter( 'googlesitekit.WinsNotificationsRequest',
 			'googlesitekit.PublisherWinsNotification',
 			( wins ) => {
-				const data =  {
+				const data = {
 					identifier: 'traffic-increase',
 					storageType: 'localStorage',
 					withData: {
@@ -115,7 +117,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 						priority: 1,
 						maxAge: getTimeInSeconds( 'day' ),
 						context: 'Dashboard',
-					}
+					},
 				};
 				wins.push( data );
 				return wins;

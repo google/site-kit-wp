@@ -16,7 +16,13 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import WPDashboardModules from './wp-dashboard-modules';
+/**
+ * External dependencies
+ */
 import Link from 'GoogleComponents/link';
 const { Component } = wp.element;
 const { __ } = wp.i18n;
@@ -30,7 +36,7 @@ class WPDashboardMain extends Component {
 						{ __( 'Visit your Site Kit Dashboard', 'google-site-kit' ) }
 					</Link>
 				</div>
-				<WPDashboardModules/>
+				<WPDashboardModules />
 			</div>
 		);
 	}
