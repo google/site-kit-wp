@@ -20,7 +20,6 @@ import DashboardPermissionAlert from 'GoogleComponents/notifications/dashboard-p
 import md5 from 'md5';
 
 import {
-	setCache,
 	stringToSlug,
 	fillFilterWithComponent,
 } from 'SiteKitCore/util';
@@ -55,6 +54,21 @@ const sortObjectProperties = ( data ) => {
 		orderedData[ key ] = val;
 	} );
 	return orderedData;
+};
+
+/**
+ * Ensures that the local datacache object is properly set up.
+ */
+const lazilySetupLocalCache = () => {
+	googlesitekit.admin = googlesitekit.admin || {};
+
+	if ( 'string' === typeof googlesitekit.admin.datacache ) {
+		googlesitekit.admin.datacache = JSON.parse( googlesitekit.admin.datacache );
+	}
+
+	if ( 'object' !== typeof googlesitekit.admin.datacache ) {
+		googlesitekit.admin.datacache = {};
+	}
 };
 
 const data = {
@@ -134,7 +148,7 @@ const data = {
 
 					// Store key for later reuse.
 					request.key = key;
-					const cache = this.getCache( request.type, key, request.maxAge, hashlessKey );
+					const cache = this.getCache( request.type + '::' + key, request.maxAge );
 					if ( cache ) {
 						responseData[ hashlessKey ] = cache;
 
@@ -197,7 +211,6 @@ const data = {
 			];
 
 			key = key.join( '::' );
-			const hashlessKey = key;
 
 			const { permaLinkHash } = googlesitekit;
 			if ( permaLinkHash && '' !== permaLinkHash ) {
@@ -206,7 +219,7 @@ const data = {
 
 			// Store key for later reuse.
 			request.key = key;
-			const cache = this.getCache( request.type, key, request.maxAge, hashlessKey );
+			const cache = this.getCache( request.type + '::' + key, request.maxAge );
 			if ( cache ) {
 
 				setTimeout( () => {
@@ -323,7 +336,7 @@ const data = {
 
 						doAction( 'googlesitekit.dataReceived', request.key );
 
-						this.setCache( request.type, request.key, result );
+						this.setCache( request.type + '::' + request.key, result );
 						this.resolve( request, result );
 					} );
 				}
@@ -356,79 +369,94 @@ const data = {
 	/**
 	 * Sets data in the cache.
 	 *
-	 * @param {object} type  The data object.
-	 * @param {string} key   The cache key,
-	 * @param {object} value The value to cache.
+	 * @param {string} key  The cache key,
+	 * @param {mixed}  data The data to cache.
 	 */
-	setCache( type, key, value ) {
-		if ( value.error || value.errors ) {
+	setCache( key, data ) {
+		if ( 'undefined' === typeof data ) {
 			return;
 		}
 
-		if ( window.sessionStorage ) {
-			const toStore = {
-				value,
-				date: Date.now() / 1000
-			};
-			setCache( 'sessionStorage', type + '::' + key, JSON.stringify( toStore ) );
+		// Specific workaround to ensure no error responses are cached.
+		if ( data && 'object' === typeof data && ( data.error || data.errors ) ) {
+			return;
 		}
+
+		lazilySetupLocalCache();
+
+		googlesitekit.admin.datacache[ key ] = data;
+
+		if ( ! window.sessionStorage ) {
+			return;
+		}
+
+		const toStore = {
+			value: data,
+			date: Date.now() / 1000
+		};
+		window.sessionStorage.setItem( 'googlesitekit_' + key, JSON.stringify( toStore ) );
 	},
 
 	/**
 	 * Gets data from the cache.
 	 *
-	 * @param {object} type   The data object.
 	 * @param {string} key    The cache key,
 	 * @param {int}    maxAge The cache TTL in seconds.
 	 *
 	 * @return {mixed} Cached data, or false if lookup failed.
 	 */
-	getCache( type, key, maxAge, hashlessKey = '' ) {
+	getCache( key, maxAge ) {
 
 		// Skip if js caching is disabled.
 		if ( googlesitekit.admin.nojscache ) {
 			return false;
 		}
 
-		// Require sessionStorage for local caching.
+		lazilySetupLocalCache();
+
+		// Check variable cache first.
+		if ( 'undefined' !== typeof googlesitekit.admin.datacache[ key ] ) {
+			return googlesitekit.admin.datacache[ key ];
+		}
+
 		if ( ! window.sessionStorage ) {
 			return false;
 		}
 
-		const cache = JSON.parse( window.sessionStorage.getItem( type + '::' + key ) );
-		const datacache = googlesitekit.admin.datacache && JSON.parse( googlesitekit.admin.datacache );
+		// Check persistent cache.
+		const cache = JSON.parse( window.sessionStorage.getItem( 'googlesitekit_' + key ) );
+		if ( cache && 'object' === typeof cache && cache.date ) {
 
-		// Check the datacache, which only includes fresh data at load.
-		if ( ! cache && datacache && datacache[ 'googlesitekit_' + key ] ) {
-			return datacache[ 'googlesitekit_' + key ];
+			// Only return value if no maximum age given or value is newer than it.
+			if ( ! maxAge || ( Date.now() / 1000 ) - cache.date < maxAge ) {
+
+				// Set variable cache.
+				googlesitekit.admin.datacache[ key ] = cache.value;
+
+				return cache.value;
+			}
 		}
 
-		// Check the datacache, which only includes fresh data at load.
-		if ( ! cache && datacache && datacache[ 'googlesitekit_' + hashlessKey ] ) {
-			return datacache[ 'googlesitekit_' + hashlessKey ];
-		}
-
-		if ( ! cache ) {
-			return false;
-		}
-
-		const age = ( Date.now() / 1000 ) - cache.date;
-		if ( age < maxAge ) {
-			return cache.value;
-		}
 		return false;
 	},
 
 	/**
 	 * Removes data from the cache.
 	 *
-	 * @param {object} type The data object.
-	 * @param {string} key  The cache key,
+	 * @param {string} key The cache key,
 	 */
-	deleteCache( type, key ) {
-		if ( window.sessionStorage ) {
-			window.sessionStorage.removeItem( type + '::' + key );
+	deleteCache( key ) {
+		lazilySetupLocalCache();
+
+		if ( 'undefined' !== typeof googlesitekit.admin.datacache[ key ] ) {
+			delete googlesitekit.admin.datacache[ key ];
 		}
+
+		if ( ! window.sessionStorage ) {
+			return;
+		}
+
+		window.sessionStorage.removeItem( 'googlesitekit_' + key );
 	},
 
 	/**
@@ -469,7 +497,7 @@ const data = {
 	get( type, identifier, datapoint, data = {}, nocache = true ) {
 
 		if ( ! nocache ) {
-			const cache = this.getCache( identifier, datapoint, 3600 );
+			const cache = this.getCache( identifier + '::' + datapoint, 3600 );
 
 			if ( cache ) {
 				googlesitekit[ type ][ identifier ][ datapoint ] = cache;
@@ -488,7 +516,7 @@ const data = {
 			path: addQueryArgs( `/google-site-kit/v1/${type}/${identifier}/data/${datapoint}`, data )
 		} ).then( ( results ) => {
 			if ( ! nocache ) {
-				this.setCache( identifier, datapoint, results );
+				this.setCache( identifier + '::' + datapoint, results );
 			}
 
 			if ( googlesitekit[ type ] &&
@@ -524,7 +552,7 @@ const data = {
 			return notifications;
 		}
 
-		notifications = data.getCache( 'googlesitekit::notifications', moduleSlug, time );
+		notifications = data.getCache( 'googlesitekit::notifications::' + moduleSlug, time );
 
 		if ( ! notifications || 0 === notifications.length ) {
 
@@ -533,7 +561,7 @@ const data = {
 				path: `/google-site-kit/v1/modules/${ moduleSlug }/notifications/`
 			} );
 
-			data.setCache( 'googlesitekit::notifications', moduleSlug, notifications );
+			data.setCache( 'googlesitekit::notifications::' + moduleSlug, notifications );
 		}
 
 		return notifications;

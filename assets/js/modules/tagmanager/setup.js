@@ -136,7 +136,7 @@ class TagmanagerSetup extends Component {
 
 			// Verify if user has access to the selected account.
 			if ( selectedAccount && ! responseData.accounts.find( account => account.accountId === selectedAccount ) ) {
-				data.deleteCache( 'tagmanager', 'list-accounts' );
+				data.deleteCache( 'tagmanager::list-accounts' );
 				errorCode = 'insufficientPermissions';
 				errorMsg  = __( 'You currently don\'t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.', 'google-site-kit' );
 			}

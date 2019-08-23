@@ -229,7 +229,7 @@ class AnalyticsSetup extends Component {
 			if ( 0 === responseData.accounts.length ) {
 
 				// clear the cache.
-				data.deleteCache( 'analytics', 'get-accounts' );
+				data.deleteCache( 'analytics::get-accounts' );
 			} else if ( ! selectedAccount ) {
 				let matchedProperty = null;
 
@@ -263,7 +263,7 @@ class AnalyticsSetup extends Component {
 					} );
 				}
 			} else if ( selectedAccount && ! responseData.accounts.find( account => account.id === selectedAccount ) ) {
-				data.deleteCache( 'analytics', 'get-accounts' );
+				data.deleteCache( 'analytics::get-accounts' );
 
 				responseData.accounts.unshift( {
 					id: 0,
@@ -352,7 +352,7 @@ class AnalyticsSetup extends Component {
 				errorMsg: err.message,
 				errorReason: err.data && err.data.reason ? err.data.reason : false,
 			};
-			data.deleteCache( 'analytics', 'existingTag' );
+			data.deleteCache( 'analytics::existingTag' );
 		}
 
 		return new Promise( ( resolve ) => {
@@ -468,7 +468,7 @@ class AnalyticsSetup extends Component {
 		try {
 			const response = await data.set( 'modules', 'analytics', 'save', analyticAccount );
 
-			const cache = data.getCache( 'analytics', 'get-accounts', 3600 );
+			const cache = data.getCache( 'analytics::get-accounts', 3600 );
 			if ( cache ) {
 				const newData = {};
 
@@ -480,7 +480,7 @@ class AnalyticsSetup extends Component {
 				} );
 
 				const values = Object.assign( cache, newData );
-				data.setCache( 'analytics', 'get-accounts', values );
+				data.setCache( 'analytics::get-accounts', values );
 			}
 
 			googlesitekit.modules.analytics.settings.accountId  = response.accountId;

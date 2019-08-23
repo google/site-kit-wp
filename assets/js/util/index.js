@@ -736,7 +736,7 @@ export const findTagInHtmlContent = ( html, module ) => {
 export const getExistingTag = async( module ) => {
 
 	try {
-		let tagFound = data.getCache( module, 'existingTag', 300 );
+		let tagFound = data.getCache( module + '::existingTag', 300 );
 
 		if ( false === tagFound ) {
 			const html = await fetch( `${googlesitekit.admin.homeURL}?tagverify=1&timestamp=${Date.now()}` ).then( res => {
@@ -749,7 +749,7 @@ export const getExistingTag = async( module ) => {
 			}
 		}
 
-		data.setCache( module, 'existingTag', tagFound );
+		data.setCache( module + '::existingTag', tagFound );
 
 		return new Promise( ( resolve ) => {
 			resolve( tagFound );
