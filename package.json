@@ -29,7 +29,7 @@
     "backstopjs:init": "backstop init --config=backstop.js",
     "travis:backstopjs": "backstop test --config=backstop-travis.js --docker",
     "screenshot": "storybook-chrome-screenshot -p 9001 -c .storybook",
-    "lint:js": "eslint './**/*.js'",
+    "lint:js": "wp-scripts lint-js",
     "lint:php": "gulp phpcs",
     "lint:css": "stylelint ./assets/sass --syntax scss",
     "env:start": "./bin/local-env/start.sh",
