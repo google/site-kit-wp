@@ -534,13 +534,8 @@ const dataAPI = {
 			const cache = this.getCache( identifier + '::' + datapoint, 3600 );
 
 			if ( 'undefined' !== typeof cache ) {
-				googlesitekit[ type ][ identifier ][ datapoint ] = cache;
-			}
-			if ( googlesitekit[ type ] &&
-				googlesitekit[ type ][ identifier ] &&
-				googlesitekit[ type ][ identifier ][ datapoint ] ) {
 				return new Promise( ( resolve ) => {
-					resolve( googlesitekit[ type ][ identifier ][ datapoint ] );
+					resolve( cache );
 				} );
 			}
 		}
@@ -551,16 +546,6 @@ const dataAPI = {
 		} ).then( ( results ) => {
 			if ( ! nocache ) {
 				this.setCache( identifier + '::' + datapoint, results );
-			}
-
-			if ( googlesitekit[ type ] &&
-					googlesitekit[ type ][ identifier ] &&
-					googlesitekit[ type ][ identifier ][ datapoint ] ) {
-				googlesitekit[ type ][ identifier ][ datapoint ] = results;
-
-				return new Promise( ( resolve ) => {
-					resolve( googlesitekit[ type ][ identifier ][ datapoint ] );
-				} );
 			}
 
 			return new Promise( ( resolve ) => {
@@ -610,10 +595,6 @@ const dataAPI = {
 	 * @return {Promise} A promise for the fetch request.
 	 */
 	set( type, identifier, datapoint, data ) {
-		if ( googlesitekit[ type ] && googlesitekit[ type ][ identifier ] ) {
-			googlesitekit[ type ][ identifier ][ datapoint ] = data;
-		}
-
 		const body = {};
 		body.data = data;
 
@@ -621,6 +602,14 @@ const dataAPI = {
 		return wp.apiFetch( { path: `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
 			data: body,
 			method: 'POST',
+		} ).then( ( response ) => {
+			dataAPI.invalidateCacheGroup( type, identifier, datapoint );
+
+			return new Promise( ( resolve ) => {
+				resolve( response );
+			} );
+		} ).catch( ( err ) => {
+			return Promise.reject( err );
 		} );
 	},
 
@@ -681,14 +670,8 @@ const dataAPI = {
 	 *
 	 * @return {Promise} A promise for the fetch request.
 	 */
-	setModuleData( identifier, datapoint, value, storeLocaly = true ) {
+	setModuleData( identifier, datapoint, value ) {
 		const type = 'modules';
-		const originalValue = googlesitekit[ type ][ identifier ][ datapoint ];
-
-		// Optimistically store the value locally, capturing the current value in case of failure.
-		if ( storeLocaly ) {
-			googlesitekit[ type ][ identifier ][ datapoint ] = value;
-		}
 
 		const body = {};
 		body[ datapoint ] = value;
@@ -702,10 +685,6 @@ const dataAPI = {
 				resolve( response );
 			} );
 		} ).catch( ( err ) => {
-			// Restore the original data when an error occurs.
-			if ( storeLocaly ) {
-				googlesitekit[ type ][ identifier ][ datapoint ] = originalValue;
-			}
 			return Promise.reject( err );
 		} );
 	},
