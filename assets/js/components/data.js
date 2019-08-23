@@ -481,6 +481,36 @@ const data = {
 	},
 
 	/**
+	 * Invalidates all caches associated with a specific cache group.
+	 *
+	 * @param {string} type       The data to access. One of 'core' or 'modules'.
+	 * @param {string} identifier The data identifier, for example a module slug.
+	 * @param {string} datapoint  The datapoint.
+	 */
+	invalidateCacheGroup( type, identifier, datapoint ) {
+		const groupPrefix = this.getCacheKey( type, identifier, datapoint );
+
+		lazilySetupLocalCache();
+
+		Object.keys( googlesitekit.admin.datacache ).forEach( ( key ) => {
+			if ( 0 === key.indexOf( groupPrefix + '::' ) || key === groupPrefix ) {
+				delete googlesitekit.admin.datacache[ key ];
+			}
+		} );
+
+		const storage = detectPersistentCache();
+		if ( ! storage ) {
+			return;
+		}
+
+		Object.keys( window[ storage ] ).forEach( ( key ) => {
+			if ( 0 === key.indexOf( 'googlesitekit_' + groupPrefix + '::' ) || key === 'googlesitekit_' + groupPrefix ) {
+				window[ storage ].removeItem( key );
+			}
+		} );
+	},
+
+	/**
 	 *  Collect the initial module data request.
 	 *
 	 * @param {string} context   The context to retrieve the module data for. One of 'Dashboard', 'Settings',
