@@ -38,7 +38,6 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 		( wins ) => {
 			const data =  {
 				identifier: 'first-post-win',
-				storageType: 'localStorage',
 			};
 			wins.push( data );
 			return wins;
@@ -49,7 +48,6 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 		( wins ) => {
 			const data =  {
 				identifier: 'publishing-win',
-				storageType: 'localStorage',
 				withData: {
 					type: 'modules',
 					identifier: 'search-console',
@@ -68,7 +66,6 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 		( wins ) => {
 			const data =  {
 				identifier: 'total-stats',
-				storageType: 'localStorage',
 				withData: {
 					type: 'modules',
 					identifier: 'search-console',
@@ -88,7 +85,6 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 			( wins ) => {
 				const data =  {
 					identifier: 'pageview-increase',
-					storageType: 'localStorage',
 					withData: {
 						type: 'modules',
 						identifier: 'analytics',
@@ -107,7 +103,6 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 			( wins ) => {
 				const data =  {
 					identifier: 'traffic-increase',
-					storageType: 'localStorage',
 					withData: {
 						type: 'modules',
 						identifier: 'analytics',

@@ -78,9 +78,8 @@ const removeDismissed = ( notifications ) => {
 	}
 
 	return notifications.filter( ( notification ) => {
-		const storageType = notification.storageType || 'sessionStorage';
-		const dismissed = window[ storageType ].getItem( `notification::dismissed::${notification.id}` );
-		return null === dismissed;
+		const dismissed = data.getCache( `notification::dismissed::${notification.id}` );
+		return ! dismissed;
 	} );
 };
 

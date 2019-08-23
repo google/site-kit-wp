@@ -28,7 +28,6 @@ const {
 	map,
 	isNull,
 	isUndefined,
-	indexOf,
 	unescape,
 	deburr,
 	toLower,
@@ -651,68 +650,6 @@ export const storageAvailable = ( type ) => {
 			// acknowledge QuotaExceededError only if there's something already stored
 			0 !== storage.length;
 	}
-};
-
-/**
- * Set Cache to Browser Storage.
- *
- * @param {string} cacheType Browser storage.
- * @param {string} cacheKey  Cache key.
- * @param {*}      data      Cache data to store.
- * @returns {boolean}
- */
-export const setCache = ( cacheType, cacheKey, data ) => {
-	if ( 0 > indexOf( [ 'localStorage', 'sessionStorage' ], cacheType ) ) {
-		return;
-	}
-
-	if ( ! storageAvailable( cacheType ) ) {
-		return;
-	}
-
-	window[ cacheType ].setItem( cacheKey, data );
-
-	return true;
-};
-
-/**
- * Get Cache from Browser Storage.
- *
- * @param {string} cacheType Browser storage.
- * @param {string} cacheKey  Cache key.
- * @returns {*}
- */
-export const getCache = ( cacheType, cacheKey ) => {
-	if ( 0 > indexOf( [ 'localStorage', 'sessionStorage' ], cacheType ) ) {
-		return;
-	}
-
-	if ( ! storageAvailable( cacheType ) ) {
-		return;
-	}
-
-	return window[ cacheType ].getItem( cacheKey );
-};
-
-/**
- * Delete Cache from Browser Storage.
- *
- * @param {string} cacheType Browser storage.
- * @param {string} cacheKey  Cache key.
- * @returns {*}
- */
-export const deleteCache = ( cacheType, cacheKey ) => {
-	if ( 0 > indexOf( [ 'localStorage', 'sessionStorage' ], cacheType ) ) {
-		return;
-	}
-
-	if ( ! storageAvailable( cacheType ) ) {
-		return;
-	}
-
-	window[ cacheType ].removeItem( cacheKey );
-
-	return true;
 };
 
 export const findTagInHtmlContent = ( html, module ) => {

@@ -20,6 +20,7 @@ import DashboardPermissionAlert from 'GoogleComponents/notifications/dashboard-p
 import md5 from 'md5';
 
 import {
+	storageAvailable,
 	stringToSlug,
 	fillFilterWithComponent,
 } from 'SiteKitCore/util';
@@ -69,6 +70,23 @@ const lazilySetupLocalCache = () => {
 	if ( 'object' !== typeof googlesitekit.admin.datacache ) {
 		googlesitekit.admin.datacache = {};
 	}
+};
+
+/**
+ * Detects whether and which persistent cache storage is available.
+ *
+ * @return {mixed} Either 'sessionStorage', 'localStorage', or undefined.
+ */
+const detectPersistentCache = () => {
+	if ( storageAvailable( 'sessionStorage' ) ) {
+		return 'sessionStorage';
+	}
+
+	if ( storageAvailable( 'localStorage' ) ) {
+		return 'localStorage';
+	}
+
+	return undefined;
 };
 
 const data = {
@@ -386,7 +404,8 @@ const data = {
 
 		googlesitekit.admin.datacache[ key ] = data;
 
-		if ( ! window.sessionStorage ) {
+		const storage = detectPersistentCache();
+		if ( ! storage ) {
 			return;
 		}
 
@@ -394,14 +413,14 @@ const data = {
 			value: data,
 			date: Date.now() / 1000
 		};
-		window.sessionStorage.setItem( 'googlesitekit_' + key, JSON.stringify( toStore ) );
+		window[ storage ].setItem( 'googlesitekit_' + key, JSON.stringify( toStore ) );
 	},
 
 	/**
 	 * Gets data from the cache.
 	 *
 	 * @param {string} key    The cache key,
-	 * @param {int}    maxAge The cache TTL in seconds.
+	 * @param {int}    maxAge The cache TTL in seconds. If not provided, no TTL will be checked.
 	 *
 	 * @return {mixed} Cached data, or undefined if lookup failed.
 	 */
@@ -419,12 +438,13 @@ const data = {
 			return googlesitekit.admin.datacache[ key ];
 		}
 
-		if ( ! window.sessionStorage ) {
+		const storage = detectPersistentCache();
+		if ( ! storage ) {
 			return undefined;
 		}
 
 		// Check persistent cache.
-		const cache = JSON.parse( window.sessionStorage.getItem( 'googlesitekit_' + key ) );
+		const cache = JSON.parse( window[ storage ].getItem( 'googlesitekit_' + key ) );
 		if ( cache && 'object' === typeof cache && cache.date ) {
 
 			// Only return value if no maximum age given or value is newer than it.
@@ -452,11 +472,12 @@ const data = {
 			delete googlesitekit.admin.datacache[ key ];
 		}
 
-		if ( ! window.sessionStorage ) {
+		const storage = detectPersistentCache();
+		if ( ! storage ) {
 			return;
 		}
 
-		window.sessionStorage.removeItem( 'googlesitekit_' + key );
+		window[ storage ].removeItem( 'googlesitekit_' + key );
 	},
 
 	/**

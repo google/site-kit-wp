@@ -143,56 +143,6 @@ valuesToTest.forEach( function( itemToTest ) {
 	} );
 } );
 
-/**
- * Test setCache, deleteCache and getCache.
- */
-valuesToTest = [
-	{
-		cacheType: 'localStorage',
-		cacheKey: 'testKey',
-		data: 'testdata',
-		expected: 'testdata',
-		deleteExpected: true,
-		setCacheExpected: true
-	},
-	{
-		cacheType: 'sessionStorage',
-		cacheKey: 'testKey',
-		data: 'testdata',
-		expected: 'testdata',
-		deleteExpected: true,
-		setCacheExpected: true
-	},
-	{
-		cacheType: 'nonExistantStorage',
-		cacheKey: 'testKey',
-		data: 'testdata',
-		expected: undefined,
-		deleteExpected: undefined,
-		setCacheExpected: undefined
-	},
-
-];
-
-valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'setCache/getCache::' + itemToTest.cacheType, function ( assert ) {
-
-		// Test setCache.
-		var setCacheResult = testFunctions.setCache( itemToTest.cacheType, itemToTest.cacheKey, itemToTest.data );
-		assert.equal( setCacheResult, itemToTest.setCacheExpected, 'Expect setCache result to be ' + itemToTest.setCacheExpected );
-
-		// Test getCache.
-		var value = testFunctions.getCache( itemToTest.cacheType, itemToTest.cacheKey );
-		assert.equal( value, itemToTest.expected, 'Expect getCache( \'' + itemToTest.cacheType + '\' ) to return ' + itemToTest.expected );
-
-		// Test deleteCahe
-		var deleteResult = testFunctions.deleteCache( itemToTest.cacheType, itemToTest.cacheKey );
-		assert.equal( deleteResult, itemToTest.deleteExpected, 'Expect deleteCache( \'' + itemToTest.cacheType + '\' ) to return ' + itemToTest.expected );
-		var afterDeleteValue = testFunctions.getCache( itemToTest.cacheType, itemToTest.cacheKey );
-		assert.equal( afterDeleteValue, undefined, 'Expect after deleteCache value to be undefined' );
-
-	} );
-} );
 
 /**
  * Test storageAvailable.

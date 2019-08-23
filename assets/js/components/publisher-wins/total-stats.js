@@ -91,7 +91,6 @@ const totalStats = ( data, id ) => {
 		winImage: `${googlesitekit.admin.assetsRoot}images/g-win.png`,
 		blockData: dataBlocks,
 		type: 'win-stats',
-		storageType: 'localStorage',
 		dismissExpires: getTimeInSeconds( 'day' ) * days,
 		showOnce: true,
 	};

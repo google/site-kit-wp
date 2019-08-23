@@ -32,7 +32,6 @@ const firstPostWin = ( id ) => {
 		format: 'small',
 		smallImage: `${googlesitekit.admin.assetsRoot}images/thumbs-up.png`,
 		type: 'win-success',
-		storageType: 'localStorage',
 		showOnce: true,
 	};
 };
