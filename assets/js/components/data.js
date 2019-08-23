@@ -149,7 +149,7 @@ const data = {
 					// Store key for later reuse.
 					request.key = key;
 					const cache = this.getCache( request.type + '::' + key, request.maxAge );
-					if ( cache ) {
+					if ( 'undefined' !== typeof cache ) {
 						responseData[ hashlessKey ] = cache;
 
 						// Trigger an action when cached data is used.
@@ -220,7 +220,7 @@ const data = {
 			// Store key for later reuse.
 			request.key = key;
 			const cache = this.getCache( request.type + '::' + key, request.maxAge );
-			if ( cache ) {
+			if ( 'undefined' !== typeof cache ) {
 
 				setTimeout( () => {
 
@@ -403,13 +403,13 @@ const data = {
 	 * @param {string} key    The cache key,
 	 * @param {int}    maxAge The cache TTL in seconds.
 	 *
-	 * @return {mixed} Cached data, or false if lookup failed.
+	 * @return {mixed} Cached data, or undefined if lookup failed.
 	 */
 	getCache( key, maxAge ) {
 
 		// Skip if js caching is disabled.
 		if ( googlesitekit.admin.nojscache ) {
-			return false;
+			return undefined;
 		}
 
 		lazilySetupLocalCache();
@@ -420,7 +420,7 @@ const data = {
 		}
 
 		if ( ! window.sessionStorage ) {
-			return false;
+			return undefined;
 		}
 
 		// Check persistent cache.
@@ -437,7 +437,7 @@ const data = {
 			}
 		}
 
-		return false;
+		return undefined;
 	},
 
 	/**
@@ -499,7 +499,7 @@ const data = {
 		if ( ! nocache ) {
 			const cache = this.getCache( identifier + '::' + datapoint, 3600 );
 
-			if ( cache ) {
+			if ( 'undefined' !== typeof cache ) {
 				googlesitekit[ type ][ identifier ][ datapoint ] = cache;
 			}
 			if ( googlesitekit[ type ] &&
