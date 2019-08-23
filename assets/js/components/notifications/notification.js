@@ -149,7 +149,7 @@ class Notification extends Component {
 			icon = '';
 		}
 
-		const data = (
+		const dataBlockMarkup = (
 			<Fragment>
 				{ blockData &&
 					<div className="mdc-layout-grid__inner">
@@ -240,13 +240,13 @@ class Notification extends Component {
 										{ inlineMarkup }
 									</div>
 									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-7-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--align-bottom">
-										{ data }
+										{ dataBlockMarkup }
 									</div>
 								</div>
 							) : (
 								<Fragment>
 									{ inlineMarkup }
-									{ data }
+									{ dataBlockMarkup }
 								</Fragment>
 							) }
 
