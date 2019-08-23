@@ -19,15 +19,6 @@ googlesitekit.modules = {
 };
 
 /**
- * Test showErrorNotification.
- */
-QUnit.test( 'showErrorNotification!', function ( assert ) {
-	testFunctions.showErrorNotification();
-	var value = wp.hooks.applyFilters( 'googlesitekit.ErrorNotification', [] );
-	assert.equal( value.toString().replace( /(\r\n|\n|\r)/gm, '' ), 'function (r) {return React.createElement(e,a()({},r,t,{OriginalComponent:n}));}' );
-} );
-
-/**
  * Test toggleConfirmModuleSettings.
  */
 valuesToTest = [
