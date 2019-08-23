@@ -16,10 +16,16 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import {
 	PageSpeedInsightsDashboardWidgetHomepageSpeedDesktop,
 	PageSpeedInsightsDashboardWidgetHomepageSpeedMobile,
 } from './dashboard-widget-homepage-speed-column';
+/**
+ * External dependencies
+ */
 import SourceLink from 'GoogleComponents/source-link';
 import { PageSpeedReportScale } from './util';
 import ProgressBar from 'GoogleComponents/progress-bar';
@@ -36,7 +42,7 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 			error: false,
 		};
 		this.handleDataLoaded = this.handleDataLoaded.bind( this );
-		this.handleDataError  = this.handleDataError.bind( this );
+		this.handleDataError = this.handleDataError.bind( this );
 	}
 
 	handleDataLoaded() {
@@ -89,7 +95,7 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 						mdc-layout-grid__cell--span-12
 					">
 						<div className="googlesitekit-pagespeed-report__loading">
-							<ProgressBar/>
+							<ProgressBar />
 							<p>{ __( 'PageSpeed Insights is preparing data for your home page…', 'google-site-kit' ) }</p>
 						</div>
 					</div>

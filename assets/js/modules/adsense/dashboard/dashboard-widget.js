@@ -16,9 +16,15 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Header from 'GoogleComponents/header';
 import PageHeader from 'GoogleComponents/page-header';
 import Layout from 'GoogleComponents/layout/layout';
+/**
+ * Internal dependencies
+ */
 import AdSenseEstimateEarningsWidget from './dashboard-widget-estimate-earnings';
 import AdSensePerformanceWidget from './dashboard-widget-performance';
 import Alert from 'GoogleComponents/alert';
@@ -36,7 +42,6 @@ const { Component, Fragment } = wp.element;
 const { __ } = wp.i18n;
 
 class AdSenseDashboardWidget extends Component {
-
 	constructor( props ) {
 		super( props );
 		this.state = {
@@ -46,9 +51,9 @@ class AdSenseDashboardWidget extends Component {
 			isAdSenseConnected: true,
 			zeroData: false,
 		};
-		this.handleDataError   = this.handleDataError.bind( this );
+		this.handleDataError = this.handleDataError.bind( this );
 		this.handleDataSuccess = this.handleDataSuccess.bind( this );
-		this.handleZeroData    = this.handleZeroData.bind( this );
+		this.handleZeroData = this.handleZeroData.bind( this );
 	}
 
 	componentDidMount() {
@@ -124,11 +129,10 @@ class AdSenseDashboardWidget extends Component {
 
 		return (
 			<Fragment>
-				<Header/>
+				<Header />
 				<div className={ `${ wrapperClass }` }>
-					<Alert module='adsense' />
+					<Alert module="adsense" />
 				</div>
-
 
 				<div className="googlesitekit-module-page googlesitekit-module-page--adsense">
 					<div className="mdc-layout-grid">
@@ -203,14 +207,14 @@ class AdSenseDashboardWidget extends Component {
 								mdc-layout-grid__cell--span-12
 								${ wrapperClass }
 							` } >
-								<DashboardAdSenseTopPages/>
+								<DashboardAdSenseTopPages />
 							</div>
 							<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 								mdc-layout-grid__cell--align-right
 							">
-								<HelpLink/>
+								<HelpLink />
 							</div>
 						</div>
 					</div>

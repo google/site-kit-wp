@@ -16,7 +16,13 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import data from 'GoogleComponents/data';
+/**
+ * Internal dependencies
+ */
 import AdSenseSetupAuthFlowWidget from './setup-auth-flow-widget';
 import Spinner from 'GoogleComponents/spinner';
 
@@ -24,7 +30,6 @@ const { Component, Fragment } = wp.element;
 const { __ } = wp.i18n;
 
 class AdSenseSetupWidget extends Component {
-
 	constructor( props ) {
 		super( props );
 
@@ -43,7 +48,7 @@ class AdSenseSetupWidget extends Component {
 
 	async getAccounts() {
 		try {
-			let responseData = await data.get( 'modules', 'adsense', 'accounts' );
+			const responseData = await data.get( 'modules', 'adsense', 'accounts' );
 
 			/**
 			 * Defines the account status. Possible values:
@@ -59,11 +64,10 @@ class AdSenseSetupWidget extends Component {
 
 			this.setState( {
 				isLoading: false,
-				accountStatus: accountStatus,
-				accounts: accounts,
+				accountStatus,
+				accounts,
 				error: false,
 			} );
-
 		} catch ( err ) {
 			this.setState( {
 				isLoading: false,
@@ -76,7 +80,7 @@ class AdSenseSetupWidget extends Component {
 	renderErrorMessage() {
 		const {
 			error,
-			message
+			message,
 		} = this.state;
 
 		return error && 0 < message.length ?

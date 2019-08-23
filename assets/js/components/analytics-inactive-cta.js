@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import {
 	activateOrDeactivateModule,
 	refreshAuthentication,
@@ -31,10 +34,6 @@ const { Component } = wp.element;
 const { __ } = wp.i18n;
 
 class AnalyticsInactiveCTA extends Component {
-	constructor( props ) {
-		super( props );
-	}
-
 	static async setupAnalyticsClick() {
 		try {
 			await activateOrDeactivateModule( data, 'analytics', true );
@@ -44,7 +43,6 @@ class AnalyticsInactiveCTA extends Component {
 			// Redirect to ReAuthentication URL
 			window.location = getReAuthUrl( 'analytics', true );
 		} catch ( err ) {
-
 			showErrorNotification( GenericError, {
 				id: 'analytics-setup-error',
 				title: __( 'Internal Server Error', 'google-site-kit' ),

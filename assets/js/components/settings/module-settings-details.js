@@ -22,7 +22,6 @@ const { Component } = wp.element;
  * A filterable component that modules use to display their settings in non-edit mode.
  */
 class ModuleSettingsDetails extends Component {
-
 	render() {
 		return null;
 	}

@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { storiesOf } from '@storybook/react';
 import Setup from 'GoogleComponents/setup';
 
@@ -8,5 +11,5 @@ storiesOf( 'Setup', module )
 		googlesitekit.setup.isVerified = false;
 		googlesitekit.setup.hasSearchConsoleProperty = false;
 		googlesitekit.permissions.canSetup = true;
-		return ( <Setup/> );
+		return ( <Setup /> );
 	} );

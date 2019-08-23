@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import {
 	getTimeInSeconds,
 	changeToPercent,

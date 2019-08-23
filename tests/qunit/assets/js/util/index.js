@@ -19,6 +19,15 @@ googlesitekit.modules = {
 };
 
 /**
+ * Test showErrorNotification.
+ */
+QUnit.test( 'showErrorNotification!', function ( assert ) {
+	testFunctions.showErrorNotification();
+	var value = wp.hooks.applyFilters( 'googlesitekit.ErrorNotification', [] );
+	assert.equal( 'function', typeof value );
+} );
+
+/**
  * Test toggleConfirmModuleSettings.
  */
 valuesToTest = [

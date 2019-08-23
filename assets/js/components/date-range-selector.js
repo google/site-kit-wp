@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import { Select } from 'SiteKitCore/material-components';
 
 const { __ } = wp.i18n;
@@ -40,7 +43,6 @@ class DateRangeSelector extends Component {
 				);
 			}
 		);
-
 
 		this.handleSelection = this.handleSelection.bind( this );
 	}

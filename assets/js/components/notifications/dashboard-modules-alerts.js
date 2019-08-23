@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Notification from 'GoogleComponents/notifications/notification';
 import { modulesNotificationsToRequest, getModulesNotifications } from 'GoogleComponents/notifications/util';
 
@@ -56,10 +59,8 @@ class DashboardModulesAlerts extends Component {
 
 		const notifications = [];
 
-		Object.keys( data ).map( key => {
-
-			each( data[ key ], notification => {
-
+		Object.keys( data ).forEach( ( key ) => {
+			each( data[ key ], ( notification ) => {
 				notifications.push(
 					<Notification
 						key={ notification.id }
@@ -67,7 +68,7 @@ class DashboardModulesAlerts extends Component {
 						title={ notification.title || '' }
 						description={ notification.description || '' }
 						blockData={ notification.blockData || [] }
-						winImage={ notification.winImage ? `${googlesitekit.admin.assetsRoot}images/${notification.winImage}` : '' }
+						winImage={ notification.winImage ? `${ googlesitekit.admin.assetsRoot }images/${ notification.winImage }` : '' }
 						format={ notification.format || 'small' }
 						learnMoreUrl={ notification.learnMoreUrl || '' }
 						learnMoreDescription={ notification.learnMoreDescription || '' }
@@ -80,14 +81,13 @@ class DashboardModulesAlerts extends Component {
 						isDismissable={ notification.isDismissable || true }
 						logo={ notification.logo || true }
 						module={ key }
-						moduleName={ googlesitekit.modules[key].name }
+						moduleName={ googlesitekit.modules[ key ].name }
 						pageIndex={ notification.pageIndex || '' }
 						dismissExpires={ notification.dismissExpires || 0 }
 						showOnce={ notification.showOnce || false }
 					/>
 				);
 			} );
-
 		} );
 		return (
 			<Fragment>

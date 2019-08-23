@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import ProgressBar from 'GoogleComponents/progress-bar';
 import PropTypes from 'prop-types';
 
@@ -25,7 +28,6 @@ const { doAction, addAction } = wp.hooks;
 const { debounce } = lodash;
 
 class GoogleChart extends Component {
-
 	constructor( props ) {
 		super( props );
 
@@ -47,13 +49,12 @@ class GoogleChart extends Component {
 			const script = document.createElement( 'script' );
 			script.type = 'text/javascript';
 			script.onload = () => {
-
 				// Cleanup onload handler
 				script.onload = null;
 
 				// Initialize charts.
 				window.google.charts.load( 'visualization', '1', {
-					'packages': [ 'corechart' ]
+					packages: [ 'corechart' ],
 				} );
 
 				window.google.charts.setOnLoadCallback( () => {
@@ -67,31 +68,26 @@ class GoogleChart extends Component {
 			};
 
 			// Add the script to the DOM
-			( document.getElementsByTagName( 'head' )[0] ).appendChild( script );
+			( document.getElementsByTagName( 'head' )[ 0 ] ).appendChild( script );
 
 			// Set the `src` to begin transport
 			script.src = 'https://www.gstatic.com/charts/loader.js';
-		} else {
-
+		} else if ( ! window.google || ! window.google.charts ) {
 			// When the google chart object not loaded, load draw chart later.
-			if ( ! window.google || ! window.google.charts ) {
-				addAction( 'googlesitekit.ChartLoaderLoaded', 'googlesitekit.HandleChartLoaderLoaded', () => {
-					window.google.charts.setOnLoadCallback( () => {
-						this.getData();
-						this.prepareChart();
-						this.drawChart();
-					} );
-				} );
-			} else {
-
-				// When the google chart object loaded, draw chart now.
+			addAction( 'googlesitekit.ChartLoaderLoaded', 'googlesitekit.HandleChartLoaderLoaded', () => {
 				window.google.charts.setOnLoadCallback( () => {
 					this.getData();
 					this.prepareChart();
 					this.drawChart();
 				} );
-			}
-
+			} );
+		} else {
+			// When the google chart object loaded, draw chart now.
+			window.google.charts.setOnLoadCallback( () => {
+				this.getData();
+				this.prepareChart();
+				this.drawChart();
+			} );
 		}
 	}
 
@@ -175,7 +171,7 @@ class GoogleChart extends Component {
 		if ( ! singleStat ) {
 			let setStats = [ 0 ]; // Default date data, required.
 			setStats = setStats.concat(
-				selectedStats.map( stat => {
+				selectedStats.map( ( stat ) => {
 					return stat + 1;
 				} )
 			);

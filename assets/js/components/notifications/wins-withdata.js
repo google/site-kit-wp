@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import data from 'GoogleComponents/data';
 
 const { filter } = lodash;
@@ -27,19 +30,20 @@ class WinsWithData {
 	}
 
 	async get() {
-		const batchRequests = filter( this.wins.map( win => {
+		const batchRequests = filter( this.wins.map( ( win ) => {
 			if ( win.withData ) {
 				win.withData.callback = ( result ) => {
 					this.response[ win.identifier ] = result;
 				};
 				return win.withData;
 			}
+
+			return false;
 		} ) );
 
 		await data.combinedGetFromCache( batchRequests );
 
 		return this.response;
-
 	}
 }
 

@@ -16,7 +16,13 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import Link from './link';
+/**
+ * External dependencies
+ */
 import data from 'SiteKitCore/components/data';
 import {
 	refreshAuthentication,
@@ -33,7 +39,6 @@ const { __, sprintf } = wp.i18n;
 const { sortBy, filter, map } = lodash;
 
 class ModulesList extends Component {
-
 	constructor( props ) {
 		super( props );
 
@@ -44,7 +49,7 @@ class ModulesList extends Component {
 	 * Handle setup module click event.
 	 *
 	 * @param {string} slug Module slug.
-	 * @returns void
+	 * @return void
 	 */
 	async setupModuleClick( slug ) {
 		try {
@@ -56,13 +61,12 @@ class ModulesList extends Component {
 			// Redirect to ReAuthentication URL
 			window.location = getReAuthUrl( slug, true );
 		} catch ( err ) {
-
 			showErrorNotification( GenericError, {
 				id: 'setup-module-error',
 				title: __( 'Internal Server Error', 'google-site-kit' ),
 				description: err.message,
 				format: 'small',
-				type: 'win-error'
+				type: 'win-error',
 			} );
 			this.setState( { isSaving: false } );
 		}
@@ -79,26 +83,25 @@ class ModulesList extends Component {
 
 		// Prevent modules with dependencies from displaying (Optimize and Tag Manager).
 		// Logic still in place below in case we want to add blocked modules back.
-		sortedModules = filter( sortedModules, module => 0 === module.required.length );
+		sortedModules = filter( sortedModules, ( module ) => 0 === module.required.length );
 
 		return (
 			<div className="googlesitekit-modules-list">
-				{ map( sortedModules, 'slug' ).map( module => {
-
+				{ map( sortedModules, 'slug' ).map( ( module ) => {
 					let blockedByParentModule = false;
-					let parentBlockerName     = '';
-					const slug                = modules[ module ].slug;
-					const name                = modules[ module ].name;
-					const isConnected         = modules[ module ].setupComplete;
+					let parentBlockerName = '';
+					const slug = modules[ module ].slug;
+					const name = modules[ module ].name;
+					const isConnected = modules[ module ].setupComplete;
 
 					// Check if required modules are active.
 					if ( 0 < modules[ module ].required.length ) {
 						const requiredModules = modules[ module ].required;
 
-						requiredModules.forEach( requiredModule => {
+						requiredModules.forEach( ( requiredModule ) => {
 							if ( 'undefined' !== typeof modules[ requiredModule ] ) {
 								blockedByParentModule = ! modules[ requiredModule ].setupComplete;
-								parentBlockerName     = modules[ requiredModule ].name;
+								parentBlockerName = modules[ requiredModule ].name;
 							}
 						} );
 					}
@@ -106,7 +109,7 @@ class ModulesList extends Component {
 					return (
 						<div key={ slug } className={ `
 							googlesitekit-modules-list__module
-							googlesitekit-modules-list__module--${slug}
+							googlesitekit-modules-list__module--${ slug }
 							${ blockedByParentModule ? 'googlesitekit-modules-list__module--disabled' : '' }
 						` }>
 							<div className="googlesitekit-settings-connect-module__wrapper">
@@ -118,36 +121,38 @@ class ModulesList extends Component {
 								</h3>
 							</div>
 							<ModuleSettingsWarning slug={ slug } context="modules-list" />
-							{
-								isConnected ?
-									<span className="googlesitekit-settings-module__status">
-										<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected">
-											<span className="screen-reader-text">
-												{
-													__( 'Connected', 'google-site-kit' )
-												}
-											</span>
-										</span>
-										{
-											__( 'Connected', 'google-site-kit' )
-										}
-									</span> :
-									! blockedByParentModule ?
-										<Link
-											arrow
-											small
-											inherit
-											onClick={ () => {
-												this.setupModuleClick( slug );
-											} }
-										> {
-												__( 'Connect Service', 'google-site-kit' )
+							{ isConnected && (
+								<span className="googlesitekit-settings-module__status">
+									<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected">
+										<span className="screen-reader-text">
+											{
+												__( 'Connected', 'google-site-kit' )
 											}
-										</Link> :
-										<Link disabled small inherit>{
-											sprintf( __( 'Enable %s to start setup', 'google-site-kit' ), parentBlockerName )
-										}</Link>
-							}
+										</span>
+									</span>
+									{
+										__( 'Connected', 'google-site-kit' )
+									}
+								</span>
+							) }
+							{ ! isConnected && ! blockedByParentModule && (
+								<Link
+									arrow
+									small
+									inherit
+									onClick={ () => {
+										this.setupModuleClick( slug );
+									} }
+								> {
+										__( 'Connect Service', 'google-site-kit' )
+									}
+								</Link>
+							) }
+							{ ! isConnected && blockedByParentModule && (
+								<Link disabled small inherit>
+									{ sprintf( __( 'Enable %s to start setup', 'google-site-kit' ), parentBlockerName ) }
+								</Link>
+							) }
 						</div>
 					);
 				} ) }

@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import withData from 'GoogleComponents/higherorder/withdata';
 import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
@@ -27,7 +30,6 @@ const { map } = lodash;
 const { Component } = wp.element;
 
 class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
-
 	static renderLayout( component ) {
 		const { accountURL } = googlesitekit.modules.adsense;
 		return (
@@ -56,20 +58,19 @@ class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
 			},
 			{
 				title: __( 'Earnings', 'google-site-kit' ),
-				tooltip: __( 'Earnings', 'google-site-kit' )
+				tooltip: __( 'Earnings', 'google-site-kit' ),
 			},
 			{
 				title: __( 'Page RPM', 'google-site-kit' ),
-				tooltip: __( 'Page RPM', 'google-site-kit' )
+				tooltip: __( 'Page RPM', 'google-site-kit' ),
 			},
 			{
 				title: __( 'Impressions', 'google-site-kit' ),
-				tooltip: __( 'Impressions', 'google-site-kit' )
-			}
+				tooltip: __( 'Impressions', 'google-site-kit' ),
+			},
 		];
 
-		const dataMapped = map( data[0].data.rows, ( row ) => {
-
+		const dataMapped = map( data[ 0 ].data.rows, ( row ) => {
 			/**
 			 * dimensions[0] = ga:pageTitle
 			 * dimensions[1] = ga:pagePath
@@ -79,10 +80,10 @@ class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
 			 * metrics[2] = ga:adsenseRevenue
 			 */
 			return [
-				row.dimensions[0],
-				Number( row.metrics[0].values[0] ).toFixed( 2 ),
-				Number( row.metrics[0].values[1] ).toFixed( 2 ),
-				numberFormat( row.metrics[0].values[2] )
+				row.dimensions[ 0 ],
+				Number( row.metrics[ 0 ].values[ 0 ] ).toFixed( 2 ),
+				Number( row.metrics[ 0 ].values[ 1 ] ).toFixed( 2 ),
+				numberFormat( row.metrics[ 0 ].values[ 2 ] ),
 			];
 		} );
 
@@ -93,10 +94,10 @@ class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
 		} = googlesitekit.modules.analytics.settings;
 
 		// Construct a deep link.
-		const adsenseDeepLink = `https://analytics.google.com/analytics/web/?pli=1#/report/content-pages/a${accountId}w${internalWebPropertyId}p${profileId}/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath:~2F`;
+		const adsenseDeepLink = `https://analytics.google.com/analytics/web/?pli=1#/report/content-pages/a${ accountId }w${ internalWebPropertyId }p${ profileId }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath:~2F`;
 
-		const linksMapped = map( data[0].data.rows, ( row ) => {
-			const pagePath = row.dimensions[1].replace( /\//g, '~2F' );
+		const linksMapped = map( data[ 0 ].data.rows, ( row ) => {
+			const pagePath = row.dimensions[ 1 ].replace( /\//g, '~2F' );
 			return adsenseDeepLink + pagePath;
 		} );
 
@@ -126,8 +127,8 @@ const isDataZero = () => {
 /**
  * Check error data response, and handle the INVALID_ARGUMENT specifically.
  *
- * @param {object} data
- * @returns {*}
+ * @param {Object} data
+ * @return {*}
  */
 const getDataError = ( data ) => {
 	if ( ! data || ! data.error ) {
@@ -143,8 +144,8 @@ const getDataError = ( data ) => {
 		return data.error.message;
 	}
 
-	if ( data.error.errors && data.error.errors[0] && data.error.errors[0].message ) {
-		return data.error.errors[0].message;
+	if ( data.error.errors && data.error.errors[ 0 ] && data.error.errors[ 0 ].message ) {
+		return data.error.errors[ 0 ].message;
 	}
 
 	return __( 'Unidentified error', 'google-site-kit' );
@@ -160,7 +161,7 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Single',
-		}
+		},
 	],
 	AnalyticsAdSenseDashboardWidgetTopPagesTable.renderLayout(
 		<PreviewTable padding />
@@ -168,7 +169,7 @@ export default withData(
 	{
 		inGrid: true,
 		fullWidth: true,
-		createGrid: true
+		createGrid: true,
 	},
 	isDataZero,
 	getDataError

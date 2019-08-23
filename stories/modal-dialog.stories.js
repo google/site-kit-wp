@@ -1,9 +1,15 @@
+/**
+ * External dependencies
+ */
 import { storiesOf } from '@storybook/react';
 import Dialog from 'GoogleComponents/dialog';
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 
 storiesOf( 'Global', module )
-	.add( 'Modal Dialog', () =>  {
+	.add( 'Modal Dialog', () => {
 		const { provides } = window.googlesitekit.modules.analytics;
 		return (
 			<Dialog
@@ -16,5 +22,5 @@ storiesOf( 'Global', module )
 	}, {
 		options: {
 			delay: 1000, // Wait for button to animate.
-		}
+		},
 	} );

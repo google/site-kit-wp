@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import totalStats from './total-stats';
 import firstPostWin from './first-post-win';
 import pageviewIncrease from './pageview-increase';

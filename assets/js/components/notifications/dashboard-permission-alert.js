@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Notification from 'GoogleComponents/notifications/notification';
 
 const { __ } = wp.i18n;

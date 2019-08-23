@@ -17,7 +17,10 @@
  */
 /* eslint camelcase:[0] */
 
-import { addPerformanceMonitoring }  from 'GoogleUtil';
+/**
+ * External dependencies
+ */
+import { addPerformanceMonitoring } from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
 
 const { setLocaleData } = wp.i18n;
@@ -25,6 +28,9 @@ const { doAction } = wp.hooks;
 const { Component, render } = wp.element;
 
 // Load the data module.
+/**
+ * Internal dependencies
+ */
 import './components/data.js';
 
 /**
@@ -33,7 +39,6 @@ import './components/data.js';
 import WPDashboardMain from './components/wp-dashboard/wp-dashboard-main';
 
 class GoogleSitekitWPDashboard extends Component {
-
 	constructor( props ) {
 		super( props );
 		this.state = { hasError: false };
@@ -77,16 +82,14 @@ class GoogleSitekitWPDashboard extends Component {
 				type="win-error"
 			/>;
 		}
-		return <WPDashboardMain/>;
+		return <WPDashboardMain />;
 	}
 }
 
 // Initialize the app once the DOM is ready.
 wp.domReady( function() {
-
 	const wpDashboard = document.getElementById( 'js-googlesitekit-wp-dashboard' );
 	if ( null !== wpDashboard ) {
-
 		// Render the Dashboard App.
 		render( <GoogleSitekitWPDashboard />, wpDashboard );
 

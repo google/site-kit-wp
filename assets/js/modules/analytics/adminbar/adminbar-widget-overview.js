@@ -16,12 +16,18 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import DataBlock from 'GoogleComponents/data-block.js';
 import withData from 'GoogleComponents/higherorder/withdata';
 import {
 	getTimeInSeconds,
 	readableLargeNumber,
 } from 'GoogleUtil';
+/**
+ * Internal dependencies
+ */
 import {
 	calculateOverviewData,
 	isDataZeroForReporting,
@@ -33,7 +39,6 @@ const { __ } = wp.i18n;
 const { Component, Fragment } = wp.element;
 
 class AnalyticsAdminbarWidgetOverview extends Component {
-
 	render() {
 		const { data } = this.props;
 
@@ -66,7 +71,7 @@ class AnalyticsAdminbarWidgetOverview extends Component {
 						title={ __( 'Total Users', 'google-site-kit' ) }
 						datapoint={ readableLargeNumber( totalUsers ) }
 						change={ totalUsersChange }
-						changeDataUnit='%'
+						changeDataUnit="%"
 					/>
 				</div>
 				<div className="
@@ -79,7 +84,7 @@ class AnalyticsAdminbarWidgetOverview extends Component {
 						title={ __( 'Total Sessions', 'google-site-kit' ) }
 						datapoint={ readableLargeNumber( totalSessions ) }
 						change={ totalSessionsChange }
-						changeDataUnit='%'
+						changeDataUnit="%"
 					/>
 				</div>
 			</Fragment>
@@ -99,7 +104,7 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Adminbar',
-		}
+		},
 	],
 	<Fragment>
 		<div className="
@@ -107,14 +112,14 @@ export default withData(
 			mdc-layout-grid__cell--span-2-tablet
 			mdc-layout-grid__cell--span-3-desktop
 		">
-			<PreviewBlock width='auto' height='59px' />
+			<PreviewBlock width="auto" height="59px" />
 		</div>
 		<div className="
 			mdc-layout-grid__cell
 			mdc-layout-grid__cell--span-2-tablet
 			mdc-layout-grid__cell--span-3-desktop
 		">
-			<PreviewBlock width='auto' height='59px' />
+			<PreviewBlock width="auto" height="59px" />
 		</div>
 	</Fragment>,
 	{ inGrid: true },

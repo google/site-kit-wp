@@ -16,12 +16,18 @@
  * limitations under the License.
  */
 
-import GoogleChart from 'GoogleComponents/google-chart.js';
-import { getTimeInSeconds } from 'GoogleUtil';
+/**
+ * External dependencies
+ */
 import withData from 'GoogleComponents/higherorder/withdata';
-import { extractSearchConsoleDashboardData } from './util';
+import GoogleChart from 'GoogleComponents/google-chart.js';
 import PreviewBlock from 'GoogleComponents/preview-block';
-import { decodeHtmlEntity } from 'GoogleUtil';
+import { decodeHtmlEntity, getTimeInSeconds } from 'GoogleUtil';
+
+/**
+ * Internal dependencies
+ */
+import { extractSearchConsoleDashboardData } from './util';
 
 const { __, sprintf } = wp.i18n;
 const { Component } = wp.element;
@@ -40,14 +46,14 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 
 		const options = {
 			chart: {
-				title: pageTitle
+				title: pageTitle,
 			},
 			curveType: 'line',
 			height: 270,
 			width: '100%',
 			chartArea: {
-				'height': '80%',
-				'width': '87%',
+				height: '80%',
+				width: '87%',
 			},
 			legend: {
 				position: 'top',
@@ -82,7 +88,7 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 					fontSize: 12,
 					italic: false,
 				},
-			}
+			},
 		};
 
 		options.series = series;
@@ -102,12 +108,12 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 
 	render() {
 		const { data, selectedStats } = this.props;
-		const options = this.setOptions();
 
 		if ( ! data || ! data.length ) {
 			return null;
 		}
 
+		const options = this.setOptions();
 		const processedData = extractSearchConsoleDashboardData( data );
 
 		return (
@@ -137,8 +143,8 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Single',
-		}
+		},
 	],
-	<PreviewBlock width='100%' height='270px' padding />,
+	<PreviewBlock width="100%" height="270px" padding />,
 	{ createGrid: true }
 );

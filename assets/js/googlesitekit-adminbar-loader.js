@@ -18,6 +18,9 @@
 
 /* eslint camelcase:[0] */
 
+/**
+ * External dependencies
+ */
 import {
 	appendNotificationsCount,
 	sendAnalyticsTrackingEvent,
@@ -39,7 +42,7 @@ function loadAdminbarScripts() {
 
 		/* webpackChunkName: "chunk-googlesitekit-adminbar" */
 		'./googlesitekit-adminbar'
-	).then( GoogleSitekitAdminbar => {
+	).then( ( GoogleSitekitAdminbar ) => {
 		return GoogleSitekitAdminbar;
 	} ).catch( () => {
 		return new Error( 'Site Kit: An error occurred while loading the Adminbar component files.' );
@@ -47,9 +50,8 @@ function loadAdminbarScripts() {
 }
 
 function initAdminbar() {
-	loadAdminbarScripts().then( GoogleSitekitAdminbar => {
+	loadAdminbarScripts().then( ( GoogleSitekitAdminbar ) => {
 		try {
-
 			// Initialize the adminbar.
 			GoogleSitekitAdminbar.init();
 		} catch ( error ) {
@@ -67,10 +69,9 @@ function initAdminbar() {
 
 // Initialize the loader once the DOM is ready.
 window.addEventListener( 'load', function() {
-
 	// Add event to Site Kit adminbar icon.
 	const adminbarIconTrigger = document.getElementById( 'wp-admin-bar-google-site-kit' );
-	let loadingGtag           = false;
+	let loadingGtag = false;
 
 	// Check if adminbarIconTrigger is an element.
 	if ( ! adminbarIconTrigger ) {
@@ -81,19 +82,17 @@ window.addEventListener( 'load', function() {
 	appendNotificationsCount( count );
 
 	const onViewAdminBarMenu = function() {
-
 		if ( isAdminbarLoaded ) {
 			return;
 		}
 
 		// Track the menu hover event.
 		if ( googlesitekit.admin.trackingOptin ) {
-
 			// Dynamically load the gtag script if not loaded.
 			if ( 'undefined' === typeof gtag && ! loadingGtag ) {
 				loadingGtag = true;
-				let gtagScript  = document.createElement( 'script' );
-				gtagScript.type   = 'text/javascript';
+				const gtagScript = document.createElement( 'script' );
+				gtagScript.type = 'text/javascript';
 				gtagScript.setAttribute( 'async', 'true' );
 				gtagScript.onload = function() {
 					window.gtag = function() {
@@ -108,20 +107,17 @@ window.addEventListener( 'load', function() {
 			}
 		}
 
-
-		const { isAdmin }    = window.googlesitekitAdminbar.properties;
-		const isPostScreen   = isAdmin && window.googlesitekit.admin.currentScreen && 'post' === window.googlesitekit.admin.currentScreen.id;
-		const scriptPath     = `${window.googlesitekitAdminbar.publicPath}allmodules.js`;
-		const isScriptLoaded = document.querySelector( `script[src="${scriptPath}"]` );
+		const { isAdmin } = window.googlesitekitAdminbar.properties;
+		const isPostScreen = isAdmin && window.googlesitekit.admin.currentScreen && 'post' === window.googlesitekit.admin.currentScreen.id;
+		const scriptPath = `${ window.googlesitekitAdminbar.publicPath }allmodules.js`;
+		const isScriptLoaded = document.querySelector( `script[src="${ scriptPath }"]` );
 
 		// Dynamically load the script if not loaded yet.
 		if ( ! isAdmin || ( isAdmin && isPostScreen && ! isScriptLoaded ) ) {
-
 			// Load all modules.
 			const script = document.createElement( 'script' );
 			script.type = 'text/javascript';
 			script.onload = () => {
-
 				// Cleanup onload handler
 				script.onload = null;
 
@@ -142,7 +138,6 @@ window.addEventListener( 'load', function() {
 			// Set adminbar as loaded.
 			isAdminbarLoaded = true;
 		}
-
 	};
 
 	if ( 'true' === getQueryParameter( 'googlesitekit_adminbar_open' ) ) {

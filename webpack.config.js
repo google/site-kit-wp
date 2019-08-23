@@ -26,8 +26,7 @@ const WebpackBar = require( 'webpackbar' );
  * WordPress dependencies
  */
 const LibraryExportDefaultPlugin = require( '@wordpress/library-export-default-webpack-plugin' );
-var webpack = require('webpack');
-
+const webpack = require( 'webpack' );
 
 /**
  * Given a string, returns a new string with dash separators converted to
@@ -57,7 +56,7 @@ const externalPackages = [
 	'keycodes',
 	'url',
 	'compose',
-	'components'
+	'components',
 ];
 
 const externals = {
@@ -78,21 +77,21 @@ const externals = {
 	};
 } );
 
-let externalEntry = {};
+const externalEntry = {};
 externalPackages.forEach( ( packageName ) => {
 	const name = camelCaseDash( packageName );
 	externalEntry[ name ] = `./node_modules/@wordpress/${ packageName }`;
 } );
 
 // This External Libraries will not part of wp object. Most of this is for Polyfill.
-let externalLibrary = {
+const externalLibrary = {
 	'wp-polyfill': './node_modules/@babel/polyfill/dist/polyfill.js',
 	'wp-polyfill-fetch': './node_modules/whatwg-fetch/dist/fetch.umd.js',
 	'wp-polyfill-element-closest': './node_modules/element-closest/element-closest.js',
 	'wp-polyfill-node-contains': './node_modules/polyfill-library/polyfills/Node/prototype/contains/polyfill.js',
 	'wp-polyfill-formdata': './node_modules/formdata-polyfill/FormData.js',
 	'wp-polyfill-url': './node_modules/url-polyfill/url-polyfill.js',
-	'svgxuse': './node_modules/svgxuse/svgxuse.js'
+	svgxuse: './node_modules/svgxuse/svgxuse.js',
 };
 
 const resolve = {
@@ -100,8 +99,8 @@ const resolve = {
 		SiteKitCore: path.resolve( 'assets/js/' ),
 		GoogleComponents: path.resolve( 'assets/js/components/' ),
 		GoogleUtil: path.resolve( 'assets/js/util/' ),
-		GoogleModules: path.resolve( './assets/js/modules/' )
-	}
+		GoogleModules: path.resolve( './assets/js/modules/' ),
+	},
 };
 
 module.exports = ( env, argv ) => {
@@ -118,17 +117,17 @@ module.exports = ( env, argv ) => {
 				'googlesitekit-adminbar-loader': './assets/js/googlesitekit-adminbar-loader.js',
 				'googlesitekit-admin': './assets/js/googlesitekit-admin.js',
 				'googlesitekit-module': './assets/js/googlesitekit-module.js',
-				'ads': './assets/js/ads.js',
-				'allmodules': glob.sync( './assets/js/modules/**/*.js' ),
+				ads: './assets/js/ads.js',
+				allmodules: glob.sync( './assets/js/modules/**/*.js' ),
 			},
 			output: {
 				filename: '[name].js',
 				path: __dirname + '/dist/assets/js',
 				chunkFilename: '[name].js',
-				publicPath: ''
+				publicPath: '',
 			},
 			performance: {
-				maxEntrypointSize: 175000
+				maxEntrypointSize: 175000,
 			},
 			module: {
 				rules: [
@@ -140,20 +139,21 @@ module.exports = ( env, argv ) => {
 								loader: 'babel-loader',
 								query: {
 									presets: [ [ '@babel/env', {
-										'useBuiltIns': 'entry',
-										'corejs': 2
+										useBuiltIns: 'entry',
+										corejs: 2,
 									} ], '@babel/preset-react' ],
-								}
+								},
 							},
 							{
 								loader: 'eslint-loader',
 								options: {
 									failOnError: true,
-								}
-							}
-						]
+									formatter: require( 'eslint' ).CLIEngine.getFormatter( 'stylish' ),
+								},
+							},
+						],
 					},
-				]
+				],
 			},
 			plugins: ( env && env.analyze ) ? [] : [
 				new WebpackBar( {
@@ -162,8 +162,8 @@ module.exports = ( env, argv ) => {
 				} ),
 				new webpack.DefinePlugin( {
 					'process.env': {
-						beta: env && env.beta
-					}
+						beta: env && env.beta,
+					},
 				} ),
 			],
 			optimization: {
@@ -177,7 +177,7 @@ module.exports = ( env, argv ) => {
 							name: 'vendor',
 							chunks: 'all',
 							test: /node_modules/,
-							priority: 20
+							priority: 20,
 						},
 
 						// commons chunk
@@ -187,13 +187,13 @@ module.exports = ( env, argv ) => {
 							chunks: 'initial',
 							priority: 10,
 							reuseExistingChunk: true,
-							enforce: true
-						}
-					}
-				}
+							enforce: true,
+						},
+					},
+				},
 			},
 			externals,
-			resolve
+			resolve,
 		},
 
 		// Build the test files.
@@ -202,12 +202,8 @@ module.exports = ( env, argv ) => {
 			output: {
 				filename: '[name].js',
 				path: __dirname + '/dist/assets/js',
-			},
-			output: {
-				filename: '[name].js',
-				path: __dirname + '/dist/assets/js',
 				chunkFilename: '[name].js',
-				publicPath: ''
+				publicPath: '',
 			},
 			module: {
 				rules: [
@@ -219,28 +215,29 @@ module.exports = ( env, argv ) => {
 								loader: 'babel-loader',
 								query: {
 									presets: [ [ '@babel/env', {
-										'useBuiltIns': 'entry',
-										'corejs': 2
+										useBuiltIns: 'entry',
+										corejs: 2,
 									} ], '@babel/preset-react' ],
-								}
+								},
 							},
 							{
 								loader: 'eslint-loader',
 								options: {
 									failOnError: true,
-								}
-							}
-						]
+									formatter: require( 'eslint' ).CLIEngine.getFormatter( 'stylish' ),
+								},
+							},
+						],
 					},
-				]
+				],
 			},
 			plugins: ( env && env.analyze ) ? [] : [
 				new WebpackBar( {
 					name: 'Test files',
 					color: '#34a853',
-				} )
+				} ),
 			],
-			resolve
+			resolve,
 		},
 
 		// Build the external wp libraries
@@ -255,19 +252,19 @@ module.exports = ( env, argv ) => {
 			plugins: ( env && env.analyze ) ? [
 				new LibraryExportDefaultPlugin( [
 					'api-fetch',
-					'dom-ready'
-				].map( camelCaseDash ) )
+					'dom-ready',
+				].map( camelCaseDash ) ),
 			] : [
 				new LibraryExportDefaultPlugin( [
 					'api-fetch',
-					'dom-ready'
+					'dom-ready',
 				].map( camelCaseDash ) ),
 				new WebpackBar( {
 					name: 'External WP Libraries',
 					color: '#d53e36',
-				} )
+				} ),
 			],
-			externals
+			externals,
 		},
 
 		// Build the external libraries
@@ -282,7 +279,7 @@ module.exports = ( env, argv ) => {
 					name: 'External Libraries',
 					color: '#4185f4',
 				} ) ],
-			externals
+			externals,
 		},
 
 		// Build the main plugin admin css.
@@ -301,8 +298,8 @@ module.exports = ( env, argv ) => {
 							{
 								loader: 'css-loader',
 								options: {
-									minimize: ( 'undefined' === typeof argv || 'production' === argv.mode )
-								}
+									minimize: ( 'undefined' === typeof argv || 'production' === argv.mode ),
+								},
 							},
 							'postcss-loader',
 							{
@@ -311,18 +308,18 @@ module.exports = ( env, argv ) => {
 									includePaths: [ 'node_modules' ],
 								},
 							},
-						]
+						],
 					},
 					{
 						test: /\.(png|woff|woff2|eot|ttf|svg|gif)$/,
-						use: { loader: 'url-loader?limit=100000', },
-					}
-				]
+						use: { loader: 'url-loader?limit=100000' },
+					},
+				],
 			},
 			plugins: ( env && env.analyze ) ? [
 				new MiniCssExtractPlugin( {
 					filename: '/assets/css/[name].css',
-				} )
+				} ),
 			] : [
 				new MiniCssExtractPlugin( {
 					filename: '/assets/css/[name].css',
@@ -330,8 +327,8 @@ module.exports = ( env, argv ) => {
 				new WebpackBar( {
 					name: 'Plugin CSS',
 					color: '#4285f4',
-				} )
-			]
+				} ),
+			],
 		},
 	];
 };

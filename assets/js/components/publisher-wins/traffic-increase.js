@@ -16,18 +16,20 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import { getTimeInSeconds, readableLargeNumber } from 'GoogleUtil';
 import { calculateOverviewData } from 'GoogleModules/analytics/util';
 
 const { __ } = wp.i18n;
 
 const trafficIncrease = ( data, id ) => {
-
 	if ( ! googlesitekit.modules.analytics || ! googlesitekit.modules.analytics.active ) {
 		return false;
 	}
 
-	if ( ! data || ! data[0] ) {
+	if ( ! data || ! data[ 0 ] ) {
 		return false;
 	}
 
@@ -40,7 +42,7 @@ const trafficIncrease = ( data, id ) => {
 	const { totalUsersChange, totalUsers } = overviewData;
 
 	// Adds threshold to show data only between 10-100 percent change.
-	if ( 10 > totalUsersChange || 100 < totalUsersChange  ) {
+	if ( 10 > totalUsersChange || 100 < totalUsersChange ) {
 		return false;
 	}
 
@@ -50,18 +52,18 @@ const trafficIncrease = ( data, id ) => {
 		description: __( 'You had a record-high amount of visitors to your website yesterday.', 'google-site-kit' ),
 		dismiss: __( 'OK, Got it!', 'google-site-kit' ),
 		format: 'large',
-		winImage: `${googlesitekit.admin.assetsRoot}images/sun.png`,
+		winImage: `${ googlesitekit.admin.assetsRoot }images/sun.png`,
 		blockData:
 			[
 				{
 					title: __( 'Site Visitors', 'google-site-kit' ),
 					datapoint: readableLargeNumber( totalUsers ),
-					datapointUnit: ''
+					datapointUnit: '',
 				},
 				{
 					title: __( 'Increase', 'google-site-kit' ),
 					datapoint: totalUsersChange,
-					datapointUnit: '%'
+					datapointUnit: '%',
 				},
 			],
 		type: 'win-stats',

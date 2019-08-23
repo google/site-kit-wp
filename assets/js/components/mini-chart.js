@@ -17,10 +17,12 @@
  */
 
 const { Component } = wp.element;
+/**
+ * External dependencies
+ */
 import GoogleChart from 'GoogleComponents/google-chart.js';
-import { colors }  from 'GoogleComponents/colors';
+import { colors } from 'GoogleComponents/colors';
 class MiniChart extends Component {
-
 	render() {
 		const { index, percent } = this.props;
 
@@ -28,7 +30,7 @@ class MiniChart extends Component {
 			backgroundColor: 'transparent',
 			chartArea: {
 				width: '100%',
-				height: '100%'
+				height: '100%',
 			},
 			enableInteractivity: false,
 			height: 28,
@@ -37,7 +39,7 @@ class MiniChart extends Component {
 			},
 			slices: {
 				0: {
-					color: colors[ index ]
+					color: colors[ index ],
 				},
 				1: {
 					color: '#e6e6e6',
@@ -45,7 +47,7 @@ class MiniChart extends Component {
 			},
 			title: null,
 			tooltip: {
-				trigger: 'none'
+				trigger: 'none',
 			},
 			width: 28,
 		};
@@ -61,7 +63,7 @@ class MiniChart extends Component {
 				<GoogleChart
 					data={ data }
 					options={ options }
-					chartType='pie'
+					chartType="pie"
 					loadSmall
 					loadCompressed
 					loadHeight={ 24 }

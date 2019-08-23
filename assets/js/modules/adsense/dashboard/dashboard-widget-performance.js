@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import data from 'GoogleComponents/data';
 import DataBlock from 'GoogleComponents/data-block.js';
 import PreviewBlock from 'GoogleComponents/preview-block';
@@ -23,6 +26,9 @@ import {
 	getTimeInSeconds,
 	readableLargeNumber,
 } from 'GoogleUtil';
+/**
+ * Internal dependencies
+ */
 import { isDataZeroAdSense } from '../util';
 
 const { __ } = wp.i18n;
@@ -30,7 +36,6 @@ const { Component } = wp.element;
 const { isUndefined } = lodash;
 
 class AdSensePerformanceWidget extends Component {
-
 	constructor( props ) {
 		super( props );
 
@@ -63,7 +68,6 @@ class AdSensePerformanceWidget extends Component {
 					maxAge: getTimeInSeconds( 'day' ),
 					context: [ 'Single', 'Dashboard' ],
 					callback: ( result ) => {
-
 						// If there are no impressions, the site is not yet displaying ads.
 						if ( result && isDataZeroAdSense( result ) ) {
 							handleZeroData();
@@ -82,7 +86,6 @@ class AdSensePerformanceWidget extends Component {
 					maxAge: getTimeInSeconds( 'day' ),
 					context: [ 'Single', 'Dashboard' ],
 					callback: ( result ) => {
-
 						this.setState( {
 							prev28Days: result,
 						} );
@@ -114,22 +117,22 @@ class AdSensePerformanceWidget extends Component {
 		} = this.state;
 
 		if ( isLoading ) {
-			return <PreviewBlock width='100%' height='250px' />;
+			return <PreviewBlock width="100%" height="250px" />;
 		}
 
 		const dataBlocks = twentyEightDays.totals ? [
 			{
 				className: 'googlesitekit-data-block--page-rpm',
 				title: __( 'Page RPM', 'google-site-kit' ),
-				datapoint: readableLargeNumber( twentyEightDays.totals[1] ),
-				change: ( ! isUndefined( prev28Days.totals ) ) ? prev28Days.totals[1] : 0,
+				datapoint: readableLargeNumber( twentyEightDays.totals[ 1 ] ),
+				change: ( ! isUndefined( prev28Days.totals ) ) ? prev28Days.totals[ 1 ] : 0,
 				changeDataUnit: '%',
 			},
 			{
 				className: 'googlesitekit-data-block--impression',
 				title: __( 'Impressions', 'google-site-kit' ),
-				datapoint: readableLargeNumber( twentyEightDays.totals[2] ),
-				change: ! isUndefined( prev28Days.totals ) ? prev28Days.totals[2] : 0,
+				datapoint: readableLargeNumber( twentyEightDays.totals[ 2 ] ),
+				change: ! isUndefined( prev28Days.totals ) ? prev28Days.totals[ 2 ] : 0,
 				changeDataUnit: '%',
 			},
 		] : [];
@@ -164,7 +167,6 @@ class AdSensePerformanceWidget extends Component {
 			</section>
 		);
 	}
-
 }
 
 export default AdSensePerformanceWidget;

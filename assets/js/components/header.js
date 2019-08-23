@@ -16,15 +16,19 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import ErrorNotification from 'SiteKitCore/components/notifications/error-notification';
 import Logo from 'GoogleComponents/logo';
+/**
+ * Internal dependencies
+ */
 import UserMenu from './user-menu';
 const { Component, Fragment } = wp.element;
 
 class Header extends Component {
-
 	render() {
-
 		const { isAuthenticated } = googlesitekit.setup;
 
 		return (
@@ -39,7 +43,7 @@ class Header extends Component {
 								mdc-layout-grid__cell--span-4-tablet
 								mdc-layout-grid__cell--span-6-desktop
 							">
-								<Logo/>
+								<Logo />
 							</div>
 							<div className="
 								mdc-layout-grid__cell
@@ -49,12 +53,12 @@ class Header extends Component {
 								mdc-layout-grid__cell--span-4-tablet
 								mdc-layout-grid__cell--span-6-desktop
 							">
-								{ isAuthenticated && <UserMenu/> }
+								{ isAuthenticated && <UserMenu /> }
 							</div>
 						</div>
 					</section>
 				</header>
-				<ErrorNotification/>
+				<ErrorNotification />
 			</Fragment>
 
 		);

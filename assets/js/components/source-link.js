@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import PropTypes from 'prop-types';
 import Link from 'GoogleComponents/link';
 
@@ -38,7 +41,7 @@ class SourceLink extends Component {
 						inherit
 					>
 						{ name }
-					</Link>
+					</Link>,
 				] }
 			</div>
 		);

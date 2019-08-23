@@ -16,7 +16,13 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import DashboardSplashMain from 'GoogleComponents/dashboard-splash/dashboard-splash-main';
+/**
+ * Internal dependencies
+ */
 import DashboardSplashNotifications from './dashboard-splash-notifications';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
@@ -31,7 +37,6 @@ const AUTHENTICATION = 1;
 const SETUP = 2;
 
 class DashboardSplashApp extends Component {
-
 	constructor( props ) {
 		super( props );
 
@@ -91,7 +96,6 @@ class DashboardSplashApp extends Component {
 	}
 
 	render() {
-
 		// Set webpackPublicPath on-the-fly.
 		if ( window.googlesitekit && window.googlesitekit.publicPath ) {
 			// eslint-disable-next-line no-undef
@@ -102,28 +106,26 @@ class DashboardSplashApp extends Component {
 			let introDescription, outroDescription, buttonLabel, onButtonClick;
 
 			switch ( this.state.buttonMode ) {
-					case AUTHENTICATION:
-						introDescription = __( 'You’re one step closer to connecting Google services to your WordPress site.', 'google-site-kit' );
-						outroDescription = __( 'Connecting your account only takes a few minutes. Faster than brewing a cup of coffee.', 'google-site-kit' );
-						buttonLabel = __( 'Connect your account', 'google-site-kit' );
-						onButtonClick = this.gotoConnectUrl;
-						break;
-					case SETUP:
-						introDescription = __( 'You’re one step closer to connecting Google services to your WordPress site.', 'google-site-kit' );
-						outroDescription = __( 'Setup only takes a few minutes. Faster than brewing a cup of coffee.', 'google-site-kit' );
-						buttonLabel = __( 'Set Up Site Kit', 'google-site-kit' );
-						onButtonClick = this.openAuthenticationSetupWizard;
-						break;
-					default:
-						if ( this.state.canViewDashboard ) {
-							introDescription = __( 'Start gaining insights on how your site is performing in search by visiting the dashboard.', 'google-site-kit' );
-						} else {
-							if ( this.state.canPublishPosts ) {
-								introDescription = __( 'Start gaining insights on how your site is performing in search by editing one of your posts.', 'google-site-kit' );
-							} else {
-								introDescription = __( 'Start gaining insights on how your site is performing in search by viewing one of your published posts.', 'google-site-kit' );
-							}
-						}
+				case AUTHENTICATION:
+					introDescription = __( 'You’re one step closer to connecting Google services to your WordPress site.', 'google-site-kit' );
+					outroDescription = __( 'Connecting your account only takes a few minutes. Faster than brewing a cup of coffee.', 'google-site-kit' );
+					buttonLabel = __( 'Connect your account', 'google-site-kit' );
+					onButtonClick = this.gotoConnectUrl;
+					break;
+				case SETUP:
+					introDescription = __( 'You’re one step closer to connecting Google services to your WordPress site.', 'google-site-kit' );
+					outroDescription = __( 'Setup only takes a few minutes. Faster than brewing a cup of coffee.', 'google-site-kit' );
+					buttonLabel = __( 'Set Up Site Kit', 'google-site-kit' );
+					onButtonClick = this.openAuthenticationSetupWizard;
+					break;
+				default:
+					if ( this.state.canViewDashboard ) {
+						introDescription = __( 'Start gaining insights on how your site is performing in search by visiting the dashboard.', 'google-site-kit' );
+					} else if ( this.state.canPublishPosts ) {
+						introDescription = __( 'Start gaining insights on how your site is performing in search by editing one of your posts.', 'google-site-kit' );
+					} else {
+						introDescription = __( 'Start gaining insights on how your site is performing in search by viewing one of your published posts.', 'google-site-kit' );
+					}
 			}
 
 			return (
@@ -159,7 +161,7 @@ class DashboardSplashApp extends Component {
 													mdc-layout-grid__cell
 													mdc-layout-grid__cell--span-12
 												">
-													<ProgressBar/>
+													<ProgressBar />
 												</div>
 											</div>
 										</div>
@@ -170,7 +172,7 @@ class DashboardSplashApp extends Component {
 					</div>
 				</Fragment>
 			}>
-				<Setup/>
+				<Setup />
 			</Suspense>
 		);
 	}

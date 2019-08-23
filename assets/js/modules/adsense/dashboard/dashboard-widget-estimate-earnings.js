@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import DataBlock from 'GoogleComponents/data-block.js';
 import PreviewBlock from 'GoogleComponents/preview-block';
 import {
@@ -23,13 +26,15 @@ import {
 	readableLargeNumber,
 } from 'GoogleUtil';
 import withData from 'GoogleComponents/higherorder/withdata';
+/**
+ * Internal dependencies
+ */
 import { isDataZeroAdSense } from '../util';
 
 const { __ } = wp.i18n;
 const { Component } = wp.element;
 
 class AdSenseEstimateEarningsWidget extends Component {
-
 	constructor( props ) {
 		super( props );
 
@@ -53,7 +58,7 @@ class AdSenseEstimateEarningsWidget extends Component {
 	componentDidUpdate( prevProps ) {
 		const {
 			data,
-			datapoint
+			datapoint,
 		} = this.props;
 
 		this.processCallbackData( data, datapoint, prevProps );
@@ -62,7 +67,7 @@ class AdSenseEstimateEarningsWidget extends Component {
 	componentDidMount() {
 		const {
 			data,
-			datapoint
+			datapoint,
 		} = this.props;
 
 		this.processCallbackData( data, datapoint );
@@ -71,9 +76,9 @@ class AdSenseEstimateEarningsWidget extends Component {
 	/**
 	 * Process callback data received from the API.
 	 *
-	 * @param {object} data Response data from the API.
+	 * @param {Object} data Response data from the API.
 	 * @param {string} datapoint data point for the callback conditional.
-	 * @returns {null}
+	 * @return {null}
 	 */
 	processCallbackData( data, datapoint ) {
 		if ( ! data ) {
@@ -81,74 +86,73 @@ class AdSenseEstimateEarningsWidget extends Component {
 		}
 
 		switch ( datapoint ) {
-				case 'earning-today':
-					if ( data !== this.state.today ) {
-						this.setState( {
-							today: data,
-						} );
-					}
-					break;
-				case 'earning-yesterday':
-					if ( data !== this.state.yesterday ) {
-						this.setState( {
-							yesterday: data,
-						} );
-					}
-					break;
-				case 'earning-samedaylastweek':
-					if ( data !== this.state.sameDayLastWeek ) {
-						this.setState( {
-							sameDayLastWeek: data,
-						} );
-					}
-					break;
-				case 'earning-7days':
-					if ( data !== this.state.sevenDays ) {
-						this.setState( {
-							sevenDays: data,
-						} );
-					}
-					break;
-				case 'earning-prev7days':
-					if ( data !== this.state.prev7Days ) {
-						this.setState( {
-							prev7Days: data,
-						} );
-					}
-					break;
-				case 'earning-this-month':
-					if ( data !== this.state.month ) {
-						this.setState( {
-							month: data,
-						} );
-					}
-					break;
-				case 'earning-this-month-last-year':
-					if ( data !== this.state.monthLastYear ) {
-						this.setState( {
-							monthLastYear: data,
-						} );
-					}
-					break;
-				case 'earning-28days':
-					if ( data !== this.state.twentyEightDays ) {
-						this.setState( {
-							twentyEightDays: data,
-						} );
-					}
-					break;
-				case 'earning-prev28days':
-					if ( data !== this.state.prev28Days ) {
-						this.setState( {
-							prev28Days: data,
-						} );
-					}
-					break;
+			case 'earning-today':
+				if ( data !== this.state.today ) {
+					this.setState( {
+						today: data,
+					} );
+				}
+				break;
+			case 'earning-yesterday':
+				if ( data !== this.state.yesterday ) {
+					this.setState( {
+						yesterday: data,
+					} );
+				}
+				break;
+			case 'earning-samedaylastweek':
+				if ( data !== this.state.sameDayLastWeek ) {
+					this.setState( {
+						sameDayLastWeek: data,
+					} );
+				}
+				break;
+			case 'earning-7days':
+				if ( data !== this.state.sevenDays ) {
+					this.setState( {
+						sevenDays: data,
+					} );
+				}
+				break;
+			case 'earning-prev7days':
+				if ( data !== this.state.prev7Days ) {
+					this.setState( {
+						prev7Days: data,
+					} );
+				}
+				break;
+			case 'earning-this-month':
+				if ( data !== this.state.month ) {
+					this.setState( {
+						month: data,
+					} );
+				}
+				break;
+			case 'earning-this-month-last-year':
+				if ( data !== this.state.monthLastYear ) {
+					this.setState( {
+						monthLastYear: data,
+					} );
+				}
+				break;
+			case 'earning-28days':
+				if ( data !== this.state.twentyEightDays ) {
+					this.setState( {
+						twentyEightDays: data,
+					} );
+				}
+				break;
+			case 'earning-prev28days':
+				if ( data !== this.state.prev28Days ) {
+					this.setState( {
+						prev28Days: data,
+					} );
+				}
+				break;
 		}
 	}
 
 	static renderLayout( dataBlocks ) {
-
 		return (
 			<section className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
@@ -183,9 +187,8 @@ class AdSenseEstimateEarningsWidget extends Component {
 	}
 
 	static renderPreviews() {
-
 		// Create our grid cells for the preview blocks.
-		let previewBlocks = [];
+		const previewBlocks = [];
 		{
 			for ( let i = 0; 5 > i; i++ ) {
 				previewBlocks.push(
@@ -196,7 +199,7 @@ class AdSenseEstimateEarningsWidget extends Component {
 						mdc-layout-grid__cell--span-2-tablet
 						mdc-layout-grid__cell--span-4-desktop
 					">
-						<PreviewBlock width='100%' height='104px'/>
+						<PreviewBlock width="100%" height="104px" />
 					</div>
 				);
 			}
@@ -239,41 +242,41 @@ class AdSenseEstimateEarningsWidget extends Component {
 			return null;
 		}
 
-		const currencyHeader = today.headers.find( header => null !== header.currency && 0 < header.currency.length );
+		const currencyHeader = today.headers.find( ( header ) => null !== header.currency && 0 < header.currency.length );
 		const currencyCode = currencyHeader ? currencyHeader.currency : false;
 
 		const dataBlocks = today.totals ? [
 			{
 				className: 'googlesitekit-data-block--today',
 				title: __( 'Today so far', 'google-site-kit' ),
-				datapoint: readableLargeNumber( today.totals[0], currencyCode ),
+				datapoint: readableLargeNumber( today.totals[ 0 ], currencyCode ),
 			},
 			{
 				className: 'googlesitekit-data-block--yesterday',
 				title: __( 'Yesterday', 'google-site-kit' ),
-				datapoint: readableLargeNumber( yesterday.totals[0], currencyCode ),
-				change: sameDayLastWeek.totals[0],
+				datapoint: readableLargeNumber( yesterday.totals[ 0 ], currencyCode ),
+				change: sameDayLastWeek.totals[ 0 ],
 				changeDataUnit: '%',
 			},
 			{
 				className: 'googlesitekit-data-block--7days',
 				title: __( 'Last 7 days', 'google-site-kit' ),
-				datapoint: readableLargeNumber( sevenDays.totals[0], currencyCode ),
-				change: prev7Days.totals[0],
+				datapoint: readableLargeNumber( sevenDays.totals[ 0 ], currencyCode ),
+				change: prev7Days.totals[ 0 ],
 				changeDataUnit: '%',
 			},
 			{
 				className: 'googlesitekit-data-block--month',
 				title: __( 'This month', 'google-site-kit' ),
-				datapoint: readableLargeNumber( month.totals[0], currencyCode ),
-				change: monthLastYear.totals[0],
+				datapoint: readableLargeNumber( month.totals[ 0 ], currencyCode ),
+				change: monthLastYear.totals[ 0 ],
 				changeDataUnit: '%',
 			},
 			{
 				className: 'googlesitekit-data-block--28days',
 				title: __( 'Last 28 days', 'google-site-kit' ),
-				datapoint: readableLargeNumber( twentyEightDays.totals[0], currencyCode ),
-				change: prev28Days.totals[0],
+				datapoint: readableLargeNumber( twentyEightDays.totals[ 0 ], currencyCode ),
+				change: prev28Days.totals[ 0 ],
 				changeDataUnit: '%',
 			},
 		] : [];
@@ -285,7 +288,6 @@ class AdSenseEstimateEarningsWidget extends Component {
 }
 
 const isDataZero = ( data, datapoint ) => {
-
 	if ( 'earning-28days' !== datapoint ) {
 		return false;
 	}
@@ -302,7 +304,7 @@ export default withData(
 			datapoint: 'earning-today',
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'Single', 'Dashboard' ]
+			context: [ 'Single', 'Dashboard' ],
 		},
 		{
 			type: 'modules',
@@ -310,7 +312,7 @@ export default withData(
 			datapoint: 'earning-yesterday',
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'Single', 'Dashboard' ]
+			context: [ 'Single', 'Dashboard' ],
 		},
 		{
 			type: 'modules',
@@ -318,7 +320,7 @@ export default withData(
 			datapoint: 'earning-samedaylastweek',
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'Single', 'Dashboard' ]
+			context: [ 'Single', 'Dashboard' ],
 		},
 		{
 			type: 'modules',
@@ -326,7 +328,7 @@ export default withData(
 			datapoint: 'earning-7days',
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'Single', 'Dashboard' ]
+			context: [ 'Single', 'Dashboard' ],
 		},
 		{
 			type: 'modules',
@@ -334,7 +336,7 @@ export default withData(
 			datapoint: 'earning-prev7days',
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'Single', 'Dashboard' ]
+			context: [ 'Single', 'Dashboard' ],
 		},
 		{
 			type: 'modules',
@@ -342,7 +344,7 @@ export default withData(
 			datapoint: 'earning-this-month',
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'Single', 'Dashboard' ]
+			context: [ 'Single', 'Dashboard' ],
 		},
 		{
 			type: 'modules',
@@ -350,7 +352,7 @@ export default withData(
 			datapoint: 'earning-this-month-last-year',
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'Single', 'Dashboard' ]
+			context: [ 'Single', 'Dashboard' ],
 		},
 		{
 			type: 'modules',
@@ -358,7 +360,7 @@ export default withData(
 			datapoint: 'earning-28days',
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'Single', 'Dashboard' ]
+			context: [ 'Single', 'Dashboard' ],
 		},
 		{
 			type: 'modules',
@@ -366,7 +368,7 @@ export default withData(
 			datapoint: 'earning-prev28days',
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'Single', 'Dashboard' ]
+			context: [ 'Single', 'Dashboard' ],
 		},
 	],
 	AdSenseEstimateEarningsWidget.renderPreviews(),

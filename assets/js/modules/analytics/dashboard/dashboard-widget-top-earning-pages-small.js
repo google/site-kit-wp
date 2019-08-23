@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import withData from 'GoogleComponents/higherorder/withdata';
 import { getTimeInSeconds } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
@@ -28,7 +31,6 @@ const { map } = lodash;
 const { Component } = wp.element;
 
 class AdSenseDashboardWidgetTopPagesTableSmall extends Component {
-
 	static renderLayout( component ) {
 		return (
 			<div className="
@@ -63,11 +65,11 @@ class AdSenseDashboardWidgetTopPagesTableSmall extends Component {
 			},
 			{
 				title: __( 'Revenue', 'google-site-kit' ),
-				tooltip: __( 'Revenue', 'google-site-kit' )
+				tooltip: __( 'Revenue', 'google-site-kit' ),
 			},
 		];
 
-		let links = [];
+		const links = [];
 		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
 			links[ i ] = row.dimensions[ 1 ];
 			return [
@@ -102,16 +104,15 @@ const isDataZero = () => {
 /**
  * Check error data response.
  *
- * @param {object} data
- * @returns {*}
+ * @param {Object} data
+ * @return {*}
  */
 const getDataError = ( data ) => {
-
 	if ( data && data.error_data ) {
 		const errors = Object.values( data.error_data );
 
 		// Specifically looking for string "badRequest"
-		if ( errors[0] && 'badRequest' === errors[0].reason ) {
+		if ( errors[ 0 ] && 'badRequest' === errors[ 0 ].reason ) {
 			return (
 				<div className="
 						mdc-layout-grid__cell
@@ -134,8 +135,8 @@ const getDataError = ( data ) => {
 
 	if ( data && data.errors ) {
 		const errors = Object.values( data.errors );
-		if ( errors[0] && errors[0][0] ) {
-			return errors[0][0];
+		if ( errors[ 0 ] && errors[ 0 ][ 0 ] ) {
+			return errors[ 0 ][ 0 ];
 		}
 	}
 
@@ -153,7 +154,7 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
-		}
+		},
 	],
 	AdSenseDashboardWidgetTopPagesTableSmall.renderLayout(
 		<PreviewTable rows={ 5 } padding />

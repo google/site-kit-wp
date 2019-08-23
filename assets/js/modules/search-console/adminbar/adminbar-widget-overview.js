@@ -16,9 +16,15 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import DataBlock from 'GoogleComponents/data-block.js';
 import withData from 'GoogleComponents/higherorder/withdata';
 import { getTimeInSeconds } from 'GoogleUtil';
+/**
+ * Internal dependencies
+ */
 import { extractSearchConsoleDashboardData, isDataZeroSearchConsole } from '../dashboard/util';
 import PreviewBlock from 'GoogleComponents/preview-block';
 
@@ -26,7 +32,6 @@ const { __ } = wp.i18n;
 const { Component, Fragment } = wp.element;
 
 class SearchConsoleAdminbarWidgetOverview extends Component {
-
 	render() {
 		const { data } = this.props;
 
@@ -55,7 +60,7 @@ class SearchConsoleAdminbarWidgetOverview extends Component {
 						title={ __( 'Total Clicks', 'google-site-kit' ) }
 						datapoint={ totalClicks }
 						change={ totalClicksChange }
-						changeDataUnit='%'
+						changeDataUnit="%"
 					/>
 				</div>
 				<div className="
@@ -68,7 +73,7 @@ class SearchConsoleAdminbarWidgetOverview extends Component {
 						title={ __( 'Total Impressions', 'google-site-kit' ) }
 						datapoint={ totalImpressions }
 						change={ totalImpressionsChange }
-						changeDataUnit='%'
+						changeDataUnit="%"
 					/>
 				</div>
 			</Fragment>
@@ -88,7 +93,7 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Adminbar',
-		}
+		},
 	],
 	<Fragment>
 		<div className="
@@ -96,14 +101,14 @@ export default withData(
 			mdc-layout-grid__cell--span-2-tablet
 			mdc-layout-grid__cell--span-3-desktop
 		">
-			<PreviewBlock width='auto' height='59px' />
+			<PreviewBlock width="auto" height="59px" />
 		</div>
 		<div className="
 			mdc-layout-grid__cell
 			mdc-layout-grid__cell--span-2-tablet
 			mdc-layout-grid__cell--span-3-desktop
 		">
-			<PreviewBlock width='auto' height='59px' />
+			<PreviewBlock width="auto" height="59px" />
 		</div>
 	</Fragment>,
 	{ inGrid: true },

@@ -15,6 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * External dependencies
+ */
 import DashboardAuthAlert from 'GoogleComponents/notifications/dashboard-auth-alert';
 import DashboardPermissionAlert from 'GoogleComponents/notifications/dashboard-permission-alert';
 import md5 from 'md5';
@@ -42,8 +45,8 @@ const { __ } = wp.i18n;
  * The returned value will be a sorted copy of the input object.
  * Any inner objects will also be sorted recursively.
  *
- * @param {object} data The data object to sort.
- * @return {object} The sorted data object.
+ * @param {Object} data The data object to sort.
+ * @return {Object} The sorted data object.
  */
 const sortObjectProperties = ( data ) => {
 	const orderedData = {};
@@ -89,7 +92,7 @@ const detectPersistentCache = () => {
 	return undefined;
 };
 
-const data = {
+const dataAPI = {
 
 	maxRequests: 10,
 
@@ -115,15 +118,14 @@ const data = {
 	 * Solves issue for publisher wins to retrieve data without performing additional requests.
 	 * Likely this will be removed after refactoring.
 	 *
- 	 * @param {Array.<{ maxAge: timestamp, type: string, identifier: string, datapoint: string, datapointId: int, callback: function }>} combinedRequest An array of data requests to resolve.
+ 	 * @param {Array.<{ maxAge: timestamp, type: string, identifier: string, datapoint: string, datapointId: number, callback: function }>} combinedRequest An array of data requests to resolve.
 	 *
 	 * @return {Promise} A promise for the cache lookup.
 	 */
 	combinedGetFromCache( combinedRequest ) {
 		return new Promise( ( resolve, reject ) => {
 			try {
-
-				let responseData = [];
+				const responseData = [];
 
 				/**
 				 * Filter the date range used for queries.
@@ -143,7 +145,7 @@ const data = {
 					}
 					request.data.date_range = dateRangeSlug; // eslint-disable-line camelcase
 					const paramsToMigrate = [ 'permaLink', 'siteURL', 'pageUrl', 'limit' ];
-					paramsToMigrate.forEach( param => {
+					paramsToMigrate.forEach( ( param ) => {
 						if ( 'undefined' !== typeof request[ param ] ) {
 							request.data[ param ] = request[ param ];
 							delete request[ param ];
@@ -178,7 +180,6 @@ const data = {
 				} );
 
 				resolve( responseData );
-
 			} catch ( err ) {
 				reject();
 			}
@@ -188,11 +189,10 @@ const data = {
 	/**
 	 * Gets data for multiple requests from the REST API using a single batch process.
 	 *
- 	 * @param {Array.<{ maxAge: timestamp, type: string, identifier: string, datapoint: string, datapointId: int, callback: function }>} combinedRequest An array of data requests to resolve.
+ 	 * @param {Array.<{ maxAge: timestamp, type: string, identifier: string, datapoint: string, datapointId: number, callback: function }>} combinedRequest An array of data requests to resolve.
 	 * @param {boolean} secondaryRequest Is this the second (or more) request?
 	 */
 	combinedGet( combinedRequest, secondaryRequest = false ) {
-
 		// First, resolve any cache matches immediately, queue resolution of the rest.
 		let dataRequest = [];
 
@@ -215,7 +215,7 @@ const data = {
 			}
 			request.data.date_range = dateRangeSlug; // eslint-disable-line camelcase
 			const paramsToMigrate = [ 'permaLink', 'siteURL', 'pageUrl', 'limit' ];
-			paramsToMigrate.forEach( param => {
+			paramsToMigrate.forEach( ( param ) => {
 				if ( 'undefined' !== typeof request[ param ] ) {
 					request.data[ param ] = request[ param ];
 					delete request[ param ];
@@ -239,9 +239,7 @@ const data = {
 			request.key = key;
 			const cache = this.getCache( request.type + '::' + key, request.maxAge );
 			if ( 'undefined' !== typeof cache ) {
-
 				setTimeout( () => {
-
 					// Trigger an action when cached data is used.
 					doAction( 'googlesitekit.cachedDataUsed', request.datapoint );
 
@@ -249,7 +247,6 @@ const data = {
 				}, cacheDelay );
 				cacheDelay += 25;
 			} else {
-
 				// Add the request to the queue.
 				dataRequest.push( request );
 			}
@@ -259,33 +256,28 @@ const data = {
 		dataRequest = sortBy( dataRequest, 'priority' );
 
 		// Only request each key once.
-		const toRequest        = [];
+		const toRequest = [];
 		const deferredRequests = [];
-		const keyIndexesMap    = {};
-		each ( dataRequest, ( request, index ) => {
-
+		const keyIndexesMap = {};
+		each( dataRequest, ( request, index ) => {
 			// Defer any datapoints with a priority of 10 or greater into a second request.
 			if ( ! secondaryRequest && 10 <= request.priority ) {
 				deferredRequests.push( request );
+			} else if ( ! keyIndexesMap[ request.key ] ) {
+				keyIndexesMap[ request.key ] = [ index ];
+				toRequest.push( request );
 			} else {
-				if ( ! keyIndexesMap[ request.key ] ) {
-					keyIndexesMap[ request.key ] = [ index ];
-					toRequest.push( request );
-				} else {
-					keyIndexesMap[ request.key ].push( index );
-				}
+				keyIndexesMap[ request.key ].push( index );
 			}
 		} );
 
-
 		const maxDatapointsPerRequest = 10;
-		const currentRequest          = toRequest.slice( 0, maxDatapointsPerRequest );
-		let remainingDatapoints       = toRequest.slice( maxDatapointsPerRequest );
+		const currentRequest = toRequest.slice( 0, maxDatapointsPerRequest );
+		let remainingDatapoints = toRequest.slice( maxDatapointsPerRequest );
 
 		remainingDatapoints = remainingDatapoints.concat( deferredRequests );
 
 		if ( 0 === currentRequest.length && 0 === remainingDatapoints.length ) {
-
 			// Trigger an action indicating this data load completed from the cache.
 			doAction( 'googlesitekit.dataLoaded', 'cache' );
 			return;
@@ -320,36 +312,31 @@ const data = {
 					// Handle insufficient scope warnings by informing the user.
 					if (
 						result.error_data &&
-						result.error_data[403] &&
-						result.error_data[403].reason
-					)  {
-
-						if ( 'insufficientPermissions' === result.error_data[403].reason ) {
-
+						result.error_data[ 403 ] &&
+						result.error_data[ 403 ].reason
+					) {
+						if ( 'insufficientPermissions' === result.error_data[ 403 ].reason ) {
 							// Insufficient scopes - add a notice.
 							addFilter( 'googlesitekit.DashboardNotifications',
 								'googlesitekit.AuthNotification',
 								fillFilterWithComponent( DashboardAuthAlert ), 1 );
-						} else if ( 'forbidden' === result.error_data[403].reason ) {
-
+						} else if ( 'forbidden' === result.error_data[ 403 ].reason ) {
 							// Insufficient access permissions - add a notice.
 							addFilter( 'googlesitekit.DashboardNotifications',
 								'googlesitekit.AuthNotification',
 								fillFilterWithComponent( DashboardPermissionAlert ), 1 );
-
 						}
 
 						// Increase the notice count.
 						addFilter( 'googlesitekit.TotalNotifications',
 							'googlesitekit.AuthCountIncrease', ( count ) => {
-
 								// Only run once.
 								removeFilter( 'googlesitekit.TotalNotifications', 'googlesitekit.AuthCountIncrease' );
 								return count + 1;
 							} );
 					}
 
-					each( keyIndexesMap[ key ], index => {
+					each( keyIndexesMap[ key ], ( index ) => {
 						const request = dataRequest[ index ];
 
 						doAction( 'googlesitekit.dataReceived', request.key );
@@ -367,7 +354,6 @@ const data = {
 
 			// Resolve any returned data requests, then re-request the remainder after a pause.
 		} ).catch( ( err ) => {
-
 			// Handle the error and give up trying.
 			console.log( 'error', err ); // eslint-disable-line no-console
 		} );
@@ -375,9 +361,11 @@ const data = {
 
 	/**
 	 * Resolves a request.
+	 *
+	 * @param {Object} request Request object to resolve.
+	 * @param {any}    result  Result to resolve this request with.
 	 */
 	resolve( request, result ) {
-
 		// Call the resolver callback with the data.
 		if ( request && 'function' === typeof request.callback ) {
 			request.callback( result, request.datapoint );
@@ -411,7 +399,7 @@ const data = {
 
 		const toStore = {
 			value: data,
-			date: Date.now() / 1000
+			date: Date.now() / 1000,
 		};
 		window[ storage ].setItem( 'googlesitekit_' + key, JSON.stringify( toStore ) );
 	},
@@ -420,12 +408,11 @@ const data = {
 	 * Gets data from the cache.
 	 *
 	 * @param {string} key    The cache key,
-	 * @param {int}    maxAge The cache TTL in seconds. If not provided, no TTL will be checked.
+	 * @param {number} maxAge The cache TTL in seconds. If not provided, no TTL will be checked.
 	 *
 	 * @return {mixed} Cached data, or undefined if lookup failed.
 	 */
 	getCache( key, maxAge ) {
-
 		// Skip if js caching is disabled.
 		if ( googlesitekit.admin.nojscache ) {
 			return undefined;
@@ -446,10 +433,8 @@ const data = {
 		// Check persistent cache.
 		const cache = JSON.parse( window[ storage ].getItem( 'googlesitekit_' + key ) );
 		if ( cache && 'object' === typeof cache && cache.date ) {
-
 			// Only return value if no maximum age given or value is newer than it.
 			if ( ! maxAge || ( Date.now() / 1000 ) - cache.date < maxAge ) {
-
 				// Set variable cache.
 				googlesitekit.admin.datacache[ key ] = cache.value;
 
@@ -511,15 +496,14 @@ const data = {
 	},
 
 	/**
-	 *  Collect the initial module data request.
+	 * Collects the initial module data request.
 	 *
-	 * @param {string} context   The context to retrieve the module data for. One of 'Dashboard', 'Settings',
+	 * @param {string} context The context to retrieve the module data for. One of 'Dashboard', 'Settings',
 	 *                         or 'Post'.
 	 * @param {mixed} moduleArgs Arguments passed from the module.
 	 *
 	 */
 	collectModuleData( context, moduleArgs ) {
-
 		/**
 		 * Filter the data requested on the dashboard page once it loads.
 		 *
@@ -537,16 +521,15 @@ const data = {
 	/**
 	 * Gets data using the REST API.
 	 *
-	 * @param {string} type       The data to access. One of 'core' or 'modules'.
-	 * @param {string} identifier The data identifier, for example a module slug.
-	 * @param {string} datapoint  The datapoint.
-	 * @param {object} data       Optional arguments to pass along.
-	 * @param {bool}   nocache    Set to true to bypass cache, default: true.
+	 * @param {string}  type       The data to access. One of 'core' or 'modules'.
+	 * @param {string}  identifier The data identifier, for example a module slug.
+	 * @param {string}  datapoint  The datapoint.
+	 * @param {Object}  data       Optional arguments to pass along.
+	 * @param {boolean} nocache    Set to true to bypass cache, default: true.
 	 *
 	 * @return {Promise} A promise for the fetch request.
 	 */
 	get( type, identifier, datapoint, data = {}, nocache = true ) {
-
 		if ( ! nocache ) {
 			const cache = this.getCache( identifier + '::' + datapoint, 3600 );
 
@@ -564,7 +547,7 @@ const data = {
 
 		// Make an API request to retrieve the results.
 		return wp.apiFetch( {
-			path: addQueryArgs( `/google-site-kit/v1/${type}/${identifier}/data/${datapoint}`, data )
+			path: addQueryArgs( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`, data ),
 		} ).then( ( results ) => {
 			if ( ! nocache ) {
 				this.setCache( identifier + '::' + datapoint, results );
@@ -573,11 +556,10 @@ const data = {
 			if ( googlesitekit[ type ] &&
 					googlesitekit[ type ][ identifier ] &&
 					googlesitekit[ type ][ identifier ][ datapoint ] ) {
-
-				googlesitekit[type][identifier][datapoint] = results;
+				googlesitekit[ type ][ identifier ][ datapoint ] = results;
 
 				return new Promise( ( resolve ) => {
-					resolve( googlesitekit[type][identifier][datapoint] );
+					resolve( googlesitekit[ type ][ identifier ][ datapoint ] );
 				} );
 			}
 
@@ -603,16 +585,15 @@ const data = {
 			return notifications;
 		}
 
-		notifications = data.getCache( 'googlesitekit::notifications::' + moduleSlug, time );
+		notifications = dataAPI.getCache( 'googlesitekit::notifications::' + moduleSlug, time );
 
 		if ( ! notifications || 0 === notifications.length ) {
-
 			// Make an API request to retrieve the notifications.
 			notifications = await wp.apiFetch( {
-				path: `/google-site-kit/v1/modules/${ moduleSlug }/notifications/`
+				path: `/google-site-kit/v1/modules/${ moduleSlug }/notifications/`,
 			} );
 
-			data.setCache( 'googlesitekit::notifications::' + moduleSlug, notifications );
+			dataAPI.setCache( 'googlesitekit::notifications::' + moduleSlug, notifications );
 		}
 
 		return notifications;
@@ -624,21 +605,20 @@ const data = {
 	 * @param {string} type       The data to access. One of 'core' or 'modules'.
 	 * @param {string} identifier The data identifier, for example a module slug.
 	 * @param {string} datapoint  The datapoint.
-	 * @param {object} data       The data to set.
+	 * @param {Object} data       The data to set.
 	 *
 	 * @return {Promise} A promise for the fetch request.
 	 */
 	set( type, identifier, datapoint, data ) {
-
 		if ( googlesitekit[ type ] && googlesitekit[ type ][ identifier ] ) {
 			googlesitekit[ type ][ identifier ][ datapoint ] = data;
 		}
 
-		const body  = {};
-		body.data   = data;
+		const body = {};
+		body.data = data;
 
 		// Make an API request to store the data.
-		return wp.apiFetch( { path: `/google-site-kit/v1/${type}/${identifier}/data/${datapoint}`,
+		return wp.apiFetch( { path: `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
 			data: body,
 			method: 'POST',
 		} );
@@ -650,7 +630,7 @@ const data = {
 	 * @param {string}  type       The data type. Either 'core' or 'modules'.
 	 * @param {string}  identifier The data identifier, for example a module slug.
 	 * @param {string}  datapoint  The datapoint.
-	 * @param {object?} data       Optional arguments to pass along.
+	 * @param {Object?} data       Optional arguments to pass along.
 	 * @return {string} The cache key to use.
 	 */
 	getCacheKey( type, identifier, datapoint, data = null ) {
@@ -702,7 +682,6 @@ const data = {
 	 * @return {Promise} A promise for the fetch request.
 	 */
 	setModuleData( identifier, datapoint, value, storeLocaly = true ) {
-
 		const type = 'modules';
 		const originalValue = googlesitekit[ type ][ identifier ][ datapoint ];
 
@@ -711,11 +690,11 @@ const data = {
 			googlesitekit[ type ][ identifier ][ datapoint ] = value;
 		}
 
-		const body      = {};
-		body[datapoint] = value;
+		const body = {};
+		body[ datapoint ] = value;
 
 		// Make an API request to store the value.
-		return wp.apiFetch( { path: `/google-site-kit/v1/${type}/${identifier}`,
+		return wp.apiFetch( { path: `/google-site-kit/v1/${ type }/${ identifier }`,
 			data: body,
 			method: 'POST',
 		} ).then( ( response ) => {
@@ -723,17 +702,16 @@ const data = {
 				resolve( response );
 			} );
 		} ).catch( ( err ) => {
-
 			// Restore the original data when an error occurs.
 			if ( storeLocaly ) {
 				googlesitekit[ type ][ identifier ][ datapoint ] = originalValue;
 			}
 			return Promise.reject( err );
 		} );
-	}
+	},
 };
 
 // Init data module once.
-data.init();
+dataAPI.init();
 
-export default data;
+export default dataAPI;

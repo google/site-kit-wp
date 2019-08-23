@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import Button from './button';
 
 const { __ } = wp.i18n;

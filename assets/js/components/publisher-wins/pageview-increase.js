@@ -16,14 +16,15 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import { numberFormat, getTimeInSeconds } from 'GoogleUtil';
 import { calculateOverviewData } from 'GoogleModules/analytics/util';
 
 const { __ } = wp.i18n;
 
-
 const pageviewIncrease = ( data, id ) => {
-
 	if ( ! googlesitekit.modules.analytics || ! googlesitekit.modules.analytics.active ) {
 		return false;
 	}
@@ -40,7 +41,7 @@ const pageviewIncrease = ( data, id ) => {
 
 	const { totalPageViewsChange, totalPageViews } = overviewData;
 
-	if ( 10 > totalPageViewsChange  ) {
+	if ( 10 > totalPageViewsChange ) {
 		return false;
 	}
 
@@ -50,17 +51,17 @@ const pageviewIncrease = ( data, id ) => {
 		description: __( 'Over the past 4 weeks', 'google-site-kit' ),
 		format: 'large',
 		logo: false,
-		winImage: `${googlesitekit.admin.assetsRoot}images/sun-small.png`,
+		winImage: `${ googlesitekit.admin.assetsRoot }images/sun-small.png`,
 		blockData: [
 			{
 				title: __( 'Total Page Views', 'google-site-kit' ),
 				datapoint: numberFormat( totalPageViews ),
-				datapointUnit: ''
+				datapointUnit: '',
 			},
 			{
 				title: __( 'Increase', 'google-site-kit' ),
 				datapoint: totalPageViewsChange,
-				datapointUnit: '%'
+				datapointUnit: '%',
 			},
 		],
 		type: 'win-stats-increase',

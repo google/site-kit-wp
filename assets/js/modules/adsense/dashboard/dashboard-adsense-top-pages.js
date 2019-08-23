@@ -20,7 +20,6 @@ const { withFilters } = wp.components;
 const { Component } = wp.element;
 
 class DashboardAdSenseTopPages extends Component {
-
 	render() {
 		return null;
 	}

@@ -18,7 +18,7 @@
 
 export const addToFilter = ( AddComponent, slug ) => {
 	return function( OriginalComponent ) {
-		let NewComponent = function( props ) {
+		const NewComponent = function( props ) {
 			if ( props.slug !== slug ) {
 				return <OriginalComponent
 					{ ...props }

@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Header from 'GoogleComponents/header';
 import Button from 'GoogleComponents/button';
 import Layout from 'GoogleComponents/layout/layout';
@@ -28,10 +31,9 @@ import WizardProgressStep from 'GoogleComponents/setup-wizard/wizard-progress-st
 
 const { __ } = wp.i18n;
 const { Component, Fragment } = wp.element;
-const { delay }  = lodash;
+const { delay } = lodash;
 
 class Setup extends Component {
-
 	constructor( props ) {
 		super( props );
 
@@ -90,19 +92,19 @@ class Setup extends Component {
 
 	siteConnectedSetup( status ) {
 		this.setState( {
-			isSiteKitConnected: status
+			isSiteKitConnected: status,
 		} );
 	}
 
 	siteVerificationSetup( status ) {
 		this.setState( {
-			isVerified: status
+			isVerified: status,
 		} );
 	}
 
 	searchConsoleSetup( status ) {
 		this.setState( {
-			hasSearchConsoleProperty: status
+			hasSearchConsoleProperty: status,
 		} );
 	}
 
@@ -120,7 +122,7 @@ class Setup extends Component {
 
 	setErrorMessage( errorMsg ) {
 		this.setState( {
-			errorMsg
+			errorMsg,
 		} );
 	}
 
@@ -154,11 +156,11 @@ class Setup extends Component {
 	}
 
 	stepStatus( applicableSteps, step ) {
-		const currentStep = this.currentStep( applicableSteps );
-
 		if ( applicableSteps[ step ].isCompleted( this.state ) ) {
 			return 'completed';
 		}
+
+		const currentStep = this.currentStep( applicableSteps );
 
 		if ( step === currentStep ) {
 			return 'inprogress';
@@ -215,7 +217,7 @@ class Setup extends Component {
 
 		return (
 			<Fragment>
-				<Header/>
+				<Header />
 				<div className="googlesitekit-wizard">
 					<div className="mdc-layout-grid">
 						<div className="mdc-layout-grid__inner">

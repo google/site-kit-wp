@@ -16,13 +16,15 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import { extractSearchConsoleDashboardData } from 'GoogleModules/search-console/dashboard/util';
 import { getTimeInSeconds, getDaysBetweenDates } from 'GoogleUtil';
 
 const { __ } = wp.i18n;
 
 const totalStats = ( data, id ) => {
-
 	if ( 5 >= parseInt( googlesitekit.admin.newSitePosts, 10 ) ) {
 		return false;
 	}
@@ -47,7 +49,7 @@ const totalStats = ( data, id ) => {
 		} = processedData;
 
 		if ( 0 < totalClicksChange && 0 < totalImpressionsChange && 0 < averageCTRChange ) {
-			description = `${ __( 'Last month was great!', 'google-site-kit' )}. ${ description }`;
+			description = `${ __( 'Last month was great!', 'google-site-kit' ) }. ${ description }`;
 		}
 
 		dataBlocks = [
@@ -57,7 +59,7 @@ const totalStats = ( data, id ) => {
 				datapointUnit: '',
 				change: totalClicksChange,
 				changeDataUnit: '%',
-				period: __( 'for month', 'google-site-kit' )
+				period: __( 'for month', 'google-site-kit' ),
 			},
 			{
 				title: __( 'Total Impressions', 'google-site-kit' ),
@@ -65,7 +67,7 @@ const totalStats = ( data, id ) => {
 				datapointUnit: '',
 				change: totalImpressionsChange,
 				changeDataUnit: '%',
-				period: __( 'for month', 'google-site-kit' )
+				period: __( 'for month', 'google-site-kit' ),
 			},
 			{
 				title: __( 'Average CTR', 'google-site-kit' ),
@@ -73,8 +75,8 @@ const totalStats = ( data, id ) => {
 				datapointUnit: '%',
 				change: averageCTRChange,
 				changeDataUnit: '%',
-				period: __( 'for month', 'google-site-kit' )
-			}
+				period: __( 'for month', 'google-site-kit' ),
+			},
 		];
 	}
 
@@ -86,9 +88,9 @@ const totalStats = ( data, id ) => {
 	return {
 		id,
 		title: __( 'Welcome Back!', 'google-site-kit' ),
-		description: description,
+		description,
 		format: 'large',
-		winImage: `${googlesitekit.admin.assetsRoot}images/g-win.png`,
+		winImage: `${ googlesitekit.admin.assetsRoot }images/g-win.png`,
 		blockData: dataBlocks,
 		type: 'win-stats',
 		dismissExpires: getTimeInSeconds( 'day' ) * days,

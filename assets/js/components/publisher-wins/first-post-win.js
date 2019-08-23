@@ -19,7 +19,6 @@
 const { __ } = wp.i18n;
 
 const firstPostWin = ( id ) => {
-
 	const showNotification = 1 === parseInt( googlesitekit.admin.newSitePosts, 10 );
 
 	if ( ! showNotification ) {
@@ -30,12 +29,11 @@ const firstPostWin = ( id ) => {
 		id,
 		title: __( 'Congrats on your first post!', 'google-site-kit' ),
 		format: 'small',
-		smallImage: `${googlesitekit.admin.assetsRoot}images/thumbs-up.png`,
+		smallImage: `${ googlesitekit.admin.assetsRoot }images/thumbs-up.png`,
 		type: 'win-success',
 		showOnce: true,
 	};
 };
 
 export default firstPostWin;
-
 

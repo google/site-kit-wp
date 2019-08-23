@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import PropTypes from 'prop-types';
 import Link from 'GoogleComponents/link';
 import Error from 'GoogleComponents/notifications/error';
@@ -24,7 +27,6 @@ const { Component } = wp.element;
 const { __, sprintf } = wp.i18n;
 
 class AdSenseInProcessStatus extends Component {
-
 	render() {
 		const { status } = this.props;
 		const { siteURL } = googlesitekit.admin;
@@ -44,7 +46,7 @@ class AdSenseInProcessStatus extends Component {
 				text: __( 'Enabled ads in', 'google-site-kit' ),
 				linkText: __( 'Ads', 'google-site-kit' ),
 				linkURL: 'https://www.google.com/adsense/new/myads/auto-ads',
-			}
+			},
 		];
 
 		const headerList = {
@@ -86,7 +88,7 @@ class AdSenseInProcessStatus extends Component {
 		const actionList = 'incomplete' === status && (
 			<div className="googlesitekit-setup-module__list-wrapper">
 				<ol className="googlesitekit-setup-module__list">
-					{ actionableItems.map( item => (
+					{ actionableItems.map( ( item ) => (
 						<li
 							className="googlesitekit-setup-module__list-item"
 							key={ item.id }
@@ -126,7 +128,7 @@ class AdSenseInProcessStatus extends Component {
 			<div className="googlesitekit-setup-module
 				googlesitekit-setup-module--adsense">
 				{ 'required' === status && (
-					<Error/>
+					<Error />
 				) }
 
 				{ header }
@@ -141,7 +143,7 @@ class AdSenseInProcessStatus extends Component {
 
 AdSenseInProcessStatus.propTypes = {
 	status: PropTypes.string,
-	module: PropTypes.string
+	module: PropTypes.string,
 };
 
 export default AdSenseInProcessStatus;

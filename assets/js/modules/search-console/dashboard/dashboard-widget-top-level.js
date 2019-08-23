@@ -16,8 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import DataBlock from 'GoogleComponents/data-block.js';
 import withData from 'GoogleComponents/higherorder/withdata';
+/**
+ * Internal dependencies
+ */
 import {
 	extractSearchConsoleDashboardData,
 	isDataZeroSearchConsole,
@@ -111,7 +117,7 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 						title={ __( 'Impressions', 'google-site-kit' ) }
 						datapoint={ totalImpressions }
 						change={ totalClicksChange }
-						changeDataUnit='%'
+						changeDataUnit="%"
 						source={ {
 							name: __( 'Search Console', 'google-site-kit' ),
 							link: href,
@@ -120,7 +126,7 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 							<Sparkline
 								data={ extractForSparkline( processedData.dataMap, 1 ) }
 								change={ totalClicksChange }
-								id='search-console-impressions-sparkline'
+								id="search-console-impressions-sparkline"
 							/>
 						}
 					/>
@@ -137,7 +143,7 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 						title={ __( 'Clicks', 'google-site-kit' ) }
 						datapoint={ totalClicks }
 						change={ totalImpressionsChange }
-						changeDataUnit='%'
+						changeDataUnit="%"
 						source={ {
 							name: __( 'Search Console', 'google-site-kit' ),
 							link: href,
@@ -146,7 +152,7 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 							<Sparkline
 								data={ extractForSparkline( processedData.dataMap, 2 ) }
 								change={ totalImpressionsChange }
-								id='search-console-clicks-sparkline'
+								id="search-console-clicks-sparkline"
 							/>
 						}
 					/>
@@ -167,7 +173,7 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
-		}
+		},
 	],
 	<Fragment>
 		<div className="
@@ -177,7 +183,7 @@ export default withData(
 			mdc-layout-grid__cell--span-2-tablet
 			mdc-layout-grid__cell--span-3-desktop
 		">
-			<PreviewBlock width='100%' height='202px' />
+			<PreviewBlock width="100%" height="202px" />
 		</div>
 		<div className="
 			mdc-layout-grid__cell
@@ -186,7 +192,7 @@ export default withData(
 			mdc-layout-grid__cell--span-2-tablet
 			mdc-layout-grid__cell--span-3-desktop
 		">
-			<PreviewBlock width='100%' height='202px' />
+			<PreviewBlock width="100%" height="202px" />
 		</div>
 	</Fragment>,
 	{

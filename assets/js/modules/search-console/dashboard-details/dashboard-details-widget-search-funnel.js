@@ -16,14 +16,19 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
 import DashboardSearchFunnelInner from '../dashboard/dashboard-widget-search-funnel-inner';
+/**
+ * External dependencies
+ */
 import Layout from 'GoogleComponents/layout/layout';
 import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
 
 const { Component } = wp.element;
 
 class DashboardDetailsSearchFunnel extends Component {
-
 	render() {
 		return (
 			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">

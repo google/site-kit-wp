@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import Notification from 'GoogleComponents/notifications/notification';
 
 const { Component } = wp.element;
@@ -23,7 +26,7 @@ const { Component } = wp.element;
 class GenericError extends Component {
 	render() {
 		return (
-			<Notification { ...this.props }/>
+			<Notification { ...this.props } />
 		);
 	}
 }

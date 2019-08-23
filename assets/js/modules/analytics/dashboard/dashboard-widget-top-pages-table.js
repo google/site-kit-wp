@@ -16,6 +16,9 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import withData from 'GoogleComponents/higherorder/withdata';
 import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
@@ -27,18 +30,16 @@ const { map } = lodash;
 const { Component, Fragment } = wp.element;
 
 class AnalyticsDashboardWidgetTopPagesTable extends Component {
-
 	/**
 	 * Add a deep link to Google Analytics Dashboard.
 	 *
 	 * @param {string} url to be used in the deep link.
 	 */
 	static addDeepLink( url ) {
-
 		const {
 			accountId,
 			internalWebPropertyId,
-			profileId
+			profileId,
 		} = googlesitekit.modules.analytics.settings;
 
 		if ( ! accountId ) {
@@ -62,29 +63,29 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 			},
 			{
 				title: __( 'Pageviews', 'google-site-kit' ),
-				tooltip: __( 'Pageviews', 'google-site-kit' )
+				tooltip: __( 'Pageviews', 'google-site-kit' ),
 			},
 			{
 				title: __( 'Unique Pageviews', 'google-site-kit' ),
-				tooltip: __( 'Unique Pageviews', 'google-site-kit' )
+				tooltip: __( 'Unique Pageviews', 'google-site-kit' ),
 			},
 			{
 				title: __( 'Bounce Rate', 'google-site-kit' ),
-				tooltip: __( 'Bounce Rate', 'google-site-kit' )
-			}
+				tooltip: __( 'Bounce Rate', 'google-site-kit' ),
+			},
 		];
 
-		let links = [];
-		const dataMapped = map( data[0].data.rows, ( row, i ) => {
-			const percent = Number( row.metrics[0].values[2] );
-			const url = row.dimensions[0];
-			const title = row.dimensions[1];
+		const links = [];
+		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
+			const percent = Number( row.metrics[ 0 ].values[ 2 ] );
+			const url = row.dimensions[ 0 ];
+			const title = row.dimensions[ 1 ];
 			links[ i ] = AnalyticsDashboardWidgetTopPagesTable.addDeepLink( url );
 			return [
 				title,
-				numberFormat( row.metrics[0].values[0] ),
-				numberFormat( row.metrics[0].values[1] ),
-				<Fragment key={ 'minichart-' + i }><div className="googlesitekit-table__body-item-chart-wrap">{ `${ percent.toFixed( 2 ) }%` }</div></Fragment>
+				numberFormat( row.metrics[ 0 ].values[ 0 ] ),
+				numberFormat( row.metrics[ 0 ].values[ 1 ] ),
+				<Fragment key={ 'minichart-' + i }><div className="googlesitekit-table__body-item-chart-wrap">{ `${ percent.toFixed( 2 ) }%` }</div></Fragment>,
 			];
 		} );
 
@@ -107,7 +108,6 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 	}
 }
 
-
 AnalyticsDashboardWidgetTopPagesTable.propTypes = {
 	data: PropTypes.array,
 	colspan: PropTypes.number,
@@ -127,8 +127,8 @@ export default withData(
 			datapoint: 'top-pages',
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
-			context: [ 'Single', 'Dashboard' ]
-		}
+			context: [ 'Single', 'Dashboard' ],
+		},
 	],
 	<PreviewTable padding />,
 	{ createGrid: true }

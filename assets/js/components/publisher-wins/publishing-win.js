@@ -16,13 +16,15 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
 import { extractSearchConsoleDashboardData } from 'GoogleModules/search-console/dashboard/util';
 import { readableLargeNumber } from 'GoogleUtil';
 
 const { __ } = wp.i18n;
 
 const publishingWin = ( data, id ) => {
-
 	const showNotification = 5 === parseInt( googlesitekit.admin.newSitePosts, 10 );
 
 	if ( ! showNotification ) {
@@ -32,7 +34,7 @@ const publishingWin = ( data, id ) => {
 	let message = __( 'Thats out of this world.', 'google-site-kit' );
 	let dataBlocks = [];
 
-	if ( googlesitekit.modules['search-console'] && googlesitekit.modules['search-console'].active && data ) {
+	if ( googlesitekit.modules[ 'search-console' ] && googlesitekit.modules[ 'search-console' ].active && data ) {
 		const processedData = extractSearchConsoleDashboardData( data );
 
 		const {
@@ -45,18 +47,18 @@ const publishingWin = ( data, id ) => {
 			{
 				title: __( 'Total Impressions', 'google-site-kit' ),
 				datapoint: readableLargeNumber( totalImpressions ),
-				datapointUnit: ''
+				datapointUnit: '',
 			},
 			{
 				title: __( 'Total Clicks', 'google-site-kit' ),
 				datapoint: readableLargeNumber( totalClicks ),
-				datapointUnit: ''
+				datapointUnit: '',
 			},
 			{
 				title: __( 'Average CTR', 'google-site-kit' ),
 				datapoint: averageCTR,
-				datapointUnit: '%'
-			}
+				datapointUnit: '%',
+			},
 		];
 
 		message = __( 'Thats out of this world. Here are the combined stats for your posts', 'google-site-kit' );
@@ -67,7 +69,7 @@ const publishingWin = ( data, id ) => {
 		title: __( 'Congrats on five published posts', 'google-site-kit' ),
 		description: message,
 		format: 'large',
-		winImage: `${googlesitekit.admin.assetsRoot}images/rocket.png`,
+		winImage: `${ googlesitekit.admin.assetsRoot }images/rocket.png`,
 		blockData: dataBlocks,
 		type: 'win-stats',
 		showOnce: true,

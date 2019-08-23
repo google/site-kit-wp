@@ -7,7 +7,7 @@ import { wpApiFetch } from './wp-api-fetch';
  * Set the connected search console property.
  *
  * @param {string} property Property URL.
- * @returns {*} resolved value from apiFetch promise.
+ * @return {*} resolved value from apiFetch promise.
  */
 export async function setSearchConsoleProperty( property = process.env.WP_BASE_URL ) {
 	return await wpApiFetch( {
