@@ -1,5 +1,13 @@
+/* global __STORYBOOK_CLIENT_API__ */
+/**
+ * External dependencies
+ */
 import React from 'react';
 import { addDecorator, configure } from '@storybook/react';
+
+/**
+ * WordPress dependencies
+ */
 import {
 	Component,
 	createRef,
@@ -24,6 +32,9 @@ import {
 	removeAction,
 	removeAllFilters,
 } from '@wordpress/hooks';
+/**
+ * Internal dependencies
+ */
 import '../dist/assets/css/wpdashboard.css';
 import '../dist/assets/css/adminbar.css';
 import '../dist/assets/css/admin.css';
@@ -34,7 +45,7 @@ import '../vendor/johnpbloch/wordpress-core/wp-admin/css/forms.css';
 import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
 
 // Default Data.
-let googlesitekit = dashboardData;
+const googlesitekit = dashboardData;
 
 // Setup.
 window.wp = window.wp || {};
@@ -74,17 +85,19 @@ wp.apiFetch = () => {
 	return {
 		then: () => {
 			return {
-				catch: () => false
+				catch: () => false,
 			};
 		},
 	};
 };
 wp.sanitize = {
-	stripTags: function( s ) { return s; }
+	stripTags( s ) {
+		return s;
+	},
 };
 
 // Global Decorator.
-addDecorator( story => <div className="googlesitekit-plugin-preview">
+addDecorator( ( story ) => <div className="googlesitekit-plugin-preview">
 	<div className="googlesitekit-plugin">{ story() }</div>
 </div> );
 
@@ -97,4 +110,5 @@ function loadStories() {
 configure( loadStories, module );
 
 // TODO Would be nice if this wrote to a file. This logs our Storybook data to the browser console. Currently it gets put in .storybook/storybook-data and used in tests/backstop/scenarios.js.
+// eslint-disable-next-line no-console
 console.log( '__STORYBOOK_CLIENT_API__.raw()', __STORYBOOK_CLIENT_API__.raw() );
