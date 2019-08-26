@@ -90,6 +90,7 @@ class DashboardWidgetPopularKeywordsTable extends Component {
 			);
 			return [
 				query,
+				numberFormat( row.clicks ),
 				numberFormat( row.impressions ),
 			];
 		} );
