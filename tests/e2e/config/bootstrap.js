@@ -64,7 +64,7 @@ function capturePageEventsForTearDown() {
  * @link https://tools.google.com/dlpage/gaoptout
  */
 function optOutOfEventTracking() {
-	page.on( 'load', () => {
+	page.on( 'domcontentloaded', () => {
 		page.evaluate( () => {
 			window._gaUserPrefs = { ioo: () => true };
 		} );
