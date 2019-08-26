@@ -585,9 +585,10 @@ final class REST_Routes {
 						'methods'  => WP_REST_Server::READABLE,
 						'callback' => function( WP_REST_Request $request ) {
 							$post_id = false;
-							$is_url  = filter_var( $request['query'], FILTER_VALIDATE_URL );
+							$query   = $request['query'];
+							$is_url  = filter_var( $query, FILTER_VALIDATE_URL );
 							if ( $is_url ) {
-								$post_id = url_to_postid( $request['query'] );
+								$post_id = url_to_postid( $query );
 							}
 							if ( $post_id ) {
 								$posts = array( get_post( $post_id ) );
@@ -595,14 +596,13 @@ final class REST_Routes {
 								$args = array(
 									'posts_per_page'  => 10,
 									'google-site-kit' => 1,
-									's'               => $request['query'],
+									's'               => $query,
 									'no_found_rows'   => true,
 									'update_post_meta_cache' => false,
 									'update_post_term_cache' => false,
 									'post_status'     => array( 'publish' ),
 								);
-								$query = new \WP_Query( $args );
-								$posts = $query->posts;
+								$posts = ( new \WP_Query( $args ) )->posts;
 							}
 							if ( empty( $posts ) ) {
 								return array();
