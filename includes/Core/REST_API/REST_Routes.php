@@ -586,8 +586,7 @@ final class REST_Routes {
 						'callback' => function( WP_REST_Request $request ) {
 							$post_id = false;
 							$query   = $request['query'];
-							$is_url  = filter_var( $query, FILTER_VALIDATE_URL );
-							if ( $is_url ) {
+							if ( filter_var( $query, FILTER_VALIDATE_URL ) ) {
 								$post_id = url_to_postid( $query );
 							}
 							if ( $post_id ) {
