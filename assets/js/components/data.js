@@ -118,7 +118,7 @@ const dataAPI = {
 	 * Solves issue for publisher wins to retrieve data without performing additional requests.
 	 * Likely this will be removed after refactoring.
 	 *
- 	 * @param {Array.<{ maxAge: timestamp, type: string, identifier: string, datapoint: string, datapointId: number, callback: function }>} combinedRequest An array of data requests to resolve.
+ 	 * @param {Array.<{ maxAge: timestamp, type: string, identifier: string, datapoint: string, callback: function }>} combinedRequest An array of data requests to resolve.
 	 *
 	 * @return {Promise} A promise for the cache lookup.
 	 */
@@ -134,16 +134,9 @@ const dataAPI = {
 				 */
 				const dateRangeSlug = stringToSlug( applyFilters( 'googlesitekit.dateRange', __( 'Last 28 days', 'google-site-kit' ) ) );
 				each( combinedRequest, ( request ) => {
-					let key = [ request.identifier, request.datapoint ];
-					if ( request.datapointId ) {
-						key = [ ...key, request.datapointId ];
-					}
+					request.data = request.data || {};
+					request.data.dateRange = request.data.dateRange || dateRangeSlug;
 
-					// Setup new request format from old request format.
-					if ( ! request.data ) {
-						request.data = {};
-					}
-					request.data.date_range = dateRangeSlug; // eslint-disable-line camelcase
 					const paramsToMigrate = [ 'permaLink', 'siteURL', 'pageUrl', 'limit' ];
 					paramsToMigrate.forEach( ( param ) => {
 						if ( 'undefined' !== typeof request[ param ] ) {
@@ -152,25 +145,11 @@ const dataAPI = {
 						}
 					} );
 
-					// Add the date range to the cache key.
-					key = [
-						...key,
-						dateRangeSlug,
-					];
+					request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
 
-					key = key.join( '::' );
-					const hashlessKey = key;
-
-					const { permaLinkHash } = googlesitekit;
-					if ( permaLinkHash && '' !== permaLinkHash ) {
-						key = key + '::' + permaLinkHash;
-					}
-
-					// Store key for later reuse.
-					request.key = key;
-					const cache = this.getCache( request.type + '::' + key, request.maxAge );
+					const cache = this.getCache( request.key, request.maxAge );
 					if ( 'undefined' !== typeof cache ) {
-						responseData[ hashlessKey ] = cache;
+						responseData[ request.key ] = cache;
 
 						// Trigger an action when cached data is used.
 						doAction( 'googlesitekit.cachedDataUsed', request.datapoint );
@@ -189,7 +168,7 @@ const dataAPI = {
 	/**
 	 * Gets data for multiple requests from the REST API using a single batch process.
 	 *
- 	 * @param {Array.<{ maxAge: timestamp, type: string, identifier: string, datapoint: string, datapointId: number, callback: function }>} combinedRequest An array of data requests to resolve.
+ 	 * @param {Array.<{ maxAge: timestamp, type: string, identifier: string, datapoint: string, callback: function }>} combinedRequest An array of data requests to resolve.
 	 * @param {boolean} secondaryRequest Is this the second (or more) request?
 	 */
 	combinedGet( combinedRequest, secondaryRequest = false ) {
@@ -204,16 +183,9 @@ const dataAPI = {
 		const dateRangeSlug = stringToSlug( applyFilters( 'googlesitekit.dateRange', __( 'Last 28 days', 'google-site-kit' ) ) );
 		let cacheDelay = 25;
 		each( combinedRequest, ( request ) => {
-			let key = [ request.identifier, request.datapoint ];
-			if ( request.datapointId ) {
-				key = [ ...key, request.datapointId ];
-			}
+			request.data = request.data || {};
+			request.data.dateRange = request.data.dateRange || dateRangeSlug;
 
-			// Setup new request format from old request format.
-			if ( ! request.data ) {
-				request.data = {};
-			}
-			request.data.date_range = dateRangeSlug; // eslint-disable-line camelcase
 			const paramsToMigrate = [ 'permaLink', 'siteURL', 'pageUrl', 'limit' ];
 			paramsToMigrate.forEach( ( param ) => {
 				if ( 'undefined' !== typeof request[ param ] ) {
@@ -222,22 +194,9 @@ const dataAPI = {
 				}
 			} );
 
-			// Add the date range to the cache key.
-			key = [
-				...key,
-				dateRangeSlug,
-			];
+			request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
 
-			key = key.join( '::' );
-
-			const { permaLinkHash } = googlesitekit;
-			if ( permaLinkHash && '' !== permaLinkHash ) {
-				key = key + '::' + permaLinkHash;
-			}
-
-			// Store key for later reuse.
-			request.key = key;
-			const cache = this.getCache( request.type + '::' + key, request.maxAge );
+			const cache = this.getCache( request.key, request.maxAge );
 			if ( 'undefined' !== typeof cache ) {
 				setTimeout( () => {
 					// Trigger an action when cached data is used.
@@ -341,7 +300,7 @@ const dataAPI = {
 
 						doAction( 'googlesitekit.dataReceived', request.key );
 
-						this.setCache( request.type + '::' + request.key, result );
+						this.setCache( request.key, result );
 						this.resolve( request, result );
 					} );
 				}
@@ -530,8 +489,10 @@ const dataAPI = {
 	 * @return {Promise} A promise for the fetch request.
 	 */
 	get( type, identifier, datapoint, data = {}, nocache = true ) {
+		const cacheKey = this.getCacheKey( type, identifier, datapoint, data );
+
 		if ( ! nocache ) {
-			const cache = this.getCache( identifier + '::' + datapoint, 3600 );
+			const cache = this.getCache( cacheKey, 3600 );
 
 			if ( 'undefined' !== typeof cache ) {
 				return new Promise( ( resolve ) => {
@@ -545,7 +506,7 @@ const dataAPI = {
 			path: addQueryArgs( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`, data ),
 		} ).then( ( results ) => {
 			if ( ! nocache ) {
-				this.setCache( identifier + '::' + datapoint, results );
+				this.setCache( cacheKey, results );
 			}
 
 			return new Promise( ( resolve ) => {
@@ -560,17 +521,20 @@ const dataAPI = {
 	 * Gets notifications from Rest API.
 	 *
 	 * @param {string} moduleSlug Slug of the module to get notifications for.
+	 * @param {number} maxAge     The cache TTL in seconds. If not provided, no TTL will be checked.
 	 *
 	 * @return {Promise} A promise for the fetch request.
 	 */
-	async getNotifications( moduleSlug, time = 0 ) {
+	async getNotifications( moduleSlug, maxAge = 0 ) {
 		let notifications = [];
 
 		if ( ! moduleSlug ) {
 			return notifications;
 		}
 
-		notifications = dataAPI.getCache( 'googlesitekit::notifications::' + moduleSlug, time );
+		const cacheKey = this.getCacheKey( 'modules', moduleSlug, 'notifications' );
+
+		notifications = dataAPI.getCache( cacheKey, maxAge );
 
 		if ( ! notifications || 0 === notifications.length ) {
 			// Make an API request to retrieve the notifications.
@@ -578,7 +542,7 @@ const dataAPI = {
 				path: `/google-site-kit/v1/modules/${ moduleSlug }/notifications/`,
 			} );
 
-			dataAPI.setCache( 'googlesitekit::notifications::' + moduleSlug, notifications );
+			dataAPI.setCache( cacheKey, notifications );
 		}
 
 		return notifications;
