@@ -19,6 +19,12 @@
 /**
  * External dependencies
  */
+import {
+	map,
+	find,
+	debounce,
+	trim,
+} from 'lodash';
 import Autocomplete from 'accessible-autocomplete/react';
 import data, { TYPE_CORE } from 'GoogleComponents/data';
 import Button from 'GoogleComponents/button';
@@ -27,14 +33,12 @@ import {
 	getSiteKitAdminURL,
 } from 'GoogleUtil';
 
+/**
+ * WordPress dependencies
+ */
 import { Component } from '@wordpress/element';
-import {
-	map,
-	find,
-	debounce,
-	trim,
-} from 'lodash';
 import { __ } from '@wordpress/i18n';
+import { stripTags } from '@wordpress/sanitize';
 
 // Shim wp.sanitize for WordPress < 4.9 when it was introduced.
 // @todo remove this when the plugin drops support for WordPress < 4.9.
@@ -81,10 +85,6 @@ if ( ! wp.sanitize ) {
 		},
 	};
 }
-<<<<<<< HEAD
-=======
-import { stripTags } from '@wordpress/sanitize';
->>>>>>> Use proper module imports
 
 class PostSearcher extends Component {
 	constructor( props ) {
@@ -109,6 +109,8 @@ class PostSearcher extends Component {
 	 */
 	async postSearch( query, populateResults ) {
 		populateResults( [ __( 'Loading...', 'google-site-kit' ) ] );
+
+		const { stripTags } = wp.sanitize;
 
 		try {
 			const results = await data.get( TYPE_CORE, 'search', 'post-search', { query: encodeURIComponent( query ) } );
