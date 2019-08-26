@@ -65,9 +65,11 @@ function capturePageEventsForTearDown() {
  */
 function optOutOfEventTracking() {
 	page.on( 'load', () => {
-		page.evaluate( () => {
-			window._gaUserPrefs = { ioo: () => true };
-		} );
+		try {
+			page.evaluate( () => {
+				window._gaUserPrefs = { ioo: () => true };
+			} );
+		} catch ( err ) {}
 	} );
 }
 
