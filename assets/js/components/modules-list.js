@@ -49,7 +49,6 @@ class ModulesList extends Component {
 	 * Handle setup module click event.
 	 *
 	 * @param {string} slug Module slug.
-	 * @return void
 	 */
 	async setupModuleClick( slug ) {
 		try {
@@ -76,9 +75,14 @@ class ModulesList extends Component {
 		// Filter out internal modules.
 		const modules = filter( window.googlesitekit.modules || [], ( module ) => ! module.internal );
 
+		// Map of slug => name for every module that is active and completely set up.
+		const completedModuleNames = {};
+
 		// Sort Modules by sort order.
-		let sortedModules = sortBy( modules, ( module, key ) => {
-			module.key = key;
+		let sortedModules = sortBy( modules, ( module ) => {
+			if ( module.active && module.setupComplete ) {
+				completedModuleNames[ module.slug ] = module.name;
+			}
 			return module.sort;
 		} );
 
@@ -88,21 +92,22 @@ class ModulesList extends Component {
 
 		return (
 			<div className="googlesitekit-modules-list">
-				{ map( sortedModules, 'slug' ).map( ( module ) => {
+				{ map( sortedModules, ( module ) => {
 					let blockedByParentModule = false;
 					let parentBlockerName = '';
-					const slug = modules[ module ].slug;
-					const name = modules[ module ].name;
-					const isConnected = modules[ module ].setupComplete;
+					const {
+						slug,
+						name,
+						setupComplete: isConnected,
+						required: requiredModules,
+					} = module;
 
 					// Check if required modules are active.
-					if ( 0 < modules[ module ].required.length ) {
-						const requiredModules = modules[ module ].required;
-
+					if ( 0 < requiredModules.length ) {
 						requiredModules.forEach( ( requiredModule ) => {
-							if ( 'undefined' !== typeof modules[ requiredModule ] ) {
-								blockedByParentModule = ! modules[ requiredModule ].setupComplete;
-								parentBlockerName = modules[ requiredModule ].name;
+							if ( completedModuleNames[ requiredModule ] ) {
+								blockedByParentModule = true;
+								parentBlockerName = completedModuleNames[ requiredModule ];
 							}
 						} );
 					}
