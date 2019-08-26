@@ -36,7 +36,7 @@ import ModuleSettingsWarning from 'GoogleComponents/notifications/module-setting
 
 const { Component } = wp.element;
 const { __, sprintf } = wp.i18n;
-const { sortBy, filter, map } = lodash;
+const { map } = lodash;
 
 class ModulesList extends Component {
 	constructor( props ) {
@@ -73,22 +73,21 @@ class ModulesList extends Component {
 
 	render() {
 		// Filter out internal modules.
-		const modules = filter( window.googlesitekit.modules || [], ( module ) => ! module.internal );
+		const modules = Object.values( window.googlesitekit.modules || {} ).filter( ( module ) => ! module.internal );
 
 		// Map of slug => name for every module that is active and completely set up.
-		const completedModuleNames = {};
+		const completedModuleNames = modules
+			.filter( ( module ) => module.active && module.setupComplete )
+			.reduce( ( completed, module ) => {
+				completed[ module.slug ] = module.name;
+				return completed;
+			}, {} );
 
-		// Sort Modules by sort order.
-		let sortedModules = sortBy( modules, ( module ) => {
-			if ( module.active && module.setupComplete ) {
-				completedModuleNames[ module.slug ] = module.name;
-			}
-			return module.sort;
-		} );
-
-		// Prevent modules with dependencies from displaying (Optimize and Tag Manager).
+		// Sort modules and exclude those that required other modules to be set up.
 		// Logic still in place below in case we want to add blocked modules back.
-		sortedModules = filter( sortedModules, ( module ) => 0 === module.required.length );
+		const sortedModules = modules
+			.filter( ( module ) => 0 === module.required.length )
+			.sort( ( module1, module2 ) => module1.sort - module2.sort );
 
 		return (
 			<div className="googlesitekit-modules-list">
