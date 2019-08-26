@@ -45,6 +45,8 @@ class ModuleTest extends TestCase {
 		$this->assertEquals( 'module-slug', $module->slug );
 		$this->assertEquals( 'module name', $module->name );
 		$this->assertEquals( 'module description', $module->description );
+		$this->assertFalse( $module->force_active );
+		$this->assertFalse( $module->internal );
 
 		$this->assertFalse( isset( $module->non_existent ) );
 		$this->assertNull( $module->non_existent );
@@ -65,6 +67,7 @@ class ModuleTest extends TestCase {
 			'module_tags',
 			'required',
 			'autoActivate',
+			'internal',
 			'screenId',
 			'hasSettings',
 		);
@@ -117,7 +120,7 @@ class ModuleTest extends TestCase {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$datapoints = $module->get_datapoints();
-		
+
 		$this->assertEquals( 'array', gettype( $datapoints ) );
 	}
 }
