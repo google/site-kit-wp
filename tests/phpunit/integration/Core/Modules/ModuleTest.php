@@ -29,6 +29,10 @@ class ModuleTest extends TestCase {
 	public function test_magic_methods() {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
+		// Check that some defaults are correct.
+		$this->assertFalse( $module->force_active );
+		$this->assertFalse( $module->internal );
+
 		// Can't use force_set_property here since the property is private on the base module
 		$reflection_property = new \ReflectionProperty( self::MODULE_CLASS_NAME, 'info' );
 		$reflection_property->setAccessible( true );
@@ -45,8 +49,6 @@ class ModuleTest extends TestCase {
 		$this->assertEquals( 'module-slug', $module->slug );
 		$this->assertEquals( 'module name', $module->name );
 		$this->assertEquals( 'module description', $module->description );
-		$this->assertFalse( $module->force_active );
-		$this->assertFalse( $module->internal );
 
 		$this->assertFalse( isset( $module->non_existent ) );
 		$this->assertNull( $module->non_existent );
