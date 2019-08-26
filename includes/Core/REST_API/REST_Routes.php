@@ -586,9 +586,17 @@ final class REST_Routes {
 						'callback' => function( WP_REST_Request $request ) {
 							$post_id = false;
 							$query   = rawurldecode( $request['query'] );
+
 							if ( filter_var( $query, FILTER_VALIDATE_URL ) ) {
-								$post_id = url_to_postid( $query );
+								// Translate public/alternate reference URLs to local if different.
+								$query_url = str_replace(
+									trailingslashit( $this->context->get_reference_site_url() ),
+									trailingslashit( home_url() ),
+									$query
+								);
+								$post_id = url_to_postid( $query_url );
 							}
+
 							if ( $post_id ) {
 								$posts = array( get_post( $post_id ) );
 							} else {
