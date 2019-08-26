@@ -611,12 +611,15 @@ final class REST_Routes {
 								);
 								$posts = ( new \WP_Query( $args ) )->posts;
 							}
+
 							if ( empty( $posts ) ) {
 								return array();
 							}
+
 							foreach ( $posts as $post ) {
 								$post->permalink = get_permalink( $post->ID );
 							}
+
 							return new WP_REST_Response( $posts );
 						},
 					),
