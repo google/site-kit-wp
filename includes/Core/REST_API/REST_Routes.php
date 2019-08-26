@@ -426,7 +426,7 @@ final class REST_Routes {
 					'args'   => array(
 						'slug' => array(
 							'type'              => 'string',
-							'description'       => __( 'Idenfier for the module.', 'google-site-kit' ),
+							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
 							'sanitize_callback' => 'sanitize_key',
 						),
 					),
@@ -485,7 +485,7 @@ final class REST_Routes {
 					'args' => array(
 						'slug'      => array(
 							'type'              => 'string',
-							'description'       => __( 'Idenfier for the module.', 'google-site-kit' ),
+							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
 							'sanitize_callback' => 'sanitize_key',
 						),
 						'datapoint' => array(
@@ -568,7 +568,7 @@ final class REST_Routes {
 					'args' => array(
 						'slug' => array(
 							'type'              => 'string',
-							'description'       => __( 'Idenfier for the module.', 'google-site-kit' ),
+							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
 							'sanitize_callback' => 'sanitize_key',
 						),
 					),
@@ -663,7 +663,7 @@ final class REST_Routes {
 			'properties' => array(
 				'slug'         => array(
 					'type'        => 'string',
-					'description' => __( 'Idenfier for the module.', 'google-site-kit' ),
+					'description' => __( 'Identifier for the module.', 'google-site-kit' ),
 					'readonly'    => true,
 				),
 				'name'         => array(
