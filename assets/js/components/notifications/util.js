@@ -151,7 +151,6 @@ const removeDisplayedWins = ( wins ) => {
  */
 export async function getModulesNotifications() {
 	const results = {};
-	const cta = {};
 	let total = 0;
 
 	const modules = await modulesNotificationsToRequest();
@@ -164,11 +163,8 @@ export async function getModulesNotifications() {
 
 			const response = await data.getNotifications( identifier, getTimeInSeconds( 'day' ) );
 
-			if ( response ) {
-				notifications = response.items || [];
-				cta.url = response.url || '';
-				cta.label = response.ctaLabel || '';
-				cta.target = response.ctaTarget || '';
+			if ( response && response.length ) {
+				notifications = response;
 
 				// Remove dismissed ones.
 				notifications = removeDismissed( notifications );
@@ -189,7 +185,7 @@ export async function getModulesNotifications() {
 		} );
 	} );
 
-	return { results, total, cta };
+	return { results, total };
 }
 
 /**
