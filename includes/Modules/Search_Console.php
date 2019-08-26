@@ -478,18 +478,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 				case 'page-analytics':
 				case 'search-keywords':
 				case 'index-status':
-					$response_data = $response->getRows();
-					usort(
-						$response_data,
-						function ( \Google_Service_Webmasters_ApiDataRow $a, \Google_Service_Webmasters_ApiDataRow $b ) {
-							if ( $a->getImpressions() === $b->getImpressions() ) {
-								return 0;
-							}
-
-							return ( $a->getImpressions() < $b->getImpressions() ) ? 1 : -1;
-						}
-					);
-					return array_slice( $response_data, 0, 10 );
+					return $response->getRows();
 			}
 		}
 
