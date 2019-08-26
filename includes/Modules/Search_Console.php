@@ -137,22 +137,21 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	protected function get_datapoint_services() {
 		return array(
 			// GET.
-			'sites'                               => 'webmasters',
-			'verified-sites'                      => 'siteverification',
-			'matched-sites'                       => 'webmasters',
-			'siteverification-list'               => 'siteverification',
-			'siteverification-token'              => 'siteverification',
-			'is-site-exist'                       => 'webmasters',
-			'sc-site-analytics'                   => 'webmasters',
-			'page-analytics'                      => 'webmasters',
-			'search-keywords'                     => 'webmasters',
-			'search-keywords-sort-by-impressions' => 'webmasters',
-			'index-status'                        => 'webmasters',
+			'sites'                  => 'webmasters',
+			'verified-sites'         => 'siteverification',
+			'matched-sites'          => 'webmasters',
+			'siteverification-list'  => 'siteverification',
+			'siteverification-token' => 'siteverification',
+			'is-site-exist'          => 'webmasters',
+			'sc-site-analytics'      => 'webmasters',
+			'page-analytics'         => 'webmasters',
+			'search-keywords'        => 'webmasters',
+			'index-status'           => 'webmasters',
 
 			// POST.
-			'siteverification'                    => '',
-			'save-property'                       => '',
-			'insert'                              => '',
+			'siteverification'       => '',
+			'save-property'          => '',
+			'insert'                 => '',
 		);
 	}
 
@@ -242,19 +241,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 							'end_date'   => $date_range[1],
 							'page'       => $page,
 							'row_limit'  => 10,
-						)
-					);
-				case 'search-keywords-sort-by-impressions':
-					$page       = ! empty( $data['permaLink'] ) ? $data['permaLink'] : '';
-					$date_range = ! empty( $data['date_range'] ) ? $data['date_range'] : 'last-28-days';
-					$date_range = $this->parse_date_range( $date_range, 1, 3 );
-					return $this->create_search_analytics_data_request(
-						array(
-							'dimensions' => array( 'query' ),
-							'start_date' => $date_range[0],
-							'end_date'   => $date_range[1],
-							'page'       => $page,
-							'row_limit'  => 100,
 						)
 					);
 				case 'index-status':
@@ -492,7 +478,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 				case 'page-analytics':
 				case 'search-keywords':
 				case 'index-status':
-				case 'search-keywords-sort-by-impressions':
 					$response_data = $response->getRows();
 					usort(
 						$response_data,
