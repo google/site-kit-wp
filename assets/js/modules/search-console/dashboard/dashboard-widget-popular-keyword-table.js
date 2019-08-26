@@ -118,7 +118,7 @@ export default withData(
 		{
 			dataObject: 'modules',
 			identifier: 'search-console',
-			datapoint: 'search-keywords-sort',
+			datapoint: 'search-keywords',
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Dashboard' ],
