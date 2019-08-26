@@ -531,10 +531,10 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					$service = $this->get_service( 'analytics' );
 					return $service->management_goals->listManagementGoals( $connection['accountId'], $connection['propertyId'], $connection['profileId'] );
 				case 'get-accounts':
-					if ( ! empty( $data['account'] ) && ! empty( $data['property'] ) ) {
+					if ( ! empty( $data['existingAccountId'] ) && ! empty( $data['existingPropertyId'] ) ) {
 						$this->_existing_tag_account = array(
-							'account'  => $data['account'],
-							'property' => $data['property'],
+							'accountId'  => $data['existingAccountId'],
+							'propertyId' => $data['existingPropertyId'],
 						);
 					}
 					$service = $this->get_service( 'analytics' );
@@ -1075,7 +1075,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							}
 						}
 					} else {
-						$found_account_id = $existing_tag['account'];
+						$found_account_id = $existing_tag['accountId'];
 					}
 
 					if ( empty( $found_account_id ) ) {
@@ -1094,13 +1094,13 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						$matched_property = array_filter(
 							$properties['properties'],
 							function( $property ) use ( $existing_tag ) {
-								return $property->getId() === $existing_tag['property'];
+								return $property->getId() === $existing_tag['propertyId'];
 							}
 						);
 					}
 
-					if ( $matched_property ) {
-						$result = array_merge( $result, array( 'matchedProperty' => array_values( $matched_property ) ) );
+					if ( ! empty( $matched_property ) ) {
+						$result = array_merge( $result, array( 'matchedProperty' => array_shift( $matched_property ) ) );
 					}
 
 					return $result;
@@ -1305,8 +1305,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 			if ( ! empty( $existing_property_match ) ) {
 				$response = array(
-					'account'  => $account_id,
-					'property' => $property_id,
+					'accountId'  => $account_id,
+					'propertyId' => $property_id,
 				);
 				break;
 			}

@@ -58,7 +58,7 @@ class AnalyticsSetup extends Component {
 			isSaving: false,
 			propertiesLoading: false,
 			profilesLoading: false,
-			useSnippet,
+			useSnippet: useSnippet || false,
 			errorCode: false,
 			errorMsg: '',
 			errorReason: false,
@@ -253,8 +253,8 @@ class AnalyticsSetup extends Component {
 		try {
 			// Send existing tag data to get account.
 			const queryArgs = existingTagData ? {
-				account: existingTagData.account,
-				property: existingTagData.property,
+				existingAccountId: existingTagData.accountId,
+				existingPropertyId: existingTagData.propertyId,
 			} : {};
 
 			const responseData = await data.get( 'modules', 'analytics', 'get-accounts', queryArgs, false );
@@ -267,14 +267,14 @@ class AnalyticsSetup extends Component {
 					matchedProperty = responseData.matchedProperty;
 				}
 
-				if ( matchedProperty && matchedProperty.length ) {
-					selectedAccount = matchedProperty[ 0 ].accountId;
-					selectedProperty = matchedProperty[ 0 ].id;
-					const matchedProfile = responseData.profiles.filter( ( profile ) => {
+				if ( matchedProperty ) {
+					selectedAccount = matchedProperty.accountId;
+					selectedProperty = matchedProperty.id;
+					const matchedProfile = responseData.profiles.find( ( profile ) => {
 						return profile.accountId === selectedAccount;
 					} );
-					if ( 0 < matchedProfile.length ) {
-						selectedProfile = matchedProfile[ 0 ].id;
+					if ( matchedProfile ) {
+						selectedProfile = matchedProfile.id;
 					}
 				} else {
 					responseData.accounts.unshift( {
@@ -330,7 +330,7 @@ class AnalyticsSetup extends Component {
 				selectedProfile,
 				properties: [ chooseAccount ],
 				profiles: [ chooseAccount ],
-				existingTag: existingTagData ? existingTagData.property : false,
+				existingTag: existingTagData ? existingTagData.propertyId : false,
 				useSnippet: ( ! existingTagData && ! onSettingsPage ) ? true : useSnippet,
 			};
 
