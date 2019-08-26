@@ -137,22 +137,20 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	protected function get_datapoint_services() {
 		return array(
 			// GET.
-			'sites'                               => 'webmasters',
-			'verified-sites'                      => 'siteverification',
-			'matched-sites'                       => 'webmasters',
-			'siteverification-list'               => 'siteverification',
-			'siteverification-token'              => 'siteverification',
-			'is-site-exist'                       => 'webmasters',
-			'sc-site-analytics'                   => 'webmasters',
-			'page-analytics'                      => 'webmasters',
-			'search-keywords'                     => 'webmasters',
-			'search-keywords-sort-by-impressions' => 'webmasters',
-			'index-status'                        => 'webmasters',
+			'sites'                  => 'webmasters',
+			'verified-sites'         => 'siteverification',
+			'matched-sites'          => 'webmasters',
+			'siteverification-list'  => 'siteverification',
+			'siteverification-token' => 'siteverification',
+			'is-site-exist'          => 'webmasters',
+			'sc-site-analytics'      => 'webmasters',
+			'search-keywords'        => 'webmasters',
+			'index-status'           => 'webmasters',
 
 			// POST.
-			'siteverification'                    => '',
-			'save-property'                       => '',
-			'insert'                              => '',
+			'siteverification'       => '',
+			'save-property'          => '',
+			'insert'                 => '',
 		);
 	}
 
@@ -219,18 +217,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 							'page'       => $page,
 						)
 					);
-				case 'page-analytics':
-					$page       = ! empty( $data['permaLink'] ) ? $data['permaLink'] : '';
-					$date_range = ! empty( $data['date_range'] ) ? $data['date_range'] : 'last-28-days';
-					$date_range = $this->parse_date_range( $date_range, 2, 3 );
-					return $this->create_search_analytics_data_request(
-						array(
-							'dimensions' => array( 'date' ),
-							'start_date' => $date_range[0],
-							'end_date'   => $date_range[1],
-							'page'       => $page,
-						)
-					);
 				case 'search-keywords':
 					$page       = ! empty( $data['permaLink'] ) ? $data['permaLink'] : '';
 					$date_range = ! empty( $data['date_range'] ) ? $data['date_range'] : 'last-28-days';
@@ -242,19 +228,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 							'end_date'   => $date_range[1],
 							'page'       => $page,
 							'row_limit'  => 10,
-						)
-					);
-				case 'search-keywords-sort-by-impressions':
-					$page       = ! empty( $data['permaLink'] ) ? $data['permaLink'] : '';
-					$date_range = ! empty( $data['date_range'] ) ? $data['date_range'] : 'last-28-days';
-					$date_range = $this->parse_date_range( $date_range, 1, 3 );
-					return $this->create_search_analytics_data_request(
-						array(
-							'dimensions' => array( 'query' ),
-							'start_date' => $date_range[0],
-							'end_date'   => $date_range[1],
-							'page'       => $page,
-							'row_limit'  => 100,
 						)
 					);
 				case 'index-status':
@@ -489,22 +462,9 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						'verified' => false,
 					);
 				case 'sc-site-analytics':
-				case 'page-analytics':
 				case 'search-keywords':
 				case 'index-status':
-				case 'search-keywords-sort-by-impressions':
-					$response_data = $response->getRows();
-					usort(
-						$response_data,
-						function ( \Google_Service_Webmasters_ApiDataRow $a, \Google_Service_Webmasters_ApiDataRow $b ) {
-							if ( $a->getImpressions() === $b->getImpressions() ) {
-								return 0;
-							}
-
-							return ( $a->getImpressions() < $b->getImpressions() ) ? 1 : -1;
-						}
-					);
-					return array_slice( $response_data, 0, 10 );
+					return $response->getRows();
 			}
 		}
 
@@ -594,15 +554,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					'identifier' => $this->slug,
 					'key'        => 'sc-site-analytics',
 					'datapoint'  => 'sc-site-analytics',
-					'data'       => array(
-						'permaLink'  => $post_url,
-						'date_range' => 'last-7-days',
-					),
-				),
-				array(
-					'identifier' => $this->slug,
-					'key'        => 'page-analytics',
-					'datapoint'  => 'page-analytics',
 					'data'       => array(
 						'permaLink'  => $post_url,
 						'date_range' => 'last-7-days',
