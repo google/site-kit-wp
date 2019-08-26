@@ -71,6 +71,10 @@ class DashboardWidgetPopularKeywordsTable extends Component {
 				tooltip: __( 'Most searched for keywords related to your content', 'google-site-kit' ),
 			},
 			{
+				title: __( 'Clicks', 'google-site-kit' ),
+				tooltip: __( 'Number of times users clicked on your content in search results', 'google-site-kit' ),
+			},
+			{
 				title: __( 'Impressions', 'google-site-kit' ),
 				tooltip: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
 			},
