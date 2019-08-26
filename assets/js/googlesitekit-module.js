@@ -20,7 +20,6 @@
  * External dependencies
  */
 import ProgressBar from 'GoogleComponents/progress-bar';
-import { addPerformanceMonitoring } from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
 
 // Load the data module.
@@ -47,10 +46,6 @@ class GoogleSitekitModule extends Component {
 		// Set up translations.
 		setLocaleData( googlesitekit.locale, 'google-site-kit' );
 
-		if ( window.googlesitekit.admin.debug ) {
-			addPerformanceMonitoring();
-		}
-
 		const {
 			showModuleSetupWizard,
 		} = googlesitekit.setup;
@@ -66,10 +61,6 @@ class GoogleSitekitModule extends Component {
 			error,
 			info,
 		} );
-	}
-
-	componentDidMount() {
-		doAction( 'googlesitekit.rootAppDidMount' );
 	}
 
 	render() {
