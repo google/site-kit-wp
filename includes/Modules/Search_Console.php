@@ -144,7 +144,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			'siteverification-token' => 'siteverification',
 			'is-site-exist'          => 'webmasters',
 			'sc-site-analytics'      => 'webmasters',
-			'page-analytics'         => 'webmasters',
 			'search-keywords'        => 'webmasters',
 			'index-status'           => 'webmasters',
 
@@ -207,18 +206,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					$service = $this->get_service( 'webmasters' );
 					return $service->sites->listSites();
 				case 'sc-site-analytics':
-					$page       = ! empty( $data['permaLink'] ) ? $data['permaLink'] : '';
-					$date_range = ! empty( $data['date_range'] ) ? $data['date_range'] : 'last-28-days';
-					$date_range = $this->parse_date_range( $date_range, 2, 3 );
-					return $this->create_search_analytics_data_request(
-						array(
-							'dimensions' => array( 'date' ),
-							'start_date' => $date_range[0],
-							'end_date'   => $date_range[1],
-							'page'       => $page,
-						)
-					);
-				case 'page-analytics':
 					$page       = ! empty( $data['permaLink'] ) ? $data['permaLink'] : '';
 					$date_range = ! empty( $data['date_range'] ) ? $data['date_range'] : 'last-28-days';
 					$date_range = $this->parse_date_range( $date_range, 2, 3 );
@@ -475,7 +462,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						'verified' => false,
 					);
 				case 'sc-site-analytics':
-				case 'page-analytics':
 				case 'search-keywords':
 				case 'index-status':
 					return $response->getRows();
@@ -568,15 +554,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					'identifier' => $this->slug,
 					'key'        => 'sc-site-analytics',
 					'datapoint'  => 'sc-site-analytics',
-					'data'       => array(
-						'permaLink'  => $post_url,
-						'date_range' => 'last-7-days',
-					),
-				),
-				array(
-					'identifier' => $this->slug,
-					'key'        => 'page-analytics',
-					'datapoint'  => 'page-analytics',
 					'data'       => array(
 						'permaLink'  => $post_url,
 						'date_range' => 'last-7-days',
