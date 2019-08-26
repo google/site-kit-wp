@@ -349,8 +349,11 @@ final class REST_Routes {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function( WP_REST_Request $request ) {
-							$modules = $this->modules->get_available_modules();
-							return new WP_REST_Response( array_values( array_map( array( $this, 'prepare_module_data_for_response' ), $modules ) ) );
+							$modules = array_map(
+								array( $this, 'prepare_module_data_for_response' ),
+								$this->modules->get_available_modules()
+							);
+							return new WP_REST_Response( array_values( $modules ) );
 						},
 						'permission_callback' => $can_authenticate,
 					),
