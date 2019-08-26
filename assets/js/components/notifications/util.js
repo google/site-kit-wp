@@ -77,9 +77,14 @@ export async function getTotalNotifications() {
 /**
  * Removes dismissed notifications from list.
  *
- * @param {Array} notifications
+ * @param {Array} notifications List of notifications
+ * @return {Array} Filtered list of notifications.
  */
 const removeDismissed = ( notifications ) => {
+	if ( ! notifications ) {
+		return [];
+	}
+
 	if ( ! notifications.length ) {
 		return notifications;
 	}
@@ -159,16 +164,10 @@ export async function getModulesNotifications() {
 	modules.map( async ( module ) => {
 		const promise = new Promise( async ( resolve ) => {
 			const { identifier } = module;
-			let notifications = [];
 
-			const response = await data.getNotifications( identifier, getTimeInSeconds( 'day' ) );
-
-			if ( response && response.length ) {
-				notifications = response;
-
-				// Remove dismissed ones.
-				notifications = removeDismissed( notifications );
-			}
+			const notifications = removeDismissed(
+				await data.getNotifications( identifier, getTimeInSeconds( 'day' ) )
+			);
 
 			resolve( { identifier, notifications } );
 		} );
