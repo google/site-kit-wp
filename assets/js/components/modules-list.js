@@ -73,7 +73,8 @@ class ModulesList extends Component {
 	}
 
 	render() {
-		const modules = window.googlesitekit.modules || [];
+		// Filter out internal modules.
+		const modules = filter( window.googlesitekit.modules || [], ( module ) => ! module.internal );
 
 		// Sort Modules by sort order.
 		let sortedModules = sortBy( modules, ( module, key ) => {
