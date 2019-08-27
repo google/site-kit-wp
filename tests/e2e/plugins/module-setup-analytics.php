@@ -189,7 +189,7 @@ add_action( 'rest_api_init', function () {
 				);
 
 				if ( $matched_property ) {
-					$response['matchedProperty'] = $response['properties'];
+					$response['matchedProperty'] = array_shift( $matched_property );
 				}
 
 				return $response;
