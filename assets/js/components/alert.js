@@ -65,18 +65,11 @@ class Alert extends Component {
 	render() {
 		const { alerts, error, isLoading } = this.state;
 
-		if ( error || isLoading || ! alerts || ! alerts.items || ! alerts.items.length ) {
+		if ( error || isLoading || ! alerts || ! alerts.length ) {
 			return null;
 		}
 
-		const {
-			items,
-			url,
-			ctaLabel,
-			ctaTarget,
-		} = alerts;
-
-		const notifications = items.map( ( item ) =>
+		const notifications = alerts.map( ( item ) =>
 			<Notification
 				id={ item.id }
 				key={ item.id }
@@ -85,9 +78,9 @@ class Alert extends Component {
 				dismiss={ __( 'Dismiss', 'google-site-kit' ) }
 				isDismissable={ item.isDismissible }
 				format="small"
-				ctaLink={ url }
-				ctaLabel={ ctaLabel }
-				ctaTarget={ ctaTarget }
+				ctaLink={ item.ctaUrl }
+				ctaLabel={ item.ctaLabel }
+				ctaTarget={ item.ctaTarget }
 				type={ item.severity }
 			/> );
 

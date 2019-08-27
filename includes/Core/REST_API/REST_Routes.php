@@ -551,15 +551,11 @@ final class REST_Routes {
 							if ( ! isset( $modules[ $slug ] ) ) {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
-							$notifications = new \stdClass(); // Will force JSON object.
+							$notifications = array();
 							if ( $this->modules->is_module_active( $slug ) ) {
 								$notifications = $modules[ $slug ]->get_data( 'notifications' );
-								if ( ! is_wp_error( $notifications ) && ! empty( $notifications ) ) {
-									if ( wp_is_numeric_array( $notifications ) ) {
-										$notifications = array( 'items' => $notifications );
-									}
-								} else {
-									$notifications = new \stdClass(); // Will force JSON object.
+								if ( is_wp_error( $notifications ) ) {
+									return $notifications;
 								}
 							}
 							return new WP_REST_Response( $notifications );
