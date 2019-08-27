@@ -140,12 +140,8 @@ final class Admin_Bar {
 			return false;
 		}
 
-		if ( $this->is_admin_post_screen() ) {
-			return true;
-		}
-
 		// Gets post object. On front area we need to use get_queried_object to get the current post object.
-		if ( is_admin() ) {
+		if ( $this->is_admin_post_screen() ) {
 			$post = get_post();
 		} else {
 			$post = get_queried_object();
@@ -179,7 +175,6 @@ final class Admin_Bar {
 
 	/**
 	 * Checks if current screen is an admin edit post screen.
-	 * Used to determine if admin bar menu is active.
 	 *
 	 * @since 1.0.0
 	 */
