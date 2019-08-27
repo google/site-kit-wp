@@ -239,6 +239,7 @@ class AnalyticsSetup extends Component {
 			selectedAccount,
 			selectedProperty,
 			selectedProfile,
+			useSnippet,
 		} = this.state;
 		const {
 			isEditing,
@@ -246,7 +247,6 @@ class AnalyticsSetup extends Component {
 		} = this.props;
 		const {
 			errorCode,
-			useSnippet,
 		} = this.state;
 		let newState = {};
 
@@ -320,6 +320,11 @@ class AnalyticsSetup extends Component {
 				name: __( 'Setup a New Profile', 'google-site-kit' ),
 			} );
 
+			// Ensure snippet is inserted while setting up the module unless there is an existing tag.
+			if ( ! onSettingsPage ) {
+				useSnippet = existingTagData ? false : true;
+			}
+
 			newState = {
 				...newState,
 				isLoading: false,
@@ -331,7 +336,7 @@ class AnalyticsSetup extends Component {
 				properties: [ chooseAccount ],
 				profiles: [ chooseAccount ],
 				existingTag: existingTagData ? existingTagData.propertyId : false,
-				useSnippet: ( ! existingTagData && ! onSettingsPage ) ? true : useSnippet,
+				useSnippet,
 			};
 
 			if ( selectedAccount && '0' !== selectedAccount ) {
