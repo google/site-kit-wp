@@ -36,7 +36,7 @@ import ModuleSettingsWarning from 'GoogleComponents/notifications/module-setting
 
 const { Component } = wp.element;
 const { __, sprintf } = wp.i18n;
-const { sortBy, filter, map } = lodash;
+const { map } = lodash;
 
 class ModulesList extends Component {
 	constructor( props ) {
@@ -49,7 +49,6 @@ class ModulesList extends Component {
 	 * Handle setup module click event.
 	 *
 	 * @param {string} slug Module slug.
-	 * @return void
 	 */
 	async setupModuleClick( slug ) {
 		try {
@@ -73,35 +72,41 @@ class ModulesList extends Component {
 	}
 
 	render() {
-		const modules = window.googlesitekit.modules || [];
+		// Filter out internal modules.
+		const modules = Object.values( window.googlesitekit.modules || {} ).filter( ( module ) => ! module.internal );
 
-		// Sort Modules by sort order.
-		let sortedModules = sortBy( modules, ( module, key ) => {
-			module.key = key;
-			return module.sort;
-		} );
+		// Map of slug => name for every module that is active and completely set up.
+		const completedModuleNames = modules
+			.filter( ( module ) => module.active && module.setupComplete )
+			.reduce( ( completed, module ) => {
+				completed[ module.slug ] = module.name;
+				return completed;
+			}, {} );
 
-		// Prevent modules with dependencies from displaying (Optimize and Tag Manager).
+		// Sort modules and exclude those that required other modules to be set up.
 		// Logic still in place below in case we want to add blocked modules back.
-		sortedModules = filter( sortedModules, ( module ) => 0 === module.required.length );
+		const sortedModules = modules
+			.filter( ( module ) => 0 === module.required.length )
+			.sort( ( module1, module2 ) => module1.sort - module2.sort );
 
 		return (
 			<div className="googlesitekit-modules-list">
-				{ map( sortedModules, 'slug' ).map( ( module ) => {
+				{ map( sortedModules, ( module ) => {
 					let blockedByParentModule = false;
 					let parentBlockerName = '';
-					const slug = modules[ module ].slug;
-					const name = modules[ module ].name;
-					const isConnected = modules[ module ].setupComplete;
+					const {
+						slug,
+						name,
+						setupComplete: isConnected,
+						required: requiredModules,
+					} = module;
 
 					// Check if required modules are active.
-					if ( 0 < modules[ module ].required.length ) {
-						const requiredModules = modules[ module ].required;
-
+					if ( 0 < requiredModules.length ) {
 						requiredModules.forEach( ( requiredModule ) => {
-							if ( 'undefined' !== typeof modules[ requiredModule ] ) {
-								blockedByParentModule = ! modules[ requiredModule ].setupComplete;
-								parentBlockerName = modules[ requiredModule ].name;
+							if ( completedModuleNames[ requiredModule ] ) {
+								blockedByParentModule = true;
+								parentBlockerName = completedModuleNames[ requiredModule ];
 							}
 						} );
 					}

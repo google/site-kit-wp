@@ -33,6 +33,7 @@ class ModulesTest extends TestCase {
 				'optimize'           => 'Google\\Site_Kit\\Modules\\Optimize',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'site-verification'  => 'Google\\Site_Kit\\Modules\\Site_Verification',
 				'tagmanager'         => 'Google\\Site_Kit\\Modules\\TagManager',
 			),
 			$available
@@ -48,7 +49,8 @@ class ModulesTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'search-console' => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'search-console'    => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'site-verification' => 'Google\\Site_Kit\\Modules\\Site_Verification',
 			),
 			$active
 		);

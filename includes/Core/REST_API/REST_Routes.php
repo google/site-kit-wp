@@ -640,6 +640,7 @@ final class REST_Routes {
 			'name'         => $module->name,
 			'description'  => $module->description,
 			'homepage'     => $module->homepage,
+			'internal'     => $module->internal,
 			'active'       => $manager->is_module_active( $module->slug ),
 			'connected'    => $manager->is_module_connected( $module->slug ),
 			'dependencies' => $manager->get_module_dependencies( $module->slug ),
@@ -679,6 +680,11 @@ final class REST_Routes {
 					'type'        => 'string',
 					'description' => __( 'The module homepage.', 'google-site-kit' ),
 					'format'      => 'uri',
+					'readonly'    => true,
+				),
+				'internal'     => array(
+					'type'        => 'boolean',
+					'description' => __( 'Whether the module is internal, thus without any UI.', 'google-site-kit' ),
 					'readonly'    => true,
 				),
 				'active'       => array(

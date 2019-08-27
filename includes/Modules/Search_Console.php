@@ -17,7 +17,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google_Client;
 use Google_Service;
-use Google_Service_Exception;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use WP_Error;
@@ -34,16 +33,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait;
 
 	const PROPERTY_OPTION = 'googlesitekit_search_console_property';
-
-	/**
-	 * Temporary storage for very specific data for 'siteverification-list' datapoint.
-	 *
-	 * Bad to have, but works for now.
-	 *
-	 * @since 1.0.0
-	 * @var array|null
-	 */
-	private $_siteverification_list_data = null;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -123,7 +112,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	public function get_scopes() {
 		return array(
 			'https://www.googleapis.com/auth/webmasters',
-			'https://www.googleapis.com/auth/siteverification',
 		);
 	}
 
@@ -137,20 +125,16 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	protected function get_datapoint_services() {
 		return array(
 			// GET.
-			'sites'                  => 'webmasters',
-			'verified-sites'         => 'siteverification',
-			'matched-sites'          => 'webmasters',
-			'siteverification-list'  => 'siteverification',
-			'siteverification-token' => 'siteverification',
-			'is-site-exist'          => 'webmasters',
-			'sc-site-analytics'      => 'webmasters',
-			'search-keywords'        => 'webmasters',
-			'index-status'           => 'webmasters',
+			'sites'             => 'webmasters',
+			'matched-sites'     => 'webmasters',
+			'is-site-exist'     => 'webmasters',
+			'sc-site-analytics' => 'webmasters',
+			'search-keywords'   => 'webmasters',
+			'index-status'      => 'webmasters',
 
 			// POST.
-			'siteverification'       => '',
-			'save-property'          => '',
-			'insert'                 => '',
+			'save-property'     => '',
+			'insert'            => '',
 		);
 	}
 
@@ -170,38 +154,9 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 				case 'sites':
 					$service = $this->get_service( 'webmasters' );
 					return $service->sites->listSites();
-				case 'verified-sites':
-					$service = $this->get_service( 'siteverification' );
-					return $service->webResource->listWebResource(); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 				case 'matched-sites':
 					$service = $this->get_service( 'webmasters' );
 					return $service->sites->listSites();
-				case 'siteverification-list':
-					// This is far from optimal and hacky, but works for now.
-					if ( ! empty( $data['siteURL'] ) ) {
-						$this->_siteverification_list_data = $data;
-					}
-					$service = $this->get_service( 'siteverification' );
-					return $service->webResource->listWebResource(); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
-				case 'siteverification-token':
-					$existing_token = $this->authentication->verification_tag()->get();
-					if ( ! empty( $existing_token ) ) {
-						return function() use ( $existing_token ) {
-							return array(
-								'method' => 'META',
-								'token'  => $existing_token,
-							);
-						};
-					}
-					$current_url = ! empty( $data['siteURL'] ) ? $data['siteURL'] : $this->context->get_reference_site_url();
-					$site        = new \Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequestSite();
-					$site->setIdentifier( $current_url );
-					$site->setType( 'SITE' );
-					$request = new \Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequest();
-					$request->setSite( $site );
-					$request->setVerificationMethod( 'META' );
-					$service = $this->get_service( 'siteverification' );
-					return $service->webResource->getToken( $request ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 				case 'is-site-exist':
 					$service = $this->get_service( 'webmasters' );
 					return $service->sites->listSites();
@@ -240,62 +195,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
-				case 'siteverification':
-					if ( ! isset( $data['siteURL'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'siteURL' ), array( 'status' => 400 ) );
-					}
-					return function() use ( $data ) {
-						$current_user = wp_get_current_user();
-						if ( ! $current_user || ! $current_user->exists() ) {
-							return new WP_Error( 'unknown_user', __( 'Unknown user.', 'google-site-kit' ) );
-						}
-						$site = $this->get_data( 'siteverification-list', $data );
-						if ( is_wp_error( $site ) ) {
-							return $site;
-						}
-						$sites = array();
-						if ( isset( $site['verified'] ) && ! $site['verified'] ) {
-							$token = $this->get_data( 'siteverification-token', $data );
-							if ( is_wp_error( $token ) ) {
-								return $token;
-							}
-							$this->authentication->verification_tag()->set( $token['token'] );
-							$client     = $this->get_client();
-							$orig_defer = $client->shouldDefer();
-							$client->setDefer( false );
-							$urls   = $this->permute_site_url( $data['siteURL'] );
-							$errors = new WP_Error();
-							foreach ( $urls as $url ) {
-								$site = new \Google_Service_SiteVerification_SiteVerificationWebResourceResourceSite();
-								$site->setType( 'SITE' );
-								$site->setIdentifier( $url );
-								$resource = new \Google_Service_SiteVerification_SiteVerificationWebResourceResource();
-								$resource->setSite( $site );
-								try {
-									$sites[] = $this->get_service( 'siteverification' )->webResource->insert( 'META', $resource ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
-								} catch ( Google_Service_Exception $e ) {
-									$message = $e->getErrors();
-									if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-										$message = $message[0]['message'];
-									}
-									$errors->add( $e->getCode(), $message, array( 'url' => $url ) );
-								} catch ( Exception $e ) {
-									$errors->add( $e->getCode(), $e->getMessage(), array( 'url' => $url ) );
-								}
-							}
-							$client->setDefer( $orig_defer );
-							if ( empty( $sites ) ) {
-								return $errors;
-							}
-						}
-						$this->authentication->verification()->set( true );
-						return array(
-							'updated'    => true,
-							'sites'      => $sites,
-							'identifier' => $data['siteURL'],
-						);
-					};
 				case 'save-property':
 					if ( ! isset( $data['siteURL'] ) ) {
 						/* translators: %s: Missing parameter name */
@@ -306,7 +205,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						if ( ! $current_user || ! $current_user->exists() ) {
 							return new WP_Error( 'unknown_user', __( 'Unknown user.', 'google-site-kit' ) );
 						}
-						$this->authentication->verification()->set( true );
 						$response = $this->options->set( self::PROPERTY_OPTION, $data['siteURL'] );
 						return array(
 							'updated' => $response,
@@ -362,17 +260,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						);
 					}
 					return $data;
-				case 'verified-sites':
-					$items = $response->getItems();
-					$data  = array();
-					foreach ( $items as $item ) {
-						$site                   = $item->getSite();
-						$data[ $item->getId() ] = array(
-							'identifier' => $site->getIdentifier(),
-							'type'       => $site->getType(),
-						);
-					}
-					return $data;
 				case 'matched-sites':
 					$sites = $response->getSiteEntry();
 					$urls  = array();
@@ -398,50 +285,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					return array(
 						'exact_match'      => in_array( $current_url, $url_matches, true ) ? $current_url : '',
 						'property_matches' => $url_matches,
-					);
-				case 'siteverification-list':
-					if ( is_array( $this->_siteverification_list_data ) && isset( $this->_siteverification_list_data['siteURL'] ) ) {
-						$current_url                       = trailingslashit( $this->_siteverification_list_data['siteURL'] );
-						$this->_siteverification_list_data = null;
-					} else {
-						$current_url = trailingslashit( $this->context->get_reference_site_url() );
-					}
-					$items = $response->getItems();
-					foreach ( $items as $item ) {
-						$site = $item->getSite();
-						$url  = trailingslashit( $site->getIdentifier() );
-						if ( 'SITE' === $site->getType() && $current_url === $url ) {
-							return array(
-								'identifier' => $site->getIdentifier(),
-								'type'       => $site->getType(),
-								'verified'   => true,
-							);
-						}
-						if ( 'INET_DOMAIN' === $site->getType() ) {
-							$host = str_replace( array( 'http://', 'https://' ), '', $site->getIdentifier() );
-							if ( ! empty( $host ) && false !== strpos( trailingslashit( $current_url ), trailingslashit( $host ) ) ) {
-								$response = array(
-									'identifier' => $site->getIdentifier(),
-									'type'       => $site->getType(),
-									'verified'   => true,
-								);
-
-								return $response;
-							}
-						}
-					}
-					return array(
-						'identifier' => $current_url,
-						'type'       => 'SITE',
-						'verified'   => false,
-					);
-				case 'siteverification-token':
-					if ( is_array( $response ) ) {
-						return $response;
-					}
-					return array(
-						'method' => $response->getMethod(),
-						'token'  => $response->getToken(),
 					);
 				case 'is-site-exist':
 					$current_url = $this->context->get_reference_site_url();
@@ -631,8 +474,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 */
 	protected function setup_services( Google_Client $client ) {
 		return array(
-			'webmasters'       => new \Google_Service_Webmasters( $client ),
-			'siteverification' => new \Google_Service_SiteVerification( $client ),
+			'webmasters' => new \Google_Service_Webmasters( $client ),
 		);
 	}
 }
