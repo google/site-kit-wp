@@ -60,6 +60,20 @@ function capturePageEventsForTearDown() {
 }
 
 /**
+ * Opt out of all Analytics tracking on page load.
+ * @link https://tools.google.com/dlpage/gaoptout
+ */
+function optOutOfEventTracking() {
+	page.on( 'load', async () => {
+		try {
+			await page.evaluate( () => {
+				window._gaUserPrefs = { ioo: () => true };
+			} );
+		} catch ( err ) {}
+	} );
+}
+
+/**
  * Removes all bound page event handlers.
  */
 function removePageEvents() {
@@ -166,6 +180,7 @@ async function observeRestResponse( res ) {
 // each other's side-effects.
 beforeAll( async () => {
 	capturePageEventsForTearDown();
+	optOutOfEventTracking();
 	enablePageDialogAccept();
 	observeConsoleLogging();
 	if ( '1' === process.env.DEBUG_REST ) {

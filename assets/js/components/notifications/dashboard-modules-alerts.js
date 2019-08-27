@@ -32,7 +32,6 @@ class DashboardModulesAlerts extends Component {
 
 		this.state = {
 			data: false,
-			cta: false,
 		};
 	}
 
@@ -43,7 +42,6 @@ class DashboardModulesAlerts extends Component {
 			getModulesNotifications( modules ).then( ( response ) => {
 				this.setState( {
 					data: response.results,
-					cta: response.cta,
 				} );
 			} );
 		}
@@ -51,7 +49,6 @@ class DashboardModulesAlerts extends Component {
 
 	render() {
 		const { data } = this.state;
-		const { cta } = this.state;
 
 		if ( 0 === Object.keys( data ).length ) {
 			return null;
@@ -73,9 +70,9 @@ class DashboardModulesAlerts extends Component {
 						learnMoreUrl={ notification.learnMoreUrl || '' }
 						learnMoreDescription={ notification.learnMoreDescription || '' }
 						learnMoreLabel={ notification.learnMoreLabel || '' }
-						ctaLink={ cta.url || '' }
-						ctaLabel={ cta.label || '' }
-						ctaTarget={ cta.target || '' }
+						ctaLink={ notification.ctaUrl || '' }
+						ctaLabel={ notification.ctaLabel || '' }
+						ctaTarget={ notification.ctaTarget || '' }
 						type={ notification.severity || '' }
 						dismiss={ notification.dismiss || __( 'OK, Got it!', 'google-site-kit' ) }
 						isDismissable={ notification.isDismissable || true }
