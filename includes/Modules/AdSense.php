@@ -491,21 +491,18 @@ tag_partner: "site_kit"
 						 */
 						$alert = array_shift( $alerts );
 						return array(
-							'items'     => array(
-								array(
-									'id'            => 'adsense-notification',
-									'title'         => __( 'Alert found!', 'google-site-kit' ),
-									/* translators: %d: number of notifications */
-									'description'   => $alert->getMessage(),
-									'isDismissible' => true,
-									'winImage'      => 'sun-small.png',
-									'format'        => 'large',
-									'severity'      => 'win-info',
-								),
+							array(
+								'id'            => 'adsense-notification',
+								'title'         => __( 'Alert found!', 'google-site-kit' ),
+								'description'   => $alert->getMessage(),
+								'isDismissible' => true,
+								'winImage'      => 'sun-small.png',
+								'format'        => 'large',
+								'severity'      => 'win-info',
+								'ctaUrl'        => $this->get_data( 'account-url' ),
+								'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
+								'ctaTarget'     => '_blank',
 							),
-							'url'       => $this->get_data( 'account-url' ),
-							'ctaLabel'  => __( 'Go to AdSense', 'google-site-kit' ),
-							'ctaTarget' => '_blank',
 						);
 					};
 				case 'accounts':
