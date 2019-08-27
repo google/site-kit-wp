@@ -64,10 +64,12 @@ function capturePageEventsForTearDown() {
  * @link https://tools.google.com/dlpage/gaoptout
  */
 function optOutOfEventTracking() {
-	page.on( 'load', () => {
-		page.evaluate( () => {
-			window._gaUserPrefs = { ioo: () => true };
-		} );
+	page.on( 'load', async () => {
+		try {
+			await page.evaluate( () => {
+				window._gaUserPrefs = { ioo: () => true };
+			} );
+		} catch ( err ) {}
 	} );
 }
 
