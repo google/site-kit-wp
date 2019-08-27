@@ -89,7 +89,6 @@ class Search_ConsoleTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'https://www.googleapis.com/auth/webmasters',
-				'https://www.googleapis.com/auth/siteverification',
 			),
 			$search_console->get_scopes()
 		);
