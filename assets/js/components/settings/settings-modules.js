@@ -208,11 +208,12 @@ class SettingsModules extends Component {
 		const { activeTab } = this.props;
 		const modulesBeingEdited = filter( isEditing, ( module ) => module );
 		const editActive = 0 < modulesBeingEdited.length;
-		if ( ! googlesitekit || ! googlesitekit.modules ) {
+		if ( ! window.googlesitekit || ! window.googlesitekit.modules ) {
 			return null;
 		}
 
-		const { modules } = googlesitekit;
+		// Filter out internal modules.
+		const modules = filter( window.googlesitekit.modules, ( module ) => ! module.internal );
 
 		const activeModules = this.mapToModule(
 			sortBy(
