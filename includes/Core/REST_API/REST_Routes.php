@@ -344,6 +344,25 @@ final class REST_Routes {
 				)
 			),
 			new REST_Route(
+				'modules',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$modules = array_map(
+								array( $this, 'prepare_module_data_for_response' ),
+								$this->modules->get_available_modules()
+							);
+							return new WP_REST_Response( array_values( $modules ) );
+						},
+						'permission_callback' => $can_authenticate,
+					),
+				),
+				array(
+					'schema' => $this->get_module_schema(),
+				)
+			),
+			new REST_Route(
 				'modules/(?P<slug>[a-z\-]+)',
 				array(
 					array(
@@ -357,7 +376,7 @@ final class REST_Routes {
 							}
 							return new WP_REST_Response( $this->prepare_module_data_for_response( $module ) );
 						},
-						'permission_callback' => $can_manage_options,
+						'permission_callback' => $can_authenticate,
 					),
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
@@ -410,7 +429,7 @@ final class REST_Routes {
 					'args'   => array(
 						'slug' => array(
 							'type'              => 'string',
-							'description'       => __( 'Idenfier for the module.', 'google-site-kit' ),
+							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
 							'sanitize_callback' => 'sanitize_key',
 						),
 					),
@@ -469,7 +488,7 @@ final class REST_Routes {
 					'args' => array(
 						'slug'      => array(
 							'type'              => 'string',
-							'description'       => __( 'Idenfier for the module.', 'google-site-kit' ),
+							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
 							'sanitize_callback' => 'sanitize_key',
 						),
 						'datapoint' => array(
@@ -552,7 +571,7 @@ final class REST_Routes {
 					'args' => array(
 						'slug' => array(
 							'type'              => 'string',
-							'description'       => __( 'Idenfier for the module.', 'google-site-kit' ),
+							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
 							'sanitize_callback' => 'sanitize_key',
 						),
 					),
@@ -647,7 +666,7 @@ final class REST_Routes {
 			'properties' => array(
 				'slug'         => array(
 					'type'        => 'string',
-					'description' => __( 'Idenfier for the module.', 'google-site-kit' ),
+					'description' => __( 'Identifier for the module.', 'google-site-kit' ),
 					'readonly'    => true,
 				),
 				'name'         => array(

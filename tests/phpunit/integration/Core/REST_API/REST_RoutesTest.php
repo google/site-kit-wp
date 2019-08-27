@@ -46,6 +46,7 @@ class REST_RoutesTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/gcpproject',
 			'/' . REST_Routes::REST_ROOT . '/core/user/data/disconnect',
 			'/' . REST_Routes::REST_ROOT . '/core/user/data/authentication',
+			'/' . REST_Routes::REST_ROOT . '/modules',
 			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z\\-]+)',
 			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z\\-]+)/data/(?P<datapoint>[a-z\\-]+)',
 			'/' . REST_Routes::REST_ROOT . '/data',
