@@ -770,7 +770,7 @@ export const extractTag = ( string, tag ) => {
 		case 'analytics':
 
 			// Detect gtag script calls.
-			reg = new RegExp( /<script async(?:="")? src=['|"]https:\/\/www.googletagmanager.com\/gtag\/js\?id=(.*?)['|"]><\/script>/gm );
+			reg = new RegExp( /<script [^>]*src=['|"]https:\/\/www.googletagmanager.com\/gtag\/js\?id=(.*?)['|"][^>]*><\/script>/gm );
 			result = reg.exec( string );
 			result = result ? result[ 1 ] : false;
 
