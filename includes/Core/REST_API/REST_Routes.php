@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Util\Reset;
+use WP_Post;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -584,8 +585,7 @@ final class REST_Routes {
 					array(
 						'methods'  => WP_REST_Server::READABLE,
 						'callback' => function( WP_REST_Request $request ) {
-							$post_id = false;
-							$query   = rawurldecode( $request['query'] );
+							$query = rawurldecode( $request['query'] );
 
 							if ( filter_var( $query, FILTER_VALIDATE_URL ) ) {
 								// Translate public/alternate reference URLs to local if different.
@@ -595,10 +595,7 @@ final class REST_Routes {
 									$query
 								);
 								$post_id = url_to_postid( $query_url );
-							}
-
-							if ( $post_id ) {
-								$posts = array( get_post( $post_id ) );
+								$posts   = array_filter( array( WP_Post::get_instance( $post_id ) ) );
 							} else {
 								$args = array(
 									'posts_per_page'  => 10,
