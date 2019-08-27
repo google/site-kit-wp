@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Util\Reset;
+use WP_Post;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -580,32 +581,38 @@ final class REST_Routes {
 					array(
 						'methods'  => WP_REST_Server::READABLE,
 						'callback' => function( WP_REST_Request $request ) {
-							$post_id = false;
-							$is_url  = filter_var( $request['query'], FILTER_VALIDATE_URL );
-							if ( $is_url ) {
-								$post_id = url_to_postid( $request['query'] );
-							}
-							if ( $post_id ) {
-								$posts = array( get_post( $post_id ) );
+							$query = rawurldecode( $request['query'] );
+
+							if ( filter_var( $query, FILTER_VALIDATE_URL ) ) {
+								// Translate public/alternate reference URLs to local if different.
+								$query_url = str_replace(
+									trailingslashit( $this->context->get_reference_site_url() ),
+									trailingslashit( home_url() ),
+									$query
+								);
+								$post_id = url_to_postid( $query_url );
+								$posts   = array_filter( array( WP_Post::get_instance( $post_id ) ) );
 							} else {
 								$args = array(
 									'posts_per_page'  => 10,
 									'google-site-kit' => 1,
-									's'               => $request['query'],
+									's'               => $query,
 									'no_found_rows'   => true,
 									'update_post_meta_cache' => false,
 									'update_post_term_cache' => false,
 									'post_status'     => array( 'publish' ),
 								);
-								$query = new \WP_Query( $args );
-								$posts = $query->posts;
+								$posts = ( new \WP_Query( $args ) )->posts;
 							}
+
 							if ( empty( $posts ) ) {
 								return array();
 							}
+
 							foreach ( $posts as $post ) {
 								$post->permalink = get_permalink( $post->ID );
 							}
+
 							return new WP_REST_Response( $posts );
 						},
 					),
