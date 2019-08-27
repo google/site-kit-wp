@@ -27,7 +27,7 @@ add_action( 'rest_api_init', function () {
 
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'modules/search-console/data/siteverification-list',
+		'modules/site-verification/data/siteverification-list',
 		array(
 			'callback' => function () {
 				return array(
@@ -42,7 +42,7 @@ add_action( 'rest_api_init', function () {
 
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'modules/search-console/data/siteverification',
+		'modules/site-verification/data/siteverification',
 		array(
 			'methods'  => 'POST',
 			'callback' => function ( WP_REST_Request $request ) {

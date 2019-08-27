@@ -42,6 +42,7 @@ use Exception;
  * @property-read array  $tags         List of module tags.
  * @property-read array  $depends_on   List of other module slugs the module depends on.
  * @property-read bool   $force_active Whether the module cannot be disabled.
+ * @property-read bool   $internal     Whether the module is internal, thus without any UI.
  */
 abstract class Module {
 
@@ -198,8 +199,9 @@ abstract class Module {
 			'module_tags'  => $this->tags,
 			'required'     => $this->depends_on,
 			'autoActivate' => $this->force_active,
+			'internal'     => $this->internal,
 			'screenId'     => $this instanceof Module_With_Screen ? $this->get_screen()->get_slug() : false,
-			'hasSettings'  => ! in_array( $this->slug, array( 'search-console' ), true ),
+			'hasSettings'  => ! in_array( $this->slug, array( 'site-verification', 'search-console' ), true ),
 		);
 	}
 
@@ -651,6 +653,7 @@ abstract class Module {
 				'tags'         => array(),
 				'depends_on'   => array(),
 				'force_active' => false,
+				'internal'     => false,
 			)
 		);
 

@@ -66,7 +66,7 @@ class SiteVerification extends Component {
 
 		( async () => {
 			try {
-				const responseData = await data.get( 'modules', 'search-console',
+				const responseData = await data.get( 'modules', 'site-verification',
 					'siteverification-list' );
 
 				const { verified, identifier } = responseData;
@@ -109,7 +109,7 @@ class SiteVerification extends Component {
 	}
 
 	async insertSiteVerification( siteURL ) {
-		return await data.set( 'modules', 'search-console', 'siteverification', { siteURL } );
+		return await data.set( 'modules', 'site-verification', 'siteverification', { siteURL } );
 	}
 
 	async onProceed() {
