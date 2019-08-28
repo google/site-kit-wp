@@ -860,10 +860,6 @@ class AnalyticsSetup extends Component {
 			onSettingsPage,
 		} = this.props;
 
-		if ( ! errorCode ) {
-			return null;
-		}
-
 		let showErrorFormat = true; // default error message.
 		let message = errorMsg;
 
