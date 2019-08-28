@@ -31,6 +31,8 @@ add_action( 'rest_api_init', function () {
 				} else {
 					delete_user_option( get_current_user_id(), 'googlesitekit_site_verified_meta' );
 				}
+
+				return array( 'success' => true );
 			}
 		)
 	);
