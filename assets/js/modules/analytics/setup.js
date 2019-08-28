@@ -259,6 +259,12 @@ class AnalyticsSetup extends Component {
 
 			const responseData = await data.get( 'modules', 'analytics', 'get-accounts', queryArgs, false );
 			if ( 0 === responseData.accounts.length ) {
+				newState = {
+					...newState,
+					errorCode: true,
+					errorReason: 'noAccounts',
+				};
+
 				// clear the cache.
 				data.deleteCache( 'analytics', 'get-accounts' );
 			} else if ( ! selectedAccount ) {
@@ -859,6 +865,10 @@ class AnalyticsSetup extends Component {
 		const {
 			onSettingsPage,
 		} = this.props;
+
+		if ( ! errorCode ) {
+			return null;
+		}
 
 		let showErrorFormat = true; // default error message.
 		let message = errorMsg;
