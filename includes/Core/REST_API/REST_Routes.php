@@ -556,7 +556,11 @@ final class REST_Routes {
 							if ( $this->modules->is_module_active( $slug ) ) {
 								$notifications = $modules[ $slug ]->get_data( 'notifications' );
 								if ( is_wp_error( $notifications ) ) {
-									return $notifications;
+									// Don't consider it an error if the module does not have a 'notifications' datapoint.
+									if ( 'invalid_datapoint' !== $notifications->get_error_code() ) {
+										return $notifications;
+									}
+									$notifications = array();
 								}
 							}
 							return new WP_REST_Response( $notifications );
