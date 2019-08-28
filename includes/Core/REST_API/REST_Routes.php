@@ -576,7 +576,7 @@ final class REST_Routes {
 			),
 			// TODO: Remove this and replace usage with calls to wp/v1/posts.
 			new REST_Route(
-				'core/search/data/(?P<query>[0-9A-Za-z%.\-]+)',
+				'core/search/data/post-search',
 				array(
 					array(
 						'methods'  => WP_REST_Server::READABLE,
@@ -622,6 +622,7 @@ final class REST_Routes {
 						'query' => array(
 							'type'        => 'string',
 							'description' => __( 'Text content to search for.', 'google-site-kit' ),
+							'required'    => true,
 						),
 					),
 				)
