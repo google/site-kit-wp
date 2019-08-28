@@ -576,7 +576,7 @@ final class REST_Routes {
 			),
 			// TODO: Remove this and replace usage with calls to wp/v1/posts.
 			new REST_Route(
-				'core/search/data',
+				'core/search/data/post-search',
 				array(
 					array(
 						'methods'  => WP_REST_Server::READABLE,

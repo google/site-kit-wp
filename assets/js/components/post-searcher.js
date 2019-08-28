@@ -107,7 +107,7 @@ class PostSearcher extends Component {
 		populateResults( [ __( 'Loading...', 'google-site-kit' ) ] );
 
 		try {
-			const results = await data.get( 'core', 'search', '', { query: encodeURIComponent( query ) } );
+			const results = await data.get( 'core', 'search', 'post-search', { query: encodeURIComponent( query ) } );
 
 			if ( 0 < results.length ) {
 				populateResults( map( results, ( result ) => {
