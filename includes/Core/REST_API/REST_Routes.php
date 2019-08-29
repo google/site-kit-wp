@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Util\Reset;
+use WP_Post;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -344,6 +345,25 @@ final class REST_Routes {
 				)
 			),
 			new REST_Route(
+				'modules',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$modules = array_map(
+								array( $this, 'prepare_module_data_for_response' ),
+								$this->modules->get_available_modules()
+							);
+							return new WP_REST_Response( array_values( $modules ) );
+						},
+						'permission_callback' => $can_authenticate,
+					),
+				),
+				array(
+					'schema' => $this->get_module_schema(),
+				)
+			),
+			new REST_Route(
 				'modules/(?P<slug>[a-z\-]+)',
 				array(
 					array(
@@ -357,7 +377,7 @@ final class REST_Routes {
 							}
 							return new WP_REST_Response( $this->prepare_module_data_for_response( $module ) );
 						},
-						'permission_callback' => $can_manage_options,
+						'permission_callback' => $can_authenticate,
 					),
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
@@ -410,7 +430,7 @@ final class REST_Routes {
 					'args'   => array(
 						'slug' => array(
 							'type'              => 'string',
-							'description'       => __( 'Idenfier for the module.', 'google-site-kit' ),
+							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
 							'sanitize_callback' => 'sanitize_key',
 						),
 					),
@@ -469,7 +489,7 @@ final class REST_Routes {
 					'args' => array(
 						'slug'      => array(
 							'type'              => 'string',
-							'description'       => __( 'Idenfier for the module.', 'google-site-kit' ),
+							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
 							'sanitize_callback' => 'sanitize_key',
 						),
 						'datapoint' => array(
@@ -532,15 +552,15 @@ final class REST_Routes {
 							if ( ! isset( $modules[ $slug ] ) ) {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
-							$notifications = new \stdClass(); // Will force JSON object.
+							$notifications = array();
 							if ( $this->modules->is_module_active( $slug ) ) {
 								$notifications = $modules[ $slug ]->get_data( 'notifications' );
-								if ( ! is_wp_error( $notifications ) && ! empty( $notifications ) ) {
-									if ( wp_is_numeric_array( $notifications ) ) {
-										$notifications = array( 'items' => $notifications );
+								if ( is_wp_error( $notifications ) ) {
+									// Don't consider it an error if the module does not have a 'notifications' datapoint.
+									if ( 'invalid_datapoint' !== $notifications->get_error_code() ) {
+										return $notifications;
 									}
-								} else {
-									$notifications = new \stdClass(); // Will force JSON object.
+									$notifications = array();
 								}
 							}
 							return new WP_REST_Response( $notifications );
@@ -552,7 +572,7 @@ final class REST_Routes {
 					'args' => array(
 						'slug' => array(
 							'type'              => 'string',
-							'description'       => __( 'Idenfier for the module.', 'google-site-kit' ),
+							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
 							'sanitize_callback' => 'sanitize_key',
 						),
 					),
@@ -560,37 +580,43 @@ final class REST_Routes {
 			),
 			// TODO: Remove this and replace usage with calls to wp/v1/posts.
 			new REST_Route(
-				'core/search/data/(?P<query>[0-9A-Za-z%.\-]+)',
+				'core/search/data/post-search',
 				array(
 					array(
 						'methods'  => WP_REST_Server::READABLE,
 						'callback' => function( WP_REST_Request $request ) {
-							$post_id = false;
-							$is_url  = filter_var( $request['query'], FILTER_VALIDATE_URL );
-							if ( $is_url ) {
-								$post_id = url_to_postid( $request['query'] );
-							}
-							if ( $post_id ) {
-								$posts = array( get_post( $post_id ) );
+							$query = rawurldecode( $request['query'] );
+
+							if ( filter_var( $query, FILTER_VALIDATE_URL ) ) {
+								// Translate public/alternate reference URLs to local if different.
+								$query_url = str_replace(
+									trailingslashit( $this->context->get_reference_site_url() ),
+									trailingslashit( home_url() ),
+									$query
+								);
+								$post_id = url_to_postid( $query_url );
+								$posts   = array_filter( array( WP_Post::get_instance( $post_id ) ) );
 							} else {
 								$args = array(
 									'posts_per_page'  => 10,
 									'google-site-kit' => 1,
-									's'               => $request['query'],
+									's'               => $query,
 									'no_found_rows'   => true,
 									'update_post_meta_cache' => false,
 									'update_post_term_cache' => false,
 									'post_status'     => array( 'publish' ),
 								);
-								$query = new \WP_Query( $args );
-								$posts = $query->posts;
+								$posts = ( new \WP_Query( $args ) )->posts;
 							}
+
 							if ( empty( $posts ) ) {
 								return array();
 							}
+
 							foreach ( $posts as $post ) {
 								$post->permalink = get_permalink( $post->ID );
 							}
+
 							return new WP_REST_Response( $posts );
 						},
 					),
@@ -600,6 +626,7 @@ final class REST_Routes {
 						'query' => array(
 							'type'        => 'string',
 							'description' => __( 'Text content to search for.', 'google-site-kit' ),
+							'required'    => true,
 						),
 					),
 				)
@@ -625,6 +652,7 @@ final class REST_Routes {
 			'name'         => $module->name,
 			'description'  => $module->description,
 			'homepage'     => $module->homepage,
+			'internal'     => $module->internal,
 			'active'       => $manager->is_module_active( $module->slug ),
 			'connected'    => $manager->is_module_connected( $module->slug ),
 			'dependencies' => $manager->get_module_dependencies( $module->slug ),
@@ -647,7 +675,7 @@ final class REST_Routes {
 			'properties' => array(
 				'slug'         => array(
 					'type'        => 'string',
-					'description' => __( 'Idenfier for the module.', 'google-site-kit' ),
+					'description' => __( 'Identifier for the module.', 'google-site-kit' ),
 					'readonly'    => true,
 				),
 				'name'         => array(
@@ -664,6 +692,11 @@ final class REST_Routes {
 					'type'        => 'string',
 					'description' => __( 'The module homepage.', 'google-site-kit' ),
 					'format'      => 'uri',
+					'readonly'    => true,
+				),
+				'internal'     => array(
+					'type'        => 'boolean',
+					'description' => __( 'Whether the module is internal, thus without any UI.', 'google-site-kit' ),
 					'readonly'    => true,
 				),
 				'active'       => array(

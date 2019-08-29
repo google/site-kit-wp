@@ -46,11 +46,12 @@ class REST_RoutesTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/gcpproject',
 			'/' . REST_Routes::REST_ROOT . '/core/user/data/disconnect',
 			'/' . REST_Routes::REST_ROOT . '/core/user/data/authentication',
+			'/' . REST_Routes::REST_ROOT . '/modules',
 			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z\\-]+)',
 			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z\\-]+)/data/(?P<datapoint>[a-z\\-]+)',
 			'/' . REST_Routes::REST_ROOT . '/data',
 			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z\\-]+)/notifications',
-			'/' . REST_Routes::REST_ROOT . '/core/search/data/(?P<query>[0-9A-Za-z%.\\-]+)',
+			'/' . REST_Routes::REST_ROOT . '/core/search/data/post-search',
 		);
 
 		$this->assertEqualSets( $routes, array_keys( $server->get_routes() ) );

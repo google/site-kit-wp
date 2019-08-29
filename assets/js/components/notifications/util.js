@@ -77,9 +77,14 @@ export async function getTotalNotifications() {
 /**
  * Removes dismissed notifications from list.
  *
- * @param {Array} notifications
+ * @param {Array} notifications List of notifications
+ * @return {Array} Filtered list of notifications.
  */
 const removeDismissed = ( notifications ) => {
+	if ( ! notifications ) {
+		return [];
+	}
+
 	if ( ! notifications.length ) {
 		return notifications;
 	}
@@ -150,7 +155,6 @@ const removeDisplayedWins = ( wins ) => {
  */
 export async function getModulesNotifications() {
 	const results = {};
-	const cta = {};
 	let total = 0;
 
 	const modules = await modulesNotificationsToRequest();
@@ -159,19 +163,10 @@ export async function getModulesNotifications() {
 	modules.map( async ( module ) => {
 		const promise = new Promise( async ( resolve ) => {
 			const { identifier } = module;
-			let notifications = [];
 
-			const response = await data.getNotifications( identifier, getTimeInSeconds( 'day' ) );
-
-			if ( response ) {
-				notifications = response.items || [];
-				cta.url = response.url || '';
-				cta.label = response.ctaLabel || '';
-				cta.target = response.ctaTarget || '';
-
-				// Remove dismissed ones.
-				notifications = removeDismissed( notifications );
-			}
+			const notifications = removeDismissed(
+				await data.getNotifications( identifier, getTimeInSeconds( 'day' ) )
+			);
 
 			resolve( { identifier, notifications } );
 		} );
@@ -188,7 +183,7 @@ export async function getModulesNotifications() {
 		} );
 	} );
 
-	return { results, total, cta };
+	return { results, total };
 }
 
 /**

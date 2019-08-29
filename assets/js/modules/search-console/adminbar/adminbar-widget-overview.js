@@ -87,7 +87,7 @@ export default withData(
 		{
 			type: 'modules',
 			identifier: 'search-console',
-			datapoint: 'page-analytics',
+			datapoint: 'sc-site-analytics',
 			permaLink: googlesitekit.permaLink,
 			postID: googlesitekit.postID,
 			priority: 1,

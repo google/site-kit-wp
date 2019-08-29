@@ -43,6 +43,7 @@ describe( 'the set up flow for an editor', () => {
 		await setAuthToken();
 		await setSiteVerification();
 		await setSearchConsoleProperty();
+		await logoutUser();
 	} );
 
 	afterEach( async () => {

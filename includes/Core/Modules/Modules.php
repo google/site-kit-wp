@@ -156,6 +156,7 @@ final class Modules {
 	public function get_available_modules() {
 		if ( empty( $this->modules ) ) {
 			$module_classes = array(
+				'Google\Site_Kit\Modules\Site_Verification',
 				'Google\Site_Kit\Modules\Search_Console',
 				'Google\Site_Kit\Modules\Analytics',
 				'Google\Site_Kit\Modules\Optimize',
