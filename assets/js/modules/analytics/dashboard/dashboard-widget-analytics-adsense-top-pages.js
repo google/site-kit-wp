@@ -158,6 +158,7 @@ export default withData(
 			type: 'modules',
 			identifier: 'analytics',
 			datapoint: 'adsense',
+			data: {},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Single',

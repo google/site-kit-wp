@@ -84,6 +84,7 @@ export default withData(
 			type: 'modules',
 			identifier: 'analytics',
 			datapoint: 'traffic-sources',
+			data: {},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',

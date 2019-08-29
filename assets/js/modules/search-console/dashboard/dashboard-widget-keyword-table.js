@@ -89,7 +89,9 @@ export default withData(
 			type: 'modules',
 			identifier: 'search-console',
 			datapoint: 'search-keywords',
-			permaLink: googlesitekit.permaLink,
+			data: {
+				permaLink: googlesitekit.permaLink,
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],

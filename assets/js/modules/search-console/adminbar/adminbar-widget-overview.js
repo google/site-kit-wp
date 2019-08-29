@@ -88,8 +88,10 @@ export default withData(
 			type: 'modules',
 			identifier: 'search-console',
 			datapoint: 'sc-site-analytics',
-			permaLink: googlesitekit.permaLink,
-			postID: googlesitekit.postID,
+			data: {
+				permaLink: googlesitekit.permaLink,
+				postID: googlesitekit.postID,
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Adminbar',

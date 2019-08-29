@@ -120,6 +120,7 @@ export default withData(
 			type: 'modules',
 			identifier: 'search-console',
 			datapoint: 'search-keywords',
+			data: {},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Dashboard' ],

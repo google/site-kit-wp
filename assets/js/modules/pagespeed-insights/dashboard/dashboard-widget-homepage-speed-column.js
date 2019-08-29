@@ -115,7 +115,9 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedMobile = withData(
 			type: 'modules',
 			identifier: 'pagespeed-insights',
 			datapoint: 'site-pagespeed-mobile',
-			permaLink: googlesitekit.permaLink,
+			data: {
+				permaLink: googlesitekit.permaLink,
+			},
 			priority: 10,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],

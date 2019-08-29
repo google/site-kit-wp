@@ -99,8 +99,10 @@ export default withData(
 			type: 'modules',
 			identifier: 'analytics',
 			datapoint: 'overview',
-			permaLink: googlesitekit.permaLink,
-			postID: googlesitekit.postID,
+			data: {
+				permaLink: googlesitekit.permaLink,
+				postID: googlesitekit.postID,
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Adminbar',

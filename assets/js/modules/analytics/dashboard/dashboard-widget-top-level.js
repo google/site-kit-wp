@@ -317,8 +317,10 @@ export default withData(
 		{
 			type: 'modules',
 			identifier: 'analytics',
-			permaLink: googlesitekit.permaLink,
 			datapoint: 'overview',
+			data: {
+				permaLink: googlesitekit.permaLink,
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
@@ -326,8 +328,10 @@ export default withData(
 		{
 			type: 'modules',
 			identifier: 'analytics',
-			permaLink: googlesitekit.permaLink,
 			datapoint: 'site-analytics',
+			data: {
+				permaLink: googlesitekit.permaLink,
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
@@ -335,8 +339,10 @@ export default withData(
 		{
 			type: 'modules',
 			identifier: 'analytics',
-			permaLink: googlesitekit.permaLink,
 			datapoint: 'goals',
+			data: {
+				permaLink: googlesitekit.permaLink,
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'hour' ),
 			context: 'Dashboard',

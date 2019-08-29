@@ -91,6 +91,7 @@ export default withData(
 			type: 'modules',
 			identifier: 'search-console',
 			datapoint: 'sc-site-analytics',
+			data: {},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'WPDashboard' ],
