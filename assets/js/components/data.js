@@ -26,6 +26,7 @@ import {
 	storageAvailable,
 	stringToSlug,
 	fillFilterWithComponent,
+	getQueryParameter,
 } from 'SiteKitCore/util';
 
 const { each, sortBy } = lodash;
@@ -251,7 +252,7 @@ const dataAPI = {
 			this.maxRequests = 10;
 		}
 
-		const { datacache } = googlesitekit.admin;
+		const datacache = null !== getQueryParameter( 'datacache' );
 		return wp.apiFetch( {
 			path: addQueryArgs( `/google-site-kit/v1/data/${ datacache ? '?datacache' : '' }`,
 				{
