@@ -90,7 +90,6 @@ export default withData(
 			datapoint: 'sc-site-analytics',
 			data: {
 				permaLink: googlesitekit.permaLink,
-				postID: googlesitekit.postID,
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),

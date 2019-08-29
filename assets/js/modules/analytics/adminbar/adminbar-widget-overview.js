@@ -101,7 +101,6 @@ export default withData(
 			datapoint: 'overview',
 			data: {
 				permaLink: googlesitekit.permaLink,
-				postID: googlesitekit.postID,
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
