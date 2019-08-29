@@ -717,7 +717,7 @@ export const getExistingTag = async ( module ) => {
 };
 
 /**
- * Extracts the tag related to a module from the given string.
+ * Extracts the tag related to a module from the given string by detecting Analytics and AdSense tag variations.
  *
  * @param {string} string The string from where to find the tag.
  * @param {string} tag    The tag to search for, one of 'adsense' or 'analytics'
@@ -730,25 +730,40 @@ export const extractTag = ( string, tag ) => {
 	switch ( tag ) {
 		case 'analytics':
 
-			// Detect analytics tag variations.
-			reg = new RegExp( /<script async(?:="")? src=['|"]https:\/\/www.googletagmanager.com\/gtag\/js\?id=(.*?)['|"]><\/script>/gm );
+			// Detect gtag script calls.
+			reg = new RegExp( /<script [^>]*src=['|"]https:\/\/www.googletagmanager.com\/gtag\/js\?id=(.*?)['|"][^>]*><\/script>/gm );
 			result = reg.exec( string );
 			result = result ? result[ 1 ] : false;
 
+			// Detect common analytics code usage.
 			if ( ! result ) {
 				reg = new RegExp( /__gaTracker\( ?['|"]create['|"], ?['|"](.*?)['|"], ?['|"]auto['|"] ?\)/gm );
 				result = reg.exec( string );
 				result = result ? result[ 1 ] : false;
 			}
 
+			// Detect ga create calls.
 			if ( ! result ) {
 				reg = new RegExp( /ga\( ?['|"]create['|"], ?['|"](.*?)['|"], ?['|"]auto['|"] ?\)/gm );
 				result = reg.exec( string );
 				result = result ? result[ 1 ] : false;
 			}
-
 			if ( ! result ) {
 				reg = new RegExp( /_gaq.push\( ?\[ ?['|"]_setAccount['|"], ?['|"](.*?)['|"] ?] ?\)/gm );
+				result = reg.exec( string );
+				result = result ? result[ 1 ] : false;
+			}
+
+			// Detect amp-analytics gtag.
+			if ( ! result ) {
+				reg = new RegExp( /<amp-analytics [^>]*type="gtag"[^>]*>[^<]*<script type="application\/json">[^<]*"gtag_id":\s*"([^"]+)"/gm );
+				result = reg.exec( string );
+				result = result ? result[ 1 ] : false;
+			}
+
+			// Detect amp-analytics googleanalytics.
+			if ( ! result ) {
+				reg = new RegExp( /<amp-analytics [^>]*type="googleanalytics"[^>]*>[^<]*<script type="application\/json">[^<]*"account":\s*"([^"]+)"/gm );
 				result = reg.exec( string );
 				result = result ? result[ 1 ] : false;
 			}
@@ -756,9 +771,17 @@ export const extractTag = ( string, tag ) => {
 			break;
 
 		case 'adsense':
+			// Detect google_ad_client.
 			reg = new RegExp( /google_ad_client: ?["|'](.*?)["|']/gm );
 			result = reg.exec( string );
 			result = result ? result[ 1 ] : false;
+
+			// Detect amp-auto-ads tag.
+			if ( ! result ) {
+				reg = new RegExp( /<amp-auto-ads [^>]*data-ad-client="([^"]+)"/gm );
+				result = reg.exec( string );
+				result = result ? result[ 1 ] : false;
+			}
 			break;
 	}
 

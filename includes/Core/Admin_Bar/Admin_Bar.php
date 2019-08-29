@@ -140,17 +140,8 @@ final class Admin_Bar {
 			return false;
 		}
 
-		$current_screen = function_exists( 'get_current_screen' ) ? get_current_screen() : false;
-		if (
-			is_admin() &&
-			( false === $current_screen || 'post' !== $current_screen->base ) ||
-			( false !== $current_screen && 'post' === $current_screen->base && 'add' === $current_screen->action )
-		) {
-			return false;
-		}
-
 		// Gets post object. On front area we need to use get_queried_object to get the current post object.
-		if ( is_admin() ) {
+		if ( $this->is_admin_post_screen() ) {
 			$post = get_post();
 		} else {
 			$post = get_queried_object();
@@ -180,6 +171,32 @@ final class Admin_Bar {
 		 * @param int  $post_id Currently visited post ID.
 		 */
 		return apply_filters( 'googlesitekit_show_admin_bar_menu', true, (int) $post->ID );
+	}
+
+	/**
+	 * Checks if current screen is an admin edit post screen.
+	 *
+	 * @since 1.0.0
+	 */
+	private function is_admin_post_screen() {
+		$current_screen = function_exists( 'get_current_screen' ) ? get_current_screen() : false;
+
+		// No screen context available.
+		if ( ! $current_screen instanceof \WP_Screen ) {
+			return false;
+		}
+
+		// Only show for post screens.
+		if ( 'post' !== $current_screen->base ) {
+			return false;
+		}
+
+		// Don't show for new post screen.
+		if ( 'add' === $current_screen->action ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

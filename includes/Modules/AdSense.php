@@ -335,7 +335,6 @@ tag_partner: "site_kit"
 			'alerts'                       => 'adsense',
 			'clients'                      => 'adsense',
 			'urlchannels'                  => 'adsense',
-			'tag'                          => '',
 			'earning-today'                => 'adsense',
 			'earning-yesterday'            => 'adsense',
 			'earning-samedaylastweek'      => 'adsense',
@@ -528,21 +527,6 @@ tag_partner: "site_kit"
 					}
 					$service = $this->get_service( 'adsense' );
 					return $service->urlchannels->listUrlchannels( $data['clientId'] );
-				case 'tag':
-					return function() {
-						$output = $this->get_frontend_hook_output( 'wp_head' ) . $this->get_frontend_hook_output( 'wp_body_open' ) . $this->get_frontend_hook_output( 'wp_footer' );
-						// Detect google_ad_client.
-						preg_match( '/google_ad_client: ?"(.*?)",/', $output, $matches );
-						if ( isset( $matches[1] ) ) {
-							return $matches[1];
-						}
-						// Detect amp-auto-ads tag.
-						preg_match( '/<amp-auto-ads [^>]*data-ad-client="([^"]+)"/', $output, $matches );
-						if ( isset( $matches[1] ) ) {
-							return $matches[1];
-						}
-						return false;
-					};
 				case 'earning-today':
 					return $this->create_adsense_earning_data_request(
 						array(
