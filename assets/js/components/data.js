@@ -138,14 +138,6 @@ const dataAPI = {
 					request.data = request.data || {};
 					request.data.dateRange = request.data.dateRange || dateRangeSlug;
 
-					const paramsToMigrate = [ 'permaLink', 'siteURL', 'pageUrl', 'limit' ];
-					paramsToMigrate.forEach( ( param ) => {
-						if ( 'undefined' !== typeof request[ param ] ) {
-							request.data[ param ] = request[ param ];
-							delete request[ param ];
-						}
-					} );
-
 					request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
 
 					const cache = this.getCache( request.key, request.maxAge );
@@ -186,14 +178,6 @@ const dataAPI = {
 		each( combinedRequest, ( request ) => {
 			request.data = request.data || {};
 			request.data.dateRange = request.data.dateRange || dateRangeSlug;
-
-			const paramsToMigrate = [ 'permaLink', 'siteURL', 'pageUrl', 'limit' ];
-			paramsToMigrate.forEach( ( param ) => {
-				if ( 'undefined' !== typeof request[ param ] ) {
-					request.data[ param ] = request[ param ];
-					delete request[ param ];
-				}
-			} );
 
 			request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
 
