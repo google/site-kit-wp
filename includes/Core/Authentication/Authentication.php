@@ -538,9 +538,11 @@ final class Authentication {
 	 * @return array Filtered $data.
 	 */
 	private function inline_js_admin_data( $data ) {
-		$profile_data     = $this->profile->get();
-		$data['userData'] = array();
+		$profile_data = $this->profile->get();
 		if ( $profile_data ) {
+			if ( ! isset( $data['userData'] ) ) {
+				$data['userData'] = array();
+			}
 			$data['userData']['email']   = $profile_data['email'];
 			$data['userData']['picture'] = $profile_data['photo'];
 		}
