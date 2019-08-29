@@ -144,9 +144,6 @@ const dataAPI = {
 					if ( 'undefined' !== typeof cache ) {
 						responseData[ request.key ] = cache;
 
-						// Trigger an action when cached data is used.
-						doAction( 'googlesitekit.cachedDataUsed', request.datapoint );
-
 						this.resolve( request, cache );
 					}
 				} );
@@ -184,9 +181,6 @@ const dataAPI = {
 			const cache = this.getCache( request.key, request.maxAge );
 			if ( 'undefined' !== typeof cache ) {
 				setTimeout( () => {
-					// Trigger an action when cached data is used.
-					doAction( 'googlesitekit.cachedDataUsed', request.datapoint );
-
 					this.resolve( request, cache );
 				}, cacheDelay );
 				cacheDelay += 25;
@@ -282,8 +276,6 @@ const dataAPI = {
 
 					each( keyIndexesMap[ key ], ( index ) => {
 						const request = dataRequest[ index ];
-
-						doAction( 'googlesitekit.dataReceived', request.key );
 
 						this.setCache( request.key, result );
 						this.resolve( request, result );

@@ -22,7 +22,6 @@ import data from 'GoogleComponents/data';
 import SvgIcon from 'GoogleUtil/svg-icon';
 
 const {
-	addAction,
 	addFilter,
 	applyFilters,
 } = wp.hooks;
@@ -267,44 +266,6 @@ export const changeToPercent = ( previous, current ) => {
 
 	return change;
 };
-
-export function addPerformanceMonitoring() {
-	const googlesitekitPerformance = window.googlesitekitPerformance || {};
-	addAction( 'googlesitekit.moduleLoaded', 'googlesitekit.PerformanceMetrics.moduleLoaded', function( context ) {
-		googlesitekitPerformance.loadedActionTriggered = ( new Date() ).getTime();
-		const elapsed = ( googlesitekitPerformance.loadedActionTriggered - googlesitekitPerformance.domReady ) + 'ms';
-		googlesitekitPerformance._timeToLoadedActionTriggered = elapsed;
-		googlesitekitPerformance.loadedActionContext = context;
-		console.log( 'Performance Metrics: App loaded', elapsed ); // eslint-disable-line no-console
-	} );
-
-	addAction( 'googlesitekit.dataReceived', 'googlesitekit.PerformanceMetrics.dataReceived', function( datapoint ) {
-		const currentlyAt = ( new Date() ).getTime();
-		googlesitekitPerformance.dataReceived = googlesitekitPerformance.dataReceived || [];
-		googlesitekitPerformance._timeToDataReceived = googlesitekitPerformance._timeToDataReceived || [];
-		googlesitekitPerformance.dataReceived.push( currentlyAt );
-		const elapsed = ( currentlyAt - googlesitekitPerformance.domReady ) + 'ms';
-		googlesitekitPerformance._timeToDataReceived.push( elapsed );
-		console.log( 'Performance Metrics: Async Data loaded: ' + datapoint, elapsed ); // eslint-disable-line no-console
-	} );
-
-	addAction( 'googlesitekit.cachedDataUsed', 'googlesitekit.PerformanceMetrics.cachedDataUsed', function( datapoint ) {
-		const currentlyAt = ( new Date() ).getTime();
-		googlesitekitPerformance.cachedDataUsed = googlesitekitPerformance.cachedDataUsed || [];
-		googlesitekitPerformance._timeToCachedDataUsed = googlesitekitPerformance._timeToCachedDataUsed || [];
-		googlesitekitPerformance.cachedDataUsed.push( currentlyAt );
-		const elapsed = ( currentlyAt - googlesitekitPerformance.domReady ) + 'ms';
-		googlesitekitPerformance._timeToCachedDataUsed.push( elapsed );
-		console.log( 'Performance Metrics: Cached Data loaded: ' + datapoint, elapsed ); // eslint-disable-line no-console
-	} );
-
-	addAction( 'googlesitekit.rootAppDidMount', 'googlesitekit.PerformanceMetrics.rootAppDidMount', function() {
-		googlesitekitPerformance.rootAppMounted = ( new Date() ).getTime();
-		const elapsed = ( googlesitekitPerformance.rootAppMounted - googlesitekitPerformance.domReady ) + 'ms';
-		googlesitekitPerformance._timeToAppMounted = elapsed;
-		console.log( 'Performance Metrics: App mounted', elapsed ); // eslint-disable-line no-console
-	} );
-}
 
 /**
  * Fallback helper to get a query parameter from the current URL.
