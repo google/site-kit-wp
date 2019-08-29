@@ -33,6 +33,7 @@ rl.question( 'Username: ', ( username ) => {
 		console.log( 'Starting data caching process...' ); // eslint-disable-line no-console
 
 		const endpoints = [
+			dataCacheBase + adminPath + 'admin.php?page=googlesitekit-splash',
 			dataCacheBase + adminPath + 'admin.php?page=googlesitekit-dashboard',
 			dataCacheBase + adminPath + 'admin.php?page=googlesitekit-module-search-console',
 			dataCacheBase + adminPath + 'admin.php?page=googlesitekit-module-analytics',
@@ -83,7 +84,13 @@ rl.question( 'Username: ', ( username ) => {
 				html = html.replace( /"trackingID":"UA-[\d]+-[\d]+"/gi, '"trackingID":"UA-XXXXXXXX-X"' );
 				html = html.replace( /pub-[\d]+/gi, 'pub-XXXXXXXXXX' );
 
-				html = html.replace( /"email":"(.*?)","name":"(.*?)"/gi, '"email":"sundar.pichai@google.com","name":"Sundar Pichai"' );
+				// Credentials
+				html = html.replace( /"clientID":"(.*?)"/gi, '"clientID":"12345678.apps.googleusercontent.com"' );
+				html = html.replace( /"clientSecret":"(.*?)"/gi, '"clientSecret":"\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"' );
+				html = html.replace( /"apikey":"(.*?)"/gi, '"apikey":"12345678"' );
+
+				// Account data
+				html = html.replace( /"email":"(.*?)","name":"(.*?)"/gi, '"email":"wapuu.wordpress@gmail.com","name":"Wapuu WordPress"' );
 				html = html.replace( /"picture":"(.*?)"/gi, '"picture":""' );
 
 				// Misc remaining strings.
