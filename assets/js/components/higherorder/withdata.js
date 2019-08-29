@@ -51,8 +51,7 @@ const { __ } = wp.i18n;
  *                                                 {string}         type       The data type. Either 'core' or 'modules'.
  *                                                 {string}         identifier The data identifier, for example a module slug.
  *                                                 {string}         datapoint  The datapoint.
- *                                                 {string}         permaLink  The current page permaLink if available. Optional.
- *                                                 {number}         postID     The current postID. Optional.
+ *                                                 {Object?}        data       Optional arguments to pass along.
  *                                                 {number}         priority   The data request priority, used for batching.
  *                                                 {number}         maxAge     How long to cache the data results.
  *                                                 {string | array} context    The context(s) to resolve data, eg 'Dashboard'.
