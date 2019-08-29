@@ -261,8 +261,8 @@ class AnalyticsSetup extends Component {
 			if ( 0 === responseData.accounts.length ) {
 				newState = {
 					...newState,
-					errorCode: true,
-					errorReason: 'noAccounts',
+					errorCode: 'no_account',
+					errorReason: 'noAccount',
 				};
 
 				// clear the cache.
@@ -304,7 +304,7 @@ class AnalyticsSetup extends Component {
 
 				newState = {
 					...newState,
-					errorCode: true,
+					errorCode: 'insufficient_permissions',
 					errorReason: 'insufficientPermissions',
 				};
 			}
