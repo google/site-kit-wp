@@ -20,13 +20,6 @@ namespace Google\Site_Kit\Core\Storage;
 final class Cache {
 
 	/**
-	 * The key for saving the global post title-> post id cache.
-	 *
-	 * @var string $global_cache_keys_key The key.
-	 */
-	private static $global_cache_post_ids_key = 'googlesitekit_global_cache_post_id_s';
-
-	/**
 	 * The key for saving the global cache keys.
 	 *
 	 * @var string $global_cache_keys_key The key.
@@ -45,46 +38,6 @@ final class Cache {
 	 */
 	public function __construct() {
 		$this->global_cache_keys = get_option( self::$global_cache_keys_key ) ?: array();
-	}
-
-	/**
-	 * ------------------------------
-	 * Static functions defined below
-	 * ------------------------------
-	 */
-
-	/**
-	 * Delete the global url-> post id cache.
-	 */
-	public static function delete_cached_title_data() {
-		delete_transient( self::$global_cache_post_ids_key );
-	}
-
-	/**
-	 * Get the global url-> post id cache.
-	 *
-	 * @return array The array of cached post url-> post id mappings. Empty array if none found.
-	 */
-	public static function get_cached_title_data() {
-		$cached_data = get_transient( self::$global_cache_post_ids_key );
-		return $cached_data ? $cached_data : array();
-	}
-
-	/**
-	 * Set the global url-> post id cache. Cache at most 20 values.
-	 *
-	 * @param array $new_data The array of new data to set.
-	 */
-	public static function set_cached_title_data( $new_data ) {
-		$cached_data = get_transient( self::$global_cache_post_ids_key );
-		if ( false === $cached_data ) {
-			set_transient( self::$global_cache_post_ids_key, $new_data );
-			return;
-		}
-
-		$merged_array = array_merge( $cached_data, $new_data );
-		$merged_array = array_slice( $merged_array, 0, 20 );
-		set_transient( self::$global_cache_post_ids_key, $merged_array );
 	}
 
 	/**
