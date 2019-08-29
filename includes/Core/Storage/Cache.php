@@ -52,7 +52,7 @@ final class Cache {
 		foreach ( $keys as $key ) {
 
 			// This only retrieves fresh data because transients expire.
-			$cache = get_transient( $key );
+			$cache = get_transient( 'googlesitekit_' . $key );
 
 			if ( $cache ) {
 				$cache_data[ $key ] = $cache;
@@ -108,9 +108,7 @@ final class Cache {
 	 * @param Object $data    The data to cache.
 	 */
 	public function set_cache_data( $key, $data ) {
-		$key = 'googlesitekit_' . $key;
-
-		set_transient( $key, $data, HOUR_IN_SECONDS );
+		set_transient( 'googlesitekit_' . $key, $data, HOUR_IN_SECONDS );
 		$this->add_global_cache_key( $key );
 	}
 

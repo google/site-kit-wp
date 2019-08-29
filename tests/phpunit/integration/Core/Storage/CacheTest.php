@@ -33,17 +33,17 @@ class CacheTest extends TestCase {
 		// Returns an associative array of transient name => transient value
 		$this->assertEqualSetsWithIndex(
 			array(
-				'googlesitekit_test-key-a' => 'test-value-a',
-				'googlesitekit_test-key-b' => 'test-value-b',
-				'googlesitekit_test-key-c' => 'test-value-c',
+				'test-key-a' => 'test-value-a',
+				'test-key-b' => 'test-value-b',
+				'test-key-c' => 'test-value-c',
 			),
 			$cache->get_current_cache_data()
 		);
 		$this->assertEqualSets(
 			array(
-				'googlesitekit_test-key-a',
-				'googlesitekit_test-key-b',
-				'googlesitekit_test-key-c',
+				'test-key-a',
+				'test-key-b',
+				'test-key-c',
 			),
 			get_option( 'googlesitekit_global_cache_keys' )
 		);
@@ -52,15 +52,15 @@ class CacheTest extends TestCase {
 		delete_transient( 'googlesitekit_test-key-b' );
 		$this->assertEqualSetsWithIndex(
 			array(
-				'googlesitekit_test-key-a' => 'test-value-a',
-				'googlesitekit_test-key-c' => 'test-value-c',
+				'test-key-a' => 'test-value-a',
+				'test-key-c' => 'test-value-c',
 			),
 			$cache->get_current_cache_data()
 		);
 		$this->assertEqualSets(
 			array(
-				'googlesitekit_test-key-a',
-				'googlesitekit_test-key-c',
+				'test-key-a',
+				'test-key-c',
 			),
 			get_option( 'googlesitekit_global_cache_keys' )
 		);
@@ -83,9 +83,9 @@ class CacheTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'googlesitekit_test-key-a',
-				'googlesitekit_test-key-b',
-				'googlesitekit_test-key-c',
+				'test-key-a',
+				'test-key-b',
+				'test-key-c',
 			),
 			get_option( 'googlesitekit_global_cache_keys' )
 		);
@@ -96,9 +96,9 @@ class CacheTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'googlesitekit_test-key-a',
-				'googlesitekit_test-key-b',
-				'googlesitekit_test-key-c',
+				'test-key-a',
+				'test-key-b',
+				'test-key-c',
 			),
 			get_option( 'googlesitekit_global_cache_keys' )
 		);
@@ -132,8 +132,8 @@ class CacheTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'googlesitekit_test-key-a',
-				'googlesitekit_test-key-c',
+				'test-key-a',
+				'test-key-c',
 			),
 			get_option( 'googlesitekit_global_cache_keys' )
 		);
