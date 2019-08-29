@@ -19,10 +19,7 @@
 /**
  * External dependencies
  */
-import {
-	addPerformanceMonitoring,
-	clearAppLocalStorage,
-} from 'GoogleUtil';
+import { clearAppLocalStorage } from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
 
 const { setLocaleData } = wp.i18n;
@@ -44,10 +41,6 @@ class GoogleSitekitDashboardSplash extends Component {
 
 		// Set up translations.
 		setLocaleData( googlesitekit.locale, 'google-site-kit' );
-
-		if ( window.googlesitekit.admin.debug ) {
-			addPerformanceMonitoring();
-		}
 	}
 
 	componentDidCatch( error, info ) {
@@ -56,10 +49,6 @@ class GoogleSitekitDashboardSplash extends Component {
 			error,
 			info,
 		} );
-	}
-
-	componentDidMount() {
-		doAction( 'googlesitekit.rootAppDidMount' );
 	}
 
 	render() {

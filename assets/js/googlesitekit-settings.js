@@ -21,7 +21,6 @@
  * External dependencies
  */
 import SettingsApp from 'GoogleComponents/settings/settings-app';
-import { addPerformanceMonitoring } from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
 
 const { setLocaleData } = wp.i18n;
@@ -35,10 +34,6 @@ class GoogleSitekitSettings extends Component {
 
 		// Set up translations.
 		setLocaleData( googlesitekit.locale, 'google-site-kit' );
-
-		if ( window.googlesitekit.admin.debug ) {
-			addPerformanceMonitoring();
-		}
 	}
 
 	componentDidCatch( error, info ) {
@@ -47,10 +42,6 @@ class GoogleSitekitSettings extends Component {
 			error,
 			info,
 		} );
-	}
-
-	componentDidMount() {
-		doAction( 'googlesitekit.rootAppDidMount' );
 	}
 
 	render() {
