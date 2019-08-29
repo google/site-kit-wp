@@ -90,8 +90,7 @@ rl.question( 'Username: ', ( username ) => {
 				html = html.replace( /"apikey":"(.*?)"/gi, '"apikey":"12345678"' );
 
 				// Account data
-				html = html.replace( /"email":"(.*?)","name":"(.*?)"/gi, '"email":"wapuu.wordpress@gmail.com","name":"Wapuu WordPress"' );
-				html = html.replace( /"picture":"(.*?)"/gi, '"picture":""' );
+				html = html.replace( /"email":"(.*?)","name":"(.*?)","picture":"(.*?)"/gi, '"email":"wapuu.wordpress@gmail.com","name":"Wapuu WordPress","picture":""' );
 
 				// Misc remaining strings.
 				html = html.replace( /10up/gi, 'google' );
