@@ -27,6 +27,7 @@ import {
 	stringToSlug,
 	fillFilterWithComponent,
 	getQueryParameter,
+	sortObjectProperties,
 } from 'SiteKitCore/util';
 
 const { each, sortBy } = lodash;
@@ -42,27 +43,6 @@ const { __ } = wp.i18n;
 
 export const TYPE_CORE = 'core';
 export const TYPE_MODULES = 'modules';
-
-/**
- * Sorts an object by its keys.
- *
- * The returned value will be a sorted copy of the input object.
- * Any inner objects will also be sorted recursively.
- *
- * @param {Object} data The data object to sort.
- * @return {Object} The sorted data object.
- */
-const sortObjectProperties = ( data ) => {
-	const orderedData = {};
-	Object.keys( data ).sort().forEach( ( key ) => {
-		let val = data[ key ];
-		if ( val && 'object' === typeof val && ! Array.isArray( val ) ) {
-			val = sortObjectProperties( val );
-		}
-		orderedData[ key ] = val;
-	} );
-	return orderedData;
-};
 
 /**
  * Ensures that the local datacache object is properly set up.
