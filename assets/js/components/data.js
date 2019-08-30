@@ -352,7 +352,7 @@ const dataAPI = {
 		// Check persistent cache.
 		const cache = JSON.parse( window[ storage ].getItem( 'googlesitekit_' + key ) );
 		if ( cache && 'object' === typeof cache && cache.date ) {
-			// Only return value if no maximum age given or value is newer than it.
+			// Only return value if no maximum age given or if cache age is less than the maximum.
 			if ( ! maxAge || ( Date.now() / 1000 ) - cache.date < maxAge ) {
 				// Set variable cache.
 				googlesitekit.admin.datacache[ key ] = cache.value;
@@ -372,9 +372,7 @@ const dataAPI = {
 	deleteCache( key ) {
 		lazilySetupLocalCache();
 
-		if ( 'undefined' !== typeof googlesitekit.admin.datacache[ key ] ) {
-			delete googlesitekit.admin.datacache[ key ];
-		}
+		delete googlesitekit.admin.datacache[ key ];
 
 		const storage = detectPersistentCache();
 		if ( ! storage ) {
@@ -532,8 +530,6 @@ const dataAPI = {
 			return new Promise( ( resolve ) => {
 				resolve( response );
 			} );
-		} ).catch( ( err ) => {
-			return Promise.reject( err );
 		} );
 	},
 
