@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { getTimeInSeconds, getQueryParameter } from 'GoogleUtil';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 import * as publisherWinCallbacks from 'GoogleComponents/publisher-wins/callbacks';
 
 const { addFilter } = wp.hooks;
@@ -51,7 +52,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 			const data = {
 				identifier: 'publishing-win',
 				withData: {
-					type: 'modules',
+					type: TYPE_MODULES,
 					identifier: 'search-console',
 					datapoint: 'sc-site-analytics',
 					data: {},
@@ -70,7 +71,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 			const data = {
 				identifier: 'total-stats',
 				withData: {
-					type: 'modules',
+					type: TYPE_MODULES,
 					identifier: 'search-console',
 					datapoint: 'sc-site-analytics',
 					data: {},
@@ -90,7 +91,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 				const data = {
 					identifier: 'pageview-increase',
 					withData: {
-						type: 'modules',
+						type: TYPE_MODULES,
 						identifier: 'analytics',
 						datapoint: 'overview',
 						data: {},
@@ -109,7 +110,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 				const data = {
 					identifier: 'traffic-increase',
 					withData: {
-						type: 'modules',
+						type: TYPE_MODULES,
 						identifier: 'analytics',
 						datapoint: 'overview',
 						data: {},

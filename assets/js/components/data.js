@@ -40,6 +40,9 @@ const {
 } = wp.hooks;
 const { __ } = wp.i18n;
 
+export const TYPE_CORE = 'core';
+export const TYPE_MODULES = 'modules';
+
 /**
  * Sorts an object by its keys.
  *

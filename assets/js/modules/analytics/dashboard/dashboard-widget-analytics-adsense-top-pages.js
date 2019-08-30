@@ -20,6 +20,7 @@
  * External dependencies
  */
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import Layout from 'GoogleComponents/layout/layout';
@@ -155,7 +156,7 @@ export default withData(
 	AnalyticsAdSenseDashboardWidgetTopPagesTable,
 	[
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'analytics',
 			datapoint: 'adsense',
 			data: {},

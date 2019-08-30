@@ -20,6 +20,7 @@
  * External dependencies
  */
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 import GoogleChart from 'GoogleComponents/google-chart.js';
 import PreviewBlock from 'GoogleComponents/preview-block';
 import { decodeHtmlEntity, getTimeInSeconds } from 'GoogleUtil';
@@ -137,7 +138,7 @@ export default withData(
 	SearchConsoleDashboardWidgetSiteStats,
 	[
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'search-console',
 			datapoint: 'sc-site-analytics',
 			data: {},

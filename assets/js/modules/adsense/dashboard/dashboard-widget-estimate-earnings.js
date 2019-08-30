@@ -26,6 +26,7 @@ import {
 	readableLargeNumber,
 } from 'GoogleUtil';
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 /**
  * Internal dependencies
  */
@@ -299,7 +300,7 @@ export default withData(
 	AdSenseEstimateEarningsWidget,
 	[
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'adsense',
 			datapoint: 'earning-today',
 			data: {},
@@ -308,7 +309,7 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ],
 		},
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'adsense',
 			datapoint: 'earning-yesterday',
 			data: {},
@@ -317,7 +318,7 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ],
 		},
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'adsense',
 			datapoint: 'earning-samedaylastweek',
 			data: {},
@@ -326,7 +327,7 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ],
 		},
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'adsense',
 			datapoint: 'earning-7days',
 			data: {},
@@ -335,7 +336,7 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ],
 		},
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'adsense',
 			datapoint: 'earning-prev7days',
 			data: {},
@@ -344,7 +345,7 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ],
 		},
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'adsense',
 			datapoint: 'earning-this-month',
 			data: {},
@@ -353,7 +354,7 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ],
 		},
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'adsense',
 			datapoint: 'earning-this-month-last-year',
 			data: {},
@@ -362,7 +363,7 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ],
 		},
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'adsense',
 			datapoint: 'earning-28days',
 			data: {},
@@ -371,7 +372,7 @@ export default withData(
 			context: [ 'Single', 'Dashboard' ],
 		},
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'adsense',
 			datapoint: 'earning-prev28days',
 			data: {},

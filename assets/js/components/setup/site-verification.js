@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import data from 'GoogleComponents/data';
+import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import Button from 'GoogleComponents/button';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import { TextField, Input } from 'SiteKitCore/material-components';
@@ -66,7 +66,7 @@ class SiteVerification extends Component {
 
 		( async () => {
 			try {
-				const responseData = await data.get( 'modules', 'site-verification',
+				const responseData = await data.get( TYPE_MODULES, 'site-verification',
 					'siteverification-list' );
 
 				const { verified, identifier } = responseData;
@@ -109,7 +109,7 @@ class SiteVerification extends Component {
 	}
 
 	async insertSiteVerification( siteURL ) {
-		return await data.set( 'modules', 'site-verification', 'siteverification', { siteURL } );
+		return await data.set( TYPE_MODULES, 'site-verification', 'siteverification', { siteURL } );
 	}
 
 	async onProceed() {

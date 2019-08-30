@@ -21,6 +21,7 @@
  */
 import DataBlock from 'GoogleComponents/data-block.js';
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 import {
 	getTimeInSeconds,
 	prepareSecondsForDisplay,
@@ -155,7 +156,7 @@ export default withData(
 	AnalyticsDashboardWidgetOverview,
 	[
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'analytics',
 			datapoint: 'overview',
 			data: {},

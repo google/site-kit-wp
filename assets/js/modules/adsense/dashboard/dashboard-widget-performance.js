@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import data from 'GoogleComponents/data';
+import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import DataBlock from 'GoogleComponents/data-block.js';
 import PreviewBlock from 'GoogleComponents/preview-block';
 import {
@@ -61,7 +61,7 @@ class AdSensePerformanceWidget extends Component {
 		try {
 			const batchRequests = [
 				{
-					type: 'modules',
+					type: TYPE_MODULES,
 					identifier: 'adsense',
 					datapoint: 'earning-28days',
 					priority: 1,
@@ -79,7 +79,7 @@ class AdSensePerformanceWidget extends Component {
 					},
 				},
 				{
-					type: 'modules',
+					type: TYPE_MODULES,
 					identifier: 'adsense',
 					datapoint: 'earning-prev28days',
 					priority: 1,

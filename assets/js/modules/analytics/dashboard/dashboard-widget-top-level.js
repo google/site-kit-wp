@@ -21,6 +21,7 @@
  */
 import DataBlock from 'GoogleComponents/data-block.js';
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 
 /**
  * Internal dependencies
@@ -315,7 +316,7 @@ export default withData(
 	AnalyticsDashboardWidgetTopLevel,
 	[
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'analytics',
 			datapoint: 'overview',
 			data: {
@@ -326,7 +327,7 @@ export default withData(
 			context: 'Dashboard',
 		},
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'analytics',
 			datapoint: 'site-analytics',
 			data: {
@@ -337,7 +338,7 @@ export default withData(
 			context: 'Dashboard',
 		},
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'analytics',
 			datapoint: 'goals',
 			data: {

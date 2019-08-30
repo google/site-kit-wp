@@ -20,6 +20,7 @@
  * External dependencies
  */
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 import PreviewBlock from 'GoogleComponents/preview-block';
 import {
 	getTimeInSeconds,
@@ -220,7 +221,7 @@ export default withData(
 	AdSenseDashboardMainSummary,
 	[
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'adsense',
 			datapoint: 'earning-today',
 			data: {},
@@ -229,7 +230,7 @@ export default withData(
 			context: 'Dashboard',
 		},
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'adsense',
 			datapoint: 'earnings-this-period',
 			data: {},
@@ -238,7 +239,7 @@ export default withData(
 			context: 'Dashboard',
 		},
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'adsense',
 			datapoint: 'earning-daily-this-month',
 			data: {},

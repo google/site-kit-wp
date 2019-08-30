@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import data from 'GoogleComponents/data';
+import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import PropTypes from 'prop-types';
 import Button from 'GoogleComponents/button';
 import ProgressBar from 'GoogleComponents/progress-bar';
@@ -92,7 +92,7 @@ class AnalyticsSetup extends Component {
 		if ( existingTagProperty && existingTagProperty.length ) {
 			// Verify the user has access to existing tag if found. If no access request will return 403 error and catch err.
 			try {
-				const existingTagData = await data.get( 'modules', 'analytics', 'tag-permission', { tag: existingTagProperty }, false );
+				const existingTagData = await data.get( TYPE_MODULES, 'analytics', 'tag-permission', { tag: existingTagProperty }, false );
 				await this.getAccounts( existingTagData );
 			} catch ( err ) {
 				this.setState(
@@ -257,7 +257,7 @@ class AnalyticsSetup extends Component {
 				existingPropertyId: existingTagData.propertyId,
 			} : {};
 
-			const responseData = await data.get( 'modules', 'analytics', 'get-accounts', queryArgs, false );
+			const responseData = await data.get( TYPE_MODULES, 'analytics', 'get-accounts', queryArgs, false );
 			if ( 0 === responseData.accounts.length ) {
 				newState = {
 					...newState,
@@ -266,7 +266,7 @@ class AnalyticsSetup extends Component {
 				};
 
 				// clear the cache.
-				data.invalidateCacheGroup( 'modules', 'analytics', 'get-accounts' );
+				data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'get-accounts' );
 			} else if ( ! selectedAccount ) {
 				let matchedProperty = null;
 				if ( responseData.matchedProperty ) {
@@ -289,7 +289,7 @@ class AnalyticsSetup extends Component {
 					} );
 				}
 			} else if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.id === selectedAccount ) ) {
-				data.invalidateCacheGroup( 'modules', 'analytics', 'get-accounts' );
+				data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'get-accounts' );
 
 				responseData.accounts.unshift( {
 					id: 0,
@@ -376,7 +376,7 @@ class AnalyticsSetup extends Component {
 				accountId: selectValue,
 			};
 
-			const responseData = await data.get( 'modules', 'analytics', 'get-properties', queryArgs );
+			const responseData = await data.get( TYPE_MODULES, 'analytics', 'get-properties', queryArgs );
 
 			const chooseProperty = {
 				id: 0,
@@ -417,7 +417,7 @@ class AnalyticsSetup extends Component {
 				propertyId: selectValue,
 			};
 
-			const responseData = await data.get( 'modules', 'analytics', 'get-profiles', queryArgs );
+			const responseData = await data.get( TYPE_MODULES, 'analytics', 'get-profiles', queryArgs );
 
 			this.setState( {
 				profilesLoading: false,
@@ -474,7 +474,7 @@ class AnalyticsSetup extends Component {
 		};
 
 		try {
-			const response = await data.set( 'modules', 'analytics', 'save', analyticAccount );
+			const response = await data.set( TYPE_MODULES, 'analytics', 'save', analyticAccount );
 
 			const cacheKey = data.getCacheKey( 'modules', 'analytics', 'get-accounts' );
 			const cache = data.getCache( cacheKey, 3600 );

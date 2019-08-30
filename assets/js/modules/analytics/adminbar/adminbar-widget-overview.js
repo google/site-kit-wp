@@ -21,6 +21,7 @@
  */
 import DataBlock from 'GoogleComponents/data-block.js';
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 import {
 	getTimeInSeconds,
 	readableLargeNumber,
@@ -96,7 +97,7 @@ export default withData(
 	AnalyticsAdminbarWidgetOverview,
 	[
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'analytics',
 			datapoint: 'overview',
 			data: {

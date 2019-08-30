@@ -20,6 +20,7 @@
  * External dependencies
  */
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 import {
 	getTimeInSeconds,
 	numberFormat,
@@ -104,7 +105,7 @@ export default withData(
 	AnalyticsDashboardWidgetTopAcquisitionSources,
 	[
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'analytics',
 			datapoint: 'traffic-sources',
 			data: {

@@ -18,7 +18,7 @@
 /**
  * External dependencies
  */
-import data from 'GoogleComponents/data';
+import data, { TYPE_CORE } from 'GoogleComponents/data';
 import SvgIcon from 'GoogleUtil/svg-icon';
 
 const {
@@ -329,7 +329,7 @@ export const extractForSparkline = ( rowData, column ) => {
 
 export const refreshAuthentication = async () => {
 	try {
-		const response = await data.get( 'core', 'user', 'authentication' );
+		const response = await data.get( TYPE_CORE, 'user', 'authentication' );
 
 		const requiredAndGrantedScopes = response.grantedScopes.filter( ( scope ) => {
 			return -1 !== response.requiredScopes.indexOf( scope );
