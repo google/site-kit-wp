@@ -586,7 +586,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					};
 				case 'adsense':
 					// Date range.
-					$date_range = ! empty( $data['date_range'] ) ? $data['date_range'] : 'last-28-days';
+					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
 					$date_range = $this->parse_date_range( $date_range );
 					// Dimensions.
 					$title_dimension = new \Google_Service_AnalyticsReporting_Dimension();
@@ -628,7 +628,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return $service->reports->batchGet( $body );
 				case 'site-analytics':
 					// Date range.
-					$date_range = ! empty( $data['date_range'] ) ? $data['date_range'] : 'last-28-days';
+					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
 					$date_range = $this->parse_date_range( $date_range, 2 );
 					// Dimensions.
 					$date_dimension = new \Google_Service_AnalyticsReporting_Dimension();
@@ -669,7 +669,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return $service->reports->batchGet( $body );
 				case 'top-pages':
 					// Date range.
-					$date_range = ! empty( $data['date_range'] ) ? $data['date_range'] : 'last-28-days';
+					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
 					$date_range = $this->parse_date_range( $date_range );
 					// Dimensions.
 					$title_dimension = new \Google_Service_AnalyticsReporting_Dimension();
@@ -731,7 +731,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						return $request;
 					}
 					// Date range (custom here because of two ranges).
-					$date_range      = ! empty( $data['date_range'] ) ? $data['date_range'] : 'last-28-days';
+					$date_range      = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
 					$date_range2     = $this->parse_date_range( $date_range, 1, 1, true );
 					$date_range      = $this->parse_date_range( $date_range );
 					$date_range2[1]  = $date_range[0];
@@ -769,7 +769,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return $service->reports->batchGet( $body );
 				case 'traffic-sources':
 					// Date range.
-					$date_range = ! empty( $data['date_range'] ) ? $data['date_range'] : 'last-28-days';
+					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
 					$date_range = $this->parse_date_range( $date_range );
 					// Dimensions.
 					$medium_dimension = new \Google_Service_AnalyticsReporting_Dimension();
