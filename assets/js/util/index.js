@@ -21,6 +21,8 @@
 import data, { TYPE_CORE } from 'GoogleComponents/data';
 import SvgIcon from 'GoogleUtil/svg-icon';
 
+export * from './storage';
+
 const {
 	addFilter,
 	applyFilters,
@@ -568,44 +570,6 @@ export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel
 			dimension2: isFirstAdmin ? 'true' : 'false', // First Admin?
 			dimension3: siteUserId, // Identifier.
 		} );
-	}
-};
-
-/**
- * Detect whether browser storage is both supported and available.
- *
- * @param {string} type Browser storage to test. ex localStorage or sessionStorage.
- * @return {boolean}
- */
-export const storageAvailable = ( type ) => {
-	const storage = window[ type ];
-	if ( ! storage ) {
-		return false;
-	}
-	try {
-		const x = '__storage_test__';
-
-		storage.setItem( x, x );
-		storage.removeItem( x );
-		return true;
-	} catch ( e ) {
-		return e instanceof DOMException && (
-
-			// everything except Firefox
-			22 === e.code ||
-
-			// Firefox
-			1014 === e.code ||
-
-			// test name field too, because code might not be present
-			// everything except Firefox
-			'QuotaExceededError' === e.name ||
-
-			// Firefox
-			'NS_ERROR_DOM_QUOTA_REACHED' === e.name ) &&
-
-			// acknowledge QuotaExceededError only if there's something already stored
-			0 !== storage.length;
 	}
 };
 

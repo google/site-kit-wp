@@ -23,7 +23,7 @@ import DashboardPermissionAlert from 'GoogleComponents/notifications/dashboard-p
 import md5 from 'md5';
 
 import {
-	storageAvailable,
+	storage,
 	stringToSlug,
 	fillFilterWithComponent,
 	getQueryParameter,
@@ -57,23 +57,6 @@ const lazilySetupLocalCache = () => {
 	if ( 'object' !== typeof googlesitekit.admin.datacache ) {
 		googlesitekit.admin.datacache = {};
 	}
-};
-
-/**
- * Detects whether and which persistent cache storage is available.
- *
- * @return {mixed} Either 'sessionStorage', 'localStorage', or undefined.
- */
-const detectPersistentCache = () => {
-	if ( storageAvailable( 'sessionStorage' ) ) {
-		return 'sessionStorage';
-	}
-
-	if ( storageAvailable( 'localStorage' ) ) {
-		return 'localStorage';
-	}
-
-	return undefined;
 };
 
 const dataAPI = {
@@ -311,8 +294,7 @@ const dataAPI = {
 
 		googlesitekit.admin.datacache[ key ] = data;
 
-		const storage = detectPersistentCache();
-		if ( ! storage ) {
+		if ( ! storage.isAvailable() ) {
 			return;
 		}
 
@@ -320,7 +302,7 @@ const dataAPI = {
 			value: data,
 			date: Date.now() / 1000,
 		};
-		window[ storage ].setItem( 'googlesitekit_' + key, JSON.stringify( toStore ) );
+		storage.setItem( 'googlesitekit_' + key, JSON.stringify( toStore ) );
 	},
 
 	/**
@@ -344,13 +326,12 @@ const dataAPI = {
 			return googlesitekit.admin.datacache[ key ];
 		}
 
-		const storage = detectPersistentCache();
-		if ( ! storage ) {
+		if ( ! storage.isAvailable() ) {
 			return undefined;
 		}
 
 		// Check persistent cache.
-		const cache = JSON.parse( window[ storage ].getItem( 'googlesitekit_' + key ) );
+		const cache = JSON.parse( storage.getItem( 'googlesitekit_' + key ) );
 		if ( cache && 'object' === typeof cache && cache.date ) {
 			// Only return value if no maximum age given or if cache age is less than the maximum.
 			if ( ! maxAge || ( Date.now() / 1000 ) - cache.date < maxAge ) {
@@ -374,12 +355,11 @@ const dataAPI = {
 
 		delete googlesitekit.admin.datacache[ key ];
 
-		const storage = detectPersistentCache();
-		if ( ! storage ) {
+		if ( ! storage.isAvailable() ) {
 			return;
 		}
 
-		window[ storage ].removeItem( 'googlesitekit_' + key );
+		storage.removeItem( 'googlesitekit_' + key );
 	},
 
 	/**
@@ -400,14 +380,13 @@ const dataAPI = {
 			}
 		} );
 
-		const storage = detectPersistentCache();
-		if ( ! storage ) {
+		if ( ! storage.isAvailable() ) {
 			return;
 		}
 
-		Object.keys( window[ storage ] ).forEach( ( key ) => {
+		storage.getItems().forEach( ( key ) => {
 			if ( 0 === key.indexOf( 'googlesitekit_' + groupPrefix + '::' ) || key === 'googlesitekit_' + groupPrefix ) {
-				window[ storage ].removeItem( key );
+				storage.removeItem( key );
 			}
 		} );
 	},
