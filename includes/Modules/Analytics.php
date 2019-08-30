@@ -598,7 +598,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'dimensions' => array( $title_dimension, $path_dimension ),
 							'start_date' => $date_range[0],
 							'end_date'   => $date_range[1],
-							'page'       => ! empty( $data['pageUrl'] ) ? $data['pageUrl'] : ( ! empty( $data['url'] ) ? $data['url'] : '' ),
+							'page'       => ! empty( $data['url'] ) ? $data['url'] : '',
 							'row_limit'  => isset( $data['limit'] ) ? $data['limit'] : 10,
 						)
 					);
