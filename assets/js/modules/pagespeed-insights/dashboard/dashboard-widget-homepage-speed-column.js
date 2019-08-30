@@ -137,7 +137,9 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedDesktop = withData(
 			type: TYPE_MODULES,
 			identifier: 'pagespeed-insights',
 			datapoint: 'site-pagespeed-desktop',
-			permaLink: googlesitekit.permaLink,
+			data: {
+				permaLink: googlesitekit.permaLink,
+			},
 			priority: 10,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
