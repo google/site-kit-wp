@@ -40,7 +40,6 @@ rl.question( 'Username: ', ( username ) => {
 			dataCacheBase + adminPath + 'admin.php?page=googlesitekit-module-adsense',
 			dataCacheBase + adminPath + 'admin.php?page=googlesitekit-settings',
 			dataCacheBase + adminPath + 'index.php?',
-			dataCacheBase + adminPath + 'post.php?post=57&action=edit',
 			dataCacheBase + adminPath + 'edit.php?',
 			dataCacheBase + 'blog/?',
 		];
