@@ -22,6 +22,7 @@
 import GoogleChart from 'GoogleComponents/google-chart.js';
 import { getSiteKitAdminURL, getTimeInSeconds } from 'GoogleUtil';
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 /**
  * Internal dependencies
  */
@@ -108,10 +109,12 @@ export default withData(
 	DashboardAcquisitionPieChart,
 	[
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'analytics',
 			datapoint: 'traffic-sources',
-			permaLink: googlesitekit.permaLink,
+			data: {
+				url: googlesitekit.permaLink,
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Dashboard', 'Single' ],

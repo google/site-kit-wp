@@ -23,10 +23,11 @@ import DashboardPermissionAlert from 'GoogleComponents/notifications/dashboard-p
 import md5 from 'md5';
 
 import {
-	storageAvailable,
+	storage,
 	stringToSlug,
 	fillFilterWithComponent,
 	getQueryParameter,
+	sortObjectProperties,
 } from 'SiteKitCore/util';
 
 const { each, sortBy } = lodash;
@@ -40,26 +41,8 @@ const {
 } = wp.hooks;
 const { __ } = wp.i18n;
 
-/**
- * Sorts an object by its keys.
- *
- * The returned value will be a sorted copy of the input object.
- * Any inner objects will also be sorted recursively.
- *
- * @param {Object} data The data object to sort.
- * @return {Object} The sorted data object.
- */
-const sortObjectProperties = ( data ) => {
-	const orderedData = {};
-	Object.keys( data ).sort().forEach( ( key ) => {
-		let val = data[ key ];
-		if ( val && 'object' === typeof val && ! Array.isArray( val ) ) {
-			val = sortObjectProperties( val );
-		}
-		orderedData[ key ] = val;
-	} );
-	return orderedData;
-};
+export const TYPE_CORE = 'core';
+export const TYPE_MODULES = 'modules';
 
 /**
  * Ensures that the local datacache object is properly set up.
@@ -74,23 +57,6 @@ const lazilySetupLocalCache = () => {
 	if ( 'object' !== typeof googlesitekit.admin.datacache ) {
 		googlesitekit.admin.datacache = {};
 	}
-};
-
-/**
- * Detects whether and which persistent cache storage is available.
- *
- * @return {mixed} Either 'sessionStorage', 'localStorage', or undefined.
- */
-const detectPersistentCache = () => {
-	if ( storageAvailable( 'sessionStorage' ) ) {
-		return 'sessionStorage';
-	}
-
-	if ( storageAvailable( 'localStorage' ) ) {
-		return 'localStorage';
-	}
-
-	return undefined;
 };
 
 const dataAPI = {
@@ -138,22 +104,11 @@ const dataAPI = {
 					request.data = request.data || {};
 					request.data.dateRange = request.data.dateRange || dateRangeSlug;
 
-					const paramsToMigrate = [ 'permaLink', 'siteURL', 'pageUrl', 'limit' ];
-					paramsToMigrate.forEach( ( param ) => {
-						if ( 'undefined' !== typeof request[ param ] ) {
-							request.data[ param ] = request[ param ];
-							delete request[ param ];
-						}
-					} );
-
 					request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
 
 					const cache = this.getCache( request.key, request.maxAge );
 					if ( 'undefined' !== typeof cache ) {
 						responseData[ request.key ] = cache;
-
-						// Trigger an action when cached data is used.
-						doAction( 'googlesitekit.cachedDataUsed', request.datapoint );
 
 						this.resolve( request, cache );
 					}
@@ -187,22 +142,11 @@ const dataAPI = {
 			request.data = request.data || {};
 			request.data.dateRange = request.data.dateRange || dateRangeSlug;
 
-			const paramsToMigrate = [ 'permaLink', 'siteURL', 'pageUrl', 'limit' ];
-			paramsToMigrate.forEach( ( param ) => {
-				if ( 'undefined' !== typeof request[ param ] ) {
-					request.data[ param ] = request[ param ];
-					delete request[ param ];
-				}
-			} );
-
 			request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
 
 			const cache = this.getCache( request.key, request.maxAge );
 			if ( 'undefined' !== typeof cache ) {
 				setTimeout( () => {
-					// Trigger an action when cached data is used.
-					doAction( 'googlesitekit.cachedDataUsed', request.datapoint );
-
 					this.resolve( request, cache );
 				}, cacheDelay );
 				cacheDelay += 25;
@@ -299,8 +243,6 @@ const dataAPI = {
 					each( keyIndexesMap[ key ], ( index ) => {
 						const request = dataRequest[ index ];
 
-						doAction( 'googlesitekit.dataReceived', request.key );
-
 						this.setCache( request.key, result );
 						this.resolve( request, result );
 					} );
@@ -352,8 +294,7 @@ const dataAPI = {
 
 		googlesitekit.admin.datacache[ key ] = data;
 
-		const storage = detectPersistentCache();
-		if ( ! storage ) {
+		if ( ! storage.isAvailable() ) {
 			return;
 		}
 
@@ -361,7 +302,7 @@ const dataAPI = {
 			value: data,
 			date: Date.now() / 1000,
 		};
-		window[ storage ].setItem( 'googlesitekit_' + key, JSON.stringify( toStore ) );
+		storage.setItem( 'googlesitekit_' + key, JSON.stringify( toStore ) );
 	},
 
 	/**
@@ -385,15 +326,14 @@ const dataAPI = {
 			return googlesitekit.admin.datacache[ key ];
 		}
 
-		const storage = detectPersistentCache();
-		if ( ! storage ) {
+		if ( ! storage.isAvailable() ) {
 			return undefined;
 		}
 
 		// Check persistent cache.
-		const cache = JSON.parse( window[ storage ].getItem( 'googlesitekit_' + key ) );
+		const cache = JSON.parse( storage.getItem( 'googlesitekit_' + key ) );
 		if ( cache && 'object' === typeof cache && cache.date ) {
-			// Only return value if no maximum age given or value is newer than it.
+			// Only return value if no maximum age given or if cache age is less than the maximum.
 			if ( ! maxAge || ( Date.now() / 1000 ) - cache.date < maxAge ) {
 				// Set variable cache.
 				googlesitekit.admin.datacache[ key ] = cache.value;
@@ -413,16 +353,13 @@ const dataAPI = {
 	deleteCache( key ) {
 		lazilySetupLocalCache();
 
-		if ( 'undefined' !== typeof googlesitekit.admin.datacache[ key ] ) {
-			delete googlesitekit.admin.datacache[ key ];
-		}
+		delete googlesitekit.admin.datacache[ key ];
 
-		const storage = detectPersistentCache();
-		if ( ! storage ) {
+		if ( ! storage.isAvailable() ) {
 			return;
 		}
 
-		window[ storage ].removeItem( 'googlesitekit_' + key );
+		storage.removeItem( 'googlesitekit_' + key );
 	},
 
 	/**
@@ -443,14 +380,13 @@ const dataAPI = {
 			}
 		} );
 
-		const storage = detectPersistentCache();
-		if ( ! storage ) {
+		if ( ! storage.isAvailable() ) {
 			return;
 		}
 
-		Object.keys( window[ storage ] ).forEach( ( key ) => {
+		storage.getItems().forEach( ( key ) => {
 			if ( 0 === key.indexOf( 'googlesitekit_' + groupPrefix + '::' ) || key === 'googlesitekit_' + groupPrefix ) {
-				window[ storage ].removeItem( key );
+				storage.removeItem( key );
 			}
 		} );
 	},
@@ -573,8 +509,6 @@ const dataAPI = {
 			return new Promise( ( resolve ) => {
 				resolve( response );
 			} );
-		} ).catch( ( err ) => {
-			return Promise.reject( err );
 		} );
 	},
 
@@ -588,28 +522,21 @@ const dataAPI = {
 	 * @return {string} The cache key to use.
 	 */
 	getCacheKey( type, identifier, datapoint, data = null ) {
-		let key = '';
-		if ( ! type || ! type.length ) {
-			return key;
+		const key = [];
+		const pieces = [ type, identifier, datapoint ];
+
+		for ( const piece of pieces ) {
+			if ( ! piece || ! piece.length ) {
+				break;
+			}
+			key.push( piece );
 		}
 
-		key = type;
-		if ( ! identifier || ! identifier.length ) {
-			return key;
+		if ( 3 === key.length && data && 'object' === typeof data && Object.keys( data ).length ) {
+			key.push( md5( JSON.stringify( sortObjectProperties( data ) ) ) );
 		}
 
-		key += '::' + identifier;
-		if ( ! datapoint || ! datapoint.length ) {
-			return key;
-		}
-
-		key += '::' + datapoint;
-		if ( ! data || ! Object.keys( data ).length ) {
-			return key;
-		}
-
-		key += '::' + md5( JSON.stringify( sortObjectProperties( data ) ) );
-		return key;
+		return key.join( '::' );
 	},
 
 	/**
@@ -617,6 +544,8 @@ const dataAPI = {
 	 *
 	 * @param {string}  moduleSlug The module slug.
 	 * @param {boolean} active     Whether the module should be active or not.
+	 *
+	 * @return {Promise} A promise for the fetch request.
 	 */
 	setModuleActive( moduleSlug, active ) {
 		// Make an API request to store the value.

@@ -20,13 +20,6 @@ namespace Google\Site_Kit\Core\Storage;
 final class Cache {
 
 	/**
-	 * The key for saving the global post title-> post id cache.
-	 *
-	 * @var string $global_cache_keys_key The key.
-	 */
-	private static $global_cache_post_ids_key = 'googlesitekit_global_cache_post_id_s';
-
-	/**
 	 * The key for saving the global cache keys.
 	 *
 	 * @var string $global_cache_keys_key The key.
@@ -48,46 +41,6 @@ final class Cache {
 	}
 
 	/**
-	 * ------------------------------
-	 * Static functions defined below
-	 * ------------------------------
-	 */
-
-	/**
-	 * Delete the global url-> post id cache.
-	 */
-	public static function delete_cached_title_data() {
-		delete_transient( self::$global_cache_post_ids_key );
-	}
-
-	/**
-	 * Get the global url-> post id cache.
-	 *
-	 * @return array The array of cached post url-> post id mappings. Empty array if none found.
-	 */
-	public static function get_cached_title_data() {
-		$cached_data = get_transient( self::$global_cache_post_ids_key );
-		return $cached_data ? $cached_data : array();
-	}
-
-	/**
-	 * Set the global url-> post id cache. Cache at most 20 values.
-	 *
-	 * @param array $new_data The array of new data to set.
-	 */
-	public static function set_cached_title_data( $new_data ) {
-		$cached_data = get_transient( self::$global_cache_post_ids_key );
-		if ( false === $cached_data ) {
-			set_transient( self::$global_cache_post_ids_key, $new_data );
-			return;
-		}
-
-		$merged_array = array_merge( $cached_data, $new_data );
-		$merged_array = array_slice( $merged_array, 0, 20 );
-		set_transient( self::$global_cache_post_ids_key, $merged_array );
-	}
-
-	/**
 	 * Helper function to get the cache data.
 	 */
 	public function get_current_cache_data() {
@@ -99,7 +52,7 @@ final class Cache {
 		foreach ( $keys as $key ) {
 
 			// This only retrieves fresh data because transients expire.
-			$cache = get_transient( $key );
+			$cache = get_transient( 'googlesitekit_' . $key );
 
 			if ( $cache ) {
 				$cache_data[ $key ] = $cache;
@@ -155,9 +108,7 @@ final class Cache {
 	 * @param Object $data    The data to cache.
 	 */
 	public function set_cache_data( $key, $data ) {
-		$key = 'googlesitekit_' . $key;
-
-		set_transient( $key, $data, HOUR_IN_SECONDS );
+		set_transient( 'googlesitekit_' . $key, $data, HOUR_IN_SECONDS );
 		$this->add_global_cache_key( $key );
 	}
 

@@ -18,11 +18,12 @@
 /**
  * External dependencies
  */
-import data from 'GoogleComponents/data';
+import data, { TYPE_CORE } from 'GoogleComponents/data';
 import SvgIcon from 'GoogleUtil/svg-icon';
 
+export * from './storage';
+
 const {
-	addAction,
 	addFilter,
 	applyFilters,
 } = wp.hooks;
@@ -268,44 +269,6 @@ export const changeToPercent = ( previous, current ) => {
 	return change;
 };
 
-export function addPerformanceMonitoring() {
-	const googlesitekitPerformance = window.googlesitekitPerformance || {};
-	addAction( 'googlesitekit.moduleLoaded', 'googlesitekit.PerformanceMetrics.moduleLoaded', function( context ) {
-		googlesitekitPerformance.loadedActionTriggered = ( new Date() ).getTime();
-		const elapsed = ( googlesitekitPerformance.loadedActionTriggered - googlesitekitPerformance.domReady ) + 'ms';
-		googlesitekitPerformance._timeToLoadedActionTriggered = elapsed;
-		googlesitekitPerformance.loadedActionContext = context;
-		console.log( 'Performance Metrics: App loaded', elapsed ); // eslint-disable-line no-console
-	} );
-
-	addAction( 'googlesitekit.dataReceived', 'googlesitekit.PerformanceMetrics.dataReceived', function( datapoint ) {
-		const currentlyAt = ( new Date() ).getTime();
-		googlesitekitPerformance.dataReceived = googlesitekitPerformance.dataReceived || [];
-		googlesitekitPerformance._timeToDataReceived = googlesitekitPerformance._timeToDataReceived || [];
-		googlesitekitPerformance.dataReceived.push( currentlyAt );
-		const elapsed = ( currentlyAt - googlesitekitPerformance.domReady ) + 'ms';
-		googlesitekitPerformance._timeToDataReceived.push( elapsed );
-		console.log( 'Performance Metrics: Async Data loaded: ' + datapoint, elapsed ); // eslint-disable-line no-console
-	} );
-
-	addAction( 'googlesitekit.cachedDataUsed', 'googlesitekit.PerformanceMetrics.cachedDataUsed', function( datapoint ) {
-		const currentlyAt = ( new Date() ).getTime();
-		googlesitekitPerformance.cachedDataUsed = googlesitekitPerformance.cachedDataUsed || [];
-		googlesitekitPerformance._timeToCachedDataUsed = googlesitekitPerformance._timeToCachedDataUsed || [];
-		googlesitekitPerformance.cachedDataUsed.push( currentlyAt );
-		const elapsed = ( currentlyAt - googlesitekitPerformance.domReady ) + 'ms';
-		googlesitekitPerformance._timeToCachedDataUsed.push( elapsed );
-		console.log( 'Performance Metrics: Cached Data loaded: ' + datapoint, elapsed ); // eslint-disable-line no-console
-	} );
-
-	addAction( 'googlesitekit.rootAppDidMount', 'googlesitekit.PerformanceMetrics.rootAppDidMount', function() {
-		googlesitekitPerformance.rootAppMounted = ( new Date() ).getTime();
-		const elapsed = ( googlesitekitPerformance.rootAppMounted - googlesitekitPerformance.domReady ) + 'ms';
-		googlesitekitPerformance._timeToAppMounted = elapsed;
-		console.log( 'Performance Metrics: App mounted', elapsed ); // eslint-disable-line no-console
-	} );
-}
-
 /**
  * Fallback helper to get a query parameter from the current URL.
  *
@@ -368,7 +331,7 @@ export const extractForSparkline = ( rowData, column ) => {
 
 export const refreshAuthentication = async () => {
 	try {
-		const response = await data.get( 'core', 'user', 'authentication' );
+		const response = await data.get( TYPE_CORE, 'user', 'authentication' );
 
 		const requiredAndGrantedScopes = response.grantedScopes.filter( ( scope ) => {
 			return -1 !== response.requiredScopes.indexOf( scope );
@@ -607,44 +570,6 @@ export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel
 			dimension2: isFirstAdmin ? 'true' : 'false', // First Admin?
 			dimension3: siteUserId, // Identifier.
 		} );
-	}
-};
-
-/**
- * Detect whether browser storage is both supported and available.
- *
- * @param {string} type Browser storage to test. ex localStorage or sessionStorage.
- * @return {boolean}
- */
-export const storageAvailable = ( type ) => {
-	const storage = window[ type ];
-	if ( ! storage ) {
-		return false;
-	}
-	try {
-		const x = '__storage_test__';
-
-		storage.setItem( x, x );
-		storage.removeItem( x );
-		return true;
-	} catch ( e ) {
-		return e instanceof DOMException && (
-
-			// everything except Firefox
-			22 === e.code ||
-
-			// Firefox
-			1014 === e.code ||
-
-			// test name field too, because code might not be present
-			// everything except Firefox
-			'QuotaExceededError' === e.name ||
-
-			// Firefox
-			'NS_ERROR_DOM_QUOTA_REACHED' === e.name ) &&
-
-			// acknowledge QuotaExceededError only if there's something already stored
-			0 !== storage.length;
 	}
 };
 
@@ -929,4 +854,25 @@ export function clearAppLocalStorage() {
 	if ( sessionStorage ) {
 		sessionStorage.clear();
 	}
+}
+
+/**
+ * Sorts an object by its keys.
+ *
+ * The returned value will be a sorted copy of the input object.
+ * Any inner objects will also be sorted recursively.
+ *
+ * @param {Object} obj The data object to sort.
+ * @return {Object} The sorted data object.
+ */
+export function sortObjectProperties( obj ) {
+	const orderedData = {};
+	Object.keys( obj ).sort().forEach( ( key ) => {
+		let val = obj[ key ];
+		if ( val && 'object' === typeof val && ! Array.isArray( val ) ) {
+			val = sortObjectProperties( val );
+		}
+		orderedData[ key ] = val;
+	} );
+	return orderedData;
 }

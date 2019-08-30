@@ -21,6 +21,7 @@
  */
 import DataBlock from 'GoogleComponents/data-block.js';
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 
 /**
  * Internal dependencies
@@ -315,28 +316,34 @@ export default withData(
 	AnalyticsDashboardWidgetTopLevel,
 	[
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'analytics',
-			permaLink: googlesitekit.permaLink,
 			datapoint: 'overview',
+			data: {
+				url: googlesitekit.permaLink,
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
 		},
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'analytics',
-			permaLink: googlesitekit.permaLink,
 			datapoint: 'site-analytics',
+			data: {
+				url: googlesitekit.permaLink,
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
 		},
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'analytics',
-			permaLink: googlesitekit.permaLink,
 			datapoint: 'goals',
+			data: {
+				url: googlesitekit.permaLink,
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'hour' ),
 			context: 'Dashboard',

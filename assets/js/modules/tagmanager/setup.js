@@ -21,7 +21,7 @@
  */
 import Button from 'GoogleComponents/button';
 import Link from 'GoogleComponents/link';
-import data from 'GoogleComponents/data';
+import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import { Select, Option } from 'SiteKitCore/material-components';
 import SvgIcon from 'GoogleUtil/svg-icon';
@@ -131,11 +131,11 @@ class TagmanagerSetup extends Component {
 
 			let errorCode = false;
 			let errorMsg = '';
-			const responseData = await data.get( 'modules', 'tagmanager', 'list-accounts', queryArgs, false );
+			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'list-accounts', queryArgs, false );
 
 			// Verify if user has access to the selected account.
 			if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.accountId === selectedAccount ) ) {
-				data.invalidateCacheGroup( 'modules', 'tagmanager', 'list-accounts' );
+				data.invalidateCacheGroup( TYPE_MODULES, 'tagmanager', 'list-accounts' );
 				errorCode = 'insufficientPermissions';
 				errorMsg = __( 'You currently don\'t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.', 'google-site-kit' );
 			}
@@ -181,7 +181,7 @@ class TagmanagerSetup extends Component {
 				accountId: selectedAccount,
 			};
 
-			const responseData = await data.get( 'modules', 'tagmanager', 'list-containers', queryArgs );
+			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'list-containers', queryArgs );
 
 			const chooseContainer = {
 				containerId: 0,
@@ -220,7 +220,7 @@ class TagmanagerSetup extends Component {
 				containerId: selectedContainer,
 			};
 
-			const responseData = await data.set( 'modules', 'tagmanager', 'save', optionData );
+			const responseData = await data.set( TYPE_MODULES, 'tagmanager', 'save', optionData );
 			if ( finishSetup ) {
 				finishSetup();
 			}

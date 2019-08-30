@@ -601,7 +601,7 @@ tag_partner: "site_kit"
 						)
 					);
 				case 'earnings-this-period':
-					$date_range = ! empty( $data['date_range'] ) ? $data['date_range'] : 'last-28-days';
+					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
 					switch ( $date_range ) {
 						case 'last-7-days':
 							$daysago = 7;

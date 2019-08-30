@@ -23,6 +23,7 @@ import PreviewBlocks from 'GoogleComponents/preview-blocks';
 import DataBlock from 'GoogleComponents/data-block.js';
 import CTA from 'GoogleComponents/notifications/cta';
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 import {
 	getTimeInSeconds,
 	prepareSecondsForDisplay,
@@ -95,9 +96,10 @@ export default withData(
 	WPAnalyticsDashboardWidgetOverview,
 	[
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'analytics',
 			datapoint: 'overview',
+			data: {},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'WPDashboard' ],

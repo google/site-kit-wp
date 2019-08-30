@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import data from 'GoogleComponents/data';
+import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import { Select, TextField, Input } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
@@ -59,9 +59,9 @@ class SearchConsole extends Component {
 		}
 
 		try {
-			const isSiteExist = await data.get( 'modules', 'search-console', 'is-site-exist' );
+			const isSiteExist = await data.get( TYPE_MODULES, 'search-console', 'is-site-exist' );
 			if ( isSiteExist && true === isSiteExist.verified ) {
-				const savePropertyResponse = await data.set( 'modules', 'search-console', 'save-property', { siteURL: isSiteExist.siteURL } );
+				const savePropertyResponse = await data.set( TYPE_MODULES, 'search-console', 'save-property', { siteURL: isSiteExist.siteURL } );
 				if ( true === savePropertyResponse.status ) {
 					return this.props.searchConsoleSetup( isSiteExist.siteURL );
 				}
@@ -86,7 +86,7 @@ class SearchConsole extends Component {
 		const { setErrorMessage } = this.props;
 		( async () => {
 			try {
-				const sitePropertyData = await data.get( 'modules', 'search-console', 'matched-sites' );
+				const sitePropertyData = await data.get( TYPE_MODULES, 'search-console', 'matched-sites' );
 
 				// We found exact match, continue the process in the background.
 				if ( sitePropertyData.exact_match ) {
@@ -129,7 +129,7 @@ class SearchConsole extends Component {
 	 * @param { string } siteURL
 	 */
 	async insertPropertyToSearchConsole( siteURL ) {
-		const response = await data.set( 'modules', 'search-console', 'insert', { siteURL } );
+		const response = await data.set( TYPE_MODULES, 'search-console', 'insert', { siteURL } );
 		sendAnalyticsTrackingEvent( 'search_console_setup', 'add_new_sc_property' );
 
 		this.setState( {

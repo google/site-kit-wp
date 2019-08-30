@@ -20,6 +20,7 @@
  * External dependencies
  */
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
@@ -117,9 +118,10 @@ export default withData(
 	DashboardWidgetPopularKeywordsTable,
 	[
 		{
-			type: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'search-console',
 			datapoint: 'search-keywords',
+			data: {},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Dashboard' ],
