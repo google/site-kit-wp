@@ -532,7 +532,7 @@ const dataAPI = {
 			key.push( piece );
 		}
 
-		if ( 3 === key.length ) {
+		if ( 3 === key.length && data && 'object' === typeof data && Object.keys( data ).length ) {
 			key.push( md5( JSON.stringify( sortObjectProperties( data ) ) ) );
 		}
 
