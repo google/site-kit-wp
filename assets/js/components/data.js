@@ -567,28 +567,21 @@ const dataAPI = {
 	 * @return {string} The cache key to use.
 	 */
 	getCacheKey( type, identifier, datapoint, data = null ) {
-		let key = '';
-		if ( ! type || ! type.length ) {
-			return key;
+		const key = [];
+		const pieces = [ type, identifier, datapoint ];
+
+		for ( const piece of pieces ) {
+			if ( ! piece || ! piece.length ) {
+				break;
+			}
+			key.push( piece );
 		}
 
-		key = type;
-		if ( ! identifier || ! identifier.length ) {
-			return key;
+		if ( 3 === key.length ) {
+			key.push( md5( JSON.stringify( sortObjectProperties( data ) ) ) );
 		}
 
-		key += '::' + identifier;
-		if ( ! datapoint || ! datapoint.length ) {
-			return key;
-		}
-
-		key += '::' + datapoint;
-		if ( ! data || ! Object.keys( data ).length ) {
-			return key;
-		}
-
-		key += '::' + md5( JSON.stringify( sortObjectProperties( data ) ) );
-		return key;
+		return key.join( '::' );
 	},
 
 	/**
@@ -596,6 +589,8 @@ const dataAPI = {
 	 *
 	 * @param {string}  moduleSlug The module slug.
 	 * @param {boolean} active     Whether the module should be active or not.
+	 *
+	 * @return {Promise} A promise for the fetch request.
 	 */
 	setModuleActive( moduleSlug, active ) {
 		// Make an API request to store the value.
