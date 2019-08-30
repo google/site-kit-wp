@@ -139,4 +139,3 @@ rl.question( 'Username: ', ( username ) => {
 		rl.close();
 	} );
 } );
-
