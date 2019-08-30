@@ -161,7 +161,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					$service = $this->get_service( 'webmasters' );
 					return $service->sites->listSites();
 				case 'sc-site-analytics':
-					$page       = ! empty( $data['permaLink'] ) ? $data['permaLink'] : '';
+					$page       = ! empty( $data['url'] ) ? $data['url'] : '';
 					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
 					$date_range = $this->parse_date_range( $date_range, 2, 3 );
 					return $this->create_search_analytics_data_request(
@@ -173,7 +173,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						)
 					);
 				case 'search-keywords':
-					$page       = ! empty( $data['permaLink'] ) ? $data['permaLink'] : '';
+					$page       = ! empty( $data['url'] ) ? $data['url'] : '';
 					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
 					$date_range = $this->parse_date_range( $date_range, 1, 3 );
 					return $this->create_search_analytics_data_request(
@@ -398,7 +398,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					'key'        => 'sc-site-analytics',
 					'datapoint'  => 'sc-site-analytics',
 					'data'       => array(
-						'permaLink' => $post_url,
+						'url'       => $post_url,
 						'dateRange' => 'last-7-days',
 					),
 				),
@@ -407,7 +407,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					'key'        => 'search-keywords',
 					'datapoint'  => 'search-keywords',
 					'data'       => array(
-						'permaLink' => $post_url,
+						'url'       => $post_url,
 						'dateRange' => 'last-7-days',
 					),
 				),

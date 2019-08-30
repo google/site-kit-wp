@@ -90,7 +90,7 @@ export default withData(
 			identifier: 'search-console',
 			datapoint: 'sc-site-analytics',
 			data: {
-				permaLink: googlesitekit.permaLink,
+				url: googlesitekit.permaLink,
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),

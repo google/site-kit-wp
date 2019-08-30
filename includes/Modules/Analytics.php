@@ -598,7 +598,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'dimensions' => array( $title_dimension, $path_dimension ),
 							'start_date' => $date_range[0],
 							'end_date'   => $date_range[1],
-							'page'       => ! empty( $data['pageUrl'] ) ? $data['pageUrl'] : ( ! empty( $data['permaLink'] ) ? $data['permaLink'] : '' ),
+							'page'       => ! empty( $data['pageUrl'] ) ? $data['pageUrl'] : ( ! empty( $data['url'] ) ? $data['url'] : '' ),
 							'row_limit'  => isset( $data['limit'] ) ? $data['limit'] : 10,
 						)
 					);
@@ -638,7 +638,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'dimensions' => array( $date_dimension ),
 							'start_date' => $date_range[0],
 							'end_date'   => $date_range[1],
-							'page'       => ! empty( $data['permaLink'] ) ? $data['permaLink'] : '',
+							'page'       => ! empty( $data['url'] ) ? $data['url'] : '',
 							'row_limit'  => isset( $data['limit'] ) ? $data['limit'] : 180,
 						)
 					);
@@ -681,7 +681,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'dimensions' => array( $path_dimension, $title_dimension ),
 							'start_date' => $date_range[0],
 							'end_date'   => $date_range[1],
-							'page'       => ! empty( $data['permaLink'] ) ? $data['permaLink'] : '',
+							'page'       => ! empty( $data['url'] ) ? $data['url'] : '',
 							'row_limit'  => isset( $data['limit'] ) ? $data['limit'] : 10,
 						)
 					);
@@ -723,7 +723,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'overview':
 					$request = $this->create_analytics_site_data_request(
 						array(
-							'page'      => ! empty( $data['permaLink'] ) ? $data['permaLink'] : '',
+							'page'      => ! empty( $data['url'] ) ? $data['url'] : '',
 							'row_limit' => isset( $data['limit'] ) ? $data['limit'] : 10,
 						)
 					);
@@ -779,7 +779,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'dimensions' => array( $medium_dimension ),
 							'start_date' => $date_range[0],
 							'end_date'   => $date_range[1],
-							'page'       => ! empty( $data['permaLink'] ) ? $data['permaLink'] : '',
+							'page'       => ! empty( $data['url'] ) ? $data['url'] : '',
 							'row_limit'  => isset( $data['limit'] ) ? $data['limit'] : 10,
 						)
 					);

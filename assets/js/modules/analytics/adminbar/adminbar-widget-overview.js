@@ -101,7 +101,7 @@ export default withData(
 			identifier: 'analytics',
 			datapoint: 'overview',
 			data: {
-				permaLink: googlesitekit.permaLink,
+				url: googlesitekit.permaLink,
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),

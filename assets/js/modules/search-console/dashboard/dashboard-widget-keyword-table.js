@@ -91,7 +91,7 @@ export default withData(
 			identifier: 'search-console',
 			datapoint: 'search-keywords',
 			data: {
-				permaLink: googlesitekit.permaLink,
+				url: googlesitekit.permaLink,
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
