@@ -21,136 +21,132 @@ import { __ } from '@wordpress/i18n';
 
 
 const setupSettings = () => {
-	googlesitekit.admin.datacache = JSON.stringify( {
-		'analytics::existingTag': false,
-		'modules::analytics::get-accounts': {
-			accounts: [
-				{
-					created: '2011-03-25T21:41:26.980Z',
-					id: '22305160',
-					kind: 'analytics#account',
-					name: '10up',
-					selfLink: 'https://www.googleapis.com/analytics/v3/management/accounts/22305160',
-					starred: null,
-					updated: '2015-08-10T19:09:14.708Z',
-					permissions: {
-						effective: [],
-					},
-					childLink: {
-						href: 'https://www.googleapis.com/analytics/v3/management/accounts/22305160/webproperties',
-						type: 'analytics#webproperties',
-					},
+	window.googlesitekit.modules.analytics[ 'get-accounts' ] = {
+		accounts: [
+			{
+				created: '2011-03-25T21:41:26.980Z',
+				id: '22305160',
+				kind: 'analytics#account',
+				name: '10up',
+				selfLink: 'https://www.googleapis.com/analytics/v3/management/accounts/22305160',
+				starred: null,
+				updated: '2015-08-10T19:09:14.708Z',
+				permissions: {
+					effective: [],
 				},
-				{
-					created: '2018-09-17T18:32:09.258Z',
-					id: '125893658',
-					kind: 'analytics#account',
-					name: 'Ryan 10up',
-					selfLink: 'https://www.googleapis.com/analytics/v3/management/accounts/125893658',
-					starred: null,
-					updated: '2018-09-17T18:32:09.258Z',
-					permissions: {
-						effective: [
-							'COLLABORATE',
-							'EDIT',
-							'MANAGE_USERS',
-							'READ_AND_ANALYZE',
-						],
-					},
-					childLink: {
-						href: 'https://www.googleapis.com/analytics/v3/management/accounts/125893658/webproperties',
-						type: 'analytics#webproperties',
-					},
+				childLink: {
+					href: 'https://www.googleapis.com/analytics/v3/management/accounts/22305160/webproperties',
+					type: 'analytics#webproperties',
 				},
-				{
-					id: '-1',
-					name: 'Setup a New Account',
+			},
+			{
+				created: '2018-09-17T18:32:09.258Z',
+				id: '125893658',
+				kind: 'analytics#account',
+				name: 'Ryan 10up',
+				selfLink: 'https://www.googleapis.com/analytics/v3/management/accounts/125893658',
+				starred: null,
+				updated: '2018-09-17T18:32:09.258Z',
+				permissions: {
+					effective: [
+						'COLLABORATE',
+						'EDIT',
+						'MANAGE_USERS',
+						'READ_AND_ANALYZE',
+					],
 				},
-			],
-			properties: [
-				{
-					accountId: '22305160',
-					created: '2016-12-06T14:48:54.188Z',
-					dataRetentionResetOnNewActivity: true,
-					dataRetentionTtl: 'MONTHS_26',
-					defaultProfileId: '135435962',
-					id: 'UA-22305160-3',
-					industryVertical: 'INTERNET_AND_TELECOM',
-					internalWebPropertyId: '131522251',
-					kind: 'analytics#webproperty',
-					level: 'STANDARD',
-					name: 'ElasticPress.io',
-					profileCount: 1,
-					selfLink: 'https://www.googleapis.com/analytics/v3/management/accounts/22305160/webproperties/UA-22305160-3',
-					starred: null,
-					updated: '2016-12-06T14:53:41.965Z',
-					websiteUrl: 'https://www.elasticpress.io',
-					permissions: {
-						effective: [
-							'READ_AND_ANALYZE',
-						],
-					},
-					parentLink: {
-						href: 'https://www.googleapis.com/analytics/v3/management/accounts/22305160',
-						type: 'analytics#account',
-					},
-					childLink: {
-						href: 'https://www.googleapis.com/analytics/v3/management/accounts/22305160/webproperties/UA-22305160-3/profiles',
-						type: 'analytics#profiles',
-					},
+				childLink: {
+					href: 'https://www.googleapis.com/analytics/v3/management/accounts/125893658/webproperties',
+					type: 'analytics#webproperties',
 				},
-				{
-					id: 0,
-					name: 'Setup a New Property',
+			},
+			{
+				id: '-1',
+				name: 'Setup a New Account',
+			},
+		],
+		properties: [
+			{
+				accountId: '22305160',
+				created: '2016-12-06T14:48:54.188Z',
+				dataRetentionResetOnNewActivity: true,
+				dataRetentionTtl: 'MONTHS_26',
+				defaultProfileId: '135435962',
+				id: 'UA-22305160-3',
+				industryVertical: 'INTERNET_AND_TELECOM',
+				internalWebPropertyId: '131522251',
+				kind: 'analytics#webproperty',
+				level: 'STANDARD',
+				name: 'ElasticPress.io',
+				profileCount: 1,
+				selfLink: 'https://www.googleapis.com/analytics/v3/management/accounts/22305160/webproperties/UA-22305160-3',
+				starred: null,
+				updated: '2016-12-06T14:53:41.965Z',
+				websiteUrl: 'https://www.elasticpress.io',
+				permissions: {
+					effective: [
+						'READ_AND_ANALYZE',
+					],
 				},
-			],
-			profiles: [
-				{
-					accountId: '22305160',
-					botFilteringEnabled: false,
-					created: '2016-12-06T14:48:54.188Z',
-					currency: 'USD',
-					defaultPage: null,
-					eCommerceTracking: false,
-					enhancedECommerceTracking: null,
-					excludeQueryParameters: null,
-					id: '135435962',
-					internalWebPropertyId: '131522251',
-					kind: 'analytics#profile',
-					name: 'All Web Site Data',
-					selfLink: 'https://www.googleapis.com/analytics/v3/management/accounts/22305160/webproperties/UA-22305160-3/profiles/135435962',
-					siteSearchCategoryParameters: null,
-					siteSearchQueryParameters: 's',
-					starred: null,
-					stripSiteSearchCategoryParameters: null,
-					stripSiteSearchQueryParameters: false,
-					timezone: 'America/Los_Angeles',
-					type: 'WEB',
-					updated: '2019-01-25T20:15:27.426Z',
-					webPropertyId: 'UA-22305160-3',
-					websiteUrl: 'https://www.elasticpress.io',
-					permissions: {
-						effective: [
-							'READ_AND_ANALYZE',
-						],
-					},
-					parentLink: {
-						href: 'https://www.googleapis.com/analytics/v3/management/accounts/22305160/webproperties/UA-22305160-3',
-						type: 'analytics#webproperty',
-					},
-					childLink: {
-						href: 'https://www.googleapis.com/analytics/v3/management/accounts/22305160/webproperties/UA-22305160-3/profiles/135435962/goals',
-						type: 'analytics#goals',
-					},
+				parentLink: {
+					href: 'https://www.googleapis.com/analytics/v3/management/accounts/22305160',
+					type: 'analytics#account',
 				},
-				{
-					id: 0,
-					name: 'Setup a New Profile',
+				childLink: {
+					href: 'https://www.googleapis.com/analytics/v3/management/accounts/22305160/webproperties/UA-22305160-3/profiles',
+					type: 'analytics#profiles',
 				},
-			],
-		}
-	} );
-	window.googlesitekit = googlesitekit;
+			},
+			{
+				id: 0,
+				name: 'Setup a New Property',
+			},
+		],
+		profiles: [
+			{
+				accountId: '22305160',
+				botFilteringEnabled: false,
+				created: '2016-12-06T14:48:54.188Z',
+				currency: 'USD',
+				defaultPage: null,
+				eCommerceTracking: false,
+				enhancedECommerceTracking: null,
+				excludeQueryParameters: null,
+				id: '135435962',
+				internalWebPropertyId: '131522251',
+				kind: 'analytics#profile',
+				name: 'All Web Site Data',
+				selfLink: 'https://www.googleapis.com/analytics/v3/management/accounts/22305160/webproperties/UA-22305160-3/profiles/135435962',
+				siteSearchCategoryParameters: null,
+				siteSearchQueryParameters: 's',
+				starred: null,
+				stripSiteSearchCategoryParameters: null,
+				stripSiteSearchQueryParameters: false,
+				timezone: 'America/Los_Angeles',
+				type: 'WEB',
+				updated: '2019-01-25T20:15:27.426Z',
+				webPropertyId: 'UA-22305160-3',
+				websiteUrl: 'https://www.elasticpress.io',
+				permissions: {
+					effective: [
+						'READ_AND_ANALYZE',
+					],
+				},
+				parentLink: {
+					href: 'https://www.googleapis.com/analytics/v3/management/accounts/22305160/webproperties/UA-22305160-3',
+					type: 'analytics#webproperty',
+				},
+				childLink: {
+					href: 'https://www.googleapis.com/analytics/v3/management/accounts/22305160/webproperties/UA-22305160-3/profiles/135435962/goals',
+					type: 'analytics#goals',
+				},
+			},
+			{
+				id: 0,
+				name: 'Setup a New Profile',
+			},
+		],
+	};
 }
 
 /**
