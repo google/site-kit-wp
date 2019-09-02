@@ -117,9 +117,6 @@ const data = {
 					if ( cache ) {
 						responseData[ hashlessKey ] = cache;
 
-						// Trigger an action when cached data is used.
-						doAction( 'googlesitekit.cachedDataUsed', request.datapoint );
-
 						this.resolve( request, cache );
 					}
 				} );
@@ -188,9 +185,6 @@ const data = {
 			const cache = this.getCache( request.dataObject, key, request.maxAge, hashlessKey );
 			if ( cache ) {
 				setTimeout( () => {
-					// Trigger an action when cached data is used.
-					doAction( 'googlesitekit.cachedDataUsed', request.datapoint );
-
 					this.resolve( request, cache );
 				}, cacheDelay );
 				cacheDelay += 25;
@@ -286,8 +280,6 @@ const data = {
 
 					each( keyIndexesMap[ key ], ( index ) => {
 						const request = dataRequest[ index ];
-
-						doAction( 'googlesitekit.dataReceived', request.key );
 
 						this.setCache( request.dataObject, request.key, result );
 						this.resolve( request, result );

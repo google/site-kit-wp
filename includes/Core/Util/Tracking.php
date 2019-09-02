@@ -106,27 +106,6 @@ final class Tracking {
 				$this->register_settings();
 			}
 		);
-
-		// In debug mode, enable performance metric monitoring.
-		$script_debug = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG );
-		if ( $script_debug ) {
-			// Start script as early as possible.
-			add_action(
-				'admin_head',
-				function() {
-					$this->add_performance_metrics_header_script();
-				},
-				0
-			);
-			// Collect results as late as possible.
-			add_action(
-				'admin_footer',
-				function() {
-					$this->add_performance_metrics_footer_script();
-				},
-				99
-			);
-		}
 	}
 
 	/**
@@ -221,34 +200,5 @@ final class Tracking {
 			'show_in_rest' => true,
 		);
 		register_setting( 'google-site-kit', self::TRACKING_OPTIN_KEY, $args );
-	}
-
-	/**
-	 * Add performance metrics monitoring in the header.
-	 */
-	private function add_performance_metrics_header_script() {
-		?>
-		<script type="text/javascript">
-			var googlesitekitPerformance = {
-				startTime: ( new Date() ).getTime()
-			};
-		</script>
-		<?php
-	}
-
-	/**
-	 * Add performance metrics monitoring in the footer.
-	 */
-	private function add_performance_metrics_footer_script() {
-		?>
-		<script type="text/javascript">
-			document.addEventListener( 'DOMContentLoaded', function() {
-				googlesitekitPerformance.domReady = ( new Date() ).getTime();
-				googlesitekitPerformance.timeToDomReady = ( googlesitekitPerformance.domReady - googlesitekitPerformance.startTime ) + 'ms';
-				console.log( 'Performance Metrics: DomReady', googlesitekitPerformance );
-			} );
-
-		</script>
-		<?php
 	}
 }

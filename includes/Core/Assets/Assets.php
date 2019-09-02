@@ -459,7 +459,6 @@ final class Assets {
 				json_encode( $cache->get_current_cache_data() ) : // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
 				false,
 			'timestamp'        => time(),
-			'debug'            => ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ),
 			'currentScreen'    => is_admin() ? get_current_screen() : null,
 			'currentAdminPage' => ( is_admin() && isset( $_GET['page'] ) ) ? sanitize_key( $_GET['page'] ) : null, // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 			'resetSession'     => isset( $_GET['googlesitekit_reset_session'] ), // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
