@@ -845,14 +845,17 @@ export function moduleIcon( module, blockedByParentModule, width = '33', height 
 }
 
 /**
- * Clear App localstorage.
+ * Clears session storage and local storage.
+ *
+ * Both of these should be cleared to make sure no Site Kit data is left in the
+ * browser's cache regardless of which storage implementation is used.
  */
 export function clearAppLocalStorage() {
-	if ( localStorage ) {
-		localStorage.clear();
+	if ( window.localStorage ) {
+		window.localStorage.clear();
 	}
-	if ( sessionStorage ) {
-		sessionStorage.clear();
+	if ( window.sessionStorage ) {
+		window.sessionStorage.clear();
 	}
 }
 

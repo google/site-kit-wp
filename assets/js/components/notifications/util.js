@@ -68,8 +68,11 @@ export async function getTotalNotifications() {
 	total = applyFilters( 'googlesitekit.TotalNotifications', total );
 	total = Math.max( 0, Math.abs( total ) );
 
-	// Set in locale storage for external reference.
-	localStorage.setItem( 'googlesitekit::total-notifications', total );
+	// The total notifications count should always rely on local storage
+	// directly for external availability.
+	if ( window.localStorage ) {
+		window.localStorage.setItem( 'googlesitekit::total-notifications', total );
+	}
 
 	return total;
 }
@@ -242,7 +245,11 @@ export async function getWinsNotifications() {
 
 export const incrementCount = ( state ) => {
 	const value = Math.abs( state.count ) + 1;
-	localStorage.setItem( 'googlesitekit::total-notifications', value );
+	// The total notifications count should always rely on local storage
+	// directly for external availability.
+	if ( window.localStorage ) {
+		window.localStorage.setItem( 'googlesitekit::total-notifications', value );
+	}
 	return {
 		count: value,
 	};
@@ -250,7 +257,11 @@ export const incrementCount = ( state ) => {
 
 export const decrementCount = ( state ) => {
 	const value = Math.max( 0, Math.abs( state.count ) - 1 );
-	localStorage.setItem( 'googlesitekit::total-notifications', value );
+	// The total notifications count should always rely on local storage
+	// directly for external availability.
+	if ( window.localStorage ) {
+		window.localStorage.setItem( 'googlesitekit::total-notifications', value );
+	}
 	return {
 		count: value,
 	};
