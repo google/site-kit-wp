@@ -19,7 +19,6 @@ import TabBar from '@material/react-tab-bar';
  */
 import { __ } from '@wordpress/i18n';
 
-
 const setupSettings = () => {
 	window.googlesitekit.modules.analytics[ 'get-accounts' ] = {
 		accounts: [
@@ -147,7 +146,7 @@ const setupSettings = () => {
 			},
 		],
 	};
-}
+};
 
 /**
  * Add components to the settings page.
