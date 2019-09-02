@@ -23,7 +23,7 @@ import DashboardPermissionAlert from 'GoogleComponents/notifications/dashboard-p
 import md5 from 'md5';
 
 import {
-	storage,
+	getStorage,
 	stringToSlug,
 	fillFilterWithComponent,
 	getQueryParameter,
@@ -294,15 +294,11 @@ const dataAPI = {
 
 		googlesitekit.admin.datacache[ key ] = data;
 
-		if ( ! storage.isAvailable() ) {
-			return;
-		}
-
 		const toStore = {
 			value: data,
 			date: Date.now() / 1000,
 		};
-		storage.setItem( 'googlesitekit_' + key, JSON.stringify( toStore ) );
+		getStorage().setItem( 'googlesitekit_' + key, JSON.stringify( toStore ) );
 	},
 
 	/**
@@ -326,12 +322,8 @@ const dataAPI = {
 			return googlesitekit.admin.datacache[ key ];
 		}
 
-		if ( ! storage.isAvailable() ) {
-			return undefined;
-		}
-
 		// Check persistent cache.
-		const cache = JSON.parse( storage.getItem( 'googlesitekit_' + key ) );
+		const cache = JSON.parse( getStorage().getItem( 'googlesitekit_' + key ) );
 		if ( cache && 'object' === typeof cache && cache.date ) {
 			// Only return value if no maximum age given or if cache age is less than the maximum.
 			if ( ! maxAge || ( Date.now() / 1000 ) - cache.date < maxAge ) {
@@ -355,11 +347,7 @@ const dataAPI = {
 
 		delete googlesitekit.admin.datacache[ key ];
 
-		if ( ! storage.isAvailable() ) {
-			return;
-		}
-
-		storage.removeItem( 'googlesitekit_' + key );
+		getStorage().removeItem( 'googlesitekit_' + key );
 	},
 
 	/**
@@ -380,13 +368,9 @@ const dataAPI = {
 			}
 		} );
 
-		if ( ! storage.isAvailable() ) {
-			return;
-		}
-
-		storage.getItems().forEach( ( key ) => {
+		Object.keys( getStorage() ).forEach( ( key ) => {
 			if ( 0 === key.indexOf( 'googlesitekit_' + groupPrefix + '::' ) || key === 'googlesitekit_' + groupPrefix ) {
-				storage.removeItem( key );
+				getStorage().removeItem( key );
 			}
 		} );
 	},

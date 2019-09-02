@@ -54,89 +54,51 @@ export const storageAvailable = ( type ) => {
 	}
 };
 
+// Custom no-op implementation of window.Storage.
+class NullStorage {
+	get length() {
+		return 0;
+	}
+
+	key() {
+		return null;
+	}
+
+	getItem() {
+		return null;
+	}
+
+	setItem() {
+		// Empty method body.
+	}
+
+	removeItem() {
+		// Empty method body.
+	}
+
+	clear() {
+		// Empty method body.
+	}
+}
+
+let storageObj;
+
 /**
- * Detects whether and which persistent storage is available.
+ * Gets the storage object to use.
  *
- * @return {mixed} Either 'sessionStorage', 'localStorage', or undefined.
+ * @return {Storage} Either window.sessionStorage, window.localStorage', or a
+ *                   no-op implementation if neither is available.
  */
-const getStorageName = () => {
-	if ( storageAvailable( 'sessionStorage' ) ) {
-		return 'sessionStorage';
+export const getStorage = () => {
+	// Only run the logic to determine the storage object once.
+	if ( ! storageObj ) {
+		if ( storageAvailable( 'sessionStorage' ) ) {
+			storageObj = window.sessionStorage;
+		} else if ( storageAvailable( 'localStorage' ) ) {
+			storageObj = window.localStorage;
+		} else {
+			storageObj = new NullStorage();
+		}
 	}
-
-	if ( storageAvailable( 'localStorage' ) ) {
-		return 'localStorage';
-	}
-
-	return undefined;
-};
-
-export const storage = {
-	/**
-	 * Checks if the storage is available.
-	 *
-	 * @return {boolean} True if the storage is available, false otherwise.
-	 */
-	isAvailable() {
-		return !! getStorageName();
-	},
-
-	/**
-	 * Sets an item in the storage.
-	 *
-	 * @param {string} key   The key to set.
-	 * @param {string} value The value to set for the key.
-	 */
-	setItem( key, value ) {
-		const storageName = getStorageName();
-		if ( ! storageName ) {
-			return;
-		}
-
-		window[ storageName ].setItem( key, value );
-	},
-
-	/**
-	 * Gets an item from the storage.
-	 *
-	 * @param {string} key The key to get.
-	 *
-	 * @return {string?} The value for the key, or null if not set.
-	 */
-	getItem( key ) {
-		const storageName = getStorageName();
-		if ( ! storageName ) {
-			return null;
-		}
-
-		return window[ storageName ].getItem( key );
-	},
-
-	/**
-	 * Removes an item from the storage.
-	 *
-	 * @param {string} key The key to remove.
-	 */
-	removeItem( key ) {
-		const storageName = getStorageName();
-		if ( ! storageName ) {
-			return;
-		}
-
-		window[ storageName ].removeItem( key );
-	},
-
-	/**
-	 * Gets a list of all keys set in the storage.
-	 *
-	 * @return {Array<string>} List of keys.
-	 */
-	getItems() {
-		const storageName = getStorageName();
-		if ( ! storageName ) {
-			return [];
-		}
-
-		return Object.keys( window[ storageName ] );
-	},
+	return storageObj;
 };
