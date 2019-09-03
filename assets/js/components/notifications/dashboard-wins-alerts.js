@@ -92,7 +92,6 @@ class DashboardWinsAlerts extends Component {
 						isDismissable={ notification.isDismissable || true }
 						logo={ notification.logo || false }
 						pageIndex={ notification.pageIndex || '' }
-						storageType={ notification.storageType || 'sessionStorage' }
 						dismissExpires={ notification.dismissExpires || 0 }
 						showOnce={ notification.showOnce || false }
 					/>

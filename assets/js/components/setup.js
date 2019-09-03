@@ -22,7 +22,7 @@
 import Header from 'GoogleComponents/header';
 import Button from 'GoogleComponents/button';
 import Layout from 'GoogleComponents/layout/layout';
-import data from 'GoogleComponents/data';
+import data, { TYPE_CORE } from 'GoogleComponents/data';
 import { sendAnalyticsTrackingEvent, clearAppLocalStorage } from 'GoogleUtil';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
 
@@ -71,7 +71,7 @@ class Setup extends Component {
 	}
 
 	async resetAndRestart() {
-		await data.set( 'core', 'site', 'reset' );
+		await data.set( TYPE_CORE, 'site', 'reset' );
 		clearAppLocalStorage();
 
 		this.setState( {

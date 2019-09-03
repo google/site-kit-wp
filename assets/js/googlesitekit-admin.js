@@ -26,7 +26,9 @@ import {
 	clearAppLocalStorage,
 } from 'GoogleUtil';
 
-if ( 'toplevel_page_googlesitekit-dashboard' !== window.pagenow && 'site-kit_page_googlesitekit-splash' !== window.pagenow && 'admin_page_googlesitekit-splash' !== window.pagenow ) {
+if ( 'toplevel_page_googlesitekit-dashboard' !== window.pagenow && 'site-kit_page_googlesitekit-splash' !== window.pagenow && 'admin_page_googlesitekit-splash' !== window.pagenow && window.localStorage ) {
+	// The total notifications count should always rely on local storage
+	// directly for external availability.
 	const count = window.localStorage.getItem( 'googlesitekit::total-notifications' ) || 0;
 	appendNotificationsCount( count );
 }

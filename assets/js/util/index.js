@@ -18,8 +18,10 @@
 /**
  * External dependencies
  */
-import data from 'GoogleComponents/data';
+import data, { TYPE_CORE } from 'GoogleComponents/data';
 import SvgIcon from 'GoogleUtil/svg-icon';
+
+export * from './storage';
 
 const {
 	addFilter,
@@ -30,7 +32,6 @@ const {
 	map,
 	isNull,
 	isUndefined,
-	indexOf,
 	unescape,
 	deburr,
 	toLower,
@@ -330,7 +331,7 @@ export const extractForSparkline = ( rowData, column ) => {
 
 export const refreshAuthentication = async () => {
 	try {
-		const response = await data.get( 'core', 'user', 'authentication' );
+		const response = await data.get( TYPE_CORE, 'user', 'authentication' );
 
 		const requiredAndGrantedScopes = response.grantedScopes.filter( ( scope ) => {
 			return -1 !== response.requiredScopes.indexOf( scope );
@@ -572,106 +573,6 @@ export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel
 	}
 };
 
-/**
- * Detect whether browser storage is both supported and available.
- *
- * @param {string} type Browser storage to test. ex localStorage or sessionStorage.
- * @return {boolean}
- */
-export const storageAvailable = ( type ) => {
-	const storage = window[ type ];
-	if ( ! storage ) {
-		return false;
-	}
-	try {
-		const x = '__storage_test__';
-
-		storage.setItem( x, x );
-		storage.removeItem( x );
-		return true;
-	} catch ( e ) {
-		return e instanceof DOMException && (
-
-			// everything except Firefox
-			22 === e.code ||
-
-			// Firefox
-			1014 === e.code ||
-
-			// test name field too, because code might not be present
-			// everything except Firefox
-			'QuotaExceededError' === e.name ||
-
-			// Firefox
-			'NS_ERROR_DOM_QUOTA_REACHED' === e.name ) &&
-
-			// acknowledge QuotaExceededError only if there's something already stored
-			0 !== storage.length;
-	}
-};
-
-/**
- * Set Cache to Browser Storage.
- *
- * @param {string} cacheType Browser storage.
- * @param {string} cacheKey  Cache key.
- * @param {*}      cacheData Cache data to store.
- * @return {boolean}
- */
-export const setCache = ( cacheType, cacheKey, cacheData ) => {
-	if ( 0 > indexOf( [ 'localStorage', 'sessionStorage' ], cacheType ) ) {
-		return;
-	}
-
-	if ( ! storageAvailable( cacheType ) ) {
-		return;
-	}
-
-	window[ cacheType ].setItem( cacheKey, cacheData );
-
-	return true;
-};
-
-/**
- * Get Cache from Browser Storage.
- *
- * @param {string} cacheType Browser storage.
- * @param {string} cacheKey  Cache key.
- * @return {*}
- */
-export const getCache = ( cacheType, cacheKey ) => {
-	if ( 0 > indexOf( [ 'localStorage', 'sessionStorage' ], cacheType ) ) {
-		return;
-	}
-
-	if ( ! storageAvailable( cacheType ) ) {
-		return;
-	}
-
-	return window[ cacheType ].getItem( cacheKey );
-};
-
-/**
- * Delete Cache from Browser Storage.
- *
- * @param {string} cacheType Browser storage.
- * @param {string} cacheKey  Cache key.
- * @return {*}
- */
-export const deleteCache = ( cacheType, cacheKey ) => {
-	if ( 0 > indexOf( [ 'localStorage', 'sessionStorage' ], cacheType ) ) {
-		return;
-	}
-
-	if ( ! storageAvailable( cacheType ) ) {
-		return;
-	}
-
-	window[ cacheType ].removeItem( cacheKey );
-
-	return true;
-};
-
 export const findTagInHtmlContent = ( html, module ) => {
 	let existingTag = false;
 
@@ -692,9 +593,9 @@ export const findTagInHtmlContent = ( html, module ) => {
  */
 export const getExistingTag = async ( module ) => {
 	try {
-		let tagFound = data.getCache( module, 'existingTag', 300 );
+		let tagFound = data.getCache( module + '::existingTag', 300 );
 
-		if ( false === tagFound ) {
+		if ( 'undefined' === typeof tagFound ) {
 			const html = await fetch( `${ googlesitekit.admin.homeURL }?tagverify=1&timestamp=${ Date.now() }` ).then( ( res ) => {
 				return res.text();
 			} );
@@ -705,7 +606,7 @@ export const getExistingTag = async ( module ) => {
 			}
 		}
 
-		data.setCache( module, 'existingTag', tagFound );
+		data.setCache( module + '::existingTag', tagFound );
 
 		return new Promise( ( resolve ) => {
 			resolve( tagFound );
@@ -797,7 +698,12 @@ export const extractTag = ( string, tag ) => {
  * @return {Promise}
  */
 export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) => {
-	return restApiClient.setModuleData( moduleSlug, 'active', status ).then( ( responseData ) => {
+	return restApiClient.setModuleActive( moduleSlug, status ).then( ( responseData ) => {
+		// We should really be using state management. This is terrible.
+		if ( window.googlesitekit.modules && window.googlesitekit.modules[ moduleSlug ] ) {
+			window.googlesitekit.modules[ moduleSlug ].active = responseData.active;
+		}
+
 		sendAnalyticsTrackingEvent(
 			`${ moduleSlug }_setup`,
 			! responseData.active ? 'module_deactivate' : 'module_activate',
@@ -939,13 +845,37 @@ export function moduleIcon( module, blockedByParentModule, width = '33', height 
 }
 
 /**
- * Clear App localstorage.
+ * Clears session storage and local storage.
+ *
+ * Both of these should be cleared to make sure no Site Kit data is left in the
+ * browser's cache regardless of which storage implementation is used.
  */
 export function clearAppLocalStorage() {
-	if ( localStorage ) {
-		localStorage.clear();
+	if ( window.localStorage ) {
+		window.localStorage.clear();
 	}
-	if ( sessionStorage ) {
-		sessionStorage.clear();
+	if ( window.sessionStorage ) {
+		window.sessionStorage.clear();
 	}
+}
+
+/**
+ * Sorts an object by its keys.
+ *
+ * The returned value will be a sorted copy of the input object.
+ * Any inner objects will also be sorted recursively.
+ *
+ * @param {Object} obj The data object to sort.
+ * @return {Object} The sorted data object.
+ */
+export function sortObjectProperties( obj ) {
+	const orderedData = {};
+	Object.keys( obj ).sort().forEach( ( key ) => {
+		let val = obj[ key ];
+		if ( val && 'object' === typeof val && ! Array.isArray( val ) ) {
+			val = sortObjectProperties( val );
+		}
+		orderedData[ key ] = val;
+	} );
+	return orderedData;
 }

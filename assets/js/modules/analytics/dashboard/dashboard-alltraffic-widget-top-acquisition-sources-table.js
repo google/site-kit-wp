@@ -20,6 +20,7 @@
  * External dependencies
  */
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import MiniChart from 'GoogleComponents/mini-chart';
@@ -81,9 +82,10 @@ export default withData(
 	AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources,
 	[
 		{
-			dataObject: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'analytics',
 			datapoint: 'traffic-sources',
+			data: {},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',

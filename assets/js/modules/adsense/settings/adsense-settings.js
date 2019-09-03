@@ -20,7 +20,7 @@
  * External dependencies
  */
 import Switch from 'GoogleComponents/switch';
-import data from 'GoogleComponents/data';
+import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import PropTypes from 'prop-types';
 import {
 	sendAnalyticsTrackingEvent,
@@ -92,7 +92,7 @@ class AdSenseSettings extends Component {
 			googlesitekit.modules.adsense.settings.adsenseTagEnabled = adsenseTagEnabled;
 		}
 
-		return data.set( 'modules', 'adsense', 'adsense-tag-enabled', toSave ).then( ( res ) => res ).catch( ( e ) => e );
+		return data.set( TYPE_MODULES, 'adsense', 'adsense-tag-enabled', toSave ).then( ( res ) => res ).catch( ( e ) => e );
 	}
 
 	handleadsenseTagEnabledSwitch( ) {
@@ -110,7 +110,7 @@ class AdSenseSettings extends Component {
 		sendAnalyticsTrackingEvent( 'adsense_setup', adsenseTagEnabled ? 'adsense_tag_enabled' : 'adsense_tag_disabled' );
 
 		if ( saveOnChange ) {
-			data.set( 'modules', 'adsense', 'adsense-tag-enabled', { adsenseTagEnabled } ).then( ( res ) => res ).catch( ( e ) => e );
+			data.set( TYPE_MODULES, 'adsense', 'adsense-tag-enabled', { adsenseTagEnabled } ).then( ( res ) => res ).catch( ( e ) => e );
 		}
 	}
 

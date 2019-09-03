@@ -95,8 +95,8 @@ final class PageSpeed_Insights extends Module {
 				case 'site-pagespeed-mobile':
 				case 'site-pagespeed-desktop':
 					$strategy = str_replace( 'site-pagespeed-', '', $datapoint );
-					if ( ! empty( $data['permaLink'] ) ) {
-						$page_url = $data['permaLink'];
+					if ( ! empty( $data['url'] ) ) {
+						$page_url = $data['url'];
 					} else {
 						$page_url = $this->context->get_reference_site_url();
 					}

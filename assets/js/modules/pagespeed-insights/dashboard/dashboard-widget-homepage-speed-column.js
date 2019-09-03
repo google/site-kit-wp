@@ -20,6 +20,7 @@
  * External dependencies
  */
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds } from 'GoogleUtil';
 import {
 	getDataTableFromData,
@@ -112,10 +113,12 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedMobile = withData(
 	PageSpeedInsightsDashboardWidgetHomepageSpeedColumn,
 	[
 		{
-			dataObject: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'pagespeed-insights',
 			datapoint: 'site-pagespeed-mobile',
-			permaLink: googlesitekit.permaLink,
+			data: {
+				url: googlesitekit.permaLink,
+			},
 			priority: 10,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
@@ -131,10 +134,12 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedDesktop = withData(
 	PageSpeedInsightsDashboardWidgetHomepageSpeedColumn,
 	[
 		{
-			dataObject: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'pagespeed-insights',
 			datapoint: 'site-pagespeed-desktop',
-			permaLink: googlesitekit.permaLink,
+			data: {
+				url: googlesitekit.permaLink,
+			},
 			priority: 10,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],

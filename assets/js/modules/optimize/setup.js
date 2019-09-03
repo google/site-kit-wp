@@ -21,7 +21,7 @@
  */
 import Button from 'GoogleComponents/button';
 import Link from 'GoogleComponents/link';
-import data from 'GoogleComponents/data';
+import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import { TextField, Input, HelperText } from 'SiteKitCore/material-components';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
@@ -140,7 +140,7 @@ class OptimizeSetup extends Component {
 			ampExperimentJson,
 		};
 
-		return await data.set( 'modules', 'optimize', 'save', optimizeAccount ).then( () => {
+		return await data.set( TYPE_MODULES, 'optimize', 'save', optimizeAccount ).then( () => {
 			if ( finishSetup ) {
 				finishSetup();
 			}

@@ -539,7 +539,6 @@ final class Assets {
 			 */
 			'notifications'      => apply_filters( 'googlesitekit_notification_data', array() ),
 			'permaLink'          => $permalink,
-			'permaLinkHash'      => ( '' === $permalink ) ? '' : md5( $permalink ),
 			'pageTitle'          => $page_title,
 			'postID'             => get_the_ID(),
 			'postType'           => get_post_type(),

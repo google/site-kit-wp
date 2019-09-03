@@ -39,15 +39,18 @@ import {
 	appendNotificationsCount,
 	sendAnalyticsTrackingEvent,
 	storageAvailable,
-	setCache,
-	getCache,
-	deleteCache,
 	findTagInHtmlContent,
 	activateOrDeactivateModule,
 	toggleConfirmModuleSettings,
 	showErrorNotification,
 } from 'GoogleUtil';
+import data from 'GoogleComponents/data';
+import md5 from 'md5';
+
+const { setCache, getCache, deleteCache, invalidateCacheGroup, getCacheKey } = data;
+
 window.googlesitekit = window.googlesitekit || {};
+
 googlesitekit.testFunctions = {
 	getTimeInSeconds,
 	changeToPercent,
@@ -68,11 +71,19 @@ googlesitekit.testFunctions = {
 	appendNotificationsCount,
 	sendAnalyticsTrackingEvent,
 	storageAvailable,
-	setCache,
-	getCache,
-	deleteCache,
 	findTagInHtmlContent,
 	activateOrDeactivateModule,
 	toggleConfirmModuleSettings,
 	showErrorNotification,
+
+	// Data functions.
+	setCache,
+	getCache,
+	deleteCache,
+	invalidateCacheGroup,
+	getCacheKey,
+};
+
+googlesitekit.testUtilities = {
+	md5,
 };

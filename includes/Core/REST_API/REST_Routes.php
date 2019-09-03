@@ -517,7 +517,7 @@ final class REST_Routes {
 								$filtered_datasets = array_filter(
 									$datasets,
 									function( $dataset ) use ( $module ) {
-										return 'modules' === $dataset->dataObject && $module->slug === $dataset->identifier; // phpcs:ignore WordPress.NamingConventions.ValidVariableName
+										return 'modules' === $dataset->type && $module->slug === $dataset->identifier; // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 									}
 								);
 								if ( empty( $filtered_datasets ) ) {
@@ -534,7 +534,7 @@ final class REST_Routes {
 						'args'                => array(
 							'request' => array(
 								'type'        => 'string',
-								'description' => __( 'JSON-encoded list of requests with dataObject keys.', 'google-site-kit' ),
+								'description' => __( 'JSON-encoded list of request objects.', 'google-site-kit' ),
 								'required'    => true,
 							),
 						),

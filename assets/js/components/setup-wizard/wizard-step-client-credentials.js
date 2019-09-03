@@ -20,13 +20,13 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import data, { TYPE_CORE } from 'GoogleComponents/data';
 import Link from 'GoogleComponents/link';
 import { TextField, Input } from 'SiteKitCore/material-components';
 import Button from 'GoogleComponents/button';
 /**
  * Internal dependencies
  */
-import data from '../data';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 import HelpLink from 'GoogleComponents/help-link';
 
@@ -64,7 +64,7 @@ class WizardStepClientCredentials extends Component {
 
 		// Double check isSiteKitConnected.
 		if ( ! isSiteKitConnected ) {
-			const response = await data.get( 'core', 'site', 'credentials' );
+			const response = await data.get( TYPE_CORE, 'site', 'credentials' );
 
 			if ( response && response.oauth2_client_id && response.oauth2_client_secret ) {
 				googlesitekit.setup.isSiteKitConnected = true;
@@ -98,10 +98,10 @@ class WizardStepClientCredentials extends Component {
 		try {
 			this.setState( { isSaving: true } );
 
-			await data.set( 'core', 'site', 'credentials', credentials );
+			await data.set( TYPE_CORE, 'site', 'credentials', credentials );
 
 			if ( projectID && projectID.length ) {
-				await data.set( 'core', 'site', 'gcpproject', { projectID } );
+				await data.set( TYPE_CORE, 'site', 'gcpproject', { projectID } );
 			}
 
 			if ( this._isMounted ) {

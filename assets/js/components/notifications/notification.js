@@ -20,13 +20,13 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import data from 'GoogleComponents/data';
 import DataBlock from 'GoogleComponents/data-block';
 import Button from 'GoogleComponents/button';
 import Warning from 'GoogleComponents/notifications/warning';
 import Error from 'GoogleComponents/notifications/error';
 import Link from 'GoogleComponents/link';
 import SvgIcon from 'GoogleUtil/svg-icon';
-import { setCache, getCache } from 'SiteKitCore/util';
 
 const { map } = lodash;
 const { Component, Fragment, createRef } = wp.element;
@@ -48,7 +48,7 @@ class Notification extends Component {
 		}
 
 		if ( this.props.showOnce ) {
-			setCache( 'sessionStorage', `notification::displayed::${ this.props.id }`, new Date() );
+			data.setCache( `notification::displayed::${ this.props.id }`, new Date() );
 		}
 	}
 
@@ -63,7 +63,7 @@ class Notification extends Component {
 		} );
 
 		setTimeout( () => {
-			setCache( this.props.storageType, `notification::dismissed::${ this.props.id }`, new Date() );
+			data.setCache( `notification::dismissed::${ this.props.id }`, new Date() );
 			card.style.display = 'none';
 
 			const event = new Event( 'notificationDismissed' );
@@ -73,19 +73,18 @@ class Notification extends Component {
 
 	expireDismiss() {
 		const {
-			storageType,
 			id,
 			dismissExpires,
 		} = this.props;
 
-		const dismissed = getCache( storageType, `notification::dismissed::${ id }` );
+		const dismissed = data.getCache( `notification::dismissed::${ id }` );
 
 		if ( dismissed ) {
 			const expiration = new Date( dismissed );
 			expiration.setSeconds( expiration.getSeconds() + parseInt( dismissExpires, 10 ) );
 
 			if ( expiration < new Date() ) {
-				window[ storageType ].removeItem( `notification::dismissed::${ id }` );
+				data.deleteCache( `notification::dismissed::${ id }` );
 			}
 		}
 	}
@@ -114,10 +113,9 @@ class Notification extends Component {
 			module,
 			moduleName,
 			pageIndex,
-			storageType,
 		} = this.props;
 
-		if ( null !== getCache( storageType, `notification::dismissed::${ id }` ) ) {
+		if ( data.getCache( `notification::dismissed::${ id }` ) ) {
 			return null;
 		}
 
@@ -152,7 +150,7 @@ class Notification extends Component {
 			icon = '';
 		}
 
-		const data = (
+		const dataBlockMarkup = (
 			<Fragment>
 				{ blockData &&
 					<div className="mdc-layout-grid__inner">
@@ -243,13 +241,13 @@ class Notification extends Component {
 										{ inlineMarkup }
 									</div>
 									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-7-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--align-bottom">
-										{ data }
+										{ dataBlockMarkup }
 									</div>
 								</div>
 							) : (
 								<Fragment>
 									{ inlineMarkup }
-									{ data }
+									{ dataBlockMarkup }
 								</Fragment>
 							) }
 
@@ -317,17 +315,12 @@ Notification.propTypes = {
 	module: PropTypes.string,
 	moduleName: PropTypes.string,
 	pageIndex: PropTypes.string,
-	storageType: PropTypes.oneOf( [
-		'sessionStorage',
-		'localStorage',
-	] ),
 	dismissExpires: PropTypes.number,
 	showOnce: PropTypes.bool,
 };
 
 Notification.defaultProps = {
 	isDismissable: true,
-	storageType: 'sessionStorage',
 	dismissExpires: 0,
 	showOnce: false,
 };
