@@ -508,12 +508,9 @@ final class TagManager extends Module implements Module_With_Scopes {
 						$this->_containers_account_id = null;
 					}
 
-					$response = array(
-						// TODO: Parse this response to a regular array.
-						'containers' => $response->getContainer(),
-					);
+					$response = $response->getContainer();
 
-					if ( 0 === count( $response['containers'] ) && ! empty( $account_id ) ) {
+					if ( empty( $response ) && ! empty( $account_id ) ) {
 						// If empty containers, attempt to create a new container.
 						$new_container = $this->create_container( $account_id );
 						if ( is_wp_error( $new_container ) ) {

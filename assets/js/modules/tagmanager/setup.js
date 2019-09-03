@@ -187,12 +187,12 @@ class TagmanagerSetup extends Component {
 				containerId: 0,
 				publicId: 0,
 			};
-			responseData.containers.push( chooseContainer );
+			responseData.push( chooseContainer );
 			if ( this._isMounted ) {
 				this.setState( {
 					containersLoading: false,
-					containers: responseData.containers,
-					selectedContainer: responseData.containers[ 0 ].publicId,
+					containers: responseData,
+					selectedContainer: responseData[ 0 ].publicId,
 					errorCode: false,
 				} );
 			}
