@@ -131,11 +131,11 @@ class TagmanagerSetup extends Component {
 
 			let errorCode = false;
 			let errorMsg = '';
-			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'list-accounts', queryArgs, false );
+			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'accounts-containers', queryArgs, false );
 
 			// Verify if user has access to the selected account.
 			if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.accountId === selectedAccount ) ) {
-				data.invalidateCacheGroup( TYPE_MODULES, 'tagmanager', 'list-accounts' );
+				data.invalidateCacheGroup( TYPE_MODULES, 'tagmanager', 'accounts-containers' );
 				errorCode = 'insufficientPermissions';
 				errorMsg = __( 'You currently don\'t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.', 'google-site-kit' );
 			}

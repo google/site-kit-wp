@@ -345,7 +345,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 						}
 						return $option['containerId'];
 					};
-				case 'list-accounts':
+				case 'accounts-containers':
 					if ( ! empty( $data['accountId'] ) ) {
 						$this->_list_accounts_data = $data;
 					}
@@ -477,7 +477,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 	protected function parse_data_response( $method, $datapoint, $response ) {
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'list-accounts':
+				case 'accounts-containers':
 					$response = array(
 						// TODO: Parse this response to a regular array.
 						'accounts'   => $response->getAccount(),
