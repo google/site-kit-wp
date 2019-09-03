@@ -220,7 +220,7 @@ class TagmanagerSetup extends Component {
 				containerId: selectedContainer,
 			};
 
-			const responseData = await data.set( TYPE_MODULES, 'tagmanager', 'save', optionData );
+			const responseData = await data.set( TYPE_MODULES, 'tagmanager', 'settings', optionData );
 			if ( finishSetup ) {
 				finishSetup();
 			}
