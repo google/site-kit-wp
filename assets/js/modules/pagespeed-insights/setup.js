@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import Button from 'GoogleComponents/button';
 import Link from 'GoogleComponents/link';
-import data from 'GoogleComponents/data';
+import data, { TYPE_CORE } from 'GoogleComponents/data';
 import { getSiteKitAdminURL, sendAnalyticsTrackingEvent } from 'GoogleUtil';
 import { Input, TextField } from 'SiteKitCore/material-components';
 
@@ -71,7 +71,7 @@ class PageSpeedInsightsSetup extends Component {
 
 		// Save the API key.
 		try {
-			await data.set( 'core', 'site', 'apikey', { apikey } );
+			await data.set( TYPE_CORE, 'site', 'apikey', { apikey } );
 
 			// If the API key was previously unconfigured, continue to the dashboard.
 			if ( startedEmpty ) {

@@ -78,6 +78,12 @@ window.addEventListener( 'load', function() {
 		return;
 	}
 
+	// The total notifications count should always rely on local storage
+	// directly for external availability.
+	if ( ! window.localStorage ) {
+		return;
+	}
+
 	const count = window.localStorage.getItem( 'googlesitekit::total-notifications' ) || 0;
 	appendNotificationsCount( count );
 

@@ -21,6 +21,7 @@
  */
 import DataBlock from 'GoogleComponents/data-block.js';
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 /**
  * Internal dependencies
  */
@@ -166,10 +167,12 @@ export default withData(
 	SearchConsoleDashboardWidgetTopLevel,
 	[
 		{
-			dataObject: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'search-console',
 			datapoint: 'sc-site-analytics',
-			permaLink: googlesitekit.permaLink,
+			data: {
+				url: googlesitekit.permaLink,
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],

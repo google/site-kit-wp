@@ -23,7 +23,7 @@ import Layout from 'GoogleComponents/layout/layout';
 import Link from 'GoogleComponents/link';
 import Dialog from 'GoogleComponents/dialog';
 import Optin from 'GoogleComponents/optin';
-import data from 'GoogleComponents/data';
+import data, { TYPE_CORE } from 'GoogleComponents/data';
 import {
 	clearAppLocalStorage,
 	moduleIcon,
@@ -70,7 +70,7 @@ class SettingsAdmin extends Component {
 	}
 
 	async handleUnlinkConfirm() {
-		await data.set( 'core', 'site', 'reset' );
+		await data.set( TYPE_CORE, 'site', 'reset' );
 		clearAppLocalStorage();
 		this.handleDialog();
 		document.location = getSiteKitAdminURL( 'googlesitekit-splash' );

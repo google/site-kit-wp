@@ -20,6 +20,7 @@
  * External dependencies
  */
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
@@ -104,9 +105,10 @@ export default withData(
 	AnalyticsDashboardWidgetPopularPagesTable,
 	[
 		{
-			dataObject: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'analytics',
 			datapoint: 'top-pages',
+			data: {},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],

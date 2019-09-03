@@ -20,6 +20,7 @@
  * External dependencies
  */
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 import {
 	getTimeInSeconds,
 	numberFormat,
@@ -104,10 +105,12 @@ export default withData(
 	AnalyticsDashboardWidgetTopAcquisitionSources,
 	[
 		{
-			dataObject: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'analytics',
 			datapoint: 'traffic-sources',
-			permaLink: googlesitekit.permaLink,
+			data: {
+				url: googlesitekit.permaLink,
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],

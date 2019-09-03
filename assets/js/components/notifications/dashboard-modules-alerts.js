@@ -80,7 +80,6 @@ class DashboardModulesAlerts extends Component {
 						module={ key }
 						moduleName={ googlesitekit.modules[ key ].name }
 						pageIndex={ notification.pageIndex || '' }
-						storageType={ notification.storageType || 'sessionStorage' }
 						dismissExpires={ notification.dismissExpires || 0 }
 						showOnce={ notification.showOnce || false }
 					/>

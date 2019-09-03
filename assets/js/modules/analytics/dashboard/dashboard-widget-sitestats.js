@@ -24,6 +24,7 @@ import {
 	getTimeInSeconds,
 } from 'GoogleUtil';
 import withData from 'GoogleComponents/higherorder/withdata';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 /**
  * Internal dependencies
  */
@@ -134,9 +135,10 @@ export default withData(
 	AnalyticsDashboardWidgetSiteStats,
 	[
 		{
-			dataObject: 'modules',
+			type: TYPE_MODULES,
 			identifier: 'analytics',
 			datapoint: 'site-analytics',
+			data: {},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Single',

@@ -586,7 +586,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					};
 				case 'adsense':
 					// Date range.
-					$date_range = ! empty( $data['date_range'] ) ? $data['date_range'] : 'last-28-days';
+					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
 					$date_range = $this->parse_date_range( $date_range );
 					// Dimensions.
 					$title_dimension = new \Google_Service_AnalyticsReporting_Dimension();
@@ -598,7 +598,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'dimensions' => array( $title_dimension, $path_dimension ),
 							'start_date' => $date_range[0],
 							'end_date'   => $date_range[1],
-							'page'       => ! empty( $data['pageUrl'] ) ? $data['pageUrl'] : ( ! empty( $data['permaLink'] ) ? $data['permaLink'] : '' ),
+							'page'       => ! empty( $data['url'] ) ? $data['url'] : '',
 							'row_limit'  => isset( $data['limit'] ) ? $data['limit'] : 10,
 						)
 					);
@@ -628,7 +628,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return $service->reports->batchGet( $body );
 				case 'site-analytics':
 					// Date range.
-					$date_range = ! empty( $data['date_range'] ) ? $data['date_range'] : 'last-28-days';
+					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
 					$date_range = $this->parse_date_range( $date_range, 2 );
 					// Dimensions.
 					$date_dimension = new \Google_Service_AnalyticsReporting_Dimension();
@@ -638,7 +638,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'dimensions' => array( $date_dimension ),
 							'start_date' => $date_range[0],
 							'end_date'   => $date_range[1],
-							'page'       => ! empty( $data['permaLink'] ) ? $data['permaLink'] : '',
+							'page'       => ! empty( $data['url'] ) ? $data['url'] : '',
 							'row_limit'  => isset( $data['limit'] ) ? $data['limit'] : 180,
 						)
 					);
@@ -669,7 +669,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return $service->reports->batchGet( $body );
 				case 'top-pages':
 					// Date range.
-					$date_range = ! empty( $data['date_range'] ) ? $data['date_range'] : 'last-28-days';
+					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
 					$date_range = $this->parse_date_range( $date_range );
 					// Dimensions.
 					$title_dimension = new \Google_Service_AnalyticsReporting_Dimension();
@@ -681,7 +681,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'dimensions' => array( $path_dimension, $title_dimension ),
 							'start_date' => $date_range[0],
 							'end_date'   => $date_range[1],
-							'page'       => ! empty( $data['permaLink'] ) ? $data['permaLink'] : '',
+							'page'       => ! empty( $data['url'] ) ? $data['url'] : '',
 							'row_limit'  => isset( $data['limit'] ) ? $data['limit'] : 10,
 						)
 					);
@@ -723,7 +723,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'overview':
 					$request = $this->create_analytics_site_data_request(
 						array(
-							'page'      => ! empty( $data['permaLink'] ) ? $data['permaLink'] : '',
+							'page'      => ! empty( $data['url'] ) ? $data['url'] : '',
 							'row_limit' => isset( $data['limit'] ) ? $data['limit'] : 10,
 						)
 					);
@@ -731,7 +731,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						return $request;
 					}
 					// Date range (custom here because of two ranges).
-					$date_range      = ! empty( $data['date_range'] ) ? $data['date_range'] : 'last-28-days';
+					$date_range      = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
 					$date_range2     = $this->parse_date_range( $date_range, 1, 1, true );
 					$date_range      = $this->parse_date_range( $date_range );
 					$date_range2[1]  = $date_range[0];
@@ -769,7 +769,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return $service->reports->batchGet( $body );
 				case 'traffic-sources':
 					// Date range.
-					$date_range = ! empty( $data['date_range'] ) ? $data['date_range'] : 'last-28-days';
+					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
 					$date_range = $this->parse_date_range( $date_range );
 					// Dimensions.
 					$medium_dimension = new \Google_Service_AnalyticsReporting_Dimension();
@@ -779,7 +779,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'dimensions' => array( $medium_dimension ),
 							'start_date' => $date_range[0],
 							'end_date'   => $date_range[1],
-							'page'       => ! empty( $data['permaLink'] ) ? $data['permaLink'] : '',
+							'page'       => ! empty( $data['url'] ) ? $data['url'] : '',
 							'row_limit'  => isset( $data['limit'] ) ? $data['limit'] : 10,
 						)
 					);

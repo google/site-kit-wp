@@ -48,11 +48,10 @@ const { __ } = wp.i18n;
  * @param {React.Component} DataDependentComponent The React Component to render once we have its required data.
  * @param {Array}           selectData             An array of data objects to resolve.
  *                                                 Each object includes the following properties:
- *                                                 {string}         dataObject The object type, eg 'modules'.
- *                                                 {string}         identifier The object name, typically the module name eg 'analytics.
- *                                                 {string}         datapoint  The datapoint name to be resolved by the API.
- *                                                 {string}         permaLink  The current page permaLink if available. Optional.
- *                                                 {number}         postID     The current postID. Optional.
+ *                                                 {string}         type       The data type. Either 'core' or 'modules'.
+ *                                                 {string}         identifier The data identifier, for example a module slug.
+ *                                                 {string}         datapoint  The datapoint.
+ *                                                 {Object?}        data       Optional arguments to pass along.
  *                                                 {number}         priority   The data request priority, used for batching.
  *                                                 {number}         maxAge     How long to cache the data results.
  *                                                 {string | array} context    The context(s) to resolve data, eg 'Dashboard'.

@@ -22,7 +22,7 @@
 import PropTypes from 'prop-types';
 import Link from 'GoogleComponents/link';
 import Button from 'GoogleComponents/button';
-import data from 'GoogleComponents/data';
+import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import SetupModule from 'GoogleComponents/setup-module';
 import Dialog from 'GoogleComponents/dialog';
@@ -91,11 +91,7 @@ class SettingsModule extends Component {
 			await refreshAuthentication();
 
 			if ( false === newActiveState ) {
-				Object.keys( window.sessionStorage ).forEach( ( key ) => {
-					if ( -1 < key.indexOf( `${ this.props.slug }::` ) ) {
-						sessionStorage.removeItem( key );
-					}
-				} );
+				data.invalidateCacheGroup( TYPE_MODULES, this.props.slug );
 			}
 
 			this.setState( {

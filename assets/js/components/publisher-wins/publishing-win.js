@@ -72,7 +72,6 @@ const publishingWin = ( data, id ) => {
 		winImage: `${ googlesitekit.admin.assetsRoot }images/rocket.png`,
 		blockData: dataBlocks,
 		type: 'win-stats',
-		storageType: 'localStorage',
 		showOnce: true,
 	};
 };

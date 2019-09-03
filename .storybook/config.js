@@ -81,7 +81,11 @@ window.googlesitekit.admin = window.googlesitekit.admin || googlesitekit.admin;
 window.googlesitekit.modules = window.googlesitekit.modules || googlesitekit.modules;
 window.googlesitekit.admin.assetsRoot = '/assets/';
 window.googlesitekit.isStorybook = true;
-wp.apiFetch = () => {
+wp.apiFetch = ( vars ) => {
+	const matches = vars.path.match( '/google-site-kit/v1/modules/(.*)/data/(.*)[\?]' );
+	if ( window.googlesitekit.modules[ matches[ 1 ] ][ matches[ 2 ] ] ) {
+		return Promise.resolve( window.googlesitekit.modules[ matches[ 1 ] ][ matches[ 2 ] ] );
+	}
 	return {
 		then: () => {
 			return {
