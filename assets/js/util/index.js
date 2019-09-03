@@ -23,6 +23,7 @@ import SvgIcon from 'GoogleUtil/svg-icon';
 
 export * from './storage';
 
+const { apiFetch } = wp;
 const {
 	addFilter,
 	applyFilters,
@@ -590,27 +591,35 @@ export const findTagInHtmlContent = ( html, module ) => {
  * while requesting list of accounts.
  *
  * @param {string} module Module slug.
+ *
+ * @param {string|null} The tag id if found, otherwise null.
  */
 export const getExistingTag = async ( module ) => {
 	const CACHE_KEY = `${ module }::existingTag`;
-	const { homeURL } = googlesitekit.admin;
+	const { homeURL, ampMode } = googlesitekit.admin;
 
-	try {
-		let tagFound = data.getCache( CACHE_KEY, 300 );
+	let tagFound = data.getCache( CACHE_KEY, 300 );
 
-		if ( 'undefined' === typeof tagFound ) {
+	if ( ! tagFound ) {
+		try {
 			tagFound = await scrapeTag( addQueryArgs( homeURL, { tagverify: 1, timestamp: Date.now() } ), module );
-		}
 
-		data.setCache( CACHE_KEY, tagFound );
+			if ( ! tagFound && 'secondary' === ampMode ) {
+				tagFound = await apiFetch( { path: '/wp/v2/posts?per_page=1' } )
+					.then( ( posts ) => {
+						// Scrape the first post in AMP mode, if there is one.
+						return posts.slice( 0, 1 ).map( async ( post ) => {
+							return await scrapeTag( addQueryArgs( post.link, { amp: 1 } ), module );
+						} ).pop();
+					} );
+			}
 
-		return new Promise( ( resolve ) => {
-			resolve( tagFound );
-		} );
-	} catch ( err ) {
-
-		// nothing.
+			// Only set/renew the cache if a tag was found.
+			data.setCache( CACHE_KEY, tagFound || undefined );
+		} catch ( err ) {}
 	}
+
+	return Promise.resolve( tagFound || null );
 };
 
 /**
