@@ -466,6 +466,7 @@ final class Assets {
 				'picture' => get_avatar_url( $current_user->user_email ),
 			),
 			'AMPenabled'       => function_exists( 'is_amp_endpoint' ),
+			'ampMode'          => $this->context->get_amp_mode(),
 			'homeURL'          => home_url(),
 		);
 
