@@ -225,11 +225,11 @@ final class Context {
 	 *                      false if AMP not active, or unknown mode
 	 */
 	public function get_amp_mode() {
-		if ( ! class_exists( 'AMP_Options_Manager' ) || ! class_exists( 'AMP_Theme_Support' ) ) {
+		if ( ! class_exists( 'AMP_Theme_Support' ) ) {
 			return false;
 		}
 
-		$mode = AMP_Options_Manager::get_option( 'theme_support' );
+		$mode = AMP_Theme_Support::get_support_mode();
 
 		if ( AMP_Theme_Support::STANDARD_MODE_SLUG === $mode ) {
 			return self::AMP_MODE_PRIMARY;
