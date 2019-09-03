@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
-use Google\Site_Kit\Core\Util\AMP_Trait;
 use Google_Client;
 use Google_Service;
 use Google_Service_Exception;
@@ -30,7 +29,7 @@ use Exception;
  * @ignore
  */
 final class TagManager extends Module implements Module_With_Scopes {
-	use Module_With_Scopes_Trait, AMP_Trait;
+	use Module_With_Scopes_Trait;
 
 	const OPTION = 'googlesitekit_tagmanager_settings';
 
@@ -158,7 +157,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 	 */
 	protected function print_gtm_js() {
 		// On AMP, do not print the script tag, falling back to 'amp_analytics_entries' below.
-		if ( $this->is_amp() ) {
+		if ( $this->context->is_amp() ) {
 			return;
 		}
 
@@ -190,7 +189,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 	 */
 	protected function print_gtm_no_js() {
 		// On AMP, do not print the script tag.
-		if ( $this->is_amp() ) {
+		if ( $this->context->is_amp() ) {
 			return;
 		}
 
@@ -214,7 +213,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 	 * @since 1.0.0
 	 */
 	protected function print_amp_gtm() {
-		if ( ! $this->is_amp() ) {
+		if ( ! $this->context->is_amp() ) {
 			return;
 		}
 

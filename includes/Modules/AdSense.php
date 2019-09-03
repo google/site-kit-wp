@@ -15,7 +15,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
-use Google\Site_Kit\Core\Util\AMP_Trait;
 use Google_Client;
 use Google_Service;
 use Google_Service_Exception;
@@ -32,7 +31,7 @@ use Exception;
  * @ignore
  */
 final class AdSense extends Module implements Module_With_Screen, Module_With_Scopes {
-	use Module_With_Screen_Trait, Module_With_Scopes_Trait, AMP_Trait;
+	use Module_With_Screen_Trait, Module_With_Scopes_Trait;
 
 	const OPTION = 'googlesitekit_adsense_settings';
 
@@ -211,7 +210,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 		}
 
 		// On AMP, preferably use the new 'wp_body_open' hook, falling back to 'the_content' below.
-		if ( $this->is_amp() ) {
+		if ( $this->context->is_amp() ) {
 			add_action(
 				'wp_body_open',
 				function() use ( $client_id ) {
@@ -286,7 +285,7 @@ tag_partner: "site_kit"
 	 * @return string Filtered $content.
 	 */
 	protected function amp_content_add_auto_ads( $content ) {
-		if ( ! $this->is_amp() ) {
+		if ( ! $this->context->is_amp() ) {
 			return $content;
 		}
 
