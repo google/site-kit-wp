@@ -27,6 +27,8 @@ add_action( 'rest_api_init', function () {
 				} else {
 					delete_option( 'googlesitekit_search_console_property' );
 				}
+
+				return array( 'success' => true );
 			}
 		)
 	);
