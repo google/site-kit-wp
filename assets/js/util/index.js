@@ -592,21 +592,17 @@ export const findTagInHtmlContent = ( html, module ) => {
  * @param {string} module Module slug.
  */
 export const getExistingTag = async ( module ) => {
+	const CACHE_KEY = `${ module }::existingTag`;
+	const { homeURL } = googlesitekit.admin;
+
 	try {
-		let tagFound = data.getCache( module + '::existingTag', 300 );
+		let tagFound = data.getCache( CACHE_KEY, 300 );
 
 		if ( 'undefined' === typeof tagFound ) {
-			const html = await fetch( `${ googlesitekit.admin.homeURL }?tagverify=1&timestamp=${ Date.now() }` ).then( ( res ) => {
-				return res.text();
-			} );
-
-			tagFound = findTagInHtmlContent( html, module );
-			if ( ! tagFound ) {
-				tagFound = '';
-			}
+			tagFound = await scrapeTag( addQueryArgs( homeURL, { tagverify: 1, timestamp: Date.now() } ), module );
 		}
 
-		data.setCache( module + '::existingTag', tagFound );
+		data.setCache( CACHE_KEY, tagFound );
 
 		return new Promise( ( resolve ) => {
 			resolve( tagFound );
@@ -614,6 +610,23 @@ export const getExistingTag = async ( module ) => {
 	} catch ( err ) {
 
 		// nothing.
+	}
+};
+
+/**
+ * Scrape a module tag from the given URL.
+ *
+ * @param {string} url URL request and parse tag from.
+ * @param {string} module The module to parse tag for.
+ *
+ * @return {string|null} The tag id if found, otherwise null.
+ */
+export const scrapeTag = async ( url, module ) => {
+	try {
+		const html = await fetch( url ).then( ( res ) => res.text() );
+		return extractTag( html, module ) || null;
+	} catch ( error ) {
+		return null;
 	}
 };
 
