@@ -703,6 +703,7 @@ class AnalyticsSetup extends Component {
 			selectedProfile,
 			useSnippet,
 			existingTag,
+			errorCode,
 		} = this.state;
 
 		const {
@@ -720,6 +721,10 @@ class AnalyticsSetup extends Component {
 
 		if ( isLoading ) {
 			return <ProgressBar />;
+		}
+
+		if ( 'google_analytics_existing_tag_permission' === errorCode ) {
+			return null;
 		}
 
 		if ( 0 >= accounts.length ) {
