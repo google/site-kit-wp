@@ -351,7 +351,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 					}
 					$service = $this->get_service( 'tagmanager' );
 					return $service->accounts->listAccounts();
-				case 'list-containers':
+				case 'containers':
 					if ( ! isset( $data['accountId'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
@@ -500,7 +500,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 					}
 
 					return array_merge( $response, $containers );
-				case 'list-containers':
+				case 'containers':
 					$account_id = null;
 					if ( ! empty( $this->_containers_account_id ) ) {
 						$account_id = $this->_containers_account_id;

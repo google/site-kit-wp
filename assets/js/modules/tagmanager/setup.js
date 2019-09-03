@@ -181,7 +181,7 @@ class TagmanagerSetup extends Component {
 				accountId: selectedAccount,
 			};
 
-			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'list-containers', queryArgs );
+			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'containers', queryArgs );
 
 			const chooseContainer = {
 				containerId: 0,
