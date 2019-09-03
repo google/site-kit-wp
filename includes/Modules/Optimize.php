@@ -12,9 +12,7 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
 use Google_Client;
-use Google_Service;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use WP_Error;
 
 /**
