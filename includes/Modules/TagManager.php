@@ -264,14 +264,14 @@ final class TagManager extends Module implements Module_With_Scopes {
 	protected function get_datapoint_services() {
 		return array(
 			// GET / POST.
-			'connection'      => '',
-			'account-id'      => '',
-			'container-id'    => '',
+			'connection'          => '',
+			'account-id'          => '',
+			'container-id'        => '',
 			// GET.
-			'list-accounts'   => 'tagmanager',
-			'list-containers' => 'tagmanager',
+			'accounts-containers' => 'tagmanager',
+			'containers'          => 'tagmanager',
 			// POST.
-			'save'            => '',
+			'save'                => '',
 		);
 	}
 
