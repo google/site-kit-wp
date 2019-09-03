@@ -605,13 +605,12 @@ export const getExistingTag = async ( module ) => {
 			tagFound = await scrapeTag( addQueryArgs( homeURL, { tagverify: 1, timestamp: Date.now() } ), module );
 
 			if ( ! tagFound && 'secondary' === ampMode ) {
-				tagFound = await apiFetch( { path: '/wp/v2/posts?per_page=1' } )
-					.then( ( posts ) => {
-						// Scrape the first post in AMP mode, if there is one.
-						return posts.slice( 0, 1 ).map( async ( post ) => {
-							return await scrapeTag( addQueryArgs( post.link, { amp: 1 } ), module );
-						} ).pop();
-					} );
+				tagFound = await apiFetch( { path: '/wp/v2/posts?per_page=1' } ).then(
+					// Scrape the first post in AMP mode, if there is one.
+					( posts ) => posts.slice( 0, 1 ).map( async ( post ) => {
+						return await scrapeTag( addQueryArgs( post.link, { amp: 1 } ), module );
+					} ).pop()
+				);
 			}
 
 			// Only set/renew the cache if a tag was found.
