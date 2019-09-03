@@ -10,6 +10,9 @@
 
 namespace Google\Site_Kit;
 
+use AMP_Options_Manager;
+use AMP_Theme_Support;
+
 /**
  * Class representing the context in which the plugin is running.
  *
@@ -18,6 +21,22 @@ namespace Google\Site_Kit;
  * @ignore
  */
 final class Context {
+
+	/**
+	 * Primary "standard" AMP website mode.
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const AMP_MODE_PRIMARY = 'primary';
+
+	/**
+	 * Secondary AMP website mode.
+	 *
+	 * @since 1.0.0
+	 * @var string
+	 */
+	const AMP_MODE_SECONDARY = 'secondary';
 
 	/**
 	 * Absolute path to the plugin main file.
@@ -196,6 +215,31 @@ final class Context {
 	 */
 	public function is_amp() {
 		return function_exists( 'is_amp_endpoint' ) && is_amp_endpoint();
+	}
+
+	/**
+	 * Get the current AMP mode.
+	 *
+	 * @return bool|string  'primary' if in standard mode,
+	 *                      'secondary' if in transitional or reader modes
+	 *                      false if AMP not active, or unknown mode
+	 */
+	public function get_amp_mode() {
+		if ( ! class_exists( 'AMP_Options_Manager' ) || ! class_exists( 'AMP_Theme_Support' ) ) {
+			return false;
+		}
+
+		$mode = AMP_Options_Manager::get_option( 'theme_support' );
+
+		if ( AMP_Theme_Support::STANDARD_MODE_SLUG === $mode ) {
+			return self::AMP_MODE_PRIMARY;
+		}
+
+		if ( in_array( $mode, array( AMP_Theme_Support::TRANSITIONAL_MODE_SLUG, AMP_Theme_Support::READER_MODE_SLUG ), true ) ) {
+			return self::AMP_MODE_SECONDARY;
+		}
+
+		return false;
 	}
 
 	/**
