@@ -188,6 +188,17 @@ final class Context {
 	}
 
 	/**
+	 * Checks whether AMP content is being served.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool True if an AMP request, false otherwise.
+	 */
+	public function is_amp() {
+		return function_exists( 'is_amp_endpoint' ) && is_amp_endpoint();
+	}
+
+	/**
 	 * Checks whether the plugin is network active.
 	 *
 	 * @since 1.0.0
