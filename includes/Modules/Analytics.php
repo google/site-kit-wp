@@ -122,10 +122,14 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		);
 
 		$print_amp_gtag = function() {
+			if ( ! doing_action( 'amp_print_analytics' ) && did_action( 'amp_print_analytics' ) ) {
+				return;
+			}
 			$this->print_amp_gtag();
 		};
-		add_action( 'wp_footer', $print_amp_gtag ); // For AMP Native and Transitional.
-		add_action( 'amp_post_template_footer', $print_amp_gtag ); // For AMP Reader.
+		add_action( 'amp_print_analytics', $print_amp_gtag );
+		add_action( 'wp_footer', $print_amp_gtag, 20 ); // For AMP Native and Transitional.
+		add_action( 'amp_post_template_footer', $print_amp_gtag, 20 ); // For AMP Reader.
 
 		$print_amp_client_id_optin = function() {
 			$this->print_amp_client_id_optin();
