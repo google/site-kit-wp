@@ -175,11 +175,8 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 								try {
 									$sites[] = $this->get_siteverification_service()->webResource->insert( 'META', $resource ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 								} catch ( Google_Service_Exception $e ) {
-									$message = $e->getErrors();
-
-									if ( ! empty( $message[0]['message'] ) ) {
-										$message = $message[0]['message'];
-									}
+									$messages = wp_list_pluck( $e->getErrors(), 'message' );
+									$message  = array_shift( $messages );
 
 									$errors->add( $e->getCode(), $message, array( 'url' => $url ) );
 								} catch ( Exception $e ) {
