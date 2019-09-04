@@ -66,15 +66,14 @@ class SiteVerification extends Component {
 
 		( async () => {
 			try {
-				const responseData = await data.get( TYPE_MODULES, 'site-verification', 'verification' );
-
-				const { verified, identifier } = responseData;
+				const { verified, identifier } = await data.get( TYPE_MODULES, 'site-verification', 'verification' );
 
 				// Our current siteURL has been verified. Proceed to next step.
 				if ( verified ) {
 					sendAnalyticsTrackingEvent( 'verification_setup', 'verification_check_true' );
 
 					const response = await this.insertSiteVerification( identifier );
+
 					if ( true === response.verified ) {
 						this.props.siteVerificationSetup( true );
 						return true;
@@ -85,7 +84,7 @@ class SiteVerification extends Component {
 
 				this.setState( {
 					loading: false,
-					siteURL: responseData.identifier,
+					siteURL: identifier,
 				} );
 			} catch ( err ) {
 				let message = err.message;
