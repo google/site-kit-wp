@@ -77,10 +77,14 @@ final class TagManager extends Module implements Module_With_Scopes {
 		);
 
 		$print_amp_gtm = function() {
+			if ( ! doing_action( 'amp_print_analytics' ) && did_action( 'amp_print_analytics' ) ) {
+				return;
+			}
 			$this->print_amp_gtm();
 		};
-		add_action( 'wp_footer', $print_amp_gtm ); // For AMP Native and Transitional.
-		add_action( 'amp_post_template_footer', $print_amp_gtm ); // For AMP Reader.
+		add_action( 'amp_print_analytics', $print_amp_gtm );
+		add_action( 'wp_footer', $print_amp_gtm, 20 ); // For AMP Native and Transitional.
+		add_action( 'amp_post_template_footer', $print_amp_gtm, 20 ); // For AMP Reader.
 
 		add_filter( // Load amp-analytics component for AMP Reader.
 			'amp_post_template_data',
