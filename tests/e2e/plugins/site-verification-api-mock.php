@@ -42,7 +42,7 @@ add_action( 'rest_api_init', function () {
 
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'modules/site-verification/data/siteverification',
+		'modules/site-verification/data/verification',
 		array(
 			'methods'  => 'POST',
 			'callback' => function ( WP_REST_Request $request ) {
@@ -55,9 +55,9 @@ add_action( 'rest_api_init', function () {
 				);
 
 				return array(
-					'updated'    => true,
-					'sites'      => array(),
+					'type'       => 'SITE',
 					'identifier' => $data['siteURL'],
+					'verified'   => true,
 				);
 			}
 		),
