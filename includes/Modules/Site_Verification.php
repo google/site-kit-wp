@@ -96,18 +96,14 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'verified-sites':
-					$service = $this->get_service( 'siteverification' );
-
-					return $service->webResource->listWebResource(); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
+					return $this->get_siteverification_service()->webResource->listWebResource();
 				case 'verification':
 					// This is far from optimal and hacky, but works for now.
 					if ( ! empty( $data['siteURL'] ) ) {
 						$this->_siteverification_list_data = $data;
 					}
 
-					$service = $this->get_service( 'siteverification' );
-
-					return $service->webResource->listWebResource(); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
+					return $this->get_siteverification_service()->webResource->listWebResource();
 				case 'verification-token':
 					$existing_token = $this->authentication->verification_tag()->get();
 
@@ -127,9 +123,8 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 					$request = new \Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequest();
 					$request->setSite( $site );
 					$request->setVerificationMethod( 'META' );
-					$service = $this->get_service( 'siteverification' );
 
-					return $service->webResource->getToken( $request ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
+					return $this->get_siteverification_service()->webResource->getToken( $request );
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
@@ -178,7 +173,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 								$resource->setSite( $site );
 
 								try {
-									$sites[] = $this->get_service( 'siteverification' )->webResource->insert( 'META', $resource ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
+									$sites[] = $this->get_siteverification_service()->webResource->insert( 'META', $resource ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 								} catch ( Google_Service_Exception $e ) {
 									$message = $e->getErrors();
 
