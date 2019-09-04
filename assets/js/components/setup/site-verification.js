@@ -129,7 +129,7 @@ class SiteVerification extends Component {
 		try {
 			const response = await this.insertSiteVerification( siteURL );
 
-			if ( true === response.updated ) {
+			if ( true === response.verified ) {
 				sendAnalyticsTrackingEvent( 'verification_setup', 'verification_insert_tag' );
 
 				// We have everything we need here. go to next step.
