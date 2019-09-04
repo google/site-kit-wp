@@ -17,40 +17,54 @@
  */
 
 /**
- * Internal dependencies
- */
-import DashboardSearchFunnelInner from '../dashboard/dashboard-widget-search-funnel-inner';
-/**
  * External dependencies
  */
-import Layout from 'GoogleComponents/layout/layout';
-import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
 
-const { Component } = wp.element;
+/**
+ * Internal dependencies
+ */
+import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
+import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
+import DashboardSearchFunnelInner from '../dashboard/dashboard-widget-search-funnel-inner';
+import Layout from 'GoogleComponents/layout/layout';
+
+const { Component, Fragment } = wp.element;
+const { __ } = wp.i18n;
 
 class DashboardDetailsSearchFunnel extends Component {
 	render() {
 		return (
-			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-				<Layout className="googlesitekit-analytics-search-funnel">
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<DashboardSearchFunnelInner />
-							{ // Show the Analytics CTA if analytics is not enabled.
-								( ! googlesitekit.modules.analytics.active ) &&
-								<div className="
+			<Fragment>
+				<div className="
+					mdc-layout-grid__cell
+					mdc-layout-grid__cell--span-12
+				">
+					<DashboardModuleHeader
+						description={ __( 'How your site appeared in Search results and how many visitors you got from Search.', 'google-site-kit' ) }
+						title={ __( 'Search Funnel', 'google-site-kit' ) }
+					/>
+				</div>
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+					<Layout className="googlesitekit-analytics-search-funnel">
+						<div className="mdc-layout-grid">
+							<div className="mdc-layout-grid__inner">
+								<DashboardSearchFunnelInner />
+								{ // Show the Analytics CTA if analytics is not enabled.
+									( ! googlesitekit.modules.analytics.active ) &&
+									<div className="
 										mdc-layout-grid__cell
 										mdc-layout-grid__cell--span-4-phone
 										mdc-layout-grid__cell--span-4-tablet
 										mdc-layout-grid__cell--span-6-desktop
 									">
-									<AnalyticsInactiveCTA />
-								</div>
-							}
+										<AnalyticsInactiveCTA />
+									</div>
+								}
+							</div>
 						</div>
-					</div>
-				</Layout>
-			</div>
+					</Layout>
+				</div>
+			</Fragment>
 		);
 	}
 }
