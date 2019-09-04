@@ -29,37 +29,34 @@ add_action( 'rest_api_init', function () {
 		REST_Routes::REST_ROOT,
 		'modules/site-verification/data/verification',
 		array(
-			'callback' => function () {
-				return array(
-					'type'       => 'SITE',
-					'identifier' => home_url( '/' ),
-					'verified'   => (bool) get_transient( 'gsk_e2e_site_verified' ),
-				);
-			}
-		),
-		true
-	);
+			array(
+				'methods'  => WP_REST_Server::READABLE,
+				'callback' => function () {
+					return array(
+						'type'       => 'SITE',
+						'identifier' => home_url( '/' ),
+						'verified'   => (bool) get_transient( 'gsk_e2e_site_verified' ),
+					);
+				}
+			),
+			array(
+				'methods'  => WP_REST_Server::CREATABLE,
+				'callback' => function ( WP_REST_Request $request ) {
+					$data = $request->get_param( 'data' );
 
-	register_rest_route(
-		REST_Routes::REST_ROOT,
-		'modules/site-verification/data/verification',
-		array(
-			'methods'  => 'POST',
-			'callback' => function ( WP_REST_Request $request ) {
-				$data = $request->get_param( 'data' );
+					update_user_option(
+						get_current_user_id(),
+						'googlesitekit_site_verified_meta',
+						'verified'
+					);
 
-				update_user_option(
-					get_current_user_id(),
-					'googlesitekit_site_verified_meta',
-					'verified'
-				);
-
-				return array(
-					'type'       => 'SITE',
-					'identifier' => $data['siteURL'],
-					'verified'   => true,
-				);
-			}
+					return array(
+						'type'       => 'SITE',
+						'identifier' => $data['siteURL'],
+						'verified'   => true,
+					);
+				}
+			),
 		),
 		true
 	);
