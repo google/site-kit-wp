@@ -66,8 +66,7 @@ class SiteVerification extends Component {
 
 		( async () => {
 			try {
-				const responseData = await data.get( TYPE_MODULES, 'site-verification',
-					'siteverification-list' );
+				const responseData = await data.get( TYPE_MODULES, 'site-verification', 'verification' );
 
 				const { verified, identifier } = responseData;
 

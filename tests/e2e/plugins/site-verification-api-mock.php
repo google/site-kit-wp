@@ -27,7 +27,7 @@ add_action( 'rest_api_init', function () {
 
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'modules/site-verification/data/siteverification-list',
+		'modules/site-verification/data/verification',
 		array(
 			'callback' => function () {
 				return array(

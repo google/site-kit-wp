@@ -32,7 +32,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	use Module_With_Scopes_Trait;
 
 	/**
-	 * Temporary storage for very specific data for 'siteverification-list' datapoint.
+	 * Temporary storage for very specific data for 'verification' datapoint.
 	 *
 	 * Bad to have, but works for now.
 	 *
@@ -74,7 +74,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		return array(
 			// GET.
 			'verified-sites'         => 'siteverification',
-			'siteverification-list'  => 'siteverification',
+			'verification'           => 'siteverification',
 			'siteverification-token' => 'siteverification',
 
 			// POST.
@@ -98,7 +98,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 				case 'verified-sites':
 					$service = $this->get_service( 'siteverification' );
 					return $service->webResource->listWebResource(); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
-				case 'siteverification-list':
+				case 'verification':
 					// This is far from optimal and hacky, but works for now.
 					if ( ! empty( $data['siteURL'] ) ) {
 						$this->_siteverification_list_data = $data;
@@ -137,7 +137,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 						if ( ! $current_user || ! $current_user->exists() ) {
 							return new WP_Error( 'unknown_user', __( 'Unknown user.', 'google-site-kit' ) );
 						}
-						$site = $this->get_data( 'siteverification-list', $data );
+						$site = $this->get_data( 'verification', $data );
 						if ( is_wp_error( $site ) ) {
 							return $site;
 						}
@@ -213,7 +213,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 						);
 					}
 					return $data;
-				case 'siteverification-list':
+				case 'verification':
 					if ( is_array( $this->_siteverification_list_data ) && isset( $this->_siteverification_list_data['siteURL'] ) ) {
 						$current_url                       = trailingslashit( $this->_siteverification_list_data['siteURL'] );
 						$this->_siteverification_list_data = null;
