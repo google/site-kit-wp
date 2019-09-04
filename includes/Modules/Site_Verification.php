@@ -78,7 +78,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			'verified-sites'     => 'siteverification',
 
 			// POST.
-			'siteverification'   => '',
+			'verification'       => '',
 		);
 	}
 
@@ -127,7 +127,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
-				case 'siteverification':
+				case 'verification':
 					if ( ! isset( $data['siteURL'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'siteURL' ), array( 'status' => 400 ) );

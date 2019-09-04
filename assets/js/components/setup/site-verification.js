@@ -108,7 +108,7 @@ class SiteVerification extends Component {
 	}
 
 	async insertSiteVerification( siteURL ) {
-		return await data.set( TYPE_MODULES, 'site-verification', 'siteverification', { siteURL } );
+		return await data.set( TYPE_MODULES, 'site-verification', 'verification', { siteURL } );
 	}
 
 	async onProceed() {
