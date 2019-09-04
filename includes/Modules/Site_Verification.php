@@ -73,12 +73,12 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	protected function get_datapoint_services() {
 		return array(
 			// GET.
-			'verified-sites'         => 'siteverification',
-			'verification'           => 'siteverification',
-			'siteverification-token' => 'siteverification',
+			'verification'       => 'siteverification',
+			'verification-token' => 'siteverification',
+			'verified-sites'     => 'siteverification',
 
 			// POST.
-			'siteverification'       => '',
+			'siteverification'   => '',
 		);
 	}
 
@@ -105,7 +105,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 					}
 					$service = $this->get_service( 'siteverification' );
 					return $service->webResource->listWebResource(); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
-				case 'siteverification-token':
+				case 'verification-token':
 					$existing_token = $this->authentication->verification_tag()->get();
 					if ( ! empty( $existing_token ) ) {
 						return function() use ( $existing_token ) {
@@ -143,7 +143,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 						}
 						$sites = array();
 						if ( isset( $site['verified'] ) && ! $site['verified'] ) {
-							$token = $this->get_data( 'siteverification-token', $data );
+							$token = $this->get_data( 'verification-token', $data );
 							if ( is_wp_error( $token ) ) {
 								return $token;
 							}
@@ -249,7 +249,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 						'type'       => 'SITE',
 						'verified'   => false,
 					);
-				case 'siteverification-token':
+				case 'verification-token':
 					if ( is_array( $response ) ) {
 						return $response;
 					}
