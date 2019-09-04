@@ -476,21 +476,8 @@ class AnalyticsSetup extends Component {
 		try {
 			const response = await data.set( TYPE_MODULES, 'analytics', 'save', analyticAccount );
 
-			const cacheKey = data.getCacheKey( 'modules', 'analytics', 'get-accounts' );
-			const cache = data.getCache( cacheKey, 3600 );
-			if ( cache ) {
-				const newData = {};
-
-				newData.properties = this.state.properties.filter( ( profile ) => {
-					return 0 !== profile.id;
-				} );
-				newData.profiles = this.state.profiles.filter( ( profile ) => {
-					return 0 !== profile.id;
-				} );
-
-				const values = Object.assign( cache, newData );
-				data.setCache( cacheKey, values );
-			}
+			data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'get-accounts' );
+			await this.getAccounts();
 
 			googlesitekit.modules.analytics.settings.accountId = response.accountId;
 			googlesitekit.modules.analytics.settings.profileId = response.profileId;
