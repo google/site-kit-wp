@@ -154,7 +154,9 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 						$sites = array();
 
-						if ( empty( $site['verified'] ) ) {
+						if ( ! empty( $site['verified'] ) ) {
+							return $site;
+						} else {
 							$token = $this->get_data( 'verification-token', $data );
 
 							if ( is_wp_error( $token ) ) {
