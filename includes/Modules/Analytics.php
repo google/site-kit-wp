@@ -127,7 +127,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			}
 			$this->print_amp_gtag();
 		};
-		add_action( 'amp_print_analytics', $print_amp_gtag );
+		add_action( 'amp_print_analytics', $print_amp_gtag ); // For AMP plugin v1.3+.
 		add_action( 'wp_footer', $print_amp_gtag, 20 ); // For AMP Native and Transitional.
 		add_action( 'amp_post_template_footer', $print_amp_gtag, 20 ); // For AMP Reader.
 
