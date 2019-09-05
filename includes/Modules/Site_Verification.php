@@ -150,6 +150,8 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 						$sites = array();
 
 						if ( ! empty( $site['verified'] ) ) {
+							$this->authentication->verification()->set( true );
+
 							return $site;
 						} else {
 							$token = $this->get_data( 'verification-token', $data );
