@@ -17,10 +17,10 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google_Client;
 use Google_Service;
-use Psr\Http\Message\RequestInterface;
+use Google_Service_Exception;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\RequestInterface;
 use WP_Error;
-use Exception;
 
 /**
  * Class representing the Search Console module.
@@ -131,6 +131,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			'searchanalytics' => 'webmasters',
 
 			// POST.
+			'site'            => '',
 			'save-property'   => '',
 			'insert'          => '',
 		);
@@ -191,6 +192,50 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
+				case 'site':
+					if ( empty( $data['siteUrl'] ) ) {
+						return new WP_Error(
+							'missing_required_param',
+							/* translators: %s: Missing parameter name */
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'siteUrl' ),
+							array( 'status' => 400 )
+						);
+					}
+
+					$site_url = trailingslashit( $data['siteUrl'] );
+
+					return function () use ( $site_url ) {
+						$orig_defer = $this->get_client()->shouldDefer();
+						$this->get_client()->setDefer( false );
+
+						try {
+							// If the site does not exist in the account, an exception will be thrown.
+							$site = $this->get_webmasters_service()->sites->get( $site_url );
+						} catch ( Google_Service_Exception $exception ) {
+							// If we got here, the site does not exist in the account, so we will add it.
+							/* @var ResponseInterface $response Response object. */
+							$response = $this->get_webmasters_service()->sites->add( $site_url );
+
+							if ( 204 !== $response->getStatusCode() ) {
+								return new WP_Error(
+									'failed_to_add_site_to_search_console',
+									__( 'Error adding the site to Search Console.', 'google-site-kit' ),
+									array( 'status' => 500 )
+								);
+							}
+
+							// Fetch the site again now that it exists.
+							$site = $this->get_webmasters_service()->sites->get( $site_url );
+						}
+
+						$this->get_client()->setDefer( $orig_defer );
+						$this->options->set( self::PROPERTY_OPTION, $site_url );
+
+						return array(
+							'siteUrl'         => $site->getSiteUrl(),
+							'permissionLevel' => $site->getPermissionLevel(),
+						);
+					};
 				case 'save-property':
 					if ( ! isset( $data['siteURL'] ) ) {
 						/* translators: %s: Missing parameter name */
