@@ -130,6 +130,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			'sc-site-analytics' => 'webmasters',
 			'search-keywords'   => 'webmasters',
 			'index-status'      => 'webmasters',
+			'searchanalytics'   => 'webmasters',
 
 			// POST.
 			'save-property'     => '',
@@ -153,6 +154,35 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 				case 'sites':
 				case 'matched-sites':
 					return $this->get_webmasters_service()->sites->listSites();
+				case 'searchanalytics':
+					$data = array_merge(
+						array(
+							'compareDateRanges' => false,
+							'dateRange'         => 'last-28-days',
+							'dimensions'        => '',
+							'url'               => '',
+						),
+						$data
+					);
+
+					list ( $start_date, $end_date ) = $this->parse_date_range(
+						$data['dateRange'],
+						$data['compareDateRanges'] ? 2 : 1,
+						3
+					);
+
+					$data_request = array(
+						'page'       => $data['url'],
+						'start_date' => $start_date,
+						'end_date'   => $end_date,
+						'dimensions' => explode( ',', $data['dimensions'] ),
+					);
+
+					if ( isset( $data['limit'] ) ) {
+						$data_request['row_limit'] = $data['limit'];
+					}
+
+					return $this->create_search_analytics_data_request( $data_request );
 				case 'sc-site-analytics':
 					$page       = ! empty( $data['url'] ) ? $data['url'] : '';
 					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
@@ -275,6 +305,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						'exactMatch'      => $exact_match, // (array) single site object, or null if no match.
 						'propertyMatches' => $property_matches, // (array) of site objects, or empty array if none.
 					);
+				case 'searchanalytics':
 				case 'sc-site-analytics':
 				case 'search-keywords':
 				case 'index-status':
