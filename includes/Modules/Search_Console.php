@@ -127,7 +127,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			// GET.
 			'sites'             => 'webmasters',
 			'matched-sites'     => 'webmasters',
-			'is-site-exist'     => 'webmasters',
 			'sc-site-analytics' => 'webmasters',
 			'search-keywords'   => 'webmasters',
 			'index-status'      => 'webmasters',
@@ -278,24 +277,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					return array(
 						'exact_match'      => in_array( $current_url, $url_matches, true ) ? $current_url : '',
 						'property_matches' => $url_matches,
-					);
-				case 'is-site-exist':
-					$current_url = $this->context->get_reference_site_url();
-					$sites       = $response->getSiteEntry();
-					foreach ( $sites as $site ) {
-						if ( trailingslashit( $current_url ) !== trailingslashit( $site->getSiteUrl() ) ) {
-							continue;
-						}
-						if ( in_array( $site->getPermissionLevel(), array( 'siteRestrictedUser', 'siteOwner', 'siteFullUser' ), true ) ) {
-							return array(
-								'siteURL'  => $site->getSiteUrl(),
-								'verified' => true,
-							);
-						}
-					}
-					return array(
-						'siteURL'  => $this->context->get_reference_site_url(),
-						'verified' => false,
 					);
 				case 'sc-site-analytics':
 				case 'search-keywords':
