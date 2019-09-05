@@ -125,15 +125,14 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	protected function get_datapoint_services() {
 		return array(
 			// GET.
-			'sites'             => 'webmasters',
-			'matched-sites'     => 'webmasters',
-			'sc-site-analytics' => 'webmasters',
-			'index-status'      => 'webmasters',
-			'searchanalytics'   => 'webmasters',
+			'sites'           => 'webmasters',
+			'matched-sites'   => 'webmasters',
+			'index-status'    => 'webmasters',
+			'searchanalytics' => 'webmasters',
 
 			// POST.
-			'save-property'     => '',
-			'insert'            => '',
+			'save-property'   => '',
+			'insert'          => '',
 		);
 	}
 
@@ -182,18 +181,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					}
 
 					return $this->create_search_analytics_data_request( $data_request );
-				case 'sc-site-analytics':
-					$page       = ! empty( $data['url'] ) ? $data['url'] : '';
-					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
-					$date_range = $this->parse_date_range( $date_range, 2, 3 );
-					return $this->create_search_analytics_data_request(
-						array(
-							'dimensions' => array( 'date' ),
-							'start_date' => $date_range[0],
-							'end_date'   => $date_range[1],
-							'page'       => $page,
-						)
-					);
 				case 'index-status':
 					return $this->create_search_analytics_data_request(
 						array(
@@ -292,7 +279,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						'propertyMatches' => $property_matches, // (array) of site objects, or empty array if none.
 					);
 				case 'searchanalytics':
-				case 'sc-site-analytics':
 				case 'index-status':
 					return $response->getRows();
 			}
