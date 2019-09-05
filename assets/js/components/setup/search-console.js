@@ -59,20 +59,19 @@ class SearchConsole extends Component {
 		}
 
 		try {
-			const isSiteExist = await data.get( TYPE_MODULES, 'search-console', 'is-site-exist' );
-			if ( isSiteExist && true === isSiteExist.verified ) {
-				const savePropertyResponse = await data.set( TYPE_MODULES, 'search-console', 'save-property', { siteURL: isSiteExist.siteURL } );
+			const { exactMatch } = await data.get( TYPE_MODULES, 'search-console', 'matched-sites' );
+
+			if ( exactMatch ) {
+				const savePropertyResponse = await data.set( TYPE_MODULES, 'search-console', 'save-property', { siteURL: exactMatch.siteUrl } );
+
 				if ( true === savePropertyResponse.status ) {
-					return this.props.searchConsoleSetup( isSiteExist.siteURL );
+					return this.props.searchConsoleSetup( exactMatch.siteUrl );
 				}
 			}
+		} catch {}
 
-			// Fallback to request match sites and exact match site.
-			this.requestSearchConsoleSiteList();
-		} catch {
-			// Fallback to request match sites and exact match site.
-			this.requestSearchConsoleSiteList();
-		}
+		// Fallback to request match sites and exact match site.
+		this.requestSearchConsoleSiteList();
 	}
 
 	/**
