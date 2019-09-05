@@ -245,35 +245,46 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 				case 'sites':
 					$sites = $response->getSiteEntry();
 					$data  = array();
+
 					foreach ( $sites as $site ) {
 						$data[] = array(
 							'permissionLevel' => $site->getPermissionLevel(),
 							'siteUrl'         => $site->getSiteUrl(),
 						);
 					}
+
 					return $data;
 				case 'matched-sites':
 					$sites = $response->getSiteEntry();
 					$urls  = array();
+
 					foreach ( $sites as $site ) {
 						$url = $site->getSiteUrl();
+
 						if ( 'sc-set' === substr( $url, 0, 6 ) ) {
 							continue;
 						}
+
 						$urls[] = $url;
 					}
+
 					$current_url = trailingslashit( $this->context->get_reference_site_url() );
 					$url_matches = array();
+
 					foreach ( $urls as $url ) {
 						$host = wp_parse_url( $url, PHP_URL_HOST );
+
 						if ( empty( $host ) || false === strpos( $current_url, (string) $host ) ) {
 							continue;
 						}
+
 						$url_matches[] = $url;
 					}
+
 					if ( empty( $url_matches ) ) {
 						$url_matches[] = $current_url;
 					}
+
 					return array(
 						'exact_match'      => in_array( $current_url, $url_matches, true ) ? $current_url : '',
 						'property_matches' => $url_matches,
