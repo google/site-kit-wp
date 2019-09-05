@@ -85,22 +85,26 @@ class SearchConsole extends Component {
 		const { setErrorMessage } = this.props;
 		( async () => {
 			try {
-				const sitePropertyData = await data.get( TYPE_MODULES, 'search-console', 'matched-sites' );
+				const { exactMatch, propertyMatches } = await data.get( TYPE_MODULES, 'search-console', 'matched-sites' );
 
 				// We found exact match, continue the process in the background.
-				if ( sitePropertyData.exact_match ) {
-					const siteURL = sitePropertyData.exact_match;
-					await this.insertPropertyToSearchConsole( siteURL );
+				if ( exactMatch ) {
+					await this.insertPropertyToSearchConsole( exactMatch.siteUrl );
 
 					// We have everything we need here. go to next step.
-					this.props.searchConsoleSetup( siteURL );
+					this.props.searchConsoleSetup( exactMatch.siteUrl );
 
 					return;
 				}
 
 				let errorMessage = '';
-				if ( 1 < sitePropertyData.property_matches.length ) {
-					errorMessage = sprintf( __( 'We found %d existing accounts. We recommend using the account  “%s”. Please confirm or change below to use.', 'google-site-kit' ), sitePropertyData.property_matches.length, sitePropertyData.property_matches[ 0 ] );
+				if ( 1 < propertyMatches.length ) {
+					errorMessage = sprintf(
+						/* translators: %d: the number of matching properties. %s: URL of recommended site. */
+						__( 'We found %d existing accounts. We recommend using the account “%s”. Please confirm or change below to use.', 'google-site-kit' ),
+						propertyMatches.length,
+						propertyMatches[ 0 ].siteUrl
+					);
 				} else {
 					errorMessage = __( 'We found no verified accounts, would you like to verify this URL?', 'google-site-kit' );
 				}
@@ -108,7 +112,7 @@ class SearchConsole extends Component {
 				setErrorMessage( errorMessage );
 				this.setState( {
 					loading: false,
-					sites: sitePropertyData.property_matches,
+					sites: propertyMatches,
 					errorCode: 'no_property_matched',
 					errorMsg: errorMessage,
 				} );
