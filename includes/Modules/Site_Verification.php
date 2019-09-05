@@ -202,7 +202,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 						}
 
 						return array(
-							'identifier' => $data['siteURL'],
+							'identifier' => $verification->getSite()->getIdentifier(),
 							'type'       => $verification->getSite()->getType(),
 							'verified'   => true,
 						);
