@@ -128,16 +128,15 @@ class SearchConsole extends Component {
 
 	/**
 	 * Insert siteURL to the option through the API
-	 * @param { string } siteURL
+	 * @param { string } siteUrl
 	 */
-	async insertPropertyToSearchConsole( siteURL ) {
-		const response = await data.set( TYPE_MODULES, 'search-console', 'insert', { siteURL } );
+	async insertPropertyToSearchConsole( siteUrl ) {
+		await data.set( TYPE_MODULES, 'search-console', 'site', { siteUrl } );
 		sendAnalyticsTrackingEvent( 'search_console_setup', 'add_new_sc_property' );
 
 		this.setState( {
 			loading: false,
 			connected: true,
-			sites: response.sites,
 		} );
 	}
 
@@ -145,15 +144,15 @@ class SearchConsole extends Component {
 	 * Event handler to set site url to option.
 	 */
 	submitPropertyEventHandler() {
-		const siteURL = this.state.selectedUrl;
+		const siteUrl = this.state.selectedUrl;
 		const { setErrorMessage } = this.props;
 
 		( async () => {
 			try {
-				await this.insertPropertyToSearchConsole( siteURL );
+				await this.insertPropertyToSearchConsole( siteUrl );
 
 				setErrorMessage( '' );
-				this.props.searchConsoleSetup( siteURL );
+				this.props.searchConsoleSetup( siteUrl );
 			} catch ( err ) {
 				setErrorMessage( err.message[ 0 ].message );
 				this.setState( {
