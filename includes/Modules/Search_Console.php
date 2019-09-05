@@ -427,10 +427,12 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 				array(
 					'identifier' => $this->slug,
 					'key'        => 'search-keywords',
-					'datapoint'  => 'search-keywords',
+					'datapoint'  => 'searchanalytics',
 					'data'       => array(
-						'url'       => $post_url,
-						'dateRange' => 'last-7-days',
+						'url'        => $post_url,
+						'dateRange'  => 'last-7-days',
+						'dimensions' => 'query',
+						'limit'      => 10,
 					),
 				),
 			);
