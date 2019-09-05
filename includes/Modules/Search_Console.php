@@ -461,6 +461,15 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	}
 
 	/**
+	 * Get the configured Webmasters service instance.
+	 *
+	 * @return Google_Service|\Google_Service_Webmasters
+	 */
+	private function get_webmasters_service() {
+		return $this->get_service( 'webmasters' );
+	}
+
+	/**
 	 * Sets up the Google services the module should use.
 	 *
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
