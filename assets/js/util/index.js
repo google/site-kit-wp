@@ -613,8 +613,7 @@ export const getExistingTag = async ( module ) => {
 				);
 			}
 
-			// Only set/renew the cache if a tag was found.
-			data.setCache( CACHE_KEY, tagFound || undefined );
+			data.setCache( CACHE_KEY, tagFound || null );
 		} catch ( err ) {}
 	}
 
