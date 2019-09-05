@@ -600,7 +600,7 @@ export const getExistingTag = async ( module ) => {
 
 	let tagFound = data.getCache( CACHE_KEY, 300 );
 
-	if ( ! tagFound ) {
+	if ( tagFound === undefined ) {
 		try {
 			tagFound = await scrapeTag( addQueryArgs( homeURL, { tagverify: 1, timestamp: Date.now() } ), module );
 
