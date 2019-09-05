@@ -117,7 +117,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await proceedToSetUpAnalytics();
 
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module--analytics p', { text: /google_analytics_existing_tag_permission/i } );
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module--analytics button', { text: /create an account/i } );
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module--analytics button', { text: /re-fetch my account/i } );
+		await expect( page ).not.toMatchElement( '.googlesitekit-setup-module--analytics button', { text: /create an account/i } );
+		await expect( page ).not.toMatchElement( '.googlesitekit-setup-module--analytics button', { text: /re-fetch my account/i } );
 	} );
 } );
