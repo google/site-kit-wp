@@ -622,7 +622,7 @@ export const getExistingTag = async ( module ) => {
 };
 
 /**
- * Scrape a module tag from the given URL.
+ * Scrapes a module tag from the given URL.
  *
  * @param {string} url URL request and parse tag from.
  * @param {string} module The module to parse tag for.
