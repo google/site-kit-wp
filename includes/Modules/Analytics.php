@@ -122,21 +122,23 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		);
 
 		$print_amp_gtag = function() {
-			// This hook is only available in AMP plugin version 1.3+, so if it
+			// This hook is only available in AMP plugin version >=1.3, so if it
 			// has already completed, do nothing.
-			if (
-				! doing_action( 'amp_print_analytics' ) &&
-				did_action( 'amp_print_analytics' )
-			) {
+			if ( ! doing_action( 'amp_print_analytics' ) && did_action( 'amp_print_analytics' ) ) {
 				return;
 			}
 
 			$this->print_amp_gtag();
 		};
-		// Print analytics when using the AMP Plugin (https://amp-wp.org/).
+		// Which actions are run depends on the version of the AMP Plugin
+		// (https://amp-wp.org/) available. Version >=1.3 exposes a
+		// new, `amp_print_analytics` action.
+		// For all AMP modes, AMP plugin version >=1.3.
 		add_action( 'amp_print_analytics', $print_amp_gtag );
-		add_action( 'wp_footer', $print_amp_gtag, 20 ); // For AMP Native and Transitional.
-		add_action( 'amp_post_template_footer', $print_amp_gtag, 20 ); // For AMP Reader.
+		// For AMP Standard and Transitional, AMP plugin version <1.3.
+		add_action( 'wp_footer', $print_amp_gtag, 20 );
+		// For AMP Reader, AMP plugin version <1.3.
+		add_action( 'amp_post_template_footer', $print_amp_gtag, 20 );
 
 		$print_amp_client_id_optin = function() {
 			$this->print_amp_client_id_optin();
