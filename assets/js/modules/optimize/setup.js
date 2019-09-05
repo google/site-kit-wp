@@ -140,7 +140,7 @@ class OptimizeSetup extends Component {
 			ampExperimentJson,
 		};
 
-		return await data.set( TYPE_MODULES, 'optimize', 'save', optimizeAccount ).then( () => {
+		return await data.set( TYPE_MODULES, 'optimize', 'settings', optimizeAccount ).then( () => {
 			if ( finishSetup ) {
 				finishSetup();
 			}
