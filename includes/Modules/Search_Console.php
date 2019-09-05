@@ -300,6 +300,25 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	}
 
 	/**
+	 * Map Site model objects to primitives used for API responses.
+	 *
+	 * @param \Google_Service_Webmasters_WmxSite[] $sites Site objects.
+	 *
+	 * @return array
+	 */
+	private function map_sites( $sites ) {
+		return array_map(
+			function ( \Google_Service_Webmasters_WmxSite $site ) {
+				return array(
+					'siteUrl'         => $site->getSiteUrl(),
+					'permissionLevel' => $site->getPermissionLevel(),
+				);
+			},
+			$sites
+		);
+	}
+
+	/**
 	 * Creates a new Search Console analytics request for the current site and given arguments.
 	 *
 	 * @since 1.0.0
