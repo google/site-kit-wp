@@ -195,7 +195,11 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 						$this->authentication->verification()->set( true );
 
-						$verification = $this->get_siteverification_service()->webResource->get( $data['siteURL'] );
+						try {
+							$verification = $this->get_siteverification_service()->webResource->get( $data['siteURL'] );
+						} catch ( Google_Service_Exception $e ) {
+							$verification = array_shift( $sites );
+						}
 
 						return array(
 							'identifier' => $data['siteURL'],
