@@ -403,10 +403,12 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 				array(
 					'identifier' => $this->slug,
 					'key'        => 'sc-site-analytics',
-					'datapoint'  => 'sc-site-analytics',
+					'datapoint'  => 'searchanalytics',
 					'data'       => array(
-						'url'       => $post_url,
-						'dateRange' => 'last-7-days',
+						'url'               => $post_url,
+						'dateRange'         => 'last-7-days',
+						'dimensions'        => 'date',
+						'compareDateRanges' => true,
 					),
 				),
 				array(
