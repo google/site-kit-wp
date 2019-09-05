@@ -88,12 +88,10 @@ class Search_ConsoleTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
+				'site',
 				'sites',
 				'matched-sites',
 				'searchanalytics',
-				'index-status',
-				'save-property',
-				'insert',
 			),
 			$search_console->get_datapoints()
 		);
