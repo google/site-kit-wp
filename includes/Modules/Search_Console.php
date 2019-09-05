@@ -152,7 +152,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'sites':
-					return $this->get_webmasters_service()->sites->listSites();
 				case 'matched-sites':
 					return $this->get_webmasters_service()->sites->listSites();
 				case 'sc-site-analytics':
