@@ -243,17 +243,8 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'sites':
-					$sites = $response->getSiteEntry();
-					$data  = array();
-
-					foreach ( $sites as $site ) {
-						$data[] = array(
-							'permissionLevel' => $site->getPermissionLevel(),
-							'siteUrl'         => $site->getSiteUrl(),
-						);
-					}
-
-					return $data;
+					/* @var \Google_Service_Webmasters_SitesListResponse $response Response object. */
+					return $this->map_sites( (array) $response->getSiteEntry() );
 				case 'matched-sites':
 					/* @var \Google_Service_Webmasters_SitesListResponse $response Response object. */
 					$sites            = $this->map_sites( (array) $response->getSiteEntry() );
