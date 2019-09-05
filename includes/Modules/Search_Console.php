@@ -255,39 +255,34 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 
 					return $data;
 				case 'matched-sites':
-					$sites = $response->getSiteEntry();
-					$urls  = array();
+					/* @var \Google_Service_Webmasters_SitesListResponse $response Response object. */
+					$sites            = $this->map_sites( (array) $response->getSiteEntry() );
+					$current_url      = $this->context->get_reference_site_url();
+					$current_host     = wp_parse_url( $current_url, PHP_URL_HOST );
+					$property_matches = array_filter(
+						$sites,
+						function ( array $site ) use ( $current_host ) {
+							$site_host = wp_parse_url( $site['siteUrl'], PHP_URL_HOST );
 
-					foreach ( $sites as $site ) {
-						$url = $site->getSiteUrl();
-
-						if ( 'sc-set' === substr( $url, 0, 6 ) ) {
-							continue;
+							// Ensure host names overlap, from right to left.
+							return 0 === strpos( strrev( $current_host ), strrev( $site_host ) );
 						}
+					);
 
-						$urls[] = $url;
-					}
-
-					$current_url = trailingslashit( $this->context->get_reference_site_url() );
-					$url_matches = array();
-
-					foreach ( $urls as $url ) {
-						$host = wp_parse_url( $url, PHP_URL_HOST );
-
-						if ( empty( $host ) || false === strpos( $current_url, (string) $host ) ) {
-							continue;
-						}
-
-						$url_matches[] = $url;
-					}
-
-					if ( empty( $url_matches ) ) {
-						$url_matches[] = $current_url;
-					}
+					$exact_match = array_reduce(
+						$property_matches,
+						function ( $match, array $site ) use ( $current_url ) {
+							if ( ! $match && trailingslashit( $current_url ) === trailingslashit( $site['siteUrl'] ) ) {
+								return $site;
+							}
+							return $match;
+						},
+						null
+					);
 
 					return array(
-						'exact_match'      => in_array( $current_url, $url_matches, true ) ? $current_url : '',
-						'property_matches' => $url_matches,
+						'exactMatch'      => $exact_match, // (array) single site object, or null if no match.
+						'propertyMatches' => $property_matches, // (array) of site objects, or empty array if none.
 					);
 				case 'sc-site-analytics':
 				case 'search-keywords':
