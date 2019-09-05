@@ -132,8 +132,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 
 			// POST.
 			'site'            => '',
-			'save-property'   => '',
-			'insert'          => '',
 		);
 	}
 
@@ -234,41 +232,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						return array(
 							'siteUrl'         => $site->getSiteUrl(),
 							'permissionLevel' => $site->getPermissionLevel(),
-						);
-					};
-				case 'save-property':
-					if ( ! isset( $data['siteURL'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'siteURL' ), array( 'status' => 400 ) );
-					}
-					return function() use ( $data ) {
-						$current_user = wp_get_current_user();
-						if ( ! $current_user || ! $current_user->exists() ) {
-							return new WP_Error( 'unknown_user', __( 'Unknown user.', 'google-site-kit' ) );
-						}
-						$response = $this->options->set( self::PROPERTY_OPTION, $data['siteURL'] );
-						return array(
-							'updated' => $response,
-							'status'  => true,
-						);
-					};
-				case 'insert':
-					if ( ! isset( $data['siteURL'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'siteURL' ), array( 'status' => 400 ) );
-					}
-					return function() use ( $data ) {
-						$client     = $this->get_client();
-						$orig_defer = $client->shouldDefer();
-						$client->setDefer( false );
-						$site = $this->get_webmasters_service()->sites->add( trailingslashit( $data['siteURL'] ) );
-						$client->setDefer( $orig_defer );
-						if ( 204 !== $site->getStatusCode() ) {
-							return new WP_Error( 'failed_to_add_site_to_search_console', __( 'Error adding the site to Search Console.', 'google-site-kit' ), array( 'status' => 500 ) );
-						}
-						$this->options->set( self::PROPERTY_OPTION, $data['siteURL'] );
-						return array(
-							'sites' => array( $data['siteURL'] ),
 						);
 					};
 			}
