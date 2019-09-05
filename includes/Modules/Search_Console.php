@@ -152,14 +152,9 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'sites':
-					$service = $this->get_service( 'webmasters' );
-					return $service->sites->listSites();
+					return $this->get_webmasters_service()->sites->listSites();
 				case 'matched-sites':
-					$service = $this->get_service( 'webmasters' );
-					return $service->sites->listSites();
-				case 'is-site-exist':
-					$service = $this->get_service( 'webmasters' );
-					return $service->sites->listSites();
+					return $this->get_webmasters_service()->sites->listSites();
 				case 'sc-site-analytics':
 					$page       = ! empty( $data['url'] ) ? $data['url'] : '';
 					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
@@ -220,8 +215,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						$client     = $this->get_client();
 						$orig_defer = $client->shouldDefer();
 						$client->setDefer( false );
-						$service = $this->get_service( 'webmasters' );
-						$site    = $service->sites->add( trailingslashit( $data['siteURL'] ) );
+						$site = $this->get_webmasters_service()->sites->add( trailingslashit( $data['siteURL'] ) );
 						$client->setDefer( $orig_defer );
 						if ( 204 !== $site->getStatusCode() ) {
 							return new WP_Error( 'failed_to_add_site_to_search_console', __( 'Error adding the site to Search Console.', 'google-site-kit' ), array( 'status' => 500 ) );
@@ -364,8 +358,9 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			$request->setRowLimit( $args['row_limit'] );
 		}
 
-		$service = $this->get_service( 'webmasters' );
-		return $service->searchanalytics->query( $this->context->get_reference_site_url(), $request );
+		return $this->get_webmasters_service()
+			->searchanalytics
+			->query( $this->context->get_reference_site_url(), $request );
 	}
 
 	/**
