@@ -63,11 +63,9 @@ class SearchConsole extends Component {
 			const { exactMatch } = await data.get( TYPE_MODULES, 'search-console', 'matched-sites' );
 
 			if ( exactMatch && sufficientPermissionLevels.includes( exactMatch.permissionLevel ) ) {
-				const savePropertyResponse = await data.set( TYPE_MODULES, 'search-console', 'save-property', { siteURL: exactMatch.siteUrl } );
+				await data.set( TYPE_MODULES, 'search-console', 'site', { siteUrl: exactMatch.siteUrl } );
 
-				if ( true === savePropertyResponse.status ) {
-					return this.props.searchConsoleSetup( exactMatch.siteUrl );
-				}
+				return this.props.searchConsoleSetup( exactMatch.siteUrl );
 			}
 		} catch {}
 

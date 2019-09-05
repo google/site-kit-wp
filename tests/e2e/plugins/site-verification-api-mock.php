@@ -113,16 +113,17 @@ add_action( 'rest_api_init', function () {
 
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'modules/search-console/data/save-property',
+		'modules/search-console/data/site',
 		array(
 			'methods'  => 'POST',
 			'callback' => function ( WP_REST_Request $request ) {
 				$data = $request->get_param( 'data' );
 
-				$response = update_option( 'googlesitekit_search_console_property', $data['siteURL'] );
+				update_option( 'googlesitekit_search_console_property', $data['siteUrl'] );
+
 				return array(
-					'updated' => $response,
-					'status'  => true,
+					'siteUrl'         => $data['siteUrl'],
+					'permissionLevel' => 'siteOwner',
 				);
 			}
 		),
