@@ -59,9 +59,10 @@ class SearchConsole extends Component {
 		}
 
 		try {
+			const sufficientPermissionLevels = [ 'siteRestrictedUser', 'siteOwner', 'siteFullUser' ];
 			const { exactMatch } = await data.get( TYPE_MODULES, 'search-console', 'matched-sites' );
 
-			if ( exactMatch ) {
+			if ( exactMatch && sufficientPermissionLevels.includes( exactMatch.permissionLevel ) ) {
 				const savePropertyResponse = await data.set( TYPE_MODULES, 'search-console', 'save-property', { siteURL: exactMatch.siteUrl } );
 
 				if ( true === savePropertyResponse.status ) {
