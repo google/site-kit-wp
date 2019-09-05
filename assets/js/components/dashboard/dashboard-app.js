@@ -17,18 +17,22 @@
  */
 
 /**
- * Internal dependencies
- */
-import DashboardMain from './dashboard-main';
-/**
  * External dependencies
  */
 import Header from 'GoogleComponents/header';
-import DashboardNotifications from './dashboard-notifications';
+import DateRangeSelector from 'GoogleComponents/date-range-selector';
+import PageHeader from 'GoogleComponents/page-header';
 import 'GoogleComponents/publisher-wins';
 import 'GoogleComponents/notifications';
 
+/**
+ * Internal dependencies
+ */
+import DashboardMain from './dashboard-main';
+import DashboardNotifications from './dashboard-notifications';
+
 const { Component, Fragment } = wp.element;
+const { __ } = wp.i18n;
 
 class DashboardApp extends Component {
 	render() {
@@ -39,6 +43,21 @@ class DashboardApp extends Component {
 				<div className="googlesitekit-module-page">
 					<div className="mdc-layout-grid">
 						<div className="mdc-layout-grid__inner">
+							<div className="
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-10-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-2-phone
+							">
+								<PageHeader
+									className="googlesitekit-page-header__page-title"
+									title={ __( 'Site Overview', 'google-site-kit' ) }
+								/>
+							</div>
+							<div className="
+									mdc-layout-grid__cell
+									mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-2-phone mdc-layout-grid__cell--align-top mdc-layout-grid__cell--align-right
+							">
+								<DateRangeSelector />
+							</div>
 							<DashboardMain />
 						</div>
 					</div>
