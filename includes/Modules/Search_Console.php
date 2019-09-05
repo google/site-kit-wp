@@ -128,7 +128,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			'sites'             => 'webmasters',
 			'matched-sites'     => 'webmasters',
 			'sc-site-analytics' => 'webmasters',
-			'search-keywords'   => 'webmasters',
 			'index-status'      => 'webmasters',
 			'searchanalytics'   => 'webmasters',
 
@@ -193,19 +192,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 							'start_date' => $date_range[0],
 							'end_date'   => $date_range[1],
 							'page'       => $page,
-						)
-					);
-				case 'search-keywords':
-					$page       = ! empty( $data['url'] ) ? $data['url'] : '';
-					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
-					$date_range = $this->parse_date_range( $date_range, 1, 3 );
-					return $this->create_search_analytics_data_request(
-						array(
-							'dimensions' => array( 'query' ),
-							'start_date' => $date_range[0],
-							'end_date'   => $date_range[1],
-							'page'       => $page,
-							'row_limit'  => 10,
 						)
 					);
 				case 'index-status':
@@ -307,7 +293,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					);
 				case 'searchanalytics':
 				case 'sc-site-analytics':
-				case 'search-keywords':
 				case 'index-status':
 					return $response->getRows();
 			}
