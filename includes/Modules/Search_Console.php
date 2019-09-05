@@ -127,7 +127,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			// GET.
 			'sites'           => 'webmasters',
 			'matched-sites'   => 'webmasters',
-			'index-status'    => 'webmasters',
 			'searchanalytics' => 'webmasters',
 
 			// POST.
@@ -180,13 +179,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					}
 
 					return $this->create_search_analytics_data_request( $data_request );
-				case 'index-status':
-					return $this->create_search_analytics_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( '365daysAgo' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( 'yesterday' ) ),
-						)
-					);
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
@@ -287,7 +279,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						'propertyMatches' => $property_matches, // (array) of site objects, or empty array if none.
 					);
 				case 'searchanalytics':
-				case 'index-status':
 					return $response->getRows();
 			}
 		}
