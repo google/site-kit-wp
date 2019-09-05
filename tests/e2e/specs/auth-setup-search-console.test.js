@@ -39,7 +39,7 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
-		
+
 		// Simulate that the user is already verified.
 		await wpApiFetch( {
 			path: 'google-site-kit/v1/e2e/verify-site',
