@@ -184,7 +184,7 @@ class AnalyticsTest extends TestCase {
 				'use-snippet',
 				'amp-client-id-opt-in',
 				'goals',
-				'get-accounts',
+				'accounts-properties-profiles',
 				'get-properties',
 				'get-profiles',
 				'tag-permission',

@@ -35,7 +35,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( 'modules/analytics/data/get-accounts' ) && getAccountsRequestHandler ) {
+			if ( request.url().match( 'modules/analytics/data/accounts-properties-profiles' ) && getAccountsRequestHandler ) {
 				getAccountsRequestHandler( request );
 			} else if ( request.url().match( 'modules/analytics/data/tag-permission' ) && tagPermissionRequestHandler ) {
 				tagPermissionRequestHandler( request );

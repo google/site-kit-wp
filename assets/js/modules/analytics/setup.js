@@ -257,7 +257,7 @@ class AnalyticsSetup extends Component {
 				existingPropertyId: existingTagData.propertyId,
 			} : {};
 
-			const responseData = await data.get( TYPE_MODULES, 'analytics', 'get-accounts', queryArgs, false );
+			const responseData = await data.get( TYPE_MODULES, 'analytics', 'accounts-properties-profiles', queryArgs, false );
 			if ( 0 === responseData.accounts.length ) {
 				newState = {
 					...newState,
@@ -266,7 +266,7 @@ class AnalyticsSetup extends Component {
 				};
 
 				// clear the cache.
-				data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'get-accounts' );
+				data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 			} else if ( ! selectedAccount ) {
 				let matchedProperty = null;
 				if ( responseData.matchedProperty ) {
@@ -289,7 +289,7 @@ class AnalyticsSetup extends Component {
 					} );
 				}
 			} else if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.id === selectedAccount ) ) {
-				data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'get-accounts' );
+				data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 
 				responseData.accounts.unshift( {
 					id: 0,
@@ -476,7 +476,7 @@ class AnalyticsSetup extends Component {
 		try {
 			const response = await data.set( TYPE_MODULES, 'analytics', 'save', analyticAccount );
 
-			data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'get-accounts' );
+			data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 			await this.getAccounts();
 
 			googlesitekit.modules.analytics.settings.accountId = response.accountId;

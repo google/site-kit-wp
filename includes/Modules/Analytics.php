@@ -428,7 +428,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			'amp-client-id-opt-in'     => '',
 			// GET.
 			'goals'                    => 'analytics',
-			'get-accounts'             => 'analytics',
+			'accounts-properties-profiles'             => 'analytics',
 			'get-properties'           => 'analytics',
 			'get-profiles'             => 'analytics',
 			'tag-permission'           => '',
@@ -530,7 +530,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 					$service = $this->get_service( 'analytics' );
 					return $service->management_goals->listManagementGoals( $connection['accountId'], $connection['propertyId'], $connection['profileId'] );
-				case 'get-accounts':
+				case 'accounts-properties-profiles':
 					if ( ! empty( $data['existingAccountId'] ) && ! empty( $data['existingPropertyId'] ) ) {
 						$this->_existing_tag_account = array(
 							'accountId'  => $data['existingAccountId'],
@@ -567,7 +567,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 								array( 'status' => 400 )
 							);
 						}
-						$accounts               = $this->get_data( 'get-accounts' );
+						$accounts               = $this->get_data( 'accounts-properties-profiles' );
 						$has_access_to_property = $this->has_access_to_property( $data['tag'], $accounts['accounts'] );
 
 						if ( empty( $has_access_to_property ) ) {
@@ -1030,7 +1030,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 					// TODO: Parse this response to a regular array.
 					break;
-				case 'get-accounts':
+				case 'accounts-properties-profiles':
 					$response = array(
 						// TODO: Parse this response to a regular array.
 						'accounts'   => $response->getItems(),
