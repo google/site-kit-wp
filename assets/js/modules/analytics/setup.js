@@ -376,7 +376,7 @@ class AnalyticsSetup extends Component {
 				accountId: selectValue,
 			};
 
-			const responseData = await data.get( TYPE_MODULES, 'analytics', 'get-properties', queryArgs );
+			const responseData = await data.get( TYPE_MODULES, 'analytics', 'properties-profiles', queryArgs );
 
 			const chooseProperty = {
 				id: 0,

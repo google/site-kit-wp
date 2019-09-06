@@ -185,7 +185,7 @@ class AnalyticsTest extends TestCase {
 				'amp-client-id-opt-in',
 				'goals',
 				'accounts-properties-profiles',
-				'get-properties',
+				'properties-profiles',
 				'get-profiles',
 				'tag-permission',
 				'adsense',

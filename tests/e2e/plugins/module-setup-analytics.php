@@ -201,7 +201,7 @@ add_action( 'rest_api_init', function () {
 	// Called when switching accounts
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'modules/analytics/data/get-properties',
+		'modules/analytics/data/properties-profiles',
 		array(
 			'callback' => function ( \WP_REST_Request $request ) use ( $properties, $profiles ) {
 				return array(

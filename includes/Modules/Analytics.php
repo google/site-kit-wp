@@ -429,7 +429,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			// GET.
 			'goals'                    => 'analytics',
 			'accounts-properties-profiles'             => 'analytics',
-			'get-properties'           => 'analytics',
+			'properties-profiles'           => 'analytics',
 			'get-profiles'             => 'analytics',
 			'tag-permission'           => '',
 			'adsense'                  => 'analyticsreporting',
@@ -539,7 +539,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 					$service = $this->get_service( 'analytics' );
 					return $service->management_accounts->listManagementAccounts();
-				case 'get-properties':
+				case 'properties-profiles':
 					if ( ! isset( $data['accountId'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
@@ -1057,7 +1057,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							$current_url = untrailingslashit( $this->context->get_reference_site_url() );
 							$urls        = $this->permute_site_url( $current_url );
 							foreach ( $response['accounts'] as $account ) {
-								$properties = $this->get_data( 'get-properties', array( 'accountId' => $account->getId() ) );
+								$properties = $this->get_data( 'properties-profiles', array( 'accountId' => $account->getId() ) );
 								if ( is_wp_error( $properties ) ) {
 									continue;
 								}
@@ -1082,7 +1082,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						return $response;
 					}
 
-					$properties = $this->get_data( 'get-properties', array( 'accountId' => $found_account_id ) );
+					$properties = $this->get_data( 'properties-profiles', array( 'accountId' => $found_account_id ) );
 					if ( is_wp_error( $properties ) ) {
 						return $response;
 					}
@@ -1104,7 +1104,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 
 					return $result;
-				case 'get-properties':
+				case 'properties-profiles':
 					$response = array(
 						// TODO: Parse this response to a regular array.
 						'properties' => $response->getItems(),
@@ -1291,7 +1291,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 		foreach ( $accounts as $account ) {
 			$account_id = $account->getId();
-			$properties = $this->get_data( 'get-properties', array( 'accountId' => $account_id ) );
+			$properties = $this->get_data( 'properties-profiles', array( 'accountId' => $account_id ) );
 
 			if ( is_wp_error( $properties ) ) {
 				continue;
