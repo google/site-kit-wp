@@ -1355,9 +1355,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	}
 
 	/**
-	 * Get configured Analytics Reporting service object instance.
+	 * Gets the configured Analytics Reporting service object instance.
 	 *
-	 * @return Google_Service|\Google_Service_AnalyticsReporting
+	 * @return \Google_Service_AnalyticsReporting The Analytics Reporting API service.
 	 */
 	private function get_analyticsreporting_service() {
 		return $this->get_service( 'analyticsreporting' );
