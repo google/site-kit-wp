@@ -336,3 +336,35 @@ export const isDataZeroForTrafficSources = ( data ) => {
 
 	return false;
 };
+
+/**
+ * Default data object for making Analytics adsense requests.
+ * @type {Object}
+ */
+export const analyticsAdsenseReportDataDefaults = {
+	dimensions: [
+		'ga:pageTitle',
+		'ga:pagePath',
+	].join( ',' ),
+	metrics: [
+		{
+			expression: 'ga:adsenseRevenue',
+			alias: 'Earnings',
+		},
+		{
+			expression: 'ga:adsenseECPM',
+			alias: 'Page RPM',
+		},
+		{
+			expression: 'ga:adsensePageImpressions',
+			alias: 'Impressions',
+		},
+	],
+	orderby: [
+		{
+			fieldName: 'ga:adsenseRevenue',
+			sortOrder: 'DESCENDING',
+		},
+	],
+	limit: 10,
+};

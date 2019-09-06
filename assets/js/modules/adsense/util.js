@@ -26,6 +26,11 @@ import {
 	sendAnalyticsTrackingEvent,
 } from 'GoogleUtil';
 
+/**
+ * Internal dependencies
+ */
+import { analyticsAdsenseReportDataDefaults } from '../analytics/util';
+
 const { each, find, filter } = lodash;
 const { __, sprintf } = wp.i18n;
 
@@ -428,7 +433,7 @@ export const isAdsenseConnectedAnalytics = async () => {
 	let adsenseConnect = true;
 
 	if ( active ) {
-		await data.get( TYPE_MODULES, 'analytics', 'adsense' ).then( ( res ) => {
+		await data.get( TYPE_MODULES, 'analytics', 'report', analyticsAdsenseReportDataDefaults ).then( ( res ) => {
 			if ( res ) {
 				adsenseConnect = true;
 			}
