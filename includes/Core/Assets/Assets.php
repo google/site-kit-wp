@@ -13,9 +13,6 @@ namespace Google\Site_Kit\Core\Assets;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Cache;
-use Google\Site_Kit\Core\Authentication\Credentials;
-use Google\Site_Kit\Core\Authentication\Profile;
-use Google\Site_Kit\Core\Util\AMP_Trait;
 
 /**
  * Class managing assets.
@@ -25,7 +22,6 @@ use Google\Site_Kit\Core\Util\AMP_Trait;
  * @ignore
  */
 final class Assets {
-	use AMP_Trait;
 
 	/**
 	 * Plugin context.
@@ -129,7 +125,7 @@ final class Assets {
 			'Roboto:300,300i,400,400i,500,500i,700,700i',
 		);
 
-		if ( $this->is_amp() ) {
+		if ( $this->context->is_amp() ) {
 			$fonts_url = add_query_arg(
 				array(
 					'family'  => implode( '|', $font_families ),
@@ -469,7 +465,8 @@ final class Assets {
 				'name'    => $current_user->display_name,
 				'picture' => get_avatar_url( $current_user->user_email ),
 			),
-			'AMPenabled'       => function_exists( 'is_amp_endpoint' ),
+			'AMPenabled'       => (bool) $this->context->get_amp_mode(),
+			'ampMode'          => $this->context->get_amp_mode(),
 			'homeURL'          => home_url(),
 		);
 

@@ -13,12 +13,9 @@ namespace Google\Site_Kit\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
-use Google\Site_Kit\Core\Util\AMP_Trait;
 use Google_Client;
-use Google_Service;
 use Google_Service_Exception;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use WP_Error;
 use Exception;
 
@@ -30,7 +27,7 @@ use Exception;
  * @ignore
  */
 final class TagManager extends Module implements Module_With_Scopes {
-	use Module_With_Scopes_Trait, AMP_Trait;
+	use Module_With_Scopes_Trait;
 
 	const OPTION = 'googlesitekit_tagmanager_settings';
 
@@ -171,7 +168,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 	 */
 	protected function print_gtm_js() {
 		// On AMP, do not print the script tag, falling back to 'amp_analytics_entries' below.
-		if ( $this->is_amp() ) {
+		if ( $this->context->is_amp() ) {
 			return;
 		}
 
@@ -203,7 +200,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 	 */
 	protected function print_gtm_no_js() {
 		// On AMP, do not print the script tag.
-		if ( $this->is_amp() ) {
+		if ( $this->context->is_amp() ) {
 			return;
 		}
 
@@ -227,7 +224,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 	 * @since 1.0.0
 	 */
 	protected function print_amp_gtm() {
-		if ( ! $this->is_amp() ) {
+		if ( ! $this->context->is_amp() ) {
 			return;
 		}
 
@@ -277,14 +274,14 @@ final class TagManager extends Module implements Module_With_Scopes {
 	protected function get_datapoint_services() {
 		return array(
 			// GET / POST.
-			'connection'      => '',
-			'account-id'      => '',
-			'container-id'    => '',
+			'connection'          => '',
+			'account-id'          => '',
+			'container-id'        => '',
 			// GET.
-			'list-accounts'   => 'tagmanager',
-			'list-containers' => 'tagmanager',
+			'accounts-containers' => 'tagmanager',
+			'containers'          => 'tagmanager',
 			// POST.
-			'save'            => '',
+			'settings'            => '',
 		);
 	}
 
@@ -358,13 +355,13 @@ final class TagManager extends Module implements Module_With_Scopes {
 						}
 						return $option['containerId'];
 					};
-				case 'list-accounts':
+				case 'accounts-containers':
 					if ( ! empty( $data['accountId'] ) ) {
 						$this->_list_accounts_data = $data;
 					}
 					$service = $this->get_service( 'tagmanager' );
 					return $service->accounts->listAccounts();
-				case 'list-containers':
+				case 'containers':
 					if ( ! isset( $data['accountId'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
@@ -410,7 +407,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'save':
+				case 'settings':
 					if ( ! isset( $data['accountId'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
@@ -490,7 +487,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 	protected function parse_data_response( $method, $datapoint, $response ) {
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'list-accounts':
+				case 'accounts-containers':
 					$response = array(
 						// TODO: Parse this response to a regular array.
 						'accounts'   => $response->getAccount(),
@@ -513,7 +510,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 					}
 
 					return array_merge( $response, $containers );
-				case 'list-containers':
+				case 'containers':
 					$account_id = null;
 					if ( ! empty( $this->_containers_account_id ) ) {
 						$account_id = $this->_containers_account_id;
@@ -521,12 +518,9 @@ final class TagManager extends Module implements Module_With_Scopes {
 						$this->_containers_account_id = null;
 					}
 
-					$response = array(
-						// TODO: Parse this response to a regular array.
-						'containers' => $response->getContainer(),
-					);
+					$response = $response->getContainer();
 
-					if ( 0 === count( $response['containers'] ) && ! empty( $account_id ) ) {
+					if ( empty( $response ) && ! empty( $account_id ) ) {
 						// If empty containers, attempt to create a new container.
 						$new_container = $this->create_container( $account_id );
 						if ( is_wp_error( $new_container ) ) {

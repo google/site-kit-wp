@@ -23,6 +23,7 @@ import SvgIcon from 'GoogleUtil/svg-icon';
 
 export * from './storage';
 
+const { apiFetch } = wp;
 const {
 	addFilter,
 	applyFilters,
@@ -590,30 +591,49 @@ export const findTagInHtmlContent = ( html, module ) => {
  * while requesting list of accounts.
  *
  * @param {string} module Module slug.
+ *
+ * @param {string|null} The tag id if found, otherwise null.
  */
 export const getExistingTag = async ( module ) => {
-	try {
-		let tagFound = data.getCache( module + '::existingTag', 300 );
+	const CACHE_KEY = `${ module }::existingTag`;
+	const { homeURL, ampMode } = googlesitekit.admin;
 
-		if ( 'undefined' === typeof tagFound ) {
-			const html = await fetch( `${ googlesitekit.admin.homeURL }?tagverify=1&timestamp=${ Date.now() }` ).then( ( res ) => {
-				return res.text();
-			} );
+	let tagFound = data.getCache( CACHE_KEY, 300 );
 
-			tagFound = findTagInHtmlContent( html, module );
-			if ( ! tagFound ) {
-				tagFound = '';
+	if ( tagFound === undefined ) {
+		try {
+			tagFound = await scrapeTag( addQueryArgs( homeURL, { tagverify: 1, timestamp: Date.now() } ), module );
+
+			if ( ! tagFound && 'secondary' === ampMode ) {
+				tagFound = await apiFetch( { path: '/wp/v2/posts?per_page=1' } ).then(
+					// Scrape the first post in AMP mode, if there is one.
+					( posts ) => posts.slice( 0, 1 ).map( async ( post ) => {
+						return await scrapeTag( addQueryArgs( post.link, { amp: 1 } ), module );
+					} ).pop()
+				);
 			}
-		}
 
-		data.setCache( module + '::existingTag', tagFound );
+			data.setCache( CACHE_KEY, tagFound || null );
+		} catch ( err ) {}
+	}
 
-		return new Promise( ( resolve ) => {
-			resolve( tagFound );
-		} );
-	} catch ( err ) {
+	return Promise.resolve( tagFound || null );
+};
 
-		// nothing.
+/**
+ * Scrapes a module tag from the given URL.
+ *
+ * @param {string} url URL request and parse tag from.
+ * @param {string} module The module to parse tag for.
+ *
+ * @return {string|null} The tag id if found, otherwise null.
+ */
+export const scrapeTag = async ( url, module ) => {
+	try {
+		const html = await fetch( url ).then( ( res ) => res.text() );
+		return extractTag( html, module ) || null;
+	} catch ( error ) {
+		return null;
 	}
 };
 

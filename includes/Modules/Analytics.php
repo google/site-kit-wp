@@ -15,12 +15,9 @@ use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
-use Google\Site_Kit\Core\Util\AMP_Trait;
 use Google_Client;
-use Google_Service;
 use Google_Service_Exception;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use WP_Error;
 use Exception;
 
@@ -32,7 +29,7 @@ use Exception;
  * @ignore
  */
 final class Analytics extends Module implements Module_With_Screen, Module_With_Scopes {
-	use Module_With_Screen_Trait, Module_With_Scopes_Trait, AMP_Trait;
+	use Module_With_Screen_Trait, Module_With_Scopes_Trait;
 
 	const OPTION = 'googlesitekit_analytics_settings';
 
@@ -240,7 +237,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		}
 
 		// On AMP, do not print the script tag.
-		if ( $this->is_amp() ) {
+		if ( $this->context->is_amp() ) {
 			return;
 		}
 
@@ -313,7 +310,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			return;
 		}
 
-		if ( ! $this->is_amp() ) {
+		if ( ! $this->context->is_amp() ) {
 			return;
 		}
 
@@ -376,7 +373,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 * @since 1.0.0
 	 */
 	protected function print_amp_client_id_optin() {
-		if ( ! $this->is_amp() ) {
+		if ( ! $this->context->is_amp() ) {
 			return;
 		}
 
