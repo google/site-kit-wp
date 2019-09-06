@@ -417,7 +417,7 @@ class AnalyticsSetup extends Component {
 				propertyId: selectValue,
 			};
 
-			const responseData = await data.get( TYPE_MODULES, 'analytics', 'get-profiles', queryArgs );
+			const responseData = await data.get( TYPE_MODULES, 'analytics', 'profiles', queryArgs );
 
 			this.setState( {
 				profilesLoading: false,

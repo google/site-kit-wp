@@ -216,7 +216,7 @@ add_action( 'rest_api_init', function () {
 	// Called when switching properties
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'modules/analytics/data/get-profiles',
+		'modules/analytics/data/profiles',
 		array(
 			'callback' => function ( \WP_REST_Request $request ) use ( $profiles ) {
 				$profiles = filter_by_account_id( $profiles, $request->get_param( 'accountId' ) );

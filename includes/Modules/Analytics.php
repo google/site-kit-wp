@@ -430,7 +430,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			'goals'                    => 'analytics',
 			'accounts-properties-profiles'             => 'analytics',
 			'properties-profiles'           => 'analytics',
-			'get-profiles'             => 'analytics',
+			'profiles'             => 'analytics',
 			'tag-permission'           => '',
 			'adsense'                  => 'analyticsreporting',
 			'site-analytics'           => 'analyticsreporting',
@@ -546,7 +546,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 					$service = $this->get_service( 'analytics' );
 					return $service->management_webproperties->listManagementWebproperties( $data['accountId'] );
-				case 'get-profiles':
+				case 'profiles':
 					if ( ! isset( $data['accountId'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
@@ -1130,7 +1130,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						$found_property_id = $response['properties'][0]->getId();
 					}
 					$profiles = $this->get_data(
-						'get-profiles',
+						'profiles',
 						array(
 							'accountId'  => $found_account_id,
 							'propertyId' => $found_property_id,
@@ -1141,7 +1141,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 					$response['profiles'] = $profiles;
 					return $response;
-				case 'get-profiles':
+				case 'profiles':
 					// TODO: Parse this response to a regular array.
 					$response = $response->getItems();
 					if ( 0 === count( $response ) ) {
