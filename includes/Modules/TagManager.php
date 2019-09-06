@@ -74,10 +74,23 @@ final class TagManager extends Module implements Module_With_Scopes {
 		);
 
 		$print_amp_gtm = function() {
+			// This hook is only available in AMP plugin version >=1.3, so if it
+			// has already completed, do nothing.
+			if ( ! doing_action( 'amp_print_analytics' ) && did_action( 'amp_print_analytics' ) ) {
+				return;
+			}
+
 			$this->print_amp_gtm();
 		};
-		add_action( 'wp_footer', $print_amp_gtm ); // For AMP Native and Transitional.
-		add_action( 'amp_post_template_footer', $print_amp_gtm ); // For AMP Reader.
+		// Which actions are run depends on the version of the AMP Plugin
+		// (https://amp-wp.org/) available. Version >=1.3 exposes a
+		// new, `amp_print_analytics` action.
+		// For all AMP modes, AMP plugin version >=1.3.
+		add_action( 'amp_print_analytics', $print_amp_gtm );
+		// For AMP Standard and Transitional, AMP plugin version <1.3.
+		add_action( 'wp_footer', $print_amp_gtm, 20 );
+		// For AMP Reader, AMP plugin version <1.3.
+		add_action( 'amp_post_template_footer', $print_amp_gtm, 20 );
 
 		add_filter( // Load amp-analytics component for AMP Reader.
 			'amp_post_template_data',
