@@ -277,7 +277,7 @@ const dataAPI = {
 	/**
 	 * Sets data in the cache.
 	 *
-	 * @param {string} key  The cache key,
+	 * @param {string} key  The cache key.
 	 * @param {mixed}  data The data to cache.
 	 */
 	setCache( key, data ) {
@@ -304,7 +304,7 @@ const dataAPI = {
 	/**
 	 * Gets data from the cache.
 	 *
-	 * @param {string} key    The cache key,
+	 * @param {string} key    The cache key.
 	 * @param {number} maxAge The cache TTL in seconds. If not provided, no TTL will be checked.
 	 *
 	 * @return {mixed} Cached data, or undefined if lookup failed.
@@ -340,7 +340,7 @@ const dataAPI = {
 	/**
 	 * Removes data from the cache.
 	 *
-	 * @param {string} key The cache key,
+	 * @param {string} key The cache key.
 	 */
 	deleteCache( key ) {
 		lazilySetupLocalCache();
