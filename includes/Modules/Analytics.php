@@ -440,7 +440,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			'profiles'                     => 'analytics',
 			'tag-permission'               => '',
 			'report'                       => 'analyticsreporting',
-			'adsense'                      => 'analyticsreporting',
 			'site-analytics'               => 'analyticsreporting',
 			'top-pages'                    => 'analyticsreporting',
 			'overview'                     => 'analyticsreporting',
@@ -675,48 +674,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					$body->setReportRequests( array( $request ) );
 
 					return $this->get_analyticsreporting_service()->reports->batchGet( $body );
-				case 'adsense':
-					// Date range.
-					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
-					$date_range = $this->parse_date_range( $date_range );
-					// Dimensions.
-					$title_dimension = new \Google_Service_AnalyticsReporting_Dimension();
-					$title_dimension->setName( 'ga:pageTitle' );
-					$path_dimension = new \Google_Service_AnalyticsReporting_Dimension();
-					$path_dimension->setName( 'ga:pagePath' );
-					$request = $this->create_analytics_site_data_request(
-						array(
-							'dimensions' => array( $title_dimension, $path_dimension ),
-							'start_date' => $date_range[0],
-							'end_date'   => $date_range[1],
-							'page'       => ! empty( $data['url'] ) ? $data['url'] : '',
-							'row_limit'  => isset( $data['limit'] ) ? $data['limit'] : 10,
-						)
-					);
-					if ( is_wp_error( $request ) ) {
-						return $request;
-					}
-					// Metrics.
-					$adsense_revenue = new \Google_Service_AnalyticsReporting_Metric();
-					$adsense_revenue->setExpression( 'ga:adsenseRevenue' );
-					$adsense_revenue->setAlias( 'Earnings' );
-					$adsense_ecpm = new \Google_Service_AnalyticsReporting_Metric();
-					$adsense_ecpm->setExpression( 'ga:adsenseECPM' );
-					$adsense_ecpm->setAlias( 'Page RPM' );
-					$impressions = new \Google_Service_AnalyticsReporting_Metric();
-					$impressions->setExpression( 'ga:adsensePageImpressions' );
-					$impressions->setAlias( 'Impressions' );
-					$request->setMetrics( array( $adsense_revenue, $adsense_ecpm, $impressions ) );
-					// Order by.
-					$orderby = new \Google_Service_AnalyticsReporting_OrderBy();
-					$orderby->setFieldName( 'ga:adsenseRevenue' );
-					$orderby->setSortOrder( 'DESCENDING' );
-					$request->setOrderBys( $orderby );
-					// Reports batch requests.
-					$body = new \Google_Service_AnalyticsReporting_GetReportsRequest();
-					$body->setReportRequests( array( $request ) );
-					$service = $this->get_service( 'analyticsreporting' );
-					return $service->reports->batchGet( $body );
 				case 'site-analytics':
 					// Date range.
 					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
@@ -1248,14 +1205,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						}
 					}
 
-					return $response->getReports();
-				case 'adsense':
-					if ( isset( $response->error ) ) {
-						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
-					} else {
-						$this->options->set( 'googlesitekit_analytics_adsense_linked', '1' );
-					}
-					// TODO: Parse this response to a regular array.
 					return $response->getReports();
 				case 'site-analytics':
 				case 'top-pages':

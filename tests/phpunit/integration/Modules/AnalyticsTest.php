@@ -189,7 +189,6 @@ class AnalyticsTest extends TestCase {
 				'profiles',
 				'tag-permission',
 				'report',
-				'adsense',
 				'site-analytics',
 				'top-pages',
 				'overview',
