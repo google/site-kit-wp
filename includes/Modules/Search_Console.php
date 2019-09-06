@@ -16,7 +16,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google_Client;
-use Google_Service;
 use Google_Service_Exception;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\RequestInterface;
@@ -459,7 +458,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	/**
 	 * Get the configured Webmasters service instance.
 	 *
-	 * @return Google_Service|\Google_Service_Webmasters
+	 * @return \Google_Service_Webmasters The Search Console API service.
 	 */
 	private function get_webmasters_service() {
 		return $this->get_service( 'webmasters' );
