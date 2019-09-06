@@ -320,7 +320,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	/**
 	 * Get the configured siteverification service instance.
 	 *
-	 * @return Google_Service|\Google_Service_SiteVerification
+	 * @return \Google_Service_SiteVerification The Site Verification API service.
 	 */
 	private function get_siteverification_service() {
 		return $this->get_service( 'siteverification' );
