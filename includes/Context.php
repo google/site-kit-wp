@@ -218,11 +218,11 @@ final class Context {
 	}
 
 	/**
-	 * Get the current AMP mode.
+	 * Gets the current AMP mode.
 	 *
-	 * @return bool|string  'primary' if in standard mode,
-	 *                      'secondary' if in transitional or reader modes
-	 *                      false if AMP not active, or unknown mode
+	 * @return bool|string 'primary' if in standard mode,
+	 *                     'secondary' if in transitional or reader modes
+	 *                     false if AMP not active, or unknown mode
 	 */
 	public function get_amp_mode() {
 		if ( ! class_exists( 'AMP_Theme_Support' ) ) {
