@@ -195,7 +195,7 @@ final class Optimize extends Module {
 			// GET.
 			'amp-client-id-opt-in' => '',
 			// POST.
-			'save'                 => '',
+			'settings'             => '',
 		);
 	}
 
@@ -280,7 +280,7 @@ final class Optimize extends Module {
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'save':
+				case 'settings':
 					if ( ! isset( $data['optimizeId'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'optimizeId' ), array( 'status' => 400 ) );
