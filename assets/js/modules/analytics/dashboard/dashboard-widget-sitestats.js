@@ -28,7 +28,7 @@ import { TYPE_MODULES } from 'GoogleComponents/data';
 /**
  * Internal dependencies
  */
-import { extractAnalyticsDashboardData } from '../util';
+import { extractAnalyticsDashboardData, siteAnalyticsReportDataDefaults } from '../util';
 import PreviewBlock from 'GoogleComponents/preview-block';
 
 const { __ } = wp.i18n;
@@ -137,8 +137,8 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'site-analytics',
-			data: {},
+			datapoint: 'report',
+			data: siteAnalyticsReportDataDefaults,
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Single',

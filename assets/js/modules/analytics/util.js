@@ -368,3 +368,35 @@ export const analyticsAdsenseReportDataDefaults = {
 	],
 	limit: 10,
 };
+
+/**
+ * Default data object for making Analytics site analytics report requests.
+ * @type {Object}
+ */
+export const siteAnalyticsReportDataDefaults = {
+	compareDateRanges: 1,
+	dimensions: 'ga:date',
+	metrics: [
+		{
+			expression: 'ga:users',
+			alias: 'Users',
+		},
+		{
+			expression: 'ga:sessions',
+			alias: 'Sessions',
+		},
+		{
+			expression: 'ga:bounceRate',
+			alias: 'Bounce Rate',
+		},
+		{
+			expression: 'ga:avgSessionDuration',
+			alias: 'Average Session Duration',
+		},
+		{
+			expression: 'ga:goalCompletionsAll',
+			alias: 'Goal Completions',
+		},
+	],
+	limit: 180,
+};

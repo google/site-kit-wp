@@ -39,6 +39,7 @@ import {
 	calculateOverviewData,
 	extractAnalyticsDashboardSparklineData,
 	getAnalyticsErrorMessageFromData,
+	siteAnalyticsReportDataDefaults,
 } from '../util';
 
 const { __ } = wp.i18n;
@@ -329,8 +330,9 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'site-analytics',
+			datapoint: 'report',
 			data: {
+				...siteAnalyticsReportDataDefaults,
 				url: googlesitekit.permaLink,
 			},
 			priority: 1,
