@@ -594,16 +594,23 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'report':
 					$data = array_merge(
 						array(
-							'dateRange'  => 'last-28-days',
-							'url'        => '',
-							'dimensions' => '', // List of strings (comma-separated) of dimension names.
-							'metrics'    => array(), // list of objects with expression and optional alias properties.
-							'orderby'    => array(), // list of objects with fieldName and sortOrder properties.
+							'dateRange'         => 'last-28-days',
+							'url'               => '',
+							'dimensions'        => '',
+							// List of strings (comma-separated) of dimension names.
+							'metrics'           => array(),
+							// List of objects with expression and optional alias properties.
+							'orderby'           => array(),
+							// List of objects with fieldName and sortOrder properties.
+							'compareDateRanges' => false,
 						),
 						$data
 					);
 
-					list ( $start_date, $end_date ) = $this->parse_date_range( $data['dateRange'] );
+					list ( $start_date, $end_date ) = $this->parse_date_range(
+						$data['dateRange'],
+						$data['compareDateRanges'] ? 2 : 1
+					);
 
 					$dimensions = array_map(
 						function ( $name ) {
