@@ -41,29 +41,35 @@ class DashboardApp extends Component {
 				<Header />
 				<DashboardNotifications />
 				<div className="googlesitekit-module-page">
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-10-desktop
-								mdc-layout-grid__cell--span-6-tablet
-								mdc-layout-grid__cell--span-2-phone
-							">
-								<PageHeader
-									title={ __( 'Site Overview', 'google-site-kit' ) }
-								/>
-							</div>
-							<div className="
+					<div className="googlesitekit-dashboard">
+						<div className="mdc-layout-grid">
+							<div className="mdc-layout-grid__inner">
+								<div className="
 									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-2-desktop
-									mdc-layout-grid__cell--span-2-tablet
+									mdc-layout-grid__cell--span-10-desktop
+									mdc-layout-grid__cell--span-6-tablet
 									mdc-layout-grid__cell--span-2-phone
-									mdc-layout-grid__cell--align-middle
-									mdc-layout-grid__cell--align-right
-							">
-								<DateRangeSelector />
+								">
+									<PageHeader
+										className="
+											googlesitekit-heading-2
+											googlesitekit-dashboard__heading
+										"
+										title={ __( 'Site Overview', 'google-site-kit' ) }
+									/>
+								</div>
+								<div className="
+										mdc-layout-grid__cell
+										mdc-layout-grid__cell--span-2-desktop
+										mdc-layout-grid__cell--span-2-tablet
+										mdc-layout-grid__cell--span-2-phone
+										mdc-layout-grid__cell--align-middle
+										mdc-layout-grid__cell--align-right
+								">
+									<DateRangeSelector />
+								</div>
+								<DashboardMain />
 							</div>
-							<DashboardMain />
 						</div>
 					</div>
 				</div>
