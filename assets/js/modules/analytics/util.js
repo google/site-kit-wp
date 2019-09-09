@@ -438,6 +438,35 @@ export const overviewReportDataDefaults = {
 };
 
 /**
+ * Default data object for making Analytics traffic sources report requests.
+ * @type {Object}
+ */
+export const trafficSourcesReportDataDefaults = {
+	dimensions: 'ga:medium',
+	metrics: [
+		{
+			expression: 'ga:sessions',
+			alias: 'Sessions',
+		},
+		{
+			expression: 'ga:users',
+			alias: 'Users',
+		},
+		{
+			expression: 'ga:newUsers',
+			alias: 'New Users',
+		},
+	],
+	orderby: [
+		{
+			fieldName: 'ga:sessions',
+			sortOrder: 'DESCENDING',
+		},
+	],
+	limit: 10,
+};
+
+/**
  * Returns the default data object for making Analytics top pages report requests.
  *
  * @return {Object} Request data object defaults.

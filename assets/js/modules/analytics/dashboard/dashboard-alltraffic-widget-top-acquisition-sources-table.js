@@ -25,6 +25,10 @@ import { getTimeInSeconds } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import MiniChart from 'GoogleComponents/mini-chart';
 import PreviewTable from 'GoogleComponents/preview-table';
+/**
+ * Internal dependencies
+ */
+import { trafficSourcesReportDataDefaults } from '../util';
 
 const { __ } = wp.i18n;
 const { map } = lodash;
@@ -84,8 +88,8 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'traffic-sources',
-			data: {},
+			datapoint: 'report',
+			data: trafficSourcesReportDataDefaults,
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
