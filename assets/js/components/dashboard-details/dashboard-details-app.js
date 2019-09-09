@@ -59,7 +59,7 @@ class DashboardDetailsApp extends Component {
 										{ __( 'Back to the Site Kit Dashboard', 'google-site-kit' ) }
 									</Link>
 									<PageHeader
-										title={ __( 'Single Page Stats', 'google-site-kit' ) }
+										title={ __( 'Detailed Page Stats', 'google-site-kit' ) }
 										className="
 											googlesitekit-heading-2
 											googlesitekit-dashboard-single-url__heading
