@@ -19,14 +19,14 @@
 /**
  * External dependencies
  */
+import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
+import Layout from 'GoogleComponents/layout/layout';
 
 /**
  * Internal dependencies
  */
 import AnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/dashboard-widget-top-acquisition-sources-table';
 import DashboardAcquisitionPieChart from '../dashboard/dashboard-widget-acquisition-piechart';
-import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
-import Layout from 'GoogleComponents/layout/layout';
 
 const { Component, Fragment } = wp.element;
 const { __ } = wp.i18n;

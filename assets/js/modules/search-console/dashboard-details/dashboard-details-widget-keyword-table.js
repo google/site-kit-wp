@@ -19,12 +19,12 @@
 /**
  * External dependencies
  */
+import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
+import Layout from 'GoogleComponents/layout/layout';
 
 /**
  * Internal dependencies
  */
-import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
-import Layout from 'GoogleComponents/layout/layout';
 import SearchConsoleDashboardWidgetKeywordTable from '../dashboard/dashboard-widget-keyword-table';
 
 const { Component, Fragment } = wp.element;

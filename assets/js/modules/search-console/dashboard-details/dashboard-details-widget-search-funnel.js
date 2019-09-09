@@ -19,14 +19,14 @@
 /**
  * External dependencies
  */
+import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
+import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
+import Layout from 'GoogleComponents/layout/layout';
 
 /**
  * Internal dependencies
  */
-import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
-import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
 import DashboardSearchFunnelInner from '../dashboard/dashboard-widget-search-funnel-inner';
-import Layout from 'GoogleComponents/layout/layout';
 
 const { Component, Fragment } = wp.element;
 const { __ } = wp.i18n;
