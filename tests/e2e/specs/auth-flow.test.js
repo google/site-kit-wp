@@ -21,13 +21,14 @@ function stubGoogleSignIn( request ) {
 				location: createURL( '/', 'oauth2callback=1&code=valid-test-code&e2e-site-verification=1' ),
 			},
 		} );
-	} else if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/is-site-exist' ) ) {
+	} else if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/matched-sites' ) ) {
 		request.respond( {
 			status: 200,
 			contentType: 'application/json',
 			body: JSON.stringify( {
-				siteURL: process.env.WP_BASE_URL,
-				verified: true,
+				exactMatch: {
+					siteUrl: process.env.WP_BASE_URL,
+				},
 			} ),
 		} );
 	} else {

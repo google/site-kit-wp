@@ -6,18 +6,14 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
 /**
  * Internal dependencies
  */
-import { resetSiteKit, deactivateAllOtherPlugins, pasteText, wpApiFetch, useRequestInterception } from '../utils';
-
-const oauthClientConfig = JSON.stringify( {
-	web: {
-		client_id: 'test-client-id',
-		client_secret: 'test-client-secret',
-		project_id: 'test-project-id',
-		auth_uri: 'https://accounts.google.com/o/oauth2/auth',
-		token_uri: 'https://accounts.google.com/o/oauth2/token',
-		auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
-	},
-} );
+import {
+	deactivateAllOtherPlugins,
+	pasteText,
+	resetSiteKit,
+	testClientConfig,
+	useRequestInterception,
+	wpApiFetch,
+} from '../utils';
 
 describe( 'Site Kit set up flow for the first time with search console setup', () => {
 	beforeAll( async () => {
@@ -60,7 +56,7 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 		await page.waitForSelector( '#client-configuration' );
 
-		await pasteText( '#client-configuration', oauthClientConfig );
+		await pasteText( '#client-configuration', JSON.stringify( testClientConfig ) );
 		await expect( page ).toClick( '#wizard-step-one-proceed' );
 		await page.waitForSelector( '.googlesitekit-wizard-step--two button' );
 
@@ -80,16 +76,10 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 	} );
 
 	it( 'saves search console property when site exists', async () => {
-		// Simulate that site exists.
-		await wpApiFetch( {
-			path: 'google-site-kit/v1/e2e/sc-site-exists',
-			method: 'post',
-		} );
-
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 		await page.waitForSelector( '#client-configuration' );
 
-		await pasteText( '#client-configuration', oauthClientConfig );
+		await pasteText( '#client-configuration', JSON.stringify( testClientConfig ) );
 		await expect( page ).toClick( '#wizard-step-one-proceed' );
 		await page.waitForSelector( '.googlesitekit-wizard-step--two button' );
 
