@@ -145,14 +145,15 @@ const withData = (
 			 *
 			 * @param {Object} returnedData The data returned from the API.
 			 * @param {string} datapoint    The datapoint name resolved by the API.
-			 * @param {string} identifier   The object name, typically the module name eg 'analytics.
+			 * @param {Object} requestData  The data object for the request.
 			 */
-			const handleReturnedData = ( returnedData, datapoint, identifier ) => {
+			const handleReturnedData = ( returnedData, datapoint, requestData ) => {
 				// If available, `handleDataError` will be called for errors (with a string) and empty data.
 				const {
 					handleDataError,
 					handleDataSuccess,
 				} = this.props;
+				const { identifier } = requestData;
 
 				// Check to see if the returned data is an error. If so, getDataError will return a string.
 				const error = getDataError( returnedData );
@@ -182,6 +183,7 @@ const withData = (
 
 				// Resolve the returned data my setting state on the Component.
 				this.setState( {
+					requestData,
 					data: returnedData,
 					datapoint,
 					module: identifier,
@@ -199,7 +201,7 @@ const withData = (
 						addFilter( `googlesitekit.module${ acontext }DataRequest`,
 							`googlesitekit.data${ acontext }`, ( moduleData ) => {
 								data.callback = ( returnedData, datapoint ) => {
-									handleReturnedData( returnedData, datapoint, data.identifier );
+									handleReturnedData( returnedData, datapoint, data );
 								};
 								moduleData.push( data );
 								return moduleData;
@@ -212,7 +214,7 @@ const withData = (
 					addFilter( `googlesitekit.module${ data.context }DataRequest`,
 						`googlesitekit.data${ data.context }`, ( moduleData ) => {
 							data.callback = ( returnedData, datapoint ) => {
-								handleReturnedData( returnedData, datapoint, data.identifier );
+								handleReturnedData( returnedData, datapoint, data );
 							};
 							moduleData.push( data );
 							return moduleData;
@@ -228,6 +230,7 @@ const withData = (
 				module,
 				zeroData,
 				error,
+				requestData,
 			} = this.state;
 
 			// Render the loading component until we have data.
@@ -257,6 +260,7 @@ const withData = (
 				<DataDependentComponent
 					data={ data }
 					datapoint={ datapoint }
+					requestData={ requestData }
 					{ ...this.props }
 				/>
 			);
