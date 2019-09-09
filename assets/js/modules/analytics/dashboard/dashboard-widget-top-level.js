@@ -41,6 +41,7 @@ import {
 	getAnalyticsErrorMessageFromData,
 	siteAnalyticsReportDataDefaults,
 	overviewReportDataDefaults,
+	isDataZeroForReporting,
 } from '../util';
 
 const { __ } = wp.i18n;
@@ -211,33 +212,11 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 }
 
 const isDataZero = ( data, datapoint ) => {
-	if ( 'report' !== datapoint ) {
-		return false;
+	if ( 'report' === datapoint ) {
+		return isDataZeroForReporting( data );
 	}
 
-	// Handle empty data.
-	if ( ! data || ! data.length ) {
-		return true;
-	}
-
-	const overview = calculateOverviewData( data );
-
-	let totalUsers = '',
-		totalSessions = '',
-		totalPageViews = '';
-
-	if ( overview ) {
-		totalUsers = overview.totalUsers;
-		totalSessions = overview.totalSessions;
-		totalPageViews = overview.totalPageViews;
-	}
-
-	const analyticsDataIsEmpty =
-		0 === parseInt( totalUsers ) &&
-		0 === parseInt( totalSessions ) &&
-		0 === parseInt( totalPageViews );
-
-	return analyticsDataIsEmpty;
+	return false;
 };
 
 /*
