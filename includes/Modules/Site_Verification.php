@@ -32,7 +32,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	use Module_With_Scopes_Trait;
 
 	/**
-	 * Temporary storage for very specific data for 'siteverification-list' datapoint.
+	 * Temporary storage for very specific data for 'verification' datapoint.
 	 *
 	 * Bad to have, but works for now.
 	 *
@@ -73,12 +73,12 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	protected function get_datapoint_services() {
 		return array(
 			// GET.
-			'verified-sites'         => 'siteverification',
-			'siteverification-list'  => 'siteverification',
-			'siteverification-token' => 'siteverification',
+			'verification'       => 'siteverification',
+			'verification-token' => 'siteverification',
+			'verified-sites'     => 'siteverification',
 
 			// POST.
-			'siteverification'       => '',
+			'verification'       => '',
 		);
 	}
 
@@ -96,17 +96,17 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'verified-sites':
-					$service = $this->get_service( 'siteverification' );
-					return $service->webResource->listWebResource(); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
-				case 'siteverification-list':
+					return $this->get_siteverification_service()->webResource->listWebResource();
+				case 'verification':
 					// This is far from optimal and hacky, but works for now.
 					if ( ! empty( $data['siteURL'] ) ) {
 						$this->_siteverification_list_data = $data;
 					}
-					$service = $this->get_service( 'siteverification' );
-					return $service->webResource->listWebResource(); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
-				case 'siteverification-token':
+
+					return $this->get_siteverification_service()->webResource->listWebResource();
+				case 'verification-token':
 					$existing_token = $this->authentication->verification_tag()->get();
+
 					if ( ! empty( $existing_token ) ) {
 						return function() use ( $existing_token ) {
 							return array(
@@ -115,6 +115,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 							);
 						};
 					}
+
 					$current_url = ! empty( $data['siteURL'] ) ? $data['siteURL'] : $this->context->get_reference_site_url();
 					$site        = new \Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequestSite();
 					$site->setIdentifier( $current_url );
@@ -122,65 +123,88 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 					$request = new \Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequest();
 					$request->setSite( $site );
 					$request->setVerificationMethod( 'META' );
-					$service = $this->get_service( 'siteverification' );
-					return $service->webResource->getToken( $request ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
+
+					return $this->get_siteverification_service()->webResource->getToken( $request );
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
-				case 'siteverification':
+				case 'verification':
 					if ( ! isset( $data['siteURL'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'siteURL' ), array( 'status' => 400 ) );
 					}
+
 					return function() use ( $data ) {
 						$current_user = wp_get_current_user();
+
 						if ( ! $current_user || ! $current_user->exists() ) {
 							return new WP_Error( 'unknown_user', __( 'Unknown user.', 'google-site-kit' ) );
 						}
-						$site = $this->get_data( 'siteverification-list', $data );
+
+						$site = $this->get_data( 'verification', $data );
+
 						if ( is_wp_error( $site ) ) {
 							return $site;
 						}
+
 						$sites = array();
-						if ( isset( $site['verified'] ) && ! $site['verified'] ) {
-							$token = $this->get_data( 'siteverification-token', $data );
+
+						if ( ! empty( $site['verified'] ) ) {
+							$this->authentication->verification()->set( true );
+
+							return $site;
+						} else {
+							$token = $this->get_data( 'verification-token', $data );
+
 							if ( is_wp_error( $token ) ) {
 								return $token;
 							}
+
 							$this->authentication->verification_tag()->set( $token['token'] );
+
 							$client     = $this->get_client();
 							$orig_defer = $client->shouldDefer();
 							$client->setDefer( false );
-							$urls   = $this->permute_site_url( $data['siteURL'] );
 							$errors = new WP_Error();
-							foreach ( $urls as $url ) {
+
+							foreach ( $this->permute_site_url( $data['siteURL'] ) as $url ) {
 								$site = new \Google_Service_SiteVerification_SiteVerificationWebResourceResourceSite();
 								$site->setType( 'SITE' );
 								$site->setIdentifier( $url );
 								$resource = new \Google_Service_SiteVerification_SiteVerificationWebResourceResource();
 								$resource->setSite( $site );
+
 								try {
-									$sites[] = $this->get_service( 'siteverification' )->webResource->insert( 'META', $resource ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
+									$sites[] = $this->get_siteverification_service()->webResource->insert( 'META', $resource );
 								} catch ( Google_Service_Exception $e ) {
-									$message = $e->getErrors();
-									if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-										$message = $message[0]['message'];
-									}
+									$messages = wp_list_pluck( $e->getErrors(), 'message' );
+									$message  = array_shift( $messages );
+
 									$errors->add( $e->getCode(), $message, array( 'url' => $url ) );
 								} catch ( Exception $e ) {
 									$errors->add( $e->getCode(), $e->getMessage(), array( 'url' => $url ) );
 								}
 							}
+
 							$client->setDefer( $orig_defer );
+
 							if ( empty( $sites ) ) {
 								return $errors;
 							}
 						}
+
 						$this->authentication->verification()->set( true );
+
+						try {
+							$verification = $this->get_siteverification_service()->webResource->get( $data['siteURL'] );
+						} catch ( Google_Service_Exception $e ) {
+							$verification = array_shift( $sites );
+						}
+
 						return array(
-							'updated'    => true,
-							'sites'      => $sites,
-							'identifier' => $data['siteURL'],
+							'identifier' => $verification->getSite()->getIdentifier(),
+							'type'       => $verification->getSite()->getType(),
+							'verified'   => true,
 						);
 					};
 			}
@@ -205,6 +229,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 				case 'verified-sites':
 					$items = $response->getItems();
 					$data  = array();
+
 					foreach ( $items as $item ) {
 						$site                   = $item->getSite();
 						$data[ $item->getId() ] = array(
@@ -212,18 +237,22 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 							'type'       => $site->getType(),
 						);
 					}
+
 					return $data;
-				case 'siteverification-list':
+				case 'verification':
 					if ( is_array( $this->_siteverification_list_data ) && isset( $this->_siteverification_list_data['siteURL'] ) ) {
 						$current_url                       = trailingslashit( $this->_siteverification_list_data['siteURL'] );
 						$this->_siteverification_list_data = null;
 					} else {
 						$current_url = trailingslashit( $this->context->get_reference_site_url() );
 					}
+
 					$items = $response->getItems();
+
 					foreach ( $items as $item ) {
 						$site = $item->getSite();
 						$url  = trailingslashit( $site->getIdentifier() );
+
 						if ( 'SITE' === $site->getType() && $current_url === $url ) {
 							return array(
 								'identifier' => $site->getIdentifier(),
@@ -231,8 +260,10 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 								'verified'   => true,
 							);
 						}
+
 						if ( 'INET_DOMAIN' === $site->getType() ) {
 							$host = str_replace( array( 'http://', 'https://' ), '', $site->getIdentifier() );
+
 							if ( ! empty( $host ) && false !== strpos( trailingslashit( $current_url ), trailingslashit( $host ) ) ) {
 								$response = array(
 									'identifier' => $site->getIdentifier(),
@@ -244,15 +275,17 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 							}
 						}
 					}
+
 					return array(
 						'identifier' => $current_url,
 						'type'       => 'SITE',
 						'verified'   => false,
 					);
-				case 'siteverification-token':
+				case 'verification-token':
 					if ( is_array( $response ) ) {
 						return $response;
 					}
+
 					return array(
 						'method' => $response->getMethod(),
 						'token'  => $response->getToken(),
@@ -282,6 +315,15 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			'force_active' => true,
 			'internal'     => true,
 		);
+	}
+
+	/**
+	 * Get the configured siteverification service instance.
+	 *
+	 * @return \Google_Service_SiteVerification The Site Verification API service.
+	 */
+	private function get_siteverification_service() {
+		return $this->get_service( 'siteverification' );
 	}
 
 	/**

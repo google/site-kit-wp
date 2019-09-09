@@ -167,16 +167,16 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 			totalUsersChange = '',
 			goalCompletions = '',
 			goalCompletionsChange = '',
-			averageSessionDuration = '',
-			averageSessionDurationChange = '';
+			averageBounceRate = '',
+			averageBounceRateChange = '';
 
 		if ( overview ) {
 			totalUsers = overview.totalUsers;
 			totalUsersChange = overview.totalUsersChange;
 			goalCompletions = overview.goalCompletions;
 			goalCompletionsChange = overview.goalCompletionsChange;
-			averageSessionDuration = overview.averageSessionDuration;
-			averageSessionDurationChange = overview.averageSessionDurationChange;
+			averageBounceRate = overview.averageBounceRate;
+			averageBounceRateChange = overview.averageBounceRateChange;
 		}
 
 		return (
@@ -223,12 +223,13 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 					{
 						permaLink && (
 							<DataBlock
-								className="overview-average-time-on-page"
-								title={ __( 'Average Session Duration', 'google-site-kit' ) }
-								datapoint={ Math.round( averageSessionDuration ) }
-								datapointUnit={ __( 's', 'google-site-kit' ) }
-								change={ averageSessionDurationChange }
+								className="overview-bounce-rate"
+								title={ __( 'Bounce Rate', 'google-site-kit' ) }
+								datapoint={ Number( averageBounceRate ).toFixed( 2 ) }
+								datapointUnit={ __( '%', 'google-site-kit' ) }
+								change={ averageBounceRateChange }
 								changeDataUnit="%"
+								reverseArrowDirection
 								source={ {
 									name: __( 'Analytics', 'google-site-kit' ),
 									link: href,
@@ -236,8 +237,8 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 								sparkline={
 									extractedAnalytics &&
 										<Sparkline
-											data={ extractForSparkline( extractedAnalytics, 3 ) }
-											change={ averageSessionDurationChange }
+											data={ extractForSparkline( extractedAnalytics, 2 ) }
+											change={ averageBounceRateChange }
 											id="analytics-sessions-sparkline"
 										/>
 								}
