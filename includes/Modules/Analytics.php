@@ -596,23 +596,20 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'report':
 					$data = array_merge(
 						array(
-							'dateRange'         => 'last-28-days',
-							'url'               => '',
+							'dateRange'            => 'last-28-days',
+							'url'                  => '',
 							// List of strings (comma-separated) of dimension names.
-							'dimensions'        => '',
+							'dimensions'           => '',
 							// List of objects with expression and optional alias properties.
-							'metrics'           => array(),
+							'metrics'              => array(),
 							// List of objects with fieldName and sortOrder properties.
-							'orderby'           => array(),
+							'orderby'              => array(),
 							// Whether or not to double the requested range for comparison.
-							'compareDateRanges' => false,
+							'compareDateRanges'    => false,
+							// Whether or not to include an additional previous range from the given dateRange.
+							'includePreviousRange' => false,
 						),
 						$data
-					);
-
-					list ( $start_date, $end_date ) = $this->parse_date_range(
-						$data['dateRange'],
-						$data['compareDateRanges'] ? 2 : 1
 					);
 
 					$dimensions = array_map(
@@ -625,7 +622,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						explode( ',', $data['dimensions'] )
 					);
 
-					$request_args         = compact( 'start_date', 'end_date', 'dimensions' );
+					$request_args         = compact( 'dimensions' );
 					$request_args['page'] = $data['url'];
 
 					if ( ! empty( $data['limit'] ) ) {
@@ -637,6 +634,35 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					if ( is_wp_error( $request ) ) {
 						return $request;
 					}
+
+					$date_ranges = array(
+						$this->parse_date_range(
+							$data['dateRange'],
+							$data['compareDateRanges'] ? 2 : 1
+						),
+					);
+
+					if ( ! empty( $data['includePreviousRange'] ) ) {
+						$date_ranges[] = $this->parse_date_range(
+							$data['dateRange'],
+							$data['compareDateRanges'] ? 2 : 1,
+							1,
+							true
+						);
+					}
+
+					$date_ranges = array_map(
+						function ( $date_range ) {
+							list ( $start_date, $end_date ) = $date_range;
+							$date_range                     = new \Google_Service_AnalyticsReporting_DateRange();
+							$date_range->setStartDate( $start_date );
+							$date_range->setEndDate( $end_date );
+
+							return $date_range;
+						},
+						$date_ranges
+					);
+					$request->setDateRanges( $date_ranges );
 
 					$metrics = array_map(
 						function ( $metric_def ) {
