@@ -73,8 +73,8 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 			requestData,
 		} = this.props;
 
-		if ( data && ! data.error && 'function' === typeof requestData.onSuccess ) {
-			requestData.onSuccess.call( this, { data } );
+		if ( data && ! data.error && 'function' === typeof requestData.toState ) {
+			this.setState( requestData.toState );
 		}
 	}
 
@@ -239,6 +239,11 @@ const isDataZero = ( data, datapoint ) => {
 	return analyticsDataIsEmpty;
 };
 
+/*
+Note: toState callbacks below accept the current data and state into an object which is passed to setState.
+This is because withData changes the props passed to the child for each request.
+*/
+
 export default withData(
 	AnalyticsDashboardWidgetTopLevel,
 	[
@@ -252,11 +257,11 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
-			onSuccess( { data } ) {
-				if ( ! this.state.overview ) {
-					this.setState( {
+			toState( state, { data } ) {
+				if ( ! state.overview ) {
+					return {
 						overview: calculateOverviewData( data ),
-					} );
+					};
 				}
 			},
 		},
@@ -271,11 +276,11 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
-			onSuccess( { data } ) {
-				if ( ! this.state.extractedAnalytics ) {
-					this.setState( {
+			toState( state, { data } ) {
+				if ( ! state.extractedAnalytics ) {
+					return {
 						extractedAnalytics: extractAnalyticsDashboardSparklineData( data ),
-					} );
+					};
 				}
 			},
 		},
@@ -289,11 +294,11 @@ export default withData(
 			priority: 10,
 			maxAge: getTimeInSeconds( 'hour' ),
 			context: 'Dashboard',
-			onSuccess( { data } ) {
-				if ( ! this.state.goals ) {
-					this.setState( {
+			toState( state, { data } ) {
+				if ( ! state.goals ) {
+					return {
 						goals: data,
-					} );
+					};
 				}
 			},
 		},
