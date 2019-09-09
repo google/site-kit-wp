@@ -17,38 +17,47 @@
  */
 
 /**
+ * External dependencies
+ */
+import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
+import Layout from 'GoogleComponents/layout/layout';
+
+/**
  * Internal dependencies
  */
 import SearchConsoleDashboardWidgetKeywordTable from '../dashboard/dashboard-widget-keyword-table';
-/**
- * External dependencies
- */
-import Layout from 'GoogleComponents/layout/layout';
 
-const { Component } = wp.element;
+const { Component, Fragment } = wp.element;
 const { __, sprintf } = wp.i18n;
 
 class DashboardDetailsWidgetKeywordsTable extends Component {
 	render() {
-		const title = googlesitekit.permaLink ? __( 'Top search queries for your page', 'google-site-kit' ) : __( 'Top search queries for your site', 'google-site-kit' );
-
 		return (
-			<div className="
-				mdc-layout-grid__cell
-				mdc-layout-grid__cell--span-12
-			">
-				<Layout
-					title={ title }
-					header
-					footer
-					footerCtaLabel={ __( 'Search Console', 'google-site-kit' ) }
-					footerCtaLink={
-						sprintf( 'https://search.google.com/u/1/search-console?resource_id=%s', googlesitekit.admin.siteURL )
-					}
-				>
-					<SearchConsoleDashboardWidgetKeywordTable />
-				</Layout>
-			</div>
+			<Fragment>
+				<div className="
+					mdc-layout-grid__cell
+					mdc-layout-grid__cell--span-12
+				">
+					<DashboardModuleHeader
+						title={ __( 'Top Queries', 'google-site-kit' ) }
+						description={ __( 'What people searched for to find your page.', 'google-site-kit' ) }
+					/>
+				</div>
+				<div className="
+					mdc-layout-grid__cell
+					mdc-layout-grid__cell--span-12
+				">
+					<Layout
+						footer
+						footerCtaLabel={ __( 'Search Console', 'google-site-kit' ) }
+						footerCtaLink={
+							sprintf( 'https://search.google.com/u/1/search-console?resource_id=%s', googlesitekit.admin.siteURL )
+						}
+					>
+						<SearchConsoleDashboardWidgetKeywordTable />
+					</Layout>
+				</div>
+			</Fragment>
 		);
 	}
 }
