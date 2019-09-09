@@ -45,7 +45,9 @@ class DashboardApp extends Component {
 						<div className="mdc-layout-grid__inner">
 							<div className="
 								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-10-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-2-phone
+								mdc-layout-grid__cell--span-10-desktop
+								mdc-layout-grid__cell--span-6-tablet
+								mdc-layout-grid__cell--span-2-phone
 							">
 								<PageHeader
 									title={ __( 'Site Overview', 'google-site-kit' ) }
@@ -53,7 +55,11 @@ class DashboardApp extends Component {
 							</div>
 							<div className="
 									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-2-phone mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--align-right
+									mdc-layout-grid__cell--span-2-desktop
+									mdc-layout-grid__cell--span-2-tablet
+									mdc-layout-grid__cell--span-2-phone
+									mdc-layout-grid__cell--align-middle
+									mdc-layout-grid__cell--align-right
 							">
 								<DateRangeSelector />
 							</div>
