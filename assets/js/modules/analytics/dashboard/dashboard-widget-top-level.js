@@ -40,6 +40,7 @@ import {
 	extractAnalyticsDashboardSparklineData,
 	getAnalyticsErrorMessageFromData,
 	siteAnalyticsReportDataDefaults,
+	overviewReportDataDefaults,
 } from '../util';
 
 const { __ } = wp.i18n;
@@ -210,7 +211,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 }
 
 const isDataZero = ( data, datapoint ) => {
-	if ( 'overview' !== datapoint ) {
+	if ( 'report' !== datapoint ) {
 		return false;
 	}
 
@@ -250,8 +251,9 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'overview',
+			datapoint: 'report',
 			data: {
+				...overviewReportDataDefaults,
 				url: googlesitekit.permaLink,
 			},
 			priority: 1,

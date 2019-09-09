@@ -402,6 +402,42 @@ export const siteAnalyticsReportDataDefaults = {
 };
 
 /**
+ * Default data object for making Analytics site analytics report requests.
+ * @type {Object}
+ */
+export const overviewReportDataDefaults = {
+	includePreviousRange: 1,
+	dimensions: 'ga:date',
+	metrics: [
+		{
+			expression: 'ga:users',
+			alias: 'Users',
+		},
+		{
+			expression: 'ga:sessions',
+			alias: 'Sessions',
+		},
+		{
+			expression: 'ga:bounceRate',
+			alias: 'Bounce Rate',
+		},
+		{
+			expression: 'ga:avgSessionDuration',
+			alias: 'Average Session Duration',
+		},
+		{
+			expression: 'ga:goalCompletionsAll',
+			alias: 'Goal Completions',
+		},
+		{
+			expression: 'ga:pageviews',
+			alias: 'Pageviews',
+		},
+	],
+	limit: 10,
+};
+
+/**
  * Returns the default data object for making Analytics top pages report requests.
  *
  * @return {Object} Request data object defaults.
