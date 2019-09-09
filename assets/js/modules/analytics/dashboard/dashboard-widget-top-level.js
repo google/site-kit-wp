@@ -88,25 +88,25 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 	 * @return {null}
 	 */
 	processCallbackData( data, datapoint, prevProps = {} ) {
-		if ( ! data ) {
+		if ( ! data || datapoint === prevProps.datapoint ) {
 			return null;
 		}
 
 		switch ( datapoint ) {
 			case 'site-analytics':
-				this.setAnalyticsData( data, prevProps );
+				this.setAnalyticsData( data );
 				break;
 			case 'goals':
-				this.setGoalsData( data, prevProps );
+				this.setGoalsData( data );
 				break;
 			case 'overview':
-				this.setOverviewData( data, prevProps );
+				this.setOverviewData( data );
 				break;
 		}
 	}
 
-	setAnalyticsData( data, prevProps = {} ) {
-		if ( this.state.extractedAnalytics || 'site-analytics' === prevProps.datapoint ) {
+	setAnalyticsData( data ) {
+		if ( this.state.extractedAnalytics ) {
 			return null;
 		}
 
@@ -119,8 +119,8 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 		} );
 	}
 
-	setOverviewData( data, prevProps = {} ) {
-		if ( this.state.overview || 'overview' === prevProps.datapoint ) {
+	setOverviewData( data ) {
+		if ( this.state.overview ) {
 			return null;
 		}
 
@@ -133,17 +133,12 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 		} );
 	}
 
-	setGoalsData( data, prevProps = {} ) {
-		if ( this.state.goals || 'goals' === prevProps.datapoint ) {
+	setGoalsData( data ) {
+		if ( this.state.goals ) {
 			return null;
 		}
 
 		if ( data && data.error ) {
-			return null;
-		}
-
-		// do nothing.
-		if ( 'goals' === prevProps.datapoint ) {
 			return null;
 		}
 
