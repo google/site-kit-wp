@@ -11,11 +11,8 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
-use Google\Site_Kit\Core\Util\AMP_Trait;
 use Google_Client;
-use Google_Service;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use WP_Error;
 
 /**
@@ -26,7 +23,6 @@ use WP_Error;
  * @ignore
  */
 final class Optimize extends Module {
-	use AMP_Trait;
 
 	const OPTION = 'googlesitekit_optimize_settings';
 
@@ -138,7 +134,7 @@ final class Optimize extends Module {
 	 * @since 1.0.0
 	 */
 	protected function print_amp_optimize_experiment() {
-		if ( ! $this->is_amp() ) {
+		if ( ! $this->context->is_amp() ) {
 			return;
 		}
 
@@ -199,7 +195,7 @@ final class Optimize extends Module {
 			// GET.
 			'amp-client-id-opt-in' => '',
 			// POST.
-			'save'                 => '',
+			'settings'             => '',
 		);
 	}
 
@@ -284,7 +280,7 @@ final class Optimize extends Module {
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'save':
+				case 'settings':
 					if ( ! isset( $data['optimizeId'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'optimizeId' ), array( 'status' => 400 ) );

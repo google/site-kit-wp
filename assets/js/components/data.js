@@ -102,7 +102,7 @@ const dataAPI = {
 				const dateRangeSlug = stringToSlug( applyFilters( 'googlesitekit.dateRange', __( 'Last 28 days', 'google-site-kit' ) ) );
 				each( combinedRequest, ( request ) => {
 					request.data = request.data || {};
-					request.data.dateRange = request.data.dateRange || dateRangeSlug;
+					request.data.dateRange = dateRangeSlug;
 
 					request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
 
@@ -140,7 +140,7 @@ const dataAPI = {
 		let cacheDelay = 25;
 		each( combinedRequest, ( request ) => {
 			request.data = request.data || {};
-			request.data.dateRange = request.data.dateRange || dateRangeSlug;
+			request.data.dateRange = dateRangeSlug;
 
 			request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
 
