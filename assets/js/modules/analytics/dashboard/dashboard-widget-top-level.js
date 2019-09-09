@@ -53,98 +53,29 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 			accounts: false,
 			goals: false,
 		};
-
-		this.processCallbackData = this.processCallbackData.bind( this );
-		this.setOverviewData = this.setOverviewData.bind( this );
-		this.setGoalsData = this.setGoalsData.bind( this );
-		this.setAnalyticsData = this.setAnalyticsData.bind( this );
 	}
 
 	// When additional data is returned, componentDidUpdate will fire.
-	componentDidUpdate( prevProps ) {
-		const {
-			data,
-			datapoint,
-		} = this.props;
-
-		this.processCallbackData( data, datapoint, prevProps );
+	componentDidUpdate() {
+		this.processCallbackData();
 	}
 
 	componentDidMount() {
-		const {
-			data,
-			datapoint,
-		} = this.props;
-
-		this.processCallbackData( data, datapoint, {} );
+		this.processCallbackData();
 	}
 
 	/**
 	 * Process callback data received from the API.
-	 *
-	 * @param {Object} data Response data from the API.
-	 * @param {string} datapoint data point for the callback conditional.
-	 * @param {Object} prevProps previous props when component did update.
-	 * @return {null}
 	 */
-	processCallbackData( data, datapoint, prevProps = {} ) {
-		if ( ! data || datapoint === prevProps.datapoint ) {
-			return null;
+	processCallbackData() {
+		const {
+			data,
+			requestData,
+		} = this.props;
+
+		if ( data && ! data.error && 'function' === typeof requestData.onSuccess ) {
+			requestData.onSuccess.call( this, { data } );
 		}
-
-		switch ( datapoint ) {
-			case 'site-analytics':
-				this.setAnalyticsData( data );
-				break;
-			case 'goals':
-				this.setGoalsData( data );
-				break;
-			case 'overview':
-				this.setOverviewData( data );
-				break;
-		}
-	}
-
-	setAnalyticsData( data ) {
-		if ( this.state.extractedAnalytics ) {
-			return null;
-		}
-
-		if ( data && data.error ) {
-			return null;
-		}
-
-		this.setState( {
-			extractedAnalytics: extractAnalyticsDashboardSparklineData( data ),
-		} );
-	}
-
-	setOverviewData( data ) {
-		if ( this.state.overview ) {
-			return null;
-		}
-
-		if ( data && data.error ) {
-			return null;
-		}
-
-		this.setState( {
-			overview: calculateOverviewData( data ),
-		} );
-	}
-
-	setGoalsData( data ) {
-		if ( this.state.goals ) {
-			return null;
-		}
-
-		if ( data && data.error ) {
-			return null;
-		}
-
-		this.setState( {
-			goals: data,
-		} );
 	}
 
 	render() {
@@ -321,6 +252,13 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
+			onSuccess( { data } ) {
+				if ( ! this.state.overview ) {
+					this.setState( {
+						overview: calculateOverviewData( data ),
+					} );
+				}
+			},
 		},
 		{
 			type: TYPE_MODULES,
@@ -333,6 +271,13 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
+			onSuccess( { data } ) {
+				if ( ! this.state.extractedAnalytics ) {
+					this.setState( {
+						extractedAnalytics: extractAnalyticsDashboardSparklineData( data ),
+					} );
+				}
+			},
 		},
 		{
 			type: TYPE_MODULES,
@@ -341,9 +286,16 @@ export default withData(
 			data: {
 				url: googlesitekit.permaLink,
 			},
-			priority: 1,
+			priority: 10,
 			maxAge: getTimeInSeconds( 'hour' ),
 			context: 'Dashboard',
+			onSuccess( { data } ) {
+				if ( ! this.state.goals ) {
+					this.setState( {
+						goals: data,
+					} );
+				}
+			},
 		},
 	],
 	<Fragment>
