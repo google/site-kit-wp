@@ -598,12 +598,13 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						array(
 							'dateRange'         => 'last-28-days',
 							'url'               => '',
-							'dimensions'        => '',
 							// List of strings (comma-separated) of dimension names.
-							'metrics'           => array(),
+							'dimensions'        => '',
 							// List of objects with expression and optional alias properties.
-							'orderby'           => array(),
+							'metrics'           => array(),
 							// List of objects with fieldName and sortOrder properties.
+							'orderby'           => array(),
+							// Whether or not to double the requested range for comparison.
 							'compareDateRanges' => false,
 						),
 						$data
