@@ -55,7 +55,7 @@ class AdSenseModuleStatus extends Component {
 
 	async componentDidMount() {
 		let existingTag = await getExistingTag( 'adsense' );
-		existingTag = existingTag.length ? existingTag : false;
+		existingTag = existingTag ? existingTag : false;
 
 		this.setState( { existingTag } );
 
