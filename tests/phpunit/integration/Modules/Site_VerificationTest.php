@@ -64,4 +64,17 @@ class Site_VerificationTest extends TestCase {
 	protected function get_module_with_scopes() {
 		return new Site_Verification( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
+
+	public function test_get_datapoints() {
+		$tagmanager = new Site_Verification( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertEqualSets(
+			array(
+				'verified-sites',
+				'verification',
+				'verification-token',
+			),
+			$tagmanager->get_datapoints()
+		);
+	}
 }
