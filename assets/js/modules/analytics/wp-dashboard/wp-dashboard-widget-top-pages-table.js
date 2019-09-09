@@ -27,7 +27,7 @@ import PreviewTable from 'GoogleComponents/preview-table';
 /**
  * Internal dependencies
  */
-import { isDataZeroForReporting } from '../util';
+import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../util';
 
 const { __ } = wp.i18n;
 const { map } = lodash;
@@ -86,8 +86,8 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'top-pages',
-			data: {},
+			datapoint: 'report',
+			data: getTopPagesReportDataDefaults(),
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'WPDashboard',

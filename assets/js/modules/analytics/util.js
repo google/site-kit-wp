@@ -400,3 +400,53 @@ export const siteAnalyticsReportDataDefaults = {
 	],
 	limit: 180,
 };
+
+/**
+ * Returns the default data object for making Analytics top pages report requests.
+ *
+ * @return {Object} Request data object defaults.
+ */
+export const getTopPagesReportDataDefaults = () => {
+	const metrics = [
+		{
+			expression: 'ga:pageviews',
+			alias: 'Pageviews',
+		},
+		{
+			expression: 'ga:uniquePageviews',
+			alias: 'Unique Pageviews',
+		},
+		{
+			expression: 'ga:bounceRate',
+			alias: 'Bounce rate',
+		},
+	];
+
+	if ( window.googlesitekit.modules.analytics.adsenseLinked ) {
+		metrics.push(
+			{
+				expression: 'ga:adsenseRevenue',
+				alias: 'AdSense Revenue',
+			},
+			{
+				expression: 'ga:adsenseECPM',
+				alias: 'AdSense ECPM',
+			}
+		);
+	}
+
+	return {
+		dimensions: [
+			'ga:pageTitle',
+			'ga:pagePath',
+		].join( ',' ),
+		metrics,
+		orderby: [
+			{
+				fieldName: 'ga:pageviews',
+				sortOrder: 'DESCENDING',
+			},
+		],
+		limit: 10,
+	};
+};
