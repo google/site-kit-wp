@@ -596,18 +596,18 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'report':
 					$data = array_merge(
 						array(
-							'dateRange'            => 'last-28-days',
-							'url'                  => '',
+							'dateRange'         => 'last-28-days',
+							'url'               => '',
 							// List of strings (comma-separated) of dimension names.
-							'dimensions'           => '',
+							'dimensions'        => '',
 							// List of objects with expression and optional alias properties.
-							'metrics'              => array(),
+							'metrics'           => array(),
 							// List of objects with fieldName and sortOrder properties.
-							'orderby'              => array(),
+							'orderby'           => array(),
 							// Whether or not to double the requested range for comparison.
-							'compareDateRanges'    => false,
+							'compareDateRanges' => false,
 							// Whether or not to include an additional previous range from the given dateRange.
-							'includePreviousRange' => false,
+							'multiDateRange'    => false,
 						),
 						$data
 					);
@@ -642,13 +642,10 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						),
 					);
 
-					if ( ! empty( $data['includePreviousRange'] ) ) {
-						$date_ranges[] = $this->parse_date_range(
-							$data['dateRange'],
-							$data['compareDateRanges'] ? 2 : 1,
-							1,
-							true
-						);
+					// When using multiple date ranges, it changes the structure of the response,
+					// where each date range becomes an item in a list.
+					if ( ! empty( $data['multiDateRange'] ) ) {
+						$date_ranges[] = $this->parse_date_range( $data['dateRange'], 1, 1, true );
 					}
 
 					$date_ranges = array_map(

@@ -406,7 +406,7 @@ export const siteAnalyticsReportDataDefaults = {
  * @type {Object}
  */
 export const overviewReportDataDefaults = {
-	includePreviousRange: 1,
+	multiDateRange: 1,
 	dimensions: 'ga:date',
 	metrics: [
 		{
