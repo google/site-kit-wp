@@ -713,17 +713,17 @@ tag_partner: "site_kit"
 					date( 'Y-m-d', strtotime( 'yesterday' ) ),
 					date( 'Y-m-d', strtotime( 'yesterday' ) ),
 				);
-			case 'samedaylastweek':
+			case 'same-day-last-week':
 				return array(
 					date( 'Y-m-d', strtotime( '7daysAgo' ) ),
 					date( 'Y-m-d', strtotime( '7daysAgo' ) ),
 				);
-			case '7days':
+			case '7-days':
 				return array(
 					date( 'Y-m-d', strtotime( '7daysAgo' ) ),
 					date( 'Y-m-d', strtotime( 'yesterday' ) ),
 				);
-			case 'prev7days':
+			case 'prev-7-days':
 				return array(
 					date( 'Y-m-d', strtotime( '14daysAgo' ) ),
 					date( 'Y-m-d', strtotime( '8daysAgo' ) ),
@@ -743,12 +743,12 @@ tag_partner: "site_kit"
 					date( $last_year . '-m-01' ),
 					date( $last_year . '-m-' . $last_date_of_month ),
 				);
-			case '28days':
+			case '28-days':
 				return array(
 					date( 'Y-m-d', strtotime( '28daysAgo' ) ),
 					date( 'Y-m-d', strtotime( 'yesterday' ) ),
 				);
-			case 'prev28days':
+			case 'prev-28-days':
 				return array(
 					date( 'Y-m-d', strtotime( '56daysAgo' ) ),
 					date( 'Y-m-d', strtotime( '29daysAgo' ) ),

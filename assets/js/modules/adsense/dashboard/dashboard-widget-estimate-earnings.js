@@ -253,7 +253,7 @@ export default withData(
 			identifier: 'adsense',
 			datapoint: 'earnings',
 			data: {
-				dateRange: 'samedaylastweek',
+				dateRange: 'same-day-last-week',
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
@@ -269,7 +269,7 @@ export default withData(
 			identifier: 'adsense',
 			datapoint: 'earnings',
 			data: {
-				dateRange: '7days',
+				dateRange: '7-days',
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
@@ -285,7 +285,7 @@ export default withData(
 			identifier: 'adsense',
 			datapoint: 'earnings',
 			data: {
-				dateRange: 'prev7days',
+				dateRange: 'prev-7-days',
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
@@ -333,7 +333,7 @@ export default withData(
 			identifier: 'adsense',
 			datapoint: 'earnings',
 			data: {
-				dateRange: '28days',
+				dateRange: '28-days',
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
@@ -349,7 +349,7 @@ export default withData(
 			identifier: 'adsense',
 			datapoint: 'earnings',
 			data: {
-				dateRange: 'prev28days',
+				dateRange: 'prev-28-days',
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
