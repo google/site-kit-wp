@@ -189,11 +189,6 @@ class AnalyticsTest extends TestCase {
 				'profiles',
 				'tag-permission',
 				'report',
-				'site-analytics',
-				'top-pages',
-				'overview',
-				'traffic-sources',
-				'save',
 			),
 			$analytics->get_datapoints()
 		);
