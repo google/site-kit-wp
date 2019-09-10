@@ -123,6 +123,7 @@ class AnalyticsTest extends TestCase {
 				'hasSettings',
 				'provides',
 				'settings',
+				'adsenseLinked',
 			),
 			array_keys( $info )
 		);
