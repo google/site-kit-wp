@@ -715,18 +715,18 @@ tag_partner: "site_kit"
 				);
 			case 'same-day-last-week':
 				return array(
-					date( 'Y-m-d', strtotime( '7daysAgo' ) ),
-					date( 'Y-m-d', strtotime( '7daysAgo' ) ),
+					date( 'Y-m-d', strtotime( '7 days ago' ) ),
+					date( 'Y-m-d', strtotime( '7 days ago' ) ),
 				);
 			case '7-days':
 				return array(
-					date( 'Y-m-d', strtotime( '7daysAgo' ) ),
+					date( 'Y-m-d', strtotime( '7 days ago' ) ),
 					date( 'Y-m-d', strtotime( 'yesterday' ) ),
 				);
 			case 'prev-7-days':
 				return array(
-					date( 'Y-m-d', strtotime( '14daysAgo' ) ),
-					date( 'Y-m-d', strtotime( '8daysAgo' ) ),
+					date( 'Y-m-d', strtotime( '14 days ago' ) ),
+					date( 'Y-m-d', strtotime( '8 days ago' ) ),
 				);
 			// Intentional fallthrough.
 			case 'daily-this-month':
@@ -745,13 +745,13 @@ tag_partner: "site_kit"
 				);
 			case '28-days':
 				return array(
-					date( 'Y-m-d', strtotime( '28daysAgo' ) ),
+					date( 'Y-m-d', strtotime( '28 days ago' ) ),
 					date( 'Y-m-d', strtotime( 'yesterday' ) ),
 				);
 			case 'prev-28-days':
 				return array(
-					date( 'Y-m-d', strtotime( '56daysAgo' ) ),
-					date( 'Y-m-d', strtotime( '29daysAgo' ) ),
+					date( 'Y-m-d', strtotime( '56 days ago' ) ),
+					date( 'Y-m-d', strtotime( '29 days ago' ) ),
 				);
 			// Intentional fallthrough.
 			case 'last-7-days':
