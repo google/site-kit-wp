@@ -59,6 +59,28 @@ const lazilySetupLocalCache = () => {
 	}
 };
 
+/**
+ * Gets a copy of the given data request object with the data.dateRange populated via filter, if not set.
+ * Respects the current dateRange value, if set.
+ *
+ * @param {Object} originalRequest Data request object.
+ * @return {Object} New data request object.
+ */
+const requestWithDateRange = ( originalRequest ) => {
+	/**
+	 * Filter the date range used for queries.
+	 *
+	 * @param String The selected date range. Default 'Last 28 days'.
+	 */
+	const dateRangeSlug = stringToSlug( applyFilters( 'googlesitekit.dateRange', __( 'Last 28 days', 'google-site-kit' ) ) );
+	// Make copies for reference safety, ensuring data exists.
+	const request = { data: {}, ...originalRequest };
+	// Use the dateRange in request.data if passed, fallback to filter-provided value.
+	request.data = { dateRange: dateRangeSlug, ...request.data };
+
+	return request;
+};
+
 const dataAPI = {
 
 	maxRequests: 10,
@@ -94,19 +116,11 @@ const dataAPI = {
 			try {
 				const responseData = [];
 
-				/**
-				 * Filter the date range used for queries.
-				 *
-				 * @param String The selected date range. Default 'Last 28 days'.
-				 */
-				const dateRangeSlug = stringToSlug( applyFilters( 'googlesitekit.dateRange', __( 'Last 28 days', 'google-site-kit' ) ) );
-				each( combinedRequest, ( request ) => {
-					request.data = request.data || {};
-					request.data.dateRange = dateRangeSlug;
-
+				each( combinedRequest, ( originalRequest ) => {
+					const request = requestWithDateRange( originalRequest );
 					request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
-
 					const cache = this.getCache( request.key, request.maxAge );
+
 					if ( 'undefined' !== typeof cache ) {
 						responseData[ request.key ] = cache;
 
@@ -130,21 +144,12 @@ const dataAPI = {
 	combinedGet( combinedRequest, secondaryRequest = false ) {
 		// First, resolve any cache matches immediately, queue resolution of the rest.
 		let dataRequest = [];
-
-		/**
-		 * Filter the date range used for queries.
-		 *
-		 * @param String The selected date range. Default 'Last 28 days'.
-		 */
-		const dateRangeSlug = stringToSlug( applyFilters( 'googlesitekit.dateRange', __( 'Last 28 days', 'google-site-kit' ) ) );
 		let cacheDelay = 25;
-		each( combinedRequest, ( request ) => {
-			request.data = request.data || {};
-			request.data.dateRange = dateRangeSlug;
-
+		each( combinedRequest, ( originalRequest ) => {
+			const request = requestWithDateRange( originalRequest );
 			request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
-
 			const cache = this.getCache( request.key, request.maxAge );
+
 			if ( 'undefined' !== typeof cache ) {
 				setTimeout( () => {
 					this.resolve( request, cache );
