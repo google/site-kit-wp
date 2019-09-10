@@ -189,6 +189,7 @@ class AnalyticsTest extends TestCase {
 				'profiles',
 				'tag-permission',
 				'report',
+				'settings',
 			),
 			$analytics->get_datapoints()
 		);
