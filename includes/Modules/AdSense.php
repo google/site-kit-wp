@@ -535,6 +535,43 @@ tag_partner: "site_kit"
 					}
 					$service = $this->get_service( 'adsense' );
 					return $service->urlchannels->listUrlchannels( $data['clientId'] );
+				case 'earnings':
+					$data = array_merge(
+						array(
+							'dateRange'  => '',
+							'dimensions' => '',
+						)
+					);
+
+					if ( empty( $data['dateRange'] ) ) {
+						return new WP_Error(
+							'missing_required_param',
+							sprintf(
+								/* translators: %s: Missing parameter name */
+								__( 'Request parameter is empty: %s.', 'google-site-kit' ),
+								'dateRange'
+							),
+							array( 'status' => 400 )
+						);
+					}
+
+					$dates = $this->date_range_to_dates( $data['dateRange'] );
+
+					if ( is_wp_error( $dates ) ) {
+						return $dates;
+					}
+
+					list ( $start_date, $end_date ) = $dates;
+
+					$dimensions = $data['dimensions'];
+					$dimensions = is_string( $dimensions ) ? explode( ',', $dimensions ) : (array) $dimensions;
+					$args       = compact( 'start_date', 'end_date', 'dimensions' );
+
+					if ( isset( $data['limit'] ) ) {
+						$args['row_limit'] = $data['limit'];
+					}
+
+					return $this->create_adsense_earning_data_request( $args );
 				case 'earning-today':
 					return $this->create_adsense_earning_data_request(
 						array(
@@ -754,6 +791,7 @@ tag_partner: "site_kit"
 				case 'urlchannels':
 					// TODO: Parse this response to a regular array.
 					return $response->getItems();
+				case 'earnings':
 				case 'earning-today':
 				case 'earning-yesterday':
 				case 'earning-samedaylastweek':
@@ -771,6 +809,82 @@ tag_partner: "site_kit"
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Gets an array of dates for the given named date range.
+	 *
+	 * @param string $date_range Named date range.
+	 *                           E.g. 'last-28-days'.
+	 *
+	 * @return array|WP_Error Array of [startDate, endDate] or WP_Error if invalid named range.
+	 */
+	private function date_range_to_dates( $date_range ) {
+		switch ( $date_range ) {
+			case 'today':
+				return array(
+					date( 'Y-m-d', strtotime( 'today' ) ),
+					date( 'Y-m-d', strtotime( 'today' ) ),
+				);
+			case 'yesterday':
+				return array(
+					date( 'Y-m-d', strtotime( 'yesterday' ) ),
+					date( 'Y-m-d', strtotime( 'yesterday' ) ),
+				);
+			case 'samedaylastweek':
+				return array(
+					date( 'Y-m-d', strtotime( '7daysAgo' ) ),
+					date( 'Y-m-d', strtotime( '7daysAgo' ) ),
+				);
+			case '7days':
+				return array(
+					date( 'Y-m-d', strtotime( '7daysAgo' ) ),
+					date( 'Y-m-d', strtotime( 'yesterday' ) ),
+				);
+			case 'prev7days':
+				return array(
+					date( 'Y-m-d', strtotime( '14daysAgo' ) ),
+					date( 'Y-m-d', strtotime( '8daysAgo' ) ),
+				);
+			// Intentional fallthrough.
+			case 'daily-this-month':
+			case 'this-month':
+				return array(
+					date( 'Y-m-01' ),
+					date( 'Y-m-d', strtotime( 'today' ) ),
+				);
+			case 'this-month-last-year':
+				$last_year          = intval( date( 'Y' ) ) - 1;
+				$last_date_of_month = date( 't', strtotime( $last_year . '-' . date( 'm' ) . '-01' ) );
+
+				return array(
+					date( $last_year . '-m-01' ),
+					date( $last_year . '-m-' . $last_date_of_month ),
+				);
+			case '28days':
+				return array(
+					date( 'Y-m-d', strtotime( '28daysAgo' ) ),
+					date( 'Y-m-d', strtotime( 'yesterday' ) ),
+				);
+			case 'prev28days':
+				return array(
+					date( 'Y-m-d', strtotime( '56daysAgo' ) ),
+					date( 'Y-m-d', strtotime( '29daysAgo' ) ),
+				);
+			// Intentional fallthrough.
+			case 'last-7-days':
+			case 'last-14-days':
+			case 'last-28-days':
+			case 'last-90-days':
+				preg_match( '/last-(?P<days>\d+)-days/', $date_range, $matches );
+
+				return array(
+					date( 'Y-m-d', strtotime( "{$matches['days']} days ago" ) ),
+					date( 'Y-m-d', strtotime( 'today' ) ),
+				);
+		}
+
+		return new WP_Error( 'invalid_date_range', __( 'Invalid date range.', 'google-site-kit' ) );
 	}
 
 	/**
