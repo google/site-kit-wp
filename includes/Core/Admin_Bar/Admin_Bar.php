@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Core\Admin_Bar;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Assets\Assets;
-use Google\Site_Kit\Core\Util\AMP_Trait;
 
 /**
  * Class handling the plugin's admin bar menu.
@@ -23,7 +22,6 @@ use Google\Site_Kit\Core\Util\AMP_Trait;
  * @ignore
  */
 final class Admin_Bar {
-	use AMP_Trait;
 
 	/**
 	 * Plugin context.
@@ -83,7 +81,7 @@ final class Admin_Bar {
 			// Enqueue styles.
 			$this->assets->enqueue_asset( 'googlesitekit_adminbar_css' );
 
-			if ( $this->is_amp() ) {
+			if ( $this->context->is_amp() ) {
 				return;
 			}
 
@@ -115,7 +113,7 @@ final class Admin_Bar {
 			),
 		);
 
-		if ( $this->is_amp() ) {
+		if ( $this->context->is_amp() ) {
 			$post = get_post();
 			if ( ! $post || ! current_user_can( 'edit_post', $post->ID ) ) {
 				return;
