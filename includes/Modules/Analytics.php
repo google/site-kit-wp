@@ -447,7 +447,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			'overview'                     => 'analyticsreporting',
 			'traffic-sources'              => 'analyticsreporting',
 			// POST.
-			'save'                         => '',
+			'settings'                     => '',
 		);
 	}
 
@@ -974,7 +974,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'save':
+				case 'settings':
 					if ( ! isset( $data['accountId'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );

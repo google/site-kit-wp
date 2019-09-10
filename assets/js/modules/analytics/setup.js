@@ -474,7 +474,7 @@ class AnalyticsSetup extends Component {
 		};
 
 		try {
-			const response = await data.set( TYPE_MODULES, 'analytics', 'save', analyticAccount );
+			const response = await data.set( TYPE_MODULES, 'analytics', 'settings', analyticAccount );
 
 			data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 			await this.getAccounts();
