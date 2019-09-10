@@ -72,11 +72,11 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 	processCallbackData() {
 		const {
 			data,
-			requestData,
+			requestDataToState,
 		} = this.props;
 
-		if ( data && ! data.error && 'function' === typeof requestData.toState ) {
-			this.setState( requestData.toState );
+		if ( data && ! data.error && 'function' === typeof requestDataToState ) {
+			this.setState( requestDataToState );
 		}
 	}
 

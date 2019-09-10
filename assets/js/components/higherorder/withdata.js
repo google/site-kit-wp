@@ -152,7 +152,7 @@ const withData = (
 					handleDataError,
 					handleDataSuccess,
 				} = this.props;
-				const { datapoint, identifier } = requestData;
+				const { datapoint, identifier, toState } = requestData;
 
 				// Check to see if the returned data is an error. If so, getDataError will return a string.
 				const error = getDataError( returnedData );
@@ -182,7 +182,7 @@ const withData = (
 
 				// Resolve the returned data my setting state on the Component.
 				this.setState( {
-					requestData,
+					requestDataToState: toState,
 					data: returnedData,
 					datapoint,
 					module: identifier,
@@ -229,7 +229,7 @@ const withData = (
 				module,
 				zeroData,
 				error,
-				requestData,
+				requestDataToState,
 			} = this.state;
 
 			// Render the loading component until we have data.
@@ -259,7 +259,7 @@ const withData = (
 				<DataDependentComponent
 					data={ data }
 					datapoint={ datapoint }
-					requestData={ requestData }
+					requestDataToState={ requestDataToState }
 					{ ...this.props }
 				/>
 			);
