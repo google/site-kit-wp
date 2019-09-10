@@ -231,7 +231,7 @@ add_action( 'rest_api_init', function () {
 	// Called when creating a new property
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'modules/analytics/data/save',
+		'modules/analytics/data/settings',
 		array(
 			'methods' => 'POST',
 			'callback' => function ( \WP_REST_Request $request ) use ( $profiles ) {
