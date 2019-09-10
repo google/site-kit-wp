@@ -329,32 +329,22 @@ tag_partner: "site_kit"
 	protected function get_datapoint_services() {
 		return array(
 			// GET / POST.
-			'connection'                   => '',
-			'account-id'                   => '',
-			'client-id'                    => '',
-			'use-snippet'                  => '',
-			'account-status'               => '',
+			'connection'     => '',
+			'account-id'     => '',
+			'client-id'      => '',
+			'use-snippet'    => '',
+			'account-status' => '',
 			// GET.
-			'account-url'                  => '',
-			'reports-url'                  => '',
-			'notifications'                => '',
-			'accounts'                     => 'adsense',
-			'alerts'                       => 'adsense',
-			'clients'                      => 'adsense',
-			'urlchannels'                  => 'adsense',
-			'earning-today'                => 'adsense',
-			'earning-yesterday'            => 'adsense',
-			'earning-samedaylastweek'      => 'adsense',
-			'earning-7days'                => 'adsense',
-			'earning-prev7days'            => 'adsense',
-			'earning-this-month'           => 'adsense',
-			'earning-this-month-last-year' => 'adsense',
-			'earning-28days'               => 'adsense',
-			'earning-prev28days'           => 'adsense',
-			'earning-daily-this-month'     => 'adsense',
-			'earnings-this-period'         => 'adsense',
+			'account-url'    => '',
+			'reports-url'    => '',
+			'notifications'  => '',
+			'accounts'       => 'adsense',
+			'alerts'         => 'adsense',
+			'clients'        => 'adsense',
+			'urlchannels'    => 'adsense',
+			'earnings'       => 'adsense',
 			// POST.
-			'setup-complete'               => '',
+			'setup-complete' => '',
 		);
 	}
 
@@ -572,102 +562,6 @@ tag_partner: "site_kit"
 					}
 
 					return $this->create_adsense_earning_data_request( $args );
-				case 'earning-today':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( 'today' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( 'today' ) ),
-						)
-					);
-				case 'earning-yesterday':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( 'yesterday' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( 'yesterday' ) ),
-						)
-					);
-				case 'earning-samedaylastweek':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( '7daysAgo' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( '7daysAgo' ) ),
-						)
-					);
-				case 'earning-7days':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( '7daysAgo' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( 'yesterday' ) ),
-						)
-					);
-				case 'earning-prev7days':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( '14daysAgo' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( '8daysAgo' ) ),
-						)
-					);
-				case 'earning-this-month':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-01' ),
-							'end_date'   => date( 'Y-m-d', strtotime( 'today' ) ),
-						)
-					);
-				case 'earning-this-month-last-year':
-					$last_year          = intval( date( 'Y' ) ) - 1;
-					$last_date_of_month = date( 't', strtotime( $last_year . '-' . date( 'm' ) . '-01' ) );
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( $last_year . '-m-01' ),
-							'end_date'   => date( $last_year . '-m-' . $last_date_of_month ),
-						)
-					);
-				case 'earning-28days':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( '28daysAgo' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( 'yesterday' ) ),
-						)
-					);
-				case 'earning-prev28days':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( '56daysAgo' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( '29daysAgo' ) ),
-						)
-					);
-				case 'earning-daily-this-month':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'dimensions' => array( 'DATE' ),
-							'start_date' => date( 'Y-m-01' ),
-							'end_date'   => date( 'Y-m-d', strtotime( 'today' ) ),
-						)
-					);
-				case 'earnings-this-period':
-					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
-					switch ( $date_range ) {
-						case 'last-7-days':
-							$daysago = 7;
-							break;
-						case 'last-14-days':
-							$daysago = 14;
-							break;
-						case 'last-90-days':
-							$daysago = 90;
-							break;
-						case 'last-28-days':
-						default:
-							$daysago = 28;
-							break;
-					}
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( '' . $daysago . 'daysAgo' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( 'today' ) ),
-						)
-					);
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
@@ -792,18 +686,6 @@ tag_partner: "site_kit"
 					// TODO: Parse this response to a regular array.
 					return $response->getItems();
 				case 'earnings':
-				case 'earning-today':
-				case 'earning-yesterday':
-				case 'earning-samedaylastweek':
-				case 'earning-7days':
-				case 'earning-prev7days':
-				case 'earning-this-month':
-				case 'earning-this-month-last-year':
-				case 'earning-28days':
-				case 'earning-prev28days':
-				case 'earning-daily-this-month':
-				case 'earnings-this-period':
-					// TODO: Parse this response to a regular array.
 					return $response;
 			}
 		}
