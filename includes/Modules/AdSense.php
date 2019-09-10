@@ -62,9 +62,19 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 				 * @param string $account_id Empty by default, will fall back to the option value if not set.
 				 */
 				$account_id = apply_filters( 'googlesitekit_adsense_account_id', '' );
+
 				if ( ! empty( $account_id ) ) {
 					$option['accountId'] = $account_id;
 				}
+
+				/**
+				 * Migrate 'adsenseTagEnabled' to 'useSnippet'.
+				 */
+				if ( ! isset( $option['useSnippet'] ) && isset( $option['adsenseTagEnabled'] ) ) {
+					$option['useSnippet'] = (bool) $option['adsenseTagEnabled'];
+				}
+				// Ensure the old key is removed regardless. No-op if not set.
+				unset( $option['adsenseTagEnabled'] );
 
 				return $option;
 			}
@@ -123,12 +133,14 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 			__( 'Monetize your website', 'google-site-kit' ),
 			__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
 		);
-		$info['settings'] = (array) $this->options->get( self::OPTION );
 
-		// If adsenseTagEnabled not saved, default tag enabled to true.
-		if ( ! isset( $info['settings']['adsenseTagEnabled'] ) ) {
-			$info['settings']['adsenseTagEnabled'] = true;
-		}
+		// If useSnippet is not saved, default to true.
+		$info['settings'] = array_merge(
+			array(
+				'useSnippet' => true,
+			),
+			(array) $this->options->get( self::OPTION )
+		);
 
 		// Clear datapoints that don't need to be localized.
 		$idenfifier_args = array(
@@ -198,7 +210,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 			return;
 		}
 
-		$tag_enabled = $this->get_data( 'adsense-tag-enabled' );
+		$tag_enabled = $this->get_data( 'use-snippet' );
 
 		// If we have client id default behaviour should be placing the tag unless the user has opted out.
 		if ( false === $tag_enabled ) {
@@ -258,7 +270,7 @@ tag_partner: "site_kit"
 			return $data;
 		}
 
-		$tag_enabled = $this->get_data( 'adsense-tag-enabled' );
+		$tag_enabled = $this->get_data( 'use-snippet' );
 		if ( is_wp_error( $tag_enabled ) || ! $tag_enabled ) {
 			return $data;
 		}
@@ -289,7 +301,7 @@ tag_partner: "site_kit"
 			return $content;
 		}
 
-		$tag_enabled = $this->get_data( 'adsense-tag-enabled' );
+		$tag_enabled = $this->get_data( 'use-snippet' );
 		if ( is_wp_error( $tag_enabled ) || ! $tag_enabled ) {
 			return $content;
 		}
@@ -320,7 +332,7 @@ tag_partner: "site_kit"
 			'connection'                   => '',
 			'account-id'                   => '',
 			'client-id'                    => '',
-			'adsense-tag-enabled'          => '',
+			'use-snippet'                  => '',
 			'account-status'               => '',
 			// GET.
 			'account-url'                  => '',
@@ -423,10 +435,11 @@ tag_partner: "site_kit"
 						}
 						return $option['clientId'];
 					};
-				case 'adsense-tag-enabled':
+				case 'use-snippet':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
-						return ! isset( $option['adsenseTagEnabled'] ) ? null : ! empty( $option['adsenseTagEnabled'] );
+
+						return ! empty( $option['useSnippet'] );
 					};
 				case 'account-status':
 					return function() {
@@ -655,15 +668,25 @@ tag_partner: "site_kit"
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'adsense-tag-enabled':
-					if ( ! isset( $data['adsenseTagEnabled'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'adsenseTagEnabled' ), array( 'status' => 400 ) );
+				case 'use-snippet':
+					if ( ! isset( $data['useSnippet'] ) ) {
+						return new WP_Error(
+							'missing_required_param',
+							sprintf(
+								/* translators: %s: Missing parameter name */
+								__( 'Request parameter is empty: %s.', 'google-site-kit' ),
+								'useSnippet'
+							),
+							array( 'status' => 400 )
+						);
 					}
+
 					return function() use ( $data ) {
-						$option                      = (array) $this->options->get( self::OPTION );
-						$option['adsenseTagEnabled'] = (bool) $data['adsenseTagEnabled'];
+						$option               = (array) $this->options->get( self::OPTION );
+						$option['useSnippet'] = (bool) $data['useSnippet'];
+
 						$this->options->set( self::OPTION, $option );
+
 						return true;
 					};
 				case 'account-status':
@@ -686,10 +709,10 @@ tag_partner: "site_kit"
 						$option                  = (array) $this->options->get( self::OPTION );
 						$option['setupComplete'] = true;
 						$option['clientId']      = $data['clientId'];
-						if ( isset( $data['adsenseTagEnabled'] ) ) {
-							$option['adsenseTagEnabled'] = (bool) $data['adsenseTagEnabled'];
-						}
+						$option['useSnippet']    = ! empty( $data['useSnippet'] );
+
 						$this->options->set( self::OPTION, $option );
+
 						return true;
 					};
 			}

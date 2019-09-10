@@ -134,7 +134,7 @@ class AdSenseTest extends TestCase {
 				'connection',
 				'account-id',
 				'client-id',
-				'adsense-tag-enabled',
+				'use-snippet',
 				'account-status',
 				'account-url',
 				'reports-url',
