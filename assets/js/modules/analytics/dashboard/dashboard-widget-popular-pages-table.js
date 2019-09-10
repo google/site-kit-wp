@@ -28,7 +28,7 @@ import Layout from 'GoogleComponents/layout/layout';
 /**
  * Internal dependencies
  */
-import { isDataZeroForReporting } from '../util';
+import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../util';
 
 const { __ } = wp.i18n;
 const { map } = lodash;
@@ -107,8 +107,8 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'top-pages',
-			data: {},
+			datapoint: 'report',
+			data: getTopPagesReportDataDefaults(),
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],

@@ -21,7 +21,7 @@ add_action( 'rest_api_init', function () {
 
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'modules/analytics/data/get-accounts',
+		'modules/analytics/data/accounts-properties-profiles',
 		array(
 			'callback' => function () {
 				/**

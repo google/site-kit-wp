@@ -33,6 +33,7 @@ import {
 	calculateOverviewData,
 	isDataZeroForReporting,
 	getAnalyticsErrorMessageFromData,
+	overviewReportDataDefaults,
 } from '../util';
 import PreviewBlock from 'GoogleComponents/preview-block';
 
@@ -99,8 +100,9 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'overview',
+			datapoint: 'report',
 			data: {
+				...overviewReportDataDefaults,
 				url: googlesitekit.permaLink,
 			},
 			priority: 1,

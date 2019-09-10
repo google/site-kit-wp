@@ -22,6 +22,10 @@
 import { getTimeInSeconds, getQueryParameter } from 'GoogleUtil';
 import { TYPE_MODULES } from 'GoogleComponents/data';
 import * as publisherWinCallbacks from 'GoogleComponents/publisher-wins/callbacks';
+/**
+ * Internal dependencies
+ */
+import { overviewReportDataDefaults } from '../../modules/analytics/util';
 
 const { addFilter } = wp.hooks;
 const notification = getQueryParameter( 'notification' );
@@ -99,8 +103,8 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 					withData: {
 						type: TYPE_MODULES,
 						identifier: 'analytics',
-						datapoint: 'overview',
-						data: {},
+						datapoint: 'reports',
+						data: overviewReportDataDefaults,
 						priority: 1,
 						maxAge: getTimeInSeconds( 'day' ),
 						context: 'Dashboard',
@@ -118,8 +122,8 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 					withData: {
 						type: TYPE_MODULES,
 						identifier: 'analytics',
-						datapoint: 'overview',
-						data: {},
+						datapoint: 'report',
+						data: overviewReportDataDefaults,
 						priority: 1,
 						maxAge: getTimeInSeconds( 'day' ),
 						context: 'Dashboard',

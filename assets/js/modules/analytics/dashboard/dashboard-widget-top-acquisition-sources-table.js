@@ -29,6 +29,10 @@ import {
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
 import MiniChart from 'GoogleComponents/mini-chart';
+/**
+ * Internal dependencies
+ */
+import { trafficSourcesReportDataDefaults } from '../util';
 
 const { __, sprintf } = wp.i18n;
 const { map } = lodash;
@@ -107,8 +111,9 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'traffic-sources',
+			datapoint: 'report',
 			data: {
+				...trafficSourcesReportDataDefaults,
 				url: googlesitekit.permaLink,
 			},
 			priority: 1,

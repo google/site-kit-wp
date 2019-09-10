@@ -34,6 +34,7 @@ import {
 	calculateOverviewData,
 	isDataZeroForReporting,
 	getAnalyticsErrorMessageFromData,
+	overviewReportDataDefaults,
 } from '../util';
 import PreviewBlock from 'GoogleComponents/preview-block';
 import PropTypes from 'prop-types';
@@ -158,8 +159,8 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'overview',
-			data: {},
+			datapoint: 'report',
+			data: overviewReportDataDefaults,
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
