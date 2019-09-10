@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
+import { TYPE_MODULES } from 'GoogleComponents/data';
 import DataBlock from 'GoogleComponents/data-block.js';
 import PreviewBlock from 'GoogleComponents/preview-block';
 import {
@@ -30,6 +30,7 @@ import {
  * Internal dependencies
  */
 import { isDataZeroAdSense } from '../util';
+import withData from '../../../components/higherorder/withdata';
 
 const { __ } = wp.i18n;
 const { Component } = wp.element;
@@ -40,85 +41,39 @@ class AdSensePerformanceWidget extends Component {
 		super( props );
 
 		this.state = {
-			isLoading: true,
-			refetch: false,
 			twentyEightDays: false,
 			prev28Days: false,
-			error: false,
-			message: '',
 		};
+	}
 
-		this.getAllData = this.getAllData.bind( this );
+	// When additional data is returned, componentDidUpdate will fire.
+	componentDidUpdate() {
+		this.processCallbackData();
 	}
 
 	componentDidMount() {
-		this.getAllData();
+		this.processCallbackData();
 	}
 
-	async getAllData() {
-		const { handleZeroData } = this.props;
+	/**
+	 * Process callback data received from the API.
+	 */
+	processCallbackData() {
+		const {
+			data,
+			requestDataToState,
+		} = this.props;
 
-		try {
-			const batchRequests = [
-				{
-					type: TYPE_MODULES,
-					identifier: 'adsense',
-					datapoint: 'earning-28days',
-					priority: 1,
-					maxAge: getTimeInSeconds( 'day' ),
-					context: [ 'Single', 'Dashboard' ],
-					callback: ( result ) => {
-						// If there are no impressions, the site is not yet displaying ads.
-						if ( result && isDataZeroAdSense( result ) ) {
-							handleZeroData();
-						}
-
-						this.setState( {
-							twentyEightDays: result,
-						} );
-					},
-				},
-				{
-					type: TYPE_MODULES,
-					identifier: 'adsense',
-					datapoint: 'earning-prev28days',
-					priority: 1,
-					maxAge: getTimeInSeconds( 'day' ),
-					context: [ 'Single', 'Dashboard' ],
-					callback: ( result ) => {
-						this.setState( {
-							prev28Days: result,
-						} );
-					},
-				},
-			];
-
-			// Fetching the data, could from the cache or rest endpoint.
-			await data.combinedGet( batchRequests );
-
-			this.setState( {
-				isLoading: false,
-				error: false,
-			} );
-		} catch ( err ) {
-			this.setState( {
-				isLoading: false,
-				error: err.code,
-				message: err.message,
-			} );
+		if ( data && ! data.error && 'function' === requestDataToState ) {
+			this.setState( requestDataToState );
 		}
 	}
 
 	render() {
 		const {
-			isLoading,
 			twentyEightDays,
 			prev28Days,
 		} = this.state;
-
-		if ( isLoading ) {
-			return <PreviewBlock width="100%" height="250px" />;
-		}
 
 		const dataBlocks = twentyEightDays.totals ? [
 			{
@@ -169,5 +124,44 @@ class AdSensePerformanceWidget extends Component {
 	}
 }
 
-export default AdSensePerformanceWidget;
+export default withData(
+	AdSensePerformanceWidget,
+	[
+		{
+			type: TYPE_MODULES,
+			identifier: 'adsense',
+			datapoint: 'earnings',
+			data: {
+				dateRange: '28days',
+			},
+			priority: 1,
+			maxAge: getTimeInSeconds( 'day' ),
+			context: [ 'Single', 'Dashboard' ],
+			toState( state, { data } ) {
+				return {
+					twentyEightDays: data,
+				};
+			},
+		},
+		{
+			type: TYPE_MODULES,
+			identifier: 'adsense',
+			datapoint: 'earnings',
+			data: {
+				dateRange: 'prev28days',
+			},
+			priority: 1,
+			maxAge: getTimeInSeconds( 'day' ),
+			context: [ 'Single', 'Dashboard' ],
+			toState( state, { data } ) {
+				return {
+					prev28Days: data,
+				};
+			},
+		},
+	],
+	<PreviewBlock width="100%" height="250px" />,
+	{},
+	isDataZeroAdSense
+);
 
