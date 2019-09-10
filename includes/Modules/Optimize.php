@@ -11,11 +11,8 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
-use Google\Site_Kit\Core\Util\AMP_Trait;
 use Google_Client;
-use Google_Service;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use WP_Error;
 
 /**
@@ -26,7 +23,6 @@ use WP_Error;
  * @ignore
  */
 final class Optimize extends Module {
-	use AMP_Trait;
 
 	const OPTION = 'googlesitekit_optimize_settings';
 
@@ -138,7 +134,7 @@ final class Optimize extends Module {
 	 * @since 1.0.0
 	 */
 	protected function print_amp_optimize_experiment() {
-		if ( ! $this->is_amp() ) {
+		if ( ! $this->context->is_amp() ) {
 			return;
 		}
 

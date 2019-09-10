@@ -115,9 +115,10 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedMobile = withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'pagespeed-insights',
-			datapoint: 'site-pagespeed-mobile',
+			datapoint: 'pagespeed',
 			data: {
 				url: googlesitekit.permaLink,
+				strategy: 'mobile',
 			},
 			priority: 10,
 			maxAge: getTimeInSeconds( 'day' ),
@@ -136,9 +137,10 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedDesktop = withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'pagespeed-insights',
-			datapoint: 'site-pagespeed-desktop',
+			datapoint: 'pagespeed',
 			data: {
 				url: googlesitekit.permaLink,
+				strategy: 'desktop',
 			},
 			priority: 10,
 			maxAge: getTimeInSeconds( 'day' ),

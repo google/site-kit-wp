@@ -58,8 +58,11 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 				withData: {
 					type: TYPE_MODULES,
 					identifier: 'search-console',
-					datapoint: 'sc-site-analytics',
-					data: {},
+					datapoint: 'searchanalytics',
+					data: {
+						dimensions: 'date',
+						compareDateRanges: true,
+					},
 					priority: 1,
 					maxAge: getTimeInSeconds( 'day' ),
 					context: 'Dashboard',
@@ -77,8 +80,11 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 				withData: {
 					type: TYPE_MODULES,
 					identifier: 'search-console',
-					datapoint: 'sc-site-analytics',
-					data: {},
+					datapoint: 'searchanalytics',
+					data: {
+						dimensions: 'date',
+						compareDateRanges: true,
+					},
 					priority: 1,
 					maxAge: getTimeInSeconds( 'day' ),
 					context: 'Dashboard',
