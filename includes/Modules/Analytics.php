@@ -694,7 +694,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							);
 							$order_by  = new \Google_Service_AnalyticsReporting_OrderBy();
 							$order_by->setFieldName( $order_def['fieldName'] );
-							$order_by->setSortOrder( $order_by['sortOrder'] );
+							$order_by->setSortOrder( $order_def['sortOrder'] );
 
 							return $order_by;
 						},
