@@ -316,28 +316,6 @@ export const isDataZeroForReporting = ( data ) => {
 };
 
 /**
- * Check for Zero data from Analytics API 'traffic-sources'.
- *
- * @param {Object} data The data returned from the Analytics API call.
- * @return {boolean}
- */
-export const isDataZeroForTrafficSources = ( data ) => {
-	// Handle empty data.
-	if ( ! data || ! data.length || ! data[ 0 ].data ) {
-		return true;
-	}
-
-	const { totals } = data[ 0 ].data;
-	const { values } = totals[ 0 ];
-
-	if ( '0' === values[ 0 ] && '0' === values[ 1 ] && '0' === values[ 2 ] ) {
-		return true;
-	}
-
-	return false;
-};
-
-/**
  * Default data object for making Analytics adsense requests.
  * @type {Object}
  */
