@@ -144,16 +144,15 @@ const withData = (
 			 * to trigger `handleDataError` and `handleDataSuccess` helpers.
 			 *
 			 * @param {Object} returnedData The data returned from the API.
-			 * @param {string} datapoint    The datapoint name resolved by the API.
 			 * @param {Object} requestData  The data object for the request.
 			 */
-			const handleReturnedData = ( returnedData, datapoint, requestData ) => {
+			const handleReturnedData = ( returnedData, requestData ) => {
 				// If available, `handleDataError` will be called for errors (with a string) and empty data.
 				const {
 					handleDataError,
 					handleDataSuccess,
 				} = this.props;
-				const { identifier } = requestData;
+				const { datapoint, identifier } = requestData;
 
 				// Check to see if the returned data is an error. If so, getDataError will return a string.
 				const error = getDataError( returnedData );
@@ -200,8 +199,8 @@ const withData = (
 						 */
 						addFilter( `googlesitekit.module${ acontext }DataRequest`,
 							`googlesitekit.data${ acontext }`, ( moduleData ) => {
-								data.callback = ( returnedData, datapoint ) => {
-									handleReturnedData( returnedData, datapoint, data );
+								data.callback = ( returnedData ) => {
+									handleReturnedData( returnedData, data );
 								};
 								moduleData.push( data );
 								return moduleData;
@@ -213,8 +212,8 @@ const withData = (
 					 */
 					addFilter( `googlesitekit.module${ data.context }DataRequest`,
 						`googlesitekit.data${ data.context }`, ( moduleData ) => {
-							data.callback = ( returnedData, datapoint ) => {
-								handleReturnedData( returnedData, datapoint, data );
+							data.callback = ( returnedData ) => {
+								handleReturnedData( returnedData, data );
 							};
 							moduleData.push( data );
 							return moduleData;
