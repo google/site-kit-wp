@@ -273,7 +273,7 @@ export default withData(
 			data: {
 				url: googlesitekit.permaLink,
 			},
-			priority: 10,
+			priority: 1,
 			maxAge: getTimeInSeconds( 'hour' ),
 			context: 'Dashboard',
 			toState( state, { data } ) {
