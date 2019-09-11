@@ -457,10 +457,10 @@ export const isAdsenseConnectedAnalytics = async () => {
  * @param {Array} adSenseData Data returned from the AdSense.
  * @return {boolean}
  */
-export const isDataZeroAdSense = ( adSenseData, datapoint ) => {
+export const isDataZeroAdSense = ( adSenseData, datapoint, dataRequest ) => {
 	// We only check the last 28 days of earnings because it is the most reliable data point to identify new setups:
 	// only new accounts or accounts not showing ads would have zero earnings in the last 28 days.
-	if ( 'earning-28days' !== datapoint ) {
+	if ( ! dataRequest.data || ! dataRequest.data.dateRange || 'earning-28days' !== dataRequest.data.dateRange ) {
 		return false;
 	}
 
