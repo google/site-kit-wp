@@ -70,7 +70,7 @@ class AdSenseDashboardMainSummary extends Component {
 			requestDataToState,
 		} = this.props;
 
-		if ( data && ! data.error && 'function' === requestDataToState ) {
+		if ( data && ! data.error && 'function' === typeof requestDataToState ) {
 			this.setState( requestDataToState );
 		}
 	}
