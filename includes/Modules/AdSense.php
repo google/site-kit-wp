@@ -529,7 +529,7 @@ tag_partner: "site_kit"
 					$data = array_merge(
 						array(
 							// Named date range slug.
-							'dateRange'  => array( 'last-28-days' ),
+							'dateRange'  => 'last-28-days',
 							// Array of dimension strings.
 							'dimensions' => array(),
 						),
