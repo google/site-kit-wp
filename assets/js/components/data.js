@@ -24,7 +24,7 @@ import md5 from 'md5';
 
 import {
 	getStorage,
-	stringToSlug,
+	getCurrentDateRange,
 	fillFilterWithComponent,
 	getQueryParameter,
 	sortObjectProperties,
@@ -39,7 +39,6 @@ const {
 	addFilter,
 	removeFilter,
 } = wp.hooks;
-const { __ } = wp.i18n;
 
 export const TYPE_CORE = 'core';
 export const TYPE_MODULES = 'modules';
@@ -64,19 +63,14 @@ const lazilySetupLocalCache = () => {
  * Respects the current dateRange value, if set.
  *
  * @param {Object} originalRequest Data request object.
+ * @param {string} dateRange Date range slug.
  * @return {Object} New data request object.
  */
-const requestWithDateRange = ( originalRequest ) => {
-	/**
-	 * Filter the date range used for queries.
-	 *
-	 * @param String The selected date range. Default 'Last 28 days'.
-	 */
-	const dateRangeSlug = stringToSlug( applyFilters( 'googlesitekit.dateRange', __( 'Last 28 days', 'google-site-kit' ) ) );
+const requestWithDateRange = ( originalRequest, dateRange ) => {
 	// Make copies for reference safety, ensuring data exists.
 	const request = { data: {}, ...originalRequest };
 	// Use the dateRange in request.data if passed, fallback to filter-provided value.
-	request.data = { dateRange: dateRangeSlug, ...request.data };
+	request.data = { dateRange, ...request.data };
 
 	return request;
 };
@@ -115,9 +109,9 @@ const dataAPI = {
 		return new Promise( ( resolve, reject ) => {
 			try {
 				const responseData = [];
-
+				const dateRange = getCurrentDateRange();
 				each( combinedRequest, ( originalRequest ) => {
-					const request = requestWithDateRange( originalRequest );
+					const request = requestWithDateRange( originalRequest, dateRange );
 					request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
 					const cache = this.getCache( request.key, request.maxAge );
 
@@ -145,8 +139,9 @@ const dataAPI = {
 		// First, resolve any cache matches immediately, queue resolution of the rest.
 		let dataRequest = [];
 		let cacheDelay = 25;
+		const dateRange = getCurrentDateRange();
 		each( combinedRequest, ( originalRequest ) => {
-			const request = requestWithDateRange( originalRequest );
+			const request = requestWithDateRange( originalRequest, dateRange );
 			request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
 			const cache = this.getCache( request.key, request.maxAge );
 
