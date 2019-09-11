@@ -528,9 +528,12 @@ tag_partner: "site_kit"
 				case 'earnings':
 					$data = array_merge(
 						array(
-							'dateRange'  => 'last-28-days',
-							'dimensions' => '',
-						)
+							// Named date range slug.
+							'dateRange'  => array( 'last-28-days' ),
+							// Array of dimension strings.
+							'dimensions' => array(),
+						),
+						$data
 					);
 
 					$dates = $this->date_range_to_dates( $data['dateRange'] );
@@ -541,8 +544,7 @@ tag_partner: "site_kit"
 
 					list ( $start_date, $end_date ) = $dates;
 
-					$dimensions = $data['dimensions'];
-					$dimensions = is_string( $dimensions ) ? explode( ',', $dimensions ) : (array) $dimensions;
+					$dimensions = (array) $data['dimensions'];
 					$args       = compact( 'start_date', 'end_date', 'dimensions' );
 
 					if ( isset( $data['limit'] ) ) {
