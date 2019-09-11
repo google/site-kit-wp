@@ -138,9 +138,11 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
 			toState( state, { data } ) {
-				return {
-					twentyEightDays: data,
-				};
+				if ( ! state.twentyEightDays ) {
+					return {
+						twentyEightDays: data,
+					};
+				}
 			},
 		},
 		{
@@ -154,9 +156,11 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
 			toState( state, { data } ) {
-				return {
-					prev28Days: data,
-				};
+				if ( ! state.prev28Days ) {
+					return {
+						prev28Days: data,
+					};
+				}
 			},
 		},
 	],
