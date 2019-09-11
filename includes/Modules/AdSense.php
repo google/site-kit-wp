@@ -746,12 +746,7 @@ tag_partner: "site_kit"
 			case 'last-14-days':
 			case 'last-28-days':
 			case 'last-90-days':
-				preg_match( '/last-(?P<days>\d+)-days/', $date_range, $matches );
-
-				return array(
-					date( 'Y-m-d', strtotime( "{$matches['days']} days ago" ) ),
-					date( 'Y-m-d', strtotime( 'today' ) ),
-				);
+				return $this->parse_date_range( $date_range );
 		}
 
 		return new WP_Error( 'invalid_date_range', __( 'Invalid date range.', 'google-site-kit' ) );
