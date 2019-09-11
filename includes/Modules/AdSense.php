@@ -708,8 +708,6 @@ tag_partner: "site_kit"
 					date( 'Y-m-d', strtotime( '7 days ago' ) ),
 					date( 'Y-m-d', strtotime( '7 days ago' ) ),
 				);
-			// Intentional fallthrough.
-			case 'daily-this-month':
 			case 'this-month':
 				return array(
 					date( 'Y-m-01' ),
