@@ -429,10 +429,12 @@ export async function getAdSenseAccountStatus( statusUpdateCallback, existingTag
  * @return {boolean}
  */
 export const isAdsenseConnectedAnalytics = async () => {
-	const { active } = googlesitekit.modules.adsense;
+	const { active: adsenseActive } = googlesitekit.modules.adsense;
+	const { active: analyticsActive } = googlesitekit.modules.analytics;
+
 	let adsenseConnect = true;
 
-	if ( active ) {
+	if ( adsenseActive && analyticsActive ) {
 		await data.get( TYPE_MODULES, 'analytics', 'report', analyticsAdsenseReportDataDefaults ).then( ( res ) => {
 			if ( res ) {
 				adsenseConnect = true;
