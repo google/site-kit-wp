@@ -708,11 +708,6 @@ tag_partner: "site_kit"
 					date( 'Y-m-d', strtotime( '7 days ago' ) ),
 					date( 'Y-m-d', strtotime( '7 days ago' ) ),
 				);
-			case '7-days':
-				return array(
-					date( 'Y-m-d', strtotime( '7 days ago' ) ),
-					date( 'Y-m-d', strtotime( 'yesterday' ) ),
-				);
 			case 'prev-7-days':
 				return array(
 					date( 'Y-m-d', strtotime( '14 days ago' ) ),
@@ -732,11 +727,6 @@ tag_partner: "site_kit"
 				return array(
 					date( $last_year . '-m-01' ),
 					date( $last_year . '-m-' . $last_date_of_month ),
-				);
-			case '28-days':
-				return array(
-					date( 'Y-m-d', strtotime( '28 days ago' ) ),
-					date( 'Y-m-d', strtotime( 'yesterday' ) ),
 				);
 			case 'prev-28-days':
 				return array(
