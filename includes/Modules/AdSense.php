@@ -528,22 +528,10 @@ tag_partner: "site_kit"
 				case 'earnings':
 					$data = array_merge(
 						array(
-							'dateRange'  => '',
+							'dateRange'  => 'last-28-days',
 							'dimensions' => '',
 						)
 					);
-
-					if ( empty( $data['dateRange'] ) ) {
-						return new WP_Error(
-							'missing_required_param',
-							sprintf(
-								/* translators: %s: Missing parameter name */
-								__( 'Request parameter is empty: %s.', 'google-site-kit' ),
-								'dateRange'
-							),
-							array( 'status' => 400 )
-						);
-					}
 
 					$dates = $this->date_range_to_dates( $data['dateRange'] );
 
