@@ -63,13 +63,13 @@ const lazilySetupLocalCache = () => {
  * Respects the current dateRange value, if set.
  *
  * @param {Object} originalRequest Data request object.
- * @param {string} dateRange Date range slug.
+ * @param {string} dateRange Default date range slug to use if not specified in the request.
  * @return {Object} New data request object.
  */
 const requestWithDateRange = ( originalRequest, dateRange ) => {
 	// Make copies for reference safety, ensuring data exists.
 	const request = { data: {}, ...originalRequest };
-	// Use the dateRange in request.data if passed, fallback to filter-provided value.
+	// Use the dateRange in request.data if passed, fallback to provided default value.
 	request.data = { dateRange, ...request.data };
 
 	return request;
