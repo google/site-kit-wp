@@ -237,6 +237,7 @@ export default withData(
 			datapoint: 'earnings',
 			data: {
 				dateRange: 'this-month',
+				dimensions: [ 'DATE' ],
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
