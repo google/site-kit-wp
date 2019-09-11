@@ -708,11 +708,6 @@ tag_partner: "site_kit"
 					date( 'Y-m-d', strtotime( '7 days ago' ) ),
 					date( 'Y-m-d', strtotime( '7 days ago' ) ),
 				);
-			case 'prev-7-days':
-				return array(
-					date( 'Y-m-d', strtotime( '14 days ago' ) ),
-					date( 'Y-m-d', strtotime( '8 days ago' ) ),
-				);
 			// Intentional fallthrough.
 			case 'daily-this-month':
 			case 'this-month':
@@ -727,6 +722,11 @@ tag_partner: "site_kit"
 				return array(
 					date( $last_year . '-m-01' ),
 					date( $last_year . '-m-' . $last_date_of_month ),
+				);
+			case 'prev-7-days':
+				return array(
+					date( 'Y-m-d', strtotime( '14 days ago' ) ),
+					date( 'Y-m-d', strtotime( '8 days ago' ) ),
 				);
 			case 'prev-28-days':
 				return array(
