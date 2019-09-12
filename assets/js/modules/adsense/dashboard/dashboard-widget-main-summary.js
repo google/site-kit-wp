@@ -70,7 +70,7 @@ class AdSenseDashboardMainSummary extends Component {
 			requestDataToState,
 		} = this.props;
 
-		if ( data && ! data.error && 'function' === requestDataToState ) {
+		if ( data && ! data.error && 'function' === typeof requestDataToState ) {
 			this.setState( requestDataToState );
 		}
 	}
@@ -210,9 +210,11 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
 			toState( state, { data } ) {
-				return {
-					today: data,
-				};
+				if ( ! state.today ) {
+					return {
+						today: data,
+					};
+				}
 			},
 		},
 		{
@@ -226,9 +228,11 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
 			toState( state, { data } ) {
-				return {
-					period: data,
-				};
+				if ( ! state.period ) {
+					return {
+						period: data,
+					};
+				}
 			},
 		},
 		{
@@ -243,9 +247,11 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
 			toState( state, { data } ) {
-				return {
-					daily: data,
-				};
+				if ( ! state.daily ) {
+					return {
+						daily: data,
+					};
+				}
 			},
 		},
 	],

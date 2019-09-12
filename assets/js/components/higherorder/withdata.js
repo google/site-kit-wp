@@ -167,7 +167,7 @@ const withData = (
 					if ( handleDataError ) {
 						handleDataError( error );
 					}
-				} else if ( isDataZero( returnedData, datapoint ) ) { // No data error, next check for zero data.
+				} else if ( isDataZero( returnedData, datapoint, requestData ) ) { // No data error, next check for zero data.
 					// If we have a `handleDataError` call it without any parameters (indicating empty data).
 					if ( handleDataError ) {
 						handleDataError( error );

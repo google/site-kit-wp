@@ -73,7 +73,7 @@ class AdSenseEstimateEarningsWidget extends Component {
 			requestDataToState,
 		} = this.props;
 
-		if ( data && ! data.error && 'function' === requestDataToState ) {
+		if ( data && ! data.error && 'function' === typeof requestDataToState ) {
 			this.setState( requestDataToState );
 		}
 	}
@@ -227,9 +227,11 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
 			toState( state, { data } ) {
-				return {
-					today: data,
-				};
+				if ( ! state.today ) {
+					return {
+						today: data,
+					};
+				}
 			},
 		},
 		{
@@ -243,9 +245,11 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
 			toState( state, { data } ) {
-				return {
-					yesterday: data,
-				};
+				if ( ! state.yesterday ) {
+					return {
+						yesterday: data,
+					};
+				}
 			},
 		},
 		{
@@ -259,9 +263,11 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
 			toState( state, { data } ) {
-				return {
-					sameDayLastWeek: data,
-				};
+				if ( ! state.sameDayLastWeek ) {
+					return {
+						sameDayLastWeek: data,
+					};
+				}
 			},
 		},
 		{
@@ -275,9 +281,11 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
 			toState( state, { data } ) {
-				return {
-					sevenDays: data,
-				};
+				if ( ! state.sevenDays ) {
+					return {
+						sevenDays: data,
+					};
+				}
 			},
 		},
 		{
@@ -291,9 +299,11 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
 			toState( state, { data } ) {
-				return {
-					prev7Days: data,
-				};
+				if ( ! state.prev7Days ) {
+					return {
+						prev7Days: data,
+					};
+				}
 			},
 		},
 		{
@@ -307,9 +317,11 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
 			toState( state, { data } ) {
-				return {
-					month: data,
-				};
+				if ( ! state.month ) {
+					return {
+						month: data,
+					};
+				}
 			},
 		},
 		{
@@ -323,9 +335,11 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
 			toState( state, { data } ) {
-				return {
-					monthLastYear: data,
-				};
+				if ( ! state.monthLastYear ) {
+					return {
+						monthLastYear: data,
+					};
+				}
 			},
 		},
 		{
@@ -339,9 +353,11 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
 			toState( state, { data } ) {
-				return {
-					twentyEightDays: data,
-				};
+				if ( ! state.twentyEightDays ) {
+					return {
+						twentyEightDays: data,
+					};
+				}
 			},
 		},
 		{
@@ -355,9 +371,11 @@ export default withData(
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
 			toState( state, { data } ) {
-				return {
-					prev28Days: data,
-				};
+				if ( ! state.prev28Days ) {
+					return {
+						prev28Days: data,
+					};
+				}
 			},
 		},
 	],
