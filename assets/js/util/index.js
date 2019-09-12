@@ -597,18 +597,24 @@ export const findTagInHtmlContent = ( html, module ) => {
 export const getExistingTag = async ( module ) => {
 	const CACHE_KEY = `${ module }::existingTag`;
 	const { homeURL, ampMode } = googlesitekit.admin;
+	const tagFetchQueryArgs = {
+		// Indicates a tag checking request. This lets Site Kit know not to output its own tags.
+		tagverify: 1,
+		// Add a timestamp for cache-busting.
+		timestamp: Date.now(),
+	};
 
 	let tagFound = data.getCache( CACHE_KEY, 300 );
 
 	if ( tagFound === undefined ) {
 		try {
-			tagFound = await scrapeTag( addQueryArgs( homeURL, { tagverify: 1, timestamp: Date.now() } ), module );
+			tagFound = await scrapeTag( addQueryArgs( homeURL, tagFetchQueryArgs ), module );
 
 			if ( ! tagFound && 'secondary' === ampMode ) {
 				tagFound = await apiFetch( { path: '/wp/v2/posts?per_page=1' } ).then(
 					// Scrape the first post in AMP mode, if there is one.
 					( posts ) => posts.slice( 0, 1 ).map( async ( post ) => {
-						return await scrapeTag( addQueryArgs( post.link, { amp: 1 } ), module );
+						return await scrapeTag( addQueryArgs( post.link, { ...tagFetchQueryArgs, amp: 1 } ), module );
 					} ).pop()
 				);
 			}
