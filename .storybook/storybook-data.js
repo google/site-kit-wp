@@ -220,6 +220,7 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
+				delay: 1000,
 			},
 		},
 	},
