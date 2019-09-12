@@ -153,8 +153,7 @@ final class PageSpeed_Insights extends Module {
 	protected function parse_data_response( $method, $datapoint, $response ) {
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'site-pagespeed-mobile':
-				case 'site-pagespeed-desktop':
+				case 'pagespeed':
 					// TODO: Parse this response to a regular array.
 					return $response->getLighthouseResult();
 			}
