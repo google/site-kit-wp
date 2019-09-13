@@ -42,6 +42,13 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	private $_existing_tag_account = false;
 
 	/**
+	 * Temporary storage for adsense request.
+	 *
+	 * @var bool
+	 */
+	private $_is_adsense_request = false;
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -186,6 +193,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		$info['settings']                     = $this->get_data( 'connection' );
 		$info['settings']['useSnippet']       = $this->get_data( 'use-snippet' );
 		$info['settings']['ampClientIdOptIn'] = $this->get_data( 'amp-client-id-opt-in' );
+
+		$info['adsenseLinked'] = (bool) $this->options->get( 'googlesitekit_analytics_adsense_linked' );
 
 		return $info;
 	}
@@ -429,26 +438,22 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	protected function get_datapoint_services() {
 		return array(
 			// GET / POST.
-			'connection'               => '',
-			'account-id'               => '',
-			'property-id'              => '',
-			'profile-id'               => '',
-			'internal-web-property-id' => '',
-			'use-snippet'              => '',
-			'amp-client-id-opt-in'     => '',
+			'connection'                   => '',
+			'account-id'                   => '',
+			'property-id'                  => '',
+			'profile-id'                   => '',
+			'internal-web-property-id'     => '',
+			'use-snippet'                  => '',
+			'amp-client-id-opt-in'         => '',
 			// GET.
-			'goals'                    => 'analytics',
-			'get-accounts'             => 'analytics',
-			'get-properties'           => 'analytics',
-			'get-profiles'             => 'analytics',
-			'tag-permission'           => '',
-			'adsense'                  => 'analyticsreporting',
-			'site-analytics'           => 'analyticsreporting',
-			'top-pages'                => 'analyticsreporting',
-			'overview'                 => 'analyticsreporting',
-			'traffic-sources'          => 'analyticsreporting',
+			'goals'                        => 'analytics',
+			'accounts-properties-profiles' => 'analytics',
+			'properties-profiles'          => 'analytics',
+			'profiles'                     => 'analytics',
+			'tag-permission'               => '',
+			'report'                       => 'analyticsreporting',
 			// POST.
-			'save'                     => '',
+			'settings'                     => '',
 		);
 	}
 
@@ -540,7 +545,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 					$service = $this->get_service( 'analytics' );
 					return $service->management_goals->listManagementGoals( $connection['accountId'], $connection['propertyId'], $connection['profileId'] );
-				case 'get-accounts':
+				case 'accounts-properties-profiles':
 					if ( ! empty( $data['existingAccountId'] ) && ! empty( $data['existingPropertyId'] ) ) {
 						$this->_existing_tag_account = array(
 							'accountId'  => $data['existingAccountId'],
@@ -549,14 +554,14 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 					$service = $this->get_service( 'analytics' );
 					return $service->management_accounts->listManagementAccounts();
-				case 'get-properties':
+				case 'properties-profiles':
 					if ( ! isset( $data['accountId'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
 					}
 					$service = $this->get_service( 'analytics' );
 					return $service->management_webproperties->listManagementWebproperties( $data['accountId'] );
-				case 'get-profiles':
+				case 'profiles':
 					if ( ! isset( $data['accountId'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
@@ -577,7 +582,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 								array( 'status' => 400 )
 							);
 						}
-						$accounts               = $this->get_data( 'get-accounts' );
+						$accounts               = $this->get_data( 'accounts-properties-profiles' );
 						$has_access_to_property = $this->has_access_to_property( $data['tag'], $accounts['accounts'] );
 
 						if ( empty( $has_access_to_property ) ) {
@@ -594,229 +599,120 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 						return $has_access_to_property;
 					};
-				case 'adsense':
-					// Date range.
-					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
-					$date_range = $this->parse_date_range( $date_range );
-					// Dimensions.
-					$title_dimension = new \Google_Service_AnalyticsReporting_Dimension();
-					$title_dimension->setName( 'ga:pageTitle' );
-					$path_dimension = new \Google_Service_AnalyticsReporting_Dimension();
-					$path_dimension->setName( 'ga:pagePath' );
-					$request = $this->create_analytics_site_data_request(
+				case 'report':
+					$data = array_merge(
 						array(
-							'dimensions' => array( $title_dimension, $path_dimension ),
-							'start_date' => $date_range[0],
-							'end_date'   => $date_range[1],
-							'page'       => ! empty( $data['url'] ) ? $data['url'] : '',
-							'row_limit'  => isset( $data['limit'] ) ? $data['limit'] : 10,
-						)
+							'dateRange'         => 'last-28-days',
+							'url'               => '',
+							// List of strings (comma-separated) of dimension names.
+							'dimensions'        => '',
+							// List of objects with expression and optional alias properties.
+							'metrics'           => array(),
+							// List of objects with fieldName and sortOrder properties.
+							'orderby'           => array(),
+							// Whether or not to double the requested range for comparison.
+							'compareDateRanges' => false,
+							// Whether or not to include an additional previous range from the given dateRange.
+							'multiDateRange'    => false,
+						),
+						$data
 					);
+
+					$dimensions = array_map(
+						function ( $name ) {
+							$dimension = new \Google_Service_AnalyticsReporting_Dimension();
+							$dimension->setName( $name );
+
+							return $dimension;
+						},
+						explode( ',', $data['dimensions'] )
+					);
+
+					$request_args         = compact( 'dimensions' );
+					$request_args['page'] = $data['url'];
+
+					if ( ! empty( $data['limit'] ) ) {
+						$request_args['row_limit'] = $data['limit'];
+					}
+
+					$request = $this->create_analytics_site_data_request( $request_args );
+
 					if ( is_wp_error( $request ) ) {
 						return $request;
 					}
-					// Metrics.
-					$adsense_revenue = new \Google_Service_AnalyticsReporting_Metric();
-					$adsense_revenue->setExpression( 'ga:adsenseRevenue' );
-					$adsense_revenue->setAlias( 'Earnings' );
-					$adsense_ecpm = new \Google_Service_AnalyticsReporting_Metric();
-					$adsense_ecpm->setExpression( 'ga:adsenseECPM' );
-					$adsense_ecpm->setAlias( 'Page RPM' );
-					$impressions = new \Google_Service_AnalyticsReporting_Metric();
-					$impressions->setExpression( 'ga:adsensePageImpressions' );
-					$impressions->setAlias( 'Impressions' );
-					$request->setMetrics( array( $adsense_revenue, $adsense_ecpm, $impressions ) );
-					// Order by.
-					$orderby = new \Google_Service_AnalyticsReporting_OrderBy();
-					$orderby->setFieldName( 'ga:adsenseRevenue' );
-					$orderby->setSortOrder( 'DESCENDING' );
-					$request->setOrderBys( $orderby );
-					// Reports batch requests.
-					$body = new \Google_Service_AnalyticsReporting_GetReportsRequest();
-					$body->setReportRequests( array( $request ) );
-					$service = $this->get_service( 'analyticsreporting' );
-					return $service->reports->batchGet( $body );
-				case 'site-analytics':
-					// Date range.
-					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
-					$date_range = $this->parse_date_range( $date_range, 2 );
-					// Dimensions.
-					$date_dimension = new \Google_Service_AnalyticsReporting_Dimension();
-					$date_dimension->setName( 'ga:date' );
-					$request = $this->create_analytics_site_data_request(
-						array(
-							'dimensions' => array( $date_dimension ),
-							'start_date' => $date_range[0],
-							'end_date'   => $date_range[1],
-							'page'       => ! empty( $data['url'] ) ? $data['url'] : '',
-							'row_limit'  => isset( $data['limit'] ) ? $data['limit'] : 180,
-						)
+
+					$date_ranges = array(
+						$this->parse_date_range(
+							$data['dateRange'],
+							$data['compareDateRanges'] ? 2 : 1
+						),
 					);
-					if ( is_wp_error( $request ) ) {
-						return $request;
+
+					// When using multiple date ranges, it changes the structure of the response,
+					// where each date range becomes an item in a list.
+					if ( ! empty( $data['multiDateRange'] ) ) {
+						$date_ranges[] = $this->parse_date_range( $data['dateRange'], 1, 1, true );
 					}
-					// Metrics.
-					$users = new \Google_Service_AnalyticsReporting_Metric();
-					$users->setExpression( 'ga:users' );
-					$users->setAlias( 'Users' );
-					$sessions = new \Google_Service_AnalyticsReporting_Metric();
-					$sessions->setExpression( 'ga:sessions' );
-					$sessions->setAlias( 'Sessions' );
-					$bounce_rate = new \Google_Service_AnalyticsReporting_Metric();
-					$bounce_rate->setExpression( 'ga:bounceRate' );
-					$bounce_rate->setAlias( 'Bounce Rate' );
-					$session_duration = new \Google_Service_AnalyticsReporting_Metric();
-					$session_duration->setExpression( 'ga:avgSessionDuration' );
-					$session_duration->setAlias( 'Average Session Duration' );
-					$goals_completed = new \Google_Service_AnalyticsReporting_Metric();
-					$goals_completed->setExpression( 'ga:goalCompletionsAll' );
-					$goals_completed->setAlias( 'Goal Completions' );
-					$request->setMetrics( array( $sessions, $users, $bounce_rate, $session_duration, $goals_completed ) );
-					// Reports batch requests.
-					$body = new \Google_Service_AnalyticsReporting_GetReportsRequest();
-					$body->setReportRequests( array( $request ) );
-					$service = $this->get_service( 'analyticsreporting' );
-					return $service->reports->batchGet( $body );
-				case 'top-pages':
-					// Date range.
-					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
-					$date_range = $this->parse_date_range( $date_range );
-					// Dimensions.
-					$title_dimension = new \Google_Service_AnalyticsReporting_Dimension();
-					$title_dimension->setName( 'ga:pageTitle' );
-					$path_dimension = new \Google_Service_AnalyticsReporting_Dimension();
-					$path_dimension->setName( 'ga:pagePath' );
-					$request = $this->create_analytics_site_data_request(
-						array(
-							'dimensions' => array( $path_dimension, $title_dimension ),
-							'start_date' => $date_range[0],
-							'end_date'   => $date_range[1],
-							'page'       => ! empty( $data['url'] ) ? $data['url'] : '',
-							'row_limit'  => isset( $data['limit'] ) ? $data['limit'] : 10,
-						)
+
+					$date_ranges = array_map(
+						function ( $date_range ) {
+							list ( $start_date, $end_date ) = $date_range;
+							$date_range                     = new \Google_Service_AnalyticsReporting_DateRange();
+							$date_range->setStartDate( $start_date );
+							$date_range->setEndDate( $end_date );
+
+							return $date_range;
+						},
+						$date_ranges
 					);
-					if ( is_wp_error( $request ) ) {
-						return $request;
-					}
-					// Metrics.
-					$pageviews = new \Google_Service_AnalyticsReporting_Metric();
-					$pageviews->setExpression( 'ga:pageviews' );
-					$pageviews->setAlias( 'Pageviews' );
-					$unique_pageviews = new \Google_Service_AnalyticsReporting_Metric();
-					$unique_pageviews->setExpression( 'ga:uniquePageviews' );
-					$unique_pageviews->setAlias( 'Unique Pageviews' );
-					$bounce_rate = new \Google_Service_AnalyticsReporting_Metric();
-					$bounce_rate->setExpression( 'ga:bounceRate' );
-					$bounce_rate->setAlias( 'Bounce rate' );
-					$metrics = array( $pageviews, $unique_pageviews, $bounce_rate );
-					if ( $this->options->get( 'googlesitekit_analytics_adsense_linked' ) ) {
-						$adsense_revenue = new \Google_Service_AnalyticsReporting_Metric();
-						$adsense_revenue->setExpression( 'ga:adsenseRevenue' );
-						$adsense_revenue->setAlias( 'AdSense Revenue' );
-						array_push( $metrics, $adsense_revenue );
-						$adsense_ecpm = new \Google_Service_AnalyticsReporting_Metric();
-						$adsense_ecpm->setExpression( 'ga:adsenseECPM' );
-						$adsense_ecpm->setAlias( 'AdSense ECPM' );
-						array_push( $metrics, $adsense_ecpm );
-					}
+					$request->setDateRanges( $date_ranges );
+
+					$metrics = array_map(
+						function ( $metric_def ) {
+							$metric_def = array_merge(
+								array(
+									'alias'      => '',
+									'expression' => '',
+								),
+								(array) $metric_def
+							);
+							$metric     = new \Google_Service_AnalyticsReporting_Metric();
+							$metric->setAlias( $metric_def['alias'] );
+							$metric->setExpression( $metric_def['expression'] );
+
+							return $metric;
+						},
+						(array) $data['metrics']
+					);
 					$request->setMetrics( $metrics );
+					// TODO: refactor this when $data is available in parse_data_response.
+					$this->detect_adsense_request_from_metrics( $metrics );
+
 					// Order by.
-					$orderby = new \Google_Service_AnalyticsReporting_OrderBy();
-					$orderby->setFieldName( 'ga:pageviews' );
-					$orderby->setSortOrder( 'DESCENDING' );
-					$request->setOrderBys( $orderby );
-					// Reports batch requests.
-					$body = new \Google_Service_AnalyticsReporting_GetReportsRequest();
-					$body->setReportRequests( array( $request ) );
-					$service = $this->get_service( 'analyticsreporting' );
-					return $service->reports->batchGet( $body );
-				case 'overview':
-					$request = $this->create_analytics_site_data_request(
-						array(
-							'page'      => ! empty( $data['url'] ) ? $data['url'] : '',
-							'row_limit' => isset( $data['limit'] ) ? $data['limit'] : 10,
-						)
+					$orderby = array_map(
+						function ( $order_def ) {
+							$order_def = array_merge(
+								array(
+									'fieldName' => '',
+									'sortOrder' => '',
+								),
+								(array) $order_def
+							);
+							$order_by  = new \Google_Service_AnalyticsReporting_OrderBy();
+							$order_by->setFieldName( $order_def['fieldName'] );
+							$order_by->setSortOrder( $order_def['sortOrder'] );
+
+							return $order_by;
+						},
+						(array) $data['orderby']
 					);
-					if ( is_wp_error( $request ) ) {
-						return $request;
-					}
-					// Date range (custom here because of two ranges).
-					$date_range      = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
-					$date_range2     = $this->parse_date_range( $date_range, 1, 1, true );
-					$date_range      = $this->parse_date_range( $date_range );
-					$date_range2[1]  = $date_range[0];
-					$date_range_inst = new \Google_Service_AnalyticsReporting_DateRange();
-					$date_range_inst->setStartDate( $date_range[0] );
-					$date_range_inst->setEndDate( $date_range[1] );
-					$date_range2_inst = new \Google_Service_AnalyticsReporting_DateRange();
-					$date_range2_inst->setStartDate( $date_range2[0] );
-					$date_range2_inst->setEndDate( $date_range2[1] );
-					$request->setDateRanges( array( $date_range_inst, $date_range2_inst ) );
-					// Metrics.
-					$users = new \Google_Service_AnalyticsReporting_Metric();
-					$users->setExpression( 'ga:users' );
-					$users->setAlias( 'Users' );
-					$sessions = new \Google_Service_AnalyticsReporting_Metric();
-					$sessions->setExpression( 'ga:sessions' );
-					$sessions->setAlias( 'Sessions' );
-					$bounce_rate = new \Google_Service_AnalyticsReporting_Metric();
-					$bounce_rate->setExpression( 'ga:bounceRate' );
-					$bounce_rate->setAlias( 'Bounce Rate' );
-					$session_duration = new \Google_Service_AnalyticsReporting_Metric();
-					$session_duration->setExpression( 'ga:avgSessionDuration' );
-					$session_duration->setAlias( 'Average Session Duration' );
-					$goals_completed = new \Google_Service_AnalyticsReporting_Metric();
-					$goals_completed->setExpression( 'ga:goalCompletionsAll' );
-					$goals_completed->setAlias( 'Goal Completions' );
-					$pageviews = new \Google_Service_AnalyticsReporting_Metric();
-					$pageviews->setExpression( 'ga:pageviews' );
-					$pageviews->setAlias( 'Pageviews' );
-					$request->setMetrics( array( $users, $sessions, $bounce_rate, $session_duration, $goals_completed, $pageviews ) );
-					// Reports batch requests.
-					$body = new \Google_Service_AnalyticsReporting_GetReportsRequest();
-					$body->setReportRequests( array( $request ) );
-					$service = $this->get_service( 'analyticsreporting' );
-					return $service->reports->batchGet( $body );
-				case 'traffic-sources':
-					// Date range.
-					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
-					$date_range = $this->parse_date_range( $date_range );
-					// Dimensions.
-					$medium_dimension = new \Google_Service_AnalyticsReporting_Dimension();
-					$medium_dimension->setName( 'ga:medium' );
-					$request = $this->create_analytics_site_data_request(
-						array(
-							'dimensions' => array( $medium_dimension ),
-							'start_date' => $date_range[0],
-							'end_date'   => $date_range[1],
-							'page'       => ! empty( $data['url'] ) ? $data['url'] : '',
-							'row_limit'  => isset( $data['limit'] ) ? $data['limit'] : 10,
-						)
-					);
-					if ( is_wp_error( $request ) ) {
-						return $request;
-					}
-					// Metrics.
-					$sessions = new \Google_Service_AnalyticsReporting_Metric();
-					$sessions->setExpression( 'ga:sessions' );
-					$sessions->setAlias( 'Sessions' );
-					$users = new \Google_Service_AnalyticsReporting_Metric();
-					$users->setExpression( 'ga:users' );
-					$users->setAlias( 'Users' );
-					$new_users = new \Google_Service_AnalyticsReporting_Metric();
-					$new_users->setExpression( 'ga:newUsers' );
-					$new_users->setAlias( 'New Users' );
-					$request->setMetrics( array( $sessions, $users, $new_users ) );
-					// Order by.
-					$orderby = new \Google_Service_AnalyticsReporting_OrderBy();
-					$orderby->setFieldName( 'ga:sessions' );
-					$orderby->setSortOrder( 'DESCENDING' );
 					$request->setOrderBys( $orderby );
-					// Reports batch requests.
+
+					// Batch reports requests.
 					$body = new \Google_Service_AnalyticsReporting_GetReportsRequest();
 					$body->setReportRequests( array( $request ) );
-					$service = $this->get_service( 'analyticsreporting' );
-					return $service->reports->batchGet( $body );
+
+					return $this->get_analyticsreporting_service()->reports->batchGet( $body );
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
@@ -903,7 +799,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'save':
+				case 'settings':
 					if ( ! isset( $data['accountId'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
@@ -1040,7 +936,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 					// TODO: Parse this response to a regular array.
 					break;
-				case 'get-accounts':
+				case 'accounts-properties-profiles':
 					$response = array(
 						// TODO: Parse this response to a regular array.
 						'accounts'   => $response->getItems(),
@@ -1067,7 +963,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							$current_url = untrailingslashit( $this->context->get_reference_site_url() );
 							$urls        = $this->permute_site_url( $current_url );
 							foreach ( $response['accounts'] as $account ) {
-								$properties = $this->get_data( 'get-properties', array( 'accountId' => $account->getId() ) );
+								$properties = $this->get_data( 'properties-profiles', array( 'accountId' => $account->getId() ) );
 								if ( is_wp_error( $properties ) ) {
 									continue;
 								}
@@ -1092,7 +988,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						return $response;
 					}
 
-					$properties = $this->get_data( 'get-properties', array( 'accountId' => $found_account_id ) );
+					$properties = $this->get_data( 'properties-profiles', array( 'accountId' => $found_account_id ) );
 					if ( is_wp_error( $properties ) ) {
 						return $response;
 					}
@@ -1114,7 +1010,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 
 					return $result;
-				case 'get-properties':
+				case 'properties-profiles':
 					$response = array(
 						// TODO: Parse this response to a regular array.
 						'properties' => $response->getItems(),
@@ -1140,7 +1036,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						$found_property_id = $response['properties'][0]->getId();
 					}
 					$profiles = $this->get_data(
-						'get-profiles',
+						'profiles',
 						array(
 							'accountId'  => $found_account_id,
 							'propertyId' => $found_property_id,
@@ -1151,26 +1047,22 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 					$response['profiles'] = $profiles;
 					return $response;
-				case 'get-profiles':
+				case 'profiles':
 					// TODO: Parse this response to a regular array.
 					$response = $response->getItems();
 					if ( 0 === count( $response ) ) {
 						return new WP_Error( 'google_analytics_profiles_empty', __( 'No Google Analytics profiles found. Please go to Google Anlytics to set one up.', 'google-site-kit' ), array( 'status' => 500 ) );
 					}
 					return $response;
-				case 'adsense':
-					if ( isset( $response->error ) ) {
-						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
-					} else {
-						$this->options->set( 'googlesitekit_analytics_adsense_linked', '1' );
+				case 'report':
+					if ( $this->_is_adsense_request ) {
+						if ( isset( $response->error ) ) {
+							$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
+						} else {
+							$this->options->set( 'googlesitekit_analytics_adsense_linked', '1' );
+						}
 					}
-					// TODO: Parse this response to a regular array.
-					return $response->getReports();
-				case 'site-analytics':
-				case 'top-pages':
-				case 'overview':
-				case 'traffic-sources':
-					// TODO: Parse this response to a regular array.
+
 					return $response->getReports();
 			}
 		}
@@ -1192,7 +1084,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 *     @type string $page       Specific page URL to filter by. Default empty string.
 	 *     @type int    $row_limit  Limit of rows to return. Default 100.
 	 * }
-	 * @return RequestInterface|WP_Error Analytics site request instance.
+	 * @return \Google_Service_AnalyticsReporting_ReportRequest|WP_Error Analytics site request instance.
 	 */
 	protected function create_analytics_site_data_request( array $args = array() ) {
 		$args = wp_parse_args(
@@ -1264,6 +1156,15 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	}
 
 	/**
+	 * Gets the configured Analytics Reporting service object instance.
+	 *
+	 * @return \Google_Service_AnalyticsReporting The Analytics Reporting API service.
+	 */
+	private function get_analyticsreporting_service() {
+		return $this->get_service( 'analyticsreporting' );
+	}
+
+	/**
 	 * Sets up the Google services the module should use.
 	 *
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
@@ -1301,7 +1202,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 		foreach ( $accounts as $account ) {
 			$account_id = $account->getId();
-			$properties = $this->get_data( 'get-properties', array( 'accountId' => $account_id ) );
+			$properties = $this->get_data( 'properties-profiles', array( 'accountId' => $account_id ) );
 
 			if ( is_wp_error( $properties ) ) {
 				continue;
@@ -1323,5 +1224,18 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Determines whether the given metrics are for an adsense request and sets the temporary state if found.
+	 *
+	 * @param \Google_Service_AnalyticsReporting_Metric[] $metrics Array of metrics objects.
+	 */
+	private function detect_adsense_request_from_metrics( array $metrics ) {
+		foreach ( $metrics as $metric ) {
+			if ( 0 === strpos( $metric->getExpression(), 'ga:adsense' ) ) {
+				$this->_is_adsense_request = true;
+			}
+		}
 	}
 }

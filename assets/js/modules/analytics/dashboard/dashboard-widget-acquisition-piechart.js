@@ -29,7 +29,7 @@ import { TYPE_MODULES } from 'GoogleComponents/data';
 import PropTypes from 'prop-types';
 import Link from 'GoogleComponents/link';
 import PreviewBlock from 'GoogleComponents/preview-block';
-import { extractAnalyticsDataForTrafficChart, getAnalyticsErrorMessageFromData, isDataZeroForTrafficSources } from '../util';
+import { extractAnalyticsDataForTrafficChart, getAnalyticsErrorMessageFromData, trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../util';
 
 const { Component } = wp.element;
 const { __ } = wp.i18n;
@@ -111,8 +111,9 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'traffic-sources',
+			datapoint: 'report',
 			data: {
+				...trafficSourcesReportDataDefaults,
 				url: googlesitekit.permaLink,
 			},
 			priority: 1,
@@ -122,6 +123,6 @@ export default withData(
 	],
 	<PreviewBlock width="282px" height="282px" shape="circular" />,
 	{},
-	isDataZeroForTrafficSources,
+	isDataZeroForReporting,
 	getAnalyticsErrorMessageFromData
 );

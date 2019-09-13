@@ -147,10 +147,10 @@ class AdSenseSetupInstructions extends Component {
 										if ( 'account-connected' === accountStatus && clientId ) {
 											this.setState( { isSaving: true } );
 											const enableAutoAds = document.getElementById( 'enableAutoAds' );
-											const adsenseTagEnabled = ( enableAutoAds && ! enableAutoAds.checked ) ? false : true;
+											const useSnippet = enableAutoAds && enableAutoAds.checked;
 
 											// Save the publisher clientId: AdSense setup is complete!
-											data.set( TYPE_MODULES, 'adsense', 'setup-complete', { clientId, adsenseTagEnabled } ).then( () => {
+											data.set( TYPE_MODULES, 'adsense', 'setup-complete', { clientId, useSnippet } ).then( () => {
 												document.location = ctaLink;
 											} ).catch( () => {
 												this.setState( { isSaving: false } );

@@ -74,8 +74,7 @@ final class PageSpeed_Insights extends Module {
 	protected function get_datapoint_services() {
 		return array(
 			// GET.
-			'site-pagespeed-mobile'  => 'pagespeedonline',
-			'site-pagespeed-desktop' => 'pagespeedonline',
+			'pagespeed' => 'pagespeedonline',
 		);
 	}
 
@@ -92,20 +91,47 @@ final class PageSpeed_Insights extends Module {
 	protected function create_data_request( $method, $datapoint, array $data = array() ) {
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'site-pagespeed-mobile':
-				case 'site-pagespeed-desktop':
-					$strategy = str_replace( 'site-pagespeed-', '', $datapoint );
+				case 'pagespeed':
+					if ( empty( $data['strategy'] ) ) {
+						return new WP_Error(
+							'missing_required_param',
+							sprintf(
+								/* translators: %s: Missing parameter name */
+								__( 'Request parameter is empty: %s.', 'google-site-kit' ),
+								'strategy'
+							),
+							array( 'status' => 400 )
+						);
+					}
+
+					$valid_strategies = array( 'mobile', 'desktop' );
+
+					if ( ! in_array( $data['strategy'], $valid_strategies, true ) ) {
+						return new WP_Error(
+							'invalid_param',
+							sprintf(
+								/* translators: 1: Invalid parameter name, 2: list of valid values */
+								__( 'Request parameter %1$s is not one of %2$s', 'google-site-kit' ),
+								'strategy',
+								implode( ', ', $valid_strategies )
+							),
+							array( 'status' => 400 )
+						);
+					}
+
 					if ( ! empty( $data['url'] ) ) {
 						$page_url = $data['url'];
 					} else {
 						$page_url = $this->context->get_reference_site_url();
 					}
+
 					$service = $this->get_service( 'pagespeedonline' );
+
 					return $service->pagespeedapi->runpagespeed(
 						$page_url,
 						array(
 							'locale'   => substr( get_locale(), 0, 2 ),
-							'strategy' => $strategy,
+							'strategy' => $data['strategy'],
 						)
 					);
 			}
@@ -127,8 +153,7 @@ final class PageSpeed_Insights extends Module {
 	protected function parse_data_response( $method, $datapoint, $response ) {
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'site-pagespeed-mobile':
-				case 'site-pagespeed-desktop':
+				case 'pagespeed':
 					// TODO: Parse this response to a regular array.
 					return $response->getLighthouseResult();
 			}

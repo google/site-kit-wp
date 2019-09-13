@@ -25,6 +25,10 @@ import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
 import PropTypes from 'prop-types';
+/**
+ * Internal dependencies
+ */
+import { getTopPagesReportDataDefaults } from '../util';
 
 const { __ } = wp.i18n;
 const { map } = lodash;
@@ -125,8 +129,8 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'top-pages',
-			data: {},
+			datapoint: 'report',
+			data: getTopPagesReportDataDefaults(),
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],

@@ -20,7 +20,7 @@ import TabBar from '@material/react-tab-bar';
 import { __ } from '@wordpress/i18n';
 
 const setupSettings = () => {
-	window.googlesitekit.modules.analytics[ 'get-accounts' ] = {
+	window.googlesitekit.modules.analytics[ 'accounts-properties-profiles' ] = {
 		accounts: [
 			{
 				created: '2011-03-25T21:41:26.980Z',

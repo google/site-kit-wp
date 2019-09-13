@@ -83,6 +83,20 @@ class Search_ConsoleTest extends TestCase {
 		$this->assertEquals( 'https://other.example.com', apply_filters( 'googlesitekit_site_url', '' ) );
 	}
 
+	public function test_get_datapoints() {
+		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertEqualSets(
+			array(
+				'site',
+				'sites',
+				'matched-sites',
+				'searchanalytics',
+			),
+			$search_console->get_datapoints()
+		);
+	}
+
 	public function test_get_module_scopes() {
 		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 

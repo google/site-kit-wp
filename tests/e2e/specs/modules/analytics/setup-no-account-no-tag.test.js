@@ -80,7 +80,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		] );
 
 		await Promise.all( [
-			page.waitForResponse( ( req ) => req.url().match( 'analytics/data/get-accounts' ) ),
+			page.waitForResponse( ( req ) => req.url().match( 'analytics/data/accounts-properties-profiles' ) ),
 			expect( page ).toClick( '.googlesitekit-cta-link', { text: /Re-fetch My Account/i } ),
 		] );
 
