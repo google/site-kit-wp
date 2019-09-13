@@ -1017,7 +1017,11 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						'profiles'   => array(),
 					);
 					if ( 0 === count( $response['properties'] ) ) {
-						return new WP_Error( 'google_analytics_properties_empty', __( 'No Google Analytics properties found. Please go to Google Anlytics to set one up.', 'google-site-kit' ), array( 'status' => 500 ) );
+						return new WP_Error(
+							'google_analytics_properties_empty',
+							__( 'No Google Analytics properties found. Please go to Google Analytics to set one up.', 'google-site-kit' ),
+							array( 'status' => 500 )
+						);
 					}
 					$found_account_id  = false;
 					$found_property_id = false;
