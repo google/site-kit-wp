@@ -557,7 +557,7 @@ class AnalyticsSetup extends Component {
 			onSettingsPage,
 		} = this.props;
 		const disabled = ! isEditing;
-		const { AMPenabled } = window.googlesitekit.admin;
+		const { ampEnabled } = window.googlesitekit.admin;
 		const useSnippetSettings = window.googlesitekit.modules.analytics.settings.useSnippet;
 
 		return (
@@ -609,7 +609,7 @@ class AnalyticsSetup extends Component {
 						</Radio>
 					</Fragment>
 				}
-				{ useSnippet && AMPenabled &&
+				{ useSnippet && ampEnabled &&
 					<div className="googlesitekit-setup-module__input">
 						<Switch
 							id="ampClientIdOptIn"
