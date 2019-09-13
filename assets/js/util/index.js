@@ -836,9 +836,9 @@ export function stringToSlug( string ) {
 }
 
 /**
- * Gets the current dateRange slug.
+ * Gets the current dateRange string.
  *
- * @return {string} the date range slug.
+ * @return {string} the date range string.
  */
 export function getCurrentDateRange() {
 	/**
@@ -846,7 +846,7 @@ export function getCurrentDateRange() {
 	 *
 	 * @param String The selected date range. Default 'Last 28 days'.
 	 */
-	return stringToSlug( applyFilters( 'googlesitekit.dateRange', __( 'Last 28 days', 'google-site-kit' ) ) );
+	return applyFilters( 'googlesitekit.dateRange', __( 'Last 28 days', 'google-site-kit' ) );
 }
 
 /**
