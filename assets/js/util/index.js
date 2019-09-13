@@ -858,6 +858,15 @@ export function getDateRangeFrom() {
 }
 
 /**
+ * Gets the current dateRange slug.
+ *
+ * @return {string} the date range slug.
+ */
+export function getCurrentDateRangeSlug() {
+	return stringToSlug( getCurrentDateRange() );
+}
+
+/**
  * Get the icon for a module.
  *
  * @param {string}  module                The module slug.

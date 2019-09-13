@@ -24,7 +24,7 @@ import md5 from 'md5';
 
 import {
 	getStorage,
-	getCurrentDateRange,
+	getCurrentDateRangeSlug,
 	fillFilterWithComponent,
 	getQueryParameter,
 	sortObjectProperties,
@@ -109,7 +109,7 @@ const dataAPI = {
 		return new Promise( ( resolve, reject ) => {
 			try {
 				const responseData = [];
-				const dateRange = getCurrentDateRange();
+				const dateRange = getCurrentDateRangeSlug();
 				each( combinedRequest, ( originalRequest ) => {
 					const request = requestWithDateRange( originalRequest, dateRange );
 					request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
@@ -139,7 +139,7 @@ const dataAPI = {
 		// First, resolve any cache matches immediately, queue resolution of the rest.
 		let dataRequest = [];
 		let cacheDelay = 25;
-		const dateRange = getCurrentDateRange();
+		const dateRange = getCurrentDateRangeSlug();
 		each( combinedRequest, ( originalRequest ) => {
 			const request = requestWithDateRange( originalRequest, dateRange );
 			request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
