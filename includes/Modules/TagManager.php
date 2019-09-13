@@ -509,7 +509,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 						return $response;
 					}
 
-					return array_merge( $response, $containers );
+					return array_merge( $response, compact( 'containers' ) );
 				case 'containers':
 					$account_id = null;
 					if ( ! empty( $this->_containers_account_id ) ) {
