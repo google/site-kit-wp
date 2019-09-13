@@ -1016,6 +1016,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						'properties' => $response->getItems(),
 						'profiles'   => array(),
 					);
+
 					if ( 0 === count( $response['properties'] ) ) {
 						return new WP_Error(
 							'google_analytics_properties_empty',
@@ -1023,33 +1024,39 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							array( 'status' => 500 )
 						);
 					}
-					$found_account_id  = false;
-					$found_property_id = false;
-					$property_id       = $this->get_data( 'property-id' );
-					if ( ! is_wp_error( $property_id ) ) {
-						foreach ( $response['properties'] as $property ) {
-							if ( $property->getId() === $property_id ) {
-								$found_account_id  = $property->getAccountId();
-								$found_property_id = $property->getId();
-								break;
-							}
+
+					$property_id = $this->get_data( 'property-id' );
+					$current_url = $this->context->get_reference_site_url();
+					// Initialize an empty property as a null object if no match is found.
+					$found_property = new \Google_Service_Analytics_Webproperty();
+
+					foreach ( $response['properties'] as $property ) {
+						/* @var \Google_Service_Analytics_Webproperty $property Property instance. */
+						if (
+							// Attempt to match by property ID.
+							$property->getId() === $property_id ||
+							// Attempt to match by site URL.
+							( trailingslashit( $current_url ) === trailingslashit( $property->getWebsiteUrl() ) )
+						) {
+							$found_property = $property;
+							break;
 						}
 					}
-					if ( empty( $found_account_id ) || empty( $found_property_id ) ) {
-						$found_account_id  = $response['properties'][0]->getAccountId();
-						$found_property_id = $response['properties'][0]->getId();
-					}
+
 					$profiles = $this->get_data(
 						'profiles',
 						array(
-							'accountId'  => $found_account_id,
-							'propertyId' => $found_property_id,
+							'accountId'  => $found_property->getAccountId(),
+							'propertyId' => $found_property->getId(),
 						)
 					);
+
 					if ( is_wp_error( $profiles ) ) {
 						return $profiles;
 					}
+
 					$response['profiles'] = $profiles;
+
 					return $response;
 				case 'profiles':
 					// TODO: Parse this response to a regular array.
