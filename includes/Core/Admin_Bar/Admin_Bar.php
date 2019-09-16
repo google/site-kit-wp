@@ -152,7 +152,7 @@ final class Admin_Bar {
 			}
 
 			// Only published posts show the menu.
-			if ( 'publish' !== $post->post_status ) {
+			if ( 'publish' !== $queried_object->post_status ) {
 				return false;
 			}
 		} else {
