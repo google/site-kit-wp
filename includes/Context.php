@@ -198,6 +198,21 @@ final class Context {
 	}
 
 	/**
+	 * Gets the canonical url for the current request.
+	 */
+	public function get_reference_canonical() {
+		$reference_permalink = $this->get_reference_permalink();
+		if ( ! $reference_permalink ) {
+
+			// Return the site reference url for the home page.
+			if ( is_home() ) {
+				return $this->get_reference_site_url();
+			};
+		}
+		return $reference_permalink;
+	}
+
+	/**
 	 * Gets the current version is beta released.
 	 *
 	 * @return bool True if the version is in beta mode, false otherwise.
