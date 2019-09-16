@@ -157,8 +157,8 @@ final class Admin_Bar {
 			}
 		} else {
 
-			// Ensure the user can view post insights.
-			if ( ! current_user_can( Permissions::VIEW_POST_INSIGHTS, 0 ) ) {
+			// Only admins can see non post admin bar data.
+			if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
 				return false;
 			}
 		}
