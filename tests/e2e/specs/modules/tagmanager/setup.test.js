@@ -37,6 +37,18 @@ async function setupAnalytics() {
 	} );
 }
 
+async function proceedToTagManagerSetup() {
+	await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
+	await page.waitForSelector( '.mdc-tab-bar' );
+	await expect( page ).toClick( '.mdc-tab', { text: /connect more services/i } );
+	await page.waitForSelector( '.googlesitekit-settings-connect-module--tagmanager' );
+
+	await Promise.all( [
+		page.waitForSelector( '.googlesitekit-setup-module__action .mdc-button' ),
+		expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up tag manager/i } ),
+	] );
+}
+
 describe( 'setting up the TagManager module with no existing account', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
@@ -55,7 +67,6 @@ describe( 'setting up the TagManager module with no existing account', () => {
 		await activatePlugin( 'e2e-tests-auth-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
-		await activatePlugin( 'e2e-tests-module-setup-tagmanager-api-mock-no-account' );
 		await setSearchConsoleProperty();
 		await setupAnalytics();
 	} );
@@ -66,15 +77,8 @@ describe( 'setting up the TagManager module with no existing account', () => {
 	} );
 
 	it( 'displays account creation form when user has no Tag Manager account', async () => {
-		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
-		await page.waitForSelector( '.mdc-tab-bar' );
-		await expect( page ).toClick( '.mdc-tab', { text: /connect more services/i } );
-		await page.waitForSelector( '.googlesitekit-settings-connect-module--tagmanager' );
-
-		await Promise.all( [
-			page.waitForSelector( '.googlesitekit-setup-module__action .mdc-button' ),
-			expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up tag manager/i } ),
-		] );
+		await activatePlugin( 'e2e-tests-module-setup-tagmanager-api-mock-no-account' );
+		await proceedToTagManagerSetup();
 
 		// Intercept the call to window.open and call our API to simulate a created account.
 		await page.evaluate( () => {
