@@ -164,7 +164,7 @@ final class Admin_Bar {
 		}
 
 		// Data is based on the current URL.
-		$current_url = $this->context->get_reference_canonical();
+		$current_url = trailingslashit( $this->context->get_reference_canonical() );
 
 		/**
 		 * Filters whether the Site Kit admin bar menu should be displayed.
