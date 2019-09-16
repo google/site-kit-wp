@@ -123,6 +123,7 @@ class AnalyticsTest extends TestCase {
 				'hasSettings',
 				'provides',
 				'settings',
+				'adsenseLinked',
 			),
 			array_keys( $info )
 		);
@@ -184,16 +185,12 @@ class AnalyticsTest extends TestCase {
 				'use-snippet',
 				'amp-client-id-opt-in',
 				'goals',
-				'get-accounts',
-				'get-properties',
-				'get-profiles',
+				'accounts-properties-profiles',
+				'properties-profiles',
+				'profiles',
 				'tag-permission',
-				'adsense',
-				'site-analytics',
-				'top-pages',
-				'overview',
-				'traffic-sources',
-				'save',
+				'report',
+				'settings',
 			),
 			$analytics->get_datapoints()
 		);

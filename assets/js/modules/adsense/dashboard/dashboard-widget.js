@@ -198,7 +198,12 @@ class AdSenseDashboardWidget extends Component {
 									headerCtaLink={ homepage }
 								>
 									<AdSensePerformanceWidget
-										handleZeroData={ this.handleZeroData }
+										handleDataError={ ( err ) => {
+											// If there is no error, it is a zero data condition.
+											if ( ! err ) {
+												this.handleZeroData();
+											}
+										} }
 									/>
 								</Layout>
 							</div>

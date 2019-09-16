@@ -26,6 +26,11 @@ import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/d
 import Layout from 'GoogleComponents/layout/layout';
 import PreviewTable from 'GoogleComponents/preview-table';
 
+/**
+ * Internal dependencies
+ */
+import { analyticsAdsenseReportDataDefaults } from '../util';
+
 const { __ } = wp.i18n;
 const { map } = lodash;
 const { Component } = wp.element;
@@ -158,8 +163,8 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'adsense',
-			data: {},
+			datapoint: 'report',
+			data: analyticsAdsenseReportDataDefaults,
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Single',

@@ -176,7 +176,7 @@ add_action( 'rest_api_init', function () {
 
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'modules/analytics/data/get-accounts',
+		'modules/analytics/data/accounts-properties-profiles',
 		array(
 			'callback' => function () use ( $accounts, $properties, $profiles ) {
 				$response = compact( 'accounts', 'properties', 'profiles' );
@@ -201,7 +201,7 @@ add_action( 'rest_api_init', function () {
 	// Called when switching accounts
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'modules/analytics/data/get-properties',
+		'modules/analytics/data/properties-profiles',
 		array(
 			'callback' => function ( \WP_REST_Request $request ) use ( $properties, $profiles ) {
 				return array(
@@ -216,7 +216,7 @@ add_action( 'rest_api_init', function () {
 	// Called when switching properties
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'modules/analytics/data/get-profiles',
+		'modules/analytics/data/profiles',
 		array(
 			'callback' => function ( \WP_REST_Request $request ) use ( $profiles ) {
 				$profiles = filter_by_account_id( $profiles, $request->get_param( 'accountId' ) );
@@ -231,7 +231,7 @@ add_action( 'rest_api_init', function () {
 	// Called when creating a new property
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'modules/analytics/data/save',
+		'modules/analytics/data/settings',
 		array(
 			'methods' => 'POST',
 			'callback' => function ( \WP_REST_Request $request ) use ( $profiles ) {

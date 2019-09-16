@@ -503,13 +503,13 @@ final class TagManager extends Module implements Module_With_Scopes {
 						$account_id = $response['accounts'][0]->getAccountId();
 					}
 
-					$containers = $this->get_data( 'list-containers', array( 'accountId' => $account_id ) );
+					$containers = $this->get_data( 'containers', array( 'accountId' => $account_id ) );
 
 					if ( is_wp_error( $containers ) ) {
 						return $response;
 					}
 
-					return array_merge( $response, $containers );
+					return array_merge( $response, compact( 'containers' ) );
 				case 'containers':
 					$account_id = null;
 					if ( ! empty( $this->_containers_account_id ) ) {
@@ -526,7 +526,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 						if ( is_wp_error( $new_container ) ) {
 							return new WP_Error( 'google_tagmanager_container_empty', __( 'No Google Tag Manager Containers Found.', 'google-site-kit' ), array( 'status' => 500 ) );
 						}
-						return $this->get_data( 'list-containers', array( 'accountId' => $account_id ) );
+						return $this->get_data( 'containers', array( 'accountId' => $account_id ) );
 					}
 					return $response;
 			}

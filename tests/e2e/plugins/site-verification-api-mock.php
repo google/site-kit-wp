@@ -67,7 +67,10 @@ add_action( 'rest_api_init', function () {
 		array(
 			'callback' => function () {
 				return array(
-					'exact_match' => home_url( '/' ),
+					'exactMatch' => array(
+						'siteUrl'         => home_url( '/' ),
+						'permissionLevel' => 'siteOwner',
+					),
 				);
 			}
 		),
@@ -76,50 +79,17 @@ add_action( 'rest_api_init', function () {
 
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'modules/search-console/data/is-site-exist',
-		array(
-			'callback' => function ( WP_REST_Request $request ) {
-				$data = $request->get_param( 'data' );
-
-				return array(
-					'siteURL'  => 'https://example.org/',
-					'verified' => (bool) get_transient( 'gsk_e2e_sc_site_exists' ),
-				);
-			}
-		),
-		true
-	);
-
-	register_rest_route(
-		REST_Routes::REST_ROOT,
-		'modules/search-console/data/insert',
+		'modules/search-console/data/site',
 		array(
 			'methods'  => 'POST',
 			'callback' => function ( WP_REST_Request $request ) {
 				$data = $request->get_param( 'data' );
 
-				update_option( 'googlesitekit_search_console_property', $data['siteURL'] );
+				update_option( 'googlesitekit_search_console_property', $data['siteUrl'] );
 
 				return array(
-					'sites' => array( $data['siteURL'] ),
-				);
-			}
-		),
-		true
-	);
-
-	register_rest_route(
-		REST_Routes::REST_ROOT,
-		'modules/search-console/data/save-property',
-		array(
-			'methods'  => 'POST',
-			'callback' => function ( WP_REST_Request $request ) {
-				$data = $request->get_param( 'data' );
-
-				$response = update_option( 'googlesitekit_search_console_property', $data['siteURL'] );
-				return array(
-					'updated' => $response,
-					'status'  => true,
+					'siteUrl'         => $data['siteUrl'],
+					'permissionLevel' => 'siteOwner',
 				);
 			}
 		),

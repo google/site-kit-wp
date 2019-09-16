@@ -52,40 +52,27 @@ class AdSenseDashboardMainSummary extends Component {
 		};
 	}
 
-	setStateFromData( data, datapoint, prevProps = {} ) {
-		if ( ! data ) {
-			return null;
-		}
-
-		if ( 'earning-today' === datapoint && 'earning-today' !== prevProps.datapoint && ! this.state.today ) {
-			this.setState( {
-				today: data,
-			} );
-		}
-
-		if ( 'earnings-this-period' === datapoint && 'earnings-this-period' !== prevProps.datapoint && ! this.state.period ) {
-			this.setState( {
-				period: data,
-			} );
-		}
-
-		if ( 'earning-daily-this-month' === datapoint && 'earning-daily-this-month' !== prevProps.datapoint && ! this.state.daily ) {
-			this.setState( {
-				daily: data,
-			} );
-		}
+	// When additional data is returned, componentDidUpdate will fire.
+	componentDidUpdate() {
+		this.processCallbackData();
 	}
 
-	// When the second dataset is returned, componentDidUpdate will fire.
-	componentDidUpdate( prevProps ) {
-		const { data, datapoint } = this.props;
-		this.setStateFromData( data, datapoint, prevProps );
-	}
-
-	// Handle the first data returned in componentDisMount.
 	componentDidMount() {
-		const { data, datapoint } = this.props;
-		this.setStateFromData( data, datapoint );
+		this.processCallbackData();
+	}
+
+	/**
+	 * Process callback data received from the API.
+	 */
+	processCallbackData() {
+		const {
+			data,
+			requestDataToState,
+		} = this.props;
+
+		if ( data && ! data.error && 'function' === typeof requestDataToState ) {
+			this.setState( requestDataToState );
+		}
 	}
 
 	render() {
@@ -209,43 +196,63 @@ class AdSenseDashboardMainSummary extends Component {
 	}
 }
 
-const isDataZero = ( data, datapoint ) => {
-	if ( 'earnings-this-period' !== datapoint ) {
-		return false;
-	}
-
-	return isDataZeroAdSense( data );
-};
-
 export default withData(
 	AdSenseDashboardMainSummary,
 	[
 		{
 			type: TYPE_MODULES,
 			identifier: 'adsense',
-			datapoint: 'earning-today',
-			data: {},
+			datapoint: 'earnings',
+			data: {
+				dateRange: 'today',
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
+			toState( state, { data } ) {
+				if ( ! state.today ) {
+					return {
+						today: data,
+					};
+				}
+			},
 		},
 		{
 			type: TYPE_MODULES,
 			identifier: 'adsense',
-			datapoint: 'earnings-this-period',
-			data: {},
+			datapoint: 'earnings',
+			data: {
+				// dateRange not set here to inherit from googlesitekit.dateRange filter: last-x-days
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
+			toState( state, { data } ) {
+				if ( ! state.period ) {
+					return {
+						period: data,
+					};
+				}
+			},
 		},
 		{
 			type: TYPE_MODULES,
 			identifier: 'adsense',
-			datapoint: 'earning-daily-this-month',
-			data: {},
+			datapoint: 'earnings',
+			data: {
+				dateRange: 'this-month',
+				dimensions: [ 'DATE' ],
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
+			toState( state, { data } ) {
+				if ( ! state.daily ) {
+					return {
+						daily: data,
+					};
+				}
+			},
 		},
 	],
 	<div className="
@@ -261,5 +268,5 @@ export default withData(
 		inGrid: true,
 		createGrid: true,
 	},
-	isDataZero
+	isDataZeroAdSense
 );
