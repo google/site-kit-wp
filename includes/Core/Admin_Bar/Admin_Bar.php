@@ -165,10 +165,11 @@ final class Admin_Bar {
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param bool $display Whether to display the admin bar menu.
-		 * @param int  $post_id Currently visited post ID.
+		 * @param bool   $display     Whether to display the admin bar menu.
+		 * @param string $current_url The URL of the current request.
+		 * @param mixed  $post_id     Currently queried object ID, or null for the home page.
 		 */
-		return apply_filters( 'googlesitekit_show_admin_bar_menu', true, (int) $post->ID );
+		return apply_filters( 'googlesitekit_show_admin_bar_menu', true, $current_url, $queried_object ? $queried_object->ID : null );
 	}
 
 	/**
