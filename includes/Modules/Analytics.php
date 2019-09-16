@@ -1011,13 +1011,15 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 					return $result;
 				case 'properties-profiles':
-					$response = array(
+					/* @var \Google_Service_Analytics_Webproperties $response listManagementWebproperties response. */
+					$properties = $response->getItems();
+					$response   = array(
 						// TODO: Parse this response to a regular array.
-						'properties' => $response->getItems(),
+						'properties' => $properties,
 						'profiles'   => array(),
 					);
 
-					if ( 0 === count( $response['properties'] ) ) {
+					if ( 0 === count( $properties ) ) {
 						return new WP_Error(
 							'google_analytics_properties_empty',
 							__( 'No Google Analytics properties found. Please go to Google Analytics to set one up.', 'google-site-kit' ),
@@ -1030,7 +1032,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					// Initialize an empty property as a null object if no match is found.
 					$found_property = new \Google_Service_Analytics_Webproperty();
 
-					foreach ( $response['properties'] as $property ) {
+					foreach ( $properties as $property ) {
 						/* @var \Google_Service_Analytics_Webproperty $property Property instance. */
 						if (
 							// Attempt to match by property ID.
