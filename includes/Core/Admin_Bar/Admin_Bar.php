@@ -134,28 +134,37 @@ final class Admin_Bar {
 	 * @return bool True if Admin bar should display, False when it's not.
 	 */
 	public function is_active() {
-		if ( ! is_user_logged_in() || ! is_admin_bar_showing() ) {
+
+		// Only active if the admin bar is showing.
+		if ( ! is_admin_bar_showing() ) {
 			return false;
 		}
 
-		// Gets post object. On front area we need to use get_queried_object to get the current post object.
-		if ( $this->is_admin_post_screen() ) {
-			$post = get_post();
+		// Determine the queried object.
+		$queried_object = get_queried_object();
+
+		// Checks for post objects.
+		if ( $queried_object instanceof \WP_Post ) {
+
+			// Ensure the user can view post insights for this post.
+			if ( ! current_user_can( Permissions::VIEW_POST_INSIGHTS, $queried_object->ID ) ) {
+				return false;
+			}
+
+			// Only published posts show the menu.
+			if ( 'publish' !== $post->post_status ) {
+				return false;
+			}
 		} else {
-			$post = get_queried_object();
+
+			// Ensure the user can view post insights.
+			if ( ! current_user_can( Permissions::VIEW_POST_INSIGHTS, 0 ) ) {
+				return false;
+			}
 		}
 
-		if ( ! $post || ! $post instanceof \WP_Post ) {
-			return false;
-		}
-
-		if ( 'publish' !== $post->post_status ) {
-			return false;
-		}
-
-		if ( ! current_user_can( Permissions::VIEW_POST_INSIGHTS, $post->ID ) ) {
-			return false;
-		}
+		// Data is based on the current URL.
+		$current_url = $this->context->get_reference_canonical();
 
 		/**
 		 * Filters whether the Site Kit admin bar menu should be displayed.
