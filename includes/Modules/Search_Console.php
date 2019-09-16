@@ -84,13 +84,13 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 
 		add_filter(
 			'googlesitekit_show_admin_bar_menu',
-			function( $display, $post_id ) {
+			function( $display, $current_url ) {
 				$sc_property = $this->options->get( self::PROPERTY_OPTION );
 				if ( empty( $sc_property ) ) {
 					return false;
 				}
 
-				if ( ! $this->has_data_for_post( $post_id ) ) {
+				if ( ! $this->has_data_for_url( $current_url ) ) {
 					return false;
 				}
 
@@ -366,22 +366,17 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $post_id Post ID.
+	 * @param string $current_url The current url.
 	 * @return bool True if Search Console data exists, false otherwise.
 	 */
-	protected function has_data_for_post( $post_id ) {
-		if ( ! $post_id ) {
+	protected function has_data_for_url( $current_url ) {
+		if ( ! $current_url ) {
 			return false;
 		}
 
-		$transient_key = 'googlesitekit_sc_has_data_for_post_' . $post_id;
+		$transient_key = md5( $current_url );
 		$has_data      = get_transient( $transient_key );
 		if ( false === $has_data ) {
-			$post_url = esc_url_raw( $this->context->get_reference_permalink( $post_id ) );
-
-			if ( false === $post_url ) {
-				return false;
-			}
 
 			$datasets = array(
 				array(
@@ -389,7 +384,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					'key'        => 'sc-site-analytics',
 					'datapoint'  => 'searchanalytics',
 					'data'       => array(
-						'url'               => $post_url,
+						'url'               => $current_url,
 						'dateRange'         => 'last-7-days',
 						'dimensions'        => 'date',
 						'compareDateRanges' => true,
@@ -400,7 +395,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					'key'        => 'search-keywords',
 					'datapoint'  => 'searchanalytics',
 					'data'       => array(
-						'url'        => $post_url,
+						'url'        => $current_url,
 						'dateRange'  => 'last-7-days',
 						'dimensions' => 'query',
 						'limit'      => 10,
