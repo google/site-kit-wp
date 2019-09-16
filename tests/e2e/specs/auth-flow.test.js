@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { activatePlugin, createURL, deactivatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
