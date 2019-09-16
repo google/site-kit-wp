@@ -201,13 +201,13 @@ final class Context {
 	 * Gets the canonical url for the current request.
 	 */
 	public function get_reference_canonical() {
+		global $wp;
 		$reference_permalink = $this->get_reference_permalink();
 		if ( ! $reference_permalink ) {
 
-			// Return the site reference url for the home page.
-			if ( is_home() ) {
-				return $this->get_reference_site_url();
-			};
+			// Fall back to site reference URL + current path.
+			return $this->get_reference_site_url() . $wp->request;
+
 		}
 		return $reference_permalink;
 	}

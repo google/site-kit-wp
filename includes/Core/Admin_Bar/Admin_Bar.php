@@ -152,7 +152,7 @@ final class Admin_Bar {
 			}
 
 			// Only published posts show the menu.
-			if ( 'publish' !== $post->post_status ) {
+			if ( 'publish' !== $queried_object->post_status ) {
 				return false;
 			}
 		} else {
@@ -163,7 +163,7 @@ final class Admin_Bar {
 			}
 		}
 
-		// Data is based on the current URL.
+		// Data is based on the current URL. Search Console uses trailing slashed URLs.
 		$current_url = trailingslashit( $this->context->get_reference_canonical() );
 
 		/**
