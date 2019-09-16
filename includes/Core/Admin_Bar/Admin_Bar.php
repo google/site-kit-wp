@@ -164,21 +164,25 @@ final class Admin_Bar {
 		}
 
 		// Data is based on the current URL.
-		$current_url = $this->context->get_reference_canonical();
+		if ( $this->is_admin_post_screen() ) {
+			global $post;
+			$current_url = $this->context->get_reference_permalink( $post->ID );
+		} else {
+			$current_url = $this->context->get_reference_canonical();
+		}
 
 		/**
 		 * Filters whether the Site Kit admin bar menu should be displayed.
 		 *
-		 * The admin bar menu is only intended for when a single published post is being visited, hence this filter is fired only
-		 * under these circumstances.
+		 * The admin bar menu is only shown when there is data for the current URL.
 		 *
 		 * @since 1.0.0
 		 *
 		 * @param bool   $display     Whether to display the admin bar menu.
 		 * @param string $current_url The URL of the current request.
-		 * @param mixed  $post_id     Currently queried object ID, or null for the home page.
+		 * @param mixed  $post_id     Currently queried object if available.
 		 */
-		return apply_filters( 'googlesitekit_show_admin_bar_menu', true, $current_url, $queried_object ? $queried_object->ID : null );
+		return apply_filters( 'googlesitekit_show_admin_bar_menu', true, $current_url, $queried_object );
 	}
 
 	/**
