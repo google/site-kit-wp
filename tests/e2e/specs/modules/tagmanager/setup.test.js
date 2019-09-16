@@ -11,31 +11,8 @@ import {
 	resetSiteKit,
 	useRequestInterception,
 	setSearchConsoleProperty,
-	wpApiFetch,
+	setupAnalytics,
 } from '../../../utils';
-
-async function setupAnalytics() {
-	// Activate the module.
-	await wpApiFetch( {
-		method: 'post',
-		path: 'google-site-kit/v1/modules/analytics',
-		data: { active: true },
-	} );
-	// Set dummy connection data.
-	await wpApiFetch( {
-		method: 'post',
-		path: 'google-site-kit/v1/modules/analytics/data/connection',
-		data: {
-			data: {
-				accountId: 100,
-				propertyId: 200,
-				profileId: 300,
-				internalWebPropertyId: 400,
-			},
-		},
-		parse: false,
-	} );
-}
 
 async function proceedToTagManagerSetup() {
 	await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
