@@ -385,7 +385,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					'datapoint'  => 'searchanalytics',
 					'data'       => array(
 						'url'               => $current_url,
-						'dateRange'         => 'last-7-days',
+						'dateRange'         => 'last-28-days',
 						'dimensions'        => 'date',
 						'compareDateRanges' => true,
 					),
@@ -396,7 +396,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					'datapoint'  => 'searchanalytics',
 					'data'       => array(
 						'url'        => $current_url,
-						'dateRange'  => 'last-7-days',
+						'dateRange'  => 'last-28-days',
 						'dimensions' => 'query',
 						'limit'      => 10,
 					),
