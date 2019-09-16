@@ -21,7 +21,9 @@ const ACCOUNT_ID_B = '101';
 
 const PUBLIC_ID_X = 'GTM-ABCXYZ';
 const PUBLIC_ID_Y = 'GTM-BCDWXY';
-//const PUBLIC_ID_Z = 'GTM-ABCDEF3';
+
+const CONTAINER_ID_X = '200';
+const CONTAINER_ID_Y = '201';
 
 function filter_by_account_id( $items, $account_id ) {
 	return array_values(
@@ -59,14 +61,16 @@ add_action( 'rest_api_init', function () {
 	);
 	$containers = array(
 		array(
-			'accountId' => ACCOUNT_ID_A,
-			'publicId'  => PUBLIC_ID_X,
-			'name'      => 'Test Container X',
+			'accountId'   => ACCOUNT_ID_A,
+			'publicId'    => PUBLIC_ID_X,
+			'containerId' => CONTAINER_ID_X,
+			'name'        => 'Test Container X',
 		),
 		array(
-			'accountId' => ACCOUNT_ID_B,
-			'publicId'  => PUBLIC_ID_Y,
-			'name'      => 'Test Container Y',
+			'accountId'   => ACCOUNT_ID_B,
+			'publicId'    => PUBLIC_ID_Y,
+			'containerId' => CONTAINER_ID_Y,
+			'name'        => 'Test Container Y',
 		),
 	);
 
