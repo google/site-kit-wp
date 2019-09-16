@@ -362,7 +362,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	/**
 	 * Checks whether Search Console data exists for the given post.
 	 *
-	 * The result of this query is stored in a transient which is refreshed every 2 hours.
+	 * The result of this query is stored in a transient.
 	 *
 	 * @since 1.0.0
 	 *
@@ -378,6 +378,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		$has_data      = get_transient( $transient_key );
 		if ( false === $has_data ) {
 
+			// Check search console for data.
 			$datasets = array(
 				array(
 					'identifier' => $this->slug,
@@ -388,17 +389,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						'dateRange'         => 'last-28-days',
 						'dimensions'        => 'date',
 						'compareDateRanges' => true,
-					),
-				),
-				array(
-					'identifier' => $this->slug,
-					'key'        => 'search-keywords',
-					'datapoint'  => 'searchanalytics',
-					'data'       => array(
-						'url'        => $current_url,
-						'dateRange'  => 'last-28-days',
-						'dimensions' => 'query',
-						'limit'      => 10,
 					),
 				),
 			);
@@ -413,18 +403,20 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			);
 
 			$has_data = false;
-			foreach ( $responses as $key => $response ) {
-				if ( is_wp_error( $response ) || ! is_array( $response ) || empty( $response ) || ! isset( $response[0] ) ) {
+
+			// Go thru results, any impressions means the URL has data.
+			foreach ( $responses['sc-site-analytics'] as $key => $response ) {
+				if ( is_wp_error( $response ) || empty( $response ) || ! isset( $response ) ) {
 					continue;
 				}
 
-				if ( $response[0]->clicks > 0 || $response[0]->impressions > 0 ) {
+				if ( $response->impressions > 0 ) {
 					$has_data = true;
 					break;
 				}
 			}
 
-			set_transient( $transient_key, (int) $has_data, 2 * HOUR_IN_SECONDS );
+			set_transient( $transient_key, (int) $has_data, $has_data ? DAY_IN_SECONDS : HOUR_IN_SECONDS );
 		}
 
 		return (bool) $has_data;
