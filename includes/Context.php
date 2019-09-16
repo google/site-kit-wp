@@ -206,7 +206,7 @@ final class Context {
 		if ( ! $reference_permalink ) {
 
 			// Fall back to site reference URL + current path.
-			return $this->get_reference_site_url() . $wp->request;
+			return trailingslashit( $this->get_reference_site_url() . $wp->request );
 
 		}
 		return $reference_permalink;
