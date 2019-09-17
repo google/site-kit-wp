@@ -14,7 +14,9 @@ describe( 'Site Kit dashboard post search', () => {
 		await activatePlugin( 'e2e-tests-auth-plugin' );
 		await setSiteVerification();
 		await setSearchConsoleProperty();
+	} );
 
+	beforeEach( async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 	} );
 
@@ -31,7 +33,7 @@ describe( 'Site Kit dashboard post search', () => {
 		// Select the post.
 		await expect( postSearcher ).toClick( '.autocomplete__option', { text: /hello world/i } );
 		// Search input becomes the post title
-		expect( await page.$eval( '.googlesitekit-post-searcher input', ( el ) => el.value ) ).toEqual( 'Hello world!' );
+		expect( await postSearcher.$eval( 'input', ( el ) => el.value ) ).toEqual( 'Hello world!' );
 
 		await Promise.all( [
 			page.waitForNavigation(),
@@ -40,5 +42,16 @@ describe( 'Site Kit dashboard post search', () => {
 
 		await expect( page ).toMatchElement( '.googlesitekit-page-header__title', { text: /detailed page stats/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-dashboard-single-url__title', { text: 'Hello world!' } );
+	} );
+
+	it( 'displays "No results found" when searching by title if no post is found', async () => {
+		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
+
+		await expect( postSearcher ).toFill( 'input', 'non-existent title' );
+
+		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: /no results found/i } );
+
+		// Ensure no other options are displayed.
+		expect( await postSearcher.$$( '.autocomplete__option' ) ).toHaveLength( 1 );
 	} );
 } );
