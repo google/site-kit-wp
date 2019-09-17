@@ -57,11 +57,11 @@ echo -e $(status_message "Contributor created! Username: contributor Password: p
 # Create a few posts
 echo -e $(status_message "Creating a few posts...")
 wp post create --post_status=publish --post_title="Hello Solar System!" --quiet
-$(status_message 'Created post with title "Hello Solar System!"')
+echo -e $(status_message 'Created post with title "Hello Solar System!"')
 wp post create --post_status=publish --post_title="Hello Milky Way!" --quiet
-$(status_message 'Created post with title "Hello Milky Way!"')
+echo -e $(status_message 'Created post with title "Hello Milky Way!"')
 wp post create --post_status=publish --post_title="Hello Universe!" --quiet
-$(status_message 'Created post with title "Hello Universe!"')
+echo -e $(status_message 'Created post with title "Hello Universe!"')
 
 # Make sure the uploads and upgrade folders exist and we have permissions to add files.
 echo -e $(status_message "Ensuring that files can be uploaded...")
