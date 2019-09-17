@@ -77,4 +77,15 @@ describe( 'Site Kit dashboard post search', () => {
 		// Ensure no other options are displayed.
 		expect( await postSearcher.$$( '.autocomplete__option' ) ).toHaveLength( 1 );
 	} );
+
+	it( 'displays "No results found" when searching by URL if no post is found', async () => {
+		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
+
+		await expect( postSearcher ).toFill( 'input', createURL( 'non-existent' ) );
+
+		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: /no results found/i } );
+
+		// Ensure no other options are displayed.
+		expect( await postSearcher.$$( '.autocomplete__option' ) ).toHaveLength( 1 );
+	} );
 } );
