@@ -7,7 +7,8 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
  * Internal dependencies
  */
 import {
-	// resetSiteKit,
+	deactivateAllOtherPlugins,
+	resetSiteKit,
 	pasteText,
 	setSearchConsoleProperty,
 	testClientConfig,
@@ -53,6 +54,11 @@ describe( 'Site Kit set up flow for the first time', () => {
 	beforeAll( async () => {
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await setSearchConsoleProperty();
+	} );
+
+	afterEach( async () => {
+		await deactivateAllOtherPlugins();
+		await resetSiteKit();
 	} );
 
 	it( 'authenticates from splash page', async () => {
