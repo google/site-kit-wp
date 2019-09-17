@@ -1,13 +1,12 @@
 /**
  * WordPress dependencies
  */
-import { activatePlugin } from '@wordpress/e2e-test-utils';
+import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
  */
 import { setSiteVerification, setSearchConsoleProperty } from '../utils';
-import { visitAdminPage } from '@wordpress/e2e-test-utils/build/visit-admin-page';
 
 describe( 'Site Kit dashboard post search', () => {
 	beforeAll( async () => {
@@ -29,6 +28,30 @@ describe( 'Site Kit dashboard post search', () => {
 		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: /hello world/i } );
 		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: /hello solar system/i } );
 		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: /hello universe/i } );
+
+		// Select the post.
+		await expect( postSearcher ).toClick( '.autocomplete__option', { text: /hello world/i } );
+		// Search input becomes the post title
+		expect( await postSearcher.$eval( 'input', ( el ) => el.value ) ).toEqual( 'Hello world!' );
+
+		await Promise.all( [
+			page.waitForNavigation(),
+			expect( postSearcher ).toClick( 'button', { text: /view data/i } ),
+		] );
+
+		await expect( page ).toMatchElement( '.googlesitekit-page-header__title', { text: /detailed page stats/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-dashboard-single-url__title', { text: 'Hello world!' } );
+	} );
+
+	it( 'displays results when searching with a URL, and loads the details page when clicking View Data', async () => {
+		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
+
+		await expect( postSearcher ).toFill( 'input', createURL( 'hello-world' ) );
+
+		// Ensure expected options appear.
+		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: /hello world/i } );
+		// Ensure no other options are displayed.
+		expect( await postSearcher.$$( '.autocomplete__option' ) ).toHaveLength( 1 );
 
 		// Select the post.
 		await expect( postSearcher ).toClick( '.autocomplete__option', { text: /hello world/i } );
