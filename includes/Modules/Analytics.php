@@ -937,84 +937,57 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					// TODO: Parse this response to a regular array.
 					break;
 				case 'accounts-properties-profiles':
-					$response = array(
-						// TODO: Parse this response to a regular array.
-						'accounts'   => $response->getItems(),
+					/* @var \Google_Service_Analytics_Accounts $response listManagementAccounts response. */
+					$accounts    = $response->getItems();
+					$account_ids = array_map(
+						function ( \Google_Service_Analytics_Account $account ) {
+							return $account->getId();
+						},
+						(array) $accounts
+					);
+					$response    = array(
+						'accounts'   => $accounts,
 						'properties' => array(),
 						'profiles'   => array(),
 					);
 
-					$found_account_id = false;
-					$matched_property = false;
 					$existing_tag     = $this->_existing_tag_account;
+					$found_account_id = ! empty( $existing_tag['accountId'] ) ? $existing_tag['accountId'] : false;
+					unset( $this->_existing_tag_account );
 
-					$this->_existing_tag_account = null; // Set back to null.
-
-					if ( empty( $existing_tag ) ) {
+					if ( ! $found_account_id ) {
+						// Get the account ID from the saved settings - returns WP_Error if not set.
 						$account_id = $this->get_data( 'account-id' );
-						if ( ! is_wp_error( $account_id ) ) {
-							foreach ( $response['accounts'] as $account ) {
-								if ( $account->getId() === $account_id ) {
-									$found_account_id = $account->getId();
-									break;
-								}
-							}
+						// If the saved account ID is in the list of accounts the user has access to, it's a match.
+						if ( in_array( $account_id, $account_ids, true ) ) {
+							$found_account_id = $account_id;
 						} else {
-							$current_url = untrailingslashit( $this->context->get_reference_site_url() );
-							$urls        = $this->permute_site_url( $current_url );
-							foreach ( $response['accounts'] as $account ) {
-								$properties = $this->get_data( 'properties-profiles', array( 'accountId' => $account->getId() ) );
-								if ( is_wp_error( $properties ) ) {
-									continue;
-								}
-								$url_matches = array_filter(
-									$properties['properties'],
-									function( $property ) use ( $urls ) {
-										return in_array( untrailingslashit( $property->getWebsiteUrl() ), $urls, true );
-									}
-								);
-								if ( ! empty( $url_matches ) ) {
-									$found_account_id = $account->getId();
-									$matched_property = $url_matches;
-									break;
+							foreach ( $accounts as $account ) {
+								// TODO: permute URLs?
+								$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountId' => $account->getId() ) );
+
+								if ( ! is_wp_error( $properties_profiles ) && isset( $properties_profiles['matchedProperty'] ) ) {
+									return array_merge( $response, $properties_profiles );
 								}
 							}
 						}
-					} else {
-						$found_account_id = $existing_tag['accountId'];
 					}
 
-					if ( empty( $found_account_id ) ) {
+					if ( ! $found_account_id ) {
 						return $response;
 					}
 
-					$properties = $this->get_data( 'properties-profiles', array( 'accountId' => $found_account_id ) );
-					if ( is_wp_error( $properties ) ) {
+					$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountId' => (int) $found_account_id ) );
+
+					if ( is_wp_error( $properties_profiles ) ) {
 						return $response;
 					}
 
-					$result = array_merge( $response, $properties );
-
-					// Get matched property from exiting tag property id.
-					if ( ! empty( $existing_tag ) ) {
-						$matched_property = array_filter(
-							$properties['properties'],
-							function( $property ) use ( $existing_tag ) {
-								return $property->getId() === $existing_tag['propertyId'];
-							}
-						);
-					}
-
-					if ( ! empty( $matched_property ) ) {
-						$result = array_merge( $result, array( 'matchedProperty' => array_shift( $matched_property ) ) );
-					}
-
-					return $result;
+					return array_merge( $response, $properties_profiles );
 				case 'properties-profiles':
 					/* @var \Google_Service_Analytics_Webproperties $response listManagementWebproperties response. */
-					$properties = $response->getItems();
+					$properties = (array) $response->getItems();
 					$response   = array(
-						// TODO: Parse this response to a regular array.
 						'properties' => $properties,
 						'profiles'   => array(),
 					);
@@ -1027,11 +1000,11 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						);
 					}
 
-					$property_id = $this->get_data( 'property-id' );
-					$current_url = $this->context->get_reference_site_url();
-					// Initialize an empty property as a null object if no match is found.
+					$property_id    = $this->get_data( 'property-id' );
+					$current_url    = $this->context->get_reference_site_url();
 					$found_property = new \Google_Service_Analytics_Webproperty();
 
+					// If there's no match for the saved account ID, try to find a match using the properties of each account.
 					foreach ( $properties as $property ) {
 						/* @var \Google_Service_Analytics_Webproperty $property Property instance. */
 						if (
@@ -1040,9 +1013,15 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							// Attempt to match by site URL.
 							( trailingslashit( $current_url ) === trailingslashit( $property->getWebsiteUrl() ) )
 						) {
-							$found_property = $property;
+							$found_property              = $property;
+							$response['matchedProperty'] = $property;
 							break;
 						}
+					}
+
+					// If no match is found, fetch profiles for the first property if available.
+					if ( ! $found_property->getAccountId() && $properties ) {
+						$found_property = array_shift( $properties );
 					}
 
 					$profiles = $this->get_data(
