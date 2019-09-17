@@ -963,7 +963,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							$found_account_id = $account_id;
 						} else {
 							foreach ( $accounts as $account ) {
-								// TODO: permute URLs?
 								$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountId' => $account->getId() ) );
 
 								if ( ! is_wp_error( $properties_profiles ) && isset( $properties_profiles['matchedProperty'] ) ) {
@@ -1001,8 +1000,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 
 					$property_id    = $this->get_data( 'property-id' );
-					$current_url    = $this->context->get_reference_site_url();
 					$found_property = new \Google_Service_Analytics_Webproperty();
+					$current_url    = untrailingslashit( $this->context->get_reference_site_url() );
+					$current_urls   = $this->permute_site_url( $current_url );
 
 					// If there's no match for the saved account ID, try to find a match using the properties of each account.
 					foreach ( $properties as $property ) {
@@ -1010,8 +1010,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						if (
 							// Attempt to match by property ID.
 							$property->getId() === $property_id ||
-							// Attempt to match by site URL.
-							( trailingslashit( $current_url ) === trailingslashit( $property->getWebsiteUrl() ) )
+							// Attempt to match by site URL, with and without http/https and 'www' subdomain.
+							in_array( untrailingslashit( $property->getWebsiteUrl() ), $current_urls, true )
 						) {
 							$found_property              = $property;
 							$response['matchedProperty'] = $property;
