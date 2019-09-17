@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { activatePlugin, visitAdminPage, createURL } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
@@ -94,6 +94,13 @@ describe( 'setting up the TagManager module with no existing account', () => {
 		] );
 
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Tag Manager!/i } );
+
+		// Ensure expected tag is placed.
+		await Promise.all( [
+			page.goto( createURL( '/' ) ),
+			page.waitForNavigation(),
+		] );
+		await expect( page ).toMatchElement( 'script[src^="https://www.googletagmanager.com/gtm.js?id=GTM-ABCXYZ"]' );
 	} );
 
 	it( 'displays available accounts and containers for the chosen account', async () => {
@@ -121,5 +128,12 @@ describe( 'setting up the TagManager module with no existing account', () => {
 		] );
 
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Tag Manager!/i } );
+
+		// Ensure expected tag is placed.
+		await Promise.all( [
+			page.goto( createURL( '/' ) ),
+			page.waitForNavigation(),
+		] );
+		await expect( page ).toMatchElement( 'script[src^="https://www.googletagmanager.com/gtm.js?id=GTM-BCDWXY"]' );
 	} );
 } );
