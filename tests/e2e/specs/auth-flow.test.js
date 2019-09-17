@@ -82,7 +82,7 @@ describe( 'Site Kit set up flow for the first time', () => {
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Site Kit!/i } );
 	} );
 
-	it( 'disconnects user from SiteKit', async () => {
+	it( 'disconnects user from Site Kit', async () => {
 		await setClientConfig();
 		await setAuthToken();
 		await setSiteVerification();
@@ -91,8 +91,10 @@ describe( 'Site Kit set up flow for the first time', () => {
 
 		await signOut();
 
-		await expect( page ).toMatchElement( '*',
-			{ text: 'Successfully disconnected from Site Kit by Google.' } );
+		await expect( page ).toMatchElement(
+			'.notice-success',
+			{ text: /Successfully disconnected from Site Kit by Google./i }
+		);
 	} );
 } );
 
