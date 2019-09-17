@@ -13,6 +13,9 @@ import {
 	setSearchConsoleProperty,
 	testClientConfig,
 	useRequestInterception,
+	setClientConfig,
+	setAuthToken,
+	setSiteVerification,
 } from '../utils';
 
 function stubGoogleSignIn( request ) {
@@ -80,6 +83,10 @@ describe( 'Site Kit set up flow for the first time', () => {
 	} );
 
 	it( 'disconnects user from SiteKit', async () => {
+		await setClientConfig();
+		await setAuthToken();
+		await setSiteVerification();
+		await setSearchConsoleProperty();
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
 		await signOut();
