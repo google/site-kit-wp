@@ -36,17 +36,6 @@ function filter_by_account_id( $items, $account_id ) {
 	);
 }
 
-//function filter_by_public_id( $items, $public_id ) {
-//	return array_values(
-//		array_filter(
-//			$items,
-//			function ( $item ) use ( $public_id ) {
-//				return $item['internalWebPropertyId'] === get_internal_id_by_public( $property_id );
-//			}
-//		)
-//	);
-//}
-
 add_action( 'rest_api_init', function () {
 
 	$accounts   = array(
