@@ -561,8 +561,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'propertyId' => $data['existingPropertyId'],
 						);
 					}
-					$service = $this->get_service( 'analytics' );
-					return $service->management_accounts->listManagementAccounts();
+					return $this->get_service( 'analytics' )->management_accounts->listManagementAccounts();
 				case 'properties-profiles':
 					if ( ! isset( $data['accountId'] ) ) {
 						/* translators: %s: Missing parameter name */
@@ -574,8 +573,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'propertyId' => $data['existingPropertyId'],
 						);
 					}
-					$service = $this->get_service( 'analytics' );
-					return $service->management_webproperties->listManagementWebproperties( $data['accountId'] );
+
+					return $this->get_service( 'analytics' )->management_webproperties->listManagementWebproperties( $data['accountId'] );
 				case 'profiles':
 					if ( ! isset( $data['accountId'] ) ) {
 						/* translators: %s: Missing parameter name */
@@ -585,8 +584,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyId' ), array( 'status' => 400 ) );
 					}
-					$service = $this->get_service( 'analytics' );
-					return $service->management_profiles->listManagementProfiles( $data['accountId'], $data['propertyId'] );
+
+					return $this->get_service( 'analytics' )->management_profiles->listManagementProfiles( $data['accountId'], $data['propertyId'] );
 				case 'tag-permission':
 					return function() use ( $data ) {
 						if ( ! isset( $data['tag'] ) ) {
