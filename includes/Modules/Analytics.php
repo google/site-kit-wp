@@ -959,6 +959,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 					if ( $existing_tag['accountId'] ) {
 						// If there is an existing tag, pass it through to ensure only the existing tag is matched.
+						// The datapoint will inherit the existing tag state from this request.
 						$properties_profiles = $this->get_data( 'properties-profiles', $existing_tag );
 					} else {
 						// Get the account ID from the saved settings - returns WP_Error if not set.
