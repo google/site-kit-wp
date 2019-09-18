@@ -88,4 +88,29 @@ describe( 'Site Kit dashboard post search', () => {
 		// Ensure no other options are displayed.
 		expect( await postSearcher.$$( '.autocomplete__option' ) ).toHaveLength( 1 );
 	} );
+
+	it( 'works with post titles containing special characters', async () => {
+		const TITLE_SPECIAL_CHARACTERS = 'Hello Spéçïåł čhāràćtęrß!';
+		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
+
+		await expect( postSearcher ).toFill( 'input', 'Spéçïåł' );
+
+		// Ensure expected options appear.
+		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: TITLE_SPECIAL_CHARACTERS } );
+		// Ensure no other options are displayed.
+		expect( await postSearcher.$$( '.autocomplete__option' ) ).toHaveLength( 1 );
+
+		// Select the post.
+		await expect( postSearcher ).toClick( '.autocomplete__option', { text: TITLE_SPECIAL_CHARACTERS } );
+		// Search input becomes the post title
+		expect( await postSearcher.$eval( 'input', ( el ) => el.value ) ).toEqual( TITLE_SPECIAL_CHARACTERS );
+
+		await Promise.all( [
+			page.waitForNavigation(),
+			expect( postSearcher ).toClick( 'button', { text: /view data/i } ),
+		] );
+
+		await expect( page ).toMatchElement( '.googlesitekit-page-header__title', { text: /detailed page stats/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-dashboard-single-url__title', { text: TITLE_SPECIAL_CHARACTERS } );
+	} );
 } );
