@@ -174,6 +174,11 @@ final class Admin_Bar {
 			$current_url = $this->context->get_reference_canonical();
 		}
 
+		// No URL was identified - don't display the admin bar menu.
+		if ( ! $current_url ) {
+			return false;
+		}
+
 		/**
 		 * Filters whether the Site Kit admin bar menu should be displayed.
 		 *
