@@ -374,7 +374,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			return false;
 		}
 
-		$transient_key = md5( 'gogolesitekit_sc_data_' . $current_url );
+		$transient_key = 'googlesitekit_sc_data_' . md5( $current_url );
 		$has_data      = get_transient( $transient_key );
 		if ( false === $has_data ) {
 
