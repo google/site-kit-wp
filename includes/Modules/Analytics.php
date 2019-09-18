@@ -944,51 +944,47 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					break;
 				case 'accounts-properties-profiles':
 					/* @var \Google_Service_Analytics_Accounts $response listManagementAccounts response. */
-					$accounts    = $response->getItems();
-					$account_ids = array_map(
+					$accounts            = (array) $response->getItems();
+					$account_ids         = array_map(
 						function ( \Google_Service_Analytics_Account $account ) {
 							return $account->getId();
 						},
-						(array) $accounts
+						$accounts
 					);
-					$response    = array(
-						'accounts'   => $accounts,
+					$properties_profiles = array(
 						'properties' => array(),
 						'profiles'   => array(),
 					);
+					$existing_tag        = $this->get_existing_tag();
 
-					$existing_tag     = $this->_existing_tag_account;
-					$found_account_id = ! empty( $existing_tag['accountId'] ) ? $existing_tag['accountId'] : false;
-					unset( $this->_existing_tag_account );
-
-					if ( ! $found_account_id ) {
+					if ( $existing_tag['accountId'] ) {
+						// If there is an existing tag, pass it through to ensure only the existing tag is matched.
+						$properties_profiles = $this->get_data( 'properties-profiles', $existing_tag );
+					} else {
 						// Get the account ID from the saved settings - returns WP_Error if not set.
 						$account_id = $this->get_data( 'account-id' );
 						// If the saved account ID is in the list of accounts the user has access to, it's a match.
 						if ( in_array( $account_id, $account_ids, true ) ) {
-							$found_account_id = $account_id;
+							$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountId' => $account_id ) );
 						} else {
-							foreach ( $accounts as $account ) {
+							// Iterate over each account in reverse so if there is no match,
+							// the last $properties_profiles will be from the first account (selected by default).
+							foreach ( array_reverse( $accounts ) as $account ) {
+								/* @var \Google_Service_Analytics_Account $account Analytics account object. */
 								$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountId' => $account->getId() ) );
 
 								if ( ! is_wp_error( $properties_profiles ) && isset( $properties_profiles['matchedProperty'] ) ) {
-									return array_merge( $response, $properties_profiles );
+									break;
 								}
 							}
 						}
 					}
 
-					if ( ! $found_account_id ) {
-						return $response;
-					}
-
-					$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountId' => (int) $found_account_id ) );
-
 					if ( is_wp_error( $properties_profiles ) ) {
-						return $response;
+						return $properties_profiles;
 					}
 
-					return array_merge( $response, $properties_profiles );
+					return array_merge( compact( 'accounts' ), $properties_profiles );
 				case 'properties-profiles':
 					/* @var \Google_Service_Analytics_Webproperties $response listManagementWebproperties response. */
 					$properties = (array) $response->getItems();
