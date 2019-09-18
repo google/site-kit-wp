@@ -37,9 +37,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 * Temporary storage for existing analytics tag found.
 	 *
 	 * @since 1.0.0
-	 * @var string|null
+	 * @var array
 	 */
-	private $_existing_tag_account = false;
+	private $_existing_tag_account;
 
 	/**
 	 * Temporary storage for adsense request.
