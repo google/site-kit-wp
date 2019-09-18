@@ -142,9 +142,16 @@ final class Admin_Bar {
 
 		// Gets post object. On front area we need to use get_queried_object to get the current post object.
 		if ( $this->is_admin_post_screen() ) {
-			$post = get_post();
+			$post        = get_post();
+			$current_url = $this->context->get_reference_permalink( $post->ID );
 		} else {
-			$post = get_queried_object();
+			$post        = get_queried_object();
+			$current_url = $this->context->get_reference_canonical();
+		}
+
+		// No URL was identified - don't display the admin bar menu.
+		if ( ! $current_url ) {
+			return false;
 		}
 
 		// Checks for post objects.
@@ -165,18 +172,6 @@ final class Admin_Bar {
 			if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
 				return false;
 			}
-		}
-
-		// Data is based on the current URL.
-		if ( $this->is_admin_post_screen() ) {
-			$current_url = $this->context->get_reference_permalink( $post->ID );
-		} else {
-			$current_url = $this->context->get_reference_canonical();
-		}
-
-		// No URL was identified - don't display the admin bar menu.
-		if ( ! $current_url ) {
-			return false;
 		}
 
 		/**
