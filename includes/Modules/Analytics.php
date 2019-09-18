@@ -999,10 +999,17 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						);
 					}
 
-					$property_id    = $this->get_data( 'property-id' );
+					$existing_tag   = $this->get_existing_tag();
+					$property_id    = $existing_tag['propertyId'] ?: $this->get_data( 'property-id' );
 					$found_property = new \Google_Service_Analytics_Webproperty();
 					$current_url    = untrailingslashit( $this->context->get_reference_site_url() );
-					$current_urls   = $this->permute_site_url( $current_url );
+
+					// If there is an existing tag, only match by property ID.
+					if ( $existing_tag['propertyId'] ) {
+						$current_urls = array();
+					} else {
+						$current_urls = $this->permute_site_url( $current_url );
+					}
 
 					// If there's no match for the saved account ID, try to find a match using the properties of each account.
 					foreach ( $properties as $property ) {
