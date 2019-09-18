@@ -93,4 +93,39 @@ describe( 'setting up the AdSense module', () => {
 			expect( page ).toClick( '.googlesitekit-setup-module__action button', { text: /create adsense account/i } ),
 		] );
 	} );
+
+	/**
+	 * Scenario 1: The account is fully created (all details complete), but the API returns “Graylisted” status (accountStatus is ‘ads-display-pending’ and API response is “type: GRAYLISTED_PUBLISHER”):
+	 * - Plugin places AdSense code on all pages of the site
+	 * - Show screen “We’re getting your site ready for ads” + link to AdSense account
+	 * - AdSense settings page should show the following status:
+	 *   - Account status: Pending
+	 *   - AdSense code: AdSense code is placed on your site
+	 */
+
+	/**
+	 * Scenario 2: The account is created, but the address is not added or phone not verified
+	 * - Plugin places AdSense code on all pages of the site
+	 * - Show screen “Your site isn’t ready for ads yet.” + link to AdSense FE
+	 * - User needs to go to AdSense FE and complete the missing details
+	 * - AdSense settings page should show the following status:
+	 *   - Account status: Action required
+	 *   - AdSense code: AdSense code is placed on your site
+	 */
+
+	/**
+	 * Scenario 3: The account is created, but the account is disapproved
+	 *  - Plugin places AdSense code on all pages of the site
+	 *  - Show screen “Your site isn’t ready for ads yet.” + link to AdSense FE
+	 *  - User needs to go to AdSense FE and complete the missing details
+	 *  - AdSense settings page should show the following status:
+	 *    - Account status: Action required
+	 *    - AdSense code: AdSense code is placed on your site
+	 */
+
+	/**
+	 * Scenario 4: The account is not yet created
+	 * - Refresh the page to check for an account. No AdSense account is detected. Show “Create your AdSense account” screen (“Site Kit will place AdSense code on every page across your site.”)
+	 * - Settings page: show status "incomplete setup" + link to set up (which is the “Create your AdSense account” page).
+	 */
 } );
