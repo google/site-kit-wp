@@ -140,19 +140,23 @@ final class Admin_Bar {
 			return false;
 		}
 
-		// Determine the queried object.
-		$queried_object = get_queried_object();
+		// Gets post object. On front area we need to use get_queried_object to get the current post object.
+		if ( $this->is_admin_post_screen() ) {
+			$post = get_post();
+		} else {
+			$post = get_queried_object();
+		}
 
 		// Checks for post objects.
-		if ( $queried_object instanceof \WP_Post ) {
+		if ( $post instanceof \WP_Post ) {
 
 			// Ensure the user can view post insights for this post.
-			if ( ! current_user_can( Permissions::VIEW_POST_INSIGHTS, $queried_object->ID ) ) {
+			if ( ! current_user_can( Permissions::VIEW_POST_INSIGHTS, $post->ID ) ) {
 				return false;
 			}
 
 			// Only published posts show the menu.
-			if ( 'publish' !== $queried_object->post_status ) {
+			if ( 'publish' !== $post->post_status ) {
 				return false;
 			}
 		} else {
@@ -165,7 +169,6 @@ final class Admin_Bar {
 
 		// Data is based on the current URL.
 		if ( $this->is_admin_post_screen() ) {
-			global $post;
 			$current_url = $this->context->get_reference_permalink( $post->ID );
 		} else {
 			$current_url = $this->context->get_reference_canonical();
