@@ -86,7 +86,7 @@ export class GoogleSitekitAdminbar extends Component {
 						">
 							<span className="googlesitekit-adminbar__subtitle">{ __( 'Stats for:', 'google-site-kit' ) }</span>
 							<h2 className="googlesitekit-adminbar__title">
-								{ '' !== pageTitle ?
+								{ pageTitle ?
 									decodeHtmlEntity( pageTitle ) :
 									permaLink
 								}</h2>
