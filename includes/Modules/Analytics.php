@@ -555,34 +555,34 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					$service = $this->get_service( 'analytics' );
 					return $service->management_goals->listManagementGoals( $connection['accountId'], $connection['propertyId'], $connection['profileId'] );
 				case 'accounts-properties-profiles':
-					if ( ! empty( $data['existingAccountId'] ) && ! empty( $data['existingPropertyId'] ) ) {
-						$this->_existing_tag_account = array(
-							'accountId'  => $data['existingAccountId'],
-							'propertyId' => $data['existingPropertyId'],
-						);
-					}
 					return $this->get_service( 'analytics' )->management_accounts->listManagementAccounts();
 				case 'properties-profiles':
 					if ( ! isset( $data['accountId'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
-					}
-					if ( ! empty( $data['existingAccountId'] ) && ! empty( $data['existingPropertyId'] ) ) {
-						$this->_existing_tag_account = array(
-							'accountId'  => $data['existingAccountId'],
-							'propertyId' => $data['existingPropertyId'],
+						return new WP_Error(
+							'missing_required_param',
+							/* translators: %s: Missing parameter name */
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ),
+							array( 'status' => 400 )
 						);
 					}
 
 					return $this->get_service( 'analytics' )->management_webproperties->listManagementWebproperties( $data['accountId'] );
 				case 'profiles':
 					if ( ! isset( $data['accountId'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
+						return new WP_Error(
+							'missing_required_param',
+							/* translators: %s: Missing parameter name */
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ),
+							array( 'status' => 400 )
+						);
 					}
 					if ( ! isset( $data['propertyId'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyId' ), array( 'status' => 400 ) );
+						return new WP_Error(
+							'missing_required_param',
+							/* translators: %s: Missing parameter name */
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyId' ),
+							array( 'status' => 400 )
+						);
 					}
 
 					return $this->get_service( 'analytics' )->management_profiles->listManagementProfiles( $data['accountId'], $data['propertyId'] );
