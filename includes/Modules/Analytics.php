@@ -1066,6 +1066,21 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	}
 
 	/**
+	 * Gets the existing tag IDs.
+	 *
+	 * @return array
+	 */
+	private function get_existing_tag() {
+		return array_merge(
+			array(
+				'accountId'  => '',
+				'propertyId' => '',
+			),
+			(array) $this->_existing_tag_account
+		);
+	}
+
+	/**
 	 * Creates a new Analytics site request for the current site and given arguments.
 	 *
 	 * @since 1.0.0
