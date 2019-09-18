@@ -7,10 +7,15 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
  * Internal dependencies
  */
 import {
+	deactivateAllOtherPlugins,
+	resetSiteKit,
 	pasteText,
 	setSearchConsoleProperty,
 	testClientConfig,
 	useRequestInterception,
+	setClientConfig,
+	setAuthToken,
+	setSiteVerification,
 } from '../utils';
 
 function stubGoogleSignIn( request ) {
@@ -36,10 +41,27 @@ function stubGoogleSignIn( request ) {
 	}
 }
 
+const signOut = async () => {
+	await page.waitForSelector( 'button[aria-controls="user-menu"]' );
+	await page.click( 'button[aria-controls="user-menu"]' );
+
+	await page.waitForSelector( '#user-menu .mdc-list-item' );
+	await page.click( '#user-menu .mdc-list-item' );
+
+	await page.waitForSelector( '.mdc-dialog__container button.mdc-button--danger' );
+	await page.click( '.mdc-dialog__container button.mdc-button--danger' );
+	await page.waitForNavigation();
+};
+
 describe( 'Site Kit set up flow for the first time', () => {
 	beforeAll( async () => {
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await setSearchConsoleProperty();
+	} );
+
+	afterEach( async () => {
+		await deactivateAllOtherPlugins();
+		await resetSiteKit();
 	} );
 
 	it( 'authenticates from splash page', async () => {
@@ -58,6 +80,21 @@ describe( 'Site Kit set up flow for the first time', () => {
 
 		await expect( page ).toMatchElement( '#js-googlesitekit-dashboard' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Site Kit!/i } );
+	} );
+
+	it( 'disconnects user from Site Kit', async () => {
+		await setClientConfig();
+		await setAuthToken();
+		await setSiteVerification();
+		await setSearchConsoleProperty();
+		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
+
+		await signOut();
+
+		await expect( page ).toMatchElement(
+			'.notice-success',
+			{ text: /Successfully disconnected from Site Kit by Google./i }
+		);
 	} );
 } );
 
