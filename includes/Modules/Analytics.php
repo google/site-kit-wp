@@ -41,14 +41,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	private $_data;
 
 	/**
-	 * Temporary storage for existing analytics tag found.
-	 *
-	 * @since 1.0.0
-	 * @var array
-	 */
-	private $_existing_tag_account;
-
-	/**
 	 * Temporary storage for adsense request.
 	 *
 	 * @var bool
@@ -953,6 +945,13 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					// TODO: Parse this response to a regular array.
 					break;
 				case 'accounts-properties-profiles':
+					$data = array_merge(
+						array(
+							'existingAccountId'  => '',
+							'existingPropertyId' => '',
+						),
+						$data
+					);
 					/* @var \Google_Service_Analytics_Accounts $response listManagementAccounts response. */
 					$accounts            = (array) $response->getItems();
 					$account_ids         = array_map(
@@ -965,12 +964,16 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						'properties' => array(),
 						'profiles'   => array(),
 					);
-					$existing_tag        = $this->get_existing_tag();
 
-					if ( $existing_tag['accountId'] ) {
+					if ( $data['existingAccountId'] && $data['existingPropertyId'] ) {
 						// If there is an existing tag, pass it through to ensure only the existing tag is matched.
-						// The datapoint will inherit the existing tag state from this request.
-						$properties_profiles = $this->get_data( 'properties-profiles', $existing_tag );
+						$properties_profiles = $this->get_data(
+							'properties-profiles',
+							array(
+								'accountId'  => $data['existingAccountId'],
+								'propertyId' => $data['existingPropertyId'],
+							)
+						);
 					} else {
 						// Get the account ID from the saved settings - returns WP_Error if not set.
 						$account_id = $this->get_data( 'account-id' );
@@ -997,6 +1000,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 					return array_merge( compact( 'accounts' ), $properties_profiles );
 				case 'properties-profiles':
+					$data = array_merge( array( 'propertyId' => '' ), $data );
 					/* @var \Google_Service_Analytics_Webproperties $response listManagementWebproperties response. */
 					$properties = (array) $response->getItems();
 					$response   = array(
@@ -1012,13 +1016,12 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						);
 					}
 
-					$existing_tag   = $this->get_existing_tag();
-					$property_id    = $existing_tag['propertyId'] ?: $this->get_data( 'property-id' );
+					$property_id    = $data['propertyId'] ?: $this->get_data( 'property-id' );
 					$found_property = new \Google_Service_Analytics_Webproperty();
 					$current_url    = untrailingslashit( $this->context->get_reference_site_url() );
 
-					// If there is an existing tag, only match by property ID.
-					if ( $existing_tag['propertyId'] ) {
+					// If requested for a specific property, only match by property ID.
+					if ( $data['propertyId'] ) {
 						$current_urls = array();
 					} else {
 						$current_urls = $this->permute_site_url( $current_url );
@@ -1083,21 +1086,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		}
 
 		return $response;
-	}
-
-	/**
-	 * Gets the existing tag IDs.
-	 *
-	 * @return array
-	 */
-	private function get_existing_tag() {
-		return array_merge(
-			array(
-				'accountId'  => '',
-				'propertyId' => '',
-			),
-			(array) $this->_existing_tag_account
-		);
 	}
 
 	/**
