@@ -1022,6 +1022,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					// If no match is found, fetch profiles for the first property if available.
 					if ( ! $found_property->getAccountId() && $properties ) {
 						$found_property = array_shift( $properties );
+					} elseif ( ! $found_property->getAccountId() ) {
+						// If no found property, skip the call to 'profiles' as it would be empty/fail.
+						return $response;
 					}
 
 					$profiles = $this->get_data(
