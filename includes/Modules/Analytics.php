@@ -34,6 +34,13 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	const OPTION = 'googlesitekit_analytics_settings';
 
 	/**
+	 * Temporary storage for datapoint $data object for use in response parsing.
+	 *
+	 * @var array
+	 */
+	private $_data;
+
+	/**
 	 * Temporary storage for existing analytics tag found.
 	 *
 	 * @since 1.0.0
@@ -468,6 +475,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
 	protected function create_data_request( $method, $datapoint, array $data = array() ) {
+		$this->_data = $data;
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'connection':
@@ -934,6 +943,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( $method, $datapoint, $response ) {
+		$data = $this->_data ?: array();
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'goals':
