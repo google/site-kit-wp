@@ -161,8 +161,8 @@ final class Admin_Bar {
 			}
 		} else {
 
-			// Only admins can see non post admin bar data.
-			if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
+			// Only admins can see non-post admin bar data.
+			if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
 				return false;
 			}
 		}
