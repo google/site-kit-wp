@@ -200,17 +200,24 @@ final class Context {
 	/**
 	 * Gets the canonical url for the current request.
 	 *
-	 * @return string|null The reference canonical URL or null if no URL was identified.
+	 * @return string|false The reference canonical URL or false if no URL was identified.
 	 */
 	public function get_reference_canonical() {
-		global $wp;
 		$reference_permalink = $this->get_reference_permalink();
-		if ( ! $reference_permalink ) {
 
-			// Fall back to site reference URL + current path.
-			return trailingslashit( $this->get_reference_site_url() . $wp->request );
+		if ( $reference_permalink || is_admin() ) {
+			return $reference_permalink;
 		}
-		return $reference_permalink;
+
+		// Handle the home page URL.
+		if ( is_front_page() ) {
+			return $this->get_reference_site_url();
+		} elseif ( is_home() ) {
+			return $this->get_reference_permalink( get_option( 'page_for_posts' ) );
+		}
+
+		// Unidentified URL.
+		return false;
 	}
 
 	/**
