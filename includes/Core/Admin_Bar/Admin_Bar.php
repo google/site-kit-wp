@@ -188,9 +188,8 @@ final class Admin_Bar {
 		 *
 		 * @param bool   $display     Whether to display the admin bar menu.
 		 * @param string $current_url The URL of the current request.
-		 * @param mixed  $post_id     Currently queried object if available.
 		 */
-		return apply_filters( 'googlesitekit_show_admin_bar_menu', true, $current_url, $queried_object );
+		return apply_filters( 'googlesitekit_show_admin_bar_menu', true, $current_url );
 	}
 
 	/**
