@@ -43,6 +43,28 @@ const ADSENSE_ACCOUNT = {
 	premium: false,
 	timezone: 'America/Chicago',
 };
+
+expect.extend( {
+	async toHaveAdsenseTag( path ) {
+		const result = {};
+		const page = await browser.newPage();
+		await page.goto( createURL( path ) );
+
+		try {
+			await expect( page ).toMatchElement( 'script[src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]' );
+			result.pass = true;
+			result.message = () => `Expected ${ path } not to contain an Adsense tag.`;
+		} catch {
+			result.pass = false;
+			result.message = () => `Expected ${ path } to contain an Adsense tag.`;
+		}
+
+		await page.close();
+
+		return result;
+	},
+} );
+
 describe( 'setting up the AdSense module', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
