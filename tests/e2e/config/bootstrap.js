@@ -20,6 +20,9 @@ import {
 	deactivateAllOtherPlugins,
 	resetSiteKit,
 } from '../utils';
+import {
+	toHaveAdSenseTag,
+} from '../matchers';
 
 /**
  * Environment variables
@@ -48,6 +51,11 @@ const pageEvents = [];
 
 // The Jest timeout is increased because these tests are a bit slow
 jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
+
+// Add custom matchers specific to Site Kit.
+expect.extend( {
+	toHaveAdSenseTag,
+} );
 
 /**
  * Adds an event listener to the page to handle additions of page event

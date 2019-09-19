@@ -1,1 +1,1 @@
-export { toHaveAdsenseTag } from './to-have-adsense-tag';
+export { toHaveAdSenseTag } from './to-have-adsense-tag';

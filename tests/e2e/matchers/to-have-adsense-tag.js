@@ -4,12 +4,13 @@
 import { createURL } from '@wordpress/e2e-test-utils';
 
 /**
- * Jest matcher for asserting the URL at the given path contains an Adsense tag.
+ * Jest matcher for asserting the URL at the given path contains an AdSense tag.
  *
  * @param {string} path The URL path of the current site to check.
  */
-export async function toHaveAdsenseTag( path ) {
+export async function toHaveAdSenseTag( path ) {
 	const result = {};
+
 	const page = await browser.newPage();
 	await page.goto( createURL( path ) );
 

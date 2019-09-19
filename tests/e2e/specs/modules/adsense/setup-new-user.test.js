@@ -16,8 +16,6 @@ import {
 	useRequestInterception,
 } from '../../../utils';
 
-import { toHaveAdsenseTag } from '../../../matchers';
-
 async function proceedToAdsenseSetup() {
 	await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 	await page.waitForSelector( '.mdc-tab-bar' );
@@ -45,10 +43,6 @@ const ADSENSE_ACCOUNT = {
 	premium: false,
 	timezone: 'America/Chicago',
 };
-
-expect.extend( {
-	toHaveAdsenseTag,
-} );
 
 describe( 'setting up the AdSense module', () => {
 	beforeAll( async () => {
@@ -139,14 +133,14 @@ describe( 'setting up the AdSense module', () => {
 			} );
 		};
 
-		await expect( '/' ).not.toHaveAdsenseTag();
+		await expect( '/' ).not.toHaveAdSenseTag();
 
 		await proceedToAdsenseSetup();
 
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /We’re getting your site ready for ads/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status/i } );
 
-		await expect( '/' ).not.toHaveAdsenseTag();
+		await expect( '/' ).not.toHaveAdSenseTag();
 	} );
 
 	it( 'displays “We’re getting your site ready for ads” when the Adsense account is missing the address or phone not verified', async () => {
@@ -197,7 +191,7 @@ describe( 'setting up the AdSense module', () => {
 			} );
 		};
 
-		await expect( '/' ).not.toHaveAdsenseTag();
+		await expect( '/' ).not.toHaveAdSenseTag();
 
 		await proceedToAdsenseSetup();
 
@@ -205,8 +199,8 @@ describe( 'setting up the AdSense module', () => {
 		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status/i } );
 
 		// Note this _should_ output a tag but currently does not as `useSnippet` is not defaulting to true.
-		// await expect( '/' ).toHaveAdsenseTag();
-		await expect( '/' ).not.toHaveAdsenseTag();
+		// await expect( '/' ).toHaveAdSenseTag();
+		await expect( '/' ).not.toHaveAdSenseTag();
 	} );
 
 	it( 'displays “Your site isn’t ready to show ads yet” when the users account is disapproved', async () => {
@@ -235,14 +229,14 @@ describe( 'setting up the AdSense module', () => {
 			} );
 		};
 
-		await expect( '/' ).not.toHaveAdsenseTag();
+		await expect( '/' ).not.toHaveAdSenseTag();
 
 		await proceedToAdsenseSetup();
 
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Your site isn’t ready to show ads yet/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to AdSense to find out how to fix the issue/i } );
 
-		await expect( '/' ).not.toHaveAdsenseTag();
+		await expect( '/' ).not.toHaveAdSenseTag();
 	} );
 
 	it( 'displays “Create your AdSense account” when the user does not have an AdSense account', async () => {
@@ -271,13 +265,13 @@ describe( 'setting up the AdSense module', () => {
 			} );
 		};
 
-		await expect( '/' ).not.toHaveAdsenseTag();
+		await expect( '/' ).not.toHaveAdSenseTag();
 
 		await proceedToAdsenseSetup();
 
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Create your AdSense account/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__action button', { text: /Create AdSense Account/i } );
 
-		await expect( '/' ).not.toHaveAdsenseTag();
+		await expect( '/' ).not.toHaveAdSenseTag();
 	} );
 } );
