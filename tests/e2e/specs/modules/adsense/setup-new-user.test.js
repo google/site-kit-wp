@@ -35,6 +35,14 @@ const datapointHandlers = {
 	alerts: defaultHandler,
 	accountStatus: defaultHandler,
 };
+
+const ADSENSE_ACCOUNT = {
+	id: 'pub-123456789',
+	kind: 'adsense#account',
+	name: 'pub-123456789',
+	premium: false,
+	timezone: 'America/Chicago',
+};
 describe( 'setting up the AdSense module', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
