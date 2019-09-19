@@ -16,6 +16,8 @@ import {
 	useRequestInterception,
 } from '../../../utils';
 
+import { toHaveAdsenseTag } from '../../../matchers';
+
 async function proceedToAdsenseSetup() {
 	await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 	await page.waitForSelector( '.mdc-tab-bar' );
@@ -45,24 +47,7 @@ const ADSENSE_ACCOUNT = {
 };
 
 expect.extend( {
-	async toHaveAdsenseTag( path ) {
-		const result = {};
-		const page = await browser.newPage();
-		await page.goto( createURL( path ) );
-
-		try {
-			await expect( page ).toMatchElement( 'script[src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]' );
-			result.pass = true;
-			result.message = () => `Expected ${ path } not to contain an Adsense tag.`;
-		} catch {
-			result.pass = false;
-			result.message = () => `Expected ${ path } to contain an Adsense tag.`;
-		}
-
-		await page.close();
-
-		return result;
-	},
+	toHaveAdsenseTag,
 } );
 
 describe( 'setting up the AdSense module', () => {
