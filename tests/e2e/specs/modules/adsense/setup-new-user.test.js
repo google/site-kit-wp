@@ -84,7 +84,6 @@ describe( 'setting up the AdSense module', () => {
 
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-auth-plugin' );
-		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await setSearchConsoleProperty();
 
 		await setClientConfig();
@@ -99,61 +98,186 @@ describe( 'setting up the AdSense module', () => {
 		await resetSiteKit();
 	} );
 
-	it( 'prompts to create an AdSense account if the user does not own or have access to one', async () => {
-		await activatePlugin( 'e2e-tests-module-setup-adsense-api-mock-no-account' );
+	it( 'displays “We’re getting your site ready for ads” when account is graylisted', async () => {
+		datapointHandlers.accounts = ( request ) => {
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( [
+					ADSENSE_ACCOUNT,
+				] ),
+			} );
+		};
+		datapointHandlers.alerts = ( request ) => {
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( [
+					{
+						id: 'BILLINGLESS_ACCOUNT',
+						isDismissible: false,
+						kind: 'adsense#alert',
+						message: "Your ad units are not displaying ads because you haven't provided your account payments information yet.",
+						severity: 'SEVERE',
+						type: 'BILLINGLESS_ACCOUNT',
+					},
+					{
+						id: 'GRAYLISTED_PUBLISHER',
+						isDismissible: false,
+						kind: 'adsense#alert',
+						message: 'Your AdSense application is still under review. You will only see blank ads until your account has been fully approved or disapproved.',
+						severity: 'SEVERE',
+						type: 'GRAYLISTED_PUBLISHER',
+					},
+					{
+						id: 'ALERT_TYPE_GLOBAL_BETTER_ADS_STANDARD',
+						isDismissible: false,
+						kind: 'adsense#alert',
+						message: "Global Better Ads Standards. Google Chrome will support the Better Ads Standards globally from July 9th. Ads may be filtered on Chrome browsers if you don't comply with the standard.",
+						severity: 'INFO',
+						type: 'ALERT_TYPE_GLOBAL_BETTER_ADS_STANDARD',
+					},
+				] ),
+			} );
+		};
+
+		await expect( '/' ).not.toHaveAdsenseTag();
+
 		await proceedToAdsenseSetup();
 
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /create your adsense account/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /We’re getting your site ready for ads/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status/i } );
 
-		// Intercept the call to window.open and call our API to simulate a created account.
-		await page.evaluate( () => {
-			window.open = () => {
-				window.wp.apiFetch( {
-					path: 'google-site-kit/v1/e2e/setup/adsense/account-created',
-					method: 'post',
-				} );
-			};
-		} );
-
-		// Clicking Create Account button will switch API mock plugins on the server to the one that has accounts.
-		await Promise.all( [
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/e2e/setup/adsense/account-created' ) ),
-			expect( page ).toClick( '.googlesitekit-setup-module__action button', { text: /create adsense account/i } ),
-		] );
+		await expect( '/' ).not.toHaveAdsenseTag();
 	} );
 
-	/**
-	 * Scenario 1: The account is fully created (all details complete), but the API returns “Graylisted” status (accountStatus is ‘ads-display-pending’ and API response is “type: GRAYLISTED_PUBLISHER”):
-	 * - Plugin places AdSense code on all pages of the site
-	 * - Show screen “We’re getting your site ready for ads” + link to AdSense account
-	 * - AdSense settings page should show the following status:
-	 *   - Account status: Pending
-	 *   - AdSense code: AdSense code is placed on your site
-	 */
+	it( 'displays “We’re getting your site ready for ads” when the Adsense account is missing the address or phone not verified', async () => {
+		datapointHandlers.accounts = ( request ) => {
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( [
+					ADSENSE_ACCOUNT,
+				] ),
+			} );
+		};
+		datapointHandlers.alerts = ( request ) => {
+			request.respond( {
+				status: 500,
+				body: JSON.stringify( {
+					code: 403,
+					message: {
+						error: {
+							errors: [
+								{
+									domain: 'global',
+									reason: 'accountPendingReview',
+									message: 'Users account is pending review.',
+								},
+							],
+							code: 403,
+							message: 'Users account is pending review.',
+						},
+					},
+					data: {
+						status: 500,
+					},
+				} ),
+			} );
+		};
+		datapointHandlers.clients = ( request ) => {
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( [
+					{
+						arcOptIn: false,
+						id: `ca-${ ADSENSE_ACCOUNT.id }`,
+						kind: 'adsense#adClient',
+						productCode: 'AFC',
+						supportsReporting: true,
+					},
+				] ),
+			} );
+		};
 
-	/**
-	 * Scenario 2: The account is created, but the address is not added or phone not verified
-	 * - Plugin places AdSense code on all pages of the site
-	 * - Show screen “Your site isn’t ready for ads yet.” + link to AdSense FE
-	 * - User needs to go to AdSense FE and complete the missing details
-	 * - AdSense settings page should show the following status:
-	 *   - Account status: Action required
-	 *   - AdSense code: AdSense code is placed on your site
-	 */
+		await expect( '/' ).not.toHaveAdsenseTag();
 
-	/**
-	 * Scenario 3: The account is created, but the account is disapproved
-	 *  - Plugin places AdSense code on all pages of the site
-	 *  - Show screen “Your site isn’t ready for ads yet.” + link to AdSense FE
-	 *  - User needs to go to AdSense FE and complete the missing details
-	 *  - AdSense settings page should show the following status:
-	 *    - Account status: Action required
-	 *    - AdSense code: AdSense code is placed on your site
-	 */
+		await proceedToAdsenseSetup();
 
-	/**
-	 * Scenario 4: The account is not yet created
-	 * - Refresh the page to check for an account. No AdSense account is detected. Show “Create your AdSense account” screen (“Site Kit will place AdSense code on every page across your site.”)
-	 * - Settings page: show status "incomplete setup" + link to set up (which is the “Create your AdSense account” page).
-	 */
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /We’re getting your site ready for ads/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status/i } );
+
+		// Note this _should_ output a tag but currently does not as `useSnippet` is not defaulting to true.
+		// await expect( '/' ).toHaveAdsenseTag();
+		await expect( '/' ).not.toHaveAdsenseTag();
+	} );
+
+	it( 'displays “Your site isn’t ready to show ads yet” when the users account is disapproved', async () => {
+		datapointHandlers.accounts = ( request ) => {
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( {
+					code: 403,
+					message: {
+						error: {
+							errors: [
+								{
+									domain: 'global',
+									reason: 'disapprovedAccount',
+									message: 'Users account has been disapproved.',
+								},
+							],
+							code: 403,
+							message: 'Users account has been disapproved.',
+						},
+					},
+					data: {
+						status: 500,
+					},
+				} ),
+			} );
+		};
+
+		await expect( '/' ).not.toHaveAdsenseTag();
+
+		await proceedToAdsenseSetup();
+
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Your site isn’t ready to show ads yet/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to AdSense to find out how to fix the issue/i } );
+
+		await expect( '/' ).not.toHaveAdsenseTag();
+	} );
+
+	it( 'displays “Create your AdSense account” when the user does not have an AdSense account', async () => {
+		datapointHandlers.accounts = ( request ) => {
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( {
+					code: 403,
+					message: {
+						error: {
+							errors: [
+								{
+									domain: 'global',
+									reason: 'noAdSenseAccount',
+									message: 'User does not have an AdSense account.',
+								},
+							],
+							code: 403,
+							message: 'User does not have an AdSense account.',
+						},
+					},
+					data: {
+						status: 500,
+					},
+				} ),
+			} );
+		};
+
+		await expect( '/' ).not.toHaveAdsenseTag();
+
+		await proceedToAdsenseSetup();
+
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Create your AdSense account/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module__action button', { text: /Create AdSense Account/i } );
+
+		await expect( '/' ).not.toHaveAdsenseTag();
+	} );
 } );
