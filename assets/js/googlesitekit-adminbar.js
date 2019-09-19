@@ -89,7 +89,8 @@ export class GoogleSitekitAdminbar extends Component {
 								{ pageTitle ?
 									decodeHtmlEntity( pageTitle ) :
 									permaLink
-								}</h2>
+								}
+							</h2>
 						</div>
 						<div className="
 							mdc-layout-grid__cell
