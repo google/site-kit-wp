@@ -177,7 +177,9 @@ final class Admin_Bar {
 		/**
 		 * Filters whether the Site Kit admin bar menu should be displayed.
 		 *
-		 * The admin bar menu is only shown when there is data for the current URL.
+		 * The admin bar menu is only shown when there is data for the current URL and the current
+		 * user has the correct capability to view the data. Modules use this filter to indicate the
+		 * presence of valid data.
 		 *
 		 * @since 1.0.0
 		 *
