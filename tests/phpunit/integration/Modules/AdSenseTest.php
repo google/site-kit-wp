@@ -53,7 +53,7 @@ class AdSenseTest extends TestCase {
 		add_filter( 'googlesitekit_adsense_account_id', function () {
 			return 'filtered-adsense-account-id';
 		} );
-		$this->assertEquals( array( 'accountId' => 'filtered-adsense-account-id' ), get_option( AdSense::OPTION ) );
+		$this->assertArraySubset( array( 'accountId' => 'filtered-adsense-account-id' ), get_option( AdSense::OPTION ) );
 	}
 
 	public function test_get_module_scope() {
