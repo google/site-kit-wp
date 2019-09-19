@@ -29,11 +29,23 @@ async function proceedToAdsenseSetup() {
 	] );
 }
 
+const defaultHandler = ( request ) => request.continue();
+const datapointHandlers = {
+	accounts: defaultHandler,
+	alerts: defaultHandler,
+	accountStatus: defaultHandler,
+};
 describe( 'setting up the AdSense module', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
+			if ( request.url().match( 'modules/adsense/data/accounts' ) ) {
+				datapointHandlers.accounts( request );
+			} else if ( request.url().match( 'modules/adsense/data/alerts' ) ) {
+				datapointHandlers.alerts( request );
+			} else if ( request.url().match( 'modules/adsense/data/account-status' ) ) {
+				datapointHandlers.accountStatus( request );
+			} else if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
 				request.respond( {
 					status: 302,
 					headers: {
@@ -67,6 +79,7 @@ describe( 'setting up the AdSense module', () => {
 	} );
 
 	afterEach( async () => {
+		Object.keys( datapointHandlers ).forEach( ( key ) => datapointHandlers[ key ] = defaultHandler );
 		await deactivateAllOtherPlugins();
 		await resetSiteKit();
 	} );
