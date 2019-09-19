@@ -143,7 +143,7 @@ final class Admin_Bar {
 		// Gets post object. On front area we need to use get_queried_object to get the current post object.
 		if ( $this->is_admin_post_screen() ) {
 			$post        = get_post();
-			$current_url = $this->context->get_reference_permalink( $post->ID );
+			$current_url = $this->context->get_reference_permalink( $post );
 		} else {
 			$post        = get_queried_object();
 			$current_url = $this->context->get_reference_canonical();
