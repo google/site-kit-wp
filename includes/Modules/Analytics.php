@@ -945,13 +945,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					// TODO: Parse this response to a regular array.
 					break;
 				case 'accounts-properties-profiles':
-					$data = array_merge(
-						array(
-							'existingAccountId'  => '',
-							'existingPropertyId' => '',
-						),
-						$data
-					);
 					/* @var \Google_Service_Analytics_Accounts $response listManagementAccounts response. */
 					$accounts            = (array) $response->getItems();
 					$account_ids         = array_map(
@@ -1000,7 +993,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 					return array_merge( compact( 'accounts' ), $properties_profiles );
 				case 'properties-profiles':
-					$data = array_merge( array( 'propertyId' => '' ), $data );
 					/* @var \Google_Service_Analytics_Webproperties $response listManagementWebproperties response. */
 					$properties = (array) $response->getItems();
 					$response   = array(
