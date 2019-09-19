@@ -416,6 +416,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 				}
 			}
 
+			// Cache "data found" status for one day, "no data" status for one hour.
 			set_transient( $transient_key, (int) $has_data, $has_data ? DAY_IN_SECONDS : HOUR_IN_SECONDS );
 		}
 
