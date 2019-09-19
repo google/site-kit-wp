@@ -958,13 +958,13 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						'profiles'   => array(),
 					);
 
-					if ( $data['existingAccountId'] && $data['existingPropertyId'] ) {
+					if ( ! empty( $data['existingAccountId'] ) && ! empty( $data['existingPropertyId'] ) ) {
 						// If there is an existing tag, pass it through to ensure only the existing tag is matched.
 						$properties_profiles = $this->get_data(
 							'properties-profiles',
 							array(
-								'accountId'  => $data['existingAccountId'],
-								'propertyId' => $data['existingPropertyId'],
+								'accountId'          => $data['existingAccountId'],
+								'existingPropertyId' => $data['existingPropertyId'],
 							)
 						);
 					} else {
@@ -1008,14 +1008,15 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						);
 					}
 
-					$property_id    = $data['propertyId'] ?: $this->get_data( 'property-id' );
 					$found_property = new \Google_Service_Analytics_Webproperty();
 					$current_url    = untrailingslashit( $this->context->get_reference_site_url() );
 
 					// If requested for a specific property, only match by property ID.
-					if ( $data['propertyId'] ) {
+					if ( ! empty( $data['existingPropertyId'] ) ) {
+						$property_id  = $data['existingPropertyId'];
 						$current_urls = array();
 					} else {
+						$property_id  = $this->get_data( 'property-id' );
 						$current_urls = $this->permute_site_url( $current_url );
 					}
 
