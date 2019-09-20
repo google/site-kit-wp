@@ -6,7 +6,7 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
 /**
  * Internal dependencies
  */
-import { setSiteVerification, setSearchConsoleProperty } from '../utils';
+import { setSiteVerification, setSearchConsoleProperty } from '../../utils';
 
 describe( 'Site Kit dashboard post search', () => {
 	beforeAll( async () => {
