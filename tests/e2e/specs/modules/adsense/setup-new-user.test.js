@@ -198,9 +198,7 @@ describe( 'setting up the AdSense module', () => {
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /We’re getting your site ready for ads/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status/i } );
 
-		// Note this _should_ output a tag but currently does not as `useSnippet` is not defaulting to true.
-		// await expect( '/' ).toHaveAdSenseTag();
-		await expect( '/' ).not.toHaveAdSenseTag();
+		await expect( '/' ).toHaveAdSenseTag();
 	} );
 
 	it( 'displays “Your site isn’t ready to show ads yet” when the users account is disapproved', async () => {
