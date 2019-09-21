@@ -96,7 +96,7 @@ final class Admin_Bar {
 	 * Add data-ampdevmode attributes to the elements that need it.
 	 *
 	 * @see \Google\Site_Kit\Core\Assets\Assets::get_assets() The 'googlesitekit' string is added to all inline scripts.
-	 * @eee \Google\Site_Kit\Core\Assets\Assets::add_amp_dev_mode_attributes() The data-ampdevmode attribute is added to registered scripts/styles here.
+	 * @see \Google\Site_Kit\Core\Assets\Assets::add_amp_dev_mode_attributes() The data-ampdevmode attribute is added to registered scripts/styles here.
 	 *
 	 * @param string[] $xpath_queries XPath queries for elements that should get the data-ampdevmode attribute.
 	 * @return string[] XPath queries.
