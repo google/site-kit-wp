@@ -41,12 +41,10 @@ class Link extends Component {
 			disabled,
 			id,
 		} = this.props;
-		const SemanticLink = href ? 'a' : 'button';
 		// Note: the disabled attribute does not alter behavior of anchor tags,
-		// hence the conditional click handler.
-		const clickHandler = disabled ?
-			( e ) => e.preventDefault() :
-			onClick;
+		// so if disabled we force it to be a button.
+		const isAnchor = href && ! disabled;
+		const SemanticLink = isAnchor ? 'a' : 'button';
 
 		return (
 			<SemanticLink
@@ -63,10 +61,10 @@ class Link extends Component {
 					${ danger ? 'googlesitekit-cta-link--danger' : '' }
 					${ disabled ? 'googlesitekit-cta-link--disabled' : '' }
 				` }
-				onClick={ clickHandler }
+				onClick={ onClick }
 				id={ id }
-				href={ href ? href : undefined }
-				target={ external ? '_blank' : undefined }
+				href={ isAnchor ? href : undefined }
+				target={ isAnchor && external ? '_blank' : undefined }
 				rel={ external ? 'noopener noreferrer' : undefined }
 				disabled={ disabled }
 			>
