@@ -34,12 +34,11 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	const OPTION = 'googlesitekit_analytics_settings';
 
 	/**
-	 * Temporary storage for existing analytics tag found.
+	 * Temporary storage for datapoint $data object for use in response parsing.
 	 *
-	 * @since 1.0.0
-	 * @var string|null
+	 * @var array
 	 */
-	private $_existing_tag_account = false;
+	private $_data;
 
 	/**
 	 * Temporary storage for adsense request.
@@ -468,6 +467,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
 	protected function create_data_request( $method, $datapoint, array $data = array() ) {
+		$this->_data = $data;
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'connection':
@@ -546,32 +547,37 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					$service = $this->get_service( 'analytics' );
 					return $service->management_goals->listManagementGoals( $connection['accountId'], $connection['propertyId'], $connection['profileId'] );
 				case 'accounts-properties-profiles':
-					if ( ! empty( $data['existingAccountId'] ) && ! empty( $data['existingPropertyId'] ) ) {
-						$this->_existing_tag_account = array(
-							'accountId'  => $data['existingAccountId'],
-							'propertyId' => $data['existingPropertyId'],
-						);
-					}
-					$service = $this->get_service( 'analytics' );
-					return $service->management_accounts->listManagementAccounts();
+					return $this->get_service( 'analytics' )->management_accounts->listManagementAccounts();
 				case 'properties-profiles':
 					if ( ! isset( $data['accountId'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
+						return new WP_Error(
+							'missing_required_param',
+							/* translators: %s: Missing parameter name */
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ),
+							array( 'status' => 400 )
+						);
 					}
-					$service = $this->get_service( 'analytics' );
-					return $service->management_webproperties->listManagementWebproperties( $data['accountId'] );
+
+					return $this->get_service( 'analytics' )->management_webproperties->listManagementWebproperties( $data['accountId'] );
 				case 'profiles':
 					if ( ! isset( $data['accountId'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
+						return new WP_Error(
+							'missing_required_param',
+							/* translators: %s: Missing parameter name */
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ),
+							array( 'status' => 400 )
+						);
 					}
 					if ( ! isset( $data['propertyId'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyId' ), array( 'status' => 400 ) );
+						return new WP_Error(
+							'missing_required_param',
+							/* translators: %s: Missing parameter name */
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyId' ),
+							array( 'status' => 400 )
+						);
 					}
-					$service = $this->get_service( 'analytics' );
-					return $service->management_profiles->listManagementProfiles( $data['accountId'], $data['propertyId'] );
+
+					return $this->get_service( 'analytics' )->management_profiles->listManagementProfiles( $data['accountId'], $data['propertyId'] );
 				case 'tag-permission':
 					return function() use ( $data ) {
 						if ( ! isset( $data['tag'] ) ) {
@@ -928,6 +934,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( $method, $datapoint, $response ) {
+		$data = $this->_data ?: array();
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'goals':
@@ -937,115 +945,118 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					// TODO: Parse this response to a regular array.
 					break;
 				case 'accounts-properties-profiles':
-					$response = array(
-						// TODO: Parse this response to a regular array.
-						'accounts'   => $response->getItems(),
+					/* @var \Google_Service_Analytics_Accounts $response listManagementAccounts response. */
+					$accounts            = (array) $response->getItems();
+					$account_ids         = array_map(
+						function ( \Google_Service_Analytics_Account $account ) {
+							return $account->getId();
+						},
+						$accounts
+					);
+					$properties_profiles = array(
 						'properties' => array(),
 						'profiles'   => array(),
 					);
 
-					$found_account_id = false;
-					$matched_property = false;
-					$existing_tag     = $this->_existing_tag_account;
-
-					$this->_existing_tag_account = null; // Set back to null.
-
-					if ( empty( $existing_tag ) ) {
+					if ( ! empty( $data['existingAccountId'] ) && ! empty( $data['existingPropertyId'] ) ) {
+						// If there is an existing tag, pass it through to ensure only the existing tag is matched.
+						$properties_profiles = $this->get_data(
+							'properties-profiles',
+							array(
+								'accountId'          => $data['existingAccountId'],
+								'existingPropertyId' => $data['existingPropertyId'],
+							)
+						);
+					} else {
+						// Get the account ID from the saved settings - returns WP_Error if not set.
 						$account_id = $this->get_data( 'account-id' );
-						if ( ! is_wp_error( $account_id ) ) {
-							foreach ( $response['accounts'] as $account ) {
-								if ( $account->getId() === $account_id ) {
-									$found_account_id = $account->getId();
-									break;
-								}
-							}
+						// If the saved account ID is in the list of accounts the user has access to, it's a match.
+						if ( in_array( $account_id, $account_ids, true ) ) {
+							$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountId' => $account_id ) );
 						} else {
-							$current_url = untrailingslashit( $this->context->get_reference_site_url() );
-							$urls        = $this->permute_site_url( $current_url );
-							foreach ( $response['accounts'] as $account ) {
-								$properties = $this->get_data( 'properties-profiles', array( 'accountId' => $account->getId() ) );
-								if ( is_wp_error( $properties ) ) {
-									continue;
-								}
-								$url_matches = array_filter(
-									$properties['properties'],
-									function( $property ) use ( $urls ) {
-										return in_array( untrailingslashit( $property->getWebsiteUrl() ), $urls, true );
-									}
-								);
-								if ( ! empty( $url_matches ) ) {
-									$found_account_id = $account->getId();
-									$matched_property = $url_matches;
+							// Iterate over each account in reverse so if there is no match,
+							// the last $properties_profiles will be from the first account (selected by default).
+							foreach ( array_reverse( $accounts ) as $account ) {
+								/* @var \Google_Service_Analytics_Account $account Analytics account object. */
+								$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountId' => $account->getId() ) );
+
+								if ( ! is_wp_error( $properties_profiles ) && isset( $properties_profiles['matchedProperty'] ) ) {
 									break;
 								}
 							}
 						}
-					} else {
-						$found_account_id = $existing_tag['accountId'];
 					}
 
-					if ( empty( $found_account_id ) ) {
-						return $response;
+					if ( is_wp_error( $properties_profiles ) ) {
+						return $properties_profiles;
 					}
 
-					$properties = $this->get_data( 'properties-profiles', array( 'accountId' => $found_account_id ) );
-					if ( is_wp_error( $properties ) ) {
-						return $response;
-					}
+					return array_merge( compact( 'accounts' ), $properties_profiles );
+				case 'properties-profiles':
+					/* @var \Google_Service_Analytics_Webproperties $response listManagementWebproperties response. */
+					$properties = (array) $response->getItems();
+					$response   = array(
+						'properties' => $properties,
+						'profiles'   => array(),
+					);
 
-					$result = array_merge( $response, $properties );
-
-					// Get matched property from exiting tag property id.
-					if ( ! empty( $existing_tag ) ) {
-						$matched_property = array_filter(
-							$properties['properties'],
-							function( $property ) use ( $existing_tag ) {
-								return $property->getId() === $existing_tag['propertyId'];
-							}
+					if ( 0 === count( $properties ) ) {
+						return new WP_Error(
+							'google_analytics_properties_empty',
+							__( 'No Google Analytics properties found. Please go to Google Analytics to set one up.', 'google-site-kit' ),
+							array( 'status' => 500 )
 						);
 					}
 
-					if ( ! empty( $matched_property ) ) {
-						$result = array_merge( $result, array( 'matchedProperty' => array_shift( $matched_property ) ) );
+					$found_property = new \Google_Service_Analytics_Webproperty();
+					$current_url    = untrailingslashit( $this->context->get_reference_site_url() );
+
+					// If requested for a specific property, only match by property ID.
+					if ( ! empty( $data['existingPropertyId'] ) ) {
+						$property_id  = $data['existingPropertyId'];
+						$current_urls = array();
+					} else {
+						$property_id  = $this->get_data( 'property-id' );
+						$current_urls = $this->permute_site_url( $current_url );
 					}
 
-					return $result;
-				case 'properties-profiles':
-					$response = array(
-						// TODO: Parse this response to a regular array.
-						'properties' => $response->getItems(),
-						'profiles'   => array(),
-					);
-					if ( 0 === count( $response['properties'] ) ) {
-						return new WP_Error( 'google_analytics_properties_empty', __( 'No Google Analytics properties found. Please go to Google Anlytics to set one up.', 'google-site-kit' ), array( 'status' => 500 ) );
-					}
-					$found_account_id  = false;
-					$found_property_id = false;
-					$property_id       = $this->get_data( 'property-id' );
-					if ( ! is_wp_error( $property_id ) ) {
-						foreach ( $response['properties'] as $property ) {
-							if ( $property->getId() === $property_id ) {
-								$found_account_id  = $property->getAccountId();
-								$found_property_id = $property->getId();
-								break;
-							}
+					// If there's no match for the saved account ID, try to find a match using the properties of each account.
+					foreach ( $properties as $property ) {
+						/* @var \Google_Service_Analytics_Webproperty $property Property instance. */
+						if (
+							// Attempt to match by property ID.
+							$property->getId() === $property_id ||
+							// Attempt to match by site URL, with and without http/https and 'www' subdomain.
+							in_array( untrailingslashit( $property->getWebsiteUrl() ), $current_urls, true )
+						) {
+							$found_property              = $property;
+							$response['matchedProperty'] = $property;
+							break;
 						}
 					}
-					if ( empty( $found_account_id ) || empty( $found_property_id ) ) {
-						$found_account_id  = $response['properties'][0]->getAccountId();
-						$found_property_id = $response['properties'][0]->getId();
+
+					// If no match is found, fetch profiles for the first property if available.
+					if ( ! $found_property->getAccountId() && $properties ) {
+						$found_property = array_shift( $properties );
+					} elseif ( ! $found_property->getAccountId() ) {
+						// If no found property, skip the call to 'profiles' as it would be empty/fail.
+						return $response;
 					}
+
 					$profiles = $this->get_data(
 						'profiles',
 						array(
-							'accountId'  => $found_account_id,
-							'propertyId' => $found_property_id,
+							'accountId'  => $found_property->getAccountId(),
+							'propertyId' => $found_property->getId(),
 						)
 					);
+
 					if ( is_wp_error( $profiles ) ) {
 						return $profiles;
 					}
+
 					$response['profiles'] = $profiles;
+
 					return $response;
 				case 'profiles':
 					// TODO: Parse this response to a regular array.

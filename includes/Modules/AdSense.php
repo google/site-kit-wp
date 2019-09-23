@@ -76,6 +76,13 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 				// Ensure the old key is removed regardless. No-op if not set.
 				unset( $option['adsenseTagEnabled'] );
 
+				/**
+				 * Enable the snippet by default.
+				 */
+				if ( ! isset( $option['useSnippet'] ) ) {
+					$option['useSnippet'] = true;
+				}
+
 				return $option;
 			}
 		);
@@ -134,13 +141,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 			__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
 		);
 
-		// If useSnippet is not saved, default to true.
-		$info['settings'] = array_merge(
-			array(
-				'useSnippet' => true,
-			),
-			(array) $this->options->get( self::OPTION )
-		);
+		$info['settings'] = $this->options->get( self::OPTION );
 
 		// Clear datapoints that don't need to be localized.
 		$idenfifier_args = array(
