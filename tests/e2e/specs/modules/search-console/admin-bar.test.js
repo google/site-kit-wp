@@ -47,7 +47,7 @@ describe( 'admin bar display on the front end and in the post editor', () => {
 		} );
 	} );
 
-	it( 'loads the Site Kit admin bar component when viewing the front and back end of a post with data in Search Console (no Analytics)', async () => {
+	it( 'loads the Site Kit admin bar component when viewing the front end of a post with data in Search Console (no Analytics)', async () => {
 		const { searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = searchConsole;
@@ -59,7 +59,6 @@ describe( 'admin bar display on the front end and in the post editor', () => {
 			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
 		] );
 
-		// const adminBarAppFront = await page.$( '#js-googlesitekit-adminbar' );
 		await expect( page ).toMatchElement( '#js-googlesitekit-adminbar .googlesitekit-data-block__title', { text: /total clicks/i } );
 		await expect( page ).toMatchElement( '#js-googlesitekit-adminbar .googlesitekit-data-block__title', { text: /total impressions/i } );
 		// Ensure Analytics CTA is displayed
