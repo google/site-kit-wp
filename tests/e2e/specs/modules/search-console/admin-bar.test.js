@@ -62,6 +62,29 @@ describe( 'admin bar display on the front end and in the post editor', () => {
 		await expect( page ).toMatchElement( '#js-googlesitekit-adminbar .googlesitekit-cta-link', { text: /More details/i } );
 	} );
 
+	it( 'loads the Site Kit admin bar component when editing a post with data in Search Console (no Analytics)', async () => {
+		const { searchConsole } = adminBarMockResponses;
+		// Data is requested when the Admin Bar app loads on first hover
+		mockBatchResponse = searchConsole;
+
+		// Navigate to edit view for this post
+		await Promise.all( [
+			expect( page ).toClick( '#wp-admin-bar-edit a', { text: /edit post/i } ),
+			page.waitForNavigation( { waitUntil: 'domcontentloaded' } ),
+		] );
+
+		// We're now in Gutenberg.
+
+		await page.hover( '#wp-admin-bar-google-site-kit' );
+		// Data will be cached already so no request to wait for.
+		await expect( page ).toMatchElement( '#js-googlesitekit-adminbar .googlesitekit-data-block__title', { text: /total clicks/i } );
+		await expect( page ).toMatchElement( '#js-googlesitekit-adminbar .googlesitekit-data-block__title', { text: /total impressions/i } );
+		// Ensure Analytics CTA is displayed
+		await expect( page ).toMatchElement( '#js-googlesitekit-adminbar .googlesitekit-cta-link', { text: /Set up analytics/i } );
+		// More details link
+		await expect( page ).toMatchElement( '#js-googlesitekit-adminbar .googlesitekit-cta-link', { text: /More details/i } );
+	} );
+
 	it( 'the Site Kit admin bar component also loads Analytics data when the module is active', async () => {
 		const { analytics, searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
