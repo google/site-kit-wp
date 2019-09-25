@@ -473,7 +473,7 @@ final class Assets {
 		if ( isset( $_GET['permaLink'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 			$permalink = esc_url_raw( $_GET['permaLink'] );
 		} else {
-			$permalink = esc_url_raw( $this->context->get_reference_permalink() );
+			$permalink = esc_url_raw( $this->context->get_reference_canonical() );
 		}
 
 		if ( isset( $_GET['pageTitle'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
