@@ -123,6 +123,7 @@
     "@wordpress/i18n": "^3.3.0",
     "@wordpress/library-export-default-webpack-plugin": "^1.1.0",
     "@wordpress/scripts": "^3.3.0",
+    "@wordpress/url": "^2.8.0",
     "accessible-autocomplete": "^1.6.2",
     "autoprefixer": "^9.5.0",
     "babel-loader": "^8.0.5",
