@@ -37,14 +37,10 @@ describe( 'admin bar display on the front end and in the post editor', () => {
 		} );
 	} );
 
-	afterEach( async () => {
+	beforeEach( async () => {
 		mockBatchResponse = [];
-		// Deactivate Analytics
-		await wpApiFetch( {
-			method: 'post',
-			path: 'google-site-kit/v1/modules/analytics',
-			data: { active: false },
-		} );
+
+		await page.goto( createURL( '/hello-world/' ), { waitUntil: 'domcontentloaded' } );
 	} );
 
 	it( 'loads the Site Kit admin bar component when viewing the front end of a post with data in Search Console (no Analytics)', async () => {
@@ -53,7 +49,6 @@ describe( 'admin bar display on the front end and in the post editor', () => {
 		mockBatchResponse = searchConsole;
 
 		// Ensure mouseover listener is registered (load)
-		await page.goto( createURL( '/hello-world/' ), { waitUntil: 'domcontentloaded' } );
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),
 			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
@@ -74,8 +69,8 @@ describe( 'admin bar display on the front end and in the post editor', () => {
 
 		await setupAnalytics();
 
-		// Ensure mouseover listener is registered (load)
-		await page.goto( createURL( '/hello-world/' ), { waitUntil: 'domcontentloaded' } );
+		await page.reload();
+
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),
 			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
