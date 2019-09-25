@@ -23,6 +23,7 @@ describe( 'Site Kit dashboard post search', () => {
 		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
 
 		await expect( postSearcher ).toFill( 'input', 'hello' );
+		await page.waitForResponse( ( res ) => res.url().match( 'core/search/data/post-search' ) );
 
 		// Ensure expected options appear.
 		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: /hello world/i } );
@@ -47,6 +48,7 @@ describe( 'Site Kit dashboard post search', () => {
 		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
 
 		await expect( postSearcher ).toFill( 'input', createURL( 'hello-world' ) );
+		await page.waitForResponse( ( res ) => res.url().match( 'core/search/data/post-search' ) );
 
 		// Ensure expected options appear.
 		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: /hello world/i } );
@@ -71,6 +73,7 @@ describe( 'Site Kit dashboard post search', () => {
 		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
 
 		await expect( postSearcher ).toFill( 'input', 'non-existent title' );
+		await page.waitForResponse( ( res ) => res.url().match( 'core/search/data/post-search' ) );
 
 		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: /no results found/i } );
 
@@ -82,6 +85,7 @@ describe( 'Site Kit dashboard post search', () => {
 		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
 
 		await expect( postSearcher ).toFill( 'input', createURL( 'non-existent' ) );
+		await page.waitForResponse( ( res ) => res.url().match( 'core/search/data/post-search' ) );
 
 		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: /no results found/i } );
 
@@ -94,6 +98,7 @@ describe( 'Site Kit dashboard post search', () => {
 		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
 
 		await expect( postSearcher ).toFill( 'input', 'Spéçïåł' );
+		await page.waitForResponse( ( res ) => res.url().match( 'core/search/data/post-search' ) );
 
 		// Ensure expected options appear.
 		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: TITLE_SPECIAL_CHARACTERS } );

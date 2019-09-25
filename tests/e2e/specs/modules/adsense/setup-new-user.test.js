@@ -26,6 +26,7 @@ async function proceedToAdsenseSetup() {
 		expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up adsense/i } ),
 		page.waitForSelector( '.googlesitekit-setup-module--adsense' ),
 		page.waitForResponse( ( res ) => res.url().match( 'modules/adsense/data/accounts' ) ),
+		page.waitForResponse( ( res ) => res.url().match( 'modules/adsense/data/account-status' ) ),
 	] );
 }
 
