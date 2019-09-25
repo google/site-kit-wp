@@ -87,6 +87,7 @@ describe( 'date range filtering on dashboard views', () => {
 		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
 
 		await expect( postSearcher ).toFill( 'input', 'hello world' );
+		await page.waitForResponse( ( res ) => res.url().match( 'core/search/data/post-search' ) );
 		await expect( postSearcher ).toClick( '.autocomplete__option', { text: /hello world/i } );
 
 		mockBatchResponse = last28Days;
