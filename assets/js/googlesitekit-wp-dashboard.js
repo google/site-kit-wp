@@ -30,7 +30,7 @@ import { Component, render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import './components/data.js';
+import 'GoogleComponents/data';
 
 /**
  * Internal dependencies.

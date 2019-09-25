@@ -27,7 +27,7 @@ import { Suspense as ReactSuspense, lazy as ReactLazy } from 'react';
 /**
  * Internal dependencies
  */
-import './components/data.js';
+import 'GoogleComponents/data';
 
 /**
  * Internal dependencies.
