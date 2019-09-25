@@ -26,6 +26,7 @@ async function proceedToAdsenseSetup() {
 		expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up adsense/i } ),
 		page.waitForSelector( '.googlesitekit-setup-module--adsense' ),
 		page.waitForResponse( ( res ) => res.url().match( 'modules/adsense/data/accounts' ) ),
+		page.waitForResponse( ( res ) => res.url().match( 'modules/adsense/data/account-status' ) ),
 	] );
 }
 
@@ -137,7 +138,6 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 
-		await page.waitForResponse( ( res ) => res.url().match( 'modules/adsense/data/account-status' ) );
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /We’re getting your site ready for ads/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status/i } );
 
@@ -196,7 +196,6 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 
-		await page.waitForResponse( ( res ) => res.url().match( 'modules/adsense/data/account-status' ) );
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /We’re getting your site ready for ads/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status/i } );
 
@@ -269,7 +268,6 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 
-		await page.waitForResponse( ( res ) => res.url().match( 'modules/adsense/data/account-status' ) );
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Create your AdSense account/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__action button', { text: /Create AdSense Account/i } );
 
