@@ -39,7 +39,7 @@ describe( 'Site Kit admin bar component display', () => {
 	beforeEach( async () => {
 		mockBatchResponse = [];
 
-		await page.goto( createURL( '/hello-world' ), { waitUntil: 'domcontentloaded' } );
+		await page.goto( createURL( '/hello-world' ), { waitUntil: 'load' } );
 	} );
 
 	it( 'loads Analytics data when the module is active', async () => {

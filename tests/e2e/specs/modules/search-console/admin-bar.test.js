@@ -38,7 +38,7 @@ describe( 'Site Kit admin bar component display', () => {
 	beforeEach( async () => {
 		mockBatchResponse = [];
 
-		await page.goto( createURL( '/hello-world' ), { waitUntil: 'domcontentloaded' } );
+		await page.goto( createURL( '/hello-world' ), { waitUntil: 'load' } );
 	} );
 
 	it( 'loads when viewing the front end of a post with data in Search Console', async () => {
@@ -69,7 +69,7 @@ describe( 'Site Kit admin bar component display', () => {
 		// Navigate to edit view for this post
 		await Promise.all( [
 			expect( page ).toClick( '#wp-admin-bar-edit a', { text: /edit post/i } ),
-			page.waitForNavigation( { waitUntil: 'domcontentloaded' } ),
+			page.waitForNavigation( { waitUntil: 'load' } ),
 		] );
 
 		// We're now in Gutenberg.
