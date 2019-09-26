@@ -204,6 +204,10 @@ beforeAll( async () => {
 	optOutOfEventTracking();
 	enablePageDialogAccept();
 	observeConsoleLogging();
+	// Log uncaught exceptions on the client.
+	// eslint-disable-next-line no-console
+	page.on( 'pageerror', console.error );
+
 	if ( '1' === process.env.DEBUG_REST ) {
 		page.on( 'request', observeRestRequest );
 		page.on( 'response', observeRestResponse );
