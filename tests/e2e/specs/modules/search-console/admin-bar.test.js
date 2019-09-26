@@ -7,7 +7,6 @@ import { activatePlugin, createURL } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
-	setupAnalytics,
 	setSiteVerification,
 	setSearchConsoleProperty,
 	useRequestInterception,
@@ -42,7 +41,7 @@ describe( 'Site Kit admin bar component display', () => {
 		await page.goto( createURL( '/hello-world' ), { waitUntil: 'domcontentloaded' } );
 	} );
 
-	it( 'loads when viewing the front end of a post with data in Search Console (no Analytics)', async () => {
+	it( 'loads when viewing the front end of a post with data in Search Console', async () => {
 		const { searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = searchConsole;
@@ -62,7 +61,7 @@ describe( 'Site Kit admin bar component display', () => {
 		await adminBarApp.dispose();
 	} );
 
-	it( 'loads when editing a post with data in Search Console (no Analytics)', async () => {
+	it( 'loads when editing a post with data in Search Console', async () => {
 		const { searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = searchConsole;
@@ -93,27 +92,6 @@ describe( 'Site Kit admin bar component display', () => {
 		await expect( adminBarApp ).toMatchElement( '.googlesitekit-cta-link', { text: /Set up analytics/i } );
 		// More details link
 		await expect( adminBarApp ).toMatchElement( '.googlesitekit-cta-link', { text: /More details/i } );
-		await adminBarApp.dispose();
-	} );
-
-	it( 'loads Analytics data when the module is active', async () => {
-		const { analytics, searchConsole } = adminBarMockResponses;
-		// Data is requested when the Admin Bar app loads on first hover
-		mockBatchResponse = Object.assign( {}, analytics, searchConsole );
-
-		await setupAnalytics();
-		await page.reload();
-
-		await Promise.all( [
-			page.hover( '#wp-admin-bar-google-site-kit' ),
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
-		] );
-
-		const adminBarApp = await page.$( '#js-googlesitekit-adminbar' );
-		await expect( adminBarApp ).toMatchElement( '.googlesitekit-data-block__title', { text: /total clicks/i } );
-		await expect( adminBarApp ).toMatchElement( '.googlesitekit-data-block__title', { text: /total impressions/i } );
-		await expect( adminBarApp ).toMatchElement( '.googlesitekit-data-block__title', { text: /total users/i } );
-		await expect( adminBarApp ).toMatchElement( '.googlesitekit-data-block__title', { text: /total sessions/i } );
 		await adminBarApp.dispose();
 	} );
 
