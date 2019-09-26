@@ -103,8 +103,12 @@ describe( 'Site Kit admin bar component display', () => {
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),
 			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
-			page.waitForSelector( '#js-googlesitekit-adminbar .googlesitekit-cta-link' ),
 		] );
+
+		await expect( page ).toMatchElement(
+			'#js-googlesitekit-adminbar .googlesitekit-cta-link',
+			{ text: /More details/i, visible: true, timeout: 5000 }
+		);
 
 		// Follow more details
 		await Promise.all( [
