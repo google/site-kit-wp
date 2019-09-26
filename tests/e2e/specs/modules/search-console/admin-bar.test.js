@@ -116,4 +116,25 @@ describe( 'Site Kit admin bar component display', () => {
 		await expect( adminBarApp ).toMatchElement( '.googlesitekit-data-block__title', { text: /total sessions/i } );
 		await adminBarApp.dispose();
 	} );
+
+	it( 'links "More details" to the dashboard details view for the current post', async () => {
+		const { searchConsole } = adminBarMockResponses;
+		// Data is requested when the Admin Bar app loads on first hover
+		mockBatchResponse = searchConsole;
+
+		await Promise.all( [
+			page.hover( '#wp-admin-bar-google-site-kit' ),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
+			page.waitForSelector( '#js-googlesitekit-adminbar .googlesitekit-cta-link' ),
+		] );
+
+		// Follow more details
+		await Promise.all( [
+			expect( page ).toClick( '#js-googlesitekit-adminbar .googlesitekit-cta-link', { text: /More details/i } ),
+			// Waiting for navigation here does not work as expected as this is a JS navigation.
+			page.waitForSelector( '.googlesitekit-page-header__title' ),
+		] );
+
+		await expect( page ).toMatchElement( '.googlesitekit-page-header__title', { title: /Detailed Page Stats/i } );
+	} );
 } );
