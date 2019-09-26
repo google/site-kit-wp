@@ -42,11 +42,6 @@ class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 			return null;
 		}
 
-		const headers = [
-			__( 'URL', 'google-site-kit' ),
-			__( 'Pageviews', 'google-site-kit' ),
-		];
-
 		const links = [];
 		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
 			const [ title, url ] = row.dimensions;
@@ -66,7 +61,7 @@ class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 			showUrls: true,
 		};
 
-		const dataTable = getDataTableFromData( dataMapped, headers, options );
+		const dataTable = getDataTableFromData( dataMapped, [], options );
 
 		return (
 			<div className="googlesitekit-search-console-widget">
