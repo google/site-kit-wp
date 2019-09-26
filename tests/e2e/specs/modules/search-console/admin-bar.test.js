@@ -16,7 +16,7 @@ import * as adminBarMockResponses from './fixtures/admin-bar';
 
 let mockBatchResponse;
 
-describe( 'admin bar display on the front end and in the post editor', () => {
+describe( 'Site Kit admin bar component display', () => {
 	beforeAll( async () => {
 		await activatePlugin( 'e2e-tests-auth-plugin' );
 		await activatePlugin( 'e2e-tests-admin-bar-visibility' );
@@ -42,7 +42,7 @@ describe( 'admin bar display on the front end and in the post editor', () => {
 		await page.goto( createURL( '/hello-world/' ), { waitUntil: 'domcontentloaded' } );
 	} );
 
-	it( 'loads the Site Kit admin bar component when viewing the front end of a post with data in Search Console (no Analytics)', async () => {
+	it( 'loads when viewing the front end of a post with data in Search Console (no Analytics)', async () => {
 		const { searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = searchConsole;
@@ -62,7 +62,7 @@ describe( 'admin bar display on the front end and in the post editor', () => {
 		await adminBarApp.dispose();
 	} );
 
-	it( 'loads the Site Kit admin bar component when editing a post with data in Search Console (no Analytics)', async () => {
+	it( 'loads when editing a post with data in Search Console (no Analytics)', async () => {
 		const { searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = searchConsole;
@@ -96,7 +96,7 @@ describe( 'admin bar display on the front end and in the post editor', () => {
 		await adminBarApp.dispose();
 	} );
 
-	it( 'the Site Kit admin bar component also loads Analytics data when the module is active', async () => {
+	it( 'loads Analytics data when the module is active', async () => {
 		const { analytics, searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = Object.assign( {}, analytics, searchConsole );
