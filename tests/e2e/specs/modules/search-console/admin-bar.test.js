@@ -11,7 +11,6 @@ import {
 	setSiteVerification,
 	setSearchConsoleProperty,
 	useRequestInterception,
-	wpApiFetch,
 } from '../../../utils';
 import * as adminBarMockResponses from './fixtures/admin-bar';
 
