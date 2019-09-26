@@ -80,6 +80,13 @@ describe( 'admin bar display on the front end and in the post editor', () => {
 			page.hover( '#wp-admin-bar-google-site-kit' ),
 			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
 		] );
+
+		await page.evaluate( () => {
+			// Temporarily replace XMLHttpRequest.send with a no-op to prevent a DOMException on navigation.
+			// https://github.com/WordPress/gutenberg/blob/d635ca96f8c5dbdc993f30b1f3a3a0b4359e3e2e/packages/editor/src/components/post-locked-modal/index.js#L114
+			window.XMLHttpRequest.prototype.send = function() {};
+		} );
+
 		const adminBarApp = await page.$( '#js-googlesitekit-adminbar' );
 		await expect( adminBarApp ).toMatchElement( '.googlesitekit-data-block__title', { text: /total clicks/i } );
 		await expect( adminBarApp ).toMatchElement( '.googlesitekit-data-block__title', { text: /total impressions/i } );
