@@ -26,8 +26,8 @@ export async function deactivateUtilityPlugins() {
 	}
 
 	// Check the boxes of plugins to deactivate.
-	await page.$$eval( '.active[data-plugin^="google-site-kit-test-plugins/"] input[type="checkbox"]', ( checkbox ) => {
-		checkbox.checked = true;
+	await page.$$eval( '.active[data-plugin^="google-site-kit-test-plugins/"] input[type="checkbox"]', ( checkboxes ) => {
+		checkboxes.forEach( ( checkbox ) => checkbox.checked = true );
 	} );
 
 	// Bulk deactivate
