@@ -211,7 +211,7 @@ final class Context {
 
 		// Handle the home page URL.
 		if ( is_front_page() ) {
-			return $this->get_reference_site_url();
+			return user_trailingslashit( $this->get_reference_site_url() );
 		} elseif ( is_home() ) {
 			return $this->get_reference_permalink( get_option( 'page_for_posts' ) );
 		}
