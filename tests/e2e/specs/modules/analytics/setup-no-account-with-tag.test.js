@@ -7,7 +7,7 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
-	deactivateAllOtherPlugins,
+	deactivateUtilityPlugins,
 	resetSiteKit,
 	setAnalyticsExistingPropertyId,
 	setAuthToken,
@@ -66,7 +66,7 @@ describe( 'setting up the Analytics module with no existing account and with an 
 	} );
 
 	afterEach( async () => {
-		await deactivateAllOtherPlugins();
+		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
 

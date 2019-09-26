@@ -7,7 +7,7 @@ import { createURL, activatePlugin, visitAdminPage } from '@wordpress/e2e-test-u
  * Internal dependencies
  */
 import {
-	deactivateAllOtherPlugins,
+	deactivateUtilityPlugins,
 	resetSiteKit,
 	setAuthToken,
 	setClientConfig,
@@ -89,7 +89,7 @@ describe( 'setting up the AdSense module', () => {
 
 	afterEach( async () => {
 		Object.keys( datapointHandlers ).forEach( ( key ) => datapointHandlers[ key ] = defaultHandler );
-		await deactivateAllOtherPlugins();
+		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
 

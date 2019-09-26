@@ -7,7 +7,7 @@ import { activatePlugin, visitAdminPage, createURL } from '@wordpress/e2e-test-u
  * Internal dependencies
  */
 import {
-	deactivateAllOtherPlugins,
+	deactivateUtilityPlugins,
 	resetSiteKit,
 	useRequestInterception,
 	setSearchConsoleProperty,
@@ -49,7 +49,7 @@ describe( 'setting up the TagManager module with no existing account', () => {
 	} );
 
 	afterEach( async () => {
-		await deactivateAllOtherPlugins();
+		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
 

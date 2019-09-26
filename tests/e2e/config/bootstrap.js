@@ -18,7 +18,7 @@ import { getQueryArg } from '@wordpress/url';
  */
 import {
 	clearSessionStorage,
-	deactivateAllOtherPlugins,
+	deactivateUtilityPlugins,
 	resetSiteKit,
 } from '../utils';
 import {
@@ -214,7 +214,7 @@ beforeAll( async () => {
 	}
 	await setBrowserViewport( 'large' );
 
-	await deactivateAllOtherPlugins();
+	await deactivateUtilityPlugins();
 	await resetSiteKit();
 } );
 
@@ -225,7 +225,7 @@ afterEach( async () => {
 } );
 
 afterAll( async () => {
-	await deactivateAllOtherPlugins();
+	await deactivateUtilityPlugins();
 	await resetSiteKit();
 	removePageEvents();
 	await page.setRequestInterception( false );

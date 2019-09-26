@@ -7,7 +7,7 @@ import { visitAdminPage, activatePlugin } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
-	deactivateAllOtherPlugins,
+	deactivateUtilityPlugins,
 	pasteText,
 	resetSiteKit,
 	setSearchConsoleProperty,
@@ -22,7 +22,7 @@ describe( 'PageSpeed Insights Activation', () => {
 	} );
 
 	afterEach( async () => {
-		await deactivateAllOtherPlugins();
+		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
 
