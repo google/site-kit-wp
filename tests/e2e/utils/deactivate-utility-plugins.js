@@ -5,30 +5,30 @@
 import { switchUserToAdmin, visitAdminPage, switchUserToTest, isCurrentURL } from '@wordpress/e2e-test-utils';
 
 /**
- * Deactivate all plugins except Site Kit.
+ * Deactivate Site Kit utility plugins.
  */
-export async function deactivateAllOtherPlugins() {
+export async function deactivateUtilityPlugins() {
 	await switchUserToAdmin();
 
 	if ( ! isCurrentURL( 'wp-admin/plugins.php' ) ) {
 		await visitAdminPage( 'plugins.php' );
 	}
 
-	await page.waitForSelector( 'input[type="checkbox"][value="google-site-kit/google-site-kit.php"]' );
-	const activePlugins = await page.$$eval( '.active[data-plugin]', ( rows ) => {
+	await page.waitForSelector( '#wpfooter' );
+
+	const activeUtilities = await page.$$eval( '.active[data-plugin^="google-site-kit-test-plugins/"]', ( rows ) => {
 		return rows.map( ( row ) => row.dataset.plugin );
 	} );
 
 	// Bail if there are no plugins to deactivate
-	if ( 1 === activePlugins.length && 'google-site-kit/google-site-kit.php' === activePlugins[ 0 ] ) {
+	if ( ! activeUtilities.length ) {
 		return;
 	}
 
-	// Select all plugins
-	await page.click( '#cb-select-all-1' );
-
-	// Uncheck Site Kit
-	await page.click( 'input[type="checkbox"][value="google-site-kit/google-site-kit.php"]' );
+	// Check the boxes of plugins to deactivate.
+	await page.$$eval( '.active[data-plugin^="google-site-kit-test-plugins/"] input[type="checkbox"]', ( checkboxes ) => {
+		checkboxes.forEach( ( checkbox ) => checkbox.checked = true );
+	} );
 
 	// Bulk deactivate
 	await page.select( 'select#bulk-action-selector-bottom', 'deactivate-selected' );
