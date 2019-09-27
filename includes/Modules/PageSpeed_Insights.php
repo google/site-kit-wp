@@ -11,6 +11,8 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_With_Scopes;
+use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google_Client;
 use Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -22,7 +24,8 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class PageSpeed_Insights extends Module {
+final class PageSpeed_Insights extends Module implements Module_With_Scopes {
+	use Module_With_Scopes_Trait;
 
 	const OPTION = 'googlesitekit_pagespeed_insights_settings';
 
@@ -224,5 +227,17 @@ final class PageSpeed_Insights extends Module {
 		);
 
 		return $info;
+	}
+
+	/**
+	 * Gets required Google OAuth scopes for the module.
+	 *
+	 * @return array List of Google OAuth scopes.
+	 * @since 1.0.0
+	 */
+	public function get_scopes() {
+		return array(
+			'openid',
+		);
 	}
 }
