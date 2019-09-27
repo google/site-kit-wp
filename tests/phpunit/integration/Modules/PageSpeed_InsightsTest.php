@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Tests\TestCase;
@@ -21,12 +22,16 @@ use Google\Site_Kit\Tests\TestCase;
 class PageSpeed_InsightsTest extends TestCase {
 
 	public function test_is_connected() {
-		$pagespeed = new PageSpeed_Insights( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$authentication = new Authentication( $context );
+		$pagespeed      = new PageSpeed_Insights( $context );
 
 		$this->assertFalse( $pagespeed->is_connected() );
 
-		// The module is connected if the API key is truthy
-		add_filter( 'googlesitekit_api_key', '__return_true' );
+		// The module is connected if the user has granted the 'openid' oauth scope.
+		$authentication->get_oauth_client()->set_granted_scopes( array( 'foo-scope', 'openid', 'bar-scope' ) );
 
 		$this->assertTrue( $pagespeed->is_connected() );
 	}

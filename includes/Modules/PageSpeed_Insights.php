@@ -47,12 +47,11 @@ final class PageSpeed_Insights extends Module {
 	 * @return bool True if module is connected, false otherwise.
 	 */
 	public function is_connected() {
-		$api_key = $this->authentication->get_api_key_client()->get_api_key();
-		if ( empty( $api_key ) ) {
-			return false;
-		}
-
-		return parent::is_connected();
+		return in_array(
+			'openid',
+			$this->authentication->get_oauth_client()->get_granted_scopes(),
+			true
+		);
 	}
 
 	/**
