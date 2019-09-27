@@ -12,12 +12,8 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
 use Google_Client;
-use Google_Service;
-use Google_Service_Exception;
 use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use WP_Error;
-use Exception;
 
 /**
  * Class representing the PageSpeed Insights module.
