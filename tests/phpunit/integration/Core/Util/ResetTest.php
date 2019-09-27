@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\API_Key;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\First_Admin;
@@ -79,7 +78,6 @@ class ResetTest extends TestCase {
 			Activation::OPTION_SHOW_ACTIVATION_NOTICE,
 			AdSense::OPTION,
 			Analytics::OPTION,
-			API_Key::OPTION,
 			Credentials::OPTION,
 			First_Admin::OPTION,
 			GCP_Project::OPTION,
