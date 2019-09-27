@@ -518,6 +518,9 @@ final class OAuth_Client {
 				if ( ! is_string( $scope ) ) {
 					return false;
 				}
+				if ( in_array( $scope, OAuth_Client::get_must_use_scopes(), true ) ) {
+					return true;
+				}
 				return 0 === strpos( $scope, 'https://www.googleapis.com/auth/' );
 			}
 		);
