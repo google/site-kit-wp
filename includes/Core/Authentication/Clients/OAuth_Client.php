@@ -291,6 +291,7 @@ final class OAuth_Client {
 
 		// These are always required.
 		$default_scopes = array(
+			'openid',
 			'https://www.googleapis.com/auth/userinfo.profile',
 			'https://www.googleapis.com/auth/userinfo.email',
 		);
