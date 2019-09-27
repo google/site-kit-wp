@@ -193,7 +193,7 @@ final class PageSpeed_Insights extends Module {
 	 * @return Google_Client Google client instance.
 	 */
 	protected function setup_client() {
-		return $this->authentication->get_api_key_client()->get_client();
+		return $this->authentication->get_oauth_client()->get_client();
 	}
 
 	/**
