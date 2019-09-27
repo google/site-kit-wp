@@ -289,14 +289,22 @@ final class OAuth_Client {
 		 */
 		$scopes = (array) apply_filters( 'googlesitekit_auth_scopes', array() );
 
-		// These are always required.
-		$default_scopes = array(
+		return array_unique(
+			array_merge( self::get_must_use_scopes(), $scopes )
+		);
+	}
+
+	/**
+	 * Gets the list of scopes that are always required.
+	 *
+	 * @return array
+	 */
+	public static function get_must_use_scopes() {
+		return array(
 			'openid',
 			'https://www.googleapis.com/auth/userinfo.profile',
 			'https://www.googleapis.com/auth/userinfo.email',
 		);
-
-		return array_unique( array_merge( $default_scopes, $scopes ) );
 	}
 
 	/**
