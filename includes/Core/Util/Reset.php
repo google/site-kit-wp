@@ -21,7 +21,6 @@ use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_Tag;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
-use Google\Site_Kit\Core\Util\Activation;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
