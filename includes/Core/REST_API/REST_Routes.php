@@ -614,7 +614,7 @@ final class REST_Routes {
 							}
 
 							foreach ( $posts as $post ) {
-								$post->permalink = get_permalink( $post->ID );
+								$post->permalink = $this->context->get_reference_permalink( $post->ID );
 							}
 
 							return new WP_REST_Response( $posts );
