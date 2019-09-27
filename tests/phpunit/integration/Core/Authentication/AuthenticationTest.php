@@ -68,12 +68,10 @@ class AuthenticationTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'apikey',
 				'clientID',
 				'clientSecret',
 				'connectUrl',
 				'disconnectUrl',
-				'externalAPIKeyURL',
 				'externalCredentialsURL',
 				'projectId',
 				'projectUrl',
@@ -213,15 +211,6 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
-	public function test_api_key() {
-		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$this->assertInstanceOf(
-			'\Google\Site_Kit\Core\Authentication\API_Key',
-			$auth->api_key()
-		);
-	}
-
 	public function test_verification() {
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -246,15 +235,6 @@ class AuthenticationTest extends TestCase {
 		$this->assertInstanceOf(
 			'\Google\Site_Kit\Core\Authentication\Profile',
 			$auth->profile()
-		);
-	}
-
-	public function test_get_api_key_client() {
-		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$this->assertInstanceOf(
-			'\Google\Site_Kit\Core\Authentication\Clients\API_Key_Client',
-			$auth->get_api_key_client()
 		);
 	}
 
