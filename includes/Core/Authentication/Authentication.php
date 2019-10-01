@@ -187,8 +187,14 @@ final class Authentication {
 			'init',
 			function() {
 				$this->handle_oauth();
-			},
-			10
+			}
+		);
+
+		add_action(
+			'admin_init',
+			function() {
+				$this->handle_verification_token();
+			}
 		);
 
 		add_action(
@@ -425,11 +431,9 @@ final class Authentication {
 	}
 
 	/**
-	 * Handle OAuth process.
+	 * Handles receiving a temporary OAuth code.
 	 *
 	 * @since 1.0.0
-	 *
-	 * @return void
 	 */
 	private function handle_oauth() {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -502,6 +506,30 @@ final class Authentication {
 			header( 'Location: ' . filter_var( $auth_client->get_authentication_url( $redirect_url ), FILTER_SANITIZE_URL ) );
 			exit();
 		}
+	}
+
+	/**
+	 * Handles receiving a verification token for a user by the authentication proxy.
+	 *
+	 * @since 1.0.0
+	 */
+	private function handle_verification_token() {
+		if ( ! $this->using_proxy() ) {
+			return;
+		}
+
+		$verification_token = filter_input( INPUT_GET, 'googlesitekit_verification_token' );
+		if ( empty( $verification_token ) ) {
+			return;
+		}
+
+		$this->verification_tag->set( $verification_token );
+
+		$code = (string) filter_input( INPUT_GET, 'googlesitekit_code' );
+
+		$auth_client = $this->get_auth_client();
+		wp_safe_redirect( add_query_arg( 'verify', 'true', $auth_client->get_proxy_setup_url( $code ) ) );
+		exit;
 	}
 
 	/**
