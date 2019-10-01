@@ -35,6 +35,8 @@ final class OAuth_Client {
 	const OPTION_REDIRECT_URL            = 'googlesitekit_redirect_url';
 	const OPTION_AUTH_SCOPES             = 'googlesitekit_auth_scopes';
 	const OPTION_ERROR_CODE              = 'googlesitekit_error_code';
+	const OPTION_PROXY_NONCE             = 'googlesitekit_proxy_nonce';
+	const PROXY_URL                      = 'https://sitekit.withgoogle.com';
 
 	/**
 	 * Plugin context.
@@ -165,7 +167,11 @@ final class OAuth_Client {
 			return $this->google_client;
 		}
 
-		$this->google_client = new Google_Client();
+		if ( $this->using_proxy() ) {
+			$this->google_client = new Google_Proxy_Client();
+		} else {
+			$this->google_client = new Google_Client();
+		}
 
 		// Return unconfigured client if credentials not yet set.
 		$client_credentials = $this->get_client_credentials();
@@ -181,8 +187,6 @@ final class OAuth_Client {
 
 		// Offline access so we can access the refresh token even when the user is logged out.
 		$this->google_client->setAccessType( 'offline' );
-		$this->google_client->setApprovalPrompt( 'force' );
-		$this->google_client->setPrompt( 'consent' );
 
 		$this->google_client->setRedirectUri( $this->get_redirect_uri() );
 
@@ -197,11 +201,13 @@ final class OAuth_Client {
 		}
 
 		$token = array(
-			'access_token'  => $access_token,
-			'refresh_token' => $this->get_refresh_token(),
-			'expires_in'    => $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
-			'created'       => $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
+			'access_token' => $access_token,
+			'expires_in'   => $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
+			'created'      => $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
 		);
+		if ( ! $this->using_proxy() ) {
+			$token['refresh_token'] = $this->get_refresh_token();
+		}
 
 		$this->google_client->setAccessToken( $token );
 
@@ -219,11 +225,12 @@ final class OAuth_Client {
 	 * @since 1.0.0
 	 */
 	public function refresh_token() {
-		// Check for a valid stored refresh token. If it's been set, grab the authentication token.
-		$refresh_token = $this->get_refresh_token();
-
-		if ( empty( $refresh_token ) ) {
-			$this->user_options->set( self::OPTION_ERROR_CODE, 'refresh_token_not_exist' );
+		$refresh_token = '';
+		if ( ! $this->using_proxy() ) {
+			$refresh_token = $this->get_refresh_token();
+			if ( empty( $refresh_token ) ) {
+				$this->user_options->set( self::OPTION_ERROR_CODE, 'refresh_token_not_exist' );
+			}
 		}
 
 		// Stop if google_client not initialized yet.
@@ -474,6 +481,11 @@ final class OAuth_Client {
 		}
 
 		if ( ! empty( $authentication_token['error'] ) ) {
+			if ( $this->using_proxy() && ! empty( $authentication_token['code'] ) ) {
+				wp_safe_redirect( $this->get_proxy_setup_url( $authentication_token['code'] ) );
+				exit();
+			}
+
 			$this->user_options->set( self::OPTION_ERROR_CODE, $authentication_token['error'] );
 			wp_safe_redirect( admin_url() );
 			exit();
@@ -530,6 +542,81 @@ final class OAuth_Client {
 
 		wp_safe_redirect( $redirect_url );
 		exit();
+	}
+
+	/**
+	 * Determines whether the authentication proxy is used.
+	 *
+	 * In order to streamline the setup and authentication flow, the plugin uses a proxy mechanism based on an external
+	 * service. This can be overridden by providing actual GCP credentials with the {@see 'googlesitekit_oauth_secret'}
+	 * filter.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool True if proxy authentication is used, false otherwise.
+	 */
+	public function using_proxy() {
+		$credentials = $this->get_client_credentials();
+
+		// If no credentials yet, assume true.
+		if ( ! is_object( $credentials ) || empty( $credentials->web->client_id ) ) {
+			return true;
+		}
+
+		// If proxy credentials, return true.
+		if ( false !== strpos( $credentials->web->client_id, '.apps.sitekit.withgoogle.com' ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Returns the setup URL to the authentication proxy.
+	 *
+	 * @param string $code Optional. Temporary access code for an undelegated access token. Default empty string.
+	 * @return string URL to the setup page on the authentication proxy.
+	 */
+	public function get_proxy_setup_url( $code = '' ) {
+		$url = self::PROXY_URL . '/site-management/setup/';
+
+		$credentials = $this->get_client_credentials();
+
+		if ( ! is_object( $credentials ) || empty( $credentials->web->client_id ) ) {
+			$home_url           = home_url();
+			$home_url_no_scheme = str_replace( array( 'http://', 'https://' ), '', $home_url );
+
+			$rest_root = str_replace( array( 'http://', 'https://' ), '', rest_url() );
+			$rest_root = str_replace( $home_url_no_scheme, '', $rest_root );
+
+			$admin_root = str_replace( array( 'http://', 'https://' ), '', admin_url() );
+			$admin_root = str_replace( $home_url_no_scheme, '', $admin_root );
+
+			$nonce = get_option( self::OPTION_PROXY_NONCE, '' );
+			if ( empty( $nonce ) ) {
+				$nonce = wp_create_nonce( 'googlesitekit_proxy' );
+				update_option( self::OPTION_PROXY_NONCE, $nonce );
+			}
+
+			return add_query_arg(
+				array(
+					'nonce'      => $nonce,
+					'name'       => get_bloginfo( 'name' ),
+					'url'        => $home_url,
+					'rest_root'  => $rest_root,
+					'admin_root' => $admin_root,
+				),
+				$url
+			);
+		}
+
+		return add_query_arg(
+			array(
+				'site_id' => $credentials->web->client_id,
+				'code'    => $code,
+			),
+			$url
+		);
 	}
 
 	/**
