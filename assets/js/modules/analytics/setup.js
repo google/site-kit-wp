@@ -92,7 +92,7 @@ class AnalyticsSetup extends Component {
 		if ( existingTagProperty && existingTagProperty.length ) {
 			// Verify the user has access to existing tag if found. If no access request will return 403 error and catch err.
 			try {
-				const existingTagData = await data.get( TYPE_MODULES, 'analytics', 'tag-permission', { tag: existingTagProperty }, false );
+				const existingTagData = await data.get( TYPE_MODULES, 'analytics', 'tag-permission', { tag: existingTagProperty } );
 				await this.getAccounts( existingTagData );
 			} catch ( err ) {
 				this.setState(
@@ -257,7 +257,7 @@ class AnalyticsSetup extends Component {
 				existingPropertyId: existingTagData.propertyId,
 			} : {};
 
-			const responseData = await data.get( TYPE_MODULES, 'analytics', 'accounts-properties-profiles', queryArgs, false );
+			const responseData = await data.get( TYPE_MODULES, 'analytics', 'accounts-properties-profiles', queryArgs );
 			if ( 0 === responseData.accounts.length ) {
 				newState = {
 					...newState,
