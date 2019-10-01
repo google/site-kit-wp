@@ -69,6 +69,38 @@ final class Google_Proxy_Client extends Google_Client {
 	}
 
 	/**
+	 * Revokes an OAuth2 access token using the authentication proxy.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string|array|null $token Optional. Access token. Default is the current one.
+	 * @return bool True on success, false on failure.
+	 */
+	public function revokeToken( $token = null ) {
+		if ( ! $token ) {
+			$token = $this->getAccessToken();
+		}
+		if ( is_array( $token ) ) {
+			$token = $token['access_token'];
+		}
+
+		$response = wp_remote_get(
+			add_query_arg(
+				array(
+					'client_id' => $this->getClientId(),
+					'token'     => $token,
+				),
+				self::OAUTH2_REVOKE_URI
+			)
+		);
+		if ( is_wp_error( $response ) ) {
+			return false;
+		}
+
+		return 200 === (int) wp_remote_retrieve_response_code( $response );
+	}
+
+	/**
 	 * Creates an auth URL for the authentication proxy.
 	 *
 	 * @since 1.0.0
