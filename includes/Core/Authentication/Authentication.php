@@ -197,6 +197,19 @@ final class Authentication {
 			}
 		);
 
+		// TODO: Remove this after testing.
+		add_action(
+			'admin_notices',
+			function() {
+				$url = $this->get_auth_client()->get_proxy_setup_url();
+				?>
+				<div class="notice notice-info">
+					<p><strong>TEMPORARY:</strong> <a href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Go to proxy setup', 'google-site-kit' ); ?></a></p>
+				</div>
+				<?php
+			}
+		);
+
 		add_action(
 			'wp_login',
 			function() {
