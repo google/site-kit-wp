@@ -53,7 +53,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					return;
 				}
 
-				$access_token = $this->get_access_token();
+				$access_token = $auth_client->get_access_token();
 				if ( empty( $access_token ) ) {
 					return;
 				}
