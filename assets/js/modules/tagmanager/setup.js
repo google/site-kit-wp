@@ -379,12 +379,16 @@ class TagmanagerSetup extends Component {
 						onEnhancedChange={ this.handleAccountChange }
 						outlined
 					>
-						{ accounts.map( ( account ) =>
-							<Option
-								key={ account.accountId }
-								value={ account.accountId }>
-								{ account.name }
-							</Option> ) }
+						{ accounts.map( ( account ) => {
+							window.console.log( 'account', account );
+							return (
+								<Option
+									key={ account.accountId }
+									value={ account.accountId }>
+									{ account.name }
+								</Option>
+							);
+						} ) }
 					</Select>
 
 					{ containersLoading ? ( <ProgressBar small /> ) : (
@@ -396,16 +400,20 @@ class TagmanagerSetup extends Component {
 							onEnhancedChange={ this.handleContainerChange }
 							outlined
 						>
-							{ containers.map( ( container ) =>
-								<Option
-									key={ container.containerId }
-									value={ container.publicId }>
-									{
-										0 === container.publicId ?
-											__( 'Set up a new container', 'google-site-kit' ) :
-											container.publicId
-									}
-								</Option> ) }
+							{ containers.map( ( container ) => {
+								window.console.log( 'container', container );
+								return (
+									<Option
+										key={ container.containerId }
+										value={ container.publicId }>
+										{
+											0 === container.publicId ?
+												__( 'Set up a new container', 'google-site-kit' ) :
+												container.publicId
+										}
+									</Option>
+								);
+							} ) }
 						</Select>
 					) }
 				</div>

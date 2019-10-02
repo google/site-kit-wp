@@ -22,13 +22,14 @@
 import PropTypes from 'prop-types';
 import Link from 'GoogleComponents/link';
 import Error from 'GoogleComponents/notifications/error';
+import ProgressBar from 'GoogleComponents/progress-bar';
 
-const { Component } = wp.element;
+const { Component, Fragment } = wp.element;
 const { __, sprintf } = wp.i18n;
 
 class AdSenseInProcessStatus extends Component {
 	render() {
-		const { status } = this.props;
+		const { ctaLink, ctaLinkText, header, incomplete, loadingMessage, subHeader, required } = this.props;
 		const { siteURL } = googlesitekit.admin;
 		const siteURLURL = new URL( siteURL );
 		const adsenseURL = `https://www.google.com/adsense/new/sites?url=${ siteURLURL.hostname }&source=site-kit`;
@@ -49,93 +50,55 @@ class AdSenseInProcessStatus extends Component {
 			},
 		];
 
-		const headerList = {
-			incomplete: __( 'We’re getting your site ready for ads', 'google-site-kit' ),
-			requiredAction: __( 'Your site isn’t ready to show ads yet', 'google-site-kit' ),
-			adsDisplayPending: __( 'We’re getting your site ready for ads', 'google-site-kit' ),
-		};
-
-		const subHeaderList = {
-			incomplete: __(
-				'AdSense is reviewing your site. Meanwhile, make sure you’ve completed these steps in AdSense.',
-				'google-site-kit'
-			),
-			requiredAction: __(
-				'You need to fix some things before we can connect Site Kit to your AdSense account.',
-				'google-site-kit'
-			),
-			adsDisplayPending: __(
-				'This usually takes less than a day, but it can sometimes take a bit longer. We’ll let you know when everything’s ready.',
-				'google-site-kit'
-			),
-		};
-
-		const header = (
-			<h3 className="
-				googlesitekit-heading-4
-				googlesitekit-setup-module__title
-			">
-				{ headerList[ status ] }
-			</h3>
-		);
-
-		const subHeader = (
-			<p>
-				{ subHeaderList[ status ] }
-			</p>
-		);
-
-		const actionList = 'incomplete' === status && (
-			<div className="googlesitekit-setup-module__list-wrapper">
-				<ol className="googlesitekit-setup-module__list">
-					{ actionableItems.map( ( item ) => (
-						<li
-							className="googlesitekit-setup-module__list-item"
-							key={ item.id }
-						>
-							{ item.text } <Link href={ item.linkURL } external inherit>
-								{ item.linkText }
-							</Link>
-						</li>
-					) ) }
-				</ol>
-			</div>
-		);
-
-		const ctaList = {
-			incomplete: null,
-
-			requiredAction: (
-				<Link className="googlesitekit-setup-module__cta-link" href={ adsenseURL } external>
-					{ __( 'Go to AdSense to find out how to fix the issue', 'google-site-kit' ) }
-				</Link>
-			),
-
-			adsDisplayPending: (
-				<Link className="googlesitekit-setup-module__cta-link" href={ adsenseURL } external>
-					{ __( 'Go to your AdSense account to check on your site’s status', 'google-site-kit' ) }
-				</Link>
-			),
-		};
-
-		const cta = (
-			<div className="googlesitekit-setup-module__cta">
-				{ ctaList[ status ] }
-			</div>
-		);
-
 		return (
 			<div className="googlesitekit-setup-module
 				googlesitekit-setup-module--adsense">
-				{ 'required' === status && (
-					<Error />
+				{ required && <Error /> }
+
+				{ loadingMessage && (
+					<Fragment>
+						{ loadingMessage }
+						<ProgressBar />
+					</Fragment>
 				) }
 
-				{ header }
-				{ subHeader }
+				{ header && (
+					<h3 className="
+						googlesitekit-heading-4
+						googlesitekit-setup-module__title
+					">
+						{ header }
+					</h3> ) }
+				{ subHeader && <p>{ subHeader }</p> }
 
-				{ actionList }
-				{ cta }
+				{ incomplete && (
+					<div className="googlesitekit-setup-module__list-wrapper">
+						<ol className="googlesitekit-setup-module__list">
+							{ actionableItems.map( ( item ) => (
+								<li
+									className="googlesitekit-setup-module__list-item"
+									key={ item.id }
+								>
+									{ item.text } <Link href={ item.linkURL } external inherit>
+										{ item.linkText }
+									</Link>
+								</li>
+							) ) }
+						</ol>
+					</div>
+				) }
+
+				{ ctaLink && ctaLinkText && (
+					<div className="googlesitekit-setup-module__cta">
+						<Link
+							className="googlesitekit-setup-module__cta-link"
+							href={ ctaLink }
+							external
+						>
+							{ ctaLinkText }
+						</Link>
+					</div>
+				) }
 			</div>
 		);
 	}
