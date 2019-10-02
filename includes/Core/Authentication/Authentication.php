@@ -201,7 +201,7 @@ final class Authentication {
 		add_action(
 			'admin_notices',
 			function() {
-				$url = $this->get_auth_client()->get_proxy_setup_url();
+				$url = $this->get_oauth_client()->get_proxy_setup_url();
 				?>
 				<div class="notice notice-info">
 					<p><strong>TEMPORARY:</strong> <a href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Go to proxy setup', 'google-site-kit' ); ?></a></p>
@@ -527,7 +527,8 @@ final class Authentication {
 	 * @since 1.0.0
 	 */
 	private function handle_verification_token() {
-		if ( ! $this->using_proxy() ) {
+		$auth_client = $this->get_oauth_client();
+		if ( ! $auth_client->using_proxy() ) {
 			return;
 		}
 
@@ -540,7 +541,6 @@ final class Authentication {
 
 		$code = (string) filter_input( INPUT_GET, 'googlesitekit_code' );
 
-		$auth_client = $this->get_auth_client();
 		wp_safe_redirect( add_query_arg( 'verify', 'true', $auth_client->get_proxy_setup_url( $code ) ) );
 		exit;
 	}

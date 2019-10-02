@@ -48,7 +48,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		add_action(
 			'admin_init',
 			function() {
-				$auth_client = $this->authentication->get_auth_client();
+				$auth_client = $this->authentication->get_oauth_client();
 				if ( ! $auth_client->using_proxy() ) {
 					return;
 				}

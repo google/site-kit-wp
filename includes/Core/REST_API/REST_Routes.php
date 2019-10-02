@@ -585,7 +585,7 @@ final class REST_Routes {
 					array(
 						'methods'  => WP_REST_Server::CREATABLE,
 						'callback' => function( WP_REST_Request $request ) {
-							$auth_client = $this->authentication->get_auth_client();
+							$auth_client = $this->authentication->get_oauth_client();
 							if ( ! $auth_client->using_proxy() ) {
 								return new WP_Error( 'invalid_authentication_mode', __( 'Invalid authentication mode.', 'google-site-kit' ), array( 'status' => 500 ) );
 							}
