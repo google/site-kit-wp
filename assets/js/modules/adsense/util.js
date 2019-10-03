@@ -20,7 +20,7 @@
  * External dependencies
  */
 import data, { TYPE_MODULES } from 'GoogleComponents/data';
-// import { getSiteKitAdminURL } from 'GoogleUtil';
+import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 
 /**
  * Internal dependencies
@@ -87,8 +87,10 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 
 				if ( ! matches || 0 === matches.length ) {
 					accountStatus = 'account-pending-review';
+					sendAnalyticsTrackingEvent( 'adsense_setup', 'adsense_account_pending', 'accountPendingReview status account-pending-review' );
 				} else {
 					id = matches[ 0 ].id;
+					sendAnalyticsTrackingEvent( 'adsense_setup', 'adsense_account_detected' );
 				}
 			}
 		}
@@ -115,7 +117,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 				 * There is an AdSense account, it is disapproved, suspended, terminated etc.
 				 */
 				if ( 'disapprovedAccount' === reason ) {
-					accountStatus = 'account-disapproved';
+					accountStatus = 'disapproved-account';
 				} else if ( existingTag ) {
 					// There is no AdSense account, there is an existing tag.
 					accountStatus = 'no-account-tag-found';
@@ -135,6 +137,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 
 			if ( find( alertsResults, { type: 'GRAYLISTED_PUBLISHER' } ) ) {
 				accountStatus = 'ads-display-pending';
+				sendAnalyticsTrackingEvent( 'adsense_setup', 'adsense_account_pending', 'accountPendingReview status ads-display-pending' );
 			} else {
 				// Attempt to retrieve and save the client id.
 				const clientResults = await data.get( TYPE_MODULES, 'adsense', 'clients' ).then( ( res ) => res ).catch( ( e ) => e );
@@ -161,6 +164,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 						 * The 'ads-display-pending' state shows the AdSenseInProcessStatus component.
 						 */
 						accountStatus = 'ads-display-pending';
+						sendAnalyticsTrackingEvent( 'adsense_setup', 'adsense_account_pending', 'accountPendingReview status ads-display-pending' );
 					}
 				} else {
 					statusUpdateCallback( __( 'Looking for AdSense client…', 'google-site-kit' ) );
@@ -175,6 +179,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 						 * The 'account-required-action' state shows the AdSenseInProcessStatus component.
 						 */
 						accountStatus = 'account-required-action';
+						sendAnalyticsTrackingEvent( 'adsense_setup', 'adsense_required_action', 'accountRequiredAction status' );
 					} else if ( item ) {
 						clientId = item.id;
 
@@ -197,10 +202,12 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 						// addition is pending.
 						if ( 0 === urlchannels.length ) {
 							accountStatus = 'ads-display-pending';
+							sendAnalyticsTrackingEvent( 'adsense_setup', 'adsense_account_pending', 'accountPendingReview status ads-display-pending' );
 						} else if ( ! matches || 0 === matches.length ) {
 							// No URL matching the site URL is found in the account,
 							// the account is still pending.
 							accountStatus = 'account-pending-review';
+							sendAnalyticsTrackingEvent( 'adsense_setup', 'adsense_account_pending', 'accountPendingReview status account-pending-review' );
 						} else if ( existingTag && clientId === existingTag ) {
 							// AdSense existing tag id matches detected client id.
 							/**
@@ -209,6 +216,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 							 * Existing tag detected, matching client id.
 							 */
 							accountStatus = 'account-connected';
+							sendAnalyticsTrackingEvent( 'adsense_setup', 'adsense_account_connected', 'existing_matching_tag' );
 						} else if ( existingTag && clientId !== existingTag ) {
 							/**
 							 * No error, matched domain, account is connected.
@@ -216,6 +224,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 							 * Existing tag detected, non-matching client id.
 							 */
 							accountStatus = 'account-connected-nonmatching';
+							sendAnalyticsTrackingEvent( 'adsense_setup', 'adsense_account_connected', 'existing_non_matching_tag' );
 						} else {
 							/**
 							 * No error, matched domain, account is connected.
@@ -224,6 +233,8 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 
 							// Send a callback to set the connection status.
 							statusUpdateCallback( __( 'Connecting…', 'google-site-kit' ) );
+
+							sendAnalyticsTrackingEvent( 'adsense_setup', 'adsense_account_connected' );
 
 							// Save the publisher clientId: AdSense setup is complete!
 							await data.set( TYPE_MODULES, 'adsense', 'setup-complete', { clientId } ).then( ( res ) => res ).catch( ( e ) => e );

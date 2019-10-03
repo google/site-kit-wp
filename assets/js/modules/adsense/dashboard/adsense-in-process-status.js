@@ -29,18 +29,25 @@ const { __, sprintf } = wp.i18n;
 
 class AdSenseInProcessStatus extends Component {
 	render() {
-		const { ctaLink, ctaLinkText, header, incomplete, loadingMessage, subHeader, required } = this.props;
-		const { siteURL } = googlesitekit.admin;
-		const siteURLURL = new URL( siteURL );
-		const adsenseURL = `https://www.google.com/adsense/new/sites?url=${ siteURLURL.hostname }&source=site-kit`;
+		const {
+			ctaLink,
+			ctaLinkText,
+			header,
+			incomplete,
+			loadingMessage,
+			subHeader,
+			required,
+		} = this.props;
+		const siteUrl = new URL( googlesitekit.admin.siteURL );
+		const adsenseUrl = `https://www.google.com/adsense/new/sites?url=${ siteUrl.hostname }&source=site-kit`;
 		const actionableItems = [
 			{
 				id: 1,
 
 				/* translators: %s: Site URL */
-				text: sprintf( __( 'Added your site %s in ', 'google-site-kit' ), siteURLURL.hostname ),
+				text: sprintf( __( 'Added your site %s in ', 'google-site-kit' ), siteUrl.hostname ),
 				linkText: __( 'Sites', 'google-site-kit' ),
-				linkURL: adsenseURL,
+				linkURL: adsenseUrl,
 			},
 			{
 				id: 2,

@@ -53,8 +53,6 @@ class AdSenseSetupInstructions extends Component {
 			profile,
 			ctaLinkText,
 			ctaLink,
-			ctaTarget,
-			buttonLink,
 			footerText,
 			footerAppendedText,
 			footerCTA,
@@ -133,7 +131,7 @@ class AdSenseSetupInstructions extends Component {
 					}
 
 					<div className="googlesitekit-setup-module__action">
-						{ buttonLink ?
+						{ 'account-connected' === accountStatus && clientId &&
 							<Fragment>
 								<Button
 									disabled={ isSaving }
@@ -144,35 +142,33 @@ class AdSenseSetupInstructions extends Component {
 												tracking.eventName
 											);
 										}
-										if ( 'account-connected' === accountStatus && clientId ) {
-											this.setState( { isSaving: true } );
-											const enableAutoAds = document.getElementById( 'enableAutoAds' );
-											const useSnippet = enableAutoAds && enableAutoAds.checked;
+										this.setState( { isSaving: true } );
+										const enableAutoAds = document.getElementById( 'enableAutoAds' );
+										const useSnippet = enableAutoAds && enableAutoAds.checked;
 
-											// Save the publisher clientId: AdSense setup is complete!
-											data.set( TYPE_MODULES, 'adsense', 'setup-complete', { clientId, useSnippet } ).then( () => {
-												document.location = ctaLink;
-											} ).catch( () => {
-												this.setState( { isSaving: false } );
-											} );
-										} else {
-											const target = ctaTarget || '_self';
-											window.open( ctaLink, target );
-										}
+										// Save the publisher clientId: AdSense setup is complete!
+										data.set( TYPE_MODULES, 'adsense', 'setup-complete', { clientId, useSnippet } ).then( () => {
+											document.location = ctaLink;
+										} ).catch( () => {
+											this.setState( { isSaving: false } );
+										} );
 									} }
 								>
 									{ ctaLinkText }
 								</Button>
 								<Spinner isSaving={ isSaving } />
-							</Fragment> :
+							</Fragment>
+						}
+						{ ( ! 'account-connected' === accountStatus || ! clientId ) && (
 							<Link
+								className="googlesitekit-setup-module__cta-link"
 								external
 								inherit
 								href={ ctaLink }
 							>
 								{ ctaLinkText }
 							</Link>
-						}
+						) }
 						{
 							continueAction &&
 							<div className="googlesitekit-setup-module__sub-action">

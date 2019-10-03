@@ -28,8 +28,8 @@ import AdSenseSetupInstructions from '../setup/adsense-setup-instructions';
 import AdSenseInProcessStatus from './adsense-in-process-status';
 import { getExistingTag, getReAuthUrl, getSiteKitAdminURL } from 'GoogleUtil';
 import { getAdSenseAccountStatus } from '../util';
+import { useEffect, useState } from 'GoogleUtil/react-features';
 
-const { useEffect, useState } = wp.element;
 const { __ } = wp.i18n;
 
 const propsFromAccountStatus = ( accountStatus, existingTag ) => {
@@ -37,22 +37,17 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 	 * Defines the account status variables.
 	 */
 	let accountTagMatch = false;
-	let buttonLink = false;
 	const clientId = false;
 	let continueAction = false;
 	let ctaLink;
 	let ctaLinkText;
-	let ctaTarget = false;
 	let footerAppendedText;
 	let footerCTA;
 	let footerCTALink;
 	let footerText;
-	// const helpLink;
-	// const helpLinkText;
 	let icon;
 	let incomplete = false;
 	let issue;
-	// const notice;
 	let profile = false;
 	let required = false;
 	const setupComplete = false;
@@ -68,6 +63,7 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 		'googlesitekit-module-adsense',
 		{}
 	);
+	const siteUrl = new URL( googlesitekit.admin.siteURL );
 
 	switch ( accountStatus ) {
 		case 'account-connected':
@@ -78,7 +74,6 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 				statusMessage = __( 'This means Google will automatically place ads for you in all the best places.', 'google-site-kit' );
 				ctaLinkText = __( 'Continue', 'google-site-kit' );
 				ctaLink = moduleURL;
-				buttonLink = true;
 				accountTagMatch = true;
 				switchLabel = __( 'Let Site Kit place code on your site', 'google-site-kit' );
 				switchOffMessage = __( 'If you don’t let Site Kit place the code you may not get the best ads experience. You can set this up later on the Site Kit settings page.', 'google-site-kit' );
@@ -90,7 +85,6 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 				statusMessage = __( 'Site Kit will place AdSense code on your site to connect your site to AdSense and help you get the most out of ads. This means Google will automatically place ads for you in all the best places.', 'google-site-kit' );
 				ctaLinkText = __( 'Continue', 'google-site-kit' );
 				ctaLink = moduleURL;
-				buttonLink = true;
 				tracking = {
 					eventCategory: 'adsense_setup',
 					eventName: 'complete_adsense_setup',
@@ -107,7 +101,6 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 			profile = false;
 			ctaLinkText = __( 'Switch Google account', 'google-site-kit' );
 			ctaLink = getReAuthUrl( 'adsense', true );
-			buttonLink = true;
 			continueAction = {
 				accountStatus: 'account-connected',
 				continueText: __( 'Continue anyway', 'google-site-kit' ),
@@ -122,13 +115,22 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 			};
 			break;
 		case 'ads-display-pending':
-			break;
-		case 'account-pending-review':
 			statusHeadline = __( 'We’re getting your site ready for ads', 'google-site-kit' );
 			statusMessage = __(
 				'This usually takes less than a day, but it can sometimes take a bit longer. We’ll let you know when everything’s ready.',
 				'google-site-kit'
 			);
+			ctaLinkText = __( 'Go to your AdSense account to check on your site’s status', 'google-site-kit' );
+			ctaLink = `https://www.google.com/adsense/new/sites?url=${ siteUrl.hostname }&source=site-kit`;
+			break;
+		case 'account-pending-review':
+			statusHeadline = __( 'We’re getting your site ready for ads', 'google-site-kit' );
+			statusMessage = __(
+				'AdSense is reviewing your site. Meanwhile, make sure you’ve completed these steps in AdSense.',
+				'google-site-kit'
+			);
+			ctaLinkText = __( 'Go to your AdSense account to check on your site’s status', 'google-site-kit' );
+			ctaLink = `https://www.google.com/adsense/new/sites?url=${ siteUrl.hostname }&source=site-kit`;
 			incomplete = true;
 			break;
 		case 'account-required-action':
@@ -154,8 +156,6 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 			profile = true;
 			ctaLinkText = __( 'Create AdSense Account', 'google-site-kit' );
 			ctaLink = signupURL;
-			ctaTarget = '_blank';
-			buttonLink = true;
 			footerText = __( 'Already have an AdSense account?', 'google-site-kit' );
 			footerAppendedText = __( 'to connect to it', 'google-site-kit' );
 			footerCTA = __( 'Switch Google account', 'google-site-kit' );
@@ -171,7 +171,6 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 			profile = false;
 			ctaLinkText = __( 'Switch Google account', 'google-site-kit' );
 			ctaLink = getReAuthUrl( 'adsense', true );
-			buttonLink = true;
 			switchLabel = __( 'Let Site Kit place code on your site to get your site approved', 'google-site-kit' );
 			continueAction = {
 				statusHeadline: __( 'Create a new AdSense account', 'google-site-kit' ),
@@ -191,22 +190,17 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 
 	return {
 		accountTagMatch,
-		buttonLink,
 		clientId,
 		continueAction,
 		ctaLink,
 		ctaLinkText,
-		ctaTarget,
 		footerAppendedText,
 		footerCTA,
 		footerCTALink,
 		footerText,
-		// helpLink,
-		// helpLinkText,
 		icon,
 		incomplete,
 		issue,
-		// notice,
 		profile,
 		required,
 		setupComplete,
@@ -253,6 +247,12 @@ const AdSenseModuleStatus = ( ) => {
 		setAccountStatus( status.accountStatus );
 	};
 
+	const showInProcess = ! accountStatus || ! googlesitekit.modules.adsense.setupComplete || [
+		'ads-display-pending',
+		'account-pending-review',
+		'account-required-action',
+	].includes( accountStatus );
+
 	useEffect( () => {
 		updateAccountStatus();
 	}, [] );
@@ -283,17 +283,19 @@ const AdSenseModuleStatus = ( ) => {
 					</div>
 				) }
 
-				{ ( accountStatus || loadingMessage ) && ! googlesitekit.modules.adsense.setupComplete && (
+				{ showInProcess && (
 					<AdSenseInProcessStatus
+						ctaLink={ instructionProps.ctaLink }
+						ctaLinkText={ instructionProps.ctaLinkText }
 						header={ instructionProps.statusHeadline }
 						subHeader={ instructionProps.statusMessage }
 						incomplete={ instructionProps.incomplete }
 						required={ instructionProps.required }
-						loadingMessage={ ! instructionProps.statusHeadline && loadingMessage }
+						loadingMessage={ ! accountStatus && loadingMessage }
 					/>
 				) }
 
-				{ googlesitekit.canAdsRun && googlesitekit.modules.adsense.setupComplete && accountStatus && instructionProps && (
+				{ googlesitekit.canAdsRun && googlesitekit.modules.adsense.setupComplete && accountStatus && (
 					<AdSenseSetupInstructions
 						{ ...instructionProps }
 						accountStatus={ accountStatus }
