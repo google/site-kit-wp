@@ -163,9 +163,12 @@ const dataAPI = {
 		const toRequest = [];
 		const deferredRequests = [];
 		const keyIndexesMap = {};
+		const noLowPriorityRequests = !! dataRequest.find( ( request ) => {
+			return request.priority < 10;
+		} );
 		each( dataRequest, ( request, index ) => {
 			// Defer any datapoints with a priority of 10 or greater into a second request.
-			if ( ! secondaryRequest && 10 <= request.priority ) {
+			if ( ! secondaryRequest && 10 <= request.priority && noLowPriorityRequests ) {
 				deferredRequests.push( request );
 			} else if ( ! keyIndexesMap[ request.key ] ) {
 				keyIndexesMap[ request.key ] = [ index ];
