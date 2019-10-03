@@ -98,7 +98,7 @@ class ModuleTest extends TestCase {
 
 	public function test_set_data() {
 		// set_data is a wrapper for the protected execute_data_request method.
-		$method = new \ReflectionMethod( self::MODULE_CLASS_NAME, 'set_data' );
+		$method = new \ReflectionMethod( self::MODULE_CLASS_NAME,'set_data' );
 		// Make assertions that affect backwards compatibility
 		$this->assertTrue( $method->isPublic() );
 		// Number of parameters can increase while preserving B/C, but not decrease
