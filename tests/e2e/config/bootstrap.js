@@ -2,8 +2,6 @@
  * External dependencies
  */
 import { get } from 'lodash';
-import { setDefaultOptions } from 'expect-puppeteer';
-setDefaultOptions( { timeout: 12000 } );
 
 /**
  * WordPress dependencies
