@@ -131,7 +131,7 @@ class TagmanagerSetup extends Component {
 
 			let errorCode = false;
 			let errorMsg = '';
-			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'accounts-containers', queryArgs, false );
+			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'accounts-containers', queryArgs );
 
 			// Verify if user has access to the selected account.
 			if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.accountId === selectedAccount ) ) {
