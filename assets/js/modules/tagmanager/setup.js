@@ -133,6 +133,18 @@ class TagmanagerSetup extends Component {
 			let errorMsg = '';
 			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'accounts-containers', queryArgs );
 
+			if ( ! selectedAccount && 0 === responseData.accounts.length ) {
+				data.deleteCache( 'tagmanager', 'list-accounts' );
+
+				throw {
+					code: 'accountEmpty',
+					message: __(
+						'We didn’t find an associated Google Tag Manager account, would you like to set it up now? If you’ve just set up an account please re-fetch your account to sync it with Site Kit.',
+						'google-site-kit'
+					),
+				};
+			}
+
 			// Verify if user has access to the selected account.
 			if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.accountId === selectedAccount ) ) {
 				data.invalidateCacheGroup( TYPE_MODULES, 'tagmanager', 'accounts-containers' );
