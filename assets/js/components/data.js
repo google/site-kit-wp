@@ -59,6 +59,22 @@ const lazilySetupLocalCache = () => {
 };
 
 /**
+ * Return a non-referenced value if this variable is a compound type (eg Object or Array).
+ *
+ * @param {any} value Variable data to set/get from cache.
+ * @return {any} A copy, not a reference to, the `value` passed to this function.
+ */
+const nonReferencedValue = ( value ) => {
+	if ( Array.isArray( value ) ) {
+		return [ ...value ];
+	} else if ( typeof value === 'object' ) {
+		return { ...value };
+	}
+
+	return value;
+};
+
+/**
  * Gets a copy of the given data request object with the data.dateRange populated via filter, if not set.
  * Respects the current dateRange value, if set.
  *
@@ -295,7 +311,7 @@ const dataAPI = {
 
 		lazilySetupLocalCache();
 
-		googlesitekit.admin.datacache[ key ] = data;
+		googlesitekit.admin.datacache[ key ] = nonReferencedValue( data );
 
 		const toStore = {
 			value: data,
@@ -331,9 +347,9 @@ const dataAPI = {
 			// Only return value if no maximum age given or if cache age is less than the maximum.
 			if ( ! maxAge || ( Date.now() / 1000 ) - cache.date < maxAge ) {
 				// Set variable cache.
-				googlesitekit.admin.datacache[ key ] = cache.value;
+				googlesitekit.admin.datacache[ key ] = nonReferencedValue( cache.value );
 
-				return cache.value;
+				return googlesitekit.admin.datacache[ key ];
 			}
 		}
 
