@@ -349,7 +349,7 @@ const dataAPI = {
 				// Set variable cache.
 				googlesitekit.admin.datacache[ key ] = nonReferencedValue( cache.value );
 
-				return googlesitekit.admin.datacache[ key ];
+				return nonReferencedValue( googlesitekit.admin.datacache[ key ] );
 			}
 		}
 
