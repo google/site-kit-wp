@@ -590,10 +590,10 @@ final class REST_Routes {
 								return new WP_Error( 'invalid_authentication_mode', __( 'Invalid authentication mode.', 'google-site-kit' ), array( 'status' => 500 ) );
 							}
 							$nonce = get_option( OAuth_Client::OPTION_PROXY_NONCE, '' );
-							delete_option( OAuth_Client::OPTION_PROXY_NONCE );
 							if ( $nonce !== $request['nonce'] ) {
 								return new WP_Error( 'invalid_nonce', __( 'Invalid nonce.', 'google-site-kit' ), array( 'status' => 400 ) );
 							}
+							delete_option( OAuth_Client::OPTION_PROXY_NONCE );
 							$data = array(
 								'oauth2_client_id'     => sanitize_text_field( $request['site_id'] ),
 								'oauth2_client_secret' => sanitize_text_field( $request['site_secret'] ),
