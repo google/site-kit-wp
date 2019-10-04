@@ -26,9 +26,9 @@ use InvalidArgumentException;
  */
 final class Google_Proxy_Client extends Google_Client {
 
-	const OAUTH2_REVOKE_URI = 'https://sitekit.withgoogle.com/o/oauth2/revoke';
-	const OAUTH2_TOKEN_URI  = 'https://sitekit.withgoogle.com/o/oauth2/token';
-	const OAUTH2_AUTH_URL   = 'https://sitekit.withgoogle.com/o/oauth2/auth';
+	const OAUTH2_REVOKE_URI = 'https://sitekit.withgoogle.com/o/oauth2/revoke/';
+	const OAUTH2_TOKEN_URI  = 'https://sitekit.withgoogle.com/o/oauth2/token/';
+	const OAUTH2_AUTH_URL   = 'https://sitekit.withgoogle.com/o/oauth2/auth/';
 
 	/**
 	 * Fetches an OAuth 2.0 access token by using a temporary code.
