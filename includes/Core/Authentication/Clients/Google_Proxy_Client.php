@@ -13,7 +13,9 @@ namespace Google\Site_Kit\Core\Authentication\Clients;
 use Google_Client;
 use Google\Auth\OAuth2;
 use Google\Auth\HttpHandler\HttpHandlerFactory;
+use Google\Auth\HttpHandler\HttpClientCache;
 use Exception;
+use InvalidArgumentException;
 
 /**
  * Modified Google API client relying on the authentication proxy.
@@ -27,6 +29,36 @@ final class Google_Proxy_Client extends Google_Client {
 	const OAUTH2_REVOKE_URI = 'https://sitekit.withgoogle.com/o/oauth2/revoke';
 	const OAUTH2_TOKEN_URI  = 'https://sitekit.withgoogle.com/o/oauth2/token';
 	const OAUTH2_AUTH_URL   = 'https://sitekit.withgoogle.com/o/oauth2/auth';
+
+	/**
+	 * Fetches an OAuth 2.0 access token by using a temporary code.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $code Temporary authorization code, or undelegated token code.
+	 * @return array Access token.
+	 *
+	 * @throws InvalidArgumentException Thrown when the passed code is empty.
+	 */
+	public function fetchAccessTokenWithAuthCode( $code ) {
+		if ( strlen( $code ) === 0 ) {
+			throw new InvalidArgumentException( 'Invalid code' );
+		}
+
+		$auth = $this->getOAuth2Service();
+		$auth->setCode( $code );
+		$auth->setRedirectUri( $this->getRedirectUri() );
+
+		$http_handler = HttpHandlerFactory::build( $this->getHttpClient() );
+
+		$creds = $this->fetchAuthToken( $auth, $http_handler );
+		if ( $creds && isset( $creds['access_token'] ) ) {
+			$creds['created'] = time();
+			$this->setAccessToken( $creds );
+		}
+
+		return $creds;
+	}
 
 	/**
 	 * Fetches a fresh OAuth 2.0 access token by using a refresh token.
@@ -59,7 +91,7 @@ final class Google_Proxy_Client extends Google_Client {
 
 		$http_handler = HttpHandlerFactory::build( $this->getHttpClient() );
 
-		$creds = $auth->fetchAuthToken( $http_handler );
+		$creds = $this->fetchAuthToken( $auth, $http_handler );
 		if ( $creds && isset( $creds['access_token'] ) ) {
 			$creds['created'] = time();
 			$this->setAccessToken( $creds );
@@ -139,5 +171,39 @@ final class Google_Proxy_Client extends Google_Client {
 		);
 
 		return $auth;
+	}
+
+	/**
+	 * Fetches an OAuth 2.0 access token using a given auth object and HTTP handler.
+	 *
+	 * This method is used in place of {@see OAuth2::fetchAuthToken()}.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param OAuth2        $auth         OAuth2 instance.
+	 * @param callable|null $http_handler Optional. HTTP handler callback. Default null.
+	 * @return array Access token.
+	 *
+	 * @throws Google_Proxy_Exception Thrown when proxy returns an error accompanied by a temporary access code.
+	 * @throws Exception              Thrown when any other type of error occurs.
+	 */
+	private function fetchAuthToken( OAuth2 $auth, callable $http_handler = null ) {
+		if ( is_null( $http_handler ) ) {
+			$http_handler = HttpHandlerFactory::build( HttpClientCache::getHttpClient() );
+		}
+
+		$request     = $auth->generateCredentialsRequest();
+		$response    = $http_handler( $request );
+		$credentials = $auth->parseTokenResponse( $response );
+		if ( ! empty( $credentials['error'] ) ) {
+			if ( ! empty( $credentials['code'] ) ) {
+				throw new Google_Proxy_Exception( $credentials['error'], 0, $credentials['code'] );
+			}
+			throw new Exception( $credentials['error'] );
+		}
+
+		$auth->updateToken( $credentials );
+
+		return $credentials;
 	}
 }

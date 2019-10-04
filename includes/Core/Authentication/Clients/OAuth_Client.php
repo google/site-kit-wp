@@ -474,6 +474,9 @@ final class OAuth_Client {
 
 		try {
 			$authentication_token = $this->get_client()->fetchAccessTokenWithAuthCode( $_GET['code'] ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+		} catch ( Google_Proxy_Exception $e ) {
+			wp_safe_redirect( $this->get_proxy_setup_url( $e->getAccessCode() ) );
+			exit();
 		} catch ( Exception $e ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'invalid_code' );
 			wp_safe_redirect( admin_url() );
@@ -481,11 +484,6 @@ final class OAuth_Client {
 		}
 
 		if ( ! empty( $authentication_token['error'] ) ) {
-			if ( $this->using_proxy() && ! empty( $authentication_token['code'] ) ) {
-				wp_safe_redirect( $this->get_proxy_setup_url( $authentication_token['code'] ) );
-				exit();
-			}
-
 			$this->user_options->set( self::OPTION_ERROR_CODE, $authentication_token['error'] );
 			wp_safe_redirect( admin_url() );
 			exit();
