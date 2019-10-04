@@ -92,7 +92,7 @@ class AnalyticsSetup extends Component {
 		if ( existingTagProperty && existingTagProperty.length ) {
 			// Verify the user has access to existing tag if found. If no access request will return 403 error and catch err.
 			try {
-				const existingTagData = await data.get( TYPE_MODULES, 'analytics', 'tag-permission', { tag: existingTagProperty }, false );
+				const existingTagData = await data.get( TYPE_MODULES, 'analytics', 'tag-permission', { tag: existingTagProperty } );
 				await this.getAccounts( existingTagData );
 			} catch ( err ) {
 				this.setState(
@@ -257,7 +257,7 @@ class AnalyticsSetup extends Component {
 				existingPropertyId: existingTagData.propertyId,
 			} : {};
 
-			const responseData = await data.get( TYPE_MODULES, 'analytics', 'get-accounts', queryArgs, false );
+			const responseData = await data.get( TYPE_MODULES, 'analytics', 'accounts-properties-profiles', queryArgs );
 			if ( 0 === responseData.accounts.length ) {
 				newState = {
 					...newState,
@@ -266,7 +266,7 @@ class AnalyticsSetup extends Component {
 				};
 
 				// clear the cache.
-				data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'get-accounts' );
+				data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 			} else if ( ! selectedAccount ) {
 				let matchedProperty = null;
 				if ( responseData.matchedProperty ) {
@@ -289,7 +289,7 @@ class AnalyticsSetup extends Component {
 					} );
 				}
 			} else if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.id === selectedAccount ) ) {
-				data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'get-accounts' );
+				data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 
 				responseData.accounts.unshift( {
 					id: 0,
@@ -376,7 +376,7 @@ class AnalyticsSetup extends Component {
 				accountId: selectValue,
 			};
 
-			const responseData = await data.get( TYPE_MODULES, 'analytics', 'get-properties', queryArgs );
+			const responseData = await data.get( TYPE_MODULES, 'analytics', 'properties-profiles', queryArgs );
 
 			const chooseProperty = {
 				id: 0,
@@ -417,7 +417,7 @@ class AnalyticsSetup extends Component {
 				propertyId: selectValue,
 			};
 
-			const responseData = await data.get( TYPE_MODULES, 'analytics', 'get-profiles', queryArgs );
+			const responseData = await data.get( TYPE_MODULES, 'analytics', 'profiles', queryArgs );
 
 			this.setState( {
 				profilesLoading: false,
@@ -474,9 +474,9 @@ class AnalyticsSetup extends Component {
 		};
 
 		try {
-			const response = await data.set( TYPE_MODULES, 'analytics', 'save', analyticAccount );
+			const response = await data.set( TYPE_MODULES, 'analytics', 'settings', analyticAccount );
 
-			data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'get-accounts' );
+			data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 			await this.getAccounts();
 
 			googlesitekit.modules.analytics.settings.accountId = response.accountId;
@@ -557,7 +557,7 @@ class AnalyticsSetup extends Component {
 			onSettingsPage,
 		} = this.props;
 		const disabled = ! isEditing;
-		const { AMPenabled } = window.googlesitekit.admin;
+		const { ampEnabled } = window.googlesitekit.admin;
 		const useSnippetSettings = window.googlesitekit.modules.analytics.settings.useSnippet;
 
 		return (
@@ -609,7 +609,7 @@ class AnalyticsSetup extends Component {
 						</Radio>
 					</Fragment>
 				}
-				{ useSnippet && AMPenabled &&
+				{ useSnippet && ampEnabled &&
 					<div className="googlesitekit-setup-module__input">
 						<Switch
 							id="ampClientIdOptIn"

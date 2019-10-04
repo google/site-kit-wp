@@ -1,6 +1,6 @@
 {
   "name": "googlesitekit",
-  "version": "1.0.0-beta.1.0.5",
+  "version": "1.0.0-beta.1.0.7",
   "description": "Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.",
   "main": "index.js",
   "scripts": {
@@ -124,6 +124,7 @@
     "@wordpress/i18n": "^3.3.0",
     "@wordpress/library-export-default-webpack-plugin": "^1.1.0",
     "@wordpress/scripts": "^3.3.0",
+    "@wordpress/url": "^2.8.0",
     "accessible-autocomplete": "^1.6.2",
     "autoprefixer": "^9.5.0",
     "babel-loader": "^8.0.5",

@@ -146,8 +146,11 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'search-console',
-			datapoint: 'sc-site-analytics',
-			data: {},
+			datapoint: 'searchanalytics',
+			data: {
+				dimensions: 'date',
+				compareDateRanges: true,
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],

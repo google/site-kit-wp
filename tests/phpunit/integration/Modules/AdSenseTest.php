@@ -53,7 +53,13 @@ class AdSenseTest extends TestCase {
 		add_filter( 'googlesitekit_adsense_account_id', function () {
 			return 'filtered-adsense-account-id';
 		} );
-		$this->assertEquals( array( 'accountId' => 'filtered-adsense-account-id' ), get_option( AdSense::OPTION ) );
+		$this->assertArraySubset( array( 'accountId' => 'filtered-adsense-account-id' ), get_option( AdSense::OPTION ) );
+
+		// Default value filtered into saved value.
+		$this->assertArraySubset( array( 'useSnippet' => true ), get_option( AdSense::OPTION ) );
+		update_option( AdSense::OPTION, array( 'useSnippet' => false ) );
+		// Default respects saved value.
+		$this->assertArraySubset( array( 'useSnippet' => false ), get_option( AdSense::OPTION ) );
 	}
 
 	public function test_get_module_scope() {
@@ -134,7 +140,7 @@ class AdSenseTest extends TestCase {
 				'connection',
 				'account-id',
 				'client-id',
-				'adsense-tag-enabled',
+				'use-snippet',
 				'account-status',
 				'account-url',
 				'reports-url',
@@ -143,17 +149,7 @@ class AdSenseTest extends TestCase {
 				'alerts',
 				'clients',
 				'urlchannels',
-				'earning-today',
-				'earning-yesterday',
-				'earning-samedaylastweek',
-				'earning-7days',
-				'earning-prev7days',
-				'earning-this-month',
-				'earning-this-month-last-year',
-				'earning-28days',
-				'earning-prev28days',
-				'earning-daily-this-month',
-				'earnings-this-period',
+				'earnings',
 				'setup-complete',
 			),
 			$adsense->get_datapoints()

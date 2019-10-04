@@ -597,18 +597,24 @@ export const findTagInHtmlContent = ( html, module ) => {
 export const getExistingTag = async ( module ) => {
 	const CACHE_KEY = `${ module }::existingTag`;
 	const { homeURL, ampMode } = googlesitekit.admin;
+	const tagFetchQueryArgs = {
+		// Indicates a tag checking request. This lets Site Kit know not to output its own tags.
+		tagverify: 1,
+		// Add a timestamp for cache-busting.
+		timestamp: Date.now(),
+	};
 
 	let tagFound = data.getCache( CACHE_KEY, 300 );
 
 	if ( tagFound === undefined ) {
 		try {
-			tagFound = await scrapeTag( addQueryArgs( homeURL, { tagverify: 1, timestamp: Date.now() } ), module );
+			tagFound = await scrapeTag( addQueryArgs( homeURL, tagFetchQueryArgs ), module );
 
 			if ( ! tagFound && 'secondary' === ampMode ) {
 				tagFound = await apiFetch( { path: '/wp/v2/posts?per_page=1' } ).then(
 					// Scrape the first post in AMP mode, if there is one.
 					( posts ) => posts.slice( 0, 1 ).map( async ( post ) => {
-						return await scrapeTag( addQueryArgs( post.link, { amp: 1 } ), module );
+						return await scrapeTag( addQueryArgs( post.link, { ...tagFetchQueryArgs, amp: 1 } ), module );
 					} ).pop()
 				);
 			}
@@ -830,12 +836,34 @@ export function stringToSlug( string ) {
 }
 
 /**
+ * Gets the current dateRange string.
+ *
+ * @return {string} the date range string.
+ */
+export function getCurrentDateRange() {
+	/**
+	 * Filter the date range used for queries.
+	 *
+	 * @param String The selected date range. Default 'Last 28 days'.
+	 */
+	return applyFilters( 'googlesitekit.dateRange', __( 'Last 28 days', 'google-site-kit' ) );
+}
+
+/**
  * Return the currently selected date range as a string that fits in the sentence:
  * "Data for the last [date range]", eg "Date for the last 28 days".
  */
 export function getDateRangeFrom() {
-	const currentDateRange = applyFilters( 'googlesitekit.dateRange', __( 'Last 28 days', 'google-site-kit' ) );
-	return currentDateRange.replace( 'Last ', '' );
+	return getCurrentDateRange().replace( 'Last ', '' );
+}
+
+/**
+ * Gets the current dateRange slug.
+ *
+ * @return {string} the date range slug.
+ */
+export function getCurrentDateRangeSlug() {
+	return stringToSlug( getCurrentDateRange() );
 }
 
 /**

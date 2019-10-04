@@ -16,11 +16,10 @@ use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google_Client;
-use Google_Service;
-use Psr\Http\Message\RequestInterface;
+use Google_Service_Exception;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\RequestInterface;
 use WP_Error;
-use Exception;
 
 /**
  * Class representing the Search Console module.
@@ -85,13 +84,13 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 
 		add_filter(
 			'googlesitekit_show_admin_bar_menu',
-			function( $display, $post_id ) {
+			function( $display, $current_url ) {
 				$sc_property = $this->options->get( self::PROPERTY_OPTION );
 				if ( empty( $sc_property ) ) {
 					return false;
 				}
 
-				if ( ! $this->has_data_for_post( $post_id ) ) {
+				if ( ! $this->has_data_for_url( $current_url ) ) {
 					return false;
 				}
 
@@ -125,16 +124,12 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	protected function get_datapoint_services() {
 		return array(
 			// GET.
-			'sites'             => 'webmasters',
-			'matched-sites'     => 'webmasters',
-			'is-site-exist'     => 'webmasters',
-			'sc-site-analytics' => 'webmasters',
-			'search-keywords'   => 'webmasters',
-			'index-status'      => 'webmasters',
+			'sites'           => 'webmasters',
+			'matched-sites'   => 'webmasters',
+			'searchanalytics' => 'webmasters',
 
 			// POST.
-			'save-property'     => '',
-			'insert'            => '',
+			'site'            => '',
 		);
 	}
 
@@ -152,83 +147,82 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'sites':
-					$service = $this->get_service( 'webmasters' );
-					return $service->sites->listSites();
 				case 'matched-sites':
-					$service = $this->get_service( 'webmasters' );
-					return $service->sites->listSites();
-				case 'is-site-exist':
-					$service = $this->get_service( 'webmasters' );
-					return $service->sites->listSites();
-				case 'sc-site-analytics':
-					$page       = ! empty( $data['url'] ) ? $data['url'] : '';
-					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
-					$date_range = $this->parse_date_range( $date_range, 2, 3 );
-					return $this->create_search_analytics_data_request(
+					return $this->get_webmasters_service()->sites->listSites();
+				case 'searchanalytics':
+					$data = array_merge(
 						array(
-							'dimensions' => array( 'date' ),
-							'start_date' => $date_range[0],
-							'end_date'   => $date_range[1],
-							'page'       => $page,
-						)
+							'compareDateRanges' => false,
+							'dateRange'         => 'last-28-days',
+							'dimensions'        => '',
+							'url'               => '',
+						),
+						$data
 					);
-				case 'search-keywords':
-					$page       = ! empty( $data['url'] ) ? $data['url'] : '';
-					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
-					$date_range = $this->parse_date_range( $date_range, 1, 3 );
-					return $this->create_search_analytics_data_request(
-						array(
-							'dimensions' => array( 'query' ),
-							'start_date' => $date_range[0],
-							'end_date'   => $date_range[1],
-							'page'       => $page,
-							'row_limit'  => 10,
-						)
+
+					list ( $start_date, $end_date ) = $this->parse_date_range(
+						$data['dateRange'],
+						$data['compareDateRanges'] ? 2 : 1,
+						3
 					);
-				case 'index-status':
-					return $this->create_search_analytics_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( '365daysAgo' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( 'yesterday' ) ),
-						)
+
+					$data_request = array(
+						'page'       => $data['url'],
+						'start_date' => $start_date,
+						'end_date'   => $end_date,
+						'dimensions' => explode( ',', $data['dimensions'] ),
 					);
+
+					if ( isset( $data['limit'] ) ) {
+						$data_request['row_limit'] = $data['limit'];
+					}
+
+					return $this->create_search_analytics_data_request( $data_request );
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
-				case 'save-property':
-					if ( ! isset( $data['siteURL'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'siteURL' ), array( 'status' => 400 ) );
-					}
-					return function() use ( $data ) {
-						$current_user = wp_get_current_user();
-						if ( ! $current_user || ! $current_user->exists() ) {
-							return new WP_Error( 'unknown_user', __( 'Unknown user.', 'google-site-kit' ) );
-						}
-						$response = $this->options->set( self::PROPERTY_OPTION, $data['siteURL'] );
-						return array(
-							'updated' => $response,
-							'status'  => true,
+				case 'site':
+					if ( empty( $data['siteUrl'] ) ) {
+						return new WP_Error(
+							'missing_required_param',
+							/* translators: %s: Missing parameter name */
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'siteUrl' ),
+							array( 'status' => 400 )
 						);
-					};
-				case 'insert':
-					if ( ! isset( $data['siteURL'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'siteURL' ), array( 'status' => 400 ) );
 					}
-					return function() use ( $data ) {
-						$client     = $this->get_client();
-						$orig_defer = $client->shouldDefer();
-						$client->setDefer( false );
-						$service = $this->get_service( 'webmasters' );
-						$site    = $service->sites->add( trailingslashit( $data['siteURL'] ) );
-						$client->setDefer( $orig_defer );
-						if ( 204 !== $site->getStatusCode() ) {
-							return new WP_Error( 'failed_to_add_site_to_search_console', __( 'Error adding the site to Search Console.', 'google-site-kit' ), array( 'status' => 500 ) );
+
+					$site_url = trailingslashit( $data['siteUrl'] );
+
+					return function () use ( $site_url ) {
+						$orig_defer = $this->get_client()->shouldDefer();
+						$this->get_client()->setDefer( false );
+
+						try {
+							// If the site does not exist in the account, an exception will be thrown.
+							$site = $this->get_webmasters_service()->sites->get( $site_url );
+						} catch ( Google_Service_Exception $exception ) {
+							// If we got here, the site does not exist in the account, so we will add it.
+							/* @var ResponseInterface $response Response object. */
+							$response = $this->get_webmasters_service()->sites->add( $site_url );
+
+							if ( 204 !== $response->getStatusCode() ) {
+								return new WP_Error(
+									'failed_to_add_site_to_search_console',
+									__( 'Error adding the site to Search Console.', 'google-site-kit' ),
+									array( 'status' => 500 )
+								);
+							}
+
+							// Fetch the site again now that it exists.
+							$site = $this->get_webmasters_service()->sites->get( $site_url );
 						}
-						$this->options->set( self::PROPERTY_OPTION, $data['siteURL'] );
+
+						$this->get_client()->setDefer( $orig_defer );
+						$this->options->set( self::PROPERTY_OPTION, $site_url );
+
 						return array(
-							'sites' => array( $data['siteURL'] ),
+							'siteUrl'         => $site->getSiteUrl(),
+							'permissionLevel' => $site->getPermissionLevel(),
 						);
 					};
 			}
@@ -251,67 +245,63 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'sites':
-					$sites = $response->getSiteEntry();
-					$data  = array();
-					foreach ( $sites as $site ) {
-						$data[] = array(
-							'permissionLevel' => $site->getPermissionLevel(),
-							'siteUrl'         => $site->getSiteUrl(),
-						);
-					}
-					return $data;
+					/* @var \Google_Service_Webmasters_SitesListResponse $response Response object. */
+					return $this->map_sites( (array) $response->getSiteEntry() );
 				case 'matched-sites':
-					$sites = $response->getSiteEntry();
-					$urls  = array();
-					foreach ( $sites as $site ) {
-						$url = $site->getSiteUrl();
-						if ( 'sc-set' === substr( $url, 0, 6 ) ) {
-							continue;
+					/* @var \Google_Service_Webmasters_SitesListResponse $response Response object. */
+					$sites            = $this->map_sites( (array) $response->getSiteEntry() );
+					$current_url      = $this->context->get_reference_site_url();
+					$current_host     = wp_parse_url( $current_url, PHP_URL_HOST );
+					$property_matches = array_filter(
+						$sites,
+						function ( array $site ) use ( $current_host ) {
+							$site_host = wp_parse_url( $site['siteUrl'], PHP_URL_HOST );
+
+							// Ensure host names overlap, from right to left.
+							return 0 === strpos( strrev( $current_host ), strrev( $site_host ) );
 						}
-						$urls[] = $url;
-					}
-					$current_url = trailingslashit( $this->context->get_reference_site_url() );
-					$url_matches = array();
-					foreach ( $urls as $url ) {
-						$host = wp_parse_url( $url, PHP_URL_HOST );
-						if ( empty( $host ) || false === strpos( $current_url, (string) $host ) ) {
-							continue;
-						}
-						$url_matches[] = $url;
-					}
-					if ( empty( $url_matches ) ) {
-						$url_matches[] = $current_url;
-					}
-					return array(
-						'exact_match'      => in_array( $current_url, $url_matches, true ) ? $current_url : '',
-						'property_matches' => $url_matches,
 					);
-				case 'is-site-exist':
-					$current_url = $this->context->get_reference_site_url();
-					$sites       = $response->getSiteEntry();
-					foreach ( $sites as $site ) {
-						if ( trailingslashit( $current_url ) !== trailingslashit( $site->getSiteUrl() ) ) {
-							continue;
-						}
-						if ( in_array( $site->getPermissionLevel(), array( 'siteRestrictedUser', 'siteOwner', 'siteFullUser' ), true ) ) {
-							return array(
-								'siteURL'  => $site->getSiteUrl(),
-								'verified' => true,
-							);
-						}
-					}
-					return array(
-						'siteURL'  => $this->context->get_reference_site_url(),
-						'verified' => false,
+
+					$exact_match = array_reduce(
+						$property_matches,
+						function ( $match, array $site ) use ( $current_url ) {
+							if ( ! $match && trailingslashit( $current_url ) === trailingslashit( $site['siteUrl'] ) ) {
+								return $site;
+							}
+							return $match;
+						},
+						null
 					);
-				case 'sc-site-analytics':
-				case 'search-keywords':
-				case 'index-status':
+
+					return array(
+						'exactMatch'      => $exact_match, // (array) single site object, or null if no match.
+						'propertyMatches' => $property_matches, // (array) of site objects, or empty array if none.
+					);
+				case 'searchanalytics':
 					return $response->getRows();
 			}
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Map Site model objects to primitives used for API responses.
+	 *
+	 * @param \Google_Service_Webmasters_WmxSite[] $sites Site objects.
+	 *
+	 * @return array
+	 */
+	private function map_sites( $sites ) {
+		return array_map(
+			function ( \Google_Service_Webmasters_WmxSite $site ) {
+				return array(
+					'siteUrl'         => $site->getSiteUrl(),
+					'permissionLevel' => $site->getPermissionLevel(),
+				);
+			},
+			$sites
+		);
 	}
 
 	/**
@@ -364,51 +354,41 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			$request->setRowLimit( $args['row_limit'] );
 		}
 
-		$service = $this->get_service( 'webmasters' );
-		return $service->searchanalytics->query( $this->context->get_reference_site_url(), $request );
+		return $this->get_webmasters_service()
+			->searchanalytics
+			->query( $this->context->get_reference_site_url(), $request );
 	}
 
 	/**
 	 * Checks whether Search Console data exists for the given post.
 	 *
-	 * The result of this query is stored in a transient which is refreshed every 2 hours.
+	 * The result of this query is stored in a transient.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int $post_id Post ID.
+	 * @param string $current_url The current url.
 	 * @return bool True if Search Console data exists, false otherwise.
 	 */
-	protected function has_data_for_post( $post_id ) {
-		if ( ! $post_id ) {
+	protected function has_data_for_url( $current_url ) {
+		if ( ! $current_url ) {
 			return false;
 		}
 
-		$transient_key = 'googlesitekit_sc_has_data_for_post_' . $post_id;
+		$transient_key = 'googlesitekit_sc_data_' . md5( $current_url );
 		$has_data      = get_transient( $transient_key );
 		if ( false === $has_data ) {
-			$post_url = esc_url_raw( $this->context->get_reference_permalink( $post_id ) );
 
-			if ( false === $post_url ) {
-				return false;
-			}
-
+			// Check search console for data.
 			$datasets = array(
 				array(
 					'identifier' => $this->slug,
 					'key'        => 'sc-site-analytics',
-					'datapoint'  => 'sc-site-analytics',
+					'datapoint'  => 'searchanalytics',
 					'data'       => array(
-						'url'       => $post_url,
-						'dateRange' => 'last-7-days',
-					),
-				),
-				array(
-					'identifier' => $this->slug,
-					'key'        => 'search-keywords',
-					'datapoint'  => 'search-keywords',
-					'data'       => array(
-						'url'       => $post_url,
-						'dateRange' => 'last-7-days',
+						'url'               => $current_url,
+						'dateRange'         => 'last-90-days',
+						'dimensions'        => 'date',
+						'compareDateRanges' => true,
 					),
 				),
 			);
@@ -423,18 +403,21 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			);
 
 			$has_data = false;
-			foreach ( $responses as $key => $response ) {
-				if ( is_wp_error( $response ) || ! is_array( $response ) || empty( $response ) || ! isset( $response[0] ) ) {
+
+			// Go thru results, any impressions means the URL has data.
+			foreach ( $responses['sc-site-analytics'] as $key => $response ) {
+				if ( is_wp_error( $response ) || empty( $response ) || ! isset( $response ) ) {
 					continue;
 				}
 
-				if ( $response[0]->clicks > 0 || $response[0]->impressions > 0 ) {
+				if ( $response->impressions > 0 ) {
 					$has_data = true;
 					break;
 				}
 			}
 
-			set_transient( $transient_key, (int) $has_data, 2 * HOUR_IN_SECONDS );
+			// Cache "data found" status for one day, "no data" status for one hour.
+			set_transient( $transient_key, (int) $has_data, $has_data ? DAY_IN_SECONDS : HOUR_IN_SECONDS );
 		}
 
 		return (bool) $has_data;
@@ -458,6 +441,15 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			'learn_more'   => __( 'https://www.google.com/webmasters/tools/home', 'google-site-kit' ),
 			'force_active' => true,
 		);
+	}
+
+	/**
+	 * Get the configured Webmasters service instance.
+	 *
+	 * @return \Google_Service_Webmasters The Search Console API service.
+	 */
+	private function get_webmasters_service() {
+		return $this->get_service( 'webmasters' );
 	}
 
 	/**

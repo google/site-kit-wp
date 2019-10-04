@@ -134,41 +134,59 @@ final class Admin_Bar {
 	 * @return bool True if Admin bar should display, False when it's not.
 	 */
 	public function is_active() {
-		if ( ! is_user_logged_in() || ! is_admin_bar_showing() ) {
+
+		// Only active if the admin bar is showing.
+		if ( ! is_admin_bar_showing() ) {
 			return false;
 		}
 
 		// Gets post object. On front area we need to use get_queried_object to get the current post object.
 		if ( $this->is_admin_post_screen() ) {
-			$post = get_post();
+			$post        = get_post();
+			$current_url = $this->context->get_reference_permalink( $post );
 		} else {
-			$post = get_queried_object();
+			$post        = get_queried_object();
+			$current_url = $this->context->get_reference_canonical();
 		}
 
-		if ( ! $post || ! $post instanceof \WP_Post ) {
+		// No URL was identified - don't display the admin bar menu.
+		if ( ! $current_url ) {
 			return false;
 		}
 
-		if ( 'publish' !== $post->post_status ) {
-			return false;
-		}
+		// Checks for post objects.
+		if ( $post instanceof \WP_Post ) {
 
-		if ( ! current_user_can( Permissions::VIEW_POST_INSIGHTS, $post->ID ) ) {
-			return false;
+			// Ensure the user can view post insights for this post.
+			if ( ! current_user_can( Permissions::VIEW_POST_INSIGHTS, $post->ID ) ) {
+				return false;
+			}
+
+			// Only published posts show the menu.
+			if ( 'publish' !== $post->post_status ) {
+				return false;
+			}
+		} else {
+
+			// Only admins can see non-post admin bar data.
+			if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
+				return false;
+			}
 		}
 
 		/**
 		 * Filters whether the Site Kit admin bar menu should be displayed.
 		 *
-		 * The admin bar menu is only intended for when a single published post is being visited, hence this filter is fired only
-		 * under these circumstances.
+		 * The admin bar menu is only shown when there is data for the current URL and the current
+		 * user has the correct capability to view the data. Modules use this filter to indicate the
+		 * presence of valid data.
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param bool $display Whether to display the admin bar menu.
-		 * @param int  $post_id Currently visited post ID.
+		 * @param bool   $display     Whether to display the admin bar menu.
+		 * @param string $current_url The URL of the current request.
 		 */
-		return apply_filters( 'googlesitekit_show_admin_bar_menu', true, (int) $post->ID );
+		return apply_filters( 'googlesitekit_show_admin_bar_menu', true, $current_url );
 	}
 
 	/**

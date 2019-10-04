@@ -76,8 +76,7 @@ class PageSpeed_InsightsTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'site-pagespeed-mobile',
-				'site-pagespeed-desktop',
+				'pagespeed',
 			),
 			$pagespeed->get_datapoints()
 		);

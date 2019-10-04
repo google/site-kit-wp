@@ -166,7 +166,7 @@ final class Context {
 	 *
 	 * @param int|\WP_Post $post  Optional. Post ID or post object. Default is the global `$post`.
 	 *
-	 * @return string|false The  Reference permalink URL or false if post does not exist.
+	 * @return string|false The reference permalink URL or false if post does not exist.
 	 */
 	public function get_reference_permalink( $post = 0 ) {
 		$reference_site_url = untrailingslashit( $this->get_reference_site_url() );
@@ -195,6 +195,29 @@ final class Context {
 		}
 
 		return $permalink;
+	}
+
+	/**
+	 * Gets the canonical url for the current request.
+	 *
+	 * @return string|false The reference canonical URL or false if no URL was identified.
+	 */
+	public function get_reference_canonical() {
+		$reference_permalink = $this->get_reference_permalink();
+
+		if ( $reference_permalink || is_admin() ) {
+			return $reference_permalink;
+		}
+
+		// Handle the home page URL.
+		if ( is_front_page() ) {
+			return user_trailingslashit( $this->get_reference_site_url() );
+		} elseif ( is_home() ) {
+			return $this->get_reference_permalink( get_option( 'page_for_posts' ) );
+		}
+
+		// Unidentified URL.
+		return false;
 	}
 
 	/**

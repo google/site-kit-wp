@@ -33,7 +33,7 @@ import {
 /**
  * Internal dependencies
  */
-import { calculateOverviewData, getAnalyticsErrorMessageFromData, isDataZeroForReporting } from '../util';
+import { calculateOverviewData, getAnalyticsErrorMessageFromData, isDataZeroForReporting, overviewReportDataDefaults } from '../util';
 
 const { __ } = wp.i18n;
 const { Component, Fragment } = wp.element;
@@ -98,8 +98,8 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'overview',
-			data: {},
+			datapoint: 'report',
+			data: overviewReportDataDefaults,
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'WPDashboard' ],

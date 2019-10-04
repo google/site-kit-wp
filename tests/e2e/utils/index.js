@@ -1,5 +1,5 @@
 export { clearSessionStorage } from './clear-session-storage';
-export { deactivateAllOtherPlugins } from './deactivate-all-other-plugins';
+export { deactivateUtilityPlugins } from './deactivate-utility-plugins';
 export { logoutUser } from './logout-user';
 export { pasteText } from './paste-text';
 export { resetSiteKit } from './reset';
@@ -8,6 +8,8 @@ export { setAuthToken } from './set-auth-token';
 export { setClientConfig } from './set-client-config';
 export { setSiteVerification } from './set-site-verification';
 export { setSearchConsoleProperty } from './set-search-console-property';
+export { setupAnalytics } from './setup-analytics';
+export { switchDateRange } from './switch-date-range';
 export { testClientConfig } from './test-client-config';
 export { useRequestInterception } from './use-request-interception';
 export { wpApiFetch } from './wp-api-fetch';

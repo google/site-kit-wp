@@ -7,7 +7,7 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
  * Internal dependencies
  */
 import {
-	deactivateAllOtherPlugins,
+	deactivateUtilityPlugins,
 	pasteText,
 	resetSiteKit,
 	testClientConfig,
@@ -42,7 +42,7 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 	} );
 
 	afterEach( async () => {
-		await deactivateAllOtherPlugins();
+		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
 
