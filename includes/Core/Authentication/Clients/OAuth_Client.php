@@ -36,6 +36,7 @@ final class OAuth_Client {
 	const OPTION_AUTH_SCOPES             = 'googlesitekit_auth_scopes';
 	const OPTION_ERROR_CODE              = 'googlesitekit_error_code';
 	const OPTION_PROXY_NONCE             = 'googlesitekit_proxy_nonce';
+	const OPTION_PROXY_ACCESS_CODE       = 'googlesitekit_proxy_access_code';
 	const PROXY_URL                      = 'https://sitekit.withgoogle.com';
 
 	/**
@@ -237,26 +238,31 @@ final class OAuth_Client {
 
 		try {
 			$authentication_token = $this->google_client->fetchAccessTokenWithRefreshToken( $refresh_token );
-
-			// Refresh token is expired or revoked.
-			if ( ! empty( $authentication_token['error'] ) ) {
-				$this->user_options->set( self::OPTION_ERROR_CODE, $authentication_token['error'] );
-				return;
-			}
-
-			if ( ! isset( $authentication_token['access_token'] ) ) {
-				$this->user_options->set( self::OPTION_ERROR_CODE, 'access_token_not_received' );
-				return;
-			}
-
-			$this->set_access_token(
-				$authentication_token['access_token'],
-				isset( $authentication_token['expires_in'] ) ? $authentication_token['expires_in'] : '',
-				isset( $authentication_token['created'] ) ? $authentication_token['created'] : 0
-			);
+		} catch ( Google_Proxy_Exception $e ) {
+			$this->user_options->set( self::OPTION_ERROR_CODE, $e->getMessage() );
+			$this->user_options->set( self::OPTION_PROXY_ACCESS_CODE, $e->getAccessCode() );
+			return;
 		} catch ( \Exception $e ) {
-			$this->user_options->set( self::OPTION_ERROR_CODE, $e->getCode() );
+			$this->user_options->set( self::OPTION_ERROR_CODE, 'invalid_grant' );
+			return;
 		}
+
+		// Refresh token is expired or revoked.
+		if ( ! empty( $authentication_token['error'] ) ) {
+			$this->user_options->set( self::OPTION_ERROR_CODE, $authentication_token['error'] );
+			return;
+		}
+
+		if ( ! isset( $authentication_token['access_token'] ) ) {
+			$this->user_options->set( self::OPTION_ERROR_CODE, 'access_token_not_received' );
+			return;
+		}
+
+		$this->set_access_token(
+			$authentication_token['access_token'],
+			isset( $authentication_token['expires_in'] ) ? $authentication_token['expires_in'] : '',
+			isset( $authentication_token['created'] ) ? $authentication_token['created'] : 0
+		);
 	}
 
 	/**
@@ -656,6 +662,19 @@ final class OAuth_Client {
 				$message = __( 'Unable to receive access token because of an unsupported grant type.', 'google-site-kit' );
 				break;
 			default:
+				if ( $this->using_proxy() ) {
+					$access_code = $this->user_options->get( self::OPTION_PROXY_ACCESS_CODE );
+					if ( ! empty( $access_code ) ) {
+						$message = sprintf(
+							/* translators: 1: error code from API, 2: URL to re-authenticate */
+							__( 'Setup Error (code: %1$s). <a href="%2$s">Re-authenticate with Google</a>', 'google-site-kit' ),
+							$error_code,
+							$this->get_proxy_setup_url( $access_code )
+						);
+						$this->user_options->delete( self::OPTION_PROXY_ACCESS_CODE );
+						return $message;
+					}
+				}
 				/* translators: %s: error code from API */
 				$message = sprintf( __( 'Unknown Error (code: %s).', 'google-site-kit' ), $error_code );
 				break;

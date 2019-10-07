@@ -863,7 +863,18 @@ final class Authentication {
 						return '';
 					}
 
-					return '<p>' . esc_html( $message ) . '</p>';
+					$message = wp_kses(
+						$message,
+						array(
+							'a'      => array(
+								'href' => array(),
+							),
+							'strong' => array(),
+							'em'     => array(),
+						)
+					);
+
+					return '<p>' . $message . '</p>';
 				},
 				'type'            => Notice::TYPE_ERROR,
 				'active_callback' => function() {
