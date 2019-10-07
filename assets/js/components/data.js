@@ -67,7 +67,7 @@ const lazilySetupLocalCache = () => {
 const nonReferencedValue = ( value ) => {
 	if ( Array.isArray( value ) ) {
 		return [ ...value ];
-	} else if ( typeof value === 'object' ) {
+	} else if ( typeof value === 'object' && value !== null ) {
 		return { ...value };
 	}
 
