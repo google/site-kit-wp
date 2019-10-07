@@ -795,7 +795,7 @@ class AnalyticsSetup extends Component {
 						<Select
 							enhanced
 							name="properties"
-							value={ selectedProperty || '-1' }
+							value={ selectedProperty || selectedProperty === 0 ? selectedProperty.toString() : '-1' }
 							onEnhancedChange={ this.handlePropertyChange }
 							label={ __( 'Property', 'google-site-kit' ) }
 							disabled={ disabledProperty }
@@ -814,7 +814,7 @@ class AnalyticsSetup extends Component {
 						<Select
 							enhanced
 							name="profiles"
-							value={ selectedProfile || '-1' }
+							value={ selectedProfile || selectedProfile === 0 ? selectedProfile.toString() : '-1' }
 							onEnhancedChange={ this.handleProfileChange }
 							label={ __( 'View', 'google-site-kit' ) }
 							disabled={ disabledProfile }

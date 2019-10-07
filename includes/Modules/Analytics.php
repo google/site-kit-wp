@@ -1001,11 +1001,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					);
 
 					if ( 0 === count( $properties ) ) {
-						return new WP_Error(
-							'google_analytics_properties_empty',
-							__( 'No Google Analytics properties found. Please go to Google Analytics to set one up.', 'google-site-kit' ),
-							array( 'status' => 500 )
-						);
+						return $response;
 					}
 
 					$found_property = new \Google_Service_Analytics_Webproperty();
@@ -1061,9 +1057,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'profiles':
 					// TODO: Parse this response to a regular array.
 					$response = $response->getItems();
-					if ( 0 === count( $response ) ) {
-						return new WP_Error( 'google_analytics_profiles_empty', __( 'No Google Analytics profiles found. Please go to Google Anlytics to set one up.', 'google-site-kit' ), array( 'status' => 500 ) );
-					}
+
 					return $response;
 				case 'report':
 					if ( $this->_is_adsense_request ) {
