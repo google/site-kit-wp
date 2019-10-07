@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "npm run remove-dist && npm run build:production && npm run build:svg && npm run build:images && gulp copy-vendor",
-    "build:production": "webpack -p --mode=production",
-    "build:beta": "webpack -p --mode=production --env.beta",
+    "build:production": "npm run lint:js && webpack -p --mode=production",
+    "build:beta": "npm run lint:js && webpack -p --mode=production --env.beta",
     "build:dev": "npm run build:svg && npm run build:images && webpack --mode=development --debug --devtool cheap-source-map --output-pathinfo",
     "build:svg": "gulp svg",
     "build:images": "gulp imagemin",
@@ -29,6 +29,7 @@
     "backstopjs:init": "backstop init --config=backstop.js",
     "travis:backstopjs": "backstop test --config=backstop-travis.js --docker",
     "screenshot": "storybook-chrome-screenshot -p 9001 -c .storybook",
+    "lint": "npm run lint:js && npm run lint:php && npm run lint:css",
     "lint:js": "wp-scripts lint-js",
     "lint:php": "gulp phpcs",
     "lint:css": "stylelint ./assets/sass --syntax scss",
