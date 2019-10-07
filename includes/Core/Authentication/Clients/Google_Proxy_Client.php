@@ -16,6 +16,7 @@ use Google\Auth\HttpHandler\HttpHandlerFactory;
 use Google\Auth\HttpHandler\HttpClientCache;
 use Exception;
 use InvalidArgumentException;
+use LogicException;
 
 /**
  * Modified Google API client relying on the authentication proxy.
@@ -63,37 +64,33 @@ final class Google_Proxy_Client extends Google_Client {
 	/**
 	 * Fetches a fresh OAuth 2.0 access token by using a refresh token.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @param string $refresh_token Optional. Refresh token. Unused here.
 	 * @return array Access token.
+	 *
+	 * @throws LogicException Thrown when no refresh token is available.
 	 */
 	public function fetchAccessTokenWithRefreshToken( $refresh_token = null ) {
 		if ( null === $refresh_token ) {
-			$refresh_token = '';
-		}
-
-		$old_access_token = $this->getAccessToken();
-		if ( empty( $old_access_token['access_token'] ) ) {
-			$url = add_query_arg( 'access_token', $old_access_token['access_token'], $url );
+			if ( ! isset( $this->token['refresh_token'] ) ) {
+				throw new LogicException( 'refresh token must be passed in or set as part of setAccessToken' );
+			}
+			$refresh_token = $this->token['refresh_token'];
 		}
 
 		$this->getLogger()->info( 'OAuth2 access token refresh' );
 		$auth = $this->getOAuth2Service();
 		$auth->setRefreshToken( $refresh_token );
 
-		// Set our own parameters.
-		$auth->setGrantType( 'refresh_token_proxy' );
-		$auth->setExtensionParams(
-			array(
-				'grant_type'   => 'refresh_token',
-				'access_token' => $old_access_token['access_token'],
-			)
-		);
-
 		$http_handler = HttpHandlerFactory::build( $this->getHttpClient() );
 
 		$creds = $this->fetchAuthToken( $auth, $http_handler );
 		if ( $creds && isset( $creds['access_token'] ) ) {
 			$creds['created'] = time();
+			if ( ! isset( $creds['refresh_token'] ) ) {
+				$creds['refresh_token'] = $refresh_token;
+			}
 			$this->setAccessToken( $creds );
 		}
 
@@ -130,25 +127,6 @@ final class Google_Proxy_Client extends Google_Client {
 		}
 
 		return 200 === (int) wp_remote_retrieve_response_code( $response );
-	}
-
-	/**
-	 * Creates an auth URL for the authentication proxy.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string|array $scope Optional. One or more scopes. Default is the originally passed scopes.
-	 * @return string Auth URL to redirect the user to.
-	 */
-	public function createAuthUrl( $scope = null ) {
-		$url = parent::createAuthUrl( $scope );
-
-		$old_access_token = $this->getAccessToken();
-		if ( ! empty( $old_access_token['access_token'] ) ) {
-			$url = add_query_arg( 'access_token', $old_access_token['access_token'], $url );
-		}
-
-		return $url;
 	}
 
 	/**

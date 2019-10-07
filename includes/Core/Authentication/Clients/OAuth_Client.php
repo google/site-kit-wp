@@ -225,12 +225,9 @@ final class OAuth_Client {
 	 * @since 1.0.0
 	 */
 	public function refresh_token() {
-		$refresh_token = '';
-		if ( ! $this->using_proxy() ) {
-			$refresh_token = $this->get_refresh_token();
-			if ( empty( $refresh_token ) ) {
-				$this->user_options->set( self::OPTION_ERROR_CODE, 'refresh_token_not_exist' );
-			}
+		$refresh_token = $this->get_refresh_token();
+		if ( empty( $refresh_token ) ) {
+			$this->user_options->set( self::OPTION_ERROR_CODE, 'refresh_token_not_exist' );
 		}
 
 		// Stop if google_client not initialized yet.
