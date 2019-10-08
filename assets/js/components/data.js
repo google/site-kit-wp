@@ -30,7 +30,7 @@ import {
 	sortObjectProperties,
 } from 'SiteKitCore/util';
 
-const { each, sortBy } = lodash;
+const { cloneDeep, each, sortBy } = lodash;
 const { addQueryArgs } = wp.url;
 const {
 	addAction,
@@ -56,22 +56,6 @@ const lazilySetupLocalCache = () => {
 	if ( 'object' !== typeof googlesitekit.admin.datacache ) {
 		googlesitekit.admin.datacache = {};
 	}
-};
-
-/**
- * Return a non-referenced value if this variable is a compound type (eg Object or Array).
- *
- * @param {any} value Variable data to set/get from cache.
- * @return {any} A copy, not a reference to, the `value` passed to this function.
- */
-const nonReferencedValue = ( value ) => {
-	if ( Array.isArray( value ) ) {
-		return [ ...value ];
-	} else if ( typeof value === 'object' && value !== null ) {
-		return { ...value };
-	}
-
-	return value;
 };
 
 /**
@@ -311,7 +295,7 @@ const dataAPI = {
 
 		lazilySetupLocalCache();
 
-		googlesitekit.admin.datacache[ key ] = nonReferencedValue( data );
+		googlesitekit.admin.datacache[ key ] = cloneDeep( data );
 
 		const toStore = {
 			value: data,
@@ -347,9 +331,9 @@ const dataAPI = {
 			// Only return value if no maximum age given or if cache age is less than the maximum.
 			if ( ! maxAge || ( Date.now() / 1000 ) - cache.date < maxAge ) {
 				// Set variable cache.
-				googlesitekit.admin.datacache[ key ] = nonReferencedValue( cache.value );
+				googlesitekit.admin.datacache[ key ] = cloneDeep( cache.value );
 
-				return nonReferencedValue( googlesitekit.admin.datacache[ key ] );
+				return cloneDeep( googlesitekit.admin.datacache[ key ] );
 			}
 		}
 
