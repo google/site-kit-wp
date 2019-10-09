@@ -380,7 +380,6 @@ class TagmanagerSetup extends Component {
 						outlined
 					>
 						{ accounts.map( ( account ) => {
-							window.console.log( 'account', account );
 							return (
 								<Option
 									key={ account.accountId }
