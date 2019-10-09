@@ -155,12 +155,15 @@ class TagmanagerSetup extends Component {
 			responseData.containers.push( chooseContainer );
 
 			if ( this._isMounted ) {
+				const accountId = responseData.accounts[ 0 ] ? responseData.accounts[ 0 ].accountId : null;
+				const publicId = responseData.containers[ 0 ] ? responseData.containers[ 0 ].publicId : null;
+
 				this.setState( {
 					isLoading: false,
 					accounts: responseData.accounts,
-					selectedAccount: ( selectedAccount ) ? selectedAccount : responseData.accounts[ 0 ].accountId,
+					selectedAccount: ( selectedAccount ) ? selectedAccount : accountId,
 					containers: responseData.containers,
-					selectedContainer: ( selectedContainer ) ? selectedContainer : responseData.containers[ 0 ].publicId,
+					selectedContainer: ( selectedContainer ) ? selectedContainer : publicId,
 					refetch: false,
 					errorCode,
 					errorMsg,
