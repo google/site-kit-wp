@@ -140,9 +140,7 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 
-		await page.waitForSelector( '.googlesitekit-setup-module--adsense' );
-
-		await expect( page ).toMatchElement( '.googlesitekit-heading-4.googlesitekit-setup-module__title', { text: /We’re getting your site ready for ads/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /We’re getting your site ready for ads/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status/i } );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
@@ -200,8 +198,6 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 
-		await page.waitForSelector( '.googlesitekit-setup-module--adsense' );
-
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /We’re getting your site ready for ads/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status/i } );
 
@@ -237,8 +233,6 @@ describe( 'setting up the AdSense module', () => {
 		await expect( '/' ).not.toHaveAdSenseTag();
 
 		await proceedToAdsenseSetup();
-
-		await page.waitForSelector( '.googlesitekit-setup-module--adsense' );
 
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Your site isn’t ready to show ads yet/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to AdSense to find out how to fix the issue/i } );
@@ -276,9 +270,10 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 
-		await page.waitForSelector( '.googlesitekit-setup-module--adsense' );
-
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Create your AdSense account/i } );
+
+		await page.waitForSelector( '.googlesitekit-cta-link' );
+
 		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Create AdSense Account/i } );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
