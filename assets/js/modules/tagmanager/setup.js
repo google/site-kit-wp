@@ -400,7 +400,6 @@ class TagmanagerSetup extends Component {
 							outlined
 						>
 							{ containers.map( ( container ) => {
-								window.console.log( 'container', container );
 								return (
 									<Option
 										key={ container.containerId }
