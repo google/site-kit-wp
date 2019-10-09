@@ -466,9 +466,9 @@ class AnalyticsSetup extends Component {
 
 		const analyticAccount = {
 			accountId: selectedAccount || accounts[ 0 ].id || null,
-			profileId: selectedProfile || profiles[ 0 ].id || null,
-			propertyId: selectedProperty || properties[ 0 ].id || null,
-			internalWebPropertyId: selectedinternalWebProperty || properties[ 0 ].internalWebPropertyId || null,
+			profileId: selectedProfile || profiles[ 0 ].id || '0',
+			propertyId: selectedProperty || properties[ 0 ].id || '0',
+			internalWebPropertyId: selectedinternalWebProperty || properties[ 0 ].internalWebPropertyId || '0',
 			useSnippet: useSnippet || false,
 			ampClientIdOptIn: ampClientIdOptIn || false,
 		};
