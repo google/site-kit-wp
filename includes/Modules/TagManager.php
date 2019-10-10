@@ -494,7 +494,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 						'containers' => array(),
 					);
 					if ( 0 === count( $response['accounts'] ) ) {
-						return new WP_Error( 'google_tagmanager_account_empty', __( 'We didn’t find an associated Google Tag Manager account, would you like to set it up now? If you’ve just set up an account please re-fetch your account to sync it with Site Kit.', 'google-site-kit' ), array( 'status' => 500 ) );
+						return $response;
 					}
 					if ( is_array( $this->_list_accounts_data ) && isset( $this->_list_accounts_data['accountId'] ) ) {
 						$account_id                = $this->_list_accounts_data['accountId'];
