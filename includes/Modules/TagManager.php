@@ -39,7 +39,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 	 * @since 1.0.0
 	 * @var array|null
 	 */
-	private $_list_accounts_data = null;
+	private $list_accounts_data = null;
 
 	/**
 	 * Temporary storage for requested account ID while retrieving containers.
@@ -49,7 +49,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 	 * @since 1.0.0
 	 * @var string|null
 	 */
-	private $_containers_account_id = null;
+	private $containers_account_id = null;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -357,7 +357,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 					};
 				case 'accounts-containers':
 					if ( ! empty( $data['accountId'] ) ) {
-						$this->_list_accounts_data = $data;
+						$this->list_accounts_data = $data;
 					}
 					$service = $this->get_service( 'tagmanager' );
 					return $service->accounts->listAccounts();
@@ -366,7 +366,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
 					}
-					$this->_containers_account_id = $data['accountId'];
+					$this->containers_account_id = $data['accountId'];
 
 					$service = $this->get_service( 'tagmanager' );
 					return $service->accounts_containers->listAccountsContainers( "accounts/{$data['accountId']}" );
@@ -496,9 +496,9 @@ final class TagManager extends Module implements Module_With_Scopes {
 					if ( 0 === count( $response['accounts'] ) ) {
 						return $response;
 					}
-					if ( is_array( $this->_list_accounts_data ) && isset( $this->_list_accounts_data['accountId'] ) ) {
-						$account_id                = $this->_list_accounts_data['accountId'];
-						$this->_list_accounts_data = null;
+					if ( is_array( $this->list_accounts_data ) && isset( $this->list_accounts_data['accountId'] ) ) {
+						$account_id               = $this->list_accounts_data['accountId'];
+						$this->list_accounts_data = null;
 					} else {
 						$account_id = $response['accounts'][0]->getAccountId();
 					}
@@ -512,10 +512,10 @@ final class TagManager extends Module implements Module_With_Scopes {
 					return array_merge( $response, compact( 'containers' ) );
 				case 'containers':
 					$account_id = null;
-					if ( ! empty( $this->_containers_account_id ) ) {
-						$account_id = $this->_containers_account_id;
+					if ( ! empty( $this->containers_account_id ) ) {
+						$account_id = $this->containers_account_id;
 
-						$this->_containers_account_id = null;
+						$this->containers_account_id = null;
 					}
 
 					$response = $response->getContainer();

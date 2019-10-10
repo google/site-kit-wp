@@ -23,9 +23,9 @@ class DashboardTest extends TestCase {
 	public function test_register() {
 		global $wp_meta_boxes, $current_screen;
 		// Clear out any registered meta boxes
-		$wp_meta_boxes = array();
+		$wp_meta_boxes = array(); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		// Set the current screen to the dashboard
-		$current_screen = convert_to_screen( 'dashboard' );
+		$current_screen = convert_to_screen( 'dashboard' ); // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$admin_id       = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		$dashboard      = new Dashboard( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		// Clear registered actions on hooks related to our assertions
@@ -39,9 +39,12 @@ class DashboardTest extends TestCase {
 			'map_meta_cap',
 			function ( $caps, $cap ) {
 				if ( Permissions::VIEW_DASHBOARD === $cap ) {
-					$caps = array_filter( $caps, function ( $cap ) {
-						return 'do_not_allow' !== $cap;
-					} );
+					$caps = array_filter(
+						$caps,
+						function ( $cap ) {
+							return 'do_not_allow' !== $cap;
+						}
+					);
 				}
 
 				return $caps;

@@ -146,8 +146,8 @@ final class Activation {
 			array(
 				'content'         => function() {
 					// Remove the default WordPress "Plugin Activated" notice.
-					if ( isset( $_GET['activate'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-						unset( $_GET['activate'] ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+					if ( isset( $_GET['activate'] ) ) { // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
+						unset( $_GET['activate'] ); // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 					}
 
 					$sitekit_splash_url = $this->context->admin_url( 'splash' );

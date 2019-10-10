@@ -36,9 +36,12 @@ class API_Key_ClientTest extends TestCase {
 		// Returns false if not filtered, and no key set.
 		$this->assertFalse( $client->get_api_key() );
 
-		add_filter( 'googlesitekit_api_key', function () {
-			return 'test-api-key';
-		} );
+		add_filter(
+			'googlesitekit_api_key',
+			function () {
+				return 'test-api-key';
+			}
+		);
 
 		$this->assertEquals( 'test-api-key', $client->get_api_key() );
 	}

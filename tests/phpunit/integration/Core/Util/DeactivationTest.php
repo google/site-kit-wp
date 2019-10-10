@@ -19,14 +19,14 @@ use Google\Site_Kit\Tests\TestCase;
 class DeactivationTest extends TestCase {
 
 	public function test_register() {
-		$deactivation    = new Deactivation();
+		$deactivation = new Deactivation();
 		remove_all_actions( 'googlesitekit_deactivation' );
 
 		wp_schedule_event( time(), 'daily', 'googlesitekit_cron_daily', array( 'interval' => 'daily' ) );
 		wp_schedule_event( time(), 'hourly', 'googlesitekit_cron_hourly', array( 'interval' => 'hourly' ) );
 
 		$deactivation->register();
-		$this->assertDeactivationActions( $network_wide = false );
+		$this->assertDeactivationActions( false );
 	}
 
 

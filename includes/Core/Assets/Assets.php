@@ -450,15 +450,15 @@ final class Assets {
 			'adminRoot'        => esc_url_raw( get_admin_url() . 'admin.php' ),
 			'pluginUri'        => esc_url_raw( $this->context->url( '/' ) ),
 			'assetsRoot'       => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
-			'nojscache'        => current_user_can( 'manage_options' ) && isset( $_GET['nojscache'] ), // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			'datacache'        => ( current_user_can( 'manage_options' ) && isset( $_GET['datacache'] ) ) ? // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			'nojscache'        => current_user_can( 'manage_options' ) && isset( $_GET['nojscache'] ), // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
+			'datacache'        => ( current_user_can( 'manage_options' ) && isset( $_GET['datacache'] ) ) ? // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 				json_encode( $cache->get_current_cache_data() ) : // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
 				false,
 			'timestamp'        => time(),
 			'currentScreen'    => is_admin() ? get_current_screen() : null,
-			'currentAdminPage' => ( is_admin() && isset( $_GET['page'] ) ) ? sanitize_key( $_GET['page'] ) : null, // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			'resetSession'     => isset( $_GET['googlesitekit_reset_session'] ), // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			'reAuth'           => isset( $_GET['reAuth'] ) && 'true' === sanitize_key( $_GET['reAuth'] ), // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			'currentAdminPage' => ( is_admin() && isset( $_GET['page'] ) ) ? sanitize_key( $_GET['page'] ) : null, // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
+			'resetSession'     => isset( $_GET['googlesitekit_reset_session'] ), // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
+			'reAuth'           => isset( $_GET['reAuth'] ) && 'true' === sanitize_key( $_GET['reAuth'] ), // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 			'userData'         => array(
 				'id'      => $current_user->ID,
 				'email'   => $current_user->user_email,
@@ -470,14 +470,14 @@ final class Assets {
 			'homeURL'          => home_url(),
 		);
 
-		if ( isset( $_GET['permaLink'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			$permalink = esc_url_raw( $_GET['permaLink'] );
+		if ( isset( $_GET['permaLink'] ) ) { // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
+			$permalink = esc_url_raw( $_GET['permaLink'] ); // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 		} else {
 			$permalink = esc_url_raw( $this->context->get_reference_canonical() );
 		}
 
-		if ( isset( $_GET['pageTitle'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			$page_title = sanitize_text_field( $_GET['pageTitle'] );
+		if ( isset( $_GET['pageTitle'] ) ) { // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
+			$page_title = sanitize_text_field( $_GET['pageTitle'] ); // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 		} else {
 			if ( is_home() ) {
 				$page_title = get_bloginfo( 'blogname' );
@@ -541,7 +541,7 @@ final class Assets {
 			'postType'           => get_post_type(),
 			'dashboardPermalink' => $this->context->admin_url( 'dashboard' ),
 			'publicPath'         => $this->context->url( 'dist/assets/js/' ),
-			'editmodule'         => isset( $_GET['editmodule'] ) ? sanitize_key( $_GET['editmodule'] ) : '', // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			'editmodule'         => isset( $_GET['editmodule'] ) ? sanitize_key( $_GET['editmodule'] ) : '', // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 		);
 
 		return $googlesitekit;

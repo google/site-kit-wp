@@ -243,8 +243,8 @@ final class Authentication {
 					remove_all_actions( "{$hook_suffix}" );
 
 					$redirect_url = '';
-					if ( ! empty( $_GET['redirect'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-						$redirect_url = esc_url_raw( wp_unslash( $_GET['redirect'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+					if ( ! empty( $_GET['redirect'] ) ) { // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
+						$redirect_url = esc_url_raw( wp_unslash( $_GET['redirect'] ) ); // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 					}
 
 					$connect_url = $this->get_connect_url();
@@ -482,8 +482,8 @@ final class Authentication {
 			}
 
 			$redirect_url = '';
-			if ( ! empty( $_GET['redirect'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-				$redirect_url = esc_url_raw( wp_unslash( $_GET['redirect'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			if ( ! empty( $_GET['redirect'] ) ) { // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
+				$redirect_url = esc_url_raw( wp_unslash( $_GET['redirect'] ) ); // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 			}
 
 			$required_scopes = $this->get_oauth_client()->get_required_scopes();
@@ -737,7 +737,7 @@ final class Authentication {
 				},
 				'type'            => Notice::TYPE_SUCCESS,
 				'active_callback' => function() {
-					if ( isset( $_GET['notification'] ) && 'googlesitekit_user_disconnected' === $_GET['notification'] ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+					if ( isset( $_GET['notification'] ) && 'googlesitekit_user_disconnected' === $_GET['notification'] ) { // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 						return true;
 					}
 					return false;
@@ -804,8 +804,8 @@ final class Authentication {
 				'content'         => function() {
 					$message     = '';
 					$auth_client = $this->get_oauth_client();
-					if ( isset( $_GET['notification'] ) && 'authentication_success' === $_GET['notification'] && ! empty( $_GET['error'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-						$message = $auth_client->get_error_message( sanitize_key( $_GET['error'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+					if ( isset( $_GET['notification'] ) && 'authentication_success' === $_GET['notification'] && ! empty( $_GET['error'] ) ) { // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
+						$message = $auth_client->get_error_message( sanitize_key( $_GET['error'] ) ); // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 					}
 
 					// If message is empty, check if we have the stored error message.
@@ -826,7 +826,7 @@ final class Authentication {
 				},
 				'type'            => Notice::TYPE_ERROR,
 				'active_callback' => function() {
-					if ( isset( $_GET['notification'] ) && 'authentication_success' === $_GET['notification'] && ! empty( $_GET['error'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+					if ( isset( $_GET['notification'] ) && 'authentication_success' === $_GET['notification'] && ! empty( $_GET['error'] ) ) { // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 						return true;
 					}
 

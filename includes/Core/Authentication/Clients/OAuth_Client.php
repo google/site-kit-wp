@@ -451,7 +451,7 @@ final class OAuth_Client {
 	 * @since 1.0.0
 	 */
 	public function authorize_user() {
-		if ( ! isset( $_GET['code'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+		if ( ! isset( $_GET['code'] ) ) { // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 			$auth_url = $this->get_client()->createAuthUrl();
 			$auth_url = filter_var( $auth_url, FILTER_SANITIZE_URL );
 
@@ -466,7 +466,7 @@ final class OAuth_Client {
 		}
 
 		try {
-			$authentication_token = $this->get_client()->fetchAccessTokenWithAuthCode( $_GET['code'] ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			$authentication_token = $this->get_client()->fetchAccessTokenWithAuthCode( $_GET['code'] ); // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 		} catch ( Exception $e ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'invalid_code' );
 			wp_safe_redirect( admin_url() );
@@ -498,8 +498,8 @@ final class OAuth_Client {
 		// Update granted scopes.
 		if ( isset( $authentication_token['scope'] ) ) {
 			$scopes = explode( ' ', $authentication_token['scope'] );
-		} elseif ( isset( $_GET['scope'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			$scopes = explode( ' ', $_GET['scope'] ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+		} elseif ( isset( $_GET['scope'] ) ) { // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
+			$scopes = explode( ' ', $_GET['scope'] ); // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 		} else {
 			$scopes = $this->get_required_scopes();
 		}

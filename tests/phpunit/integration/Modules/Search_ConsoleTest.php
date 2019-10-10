@@ -75,9 +75,12 @@ class Search_ConsoleTest extends TestCase {
 		// Site url uses property URL by default.
 		$this->assertEquals( $property_url, apply_filters( 'googlesitekit_site_url', '' ) );
 
-		add_filter( 'googlesitekit_site_url', function () {
-			return 'https://other.example.com';
-		} );
+		add_filter(
+			'googlesitekit_site_url',
+			function () {
+				return 'https://other.example.com';
+			}
+		);
 
 		// Property URL filters googlesitekit_site_url on a very low priority
 		$this->assertEquals( 'https://other.example.com', apply_filters( 'googlesitekit_site_url', '' ) );

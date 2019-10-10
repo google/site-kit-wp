@@ -36,11 +36,14 @@ class ModuleTest extends TestCase {
 		// Can't use force_set_property here since the property is private on the base module
 		$reflection_property = new \ReflectionProperty( self::MODULE_CLASS_NAME, 'info' );
 		$reflection_property->setAccessible( true );
-		$reflection_property->setValue( $module, array(
-			'slug'        => 'module-slug',
-			'name'        => 'module name',
-			'description' => 'module description',
-		) );
+		$reflection_property->setValue(
+			$module,
+			array(
+				'slug'        => 'module-slug',
+				'name'        => 'module name',
+				'description' => 'module description',
+			)
+		);
 
 		$this->assertTrue( isset( $module->slug ) );
 		$this->assertTrue( isset( $module->name ) );
@@ -56,7 +59,7 @@ class ModuleTest extends TestCase {
 
 	public function test_prepare_info_for_js() {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$keys = array(
+		$keys   = array(
 			'slug',
 			'name',
 			'description',

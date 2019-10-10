@@ -39,7 +39,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * @since 1.0.0
 	 * @var array|null
 	 */
-	private $_siteverification_list_data = null;
+	private $siteverification_list_data = null;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -98,7 +98,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 				case 'verification':
 					// This is far from optimal and hacky, but works for now.
 					if ( ! empty( $data['siteURL'] ) ) {
-						$this->_siteverification_list_data = $data;
+						$this->siteverification_list_data = $data;
 					}
 
 					return $this->get_siteverification_service()->webResource->listWebResource();
@@ -238,9 +238,9 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 					return $data;
 				case 'verification':
-					if ( is_array( $this->_siteverification_list_data ) && isset( $this->_siteverification_list_data['siteURL'] ) ) {
-						$current_url                       = trailingslashit( $this->_siteverification_list_data['siteURL'] );
-						$this->_siteverification_list_data = null;
+					if ( is_array( $this->siteverification_list_data ) && isset( $this->siteverification_list_data['siteURL'] ) ) {
+						$current_url                      = trailingslashit( $this->siteverification_list_data['siteURL'] );
+						$this->siteverification_list_data = null;
 					} else {
 						$current_url = trailingslashit( $this->context->get_reference_site_url() );
 					}

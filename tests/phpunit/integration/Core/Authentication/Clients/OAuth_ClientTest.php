@@ -199,7 +199,7 @@ class OAuth_ClientTest extends TestCase {
 		$post_auth_redirect = 'http://example.com/test/redirect/url';
 		$authentication_url = $client->get_authentication_url( $post_auth_redirect );
 		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/auth?', $authentication_url );
-		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
+		wp_parse_str( wp_parse_url( $authentication_url, PHP_URL_QUERY ), $params );
 		/**
 		 * The redirect URL passed to get_authentication_url is used locally, and the redirect URI here is always the same.
 		 * @see \Google\Site_Kit\Core\Authentication\Authentication::handle_oauth
@@ -290,13 +290,18 @@ class OAuth_ClientTest extends TestCase {
 	}
 
 	protected function fake_authentication() {
-		add_filter( 'googlesitekit_oauth_secret', function () {
-			return json_encode( array(
-				'web' => array(
-					'client_id'     => 'test-client-id',
-					'client_secret' => 'test-client-secret',
-				),
-			) );
-		} );
+		add_filter(
+			'googlesitekit_oauth_secret',
+			function () {
+				return wp_json_encode(
+					array(
+						'web' => array(
+							'client_id'     => 'test-client-id',
+							'client_secret' => 'test-client-secret',
+						),
+					)
+				);
+			}
+		);
 	}
 }

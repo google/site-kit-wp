@@ -356,7 +356,7 @@ abstract class Module {
 		// Cache the results for storybook.
 		if (
 			current_user_can( 'manage_options' ) &&
-			isset( $_GET['datacache'] ) // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			isset( $_GET['datacache'] ) // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 			&& ! empty( $results )
 		) {
 			$cache = new Cache();

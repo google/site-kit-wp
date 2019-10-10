@@ -153,10 +153,13 @@ class AuthenticationTest extends TestCase {
 		$this->assertTrue( $auth->is_authenticated() );
 		// Set a refresh token and expect it to be passed to the Google Client.
 		$client->set_refresh_token( 'test-refresh-token' );
-		$mock_google_client = $this->getMock( 'Google_Client', array(
-			'fetchAccessTokenWithRefreshToken',
-			'revokeToken'
-		) );
+		$mock_google_client = $this->getMock(
+			'Google_Client',
+			array(
+				'fetchAccessTokenWithRefreshToken',
+				'revokeToken',
+			)
+		);
 		$mock_google_client->expects( $this->once() )->method( 'fetchAccessTokenWithRefreshToken' )->with( 'test-refresh-token' );
 		$mock_google_client->expects( $this->once() )->method( 'revokeToken' );
 		$this->force_set_property( $client, 'google_client', $mock_google_client );
@@ -286,12 +289,12 @@ class AuthenticationTest extends TestCase {
 		$connect_url = $auth->get_connect_url();
 
 		$this->assertStringStartsWith( admin_url(), $connect_url );
-		wp_parse_str( parse_url( $connect_url, PHP_URL_QUERY ), $params );
+		wp_parse_str( wp_parse_url( $connect_url, PHP_URL_QUERY ), $params );
 		$this->assertEquals( 1, wp_verify_nonce( $params['nonce'], 'connect' ) );
 		$this->assertArraySubset(
 			array(
 				'googlesitekit_connect' => 1,
-				'page'                  => 'googlesitekit-splash'
+				'page'                  => 'googlesitekit-splash',
 			),
 			$params
 		);
@@ -303,12 +306,12 @@ class AuthenticationTest extends TestCase {
 		$disconnect_url = $auth->get_disconnect_url();
 
 		$this->assertStringStartsWith( admin_url(), $disconnect_url );
-		wp_parse_str( parse_url( $disconnect_url, PHP_URL_QUERY ), $params );
+		wp_parse_str( wp_parse_url( $disconnect_url, PHP_URL_QUERY ), $params );
 		$this->assertEquals( 1, wp_verify_nonce( $params['nonce'], 'disconnect' ) );
 		$this->assertArraySubset(
 			array(
 				'googlesitekit_disconnect' => 1,
-				'page'                     => 'googlesitekit-splash'
+				'page'                     => 'googlesitekit-splash',
 			),
 			$params
 		);

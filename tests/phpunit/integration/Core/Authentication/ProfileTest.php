@@ -51,13 +51,37 @@ class ProfileTest extends TestCase {
 		$this->assertFalse( $profile->has() );
 		$user_options->set( Profile::OPTION, array( 'email' => 'user@example.com' ) );
 		$this->assertFalse( $profile->has() );
-		$user_options->set( Profile::OPTION, array( 'email' => 'user@example.com', 'photo' => '' ) );
+		$user_options->set(
+			Profile::OPTION,
+			array(
+				'email' => 'user@example.com',
+				'photo' => '',
+			)
+		);
 		$this->assertFalse( $profile->has() );
-		$user_options->set( Profile::OPTION, array( 'email' => '', 'photo' => '' ) );
+		$user_options->set(
+			Profile::OPTION,
+			array(
+				'email' => '',
+				'photo' => '',
+			)
+		);
 		$this->assertFalse( $profile->has() );
-		$user_options->set( Profile::OPTION, array( 'email' => '', 'photo' => 'test-photo.jpg' ) );
+		$user_options->set(
+			Profile::OPTION,
+			array(
+				'email' => '',
+				'photo' => 'test-photo.jpg',
+			)
+		);
 		$this->assertFalse( $profile->has() );
-		$user_options->set( Profile::OPTION, array( 'email' => 'user@example.com', 'photo' => 'test-photo.jpg' ) );
+		$user_options->set(
+			Profile::OPTION,
+			array(
+				'email' => 'user@example.com',
+				'photo' => 'test-photo.jpg',
+			)
+		);
 		$this->assertTrue( $profile->has() );
 	}
 
@@ -70,10 +94,18 @@ class ProfileTest extends TestCase {
 
 		$this->assertFalse( $user_options->get( Profile::OPTION ) );
 
-		$profile->set( array( 'email' => 'user@example.com', 'photo' => 'test-photo.jpg' ) );
+		$profile->set(
+			array(
+				'email' => 'user@example.com',
+				'photo' => 'test-photo.jpg',
+			)
+		);
 
 		$this->assertEquals(
-			array( 'email' => 'user@example.com', 'photo' => 'test-photo.jpg' ),
+			array(
+				'email' => 'user@example.com',
+				'photo' => 'test-photo.jpg',
+			),
 			$user_options->get( Profile::OPTION )
 		);
 	}

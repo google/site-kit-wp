@@ -50,7 +50,7 @@ class ContextTest extends TestCase {
 		$admin_url = trailingslashit( admin_url() );
 
 		$get_query_params = function ( $url ) {
-			wp_parse_str( parse_url( $url, PHP_URL_QUERY ), $query_vars );
+			wp_parse_str( wp_parse_url( $url, PHP_URL_QUERY ), $query_vars );
 
 			return $query_vars;
 		};
@@ -76,7 +76,13 @@ class ContextTest extends TestCase {
 		);
 
 		// Make sure that the page parameter is not overridden by extra query params.
-		$admin_url_with_page_param = $context->admin_url( 'slug', array( 'foo' => 'bar', 'page' => 'different' ) );
+		$admin_url_with_page_param = $context->admin_url(
+			'slug',
+			array(
+				'foo'  => 'bar',
+				'page' => 'different',
+			)
+		);
 		$this->assertEqualSetsWithIndex(
 			array(
 				'page' => Screens::PREFIX . 'slug',
@@ -121,7 +127,12 @@ class ContextTest extends TestCase {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
 		$post_id = self::factory()->post->create( array( 'post_title' => 'hello-world' ) );
-		$page_id = self::factory()->post->create( array( 'post_title' => 'homepage', 'post_type' => 'page' ) );
+		$page_id = self::factory()->post->create(
+			array(
+				'post_title' => 'homepage',
+				'post_type'  => 'page',
+			)
+		);
 		self::factory()->category->create( array( 'slug' => 'postcategory' ) );
 
 		$this->go_to( '/category/postcategory' );

@@ -12,29 +12,40 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-register_activation_hook( __FILE__, function () {
-	delete_option( 'googlesitekit_e2e_analytics_existing_property_id' );
-} );
+// phpcs:disable WordPress.Security.EscapeOutput.OutputNotEscaped, WordPress.WP.EnqueuedResources.NonEnqueuedScript
 
-register_deactivation_hook( __FILE__, function () {
-	delete_option( 'googlesitekit_e2e_analytics_existing_property_id' );
-} );
-
-add_action( 'wp_print_scripts', function () {
-	$UA_CODE = get_option( 'googlesitekit_e2e_analytics_existing_property_id' );
-
-	if ( ! $UA_CODE ) {
-		return;
+register_activation_hook(
+	__FILE__,
+	function () {
+		delete_option( 'googlesitekit_e2e_analytics_existing_property_id' );
 	}
+);
 
-	echo <<<HTML
+register_deactivation_hook(
+	__FILE__,
+	function () {
+		delete_option( 'googlesitekit_e2e_analytics_existing_property_id' );
+	}
+);
+
+add_action(
+	'wp_print_scripts',
+	function () {
+		$ua_code = get_option( 'googlesitekit_e2e_analytics_existing_property_id' );
+
+		if ( ! $ua_code ) {
+			return;
+		}
+
+		echo <<<HTML
 <!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=$UA_CODE"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=$ua_code"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', '$UA_CODE');
+  gtag('config', '$ua_code');
 </script>
 HTML;
-} );
+	}
+);

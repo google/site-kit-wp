@@ -200,7 +200,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 	protected function output_adsense_script() {
 
 		// Bail early if we are checking for the tag presence from the back end.
-		$tag_verify = ! empty( $_GET['tagverify'] ) ? true : false; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+		$tag_verify = ! empty( $_GET['tagverify'] ) ? true : false; // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 		if ( $tag_verify ) {
 			return;
 		}

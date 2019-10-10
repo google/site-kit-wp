@@ -50,9 +50,12 @@ class AdSenseTest extends TestCase {
 		$this->assertArraySubset( array( 'accountId' => 'saved-account-id' ), get_option( AdSense::OPTION ) );
 		remove_filter( 'googlesitekit_adsense_account_id', '__return_empty_string' );
 
-		add_filter( 'googlesitekit_adsense_account_id', function () {
-			return 'filtered-adsense-account-id';
-		} );
+		add_filter(
+			'googlesitekit_adsense_account_id',
+			function () {
+				return 'filtered-adsense-account-id';
+			}
+		);
 		$this->assertArraySubset( array( 'accountId' => 'filtered-adsense-account-id' ), get_option( AdSense::OPTION ) );
 
 		// Default value filtered into saved value.

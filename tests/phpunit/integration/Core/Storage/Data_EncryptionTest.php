@@ -8,6 +8,8 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+// phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode, WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode
+
 namespace Google\Site_Kit\Tests\Core\Storage;
 
 use Google\Site_Kit\Core\Storage\Data_Encryption;
@@ -48,7 +50,7 @@ class Data_EncryptionTest extends TestCase {
 		// Encrypt 'test-value' and ensure that it is decrypted successfully.
 		$iv_len          = openssl_cipher_iv_length( self::METHOD );
 		$iv              = openssl_random_pseudo_bytes( $iv_len );
-		$encrypted       = openssl_encrypt( 'test-value' . 'test-salt', self::METHOD, 'test-key', 0, $iv );
+		$encrypted       = openssl_encrypt( 'test-value' . 'test-salt', self::METHOD, 'test-key', 0, $iv ); // phpcs:ignore Generic.Strings.UnnecessaryStringConcat.Found
 		$encrypted_value = base64_encode( $iv . $encrypted );
 		$decrypted_value = $encryption->decrypt( $encrypted_value );
 

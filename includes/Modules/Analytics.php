@@ -38,14 +38,14 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 *
 	 * @var array
 	 */
-	private $_data;
+	private $data;
 
 	/**
 	 * Temporary storage for adsense request.
 	 *
 	 * @var bool
 	 */
-	private $_is_adsense_request = false;
+	private $is_adsense_request = false;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -239,7 +239,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 */
 	protected function enqueue_gtag_js() {
 		// Bail early if we are checking for the tag presence from the back end.
-		$tag_verify = ! empty( $_GET['tagverify'] ) ? true : false; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+		$tag_verify = ! empty( $_GET['tagverify'] ) ? true : false; // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 		if ( $tag_verify ) {
 			return;
 		}
@@ -313,7 +313,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 */
 	protected function print_amp_gtag() {
 		// Bail early if we are checking for the tag presence from the back end.
-		$tag_verify = ! empty( $_GET['tagverify'] ) ? true : false; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+		$tag_verify = ! empty( $_GET['tagverify'] ) ? true : false; // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
 		if ( $tag_verify ) {
 			return;
 		}
@@ -467,7 +467,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
 	protected function create_data_request( $method, $datapoint, array $data = array() ) {
-		$this->_data = $data;
+		$this->data = $data;
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
@@ -934,7 +934,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( $method, $datapoint, $response ) {
-		$data = $this->_data ?: array();
+		$data = $this->data ?: array();
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
@@ -1060,7 +1060,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 					return $response;
 				case 'report':
-					if ( $this->_is_adsense_request ) {
+					if ( $this->is_adsense_request ) {
 						if ( isset( $response->error ) ) {
 							$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 						} else {
@@ -1239,7 +1239,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	private function detect_adsense_request_from_metrics( array $metrics ) {
 		foreach ( $metrics as $metric ) {
 			if ( 0 === strpos( $metric->getExpression(), 'ga:adsense' ) ) {
-				$this->_is_adsense_request = true;
+				$this->is_adsense_request = true;
 			}
 		}
 	}

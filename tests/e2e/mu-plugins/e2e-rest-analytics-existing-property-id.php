@@ -11,26 +11,33 @@
 
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 
-add_action( 'rest_api_init', function () {
-	if ( ! defined( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE' ) ) {
-		return;
-	}
+add_action(
+	'rest_api_init',
+	function () {
+		if ( ! defined( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE' ) ) {
+			return;
+		}
 
-	register_rest_route(
-		REST_Routes::REST_ROOT,
-		'e2e/analytics/existing-property-id',
-		array(
-			'methods'  => WP_REST_Server::EDITABLE,
-			'callback' => function ( WP_REST_Request $request ) {
-				if ( $request['id'] ) {
-					update_option( 'googlesitekit_e2e_analytics_existing_property_id', $request['id'] );
-				} else {
-					delete_option( 'googlesitekit_e2e_analytics_existing_property_id' );
-				}
+		register_rest_route(
+			REST_Routes::REST_ROOT,
+			'e2e/analytics/existing-property-id',
+			array(
+				'methods'  => WP_REST_Server::EDITABLE,
+				'callback' => function ( WP_REST_Request $request ) {
+					if ( $request['id'] ) {
+						update_option( 'googlesitekit_e2e_analytics_existing_property_id', $request['id'] );
+					} else {
+						delete_option( 'googlesitekit_e2e_analytics_existing_property_id' );
+					}
 
-				return array( 'success' => true, 'id' => $request['id'] );
-			}
-		)
-	);
-}, 0 );
+					return array(
+						'success' => true,
+						'id'      => $request['id'],
+					);
+				},
+			)
+		);
+	},
+	0
+);
 

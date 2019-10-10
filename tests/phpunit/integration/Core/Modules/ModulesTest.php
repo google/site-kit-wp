@@ -22,9 +22,12 @@ class ModulesTest extends TestCase {
 	public function test_get_available_modules() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$available = array_map( function ( $instance ) {
-			return get_class( $instance );
-		}, $modules->get_available_modules() );
+		$available = array_map(
+			function ( $instance ) {
+					return get_class( $instance );
+			},
+			$modules->get_available_modules()
+		);
 
 		$this->assertEqualSets(
 			array(
@@ -43,9 +46,12 @@ class ModulesTest extends TestCase {
 	public function test_get_active_modules() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$active = array_map( function ( $instance ) {
-			return get_class( $instance );
-		}, $modules->get_active_modules() );
+		$active = array_map(
+			function ( $instance ) {
+					return get_class( $instance );
+			},
+			$modules->get_active_modules()
+		);
 
 		$this->assertEqualSets(
 			array(
@@ -190,9 +196,11 @@ class ModulesTest extends TestCase {
 
 		$activation_invocations = 0;
 		$fake_module            = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$fake_module->set_on_activation_callback( function () use ( &$activation_invocations ) {
-			$activation_invocations++;
-		} );
+		$fake_module->set_on_activation_callback(
+			function () use ( &$activation_invocations ) {
+					$activation_invocations++;
+			}
+		);
 
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
 
@@ -216,9 +224,11 @@ class ModulesTest extends TestCase {
 
 		$deactivation_invocations = 0;
 		$fake_module              = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$fake_module->set_on_deactivation_callback( function () use ( &$deactivation_invocations ) {
-			$deactivation_invocations++;
-		} );
+		$fake_module->set_on_deactivation_callback(
+			function () use ( &$deactivation_invocations ) {
+					$deactivation_invocations++;
+			}
+		);
 
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
 		update_option( 'googlesitekit-active-modules', array( 'fake-module' ) );
