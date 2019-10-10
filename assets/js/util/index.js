@@ -602,17 +602,17 @@ export const getExistingTag = async ( module ) => {
 		// Add a timestamp for cache-busting.
 		timestamp: Date.now(),
 	};
-	let tagFound;
 
-	if ( 'secondary' === ampMode ) {
+	// Always check the homepage regardless of AMP mode.
+	let tagFound = await scrapeTag( addQueryArgs( homeURL, tagFetchQueryArgs ), module );
+
+	if ( ! tagFound && 'secondary' === ampMode ) {
 		tagFound = await apiFetch( { path: '/wp/v2/posts?per_page=1' } ).then(
 			// Scrape the first post in AMP mode, if there is one.
 			( posts ) => posts.slice( 0, 1 ).map( async ( post ) => {
 				return await scrapeTag( addQueryArgs( post.link, { ...tagFetchQueryArgs, amp: 1 } ), module );
 			} ).pop()
 		);
-	} else {
-		tagFound = await scrapeTag( addQueryArgs( homeURL, tagFetchQueryArgs ), module );
 	}
 
 	return Promise.resolve( tagFound || null );
