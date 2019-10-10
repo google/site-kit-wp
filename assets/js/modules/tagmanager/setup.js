@@ -133,6 +133,14 @@ class TagmanagerSetup extends Component {
 			let errorMsg = '';
 			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'accounts-containers', queryArgs );
 
+			if ( ! selectedAccount && 0 === responseData.accounts.length ) {
+				errorCode = 'accountEmpty';
+				errorMsg = __(
+					'We didn’t find an associated Google Tag Manager account, would you like to set it up now? If you’ve just set up an account please re-fetch your account to sync it with Site Kit.',
+					'google-site-kit'
+				);
+			}
+
 			// Verify if user has access to the selected account.
 			if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.accountId === selectedAccount ) ) {
 				data.invalidateCacheGroup( TYPE_MODULES, 'tagmanager', 'accounts-containers' );
@@ -147,12 +155,15 @@ class TagmanagerSetup extends Component {
 			responseData.containers.push( chooseContainer );
 
 			if ( this._isMounted ) {
+				const accountId = responseData.accounts[ 0 ] ? responseData.accounts[ 0 ].accountId : null;
+				const publicId = responseData.containers[ 0 ] ? responseData.containers[ 0 ].publicId : null;
+
 				this.setState( {
 					isLoading: false,
 					accounts: responseData.accounts,
-					selectedAccount: ( selectedAccount ) ? selectedAccount : responseData.accounts[ 0 ].accountId,
+					selectedAccount: ( selectedAccount ) ? selectedAccount : accountId,
 					containers: responseData.containers,
-					selectedContainer: ( selectedContainer ) ? selectedContainer : responseData.containers[ 0 ].publicId,
+					selectedContainer: ( selectedContainer ) ? selectedContainer : publicId,
 					refetch: false,
 					errorCode,
 					errorMsg,
