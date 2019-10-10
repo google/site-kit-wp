@@ -103,7 +103,6 @@ class AnalyticsSetup extends Component {
 						errorReason: err.data && err.data.reason ? err.data.reason : false,
 					}
 				);
-				data.deleteCache( 'analytics', 'existingTag' );
 			}
 		} else {
 			await this.getAccounts();
