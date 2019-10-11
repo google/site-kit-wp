@@ -389,6 +389,7 @@ final class Authentication {
 		$this->user_options->delete( Clients\OAuth_Client::OPTION_REDIRECT_URL );
 		$this->user_options->delete( Clients\OAuth_Client::OPTION_AUTH_SCOPES );
 		$this->user_options->delete( Clients\OAuth_Client::OPTION_ERROR_CODE );
+		$this->user_options->delete( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 		$this->user_options->delete( Verification::OPTION );
 		$this->user_options->delete( Verification_Tag::OPTION );
 		$this->user_options->delete( Profile::OPTION );
