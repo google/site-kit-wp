@@ -621,6 +621,25 @@ final class OAuth_Client {
 	}
 
 	/**
+	 * Returns the permissions URL to the authentication proxy.
+	 *
+	 * This only returns a URL if the user already has an access token set.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string URL to the permissions page on the authentication proxy on success,
+	 *                or empty string on failure.
+	 */
+	public function get_proxy_permissions_url() {
+		$access_token = $this->get_access_token();
+		if ( empty( $access_token ) ) {
+			return '';
+		}
+
+		return add_query_arg( 'token', $access_token, self::PROXY_URL . '/site-management/permissions/' );
+	}
+
+	/**
 	 * Checks whether the given proxy nonce is valid.
 	 *
 	 * @since 1.0.0
