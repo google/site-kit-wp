@@ -593,10 +593,10 @@ final class OAuth_Client {
 			$admin_root = str_replace( array( 'http://', 'https://' ), '', admin_url() );
 			$admin_root = str_replace( $home_url_no_scheme, '', $admin_root );
 
-			$nonce = get_option( self::OPTION_PROXY_NONCE, '' );
+			$nonce = $this->options->get( self::OPTION_PROXY_NONCE );
 			if ( empty( $nonce ) ) {
 				$nonce = wp_create_nonce( 'googlesitekit_proxy' );
-				update_option( self::OPTION_PROXY_NONCE, $nonce );
+				$this->options->set( self::OPTION_PROXY_NONCE, $nonce );
 			}
 
 			return add_query_arg(
@@ -618,6 +618,24 @@ final class OAuth_Client {
 			),
 			$url
 		);
+	}
+
+	/**
+	 * Checks whether the given proxy nonce is valid.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $nonce Nonce to validate.
+	 * @return bool True if nonce is valid, false otherwise.
+	 */
+	public function validate_proxy_nonce( $nonce ) {
+		$valid_nonce = $this->options->get( self::OPTION_PROXY_NONCE );
+		if ( $nonce !== $valid_nonce ) {
+			return false;
+		}
+
+		$this->options->delete( self::OPTION_PROXY_NONCE );
+		return true;
 	}
 
 	/**
