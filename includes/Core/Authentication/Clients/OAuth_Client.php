@@ -527,6 +527,19 @@ final class OAuth_Client {
 		);
 		$this->set_granted_scopes( $scopes );
 
+		// If using the proxy, these values can reliably be set at this point because the proxy already took care of
+		// them.
+		// TODO: In the future, once the old authentication mechanism no longer exists, this should be resolved in
+		// another way.
+		if ( $this->using_proxy() ) {
+			if ( ! $this->user_options->get( 'googlesitekit_site_verified_meta' ) ) {
+				$this->user_options->set( 'googlesitekit_site_verified_meta', 'verified' );
+			}
+			if ( ! $this->options->get( 'googlesitekit_search_console_property' ) ) {
+				$this->options->set( 'googlesitekit_search_console_property', trailingslashit( $this->context->get_reference_site_url() ) );
+			}
+		}
+
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
 
 		if ( $redirect_url ) {

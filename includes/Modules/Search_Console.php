@@ -43,25 +43,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 
 		$this->register_screen_hook();
 
-		// When using the proxy, simply set the Search Console property after receiving an access token, since it is
-		// already taken care of on the proxy side.
-		add_action(
-			'admin_init',
-			function() {
-				$auth_client = $this->authentication->get_oauth_client();
-				if ( ! $auth_client->using_proxy() ) {
-					return;
-				}
-
-				$access_token = $auth_client->get_access_token();
-				if ( empty( $access_token ) ) {
-					return;
-				}
-
-				$this->options->set( self::PROPERTY_OPTION, trailingslashit( $this->context->get_reference_site_url() ) );
-			}
-		);
-
 		// Ensure that a Search Console property must be set at all times.
 		add_filter(
 			'googlesitekit_setup_complete',
