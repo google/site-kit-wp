@@ -121,6 +121,7 @@ final class Reset {
 		$this->options->delete( Optimize::OPTION );
 		$this->options->delete( TagManager::OPTION );
 		$this->options->delete( First_Admin::OPTION );
+		$this->options->delete( OAuth_Client::OPTION_PROXY_NONCE );
 
 		// Clean up old site verification data, moved to user options.
 		// Also clean up other old unused options.
@@ -162,6 +163,7 @@ final class Reset {
 			$user_options->delete( OAuth_Client::OPTION_REDIRECT_URL );
 			$user_options->delete( OAuth_Client::OPTION_AUTH_SCOPES );
 			$user_options->delete( OAuth_Client::OPTION_ERROR_CODE );
+			$user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 			$user_options->delete( Verification::OPTION );
 			$user_options->delete( Verification_Tag::OPTION );
 			$user_options->delete( Profile::OPTION );
