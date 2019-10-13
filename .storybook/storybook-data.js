@@ -529,10 +529,10 @@ module.exports = [
 		},
 	},
 	{
-		id: 'setup--client-id',
+		id: 'setup--step-one',
 		kind: 'Setup',
-		name: 'Client ID',
-		story: 'Client ID',
+		name: 'Step One',
+		story: 'Step One',
 		parameters: {
 			fileName: './stories/setup.stories.js',
 			options: {
