@@ -69,7 +69,7 @@ describe( 'Site Kit set up flow for the first time', () => {
 		// Sign in with Google
 		await page.setRequestInterception( true );
 		useRequestInterception( stubGoogleSignIn );
-		await page.click( '.googlesitekit-wizard-step--two .mdc-button' );
+		await expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with Google/i } );
 		await page.waitForNavigation();
 
 		await expect( page ).toMatchElement( '#js-googlesitekit-dashboard' );

@@ -55,7 +55,7 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 		await setClientConfig();
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 
-		await expect( page ).toClick( '.googlesitekit-wizard-step--two button', { text: /sign in with Google/i } );
+		await expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with Google/i } );
 		await page.waitForNavigation();
 
 		await page.waitForSelector( '.googlesitekit-setup-module__title' );
@@ -74,7 +74,7 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 		await setClientConfig();
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 
-		await expect( page ).toClick( '.googlesitekit-wizard-step--two button', { text: /sign in with Google/i } );
+		await expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with Google/i } );
 		await page.waitForNavigation();
 
 		await page.waitForSelector( '.googlesitekit-setup-module__title' );
