@@ -8,9 +8,8 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
  */
 import {
 	deactivateUtilityPlugins,
-	pasteText,
 	resetSiteKit,
-	testClientConfig,
+	setClientConfig,
 	useRequestInterception,
 	wpApiFetch,
 } from '../utils';
@@ -51,12 +50,8 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 	} );
 
 	it( 'prompts for confirmation if user is not verified for the site', async () => {
+		await setClientConfig();
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
-		await page.waitForSelector( '#client-configuration' );
-
-		await pasteText( '#client-configuration', JSON.stringify( testClientConfig ) );
-		await expect( page ).toClick( '#wizard-step-one-proceed' );
-		await page.waitForSelector( '.googlesitekit-wizard-step--two button' );
 
 		await expect( page ).toClick( '.googlesitekit-wizard-step--two button', { text: /sign in with Google/i } );
 		await page.waitForNavigation();
@@ -78,6 +73,7 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 	} );
 
 	it( 'does not prompt for verification if the user is already verified for the site', async () => {
+		await setClientConfig();
 		// Simulate that the user is already verified.
 		await wpApiFetch( {
 			path: 'google-site-kit/v1/e2e/verify-site',
@@ -85,11 +81,6 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 		} );
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
-		await page.waitForSelector( '#client-configuration' );
-
-		await pasteText( '#client-configuration', JSON.stringify( testClientConfig ) );
-		await expect( page ).toClick( '#wizard-step-one-proceed' );
-		await page.waitForSelector( '.googlesitekit-wizard-step--two button' );
 
 		await expect( page ).toClick( '.googlesitekit-wizard-step--two button', { text: /sign in with Google/i } );
 		await page.waitForNavigation();
