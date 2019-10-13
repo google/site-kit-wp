@@ -12,6 +12,9 @@ about: Suggest an idea for this project
 
 _Do not alter or remove anything below. The following sections will be managed by moderators only._
 
+<!-- Please reference the PR that addresses this issue; move to the top after adding for visibility. -->
+Addressed by PR #
+
 ## Acceptance criteria
 
 * <!-- One or more bullet points for acceptance criteria. -->
