@@ -39,6 +39,8 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 	 * Add a deep link to Google Analytics Dashboard.
 	 *
 	 * @param {string} url to be used in the deep link.
+	 *
+	 * @return {string} new url.
 	 */
 	static addDeepLink( url ) {
 		const {
