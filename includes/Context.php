@@ -156,7 +156,7 @@ final class Context {
 			$site_url = $orig_site_url;
 		}
 
-		return $site_url;
+		return untrailingslashit( $site_url );
 	}
 
 	/**
