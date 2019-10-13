@@ -55,7 +55,7 @@ describe( 'Plugin Reset', () => {
 			expect( page ).toClick( '.mdc-dialog--open .mdc-button', { text: 'Reset' } ),
 		] );
 
-		await page.waitForSelector( '.googlesitekit-wizard-step--one' );
-		await expect( page ).toMatchElement( '.googlesitekit-wizard-step__title', { text: /Welcome to Site Kit beta for developers/i } );
+		// Ensure we're on the first step.
+		await expect( page ).toMatchElement( '.googlesitekit-wizard-progress-step__number--inprogress', { text: '1' } );
 	} );
 } );
