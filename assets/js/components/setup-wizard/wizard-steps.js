@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import WizardStepClientCredentials from 'GoogleComponents/setup-wizard/wizard-step-client-credentials';
 import WizardStepAuthentication from 'GoogleComponents/setup-wizard/wizard-step-authentication';
 import WizardStepVerification from 'GoogleComponents/setup-wizard/wizard-step-verification';
 import WizardStepSearchConsoleProperty from 'GoogleComponents/setup-wizard/wizard-step-search-console-property';
@@ -28,13 +27,6 @@ import WizardStepCompleteSetup from 'GoogleComponents/setup-wizard/wizard-step-c
 const { __ } = wp.i18n;
 
 const STEPS = {
-	clientCredentials: {
-		title: __( 'Create Client ID', 'google-site-kit' ),
-		required: true,
-		isApplicable: ( props ) => props.canSetup && ( ! props.isSiteKitConnected || ! props.hasSearchConsolePropertyFromTheStart ),
-		isCompleted: ( props ) => props.isSiteKitConnected,
-		Component: WizardStepClientCredentials,
-	},
 	authentication: {
 		title: __( 'Authenticate', 'google-site-kit' ),
 		required: true,
