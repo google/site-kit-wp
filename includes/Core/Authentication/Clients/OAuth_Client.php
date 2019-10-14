@@ -649,7 +649,17 @@ final class OAuth_Client {
 			return '';
 		}
 
-		return add_query_arg( 'token', $access_token, self::PROXY_URL . '/site-management/permissions/' );
+		$query_args = array( 'token' => $access_token );
+
+		$credentials = $this->get_client_credentials();
+		if ( is_object( $credentials ) && ! empty( $credentials->web->client_id ) ) {
+			$query_args['site_id'] = $credentials->web->client_id;
+		}
+
+		return add_query_arg(
+			$query_args,
+			self::PROXY_URL . '/site-management/permissions/'
+		);
 	}
 
 	/**
