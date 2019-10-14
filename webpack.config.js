@@ -60,8 +60,8 @@ const externalPackages = [
 ];
 
 const externals = {
-	// react: 'React',
-	// 'react-dom': 'ReactDOM',
+	react: 'React',
+	'react-dom': 'ReactDOM',
 	tinymce: 'tinymce',
 	moment: 'moment',
 	jquery: 'jQuery',
