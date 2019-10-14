@@ -201,6 +201,9 @@ final class Authentication {
 		add_action(
 			'admin_notices',
 			function() {
+				if ( ! $this->get_oauth_client()->using_proxy() ) {
+					return;
+				}
 				$setup_url       = $this->get_oauth_client()->get_proxy_setup_url();
 				$permissions_url = $this->get_oauth_client()->get_proxy_permissions_url();
 				?>
