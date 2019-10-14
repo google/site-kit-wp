@@ -8,13 +8,19 @@ const defaultConnection = {
 	propertyId: 200,
 	profileId: 300,
 	internalWebPropertyId: 400,
+	useSnippet: true,
+	// ampClientIdOptIn: (bool)
 };
 
 /**
  * Activate and set up the Analytics module.
- * @param {Object} config Optional configuration to use for module set up.
+ * @param {Object} connectionOverrides Optional connection overrides to use for module set up.
  */
-export async function setupAnalytics( config = { connection: defaultConnection } ) {
+export async function setupAnalytics( connectionOverrides = {} ) {
+	const connection = {
+		...defaultConnection,
+		...connectionOverrides,
+	};
 	// Activate the module.
 	await wpApiFetch( {
 		method: 'post',
@@ -26,8 +32,19 @@ export async function setupAnalytics( config = { connection: defaultConnection }
 		method: 'post',
 		path: 'google-site-kit/v1/modules/analytics/data/connection',
 		data: {
-			data: config.connection,
+			data: connection,
 		},
 		parse: false,
 	} );
+
+	if ( connection.useSnippet ) {
+		await wpApiFetch( {
+			method: 'post',
+			path: 'google-site-kit/v1/modules/analytics/data/use-snippet',
+			data: {
+				data: { useSnippet: true },
+			},
+			parse: false,
+		} );
+	}
 }
