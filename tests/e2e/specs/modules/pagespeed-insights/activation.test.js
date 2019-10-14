@@ -11,9 +11,22 @@ import {
 	resetSiteKit,
 	setSearchConsoleProperty,
 	setSiteVerification,
+	useRequestInterception,
 } from '../../../utils';
 
 describe( 'PageSpeed Insights Activation', () => {
+	beforeAll( async () => {
+		await page.setRequestInterception( true );
+		useRequestInterception( ( request ) => {
+			if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
+				request.respond( {
+					status: 200,
+				} );
+			} else {
+				request.continue();
+			}
+		} );
+	} );
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-auth-plugin' );
 		await setSiteVerification();
