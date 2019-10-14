@@ -120,8 +120,8 @@ jobs:
       name: E2E Tests (WordPress 4.7)
       env: E2E=1 WP_VERSION=4.7.13
     - stage: test
-      name: E2E Tests (WordPress 4.9)
-      env: E2E=1 WP_VERSION=4.9.10
+      name: E2E Tests (WordPress 4.9, Gutenberg 4.9)
+      env: E2E=1 WP_VERSION=4.9.10 GUTENBERG_VERSION=4.9.0
 
 services:
   - docker
