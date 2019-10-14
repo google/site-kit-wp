@@ -652,22 +652,6 @@ final class Assets {
 				)
 			),
 			new Script(
-				'react',
-				array(
-					'src'      => $base_url . 'vendor/react' . $react_suffix . '.js',
-					'version'  => '16.8.5',
-					'fallback' => true,
-				)
-			),
-			new Script(
-				'react-dom',
-				array(
-					'src'      => $base_url . 'vendor/react-dom' . $react_suffix . '.js',
-					'version'  => '16.8.5',
-					'fallback' => true,
-				)
-			),
-			new Script(
 				'wp-polyfill',
 				array(
 					'src'           => $base_url . 'js/externals/wp-polyfill.js',

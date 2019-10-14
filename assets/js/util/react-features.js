@@ -15,7 +15,7 @@ const {
 	useState: wpUseState,
 } = wp.element;
 
-export const Suspense = typeof wpSuspense === 'function' ? wpSuspense : ReactSuspense;
-export const lazy = typeof wpLazy === 'function' ? wpLazy : ReactLazy;
-export const useEffect = typeof wpUseEffect === 'function' ? wpUseEffect : ReactUseEffect;
-export const useState = typeof wpUseState === 'function' ? wpUseState : ReactUseState;
+export const Suspense = !! wpSuspense ? wpSuspense : ReactSuspense;
+export const lazy = !! wpLazy ? wpLazy : ReactLazy;
+export const useEffect = !! wpUseEffect ? wpUseEffect : ReactUseEffect;
+export const useState = !! wpUseState ? wpUseState : ReactUseState;
