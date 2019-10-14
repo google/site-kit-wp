@@ -28,8 +28,8 @@ import AdSenseSetupInstructions from '../setup/adsense-setup-instructions';
 import AdSenseInProcessStatus from './adsense-in-process-status';
 import { getExistingTag, getReAuthUrl, getSiteKitAdminURL } from 'GoogleUtil';
 import { getAdSenseAccountStatus } from '../util';
-import { useEffect, useState } from 'GoogleUtil/react-features';
 
+const { Component } = wp.element;
 const { __ } = wp.i18n;
 
 const propsFromAccountStatus = ( accountStatus, existingTag ) => {
@@ -213,100 +213,119 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 	};
 };
 
-const AdSenseModuleStatus = ( ) => {
-	const [ accountStatus, setAccountStatus ] = useState();
-	const [ loadingMessage, setLoadingMessage ] = useState(
-		__( 'Loading…', 'google-site-kit' )
-	);
-	const [ instructionProps, setInstructionProps ] = useState( {} );
+export class AdSenseModuleStatus extends Component {
+	constructor( props ) {
+		super( props );
+
+		this.state = {
+			accountStatus: undefined,
+			loadingMessage: __( 'Loading…', 'google-site-kit' ),
+			instructionProps: {},
+		};
+	}
+
+	async componentDidMount() {
+		await this.updateAccountStatus();
+	}
+
+	componentDidUpdate( previousProps, previousState ) {
+		const { accountStatus } = this.state;
+
+		if ( previousState.accountStatus !== accountStatus ) {
+			const adSenseSetupInstructionsProps = propsFromAccountStatus( accountStatus );
+			this.setState( { instructionProps: adSenseSetupInstructionsProps } );
+		}
+	}
 
 	/**
 	 * If setup requires a continue step, the method repopulates state with the new data.
 	 */
-	const continueSetup = ( continueData ) => {
+	continueSetup( continueData ) {
+		const { instructionProps } = this.state;
+
 		continueData.existingState = { ...instructionProps };
-		setInstructionProps( continueData );
-	};
+		this.setState( { instructionProps: continueData } );
+	}
 
 	/**
 	 * Go back to the previous (existing) state.
 	 */
-	const goBack = () => {
+	goBack() {
+		const { instructionProps } = this.state;
+
 		const { existingState } = { ...instructionProps };
 		if ( existingState ) {
 			existingState.existingState = false;
-			setInstructionProps( existingState );
+			this.setState( { instructionProps: existingState } );
 		}
-	};
+	}
 
-	const updateAccountStatus = async () => {
+	async updateAccountStatus() {
 		const existingTag = await getExistingTag( 'adsense' );
+		const setLoadingMessage = ( message ) => {
+			this.setState( { loadingMessage: message } );
+		};
 
 		const status = await getAdSenseAccountStatus( existingTag, setLoadingMessage );
 
-		setAccountStatus( status.accountStatus );
-	};
+		this.setState( { accountStatus: status.accountStatus } );
+	}
 
-	const showInProcess = ! accountStatus || ! googlesitekit.modules.adsense.setupComplete || [
-		'ads-display-pending',
-		'account-pending-review',
-		'account-required-action',
-	].includes( accountStatus );
+	render() {
+		const { accountStatus, loadingMessage, instructionProps } = this.state;
 
-	useEffect( () => {
-		updateAccountStatus();
-	}, [] );
+		const showInProcess = ! accountStatus || ! googlesitekit.modules.adsense.setupComplete || [
+			'ads-display-pending',
+			'account-pending-review',
+			'account-required-action',
+		].includes( accountStatus );
 
-	useEffect( () => {
-		const adSenseSetupInstructionsProps = propsFromAccountStatus( accountStatus );
-		setInstructionProps( adSenseSetupInstructionsProps );
-	}, [ accountStatus ] );
-
-	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--adsense">
-			<div className="googlesitekit-setup-module__step">
-				<div className="googlesitekit-setup-module__logo">
-					<SvgIcon id="adsense" width="33" height="33" />
-				</div>
-				<h2 className="
+		return (
+			<div className="googlesitekit-setup-module googlesitekit-setup-module--adsense">
+				<div className="googlesitekit-setup-module__step">
+					<div className="googlesitekit-setup-module__logo">
+						<SvgIcon id="adsense" width="33" height="33" />
+					</div>
+					<h2 className="
 					googlesitekit-heading-3
 					googlesitekit-setup-module__title
 				">
-					{ __( 'AdSense', 'google-site-kit' ) }
-				</h2>
-			</div>
-			<div className="googlesitekit-setup-module__step">
-				{ ! googlesitekit.canAdsRun && ! googlesitekit.modules.adsense.setupComplete && (
-					<div className="googlesitekit-settings-module-warning">
-						<SvgIcon id="error" height="20" width="23" />
-						{ __( 'Ad blocker detected, you need to disable it in order to setup AdSense.', 'google-site-kit' ) }
-					</div>
-				) }
+						{ __( 'AdSense', 'google-site-kit' ) }
+					</h2>
+				</div>
+				<div className="googlesitekit-setup-module__step">
+					{ ! googlesitekit.canAdsRun && ! googlesitekit.modules.adsense.setupComplete && (
+						<div className="googlesitekit-settings-module-warning">
+							<SvgIcon id="error" height="20" width="23" />
+							{ __( 'Ad blocker detected, you need to disable it in order to setup AdSense.', 'google-site-kit' ) }
+						</div>
+					) }
 
-				{ showInProcess && (
-					<AdSenseInProcessStatus
-						ctaLink={ instructionProps.ctaLink }
-						ctaLinkText={ instructionProps.ctaLinkText }
-						header={ instructionProps.statusHeadline }
-						subHeader={ instructionProps.statusMessage }
-						incomplete={ instructionProps.incomplete }
-						required={ instructionProps.required }
-						loadingMessage={ ! accountStatus && loadingMessage }
-					/>
-				) }
+					{ showInProcess && (
+						<AdSenseInProcessStatus
+							ctaLink={ instructionProps.ctaLink }
+							ctaLinkText={ instructionProps.ctaLinkText }
+							header={ instructionProps.statusHeadline }
+							subHeader={ instructionProps.statusMessage }
+							incomplete={ instructionProps.incomplete }
+							required={ instructionProps.required }
+							loadingMessage={ ! accountStatus && loadingMessage }
+						/>
+					) }
 
-				{ googlesitekit.canAdsRun && googlesitekit.modules.adsense.setupComplete && accountStatus && (
-					<AdSenseSetupInstructions
-						{ ...instructionProps }
-						accountStatus={ accountStatus }
-						continueSetup={ continueSetup }
-						goBack={ goBack }
-					/>
-				) }
+					{ googlesitekit.canAdsRun && googlesitekit.modules.adsense.setupComplete && accountStatus && (
+						<AdSenseSetupInstructions
+							{ ...instructionProps }
+							accountStatus={ accountStatus }
+							continueSetup={ this.continueSetup }
+							goBack={ this.goBack }
+						/>
+					) }
+				</div>
 			</div>
-		</div>
-	);
-};
+		);
+	}
+}
 
 AdSenseModuleStatus.propTypes = {
 	status: PropTypes.string,
