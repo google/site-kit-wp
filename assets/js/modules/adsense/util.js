@@ -193,11 +193,6 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 							return 0 < googlesitekit.admin.siteURL.indexOf( channel.urlPattern );
 						} );
 
-						// const moduleURL = getSiteKitAdminURL(
-						// 	'googlesitekit-module-adsense',
-						// 	{}
-						// );
-
 						// No domains found in the account, it is newly set up and domain
 						// addition is pending.
 						if ( 0 === urlchannels.length ) {
