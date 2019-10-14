@@ -591,7 +591,6 @@ export const findTagInHtmlContent = ( html, module ) => {
  * @param {string|null} The tag id if found, otherwise null.
  */
 export const getExistingTag = async ( module ) => {
-	const CACHE_KEY = `${ module }::existingTag`;
 	const { homeURL, ampMode } = googlesitekit.admin;
 	const tagFetchQueryArgs = {
 		// Indicates a tag checking request. This lets Site Kit know not to output its own tags.
@@ -600,23 +599,16 @@ export const getExistingTag = async ( module ) => {
 		timestamp: Date.now(),
 	};
 
-	let tagFound = data.getCache( CACHE_KEY, 300 );
+	// Always check the homepage regardless of AMP mode.
+	let tagFound = await scrapeTag( addQueryArgs( homeURL, tagFetchQueryArgs ), module );
 
-	if ( tagFound === undefined ) {
-		try {
-			tagFound = await scrapeTag( addQueryArgs( homeURL, tagFetchQueryArgs ), module );
-
-			if ( ! tagFound && 'secondary' === ampMode ) {
-				tagFound = await apiFetch( { path: '/wp/v2/posts?per_page=1' } ).then(
-					// Scrape the first post in AMP mode, if there is one.
-					( posts ) => posts.slice( 0, 1 ).map( async ( post ) => {
-						return await scrapeTag( addQueryArgs( post.link, { ...tagFetchQueryArgs, amp: 1 } ), module );
-					} ).pop()
-				);
-			}
-
-			data.setCache( CACHE_KEY, tagFound || null );
-		} catch ( err ) {}
+	if ( ! tagFound && 'secondary' === ampMode ) {
+		tagFound = await apiFetch( { path: '/wp/v2/posts?per_page=1' } ).then(
+			// Scrape the first post in AMP mode, if there is one.
+			( posts ) => posts.slice( 0, 1 ).map( async ( post ) => {
+				return await scrapeTag( addQueryArgs( post.link, { ...tagFetchQueryArgs, amp: 1 } ), module );
+			} ).pop()
+		);
 	}
 
 	return Promise.resolve( tagFound || null );
