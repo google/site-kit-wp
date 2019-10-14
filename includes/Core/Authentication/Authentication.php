@@ -201,10 +201,16 @@ final class Authentication {
 		add_action(
 			'admin_notices',
 			function() {
-				$url = $this->get_oauth_client()->get_proxy_setup_url();
+				$setup_url       = $this->get_oauth_client()->get_proxy_setup_url();
+				$permissions_url = $this->get_oauth_client()->get_proxy_permissions_url();
 				?>
 				<div class="notice notice-info">
-					<p><strong>TEMPORARY:</strong> <a href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Go to proxy setup', 'google-site-kit' ); ?></a></p>
+					<p>
+						<strong>TEMPORARY:</strong>
+						<a href="<?php echo esc_url( $setup_url ); ?>"><?php esc_html_e( 'Go to proxy setup', 'google-site-kit' ); ?></a>
+						or
+						<a href="<?php echo esc_url( $permissions_url ); ?>"><?php esc_html_e( 'Manage proxy sites', 'google-site-kit' ); ?></a>
+					</p>
 				</div>
 				<?php
 			}
