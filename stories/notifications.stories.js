@@ -135,7 +135,7 @@ storiesOf( 'Global/Notifications', module )
 		<Notification
 			id="notification-id"
 			title={ __( 'Congrats on five published posts', 'google-site-kit' ) }
-			description={ __( "That's out of this world. Here are the combined stats for your posts", 'google-site-kit' ) }
+			description={ __( 'That’s out of this world. Here are the combined stats for your posts', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="large"
 			winImage={ `${ googlesitekit.admin.assetsRoot }images/rocket.png` }
