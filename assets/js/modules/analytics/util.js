@@ -493,3 +493,21 @@ export const getTopPagesReportDataDefaults = () => {
 		limit: 10,
 	};
 };
+
+export const tagMatchers = [
+	// Detect gtag script calls.
+	/<script [^>]*src=['|"]https:\/\/www.googletagmanager.com\/gtag\/js\?id=(.*?)['|"][^>]*><\/script>/,
+
+	// Detect common analytics code usage.
+	/__gaTracker\( ?['|"]create['|"], ?['|"](.*?)['|"], ?['|"]auto['|"] ?\)/,
+
+	// Detect ga create calls.
+	/ga\( ?['|"]create['|"], ?['|"](.*?)['|"], ?['|"]auto['|"] ?\)/,
+	/_gaq.push\( ?\[ ?['|"]_setAccount['|"], ?['|"](.*?)['|"] ?] ?\)/,
+
+	// Detect amp-analytics gtag.
+	/<amp-analytics [^>]*type="gtag"[^>]*>[^<]*<script type="application\/json">[^<]*"gtag_id":\s*"([^"]+)"/,
+
+	// Detect amp-analytics googleanalytics.
+	/<amp-analytics [^>]*type="googleanalytics"[^>]*>[^<]*<script type="application\/json">[^<]*"account":\s*"([^"]+)"/,
+];

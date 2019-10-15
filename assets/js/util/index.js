@@ -21,6 +21,12 @@
 import data, { TYPE_CORE } from 'GoogleComponents/data';
 import SvgIcon from 'GoogleUtil/svg-icon';
 
+/**
+ * Internal dependencies
+ */
+import { tagMatchers as analyticsTagMatchers } from '../modules/analytics/util';
+import { tagMatchers as adsenseTagMatchers } from '../modules/adsense/util';
+
 export * from './storage';
 
 const { apiFetch } = wp;
@@ -636,75 +642,26 @@ export const scrapeTag = async ( url, module ) => {
 };
 
 /**
- * Extracts the tag related to a module from the given string by detecting Analytics and AdSense tag variations.
+ * Extracts a tag related to a module from the given string.
  *
  * @param {string} string The string from where to find the tag.
- * @param {string} tag    The tag to search for, one of 'adsense' or 'analytics'
+ * @param {string} module The module to check tags for. (adsense|analytics)
  *
- * @return string|bool The tag id if found, otherwise false.
+ * @return {string|null} String tag if found, otherwise null.
  */
-export const extractTag = ( string, tag ) => {
-	let result = false;
-	let reg = null;
-	switch ( tag ) {
-		case 'analytics':
+export const extractTag = ( string, module ) => {
+	const matchers = {
+		analytics: analyticsTagMatchers,
+		adsense: adsenseTagMatchers,
+	}[ module ] || [];
 
-			// Detect gtag script calls.
-			reg = new RegExp( /<script [^>]*src=['|"]https:\/\/www.googletagmanager.com\/gtag\/js\?id=(.*?)['|"][^>]*><\/script>/gm );
-			result = reg.exec( string );
-			result = result ? result[ 1 ] : false;
+	const matchingPattern = matchers.find( ( pattern ) => pattern.test( string ) );
 
-			// Detect common analytics code usage.
-			if ( ! result ) {
-				reg = new RegExp( /__gaTracker\( ?['|"]create['|"], ?['|"](.*?)['|"], ?['|"]auto['|"] ?\)/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			// Detect ga create calls.
-			if ( ! result ) {
-				reg = new RegExp( /ga\( ?['|"]create['|"], ?['|"](.*?)['|"], ?['|"]auto['|"] ?\)/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-			if ( ! result ) {
-				reg = new RegExp( /_gaq.push\( ?\[ ?['|"]_setAccount['|"], ?['|"](.*?)['|"] ?] ?\)/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			// Detect amp-analytics gtag.
-			if ( ! result ) {
-				reg = new RegExp( /<amp-analytics [^>]*type="gtag"[^>]*>[^<]*<script type="application\/json">[^<]*"gtag_id":\s*"([^"]+)"/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			// Detect amp-analytics googleanalytics.
-			if ( ! result ) {
-				reg = new RegExp( /<amp-analytics [^>]*type="googleanalytics"[^>]*>[^<]*<script type="application\/json">[^<]*"account":\s*"([^"]+)"/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			break;
-
-		case 'adsense':
-			// Detect google_ad_client.
-			reg = new RegExp( /google_ad_client: ?["|'](.*?)["|']/gm );
-			result = reg.exec( string );
-			result = result ? result[ 1 ] : false;
-
-			// Detect amp-auto-ads tag.
-			if ( ! result ) {
-				reg = new RegExp( /<amp-auto-ads [^>]*data-ad-client="([^"]+)"/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-			break;
+	if ( matchingPattern ) {
+		return matchingPattern.exec( string )[ 1 ];
 	}
 
-	return result;
+	return null;
 };
 
 /**

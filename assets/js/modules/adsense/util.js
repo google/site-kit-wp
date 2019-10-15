@@ -475,3 +475,11 @@ export const isDataZeroAdSense = ( adSenseData, datapoint, dataRequest ) => {
 	} );
 	return 0 === totals.length;
 };
+
+export const tagMatchers = [
+	// Detect google_ad_client.
+	/google_ad_client: ?["|'](.*?)["|']/,
+
+	// Detect amp-auto-ads tag.
+	/<amp-auto-ads [^>]*data-ad-client="([^"]+)"/,
+];
