@@ -155,6 +155,45 @@ valuesToTest = [
 		module: 'adsense',
 		expected: 'ca-pub-123456789'
 	},
+	{
+		html: '<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-XXXXXXX"></script>',
+		module: 'tagmanager',
+		expected: 'GTM-XXXXXXX'
+	},
+	{
+		html: '<amp-analytics config="https://www.googletagmanager.com/amp.json?id=GTM-XXXXXXX" data-credentials="include" class="i-amphtml-element i-amphtml-layout-fixed i-amphtml-layout-size-defined i-amphtml-layout" i-amphtml-layout="fixed" aria-hidden="true" style="width: 1px; height: 1px;" hidden=""></amp-analytics>',
+		module: 'tagmanager',
+		expected: 'GTM-XXXXXXX'
+	},
+	{
+		html: '<meta charset="UTF-8"><title>Site Kit for WordPress</title><link rel="dns-prefetch" href="//fonts.googleapis.com"></link>',
+		module: 'tagmanager',
+		expected: null
+	},
+	{
+		html: [
+			'<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({\'gtm.start\':',
+			'new Date().getTime(),event:\'gtm.js\'});var f=d.getElementsByTagName(s)[0],',
+			'j=d.createElement(s),dl=l!=\'dataLayer\'?\'&l=\'+l:\'\';j.async=true;j.src=',
+			'\'https://www.googletagmanager.com/gtm.js?id=\'+i+dl;f.parentNode.insertBefore(j,f);',
+			'})(window,document,\'script\',\'dataLayer\',\'GTM-XXXXXXX\');</script>',
+		].join( "\n" ),
+		module: 'tagmanager',
+		expected: 'GTM-XXXXXXX'
+	},
+	{
+		html: [
+			'<script data-cfasync="false">//<![CDATA[',
+			'(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({\'gtm.start\':',
+			'new Date().getTime(),event:\'gtm.js\'});var f=d.getElementsByTagName(s)[0],',
+			'j=d.createElement(s),dl=l!=\'dataLayer\'?\'&l=\'+l:\'\';j.async=true;j.src=',
+			'\'//www.googletagmanager.com/gtm.\'+\'js?id=\'+i+dl;f.parentNode.insertBefore(j,f);',
+			'})(window,document,\'script\',\'dataLayer\',\'GTM-XXXXXXX\');//]]>',
+			'</script>',
+		].join( "\n" ),
+		module: 'tagmanager',
+		expected: 'GTM-XXXXXXX'
+	},
 ]
 valuesToTest.forEach( function( itemToTest ) {
 	QUnit.test( 'extractTag::' + itemToTest.html, function ( assert ) {

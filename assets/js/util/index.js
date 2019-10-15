@@ -26,6 +26,7 @@ import SvgIcon from 'GoogleUtil/svg-icon';
  */
 import { tagMatchers as analyticsTagMatchers } from '../modules/analytics/util';
 import { tagMatchers as adsenseTagMatchers } from '../modules/adsense/util';
+import { tagMatchers as tagManagerTagMatchers } from '../modules/tagmanager/util';
 
 export * from './storage';
 
@@ -641,6 +642,7 @@ export const extractTag = ( string, module ) => {
 	const matchers = {
 		analytics: analyticsTagMatchers,
 		adsense: adsenseTagMatchers,
+		tagmanager: tagManagerTagMatchers,
 	}[ module ] || [];
 
 	const matchingPattern = matchers.find( ( pattern ) => pattern.test( string ) );
