@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
@@ -388,7 +389,11 @@ final class TagManager extends Module implements Module_With_Scopes {
 							return $accounts;
 						}
 
-						return $this->get_container_access( $data['tag'], $accounts['accounts'] );
+						$profile   = new Profile( $this->user_options, $this->authentication->get_oauth_client() );
+						$user_data = $profile->get();
+						$email     = isset( $user_data['email'] ) ? $user_data['email'] : wp_get_current_user()->user_email;
+
+						return $this->get_container_access( $data['tag'], $accounts['accounts'], $email );
 					};
 			}
 		} elseif ( 'POST' === $method ) {
@@ -559,12 +564,13 @@ final class TagManager extends Module implements Module_With_Scopes {
 	 * Gets the access levels for the given container and its account.
 	 *
 	 * @param string $container_id Property found in the existing tag.
-	 * @param array  $accounts     List of accounts to loop through containers.
+	 * @param array  $accounts List of accounts to loop through containers.
+	 * @param string $user_email User email address to get access for.
 	 *
 	 * @return array
 	 * @since 1.0.0
 	 */
-	protected function get_container_access( $container_id, $accounts ) {
+	protected function get_container_access( $container_id, $accounts, $user_email ) {
 		$response = array(
 			'account'   => false,
 			'container' => false,
@@ -580,15 +586,31 @@ final class TagManager extends Module implements Module_With_Scopes {
 			return $response;
 		}
 
-		/* @var \Google_Service_TagManager_Account $account Account instance. */
-		$permissions = $this->get_tagmanager_service()->accounts_user_permissions->listAccountsUserPermissions(
+		/* @var \Google_Service_TagManager_UserPermission[] $user_permissions User Permission instances. */
+		$user_permissions = $this->get_tagmanager_service()->accounts_user_permissions->listAccountsUserPermissions(
+			/* @var \Google_Service_TagManager_Account $account Account instance. */
 			'accounts/' . $account->getAccountId()
 		)->getUserPermission();
 
-		$response['account'] = $permissions->getAccountAccess();
+		// Filter the permissions down to only those for the given user by email.
+		$user_permissions = array_filter(
+			$user_permissions,
+			function ( \Google_Service_TagManager_UserPermission $user_permission ) use ( $user_email ) {
+				return $user_email === $user_permission->getEmailAddress();
+			}
+		);
+
+		/* @var \Google_Service_TagManager_UserPermission $user_permission User Permission instance. */
+		$user_permission = array_shift( $user_permissions );
+
+		if ( ! $user_permission ) {
+			return $response;
+		}
+
+		$response['account'] = $user_permission->getAccountAccess()->getPermission();
 
 		/* @var \Google_Service_TagManager_Container $container Container instance. */
-		foreach ( (array) $permissions->getContainerAccess() as $container_access ) {
+		foreach ( (array) $user_permission->getContainerAccess() as $container_access ) {
 			/* @var \Google_Service_TagManager_ContainerAccess $container_access Container access instance. */
 			if ( $container->getContainerId() === $container_access->getContainerId() ) {
 				$response['container'] = $container_access->getPermission();
