@@ -280,6 +280,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 			// GET.
 			'accounts-containers' => 'tagmanager',
 			'containers'          => 'tagmanager',
+			'tag-permission'      => 'tagmanager',
 			// POST.
 			'settings'            => '',
 		);
@@ -555,6 +556,16 @@ final class TagManager extends Module implements Module_With_Scopes {
 			'tags'        => array( 'marketing' ),
 			'depends_on'  => array( 'analytics' ),
 		);
+	}
+
+	/**
+	 * Gets the configured TagManager service instance.
+	 *
+	 * @return \Google_Service_TagManager instance.
+	 * @throws Exception Thrown if the module did not correctly set up the service.
+	 */
+	private function get_tagmanager_service() {
+		return $this->get_service( 'tagmanager' );
 	}
 
 	/**
