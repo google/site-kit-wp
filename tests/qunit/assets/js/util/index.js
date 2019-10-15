@@ -107,7 +107,7 @@ valuesToTest.forEach( function( itemToTest ) {
 } );
 
 /**
- * Test findTagInHtmlContent, also tests extractTag.
+ * Test extractTag
  */
 valuesToTest = [
 	{
@@ -128,7 +128,7 @@ valuesToTest = [
 	{
 		html: '<meta charset="UTF-8"><title>Site Kit for WordPress</title><link rel="dns-prefetch" href="//fonts.googleapis.com"></link>',
 		module: 'analytics',
-		expected: false
+		expected: null
 	},
 	{
 		html: '<amp-analytics type="googleanalytics"><script type="application/json"> { "vars": { "account": "UA-XXXXX-Y" }, "triggers": { "default pageview": { "on": "visible", "request": "pageview", "vars": { "title": "Name of the Article" } } } } </script></amp-analytics>',
@@ -143,7 +143,7 @@ valuesToTest = [
 	{
 		html: '<meta charset="UTF-8"><title>Site Kit for WordPress</title><link rel="dns-prefetch" href="//fonts.googleapis.com"></link>',
 		module: 'adsense',
-		expected: false
+		expected: null
 	},
 	{
 		html: '<script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> <script> (adsbygoogle = window.adsbygoogle || []).push({ google_ad_client: "ca-pub-123456789", enable_page_level_ads: true }); </script>',
@@ -157,9 +157,9 @@ valuesToTest = [
 	},
 ]
 valuesToTest.forEach( function( itemToTest ) {
-	QUnit.test( 'findTagInHtmlContent::' + itemToTest.html, function ( assert ) {
-		var value = testFunctions.findTagInHtmlContent( itemToTest.html, itemToTest.module );
-		assert.equal( value, itemToTest.expected, 'Expect findTagInHtmlContent( \'' + itemToTest.html + '\' ) to return ' + itemToTest.expected );
+	QUnit.test( 'extractTag::' + itemToTest.html, function ( assert ) {
+		var value = testFunctions.extractTag( itemToTest.html, itemToTest.module );
+		assert.equal( value, itemToTest.expected, 'Expect extractTag( \'' + itemToTest.html + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
 
