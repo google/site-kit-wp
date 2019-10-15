@@ -32,7 +32,8 @@ describe( 'Plugin Activation Notice', () => {
 		await page.click( '.googlesitekit-activation__button' );
 		await page.waitForSelector( '.googlesitekit-wizard-step__title' );
 
-		await expect( page ).toMatchElement( 'h2.googlesitekit-wizard-step__title', { text: 'Welcome to Site Kit beta for developers.' } );
+		// Ensure we're on the first step.
+		await expect( page ).toMatchElement( '.googlesitekit-wizard-progress-step__number--inprogress', { text: '1' } );
 
 		await deactivatePlugin( 'google-site-kit' );
 	} );
