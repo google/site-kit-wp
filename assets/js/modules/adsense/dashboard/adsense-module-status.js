@@ -288,9 +288,9 @@ export class AdSenseModuleStatus extends Component {
 						<SvgIcon id="adsense" width="33" height="33" />
 					</div>
 					<h2 className="
-					googlesitekit-heading-3
-					googlesitekit-setup-module__title
-				">
+						googlesitekit-heading-3
+						googlesitekit-setup-module__title
+					">
 						{ __( 'AdSense', 'google-site-kit' ) }
 					</h2>
 				</div>
