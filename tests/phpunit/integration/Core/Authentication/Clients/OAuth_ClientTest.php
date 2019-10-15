@@ -272,16 +272,16 @@ class OAuth_ClientTest extends TestCase {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
 		// If no site ID, pass site registration args.
-		$client  = new OAuth_Client( $context );
+		$client = new OAuth_Client( $context );
 		$url = $client->get_proxy_setup_url();
 		$this->assertTrue( (bool) strpos( $url, 'name=' ) );
 		$this->assertTrue( (bool) strpos( $url, 'url=' ) );
-		$this->assertTrue( (bool) strpos( $url, 'rest_root=wp-json' ) );
-		$this->assertTrue( (bool) strpos( $url, 'admin_root=wp-admin' ) );
+		$this->assertTrue( (bool) strpos( $url, 'rest_root=' ) );
+		$this->assertTrue( (bool) strpos( $url, 'admin_root=' ) );
 
 		// Otherwise, pass site ID and given temporary access code.
 		$this->fake_proxy_authentication();
-		$client  = new OAuth_Client( $context );
+		$client = new OAuth_Client( $context );
 		$url = $client->get_proxy_setup_url( 'temp-code' );
 		$this->assertTrue( (bool) strpos( $url, 'site_id=' . self::SITE_ID ) );
 		$this->assertTrue( (bool) strpos( $url, 'code=temp-code' ) );
@@ -291,19 +291,20 @@ class OAuth_ClientTest extends TestCase {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
 		// If no access token, this does not work.
-		$client  = new OAuth_Client( $context );
+		$client = new OAuth_Client( $context );
 		$url = $client->get_proxy_permissions_url();
 		$this->assertEmpty( $url );
 
 		// The URL has to include the access token.
-		$encrypted_user_options = $this->force_get_property( $client, 'encrypted_user_options' );
-		$encrypted_user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN, 'test-access-token' );
+		$client                 = new OAuth_Client( $context );
+		$client->set_access_token( 'test-access-token', 3600 );
 		$url = $client->get_proxy_permissions_url();
 		$this->assertTrue( (bool) strpos( $url, 'token=test-access-token' ) );
 
 		// If there is a site ID, it should also include that.
 		$this->fake_proxy_authentication();
-		$client  = new OAuth_Client( $context );
+		$client = new OAuth_Client( $context );
+		$client->set_access_token( 'test-access-token', 3600 );
 		$url = $client->get_proxy_permissions_url();
 		$this->assertTrue( (bool) strpos( $url, 'token=test-access-token' ) );
 		$this->assertTrue( (bool) strpos( $url, 'site_id=' . self::SITE_ID ) );
