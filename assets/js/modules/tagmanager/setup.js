@@ -58,6 +58,7 @@ class TagmanagerSetup extends Component {
 			selectedAccount: accountId ? accountId : 0,
 			selectedContainer: containerId ? containerId : 0,
 			containersLoading: false,
+			blockedFromCompleting: false,
 		};
 
 		this.handleSubmit = this.handleSubmit.bind( this );
@@ -87,6 +88,7 @@ class TagmanagerSetup extends Component {
 							),
 							existingTag
 						),
+						blockedFromCompleting: true,
 					};
 				}
 				await this.requestTagManagerAccounts();
@@ -97,6 +99,7 @@ class TagmanagerSetup extends Component {
 						errorCode: err.code,
 						errorMsg: err.message,
 						errorReason: err.data && err.data.reason ? err.data.reason : false,
+						blockedFromCompleting: !! err.blockedFromCompleting,
 					}
 				);
 			}
@@ -391,6 +394,7 @@ class TagmanagerSetup extends Component {
 			selectedContainer,
 			isLoading,
 			containersLoading,
+			blockedFromCompleting,
 		} = this.state;
 
 		const {
@@ -399,6 +403,11 @@ class TagmanagerSetup extends Component {
 
 		if ( isLoading ) {
 			return <ProgressBar />;
+		}
+
+		// If blocked, don't display anything else. The user can then click cancel.
+		if ( blockedFromCompleting ) {
+			return null;
 		}
 
 		if ( 0 >= accounts.length ) {
