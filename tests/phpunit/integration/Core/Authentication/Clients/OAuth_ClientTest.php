@@ -50,19 +50,8 @@ class OAuth_ClientTest extends TestCase {
 		$client->refresh_token();
 
 		// At this point an error is triggered internally due to undefined indexes on $authentication_token
-		// and the saved error code is an integer from a PHPUnit exception.
-		// Let's just make sure the error code is not one related to client error handling.
-		$this->assertNotContains(
-			get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ),
-			array(
-				'oauth_credentials_not_exist',
-				'refresh_token_not_exist',
-				'cannot_log_in',
-				'invalid_grant',
-				'invalid_code',
-				'access_token_not_received',
-			)
-		);
+		// and the saved error code is 'invalid_grant' by default.
+		$this->assertEquals( 'invalid_grant', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
 	}
 
 	public function test_revoke_token() {
