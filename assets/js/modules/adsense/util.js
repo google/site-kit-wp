@@ -58,6 +58,7 @@ export function reduceAdSenseData( rows ) {
 /**
  * Determine the AdSense account status.
  *
+ * @param {string|boolean} existingTag String existing clientId, or false.
  * @param {function} statusUpdateCallback The function to call back with status updates.
  */
 export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdateCallback = () => {} ) => {
@@ -265,7 +266,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 /**
  * Check if adsense is connected from Analytics API.
  *
- * @return {boolean}
+ * @return {Promise} Resolves to a boolean, whether or not AdSense is connected.
  */
 export const isAdsenseConnectedAnalytics = async () => {
 	const { active: adsenseActive } = googlesitekit.modules.adsense;
@@ -294,7 +295,9 @@ export const isAdsenseConnectedAnalytics = async () => {
  * Check for any value higher than 0 in values from AdSense data.
  *
  * @param {Array} adSenseData Data returned from the AdSense.
- * @return {boolean}
+ * @param {string} datapoint Datapoint requested.
+ * @param {Object} dataRequest Request data object.
+ * @return {boolean} Whether or not AdSense data is considered zero data.
  */
 export const isDataZeroAdSense = ( adSenseData, datapoint, dataRequest ) => {
 	// We only check the last 28 days of earnings because it is the most reliable data point to identify new setups:
