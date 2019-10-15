@@ -20,6 +20,9 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class OAuth_ClientTest extends TestCase {
 
+	const SITE_ID   = '12345678.apps.sitekit.withgoogle.com';
+	const CLIENT_ID = 'test-client-id';
+
 	public function test_get_client() {
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -194,7 +197,7 @@ class OAuth_ClientTest extends TestCase {
 		 * @see \Google\Site_Kit\Core\Authentication\Authentication::handle_oauth
 		 */
 		$this->assertEquals( add_query_arg( 'oauth2callback', 1, home_url() ), $params['redirect_uri'] );
-		$this->assertEquals( 'test-client-id', $params['client_id'] );
+		$this->assertEquals( self::CLIENT_ID, $params['client_id'] );
 	}
 
 	public function test_authorize_user() {
@@ -247,6 +250,65 @@ class OAuth_ClientTest extends TestCase {
 		}
 	}
 
+	public function test_using_proxy() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		// Use proxy by default.
+		$client = new OAuth_Client( $context );
+		$this->assertTrue( $client->using_proxy() );
+
+		// Don't use proxy when regular OAuth client ID is used.
+		$this->fake_authentication();
+		$client = new OAuth_Client( $context );
+		$this->assertFalse( $client->using_proxy() );
+
+		// Use proxy when proxy site ID is used.
+		$this->fake_proxy_authentication();
+		$client = new OAuth_Client( $context );
+		$this->assertTrue( $client->using_proxy() );
+	}
+
+	public function test_get_proxy_setup_url() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		// If no site ID, pass site registration args.
+		$client  = new OAuth_Client( $context );
+		$url = $client->get_proxy_setup_url();
+		$this->assertTrue( (bool) strpos( $url, 'name=' ) );
+		$this->assertTrue( (bool) strpos( $url, 'url=' ) );
+		$this->assertTrue( (bool) strpos( $url, 'rest_root=wp-json' ) );
+		$this->assertTrue( (bool) strpos( $url, 'admin_root=wp-admin' ) );
+
+		// Otherwise, pass site ID and given temporary access code.
+		$this->fake_proxy_authentication();
+		$client  = new OAuth_Client( $context );
+		$url = $client->get_proxy_setup_url( 'temp-code' );
+		$this->assertTrue( (bool) strpos( $url, 'site_id=' . self::SITE_ID ) );
+		$this->assertTrue( (bool) strpos( $url, 'code=temp-code' ) );
+	}
+
+	public function test_get_proxy_permissions_url() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		// If no access token, this does not work.
+		$client  = new OAuth_Client( $context );
+		$url = $client->get_proxy_permissions_url();
+		$this->assertEmpty( $url );
+
+		// The URL has to include the access token.
+		$encrypted_user_options = $this->force_get_property( $client, 'encrypted_user_options' );
+		$encrypted_user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN, 'test-access-token' );
+		$url = $client->get_proxy_permissions_url();
+		$this->assertTrue( (bool) strpos( $url, 'token=test-access-token' ) );
+
+		// If there is a site ID, it should also include that.
+		$this->fake_proxy_authentication();
+		$client  = new OAuth_Client( $context );
+		$url = $client->get_proxy_permissions_url();
+		$this->assertTrue( (bool) strpos( $url, 'token=test-access-token' ) );
+		$this->assertTrue( (bool) strpos( $url, 'site_id=' . self::SITE_ID ) );
+	}
+
 	public function test_get_error_message_unknown() {
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -282,7 +344,18 @@ class OAuth_ClientTest extends TestCase {
 		add_filter( 'googlesitekit_oauth_secret', function () {
 			return json_encode( array(
 				'web' => array(
-					'client_id'     => 'test-client-id',
+					'client_id'     => self::CLIENT_ID,
+					'client_secret' => 'test-client-secret',
+				),
+			) );
+		} );
+	}
+
+	protected function fake_proxy_authentication() {
+		add_filter( 'googlesitekit_oauth_secret', function () {
+			return json_encode( array(
+				'web' => array(
+					'client_id'     => self::SITE_ID,
 					'client_secret' => 'test-client-secret',
 				),
 			) );
