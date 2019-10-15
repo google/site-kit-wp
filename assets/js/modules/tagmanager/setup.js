@@ -27,6 +27,10 @@ import { Select, Option } from 'SiteKitCore/material-components';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
 import { toggleConfirmModuleSettings } from 'GoogleUtil';
+/**
+ * Internal dependencies
+ */
+import { getExistingTag } from '../../util';
 
 const { __, sprintf } = wp.i18n;
 const { Component, Fragment } = wp.element;
@@ -63,9 +67,42 @@ class TagmanagerSetup extends Component {
 		this.refetchAccount = this.refetchAccount.bind( this );
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		this._isMounted = true;
-		this.requestTagManagerAccounts();
+
+		const existingTag = await getExistingTag( 'tagmanager' );
+
+		if ( existingTag ) {
+			// Verify the user has access to existing tag if found. If no access request will return 403 error and catch err.
+			try {
+				const { container } = await data.get( TYPE_MODULES, 'tagmanager', 'tag-permission', { tag: existingTag } );
+				// User has permission if they have Admin status on the container's account, or "Publish" capability on the container itself (admins have this capability implicitly).
+				if ( 'publish' !== container ) {
+					throw {
+						code: 'tag_manager_existing_tag_permission',
+						message: sprintf(
+							__(
+								'We\'ve detected there\'s already an existing Tag Manager tag on your site (%s), but your account doesn\'t seem to have the necessary access to this container. You can either remove the existing tag and connect to a different account, or request access to this container from your team.',
+								'google-site-kit'
+							),
+							existingTag
+						),
+					};
+				}
+				await this.requestTagManagerAccounts();
+			} catch ( err ) {
+				this.setState(
+					{
+						isLoading: false,
+						errorCode: err.code,
+						errorMsg: err.message,
+						errorReason: err.data && err.data.reason ? err.data.reason : false,
+					}
+				);
+			}
+		} else {
+			await this.requestTagManagerAccounts();
+		}
 
 		// Handle save hook from the settings page.
 		addFilter( 'googlekit.SettingsConfirmed',
