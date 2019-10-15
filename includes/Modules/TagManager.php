@@ -370,6 +370,25 @@ final class TagManager extends Module implements Module_With_Scopes {
 					$this->_containers_account_id = $data['accountId'];
 
 					return $this->get_tagmanager_service()->accounts_containers->listAccountsContainers( "accounts/{$data['accountId']}" );
+				case 'tag-permission':
+					return function() use ( $data ) {
+						if ( ! isset( $data['tag'] ) ) {
+							return new WP_Error(
+								'missing_required_param',
+								/* translators: %s: Missing parameter name */
+								sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'tag' ),
+								array( 'status' => 400 )
+							);
+						}
+
+						$accounts = $this->get_data( 'accounts-containers' );
+
+						if ( is_wp_error( $accounts ) ) {
+							return $accounts;
+						}
+
+						return $this->get_container_access( $data['tag'], $accounts['accounts'] );
+					};
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
@@ -533,6 +552,79 @@ final class TagManager extends Module implements Module_With_Scopes {
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Gets the access levels for the given container and its account.
+	 *
+	 * @param string $container_id Property found in the existing tag.
+	 * @param array  $accounts     List of accounts to loop through containers.
+	 *
+	 * @return array
+	 * @since 1.0.0
+	 */
+	protected function get_container_access( $container_id, $accounts ) {
+		$response = array(
+			'account'   => false,
+			'container' => false,
+		);
+
+		if ( empty( $container_id ) || empty( $accounts ) ) {
+			return $response;
+		}
+
+		try {
+			list ( $account, $container ) = $this->get_account_for_container( $container_id, $accounts );
+		} catch ( \Exception $e ) {
+			return $response;
+		}
+
+		/* @var \Google_Service_TagManager_Account $account Account instance. */
+		$permissions = $this->get_tagmanager_service()->accounts_user_permissions->listAccountsUserPermissions(
+			'accounts/' . $account->getAccountId()
+		)->getUserPermission();
+
+		$response['account'] = $permissions->getAccountAccess();
+
+		/* @var \Google_Service_TagManager_Container $container Container instance. */
+		foreach ( (array) $permissions->getContainerAccess() as $container_access ) {
+			/* @var \Google_Service_TagManager_ContainerAccess $container_access Container access instance. */
+			if ( $container->getContainerId() === $container_access->getContainerId() ) {
+				$response['container'] = $container_access->getPermission();
+
+				return $response;
+			}
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Finds the account for the given container *public ID* from the given list of accounts.
+	 *
+	 * There is no way to query a container by its public ID (the ID that identifies the container on the client)
+	 * so we must find it by listing the containers of the available accounts and matching on the public ID.
+	 *
+	 * @param string                               $container_id Container public ID (e.g. GTM-ABCDEFG).
+	 * @param \Google_Service_TagManager_Account[] $accounts All accounts available to the current user.
+	 *
+	 * @return array [ \Google_Service_TagManager_Account, \Google_Service_TagManager_Container ]
+	 * @throws Exception Thrown if the given container ID does not belong to any of the given accounts.
+	 */
+	private function get_account_for_container( $container_id, $accounts ) {
+		foreach ( (array) $accounts as $account ) {
+			/* @var \Google_Service_TagManager_Account $account Tag manager account */
+			$containers = $this->get_data( 'containers', array( 'accountId' => $account->getAccountId() ) );
+
+			foreach ( (array) $containers as $container ) {
+				/* @var \Google_Service_TagManager_Container $container Container instance */
+				if ( $container_id === $container->getPublicId() ) {
+					return [ $account, $container ];
+				}
+			}
+		}
+
+		throw new Exception( 'No account found for given container' );
 	}
 
 	/**
