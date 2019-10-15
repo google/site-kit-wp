@@ -360,8 +360,8 @@ final class TagManager extends Module implements Module_With_Scopes {
 					if ( ! empty( $data['accountId'] ) ) {
 						$this->_list_accounts_data = $data;
 					}
-					$service = $this->get_service( 'tagmanager' );
-					return $service->accounts->listAccounts();
+
+					return $this->get_tagmanager_service()->accounts->listAccounts();
 				case 'containers':
 					if ( ! isset( $data['accountId'] ) ) {
 						/* translators: %s: Missing parameter name */
@@ -369,8 +369,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 					}
 					$this->_containers_account_id = $data['accountId'];
 
-					$service = $this->get_service( 'tagmanager' );
-					return $service->accounts_containers->listAccountsContainers( "accounts/{$data['accountId']}" );
+					return $this->get_tagmanager_service()->accounts_containers->listAccountsContainers( "accounts/{$data['accountId']}" );
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
