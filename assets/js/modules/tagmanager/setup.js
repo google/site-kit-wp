@@ -59,6 +59,7 @@ class TagmanagerSetup extends Component {
 			selectedContainer: containerId ? containerId : 0,
 			containersLoading: false,
 			blockedFromCompleting: false,
+			existingTag: false,
 		};
 
 		this.handleSubmit = this.handleSubmit.bind( this );
@@ -72,6 +73,8 @@ class TagmanagerSetup extends Component {
 		this._isMounted = true;
 
 		const existingTag = await getExistingTag( 'tagmanager' );
+
+		this.setState( { existingTag } );
 
 		if ( existingTag ) {
 			// Verify the user has access to existing tag if found. If no access request will return 403 error and catch err.
