@@ -1,11 +1,16 @@
+const { preset } = require( '@wordpress/scripts/config/jest-unit.config' );
+
 module.exports = {
+	preset,
 	rootDir: '../../',
-	...require( '@wordpress/scripts/config/jest-unit.config' ),
 	transform: {
 		'^.+\\.[jt]sx?$': '<rootDir>/node_modules/@wordpress/scripts/config/babel-transform',
 	},
 	setupFiles: [
 		'<rootDir>/tests/js/setup-globals',
+	],
+	setupFilesAfterEnv: [
+		'<rootDir>/tests/js/jest-matchers',
 	],
 	testMatch: [
 		'<rootDir>/assets/**/__tests__/**/*.js',

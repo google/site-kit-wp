@@ -1,3 +1,8 @@
+import React from 'react';
+
+// The rest of our code relies on a global, external React being available.
+global.React = React;
+
 // eslint-disable-next-line no-undef
 global.googlesitekit = {
 	admin: {
