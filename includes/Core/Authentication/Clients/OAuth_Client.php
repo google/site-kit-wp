@@ -615,10 +615,10 @@ final class OAuth_Client {
 			return add_query_arg(
 				array(
 					'nonce'      => $nonce,
-					'name'       => get_bloginfo( 'name' ),
-					'url'        => $home_url,
-					'rest_root'  => $rest_root,
-					'admin_root' => $admin_root,
+					'name'       => rawurlencode( get_bloginfo( 'name' ) ),
+					'url'        => rawurlencode( $home_url ),
+					'rest_root'  => rawurlencode( $rest_root ),
+					'admin_root' => rawurlencode( $admin_root ),
 				),
 				$url
 			);
