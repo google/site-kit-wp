@@ -298,11 +298,12 @@ const fallbackGetQueryParamater = ( name ) => {
 /**
  * Get query parameter from the current URL.
  *
- * @param {string} name Query param to search for.
- * @return {string}
+ * @param  {string} name      Query param to search for.
+ * @param  {Object} _location Global `location` variable; used for DI-testing.
+ * @return {string}           Value of the query param.
  */
-export const getQueryParameter = ( name ) => {
-	const url = new URL( location.href );
+export const getQueryParameter = ( name, _location = location ) => {
+	const url = new URL( _location.href );
 	if ( name ) {
 		if ( ! url.searchParams || ! url.searchParams.get ) {
 			return fallbackGetQueryParamater( name );
