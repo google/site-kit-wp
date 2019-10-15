@@ -170,88 +170,84 @@ class AnalyticsDashboardWidget extends Component {
 							{ ! receivingData && (
 								error ? getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( __( 'Analytics', 'google-site-kit' ), true, true, true )
 							) }
-							{ receivingData && (
-								<Fragment>
-									<div className={ `
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-12
-										${ wrapperClass }
-									` }>
-										<Layout
-											header
-											title={ sprintf( __( 'Audience overview for the last %s', 'google-site-kit' ), dateRangeFrom ) }
-											headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-											headerCtaLink="http://analytics.google.com"
-										>
-											<AnalyticsDashboardWidgetOverview
-												selectedStats={ selectedStats }
-												handleStatSelection={ this.handleStatSelection }
-												handleDataError={ this.handleDataError }
-												handleDataSuccess={ this.handleDataSuccess }
-											/>
-											<AnalyticsDashboardWidgetSiteStats
-												selectedStats={ selectedStats }
-												series={ series }
-												vAxes={ vAxes }
-												dateRangeFrom={ dateRangeFrom }
-											/>
-										</Layout>
-									</div>
-									<div className={ `
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-12
-										${ wrapperClass }
-									` }>
-										<Layout
-											header
-											footer
-											title={ sprintf( __( 'Top content over the last %s', 'google-site-kit' ), dateRangeFrom ) }
-											headerCtaLink="https://analytics.google.com"
-											headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-											footerCtaLabel={ __( 'Analytics', 'google-site-kit' ) }
-											footerCtaLink="https://analytics.google.com"
-										>
-											<AnalyticsDashboardWidgetTopPagesTable />
-										</Layout>
-									</div>
-									<div className={ `
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-12
-										${ wrapperClass }
-									` }>
-										<Layout
-											header
-											footer
-											title={ sprintf( __( 'Top acquisition sources over the last %s', 'google-site-kit' ), dateRangeFrom ) }
-											headerCtaLink="https://analytics.google.com"
-											headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-											footerCtaLabel={ __( 'Analytics', 'google-site-kit' ) }
-											footerCtaLink="https://analytics.google.com"
-										>
-											<div className="mdc-layout-grid">
-												<div className="mdc-layout-grid__inner">
-													<div className="
-														mdc-layout-grid__cell
-														mdc-layout-grid__cell--span-4-desktop
-														mdc-layout-grid__cell--span-8-tablet
-														mdc-layout-grid__cell--span-4-phone
-													">
-														<DashboardAcquisitionPieChart />
-													</div>
-													<div className="
-														mdc-layout-grid__cell
-														mdc-layout-grid__cell--span-8-desktop
-														mdc-layout-grid__cell--span-8-tablet
-														mdc-layout-grid__cell--span-4-phone
-													">
-														<AnalyticsDashboardWidgetTopAcquisitionSources />
-													</div>
-												</div>
+							<div className={ `
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-12
+								${ wrapperClass }
+							` }>
+								<Layout
+									header
+									title={ sprintf( __( 'Audience overview for the last %s', 'google-site-kit' ), dateRangeFrom ) }
+									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
+									headerCtaLink="http://analytics.google.com"
+								>
+									<AnalyticsDashboardWidgetOverview
+										selectedStats={ selectedStats }
+										handleStatSelection={ this.handleStatSelection }
+										handleDataError={ this.handleDataError }
+										handleDataSuccess={ this.handleDataSuccess }
+									/>
+									<AnalyticsDashboardWidgetSiteStats
+										selectedStats={ selectedStats }
+										series={ series }
+										vAxes={ vAxes }
+										dateRangeFrom={ dateRangeFrom }
+									/>
+								</Layout>
+							</div>
+							<div className={ `
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-12
+								${ wrapperClass }
+							` }>
+								<Layout
+									header
+									footer
+									title={ sprintf( __( 'Top content over the last %s', 'google-site-kit' ), dateRangeFrom ) }
+									headerCtaLink="https://analytics.google.com"
+									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
+									footerCtaLabel={ __( 'Analytics', 'google-site-kit' ) }
+									footerCtaLink="https://analytics.google.com"
+								>
+									<AnalyticsDashboardWidgetTopPagesTable />
+								</Layout>
+							</div>
+							<div className={ `
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-12
+								${ wrapperClass }
+							` }>
+								<Layout
+									header
+									footer
+									title={ sprintf( __( 'Top acquisition sources over the last %s', 'google-site-kit' ), dateRangeFrom ) }
+									headerCtaLink="https://analytics.google.com"
+									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
+									footerCtaLabel={ __( 'Analytics', 'google-site-kit' ) }
+									footerCtaLink="https://analytics.google.com"
+								>
+									<div className="mdc-layout-grid">
+										<div className="mdc-layout-grid__inner">
+											<div className="
+												mdc-layout-grid__cell
+												mdc-layout-grid__cell--span-4-desktop
+												mdc-layout-grid__cell--span-8-tablet
+												mdc-layout-grid__cell--span-4-phone
+											">
+												<DashboardAcquisitionPieChart />
 											</div>
-										</Layout>
+											<div className="
+												mdc-layout-grid__cell
+												mdc-layout-grid__cell--span-8-desktop
+												mdc-layout-grid__cell--span-8-tablet
+												mdc-layout-grid__cell--span-4-phone
+											">
+												<AnalyticsDashboardWidgetTopAcquisitionSources />
+											</div>
+										</div>
 									</div>
-								</Fragment>
-							) }
+								</Layout>
+							</div>
 							<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12

@@ -103,7 +103,6 @@ class AnalyticsSetup extends Component {
 						errorReason: err.data && err.data.reason ? err.data.reason : false,
 					}
 				);
-				data.deleteCache( 'analytics', 'existingTag' );
 			}
 		} else {
 			await this.getAccounts();
@@ -464,11 +463,23 @@ class AnalyticsSetup extends Component {
 			finishSetup,
 		} = this.props;
 
+		// Ensure that values of `0` are not treated as false-y, causing an error to
+		// appear.
+		// See: https://github.com/google/site-kit-wp/issues/398#issuecomment-540024321
+		const profileId = selectedProfile || ( profiles[ 0 ].id || profiles[ 0 ].id === 0 ? profiles[ 0 ].id.toString() : null );
+		const propertyId = selectedProperty || ( properties[ 0 ].id || properties[ 0 ].id === 0 ? properties[ 0 ].id.toString() : null );
+		let internalWebPropertyId;
+		if ( propertyId === '0' ) {
+			internalWebPropertyId = '0';
+		} else {
+			internalWebPropertyId = selectedinternalWebProperty || ( properties[ 0 ].internalWebPropertyId || properties[ 0 ].internalWebPropertyId === 0 ? properties[ 0 ].internalWebPropertyId.toString() : null );
+		}
+
 		const analyticAccount = {
 			accountId: selectedAccount || accounts[ 0 ].id || null,
-			profileId: selectedProfile || profiles[ 0 ].id || null,
-			propertyId: selectedProperty || properties[ 0 ].id || null,
-			internalWebPropertyId: selectedinternalWebProperty || properties[ 0 ].internalWebPropertyId || null,
+			profileId,
+			propertyId,
+			internalWebPropertyId,
 			useSnippet: useSnippet || false,
 			ampClientIdOptIn: ampClientIdOptIn || false,
 		};
@@ -795,7 +806,7 @@ class AnalyticsSetup extends Component {
 						<Select
 							enhanced
 							name="properties"
-							value={ selectedProperty || '-1' }
+							value={ selectedProperty || selectedProperty === 0 ? selectedProperty.toString() : '-1' }
 							onEnhancedChange={ this.handlePropertyChange }
 							label={ __( 'Property', 'google-site-kit' ) }
 							disabled={ disabledProperty }
@@ -814,7 +825,7 @@ class AnalyticsSetup extends Component {
 						<Select
 							enhanced
 							name="profiles"
-							value={ selectedProfile || '-1' }
+							value={ selectedProfile || selectedProfile === 0 ? selectedProfile.toString() : '-1' }
 							onEnhancedChange={ this.handleProfileChange }
 							label={ __( 'View', 'google-site-kit' ) }
 							disabled={ disabledProfile }

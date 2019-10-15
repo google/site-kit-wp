@@ -30,7 +30,7 @@ import {
 	sortObjectProperties,
 } from 'SiteKitCore/util';
 
-const { each, sortBy } = lodash;
+const { cloneDeep, each, sortBy } = lodash;
 const { addQueryArgs } = wp.url;
 const {
 	addAction,
@@ -163,9 +163,12 @@ const dataAPI = {
 		const toRequest = [];
 		const deferredRequests = [];
 		const keyIndexesMap = {};
+		const noLowPriorityRequests = !! dataRequest.find( ( request ) => {
+			return request.priority < 10;
+		} );
 		each( dataRequest, ( request, index ) => {
 			// Defer any datapoints with a priority of 10 or greater into a second request.
-			if ( ! secondaryRequest && 10 <= request.priority ) {
+			if ( ! secondaryRequest && 10 <= request.priority && noLowPriorityRequests ) {
 				deferredRequests.push( request );
 			} else if ( ! keyIndexesMap[ request.key ] ) {
 				keyIndexesMap[ request.key ] = [ index ];
@@ -292,7 +295,7 @@ const dataAPI = {
 
 		lazilySetupLocalCache();
 
-		googlesitekit.admin.datacache[ key ] = data;
+		googlesitekit.admin.datacache[ key ] = cloneDeep( data );
 
 		const toStore = {
 			value: data,
@@ -328,9 +331,9 @@ const dataAPI = {
 			// Only return value if no maximum age given or if cache age is less than the maximum.
 			if ( ! maxAge || ( Date.now() / 1000 ) - cache.date < maxAge ) {
 				// Set variable cache.
-				googlesitekit.admin.datacache[ key ] = cache.value;
+				googlesitekit.admin.datacache[ key ] = cloneDeep( cache.value );
 
-				return cache.value;
+				return cloneDeep( googlesitekit.admin.datacache[ key ] );
 			}
 		}
 
