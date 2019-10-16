@@ -278,6 +278,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'url=', $url );
 		$this->assertContains( 'rest_root=', $url );
 		$this->assertContains( 'admin_root=', $url );
+		$this->assertNotContains( 'site_id=', $url );
 
 		// Otherwise, pass site ID and given temporary access code.
 		$this->fake_proxy_authentication();
@@ -285,6 +286,10 @@ class OAuth_ClientTest extends TestCase {
 		$url = $client->get_proxy_setup_url( 'temp-code' );
 		$this->assertContains( 'site_id=' . self::SITE_ID, $url );
 		$this->assertContains( 'code=temp-code', $url );
+		$this->assertNotContains( 'name=', $url );
+		$this->assertNotContains( 'url=', $url );
+		$this->assertNotContains( 'rest_root=', $url );
+		$this->assertNotContains( 'admin_root=', $url );
 	}
 
 	public function test_get_proxy_permissions_url() {
