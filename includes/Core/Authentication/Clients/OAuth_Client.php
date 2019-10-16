@@ -481,7 +481,7 @@ final class OAuth_Client {
 		try {
 			$authentication_token = $this->get_client()->fetchAccessTokenWithAuthCode( $_GET['code'] ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 		} catch ( Google_Proxy_Exception $e ) {
-			wp_safe_redirect( $this->get_proxy_setup_url( $e->getAccessCode() ) );
+			wp_safe_redirect( $this->get_proxy_setup_url( $e->getAccessCode(), $e->getMessage() ) );
 			exit();
 		} catch ( Exception $e ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'invalid_code' );
@@ -591,10 +591,13 @@ final class OAuth_Client {
 	/**
 	 * Returns the setup URL to the authentication proxy.
 	 *
-	 * @param string $code Optional. Temporary access code for an undelegated access token. Default empty string.
+	 * @since 1.0.0
+	 *
+	 * @param string $access_code Optional. Temporary access code for an undelegated access token. Default empty string.
+	 * @param string $error_code  Optional. Error code, if the user should be redirected because of an error. Default empty string.
 	 * @return string URL to the setup page on the authentication proxy.
 	 */
-	public function get_proxy_setup_url( $code = '' ) {
+	public function get_proxy_setup_url( $access_code = '', $error_code = '' ) {
 		$url = self::PROXY_URL . '/site-management/setup/';
 
 		$credentials = $this->get_client_credentials();
@@ -627,13 +630,15 @@ final class OAuth_Client {
 			);
 		}
 
-		return add_query_arg(
-			array(
-				'site_id' => $credentials->web->client_id,
-				'code'    => $code,
-			),
-			$url
+		$query_args = array(
+			'site_id' => $credentials->web->client_id,
+			'code'    => $access_code,
 		);
+		if ( 'missing_verification' === $error_code ) {
+			$query_args['verification_nonce'] = wp_create_nonce( 'googlesitekit_verification' );
+		}
+
+		return add_query_arg( $query_args, $url );
 	}
 
 	/**
@@ -732,7 +737,7 @@ final class OAuth_Client {
 							/* translators: 1: error code from API, 2: URL to re-authenticate */
 							__( 'Setup Error (code: %1$s). <a href="%2$s">Re-authenticate with Google</a>', 'google-site-kit' ),
 							$error_code,
-							$this->get_proxy_setup_url( $access_code )
+							$this->get_proxy_setup_url( $access_code, $error_code )
 						);
 						$this->user_options->delete( self::OPTION_PROXY_ACCESS_CODE );
 						return $message;

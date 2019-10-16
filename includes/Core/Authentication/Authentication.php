@@ -547,6 +547,11 @@ final class Authentication {
 			return;
 		}
 
+		$verification_nonce = filter_input( INPUT_GET, 'googlesitekit_verification_nonce' );
+		if ( empty( $verification_nonce ) || ! wp_verify_nonce( $verification_nonce, 'googlesitekit_verification' ) ) {
+			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
+		}
+
 		$this->verification_tag->set( $verification_token );
 
 		$code = (string) filter_input( INPUT_GET, 'googlesitekit_code' );
