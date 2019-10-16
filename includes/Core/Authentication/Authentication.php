@@ -606,8 +606,8 @@ final class Authentication {
 		$auth_client = $this->get_oauth_client();
 		if ( $auth_client->using_proxy() ) {
 			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
-			$data['proxySetupURL']       = $auth_client->get_proxy_setup_url( $access_code );
-			$data['proxyPermissionsURL'] = $auth_client->get_proxy_permissions_url();
+			$data['proxySetupURL']       = esc_url_raw( $auth_client->get_proxy_setup_url( $access_code ) );
+			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
 
 			// TODO: Remove once related JS functionality is removed. For now, still set these as false-y.
 			$data['clientID']     = '';
@@ -641,7 +641,7 @@ final class Authentication {
 			// Make GCP project information available only to the creator.
 			if ( ! empty( $gcp_project['id'] ) && (int) get_current_user_id() === $gcp_project['wp_owner_id'] ) {
 				$data['projectId']  = $gcp_project['id'];
-				$data['projectUrl'] = add_query_arg( 'project', $gcp_project['id'], 'https://console.cloud.google.com/apis/credentials' );
+				$data['projectUrl'] = esc_url_raw( add_query_arg( 'project', $gcp_project['id'], 'https://console.cloud.google.com/apis/credentials' ) );
 			} else {
 				$data['projectId']  = false;
 				$data['projectUrl'] = false;
