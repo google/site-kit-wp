@@ -653,13 +653,11 @@ final class Authentication {
 			if ( strlen( $external_sitename ) < 4 ) {
 				$external_sitename .= ' Site Kit';
 			}
-			$external_page_params = array(
+			$external_page_params      = array(
 				'sitename' => substr( $external_sitename, 0, 30 ), // limit to 30 chars.
 				'siteurl'  => untrailingslashit( home_url() ),
 			);
-
-			$data['externalCredentialsURL'] = esc_url_raw( add_query_arg( $external_page_params, 'https://developers.google.com/web/site-kit' ) );
-			$data['externalAPIKeyURL']      = esc_url_raw( add_query_arg( $external_page_params, 'https://developers.google.com/web/site-kit/apikey' ) );
+			$data['externalAPIKeyURL'] = esc_url_raw( add_query_arg( $external_page_params, 'https://developers.google.com/web/site-kit/apikey' ) );
 		}
 
 		$data['connectUrl']    = esc_url_raw( $this->get_connect_url() );
