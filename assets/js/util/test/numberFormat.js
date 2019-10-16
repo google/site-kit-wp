@@ -3,81 +3,62 @@
  */
 import { numberFormat } from '../';
 
-const valuesToTest = [
-	[
-		123.87,
-		'en-US',
-		'123.87',
-	],
-	[
-		1234.87,
-		'en-US',
-		'1,234.87',
-	],
-	[
-		12345.87,
-		'en-US',
-		'12,345.87',
-	],
-	[
-		123456.87,
-		'en-US',
-		'123,456.87',
-	],
-	[
-		1234567.87,
-		'en-US',
-		'1,234,567.87',
-	],
-	[
-		12345678.87,
-		'en-US',
-		'12,345,678.87',
-	],
-	[
-		123456789.87,
-		'en-US',
-		'123,456,789.87',
-	],
-	[
-		123.87,
-		'de-DE',
-		'123,87',
-	],
-	[
-		1234.87,
-		'de-DE',
-		'1.234,87',
-	],
-	[
-		12345.87,
-		'de-DE',
-		'12.345,87',
-	],
-	[
-		123456.87,
-		'de-DE',
-		'123.456,87',
-	],
-	[
-		1234567.87,
-		'de-DE',
-		'1.234.567,87',
-	],
-	[
-		12345678.87,
-		'de-DE',
-		'12.345.678,87',
-	],
-	[
-		123456789.87,
-		'de-DE',
-		'123.456.789,87',
-	]
-];
-
 describe( 'numberFormat', () => {
-	it.each( valuesToTest )( 'for %s and locale %s should return %s', ( value, locale, expected ) => {
-		expect( numberFormat( value, locale ) ).toStrictEqual( expected );
+	it( 'formats numbers correctly according to the locale provided', () => {
+		expect(
+			numberFormat( 123.87, 'en-US' )
+		).toStrictEqual( '123.87' );
+
+		expect(
+			numberFormat( 1234.87, 'en-US' )
+		).toStrictEqual( '1,234.87' );
+
+		expect(
+			numberFormat( 12345.87, 'en-US' )
+		).toStrictEqual( '12,345.87' );
+
+		expect(
+			numberFormat( 123456.87, 'en-US' )
+		).toStrictEqual( '123,456.87' );
+
+		expect(
+			numberFormat( 1234567.87, 'en-US' )
+		).toStrictEqual( '1,234,567.87' );
+
+		expect(
+			numberFormat( 12345678.87, 'en-US' )
+		).toStrictEqual( '12,345,678.87' );
+
+		expect(
+			numberFormat( 123456789.87, 'en-US' )
+		).toStrictEqual( '123,456,789.87' );
+
+		expect(
+			numberFormat( 123.87, 'de-DE' )
+		).toStrictEqual( '123,87' );
+
+		expect(
+			numberFormat( 1234.87, 'de-DE' )
+		).toStrictEqual( '1.234,87' );
+
+		expect(
+			numberFormat( 12345.87, 'de-DE' )
+		).toStrictEqual( '12.345,87' );
+
+		expect(
+			numberFormat( 123456.87, 'de-DE' )
+		).toStrictEqual( '123.456,87' );
+
+		expect(
+			numberFormat( 1234567.87, 'de-DE' )
+		).toStrictEqual( '1.234.567,87' );
+
+		expect(
+			numberFormat( 12345678.87, 'de-DE' )
+		).toStrictEqual( '12.345.678,87' );
+
+		expect(
+			numberFormat( 123456789.87, 'de-DE' )
+		).toStrictEqual( '123.456.789,87' );
 	} );
 } );
