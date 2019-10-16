@@ -14,6 +14,8 @@ use Google_Client;
 use Google\Auth\OAuth2;
 use Google\Auth\HttpHandler\HttpHandlerFactory;
 use Google\Auth\HttpHandler\HttpClientCache;
+use GuzzleHttp\Psr7;
+use GuzzleHttp\Psr7\Request;
 use Exception;
 use InvalidArgumentException;
 use LogicException;
@@ -113,20 +115,29 @@ final class Google_Proxy_Client extends Google_Client {
 			$token = $token['access_token'];
 		}
 
-		$response = wp_remote_get(
-			add_query_arg(
+		$body    = Psr7\stream_for(
+			http_build_query(
 				array(
 					'client_id' => $this->getClientId(),
 					'token'     => $token,
-				),
-				self::OAUTH2_REVOKE_URI
+				)
 			)
 		);
-		if ( is_wp_error( $response ) ) {
-			return false;
-		}
+		$request = new Request(
+			'POST',
+			self::OAUTH2_REVOKE_URI,
+			array(
+				'Cache-Control' => 'no-store',
+				'Content-Type'  => 'application/x-www-form-urlencoded',
+			),
+			$body
+		);
 
-		return 200 === (int) wp_remote_retrieve_response_code( $response );
+		$http_handler = HttpHandlerFactory::build( $this->getHttpClient() );
+
+		$response = $http_handler( $request );
+
+		return 200 === (int) $response->getStatusCode();
 	}
 
 	/**
