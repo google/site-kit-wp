@@ -3,41 +3,60 @@
  */
 import { getReAuthUrl } from '../';
 
-const valuesToTest = [
-	[
-		'pagespeed-insights',
-		false,
-		false,
-		'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&reAuth=false&slug=pagespeed-insights'
-	],
-	[
-		'pagespeed-insights',
-		true,
-		false,
-		'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=false&slug=pagespeed-insights'
-	],
-	[
-		'pagespeed-insights',
-		false,
-		'abc123',
-		'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&reAuth=false&slug=pagespeed-insights'
-	],
-	[
-		'pagespeed-insights',
-		true,
-		'abc123',
-		'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=false&slug=pagespeed-insights'
-	]
-];
+const createSiteKit = ( apiKey ) => {
+	return {
+		admin: {
+			adminRoot: 'http://sitekit.withgoogle.com/wp-admin/admin.php',
+			apikey: apiKey,
+			connectUrl: 'http://sitekit.withgoogle.com/wp-admin/admin.php?googlesitekit_connect=1&nonce=12345&page=googlesitekit-splash',
+		},
+		modules: {
+			'search-console': {
+				screenId: 'googlesitekit-module-search-console',
+			},
+			'pagespeed-insights': {
+				screenId: 'googlesitekit-module-pagespeed-insights',
+			},
+		},
+		setup: {
+			needReauthenticate: false,
+		},
+	};
+};
 
-// Disable reason: Needs investigation.
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip( 'getReAuthUrl', () => {
-	it.each( valuesToTest )( 'should return URL for slug %s, status %p, and API key %s', ( slug, status, apikey, expected ) => {
-		// eslint-disable-next-line no-undef
-		global.googlesitekit.admin.apikey = apikey;
-		expect( getReAuthUrl( slug, status ) ).toStrictEqual( expected );
+describe( 'getReAuthUrl', () => {
+	it( 'should return URL for slug with status/API key', () => {
+		let googlesitekit = createSiteKit( false );
+
+		expect(
+			getReAuthUrl( 'pagespeed-insights', false, googlesitekit )
+		).toStrictEqual(
+			'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&reAuth=false&slug=pagespeed-insights'
+		);
+
+		googlesitekit = createSiteKit( false );
+
+		expect(
+			getReAuthUrl( 'pagespeed-insights', true, googlesitekit )
+		).toStrictEqual(
+			'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=true&slug=pagespeed-insights'
+		);
+
+		googlesitekit = createSiteKit( 'abc123' );
+
+		expect(
+			getReAuthUrl( 'pagespeed-insights', false, googlesitekit )
+		).toStrictEqual(
+			'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&reAuth=false&slug=pagespeed-insights'
+		);
+
+		googlesitekit = createSiteKit( 'abc123' );
+
+		expect(
+			getReAuthUrl( 'pagespeed-insights', true, googlesitekit )
+		).toStrictEqual(
+			'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=false&slug=pagespeed-insights'
+		);
 	} );
 } );
-
 

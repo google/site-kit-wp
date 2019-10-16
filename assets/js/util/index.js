@@ -356,15 +356,15 @@ export const refreshAuthentication = async () => {
  * @param {string}  slug   The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
  * @param {boolean} status The module activation status.
  */
-export const getReAuthURL = ( slug, status ) => {
+export const getReAuthUrl = ( slug, status, _googlesitekit = googlesitekit ) => {
 	const {
 		connectURL,
 		adminRoot,
-	} = googlesitekit.admin;
+	} = _googlesitekit.admin;
 
-	const { needReauthenticate } = window.googlesitekit.setup;
+	const { needReauthenticate } = _googlesitekit.setup;
 
-	const { screenID } = googlesitekit.modules[ slug ];
+	const { screenId } = _googlesitekit.modules[ slug ];
 
 	// Special case handling for PageSpeed Insights.
 	// TODO: Refactor this out.
@@ -374,10 +374,9 @@ export const getReAuthURL = ( slug, status ) => {
 	} : {};
 
 	let redirect = addQueryArgs(
-		adminRoot,
-		{
+		adminRoot, {
 			// If the module has a submenu page, and is being activated, redirect back to the module page.
-			page: ( slug && status && screenID ) ? screenID : 'googlesitekit-dashboard',
+			page: ( slug && status && screenId ) ? screenId : 'googlesitekit-dashboard',
 			slug,
 			reAuth: status,
 			...pageSpeedQueryArgs,
