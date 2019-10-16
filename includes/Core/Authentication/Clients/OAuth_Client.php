@@ -16,6 +16,8 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Authentication\Credentials;
+use Google\Site_Kit\Core\Authentication\Verification;
+use Google\Site_Kit\Modules\Search_Console;
 use Google_Client;
 use Exception;
 
@@ -535,12 +537,8 @@ final class OAuth_Client {
 		// TODO: In the future, once the old authentication mechanism no longer exists, this should be resolved in
 		// another way.
 		if ( $this->using_proxy() ) {
-			if ( ! $this->user_options->get( 'googlesitekit_site_verified_meta' ) ) {
-				$this->user_options->set( 'googlesitekit_site_verified_meta', 'verified' );
-			}
-			if ( ! $this->options->get( 'googlesitekit_search_console_property' ) ) {
-				$this->options->set( 'googlesitekit_search_console_property', trailingslashit( $this->context->get_reference_site_url() ) );
-			}
+			$this->user_options->set( Verification::OPTION, 'verified' );
+			$this->options->set( Search_Console::PROPERTY_OPTION, trailingslashit( $this->context->get_reference_site_url() ) );
 		}
 
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
