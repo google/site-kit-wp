@@ -733,8 +733,8 @@ export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) 
  * @param {Object} settingsState   The changed settings component state to compare with.
  * @param {Object} skipDOM         Skip DOm checks/modifications, used for testing.
  */
-export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false ) => {
-	const { settings, setupComplete } = googlesitekit.modules[ moduleSlug ];
+export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, _googlesitekit = googlesitekit ) => {
+	const { settings, setupComplete } = _googlesitekit.modules[ moduleSlug ];
 	const confirm = skipDOM || document.getElementById( `confirm-changes-${ moduleSlug }` );
 
 	if ( ! setupComplete || ! confirm ) {
