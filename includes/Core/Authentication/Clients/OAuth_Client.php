@@ -729,7 +729,7 @@ final class OAuth_Client {
 							/* translators: 1: error code from API, 2: URL to re-authenticate */
 							__( 'Setup Error (code: %1$s). <a href="%2$s">Re-authenticate with Google</a>', 'google-site-kit' ),
 							$error_code,
-							$this->get_proxy_setup_url( $access_code )
+							esc_url( $this->get_proxy_setup_url( $access_code ) )
 						);
 						$this->user_options->delete( self::OPTION_PROXY_ACCESS_CODE );
 						return $message;
