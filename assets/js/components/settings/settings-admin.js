@@ -26,7 +26,6 @@ import Optin from 'GoogleComponents/optin';
 import data, { TYPE_CORE } from 'GoogleComponents/data';
 import {
 	clearAppLocalStorage,
-	moduleIcon,
 	getSiteKitAdminURL,
 } from 'GoogleUtil';
 
@@ -119,7 +118,6 @@ class SettingsAdmin extends Component {
 											googlesitekit-heading-4
 											googlesitekit-settings-module__title
 										">
-											{ moduleIcon( 'logo-google-cloud', false, '24', '26', 'googlesitekit-settings-module__title-icon' ) }
 											{ __( 'Plugin Status', 'google-site-kit' ) }
 										</h3>
 									</div>
