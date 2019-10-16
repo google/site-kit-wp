@@ -76,9 +76,7 @@ const valuesToTest = [
 	]
 ];
 
-// Disable reason: Node needs some polyfills for supporting a different locale.
-// eslint-disable-next-line jest/no-disabled-tests
-describe.skip( 'numberFormat', () => {
+describe( 'numberFormat', () => {
 	it.each( valuesToTest )( 'for %s and locale %s should return %s', ( value, locale, expected ) => {
 		expect( numberFormat( value, locale ) ).toStrictEqual( expected );
 	} );

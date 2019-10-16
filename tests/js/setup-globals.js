@@ -1,4 +1,16 @@
+import intlLocalesSupported from 'intl-locales-supported';
+import intl from 'intl';
 import React from 'react';
+
+if ( global.Intl ) {
+	// Check for locales other than American English.
+	if ( ! intlLocalesSupported( [ 'en-US', 'de-DE' ] ) ) {
+		global.Intl.NumberFormat = intl.NumberFormat;
+		global.Intl.DateTimeFormat = intl.DateTimeFormat;
+	}
+} else {
+	throw new Error( 'Your version of node is very old and does not support `Intl`. Please use at least node 10.' );
+}
 
 // The rest of our code relies on a global, external React being available.
 global.React = React;
