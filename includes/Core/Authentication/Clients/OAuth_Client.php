@@ -604,11 +604,8 @@ final class OAuth_Client {
 			$home_url           = home_url();
 			$home_url_no_scheme = str_replace( array( 'http://', 'https://' ), '', $home_url );
 
-			$rest_root = str_replace( array( 'http://', 'https://' ), '', rest_url() );
-			$rest_root = str_replace( $home_url_no_scheme, '', $rest_root );
-
-			$admin_root = str_replace( array( 'http://', 'https://' ), '', admin_url() );
-			$admin_root = str_replace( $home_url_no_scheme, '', $admin_root );
+			$rest_root  = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', rest_url() );
+			$admin_root = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', admin_url() );
 
 			$nonce = $this->options->get( self::OPTION_PROXY_NONCE );
 			if ( empty( $nonce ) ) {
