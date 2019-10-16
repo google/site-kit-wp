@@ -232,31 +232,6 @@ final class Authentication {
 
 		add_action( 'wp_head', $print_site_verification_meta );
 		add_action( 'login_head', $print_site_verification_meta );
-
-		add_action(
-			'admin_head',
-			function() {
-				global $hook_suffix;
-
-				// Highjack current admin page with OAuth sensitive scopes warning.
-				if ( filter_input( INPUT_GET, Sensitive_Scopes_Warning::QUERY_PARAMETER ) ) {
-					remove_all_actions( "{$hook_suffix}" );
-
-					$redirect_url = '';
-					if ( ! empty( $_GET['redirect'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-						$redirect_url = esc_url_raw( wp_unslash( $_GET['redirect'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-					}
-
-					$connect_url = $this->get_connect_url();
-					if ( ! empty( $redirect_url ) ) {
-						$connect_url = add_query_arg( 'redirect', rawurlencode( $redirect_url ), $connect_url );
-					}
-
-					$warning = new Sensitive_Scopes_Warning( $this->context, $connect_url );
-					add_action( "{$hook_suffix}", array( $warning, 'render' ), 1 );
-				}
-			}
-		);
 	}
 
 	/**
@@ -484,18 +459,6 @@ final class Authentication {
 			$redirect_url = '';
 			if ( ! empty( $_GET['redirect'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 				$redirect_url = esc_url_raw( wp_unslash( $_GET['redirect'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			}
-
-			$required_scopes = $this->get_oauth_client()->get_required_scopes();
-
-			$warning = new Sensitive_Scopes_Warning( $this->context, $this->get_connect_url() );
-			if ( $warning->should_display( $required_scopes ) ) {
-				$warning_url = $warning->get_url();
-				if ( ! empty( $redirect_url ) ) {
-					$warning_url = add_query_arg( 'redirect', $redirect_url, $warning_url );
-				}
-				wp_safe_redirect( $warning_url );
-				exit;
 			}
 
 			// User is trying to authenticate, but access token hasn't been set.
