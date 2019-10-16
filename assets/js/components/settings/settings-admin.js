@@ -120,7 +120,7 @@ class SettingsAdmin extends Component {
 											googlesitekit-settings-module__title
 										">
 											{ moduleIcon( 'logo-google-cloud', false, '24', '26', 'googlesitekit-settings-module__title-icon' ) }
-											{ __( 'API Credentials', 'google-site-kit' ) }
+											{ __( 'Plugin Status', 'google-site-kit' ) }
 										</h3>
 									</div>
 									<div className="
