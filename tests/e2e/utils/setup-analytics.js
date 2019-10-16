@@ -3,18 +3,24 @@
  */
 import { wpApiFetch } from './wp-api-fetch';
 
-const defaultConnection = {
+const defaultSettings = {
 	accountId: 100,
 	propertyId: 200,
 	profileId: 300,
 	internalWebPropertyId: 400,
+	useSnippet: true,
+	// ampClientIdOptIn: (bool)
 };
 
 /**
  * Activate and set up the Analytics module.
- * @param {Object} config Optional configuration to use for module set up.
+ * @param {Object} settingsOverrides Optional settings to override the defaults.
  */
-export async function setupAnalytics( config = { connection: defaultConnection } ) {
+export async function setupAnalytics( settingsOverrides = {} ) {
+	const settings = {
+		...defaultSettings,
+		...settingsOverrides,
+	};
 	// Activate the module.
 	await wpApiFetch( {
 		method: 'post',
@@ -24,9 +30,9 @@ export async function setupAnalytics( config = { connection: defaultConnection }
 	// Set dummy connection data.
 	await wpApiFetch( {
 		method: 'post',
-		path: 'google-site-kit/v1/modules/analytics/data/connection',
+		path: 'google-site-kit/v1/modules/analytics/data/settings',
 		data: {
-			data: config.connection,
+			data: settings,
 		},
 		parse: false,
 	} );
