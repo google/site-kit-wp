@@ -74,16 +74,23 @@ class Beta_Migration {
 	 * Registers hooks.
 	 */
 	public function register() {
-		$notice = new Notice(
-			'beta-migration',
-			array(
-				'content'         => function () {
-					return $this->get_notice_content();
-				},
-				'active_callback' => function () {
-					return $this->options->get( self::OPTION_IS_PRE_PROXY_INSTALL ) && current_user_can( Permissions::SETUP );
-				},
-			)
+		add_filter(
+			'googlesitekit_admin_notices',
+			function ( $notices ) {
+				$notices[] = new Notice(
+					'beta-migration',
+					array(
+						'content'         => function () {
+							return $this->get_notice_content();
+						},
+						'active_callback' => function () {
+							return $this->options->get( self::OPTION_IS_PRE_PROXY_INSTALL ) && current_user_can( Permissions::SETUP );
+						},
+					)
+				);
+
+				return $notices;
+			}
 		);
 
 		add_action(
@@ -99,8 +106,6 @@ class Beta_Migration {
 
 		add_action( 'admin_init', array( $this, 'handle_action' ) );
 		add_action( 'admin_init', array( $this, 'maybe_run_upgrade' ) );
-		add_action( 'admin_notices', array( $notice, 'render' ) );
-		add_action( 'network_admin_notices', array( $notice, 'render' ) );
 	}
 
 	/**

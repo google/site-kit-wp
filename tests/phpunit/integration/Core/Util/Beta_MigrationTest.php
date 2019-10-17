@@ -21,15 +21,13 @@ class Beta_MigrationTest extends TestCase {
 	public function test_register() {
 		$migration = new Beta_Migration( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_actions( 'admin_init' );
-		remove_all_actions( 'admin_notices' );
-		remove_all_actions( 'network_admin_notices' );
+		remove_all_filters( 'googlesitekit_admin_notices' );
 		remove_all_actions( 'wp_ajax_' . Beta_Migration::ACTION_DISMISS );
 
 		$migration->register();
 
 		$this->assertTrue( has_action( 'admin_init' ) );
-		$this->assertTrue( has_action( 'admin_notices' ) );
-		$this->assertTrue( has_action( 'network_admin_notices' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_admin_notices' ) );
 		$this->assertTrue( has_action( 'wp_ajax_' . Beta_Migration::ACTION_DISMISS ) );
 	}
 
