@@ -34,14 +34,9 @@ class Beta_Migration {
 	const OPTION_IS_PRE_PROXY_INSTALL = 'googlesitekit_pre_proxy_install';
 
 	/**
-	 * Query parameter for identifying a pre-proxy action.
+	 * WP Ajax Dismiss Action.
 	 */
-	const PARAM_PRE_PROXY_ACTION = 'googlesitekit_pre_proxy_action';
-
-	/**
-	 * WP Nonce Action.
-	 */
-	const ACTION = 'dismiss_reconnect_notice';
+	const ACTION_DISMISS = 'googlesitekit_dismiss';
 
 	/**
 	 * Options instance.
@@ -92,9 +87,9 @@ class Beta_Migration {
 		);
 
 		add_action(
-			'wp_ajax_googlesitekit_' . self::ACTION,
+			'wp_ajax_' . self::ACTION_DISMISS,
 			function () {
-				check_ajax_referer( self::ACTION );
+				check_ajax_referer( self::ACTION_DISMISS );
 
 				$this->options->delete( self::OPTION_IS_PRE_PROXY_INSTALL );
 
@@ -162,8 +157,8 @@ class Beta_Migration {
 				$notice
 					.on( 'click', 'a', function () {
 						$.post( ajaxurl, {
-							action: "<?php echo esc_js( 'googlesitekit_' . self::ACTION ); ?>",
-							_wpnonce: "<?php echo esc_js( wp_create_nonce( self::ACTION ) ); ?>"
+							action: "<?php echo esc_js( self::ACTION_DISMISS ); ?>",
+							_wpnonce: "<?php echo esc_js( wp_create_nonce( self::ACTION_DISMISS ) ); ?>"
 						} );
 					} )
 					.on( 'click', '[data-dismiss]', function( event ) {

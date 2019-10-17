@@ -23,14 +23,14 @@ class Beta_MigrationTest extends TestCase {
 		remove_all_actions( 'admin_init' );
 		remove_all_actions( 'admin_notices' );
 		remove_all_actions( 'network_admin_notices' );
-		remove_all_actions( 'wp_ajax_googlesitekit_' . Beta_Migration::ACTION );
+		remove_all_actions( 'wp_ajax_' . Beta_Migration::ACTION_DISMISS );
 
 		$migration->register();
 
 		$this->assertTrue( has_action( 'admin_init' ) );
 		$this->assertTrue( has_action( 'admin_notices' ) );
 		$this->assertTrue( has_action( 'network_admin_notices' ) );
-		$this->assertTrue( has_action( 'wp_ajax_googlesitekit_' . Beta_Migration::ACTION ) );
+		$this->assertTrue( has_action( 'wp_ajax_' . Beta_Migration::ACTION_DISMISS ) );
 	}
 
 	public function test_maybe_run_upgrade() {
