@@ -25,16 +25,7 @@ class PageSpeed_InsightsTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
 
 	public function test_is_connected() {
-		$user_id = $this->factory()->user->create();
-		wp_set_current_user( $user_id );
-		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$authentication = new Authentication( $context );
-		$pagespeed      = new PageSpeed_Insights( $context );
-
-		$this->assertFalse( $pagespeed->is_connected() );
-
-		// The module is connected if the user has granted the 'openid' oauth scope.
-		$authentication->get_oauth_client()->set_granted_scopes( array( 'foo-scope', 'openid', 'bar-scope' ) );
+		$pagespeed = new PageSpeed_Insights( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertTrue( $pagespeed->is_connected() );
 	}
