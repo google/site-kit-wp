@@ -89,17 +89,6 @@ class OAuth_ClientTest extends TestCase {
 		);
 	}
 
-	public function test_get_must_use_scopes() {
-		$this->assertEqualSets(
-			array(
-				'https://www.googleapis.com/auth/userinfo.profile',
-				'https://www.googleapis.com/auth/userinfo.email',
-				'openid',
-			),
-			OAuth_Client::get_must_use_scopes()
-		);
-	}
-
 	public function test_get_granted_scopes() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
