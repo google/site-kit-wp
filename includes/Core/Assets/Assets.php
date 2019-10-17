@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Assets;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Cache;
 
@@ -443,7 +444,10 @@ final class Assets {
 		$current_user = wp_get_current_user();
 		$site_url     = $this->context->get_reference_site_url();
 
+		$auth_client = new \Google\Site_Kit\Core\Authentication\Clients\OAuth_Client( $this->context );
+
 		$admin_data = array(
+			'usingProxy'       => $auth_client->using_proxy(),
 			'siteURL'          => esc_url_raw( $site_url ),
 			'siteName'         => get_bloginfo( 'name' ),
 			'siteUserId'       => md5( $site_url . $current_user->ID ),
