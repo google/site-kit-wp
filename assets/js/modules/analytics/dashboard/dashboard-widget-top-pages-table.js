@@ -39,6 +39,8 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 	 * Add a deep link to Google Analytics Dashboard.
 	 *
 	 * @param {string} url to be used in the deep link.
+	 *
+	 * @return {string} new url.
 	 */
 	static addDeepLink( url ) {
 		const {
@@ -83,8 +85,7 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 		const links = [];
 		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
 			const percent = Number( row.metrics[ 0 ].values[ 2 ] );
-			const url = row.dimensions[ 0 ];
-			const title = row.dimensions[ 1 ];
+			const [ title, url ] = row.dimensions;
 			links[ i ] = AnalyticsDashboardWidgetTopPagesTable.addDeepLink( url );
 			return [
 				title,

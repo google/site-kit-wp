@@ -85,6 +85,7 @@ rl.question( 'Username: ', ( username ) => {
 				// Credentials
 				html = html.replace( /"clientID":"(.*?)"/gi, '"clientID":"12345678.apps.googleusercontent.com"' );
 				html = html.replace( /"clientSecret":"(.*?)"/gi, '"clientSecret":"\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"' );
+				// API Key is no longer used, scrubbing kept just in case
 				html = html.replace( /"apikey":"(.*?)"/gi, '"apikey":"12345678"' );
 
 				// Account data

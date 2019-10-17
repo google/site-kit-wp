@@ -36,21 +36,17 @@ const { Component } = wp.element;
 class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 	render() {
 		const { data } = this.props;
+		const { siteURL: siteUrl } = googlesitekit.admin;
 
 		if ( isDataZeroForReporting( data ) ) {
 			return null;
 		}
 
-		const headers = [
-			__( 'URL', 'google-site-kit' ),
-			__( 'Pageviews', 'google-site-kit' ),
-		];
-
 		const links = [];
 		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
-			const url = row.dimensions[ 0 ];
-			const title = row.dimensions[ 1 ];
-			links[ i ] = url;
+			const [ title, url ] = row.dimensions;
+			links[ i ] = siteUrl + url;
+
 			return [
 				title,
 				numberFormat( row.metrics[ 0 ].values[ 0 ] ),
@@ -65,7 +61,7 @@ class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 			showUrls: true,
 		};
 
-		const dataTable = getDataTableFromData( dataMapped, headers, options );
+		const dataTable = getDataTableFromData( dataMapped, [], options );
 
 		return (
 			<div className="googlesitekit-search-console-widget">

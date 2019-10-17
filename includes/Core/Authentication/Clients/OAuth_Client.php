@@ -289,13 +289,17 @@ final class OAuth_Client {
 		 */
 		$scopes = (array) apply_filters( 'googlesitekit_auth_scopes', array() );
 
-		// These are always required.
-		$default_scopes = array(
-			'https://www.googleapis.com/auth/userinfo.profile',
-			'https://www.googleapis.com/auth/userinfo.email',
+		return array_unique(
+			array_merge(
+				// Default scopes that are always required.
+				array(
+					'openid',
+					'https://www.googleapis.com/auth/userinfo.profile',
+					'https://www.googleapis.com/auth/userinfo.email',
+				),
+				$scopes
+			)
 		);
-
-		return array_unique( array_merge( $default_scopes, $scopes ) );
 	}
 
 	/**
@@ -508,6 +512,9 @@ final class OAuth_Client {
 			function( $scope ) {
 				if ( ! is_string( $scope ) ) {
 					return false;
+				}
+				if ( in_array( $scope, array( 'openid', 'profile', 'email' ), true ) ) {
+					return true;
 				}
 				return 0 === strpos( $scope, 'https://www.googleapis.com/auth/' );
 			}

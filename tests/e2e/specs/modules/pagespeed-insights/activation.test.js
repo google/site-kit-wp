@@ -8,13 +8,25 @@ import { visitAdminPage, activatePlugin } from '@wordpress/e2e-test-utils';
  */
 import {
 	deactivateUtilityPlugins,
-	pasteText,
 	resetSiteKit,
 	setSearchConsoleProperty,
 	setSiteVerification,
+	useRequestInterception,
 } from '../../../utils';
 
 describe( 'PageSpeed Insights Activation', () => {
+	beforeAll( async () => {
+		await page.setRequestInterception( true );
+		useRequestInterception( ( request ) => {
+			if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
+				request.respond( {
+					status: 200,
+				} );
+			} else {
+				request.continue();
+			}
+		} );
+	} );
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-auth-plugin' );
 		await setSiteVerification();
@@ -26,29 +38,14 @@ describe( 'PageSpeed Insights Activation', () => {
 		await resetSiteKit();
 	} );
 
-	it( 'should lead you to the activation page', async () => {
+	it( 'leads you to the Site Kit dashboard after activation', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
+		await Promise.all( [
+			page.waitForNavigation(),
+			expect( page ).toClick( '.googlesitekit-cta-link', { text: 'Activate PageSpeed Insights' } ),
+		] );
 
-		await expect( page ).toMatchElement( 'h3.googlesitekit-cta__title', { text: 'Activate PageSpeed Insights.' } );
-
-		await expect( page ).toClick( '.googlesitekit-cta-link', { text: 'Activate PageSpeed Insights' } );
-		await page.waitForSelector( 'h2.googlesitekit-setup-module__title' );
-
-		await expect( page ).toMatchElement( 'h2.googlesitekit-setup-module__title', { text: 'PageSpeed Insights' } );
-	} );
-
-	it( 'should submit and save the entered key', async () => {
-		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
-
-		await expect( page ).toClick( '.googlesitekit-cta-link', { text: 'Activate PageSpeed Insights' } );
-		await page.waitForSelector( 'h2.googlesitekit-setup-module__title' );
-
-		await expect( page ).toMatchElement( 'h2.googlesitekit-setup-module__title', { text: 'PageSpeed Insights' } );
-
-		await pasteText( 'input.mdc-text-field__input', 'PSIKEYTOSUBMITANDTEST' );
-
-		await expect( page ).toClick( 'button.mdc-button', { text: 'Proceed' } );
-
-		await page.waitForSelector( 'h3.googlesitekit-heading-3' );
+		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
+		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for PageSpeed Insights!/i } );
 	} );
 } );
