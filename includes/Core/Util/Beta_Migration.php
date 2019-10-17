@@ -91,6 +91,17 @@ class Beta_Migration {
 			)
 		);
 
+		add_action(
+			'wp_ajax_googlesitekit_' . self::ACTION,
+			function () {
+				check_ajax_referer( self::ACTION );
+
+				$this->options->delete( self::OPTION_IS_PRE_PROXY_INSTALL );
+
+				wp_send_json_success();
+			}
+		);
+
 		add_action( 'admin_init', array( $this, 'handle_action' ) );
 		add_action( 'admin_init', array( $this, 'maybe_run_upgrade' ) );
 		add_action( 'admin_notices', array( $notice, 'render' ) );
@@ -104,39 +115,6 @@ class Beta_Migration {
 		if ( version_compare( get_option( 'googlesitekit_db_version', '0' ), self::DB_VERSION, '<' ) ) {
 			$this->run_upgrade();
 		}
-	}
-
-	/**
-	 * Handles the pre-proxy action chosen by the user.
-	 */
-	public function handle_action() {
-		$action = filter_input( INPUT_GET, self::PARAM_PRE_PROXY_ACTION );
-
-		if ( ! $action ) {
-			return;
-		}
-
-		if ( ! check_admin_referer( self::ACTION ) || ! in_array( $action, array( 'reconnect', 'ignore' ), true ) ) {
-			return;
-		}
-
-		$this->options->delete( self::OPTION_IS_PRE_PROXY_INSTALL );
-
-		if ( 'reconnect' === $action ) {
-			wp_safe_redirect( $this->oauth_client->get_proxy_setup_url() );
-		} elseif ( 'ignore' === $action ) {
-			// Redirect to the current URL without the action params.
-			wp_safe_redirect(
-				add_query_arg(
-					array(
-						self::PARAM_PRE_PROXY_ACTION => false,
-						'_wpnonce'                   => false,
-					)
-				)
-			);
-		}
-
-		exit;
 	}
 
 	/**
@@ -156,6 +134,10 @@ class Beta_Migration {
 	/**
 	 * Gets the content to render in the reconnect notice.
 	 *
+	 * Mirrors behavior of core's dismissible notices, while dismissing DB flag asynchronously.
+	 *
+	 * @link https://github.com/WordPress/WordPress/blob/956725990f075cb6b8b5a0b8a480c4c823a3fd99/wp-admin/js/common.js#L765-L770
+	 *
 	 * @return string
 	 */
 	private function get_notice_content() {
@@ -165,32 +147,37 @@ class Beta_Migration {
 			<?php esc_html_e( 'We’ve made a lot of improvements to get Site Kit ready for general release! In order to use this new version, you’ll need to go through the updated setup flow to re-generate your credentials. Once you’re done, all your data will still be there.', 'google-site-kit' ); ?>
 		</p>
 		<p style="display: flex; align-items: center;">
-			<a href="<?php echo esc_url( $this->get_action_url( 'reconnect' ) ); ?>" class="button button-primary button-large">
+			<a href="<?php echo esc_url( $this->oauth_client->get_proxy_setup_url() ); ?>" class="button button-primary button-large">
 				<?php esc_html_e( 'Reconnect Site Kit', 'google-site-kit' ); ?>
 			</a>
-			<span style="width: 1rem;"></span>
-			<a href="<?php echo esc_url( $this->get_action_url( 'ignore' ) ); ?>">
+			<span style="width: 1rem;"> </span>
+			<a href="#" data-dismiss>
 				<?php echo esc_html_x( 'Ignore', 'ignore/dismiss the notice', 'google-site-kit' ); ?>
 			</a>
 		</p>
+		<?php /* Add JS for dismissing the flag in the DB when either link is clicked in the background. */ ?>
+		<script>
+			jQuery( function ( $ ) {
+				var $notice = $( '#googlesitekit-notice-beta-migration' );
+				$notice
+					.on( 'click', 'a', function () {
+						$.post( ajaxurl, {
+							action: "<?php echo esc_js( 'googlesitekit_' . self::ACTION ); ?>",
+							_wpnonce: "<?php echo esc_js( wp_create_nonce( self::ACTION ) ); ?>"
+						} );
+					} )
+					.on( 'click', '[data-dismiss]', function( event ) {
+						event.preventDefault();
+						$notice.fadeTo( 100, 0, function() {
+							$notice.slideUp( 100, function() {
+								$notice.remove();
+							} );
+						} );
+					} );
+			} )
+		</script>
 		<?php
 
 		return ob_get_clean();
-	}
-
-	/**
-	 * Gets the URL for performing the given action.
-	 *
-	 * @param string $action Action to perform.
-	 *
-	 * @return string
-	 */
-	private function get_action_url( $action ) {
-		return add_query_arg(
-			array(
-				self::PARAM_PRE_PROXY_ACTION => $action,
-				'_wpnonce'                   => wp_create_nonce( self::ACTION ),
-			)
-		);
 	}
 }
