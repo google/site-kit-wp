@@ -164,20 +164,6 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes {
 	}
 
 	/**
-	 * Sets up the Google client the module should use.
-	 *
-	 * This method is invoked once by {@see Module::get_client()} to lazily set up the client when it is requested
-	 * for the first time.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return Google_Client Google client instance.
-	 */
-	protected function setup_client() {
-		return $this->authentication->get_oauth_client()->get_client();
-	}
-
-	/**
 	 * Sets up the Google services the module should use.
 	 *
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
