@@ -79,10 +79,11 @@ class OAuth_ClientTest extends TestCase {
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 
-		$this->assertArraySubset(
+		$this->assertEqualSets(
 			array(
 				'https://www.googleapis.com/auth/userinfo.profile',
 				'https://www.googleapis.com/auth/userinfo.email',
+				'openid',
 			),
 			$client->get_required_scopes()
 		);

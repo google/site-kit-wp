@@ -418,7 +418,7 @@ valuesToTest = [
 		slug: 'pagespeed-insights',
 		status: true,
 		apikey: false,
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=false&slug=pagespeed-insights'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=true&slug=pagespeed-insights'
 	},
 	{
 		slug: 'pagespeed-insights',
@@ -430,7 +430,7 @@ valuesToTest = [
 		slug: 'pagespeed-insights',
 		status: true,
 		apikey: 'abc123',
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=false&slug=pagespeed-insights'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=true&slug=pagespeed-insights'
 	},
 ];
 

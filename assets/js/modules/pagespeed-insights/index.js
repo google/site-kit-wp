@@ -20,8 +20,7 @@
  * External dependencies
  */
 import { createAddToFilter } from 'GoogleUtil/helpers';
-import { fillFilterWithComponent } from 'GoogleUtil';
-import PageSpeedInsightsSetup from 'GoogleModules/pagespeed-insights/setup';
+
 /**
  * Internal dependencies
  */
@@ -34,7 +33,6 @@ const {
 	active,
 	setupComplete,
 } = googlesitekit.modules[ 'pagespeed-insights' ];
-const slug = 'pagespeed-insights';
 
 if ( active && setupComplete ) {
 	const addDashboardSpeed = createAddToFilter( <DashboardSpeed /> );
@@ -54,13 +52,4 @@ if ( active && setupComplete ) {
 	addFilter( 'googlesitekit.DashboardModule',
 		'googlesitekit.PageSpeedInsights',
 		addPageSpeedInsightsCTA, 45 );
-
-	/**
-	 * Add component to the setup wizard
-	 */
-	addFilter( `googlesitekit.ModuleSetup-${ slug }`,
-		'googlesitekit.PageSpeedInsightsModuleSetupWizard',
-		fillFilterWithComponent( PageSpeedInsightsSetup, {
-			onSettingsPage: false,
-		} ) );
 }

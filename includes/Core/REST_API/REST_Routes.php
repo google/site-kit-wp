@@ -234,40 +234,6 @@ final class REST_Routes {
 			),
 			// This route is forward-compatible with a potential 'core/(?P<slug>[a-z\-]+)/data/(?P<datapoint>[a-z\-]+)'.
 			new REST_Route(
-				'core/site/data/apikey',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function() {
-							return new WP_REST_Response( $this->authentication->api_key()->get() ?: '' );
-						},
-						'permission_callback' => $can_setup,
-					),
-					array(
-						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$data = isset( $request['data'] ) ? $request['data'] : array();
-							if ( ! isset( $data['apikey'] ) ) {
-								/* translators: %s: Missing parameter name */
-								return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'apikey' ), array( 'status' => 400 ) );
-							}
-							return new WP_REST_Response( $this->authentication->api_key()->set( $data['apikey'] ) );
-						},
-						'permission_callback' => $can_setup,
-						'args'                => array(
-							'data' => array(
-								'type'              => 'object',
-								'description'       => __( 'Data to set.', 'google-site-kit' ),
-								'validate_callback' => function( $value ) {
-									return is_array( $value );
-								},
-							),
-						),
-					),
-				)
-			),
-			// This route is forward-compatible with a potential 'core/(?P<slug>[a-z\-]+)/data/(?P<datapoint>[a-z\-]+)'.
-			new REST_Route(
 				'core/site/data/credentials',
 				array(
 					array(
