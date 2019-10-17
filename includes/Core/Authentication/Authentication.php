@@ -197,28 +197,6 @@ final class Authentication {
 			}
 		);
 
-		// TODO: Remove this after testing.
-		add_action(
-			'admin_notices',
-			function() {
-				if ( ! $this->get_oauth_client()->using_proxy() ) {
-					return;
-				}
-				$setup_url       = $this->get_oauth_client()->get_proxy_setup_url();
-				$permissions_url = $this->get_oauth_client()->get_proxy_permissions_url();
-				?>
-				<div class="notice notice-info">
-					<p>
-						<strong>TEMPORARY:</strong>
-						<a href="<?php echo esc_url( $setup_url ); ?>"><?php esc_html_e( 'Go to proxy setup', 'google-site-kit' ); ?></a>
-						or
-						<a href="<?php echo esc_url( $permissions_url ); ?>"><?php esc_html_e( 'Manage proxy sites', 'google-site-kit' ); ?></a>
-					</p>
-				</div>
-				<?php
-			}
-		);
-
 		add_action(
 			'wp_login',
 			function() {
