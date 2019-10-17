@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_Tag;
 use Google\Site_Kit\Core\Util\Activation;
+use Google\Site_Kit\Core\Util\Beta_Migration;
 use Google\Site_Kit\Core\Util\Reset;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
@@ -83,6 +84,8 @@ class ResetTest extends TestCase {
 			PageSpeed_Insights::OPTION,
 			Search_Console::PROPERTY_OPTION,
 			TagManager::OPTION,
+			Beta_Migration::OPTION_IS_PRE_PROXY_INSTALL,
+			'googlesitekit_db_version',
 		);
 	}
 

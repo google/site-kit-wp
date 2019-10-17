@@ -117,6 +117,8 @@ final class Reset {
 		$this->options->delete( TagManager::OPTION );
 		$this->options->delete( First_Admin::OPTION );
 		$this->options->delete( OAuth_Client::OPTION_PROXY_NONCE );
+		$this->options->delete( Beta_Migration::OPTION_IS_PRE_PROXY_INSTALL );
+		$this->options->delete( 'googlesitekit_db_version' );
 
 		// Clean up old site verification data, moved to user options.
 		// Also clean up other old unused options.
