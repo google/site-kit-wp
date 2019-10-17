@@ -50,14 +50,5 @@ describe( 'PageSpeed Insights Activation', () => {
 		await expect( page ).toClick( 'button.mdc-button', { text: 'Proceed' } );
 
 		await page.waitForSelector( 'h3.googlesitekit-heading-3' );
-
-		// Check that the correct key is saved on the settings page.
-		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
-
-		await expect( page ).toClick( 'button.mdc-tab', { text: 'Admin Settings' } );
-
-		// Check the API Key text, verifying the submitted value has been stored.
-		await expect( page ).toMatchElement( '.googlesitekit-settings-module__meta-item-type', { text: 'API Key' } );
-		await expect( page ).toMatchElement( 'h5.googlesitekit-settings-module__meta-item-data', { text: 'PSIKEYTOSUBMITANDTEST' } );
 	} );
 } );
