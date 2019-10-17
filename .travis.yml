@@ -34,7 +34,7 @@ branches:
   only:
     - master
     - develop
-    - datapoint-refactoring
+    - feature/auth-proxy
 
 # Before install, failures in this section will result in build status 'errored'
 before_install:
