@@ -71,29 +71,12 @@ final class Authentication {
 	private $auth_client = null;
 
 	/**
-	 * API key client object.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @var Clients\API_Key_Client
-	 */
-	private $api_key_client = null;
-
-	/**
 	 * OAuth credentials instance.
 	 *
 	 * @since 1.0.0
 	 * @var Credentials
 	 */
 	protected $credentials;
-
-	/**
-	 * API key instance.
-	 *
-	 * @since 1.0.0
-	 * @var API_Key
-	 */
-	protected $api_key;
 
 	/**
 	 * Verification instance.
@@ -161,7 +144,6 @@ final class Authentication {
 		$this->transients = $transients;
 
 		$this->credentials      = new Credentials( $this->options );
-		$this->api_key          = new API_Key( $this->options );
 		$this->verification     = new Verification( $this->user_options );
 		$this->verification_tag = new Verification_Tag( $this->user_options, $this->transients );
 		$this->profile          = new Profile( $user_options, $this->get_oauth_client() );
@@ -268,17 +250,6 @@ final class Authentication {
 	}
 
 	/**
-	 * Gets the API key instance.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return API_Key API key instance.
-	 */
-	public function api_key() {
-		return $this->api_key;
-	}
-
-	/**
 	 * Gets the verification instance.
 	 *
 	 * @since 1.0.0
@@ -323,20 +294,6 @@ final class Authentication {
 			$this->auth_client = new Clients\OAuth_Client( $this->context, $this->options, $this->user_options, $this->credentials );
 		}
 		return $this->auth_client;
-	}
-
-	/**
-	 * Gets the API key client instance.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return Clients\API_Key_Client API key client instance.
-	 */
-	public function get_api_key_client() {
-		if ( ! $this->api_key_client instanceof Clients\API_Key_Client ) {
-			$this->api_key_client = new Clients\API_Key_Client( $this->context, $this->options, $this->api_key );
-		}
-		return $this->api_key_client;
 	}
 
 	/**
@@ -566,30 +523,6 @@ final class Authentication {
 			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 			$data['proxySetupURL']       = esc_url_raw( $auth_client->get_proxy_setup_url( $access_code ) );
 			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
-
-			// TODO: Remove once related JS functionality is removed. For now, still set these as false-y.
-			$data['apikey'] = false;
-		} else {
-			// TODO: Remove once related JS functionality is removed.
-			$apikey = $this->get_api_key_client()->get_api_key();
-
-			if ( current_user_can( Permissions::MANAGE_OPTIONS ) && $apikey ) {
-				$data['apikey'] = $apikey;
-			} else {
-				$data['apikey'] = false;
-			}
-
-			$external_sitename = html_entity_decode( get_bloginfo( 'name' ), ENT_QUOTES );
-			$external_sitename = str_replace( '&', 'and', $external_sitename );
-			$external_sitename = trim( preg_replace( '/([^A-Za-z0-9 ]+|google)/i', '', $external_sitename ) );
-			if ( strlen( $external_sitename ) < 4 ) {
-				$external_sitename .= ' Site Kit';
-			}
-			$external_page_params      = array(
-				'sitename' => substr( $external_sitename, 0, 30 ), // limit to 30 chars.
-				'siteurl'  => untrailingslashit( home_url() ),
-			);
-			$data['externalAPIKeyURL'] = esc_url_raw( add_query_arg( $external_page_params, 'https://developers.google.com/web/site-kit/apikey' ) );
 		}
 
 		$data['connectUrl']    = esc_url_raw( $this->get_connect_url() );
