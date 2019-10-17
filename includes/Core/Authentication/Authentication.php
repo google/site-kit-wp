@@ -588,41 +588,15 @@ final class Authentication {
 			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
 
 			// TODO: Remove once related JS functionality is removed. For now, still set these as false-y.
-			$data['clientID']     = '';
-			$data['clientSecret'] = '';
-			$data['apikey']       = false;
-			$data['projectId']    = false;
-			$data['projectUrl']   = false;
+			$data['apikey'] = false;
 		} else {
 			// TODO: Remove once related JS functionality is removed.
-			$client_data = $this->credentials->get();
-			$apikey      = $this->get_api_key_client()->get_api_key();
-			$gcp_project = $this->gcp_project->get();
-
-			if ( current_user_can( Permissions::MANAGE_OPTIONS ) && isset( $client_data['oauth2_client_id'] ) ) {
-				$data['clientID'] = $client_data['oauth2_client_id'];
-			} else {
-				$data['clientID'] = '';
-			}
-			if ( current_user_can( Permissions::MANAGE_OPTIONS ) && isset( $client_data['oauth2_client_secret'] ) ) {
-				$data['clientSecret'] = str_repeat( '•', strlen( $client_data['oauth2_client_secret'] ) );
-			} else {
-				$data['clientSecret'] = '';
-			}
+			$apikey = $this->get_api_key_client()->get_api_key();
 
 			if ( current_user_can( Permissions::MANAGE_OPTIONS ) && $apikey ) {
 				$data['apikey'] = $apikey;
 			} else {
 				$data['apikey'] = false;
-			}
-
-			// Make GCP project information available only to the creator.
-			if ( ! empty( $gcp_project['id'] ) && (int) get_current_user_id() === $gcp_project['wp_owner_id'] ) {
-				$data['projectId']  = $gcp_project['id'];
-				$data['projectUrl'] = esc_url_raw( add_query_arg( 'project', $gcp_project['id'], 'https://console.cloud.google.com/apis/credentials' ) );
-			} else {
-				$data['projectId']  = false;
-				$data['projectUrl'] = false;
 			}
 
 			$external_sitename = html_entity_decode( get_bloginfo( 'name' ), ENT_QUOTES );
