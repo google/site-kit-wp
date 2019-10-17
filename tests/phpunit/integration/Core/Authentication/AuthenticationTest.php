@@ -69,14 +69,10 @@ class AuthenticationTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'apikey',
-				'clientID',
-				'clientSecret',
 				'connectUrl',
 				'disconnectUrl',
 				'proxySetupURL',
 				'proxyPermissionsURL',
-				'projectId',
-				'projectUrl',
 				'userData',
 			),
 			array_keys( $data )

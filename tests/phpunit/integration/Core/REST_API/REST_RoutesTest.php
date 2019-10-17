@@ -43,7 +43,6 @@ class REST_RoutesTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/reset',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/apikey',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/credentials',
-			'/' . REST_Routes::REST_ROOT . '/core/site/data/gcpproject',
 			'/' . REST_Routes::REST_ROOT . '/core/user/data/disconnect',
 			'/' . REST_Routes::REST_ROOT . '/core/user/data/authentication',
 			'/' . REST_Routes::REST_ROOT . '/modules',
