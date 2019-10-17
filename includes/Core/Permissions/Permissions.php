@@ -104,7 +104,7 @@ final class Permissions {
 		$this->authentication = $authentication;
 
 		$this->primitive_to_core = array(
-			// By default, only allow administrators and up to authenticate.
+			// By default, only allow administrators to authenticate.
 			self::AUTHENTICATE        => 'manage_options',
 
 			// Allow contributors and up to view their own post's insights.
