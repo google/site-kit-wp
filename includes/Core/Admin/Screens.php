@@ -334,6 +334,20 @@ final class Screens {
 					$assets->enqueue_asset( 'googlesitekit_dashboard_splash' );
 				},
 				'render_callback'     => function( Context $context ) {
+					$auth_client = new \Google\Site_Kit\Core\Authentication\Clients\OAuth_Client( $this->context );
+					if ( $auth_client->using_proxy() ) {
+						$setup_url = $auth_client->get_proxy_setup_url();
+						?>
+						<div class="wrap">
+							<h1>Temporary Setup</h1>
+
+							<p>
+								<a href="<?php echo esc_url( $setup_url ); ?>">Go To Setup</a>
+							</p>
+						</div>
+						<?php
+						return;
+					}
 					?>
 					<div class="googlesitekit-plugin">
 						<?php
