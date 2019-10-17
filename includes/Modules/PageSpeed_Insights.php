@@ -37,23 +37,6 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes {
 	public function register() {}
 
 	/**
-	 * Checks whether the module is connected.
-	 *
-	 * A module being connected means that all steps required as part of its activation are completed.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return bool True if module is connected, false otherwise.
-	 */
-	public function is_connected() {
-		return in_array(
-			'openid',
-			$this->authentication->get_oauth_client()->get_granted_scopes(),
-			true
-		);
-	}
-
-	/**
 	 * Cleans up when the module is deactivated.
 	 *
 	 * @since 1.0.0
