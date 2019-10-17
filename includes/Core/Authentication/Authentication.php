@@ -96,14 +96,6 @@ final class Authentication {
 	protected $api_key;
 
 	/**
-	 * GCP project instance.
-	 *
-	 * @since 1.0.0
-	 * @var GCP_Project
-	 */
-	protected $gcp_project;
-
-	/**
 	 * Verification instance.
 	 *
 	 * @since 1.0.0
@@ -170,7 +162,6 @@ final class Authentication {
 
 		$this->credentials      = new Credentials( $this->options );
 		$this->api_key          = new API_Key( $this->options );
-		$this->gcp_project      = new GCP_Project( $this->options );
 		$this->verification     = new Verification( $this->user_options );
 		$this->verification_tag = new Verification_Tag( $this->user_options, $this->transients );
 		$this->profile          = new Profile( $user_options, $this->get_oauth_client() );
@@ -285,17 +276,6 @@ final class Authentication {
 	 */
 	public function api_key() {
 		return $this->api_key;
-	}
-
-	/**
-	 * Gets the GCP project instance.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return GCP_Project Project ID instance.
-	 */
-	public function gcp_project() {
-		return $this->gcp_project;
 	}
 
 	/**

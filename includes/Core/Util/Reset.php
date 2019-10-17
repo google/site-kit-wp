@@ -17,7 +17,6 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\API_Key;
 use Google\Site_Kit\Core\Authentication\First_Admin;
-use Google\Site_Kit\Core\Authentication\GCP_Project;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_Tag;
 use Google\Site_Kit\Core\Authentication\Profile;
@@ -111,7 +110,6 @@ final class Reset {
 		$this->options->delete( Activation::OPTION_NEW_SITE_POSTS );
 		$this->options->delete( Credentials::OPTION );
 		$this->options->delete( API_Key::OPTION );
-		$this->options->delete( GCP_Project::OPTION );
 		$this->options->delete( 'googlesitekit-active-modules' );
 		$this->options->delete( Search_Console::PROPERTY_OPTION );
 		$this->options->delete( AdSense::OPTION );
@@ -131,6 +129,7 @@ final class Reset {
 		$this->options->delete( 'googlesitekit_available_modules' );
 		$this->options->delete( 'googlesitekit_secret_token' );
 		$this->options->delete( 'googlesitekit_project_id' );
+		$this->options->delete( 'googlesitekit_gcp_project' );
 	}
 
 	/**
