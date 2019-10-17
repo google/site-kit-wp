@@ -14,7 +14,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\First_Admin;
-use Google\Site_Kit\Core\Authentication\GCP_Project;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_Tag;
@@ -80,7 +79,6 @@ class ResetTest extends TestCase {
 			Analytics::OPTION,
 			Credentials::OPTION,
 			First_Admin::OPTION,
-			GCP_Project::OPTION,
 			Optimize::OPTION,
 			PageSpeed_Insights::OPTION,
 			Search_Console::PROPERTY_OPTION,
