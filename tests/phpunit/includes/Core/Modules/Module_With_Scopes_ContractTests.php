@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Tests\Core\Modules;
 
-use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Tests\TestCase_Context_Trait;
 
@@ -30,9 +29,9 @@ trait Module_With_Scopes_ContractTests {
 		$scopes = $module->get_scopes();
 
 		$testcase->assertInternalType( 'array', $scopes );
-		// Must use scopes include more generic scopes.
+
 		// Test that anything else is only a Google scope.
-		$scopes = array_diff( $scopes, OAuth_Client::get_must_use_scopes() );
+		$scopes = array_diff( $scopes, array( 'openid', 'profile', 'email' ) );
 
 		foreach ( $scopes as $scope ) {
 			$testcase->assertStringStartsWith( 'https://www.googleapis.com/auth/', $scope );
