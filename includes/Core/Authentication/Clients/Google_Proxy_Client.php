@@ -153,9 +153,9 @@ final class Google_Proxy_Client extends Google_Client {
 				'authorizationUri'   => self::OAUTH2_AUTH_URL,
 				'tokenCredentialUri' => self::OAUTH2_TOKEN_URI,
 				'redirectUri'        => $this->getRedirectUri(),
-				'issuer'             => $this->config['client_id'],
-				'signingKey'         => $this->config['signing_key'],
-				'signingAlgorithm'   => $this->config['signing_algorithm'],
+				'issuer'             => $this->getClientId(),
+				'signingKey'         => null,
+				'signingAlgorithm'   => null,
 			)
 		);
 
