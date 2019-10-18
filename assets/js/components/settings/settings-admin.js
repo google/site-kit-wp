@@ -91,7 +91,6 @@ class SettingsAdmin extends Component {
 		const {
 			clientID,
 			clientSecret,
-			apikey,
 			projectId,
 			projectUrl,
 		} = googlesitekit.admin;
@@ -171,23 +170,6 @@ class SettingsAdmin extends Component {
 												</h5>
 											</div>
 										</div>
-										{ apikey &&
-											<div className="googlesitekit-settings-module__meta-items">
-												<div
-													className={ 'googlesitekit-settings-module__meta-item' + ( projectId && projectUrl ? '' : 'googlesitekit-settings-module__meta-item--nomargin' ) }
-												>
-													<p className="googlesitekit-settings-module__meta-item-type">
-														{ __( 'API Key', 'google-site-kit' ) }
-													</p>
-													<h5 className="
-														googlesitekit-settings-module__meta-item-data
-														googlesitekit-settings-module__meta-item-data--wrap
-													">
-														{ apikey }
-													</h5>
-												</div>
-											</div>
-										}
 										{ ( projectId && projectUrl ) &&
 											<div className="googlesitekit-settings-module__meta-items">
 												<div className="

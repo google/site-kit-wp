@@ -6,9 +6,12 @@ import data from 'GoogleComponents/data';
 import GenericError from 'GoogleComponents/notifications/generic-error';
 import {
 	activateOrDeactivateModule,
-	getReAuthUrl,
 	showErrorNotification,
 } from 'GoogleUtil';
+/**
+ * Internal dependencies
+ */
+import { getSiteKitAdminURL } from '../../../util';
 
 const { __ } = wp.i18n;
 
@@ -28,8 +31,15 @@ const PageSpeedInsightsCTA = () => {
 		try {
 			await activateOrDeactivateModule( data, 'pagespeed-insights', true );
 
-			// Redirect to continue setup.
-			window.location = getReAuthUrl( 'pagespeed-insights', true );
+			window.location.assign(
+				getSiteKitAdminURL(
+					'googlesitekit-dashboard',
+					{
+						notification: 'authentication_success',
+						slug: 'pagespeed-insights',
+					},
+				)
+			);
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'pagespeed-insights-setup-error',

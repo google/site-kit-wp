@@ -358,22 +358,18 @@ export const getReAuthUrl = ( slug, status ) => {
 	const {
 		connectUrl,
 		adminRoot,
-		apikey,
 	} = googlesitekit.admin;
 
 	const { needReauthenticate } = window.googlesitekit.setup;
 
 	const { screenId } = googlesitekit.modules[ slug ];
 
-	// For PageSpeedInsights, there is no setup needed if an API key already exists.
-	const reAuth = ( 'pagespeed-insights' === slug && apikey && apikey.length ) ? false : status;
-
 	let redirect = addQueryArgs(
 		adminRoot, {
 
 			// If the module has a submenu page, and is being activated, redirect back to the module page.
 			page: ( slug && status && screenId ) ? screenId : 'googlesitekit-dashboard',
-			reAuth,
+			reAuth: status,
 			slug,
 		}
 	);
