@@ -1005,7 +1005,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 
 					$found_property = new \Google_Service_Analytics_Webproperty();
-					$current_url    = untrailingslashit( $this->context->get_reference_site_url() );
+					$current_url    = $this->context->get_reference_site_url();
 
 					// If requested for a specific property, only match by property ID.
 					if ( ! empty( $data['existingPropertyId'] ) ) {
