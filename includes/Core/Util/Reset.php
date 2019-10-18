@@ -117,6 +117,7 @@ final class Reset {
 		$this->options->delete( TagManager::OPTION );
 		$this->options->delete( First_Admin::OPTION );
 		$this->options->delete( OAuth_Client::OPTION_PROXY_NONCE );
+		$this->options->delete( Beta_Migration::OPTION_IS_PRE_PROXY_INSTALL );
 
 		// Clean up old site verification data, moved to user options.
 		// Also clean up other old unused options.
