@@ -38,51 +38,27 @@ class Beta_MigrationTest extends TestCase {
 		$migration   = new Beta_Migration( $context );
 
 		// Upgrade will update the DB version if run.
-		$this->delete_db_version();
 		$this->delete_credentials();
 
-		$migration->maybe_run_upgrade();
+		$migration->migrate_old_credentials();
 
-		$this->assertEquals( Beta_Migration::DB_VERSION, $options->get( 'googlesitekit_db_version' ) );
 		$this->assertFalse( $credentials->has() );
 
 		// The upgrade will delete old GCP credentials if present.
-		$this->delete_db_version();
 		$this->set_gcp_credentials();
 		$this->assertTrue( $credentials->has() );
 
-		$migration->maybe_run_upgrade();
+		$migration->migrate_old_credentials();
 
 		$this->assertFalse( $credentials->has() );
-		$this->assertEquals( Beta_Migration::DB_VERSION, $options->get( 'googlesitekit_db_version' ) );
 
 		// The upgrade will not delete proxy credentials if present.
-		$this->delete_db_version();
 		$this->set_proxy_credentials();
 		$this->assertTrue( $credentials->has() );
 
-		$migration->maybe_run_upgrade();
+		$migration->migrate_old_credentials();
 
 		$this->assertTrue( $credentials->has() );
-		$this->assertEquals( Beta_Migration::DB_VERSION, $options->get( 'googlesitekit_db_version' ) );
-
-		// The upgrade will not run if the DB version is greater than or equal to DB_VERSION.
-		$options->set( 'googlesitekit_db_version', Beta_Migration::DB_VERSION );
-		// Set GCP credentials which would be deleted if the upgrade were to run.
-		$this->set_gcp_credentials();
-		$this->assertTrue( $credentials->has() );
-		$credentials_before = $credentials->get();
-
-		$migration->maybe_run_upgrade();
-
-		$this->assertTrue( $credentials->has() );
-		// Credentials are the same as before.
-		$this->assertEquals( $credentials_before, $credentials->get() );
-		$this->assertEquals( Beta_Migration::DB_VERSION, $options->get( 'googlesitekit_db_version' ) );
-	}
-
-	private function delete_db_version() {
-		( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )->delete( 'googlesitekit_db_version' );
 	}
 
 	private function delete_credentials() {

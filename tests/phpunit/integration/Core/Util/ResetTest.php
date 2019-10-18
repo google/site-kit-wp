@@ -85,7 +85,6 @@ class ResetTest extends TestCase {
 			Search_Console::PROPERTY_OPTION,
 			TagManager::OPTION,
 			Beta_Migration::OPTION_IS_PRE_PROXY_INSTALL,
-			'googlesitekit_db_version',
 		);
 	}
 

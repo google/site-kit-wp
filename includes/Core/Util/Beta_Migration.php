@@ -24,11 +24,6 @@ use Google\Site_Kit\Core\Storage\Options;
  */
 class Beta_Migration {
 	/**
-	 * Target database version.
-	 */
-	const DB_VERSION = '1.0.0';
-
-	/**
 	 * Option name to identify a site which was previously configured without the proxy.
 	 */
 	const OPTION_IS_PRE_PROXY_INSTALL = 'googlesitekit_pre_proxy_install';
@@ -104,30 +99,22 @@ class Beta_Migration {
 			}
 		);
 
-		add_action( 'admin_init', array( $this, 'maybe_run_upgrade' ) );
+		add_action( 'admin_init', array( $this, 'migrate_old_credentials' ) );
 	}
 
 	/**
-	 * Runs the upgrade based on the current DB version.
+	 * Migrates old GCP credentials if saved in the option.
+	 *
+	 * GCP credentials are still possible to use (for now), but only via filter
+	 * so they should never be present in the option / Credentials anymore.
 	 */
-	public function maybe_run_upgrade() {
-		if ( version_compare( get_option( 'googlesitekit_db_version', '0' ), self::DB_VERSION, '<' ) ) {
-			$this->run_upgrade();
-		}
-	}
-
-	/**
-	 * Runs the upgrade.
-	 */
-	private function run_upgrade() {
+	public function migrate_old_credentials() {
 		$credentials = $this->credentials->get();
 
 		if ( ! strpos( $credentials['oauth2_client_id'], '.apps.sitekit.withgoogle.com' ) ) {
 			$this->options->delete( Credentials::OPTION );
 			$this->options->set( self::OPTION_IS_PRE_PROXY_INSTALL, 1 );
 		}
-
-		update_option( 'googlesitekit_db_version', self::DB_VERSION );
 	}
 
 	/**
