@@ -104,7 +104,6 @@ class Beta_Migration {
 			}
 		);
 
-		add_action( 'admin_init', array( $this, 'handle_action' ) );
 		add_action( 'admin_init', array( $this, 'maybe_run_upgrade' ) );
 	}
 
