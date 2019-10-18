@@ -9,7 +9,6 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
 import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
-	setClientConfig,
 	useRequestInterception,
 	wpApiFetch,
 } from '../utils';
@@ -36,6 +35,7 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 	} );
 
 	beforeEach( async () => {
+		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
 
@@ -52,7 +52,6 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 	} );
 
 	it( 'inserts property to search console when site does not exist', async () => {
-		await setClientConfig();
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 
 		await expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with Google/i } );
@@ -71,7 +70,6 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 	} );
 
 	it( 'saves search console property when site exists', async () => {
-		await setClientConfig();
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 
 		await expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with Google/i } );
