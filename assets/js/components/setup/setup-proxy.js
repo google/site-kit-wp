@@ -81,7 +81,7 @@ class SetupUsingProxy extends Component {
 				},
 			);
 
-			delay( function() {
+			delay( () => {
 				window.location.replace( redirectUrl );
 			}, 500, 'later' );
 		}
