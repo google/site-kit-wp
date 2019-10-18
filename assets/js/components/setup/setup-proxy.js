@@ -33,29 +33,15 @@ class SetupUsingProxy extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { connectUrl } = googlesitekit.admin;
-
-		const {
-			isAuthenticated,
-			hasSearchConsoleProperty,
-			isSiteKitConnected,
-			isVerified,
-			needReauthenticate,
-		} = googlesitekit.setup;
-
+		const { proxySetupURL } = googlesitekit.admin;
+		const { isSiteKitConnected } = googlesitekit.setup;
 		const { canSetup } = googlesitekit.permissions;
 
 		this.state = {
 			canSetup,
-			isAuthenticated,
-			isVerified,
-			needReauthenticate,
-			hasSearchConsoleProperty,
-			hasSearchConsolePropertyFromTheStart: hasSearchConsoleProperty,
-			connectUrl,
-			errorMsg: '',
 			isSiteKitConnected,
 			completeSetup: false,
+			proxySetupURL,
 		};
 	}
 
@@ -69,10 +55,6 @@ class SetupUsingProxy extends Component {
 	}
 
 	render() {
-		const {
-			connectUrl,
-		} = this.state;
-
 		if ( this.isSetupFinished() ) {
 			const redirectUrl = getSiteKitAdminURL(
 				'googlesitekit-dashboard',
@@ -86,7 +68,7 @@ class SetupUsingProxy extends Component {
 			}, 500, 'later' );
 		}
 
-		const { proxySetupURL } = googlesitekit.admin;
+		const { proxySetupURL } = this.state;
 
 		return (
 			<Fragment>
@@ -117,9 +99,10 @@ class SetupUsingProxy extends Component {
 															href={ proxySetupURL }
 															onClick={ () => {
 																sendAnalyticsTrackingEvent( 'plugin_setup', 'signin_with_google' );
-																document.location = connectUrl;
 															} }
-														>{ __( 'Start setup', 'google-site-kit' ) }</Button>
+														>
+															{ __( 'Start setup', 'google-site-kit' ) }
+														</Button>
 													</div>
 												</div>
 											</div>
