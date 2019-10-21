@@ -447,7 +447,6 @@ final class Assets {
 		$auth_client = new \Google\Site_Kit\Core\Authentication\Clients\OAuth_Client( $this->context );
 
 		$admin_data = array(
-			'usingProxy'       => $auth_client->using_proxy(),
 			'siteURL'          => esc_url_raw( $site_url ),
 			'siteName'         => get_bloginfo( 'name' ),
 			'siteUserId'       => md5( $site_url . $current_user->ID ),
