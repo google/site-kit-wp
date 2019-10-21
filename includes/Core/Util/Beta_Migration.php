@@ -111,7 +111,8 @@ class Beta_Migration {
 	public function migrate_old_credentials() {
 		$credentials = $this->credentials->get();
 
-		if ( $credentials['oauth2_client_id'] && ! strpos( $credentials['oauth2_client_id'], '.apps.sitekit.withgoogle.com' ) ) {
+		// Credentials can be filtered in so we must also check if there is a saved option present.
+		if ( $this->options->get( Credentials::OPTION ) && $credentials['oauth2_client_id'] && ! strpos( $credentials['oauth2_client_id'], '.apps.sitekit.withgoogle.com' ) ) {
 			$this->options->delete( Credentials::OPTION );
 			$this->options->set( self::OPTION_IS_PRE_PROXY_INSTALL, 1 );
 		}
