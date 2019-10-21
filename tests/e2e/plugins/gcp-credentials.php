@@ -12,21 +12,23 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-use Google\Site_Kit\Core\Storage\Data_Encryption;
-
 /**
  * Provide dummy client configuration, normally provided in step 1 of the set up.
- * We need to filter the credentials option here due to `isSiteKitConnected`'s dependence
- * on `Credentials` in `\Google\Site_Kit\Core\Authentication\Authentication::inline_js_setup_data`
- * which is option-based.
  */
-add_filter( 'pre_option_googlesitekit_credentials', function () {
-	return ( new Data_Encryption() )->encrypt(
-		serialize(
+add_filter(
+	'googlesitekit_oauth_secret',
+	function () {
+		return json_encode(
 			array(
-				'oauth2_client_id'     => '1234567890-asdfasdfasdfasdfzxcvzxcvzxcvzxcv.apps.googleusercontent.com',
-				'oauth2_client_secret' => 'x_xxxxxxxxxxxxxxxxxxxxxx',
+				'web' => array(
+					'client_id'                   => '1234567890-asdfasdfasdfasdfzxcvzxcvzxcvzxcv.apps.googleusercontent.com',
+					'client_secret'               => 'x_xxxxxxxxxxxxxxxxxxxxxx',
+					'auth_uri'                    => 'https://accounts.google.com/o/oauth2/auth',
+					'token_uri'                   => 'https://oauth2.googleapis.com/token',
+					'auth_provider_x509_cert_url' => 'https://www.googleapis.com/oauth2/v1/certs',
+					'redirect_uris'               => array( add_query_arg( 'oauth2callback', '1', home_url() ) ),
+				),
 			)
-		)
-	);
-} );
+		);
+	}
+);
