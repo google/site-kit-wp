@@ -67,10 +67,6 @@ class PluginTest extends TestCase {
 		$this->assertEquals( 0, did_action( 'googlesitekit_init' ) );
 		do_action( 'init' );
 		$this->assertEquals( 1, did_action( 'googlesitekit_init' ) );
-
-		// Ensure googlesitekit cron events are cleared.
-		$this->assertFalse( wp_get_schedule( 'googlesitekit_cron_daily', array( 'interval' => 'daily' ) ) );
-		$this->assertFalse( wp_get_schedule( 'googlesitekit_cron_hourly', array( 'interval' => 'hourly' ) ) );
 	}
 
 	protected function assertActionRendersGeneratorTag( $action ) {
