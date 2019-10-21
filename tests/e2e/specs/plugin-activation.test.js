@@ -36,7 +36,5 @@ describe( 'Plugin Activation Notice', () => {
 
 		// Ensure we're on the first step.
 		await expect( page ).toMatchElement( '.googlesitekit-wizard-progress-step__number--inprogress', { text: '1' } );
-
-		await deactivatePlugin( 'google-site-kit' );
 	} );
 } );
