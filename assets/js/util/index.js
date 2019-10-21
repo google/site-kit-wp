@@ -364,13 +364,21 @@ export const getReAuthUrl = ( slug, status ) => {
 
 	const { screenId } = googlesitekit.modules[ slug ];
 
-	let redirect = addQueryArgs(
-		adminRoot, {
+	// Special case handling for PageSpeed Insights.
+	// TODO: Refactor this out.
+	const pageSpeedQueryArgs = 'pagespeed-insights' === slug ? {
+		notification: 'authentication_success',
+		reAuth: undefined,
+	} : {};
 
+	let redirect = addQueryArgs(
+		adminRoot,
+		{
 			// If the module has a submenu page, and is being activated, redirect back to the module page.
 			page: ( slug && status && screenId ) ? screenId : 'googlesitekit-dashboard',
-			reAuth: status,
 			slug,
+			reAuth: status,
+			...pageSpeedQueryArgs,
 		}
 	);
 

@@ -407,30 +407,29 @@ QUnit.test( 'fillFilterWithComponent::', function ( assert ) {
  * Test getReAuthUrl.
  */
 valuesToTest = [
-
 	{
 		slug: 'pagespeed-insights',
 		status: false,
 		apikey: false,
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&reAuth=false&slug=pagespeed-insights'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=pagespeed-insights&notification=authentication_success'
 	},
 	{
 		slug: 'pagespeed-insights',
 		status: true,
 		apikey: false,
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=true&slug=pagespeed-insights'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&slug=pagespeed-insights&notification=authentication_success'
 	},
 	{
 		slug: 'pagespeed-insights',
 		status: false,
 		apikey: 'abc123',
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&reAuth=false&slug=pagespeed-insights'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=pagespeed-insights&notification=authentication_success'
 	},
 	{
 		slug: 'pagespeed-insights',
 		status: true,
 		apikey: 'abc123',
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=true&slug=pagespeed-insights'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&slug=pagespeed-insights&notification=authentication_success'
 	},
 ];
 
