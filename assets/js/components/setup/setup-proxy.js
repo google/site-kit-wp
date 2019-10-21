@@ -90,7 +90,7 @@ class SetupUsingProxy extends Component {
 														mdc-layout-grid__cell--span-12
 													">
 														<h1 className="googlesitekit-setup__title">
-															{ __( 'Time to set up the Site Kit plugin', 'google-site-kit' ) }
+															{ __( 'The Site Kit plugin is active but requires setup', 'google-site-kit' ) }
 														</h1>
 														<p className="googlesitekit-setup__description">
 															{ __( 'Site Kit Service will guide you through 3 simple setup steps.', 'google-site-kit' ) }
