@@ -6,9 +6,11 @@ import { deactivatePlugin, activatePlugin } from '@wordpress/e2e-test-utils';
 describe( 'Plugin Activation Notice', () => {
 	beforeEach( async () => {
 		await deactivatePlugin( 'google-site-kit' );
+		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 	} );
 
 	afterEach( async () => {
+		await deactivatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 		await activatePlugin( 'google-site-kit' );
 	} );
 
@@ -34,7 +36,5 @@ describe( 'Plugin Activation Notice', () => {
 
 		// Ensure we're on the first step.
 		await expect( page ).toMatchElement( '.googlesitekit-wizard-progress-step__number--inprogress', { text: '1' } );
-
-		await deactivatePlugin( 'google-site-kit' );
 	} );
 } );
