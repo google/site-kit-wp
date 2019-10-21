@@ -623,7 +623,7 @@ final class OAuth_Client {
 			return add_query_arg(
 				array(
 					'nonce'      => $nonce,
-					'name'       => rawurlencode( get_bloginfo( 'name' ) ),
+					'name'       => rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ) ) ),
 					'url'        => rawurlencode( $home_url ),
 					'rest_root'  => rawurlencode( $rest_root ),
 					'admin_root' => rawurlencode( $admin_root ),
