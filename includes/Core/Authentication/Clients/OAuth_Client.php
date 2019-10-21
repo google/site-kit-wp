@@ -607,6 +607,8 @@ final class OAuth_Client {
 
 		$credentials = $this->get_client_credentials();
 
+		$scope = implode( ' ', $this->get_required_scopes() );
+
 		if ( ! is_object( $credentials ) || empty( $credentials->web->client_id ) ) {
 			$home_url           = home_url();
 			$home_url_no_scheme = str_replace( array( 'http://', 'https://' ), '', $home_url );
@@ -627,6 +629,7 @@ final class OAuth_Client {
 					'url'        => rawurlencode( $home_url ),
 					'rest_root'  => rawurlencode( $rest_root ),
 					'admin_root' => rawurlencode( $admin_root ),
+					'scope'      => rawurlencode( $scope ),
 				),
 				$url
 			);
@@ -635,6 +638,7 @@ final class OAuth_Client {
 		$query_args = array(
 			'site_id' => $credentials->web->client_id,
 			'code'    => $access_code,
+			'scope'   => rawurlencode( $scope ),
 		);
 		if ( 'missing_verification' === $error_code ) {
 			$query_args['verification_nonce'] = wp_create_nonce( 'googlesitekit_verification' );
