@@ -544,7 +544,8 @@ final class Authentication {
 
 		$access_token = $auth_client->get_client()->getAccessToken();
 
-		$data['isSiteKitConnected'] = $this->credentials->has();
+		// Site Kit is connected if it has credentials or if it is not using the proxy (only possible via filter).
+		$data['isSiteKitConnected'] = $this->credentials->has() || ! $auth_client->using_proxy();
 
 		$data['isAuthenticated']    = ! empty( $access_token );
 		$data['requiredScopes']     = $auth_client->get_required_scopes();

@@ -478,7 +478,8 @@ final class OAuth_Client {
 			exit();
 		}
 
-		if ( ! $this->credentials->has() ) {
+		// Assume Site Kit has credentials if it is not using the proxy (only possible via filter).
+		if ( ! $this->credentials->has() && $this->using_proxy() ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'oauth_credentials_not_exist' );
 			wp_safe_redirect( admin_url() );
 			exit();
