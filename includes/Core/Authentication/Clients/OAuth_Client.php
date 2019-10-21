@@ -772,32 +772,19 @@ final class OAuth_Client {
 			return $this->client_credentials;
 		}
 
-		/**
-		 * Site Kit oAuth Secret is a string of the JSON for the Google Cloud Platform web application used for Site Kit
-		 * that will be associated with this account. This is meant to be a temporary way to specify the client secret
-		 * until the authentication proxy has been completed. This filter can be specified from a separate theme or plugin.
-		 *
-		 * To retrieve the JSON secret, use the following instructions:
-		 * - Go to the Google Cloud Platform and create a new project or use an existing one
-		 * - In the APIs & Services section, enable the APIs that are used within Site Kit
-		 * - Under 'credentials' either create new oAuth Client ID credentials or use an existing set of credentials
-		 * - Set the authorizes redirect URIs to be the URL to the oAuth callback for Site Kit, eg. https://<domainname>?oauth2callback=1 (this must be public)
-		 * - Click the 'Download JSON' button to download the JSON file that can be copied and pasted into the filter
-		 */
-		$credentials = trim( apply_filters( 'googlesitekit_oauth_secret', '' ) );
+		if ( $this->credentials->has() ) {
+			$credentials = $this->credentials->get();
 
-		if ( empty( $credentials ) && $this->credentials->has() ) {
-			$redirect_uri = $this->get_redirect_uri();
-			$credentials  = $this->credentials->get();
-			$credentials  = '{"web":{"client_id":"' . $credentials['oauth2_client_id'] . '","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_secret":"' . $credentials['oauth2_client_secret'] . '","redirect_uris":["' . $redirect_uri . '"]}}';
-		}
-
-		if ( ! empty( $credentials ) ) {
-			$this->client_credentials = json_decode( $credentials );
-		}
-
-		if ( ! is_object( $this->client_credentials ) || empty( $this->client_credentials->web ) ) {
-			$this->client_credentials = null;
+			$this->client_credentials = (object) array(
+				'web' => (object) array(
+					'client_id'                   => $credentials['oauth2_client_id'],
+					'client_secret'               => $credentials['oauth2_client_secret'],
+					'auth_uri'                    => 'https://accounts.google.com/o/oauth2/auth',
+					'token_uri'                   => 'https://oauth2.googleapis.com/token',
+					'auth_provider_x509_cert_url' => 'https://www.googleapis.com/oauth2/v1/certs',
+					'redirect_uris'               => array( $this->get_redirect_uri() ),
+				),
+			);
 		}
 
 		return $this->client_credentials;
