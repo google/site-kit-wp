@@ -28,9 +28,6 @@ final class Deactivation {
 		add_action(
 			'googlesitekit_deactivation',
 			function() {
-				// TODO: Unschedule site kit cron events as Core\Util\Cron has been removed. Lines to be removed on future release.
-				wp_clear_scheduled_hook( 'googlesitekit_cron_daily', array( 'interval' => 'daily' ) );
-				wp_clear_scheduled_hook( 'googlesitekit_cron_hourly', array( 'interval' => 'hourly' ) );
 			}
 		);
 	}

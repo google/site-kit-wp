@@ -124,10 +124,6 @@ final class Plugin {
 				( new Core\Admin\Notices() )->register();
 				( new Core\Admin\Dashboard( $this->context, $assets ) )->register();
 
-				// TODO: Unschedule site kit cron events as Core\Util\Cron has been removed. Lines to be removed on future release.
-				wp_clear_scheduled_hook( 'googlesitekit_cron_daily', array( 'interval' => 'daily' ) );
-				wp_clear_scheduled_hook( 'googlesitekit_cron_hourly', array( 'interval' => 'hourly' ) );
-
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(
 					'wp_login',
