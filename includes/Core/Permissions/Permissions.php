@@ -272,7 +272,7 @@ final class Permissions {
 	 * @return bool True if setup is completed, false otherwise.
 	 */
 	private function is_setup_complete() {
-		if ( ! $this->authentication->credentials()->has() && $this->authentication->get_oauth_client()->using_proxy() ) {
+		if ( ! $this->authentication->credentials()->has() ) {
 			return false;
 		}
 
