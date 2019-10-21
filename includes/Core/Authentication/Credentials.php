@@ -66,7 +66,11 @@ final class Credentials {
 		 * - Set the authorizes redirect URIs to be the URL to the oAuth callback for Site Kit, eg. https://<domainname>?oauth2callback=1 (this must be public)
 		 * - Click the 'Download JSON' button to download the JSON file that can be copied and pasted into the filter
 		 */
-		$credentials = json_decode( apply_filters( 'googlesitekit_oauth_secret', '' ), true );
+		$credentials = apply_filters( 'googlesitekit_oauth_secret', '' );
+
+		if ( is_string( $credentials ) && trim( $credentials ) ) {
+			$credentials = json_decode( $credentials, true );
+		}
 
 		if ( isset( $credentials['web']['client_id'], $credentials['web']['client_secret'] ) ) {
 			return $this->parse_defaults(
