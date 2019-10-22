@@ -102,7 +102,7 @@ add_action( 'rest_api_init', function () {
 			'kind'                  => 'analytics#webproperty',
 			'level'                 => 'STANDARD',
 			'name'                  => 'Test Property X',
-			'websiteUrl'            => get_reference_url(),
+			'websiteURL'            => get_reference_url(),
 			'permissions'           => array(
 				'effective' => array( 'READ_AND_ANALYZE' ),
 			),
@@ -114,7 +114,7 @@ add_action( 'rest_api_init', function () {
 			'kind'                  => 'analytics#webproperty',
 			'level'                 => 'STANDARD',
 			'name'                  => 'Test Property Y',
-			'websiteUrl'            => 'https://y.example.com',
+			'websiteURL'            => 'https://y.example.com',
 			'permissions'           => array(
 				'effective' => array( 'READ_AND_ANALYZE' ),
 			),
@@ -126,7 +126,7 @@ add_action( 'rest_api_init', function () {
 			'kind'                  => 'analytics#webproperty',
 			'level'                 => 'STANDARD',
 			'name'                  => 'Test Property Z',
-			'websiteUrl'            => 'https://z.example.com',
+			'websiteURL'            => 'https://z.example.com',
 			'permissions'           => array(
 				'effective' => array( 'READ_AND_ANALYZE' ),
 			),
@@ -141,7 +141,7 @@ add_action( 'rest_api_init', function () {
 			'type'                  => 'WEB',
 			'webPropertyID'         => PROPERTY_ID_X,
 			'internalWebPropertyID' => INTERNAL_PROPERTY_ID_X,
-			'websiteUrl'            => get_reference_url(),
+			'websiteURL'            => get_reference_url(),
 			'permissions'           => array(
 				'effective' => array( 'READ_AND_ANALYZE' ),
 			),
@@ -154,7 +154,7 @@ add_action( 'rest_api_init', function () {
 			'type'                  => 'WEB',
 			'webPropertyID'         => PROPERTY_ID_Y,
 			'internalWebPropertyID' => INTERNAL_PROPERTY_ID_Y,
-			'websiteUrl'            => 'https://example.com',
+			'websiteURL'            => 'https://example.com',
 			'permissions'           => array(
 				'effective' => array( 'READ_AND_ANALYZE' ),
 			),
@@ -167,7 +167,7 @@ add_action( 'rest_api_init', function () {
 			'type'                  => 'WEB',
 			'webPropertyID'         => PROPERTY_ID_Z,
 			'internalWebPropertyID' => INTERNAL_PROPERTY_ID_Z,
-			'websiteUrl'            => 'https://z.example.com',
+			'websiteURL'            => 'https://z.example.com',
 			'permissions'           => array(
 				'effective' => array( 'READ_AND_ANALYZE' ),
 			),
@@ -184,7 +184,7 @@ add_action( 'rest_api_init', function () {
 				$matched_property = array_filter(
 					$properties,
 					function ( $property ) {
-						return $property['websiteUrl'] === home_url();
+						return $property['websiteURL'] === home_url();
 					}
 				);
 

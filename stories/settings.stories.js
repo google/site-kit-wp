@@ -81,7 +81,7 @@ const setupSettings = () => {
 				selfLink: 'https://www.googleapis.com/analytics/v3/management/accounts/12345678/webproperties/UA-12345678-3',
 				starred: null,
 				updated: '2016-12-06T14:53:41.965Z',
-				websiteUrl: 'https://www.testwebsite.com',
+				websiteURL: 'https://www.testwebsite.com',
 				permissions: {
 					effective: [
 						'READ_AND_ANALYZE',
@@ -125,7 +125,7 @@ const setupSettings = () => {
 				type: 'WEB',
 				updated: '2019-01-25T20:15:27.426Z',
 				webPropertyID: 'UA-12345678-3',
-				websiteUrl: 'https://www.testwebsite.com',
+				websiteURL: 'https://www.testwebsite.com',
 				permissions: {
 					effective: [
 						'READ_AND_ANALYZE',
