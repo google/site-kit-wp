@@ -769,27 +769,33 @@ final class OAuth_Client {
 	}
 
 	/**
-	 * Retrieve the Site Kit oAuth secret.
+	 * Retrieves the OAuth credentials object.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return object|null Credentials object with `web` property, or null if no credentials available.
 	 */
 	private function get_client_credentials() {
 		if ( false !== $this->client_credentials ) {
 			return $this->client_credentials;
 		}
 
-		if ( $this->credentials->has() ) {
-			$credentials = $this->credentials->get();
-
-			$this->client_credentials = (object) array(
-				'web' => (object) array(
-					'client_id'                   => $credentials['oauth2_client_id'],
-					'client_secret'               => $credentials['oauth2_client_secret'],
-					'auth_uri'                    => 'https://accounts.google.com/o/oauth2/auth',
-					'token_uri'                   => 'https://oauth2.googleapis.com/token',
-					'auth_provider_x509_cert_url' => 'https://www.googleapis.com/oauth2/v1/certs',
-					'redirect_uris'               => array( $this->get_redirect_uri() ),
-				),
-			);
+		if ( ! $this->credentials->has() ) {
+			return null;
 		}
+
+		$credentials = $this->credentials->get();
+
+		$this->client_credentials = (object) array(
+			'web' => (object) array(
+				'client_id'                   => $credentials['oauth2_client_id'],
+				'client_secret'               => $credentials['oauth2_client_secret'],
+				'auth_uri'                    => 'https://accounts.google.com/o/oauth2/auth',
+				'token_uri'                   => 'https://oauth2.googleapis.com/token',
+				'auth_provider_x509_cert_url' => 'https://www.googleapis.com/oauth2/v1/certs',
+				'redirect_uris'               => array( $this->get_redirect_uri() ),
+			),
+		);
 
 		return $this->client_credentials;
 	}
