@@ -39,7 +39,7 @@ class SearchConsole extends Component {
 		this.state = {
 			loading: true,
 			sites: false,
-			selectedUrl: siteURL,
+			selectedURL: siteURL,
 			siteURL,
 			connected: false,
 			errorCode: false,
@@ -144,7 +144,7 @@ class SearchConsole extends Component {
 	 * Event handler to set site url to option.
 	 */
 	submitPropertyEventHandler() {
-		const siteUrl = this.state.selectedUrl;
+		const siteUrl = this.state.selectedURL;
 		const { setErrorMessage } = this.props;
 
 		( async () => {
@@ -166,12 +166,12 @@ class SearchConsole extends Component {
 
 	handleUrlSelect( index, item ) {
 		this.setState( {
-			selectedUrl: item.getAttribute( 'data-value' ),
+			selectedURL: item.getAttribute( 'data-value' ),
 		} );
 	}
 
 	matchedForm() {
-		const { sites, selectedUrl } = this.state;
+		const { sites, selectedURL } = this.state;
 
 		const sitesList = [
 			{ /* Required for initial placeholder. */
@@ -202,7 +202,7 @@ class SearchConsole extends Component {
 						outlined
 						onEnhancedChange={ this.handleUrlSelect }
 						options={ sitesList }
-						value={ selectedUrl }
+						value={ selectedURL }
 					/>
 				</div>
 				<div className="googlesitekit-setup-module__action googlesitekit-setup-module__action--justify">

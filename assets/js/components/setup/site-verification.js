@@ -43,7 +43,7 @@ class SiteVerification extends Component {
 			loading: isAuthenticated && shouldSetup,
 			loadingMsg: __( 'Getting your verified sites...', 'google-site-kit' ),
 			siteURL: ' ', // Space allows TextField label to look right.
-			selectedUrl: '',
+			selectedURL: '',
 			errorCode: false,
 			errorMsg: '',
 		};
