@@ -155,9 +155,61 @@ final class Activation {
 					ob_start();
 					?>
 					<script type="text/javascript">
-					if( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
-						sendAnalyticsTrackingEvent( 'plugin_setup', 'plugin_activated' );
-					}
+						if( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
+							sendAnalyticsTrackingEvent( 'plugin_setup', 'plugin_activated' );
+						}
+
+						jQuery(document).ready(function() {
+							if ( googlesitekit.admin.trackingOptIn ) {
+								jQuery('#opt-in').attr( 'checked', googlesitekit.admin.trackingOptIn );
+							}
+							if ( googlesitekit.admin.proxySetupURL ) {
+								jQuery( '#start-setup-link' ).attr( 'href', googlesitekit.admin.proxySetupURL );
+							}
+
+							// TODO: Fix this; it doesn't currently work as
+							// `sendAnalyticsTrackingEvent` is not synchronous
+							// but fails to implement an async API that confirms
+							// the event was sent. This was moved from an
+							// `onClick` handler, but did not work there either.
+							jQuery( '#start-setup-link' ).on( 'click' , function() {
+								if ( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
+									sendAnalyticsTrackingEvent( 'plugin_setup', 'goto_sitekit' );
+								}
+							} );
+
+							jQuery('#opt-in').on( 'change' , function( event ) {
+								if ( event.target.disabled ) {
+									event.preventDefault();
+									return;
+								}
+
+								var checked = event.target.checked;
+
+								var body = {
+									googlesitekit_tracking_optin: checked,
+								};
+								var self = this;
+
+								jQuery(self).attr( 'disabled', true );
+
+								wp.apiFetch( {
+									path: '/wp/v2/settings',
+									headers: {
+										'Content-Type': 'application/json; charset=UTF-8',
+									},
+									body: JSON.stringify( body ),
+									method: 'POST',
+								} )
+									.then( function() {
+										jQuery(self).attr( 'disabled', null );
+									} )
+									.catch( function( err ) {
+										jQuery(self).attr( 'checked', ! checked );
+										jQuery(self).attr( 'disabled', false );
+									} );
+							});
+						});
 					</script>
 					<div class="googlesitekit-plugin">
 						<div class="googlesitekit-activation">
@@ -186,7 +238,7 @@ final class Activation {
 											); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
 											?>
 										</div>
-										<h3 class="googlesitekit-heading-1 googlesitekit-activation__title">
+										<h3 class="googlesitekit-heading-3 googlesitekit-activation__title">
 											<?php esc_html_e( 'Congratulations, the Site Kit plugin is now activated.', 'google-site-kit' ); ?>
 										</h3>
 									</div>
@@ -194,12 +246,33 @@ final class Activation {
 										mdc-layout-grid__cell
 										mdc-layout-grid__cell--start-8-desktop
 										mdc-layout-grid__cell--offset-1-desktop
-										mdc-layout-grid__cell--align-middle
+										mdc-layout-grid__cell--align-bottom
 									">
-										<a href="#" onClick="javascript:if( 'undefined' !== typeof sendAnalyticsTrackingEvent ) { sendAnalyticsTrackingEvent( 'plugin_setup', 'goto_sitekit' ) };document.location='<?php echo esc_url( $sitekit_splash_url ); ?>';"
-											class="googlesitekit-activation__button mdc-button mdc-button--raised">
+										<a id="start-setup-link" href="<?php echo esc_url( $sitekit_splash_url ); ?>" class="googlesitekit-activation__button mdc-button mdc-button--raised">
 											<?php esc_html_e( 'Start Setup', 'google-site-kit' ); ?>
 										</a>
+									</div>
+									<div class="
+										mdc-layout-grid__cell
+										mdc-layout-grid__cell--span-12
+									">
+										<div class="googlesitekit-opt-in">
+											<div class="mdc-form-field">
+												<div class="mdc-checkbox mdc-checkbox--upgraded mdc-ripple-upgraded mdc-ripple-upgraded--unbounded">
+													<input class="mdc-checkbox__native-control" type="checkbox" id="opt-in" name="optin" value="1" />
+													<div class="mdc-checkbox__background">
+														<svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+															<path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
+														</svg>
+														<div class="mdc-checkbox__mixedmark">
+														</div>
+													</div>
+												</div>
+												<label for="opt-in">
+													Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>.
+												</label>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
