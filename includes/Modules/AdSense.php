@@ -497,7 +497,7 @@ tag_partner: "site_kit"
 								'winImage'      => 'sun-small.png',
 								'format'        => 'large',
 								'severity'      => 'win-info',
-								'ctaUrl'        => $this->get_data( 'account-url' ),
+								'ctaURL'        => $this->get_data( 'account-url' ),
 								'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
 								'ctaTarget'     => '_blank',
 							),

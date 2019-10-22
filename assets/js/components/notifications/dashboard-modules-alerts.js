@@ -70,7 +70,7 @@ class DashboardModulesAlerts extends Component {
 						learnMoreUrl={ notification.learnMoreUrl || '' }
 						learnMoreDescription={ notification.learnMoreDescription || '' }
 						learnMoreLabel={ notification.learnMoreLabel || '' }
-						ctaLink={ notification.ctaUrl || '' }
+						ctaLink={ notification.ctaURL || '' }
 						ctaLabel={ notification.ctaLabel || '' }
 						ctaTarget={ notification.ctaTarget || '' }
 						type={ notification.severity || '' }
