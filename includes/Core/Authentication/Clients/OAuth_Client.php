@@ -190,6 +190,7 @@ final class OAuth_Client {
 
 		// Offline access so we can access the refresh token even when the user is logged out.
 		$this->google_client->setAccessType( 'offline' );
+		$this->google_client->setPrompt( 'consent' );
 
 		$this->google_client->setRedirectUri( $this->get_redirect_uri() );
 
