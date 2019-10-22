@@ -88,7 +88,7 @@ export async function getAdSenseAccountStatus( statusUpdateCallback, existingTag
 	let footerCTALink = '';
 	let continueAction = false;
 	let accountTagMatch = false;
-	let clientId = false;
+	let clientID = false;
 	let switchLabel = '';
 	let tracking = false;
 	let switchOffMessage = '';
@@ -178,7 +178,7 @@ export async function getAdSenseAccountStatus( statusUpdateCallback, existingTag
 				statusUpdateCallback( __( 'Searching for domain…', 'google-site-kit' ) );
 				for ( const account of accounts ) {
 					const accountId = account.id;
-					const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { clientId: accountId } ).then( ( res ) => res ).catch( ( e ) => e );
+					const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { clientID: accountId } ).then( ( res ) => res ).catch( ( e ) => e );
 					const parsedUrl = new URL( googlesitekit.admin.siteURL );
 					const matches = urlchannels && urlchannels.length ? filter( urlchannels, { urlPattern: parsedUrl.hostname } ) : [];
 
@@ -213,10 +213,10 @@ export async function getAdSenseAccountStatus( statusUpdateCallback, existingTag
 				const hasClientError = clients && clients.message && clients.message.error;
 				const item = clients && clients.length ? find( clients, { productCode: 'AFC' } ) : false;
 				if ( item ) {
-					clientId = item.id;
+					clientID = item.id;
 
 					// Save the client ID immediately so we can verify the site by inserting the tag.
-					await data.set( TYPE_MODULES, 'adsense', 'client-id', { clientId } ).then( ( res ) => res ).catch( ( e ) => e );
+					await data.set( TYPE_MODULES, 'adsense', 'client-id', { clientID } ).then( ( res ) => res ).catch( ( e ) => e );
 				}
 
 				if ( hasAlertsError ) {
@@ -251,12 +251,12 @@ export async function getAdSenseAccountStatus( statusUpdateCallback, existingTag
 						issue = 'accountRequiredAction';
 						sendAnalyticsTrackingEvent( 'adsense_setup', 'adsense_required_action', 'accountRequiredAction status' );
 					} else if ( item ) {
-						clientId = item.id;
+						clientID = item.id;
 
 						// Check the URL channels.
 						statusUpdateCallback( __( 'Looking for site domain…', 'google-site-kit' ) );
 
-						const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { clientId } ).then( ( res ) => res ).catch( ( e ) => e );
+						const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { clientID } ).then( ( res ) => res ).catch( ( e ) => e );
 
 						// Find a URL channel with a matching domain
 						const matches = urlchannels && urlchannels.length && filter( urlchannels, ( channel ) => {
@@ -280,7 +280,7 @@ export async function getAdSenseAccountStatus( statusUpdateCallback, existingTag
 							accountStatus = 'account-pending-review';
 							issue = 'accountPendingReview';
 							sendAnalyticsTrackingEvent( 'adsense_setup', 'adsense_account_pending', 'accountPendingReview status account-pending-review' );
-						} else if ( existingTag && clientId === existingTag ) {
+						} else if ( existingTag && clientID === existingTag ) {
 							// AdSense existing tag id matches detected client id.
 							/**
 							 * No error, matched domain, account is connected.
@@ -300,7 +300,7 @@ export async function getAdSenseAccountStatus( statusUpdateCallback, existingTag
 							switchLabel = __( 'Let Site Kit place code on your site', 'google-site-kit' );
 							switchOffMessage = __( 'If you don’t let Site Kit place the code you may not get the best ads experience. You can set this up later on the Site Kit settings page.', 'google-site-kit' );
 							switchOnMessage = __( 'If you’ve already set up ads on your site, it may change how they appear. You can customize this later in AdSense.', 'google-site-kit' );
-						} else if ( existingTag && clientId !== existingTag ) {
+						} else if ( existingTag && clientID !== existingTag ) {
 							/**
 							 * No error, matched domain, account is connected.
 							 *
@@ -353,8 +353,8 @@ export async function getAdSenseAccountStatus( statusUpdateCallback, existingTag
 							// Track this event.
 							sendAnalyticsTrackingEvent( 'adsense_setup', 'adsense_account_connected' );
 
-							// Save the publisher clientId: AdSense setup is complete!
-							await data.set( TYPE_MODULES, 'adsense', 'setup-complete', { clientId } ).then( ( res ) => res ).catch( ( e ) => e );
+							// Save the publisher clientID: AdSense setup is complete!
+							await data.set( TYPE_MODULES, 'adsense', 'setup-complete', { clientID } ).then( ( res ) => res ).catch( ( e ) => e );
 						}
 					} else {
 						/**
@@ -407,7 +407,7 @@ export async function getAdSenseAccountStatus( statusUpdateCallback, existingTag
 			footerAppendedText,
 			continueAction,
 			accountTagMatch,
-			clientId,
+			clientID,
 			existingTag,
 			switchLabel,
 			tracking,

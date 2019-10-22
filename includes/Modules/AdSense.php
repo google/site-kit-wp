@@ -374,8 +374,8 @@ tag_partner: "site_kit"
 								unset( $option['account_id'] );
 							}
 							if ( isset( $option['client_id'] ) ) {
-								if ( ! isset( $option['clientId'] ) ) {
-									$option['clientId'] = $option['client_id'];
+								if ( ! isset( $option['clientID'] ) ) {
+									$option['clientID'] = $option['client_id'];
 								}
 								unset( $option['client_id'] );
 							}
@@ -389,7 +389,7 @@ tag_partner: "site_kit"
 						}
 						$defaults = array(
 							'accountId'     => '',
-							'clientId'      => '',
+							'clientID'      => '',
 							'accountStatus' => '',
 						);
 						return array_intersect_key( array_merge( $defaults, $option ), $defaults );
@@ -415,16 +415,16 @@ tag_partner: "site_kit"
 						$option = (array) $this->options->get( self::OPTION );
 						// TODO: Remove this at some point (migration of old option).
 						if ( isset( $option['client_id'] ) ) {
-							if ( ! isset( $option['clientId'] ) ) {
-								$option['clientId'] = $option['client_id'];
+							if ( ! isset( $option['clientID'] ) ) {
+								$option['clientID'] = $option['client_id'];
 							}
 							unset( $option['client_id'] );
 							$this->options->set( self::OPTION, $option );
 						}
-						if ( empty( $option['clientId'] ) ) {
+						if ( empty( $option['clientID'] ) ) {
 							return new WP_Error( 'client_id_not_set', __( 'AdSense client ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
-						return $option['clientId'];
+						return $option['clientID'];
 					};
 				case 'use-snippet':
 					return function() {
@@ -520,12 +520,12 @@ tag_partner: "site_kit"
 					$service = $this->get_service( 'adsense' );
 					return $service->adclients->listAdclients();
 				case 'urlchannels':
-					if ( ! isset( $data['clientId'] ) ) {
+					if ( ! isset( $data['clientID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
 					}
 					$service = $this->get_service( 'adsense' );
-					return $service->urlchannels->listUrlchannels( $data['clientId'] );
+					return $service->urlchannels->listUrlchannels( $data['clientID'] );
 				case 'earnings':
 					$data = array_merge(
 						array(
@@ -559,7 +559,7 @@ tag_partner: "site_kit"
 				case 'connection':
 					return function() use ( $data ) {
 						$option = (array) $this->options->get( self::OPTION );
-						$keys   = array( 'accountId', 'clientId', 'accountStatus' );
+						$keys   = array( 'accountId', 'clientID', 'accountStatus' );
 						foreach ( $keys as $key ) {
 							if ( isset( $data[ $key ] ) ) {
 								$option[ $key ] = $data[ $key ];
@@ -580,13 +580,13 @@ tag_partner: "site_kit"
 						return true;
 					};
 				case 'client-id':
-					if ( ! isset( $data['clientId'] ) ) {
+					if ( ! isset( $data['clientID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
 					}
 					return function() use ( $data ) {
 						$option             = (array) $this->options->get( self::OPTION );
-						$option['clientId'] = $data['clientId'];
+						$option['clientID'] = $data['clientID'];
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
@@ -623,14 +623,14 @@ tag_partner: "site_kit"
 						return true;
 					};
 				case 'setup-complete':
-					if ( ! isset( $data['clientId'] ) ) {
+					if ( ! isset( $data['clientID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
 					}
 					return function() use ( $data ) {
 						$option                  = (array) $this->options->get( self::OPTION );
 						$option['setupComplete'] = true;
-						$option['clientId']      = $data['clientId'];
+						$option['clientID']      = $data['clientID'];
 						$option['useSnippet']    = ! empty( $data['useSnippet'] );
 
 						$this->options->set( self::OPTION, $option );
