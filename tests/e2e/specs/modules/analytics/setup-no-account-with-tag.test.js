@@ -9,7 +9,7 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
-	setAnalyticsExistingPropertyId,
+	setAnalyticsExistingPropertyID,
 	setAuthToken,
 	setClientConfig,
 	setSearchConsoleProperty,
@@ -71,7 +71,7 @@ describe( 'setting up the Analytics module with no existing account and with an 
 	} );
 
 	it( 'does not allow Analytics to be set up with an existing tag that does not match a property of the user', async () => {
-		await setAnalyticsExistingPropertyId( EXISTING_PROPERTY_ID );
+		await setAnalyticsExistingPropertyID( EXISTING_PROPERTY_ID );
 
 		await proceedToSetUpAnalytics();
 
