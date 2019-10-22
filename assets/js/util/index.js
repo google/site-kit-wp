@@ -81,14 +81,14 @@ const removeURLFallBack = ( url, parameter ) => {
  * @param {string} parameter The URL parameter to remove.
  */
 export const removeURLParameter = ( url, parameter ) => {
-	const parsedUrl = new URL( url );
+	const parsedURL = new URL( url );
 
-	// If the URL implementation doesn't support ! parsedUrl.searchParams, use the fallback handler.
-	if ( ! parsedUrl.searchParams || ! parsedUrl.searchParams.delete ) {
+	// If the URL implementation doesn't support ! parsedURL.searchParams, use the fallback handler.
+	if ( ! parsedURL.searchParams || ! parsedURL.searchParams.delete ) {
 		return removeURLFallBack( url, parameter );
 	}
-	parsedUrl.searchParams.delete( parameter );
-	return parsedUrl.href;
+	parsedURL.searchParams.delete( parameter );
+	return parsedURL.href;
 };
 
 /**

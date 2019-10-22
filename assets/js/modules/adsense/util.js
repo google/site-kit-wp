@@ -179,8 +179,8 @@ export async function getAdSenseAccountStatus( statusUpdateCallback, existingTag
 				for ( const account of accounts ) {
 					const accountID = account.id;
 					const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { clientID: accountID } ).then( ( res ) => res ).catch( ( e ) => e );
-					const parsedUrl = new URL( googlesitekit.admin.siteURL );
-					const matches = urlchannels && urlchannels.length ? filter( urlchannels, { urlPattern: parsedUrl.hostname } ) : [];
+					const parsedURL = new URL( googlesitekit.admin.siteURL );
+					const matches = urlchannels && urlchannels.length ? filter( urlchannels, { urlPattern: parsedURL.hostname } ) : [];
 
 					if ( 0 === matches.length ) {
 						accountStatus = 'account-pending-review';
