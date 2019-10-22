@@ -479,11 +479,55 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'profileID'             => '',
 							'internalWebPropertyID' => '',
 						);
-						return array_intersect_key( array_merge( $defaults, (array) $this->options->get( self::OPTION ) ), $defaults );
+
+						$options = (array) $this->options->get( self::OPTION );
+
+						// TODO: Remove this at some point (migration of old 'accountId' option).
+						if ( isset( $option['accountId'] ) ) {
+							if ( ! isset( $option['accountID'] ) ) {
+								$option['accountID'] = $option['accountId'];
+							}
+							unset( $option['accountId'] );
+						}
+
+						// TODO: Remove this at some point (migration of old 'propertyId' option).
+						if ( isset( $option['propertyId'] ) ) {
+							if ( ! isset( $option['propertyID'] ) ) {
+								$option['propertyID'] = $option['propertyId'];
+							}
+							unset( $option['propertyId'] );
+						}
+
+						// TODO: Remove this at some point (migration of old 'profileId' option).
+						if ( isset( $option['profileId'] ) ) {
+							if ( ! isset( $option['profileID'] ) ) {
+								$option['profileID'] = $option['profileId'];
+							}
+							unset( $option['profileId'] );
+						}
+
+						// TODO: Remove this at some point (migration of old 'internalWebPropertyId' option).
+						if ( isset( $option['internalWebPropertyId'] ) ) {
+							if ( ! isset( $option['internalWebPropertyID'] ) ) {
+								$option['internalWebPropertyID'] = $option['internalWebPropertyId'];
+							}
+							unset( $option['internalWebPropertyId'] );
+						}
+
+						return array_intersect_key( array_merge( $defaults, $options ), $defaults );
 					};
 				case 'account-id':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
+
+						// TODO: Remove this at some point (migration of old 'accountId' option).
+						if ( isset( $option['accountId'] ) ) {
+							if ( ! isset( $option['accountID'] ) ) {
+								$option['accountID'] = $option['accountId'];
+							}
+							unset( $option['accountId'] );
+						}
+
 						if ( empty( $option['accountID'] ) ) {
 							return new WP_Error( 'account_id_not_set', __( 'Analytics account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
@@ -492,6 +536,15 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'property-id':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
+
+						// TODO: Remove this at some point (migration of old 'propertyId' option).
+						if ( isset( $option['propertyId'] ) ) {
+							if ( ! isset( $option['propertyID'] ) ) {
+								$option['propertyID'] = $option['propertyId'];
+							}
+							unset( $option['propertyId'] );
+						}
+
 						if ( empty( $option['propertyID'] ) ) {
 							return new WP_Error( 'property_id_not_set', __( 'Analytics property ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
@@ -500,6 +553,15 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'profile-id':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
+
+						// TODO: Remove this at some point (migration of old 'profileId' option).
+						if ( isset( $option['profileId'] ) ) {
+							if ( ! isset( $option['profileID'] ) ) {
+								$option['profileID'] = $option['profileId'];
+							}
+							unset( $option['profileId'] );
+						}
+
 						if ( empty( $option['profileID'] ) ) {
 							return new WP_Error( 'profile_id_not_set', __( 'Analytics profile ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
@@ -508,6 +570,15 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'internal-web-property-id':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
+
+						// TODO: Remove this at some point (migration of old 'internalWebPropertyId' option).
+						if ( isset( $option['internalWebPropertyId'] ) ) {
+							if ( ! isset( $option['internalWebPropertyID'] ) ) {
+								$option['internalWebPropertyID'] = $option['internalWebPropertyId'];
+							}
+							unset( $option['internalWebPropertyId'] );
+						}
+
 						if ( empty( $option['internalWebPropertyID'] ) ) {
 							return new WP_Error( 'internal_web_property_id_not_set', __( 'Analytics internal web property ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
@@ -521,6 +592,15 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'amp-client-id-opt-in':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
+
+						// TODO: Remove this at some point (migration of old 'ampClientIdOptIn' option).
+						if ( isset( $option['ampClientIdOptIn'] ) ) {
+							if ( ! isset( $option['ampClientIDOptIn'] ) ) {
+								$option['ampClientIDOptIn'] = $option['ampClientIdOptIn'];
+							}
+							unset( $option['ampClientIdOptIn'] );
+						}
+
 						if ( ! isset( $option['ampClientIDOptIn'] ) ) {
 							return true; // Default to true.
 						}
