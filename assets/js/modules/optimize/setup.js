@@ -45,7 +45,7 @@ class OptimizeSetup extends Component {
 		const {
 			optimizeID,
 			ampClientIDOptIn,
-			ampExperimentJson,
+			ampExperimentJSON,
 		} = googlesitekit.modules.optimize.settings;
 
 		const {
@@ -67,8 +67,8 @@ class OptimizeSetup extends Component {
 			errorCode: false,
 			errorMsg: '',
 			ampClientIDOptIn: ampClientIDOptIn || false,
-			ampExperimentJson: ampExperimentJson || '',
-			ampExperimentJsonValidated: true,
+			ampExperimentJSON: ampExperimentJSON || '',
+			ampExperimentJSONValidated: true,
 			OptimizeIDValidated: true,
 		};
 
@@ -117,7 +117,7 @@ class OptimizeSetup extends Component {
 
 		const settingsMapping = {
 			optimizeID: 'optimizeID',
-			ampExperimentJson: 'ampExperimentJson',
+			ampExperimentJSON: 'ampExperimentJSON',
 		};
 
 		toggleConfirmModuleSettings( 'optimize', settingsMapping, this.state );
@@ -126,7 +126,7 @@ class OptimizeSetup extends Component {
 	async handleSubmit() {
 		const {
 			optimizeID,
-			ampExperimentJson,
+			ampExperimentJSON,
 			OptimizeIDValidated,
 		} = this.state;
 		const { finishSetup } = this.props;
@@ -137,7 +137,7 @@ class OptimizeSetup extends Component {
 
 		const optimizeAccount = {
 			optimizeID,
-			ampExperimentJson,
+			ampExperimentJSON,
 		};
 
 		return await data.set( TYPE_MODULES, 'optimize', 'settings', optimizeAccount ).then( () => {
@@ -177,8 +177,8 @@ class OptimizeSetup extends Component {
 
 		if ( this._isMounted ) {
 			this.setState( {
-				ampExperimentJson: e.target.value,
-				ampExperimentJsonValidated: validJSON,
+				ampExperimentJSON: e.target.value,
+				ampExperimentJSONValidated: validJSON,
 			} );
 		}
 	}
@@ -235,8 +235,8 @@ class OptimizeSetup extends Component {
 		const {
 			analyticsUseSnippet,
 			ampClientIDOptIn,
-			ampExperimentJson,
-			ampExperimentJsonValidated,
+			ampExperimentJSON,
+			ampExperimentJSONValidated,
 		} = this.state;
 
 		const { ampEnabled } = window.googlesitekit.admin;
@@ -253,7 +253,7 @@ class OptimizeSetup extends Component {
 						<TextField
 							className={ `
 								mdc-text-field
-								${ ampExperimentJsonValidated ? '' : 'mdc-text-field--error' }
+								${ ampExperimentJSONValidated ? '' : 'mdc-text-field--error' }
 							` }
 							name="amp-experiment"
 							onChange={ this.handleAMPOptimizeEntry }
@@ -261,10 +261,10 @@ class OptimizeSetup extends Component {
 						>
 							<Input
 								inputType="textarea"
-								value={ null === ampExperimentJson ? '' : ampExperimentJson }
+								value={ null === ampExperimentJSON ? '' : ampExperimentJSON }
 							/>
 						</TextField>
-						{ ! ampExperimentJsonValidated &&
+						{ ! ampExperimentJSONValidated &&
 							<p className="googlesitekit-error-text">{ __( 'Error: AMP experiment settings are not in a valid JSON format.', 'google-site-kit' ) }</p>
 						}
 					</Fragment>
