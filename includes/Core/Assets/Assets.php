@@ -446,7 +446,7 @@ final class Assets {
 		$admin_data = array(
 			'siteURL'          => esc_url_raw( $site_url ),
 			'siteName'         => get_bloginfo( 'name' ),
-			'siteUserId'       => md5( $site_url . $current_user->ID ),
+			'siteUserID'       => md5( $site_url . $current_user->ID ),
 			'adminRoot'        => esc_url_raw( get_admin_url() . 'admin.php' ),
 			'pluginURI'        => esc_url_raw( $this->context->url( '/' ) ),
 			'assetsRoot'       => esc_url_raw( $this->context->url( 'dist/assets/' ) ),

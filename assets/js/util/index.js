@@ -559,7 +559,7 @@ export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel
 	}
 	const {
 		siteURL,
-		siteUserId,
+		siteUserID,
 	} = googlesitekit.admin;
 
 	const { isFirstAdmin } = googlesitekit.setup;
@@ -573,7 +573,7 @@ export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel
 			event_value: eventValue, /*eslint camelcase: 0*/
 			dimension1: trimEnd( siteURL, '/' ), // Domain.
 			dimension2: isFirstAdmin ? 'true' : 'false', // First Admin?
-			dimension3: siteUserId, // Identifier.
+			dimension3: siteUserID, // Identifier.
 		} );
 	}
 };
