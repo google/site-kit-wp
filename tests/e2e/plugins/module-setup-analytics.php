@@ -220,7 +220,7 @@ add_action( 'rest_api_init', function () {
 		array(
 			'callback' => function ( \WP_REST_Request $request ) use ( $profiles ) {
 				$profiles = filter_by_account_id( $profiles, $request->get_param( 'accountID' ) );
-				$profiles = filter_by_property_id( $profiles, $request->get_param( 'propertyId' ) );
+				$profiles = filter_by_property_id( $profiles, $request->get_param( 'propertyID' ) );
 
 				return $profiles;
 			}
@@ -237,7 +237,7 @@ add_action( 'rest_api_init', function () {
 			'callback' => function ( \WP_REST_Request $request ) use ( $profiles ) {
 				$option = array(
 					'accountID'             => $request['accountID'],
-					'propertyId'            => $request['propertyId'] ?: time(), // fake a new property ID if empty
+					'propertyID'            => $request['propertyID'] ?: time(), // fake a new property ID if empty
 					'internalWebPropertyID' => $request['internalWebPropertyID'],
 					'profileID'             => $request['profileID'] ?: time(),  // fake a new profile ID if empty
 					'useSnippet'            => ! empty( $request['useSnippet'] ),

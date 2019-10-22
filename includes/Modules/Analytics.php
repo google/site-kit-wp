@@ -83,7 +83,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				 */
 				$property_id = apply_filters( 'googlesitekit_analytics_property_id', '' );
 				if ( ! empty( $property_id ) ) {
-					$option['propertyId'] = $property_id;
+					$option['propertyID'] = $property_id;
 				}
 
 				/**
@@ -475,7 +475,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return function() {
 						$defaults = array(
 							'accountID'             => '',
-							'propertyId'            => '',
+							'propertyID'            => '',
 							'profileID'             => '',
 							'internalWebPropertyID' => '',
 						);
@@ -492,10 +492,10 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'property-id':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
-						if ( empty( $option['propertyId'] ) ) {
+						if ( empty( $option['propertyID'] ) ) {
 							return new WP_Error( 'property_id_not_set', __( 'Analytics property ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
-						return $option['propertyId'];
+						return $option['propertyID'];
 					};
 				case 'profile-id':
 					return function() {
@@ -545,7 +545,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						};
 					}
 					$service = $this->get_service( 'analytics' );
-					return $service->management_goals->listManagementGoals( $connection['accountID'], $connection['propertyId'], $connection['profileID'] );
+					return $service->management_goals->listManagementGoals( $connection['accountID'], $connection['propertyID'], $connection['profileID'] );
 				case 'accounts-properties-profiles':
 					return $this->get_service( 'analytics' )->management_accounts->listManagementAccounts();
 				case 'properties-profiles':
@@ -568,16 +568,16 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							array( 'status' => 400 )
 						);
 					}
-					if ( ! isset( $data['propertyId'] ) ) {
+					if ( ! isset( $data['propertyID'] ) ) {
 						return new WP_Error(
 							'missing_required_param',
 							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyId' ),
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
 							array( 'status' => 400 )
 						);
 					}
 
-					return $this->get_service( 'analytics' )->management_profiles->listManagementProfiles( $data['accountID'], $data['propertyId'] );
+					return $this->get_service( 'analytics' )->management_profiles->listManagementProfiles( $data['accountID'], $data['propertyID'] );
 				case 'tag-permission':
 					return function() use ( $data ) {
 						if ( ! isset( $data['tag'] ) ) {
@@ -725,7 +725,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'connection':
 					return function() use ( $data ) {
 						$option = (array) $this->options->get( self::OPTION );
-						$keys   = array( 'accountID', 'propertyId', 'profileID', 'internalWebPropertyID' );
+						$keys   = array( 'accountID', 'propertyID', 'profileID', 'internalWebPropertyID' );
 						foreach ( $keys as $key ) {
 							if ( isset( $data[ $key ] ) ) {
 								$option[ $key ] = $data[ $key ];
@@ -748,13 +748,13 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						return true;
 					};
 				case 'property-id':
-					if ( ! isset( $data['propertyId'] ) ) {
+					if ( ! isset( $data['propertyID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ), array( 'status' => 400 ) );
 					}
 					return function() use ( $data ) {
 						$option               = (array) $this->options->get( self::OPTION );
-						$option['propertyId'] = $data['propertyId'];
+						$option['propertyID'] = $data['propertyID'];
 						$this->options->set( self::OPTION, $option );
 						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 						return true;
@@ -810,9 +810,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 					}
-					if ( ! isset( $data['propertyId'] ) ) {
+					if ( ! isset( $data['propertyID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ), array( 'status' => 400 ) );
 					}
 					if ( ! isset( $data['internalWebPropertyID'] ) ) {
 						/* translators: %s: Missing parameter name */
@@ -830,7 +830,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						$property_id              = null;
 						$internal_web_property_id = null;
 						$property_name            = '';
-						if ( '0' === $data['propertyId'] ) {
+						if ( '0' === $data['propertyID'] ) {
 							$is_new_property = true;
 							$client          = $this->get_client();
 							$orig_defer      = $client->shouldDefer();
@@ -855,7 +855,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							$internal_web_property_id = $property->internalWebPropertyID; // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 						} else {
 							$is_new_property          = false;
-							$property_id              = $data['propertyId'];
+							$property_id              = $data['propertyID'];
 							$internal_web_property_id = $data['internalWebPropertyID'];
 						}
 						$profile_id = null;
@@ -907,7 +907,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						}
 						$option = array(
 							'accountID'             => $data['accountID'],
-							'propertyId'            => $property_id,
+							'propertyID'            => $property_id,
 							'internalWebPropertyID' => $internal_web_property_id,
 							'profileID'             => $profile_id,
 							'useSnippet'            => ! empty( $data['useSnippet'] ),
@@ -1043,7 +1043,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						'profiles',
 						array(
 							'accountID'  => $found_property->getAccountId(),
-							'propertyId' => $found_property->getId(),
+							'propertyID' => $found_property->getId(),
 						)
 					);
 
@@ -1222,7 +1222,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			if ( ! empty( $existing_property_match ) ) {
 				$response = array(
 					'accountID'  => $account_id,
-					'propertyId' => $property_id,
+					'propertyID' => $property_id,
 				);
 				break;
 			}

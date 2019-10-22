@@ -68,15 +68,15 @@ class AnalyticsTest extends TestCase {
 		} );
 		$this->assertEquals( 'filtered-account-id', get_option( Analytics::OPTION )['accountID'] );
 
-		// Test propertyId can be overridden by non-empty value via filter
-		update_option( Analytics::OPTION, array( 'propertyId' => 'saved-property-id' ) );
-		$this->assertEquals( 'saved-property-id', get_option( Analytics::OPTION )['propertyId'] );
+		// Test propertyID can be overridden by non-empty value via filter
+		update_option( Analytics::OPTION, array( 'propertyID' => 'saved-property-id' ) );
+		$this->assertEquals( 'saved-property-id', get_option( Analytics::OPTION )['propertyID'] );
 		add_filter( 'googlesitekit_analytics_property_id', '__return_empty_string' );
-		$this->assertEquals( 'saved-property-id', get_option( Analytics::OPTION )['propertyId'] );
+		$this->assertEquals( 'saved-property-id', get_option( Analytics::OPTION )['propertyID'] );
 		add_filter( 'googlesitekit_analytics_property_id', function () {
 			return 'filtered-property-id';
 		} );
-		$this->assertEquals( 'filtered-property-id', get_option( Analytics::OPTION )['propertyId'] );
+		$this->assertEquals( 'filtered-property-id', get_option( Analytics::OPTION )['propertyID'] );
 
 		// Test internalWebPropertyID can be overridden by non-empty value via filter
 		update_option( Analytics::OPTION, array( 'internalWebPropertyID' => 'saved-internal-web-property-id' ) );
@@ -130,7 +130,7 @@ class AnalyticsTest extends TestCase {
 
 		$this->assertEquals( 'analytics', $info['slug'] );
 		$this->assertArrayHasKey( 'accountID', $info['settings'] );
-		$this->assertArrayHasKey( 'propertyId', $info['settings'] );
+		$this->assertArrayHasKey( 'propertyID', $info['settings'] );
 		$this->assertArrayHasKey( 'profileID', $info['settings'] );
 		$this->assertArrayHasKey( 'internalWebPropertyID', $info['settings'] );
 		$this->assertArrayHasKey( 'useSnippet', $info['settings'] );
@@ -206,7 +206,7 @@ class AnalyticsTest extends TestCase {
 		$this->assertSame( $data, $result );
 
 		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$analytics->set_data( 'property-id', array( 'propertyId' => '12345678' ) );
+		$analytics->set_data( 'property-id', array( 'propertyID' => '12345678' ) );
 
 		$result = apply_filters( 'amp_post_template_data', $data );
 		$this->assertArrayHasKey( 'amp-analytics', $result['amp_component_scripts'] );

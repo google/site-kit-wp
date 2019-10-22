@@ -48,7 +48,7 @@ class AnalyticsSetup extends Component {
 			accountID,
 			internalWebPropertyID,
 			profileID,
-			propertyId,
+			propertyID,
 			useSnippet,
 			ampClientIdOptIn,
 		} = googlesitekit.modules.analytics.settings;
@@ -66,7 +66,7 @@ class AnalyticsSetup extends Component {
 			properties: [],
 			profiles: [],
 			selectedAccount: accountID,
-			selectedProperty: propertyId,
+			selectedProperty: propertyID,
 			selectedProfile: profileID,
 			selectedinternalWebProperty: internalWebPropertyID,
 			ampClientIdOptIn,
@@ -142,7 +142,7 @@ class AnalyticsSetup extends Component {
 
 		const settingsMapping = {
 			selectedAccount: 'accountID',
-			selectedProperty: 'propertyId',
+			selectedProperty: 'propertyID',
 			selectedProfile: 'profileID',
 			selectedinternalWebProperty: 'internalWebPropertyID',
 			useSnippet: 'useSnippet',
@@ -253,7 +253,7 @@ class AnalyticsSetup extends Component {
 			// Send existing tag data to get account.
 			const queryArgs = existingTagData ? {
 				existingAccountId: existingTagData.accountID,
-				existingPropertyId: existingTagData.propertyId,
+				existingPropertyId: existingTagData.propertyID,
 			} : {};
 
 			const responseData = await data.get( TYPE_MODULES, 'analytics', 'accounts-properties-profiles', queryArgs );
@@ -340,7 +340,7 @@ class AnalyticsSetup extends Component {
 				selectedProfile,
 				properties: [ chooseAccount ],
 				profiles: [ chooseAccount ],
-				existingTag: existingTagData ? existingTagData.propertyId : false,
+				existingTag: existingTagData ? existingTagData.propertyID : false,
 				useSnippet,
 			};
 
@@ -413,7 +413,7 @@ class AnalyticsSetup extends Component {
 		try {
 			const queryArgs = {
 				accountID: selectedAccount,
-				propertyId: selectValue,
+				propertyID: selectValue,
 			};
 
 			const responseData = await data.get( TYPE_MODULES, 'analytics', 'profiles', queryArgs );
@@ -467,9 +467,9 @@ class AnalyticsSetup extends Component {
 		// appear.
 		// See: https://github.com/google/site-kit-wp/issues/398#issuecomment-540024321
 		const profileID = selectedProfile || ( profiles[ 0 ].id || profiles[ 0 ].id === 0 ? profiles[ 0 ].id.toString() : null );
-		const propertyId = selectedProperty || ( properties[ 0 ].id || properties[ 0 ].id === 0 ? properties[ 0 ].id.toString() : null );
+		const propertyID = selectedProperty || ( properties[ 0 ].id || properties[ 0 ].id === 0 ? properties[ 0 ].id.toString() : null );
 		let internalWebPropertyID;
-		if ( propertyId === '0' ) {
+		if ( propertyID === '0' ) {
 			internalWebPropertyID = '0';
 		} else {
 			internalWebPropertyID = selectedinternalWebProperty || ( properties[ 0 ].internalWebPropertyID || properties[ 0 ].internalWebPropertyID === 0 ? properties[ 0 ].internalWebPropertyID.toString() : null );
@@ -478,7 +478,7 @@ class AnalyticsSetup extends Component {
 		const analyticAccount = {
 			accountID: selectedAccount || accounts[ 0 ].id || null,
 			profileID,
-			propertyId,
+			propertyID,
 			internalWebPropertyID,
 			useSnippet: useSnippet || false,
 			ampClientIdOptIn: ampClientIdOptIn || false,
@@ -492,7 +492,7 @@ class AnalyticsSetup extends Component {
 
 			googlesitekit.modules.analytics.settings.accountID = response.accountID;
 			googlesitekit.modules.analytics.settings.profileID = response.profileID;
-			googlesitekit.modules.analytics.settings.propertyId = response.propertyId;
+			googlesitekit.modules.analytics.settings.propertyID = response.propertyID;
 			googlesitekit.modules.analytics.settings.internalWebPropertyID = response.internalWebPropertyID;
 			googlesitekit.modules.analytics.settings.useSnippet = response.useSnippet;
 			googlesitekit.modules.analytics.settings.ampClientIdOptIn = response.ampClientIdOptIn;
@@ -509,7 +509,7 @@ class AnalyticsSetup extends Component {
 					isSaving: false,
 					selectedAccount: response.accountID,
 					selectedProfile: response.profileID,
-					selectedProperty: response.propertyId,
+					selectedProperty: response.propertyID,
 					selectedinternalWebProperty: response.internalWebPropertyID,
 				} );
 			}
