@@ -5,7 +5,7 @@ QUnit.module( 'Utility function tests' );
 
 // Set up default admin data.
 googlesitekit.admin = {
-	connectUrl: 'http://sitekit.withgoogle.com/wp-admin/admin.php?googlesitekit_connect=1&nonce=12345&page=googlesitekit-splash',
+	connectURL: 'http://sitekit.withgoogle.com/wp-admin/admin.php?googlesitekit_connect=1&nonce=12345&page=googlesitekit-splash',
 	adminRoot: 'http://sitekit.withgoogle.com/wp-admin/admin.php',
 };
 

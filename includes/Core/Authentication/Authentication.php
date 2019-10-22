@@ -525,7 +525,7 @@ final class Authentication {
 			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
 		}
 
-		$data['connectUrl']    = esc_url_raw( $this->get_connect_url() );
+		$data['connectURL']    = esc_url_raw( $this->get_connect_url() );
 		$data['disconnectUrl'] = esc_url_raw( $this->get_disconnect_url() );
 
 		return $data;

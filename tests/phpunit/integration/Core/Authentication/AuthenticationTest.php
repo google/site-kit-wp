@@ -68,7 +68,7 @@ class AuthenticationTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'connectUrl',
+				'connectURL',
 				'disconnectUrl',
 				'proxySetupURL',
 				'proxyPermissionsURL',

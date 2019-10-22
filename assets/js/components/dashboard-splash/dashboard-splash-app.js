@@ -52,7 +52,7 @@ class DashboardSplashApp extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { connectUrl } = googlesitekit.admin;
+		const { connectURL } = googlesitekit.admin;
 
 		const {
 			showModuleSetupWizard,
@@ -74,7 +74,7 @@ class DashboardSplashApp extends Component {
 			canViewDashboard,
 			canPublishPosts,
 			buttonMode: 0,
-			connectUrl,
+			connectURL,
 		};
 
 		if ( canAuthenticate && ! isAuthenticated ) {
@@ -104,7 +104,7 @@ class DashboardSplashApp extends Component {
 
 		sendAnalyticsTrackingEvent( 'plugin_setup', 'connect_account' );
 
-		document.location = this.state.connectUrl;
+		document.location = this.state.connectURL;
 	}
 
 	render() {

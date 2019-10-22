@@ -356,7 +356,7 @@ export const refreshAuthentication = async () => {
  */
 export const getReAuthURL = ( slug, status ) => {
 	const {
-		connectUrl,
+		connectURL,
 		adminRoot,
 	} = googlesitekit.admin;
 
@@ -393,7 +393,7 @@ export const getReAuthURL = ( slug, status ) => {
 	redirect = adminRoot + '?' + queryString;
 
 	return addQueryArgs(
-		connectUrl, {
+		connectURL, {
 			redirect,
 			status,
 		}

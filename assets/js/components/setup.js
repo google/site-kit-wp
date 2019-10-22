@@ -37,7 +37,7 @@ class Setup extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { connectUrl } = googlesitekit.admin;
+		const { connectURL } = googlesitekit.admin;
 
 		const {
 			isAuthenticated,
@@ -56,7 +56,7 @@ class Setup extends Component {
 			needReauthenticate,
 			hasSearchConsoleProperty,
 			hasSearchConsolePropertyFromTheStart: hasSearchConsoleProperty,
-			connectUrl,
+			connectURL,
 			errorMsg: '',
 			isSiteKitConnected,
 			completeSetup: false,
@@ -176,7 +176,7 @@ class Setup extends Component {
 			isVerified,
 			needReauthenticate,
 			hasSearchConsoleProperty,
-			connectUrl,
+			connectURL,
 			isSiteKitConnected,
 		} = this.state;
 
@@ -199,7 +199,7 @@ class Setup extends Component {
 		const WizardStepComponent = progressSteps[ currentStep ].Component;
 		const wizardStepComponent = <WizardStepComponent
 			siteConnectedSetup={ this.siteConnectedSetup }
-			connectUrl={ connectUrl }
+			connectURL={ connectURL }
 			siteVerificationSetup={ this.siteVerificationSetup }
 			searchConsoleSetup={ this.searchConsoleSetup }
 			completeSetup={ this.completeSetup }
@@ -272,7 +272,7 @@ class Setup extends Component {
 																href="#"
 																onClick={ () => {
 																	sendAnalyticsTrackingEvent( 'plugin_setup', 'signin_with_google' );
-																	document.location = connectUrl;
+																	document.location = connectURL;
 																} }
 															>{ __( 'Sign in with Google', 'google-site-kit' ) }</Button>
 														</div>
