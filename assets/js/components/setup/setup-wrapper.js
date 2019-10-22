@@ -142,13 +142,13 @@ class SetupWrapper extends Component {
 			args.slug = googlesitekit.setup.moduleToSetup;
 		}
 
-		const redirectUrl = getSiteKitAdminURL(
+		const redirectURL = getSiteKitAdminURL(
 			'googlesitekit-dashboard',
 			args,
 		);
 
 		delay( function() {
-			window.location.replace( redirectUrl );
+			window.location.replace( redirectURL );
 		}, 500, 'later' );
 	}
 

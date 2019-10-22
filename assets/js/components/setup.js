@@ -181,7 +181,7 @@ class Setup extends Component {
 		} = this.state;
 
 		if ( this.isSetupFinished() ) {
-			const redirectUrl = getSiteKitAdminURL(
+			const redirectURL = getSiteKitAdminURL(
 				'googlesitekit-dashboard',
 				{
 					notification: 'authentication_success',
@@ -189,7 +189,7 @@ class Setup extends Component {
 			);
 
 			delay( function() {
-				window.location.replace( redirectUrl );
+				window.location.replace( redirectURL );
 			}, 500, 'later' );
 		}
 
