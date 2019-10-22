@@ -47,7 +47,7 @@ class AnalyticsSetup extends Component {
 		const {
 			accountID,
 			internalWebPropertyID,
-			profileId,
+			profileID,
 			propertyId,
 			useSnippet,
 			ampClientIdOptIn,
@@ -67,7 +67,7 @@ class AnalyticsSetup extends Component {
 			profiles: [],
 			selectedAccount: accountID,
 			selectedProperty: propertyId,
-			selectedProfile: profileId,
+			selectedProfile: profileID,
 			selectedinternalWebProperty: internalWebPropertyID,
 			ampClientIdOptIn,
 			existingTag: false,
@@ -143,7 +143,7 @@ class AnalyticsSetup extends Component {
 		const settingsMapping = {
 			selectedAccount: 'accountID',
 			selectedProperty: 'propertyId',
-			selectedProfile: 'profileId',
+			selectedProfile: 'profileID',
 			selectedinternalWebProperty: 'internalWebPropertyID',
 			useSnippet: 'useSnippet',
 			ampClientIdOptIn: 'ampClientIdOptIn',
@@ -466,7 +466,7 @@ class AnalyticsSetup extends Component {
 		// Ensure that values of `0` are not treated as false-y, causing an error to
 		// appear.
 		// See: https://github.com/google/site-kit-wp/issues/398#issuecomment-540024321
-		const profileId = selectedProfile || ( profiles[ 0 ].id || profiles[ 0 ].id === 0 ? profiles[ 0 ].id.toString() : null );
+		const profileID = selectedProfile || ( profiles[ 0 ].id || profiles[ 0 ].id === 0 ? profiles[ 0 ].id.toString() : null );
 		const propertyId = selectedProperty || ( properties[ 0 ].id || properties[ 0 ].id === 0 ? properties[ 0 ].id.toString() : null );
 		let internalWebPropertyID;
 		if ( propertyId === '0' ) {
@@ -477,7 +477,7 @@ class AnalyticsSetup extends Component {
 
 		const analyticAccount = {
 			accountID: selectedAccount || accounts[ 0 ].id || null,
-			profileId,
+			profileID,
 			propertyId,
 			internalWebPropertyID,
 			useSnippet: useSnippet || false,
@@ -491,7 +491,7 @@ class AnalyticsSetup extends Component {
 			await this.getAccounts();
 
 			googlesitekit.modules.analytics.settings.accountID = response.accountID;
-			googlesitekit.modules.analytics.settings.profileId = response.profileId;
+			googlesitekit.modules.analytics.settings.profileID = response.profileID;
 			googlesitekit.modules.analytics.settings.propertyId = response.propertyId;
 			googlesitekit.modules.analytics.settings.internalWebPropertyID = response.internalWebPropertyID;
 			googlesitekit.modules.analytics.settings.useSnippet = response.useSnippet;
@@ -508,7 +508,7 @@ class AnalyticsSetup extends Component {
 				this.setState( {
 					isSaving: false,
 					selectedAccount: response.accountID,
-					selectedProfile: response.profileId,
+					selectedProfile: response.profileID,
 					selectedProperty: response.propertyId,
 					selectedinternalWebProperty: response.internalWebPropertyID,
 				} );

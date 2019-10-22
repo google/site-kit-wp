@@ -239,7 +239,7 @@ add_action( 'rest_api_init', function () {
 					'accountID'             => $request['accountID'],
 					'propertyId'            => $request['propertyId'] ?: time(), // fake a new property ID if empty
 					'internalWebPropertyID' => $request['internalWebPropertyID'],
-					'profileId'             => $request['profileId'] ?: time(),  // fake a new profile ID if empty
+					'profileID'             => $request['profileID'] ?: time(),  // fake a new profile ID if empty
 					'useSnippet'            => ! empty( $request['useSnippet'] ),
 					'ampClientIdOptIn'      => ! empty( $request['ampClientIdOptIn'] ),
 				);

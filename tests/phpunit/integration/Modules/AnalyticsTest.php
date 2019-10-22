@@ -88,15 +88,15 @@ class AnalyticsTest extends TestCase {
 		} );
 		$this->assertEquals( 'filtered-internal-web-property-id', get_option( Analytics::OPTION )['internalWebPropertyID'] );
 
-		// Test profileId can be overridden by non-empty value via filter
-		update_option( Analytics::OPTION, array( 'profileId' => 'saved-profile-id' ) );
-		$this->assertEquals( 'saved-profile-id', get_option( Analytics::OPTION )['profileId'] );
+		// Test profileID can be overridden by non-empty value via filter
+		update_option( Analytics::OPTION, array( 'profileID' => 'saved-profile-id' ) );
+		$this->assertEquals( 'saved-profile-id', get_option( Analytics::OPTION )['profileID'] );
 		add_filter( 'googlesitekit_analytics_view_id', '__return_empty_string' );
-		$this->assertEquals( 'saved-profile-id', get_option( Analytics::OPTION )['profileId'] );
+		$this->assertEquals( 'saved-profile-id', get_option( Analytics::OPTION )['profileID'] );
 		add_filter( 'googlesitekit_analytics_view_id', function () {
 			return 'filtered-profile-id';
 		} );
-		$this->assertEquals( 'filtered-profile-id', get_option( Analytics::OPTION )['profileId'] );
+		$this->assertEquals( 'filtered-profile-id', get_option( Analytics::OPTION )['profileID'] );
 	}
 
 	public function test_prepare_info_for_js() {
@@ -131,7 +131,7 @@ class AnalyticsTest extends TestCase {
 		$this->assertEquals( 'analytics', $info['slug'] );
 		$this->assertArrayHasKey( 'accountID', $info['settings'] );
 		$this->assertArrayHasKey( 'propertyId', $info['settings'] );
-		$this->assertArrayHasKey( 'profileId', $info['settings'] );
+		$this->assertArrayHasKey( 'profileID', $info['settings'] );
 		$this->assertArrayHasKey( 'internalWebPropertyID', $info['settings'] );
 		$this->assertArrayHasKey( 'useSnippet', $info['settings'] );
 		$this->assertArrayHasKey( 'ampClientIdOptIn', $info['settings'] );

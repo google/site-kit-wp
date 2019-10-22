@@ -6,7 +6,7 @@ import { wpApiFetch } from './wp-api-fetch';
 const defaultSettings = {
 	accountID: 100,
 	propertyId: 200,
-	profileId: 300,
+	profileID: 300,
 	internalWebPropertyID: 400,
 	useSnippet: true,
 	// ampClientIdOptIn: (bool)

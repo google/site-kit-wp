@@ -107,7 +107,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				 */
 				$profile_id = apply_filters( 'googlesitekit_analytics_view_id', '' );
 				if ( ! empty( $profile_id ) ) {
-					$option['profileId'] = $profile_id;
+					$option['profileID'] = $profile_id;
 				}
 
 				return $option;
@@ -476,7 +476,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						$defaults = array(
 							'accountID'             => '',
 							'propertyId'            => '',
-							'profileId'             => '',
+							'profileID'             => '',
 							'internalWebPropertyID' => '',
 						);
 						return array_intersect_key( array_merge( $defaults, (array) $this->options->get( self::OPTION ) ), $defaults );
@@ -500,10 +500,10 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'profile-id':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
-						if ( empty( $option['profileId'] ) ) {
+						if ( empty( $option['profileID'] ) ) {
 							return new WP_Error( 'profile_id_not_set', __( 'Analytics profile ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
-						return $option['profileId'];
+						return $option['profileID'];
 					};
 				case 'internal-web-property-id':
 					return function() {
@@ -531,7 +531,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					if (
 						empty( $connection['accountID'] ) ||
 						empty( $connection['internalWebPropertyID'] ) ||
-						empty( $connection['profileId'] )
+						empty( $connection['profileID'] )
 					) {
 						// This is needed to return and emulate the same error format from Analytics API.
 						return function() {
@@ -545,7 +545,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						};
 					}
 					$service = $this->get_service( 'analytics' );
-					return $service->management_goals->listManagementGoals( $connection['accountID'], $connection['propertyId'], $connection['profileId'] );
+					return $service->management_goals->listManagementGoals( $connection['accountID'], $connection['propertyId'], $connection['profileID'] );
 				case 'accounts-properties-profiles':
 					return $this->get_service( 'analytics' )->management_accounts->listManagementAccounts();
 				case 'properties-profiles':
@@ -725,7 +725,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'connection':
 					return function() use ( $data ) {
 						$option = (array) $this->options->get( self::OPTION );
-						$keys   = array( 'accountID', 'propertyId', 'profileId', 'internalWebPropertyID' );
+						$keys   = array( 'accountID', 'propertyId', 'profileID', 'internalWebPropertyID' );
 						foreach ( $keys as $key ) {
 							if ( isset( $data[ $key ] ) ) {
 								$option[ $key ] = $data[ $key ];
@@ -760,13 +760,13 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						return true;
 					};
 				case 'profile-id':
-					if ( ! isset( $data['profileId'] ) ) {
+					if ( ! isset( $data['profileID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileID' ), array( 'status' => 400 ) );
 					}
 					return function() use ( $data ) {
 						$option              = (array) $this->options->get( self::OPTION );
-						$option['profileId'] = $data['profileId'];
+						$option['profileID'] = $data['profileID'];
 						$this->options->set( self::OPTION, $option );
 						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 						return true;
@@ -818,9 +818,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalWebPropertyID' ), array( 'status' => 400 ) );
 					}
-					if ( ! isset( $data['profileId'] ) ) {
+					if ( ! isset( $data['profileID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileID' ), array( 'status' => 400 ) );
 					}
 					if ( ! isset( $data['useSnippet'] ) ) {
 						/* translators: %s: Missing parameter name */
@@ -859,7 +859,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							$internal_web_property_id = $data['internalWebPropertyID'];
 						}
 						$profile_id = null;
-						if ( '0' === $data['profileId'] ) {
+						if ( '0' === $data['profileID'] ) {
 							$client     = $this->get_client();
 							$orig_defer = $client->shouldDefer();
 							$client->setDefer( false );
@@ -881,7 +881,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							$client->setDefer( $orig_defer );
 							$profile_id = $profile->id;
 						} else {
-							$profile_id = $data['profileId'];
+							$profile_id = $data['profileID'];
 						}
 						// Set default profile for new property.
 						if ( $is_new_property ) {
@@ -909,7 +909,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'accountID'             => $data['accountID'],
 							'propertyId'            => $property_id,
 							'internalWebPropertyID' => $internal_web_property_id,
-							'profileId'             => $profile_id,
+							'profileID'             => $profile_id,
 							'useSnippet'            => ! empty( $data['useSnippet'] ),
 							'ampClientIdOptIn'      => ! empty( $data['ampClientIdOptIn'] ),
 						);
