@@ -252,8 +252,8 @@ class AnalyticsSetup extends Component {
 		try {
 			// Send existing tag data to get account.
 			const queryArgs = existingTagData ? {
-				existingAccountId: existingTagData.accountID,
-				existingPropertyId: existingTagData.propertyID,
+				existingAccountId: existingTagData.accountId,
+				existingPropertyId: existingTagData.propertyId,
 			} : {};
 
 			const responseData = await data.get( TYPE_MODULES, 'analytics', 'accounts-properties-profiles', queryArgs );
@@ -273,10 +273,10 @@ class AnalyticsSetup extends Component {
 				}
 
 				if ( matchedProperty ) {
-					selectedAccount = matchedProperty.accountID;
+					selectedAccount = matchedProperty.accountId;
 					selectedProperty = matchedProperty.id;
 					const matchedProfile = responseData.profiles.find( ( profile ) => {
-						return profile.accountID === selectedAccount;
+						return profile.accountId === selectedAccount;
 					} );
 					if ( matchedProfile ) {
 						selectedProfile = matchedProfile.id;
@@ -472,7 +472,7 @@ class AnalyticsSetup extends Component {
 		if ( propertyID === '0' ) {
 			internalWebPropertyID = '0';
 		} else {
-			internalWebPropertyID = selectedinternalWebProperty || ( properties[ 0 ].internalWebPropertyID || properties[ 0 ].internalWebPropertyID === 0 ? properties[ 0 ].internalWebPropertyID.toString() : null );
+			internalWebPropertyID = selectedinternalWebProperty || ( properties[ 0 ].internalWebPropertyId || properties[ 0 ].internalWebPropertyId === 0 ? properties[ 0 ].internalWebPropertyId.toString() : null );
 		}
 
 		const analyticAccount = {
