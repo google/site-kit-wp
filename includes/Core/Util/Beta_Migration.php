@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 
 /**
@@ -41,13 +42,6 @@ class Beta_Migration {
 	protected $options;
 
 	/**
-	 * Credentials instance.
-	 *
-	 * @var Credentials
-	 */
-	protected $credentials;
-
-	/**
 	 * OAuth Client instance.
 	 *
 	 * @var OAuth_Client
@@ -61,7 +55,6 @@ class Beta_Migration {
 	 */
 	public function __construct( Context $context ) {
 		$this->options      = new Options( $context );
-		$this->credentials  = new Credentials( $this->options );
 		$this->oauth_client = new OAuth_Client( $context );
 	}
 
@@ -109,10 +102,10 @@ class Beta_Migration {
 	 * so they should never be present in the option / Credentials anymore.
 	 */
 	public function migrate_old_credentials() {
-		$credentials = $this->credentials->get();
+		$credentials = ( new Encrypted_Options( $this->options ) )->get( Credentials::OPTION );
 
 		// Credentials can be filtered in so we must also check if there is a saved option present.
-		if ( $this->options->get( Credentials::OPTION ) && $credentials['oauth2_client_id'] && ! strpos( $credentials['oauth2_client_id'], '.apps.sitekit.withgoogle.com' ) ) {
+		if ( isset( $credentials['oauth2_client_id'] ) && ! strpos( $credentials['oauth2_client_id'], '.apps.sitekit.withgoogle.com' ) ) {
 			$this->options->delete( Credentials::OPTION );
 			$this->options->set( self::OPTION_IS_PRE_PROXY_INSTALL, 1 );
 		}
