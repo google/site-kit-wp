@@ -44,7 +44,7 @@ class OptimizeSetup extends Component {
 
 		const {
 			optimizeID,
-			ampClientIdOptIn,
+			ampClientIDOptIn,
 			ampExperimentJson,
 		} = googlesitekit.modules.optimize.settings;
 
@@ -66,7 +66,7 @@ class OptimizeSetup extends Component {
 			gtmUseSnippet,
 			errorCode: false,
 			errorMsg: '',
-			ampClientIdOptIn: ampClientIdOptIn || false,
+			ampClientIDOptIn: ampClientIDOptIn || false,
 			ampExperimentJson: ampExperimentJson || '',
 			ampExperimentJsonValidated: true,
 			OptimizeIDValidated: true,
@@ -234,7 +234,7 @@ class OptimizeSetup extends Component {
 	renderAMPSnippet() {
 		const {
 			analyticsUseSnippet,
-			ampClientIdOptIn,
+			ampClientIDOptIn,
 			ampExperimentJson,
 			ampExperimentJsonValidated,
 		} = this.state;
@@ -247,7 +247,7 @@ class OptimizeSetup extends Component {
 
 		return (
 			<Fragment>
-				{ ampClientIdOptIn &&
+				{ ampClientIDOptIn &&
 					<Fragment>
 						<p>{ __( 'Please input your AMP experiment settings in JSON format below.', 'google-site-kit' ) } <Link href="https://developers.google.com/optimize/devguides/amp-experiments" external inherit>{ __( 'Learn More.', 'google-site-kit' ) }</Link></p>
 						<TextField

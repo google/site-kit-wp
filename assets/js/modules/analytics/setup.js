@@ -50,7 +50,7 @@ class AnalyticsSetup extends Component {
 			profileID,
 			propertyID,
 			useSnippet,
-			ampClientIdOptIn,
+			ampClientIDOptIn,
 		} = googlesitekit.modules.analytics.settings;
 
 		this.state = {
@@ -69,7 +69,7 @@ class AnalyticsSetup extends Component {
 			selectedProperty: propertyID,
 			selectedProfile: profileID,
 			selectedinternalWebProperty: internalWebPropertyID,
-			ampClientIdOptIn,
+			ampClientIDOptIn,
 			existingTag: false,
 		};
 
@@ -146,7 +146,7 @@ class AnalyticsSetup extends Component {
 			selectedProfile: 'profileID',
 			selectedinternalWebProperty: 'internalWebPropertyID',
 			useSnippet: 'useSnippet',
-			ampClientIdOptIn: 'ampClientIdOptIn',
+			ampClientIDOptIn: 'ampClientIDOptIn',
 		};
 
 		toggleConfirmModuleSettings( 'analytics', settingsMapping, this.state );
@@ -452,7 +452,7 @@ class AnalyticsSetup extends Component {
 			accounts,
 			properties,
 			profiles,
-			ampClientIdOptIn,
+			ampClientIDOptIn,
 		} = this.state;
 
 		this.setState( {
@@ -481,7 +481,7 @@ class AnalyticsSetup extends Component {
 			propertyID,
 			internalWebPropertyID,
 			useSnippet: useSnippet || false,
-			ampClientIdOptIn: ampClientIdOptIn || false,
+			ampClientIDOptIn: ampClientIDOptIn || false,
 		};
 
 		try {
@@ -495,7 +495,7 @@ class AnalyticsSetup extends Component {
 			googlesitekit.modules.analytics.settings.propertyID = response.propertyID;
 			googlesitekit.modules.analytics.settings.internalWebPropertyID = response.internalWebPropertyID;
 			googlesitekit.modules.analytics.settings.useSnippet = response.useSnippet;
-			googlesitekit.modules.analytics.settings.ampClientIdOptIn = response.ampClientIdOptIn;
+			googlesitekit.modules.analytics.settings.ampClientIDOptIn = response.ampClientIDOptIn;
 
 			// Track event.
 			sendAnalyticsTrackingEvent( 'analytics_setup', 'analytics_configured' );
@@ -541,7 +541,7 @@ class AnalyticsSetup extends Component {
 
 	handleAMPClientIdSwitch( ) {
 		this.setState( {
-			ampClientIdOptIn: ! this.state.ampClientIdOptIn,
+			ampClientIDOptIn: ! this.state.ampClientIDOptIn,
 		} );
 	}
 
@@ -559,7 +559,7 @@ class AnalyticsSetup extends Component {
 		const {
 			useSnippet,
 			isSaving,
-			ampClientIdOptIn,
+			ampClientIDOptIn,
 			existingTag,
 		} = this.state;
 
@@ -623,14 +623,14 @@ class AnalyticsSetup extends Component {
 				{ useSnippet && ampEnabled &&
 					<div className="googlesitekit-setup-module__input">
 						<Switch
-							id="ampClientIdOptIn"
+							id="ampClientIDOptIn"
 							label={ __( 'Opt in AMP Client ID', 'google-site-kit' ) }
 							onClick={ this.handleAMPClientIdSwitch }
-							checked={ ampClientIdOptIn }
+							checked={ ampClientIDOptIn }
 							hideLabel={ false }
 						/>
 						<p>
-							{ ampClientIdOptIn ?
+							{ ampClientIDOptIn ?
 								__( 'Sessions will be combined across AMP/non-AMP pages.', 'google-site-kit' ) + ' ' :
 								__( 'Sessions will be tracked separately between AMP/non-AMP pages.', 'google-site-kit' ) + ' '
 							}

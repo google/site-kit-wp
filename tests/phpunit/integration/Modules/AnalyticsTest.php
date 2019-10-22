@@ -134,7 +134,7 @@ class AnalyticsTest extends TestCase {
 		$this->assertArrayHasKey( 'profileID', $info['settings'] );
 		$this->assertArrayHasKey( 'internalWebPropertyID', $info['settings'] );
 		$this->assertArrayHasKey( 'useSnippet', $info['settings'] );
-		$this->assertArrayHasKey( 'ampClientIdOptIn', $info['settings'] );
+		$this->assertArrayHasKey( 'ampClientIDOptIn', $info['settings'] );
 	}
 
 	public function test_is_connected() {
