@@ -526,7 +526,7 @@ final class Authentication {
 		}
 
 		$data['connectURL']    = esc_url_raw( $this->get_connect_url() );
-		$data['disconnectUrl'] = esc_url_raw( $this->get_disconnect_url() );
+		$data['disconnectURL'] = esc_url_raw( $this->get_disconnect_url() );
 
 		return $data;
 	}
