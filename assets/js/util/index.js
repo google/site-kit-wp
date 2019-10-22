@@ -362,7 +362,7 @@ export const getReAuthURL = ( slug, status ) => {
 
 	const { needReauthenticate } = window.googlesitekit.setup;
 
-	const { screenId } = googlesitekit.modules[ slug ];
+	const { screenID } = googlesitekit.modules[ slug ];
 
 	// Special case handling for PageSpeed Insights.
 	// TODO: Refactor this out.
@@ -375,7 +375,7 @@ export const getReAuthURL = ( slug, status ) => {
 		adminRoot,
 		{
 			// If the module has a submenu page, and is being activated, redirect back to the module page.
-			page: ( slug && status && screenId ) ? screenId : 'googlesitekit-dashboard',
+			page: ( slug && status && screenID ) ? screenID : 'googlesitekit-dashboard',
 			slug,
 			reAuth: status,
 			...pageSpeedQueryArgs,

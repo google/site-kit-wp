@@ -119,7 +119,7 @@ class AnalyticsTest extends TestCase {
 				'required',
 				'autoActivate',
 				'internal',
-				'screenId',
+				'screenID',
 				'hasSettings',
 				'provides',
 				'settings',

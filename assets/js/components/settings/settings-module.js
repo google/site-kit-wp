@@ -177,7 +177,7 @@ class SettingsModule extends Component {
 			autoActivate,
 			provides,
 			isSaving,
-			screenId,
+			screenID,
 			error,
 		} = this.props;
 
@@ -321,7 +321,7 @@ class SettingsModule extends Component {
 									{
 										hasSettings && ! setupComplete &&
 											<ModuleSetupIncomplete
-												screenId={ screenId }
+												screenID={ screenID }
 												slug={ slug }
 											/>
 									}

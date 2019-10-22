@@ -91,7 +91,7 @@ class AdSenseTest extends TestCase {
 				'required',
 				'autoActivate',
 				'internal',
-				'screenId',
+				'screenID',
 				'hasSettings',
 				'provides',
 				'settings',
