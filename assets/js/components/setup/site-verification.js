@@ -90,8 +90,8 @@ class SiteVerification extends Component {
 				let message = err.message;
 
 				if ( validateJSON( err.message ) ) {
-					const errorJson = JSON.parse( err.message );
-					message = errorJson.error.message || err.message;
+					const errorJSON = JSON.parse( err.message );
+					message = errorJSON.error.message || err.message;
 				}
 
 				setErrorMessage( message );
@@ -138,8 +138,8 @@ class SiteVerification extends Component {
 			let message = err.message;
 
 			if ( validateJSON( err.message ) ) {
-				const errorJson = JSON.parse( err.message );
-				message = errorJson.error.message || err.message;
+				const errorJSON = JSON.parse( err.message );
+				message = errorJSON.error.message || err.message;
 			}
 
 			setErrorMessage( message );
