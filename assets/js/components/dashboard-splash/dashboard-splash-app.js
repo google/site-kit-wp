@@ -85,7 +85,7 @@ class DashboardSplashApp extends Component {
 		}
 
 		this.openAuthenticationSetupWizard = this.openAuthenticationSetupWizard.bind( this );
-		this.gotoConnectUrl = this.gotoConnectUrl.bind( this );
+		this.gotoConnectURL = this.gotoConnectURL.bind( this );
 	}
 
 	openAuthenticationSetupWizard() {
@@ -96,7 +96,7 @@ class DashboardSplashApp extends Component {
 		} );
 	}
 
-	gotoConnectUrl() {
+	gotoConnectURL() {
 		this.setState( {
 			showAuthenticationInstructionsWizard: false,
 			showAuthenticationSetupWizard: false,
@@ -124,7 +124,7 @@ class DashboardSplashApp extends Component {
 					introDescription = __( 'You’re one step closer to connecting Google services to your WordPress site.', 'google-site-kit' );
 					outroDescription = __( 'Connecting your account only takes a few minutes. Faster than brewing a cup of coffee.', 'google-site-kit' );
 					buttonLabel = __( 'Connect your account', 'google-site-kit' );
-					onButtonClick = this.gotoConnectUrl;
+					onButtonClick = this.gotoConnectURL;
 					break;
 				case SETUP:
 					introDescription = __( 'You’re one step closer to connecting Google services to your WordPress site.', 'google-site-kit' );
