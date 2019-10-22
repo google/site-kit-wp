@@ -46,7 +46,7 @@ class SearchConsole extends Component {
 			errorMsg: '',
 		};
 
-		this.handleUrlSelect = this.handleUrlSelect.bind( this );
+		this.handleURLSelect = this.handleURLSelect.bind( this );
 		this.insertPropertyToSearchConsole = this.insertPropertyToSearchConsole.bind( this );
 		this.submitPropertyEventHandler = this.submitPropertyEventHandler.bind( this );
 	}
@@ -164,7 +164,7 @@ class SearchConsole extends Component {
 		} )();
 	}
 
-	handleUrlSelect( index, item ) {
+	handleURLSelect( index, item ) {
 		this.setState( {
 			selectedURL: item.getAttribute( 'data-value' ),
 		} );
@@ -200,7 +200,7 @@ class SearchConsole extends Component {
 						name="siteProperty"
 						label={ __( 'Choose URL', 'google-site-kit' ) }
 						outlined
-						onEnhancedChange={ this.handleUrlSelect }
+						onEnhancedChange={ this.handleURLSelect }
 						options={ sitesList }
 						value={ selectedURL }
 					/>
