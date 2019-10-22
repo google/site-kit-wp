@@ -55,15 +55,6 @@ class FakeModule extends Module {
 	}
 
 	/**
-	 * Deactivation handler.
-	 */
-	public function on_deactivation() {
-		if ( $this->on_deactivation_callback ) {
-			call_user_func_array( $this->on_deactivation_callback, func_get_args() );
-		}
-	}
-
-	/**
 	 * Setter for force activation property.
 	 *
 	 * @param bool $value New value
