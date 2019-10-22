@@ -124,7 +124,7 @@ const setupSettings = () => {
 				timezone: 'America/Los_Angeles',
 				type: 'WEB',
 				updated: '2019-01-25T20:15:27.426Z',
-				webPropertyId: 'UA-12345678-3',
+				webPropertyID: 'UA-12345678-3',
 				websiteUrl: 'https://www.testwebsite.com',
 				permissions: {
 					effective: [

@@ -139,7 +139,7 @@ add_action( 'rest_api_init', function () {
 			'kind'                  => 'analytics#profile',
 			'name'                  => 'Test Profile X',
 			'type'                  => 'WEB',
-			'webPropertyId'         => PROPERTY_ID_X,
+			'webPropertyID'         => PROPERTY_ID_X,
 			'internalWebPropertyID' => INTERNAL_PROPERTY_ID_X,
 			'websiteUrl'            => get_reference_url(),
 			'permissions'           => array(
@@ -152,7 +152,7 @@ add_action( 'rest_api_init', function () {
 			'kind'                  => 'analytics#profile',
 			'name'                  => 'Test Profile Y',
 			'type'                  => 'WEB',
-			'webPropertyId'         => PROPERTY_ID_Y,
+			'webPropertyID'         => PROPERTY_ID_Y,
 			'internalWebPropertyID' => INTERNAL_PROPERTY_ID_Y,
 			'websiteUrl'            => 'https://example.com',
 			'permissions'           => array(
@@ -165,7 +165,7 @@ add_action( 'rest_api_init', function () {
 			'kind'                  => 'analytics#profile',
 			'name'                  => 'Test Profile Z',
 			'type'                  => 'WEB',
-			'webPropertyId'         => PROPERTY_ID_Z,
+			'webPropertyID'         => PROPERTY_ID_Z,
 			'internalWebPropertyID' => INTERNAL_PROPERTY_ID_Z,
 			'websiteUrl'            => 'https://z.example.com',
 			'permissions'           => array(
