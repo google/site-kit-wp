@@ -232,9 +232,6 @@ class OAuth_ClientTest extends TestCase {
 
 		$_GET['code'] = 'test-code';
 		$this->fake_authentication();
-		$credentials_mock = $this->getMock( 'MockClass', array( 'has' ) );
-		$credentials_mock->method( 'has' )->willReturn( true );
-		$this->force_set_property( $client, 'credentials', $credentials_mock );
 		// If all goes smooth, we expect to be redirected to $success_redirect
 		$success_redirect = admin_url( 'success-redirect' );
 		$client->get_authentication_url( $success_redirect );
