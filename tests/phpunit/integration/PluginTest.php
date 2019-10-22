@@ -50,10 +50,7 @@ class PluginTest extends TestCase {
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'login_head' );
 		$GLOBALS['wp_actions'] = [];
-
-		wp_schedule_event( time(), 'daily', 'googlesitekit_cron_daily', array( 'interval' => 'daily' ) );
-		wp_schedule_event( time(), 'hourly', 'googlesitekit_cron_hourly', array( 'interval' => 'hourly' ) );
-
+		
 		$plugin->register();
 
 		$this->assertActionRendersGeneratorTag( 'wp_head' );
