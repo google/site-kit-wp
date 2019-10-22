@@ -155,7 +155,7 @@ class SetupWrapper extends Component {
 	render() {
 		const { currentModule } = this.state;
 		const setupModule = SetupWrapper.loadSetupModule( currentModule );
-		const settingsPageUrl = getSiteKitAdminURL(
+		const settingsPageURL = getSiteKitAdminURL(
 			'googlesitekit-settings',
 			{}
 		);
@@ -198,7 +198,7 @@ class SetupWrapper extends Component {
 													">
 													<Link
 														id={ `setup-${ currentModule }-cancel` }
-														href={ settingsPageUrl }
+														href={ settingsPageURL }
 													>{ __( 'Cancel', 'google-site-kit' ) }</Link>
 												</div>
 												<div className="
