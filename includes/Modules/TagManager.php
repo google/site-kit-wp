@@ -317,6 +317,23 @@ final class TagManager extends Module implements Module_With_Scopes {
 							}
 							$this->options->set( self::OPTION, $option );
 						}
+
+						// TODO: Remove this at some point (migration of old 'accountId' option).
+						if ( isset( $option['accountId'] ) ) {
+							if ( ! isset( $option['accountID'] ) ) {
+								$option['accountID'] = $option['accountId'];
+							}
+							unset( $option['accountId'] );
+						}
+
+						// TODO: Remove this at some point (migration of old 'containerId' option).
+						if ( isset( $option['containerId'] ) ) {
+							if ( ! isset( $option['containerID'] ) ) {
+								$option['containerID'] = $option['containerId'];
+							}
+							unset( $option['containerId'] );
+						}
+
 						$defaults = array(
 							'accountID'   => '',
 							'containerID' => '',
@@ -334,6 +351,15 @@ final class TagManager extends Module implements Module_With_Scopes {
 							unset( $option['account_id'] );
 							$this->options->set( self::OPTION, $option );
 						}
+
+						// TODO: Remove this at some point (migration of old 'accountId' option).
+						if ( isset( $option['accountId'] ) ) {
+							if ( ! isset( $option['accountID'] ) ) {
+								$option['accountID'] = $option['accountId'];
+							}
+							unset( $option['accountId'] );
+						}
+
 						if ( empty( $option['accountID'] ) ) {
 							return new WP_Error( 'account_id_not_set', __( 'Tag Manager account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
@@ -350,6 +376,15 @@ final class TagManager extends Module implements Module_With_Scopes {
 							unset( $option['container_id'] );
 							$this->options->set( self::OPTION, $option );
 						}
+
+						// TODO: Remove this at some point (migration of old 'containerId' option).
+						if ( isset( $option['containerId'] ) ) {
+							if ( ! isset( $option['containerID'] ) ) {
+								$option['containerID'] = $option['containerId'];
+							}
+							unset( $option['containerId'] );
+						}
+
 						if ( empty( $option['containerID'] ) ) {
 							return new WP_Error( 'container_id_not_set', __( 'Tag Manager container ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
