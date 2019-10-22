@@ -223,6 +223,15 @@ final class Optimize extends Module {
 							unset( $option['optimize_id'] );
 							$this->options->set( self::OPTION, $option );
 						}
+
+						// TODO: Remove this at some point (migration of old 'optimizeId' option).
+						if ( isset( $option['optimizeId'] ) ) {
+							if ( ! isset( $option['optimizeID'] ) ) {
+								$option['optimizeID'] = $option['optimizeId'];
+							}
+							unset( $option['optimizeId'] );
+						}
+
 						if ( empty( $option['optimizeID'] ) ) {
 							return new WP_Error( 'optimize_id_not_set', __( 'Optimize ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
@@ -231,6 +240,15 @@ final class Optimize extends Module {
 				case 'amp-client-id-opt-in': // Get this from Analytics, read-only from here.
 					return function() {
 						$option = (array) $this->options->get( Analytics::OPTION );
+
+						// TODO: Remove this at some point (migration of old 'ampClientIdOptIn' option).
+						if ( isset( $option['ampClientIdOptIn'] ) ) {
+							if ( ! isset( $option['ampClientIDOptIn'] ) ) {
+								$option['ampClientIDOptIn'] = $option['ampClientIdOptIn'];
+							}
+							unset( $option['ampClientIdOptIn'] );
+						}
+
 						if ( ! isset( $option['ampClientIDOptIn'] ) ) {
 							return true; // Default to true.
 						}
@@ -247,6 +265,15 @@ final class Optimize extends Module {
 							unset( $option['AMPExperimentJson'] );
 							$this->options->set( self::OPTION, $option );
 						}
+
+						// TODO: Remove this at some point (migration of old 'ampExperimentJson' option).
+						if ( isset( $option['ampExperimentJson'] ) ) {
+							if ( ! isset( $option['ampExperimentJSON'] ) ) {
+								$option['ampExperimentJSON'] = $option['ampExperimentJson'];
+							}
+							unset( $option['ampExperimentJson'] );
+						}
+
 						if ( empty( $option['ampExperimentJSON'] ) ) {
 							return new WP_Error( 'amp_experiment_json_not_set', __( 'AMP experiment JSON not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
