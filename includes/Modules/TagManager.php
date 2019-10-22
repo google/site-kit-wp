@@ -304,8 +304,8 @@ final class TagManager extends Module implements Module_With_Scopes {
 						// TODO: Remove this at some point (migration of old options).
 						if ( isset( $option['account_id'] ) || isset( $option['container_id'] ) ) {
 							if ( isset( $option['account_id'] ) ) {
-								if ( ! isset( $option['accountId'] ) ) {
-									$option['accountId'] = $option['account_id'];
+								if ( ! isset( $option['accountID'] ) ) {
+									$option['accountID'] = $option['account_id'];
 								}
 								unset( $option['account_id'] );
 							}
@@ -318,7 +318,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 							$this->options->set( self::OPTION, $option );
 						}
 						$defaults = array(
-							'accountId'   => '',
+							'accountID'   => '',
 							'containerId' => '',
 						);
 						return array_intersect_key( array_merge( $defaults, $option ), $defaults );
@@ -328,16 +328,16 @@ final class TagManager extends Module implements Module_With_Scopes {
 						$option = (array) $this->options->get( self::OPTION );
 						// TODO: Remove this at some point (migration of old option).
 						if ( isset( $option['account_id'] ) ) {
-							if ( ! isset( $option['accountId'] ) ) {
-								$option['accountId'] = $option['account_id'];
+							if ( ! isset( $option['accountID'] ) ) {
+								$option['accountID'] = $option['account_id'];
 							}
 							unset( $option['account_id'] );
 							$this->options->set( self::OPTION, $option );
 						}
-						if ( empty( $option['accountId'] ) ) {
+						if ( empty( $option['accountID'] ) ) {
 							return new WP_Error( 'account_id_not_set', __( 'Tag Manager account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
-						return $option['accountId'];
+						return $option['accountID'];
 					};
 				case 'container-id':
 					return function() {
@@ -356,27 +356,27 @@ final class TagManager extends Module implements Module_With_Scopes {
 						return $option['containerId'];
 					};
 				case 'accounts-containers':
-					if ( ! empty( $data['accountId'] ) ) {
+					if ( ! empty( $data['accountID'] ) ) {
 						$this->_list_accounts_data = $data;
 					}
 					$service = $this->get_service( 'tagmanager' );
 					return $service->accounts->listAccounts();
 				case 'containers':
-					if ( ! isset( $data['accountId'] ) ) {
+					if ( ! isset( $data['accountID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 					}
-					$this->_containers_account_id = $data['accountId'];
+					$this->_containers_account_id = $data['accountID'];
 
 					$service = $this->get_service( 'tagmanager' );
-					return $service->accounts_containers->listAccountsContainers( "accounts/{$data['accountId']}" );
+					return $service->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
 				case 'connection':
 					return function() use ( $data ) {
 						$option = (array) $this->options->get( self::OPTION );
-						$keys   = array( 'accountId', 'containerId' );
+						$keys   = array( 'accountID', 'containerId' );
 						foreach ( $keys as $key ) {
 							if ( isset( $data[ $key ] ) ) {
 								$option[ $key ] = $data[ $key ];
@@ -386,13 +386,13 @@ final class TagManager extends Module implements Module_With_Scopes {
 						return true;
 					};
 				case 'account-id':
-					if ( ! isset( $data['accountId'] ) ) {
+					if ( ! isset( $data['accountID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 					}
 					return function() use ( $data ) {
 						$option              = (array) $this->options->get( self::OPTION );
-						$option['accountId'] = $data['accountId'];
+						$option['accountID'] = $data['accountID'];
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
@@ -408,9 +408,9 @@ final class TagManager extends Module implements Module_With_Scopes {
 						return true;
 					};
 				case 'settings':
-					if ( ! isset( $data['accountId'] ) ) {
+					if ( ! isset( $data['accountID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 					}
 					if ( ! isset( $data['containerId'] ) ) {
 						/* translators: %s: Missing parameter name */
@@ -418,7 +418,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 					}
 					return function() use ( $data ) {
 						if ( '0' === $data['containerId'] ) {
-							$response = $this->create_container( $data['accountId'] );
+							$response = $this->create_container( $data['accountID'] );
 							if ( is_wp_error( $response ) ) {
 								return $response;
 							}
@@ -426,7 +426,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 							$data['containerId'] = $response;
 						}
 						$option = array(
-							'accountId'   => $data['accountId'],
+							'accountID'   => $data['accountID'],
 							'containerId' => $data['containerId'],
 						);
 						$this->options->set( self::OPTION, $option );
@@ -496,14 +496,14 @@ final class TagManager extends Module implements Module_With_Scopes {
 					if ( 0 === count( $response['accounts'] ) ) {
 						return $response;
 					}
-					if ( is_array( $this->_list_accounts_data ) && isset( $this->_list_accounts_data['accountId'] ) ) {
-						$account_id                = $this->_list_accounts_data['accountId'];
+					if ( is_array( $this->_list_accounts_data ) && isset( $this->_list_accounts_data['accountID'] ) ) {
+						$account_id                = $this->_list_accounts_data['accountID'];
 						$this->_list_accounts_data = null;
 					} else {
 						$account_id = $response['accounts'][0]->getAccountId();
 					}
 
-					$containers = $this->get_data( 'containers', array( 'accountId' => $account_id ) );
+					$containers = $this->get_data( 'containers', array( 'accountID' => $account_id ) );
 
 					if ( is_wp_error( $containers ) ) {
 						return $response;
@@ -526,7 +526,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 						if ( is_wp_error( $new_container ) ) {
 							return new WP_Error( 'google_tagmanager_container_empty', __( 'No Google Tag Manager Containers Found.', 'google-site-kit' ), array( 'status' => 500 ) );
 						}
-						return $this->get_data( 'containers', array( 'accountId' => $account_id ) );
+						return $this->get_data( 'containers', array( 'accountID' => $account_id ) );
 					}
 					return $response;
 			}

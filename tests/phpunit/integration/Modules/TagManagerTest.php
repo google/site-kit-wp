@@ -95,7 +95,7 @@ class TagManagerTest extends TestCase {
 		);
 
 		$this->assertEquals( 'tagmanager', $info['slug'] );
-		$this->assertArrayHasKey( 'accountId', $info['settings'] );
+		$this->assertArrayHasKey( 'accountID', $info['settings'] );
 		$this->assertArrayHasKey( 'containerId', $info['settings'] );
 	}
 

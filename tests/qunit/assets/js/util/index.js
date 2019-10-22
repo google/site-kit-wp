@@ -49,18 +49,18 @@ valuesToTest.forEach( function( itemToTest ) {
 		assert.equal ( '', '', '' );
 		window.googlesitekit.modules = window.googlesitekit.modules || {};
 		window.googlesitekit.modules.analytics = {
-			settings: { accountId: '12345678' },
+			settings: { accountID: '12345678' },
 			setupComplete: true,
 			confirm: true,
 		};
 
 		window.googlesitekit.modules.adsense = {
-			settings: { accountId: '12345678' },
+			settings: { accountID: '12345678' },
 			setupComplete: false,
 			confirm: true,
 		};
 
-		var value = testFunctions.toggleConfirmModuleSettings( itemToTest.moduleSlug, { selectedAccount: 'accountId' }, itemToTest.settingsState, true );
+		var value = testFunctions.toggleConfirmModuleSettings( itemToTest.moduleSlug, { selectedAccount: 'accountID' }, itemToTest.settingsState, true );
 		assert.equal( value, itemToTest.expected, 'Expect toggleConfirmModuleSettings( \'' + itemToTest.moduleSlug + '\' ) to return ' + itemToTest.expected );
 	} );
 } );

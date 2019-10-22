@@ -45,7 +45,7 @@ class AnalyticsSetup extends Component {
 	constructor( props ) {
 		super( props );
 		const {
-			accountId,
+			accountID,
 			internalWebPropertyId,
 			profileId,
 			propertyId,
@@ -65,7 +65,7 @@ class AnalyticsSetup extends Component {
 			accounts: [],
 			properties: [],
 			profiles: [],
-			selectedAccount: accountId,
+			selectedAccount: accountID,
 			selectedProperty: propertyId,
 			selectedProfile: profileId,
 			selectedinternalWebProperty: internalWebPropertyId,
@@ -141,7 +141,7 @@ class AnalyticsSetup extends Component {
 		}
 
 		const settingsMapping = {
-			selectedAccount: 'accountId',
+			selectedAccount: 'accountID',
 			selectedProperty: 'propertyId',
 			selectedProfile: 'profileId',
 			selectedinternalWebProperty: 'internalWebPropertyId',
@@ -252,7 +252,7 @@ class AnalyticsSetup extends Component {
 		try {
 			// Send existing tag data to get account.
 			const queryArgs = existingTagData ? {
-				existingAccountId: existingTagData.accountId,
+				existingAccountId: existingTagData.accountID,
 				existingPropertyId: existingTagData.propertyId,
 			} : {};
 
@@ -273,10 +273,10 @@ class AnalyticsSetup extends Component {
 				}
 
 				if ( matchedProperty ) {
-					selectedAccount = matchedProperty.accountId;
+					selectedAccount = matchedProperty.accountID;
 					selectedProperty = matchedProperty.id;
 					const matchedProfile = responseData.profiles.find( ( profile ) => {
-						return profile.accountId === selectedAccount;
+						return profile.accountID === selectedAccount;
 					} );
 					if ( matchedProfile ) {
 						selectedProfile = matchedProfile.id;
@@ -372,7 +372,7 @@ class AnalyticsSetup extends Component {
 	async processAccountChange( selectValue ) {
 		try {
 			const queryArgs = {
-				accountId: selectValue,
+				accountID: selectValue,
 			};
 
 			const responseData = await data.get( TYPE_MODULES, 'analytics', 'properties-profiles', queryArgs );
@@ -412,7 +412,7 @@ class AnalyticsSetup extends Component {
 
 		try {
 			const queryArgs = {
-				accountId: selectedAccount,
+				accountID: selectedAccount,
 				propertyId: selectValue,
 			};
 
@@ -476,7 +476,7 @@ class AnalyticsSetup extends Component {
 		}
 
 		const analyticAccount = {
-			accountId: selectedAccount || accounts[ 0 ].id || null,
+			accountID: selectedAccount || accounts[ 0 ].id || null,
 			profileId,
 			propertyId,
 			internalWebPropertyId,
@@ -490,7 +490,7 @@ class AnalyticsSetup extends Component {
 			data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 			await this.getAccounts();
 
-			googlesitekit.modules.analytics.settings.accountId = response.accountId;
+			googlesitekit.modules.analytics.settings.accountID = response.accountID;
 			googlesitekit.modules.analytics.settings.profileId = response.profileId;
 			googlesitekit.modules.analytics.settings.propertyId = response.propertyId;
 			googlesitekit.modules.analytics.settings.internalWebPropertyId = response.internalWebPropertyId;
@@ -507,7 +507,7 @@ class AnalyticsSetup extends Component {
 			if ( this._isMounted ) {
 				this.setState( {
 					isSaving: false,
-					selectedAccount: response.accountId,
+					selectedAccount: response.accountID,
 					selectedProfile: response.profileId,
 					selectedProperty: response.propertyId,
 					selectedinternalWebProperty: response.internalWebPropertyId,

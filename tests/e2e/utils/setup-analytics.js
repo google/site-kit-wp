@@ -4,7 +4,7 @@
 import { wpApiFetch } from './wp-api-fetch';
 
 const defaultSettings = {
-	accountId: 100,
+	accountID: 100,
 	propertyId: 200,
 	profileId: 300,
 	internalWebPropertyId: 400,

@@ -66,7 +66,7 @@ const setupSettings = () => {
 		],
 		properties: [
 			{
-				accountId: '12345678',
+				accountID: '12345678',
 				created: '2016-12-06T14:48:54.188Z',
 				dataRetentionResetOnNewActivity: true,
 				dataRetentionTtl: 'MONTHS_26',
@@ -103,7 +103,7 @@ const setupSettings = () => {
 		],
 		profiles: [
 			{
-				accountId: '12345678',
+				accountID: '12345678',
 				botFilteringEnabled: false,
 				created: '2016-12-06T14:48:54.188Z',
 				currency: 'USD',

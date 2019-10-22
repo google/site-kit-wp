@@ -177,8 +177,8 @@ export async function getAdSenseAccountStatus( statusUpdateCallback, existingTag
 				// Find accounts with a matching URL channel.
 				statusUpdateCallback( __( 'Searching for domain…', 'google-site-kit' ) );
 				for ( const account of accounts ) {
-					const accountId = account.id;
-					const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { clientID: accountId } ).then( ( res ) => res ).catch( ( e ) => e );
+					const accountID = account.id;
+					const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { clientID: accountID } ).then( ( res ) => res ).catch( ( e ) => e );
 					const parsedUrl = new URL( googlesitekit.admin.siteURL );
 					const matches = urlchannels && urlchannels.length ? filter( urlchannels, { urlPattern: parsedUrl.hostname } ) : [];
 
@@ -198,7 +198,7 @@ export async function getAdSenseAccountStatus( statusUpdateCallback, existingTag
 
 			statusUpdateCallback( __( 'Account found, checking account status…', 'google-site-kit' ) );
 
-			const alertsResults = await data.get( TYPE_MODULES, 'adsense', 'alerts', { accountId: id } ).then( ( res ) => res ).catch( ( e ) => e );
+			const alertsResults = await data.get( TYPE_MODULES, 'adsense', 'alerts', { accountID: id } ).then( ( res ) => res ).catch( ( e ) => e );
 			const alerts = alertsResults.data && ( ! alertsResults.data.status || 200 === alertsResults.data.status ) ? alertsResults.data : alertsResults;
 			const hasAlertsError = alerts && alerts.message && alerts.message.error;
 

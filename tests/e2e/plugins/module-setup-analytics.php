@@ -58,7 +58,7 @@ function filter_by_account_id( $items, $account_id ) {
 		array_filter(
 			$items,
 			function ( $item ) use ( $account_id ) {
-				return $item['accountId'] === $account_id;
+				return $item['accountID'] === $account_id;
 			}
 		)
 	);
@@ -96,7 +96,7 @@ add_action( 'rest_api_init', function () {
 	);
 	$properties = array(
 		array(
-			'accountId'             => ACCOUNT_ID_A,
+			'accountID'             => ACCOUNT_ID_A,
 			'id'                    => PROPERTY_ID_X,
 			'internalWebPropertyId' => INTERNAL_PROPERTY_ID_X,
 			'kind'                  => 'analytics#webproperty',
@@ -108,7 +108,7 @@ add_action( 'rest_api_init', function () {
 			),
 		),
 		array(
-			'accountId'             => ACCOUNT_ID_B,
+			'accountID'             => ACCOUNT_ID_B,
 			'id'                    => PROPERTY_ID_Y,
 			'internalWebPropertyId' => INTERNAL_PROPERTY_ID_Y,
 			'kind'                  => 'analytics#webproperty',
@@ -120,7 +120,7 @@ add_action( 'rest_api_init', function () {
 			),
 		),
 		array(
-			'accountId'             => ACCOUNT_ID_B,
+			'accountID'             => ACCOUNT_ID_B,
 			'id'                    => PROPERTY_ID_Z,
 			'internalWebPropertyId' => INTERNAL_PROPERTY_ID_Z,
 			'kind'                  => 'analytics#webproperty',
@@ -134,7 +134,7 @@ add_action( 'rest_api_init', function () {
 	);
 	$profiles   = array(
 		array(
-			'accountId'             => ACCOUNT_ID_A,
+			'accountID'             => ACCOUNT_ID_A,
 			'id'                    => PROFILE_ID_X,
 			'kind'                  => 'analytics#profile',
 			'name'                  => 'Test Profile X',
@@ -147,7 +147,7 @@ add_action( 'rest_api_init', function () {
 			),
 		),
 		array(
-			'accountId'             => ACCOUNT_ID_B,
+			'accountID'             => ACCOUNT_ID_B,
 			'id'                    => PROFILE_ID_Y,
 			'kind'                  => 'analytics#profile',
 			'name'                  => 'Test Profile Y',
@@ -160,7 +160,7 @@ add_action( 'rest_api_init', function () {
 			),
 		),
 		array(
-			'accountId'             => ACCOUNT_ID_B,
+			'accountID'             => ACCOUNT_ID_B,
 			'id'                    => PROFILE_ID_Z,
 			'kind'                  => 'analytics#profile',
 			'name'                  => 'Test Profile Z',
@@ -205,8 +205,8 @@ add_action( 'rest_api_init', function () {
 		array(
 			'callback' => function ( \WP_REST_Request $request ) use ( $properties, $profiles ) {
 				return array(
-					'properties' => filter_by_account_id( $properties, $request->get_param( 'accountId' ) ),
-					'profiles'   => filter_by_account_id( $profiles, $request->get_param( 'accountId' ) ),
+					'properties' => filter_by_account_id( $properties, $request->get_param( 'accountID' ) ),
+					'profiles'   => filter_by_account_id( $profiles, $request->get_param( 'accountID' ) ),
 				);
 			}
 		),
@@ -219,7 +219,7 @@ add_action( 'rest_api_init', function () {
 		'modules/analytics/data/profiles',
 		array(
 			'callback' => function ( \WP_REST_Request $request ) use ( $profiles ) {
-				$profiles = filter_by_account_id( $profiles, $request->get_param( 'accountId' ) );
+				$profiles = filter_by_account_id( $profiles, $request->get_param( 'accountID' ) );
 				$profiles = filter_by_property_id( $profiles, $request->get_param( 'propertyId' ) );
 
 				return $profiles;
@@ -236,7 +236,7 @@ add_action( 'rest_api_init', function () {
 			'methods' => 'POST',
 			'callback' => function ( \WP_REST_Request $request ) use ( $profiles ) {
 				$option = array(
-					'accountId'             => $request['accountId'],
+					'accountID'             => $request['accountID'],
 					'propertyId'            => $request['propertyId'] ?: time(), // fake a new property ID if empty
 					'internalWebPropertyId' => $request['internalWebPropertyId'],
 					'profileId'             => $request['profileId'] ?: time(),  // fake a new profile ID if empty

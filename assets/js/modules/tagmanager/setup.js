@@ -40,7 +40,7 @@ class TagmanagerSetup extends Component {
 		super( props );
 
 		const {
-			accountId,
+			accountID,
 			containerId,
 		} = googlesitekit.modules.tagmanager.settings;
 
@@ -51,7 +51,7 @@ class TagmanagerSetup extends Component {
 			errorCode: false,
 			errorMsg: '',
 			refetch: false,
-			selectedAccount: accountId ? accountId : 0,
+			selectedAccount: accountID ? accountID : 0,
 			selectedContainer: containerId ? containerId : 0,
 			containersLoading: false,
 		};
@@ -126,7 +126,7 @@ class TagmanagerSetup extends Component {
 			} = this.state;
 
 			const queryArgs = {
-				accountId: selectedAccount,
+				accountID: selectedAccount,
 			};
 
 			let errorCode = false;
@@ -142,7 +142,7 @@ class TagmanagerSetup extends Component {
 			}
 
 			// Verify if user has access to the selected account.
-			if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.accountId === selectedAccount ) ) {
+			if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.accountID === selectedAccount ) ) {
 				data.invalidateCacheGroup( TYPE_MODULES, 'tagmanager', 'accounts-containers' );
 				errorCode = 'insufficientPermissions';
 				errorMsg = __( 'You currently don\'t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.', 'google-site-kit' );
@@ -155,13 +155,13 @@ class TagmanagerSetup extends Component {
 			responseData.containers.push( chooseContainer );
 
 			if ( this._isMounted ) {
-				const accountId = responseData.accounts[ 0 ] ? responseData.accounts[ 0 ].accountId : null;
+				const accountID = responseData.accounts[ 0 ] ? responseData.accounts[ 0 ].accountID : null;
 				const publicId = responseData.containers[ 0 ] ? responseData.containers[ 0 ].publicId : null;
 
 				this.setState( {
 					isLoading: false,
 					accounts: responseData.accounts,
-					selectedAccount: ( selectedAccount ) ? selectedAccount : accountId,
+					selectedAccount: ( selectedAccount ) ? selectedAccount : accountID,
 					containers: responseData.containers,
 					selectedContainer: ( selectedContainer ) ? selectedContainer : publicId,
 					refetch: false,
@@ -189,7 +189,7 @@ class TagmanagerSetup extends Component {
 	async requestTagManagerContainers( selectedAccount ) {
 		try {
 			const queryArgs = {
-				accountId: selectedAccount,
+				accountID: selectedAccount,
 			};
 
 			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'containers', queryArgs );
@@ -227,7 +227,7 @@ class TagmanagerSetup extends Component {
 
 		try {
 			const optionData = {
-				accountId: selectedAccount,
+				accountID: selectedAccount,
 				containerId: selectedContainer,
 			};
 
@@ -237,7 +237,7 @@ class TagmanagerSetup extends Component {
 			}
 
 			googlesitekit.modules.tagmanager.settings = {
-				accountId: responseData.accountId,
+				accountID: responseData.accountID,
 				containerId: responseData.containerId,
 			};
 
@@ -392,8 +392,8 @@ class TagmanagerSetup extends Component {
 					>
 						{ accounts.map( ( account ) =>
 							<Option
-								key={ account.accountId }
-								value={ account.accountId }>
+								key={ account.accountID }
+								value={ account.accountID }>
 								{ account.name }
 							</Option> ) }
 					</Select>

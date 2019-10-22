@@ -44,17 +44,17 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 	 */
 	static addDeepLink( url ) {
 		const {
-			accountId,
+			accountID,
 			internalWebPropertyId,
 			profileId,
 		} = googlesitekit.modules.analytics.settings;
 
-		if ( ! accountId ) {
+		if ( ! accountID ) {
 			return 'https://analytics.google.com/analytics/web/';
 		}
 
 		// The pagePath param requires / to be replaced by ~2F.
-		return `https://analytics.google.com/analytics/web/#/report/content-drilldown/a${ accountId }w${ internalWebPropertyId }p${ profileId }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath:${ encodeURIComponent( url.replace( /\//g, '~2F' ) ) }`;
+		return `https://analytics.google.com/analytics/web/#/report/content-drilldown/a${ accountID }w${ internalWebPropertyId }p${ profileId }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath:${ encodeURIComponent( url.replace( /\//g, '~2F' ) ) }`;
 	}
 
 	render() {

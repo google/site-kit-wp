@@ -77,7 +77,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 			request.respond( {
 				status: 200,
 				body: JSON.stringify( {
-					accountId: EXISTING_ACCOUNT_ID,
+					accountID: EXISTING_ACCOUNT_ID,
 					propertyId: EXISTING_PROPERTY_ID,
 				} ),
 			} );

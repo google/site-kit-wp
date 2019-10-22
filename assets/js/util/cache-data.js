@@ -75,7 +75,7 @@ rl.question( 'Username: ', ( username ) => {
 				html = html.replace( /Elasticpress/gi, 'Site Kit' );
 
 				// Account Ids
-				html = html.replace( /"accountId":"[\d]+"/gi, '"accountId":"XXXXXXXX"' );
+				html = html.replace( /"accountID":"[\d]+"/gi, '"accountID":"XXXXXXXX"' );
 				html = html.replace( /"profileId":"[\d]+"/gi, '"profileId":"XXXXXXXX"' );
 				html = html.replace( /"internalWebPropertyId":"[\d]+"/gi, '"internalWebPropertyId":"XXXXXXXX"' );
 				html = html.replace( /"propertyId":"UA-[\d]+-[\d]+"/gi, '"propertyId":"UA-XXXXXXXX-X"' );
