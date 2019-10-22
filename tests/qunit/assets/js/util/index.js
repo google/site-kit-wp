@@ -404,7 +404,7 @@ QUnit.test( 'fillFilterWithComponent::', function ( assert ) {
 } );
 
 /**
- * Test getReAuthUrl.
+ * Test getReAuthURL.
  */
 valuesToTest = [
 	{
@@ -448,11 +448,11 @@ const addQueryArgs = function( url, args ) {
 
 valuesToTest.forEach( function( itemToTest ) {
 	googlesitekit.admin.apikey = itemToTest.apikey;
-	QUnit.test( 'getReAuthUrl::' + itemToTest.slug, function ( assert ) {
+	QUnit.test( 'getReAuthURL::' + itemToTest.slug, function ( assert ) {
 
 		wp.url.addQueryArgs = addQueryArgs;
-		var value = testFunctions.getReAuthUrl( itemToTest.slug, itemToTest.status );
-		assert.equal( value, itemToTest.expected, 'Expect getReAuthUrl( \'' + itemToTest.slug + ', ' + itemToTest.status + ', ' + itemToTest.apikey  + '\' ) to return ' + itemToTest.expected );
+		var value = testFunctions.getReAuthURL( itemToTest.slug, itemToTest.status );
+		assert.equal( value, itemToTest.expected, 'Expect getReAuthURL( \'' + itemToTest.slug + ', ' + itemToTest.status + ', ' + itemToTest.apikey  + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
 
