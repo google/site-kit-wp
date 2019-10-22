@@ -75,7 +75,7 @@ final class Optimize extends Module {
 
 		$info['settings'] = array(
 			'optimizeId'        => ! is_wp_error( $optimize_id ) ? $optimize_id : false,
-			'ampClientIdOptIn'  => ! is_wp_error( $amp_client_id_opt_in ) ? $amp_client_id_opt_in : false,
+			'ampClientIDOptIn'  => ! is_wp_error( $amp_client_id_opt_in ) ? $amp_client_id_opt_in : false,
 			'ampExperimentJson' => ! is_wp_error( $amp_experiment_json ) ? $amp_experiment_json : '',
 		);
 
@@ -231,10 +231,10 @@ final class Optimize extends Module {
 				case 'amp-client-id-opt-in': // Get this from Analytics, read-only from here.
 					return function() {
 						$option = (array) $this->options->get( Analytics::OPTION );
-						if ( ! isset( $option['ampClientIdOptIn'] ) ) {
+						if ( ! isset( $option['ampClientIDOptIn'] ) ) {
 							return true; // Default to true.
 						}
-						return ! empty( $option['ampClientIdOptIn'] );
+						return ! empty( $option['ampClientIDOptIn'] );
 					};
 				case 'amp-experiment-json':
 					return function() {

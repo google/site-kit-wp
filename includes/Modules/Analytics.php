@@ -191,7 +191,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 		$info['settings']                     = $this->get_data( 'connection' );
 		$info['settings']['useSnippet']       = $this->get_data( 'use-snippet' );
-		$info['settings']['ampClientIdOptIn'] = $this->get_data( 'amp-client-id-opt-in' );
+		$info['settings']['ampClientIDOptIn'] = $this->get_data( 'amp-client-id-opt-in' );
 
 		$info['adsenseLinked'] = (bool) $this->options->get( 'googlesitekit_analytics_adsense_linked' );
 
@@ -521,10 +521,10 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'amp-client-id-opt-in':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
-						if ( ! isset( $option['ampClientIdOptIn'] ) ) {
+						if ( ! isset( $option['ampClientIDOptIn'] ) ) {
 							return true; // Default to true.
 						}
-						return ! empty( $option['ampClientIdOptIn'] );
+						return ! empty( $option['ampClientIDOptIn'] );
 					};
 				case 'goals':
 					$connection = $this->get_data( 'connection' );
@@ -795,13 +795,13 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						return true;
 					};
 				case 'amp-client-id-opt-in':
-					if ( ! isset( $data['ampClientIdOptIn'] ) ) {
+					if ( ! isset( $data['ampClientIDOptIn'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampClientIdOptIn' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampClientIDOptIn' ), array( 'status' => 400 ) );
 					}
 					return function() use ( $data ) {
 						$option                     = (array) $this->options->get( self::OPTION );
-						$option['ampClientIdOptIn'] = (bool) $data['ampClientIdOptIn'];
+						$option['ampClientIDOptIn'] = (bool) $data['ampClientIDOptIn'];
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
@@ -911,7 +911,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'internalWebPropertyID' => $internal_web_property_id,
 							'profileID'             => $profile_id,
 							'useSnippet'            => ! empty( $data['useSnippet'] ),
-							'ampClientIdOptIn'      => ! empty( $data['ampClientIdOptIn'] ),
+							'ampClientIDOptIn'      => ! empty( $data['ampClientIDOptIn'] ),
 						);
 						$this->options->set( self::OPTION, $option );
 						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );

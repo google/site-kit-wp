@@ -241,7 +241,7 @@ add_action( 'rest_api_init', function () {
 					'internalWebPropertyID' => $request['internalWebPropertyID'],
 					'profileID'             => $request['profileID'] ?: time(),  // fake a new profile ID if empty
 					'useSnippet'            => ! empty( $request['useSnippet'] ),
-					'ampClientIdOptIn'      => ! empty( $request['ampClientIdOptIn'] ),
+					'ampClientIDOptIn'      => ! empty( $request['ampClientIDOptIn'] ),
 				);
 				update_option( 'googlesitekit_analytics_settings', $option );
 
