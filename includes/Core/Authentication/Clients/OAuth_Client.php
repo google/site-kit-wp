@@ -16,6 +16,8 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Authentication\Credentials;
+use Google\Site_Kit\Core\Authentication\Verification;
+use Google\Site_Kit\Modules\Search_Console;
 use Google_Client;
 use Exception;
 
@@ -35,6 +37,9 @@ final class OAuth_Client {
 	const OPTION_REDIRECT_URL            = 'googlesitekit_redirect_url';
 	const OPTION_AUTH_SCOPES             = 'googlesitekit_auth_scopes';
 	const OPTION_ERROR_CODE              = 'googlesitekit_error_code';
+	const OPTION_PROXY_NONCE             = 'googlesitekit_proxy_nonce';
+	const OPTION_PROXY_ACCESS_CODE       = 'googlesitekit_proxy_access_code';
+	const PROXY_URL                      = 'https://sitekit.withgoogle.com';
 
 	/**
 	 * Plugin context.
@@ -165,7 +170,11 @@ final class OAuth_Client {
 			return $this->google_client;
 		}
 
-		$this->google_client = new Google_Client();
+		if ( $this->using_proxy() ) {
+			$this->google_client = new Google_Proxy_Client();
+		} else {
+			$this->google_client = new Google_Client();
+		}
 
 		// Return unconfigured client if credentials not yet set.
 		$client_credentials = $this->get_client_credentials();
@@ -181,8 +190,6 @@ final class OAuth_Client {
 
 		// Offline access so we can access the refresh token even when the user is logged out.
 		$this->google_client->setAccessType( 'offline' );
-		$this->google_client->setApprovalPrompt( 'force' );
-		$this->google_client->setPrompt( 'consent' );
 
 		$this->google_client->setRedirectUri( $this->get_redirect_uri() );
 
@@ -197,11 +204,13 @@ final class OAuth_Client {
 		}
 
 		$token = array(
-			'access_token'  => $access_token,
-			'refresh_token' => $this->get_refresh_token(),
-			'expires_in'    => $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
-			'created'       => $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
+			'access_token' => $access_token,
+			'expires_in'   => $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
+			'created'      => $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
 		);
+		if ( ! $this->using_proxy() ) {
+			$token['refresh_token'] = $this->get_refresh_token();
+		}
 
 		$this->google_client->setAccessToken( $token );
 
@@ -219,9 +228,7 @@ final class OAuth_Client {
 	 * @since 1.0.0
 	 */
 	public function refresh_token() {
-		// Check for a valid stored refresh token. If it's been set, grab the authentication token.
 		$refresh_token = $this->get_refresh_token();
-
 		if ( empty( $refresh_token ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'refresh_token_not_exist' );
 		}
@@ -233,26 +240,34 @@ final class OAuth_Client {
 
 		try {
 			$authentication_token = $this->google_client->fetchAccessTokenWithRefreshToken( $refresh_token );
-
-			// Refresh token is expired or revoked.
-			if ( ! empty( $authentication_token['error'] ) ) {
-				$this->user_options->set( self::OPTION_ERROR_CODE, $authentication_token['error'] );
-				return;
-			}
-
-			if ( ! isset( $authentication_token['access_token'] ) ) {
-				$this->user_options->set( self::OPTION_ERROR_CODE, 'access_token_not_received' );
-				return;
-			}
-
-			$this->set_access_token(
-				$authentication_token['access_token'],
-				isset( $authentication_token['expires_in'] ) ? $authentication_token['expires_in'] : '',
-				isset( $authentication_token['created'] ) ? $authentication_token['created'] : 0
-			);
+		} catch ( Google_Proxy_Exception $e ) {
+			$this->user_options->set( self::OPTION_ERROR_CODE, $e->getMessage() );
+			$this->user_options->set( self::OPTION_PROXY_ACCESS_CODE, $e->getAccessCode() );
+			return;
 		} catch ( \Exception $e ) {
-			$this->user_options->set( self::OPTION_ERROR_CODE, $e->getCode() );
+			$this->user_options->set( self::OPTION_ERROR_CODE, 'invalid_grant' );
+			return;
 		}
+
+		// Refresh token is expired or revoked.
+		if ( ! empty( $authentication_token['error'] ) ) {
+			$this->user_options->set( self::OPTION_ERROR_CODE, $authentication_token['error'] );
+			return;
+		}
+
+		if ( ! isset( $authentication_token['access_token'] ) ) {
+			$this->user_options->set( self::OPTION_ERROR_CODE, 'access_token_not_received' );
+			return;
+		}
+
+		$this->set_access_token(
+			$authentication_token['access_token'],
+			isset( $authentication_token['expires_in'] ) ? $authentication_token['expires_in'] : '',
+			isset( $authentication_token['created'] ) ? $authentication_token['created'] : 0
+		);
+
+		$refresh_token = $this->get_client()->getRefreshToken();
+		$this->set_refresh_token( $refresh_token );
 	}
 
 	/**
@@ -471,6 +486,9 @@ final class OAuth_Client {
 
 		try {
 			$authentication_token = $this->get_client()->fetchAccessTokenWithAuthCode( $_GET['code'] ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+		} catch ( Google_Proxy_Exception $e ) {
+			wp_safe_redirect( $this->get_proxy_setup_url( $e->getAccessCode(), $e->getMessage() ) );
+			exit();
 		} catch ( Exception $e ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'invalid_code' );
 			wp_safe_redirect( admin_url() );
@@ -521,6 +539,15 @@ final class OAuth_Client {
 		);
 		$this->set_granted_scopes( $scopes );
 
+		// If using the proxy, these values can reliably be set at this point because the proxy already took care of
+		// them.
+		// TODO: In the future, once the old authentication mechanism no longer exists, this should be resolved in
+		// another way.
+		if ( $this->using_proxy() ) {
+			$this->user_options->set( Verification::OPTION, 'verified' );
+			$this->options->set( Search_Console::PROPERTY_OPTION, trailingslashit( $this->context->get_reference_site_url() ) );
+		}
+
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
 
 		if ( $redirect_url ) {
@@ -537,6 +564,134 @@ final class OAuth_Client {
 
 		wp_safe_redirect( $redirect_url );
 		exit();
+	}
+
+	/**
+	 * Determines whether the authentication proxy is used.
+	 *
+	 * In order to streamline the setup and authentication flow, the plugin uses a proxy mechanism based on an external
+	 * service. This can be overridden by providing actual GCP credentials with the {@see 'googlesitekit_oauth_secret'}
+	 * filter.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool True if proxy authentication is used, false otherwise.
+	 */
+	public function using_proxy() {
+		$credentials = $this->get_client_credentials();
+
+		// If no credentials yet, assume true.
+		if ( ! is_object( $credentials ) || empty( $credentials->web->client_id ) ) {
+			return true;
+		}
+
+		// If proxy credentials, return true.
+		if ( false !== strpos( $credentials->web->client_id, '.apps.sitekit.withgoogle.com' ) ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Returns the setup URL to the authentication proxy.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $access_code Optional. Temporary access code for an undelegated access token. Default empty string.
+	 * @param string $error_code  Optional. Error code, if the user should be redirected because of an error. Default empty string.
+	 * @return string URL to the setup page on the authentication proxy.
+	 */
+	public function get_proxy_setup_url( $access_code = '', $error_code = '' ) {
+		$url = self::PROXY_URL . '/site-management/setup/';
+
+		$credentials = $this->get_client_credentials();
+
+		$scope = implode( ' ', $this->get_required_scopes() );
+
+		if ( ! is_object( $credentials ) || empty( $credentials->web->client_id ) ) {
+			$home_url           = home_url();
+			$home_url_no_scheme = str_replace( array( 'http://', 'https://' ), '', $home_url );
+
+			$rest_root  = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', rest_url() );
+			$admin_root = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', admin_url() );
+
+			$nonce = $this->options->get( self::OPTION_PROXY_NONCE );
+			if ( empty( $nonce ) ) {
+				$nonce = wp_create_nonce( 'googlesitekit_proxy' );
+				$this->options->set( self::OPTION_PROXY_NONCE, $nonce );
+			}
+
+			return add_query_arg(
+				array(
+					'nonce'      => $nonce,
+					'name'       => rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ) ) ),
+					'url'        => rawurlencode( $home_url ),
+					'rest_root'  => rawurlencode( $rest_root ),
+					'admin_root' => rawurlencode( $admin_root ),
+					'scope'      => rawurlencode( $scope ),
+				),
+				$url
+			);
+		}
+
+		$query_args = array(
+			'site_id' => $credentials->web->client_id,
+			'code'    => $access_code,
+			'scope'   => rawurlencode( $scope ),
+		);
+		if ( 'missing_verification' === $error_code ) {
+			$query_args['verification_nonce'] = wp_create_nonce( 'googlesitekit_verification' );
+		}
+
+		return add_query_arg( $query_args, $url );
+	}
+
+	/**
+	 * Returns the permissions URL to the authentication proxy.
+	 *
+	 * This only returns a URL if the user already has an access token set.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string URL to the permissions page on the authentication proxy on success,
+	 *                or empty string on failure.
+	 */
+	public function get_proxy_permissions_url() {
+		$access_token = $this->get_access_token();
+		if ( empty( $access_token ) ) {
+			return '';
+		}
+
+		$query_args = array( 'token' => $access_token );
+
+		$credentials = $this->get_client_credentials();
+		if ( is_object( $credentials ) && ! empty( $credentials->web->client_id ) ) {
+			$query_args['site_id'] = $credentials->web->client_id;
+		}
+
+		return add_query_arg(
+			$query_args,
+			self::PROXY_URL . '/site-management/permissions/'
+		);
+	}
+
+	/**
+	 * Checks whether the given proxy nonce is valid.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $nonce Nonce to validate.
+	 * @return bool True if nonce is valid, false otherwise.
+	 */
+	public function validate_proxy_nonce( $nonce ) {
+		$valid_nonce = $this->options->get( self::OPTION_PROXY_NONCE );
+		if ( $nonce !== $valid_nonce ) {
+			return false;
+		}
+
+		$this->options->delete( self::OPTION_PROXY_NONCE );
+		return true;
 	}
 
 	/**
@@ -581,6 +736,19 @@ final class OAuth_Client {
 				$message = __( 'Unable to receive access token because of an unsupported grant type.', 'google-site-kit' );
 				break;
 			default:
+				if ( $this->using_proxy() ) {
+					$access_code = $this->user_options->get( self::OPTION_PROXY_ACCESS_CODE );
+					if ( ! empty( $access_code ) ) {
+						$message = sprintf(
+							/* translators: 1: error code from API, 2: URL to re-authenticate */
+							__( 'Setup Error (code: %1$s). <a href="%2$s">Re-authenticate with Google</a>', 'google-site-kit' ),
+							$error_code,
+							esc_url( $this->get_proxy_setup_url( $access_code, $error_code ) )
+						);
+						$this->user_options->delete( self::OPTION_PROXY_ACCESS_CODE );
+						return $message;
+					}
+				}
 				/* translators: %s: error code from API */
 				$message = sprintf( __( 'Unknown Error (code: %s).', 'google-site-kit' ), $error_code );
 				break;
@@ -601,40 +769,33 @@ final class OAuth_Client {
 	}
 
 	/**
-	 * Retrieve the Site Kit oAuth secret.
+	 * Retrieves the OAuth credentials object.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return object|null Credentials object with `web` property, or null if no credentials available.
 	 */
 	private function get_client_credentials() {
 		if ( false !== $this->client_credentials ) {
 			return $this->client_credentials;
 		}
 
-		/**
-		 * Site Kit oAuth Secret is a string of the JSON for the Google Cloud Platform web application used for Site Kit
-		 * that will be associated with this account. This is meant to be a temporary way to specify the client secret
-		 * until the authentication proxy has been completed. This filter can be specified from a separate theme or plugin.
-		 *
-		 * To retrieve the JSON secret, use the following instructions:
-		 * - Go to the Google Cloud Platform and create a new project or use an existing one
-		 * - In the APIs & Services section, enable the APIs that are used within Site Kit
-		 * - Under 'credentials' either create new oAuth Client ID credentials or use an existing set of credentials
-		 * - Set the authorizes redirect URIs to be the URL to the oAuth callback for Site Kit, eg. https://<domainname>?oauth2callback=1 (this must be public)
-		 * - Click the 'Download JSON' button to download the JSON file that can be copied and pasted into the filter
-		 */
-		$credentials = trim( apply_filters( 'googlesitekit_oauth_secret', '' ) );
-
-		if ( empty( $credentials ) && $this->credentials->has() ) {
-			$redirect_uri = $this->get_redirect_uri();
-			$credentials  = $this->credentials->get();
-			$credentials  = '{"web":{"client_id":"' . $credentials['oauth2_client_id'] . '","auth_uri":"https://accounts.google.com/o/oauth2/auth","token_uri":"https://oauth2.googleapis.com/token","auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs","client_secret":"' . $credentials['oauth2_client_secret'] . '","redirect_uris":["' . $redirect_uri . '"]}}';
+		if ( ! $this->credentials->has() ) {
+			return null;
 		}
 
-		if ( ! empty( $credentials ) ) {
-			$this->client_credentials = json_decode( $credentials );
-		}
+		$credentials = $this->credentials->get();
 
-		if ( ! is_object( $this->client_credentials ) || empty( $this->client_credentials->web ) ) {
-			$this->client_credentials = null;
-		}
+		$this->client_credentials = (object) array(
+			'web' => (object) array(
+				'client_id'                   => $credentials['oauth2_client_id'],
+				'client_secret'               => $credentials['oauth2_client_secret'],
+				'auth_uri'                    => 'https://accounts.google.com/o/oauth2/auth',
+				'token_uri'                   => 'https://oauth2.googleapis.com/token',
+				'auth_provider_x509_cert_url' => 'https://www.googleapis.com/oauth2/v1/certs',
+				'redirect_uris'               => array( $this->get_redirect_uri() ),
+			),
+		);
 
 		return $this->client_credentials;
 	}

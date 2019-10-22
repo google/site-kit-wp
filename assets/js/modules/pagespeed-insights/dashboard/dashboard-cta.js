@@ -11,7 +11,7 @@ import {
 /**
  * Internal dependencies
  */
-import { getSiteKitAdminURL } from '../../../util';
+import { getReAuthUrl } from '../../../util';
 
 const { __ } = wp.i18n;
 
@@ -30,16 +30,7 @@ const PageSpeedInsightsCTA = () => {
 	const handleSetUpClick = async () => {
 		try {
 			await activateOrDeactivateModule( data, 'pagespeed-insights', true );
-
-			window.location.assign(
-				getSiteKitAdminURL(
-					'googlesitekit-dashboard',
-					{
-						notification: 'authentication_success',
-						slug: 'pagespeed-insights',
-					},
-				)
-			);
+			window.location = getReAuthUrl( 'pagespeed-insights' );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'pagespeed-insights-setup-error',

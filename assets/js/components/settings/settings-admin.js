@@ -26,7 +26,6 @@ import Optin from 'GoogleComponents/optin';
 import data, { TYPE_CORE } from 'GoogleComponents/data';
 import {
 	clearAppLocalStorage,
-	moduleIcon,
 	getSiteKitAdminURL,
 } from 'GoogleUtil';
 
@@ -88,12 +87,6 @@ class SettingsAdmin extends Component {
 		const {
 			dialogActive,
 		} = this.state;
-		const {
-			clientID,
-			clientSecret,
-			projectId,
-			projectUrl,
-		} = googlesitekit.admin;
 
 		return (
 			<Fragment>
@@ -118,8 +111,7 @@ class SettingsAdmin extends Component {
 											googlesitekit-heading-4
 											googlesitekit-settings-module__title
 										">
-											{ moduleIcon( 'logo-google-cloud', false, '24', '26', 'googlesitekit-settings-module__title-icon' ) }
-											{ __( 'API Credentials', 'google-site-kit' ) }
+											{ __( 'Plugin Status', 'google-site-kit' ) }
 										</h3>
 									</div>
 									<div className="
@@ -130,73 +122,24 @@ class SettingsAdmin extends Component {
 										mdc-layout-grid__cell--align-middle
 										mdc-layout-grid__cell--align-right-tablet
 									">
-										<p className="googlesitekit-settings-module__status">
-											{ __( 'Site Kit is connected', 'google-site-kit' ) }
-											<span className="
-												googlesitekit-settings-module__status-icon
-												googlesitekit-settings-module__status-icon--connected
-											">
-												<span className="screen-reader-text">
-													{ __( 'Connected', 'google-site-kit' ) }
-												</span>
-											</span>
-										</p>
 									</div>
 									<div className="
 										mdc-layout-grid__cell
 										mdc-layout-grid__cell--span-12
 									">
 										<div className="googlesitekit-settings-module__meta-items">
-											<div className="googlesitekit-settings-module__meta-item">
-												<p className="googlesitekit-settings-module__meta-item-type">
-													{ __( 'Client ID', 'google-site-kit' ) }
-												</p>
-												<h5 className="
-													googlesitekit-settings-module__meta-item-data
-													googlesitekit-settings-module__meta-item-data--wrap
+											<p className="googlesitekit-settings-module__status">
+												{ __( 'Site Kit is connected', 'google-site-kit' ) }
+												<span className="
+													googlesitekit-settings-module__status-icon
+													googlesitekit-settings-module__status-icon--connected
 												">
-													{ clientID }
-												</h5>
-											</div>
-											<div className="googlesitekit-settings-module__meta-item">
-												<p className="googlesitekit-settings-module__meta-item-type">
-													{ __( 'Client Secret', 'google-site-kit' ) }
-												</p>
-												<h5 className="
-													googlesitekit-settings-module__meta-item-data
-													googlesitekit-settings-module__meta-item-data--wrap
-												">
-													{ clientSecret }
-												</h5>
-											</div>
+													<span className="screen-reader-text">
+														{ __( 'Connected', 'google-site-kit' ) }
+													</span>
+												</span>
+											</p>
 										</div>
-										{ ( projectId && projectUrl ) &&
-											<div className="googlesitekit-settings-module__meta-items">
-												<div className="
-													googlesitekit-settings-module__meta-item
-													googlesitekit-settings-module__meta-item--nomargin
-												">
-													<p className="googlesitekit-settings-module__meta-item-type">
-														{ __( 'Project ID', 'google-site-kit' ) }
-													</p>
-													<h5 className="
-														googlesitekit-settings-module__meta-item-data
-														googlesitekit-settings-module__meta-item-data--wrap
-													">
-														{ projectId + ' ' }
-														<small>
-															<Link
-																href={ projectUrl }
-																inherit
-																external
-															>
-																{ __( 'Open in Google Cloud Platform', 'google-site-kit' ) }
-															</Link>
-														</small>
-													</h5>
-												</div>
-											</div>
-										}
 									</div>
 								</div>
 							</div>

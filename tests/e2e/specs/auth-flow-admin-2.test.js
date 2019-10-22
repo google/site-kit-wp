@@ -14,7 +14,6 @@ import {
 import {
 	logoutUser,
 	setAuthToken,
-	setClientConfig,
 	setSearchConsoleProperty,
 	setSiteVerification,
 	useRequestInterception,
@@ -39,9 +38,9 @@ describe( 'the set up flow for the second administrator', () => {
 	} );
 
 	beforeEach( async () => {
+		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
-		await setClientConfig();
 		await setAuthToken();
 		await setSiteVerification();
 		await setSearchConsoleProperty();

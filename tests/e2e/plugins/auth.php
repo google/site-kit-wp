@@ -19,16 +19,7 @@ use Google\Site_Kit\Plugin;
 /**
  * Provide dummy client configuration, normally provided in step 1 of the set up.
  */
-add_filter( 'pre_option_googlesitekit_credentials', function () {
-	return ( new Data_Encryption() )->encrypt(
-		serialize(
-			array(
-				'oauth2_client_id'     => '1234567890-asdfasdfasdfasdfzxcvzxcvzxcvzxcv.apps.googleusercontent.com',
-				'oauth2_client_secret' => 'x_xxxxxxxxxxxxxxxxxxxxxx',
-			)
-		)
-	);
-} );
+require_once __DIR__ . '/gcp-credentials.php';
 
 /**
  * Provide a dummy access token to fake an authenticated state.

@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 export const testClientConfig = {
 	web: {
-		client_id: '1234567890-asdfasdfasdfasdfzxcvzxcvzxcvzxcv.apps.googleusercontent.com',
+		client_id: '1234567890-asdfasdfasdfasdfzxcvzxcvzxcvzxcv.apps.sitekit.withgoogle.com',
 		client_secret: 'x_xxxxxxxxxxxxxxxxxxxxxx',
 		project_id: 'test-project-id',
 		auth_uri: 'https://accounts.google.com/o/oauth2/auth',
