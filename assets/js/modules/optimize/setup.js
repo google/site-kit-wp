@@ -43,7 +43,7 @@ class OptimizeSetup extends Component {
 		super( props );
 
 		const {
-			optimizeId,
+			optimizeID,
 			ampClientIdOptIn,
 			ampExperimentJson,
 		} = googlesitekit.modules.optimize.settings;
@@ -61,7 +61,7 @@ class OptimizeSetup extends Component {
 		const gtmUseSnippet = gtmActive && gtmSettings ? gtmSettings.useSnippet : false;
 
 		this.state = {
-			optimizeId: optimizeId || '',
+			optimizeID: optimizeID || '',
 			analyticsUseSnippet,
 			gtmUseSnippet,
 			errorCode: false,
@@ -116,7 +116,7 @@ class OptimizeSetup extends Component {
 		}
 
 		const settingsMapping = {
-			optimizeId: 'optimizeId',
+			optimizeID: 'optimizeID',
 			ampExperimentJson: 'ampExperimentJson',
 		};
 
@@ -125,18 +125,18 @@ class OptimizeSetup extends Component {
 
 	async handleSubmit() {
 		const {
-			optimizeId,
+			optimizeID,
 			ampExperimentJson,
 			OptimizeIDValidated,
 		} = this.state;
 		const { finishSetup } = this.props;
 
-		if ( ! OptimizeIDValidated || 0 === optimizeId.length ) {
+		if ( ! OptimizeIDValidated || 0 === optimizeID.length ) {
 			return false;
 		}
 
 		const optimizeAccount = {
-			optimizeId,
+			optimizeID,
 			ampExperimentJson,
 		};
 
@@ -145,7 +145,7 @@ class OptimizeSetup extends Component {
 				finishSetup();
 			}
 
-			googlesitekit.modules.optimize.settings.optimizeId = optimizeId;
+			googlesitekit.modules.optimize.settings.optimizeID = optimizeID;
 
 			if ( this._isMounted ) {
 				this.setState( {
@@ -166,7 +166,7 @@ class OptimizeSetup extends Component {
 		const validOptimizeID = validateOptimizeID( e.target.value );
 		if ( this._isMounted ) {
 			this.setState( {
-				optimizeId: e.target.value,
+				optimizeID: e.target.value,
 				OptimizeIDValidated: validOptimizeID,
 			} );
 		}
@@ -185,14 +185,14 @@ class OptimizeSetup extends Component {
 
 	renderInfo() {
 		const {
-			optimizeId,
+			optimizeID,
 		} = this.state;
 
 		return (
 			<Fragment>
 				{
-					optimizeId ?
-						<div>{ __( 'Your Optimize Container ID', 'google-site-kit' ) }: <strong>{ optimizeId }</strong></div> :
+					optimizeID ?
+						<div>{ __( 'Your Optimize Container ID', 'google-site-kit' ) }: <strong>{ optimizeID }</strong></div> :
 						<div>{ __( 'Optimize Container ID missing, press "edit" to add', 'google-site-kit' ) }.</div>
 				}
 			</Fragment>
@@ -203,7 +203,7 @@ class OptimizeSetup extends Component {
 		const {
 			analyticsUseSnippet,
 			gtmUseSnippet,
-			optimizeId,
+			optimizeID,
 		} = this.state;
 
 		// If we don't use auto insert gtag, but use auto insert gtm. Show instruction of how to implement it on GTM.
@@ -221,7 +221,7 @@ class OptimizeSetup extends Component {
 				<Fragment>
 					<p>{ __( 'You disabled analytics auto insert snippet. If You are using Google Analytics code snippet, add the code below:', 'google-site-kit' ) }</p>
 					<pre>
-						ga(&quot;require&quot;, &quot;{ optimizeId ? optimizeId : 'GTM-XXXXXXX' }&quot;);
+						ga(&quot;require&quot;, &quot;{ optimizeID ? optimizeID : 'GTM-XXXXXXX' }&quot;);
 					</pre>
 					<p><a href="https://support.google.com/optimize/answer/6262084">{ __( 'Click here', 'google-site-kit' ) }</a> { __( 'for how to implement Optimize tag in Google Analytics Code Snippet', 'google-site-kit' ) }</p>
 				</Fragment>
@@ -276,7 +276,7 @@ class OptimizeSetup extends Component {
 
 	renderForm() {
 		const {
-			optimizeId,
+			optimizeID,
 			errorCode,
 			errorMsg,
 			OptimizeIDValidated,
@@ -301,14 +301,14 @@ class OptimizeSetup extends Component {
 							${ OptimizeIDValidated ? '' : 'mdc-text-field--error' }
 						` }
 						label={ __( 'Optimize Container ID', 'google-site-kit' ) }
-						name="optimizeId"
+						name="optimizeID"
 						onChange={ this.handleOptimizeIdEntry }
 						helperText={ <HelperText>{ __( 'Format: GTM-XXXXXXX.', 'google-site-kit' ) }</HelperText> }
 						outlined
 						required
 					>
 						<Input
-							value={ optimizeId }
+							value={ optimizeID }
 						/>
 					</TextField>
 				</div>
