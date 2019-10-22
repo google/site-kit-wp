@@ -78,15 +78,15 @@ class AnalyticsTest extends TestCase {
 		} );
 		$this->assertEquals( 'filtered-property-id', get_option( Analytics::OPTION )['propertyId'] );
 
-		// Test internalWebPropertyId can be overridden by non-empty value via filter
-		update_option( Analytics::OPTION, array( 'internalWebPropertyId' => 'saved-internal-web-property-id' ) );
-		$this->assertEquals( 'saved-internal-web-property-id', get_option( Analytics::OPTION )['internalWebPropertyId'] );
+		// Test internalWebPropertyID can be overridden by non-empty value via filter
+		update_option( Analytics::OPTION, array( 'internalWebPropertyID' => 'saved-internal-web-property-id' ) );
+		$this->assertEquals( 'saved-internal-web-property-id', get_option( Analytics::OPTION )['internalWebPropertyID'] );
 		add_filter( 'googlesitekit_analytics_internal_web_property_id', '__return_empty_string' );
-		$this->assertEquals( 'saved-internal-web-property-id', get_option( Analytics::OPTION )['internalWebPropertyId'] );
+		$this->assertEquals( 'saved-internal-web-property-id', get_option( Analytics::OPTION )['internalWebPropertyID'] );
 		add_filter( 'googlesitekit_analytics_internal_web_property_id', function () {
 			return 'filtered-internal-web-property-id';
 		} );
-		$this->assertEquals( 'filtered-internal-web-property-id', get_option( Analytics::OPTION )['internalWebPropertyId'] );
+		$this->assertEquals( 'filtered-internal-web-property-id', get_option( Analytics::OPTION )['internalWebPropertyID'] );
 
 		// Test profileId can be overridden by non-empty value via filter
 		update_option( Analytics::OPTION, array( 'profileId' => 'saved-profile-id' ) );
@@ -132,7 +132,7 @@ class AnalyticsTest extends TestCase {
 		$this->assertArrayHasKey( 'accountID', $info['settings'] );
 		$this->assertArrayHasKey( 'propertyId', $info['settings'] );
 		$this->assertArrayHasKey( 'profileId', $info['settings'] );
-		$this->assertArrayHasKey( 'internalWebPropertyId', $info['settings'] );
+		$this->assertArrayHasKey( 'internalWebPropertyID', $info['settings'] );
 		$this->assertArrayHasKey( 'useSnippet', $info['settings'] );
 		$this->assertArrayHasKey( 'ampClientIdOptIn', $info['settings'] );
 	}

@@ -95,7 +95,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				 */
 				$internal_web_property_id = apply_filters( 'googlesitekit_analytics_internal_web_property_id', '' );
 				if ( ! empty( $internal_web_property_id ) ) {
-					$option['internalWebPropertyId'] = $internal_web_property_id;
+					$option['internalWebPropertyID'] = $internal_web_property_id;
 				}
 
 				/**
@@ -477,7 +477,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'accountID'             => '',
 							'propertyId'            => '',
 							'profileId'             => '',
-							'internalWebPropertyId' => '',
+							'internalWebPropertyID' => '',
 						);
 						return array_intersect_key( array_merge( $defaults, (array) $this->options->get( self::OPTION ) ), $defaults );
 					};
@@ -508,10 +508,10 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'internal-web-property-id':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
-						if ( empty( $option['internalWebPropertyId'] ) ) {
+						if ( empty( $option['internalWebPropertyID'] ) ) {
 							return new WP_Error( 'internal_web_property_id_not_set', __( 'Analytics internal web property ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
-						return $option['internalWebPropertyId'];
+						return $option['internalWebPropertyID'];
 					};
 				case 'use-snippet':
 					return function() {
@@ -530,7 +530,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					$connection = $this->get_data( 'connection' );
 					if (
 						empty( $connection['accountID'] ) ||
-						empty( $connection['internalWebPropertyId'] ) ||
+						empty( $connection['internalWebPropertyID'] ) ||
 						empty( $connection['profileId'] )
 					) {
 						// This is needed to return and emulate the same error format from Analytics API.
@@ -725,7 +725,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'connection':
 					return function() use ( $data ) {
 						$option = (array) $this->options->get( self::OPTION );
-						$keys   = array( 'accountID', 'propertyId', 'profileId', 'internalWebPropertyId' );
+						$keys   = array( 'accountID', 'propertyId', 'profileId', 'internalWebPropertyID' );
 						foreach ( $keys as $key ) {
 							if ( isset( $data[ $key ] ) ) {
 								$option[ $key ] = $data[ $key ];
@@ -772,13 +772,13 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						return true;
 					};
 				case 'internal-web-property-id':
-					if ( ! isset( $data['internalWebPropertyId'] ) ) {
+					if ( ! isset( $data['internalWebPropertyID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalWebPropertyId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalWebPropertyID' ), array( 'status' => 400 ) );
 					}
 					return function() use ( $data ) {
 						$option                          = (array) $this->options->get( self::OPTION );
-						$option['internalWebPropertyId'] = $data['internalWebPropertyId'];
+						$option['internalWebPropertyID'] = $data['internalWebPropertyID'];
 						$this->options->set( self::OPTION, $option );
 						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 						return true;
@@ -814,9 +814,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyId' ), array( 'status' => 400 ) );
 					}
-					if ( ! isset( $data['internalWebPropertyId'] ) ) {
+					if ( ! isset( $data['internalWebPropertyID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalWebPropertyId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalWebPropertyID' ), array( 'status' => 400 ) );
 					}
 					if ( ! isset( $data['profileId'] ) ) {
 						/* translators: %s: Missing parameter name */
@@ -852,11 +852,11 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							}
 							$client->setDefer( $orig_defer );
 							$property_id              = $property->id;
-							$internal_web_property_id = $property->internalWebPropertyId; // phpcs:ignore WordPress.NamingConventions.ValidVariableName
+							$internal_web_property_id = $property->internalWebPropertyID; // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 						} else {
 							$is_new_property          = false;
 							$property_id              = $data['propertyId'];
-							$internal_web_property_id = $data['internalWebPropertyId'];
+							$internal_web_property_id = $data['internalWebPropertyID'];
 						}
 						$profile_id = null;
 						if ( '0' === $data['profileId'] ) {
@@ -908,7 +908,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						$option = array(
 							'accountID'             => $data['accountID'],
 							'propertyId'            => $property_id,
-							'internalWebPropertyId' => $internal_web_property_id,
+							'internalWebPropertyID' => $internal_web_property_id,
 							'profileId'             => $profile_id,
 							'useSnippet'            => ! empty( $data['useSnippet'] ),
 							'ampClientIdOptIn'      => ! empty( $data['ampClientIdOptIn'] ),

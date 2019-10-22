@@ -7,7 +7,7 @@ const defaultSettings = {
 	accountID: 100,
 	propertyId: 200,
 	profileId: 300,
-	internalWebPropertyId: 400,
+	internalWebPropertyID: 400,
 	useSnippet: true,
 	// ampClientIdOptIn: (bool)
 };

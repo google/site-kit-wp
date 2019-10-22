@@ -46,7 +46,7 @@ class AnalyticsSetup extends Component {
 		super( props );
 		const {
 			accountID,
-			internalWebPropertyId,
+			internalWebPropertyID,
 			profileId,
 			propertyId,
 			useSnippet,
@@ -68,7 +68,7 @@ class AnalyticsSetup extends Component {
 			selectedAccount: accountID,
 			selectedProperty: propertyId,
 			selectedProfile: profileId,
-			selectedinternalWebProperty: internalWebPropertyId,
+			selectedinternalWebProperty: internalWebPropertyID,
 			ampClientIdOptIn,
 			existingTag: false,
 		};
@@ -144,7 +144,7 @@ class AnalyticsSetup extends Component {
 			selectedAccount: 'accountID',
 			selectedProperty: 'propertyId',
 			selectedProfile: 'profileId',
-			selectedinternalWebProperty: 'internalWebPropertyId',
+			selectedinternalWebProperty: 'internalWebPropertyID',
 			useSnippet: 'useSnippet',
 			ampClientIdOptIn: 'ampClientIdOptIn',
 		};
@@ -348,7 +348,7 @@ class AnalyticsSetup extends Component {
 				newState = Object.assign( newState, {
 					properties: responseData.properties,
 					profiles: responseData.profiles,
-					selectedinternalWebProperty: ( responseData.properties[ 0 ] ) ? responseData.properties[ 0 ].internalWebPropertyId : 0,
+					selectedinternalWebProperty: ( responseData.properties[ 0 ] ) ? responseData.properties[ 0 ].internalWebPropertyID : 0,
 				} );
 			}
 		} catch ( err ) {
@@ -395,7 +395,7 @@ class AnalyticsSetup extends Component {
 				profiles: responseData.profiles,
 				selectedAccount: selectValue,
 				selectedProperty: responseData.properties[ 0 ].id,
-				selectedinternalWebProperty: responseData.properties[ 0 ].internalWebPropertyId,
+				selectedinternalWebProperty: responseData.properties[ 0 ].internalWebPropertyID,
 				selectedProfile: responseData.profiles[ 0 ].id,
 				errorCode: false,
 			} );
@@ -422,7 +422,7 @@ class AnalyticsSetup extends Component {
 				profilesLoading: false,
 				profiles: responseData,
 				selectedProperty: selectValue,
-				selectedinternalWebProperty: responseData[ 0 ].internalWebPropertyId,
+				selectedinternalWebProperty: responseData[ 0 ].internalWebPropertyID,
 				selectedProfile: responseData[ 0 ].id,
 				errorCode: false,
 			} );
@@ -468,18 +468,18 @@ class AnalyticsSetup extends Component {
 		// See: https://github.com/google/site-kit-wp/issues/398#issuecomment-540024321
 		const profileId = selectedProfile || ( profiles[ 0 ].id || profiles[ 0 ].id === 0 ? profiles[ 0 ].id.toString() : null );
 		const propertyId = selectedProperty || ( properties[ 0 ].id || properties[ 0 ].id === 0 ? properties[ 0 ].id.toString() : null );
-		let internalWebPropertyId;
+		let internalWebPropertyID;
 		if ( propertyId === '0' ) {
-			internalWebPropertyId = '0';
+			internalWebPropertyID = '0';
 		} else {
-			internalWebPropertyId = selectedinternalWebProperty || ( properties[ 0 ].internalWebPropertyId || properties[ 0 ].internalWebPropertyId === 0 ? properties[ 0 ].internalWebPropertyId.toString() : null );
+			internalWebPropertyID = selectedinternalWebProperty || ( properties[ 0 ].internalWebPropertyID || properties[ 0 ].internalWebPropertyID === 0 ? properties[ 0 ].internalWebPropertyID.toString() : null );
 		}
 
 		const analyticAccount = {
 			accountID: selectedAccount || accounts[ 0 ].id || null,
 			profileId,
 			propertyId,
-			internalWebPropertyId,
+			internalWebPropertyID,
 			useSnippet: useSnippet || false,
 			ampClientIdOptIn: ampClientIdOptIn || false,
 		};
@@ -493,7 +493,7 @@ class AnalyticsSetup extends Component {
 			googlesitekit.modules.analytics.settings.accountID = response.accountID;
 			googlesitekit.modules.analytics.settings.profileId = response.profileId;
 			googlesitekit.modules.analytics.settings.propertyId = response.propertyId;
-			googlesitekit.modules.analytics.settings.internalWebPropertyId = response.internalWebPropertyId;
+			googlesitekit.modules.analytics.settings.internalWebPropertyID = response.internalWebPropertyID;
 			googlesitekit.modules.analytics.settings.useSnippet = response.useSnippet;
 			googlesitekit.modules.analytics.settings.ampClientIdOptIn = response.ampClientIdOptIn;
 
@@ -510,7 +510,7 @@ class AnalyticsSetup extends Component {
 					selectedAccount: response.accountID,
 					selectedProfile: response.profileId,
 					selectedProperty: response.propertyId,
-					selectedinternalWebProperty: response.internalWebPropertyId,
+					selectedinternalWebProperty: response.internalWebPropertyID,
 				} );
 			}
 		} catch ( err ) {
