@@ -41,7 +41,7 @@ class TagmanagerSetup extends Component {
 
 		const {
 			accountID,
-			containerId,
+			containerID,
 		} = googlesitekit.modules.tagmanager.settings;
 
 		this.state = {
@@ -52,7 +52,7 @@ class TagmanagerSetup extends Component {
 			errorMsg: '',
 			refetch: false,
 			selectedAccount: accountID ? accountID : 0,
-			selectedContainer: containerId ? containerId : 0,
+			selectedContainer: containerID ? containerID : 0,
 			containersLoading: false,
 		};
 
@@ -108,7 +108,7 @@ class TagmanagerSetup extends Component {
 		}
 
 		const settingsMapping = {
-			selectedContainer: 'containerId',
+			selectedContainer: 'containerID',
 			selectedAccount: 'selectedAccount',
 		};
 
@@ -149,7 +149,7 @@ class TagmanagerSetup extends Component {
 			}
 
 			const chooseContainer = {
-				containerId: 0,
+				containerID: 0,
 				publicId: 0,
 			};
 			responseData.containers.push( chooseContainer );
@@ -195,7 +195,7 @@ class TagmanagerSetup extends Component {
 			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'containers', queryArgs );
 
 			const chooseContainer = {
-				containerId: 0,
+				containerID: 0,
 				publicId: 0,
 			};
 			responseData.push( chooseContainer );
@@ -228,7 +228,7 @@ class TagmanagerSetup extends Component {
 		try {
 			const optionData = {
 				accountID: selectedAccount,
-				containerId: selectedContainer,
+				containerID: selectedContainer,
 			};
 
 			const responseData = await data.set( TYPE_MODULES, 'tagmanager', 'settings', optionData );
@@ -238,7 +238,7 @@ class TagmanagerSetup extends Component {
 
 			googlesitekit.modules.tagmanager.settings = {
 				accountID: responseData.accountID,
-				containerId: responseData.containerId,
+				containerID: responseData.containerID,
 			};
 
 			if ( this._isMounted ) {
@@ -409,7 +409,7 @@ class TagmanagerSetup extends Component {
 						>
 							{ containers.map( ( container ) =>
 								<Option
-									key={ container.containerId }
+									key={ container.containerID }
 									value={ container.publicId }>
 									{
 										0 === container.publicId ?

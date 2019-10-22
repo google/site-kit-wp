@@ -310,8 +310,8 @@ final class TagManager extends Module implements Module_With_Scopes {
 								unset( $option['account_id'] );
 							}
 							if ( isset( $option['container_id'] ) ) {
-								if ( ! isset( $option['containerId'] ) ) {
-									$option['containerId'] = $option['container_id'];
+								if ( ! isset( $option['containerID'] ) ) {
+									$option['containerID'] = $option['container_id'];
 								}
 								unset( $option['container_id'] );
 							}
@@ -319,7 +319,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 						}
 						$defaults = array(
 							'accountID'   => '',
-							'containerId' => '',
+							'containerID' => '',
 						);
 						return array_intersect_key( array_merge( $defaults, $option ), $defaults );
 					};
@@ -344,16 +344,16 @@ final class TagManager extends Module implements Module_With_Scopes {
 						$option = (array) $this->options->get( self::OPTION );
 						// TODO: Remove this at some point (migration of old option).
 						if ( isset( $option['container_id'] ) ) {
-							if ( ! isset( $option['containerId'] ) ) {
-								$option['containerId'] = $option['container_id'];
+							if ( ! isset( $option['containerID'] ) ) {
+								$option['containerID'] = $option['container_id'];
 							}
 							unset( $option['container_id'] );
 							$this->options->set( self::OPTION, $option );
 						}
-						if ( empty( $option['containerId'] ) ) {
+						if ( empty( $option['containerID'] ) ) {
 							return new WP_Error( 'container_id_not_set', __( 'Tag Manager container ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
-						return $option['containerId'];
+						return $option['containerID'];
 					};
 				case 'accounts-containers':
 					if ( ! empty( $data['accountID'] ) ) {
@@ -376,7 +376,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 				case 'connection':
 					return function() use ( $data ) {
 						$option = (array) $this->options->get( self::OPTION );
-						$keys   = array( 'accountID', 'containerId' );
+						$keys   = array( 'accountID', 'containerID' );
 						foreach ( $keys as $key ) {
 							if ( isset( $data[ $key ] ) ) {
 								$option[ $key ] = $data[ $key ];
@@ -397,13 +397,13 @@ final class TagManager extends Module implements Module_With_Scopes {
 						return true;
 					};
 				case 'container-id':
-					if ( ! isset( $data['containerId'] ) ) {
+					if ( ! isset( $data['containerID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ), array( 'status' => 400 ) );
 					}
 					return function() use ( $data ) {
 						$option                = (array) $this->options->get( self::OPTION );
-						$option['containerId'] = $data['containerId'];
+						$option['containerID'] = $data['containerID'];
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
@@ -412,22 +412,22 @@ final class TagManager extends Module implements Module_With_Scopes {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 					}
-					if ( ! isset( $data['containerId'] ) ) {
+					if ( ! isset( $data['containerID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ), array( 'status' => 400 ) );
 					}
 					return function() use ( $data ) {
-						if ( '0' === $data['containerId'] ) {
+						if ( '0' === $data['containerID'] ) {
 							$response = $this->create_container( $data['accountID'] );
 							if ( is_wp_error( $response ) ) {
 								return $response;
 							}
 
-							$data['containerId'] = $response;
+							$data['containerID'] = $response;
 						}
 						$option = array(
 							'accountID'   => $data['accountID'],
-							'containerId' => $data['containerId'],
+							'containerID' => $data['containerID'],
 						);
 						$this->options->set( self::OPTION, $option );
 						return $option;

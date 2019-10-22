@@ -52,13 +52,13 @@ add_action( 'rest_api_init', function () {
 		array(
 			'accountID'   => ACCOUNT_ID_A,
 			'publicId'    => PUBLIC_ID_X,
-			'containerId' => CONTAINER_ID_X,
+			'containerID' => CONTAINER_ID_X,
 			'name'        => 'Test Container X',
 		),
 		array(
 			'accountID'   => ACCOUNT_ID_B,
 			'publicId'    => PUBLIC_ID_Y,
-			'containerId' => CONTAINER_ID_Y,
+			'containerID' => CONTAINER_ID_Y,
 			'name'        => 'Test Container Y',
 		),
 	);
