@@ -87,7 +87,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 			hideHeader: false,
 			chartsEnabled: false,
 			links,
-			showUrls: true,
+			showURLs: true,
 		};
 
 		const dataTable = getDataTableFromData( dataMapped, headers, options );

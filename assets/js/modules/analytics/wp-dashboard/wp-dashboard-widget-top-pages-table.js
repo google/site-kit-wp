@@ -58,7 +58,7 @@ class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 			chartsEnabled: true,
 			links,
 			cap: 5,
-			showUrls: true,
+			showURLs: true,
 		};
 
 		const dataTable = getDataTableFromData( dataMapped, [], options );
