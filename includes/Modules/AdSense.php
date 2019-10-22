@@ -387,6 +387,22 @@ tag_partner: "site_kit"
 							}
 							$this->options->set( self::OPTION, $option );
 						}
+						// TODO: Remove this at some point (migration of old 'accountId' option).
+						if ( isset( $option['accountId'] ) ) {
+							if ( ! isset( $option['accountID'] ) ) {
+								$option['accountID'] = $option['accountId'];
+							}
+							unset( $option['accountId'] );
+						}
+
+						// TODO: Remove this at some point (migration of old 'clientId' option).
+						if ( isset( $option['clientId'] ) ) {
+							if ( ! isset( $option['clientID'] ) ) {
+								$option['clientID'] = $option['clientId'];
+							}
+							unset( $option['clientId'] );
+						}
+
 						$defaults = array(
 							'accountID'     => '',
 							'clientID'      => '',
