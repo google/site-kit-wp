@@ -36,7 +36,7 @@ const { Component } = wp.element;
 class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 	render() {
 		const { data } = this.props;
-		const { siteURL: siteUrl } = googlesitekit.admin;
+		const { siteURL: siteURL } = googlesitekit.admin;
 
 		if ( isDataZeroForReporting( data ) ) {
 			return null;
@@ -45,7 +45,7 @@ class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 		const links = [];
 		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
 			const [ title, url ] = row.dimensions;
-			links[ i ] = siteUrl + url;
+			links[ i ] = siteURL + url;
 
 			return [
 				title,

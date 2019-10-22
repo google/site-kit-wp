@@ -57,7 +57,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 
 	render() {
 		const { data } = this.props;
-		const { siteURL: siteUrl } = googlesitekit.admin;
+		const { siteURL: siteURL } = googlesitekit.admin;
 
 		if ( ! data || ! data.length ) {
 			return null;
@@ -75,7 +75,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 		const links = [];
 		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
 			const [ title, url ] = row.dimensions;
-			links[ i ] = siteUrl + url;
+			links[ i ] = siteURL + url;
 
 			return [
 				title,

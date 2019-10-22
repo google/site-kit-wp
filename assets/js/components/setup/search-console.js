@@ -63,9 +63,9 @@ class SearchConsole extends Component {
 			const { exactMatch } = await data.get( TYPE_MODULES, 'search-console', 'matched-sites' );
 
 			if ( exactMatch && sufficientPermissionLevels.includes( exactMatch.permissionLevel ) ) {
-				await data.set( TYPE_MODULES, 'search-console', 'site', { siteUrl: exactMatch.siteUrl } );
+				await data.set( TYPE_MODULES, 'search-console', 'site', { siteURL: exactMatch.siteURL } );
 
-				return this.props.searchConsoleSetup( exactMatch.siteUrl );
+				return this.props.searchConsoleSetup( exactMatch.siteURL );
 			}
 		} catch {}
 
@@ -88,10 +88,10 @@ class SearchConsole extends Component {
 
 				// We found exact match, continue the process in the background.
 				if ( exactMatch ) {
-					await this.insertPropertyToSearchConsole( exactMatch.siteUrl );
+					await this.insertPropertyToSearchConsole( exactMatch.siteURL );
 
 					// We have everything we need here. go to next step.
-					this.props.searchConsoleSetup( exactMatch.siteUrl );
+					this.props.searchConsoleSetup( exactMatch.siteURL );
 
 					return;
 				}
@@ -102,7 +102,7 @@ class SearchConsole extends Component {
 						/* translators: %d: the number of matching properties. %s: URL of recommended site. */
 						__( 'We found %d existing accounts. We recommend using the account “%s”. Please confirm or change below to use.', 'google-site-kit' ),
 						propertyMatches.length,
-						propertyMatches[ 0 ].siteUrl
+						propertyMatches[ 0 ].siteURL
 					);
 				} else {
 					errorMessage = __( 'We found no verified accounts, would you like to verify this URL?', 'google-site-kit' );
@@ -128,10 +128,10 @@ class SearchConsole extends Component {
 
 	/**
 	 * Insert siteURL to the option through the API
-	 * @param { string } siteUrl
+	 * @param { string } siteURL
 	 */
-	async insertPropertyToSearchConsole( siteUrl ) {
-		await data.set( TYPE_MODULES, 'search-console', 'site', { siteUrl } );
+	async insertPropertyToSearchConsole( siteURL ) {
+		await data.set( TYPE_MODULES, 'search-console', 'site', { siteURL } );
 		sendAnalyticsTrackingEvent( 'search_console_setup', 'add_new_sc_property' );
 
 		this.setState( {
@@ -144,15 +144,15 @@ class SearchConsole extends Component {
 	 * Event handler to set site url to option.
 	 */
 	submitPropertyEventHandler() {
-		const siteUrl = this.state.selectedURL;
+		const siteURL = this.state.selectedURL;
 		const { setErrorMessage } = this.props;
 
 		( async () => {
 			try {
-				await this.insertPropertyToSearchConsole( siteUrl );
+				await this.insertPropertyToSearchConsole( siteURL );
 
 				setErrorMessage( '' );
-				this.props.searchConsoleSetup( siteUrl );
+				this.props.searchConsoleSetup( siteURL );
 			} catch ( err ) {
 				setErrorMessage( err.message[ 0 ].message );
 				this.setState( {
