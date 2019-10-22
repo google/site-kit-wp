@@ -118,7 +118,7 @@ final class Tracking {
 	 * @return bool True if tracking enabled, and False if not.
 	 */
 	public function is_active() {
-		return (bool) get_option( self::TRACKING_OPTIN_KEY, true );
+		return (bool) get_option( self::TRACKING_OPTIN_KEY, false );
 	}
 
 	/**

@@ -22,6 +22,7 @@
 import Header from 'GoogleComponents/header';
 import Button from 'GoogleComponents/button';
 import Layout from 'GoogleComponents/layout/layout';
+import Optin from 'GoogleComponents/optin';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
 
@@ -103,6 +104,10 @@ class SetupUsingProxy extends Component {
 														>
 															{ __( 'Start setup', 'google-site-kit' ) }
 														</Button>
+														<Optin
+															id="opt-in"
+															name="optin"
+														/>
 													</div>
 												</div>
 											</div>
