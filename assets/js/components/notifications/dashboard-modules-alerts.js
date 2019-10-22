@@ -67,7 +67,7 @@ class DashboardModulesAlerts extends Component {
 						blockData={ notification.blockData || [] }
 						winImage={ notification.winImage ? `${ googlesitekit.admin.assetsRoot }images/${ notification.winImage }` : '' }
 						format={ notification.format || 'small' }
-						learnMoreUrl={ notification.learnMoreUrl || '' }
+						learnMoreURL={ notification.learnMoreURL || '' }
 						learnMoreDescription={ notification.learnMoreDescription || '' }
 						learnMoreLabel={ notification.learnMoreLabel || '' }
 						ctaLink={ notification.ctaURL || '' }
