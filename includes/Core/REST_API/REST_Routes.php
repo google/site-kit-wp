@@ -519,8 +519,8 @@ final class REST_Routes {
 							if ( filter_var( $query, FILTER_VALIDATE_URL ) ) {
 								// Translate public/alternate reference URLs to local if different.
 								$query_url = str_replace(
-									trailingslashit( $this->context->get_reference_site_url() ),
-									trailingslashit( home_url() ),
+									$this->context->get_reference_site_url(),
+									home_url(),
 									$query
 								);
 								$post_id = url_to_postid( $query_url );

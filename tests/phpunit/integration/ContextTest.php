@@ -108,6 +108,15 @@ class ContextTest extends TestCase {
 		$this->assertEquals( 'https://test.com', $context->get_reference_site_url() );
 		remove_filter( 'googlesitekit_site_url', $other_url_filter );
 
+		$trailing_slash_url = function () {
+			return 'https://test.com/';
+		};
+
+		// It always returns a URL without a trailing slash.
+		add_filter( 'googlesitekit_site_url', $trailing_slash_url );
+		$this->assertEquals( 'https://test.com', $context->get_reference_site_url() );
+		remove_filter( 'googlesitekit_site_url', $trailing_slash_url );
+
 		// If the filtered value returns an empty value, it falls back to the home_url.
 		add_filter( 'googlesitekit_site_url', '__return_empty_string' );
 		$this->assertEquals( $home_url, $context->get_reference_site_url() );
