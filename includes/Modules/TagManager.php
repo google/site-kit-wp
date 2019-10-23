@@ -33,16 +33,6 @@ final class TagManager extends Module implements Module_With_Scopes {
 	const OPTION = 'googlesitekit_tagmanager_settings';
 
 	/**
-	 * Temporary storage for very specific data for 'list-accounts' datapoint.
-	 *
-	 * Bad to have, but works for now.
-	 *
-	 * @since 1.0.0
-	 * @var array|null
-	 */
-	private $_list_accounts_data = null;
-
-	/**
 	 * Temporary storage for requested account ID while retrieving containers.
 	 *
 	 * Bad to have, but works for now.
@@ -359,9 +349,6 @@ final class TagManager extends Module implements Module_With_Scopes {
 						return $option['containerId'];
 					};
 				case 'accounts-containers':
-					if ( ! empty( $data['accountId'] ) ) {
-						$this->_list_accounts_data = $data;
-					}
 					$service = $this->get_service( 'tagmanager' );
 					return $service->accounts->listAccounts();
 				case 'containers':
@@ -502,9 +489,8 @@ final class TagManager extends Module implements Module_With_Scopes {
 					if ( 0 === count( $response['accounts'] ) ) {
 						return $response;
 					}
-					if ( is_array( $this->_list_accounts_data ) && isset( $this->_list_accounts_data['accountId'] ) ) {
-						$account_id                = $this->_list_accounts_data['accountId'];
-						$this->_list_accounts_data = null;
+					if ( $data['accountId'] ) {
+						$account_id = $data['accountId'];
 					} else {
 						$account_id = $response['accounts'][0]->getAccountId();
 					}
