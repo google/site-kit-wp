@@ -467,6 +467,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
 	protected function create_data_request( Data_Request $data ) {
+		$method    = $data->get_method();
+		$datapoint = $data->get_datapoint();
+
 		$this->_data = $data;
 
 		if ( 'GET' === $method ) {
@@ -934,6 +937,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
+		$method    = $data->get_method();
+		$datapoint = $data->get_datapoint();
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {

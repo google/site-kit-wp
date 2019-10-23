@@ -296,6 +296,9 @@ final class TagManager extends Module implements Module_With_Scopes {
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
 	protected function create_data_request( Data_Request $data ) {
+		$method    = $data->get_method();
+		$datapoint = $data->get_datapoint();
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'connection':
@@ -485,6 +488,9 @@ final class TagManager extends Module implements Module_With_Scopes {
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
+		$method    = $data->get_method();
+		$datapoint = $data->get_datapoint();
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'accounts-containers':
