@@ -33,16 +33,6 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	use Module_With_Scopes_Trait;
 
 	/**
-	 * Temporary storage for very specific data for 'verification' datapoint.
-	 *
-	 * Bad to have, but works for now.
-	 *
-	 * @since 1.0.0
-	 * @var array|null
-	 */
-	private $_siteverification_list_data = null;
-
-	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -99,11 +89,6 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 				case 'verified-sites':
 					return $this->get_siteverification_service()->webResource->listWebResource();
 				case 'verification':
-					// This is far from optimal and hacky, but works for now.
-					if ( ! empty( $data['siteURL'] ) ) {
-						$this->_siteverification_list_data = $data;
-					}
-
 					return $this->get_siteverification_service()->webResource->listWebResource();
 				case 'verification-token':
 					$existing_token = $this->authentication->verification_tag()->get();
@@ -244,9 +229,8 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 					return $data;
 				case 'verification':
-					if ( is_array( $this->_siteverification_list_data ) && isset( $this->_siteverification_list_data['siteURL'] ) ) {
-						$current_url                       = trailingslashit( $this->_siteverification_list_data['siteURL'] );
-						$this->_siteverification_list_data = null;
+					if ( $data['siteURL'] ) {
+						$current_url = trailingslashit( $data['siteURL'] );
 					} else {
 						$current_url = trailingslashit( $this->context->get_reference_site_url() );
 					}
