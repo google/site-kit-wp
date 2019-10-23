@@ -269,7 +269,17 @@ final class Activation {
 													</div>
 												</div>
 												<label for="opt-in">
-													Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>.
+													<?php
+														echo sprintf(
+															// translators: Placeholders here are for <a></a> tags.
+															esc_html__(
+																'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with %1$sGoogle Privacy Policy%2$s.',
+																'google-site-kit'
+															),
+															'<a href="https://policies.google.com/privacy" rel="noopener noreferrer">',
+															'</a>'
+														)
+													?>
 												</label>
 											</div>
 										</div>
