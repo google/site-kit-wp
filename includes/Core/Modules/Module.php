@@ -224,11 +224,11 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $datapoint Datapoint to get data for.
-	 * @param array  $data      Optional. Contextual data to provide. Default empty array.
+	 * @param string             $datapoint Datapoint to get data for.
+	 * @param array|Data_Request $data      Optional. Contextual data to provide. Default empty array.
 	 * @return mixed Data on success, or WP_Error on failure.
 	 */
-	final public function get_data( $datapoint, array $data = array() ) {
+	final public function get_data( $datapoint, $data = array() ) {
 		return $this->execute_data_request(
 			new Data_Request( 'GET', 'modules', $this->slug, $datapoint, $data )
 		);
@@ -239,11 +239,11 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $datapoint Datapoint to get data for.
-	 * @param array  $data      Data to set.
+	 * @param string             $datapoint Datapoint to get data for.
+	 * @param array|Data_Request $data Data to set.
 	 * @return mixed Response data on success, or WP_Error on failure.
 	 */
-	final public function set_data( $datapoint, array $data ) {
+	final public function set_data( $datapoint, $data ) {
 		return $this->execute_data_request(
 			new Data_Request( 'POST', 'modules', $this->slug, $datapoint, $data )
 		);
