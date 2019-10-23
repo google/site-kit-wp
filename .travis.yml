@@ -51,6 +51,7 @@ before_install:
 
 before_script:
   - npm install || exit 1
+  - composer global require humbug/php-scoper
   - composer install
   - |
     if [[ "$PHP" == "1" ]] || [[ "$JS" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
