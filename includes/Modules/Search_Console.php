@@ -153,18 +153,8 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 				case 'matched-sites':
 					return $this->get_webmasters_service()->sites->listSites();
 				case 'searchanalytics':
-					$data = array_merge(
-						array(
-							'compareDateRanges' => false,
-							'dateRange'         => 'last-28-days',
-							'dimensions'        => '',
-							'url'               => '',
-						),
-						$data
-					);
-
 					list ( $start_date, $end_date ) = $this->parse_date_range(
-						$data['dateRange'],
+						$data['dateRange'] ?: 'last-28-days',
 						$data['compareDateRanges'] ? 2 : 1,
 						3
 					);
@@ -173,7 +163,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						'page'       => $data['url'],
 						'start_date' => $start_date,
 						'end_date'   => $end_date,
-						'dimensions' => explode( ',', $data['dimensions'] ),
+						'dimensions' => array_filter( explode( ',', $data['dimensions'] ) ),
 					);
 
 					if ( isset( $data['limit'] ) ) {
