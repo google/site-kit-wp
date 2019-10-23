@@ -127,6 +127,7 @@ class FakeModule extends Module {
 		switch ( "$method:$datapoint" ) {
 			case 'GET:test-request':
 				return function () use ( $method, $datapoint, $data ) {
+					$data = $data->get_data();
 					return json_encode( compact( 'method', 'datapoint', 'data' ) );
 				};
 		}
