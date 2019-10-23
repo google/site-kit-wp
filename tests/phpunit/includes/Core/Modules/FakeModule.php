@@ -166,7 +166,9 @@ class FakeModule extends Module {
 	 *
 	 */
 	protected function setup_info() {
-		return array();
+		return array(
+			'slug' => 'fake-module',
+		);
 	}
 
 	/**
