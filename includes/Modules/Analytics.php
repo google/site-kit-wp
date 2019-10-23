@@ -1210,7 +1210,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 */
 	private function is_adsense_request( $data ) {
 		foreach ( (array) $data['metrics'] as $metric ) {
-			if ( isset( $metric['expression'] ) && 0 === strpos( $metric['expression'], 'ga:adsense' ) ) {
+			if ( isset( $metric->expression ) && 0 === strpos( $metric->expression, 'ga:adsense' ) ) {
 				return true;
 			}
 		}
