@@ -62,12 +62,12 @@ class Data_Request implements \ArrayAccess {
 	/**
 	 * Data_Request constructor.
 	 *
-	 * @param string $method Request method.
-	 * @param string $type Request type.
-	 * @param string $identifier Request identifier.
-	 * @param string $datapoint Request datapoint.
-	 * @param array  $data Request data parameters.
-	 * @param string $key Request cache key.
+	 * @param string     $method Request method.
+	 * @param string     $type Request type.
+	 * @param string     $identifier Request identifier.
+	 * @param string     $datapoint Request datapoint.
+	 * @param array|self $data Request data parameters.
+	 * @param string     $key Request cache key.
 	 */
 	public function __construct(
 		$method = null,
@@ -81,7 +81,7 @@ class Data_Request implements \ArrayAccess {
 		$this->type       = $type;
 		$this->identifier = $identifier;
 		$this->datapoint  = $datapoint;
-		$this->data       = $data;
+		$this->data       = $data instanceof self ? $data->get_data() : $data;
 		$this->key        = $key;
 	}
 

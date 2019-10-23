@@ -44,9 +44,14 @@ class Data_RequestTest extends TestCase {
 	}
 
 	public function test_get_data() {
-		$data = new Data_Request( 'GET', 'test-type', 'test-identifier', 'test-datapoint', array( 'test-data' ) );
+		$data_a = new Data_Request( 'GET', 'test-type', 'test-identifier', 'test-datapoint', array( 'test-data' ) );
 
-		$this->assertEquals( array( 'test-data' ), $data->get_data() );
+		$this->assertEquals( array( 'test-data' ), $data_a->get_data() );
+
+		// Data can come from another Data Request.
+		$data_b = new Data_Request( 'GET', 'test-type', 'test-identifier', 'test-datapoint', $data_a );
+
+		$this->assertEquals( array( 'test-data' ), $data_b->get_data() );
 	}
 
 	public function test_get_key() {
