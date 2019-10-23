@@ -58,7 +58,7 @@ function filter_by_account_id( $items, $account_id ) {
 		array_filter(
 			$items,
 			function ( $item ) use ( $account_id ) {
-				return $item['accountID'] === $account_id;
+				return $item['accountId'] === $account_id;
 			}
 		)
 	);
@@ -69,7 +69,7 @@ function filter_by_property_id( $items, $property_id ) {
 		array_filter(
 			$items,
 			function ( $item ) use ( $property_id ) {
-				return $item['internalWebPropertyID'] === get_internal_id_by_property( $property_id );
+				return $item['internalWebPropertyId'] === get_internal_id_by_property( $property_id );
 			}
 		)
 	);
@@ -96,37 +96,37 @@ add_action( 'rest_api_init', function () {
 	);
 	$properties = array(
 		array(
-			'accountID'             => ACCOUNT_ID_A,
+			'accountId'             => ACCOUNT_ID_A,
 			'id'                    => PROPERTY_ID_X,
-			'internalWebPropertyID' => INTERNAL_PROPERTY_ID_X,
+			'internalWebPropertyId' => INTERNAL_PROPERTY_ID_X,
 			'kind'                  => 'analytics#webproperty',
 			'level'                 => 'STANDARD',
 			'name'                  => 'Test Property X',
-			'websiteURL'            => get_reference_url(),
+			'websiteUrl'            => get_reference_url(),
 			'permissions'           => array(
 				'effective' => array( 'READ_AND_ANALYZE' ),
 			),
 		),
 		array(
-			'accountID'             => ACCOUNT_ID_B,
+			'accountId'             => ACCOUNT_ID_B,
 			'id'                    => PROPERTY_ID_Y,
-			'internalWebPropertyID' => INTERNAL_PROPERTY_ID_Y,
+			'internalWebPropertyId' => INTERNAL_PROPERTY_ID_Y,
 			'kind'                  => 'analytics#webproperty',
 			'level'                 => 'STANDARD',
 			'name'                  => 'Test Property Y',
-			'websiteURL'            => 'https://y.example.com',
+			'websiteUrl'            => 'https://y.example.com',
 			'permissions'           => array(
 				'effective' => array( 'READ_AND_ANALYZE' ),
 			),
 		),
 		array(
-			'accountID'             => ACCOUNT_ID_B,
+			'accountId'             => ACCOUNT_ID_B,
 			'id'                    => PROPERTY_ID_Z,
-			'internalWebPropertyID' => INTERNAL_PROPERTY_ID_Z,
+			'internalWebPropertyId' => INTERNAL_PROPERTY_ID_Z,
 			'kind'                  => 'analytics#webproperty',
 			'level'                 => 'STANDARD',
 			'name'                  => 'Test Property Z',
-			'websiteURL'            => 'https://z.example.com',
+			'websiteUrl'            => 'https://z.example.com',
 			'permissions'           => array(
 				'effective' => array( 'READ_AND_ANALYZE' ),
 			),
@@ -134,40 +134,40 @@ add_action( 'rest_api_init', function () {
 	);
 	$profiles   = array(
 		array(
-			'accountID'             => ACCOUNT_ID_A,
+			'accountId'             => ACCOUNT_ID_A,
 			'id'                    => PROFILE_ID_X,
 			'kind'                  => 'analytics#profile',
 			'name'                  => 'Test Profile X',
 			'type'                  => 'WEB',
-			'webPropertyID'         => PROPERTY_ID_X,
-			'internalWebPropertyID' => INTERNAL_PROPERTY_ID_X,
-			'websiteURL'            => get_reference_url(),
+			'webPropertyId'         => PROPERTY_ID_X,
+			'internalWebPropertyId' => INTERNAL_PROPERTY_ID_X,
+			'websiteUrl'            => get_reference_url(),
 			'permissions'           => array(
 				'effective' => array( 'READ_AND_ANALYZE' ),
 			),
 		),
 		array(
-			'accountID'             => ACCOUNT_ID_B,
+			'accountId'             => ACCOUNT_ID_B,
 			'id'                    => PROFILE_ID_Y,
 			'kind'                  => 'analytics#profile',
 			'name'                  => 'Test Profile Y',
 			'type'                  => 'WEB',
-			'webPropertyID'         => PROPERTY_ID_Y,
-			'internalWebPropertyID' => INTERNAL_PROPERTY_ID_Y,
-			'websiteURL'            => 'https://example.com',
+			'webPropertyId'         => PROPERTY_ID_Y,
+			'internalWebPropertyId' => INTERNAL_PROPERTY_ID_Y,
+			'websiteUrl'            => 'https://example.com',
 			'permissions'           => array(
 				'effective' => array( 'READ_AND_ANALYZE' ),
 			),
 		),
 		array(
-			'accountID'             => ACCOUNT_ID_B,
+			'accountId'             => ACCOUNT_ID_B,
 			'id'                    => PROFILE_ID_Z,
 			'kind'                  => 'analytics#profile',
 			'name'                  => 'Test Profile Z',
 			'type'                  => 'WEB',
-			'webPropertyID'         => PROPERTY_ID_Z,
-			'internalWebPropertyID' => INTERNAL_PROPERTY_ID_Z,
-			'websiteURL'            => 'https://z.example.com',
+			'webPropertyId'         => PROPERTY_ID_Z,
+			'internalWebPropertyId' => INTERNAL_PROPERTY_ID_Z,
+			'websiteUrl'            => 'https://z.example.com',
 			'permissions'           => array(
 				'effective' => array( 'READ_AND_ANALYZE' ),
 			),
@@ -184,7 +184,7 @@ add_action( 'rest_api_init', function () {
 				$matched_property = array_filter(
 					$properties,
 					function ( $property ) {
-						return $property['websiteURL'] === home_url();
+						return $property['websiteUrl'] === home_url();
 					}
 				);
 

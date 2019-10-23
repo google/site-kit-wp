@@ -30,7 +30,7 @@ function filter_by_account_id( $items, $account_id ) {
 		array_filter(
 			$items,
 			function ( $item ) use ( $account_id ) {
-				return $item['accountID'] === $account_id;
+				return $item['accountId'] === $account_id;
 			}
 		)
 	);
@@ -40,25 +40,25 @@ add_action( 'rest_api_init', function () {
 
 	$accounts   = array(
 		array(
-			'accountID' => ACCOUNT_ID_A,
+			'accountId' => ACCOUNT_ID_A,
 			'name'      => 'Test Account A',
 		),
 		array(
-			'accountID' => ACCOUNT_ID_B,
+			'accountId' => ACCOUNT_ID_B,
 			'name'      => 'Test Account B',
 		),
 	);
 	$containers = array(
 		array(
-			'accountID'   => ACCOUNT_ID_A,
+			'accountId'   => ACCOUNT_ID_A,
 			'publicId'    => PUBLIC_ID_X,
-			'containerID' => CONTAINER_ID_X,
+			'containerId' => CONTAINER_ID_X,
 			'name'        => 'Test Container X',
 		),
 		array(
-			'accountID'   => ACCOUNT_ID_B,
+			'accountId'   => ACCOUNT_ID_B,
 			'publicId'    => PUBLIC_ID_Y,
-			'containerID' => CONTAINER_ID_Y,
+			'containerId' => CONTAINER_ID_Y,
 			'name'        => 'Test Container Y',
 		),
 	);
@@ -68,7 +68,7 @@ add_action( 'rest_api_init', function () {
 		'modules/tagmanager/data/accounts-containers',
 		array(
 			'callback' => function ( $request ) use ( $accounts, $containers ) {
-				$account_id = $request['accountID'] ?: $accounts[0]['accountID'];
+				$account_id = $request['accountID'] ?: $accounts[0]['accountId'];
 
 				return array(
 					'accounts'   => $accounts,
