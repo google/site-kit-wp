@@ -53,6 +53,13 @@ class Data_Request implements \ArrayAccess {
 	protected $data;
 
 	/**
+	 * Request key.
+	 *
+	 * @var string
+	 */
+	protected $key;
+
+	/**
 	 * Data_Request constructor.
 	 *
 	 * @param string $method Request method.
@@ -60,13 +67,22 @@ class Data_Request implements \ArrayAccess {
 	 * @param string $identifier Request identifier.
 	 * @param string $datapoint Request datapoint.
 	 * @param array  $data Request data parameters.
+	 * @param string $key Request cache key.
 	 */
-	public function __construct( $method, $type = null, $identifier = null, $datapoint = null, $data = array() ) {
+	public function __construct(
+		$method = null,
+		$type = null,
+		$identifier = null,
+		$datapoint = null,
+		$data = array(),
+		$key = null
+	) {
 		$this->method     = strtoupper( $method );
 		$this->type       = $type;
 		$this->identifier = $identifier;
 		$this->datapoint  = $datapoint;
 		$this->data       = $data;
+		$this->key        = $key;
 	}
 
 	/**
@@ -103,6 +119,15 @@ class Data_Request implements \ArrayAccess {
 	 */
 	public function get_datapoint() {
 		return $this->datapoint;
+	}
+
+	/**
+	 * Gets the request key.
+	 *
+	 * @return string
+	 */
+	public function get_key() {
+		return $this->key;
 	}
 
 	/**
