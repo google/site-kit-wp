@@ -122,6 +122,14 @@ class FakeModule extends Module {
 	 *
 	 */
 	protected function create_data_request( $method, $datapoint, array $data = array() ) {
+
+		switch ( "$method:$datapoint" ) {
+			case 'GET:test-request':
+				return function () use ( $method, $datapoint, $data ) {
+					return json_encode( compact( 'method', 'datapoint', 'data' ) );
+				};
+		}
+
 		return function () {
 		};
 	}
@@ -138,6 +146,11 @@ class FakeModule extends Module {
 	 *
 	 */
 	protected function parse_data_response( $method, $datapoint, $response ) {
+		switch ( "$method:$datapoint" ) {
+			case 'GET:test-request':
+				return json_decode( $response/* true/false */ );
+		}
+
 		return '';
 	}
 

@@ -94,6 +94,12 @@ class ModuleTest extends TestCase {
 		$this->assertEquals( 2, $method->getNumberOfParameters() );
 		// Number of required parameters can decrease while preserving B/C, but not increase
 		$this->assertEquals( 1, $method->getNumberOfRequiredParameters() );
+
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$response = $module->get_data( 'test-request', array( 'foo' => 'bar' ) );
+		$this->assertEquals( 'GET', $response->method );
+		$this->assertEquals( 'test-request', $response->datapoint );
+		$this->assertEquals( array( 'foo' => 'bar' ), (array) $response->data );
 	}
 
 	public function test_set_data() {
