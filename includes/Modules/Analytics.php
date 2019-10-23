@@ -35,13 +35,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	const OPTION = 'googlesitekit_analytics_settings';
 
 	/**
-	 * Temporary storage for datapoint $data object for use in response parsing.
-	 *
-	 * @var array
-	 */
-	private $_data;
-
-	/**
 	 * Temporary storage for adsense request.
 	 *
 	 * @var bool
@@ -469,8 +462,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	protected function create_data_request( Data_Request $data ) {
 		$method    = $data->get_method();
 		$datapoint = $data->get_datapoint();
-
-		$this->_data = $data;
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
