@@ -81,7 +81,7 @@ class Data_Request implements \ArrayAccess {
 		$this->type       = $type;
 		$this->identifier = $identifier;
 		$this->datapoint  = $datapoint;
-		$this->data       = $data instanceof self ? $data->get_data() : $data;
+		$this->data       = $data instanceof self ? $data->get_data() : (array) $data;
 		$this->key        = $key;
 	}
 
@@ -136,7 +136,7 @@ class Data_Request implements \ArrayAccess {
 	 * @return array
 	 */
 	public function get_data() {
-		return $this->data;
+		return (array) $this->data;
 	}
 
 	/**
