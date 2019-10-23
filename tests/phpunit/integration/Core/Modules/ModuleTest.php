@@ -98,9 +98,17 @@ class ModuleTest extends TestCase {
 
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$response = $module->get_data( 'test-request', array( 'foo' => 'bar' ) );
+		$this->assertInternalType( 'object', $response );
 		$this->assertEquals( 'GET', $response->method );
 		$this->assertEquals( 'test-request', $response->datapoint );
 		$this->assertEquals( array( 'foo' => 'bar' ), (array) $response->data );
+
+		// Test that $data is available in parse_data_response
+		$response = $module->get_data( 'test-request', array( 'foo' => 'bar', 'asArray' => true ) );
+		$this->assertInternalType( 'array', $response );
+		$this->assertEquals( 'GET', $response['method'] );
+		$this->assertEquals( 'test-request', $response['datapoint'] );
+		$this->assertEquals( array( 'foo' => 'bar', 'asArray' => true ), $response['data'] );
 	}
 
 	public function test_set_data() {

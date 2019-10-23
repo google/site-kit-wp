@@ -154,7 +154,7 @@ class FakeModule extends Module {
 
 		switch ( "$method:$datapoint" ) {
 			case 'GET:test-request':
-				return json_decode( $response/* true/false */ );
+				return json_decode( $response, $data['asArray'] );
 		}
 
 		return '';
