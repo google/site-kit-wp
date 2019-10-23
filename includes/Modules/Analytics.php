@@ -35,13 +35,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	const OPTION = 'googlesitekit_analytics_settings';
 
 	/**
-	 * Temporary storage for adsense request.
-	 *
-	 * @var bool
-	 */
-	private $_is_adsense_request = false;
-
-	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -685,8 +678,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						(array) $data['metrics']
 					);
 					$request->setMetrics( $metrics );
-					// TODO: refactor this when $data is available in parse_data_response.
-					$this->detect_adsense_request_from_metrics( $metrics );
 
 					// Order by.
 					$orderby = array_map(
@@ -1055,7 +1046,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 					return $response;
 				case 'report':
-					if ( $this->_is_adsense_request ) {
+					if ( $this->is_adsense_request( $data ) ) {
 						if ( isset( $response->error ) ) {
 							$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 						} else {
@@ -1227,15 +1218,19 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	}
 
 	/**
-	 * Determines whether the given metrics are for an adsense request and sets the temporary state if found.
+	 * Determines whether the given request is for an adsense request.
 	 *
-	 * @param \Google_Service_AnalyticsReporting_Metric[] $metrics Array of metrics objects.
+	 * @param Data_Request $data Data request object.
+	 *
+	 * @return bool
 	 */
-	private function detect_adsense_request_from_metrics( array $metrics ) {
-		foreach ( $metrics as $metric ) {
-			if ( 0 === strpos( $metric->getExpression(), 'ga:adsense' ) ) {
-				$this->_is_adsense_request = true;
+	private function is_adsense_request( $data ) {
+		foreach ( (array) $data['metrics'] as $metric ) {
+			if ( isset( $metric['expression'] ) && 0 === strpos( $metric['expression'], 'ga:adsense' ) ) {
+				return true;
 			}
 		}
+
+		return false;
 	}
 }
