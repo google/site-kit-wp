@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Util\Data_Request;
 use Google_Client;
 use Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -113,15 +114,13 @@ class FakeModule extends Module {
 	/**
 	 * Creates a request object for the given datapoint.
 	 *
-	 * @param string $method Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to get request object for.
-	 * @param array $data Optional. Contextual data to provide or set. Default empty array.
-	 *
-	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 * @since 1.0.0
 	 *
+	 * @param Data_Request $data Data request object.
+	 *
+	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
-	protected function create_data_request( $method, $datapoint, array $data = array() ) {
+	protected function create_data_request( Data_Request $data ) {
 
 		switch ( "$method:$datapoint" ) {
 			case 'GET:test-request':
@@ -137,15 +136,14 @@ class FakeModule extends Module {
 	/**
 	 * Parses a response for the given datapoint.
 	 *
-	 * @param string $method Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to resolve response for.
-	 * @param mixed $response Response object or array.
-	 *
-	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 * @since 1.0.0
 	 *
+	 * @param Data_Request $data Data request object.
+	 * @param mixed $response Request response.
+	 *
+	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
-	protected function parse_data_response( $method, $datapoint, $response ) {
+	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "$method:$datapoint" ) {
 			case 'GET:test-request':
 				return json_decode( $response/* true/false */ );

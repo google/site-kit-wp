@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Util\Data_Request;
 use Google_Client;
 use Google_Service;
 use Google_Service_Exception;
@@ -228,7 +229,9 @@ abstract class Module {
 	 * @return mixed Data on success, or WP_Error on failure.
 	 */
 	final public function get_data( $datapoint, array $data = array() ) {
-		return $this->execute_data_request( 'GET', $datapoint, $data );
+		return $this->execute_data_request(
+			new Data_Request( 'GET', 'modules', $this->slug, $datapoint, $data )
+		);
 	}
 
 	/**
@@ -241,7 +244,9 @@ abstract class Module {
 	 * @return mixed Response data on success, or WP_Error on failure.
 	 */
 	final public function set_data( $datapoint, array $data ) {
-		return $this->execute_data_request( 'POST', $datapoint, $data );
+		return $this->execute_data_request(
+			new Data_Request( 'POST', 'modules', $this->slug, $datapoint, $data )
+		);
 	}
 
 	/**
@@ -391,36 +396,34 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to get request object for.
-	 * @param array  $data      Optional. Contextual data to provide or set. Default empty array.
+	 * @param Data_Request $data Data request object.
+	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
-	abstract protected function create_data_request( $method, $datapoint, array $data = array() );
+	abstract protected function create_data_request( Data_Request $data );
 
 	/**
 	 * Parses a response for the given datapoint.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to resolve response for.
-	 * @param mixed  $response  Response object or array.
+	 * @param Data_Request $data Data request object.
+	 * @param mixed        $response Request response.
+	 *
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
-	abstract protected function parse_data_response( $method, $datapoint, $response );
+	abstract protected function parse_data_response( Data_Request $data, $response );
 
 	/**
 	 * Creates a request object for the given datapoint.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to get request object for.
-	 * @param array  $data      Optional. Contextual data to provide or set. Default empty array.
+	 * @param Data_Request $data Data request object.
+	 *
 	 * @return mixed Data on success, or WP_Error on failure.
 	 */
-	final protected function execute_data_request( $method, $datapoint, array $data = array() ) {
+	final protected function execute_data_request( Data_Request $data ) {
 		$client     = $this->get_client();
 		$orig_defer = $client->shouldDefer();
 		$client->setDefer( true );
