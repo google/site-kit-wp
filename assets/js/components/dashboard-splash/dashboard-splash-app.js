@@ -114,6 +114,8 @@ class DashboardSplashApp extends Component {
 			__webpack_public_path__ = window.googlesitekit.publicPath;
 		}
 
+		const { proxySetupURL } = googlesitekit.admin;
+
 		if ( ! this.state.showAuthenticationSetupWizard && ! this.state.showModuleSetupWizard ) {
 			let introDescription, outroDescription, buttonLabel, onButtonClick;
 
@@ -150,7 +152,10 @@ class DashboardSplashApp extends Component {
 
 		let Setup = null;
 
-		if ( this.state.showAuthenticationSetupWizard ) {
+		// proxySetupURL is only set if the proxy is in use.
+		if ( proxySetupURL ) {
+			Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wizard-proxy" */'../setup/setup-proxy' ) );
+		} else if ( this.state.showAuthenticationSetupWizard ) {
 			Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wizard" */'../setup' ) );
 		} else {
 			Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wrapper" */'../setup/setup-wrapper' ) );

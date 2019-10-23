@@ -147,6 +147,7 @@ final class Plugin {
 		$reset = new Core\Util\Reset( $this->context, $options );
 
 		( new Core\Util\Activation( $this->context, $options, $assets ) )->register();
+		( new Core\Util\Beta_Migration( $this->context ) )->register();
 		( new Core\Util\Uninstallation( $reset ) )->register();
 		( new Core\Util\Updater() )->register();
 
