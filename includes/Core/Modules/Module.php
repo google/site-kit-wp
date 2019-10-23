@@ -282,7 +282,14 @@ abstract class Module {
 		$results       = array();
 		foreach ( $datasets as $dataset ) {
 			if ( ! $dataset instanceof Data_Request ) {
-				continue;
+				$dataset = new Data_Request(
+					'GET',
+					'modules',
+					$dataset->identifier,
+					$dataset->datapoint,
+					(array) $dataset->data,
+					$dataset->key
+				);
 			}
 
 			/* @var Data_Request $dataset Request object. */
