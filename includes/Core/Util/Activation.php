@@ -160,6 +160,8 @@ final class Activation {
 						}
 
 						jQuery(document).ready(function() {
+							var trackingScriptPresent = !! googlesitekit.admin.trackingOptIn;
+
 							if ( googlesitekit.admin.trackingOptIn ) {
 								jQuery('#opt-in').attr( 'checked', googlesitekit.admin.trackingOptIn );
 							}
@@ -203,6 +205,24 @@ final class Activation {
 								} )
 									.then( function() {
 										jQuery(self).attr( 'disabled', null );
+
+										var trackingId = googlesitekit.admin.trackingID;
+										var trackingScriptPresent = jQuery( `script[src="https://www.googletagmanager.com/gtag/js?id=${ trackingId }"]` ).length > 0;
+
+										if ( ! trackingScriptPresent ) {
+											jQuery( 'body' ).append( `
+												\<script async src="https://www.googletagmanager.com/gtag/js?id=${ trackingId }"\>\</script\><?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+											` );
+											jQuery( 'body' ).append( `
+												\<script\>
+													window.dataLayer = window.dataLayer || [];
+													function gtag(){dataLayer.push(arguments);}
+													gtag('js', new Date());
+													gtag('config', '${ trackingId }');
+													window.googlesitekitTrackingEnabled = true;
+												\</script\>
+											` );
+										}
 									} )
 									.catch( function( err ) {
 										jQuery(self).attr( 'checked', ! checked );

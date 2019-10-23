@@ -42,20 +42,24 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 	it( 'should have tracking code when opted in', async () => {
 		await page.waitForSelector( '#opt-in' );
 
+		// Make sure the script tags are not yet loaded on the page.
+		await expect( page ).not.toMatchElement( 'script[src^="https://www.google-analytics.com/analytics.js"]' );
+		await expect( page ).not.toMatchElement( 'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]' );
+
 		// Opt-in to tracking to ensure the checkbox is selected.
 		await Promise.all( [
 			page.waitForResponse( ( res ) => res.url().match( 'wp/v2/settings' ) ),
 			expect( page ).toClick( '#opt-in' ),
 		] );
 
-		// Reload the page to ensure the GA script is loaded.
-		await page.reload();
-		// Click on Admin Settings Tab.
-		await page.waitForSelector( '.mdc-tab-bar' );
-		await expect( page ).toClick( 'button.mdc-tab', { text: 'Admin Settings' } );
-		await page.waitForSelector( '#opt-in' );
-
 		expect( await page.$eval( '#opt-in', ( el ) => el.checked ) ).toBe( true );
+
+		// Ensure the script tags are injected into the page if they weren't
+		// loaded already.
+		await Promise.all( [
+			page.waitForSelector( 'script[src^="https://www.google-analytics.com/analytics.js"]' ),
+			page.waitForSelector( 'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]' ),
+		] );
 
 		// Ensure analytics script tag exists.
 		await expect( page ).toMatchElement( 'script[src^="https://www.google-analytics.com/analytics.js"]' );
