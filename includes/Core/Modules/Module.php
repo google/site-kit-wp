@@ -428,7 +428,7 @@ abstract class Module {
 		$orig_defer = $client->shouldDefer();
 		$client->setDefer( true );
 
-		$request = $this->create_data_request( $method, $datapoint, $data );
+		$request = $this->create_data_request( $data );
 
 		$client->setDefer( $orig_defer );
 
@@ -443,14 +443,14 @@ abstract class Module {
 				$response = $client->execute( $request );
 			}
 		} catch ( Exception $e ) {
-			return $this->exception_to_error( $e, $datapoint );
+			return $this->exception_to_error( $e, $data->get_datapoint() );
 		}
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
 
-		return $this->parse_data_response( $method, $datapoint, $response );
+		return $this->parse_data_response( $data, $response );
 	}
 
 	/**
