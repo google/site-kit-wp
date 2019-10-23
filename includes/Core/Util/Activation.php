@@ -271,7 +271,7 @@ final class Activation {
 												<label for="opt-in">
 													<?php
 														echo sprintf(
-															// translators: Placeholders here are for <a></a> tags.
+															// translators: Placeholders here are for <a> + </a> tags.
 															esc_html__(
 																'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with %1$sGoogle Privacy Policy%2$s.',
 																'google-site-kit'
