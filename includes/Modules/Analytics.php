@@ -593,7 +593,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						return $has_access_to_property;
 					};
 				case 'report':
-					$data = array_merge(
+					$date_range = $data['dateRange'] ?: 'last-28-days';
+					$data       = array_merge(
 						array(
 							'dateRange'         => 'last-28-days',
 							'url'               => '',
@@ -636,7 +637,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 					$date_ranges = array(
 						$this->parse_date_range(
-							$data['dateRange'],
+							$date_range,
 							$data['compareDateRanges'] ? 2 : 1
 						),
 					);
@@ -644,7 +645,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					// When using multiple date ranges, it changes the structure of the response,
 					// where each date range becomes an item in a list.
 					if ( ! empty( $data['multiDateRange'] ) ) {
-						$date_ranges[] = $this->parse_date_range( $data['dateRange'], 1, 1, true );
+						$date_ranges[] = $this->parse_date_range( $date_range, 1, 1, true );
 					}
 
 					$date_ranges = array_map(
