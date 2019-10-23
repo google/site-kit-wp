@@ -12,7 +12,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\E2E\Modules\TagManager;
+namespace Google\Site_Kit\Tests\E2E\Modules\Tag_Manager;
 
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 

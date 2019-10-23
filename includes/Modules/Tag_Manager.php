@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\TagManager
+ * Class Google\Site_Kit\Modules\Tag_Manager
  *
  * @package   Google\Site_Kit
  * @copyright 2019 Google LLC
@@ -26,7 +26,7 @@ use Exception;
  * @access private
  * @ignore
  */
-final class TagManager extends Module implements Module_With_Scopes {
+final class Tag_Manager extends Module implements Module_With_Scopes {
 	use Module_With_Scopes_Trait;
 
 	const OPTION = 'googlesitekit_tagmanager_settings';
@@ -452,7 +452,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 
 		$client->setDefer( false );
 
-		$container = new \Google_Service_TagManager_Container();
+		$container = new \Google_Service_Tag_Manager_Container();
 		$container->setName( remove_accents( get_bloginfo( 'name' ) ) );
 		$container->setUsageContext( array( 'web' ) );
 
@@ -571,7 +571,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 	 */
 	protected function setup_services( Google_Client $client ) {
 		return array(
-			'tagmanager' => new \Google_Service_TagManager( $client ),
+			'tagmanager' => new \Google_Service_Tag_Manager( $client ),
 		);
 	}
 }
