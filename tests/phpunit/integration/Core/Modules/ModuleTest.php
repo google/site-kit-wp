@@ -127,8 +127,9 @@ class ModuleTest extends TestCase {
 	public function test_get_datapoints() {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$datapoints = $module->get_datapoints();
-
-		$this->assertEquals( 'array', gettype( $datapoints ) );
+		$this->assertEqualSets(
+			array( 'test-request' ),
+			$module->get_datapoints()
+		);
 	}
 }

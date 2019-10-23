@@ -108,7 +108,9 @@ class FakeModule extends Module {
 	 *
 	 */
 	protected function get_datapoint_services() {
-		return array();
+		return array(
+			'test-request' => '',
+		);
 	}
 
 	/**
