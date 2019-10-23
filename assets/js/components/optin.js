@@ -30,7 +30,7 @@ class Optin extends Component {
 		super( props );
 
 		this.state = {
-			optIn: googlesitekit.admin.trackingOptin || false,
+			optIn: !! googlesitekit.admin.trackingOptin,
 			error: false,
 		};
 

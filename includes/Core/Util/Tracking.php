@@ -196,7 +196,7 @@ final class Tracking {
 		$args = array(
 			'type'         => 'boolean',
 			'description'  => __( 'Allowing tracking of anonymous usage stats.', 'google-site-kit' ),
-			'default'      => true,
+			'default'      => false,
 			'show_in_rest' => true,
 		);
 		register_setting( 'google-site-kit', self::TRACKING_OPTIN_KEY, $args );

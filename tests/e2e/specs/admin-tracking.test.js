@@ -51,6 +51,7 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 		// Reload the page to ensure the GA script is loaded.
 		await page.reload();
 		// Click on Admin Settings Tab.
+		await page.waitForSelector( '.mdc-tab-bar' );
 		await expect( page ).toClick( 'button.mdc-tab', { text: 'Admin Settings' } );
 		await page.waitForSelector( '#opt-in' );
 
