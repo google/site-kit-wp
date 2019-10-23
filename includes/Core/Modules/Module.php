@@ -278,21 +278,27 @@ abstract class Module {
 		$datapoint_services = $this->get_datapoint_services();
 		$service_batches    = array();
 
-		$results = array();
+		$data_requests = array();
+		$results       = array();
 		foreach ( $datasets as $dataset ) {
-			if ( $this->slug !== $dataset->identifier ) {
+			if ( ! $dataset instanceof Data_Request ) {
 				continue;
 			}
 
-			if ( ! isset( $datapoint_services[ $dataset->datapoint ] ) ) {
+			/* @var Data_Request $dataset Request object. */
+			if ( $this->slug !== $dataset->get_identifier() ) {
 				continue;
 			}
 
-			$key       = ! empty( $dataset->key ) ? $dataset->key : wp_rand();
-			$datapoint = $dataset->datapoint;
-			$data      = ! empty( $dataset->data ) ? (array) $dataset->data : array();
+			if ( ! isset( $datapoint_services[ $dataset->get_datapoint() ] ) ) {
+				continue;
+			}
 
-			$request = $this->create_data_request( 'GET', $datapoint, $data );
+			$key                   = $dataset->get_key() ?: wp_rand();
+			$data_requests[ $key ] = $dataset;
+			$datapoint             = $dataset->get_datapoint();
+			$request               = $this->create_data_request( $dataset );
+
 			if ( is_wp_error( $request ) ) {
 				$results[ $key ] = $request;
 				continue;
@@ -302,7 +308,7 @@ abstract class Module {
 				try {
 					$results[ $key ] = call_user_func( $request );
 					if ( ! is_wp_error( $results[ $key ] ) ) {
-						$results[ $key ] = $this->parse_data_response( 'GET', $datapoint, $results[ $key ] );
+						$results[ $key ] = $this->parse_data_response( $dataset, $results[ $key ] );
 					}
 				} catch ( Exception $e ) {
 					$results[ $key ] = $this->exception_to_error( $e, $datapoint );
@@ -349,7 +355,7 @@ abstract class Module {
 
 				if ( ! $result instanceof Exception ) {
 					$results[ $key ] = $result;
-					$results[ $key ] = $this->parse_data_response( 'GET', $datapoint, $result );
+					$results[ $key ] = $this->parse_data_response( $data_requests[ $key ], $result );
 				} else {
 					$results[ $key ] = $this->exception_to_error( $result, $datapoint );
 				}

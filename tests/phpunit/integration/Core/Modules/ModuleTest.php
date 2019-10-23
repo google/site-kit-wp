@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Util\Data_Request;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -122,6 +123,36 @@ class ModuleTest extends TestCase {
 		$this->assertEquals( 1, $method->getNumberOfParameters() );
 		// Number of required parameters can decrease while preserving B/C, but not increase
 		$this->assertEquals( 1, $method->getNumberOfRequiredParameters() );
+
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$batch_responses = $module->get_batch_data(
+			array(
+				new Data_Request(
+					'GET',
+					'modules',
+					$module->slug,
+					'test-request',
+					array( 'foo' => 'bar' ),
+					'request-1'
+				),
+				new Data_Request(
+					'GET',
+					'modules',
+					$module->slug,
+					'test-request',
+					array( 'bar' => 'baz' ),
+					'request-2'
+				),
+			)
+		);
+		$response = $batch_responses['request-1'];
+		$this->assertEquals( 'GET', $response->method );
+		$this->assertEquals( 'test-request', $response->datapoint );
+		$this->assertEquals( array( 'foo' => 'bar' ), (array) $response->data );
+		$response = $batch_responses['request-2'];
+		$this->assertEquals( 'GET', $response->method );
+		$this->assertEquals( 'test-request', $response->datapoint );
+		$this->assertEquals( array( 'bar' => 'baz' ), (array) $response->data );
 	}
 
 	public function test_get_datapoints() {
