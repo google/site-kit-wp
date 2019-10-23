@@ -18,7 +18,7 @@ use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Modules\Search_Console;
-use Google_Client;
+use Google\Site_Kit_Dependencies\Google_Client;
 use Exception;
 
 /**

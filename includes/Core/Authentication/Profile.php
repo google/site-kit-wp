@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Authentication;
 use Google\Site_Kit\Helpers;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit_Dependencies\Google_Service_PeopleService;
 
 /**
  * Class controlling the user's Google profile.
@@ -125,7 +126,7 @@ final class Profile {
 		// Retrieve and store the user's Google profile data.
 		try {
 			$client         = $this->auth_client->get_client();
-			$people_service = new \Google_Service_PeopleService( $client );
+			$people_service = new Google_Service_PeopleService( $client );
 			$profile        = $people_service->people->get( 'people/me', array( 'personFields' => 'emailAddresses,photos' ) );
 
 			if ( isset( $profile['emailAddresses'][0]['value'] ) && isset( $profile['photos'][0]['url'] ) ) {

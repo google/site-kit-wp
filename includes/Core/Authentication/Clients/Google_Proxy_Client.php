@@ -10,12 +10,12 @@
 
 namespace Google\Site_Kit\Core\Authentication\Clients;
 
-use Google_Client;
-use Google\Auth\OAuth2;
-use Google\Auth\HttpHandler\HttpHandlerFactory;
-use Google\Auth\HttpHandler\HttpClientCache;
-use GuzzleHttp\Psr7;
-use GuzzleHttp\Psr7\Request;
+use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit_Dependencies\Google\Auth\OAuth2;
+use Google\Site_Kit_Dependencies\Google\Auth\HttpHandler\HttpHandlerFactory;
+use Google\Site_Kit_Dependencies\Google\Auth\HttpHandler\HttpClientCache;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Exception;
 use InvalidArgumentException;
 use LogicException;

@@ -37,6 +37,14 @@
     }
   },
   "scripts": {
+    "post-install-cmd": [
+      "php-scoper add --output-dir=./third-party --force",
+      "cd third-party && echo '{ \"autoload\": { \"classmap\": [\"\"] } }' > composer.json && composer dump-autoload --classmap-authoritative --no-interaction && rm composer.json"
+    ],
+    "post-update-cmd": [
+      "php-scoper add --output-dir=./third-party --force",
+      "cd third-party && echo '{ \"autoload\": { \"classmap\": [\"\"] } }' > composer.json && composer dump-autoload --classmap-authoritative --no-interaction && rm composer.json"
+    ],
     "lint": "vendor/bin/phpcs",
     "lint-fix": "vendor/bin/phpcbf"
   }

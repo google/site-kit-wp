@@ -15,8 +15,10 @@ use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
-use Google_Client;
-use Psr\Http\Message\RequestInterface;
+use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit_Dependencies\Google_Service_AdSense;
+use Google\Site_Kit_Dependencies\Google_Service_AdSense_Alert;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
 /**
@@ -472,7 +474,7 @@ tag_partner: "site_kit"
 						}
 						$alerts = array_filter(
 							$alerts,
-							function( \Google_Service_AdSense_Alert $alert ) {
+							function( Google_Service_AdSense_Alert $alert ) {
 								return 'SEVERE' === $alert->getSeverity();
 							}
 						);
@@ -485,7 +487,7 @@ tag_partner: "site_kit"
 						/**
 						 * First Alert
 						 *
-						 * @var \Google_Service_AdSense_Alert $alert
+						 * @var Google_Service_AdSense_Alert $alert
 						 */
 						$alert = array_shift( $alerts );
 						return array(
@@ -836,7 +838,7 @@ tag_partner: "site_kit"
 	 */
 	protected function setup_services( Google_Client $client ) {
 		return array(
-			'adsense' => new \Google_Service_AdSense( $client ),
+			'adsense' => new Google_Service_AdSense( $client ),
 		);
 	}
 }
