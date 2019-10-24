@@ -75,10 +75,10 @@ rl.question( 'Username: ', ( username ) => {
 				html = html.replace( /Elasticpress/gi, 'Site Kit' );
 
 				// Account Ids
-				html = html.replace( /"accountId":"[\d]+"/gi, '"accountId":"XXXXXXXX"' );
-				html = html.replace( /"profileId":"[\d]+"/gi, '"profileId":"XXXXXXXX"' );
-				html = html.replace( /"internalWebPropertyId":"[\d]+"/gi, '"internalWebPropertyId":"XXXXXXXX"' );
-				html = html.replace( /"propertyId":"UA-[\d]+-[\d]+"/gi, '"propertyId":"UA-XXXXXXXX-X"' );
+				html = html.replace( /"accountID":"[\d]+"/gi, '"accountID":"XXXXXXXX"' );
+				html = html.replace( /"profileID":"[\d]+"/gi, '"profileID":"XXXXXXXX"' );
+				html = html.replace( /"internalWebPropertyID":"[\d]+"/gi, '"internalWebPropertyID":"XXXXXXXX"' );
+				html = html.replace( /"propertyID":"UA-[\d]+-[\d]+"/gi, '"propertyID":"UA-XXXXXXXX-X"' );
 				html = html.replace( /"trackingID":"UA-[\d]+-[\d]+"/gi, '"trackingID":"UA-XXXXXXXX-X"' );
 				html = html.replace( /pub-[\d]+/gi, 'pub-XXXXXXXXXX' );
 

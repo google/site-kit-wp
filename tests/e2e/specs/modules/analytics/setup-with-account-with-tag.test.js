@@ -9,7 +9,7 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
-	setAnalyticsExistingPropertyId,
+	setAnalyticsExistingPropertyID,
 	setAuthToken,
 	setClientConfig,
 	setSearchConsoleProperty,
@@ -77,12 +77,12 @@ describe( 'setting up the Analytics module with an existing account and existing
 			request.respond( {
 				status: 200,
 				body: JSON.stringify( {
-					accountId: EXISTING_ACCOUNT_ID,
-					propertyId: EXISTING_PROPERTY_ID,
+					accountID: EXISTING_ACCOUNT_ID,
+					propertyID: EXISTING_PROPERTY_ID,
 				} ),
 			} );
 		};
-		await setAnalyticsExistingPropertyId( EXISTING_PROPERTY_ID );
+		await setAnalyticsExistingPropertyID( EXISTING_PROPERTY_ID );
 		await proceedToSetUpAnalytics();
 
 		await page.waitForResponse( ( res ) => res.url().match( 'modules/analytics/data/accounts-properties-profiles' ) );

@@ -78,7 +78,7 @@ class Alert extends Component {
 				dismiss={ __( 'Dismiss', 'google-site-kit' ) }
 				isDismissable={ item.isDismissible }
 				format="small"
-				ctaLink={ item.ctaUrl }
+				ctaLink={ item.ctaURL }
 				ctaLabel={ item.ctaLabel }
 				ctaTarget={ item.ctaTarget }
 				type={ item.severity }

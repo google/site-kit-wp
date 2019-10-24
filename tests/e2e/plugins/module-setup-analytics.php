@@ -205,8 +205,8 @@ add_action( 'rest_api_init', function () {
 		array(
 			'callback' => function ( \WP_REST_Request $request ) use ( $properties, $profiles ) {
 				return array(
-					'properties' => filter_by_account_id( $properties, $request->get_param( 'accountId' ) ),
-					'profiles'   => filter_by_account_id( $profiles, $request->get_param( 'accountId' ) ),
+					'properties' => filter_by_account_id( $properties, $request->get_param( 'accountID' ) ),
+					'profiles'   => filter_by_account_id( $profiles, $request->get_param( 'accountID' ) ),
 				);
 			}
 		),
@@ -219,8 +219,8 @@ add_action( 'rest_api_init', function () {
 		'modules/analytics/data/profiles',
 		array(
 			'callback' => function ( \WP_REST_Request $request ) use ( $profiles ) {
-				$profiles = filter_by_account_id( $profiles, $request->get_param( 'accountId' ) );
-				$profiles = filter_by_property_id( $profiles, $request->get_param( 'propertyId' ) );
+				$profiles = filter_by_account_id( $profiles, $request->get_param( 'accountID' ) );
+				$profiles = filter_by_property_id( $profiles, $request->get_param( 'propertyID' ) );
 
 				return $profiles;
 			}
@@ -236,12 +236,12 @@ add_action( 'rest_api_init', function () {
 			'methods' => 'POST',
 			'callback' => function ( \WP_REST_Request $request ) use ( $profiles ) {
 				$option = array(
-					'accountId'             => $request['accountId'],
-					'propertyId'            => $request['propertyId'] ?: time(), // fake a new property ID if empty
-					'internalWebPropertyId' => $request['internalWebPropertyId'],
-					'profileId'             => $request['profileId'] ?: time(),  // fake a new profile ID if empty
+					'accountID'             => $request['accountID'],
+					'propertyID'            => $request['propertyID'] ?: time(), // fake a new property ID if empty
+					'internalWebPropertyID' => $request['internalWebPropertyID'],
+					'profileID'             => $request['profileID'] ?: time(),  // fake a new profile ID if empty
 					'useSnippet'            => ! empty( $request['useSnippet'] ),
-					'ampClientIdOptIn'      => ! empty( $request['ampClientIdOptIn'] ),
+					'ampClientIDOptIn'      => ! empty( $request['ampClientIDOptIn'] ),
 				);
 				update_option( 'googlesitekit_analytics_settings', $option );
 

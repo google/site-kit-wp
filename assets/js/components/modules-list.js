@@ -26,7 +26,7 @@ import Link from './link';
 import data from 'SiteKitCore/components/data';
 import {
 	refreshAuthentication,
-	getReAuthUrl,
+	getReAuthURL,
 	activateOrDeactivateModule,
 	showErrorNotification,
 	moduleIcon,
@@ -58,7 +58,7 @@ class ModulesList extends Component {
 			await refreshAuthentication();
 
 			// Redirect to ReAuthentication URL
-			window.location = getReAuthUrl( slug, true );
+			window.location = getReAuthURL( slug, true );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'setup-module-error',
