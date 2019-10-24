@@ -51,9 +51,7 @@ before_install:
 
 before_script:
   - npm install || exit 1
-  - phpenv global 7.3 2>/dev/null
-  - composer install
-  - phpenv global $TRAVIS_PHP_VERSION
+  - docker run --rm -v "$PWD:/app" composer install
   - |
     if [[ "$PHP" == "1" ]] || [[ "$JS" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
       npm install -g gulp-cli
