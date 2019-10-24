@@ -25,7 +25,7 @@ use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Optimize;
-use Google\Site_Kit\Modules\TagManager;
+use Google\Site_Kit\Modules\Tag_Manager;
 
 /**
  * Class providing functions to reset the plugin.
@@ -114,7 +114,7 @@ final class Reset {
 		$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 		$this->options->delete( PageSpeed_Insights::OPTION );
 		$this->options->delete( Optimize::OPTION );
-		$this->options->delete( TagManager::OPTION );
+		$this->options->delete( Tag_Manager::OPTION );
 		$this->options->delete( First_Admin::OPTION );
 		$this->options->delete( OAuth_Client::OPTION_PROXY_NONCE );
 		$this->options->delete( Beta_Migration::OPTION_IS_PRE_PROXY_INSTALL );

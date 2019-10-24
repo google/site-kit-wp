@@ -11,8 +11,8 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
-use Google_Client;
-use Psr\Http\Message\RequestInterface;
+use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
 /**
@@ -74,9 +74,9 @@ final class Optimize extends Module {
 		$amp_experiment_json  = $this->get_data( 'amp-experiment-json' );
 
 		$info['settings'] = array(
-			'optimizeId'        => ! is_wp_error( $optimize_id ) ? $optimize_id : false,
-			'ampClientIdOptIn'  => ! is_wp_error( $amp_client_id_opt_in ) ? $amp_client_id_opt_in : false,
-			'ampExperimentJson' => ! is_wp_error( $amp_experiment_json ) ? $amp_experiment_json : '',
+			'optimizeID'        => ! is_wp_error( $optimize_id ) ? $optimize_id : false,
+			'ampClientIDOptIn'  => ! is_wp_error( $amp_client_id_opt_in ) ? $amp_client_id_opt_in : false,
+			'ampExperimentJSON' => ! is_wp_error( $amp_experiment_json ) ? $amp_experiment_json : '',
 		);
 
 		return $info;
@@ -151,7 +151,7 @@ final class Optimize extends Module {
 		?>
 		<amp-experiment>
 			<script type="application/json">
-				<?php echo wp_json_encode( $optimize_option['ampExperimentJson'] ); ?>
+				<?php echo wp_json_encode( $optimize_option['ampExperimentJSON'] ); ?>
 			</script>
 		</amp-experiment>
 		<?php
@@ -217,85 +217,112 @@ final class Optimize extends Module {
 						$option = (array) $this->options->get( self::OPTION );
 						// TODO: Remove this at some point (migration of old option).
 						if ( isset( $option['optimize_id'] ) ) {
-							if ( ! isset( $option['optimizeId'] ) ) {
-								$option['optimizeId'] = $option['optimize_id'];
+							if ( ! isset( $option['optimizeID'] ) ) {
+								$option['optimizeID'] = $option['optimize_id'];
 							}
 							unset( $option['optimize_id'] );
 							$this->options->set( self::OPTION, $option );
 						}
-						if ( empty( $option['optimizeId'] ) ) {
+
+						// TODO: Remove this at some point (migration of old 'optimizeId' option).
+						if ( isset( $option['optimizeId'] ) ) {
+							if ( ! isset( $option['optimizeID'] ) ) {
+								$option['optimizeID'] = $option['optimizeId'];
+							}
+							unset( $option['optimizeId'] );
+						}
+
+						if ( empty( $option['optimizeID'] ) ) {
 							return new WP_Error( 'optimize_id_not_set', __( 'Optimize ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
-						return $option['optimizeId'];
+						return $option['optimizeID'];
 					};
 				case 'amp-client-id-opt-in': // Get this from Analytics, read-only from here.
 					return function() {
 						$option = (array) $this->options->get( Analytics::OPTION );
-						if ( ! isset( $option['ampClientIdOptIn'] ) ) {
+
+						// TODO: Remove this at some point (migration of old 'ampClientIdOptIn' option).
+						if ( isset( $option['ampClientIdOptIn'] ) ) {
+							if ( ! isset( $option['ampClientIDOptIn'] ) ) {
+								$option['ampClientIDOptIn'] = $option['ampClientIdOptIn'];
+							}
+							unset( $option['ampClientIdOptIn'] );
+						}
+
+						if ( ! isset( $option['ampClientIDOptIn'] ) ) {
 							return true; // Default to true.
 						}
-						return ! empty( $option['ampClientIdOptIn'] );
+						return ! empty( $option['ampClientIDOptIn'] );
 					};
 				case 'amp-experiment-json':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
 						// TODO: Remove this at some point (migration of old option).
 						if ( isset( $option['AMPExperimentJson'] ) ) {
-							if ( ! isset( $option['ampExperimentJson'] ) ) {
-								$option['ampExperimentJson'] = $option['AMPExperimentJson'];
+							if ( ! isset( $option['ampExperimentJSON'] ) ) {
+								$option['ampExperimentJSON'] = $option['AMPExperimentJson'];
 							}
 							unset( $option['AMPExperimentJson'] );
 							$this->options->set( self::OPTION, $option );
 						}
-						if ( empty( $option['ampExperimentJson'] ) ) {
+
+						// TODO: Remove this at some point (migration of old 'ampExperimentJson' option).
+						if ( isset( $option['ampExperimentJson'] ) ) {
+							if ( ! isset( $option['ampExperimentJSON'] ) ) {
+								$option['ampExperimentJSON'] = $option['ampExperimentJson'];
+							}
+							unset( $option['ampExperimentJson'] );
+						}
+
+						if ( empty( $option['ampExperimentJSON'] ) ) {
 							return new WP_Error( 'amp_experiment_json_not_set', __( 'AMP experiment JSON not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
-						return wp_json_encode( $option['ampExperimentJson'] );
+						return wp_json_encode( $option['ampExperimentJSON'] );
 					};
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
 				case 'optimize-id':
-					if ( ! isset( $data['optimizeId'] ) ) {
+					if ( ! isset( $data['optimizeID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'optimizeId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'optimizeID' ), array( 'status' => 400 ) );
 					}
 					return function() use ( $data ) {
 						$option               = (array) $this->options->get( self::OPTION );
-						$option['optimizeId'] = $data['optimizeId'];
+						$option['optimizeID'] = $data['optimizeID'];
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
 				case 'amp-experiment-json':
-					if ( ! isset( $data['ampExperimentJson'] ) ) {
+					if ( ! isset( $data['ampExperimentJSON'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampExperimentJson' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampExperimentJSON' ), array( 'status' => 400 ) );
 					}
 					return function() use ( $data ) {
 						$option                      = (array) $this->options->get( self::OPTION );
-						$option['ampExperimentJson'] = $data['ampExperimentJson'];
-						if ( is_string( $option['ampExperimentJson'] ) ) {
-							$option['ampExperimentJson'] = json_decode( $option['ampExperimentJson'] );
+						$option['ampExperimentJSON'] = $data['ampExperimentJSON'];
+						if ( is_string( $option['ampExperimentJSON'] ) ) {
+							$option['ampExperimentJSON'] = json_decode( $option['ampExperimentJSON'] );
 						}
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
 				case 'settings':
-					if ( ! isset( $data['optimizeId'] ) ) {
+					if ( ! isset( $data['optimizeID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'optimizeId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'optimizeID' ), array( 'status' => 400 ) );
 					}
-					if ( ! isset( $data['ampExperimentJson'] ) ) {
+					if ( ! isset( $data['ampExperimentJSON'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampExperimentJson' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampExperimentJSON' ), array( 'status' => 400 ) );
 					}
 					return function() use ( $data ) {
 						$option = array(
-							'optimizeId'        => $data['optimizeId'],
-							'ampExperimentJson' => $data['ampExperimentJson'],
+							'optimizeID'        => $data['optimizeID'],
+							'ampExperimentJSON' => $data['ampExperimentJSON'],
 						);
-						if ( is_string( $option['ampExperimentJson'] ) ) {
-							$option['ampExperimentJson'] = json_decode( $option['ampExperimentJson'] );
+						if ( is_string( $option['ampExperimentJSON'] ) ) {
+							$option['ampExperimentJSON'] = json_decode( $option['ampExperimentJSON'] );
 						}
 						$this->options->set( self::OPTION, $option );
 						return $option;

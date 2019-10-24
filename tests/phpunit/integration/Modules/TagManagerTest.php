@@ -1,6 +1,6 @@
 <?php
 /**
- * TagManagerTest
+ * Tag_ManagerTest
  *
  * @package   Google\Site_Kit\Tests\Modules
  * @copyright 2019 Google LLC
@@ -13,18 +13,18 @@ namespace Google\Site_Kit\Tests\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Modules\TagManager;
+use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
  * @group Modules
  */
-class TagManagerTest extends TestCase {
+class Tag_ManagerTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
 
 	public function test_register() {
-		$tagmanager = new TagManager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 
 		$tagmanager->register();
@@ -36,25 +36,25 @@ class TagManagerTest extends TestCase {
 	}
 
 	public function test_is_connected() {
-		$tagmanager = new TagManager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		// is_connected relies on get_data so it isn't currently possible to test a connected state.
 		$this->assertFalse( $tagmanager->is_connected() );
 	}
 
 	public function test_on_deactivation() {
-		$tagmanager = new TagManager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options    = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$options->set( TagManager::OPTION, 'test-value' );
-		$this->assertEquals( 'test-value', $options->get( TagManager::OPTION ) );
+		$options->set( Tag_Manager::OPTION, 'test-value' );
+		$this->assertEquals( 'test-value', $options->get( Tag_Manager::OPTION ) );
 
 		$tagmanager->on_deactivation();
 
-		$this->assertFalse( $options->get( TagManager::OPTION ) );
+		$this->assertFalse( $options->get( Tag_Manager::OPTION ) );
 	}
 
 	public function test_scopes() {
-		$tagmanager = new TagManager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertEqualSets(
 			array(
@@ -67,7 +67,7 @@ class TagManagerTest extends TestCase {
 	}
 
 	public function test_prepare_info_for_js() {
-		$tagmanager = new TagManager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$info = $tagmanager->prepare_info_for_js();
 
@@ -86,7 +86,7 @@ class TagManagerTest extends TestCase {
 				'required',
 				'autoActivate',
 				'internal',
-				'screenId',
+				'screenID',
 				'hasSettings',
 				'provides',
 				'settings',
@@ -95,12 +95,12 @@ class TagManagerTest extends TestCase {
 		);
 
 		$this->assertEquals( 'tagmanager', $info['slug'] );
-		$this->assertArrayHasKey( 'accountId', $info['settings'] );
-		$this->assertArrayHasKey( 'containerId', $info['settings'] );
+		$this->assertArrayHasKey( 'accountID', $info['settings'] );
+		$this->assertArrayHasKey( 'containerID', $info['settings'] );
 	}
 
 	public function test_get_datapoints() {
-		$tagmanager = new TagManager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertEqualSets(
 			array(
@@ -116,7 +116,7 @@ class TagManagerTest extends TestCase {
 	}
 
 	public function test_amp_data_load_analytics_component() {
-		$tagmanager = new TagManager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$tagmanager->register();
 
 		$data = array( 'amp_component_scripts' => array() );
@@ -124,7 +124,7 @@ class TagManagerTest extends TestCase {
 		$result = apply_filters( 'amp_post_template_data', $data );
 		$this->assertSame( $data, $result );
 
-		$tagmanager->set_data( 'container-id', array( 'containerId' => '12345678' ) );
+		$tagmanager->set_data( 'container-id', array( 'containerID' => '12345678' ) );
 
 		$result = apply_filters( 'amp_post_template_data', $data );
 		$this->assertArrayHasKey( 'amp-analytics', $result['amp_component_scripts'] );
@@ -134,6 +134,6 @@ class TagManagerTest extends TestCase {
 	 * @return Module_With_Scopes
 	 */
 	protected function get_module_with_scopes() {
-		return new TagManager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		return new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 }

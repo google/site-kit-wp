@@ -31,7 +31,7 @@ class AdSenseSettingsStatus extends Component {
 	render() {
 		const {
 			slug,
-			screenId,
+			screenID,
 			OriginalComponent,
 		} = this.props;
 
@@ -49,7 +49,7 @@ class AdSenseSettingsStatus extends Component {
 					<Link
 						className="googlesitekit-settings-module__edit-button"
 						onClick={ () => {
-							const page = screenId ? screenId : 'googlesitekit-dashboard';
+							const page = screenID ? screenID : 'googlesitekit-dashboard';
 
 							window.location = getSiteKitAdminURL( page, { reAuth: true, slug } );
 						} }
