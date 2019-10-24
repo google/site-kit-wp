@@ -13,20 +13,15 @@ use Isolated\Symfony\Component\Finder\Finder;
 // Google API services to include classes for.
 $google_services = implode(
 	'|',
-	array_map(
-		function( $service ) {
-			return preg_quote( $service, '#' );
-		},
-		array(
-			'Analytics',
-			'AnalyticsReporting',
-			'AdSense',
-			'Pagespeedonline',
-			'PeopleService',
-			'SiteVerification',
-			'TagManager',
-			'Webmasters',
-		)
+	array(
+		'Analytics',
+		'AnalyticsReporting',
+		'AdSense',
+		'Pagespeedonline',
+		'PeopleService',
+		'SiteVerification',
+		'TagManager',
+		'Webmasters',
 	)
 );
 
