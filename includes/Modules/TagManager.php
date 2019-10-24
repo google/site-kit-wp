@@ -13,9 +13,11 @@ namespace Google\Site_Kit\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
-use Google_Client;
-use Google_Service_Exception;
-use Psr\Http\Message\RequestInterface;
+use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit_Dependencies\Google_Service_Exception;
+use Google\Site_Kit_Dependencies\Google_Service_TagManager;
+use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
 
@@ -487,7 +489,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 
 		$client->setDefer( false );
 
-		$container = new \Google_Service_TagManager_Container();
+		$container = new Google_Service_TagManager_Container();
 		$container->setName( remove_accents( get_bloginfo( 'name' ) ) );
 		$container->setUsageContext( array( 'web' ) );
 
@@ -606,7 +608,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 	 */
 	protected function setup_services( Google_Client $client ) {
 		return array(
-			'tagmanager' => new \Google_Service_TagManager( $client ),
+			'tagmanager' => new Google_Service_TagManager( $client ),
 		);
 	}
 }

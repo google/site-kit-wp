@@ -26,7 +26,7 @@ class OAuth_ClientTest extends TestCase {
 	public function test_get_client() {
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertInstanceOf( 'Google_Client', $client->get_client() );
+		$this->assertInstanceOf( 'Google\Site_Kit_Dependencies\Google_Client', $client->get_client() );
 	}
 
 	public function test_refresh_token() {
@@ -236,7 +236,7 @@ class OAuth_ClientTest extends TestCase {
 		$success_redirect = admin_url( 'success-redirect' );
 		$client->get_authentication_url( $success_redirect );
 		// No other way around this but to mock the Google_Client
-		$google_client_mock = $this->getMock( 'Google_Client', array( 'fetchAccessTokenWithAuthCode' ) );
+		$google_client_mock = $this->getMock( 'Google\Site_Kit_Dependencies\Google_Client', array( 'fetchAccessTokenWithAuthCode' ) );
 		$google_client_mock->method( 'fetchAccessTokenWithAuthCode' )->willReturn( array( 'access_token' => 'test-access-token' ) );
 		$this->force_set_property( $client, 'google_client', $google_client_mock );
 
