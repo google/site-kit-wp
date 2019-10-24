@@ -257,7 +257,7 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array $datasets List of datapoints with data attached.
+	 * @param \stdClass[]|Data_Request[] $datasets List of datapoints with data attached.
 	 * @return array List of responses. Each item is either the response data, or a WP_Error on failure.
 	 */
 	final public function get_batch_data( array $datasets ) {
