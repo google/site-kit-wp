@@ -91,6 +91,9 @@ return array(
 	),
 	'patchers'                   => array(
 		function( $file_path, $prefix, $contents ) {
+			if ( preg_match( '#google/apiclient/src/Google/Http/REST\.php$#', $file_path ) ) {
+				$contents = str_replace( "\\$prefix\\intVal", '\\intval', $contents );
+			}
 			if ( false !== strpos( $file_path, 'vendor/google/apiclient-services/' ) ) {
 				$contents = str_replace( "'Google_Service_", "'" . $prefix . '\Google_Service_', $contents );
 				$contents = str_replace( '"Google_Service_', '"' . $prefix . '\Google_Service_', $contents );
