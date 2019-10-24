@@ -452,7 +452,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 
 		$client->setDefer( false );
 
-		$container = new \Google_Service_Tag_Manager_Container();
+		$container = new \Google_Service_TagManager_Container();
 		$container->setName( remove_accents( get_bloginfo( 'name' ) ) );
 		$container->setUsageContext( array( 'web' ) );
 
