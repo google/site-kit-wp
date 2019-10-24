@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Util\Reset;
+use Google\Site_Kit_Dependencies\Google_Collection;
 use WP_Post;
 use WP_REST_Server;
 use WP_REST_Request;
@@ -672,7 +673,7 @@ final class REST_Routes {
 			return $data;
 		}
 
-		// There is an compatibility issue with \Google_Collection object and wp_json_encode in PHP 5.4 only.
+		// There is an compatibility issue with Google_Collection object and wp_json_encode in PHP 5.4 only.
 		// These lines will encode/decode to deep convert objects, ensuring all data is returned.
 		if ( version_compare( PHP_VERSION, '5.5.0', '<' ) ) {
 			$data = json_decode( json_encode( $data ) );  // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode

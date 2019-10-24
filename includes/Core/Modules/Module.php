@@ -15,11 +15,11 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google_Client;
-use Google_Service;
-use Google_Service_Exception;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit_Dependencies\Google_Service;
+use Google\Site_Kit_Dependencies\Google_Service_Exception;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
 use WP_Error;
 use Exception;
 
@@ -200,7 +200,7 @@ abstract class Module {
 			'required'     => $this->depends_on,
 			'autoActivate' => $this->force_active,
 			'internal'     => $this->internal,
-			'screenId'     => $this instanceof Module_With_Screen ? $this->get_screen()->get_slug() : false,
+			'screenID'     => $this instanceof Module_With_Screen ? $this->get_screen()->get_slug() : false,
 			'hasSettings'  => ! in_array( $this->slug, array( 'site-verification', 'search-console', 'pagespeed-insights' ), true ),
 		);
 	}

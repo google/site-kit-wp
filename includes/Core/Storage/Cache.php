@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Storage;
 
+use Google\Site_Kit_Dependencies\Google_Service_Exception;
+
 /**
  * Class providing a server side caching framework.
  *
@@ -122,7 +124,7 @@ final class Cache {
 		$request_keys = wp_list_pluck( $batch_requests, 'key' );
 
 		foreach ( $results as $key => $result ) {
-			if ( $result instanceof \Exception || $result instanceof \Google_Service_Exception ) {
+			if ( $result instanceof \Exception || $result instanceof Google_Service_Exception ) {
 				continue;
 			}
 			$key = str_replace( 'response-', '', $key );

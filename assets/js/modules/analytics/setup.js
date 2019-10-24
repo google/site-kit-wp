@@ -45,12 +45,12 @@ class AnalyticsSetup extends Component {
 	constructor( props ) {
 		super( props );
 		const {
-			accountId,
-			internalWebPropertyId,
-			profileId,
-			propertyId,
+			accountID,
+			internalWebPropertyID,
+			profileID,
+			propertyID,
 			useSnippet,
-			ampClientIdOptIn,
+			ampClientIDOptIn,
 		} = googlesitekit.modules.analytics.settings;
 
 		this.state = {
@@ -65,11 +65,11 @@ class AnalyticsSetup extends Component {
 			accounts: [],
 			properties: [],
 			profiles: [],
-			selectedAccount: accountId,
-			selectedProperty: propertyId,
-			selectedProfile: profileId,
-			selectedinternalWebProperty: internalWebPropertyId,
-			ampClientIdOptIn,
+			selectedAccount: accountID,
+			selectedProperty: propertyID,
+			selectedProfile: profileID,
+			selectedinternalWebProperty: internalWebPropertyID,
+			ampClientIDOptIn,
 			existingTag: false,
 		};
 
@@ -141,12 +141,12 @@ class AnalyticsSetup extends Component {
 		}
 
 		const settingsMapping = {
-			selectedAccount: 'accountId',
-			selectedProperty: 'propertyId',
-			selectedProfile: 'profileId',
-			selectedinternalWebProperty: 'internalWebPropertyId',
+			selectedAccount: 'accountID',
+			selectedProperty: 'propertyID',
+			selectedProfile: 'profileID',
+			selectedinternalWebProperty: 'internalWebPropertyID',
 			useSnippet: 'useSnippet',
-			ampClientIdOptIn: 'ampClientIdOptIn',
+			ampClientIDOptIn: 'ampClientIDOptIn',
 		};
 
 		toggleConfirmModuleSettings( 'analytics', settingsMapping, this.state );
@@ -340,7 +340,7 @@ class AnalyticsSetup extends Component {
 				selectedProfile,
 				properties: [ chooseAccount ],
 				profiles: [ chooseAccount ],
-				existingTag: existingTagData ? existingTagData.propertyId : false,
+				existingTag: existingTagData ? existingTagData.propertyID : false,
 				useSnippet,
 			};
 
@@ -348,7 +348,7 @@ class AnalyticsSetup extends Component {
 				newState = Object.assign( newState, {
 					properties: responseData.properties,
 					profiles: responseData.profiles,
-					selectedinternalWebProperty: ( responseData.properties[ 0 ] ) ? responseData.properties[ 0 ].internalWebPropertyId : 0,
+					selectedinternalWebProperty: ( responseData.properties[ 0 ] ) ? responseData.properties[ 0 ].internalWebPropertyID : 0,
 				} );
 			}
 		} catch ( err ) {
@@ -372,7 +372,7 @@ class AnalyticsSetup extends Component {
 	async processAccountChange( selectValue ) {
 		try {
 			const queryArgs = {
-				accountId: selectValue,
+				accountID: selectValue,
 			};
 
 			const responseData = await data.get( TYPE_MODULES, 'analytics', 'properties-profiles', queryArgs );
@@ -395,7 +395,7 @@ class AnalyticsSetup extends Component {
 				profiles: responseData.profiles,
 				selectedAccount: selectValue,
 				selectedProperty: responseData.properties[ 0 ].id,
-				selectedinternalWebProperty: responseData.properties[ 0 ].internalWebPropertyId,
+				selectedinternalWebProperty: responseData.properties[ 0 ].internalWebPropertyID,
 				selectedProfile: responseData.profiles[ 0 ].id,
 				errorCode: false,
 			} );
@@ -412,8 +412,8 @@ class AnalyticsSetup extends Component {
 
 		try {
 			const queryArgs = {
-				accountId: selectedAccount,
-				propertyId: selectValue,
+				accountID: selectedAccount,
+				propertyID: selectValue,
 			};
 
 			const responseData = await data.get( TYPE_MODULES, 'analytics', 'profiles', queryArgs );
@@ -422,7 +422,7 @@ class AnalyticsSetup extends Component {
 				profilesLoading: false,
 				profiles: responseData,
 				selectedProperty: selectValue,
-				selectedinternalWebProperty: responseData[ 0 ].internalWebPropertyId,
+				selectedinternalWebProperty: responseData[ 0 ].internalWebPropertyID,
 				selectedProfile: responseData[ 0 ].id,
 				errorCode: false,
 			} );
@@ -452,7 +452,7 @@ class AnalyticsSetup extends Component {
 			accounts,
 			properties,
 			profiles,
-			ampClientIdOptIn,
+			ampClientIDOptIn,
 		} = this.state;
 
 		this.setState( {
@@ -466,22 +466,22 @@ class AnalyticsSetup extends Component {
 		// Ensure that values of `0` are not treated as false-y, causing an error to
 		// appear.
 		// See: https://github.com/google/site-kit-wp/issues/398#issuecomment-540024321
-		const profileId = selectedProfile || ( profiles[ 0 ].id || profiles[ 0 ].id === 0 ? profiles[ 0 ].id.toString() : null );
-		const propertyId = selectedProperty || ( properties[ 0 ].id || properties[ 0 ].id === 0 ? properties[ 0 ].id.toString() : null );
-		let internalWebPropertyId;
-		if ( propertyId === '0' ) {
-			internalWebPropertyId = '0';
+		const profileID = selectedProfile || ( profiles[ 0 ].id || profiles[ 0 ].id === 0 ? profiles[ 0 ].id.toString() : null );
+		const propertyID = selectedProperty || ( properties[ 0 ].id || properties[ 0 ].id === 0 ? properties[ 0 ].id.toString() : null );
+		let internalWebPropertyID;
+		if ( propertyID === '0' ) {
+			internalWebPropertyID = '0';
 		} else {
-			internalWebPropertyId = selectedinternalWebProperty || ( properties[ 0 ].internalWebPropertyId || properties[ 0 ].internalWebPropertyId === 0 ? properties[ 0 ].internalWebPropertyId.toString() : null );
+			internalWebPropertyID = selectedinternalWebProperty || ( properties[ 0 ].internalWebPropertyId || properties[ 0 ].internalWebPropertyId === 0 ? properties[ 0 ].internalWebPropertyId.toString() : null );
 		}
 
 		const analyticAccount = {
-			accountId: selectedAccount || accounts[ 0 ].id || null,
-			profileId,
-			propertyId,
-			internalWebPropertyId,
+			accountID: selectedAccount || accounts[ 0 ].id || null,
+			profileID,
+			propertyID,
+			internalWebPropertyID,
 			useSnippet: useSnippet || false,
-			ampClientIdOptIn: ampClientIdOptIn || false,
+			ampClientIDOptIn: ampClientIDOptIn || false,
 		};
 
 		try {
@@ -490,12 +490,12 @@ class AnalyticsSetup extends Component {
 			data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 			await this.getAccounts();
 
-			googlesitekit.modules.analytics.settings.accountId = response.accountId;
-			googlesitekit.modules.analytics.settings.profileId = response.profileId;
-			googlesitekit.modules.analytics.settings.propertyId = response.propertyId;
-			googlesitekit.modules.analytics.settings.internalWebPropertyId = response.internalWebPropertyId;
+			googlesitekit.modules.analytics.settings.accountID = response.accountID;
+			googlesitekit.modules.analytics.settings.profileID = response.profileID;
+			googlesitekit.modules.analytics.settings.propertyID = response.propertyID;
+			googlesitekit.modules.analytics.settings.internalWebPropertyID = response.internalWebPropertyID;
 			googlesitekit.modules.analytics.settings.useSnippet = response.useSnippet;
-			googlesitekit.modules.analytics.settings.ampClientIdOptIn = response.ampClientIdOptIn;
+			googlesitekit.modules.analytics.settings.ampClientIDOptIn = response.ampClientIDOptIn;
 
 			// Track event.
 			sendAnalyticsTrackingEvent( 'analytics_setup', 'analytics_configured' );
@@ -507,10 +507,10 @@ class AnalyticsSetup extends Component {
 			if ( this._isMounted ) {
 				this.setState( {
 					isSaving: false,
-					selectedAccount: response.accountId,
-					selectedProfile: response.profileId,
-					selectedProperty: response.propertyId,
-					selectedinternalWebProperty: response.internalWebPropertyId,
+					selectedAccount: response.accountID,
+					selectedProfile: response.profileID,
+					selectedProperty: response.propertyID,
+					selectedinternalWebProperty: response.internalWebPropertyID,
 				} );
 			}
 		} catch ( err ) {
@@ -541,7 +541,7 @@ class AnalyticsSetup extends Component {
 
 	handleAMPClientIdSwitch( ) {
 		this.setState( {
-			ampClientIdOptIn: ! this.state.ampClientIdOptIn,
+			ampClientIDOptIn: ! this.state.ampClientIDOptIn,
 		} );
 	}
 
@@ -559,7 +559,7 @@ class AnalyticsSetup extends Component {
 		const {
 			useSnippet,
 			isSaving,
-			ampClientIdOptIn,
+			ampClientIDOptIn,
 			existingTag,
 		} = this.state;
 
@@ -623,14 +623,14 @@ class AnalyticsSetup extends Component {
 				{ useSnippet && ampEnabled &&
 					<div className="googlesitekit-setup-module__input">
 						<Switch
-							id="ampClientIdOptIn"
+							id="ampClientIDOptIn"
 							label={ __( 'Opt in AMP Client ID', 'google-site-kit' ) }
 							onClick={ this.handleAMPClientIdSwitch }
-							checked={ ampClientIdOptIn }
+							checked={ ampClientIDOptIn }
 							hideLabel={ false }
 						/>
 						<p>
-							{ ampClientIdOptIn ?
+							{ ampClientIDOptIn ?
 								__( 'Sessions will be combined across AMP/non-AMP pages.', 'google-site-kit' ) + ' ' :
 								__( 'Sessions will be tracked separately between AMP/non-AMP pages.', 'google-site-kit' ) + ' '
 							}

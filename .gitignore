@@ -1,6 +1,7 @@
 node_modules
 bower_components
-/vendor
+vendor
+/third-party
 release
 composer.lock
 phpunit.xml

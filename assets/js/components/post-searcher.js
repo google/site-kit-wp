@@ -141,7 +141,7 @@ class PostSearcher extends Component {
 	 *
 	 * @return mixed Returns the pathname or false if param is not valid url.
 	 */
-	getUrlPathname( url ) {
+	getURLPathname( url ) {
 		try {
 			const parseURL = new URL( url );
 			return trim( parseURL.pathname, '/' );

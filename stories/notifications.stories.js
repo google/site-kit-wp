@@ -41,7 +41,7 @@ storiesOf( 'Global/Notifications', module )
 			title={ __( 'Your Site is Now Registered!', 'google-site-kit' ) }
 			description={ __( 'Congrats your site is registered with Search Console!', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-			learnMoreUrl="http://google.com"
+			learnMoreURL="http://google.com"
 			learnMoreLabel={ __( 'Learn More', 'google-site-kit' ) }
 			learnMoreDescription={ __( 'about the particular win', 'google-site-kit' ) }
 			format="small"
@@ -53,7 +53,7 @@ storiesOf( 'Global/Notifications', module )
 			id="notification-id"
 			title={ __( 'AMP Validation Error', 'google-site-kit' ) }
 			description={ __( 'There are validation errors that need to be fixed.', 'google-site-kit' ) }
-			learnMoreUrl="http://google.com"
+			learnMoreURL="http://google.com"
 			learnMore={ __( 'View Search Console report', 'google-site-kit' ) }
 			learnMoreLabel={ __( 'View Search Console', 'google-site-kit' ) }
 			learnMoreDescription={ __( 'report', 'google-site-kit' ) }
@@ -67,7 +67,7 @@ storiesOf( 'Global/Notifications', module )
 			id="notification-id"
 			title={ __( 'Index Warning', 'google-site-kit' ) }
 			description={ __( 'Indexed, though blocked by robots.text.', 'google-site-kit' ) }
-			learnMoreUrl="http://google.com"
+			learnMoreURL="http://google.com"
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
 			dismiss={ __( 'Dismiss', 'google-site-kit' ) }
 			format="small"

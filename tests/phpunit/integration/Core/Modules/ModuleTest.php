@@ -70,7 +70,7 @@ class ModuleTest extends TestCase {
 			'required',
 			'autoActivate',
 			'internal',
-			'screenId',
+			'screenID',
 			'hasSettings',
 		);
 

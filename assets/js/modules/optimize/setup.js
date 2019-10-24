@@ -43,9 +43,9 @@ class OptimizeSetup extends Component {
 		super( props );
 
 		const {
-			optimizeId,
-			ampClientIdOptIn,
-			ampExperimentJson,
+			optimizeID,
+			ampClientIDOptIn,
+			ampExperimentJSON,
 		} = googlesitekit.modules.optimize.settings;
 
 		const {
@@ -61,14 +61,14 @@ class OptimizeSetup extends Component {
 		const gtmUseSnippet = gtmActive && gtmSettings ? gtmSettings.useSnippet : false;
 
 		this.state = {
-			optimizeId: optimizeId || '',
+			optimizeID: optimizeID || '',
 			analyticsUseSnippet,
 			gtmUseSnippet,
 			errorCode: false,
 			errorMsg: '',
-			ampClientIdOptIn: ampClientIdOptIn || false,
-			ampExperimentJson: ampExperimentJson || '',
-			ampExperimentJsonValidated: true,
+			ampClientIDOptIn: ampClientIDOptIn || false,
+			ampExperimentJSON: ampExperimentJSON || '',
+			ampExperimentJSONValidated: true,
 			OptimizeIDValidated: true,
 		};
 
@@ -116,8 +116,8 @@ class OptimizeSetup extends Component {
 		}
 
 		const settingsMapping = {
-			optimizeId: 'optimizeId',
-			ampExperimentJson: 'ampExperimentJson',
+			optimizeID: 'optimizeID',
+			ampExperimentJSON: 'ampExperimentJSON',
 		};
 
 		toggleConfirmModuleSettings( 'optimize', settingsMapping, this.state );
@@ -125,19 +125,19 @@ class OptimizeSetup extends Component {
 
 	async handleSubmit() {
 		const {
-			optimizeId,
-			ampExperimentJson,
+			optimizeID,
+			ampExperimentJSON,
 			OptimizeIDValidated,
 		} = this.state;
 		const { finishSetup } = this.props;
 
-		if ( ! OptimizeIDValidated || 0 === optimizeId.length ) {
+		if ( ! OptimizeIDValidated || 0 === optimizeID.length ) {
 			return false;
 		}
 
 		const optimizeAccount = {
-			optimizeId,
-			ampExperimentJson,
+			optimizeID,
+			ampExperimentJSON,
 		};
 
 		return await data.set( TYPE_MODULES, 'optimize', 'settings', optimizeAccount ).then( () => {
@@ -145,7 +145,7 @@ class OptimizeSetup extends Component {
 				finishSetup();
 			}
 
-			googlesitekit.modules.optimize.settings.optimizeId = optimizeId;
+			googlesitekit.modules.optimize.settings.optimizeID = optimizeID;
 
 			if ( this._isMounted ) {
 				this.setState( {
@@ -166,7 +166,7 @@ class OptimizeSetup extends Component {
 		const validOptimizeID = validateOptimizeID( e.target.value );
 		if ( this._isMounted ) {
 			this.setState( {
-				optimizeId: e.target.value,
+				optimizeID: e.target.value,
 				OptimizeIDValidated: validOptimizeID,
 			} );
 		}
@@ -177,22 +177,22 @@ class OptimizeSetup extends Component {
 
 		if ( this._isMounted ) {
 			this.setState( {
-				ampExperimentJson: e.target.value,
-				ampExperimentJsonValidated: validJSON,
+				ampExperimentJSON: e.target.value,
+				ampExperimentJSONValidated: validJSON,
 			} );
 		}
 	}
 
 	renderInfo() {
 		const {
-			optimizeId,
+			optimizeID,
 		} = this.state;
 
 		return (
 			<Fragment>
 				{
-					optimizeId ?
-						<div>{ __( 'Your Optimize Container ID', 'google-site-kit' ) }: <strong>{ optimizeId }</strong></div> :
+					optimizeID ?
+						<div>{ __( 'Your Optimize Container ID', 'google-site-kit' ) }: <strong>{ optimizeID }</strong></div> :
 						<div>{ __( 'Optimize Container ID missing, press "edit" to add', 'google-site-kit' ) }.</div>
 				}
 			</Fragment>
@@ -203,7 +203,7 @@ class OptimizeSetup extends Component {
 		const {
 			analyticsUseSnippet,
 			gtmUseSnippet,
-			optimizeId,
+			optimizeID,
 		} = this.state;
 
 		// If we don't use auto insert gtag, but use auto insert gtm. Show instruction of how to implement it on GTM.
@@ -221,7 +221,7 @@ class OptimizeSetup extends Component {
 				<Fragment>
 					<p>{ __( 'You disabled analytics auto insert snippet. If You are using Google Analytics code snippet, add the code below:', 'google-site-kit' ) }</p>
 					<pre>
-						ga(&quot;require&quot;, &quot;{ optimizeId ? optimizeId : 'GTM-XXXXXXX' }&quot;);
+						ga(&quot;require&quot;, &quot;{ optimizeID ? optimizeID : 'GTM-XXXXXXX' }&quot;);
 					</pre>
 					<p><a href="https://support.google.com/optimize/answer/6262084">{ __( 'Click here', 'google-site-kit' ) }</a> { __( 'for how to implement Optimize tag in Google Analytics Code Snippet', 'google-site-kit' ) }</p>
 				</Fragment>
@@ -234,9 +234,9 @@ class OptimizeSetup extends Component {
 	renderAMPSnippet() {
 		const {
 			analyticsUseSnippet,
-			ampClientIdOptIn,
-			ampExperimentJson,
-			ampExperimentJsonValidated,
+			ampClientIDOptIn,
+			ampExperimentJSON,
+			ampExperimentJSONValidated,
 		} = this.state;
 
 		const { ampEnabled } = window.googlesitekit.admin;
@@ -247,13 +247,13 @@ class OptimizeSetup extends Component {
 
 		return (
 			<Fragment>
-				{ ampClientIdOptIn &&
+				{ ampClientIDOptIn &&
 					<Fragment>
 						<p>{ __( 'Please input your AMP experiment settings in JSON format below.', 'google-site-kit' ) } <Link href="https://developers.google.com/optimize/devguides/amp-experiments" external inherit>{ __( 'Learn More.', 'google-site-kit' ) }</Link></p>
 						<TextField
 							className={ `
 								mdc-text-field
-								${ ampExperimentJsonValidated ? '' : 'mdc-text-field--error' }
+								${ ampExperimentJSONValidated ? '' : 'mdc-text-field--error' }
 							` }
 							name="amp-experiment"
 							onChange={ this.handleAMPOptimizeEntry }
@@ -261,10 +261,10 @@ class OptimizeSetup extends Component {
 						>
 							<Input
 								inputType="textarea"
-								value={ null === ampExperimentJson ? '' : ampExperimentJson }
+								value={ null === ampExperimentJSON ? '' : ampExperimentJSON }
 							/>
 						</TextField>
-						{ ! ampExperimentJsonValidated &&
+						{ ! ampExperimentJSONValidated &&
 							<p className="googlesitekit-error-text">{ __( 'Error: AMP experiment settings are not in a valid JSON format.', 'google-site-kit' ) }</p>
 						}
 					</Fragment>
@@ -276,7 +276,7 @@ class OptimizeSetup extends Component {
 
 	renderForm() {
 		const {
-			optimizeId,
+			optimizeID,
 			errorCode,
 			errorMsg,
 			OptimizeIDValidated,
@@ -301,14 +301,14 @@ class OptimizeSetup extends Component {
 							${ OptimizeIDValidated ? '' : 'mdc-text-field--error' }
 						` }
 						label={ __( 'Optimize Container ID', 'google-site-kit' ) }
-						name="optimizeId"
+						name="optimizeID"
 						onChange={ this.handleOptimizeIdEntry }
 						helperText={ <HelperText>{ __( 'Format: GTM-XXXXXXX.', 'google-site-kit' ) }</HelperText> }
 						outlined
 						required
 					>
 						<Input
-							value={ optimizeId }
+							value={ optimizeID }
 						/>
 					</TextField>
 				</div>

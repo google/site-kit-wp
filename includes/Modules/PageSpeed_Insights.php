@@ -13,8 +13,9 @@ namespace Google\Site_Kit\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
-use Google_Client;
-use Psr\Http\Message\RequestInterface;
+use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit_Dependencies\Google_Service_Pagespeedonline;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
 /**
@@ -177,7 +178,7 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes {
 	 */
 	protected function setup_services( Google_Client $client ) {
 		return array(
-			'pagespeedonline' => new \Google_Service_Pagespeedonline( $client ),
+			'pagespeedonline' => new Google_Service_Pagespeedonline( $client ),
 		);
 	}
 

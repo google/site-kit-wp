@@ -20,7 +20,7 @@ storiesOf( 'Global', module )
 					icon
 					iconWidth="23"
 					iconHeight="26"
-					iconId="analytics"
+					iconID="analytics"
 					status="not-connected"
 					statusText="Analytics is not connected"
 				/>
