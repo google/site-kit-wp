@@ -155,32 +155,27 @@ final class Activation {
 					ob_start();
 					?>
 					<script type="text/javascript">
-						if( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
+						if ( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
 							sendAnalyticsTrackingEvent( 'plugin_setup', 'plugin_activated' );
 						}
 
-						jQuery(document).ready(function() {
+						jQuery( document ).ready( function( $ ) {
 							var trackingScriptPresent = !! googlesitekit.admin.trackingOptIn;
 
 							if ( googlesitekit.admin.trackingOptIn ) {
-								jQuery('#opt-in').attr( 'checked', googlesitekit.admin.trackingOptIn );
+								$( '#opt-in' ).prop( 'checked', googlesitekit.admin.trackingOptIn );
 							}
 							if ( googlesitekit.admin.proxySetupURL ) {
-								jQuery( '#start-setup-link' ).attr( 'href', googlesitekit.admin.proxySetupURL );
+								$( '#start-setup-link' ).attr( 'href', googlesitekit.admin.proxySetupURL );
 							}
 
-							// TODO: Fix this; it doesn't currently work as
-							// `sendAnalyticsTrackingEvent` is not synchronous
-							// but fails to implement an async API that confirms
-							// the event was sent. This was moved from an
-							// `onClick` handler, but did not work there either.
-							jQuery( '#start-setup-link' ).on( 'click' , function() {
+							$( '#start-setup-link' ).on( 'click' , function() {
 								if ( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
 									sendAnalyticsTrackingEvent( 'plugin_setup', 'goto_sitekit' );
 								}
 							} );
 
-							jQuery('#opt-in').on( 'change' , function( event ) {
+							$('#opt-in').on( 'change' , function( event ) {
 								if ( event.target.disabled ) {
 									event.preventDefault();
 									return;
@@ -193,7 +188,7 @@ final class Activation {
 								};
 								var self = this;
 
-								jQuery(self).attr( 'disabled', true );
+								$( self ).prop( 'disabled', true );
 
 								wp.apiFetch( {
 									path: '/wp/v2/settings',
@@ -204,16 +199,14 @@ final class Activation {
 									method: 'POST',
 								} )
 									.then( function() {
-										jQuery(self).attr( 'disabled', null );
+										$(self).prop( 'disabled', null );
 
 										var trackingId = googlesitekit.admin.trackingID;
-										var trackingScriptPresent = jQuery( `script[src="https://www.googletagmanager.com/gtag/js?id=${ trackingId }"]` ).length > 0;
+										var trackingScriptPresent = $( `script[src="https://www.googletagmanager.com/gtag/js?id=${ trackingId }"]` ).length > 0;
 
 										if ( ! trackingScriptPresent ) {
-											jQuery( 'body' ).append( `
+											$( 'body' ).append( `
 												\<script async src="https://www.googletagmanager.com/gtag/js?id=${ trackingId }"\>\</script\><?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-											` );
-											jQuery( 'body' ).append( `
 												\<script\>
 													window.dataLayer = window.dataLayer || [];
 													function gtag(){dataLayer.push(arguments);}
@@ -225,11 +218,11 @@ final class Activation {
 										}
 									} )
 									.catch( function( err ) {
-										jQuery(self).attr( 'checked', ! checked );
-										jQuery(self).attr( 'disabled', false );
+										$( self ).prop( 'checked', ! checked );
+										$( self ).prop( 'disabled', false );
 									} );
-							});
-						});
+							} );
+						} );
 					</script>
 					<div class="googlesitekit-plugin">
 						<div class="googlesitekit-activation">
@@ -290,14 +283,23 @@ final class Activation {
 												</div>
 												<label for="opt-in">
 													<?php
-														echo sprintf(
-															// translators: Placeholders here are for <a> + </a> tags.
-															esc_html__(
-																'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with %1$sGoogle Privacy Policy%2$s.',
-																'google-site-kit'
+														$locale = str_replace( '_', '-', get_locale() );
+														echo wp_kses(
+															sprintf(
+																// translators: %1$s: <a href="https://policies.google.com/privacy"> %2$s: </a>.
+																__(
+																	'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with %1$sGoogle Privacy Policy%2$s.',
+																	'google-site-kit'
+																),
+																"<a href=\"https://policies.google.com/privacy?hl=${locale}\" rel=\"noopener noreferrer\">",
+																'</a>'
 															),
-															'<a href="https://policies.google.com/privacy" rel="noopener noreferrer">',
-															'</a>'
+															array(
+																'a' => array(
+																	'href' => array(),
+																	'rel' => array(),
+																),
+															)
 														)
 													?>
 												</label>
