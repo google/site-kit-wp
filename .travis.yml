@@ -51,7 +51,7 @@ before_install:
 
 before_script:
   - npm install || exit 1
-  - phpenv global 7.3
+  - phpenv global 7.3 2>/dev/null
   - composer install
   - phpenv global $TRAVIS_PHP_VERSION
   - |
