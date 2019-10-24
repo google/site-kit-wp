@@ -255,7 +255,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					$property_matches = array_filter(
 						$sites,
 						function ( array $site ) use ( $current_host ) {
-							$site_host = wp_parse_url( $site['siteURL'], PHP_URL_HOST );
+							$site_host = wp_parse_url( str_replace( 'sc-domain:', 'https://', $site['siteURL'] ), PHP_URL_HOST );
 
 							// Ensure host names overlap, from right to left.
 							return 0 === strpos( strrev( $current_host ), strrev( $site_host ) );
