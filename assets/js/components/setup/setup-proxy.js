@@ -56,7 +56,7 @@ class SetupUsingProxy extends Component {
 
 	render() {
 		if ( this.isSetupFinished() ) {
-			const redirectUrl = getSiteKitAdminURL(
+			const redirectURL = getSiteKitAdminURL(
 				'googlesitekit-dashboard',
 				{
 					notification: 'authentication_success',
@@ -64,7 +64,7 @@ class SetupUsingProxy extends Component {
 			);
 
 			delay( () => {
-				window.location.replace( redirectUrl );
+				window.location.replace( redirectURL );
 			}, 500, 'later' );
 		}
 

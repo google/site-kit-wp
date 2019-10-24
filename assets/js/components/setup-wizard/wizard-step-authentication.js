@@ -37,7 +37,7 @@ const { Component } = wp.element;
 class WizardStepAuthentication extends Component {
 	render() {
 		const {
-			connectUrl,
+			connectURL,
 			needReauthenticate,
 			resetAndRestart,
 		} = this.props;
@@ -69,7 +69,7 @@ class WizardStepAuthentication extends Component {
 								<Button
 									onClick={ () => {
 										sendAnalyticsTrackingEvent( 'plugin_setup', 'signin_with_google' );
-										document.location = connectUrl;
+										document.location = connectURL;
 									} }
 								>
 									{ __( 'Sign in with Google', 'google-site-kit' ) }
@@ -99,7 +99,7 @@ class WizardStepAuthentication extends Component {
 }
 
 WizardStepAuthentication.propTypes = {
-	connectUrl: PropTypes.string.isRequired,
+	connectURL: PropTypes.string.isRequired,
 	resetAndRestart: PropTypes.func,
 };
 
