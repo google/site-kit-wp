@@ -91,11 +91,15 @@ return array(
 	),
 	'patchers'                   => array(
 		function( $file_path, $prefix, $contents ) {
+			if ( false !== strpos( $file_path, 'vendor/google/apiclient-services/' ) ) {
+				$contents = str_replace( "'Google_Service_", "'" . $prefix . '\Google_Service_', $contents );
+				$contents = str_replace( '"Google_Service_', '"' . $prefix . '\Google_Service_', $contents );
+			}
 			return $contents;
 		},
 	),
 	'whitelist'                  => array(),
-	'whitelist-global-constants' => true,
-	'whitelist-global-classes'   => true,
-	'whitelist-global-functions' => true,
+	'whitelist-global-constants' => false,
+	'whitelist-global-classes'   => false,
+	'whitelist-global-functions' => false,
 );
