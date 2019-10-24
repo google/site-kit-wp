@@ -381,21 +381,26 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		if ( false === $has_data ) {
 
 			// Check search console for data.
-			$responses = $this->get_batch_data(
+			$datasets = array(
 				array(
-					new Data_Request(
-						'GET',
-						'modules',
-						$this->slug,
-						'searchanalytics',
-						array(
-							'url'               => $current_url,
-							'dateRange'         => 'last-90-days',
-							'dimensions'        => 'date',
-							'compareDateRanges' => true,
-						),
-						'sc-site-analytics'
+					'identifier' => $this->slug,
+					'key'        => 'sc-site-analytics',
+					'datapoint'  => 'searchanalytics',
+					'data'       => array(
+						'url'               => $current_url,
+						'dateRange'         => 'last-90-days',
+						'dimensions'        => 'date',
+						'compareDateRanges' => true,
 					),
+				),
+			);
+
+			$responses = $this->get_batch_data(
+				array_map(
+					function( $dataset ) {
+						return (object) $dataset;
+					},
+					$datasets
 				)
 			);
 
