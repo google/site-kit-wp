@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager;
@@ -32,26 +33,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	use Module_With_Scopes_Trait;
 
 	const OPTION = 'googlesitekit_tagmanager_settings';
-
-	/**
-	 * Temporary storage for very specific data for 'list-accounts' datapoint.
-	 *
-	 * Bad to have, but works for now.
-	 *
-	 * @since 1.0.0
-	 * @var array|null
-	 */
-	private $_list_accounts_data = null;
-
-	/**
-	 * Temporary storage for requested account ID while retrieving containers.
-	 *
-	 * Bad to have, but works for now.
-	 *
-	 * @since 1.0.0
-	 * @var string|null
-	 */
-	private $_containers_account_id = null;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -292,12 +273,14 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to get request object for.
-	 * @param array  $data      Optional. Contextual data to provide or set. Default empty array.
+	 * @param Data_Request $data Data request object.
+	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
-	protected function create_data_request( $method, $datapoint, array $data = array() ) {
+	protected function create_data_request( Data_Request $data ) {
+		$method    = $data->method;
+		$datapoint = $data->datapoint;
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'connection':
@@ -393,9 +376,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						return $option['containerID'];
 					};
 				case 'accounts-containers':
-					if ( ! empty( $data['accountID'] ) ) {
-						$this->_list_accounts_data = $data;
-					}
 					$service = $this->get_service( 'tagmanager' );
 					return $service->accounts->listAccounts();
 				case 'containers':
@@ -403,8 +383,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 					}
-					$this->_containers_account_id = $data['accountID'];
-
 					$service = $this->get_service( 'tagmanager' );
 					return $service->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
 			}
@@ -516,12 +494,15 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to resolve response for.
-	 * @param mixed  $response  Response object or array.
+	 * @param Data_Request $data Data request object.
+	 * @param mixed        $response Request response.
+	 *
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
-	protected function parse_data_response( $method, $datapoint, $response ) {
+	protected function parse_data_response( Data_Request $data, $response ) {
+		$method    = $data->method;
+		$datapoint = $data->datapoint;
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'accounts-containers':
@@ -533,9 +514,8 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 					if ( 0 === count( $response['accounts'] ) ) {
 						return $response;
 					}
-					if ( is_array( $this->_list_accounts_data ) && isset( $this->_list_accounts_data['accountID'] ) ) {
-						$account_id                = $this->_list_accounts_data['accountID'];
-						$this->_list_accounts_data = null;
+					if ( $data['accountID'] ) {
+						$account_id = $data['accountID'];
 					} else {
 						$account_id = $response['accounts'][0]->getAccountId();
 					}
@@ -548,14 +528,8 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 
 					return array_merge( $response, compact( 'containers' ) );
 				case 'containers':
-					$account_id = null;
-					if ( ! empty( $this->_containers_account_id ) ) {
-						$account_id = $this->_containers_account_id;
-
-						$this->_containers_account_id = null;
-					}
-
-					$response = $response->getContainer();
+					$account_id = $data['accountID'];
+					$response   = $response->getContainer();
 
 					if ( empty( $response ) && ! empty( $account_id ) ) {
 						// If empty containers, attempt to create a new container.
