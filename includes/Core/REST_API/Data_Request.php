@@ -2,7 +2,7 @@
 /**
  * Data_Request
  *
- * @package   Google\Site_Kit\Core\Util
+ * @package   Google\Site_Kit\Core\REST_API
  * @copyright 2019 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
@@ -13,14 +13,14 @@ namespace Google\Site_Kit\Core\REST_API;
 /**
  * Class Data_Request
  *
- * @package Google\Site_Kit\Core\Util
+ * @since 1.0.0
  *
- * @property-read string $method
- * @property-read string $type
- * @property-read string $identifier
- * @property-read string $datapoint
- * @property-read string $data
- * @property-read string $key
+ * @property-read string $method     Request method.
+ * @property-read string $type       Request type.
+ * @property-read string $identifier Request identifier.
+ * @property-read string $datapoint  Request datapoint.
+ * @property-read array  $data       Request data parameters.
+ * @property-read string $key        Request key.
  */
 class Data_Request implements \ArrayAccess {
 
