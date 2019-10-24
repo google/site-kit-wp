@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\TagManager
+ * Class Google\Site_Kit\Modules\Tag_Manager
  *
  * @package   Google\Site_Kit
  * @copyright 2019 Google LLC
@@ -28,7 +28,7 @@ use Exception;
  * @access private
  * @ignore
  */
-final class TagManager extends Module implements Module_With_Scopes {
+final class Tag_Manager extends Module implements Module_With_Scopes {
 	use Module_With_Scopes_Trait;
 
 	const OPTION = 'googlesitekit_tagmanager_settings';

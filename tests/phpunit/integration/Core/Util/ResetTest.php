@@ -25,7 +25,7 @@ use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
-use Google\Site_Kit\Modules\TagManager;
+use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -83,7 +83,7 @@ class ResetTest extends TestCase {
 			Optimize::OPTION,
 			PageSpeed_Insights::OPTION,
 			Search_Console::PROPERTY_OPTION,
-			TagManager::OPTION,
+			Tag_Manager::OPTION,
 			Beta_Migration::OPTION_IS_PRE_PROXY_INSTALL,
 		);
 	}
