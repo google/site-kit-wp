@@ -512,8 +512,8 @@ final class TagManager extends Module implements Module_With_Scopes {
 					if ( 0 === count( $response['accounts'] ) ) {
 						return $response;
 					}
-					if ( $data['accountId'] ) {
-						$account_id = $data['accountId'];
+					if ( $data['accountID'] ) {
+						$account_id = $data['accountID'];
 					} else {
 						$account_id = $response['accounts'][0]->getAccountId();
 					}
@@ -526,7 +526,7 @@ final class TagManager extends Module implements Module_With_Scopes {
 
 					return array_merge( $response, compact( 'containers' ) );
 				case 'containers':
-					$account_id = $data['accountId'];
+					$account_id = $data['accountID'];
 					$response   = $response->getContainer();
 
 					if ( empty( $response ) && ! empty( $account_id ) ) {
