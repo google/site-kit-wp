@@ -200,7 +200,7 @@ abstract class Module {
 			'required'     => $this->depends_on,
 			'autoActivate' => $this->force_active,
 			'internal'     => $this->internal,
-			'screenId'     => $this instanceof Module_With_Screen ? $this->get_screen()->get_slug() : false,
+			'screenID'     => $this instanceof Module_With_Screen ? $this->get_screen()->get_slug() : false,
 			'hasSettings'  => ! in_array( $this->slug, array( 'site-verification', 'search-console', 'pagespeed-insights' ), true ),
 		);
 	}

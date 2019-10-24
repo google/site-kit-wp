@@ -27,7 +27,7 @@ import ModuleSettingsWarning from 'GoogleComponents/notifications/module-setting
 import {
 	activateOrDeactivateModule,
 	refreshAuthentication,
-	getReAuthUrl,
+	getReAuthURL,
 	showErrorNotification,
 	moduleIcon,
 } from 'GoogleUtil';
@@ -63,7 +63,7 @@ class SetupModule extends Component {
 			await refreshAuthentication();
 
 			// Redirect to ReAuthentication URL.
-			window.location = getReAuthUrl( slug, true );
+			window.location = getReAuthURL( slug, true );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'activate-module-error',

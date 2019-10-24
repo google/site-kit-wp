@@ -182,16 +182,16 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
 				case 'site':
-					if ( empty( $data['siteUrl'] ) ) {
+					if ( empty( $data['siteURL'] ) ) {
 						return new WP_Error(
 							'missing_required_param',
 							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'siteUrl' ),
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'siteURL' ),
 							array( 'status' => 400 )
 						);
 					}
 
-					$site_url = trailingslashit( $data['siteUrl'] );
+					$site_url = trailingslashit( $data['siteURL'] );
 
 					return function () use ( $site_url ) {
 						$orig_defer = $this->get_client()->shouldDefer();
@@ -221,7 +221,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						$this->options->set( self::PROPERTY_OPTION, $site_url );
 
 						return array(
-							'siteUrl'         => $site->getSiteUrl(),
+							'siteURL'         => $site->getSiteUrl(),
 							'permissionLevel' => $site->getPermissionLevel(),
 						);
 					};
@@ -255,7 +255,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					$property_matches = array_filter(
 						$sites,
 						function ( array $site ) use ( $current_host ) {
-							$site_host = wp_parse_url( str_replace( 'sc-domain:', 'https://', $site['siteUrl'] ), PHP_URL_HOST );
+							$site_host = wp_parse_url( str_replace( 'sc-domain:', 'https://', $site['siteURL'] ), PHP_URL_HOST );
 
 							// Ensure host names overlap, from right to left.
 							return 0 === strpos( strrev( $current_host ), strrev( $site_host ) );
@@ -265,7 +265,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					$exact_match = array_reduce(
 						$property_matches,
 						function ( $match, array $site ) use ( $current_url ) {
-							if ( ! $match && trailingslashit( $current_url ) === trailingslashit( $site['siteUrl'] ) ) {
+							if ( ! $match && trailingslashit( $current_url ) === trailingslashit( $site['siteURL'] ) ) {
 								return $site;
 							}
 							return $match;
@@ -296,7 +296,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		return array_map(
 			function ( \Google_Service_Webmasters_WmxSite $site ) {
 				return array(
-					'siteUrl'         => $site->getSiteUrl(),
+					'siteURL'         => $site->getSiteUrl(),
 					'permissionLevel' => $site->getPermissionLevel(),
 				);
 			},

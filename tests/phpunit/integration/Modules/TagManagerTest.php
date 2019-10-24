@@ -86,7 +86,7 @@ class TagManagerTest extends TestCase {
 				'required',
 				'autoActivate',
 				'internal',
-				'screenId',
+				'screenID',
 				'hasSettings',
 				'provides',
 				'settings',
@@ -95,8 +95,8 @@ class TagManagerTest extends TestCase {
 		);
 
 		$this->assertEquals( 'tagmanager', $info['slug'] );
-		$this->assertArrayHasKey( 'accountId', $info['settings'] );
-		$this->assertArrayHasKey( 'containerId', $info['settings'] );
+		$this->assertArrayHasKey( 'accountID', $info['settings'] );
+		$this->assertArrayHasKey( 'containerID', $info['settings'] );
 	}
 
 	public function test_get_datapoints() {
@@ -124,7 +124,7 @@ class TagManagerTest extends TestCase {
 		$result = apply_filters( 'amp_post_template_data', $data );
 		$this->assertSame( $data, $result );
 
-		$tagmanager->set_data( 'container-id', array( 'containerId' => '12345678' ) );
+		$tagmanager->set_data( 'container-id', array( 'containerID' => '12345678' ) );
 
 		$result = apply_filters( 'amp_post_template_data', $data );
 		$this->assertArrayHasKey( 'amp-analytics', $result['amp_component_scripts'] );

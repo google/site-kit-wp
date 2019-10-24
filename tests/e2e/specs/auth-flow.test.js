@@ -29,7 +29,7 @@ function stubGoogleSignIn( request ) {
 			contentType: 'application/json',
 			body: JSON.stringify( {
 				exactMatch: {
-					siteUrl: process.env.WP_BASE_URL,
+					siteURL: process.env.WP_BASE_URL,
 				},
 			} ),
 		} );

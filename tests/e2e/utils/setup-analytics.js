@@ -4,12 +4,12 @@
 import { wpApiFetch } from './wp-api-fetch';
 
 const defaultSettings = {
-	accountId: 100,
-	propertyId: 200,
-	profileId: 300,
-	internalWebPropertyId: 400,
+	accountID: 100,
+	propertyID: 200,
+	profileID: 300,
+	internalWebPropertyID: 400,
 	useSnippet: true,
-	// ampClientIdOptIn: (bool)
+	// ampClientIDOptIn: (bool)
 };
 
 /**
