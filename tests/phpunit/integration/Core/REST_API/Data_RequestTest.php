@@ -1,6 +1,6 @@
 <?php
 /**
- * Data_RequestTest.php
+ * Data_RequestTest
  *
  * @package   Google\Site_Kit\Tests\Core\Util
  * @copyright 2019 Google LLC
@@ -8,9 +8,9 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\Core\Util;
+namespace Google\Site_Kit\Tests\Core\REST_API;
 
-use Google\Site_Kit\Core\Util\Data_Request;
+use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Tests\TestCase;
 
 class Data_RequestTest extends TestCase {

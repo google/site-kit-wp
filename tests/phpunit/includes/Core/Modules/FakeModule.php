@@ -11,7 +11,7 @@
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
-use Google\Site_Kit\Core\Util\Data_Request;
+use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit_Dependencies\Google_Client;
 use Psr\Http\Message\RequestInterface;
 use WP_Error;
