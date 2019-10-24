@@ -16,9 +16,24 @@ use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Util\Data_Request;
-use Google_Client;
-use Google_Service_Exception;
-use Psr\Http\Message\RequestInterface;
+use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit_Dependencies\Google_Service_Exception;
+use Google\Site_Kit_Dependencies\Google_Service_Analytics;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsRequest;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_ReportRequest;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_Dimension;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DimensionFilter;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DimensionFilterClause;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DateRange;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_Metric;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_OrderBy;
+use Google\Site_Kit_Dependencies\Google_Service_Analytics_Accounts;
+use Google\Site_Kit_Dependencies\Google_Service_Analytics_Account;
+use Google\Site_Kit_Dependencies\Google_Service_Analytics_Webproperties;
+use Google\Site_Kit_Dependencies\Google_Service_Analytics_Webproperty;
+use Google\Site_Kit_Dependencies\Google_Service_Analytics_Profile;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
 
@@ -677,7 +692,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 					$dimensions = array_map(
 						function ( $name ) {
-							$dimension = new \Google_Service_AnalyticsReporting_Dimension();
+							$dimension = new Google_Service_AnalyticsReporting_Dimension();
 							$dimension->setName( $name );
 
 							return $dimension;
@@ -714,7 +729,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					$date_ranges = array_map(
 						function ( $date_range ) {
 							list ( $start_date, $end_date ) = $date_range;
-							$date_range                     = new \Google_Service_AnalyticsReporting_DateRange();
+							$date_range                     = new Google_Service_AnalyticsReporting_DateRange();
 							$date_range->setStartDate( $start_date );
 							$date_range->setEndDate( $end_date );
 
@@ -733,7 +748,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 								),
 								(array) $metric_def
 							);
-							$metric     = new \Google_Service_AnalyticsReporting_Metric();
+							$metric     = new Google_Service_AnalyticsReporting_Metric();
 							$metric->setAlias( $metric_def['alias'] );
 							$metric->setExpression( $metric_def['expression'] );
 
@@ -753,7 +768,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 								),
 								(array) $order_def
 							);
-							$order_by  = new \Google_Service_AnalyticsReporting_OrderBy();
+							$order_by  = new Google_Service_AnalyticsReporting_OrderBy();
 							$order_by->setFieldName( $order_def['fieldName'] );
 							$order_by->setSortOrder( $order_def['sortOrder'] );
 
@@ -764,7 +779,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					$request->setOrderBys( $orderby );
 
 					// Batch reports requests.
-					$body = new \Google_Service_AnalyticsReporting_GetReportsRequest();
+					$body = new Google_Service_AnalyticsReporting_GetReportsRequest();
 					$body->setReportRequests( array( $request ) );
 
 					return $this->get_analyticsreporting_service()->reports->batchGet( $body );
@@ -884,7 +899,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							$client          = $this->get_client();
 							$orig_defer      = $client->shouldDefer();
 							$client->setDefer( false );
-							$property = new \Google_Service_Analytics_Webproperty();
+							$property = new Google_Service_Analytics_Webproperty();
 							$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 							try {
 								$property = $this->get_service( 'analytics' )->management_webproperties->insert( $data['accountID'], $property );
@@ -912,7 +927,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							$client     = $this->get_client();
 							$orig_defer = $client->shouldDefer();
 							$client->setDefer( false );
-							$profile = new \Google_Service_Analytics_Profile();
+							$profile = new Google_Service_Analytics_Profile();
 							$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
 							try {
 								$profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $property_id, $profile );
@@ -937,7 +952,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							$client     = $this->get_client();
 							$orig_defer = $client->shouldDefer();
 							$client->setDefer( false );
-							$property = new \Google_Service_Analytics_Webproperty();
+							$property = new Google_Service_Analytics_Webproperty();
 							$property->setDefaultProfileId( $profile_id );
 							try {
 								$property = $this->get_service( 'analytics' )->management_webproperties->patch( $data['accountID'], $property_id, $property );
@@ -995,10 +1010,10 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					// TODO: Parse this response to a regular array.
 					break;
 				case 'accounts-properties-profiles':
-					/* @var \Google_Service_Analytics_Accounts $response listManagementAccounts response. */
+					/* @var Google_Service_Analytics_Accounts $response listManagementAccounts response. */
 					$accounts            = (array) $response->getItems();
 					$account_ids         = array_map(
-						function ( \Google_Service_Analytics_Account $account ) {
+						function ( Google_Service_Analytics_Account $account ) {
 							return $account->getId();
 						},
 						$accounts
@@ -1027,7 +1042,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							// Iterate over each account in reverse so if there is no match,
 							// the last $properties_profiles will be from the first account (selected by default).
 							foreach ( array_reverse( $accounts ) as $account ) {
-								/* @var \Google_Service_Analytics_Account $account Analytics account object. */
+								/* @var Google_Service_Analytics_Account $account Analytics account object. */
 								$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account->getId() ) );
 
 								if ( ! is_wp_error( $properties_profiles ) && isset( $properties_profiles['matchedProperty'] ) ) {
@@ -1043,7 +1058,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 					return array_merge( compact( 'accounts' ), $properties_profiles );
 				case 'properties-profiles':
-					/* @var \Google_Service_Analytics_Webproperties $response listManagementWebproperties response. */
+					/* @var Google_Service_Analytics_Webproperties $response listManagementWebproperties response. */
 					$properties = (array) $response->getItems();
 					$response   = array(
 						'properties' => $properties,
@@ -1054,7 +1069,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						return $response;
 					}
 
-					$found_property = new \Google_Service_Analytics_Webproperty();
+					$found_property = new Google_Service_Analytics_Webproperty();
 					$current_url    = $this->context->get_reference_site_url();
 
 					// If requested for a specific property, only match by property ID.
@@ -1068,7 +1083,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 					// If there's no match for the saved account ID, try to find a match using the properties of each account.
 					foreach ( $properties as $property ) {
-						/* @var \Google_Service_Analytics_Webproperty $property Property instance. */
+						/* @var Google_Service_Analytics_Webproperty $property Property instance. */
 						if (
 							// Attempt to match by property ID.
 							$property->getId() === $property_id ||
@@ -1139,7 +1154,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 *     @type string $page       Specific page URL to filter by. Default empty string.
 	 *     @type int    $row_limit  Limit of rows to return. Default 100.
 	 * }
-	 * @return \Google_Service_AnalyticsReporting_ReportRequest|WP_Error Analytics site request instance.
+	 * @return Google_Service_AnalyticsReporting_ReportRequest|WP_Error Analytics site request instance.
 	 */
 	protected function create_analytics_site_data_request( array $args = array() ) {
 		$args = wp_parse_args(
@@ -1158,7 +1173,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			return $profile_id;
 		}
 
-		$request = new \Google_Service_AnalyticsReporting_ReportRequest();
+		$request = new Google_Service_AnalyticsReporting_ReportRequest();
 		$request->setViewId( $profile_id );
 
 		if ( ! empty( $args['dimensions'] ) ) {
@@ -1166,19 +1181,19 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		}
 
 		if ( ! empty( $args['start_date'] ) && ! empty( $args['end_date'] ) ) {
-			$date_range = new \Google_Service_AnalyticsReporting_DateRange();
+			$date_range = new Google_Service_AnalyticsReporting_DateRange();
 			$date_range->setStartDate( $args['start_date'] );
 			$date_range->setEndDate( $args['end_date'] );
 			$request->setDateRanges( array( $date_range ) );
 		}
 
 		if ( ! empty( $args['page'] ) ) {
-			$dimension_filter = new \Google_Service_AnalyticsReporting_DimensionFilter();
+			$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
 			$dimension_filter->setDimensionName( 'ga:pagePath' );
 			$dimension_filter->setOperator( 'EXACT' );
 			$args['page'] = str_replace( trim( $this->context->get_reference_site_url(), '/' ), '', $args['page'] );
 			$dimension_filter->setExpressions( array( $args['page'] ) );
-			$dimension_filter_clause = new \Google_Service_AnalyticsReporting_DimensionFilterClause();
+			$dimension_filter_clause = new Google_Service_AnalyticsReporting_DimensionFilterClause();
 			$dimension_filter_clause->setFilters( array( $dimension_filter ) );
 			$request->setDimensionFilterClauses( array( $dimension_filter_clause ) );
 		}
@@ -1213,7 +1228,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	/**
 	 * Gets the configured Analytics Reporting service object instance.
 	 *
-	 * @return \Google_Service_AnalyticsReporting The Analytics Reporting API service.
+	 * @return Google_Service_AnalyticsReporting The Analytics Reporting API service.
 	 */
 	private function get_analyticsreporting_service() {
 		return $this->get_service( 'analyticsreporting' );
@@ -1233,8 +1248,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 */
 	protected function setup_services( Google_Client $client ) {
 		return array(
-			'analytics'          => new \Google_Service_Analytics( $client ),
-			'analyticsreporting' => new \Google_Service_AnalyticsReporting( $client ),
+			'analytics'          => new Google_Service_Analytics( $client ),
+			'analyticsreporting' => new Google_Service_AnalyticsReporting( $client ),
 		);
 	}
 

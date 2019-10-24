@@ -14,11 +14,16 @@ use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Util\Data_Request;
-use Google_Client;
-use Google_Service;
-use Google_Service_Exception;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit_Dependencies\Google_Service;
+use Google\Site_Kit_Dependencies\Google_Service_Exception;
+use Google\Site_Kit_Dependencies\Google_Service_SiteVerification;
+use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequest;
+use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequestSite;
+use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificationWebResourceResource;
+use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificationWebResourceResourceSite;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
 use WP_Error;
 use Exception;
 
@@ -103,10 +108,10 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 					}
 
 					$current_url = ! empty( $data['siteURL'] ) ? $data['siteURL'] : $this->context->get_reference_site_url();
-					$site        = new \Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequestSite();
+					$site        = new Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequestSite();
 					$site->setIdentifier( $current_url );
 					$site->setType( 'SITE' );
-					$request = new \Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequest();
+					$request = new Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequest();
 					$request->setSite( $site );
 					$request->setVerificationMethod( 'META' );
 
@@ -154,10 +159,10 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 							$errors = new WP_Error();
 
 							foreach ( $this->permute_site_url( $data['siteURL'] ) as $url ) {
-								$site = new \Google_Service_SiteVerification_SiteVerificationWebResourceResourceSite();
+								$site = new Google_Service_SiteVerification_SiteVerificationWebResourceResourceSite();
 								$site->setType( 'SITE' );
 								$site->setIdentifier( $url );
-								$resource = new \Google_Service_SiteVerification_SiteVerificationWebResourceResource();
+								$resource = new Google_Service_SiteVerification_SiteVerificationWebResourceResource();
 								$resource->setSite( $site );
 
 								try {
@@ -308,7 +313,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	/**
 	 * Get the configured siteverification service instance.
 	 *
-	 * @return \Google_Service_SiteVerification The Site Verification API service.
+	 * @return Google_Service_SiteVerification The Site Verification API service.
 	 */
 	private function get_siteverification_service() {
 		return $this->get_service( 'siteverification' );
@@ -328,7 +333,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 */
 	protected function setup_services( Google_Client $client ) {
 		return array(
-			'siteverification' => new \Google_Service_SiteVerification( $client ),
+			'siteverification' => new Google_Service_SiteVerification( $client ),
 		);
 	}
 }

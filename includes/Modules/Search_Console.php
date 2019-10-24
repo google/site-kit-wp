@@ -16,10 +16,16 @@ use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Util\Data_Request;
-use Google_Client;
-use Google_Service_Exception;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\RequestInterface;
+use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit_Dependencies\Google_Service_Exception;
+use Google\Site_Kit_Dependencies\Google_Service_Webmasters;
+use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SitesListResponse;
+use Google\Site_Kit_Dependencies\Google_Service_Webmasters_WmxSite;
+use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SearchAnalyticsQueryRequest;
+use Google\Site_Kit_Dependencies\Google_Service_Webmasters_ApiDimensionFilter;
+use Google\Site_Kit_Dependencies\Google_Service_Webmasters_ApiDimensionFilterGroup;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
 /**
@@ -241,10 +247,10 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'sites':
-					/* @var \Google_Service_Webmasters_SitesListResponse $response Response object. */
+					/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
 					return $this->map_sites( (array) $response->getSiteEntry() );
 				case 'matched-sites':
-					/* @var \Google_Service_Webmasters_SitesListResponse $response Response object. */
+					/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
 					$sites            = $this->map_sites( (array) $response->getSiteEntry() );
 					$current_url      = $this->context->get_reference_site_url();
 					$current_host     = wp_parse_url( $current_url, PHP_URL_HOST );
@@ -284,13 +290,13 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	/**
 	 * Map Site model objects to primitives used for API responses.
 	 *
-	 * @param \Google_Service_Webmasters_WmxSite[] $sites Site objects.
+	 * @param array $sites Site objects.
 	 *
 	 * @return array
 	 */
 	private function map_sites( $sites ) {
 		return array_map(
-			function ( \Google_Service_Webmasters_WmxSite $site ) {
+			function ( Google_Service_Webmasters_WmxSite $site ) {
 				return array(
 					'siteURL'         => $site->getSiteUrl(),
 					'permissionLevel' => $site->getPermissionLevel(),
@@ -328,7 +334,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			)
 		);
 
-		$request = new \Google_Service_Webmasters_SearchAnalyticsQueryRequest();
+		$request = new Google_Service_Webmasters_SearchAnalyticsQueryRequest();
 		if ( ! empty( $args['dimensions'] ) ) {
 			$request->setDimensions( (array) $args['dimensions'] );
 		}
@@ -339,10 +345,10 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			$request->setEndDate( $args['end_date'] );
 		}
 		if ( ! empty( $args['page'] ) ) {
-			$filter = new \Google_Service_Webmasters_ApiDimensionFilter();
+			$filter = new Google_Service_Webmasters_ApiDimensionFilter();
 			$filter->setDimension( 'page' );
 			$filter->setExpression( esc_url_raw( $args['page'] ) );
-			$filters = new \Google_Service_Webmasters_ApiDimensionFilterGroup();
+			$filters = new Google_Service_Webmasters_ApiDimensionFilterGroup();
 			$filters->setFilters( array( $filter ) );
 			$request->setDimensionFilterGroups( array( $filters ) );
 		}
@@ -437,7 +443,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	/**
 	 * Get the configured Webmasters service instance.
 	 *
-	 * @return \Google_Service_Webmasters The Search Console API service.
+	 * @return Google_Service_Webmasters The Search Console API service.
 	 */
 	private function get_webmasters_service() {
 		return $this->get_service( 'webmasters' );
@@ -457,7 +463,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 */
 	protected function setup_services( Google_Client $client ) {
 		return array(
-			'webmasters' => new \Google_Service_Webmasters( $client ),
+			'webmasters' => new Google_Service_Webmasters( $client ),
 		);
 	}
 }
