@@ -68,6 +68,8 @@ class Data_RequestTest extends TestCase {
 		// Data cannot be mutated.
 		$data['test-key'] = 'new value';
 		$this->assertEquals( 'test-data', $data['test-key'] );
+		unset( $data['test-key'] );
+		$this->assertEquals( 'test-data', $data['test-key'] );
 
 		// Non-existent keys have null values.
 		$this->assertNull( $data['non-existent-key'] );
