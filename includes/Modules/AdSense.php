@@ -362,8 +362,8 @@ tag_partner: "site_kit"
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
 	protected function create_data_request( Data_Request $data ) {
-		$method    = $data->get_method();
-		$datapoint = $data->get_datapoint();
+		$method    = $data->method;
+		$datapoint = $data->datapoint;
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
@@ -675,8 +675,8 @@ tag_partner: "site_kit"
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
-		$method    = $data->get_method();
-		$datapoint = $data->get_datapoint();
+		$method    = $data->method;
+		$datapoint = $data->datapoint;
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {

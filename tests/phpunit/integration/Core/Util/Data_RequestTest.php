@@ -17,47 +17,47 @@ class Data_RequestTest extends TestCase {
 	public function test_get_method() {
 		$data = new Data_Request( 'GET' );
 
-		$this->assertEquals( 'GET', $data->get_method() );
+		$this->assertEquals( 'GET', $data->method );
 
 		// Method is always returned in all caps.
 		$data = new Data_Request( 'post' );
 
-		$this->assertEquals( 'POST', $data->get_method() );
+		$this->assertEquals( 'POST', $data->method );
 	}
 
 	public function test_get_type() {
 		$data = new Data_Request( 'GET', 'test-type' );
 
-		$this->assertEquals( 'test-type', $data->get_type() );
+		$this->assertEquals( 'test-type', $data->type );
 	}
 
 	public function test_get_identifier() {
 		$data = new Data_Request( 'GET', 'test-type', 'test-identifier' );
 
-		$this->assertEquals( 'test-identifier', $data->get_identifier() );
+		$this->assertEquals( 'test-identifier', $data->identifier );
 	}
 
 	public function test_get_datapoint() {
 		$data = new Data_Request( 'GET', 'test-type', 'test-identifier', 'test-datapoint' );
 
-		$this->assertEquals( 'test-datapoint', $data->get_datapoint() );
+		$this->assertEquals( 'test-datapoint', $data->datapoint );
 	}
 
 	public function test_get_data() {
 		$data_a = new Data_Request( 'GET', 'test-type', 'test-identifier', 'test-datapoint', array( 'test-data' ) );
 
-		$this->assertEquals( array( 'test-data' ), $data_a->get_data() );
+		$this->assertEquals( array( 'test-data' ), $data_a->data );
 
 		// Data can come from another Data Request.
 		$data_b = new Data_Request( 'GET', 'test-type', 'test-identifier', 'test-datapoint', $data_a );
 
-		$this->assertEquals( array( 'test-data' ), $data_b->get_data() );
+		$this->assertEquals( array( 'test-data' ), $data_b->data );
 	}
 
 	public function test_get_key() {
 		$data = new Data_Request( 'GET', 'test-type', 'test-identifier', 'test-datapoint', array(), 'test-key' );
 
-		$this->assertEquals( 'test-key', $data->get_key() );
+		$this->assertEquals( 'test-key', $data->key );
 	}
 
 	public function test_array_access() {

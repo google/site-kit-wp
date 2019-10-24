@@ -293,17 +293,17 @@ abstract class Module {
 			}
 
 			/* @var Data_Request $dataset Request object. */
-			if ( $this->slug !== $dataset->get_identifier() ) {
+			if ( $this->slug !== $dataset->identifier ) {
 				continue;
 			}
 
-			if ( ! isset( $datapoint_services[ $dataset->get_datapoint() ] ) ) {
+			if ( ! isset( $datapoint_services[ $dataset->datapoint ] ) ) {
 				continue;
 			}
 
-			$key                   = $dataset->get_key() ?: wp_rand();
+			$key                   = $dataset->key ?: wp_rand();
 			$data_requests[ $key ] = $dataset;
-			$datapoint             = $dataset->get_datapoint();
+			$datapoint             = $dataset->datapoint;
 			$request               = $this->create_data_request( $dataset );
 
 			if ( is_wp_error( $request ) ) {
@@ -456,7 +456,7 @@ abstract class Module {
 				$response = $client->execute( $request );
 			}
 		} catch ( Exception $e ) {
-			return $this->exception_to_error( $e, $data->get_datapoint() );
+			return $this->exception_to_error( $e, $data->datapoint );
 		}
 
 		if ( is_wp_error( $response ) ) {

@@ -14,6 +14,13 @@ namespace Google\Site_Kit\Core\Util;
  * Class Data_Request
  *
  * @package Google\Site_Kit\Core\Util
+ *
+ * @property-read string $method
+ * @property-read string $type
+ * @property-read string $identifier
+ * @property-read string $datapoint
+ * @property-read string $data
+ * @property-read string $key
  */
 class Data_Request implements \ArrayAccess {
 
@@ -81,62 +88,30 @@ class Data_Request implements \ArrayAccess {
 		$this->type       = $type;
 		$this->identifier = $identifier;
 		$this->datapoint  = $datapoint;
-		$this->data       = $data instanceof self ? $data->get_data() : (array) $data;
+		$this->data       = $data instanceof self ? $data->data : (array) $data;
 		$this->key        = $key;
 	}
 
 	/**
-	 * Gets the request method.
+	 * Gets the accessed property by the given name.
 	 *
-	 * @return string
+	 * @param string $name Property name.
+	 *
+	 * @return mixed
 	 */
-	public function get_method() {
-		return $this->method;
+	public function __get( $name ) {
+		return isset( $this->$name ) ? $this->$name : null;
 	}
 
 	/**
-	 * Gets the request type.
+	 * Checks whether or not the given magic property is set.
 	 *
-	 * @return string
-	 */
-	public function get_type() {
-		return $this->type;
-	}
-
-	/**
-	 * Gets the request identifier.
+	 * @param string $name Property name.
 	 *
-	 * @return string
+	 * @return bool
 	 */
-	public function get_identifier() {
-		return $this->identifier;
-	}
-
-	/**
-	 * Gets the request datapoint.
-	 *
-	 * @return string
-	 */
-	public function get_datapoint() {
-		return $this->datapoint;
-	}
-
-	/**
-	 * Gets the request key.
-	 *
-	 * @return string
-	 */
-	public function get_key() {
-		return $this->key;
-	}
-
-	/**
-	 * Gets the request data parameters.
-	 *
-	 * @return array
-	 */
-	public function get_data() {
-		return (array) $this->data;
+	public function __isset( $name ) {
+		return isset( $this->$name );
 	}
 
 	/**
