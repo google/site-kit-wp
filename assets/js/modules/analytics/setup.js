@@ -252,8 +252,8 @@ class AnalyticsSetup extends Component {
 		try {
 			// Send existing tag data to get account.
 			const queryArgs = existingTagData ? {
-				existingAccountID: existingTagData.accountId, /* casing rule exception: `accountId` is an API returned value */
-				existingPropertyID: existingTagData.propertyId, /* casing rule exception: `propertyId` is an API returned value */
+				existingAccountID: existingTagData.accountId, // Capitalization rule exception: `accountId` is an API returned value.
+				existingPropertyID: existingTagData.propertyId, // Capitalization rule exception: `propertyId` is an API returned value.
 			} : {};
 
 			const responseData = await data.get( TYPE_MODULES, 'analytics', 'accounts-properties-profiles', queryArgs );
@@ -273,10 +273,10 @@ class AnalyticsSetup extends Component {
 				}
 
 				if ( matchedProperty ) {
-					selectedAccount = matchedProperty.accountId; /* casing rule exception: `accountId` is an API returned value */
+					selectedAccount = matchedProperty.accountId; // Capitalization rule exception: `accountId` is an API returned value.
 					selectedProperty = matchedProperty.id;
 					const matchedProfile = responseData.profiles.find( ( profile ) => {
-						return profile.accountId === selectedAccount; /* casing rule exception: `accountId` is an API returned value */
+						return profile.accountId === selectedAccount; // Capitalization rule exception: `accountId` is an API returned value.
 					} );
 					if ( matchedProfile ) {
 						selectedProfile = matchedProfile.id;
