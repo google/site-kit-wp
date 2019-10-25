@@ -60,6 +60,8 @@ class Optin extends Component {
 						return;
 					}
 
+					window.googlesitekitTrackingEnabled = !! checked;
+
 					document.body.insertAdjacentHTML( 'beforeend', `
 						<script async src="https://www.googletagmanager.com/gtag/js?id=${ googlesitekit.admin.trackingID }"></script>
 					` );
@@ -69,7 +71,6 @@ class Optin extends Component {
 							function gtag(){dataLayer.push(arguments);}
 							gtag('js', new Date());
 							gtag('config', '${ googlesitekit.admin.trackingID }');
-							window.googlesitekitTrackingEnabled = true;
 						</script>
 					` );
 				}

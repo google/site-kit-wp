@@ -43,7 +43,6 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 		await page.waitForSelector( '#opt-in' );
 
 		// Make sure the script tags are not yet loaded on the page.
-		await expect( page ).not.toMatchElement( 'script[src^="https://www.google-analytics.com/analytics.js"]' );
 		await expect( page ).not.toMatchElement( 'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]' );
 
 		// Opt-in to tracking to ensure the checkbox is selected.
@@ -57,12 +56,8 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 		// Ensure the script tags are injected into the page if they weren't
 		// loaded already.
 		await Promise.all( [
-			page.waitForSelector( 'script[src^="https://www.google-analytics.com/analytics.js"]' ),
 			page.waitForSelector( 'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]' ),
 		] );
-
-		// Ensure analytics script tag exists.
-		await expect( page ).toMatchElement( 'script[src^="https://www.google-analytics.com/analytics.js"]' );
 
 		// Ensure tag manager script tag exists.
 		await expect( page ).toMatchElement( 'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]' );

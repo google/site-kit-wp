@@ -200,6 +200,7 @@ final class Activation {
 								} )
 									.then( function() {
 										event.target.disabled = null;
+										window.googlesitekitTrackingEnabled = !! checked;
 
 										var trackingId = googlesitekit.admin.trackingID;
 										var trackingScriptPresent = document.querySelectorAll( `script[src="https://www.googletagmanager.com/gtag/js?id=${ trackingId }"]` ).length > 0;
@@ -214,7 +215,6 @@ final class Activation {
 													function gtag(){dataLayer.push(arguments);}
 													gtag('js', new Date());
 													gtag('config', '${ trackingId }');
-													window.googlesitekitTrackingEnabled = true;
 												\</script\>
 											` );
 										}
