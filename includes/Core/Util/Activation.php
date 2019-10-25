@@ -155,11 +155,11 @@ final class Activation {
 					ob_start();
 					?>
 					<script type="text/javascript">
-						if ( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
-							sendAnalyticsTrackingEvent( 'plugin_setup', 'plugin_activated' );
-						}
-
 						document.addEventListener( 'DOMContentLoaded' , function() {
+							if ( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
+								sendAnalyticsTrackingEvent( 'plugin_setup', 'plugin_activated' );
+							}
+
 							var trackingScriptPresent = !! googlesitekit.admin.trackingOptIn;
 
 							if ( googlesitekit.admin.trackingOptIn ) {
@@ -278,7 +278,7 @@ final class Activation {
 														$locale = str_replace( '_', '-', get_locale() );
 														echo wp_kses(
 															sprintf(
-																// translators: %s: https://policies.google.com/privacy.
+																// translators: %s: https://policies.google.com/privacy?hl=LOCALE (where LOCALE is the current WordPress locale, translating the privacy policy if a translation exists).
 																__(
 																	'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with <a href="%s" rel="noopener noreferrer">Google Privacy Policy</a>.',
 																	'google-site-kit'
