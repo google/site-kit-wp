@@ -148,7 +148,7 @@ final class Google_Proxy_Client extends Google_Client {
 	protected function createOAuth2Service() {
 		$auth = new OAuth2(
 			array(
-				'clientID'           => $this->getClientId(),
+				'clientId'           => $this->getClientId(),
 				'clientSecret'       => $this->getClientSecret(),
 				'authorizationUri'   => self::OAUTH2_AUTH_URL,
 				'tokenCredentialUri' => self::OAUTH2_TOKEN_URI,
