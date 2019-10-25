@@ -111,8 +111,6 @@ final class Tracking {
 	/**
 	 * Is tracking active for this plugin install?
 	 *
-	 * During the beta, this defaults to true.
-	 *
 	 * @since 1.0.0
 	 *
 	 * @return bool True if tracking enabled, and False if not.
