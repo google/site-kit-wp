@@ -491,7 +491,11 @@ final class OAuth_Client {
 			wp_safe_redirect( $this->get_proxy_setup_url( $e->getAccessCode(), $e->getMessage() ) );
 			exit();
 		} catch ( Exception $e ) {
-			$this->user_options->set( self::OPTION_ERROR_CODE, 'invalid_code' );
+			$error_code = 'invalid_code';
+			if ( $this->using_proxy() ) { // Only the Google_Proxy_Client exposes the real error response.
+				$error_code = $e->getMessage();
+			}
+			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
 			wp_safe_redirect( admin_url() );
 			exit();
 		}
