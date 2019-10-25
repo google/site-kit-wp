@@ -232,7 +232,7 @@ final class Activation {
 								<div class="mdc-layout-grid__inner">
 									<div class="
 										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-7
+										mdc-layout-grid__cell--span-12
 									">
 										<div class="googlesitekit-logo">
 											<?php
@@ -256,21 +256,11 @@ final class Activation {
 										<h3 class="googlesitekit-heading-3 googlesitekit-activation__title">
 											<?php esc_html_e( 'Congratulations, the Site Kit plugin is now activated.', 'google-site-kit' ); ?>
 										</h3>
-									</div>
-									<div class="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--start-8-desktop
-										mdc-layout-grid__cell--offset-1-desktop
-										mdc-layout-grid__cell--align-bottom
-									">
+
 										<a id="start-setup-link" href="<?php echo esc_url( $sitekit_splash_url ); ?>" class="googlesitekit-activation__button mdc-button mdc-button--raised">
 											<?php esc_html_e( 'Start Setup', 'google-site-kit' ); ?>
 										</a>
-									</div>
-									<div class="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-12
-									">
+
 										<div class="googlesitekit-opt-in">
 											<div class="mdc-form-field">
 												<div class="mdc-checkbox mdc-checkbox--upgraded mdc-ripple-upgraded mdc-ripple-upgraded--unbounded">
