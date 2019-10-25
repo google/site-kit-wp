@@ -17,22 +17,15 @@ storiesOf( 'WordPress', module )
 						<div className="mdc-layout-grid__inner">
 							<div className="
 								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-7
+								mdc-layout-grid__cell--span-12
 							">
 								<div className="googlesitekit-activation__logo">
 									<SvgIcon id="logo-g" height="33" width="33" />
 								</div>
-								<h3 className="googlesitekit-heading-1 googlesitekit-activation__title">{ __( 'Congratulations, the Site Kit plugin is now activated.', 'google-site-kit' ) }</h3>
-							</div>
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--start-8-desktop
-								mdc-layout-grid__cell--offset-1-desktop
-								mdc-layout-grid__cell--align-middle
-							">
-								<button className="googlesitekit-activation__button mdc-button mdc-button--raised">
+								<h3 className="googlesitekit-heading-3 googlesitekit-activation__title">{ __( 'Congratulations, the Site Kit plugin is now activated.', 'google-site-kit' ) }</h3>
+								<a className="googlesitekit-activation__button mdc-button mdc-button--raised" href="#start-setup">
 									{ __( 'Start Setup', 'google-site-kit' ) }
-								</button>
+								</a>
 							</div>
 						</div>
 					</div>
