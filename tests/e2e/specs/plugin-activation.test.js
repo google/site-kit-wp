@@ -5,27 +5,27 @@ import { deactivatePlugin, activatePlugin } from '@wordpress/e2e-test-utils';
 
 describe( 'Plugin Activation Notice', () => {
 	beforeEach( async () => {
-		await deactivatePlugin( 'google-site-kit' );
+		await deactivatePlugin( 'site-kit-by-google' );
 		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 	} );
 
 	afterEach( async () => {
 		await deactivatePlugin( 'e2e-tests-gcp-credentials-plugin' );
-		await activatePlugin( 'google-site-kit' );
+		await activatePlugin( 'site-kit-by-google' );
 	} );
 
 	it( 'Should be displayed', async () => {
-		await activatePlugin( 'google-site-kit' );
+		await activatePlugin( 'site-kit-by-google' );
 
 		await page.waitForSelector( '.googlesitekit-activation' );
 
 		await expect( page ).toMatchElement( 'h3.googlesitekit-activation__title', { text: 'Congratulations, the Site Kit plugin is now activated.' } );
 
-		await deactivatePlugin( 'google-site-kit' );
+		await deactivatePlugin( 'site-kit-by-google' );
 	} );
 
 	it( 'Should lead you to the setup wizard', async () => {
-		await activatePlugin( 'google-site-kit' );
+		await activatePlugin( 'site-kit-by-google' );
 
 		await page.waitForSelector( '.googlesitekit-activation' );
 
