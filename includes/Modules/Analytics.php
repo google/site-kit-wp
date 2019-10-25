@@ -1023,13 +1023,13 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						'profiles'   => array(),
 					);
 
-					if ( ! empty( $data['existingAccountID'] ) && ! empty( $data['existingPropertyId'] ) ) {
+					if ( ! empty( $data['existingAccountID'] ) && ! empty( $data['existingPropertyID'] ) ) {
 						// If there is an existing tag, pass it through to ensure only the existing tag is matched.
 						$properties_profiles = $this->get_data(
 							'properties-profiles',
 							array(
 								'accountID'          => $data['existingAccountID'],
-								'existingPropertyId' => $data['existingPropertyId'],
+								'existingPropertyID' => $data['existingPropertyID'],
 							)
 						);
 					} else {
@@ -1073,8 +1073,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					$current_url    = $this->context->get_reference_site_url();
 
 					// If requested for a specific property, only match by property ID.
-					if ( ! empty( $data['existingPropertyId'] ) ) {
-						$property_id  = $data['existingPropertyId'];
+					if ( ! empty( $data['existingPropertyID'] ) ) {
+						$property_id  = $data['existingPropertyID'];
 						$current_urls = array();
 					} else {
 						$property_id  = $this->get_data( 'property-id' );

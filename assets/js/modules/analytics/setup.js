@@ -253,7 +253,7 @@ class AnalyticsSetup extends Component {
 			// Send existing tag data to get account.
 			const queryArgs = existingTagData ? {
 				existingAccountID: existingTagData.accountId, /* casing rule exception: `accountId` is an API returned value */
-				existingPropertyId: existingTagData.propertyId, /* casing rule exception: `propertyId` is an API returned value */
+				existingPropertyID: existingTagData.propertyId, /* casing rule exception: `propertyId` is an API returned value */
 			} : {};
 
 			const responseData = await data.get( TYPE_MODULES, 'analytics', 'accounts-properties-profiles', queryArgs );
