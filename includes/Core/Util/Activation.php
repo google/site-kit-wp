@@ -163,7 +163,7 @@ final class Activation {
 							var trackingScriptPresent = !! googlesitekit.admin.trackingOptIn;
 
 							if ( googlesitekit.admin.trackingOptIn ) {
-								document.getElementById( 'opt-in' ).checked = googlesitekit.admin.trackingOptIn;
+								document.getElementById( 'googlesitekit-opt-in' ).checked = googlesitekit.admin.trackingOptIn;
 							}
 							if ( googlesitekit.admin.proxySetupURL ) {
 								document.getElementById( 'start-setup-link' ).href = googlesitekit.admin.proxySetupURL
@@ -175,7 +175,7 @@ final class Activation {
 								}
 							} );
 
-							document.getElementById( 'opt-in' ).addEventListener( 'change' , function( event ) {
+							document.getElementById( 'googlesitekit-opt-in' ).addEventListener( 'change' , function( event ) {
 								if ( event.target.disabled ) {
 									event.preventDefault();
 									return;
@@ -264,7 +264,7 @@ final class Activation {
 										<div class="googlesitekit-opt-in googlesitekit-activation__opt-in">
 											<div class="mdc-form-field">
 												<div class="mdc-checkbox mdc-checkbox--upgraded mdc-ripple-upgraded mdc-ripple-upgraded--unbounded">
-													<input class="mdc-checkbox__native-control" type="checkbox" id="opt-in" name="optin" value="1" />
+													<input class="mdc-checkbox__native-control" type="checkbox" id="googlesitekit-opt-in" value="1" />
 													<div class="mdc-checkbox__background">
 														<svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
 															<path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
@@ -273,7 +273,7 @@ final class Activation {
 														</div>
 													</div>
 												</div>
-												<label for="opt-in">
+												<label for="googlesitekit-opt-in">
 													<?php
 														$locale = str_replace( '_', '-', get_locale() );
 														echo wp_kses(

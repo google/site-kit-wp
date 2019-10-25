@@ -104,10 +104,7 @@ class SetupUsingProxy extends Component {
 														>
 															{ __( 'Start setup', 'google-site-kit' ) }
 														</Button>
-														<Optin
-															id="opt-in"
-															name="optin"
-														/>
+														<Optin />
 													</div>
 												</div>
 											</div>

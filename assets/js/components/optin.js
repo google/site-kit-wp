@@ -131,7 +131,7 @@ Optin.propTypes = {
 };
 
 Optin.defaultProps = {
-	id: 'opt-in',
+	id: 'googlesitekit-opt-in',
 	name: 'optIn',
 };
 
