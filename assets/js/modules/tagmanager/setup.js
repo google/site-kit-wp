@@ -142,21 +142,21 @@ class TagmanagerSetup extends Component {
 			}
 
 			// Verify if user has access to the selected account.
-			if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.accountId === selectedAccount ) ) {
+			if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.accountId === selectedAccount ) ) { /* casing rule exception: `accountId` is an API returned value */
 				data.invalidateCacheGroup( TYPE_MODULES, 'tagmanager', 'accounts-containers' );
 				errorCode = 'insufficientPermissions';
 				errorMsg = __( 'You currently don\'t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.', 'google-site-kit' );
 			}
 
 			const chooseContainer = {
-				containerId: 0,
-				publicId: 0,
+				containerId: 0, /* casing rule exception: `containerId` matches an API returned value */
+				publicId: 0, /* casing rule exception: `publicId` is an API returned value */
 			};
 			responseData.containers.push( chooseContainer );
 
 			if ( this._isMounted ) {
-				const accountID = responseData.accounts[ 0 ] ? responseData.accounts[ 0 ].accountId : null;
-				const publicID = responseData.containers[ 0 ] ? responseData.containers[ 0 ].publicId : null;
+				const accountID = responseData.accounts[ 0 ] ? responseData.accounts[ 0 ].accountId : null; /* casing rule exception: `accountId` is an API returned value */
+				const publicID = responseData.containers[ 0 ] ? responseData.containers[ 0 ].publicId : null; /* casing rule exception: `publicId` is an API returned value */
 
 				this.setState( {
 					isLoading: false,
@@ -195,15 +195,15 @@ class TagmanagerSetup extends Component {
 			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'containers', queryArgs );
 
 			const chooseContainer = {
-				containerId: 0,
-				publicId: 0,
+				containerId: 0, /* casing rule exception: `containerId` matches an API returned value */
+				publicId: 0, /* casing rule exception: `publicId` matches an API returned value */
 			};
 			responseData.push( chooseContainer );
 			if ( this._isMounted ) {
 				this.setState( {
 					containersLoading: false,
 					containers: responseData,
-					selectedContainer: responseData[ 0 ].publicId,
+					selectedContainer: responseData[ 0 ].publicId, /* casing rule exception: `publicId` is an API returned value */
 					errorCode: false,
 				} );
 			}
@@ -237,8 +237,8 @@ class TagmanagerSetup extends Component {
 			}
 
 			googlesitekit.modules.tagmanager.settings = {
-				accountID: responseData.accountId,
-				containerID: responseData.containerId,
+				accountID: responseData.accountId, /* casing rule exception: `accountId` is an API returned value */
+				containerID: responseData.containerId, /* casing rule exception: `containerId` is an API returned value */
 			};
 
 			if ( this._isMounted ) {
@@ -392,8 +392,8 @@ class TagmanagerSetup extends Component {
 					>
 						{ accounts.map( ( account ) =>
 							<Option
-								key={ account.accountId }
-								value={ account.accountId }>
+								key={ account.accountId /* casing rule exception: `accountId` is an API returned value */ }
+								value={ account.accountId /* casing rule exception: `accountId` is an API returned value */ }>
 								{ account.name }
 							</Option> ) }
 					</Select>
@@ -409,12 +409,12 @@ class TagmanagerSetup extends Component {
 						>
 							{ containers.map( ( container ) =>
 								<Option
-									key={ container.containerId }
-									value={ container.publicId }>
+									key={ container.containerId /* casing rule exception: `containerId` is an API returned value */ }
+									value={ container.publicId /* casing rule exception: `publicId` is an API returned value */ }>
 									{
-										0 === container.publicId ?
+										0 === container.publicId ? /* casing rule exception: `publicId` is an API returned value */
 											__( 'Set up a new container', 'google-site-kit' ) :
-											container.publicId
+											container.publicId /* casing rule exception: `publicId` is an API returned value */
 									}
 								</Option> ) }
 						</Select>
