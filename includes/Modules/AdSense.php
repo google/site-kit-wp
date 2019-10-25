@@ -556,7 +556,7 @@ tag_partner: "site_kit"
 
 					list ( $start_date, $end_date ) = $dates;
 
-					$dimensions = $data['dimensions'];
+					$dimensions = (array) $data['dimensions'];
 					$args       = compact( 'start_date', 'end_date', 'dimensions' );
 
 					if ( isset( $data['limit'] ) ) {
