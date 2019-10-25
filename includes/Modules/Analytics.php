@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics;
@@ -47,20 +48,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait;
 
 	const OPTION = 'googlesitekit_analytics_settings';
-
-	/**
-	 * Temporary storage for datapoint $data object for use in response parsing.
-	 *
-	 * @var array
-	 */
-	private $_data;
-
-	/**
-	 * Temporary storage for adsense request.
-	 *
-	 * @var bool
-	 */
-	private $_is_adsense_request = false;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -476,13 +463,13 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to get request object for.
-	 * @param array  $data      Optional. Contextual data to provide or set. Default empty array.
+	 * @param Data_Request $data Data request object.
+	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
-	protected function create_data_request( $method, $datapoint, array $data = array() ) {
-		$this->_data = $data;
+	protected function create_data_request( Data_Request $data ) {
+		$method    = $data->method;
+		$datapoint = $data->datapoint;
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
@@ -701,23 +688,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						return $has_access_to_property;
 					};
 				case 'report':
-					$data = array_merge(
-						array(
-							'dateRange'         => 'last-28-days',
-							'url'               => '',
-							// List of strings (comma-separated) of dimension names.
-							'dimensions'        => '',
-							// List of objects with expression and optional alias properties.
-							'metrics'           => array(),
-							// List of objects with fieldName and sortOrder properties.
-							'orderby'           => array(),
-							// Whether or not to double the requested range for comparison.
-							'compareDateRanges' => false,
-							// Whether or not to include an additional previous range from the given dateRange.
-							'multiDateRange'    => false,
-						),
-						$data
-					);
+					$date_range = $data['dateRange'] ?: 'last-28-days';
 
 					$dimensions = array_map(
 						function ( $name ) {
@@ -726,7 +697,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 							return $dimension;
 						},
-						explode( ',', $data['dimensions'] )
+						array_filter( explode( ',', $data['dimensions'] ) )
 					);
 
 					$request_args         = compact( 'dimensions' );
@@ -744,7 +715,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 					$date_ranges = array(
 						$this->parse_date_range(
-							$data['dateRange'],
+							$date_range,
 							$data['compareDateRanges'] ? 2 : 1
 						),
 					);
@@ -752,7 +723,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					// When using multiple date ranges, it changes the structure of the response,
 					// where each date range becomes an item in a list.
 					if ( ! empty( $data['multiDateRange'] ) ) {
-						$date_ranges[] = $this->parse_date_range( $data['dateRange'], 1, 1, true );
+						$date_ranges[] = $this->parse_date_range( $date_range, 1, 1, true );
 					}
 
 					$date_ranges = array_map(
@@ -786,8 +757,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						(array) $data['metrics']
 					);
 					$request->setMetrics( $metrics );
-					// TODO: refactor this when $data is available in parse_data_response.
-					$this->detect_adsense_request_from_metrics( $metrics );
 
 					// Order by.
 					$orderby = array_map(
@@ -1023,13 +992,14 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to resolve response for.
-	 * @param mixed  $response  Response object or array.
+	 * @param Data_Request $data Data request object.
+	 * @param mixed        $response Request response.
+	 *
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
-	protected function parse_data_response( $method, $datapoint, $response ) {
-		$data = $this->_data ?: array();
+	protected function parse_data_response( Data_Request $data, $response ) {
+		$method    = $data->method;
+		$datapoint = $data->datapoint;
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
@@ -1155,7 +1125,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 					return $response;
 				case 'report':
-					if ( $this->_is_adsense_request ) {
+					if ( $this->is_adsense_request( $data ) ) {
 						if ( isset( $response->error ) ) {
 							$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 						} else {
@@ -1327,15 +1297,19 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	}
 
 	/**
-	 * Determines whether the given metrics are for an adsense request and sets the temporary state if found.
+	 * Determines whether the given request is for an adsense request.
 	 *
-	 * @param Google_Service_AnalyticsReporting_Metric[] $metrics Array of metrics objects.
+	 * @param Data_Request $data Data request object.
+	 *
+	 * @return bool
 	 */
-	private function detect_adsense_request_from_metrics( array $metrics ) {
-		foreach ( $metrics as $metric ) {
-			if ( 0 === strpos( $metric->getExpression(), 'ga:adsense' ) ) {
-				$this->_is_adsense_request = true;
+	private function is_adsense_request( $data ) {
+		foreach ( (array) $data['metrics'] as $metric ) {
+			if ( isset( $metric->expression ) && 0 === strpos( $metric->expression, 'ga:adsense' ) ) {
+				return true;
 			}
 		}
+
+		return false;
 	}
 }

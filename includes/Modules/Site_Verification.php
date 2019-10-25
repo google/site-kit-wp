@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
@@ -35,16 +36,6 @@ use Exception;
  */
 final class Site_Verification extends Module implements Module_With_Scopes {
 	use Module_With_Scopes_Trait;
-
-	/**
-	 * Temporary storage for very specific data for 'verification' datapoint.
-	 *
-	 * Bad to have, but works for now.
-	 *
-	 * @since 1.0.0
-	 * @var array|null
-	 */
-	private $_siteverification_list_data = null;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -90,22 +81,19 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to get request object for.
-	 * @param array  $data      Optional. Contextual data to provide or set. Default empty array.
+	 * @param Data_Request $data Data request object.
+	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
-	protected function create_data_request( $method, $datapoint, array $data = array() ) {
+	protected function create_data_request( Data_Request $data ) {
+		$method    = $data->method;
+		$datapoint = $data->datapoint;
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'verified-sites':
 					return $this->get_siteverification_service()->webResource->listWebResource();
 				case 'verification':
-					// This is far from optimal and hacky, but works for now.
-					if ( ! empty( $data['siteURL'] ) ) {
-						$this->_siteverification_list_data = $data;
-					}
-
 					return $this->get_siteverification_service()->webResource->listWebResource();
 				case 'verification-token':
 					$existing_token = $this->authentication->verification_tag()->get();
@@ -221,12 +209,15 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to resolve response for.
-	 * @param mixed  $response  Response object or array.
+	 * @param Data_Request $data Data request object.
+	 * @param mixed        $response Request response.
+	 *
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
-	protected function parse_data_response( $method, $datapoint, $response ) {
+	protected function parse_data_response( Data_Request $data, $response ) {
+		$method    = $data->method;
+		$datapoint = $data->datapoint;
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'verified-sites':
@@ -243,9 +234,8 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 					return $data;
 				case 'verification':
-					if ( is_array( $this->_siteverification_list_data ) && isset( $this->_siteverification_list_data['siteURL'] ) ) {
-						$current_url                       = trailingslashit( $this->_siteverification_list_data['siteURL'] );
-						$this->_siteverification_list_data = null;
+					if ( $data['siteURL'] ) {
+						$current_url = trailingslashit( $data['siteURL'] );
 					} else {
 						$current_url = trailingslashit( $this->context->get_reference_site_url() );
 					}

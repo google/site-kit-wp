@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service_AdSense;
 use Google\Site_Kit_Dependencies\Google_Service_AdSense_Alert;
@@ -356,12 +357,14 @@ tag_partner: "site_kit"
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to get request object for.
-	 * @param array  $data      Optional. Contextual data to provide or set. Default empty array.
+	 * @param Data_Request $data Data request object.
+	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
-	protected function create_data_request( $method, $datapoint, array $data = array() ) {
+	protected function create_data_request( Data_Request $data ) {
+		$method    = $data->method;
+		$datapoint = $data->datapoint;
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'connection':
@@ -666,12 +669,15 @@ tag_partner: "site_kit"
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to resolve response for.
-	 * @param mixed  $response  Response object or array.
+	 * @param Data_Request $data Data request object.
+	 * @param mixed        $response Request response.
+	 *
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
-	protected function parse_data_response( $method, $datapoint, $response ) {
+	protected function parse_data_response( Data_Request $data, $response ) {
+		$method    = $data->method;
+		$datapoint = $data->datapoint;
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'accounts':
