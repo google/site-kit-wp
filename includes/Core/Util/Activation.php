@@ -286,13 +286,12 @@ final class Activation {
 														$locale = str_replace( '_', '-', get_locale() );
 														echo wp_kses(
 															sprintf(
-																// translators: %1$s: <a href="https://policies.google.com/privacy"> %2$s: </a>.
+																// translators: %s: https://policies.google.com/privacy.
 																__(
-																	'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with %1$sGoogle Privacy Policy%2$s.',
+																	'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with <a href="%s" rel="noopener noreferrer">Google Privacy Policy</a>.',
 																	'google-site-kit'
 																),
-																"<a href=\"https://policies.google.com/privacy?hl=${locale}\" rel=\"noopener noreferrer\">",
-																'</a>'
+																"https://policies.google.com/privacy?hl=${locale}"
 															),
 															array(
 																'a' => array(
