@@ -171,7 +171,7 @@ final class Activation {
 
 							document.getElementById( 'start-setup-link' ).addEventListener( 'click' , function() {
 								if ( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
-									sendAnalyticsTrackingEvent( 'plugin_setup', 'goto_sitekit' );
+									sendAnalyticsTrackingEvent( 'plugin_setup', googlesitekit.admin.proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
 								}
 							} );
 
