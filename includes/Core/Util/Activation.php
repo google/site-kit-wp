@@ -178,10 +178,10 @@ final class Activation {
 											); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
 
 											echo $this->assets->svg_sprite(
-												'logo-sitekit-beta',
+												'logo-sitekit',
 												array(
-													'height' => '28',
-													'width'  => '206',
+													'height' => '26',
+													'width'  => '99',
 												)
 											); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
 											?>
