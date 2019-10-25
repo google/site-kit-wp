@@ -6,12 +6,11 @@
   "scripts": {
     "build": "npm run remove-dist && npm run build:production && npm run build:svg && npm run build:images && gulp copy-vendor",
     "build:production": "npm run lint:js && webpack -p --mode=production",
-    "build:beta": "npm run lint:js && webpack -p --mode=production --env.beta",
     "build:dev": "npm run build:svg && npm run build:images && webpack --mode=development --debug --devtool cheap-source-map --output-pathinfo",
     "build:svg": "gulp svg",
     "build:images": "gulp imagemin",
     "dev": "gulp copy-vendor && npm run build:dev && npm run build:svg && npm run build:images",
-    "watch": "npm run remove-dist && npm run build:svg && npm run build:images && gulp copy-vendor && webpack --watch --mode=development --env.beta --debug --devtool cheap-module-eval-source-map --output-pathinfo",
+    "watch": "npm run remove-dist && npm run build:svg && npm run build:images && gulp copy-vendor && webpack --watch --mode=development --debug --devtool cheap-module-eval-source-map --output-pathinfo",
     "release-zip": "npm run build && gulp release && gulp copy && gulp pre-zip && gulp zip && rm -rf release",
     "release-zip-wp50": "npm run build && gulp release && gulp copy && gulp pre-zip-wp50 && gulp zip-wp50 && rm -rf release",
     "release": "rm -rf release && git worktree prune && git worktree add -B stable release origin/stable && npm run build && gulp release && gulp copy",

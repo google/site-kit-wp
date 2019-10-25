@@ -26,7 +26,6 @@ const WebpackBar = require( 'webpackbar' );
  * WordPress dependencies
  */
 const LibraryExportDefaultPlugin = require( '@wordpress/library-export-default-webpack-plugin' );
-const webpack = require( 'webpack' );
 
 /**
  * Given a string, returns a new string with dash separators converted to
@@ -158,11 +157,6 @@ module.exports = ( env, argv ) => {
 				new WebpackBar( {
 					name: 'Module Entry Points',
 					color: '#fbbc05',
-				} ),
-				new webpack.DefinePlugin( {
-					'process.env': {
-						beta: env && env.beta,
-					},
 				} ),
 			],
 			optimization: {
