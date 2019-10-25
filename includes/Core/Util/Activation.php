@@ -159,23 +159,23 @@ final class Activation {
 							sendAnalyticsTrackingEvent( 'plugin_setup', 'plugin_activated' );
 						}
 
-						jQuery( document ).ready( function( $ ) {
+						document.addEventListener( 'DOMContentLoaded' , function() {
 							var trackingScriptPresent = !! googlesitekit.admin.trackingOptIn;
 
 							if ( googlesitekit.admin.trackingOptIn ) {
-								$( '#opt-in' ).prop( 'checked', googlesitekit.admin.trackingOptIn );
+								document.getElementById( 'opt-in' ).checked = googlesitekit.admin.trackingOptIn;
 							}
 							if ( googlesitekit.admin.proxySetupURL ) {
-								$( '#start-setup-link' ).attr( 'href', googlesitekit.admin.proxySetupURL );
+								document.getElementById( 'start-setup-link' ).href = googlesitekit.admin.proxySetupURL
 							}
 
-							$( '#start-setup-link' ).on( 'click' , function() {
+							document.getElementById( 'start-setup-link' ).addEventListener( 'click' , function() {
 								if ( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
 									sendAnalyticsTrackingEvent( 'plugin_setup', 'goto_sitekit' );
 								}
 							} );
 
-							$('#opt-in').on( 'change' , function( event ) {
+							document.getElementById( 'opt-in' ).addEventListener( 'change' , function( event ) {
 								if ( event.target.disabled ) {
 									event.preventDefault();
 									return;
@@ -188,7 +188,7 @@ final class Activation {
 								};
 								var self = this;
 
-								$( self ).prop( 'disabled', true );
+								event.target.disabled = true;
 
 								wp.apiFetch( {
 									path: '/wp/v2/settings',
@@ -199,14 +199,16 @@ final class Activation {
 									method: 'POST',
 								} )
 									.then( function() {
-										$(self).prop( 'disabled', null );
+										event.target.disabled = null;
 
 										var trackingId = googlesitekit.admin.trackingID;
-										var trackingScriptPresent = $( `script[src="https://www.googletagmanager.com/gtag/js?id=${ trackingId }"]` ).length > 0;
+										var trackingScriptPresent = document.querySelectorAll( `script[src="https://www.googletagmanager.com/gtag/js?id=${ trackingId }"]` ).length > 0;
 
 										if ( ! trackingScriptPresent ) {
-											$( 'body' ).append( `
+											document.body.insertAdjacentHTML( 'beforeend', `
 												\<script async src="https://www.googletagmanager.com/gtag/js?id=${ trackingId }"\>\</script\><?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+											` );
+											document.body.insertAdjacentHTML( 'beforeend', `
 												\<script\>
 													window.dataLayer = window.dataLayer || [];
 													function gtag(){dataLayer.push(arguments);}
@@ -218,8 +220,8 @@ final class Activation {
 										}
 									} )
 									.catch( function( err ) {
-										$( self ).prop( 'checked', ! checked );
-										$( self ).prop( 'disabled', false );
+										event.target.checked = ! checked;
+										event.target.disabled = false;
 									} );
 							} );
 						} );

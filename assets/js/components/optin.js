@@ -54,10 +54,16 @@ class Optin extends Component {
 		} )
 			.then( () => {
 				if ( !! checked && ! this.state.scriptOnPage ) {
-					const { jQuery: $ } = window;
+					const { document } = window;
 
-					$( 'body' ).append( `
+					if ( ! document ) {
+						return;
+					}
+
+					document.body.insertAdjacentHTML( 'beforeend', `
 						<script async src="https://www.googletagmanager.com/gtag/js?id=${ googlesitekit.admin.trackingID }"></script>
+					` );
+					document.body.insertAdjacentHTML( 'beforeend', `
 						<script>
 							window.dataLayer = window.dataLayer || [];
 							function gtag(){dataLayer.push(arguments);}
