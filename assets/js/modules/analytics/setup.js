@@ -273,10 +273,10 @@ class AnalyticsSetup extends Component {
 				}
 
 				if ( matchedProperty ) {
-					selectedAccount = matchedProperty.accountId;
+					selectedAccount = matchedProperty.accountId; /* casing rule exception: `accountId` is an API returned value */
 					selectedProperty = matchedProperty.id;
 					const matchedProfile = responseData.profiles.find( ( profile ) => {
-						return profile.accountId === selectedAccount;
+						return profile.accountId === selectedAccount; /* casing rule exception: `accountId` is an API returned value */
 					} );
 					if ( matchedProfile ) {
 						selectedProfile = matchedProfile.id;
