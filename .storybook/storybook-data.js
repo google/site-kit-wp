@@ -581,19 +581,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'wordpress--wordpress-activation',
-		kind: 'WordPress',
-		name: 'WordPress Activation',
-		story: 'WordPress Activation',
-		parameters: {
-			fileName: './stories/wp-activation.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
 		id: 'wordpress--wordpress-dashboard',
 		kind: 'WordPress',
 		name: 'WordPress Dashboard',
