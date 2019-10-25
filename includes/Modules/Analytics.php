@@ -1023,12 +1023,12 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						'profiles'   => array(),
 					);
 
-					if ( ! empty( $data['existingAccountId'] ) && ! empty( $data['existingPropertyId'] ) ) {
+					if ( ! empty( $data['existingAccountID'] ) && ! empty( $data['existingPropertyId'] ) ) {
 						// If there is an existing tag, pass it through to ensure only the existing tag is matched.
 						$properties_profiles = $this->get_data(
 							'properties-profiles',
 							array(
-								'accountID'          => $data['existingAccountId'],
+								'accountID'          => $data['existingAccountID'],
 								'existingPropertyId' => $data['existingPropertyId'],
 							)
 						);
