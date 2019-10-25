@@ -80,7 +80,7 @@ class AnalyticsSetup extends Component {
 		this.processPropertyChange = this.processPropertyChange.bind( this );
 		this.handleSubmit = this.handleSubmit.bind( this );
 		this.handleRadioClick = this.handleRadioClick.bind( this );
-		this.handleAMPClientIdSwitch = this.handleAMPClientIdSwitch.bind( this );
+		this.handleAMPClientIDSwitch = this.handleAMPClientIDSwitch.bind( this );
 		this.handleRefetchAccount = this.handleRefetchAccount.bind( this );
 	}
 
@@ -539,7 +539,7 @@ class AnalyticsSetup extends Component {
 		sendAnalyticsTrackingEvent( 'analytics_setup', useSnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled' );
 	}
 
-	handleAMPClientIdSwitch( ) {
+	handleAMPClientIDSwitch( ) {
 		this.setState( {
 			ampClientIDOptIn: ! this.state.ampClientIDOptIn,
 		} );
@@ -625,7 +625,7 @@ class AnalyticsSetup extends Component {
 						<Switch
 							id="ampClientIDOptIn"
 							label={ __( 'Opt in AMP Client ID', 'google-site-kit' ) }
-							onClick={ this.handleAMPClientIdSwitch }
+							onClick={ this.handleAMPClientIDSwitch }
 							checked={ ampClientIDOptIn }
 							hideLabel={ false }
 						/>
