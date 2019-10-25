@@ -22,9 +22,7 @@
 import SvgIcon from 'GoogleUtil/svg-icon';
 const { __ } = wp.i18n;
 
-const Logo = ( props ) => {
-	const { beta = true } = props;
-
+const Logo = () => {
 	return (
 		<div className="googlesitekit-logo" aria-hidden="true">
 			<SvgIcon
@@ -34,13 +32,12 @@ const Logo = ( props ) => {
 				width="32"
 			/>
 			<SvgIcon
-				id={ beta ? 'logo-sitekit-beta' : 'logo-sitekit' }
+				id="logo-sitekit"
 				className={ `
 				 googlesitekit-logo__logo-sitekit
-				 ${ beta ? 'googlesitekit-logo__logo-sitekit--beta' : '' }
 				` }
-				height={ beta ? '28' : '26' }
-				width={ beta ? '206' : '99' }
+				height="26"
+				width="99"
 			/>
 			<span className="screen-reader-text">
 				{ __( 'Site Kit by Google Logo', 'google-site-kit' ) }
