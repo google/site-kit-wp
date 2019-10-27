@@ -548,17 +548,7 @@ tag_partner: "site_kit"
 					$service = $this->get_service( 'adsense' );
 					return $service->urlchannels->listUrlchannels( $data['clientID'] );
 				case 'earnings':
-					$data = array_merge(
-						array(
-							// Named date range slug.
-							'dateRange'  => 'last-28-days',
-							// Array of dimension strings.
-							'dimensions' => array(),
-						),
-						$data
-					);
-
-					$dates = $this->date_range_to_dates( $data['dateRange'] );
+					$dates = $this->date_range_to_dates( $data['dateRange'] ?: 'last-28-days' );
 
 					if ( is_wp_error( $dates ) ) {
 						return $dates;
