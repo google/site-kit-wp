@@ -120,8 +120,11 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'search-console',
-			datapoint: 'search-keywords',
-			data: {},
+			datapoint: 'searchanalytics',
+			data: {
+				dimensions: 'query',
+				limit: 10,
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Dashboard' ],

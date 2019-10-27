@@ -56,100 +56,25 @@ class AdSenseEstimateEarningsWidget extends Component {
 	}
 
 	// When additional data is returned, componentDidUpdate will fire.
-	componentDidUpdate( prevProps ) {
-		const {
-			data,
-			datapoint,
-		} = this.props;
-
-		this.processCallbackData( data, datapoint, prevProps );
+	componentDidUpdate() {
+		this.processCallbackData();
 	}
 
 	componentDidMount() {
-		const {
-			data,
-			datapoint,
-		} = this.props;
-
-		this.processCallbackData( data, datapoint );
+		this.processCallbackData();
 	}
 
 	/**
 	 * Process callback data received from the API.
-	 *
-	 * @param {Object} data Response data from the API.
-	 * @param {string} datapoint data point for the callback conditional.
-	 * @return {null}
 	 */
-	processCallbackData( data, datapoint ) {
-		if ( ! data ) {
-			return null;
-		}
+	processCallbackData() {
+		const {
+			data,
+			requestDataToState,
+		} = this.props;
 
-		switch ( datapoint ) {
-			case 'earning-today':
-				if ( data !== this.state.today ) {
-					this.setState( {
-						today: data,
-					} );
-				}
-				break;
-			case 'earning-yesterday':
-				if ( data !== this.state.yesterday ) {
-					this.setState( {
-						yesterday: data,
-					} );
-				}
-				break;
-			case 'earning-samedaylastweek':
-				if ( data !== this.state.sameDayLastWeek ) {
-					this.setState( {
-						sameDayLastWeek: data,
-					} );
-				}
-				break;
-			case 'earning-7days':
-				if ( data !== this.state.sevenDays ) {
-					this.setState( {
-						sevenDays: data,
-					} );
-				}
-				break;
-			case 'earning-prev7days':
-				if ( data !== this.state.prev7Days ) {
-					this.setState( {
-						prev7Days: data,
-					} );
-				}
-				break;
-			case 'earning-this-month':
-				if ( data !== this.state.month ) {
-					this.setState( {
-						month: data,
-					} );
-				}
-				break;
-			case 'earning-this-month-last-year':
-				if ( data !== this.state.monthLastYear ) {
-					this.setState( {
-						monthLastYear: data,
-					} );
-				}
-				break;
-			case 'earning-28days':
-				if ( data !== this.state.twentyEightDays ) {
-					this.setState( {
-						twentyEightDays: data,
-					} );
-				}
-				break;
-			case 'earning-prev28days':
-				if ( data !== this.state.prev28Days ) {
-					this.setState( {
-						prev28Days: data,
-					} );
-				}
-				break;
+		if ( data && ! data.error && 'function' === typeof requestDataToState ) {
+			this.setState( requestDataToState );
 		}
 	}
 
@@ -288,100 +213,173 @@ class AdSenseEstimateEarningsWidget extends Component {
 	}
 }
 
-const isDataZero = ( data, datapoint ) => {
-	if ( 'earning-28days' !== datapoint ) {
-		return false;
-	}
-
-	return isDataZeroAdSense( data );
-};
-
 export default withData(
 	AdSenseEstimateEarningsWidget,
 	[
 		{
 			type: TYPE_MODULES,
 			identifier: 'adsense',
-			datapoint: 'earning-today',
-			data: {},
+			datapoint: 'earnings',
+			data: {
+				dateRange: 'today',
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
+			toState( state, { data } ) {
+				if ( ! state.today ) {
+					return {
+						today: data,
+					};
+				}
+			},
 		},
 		{
 			type: TYPE_MODULES,
 			identifier: 'adsense',
-			datapoint: 'earning-yesterday',
-			data: {},
+			datapoint: 'earnings',
+			data: {
+				dateRange: 'yesterday',
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
+			toState( state, { data } ) {
+				if ( ! state.yesterday ) {
+					return {
+						yesterday: data,
+					};
+				}
+			},
 		},
 		{
 			type: TYPE_MODULES,
 			identifier: 'adsense',
-			datapoint: 'earning-samedaylastweek',
-			data: {},
+			datapoint: 'earnings',
+			data: {
+				dateRange: 'same-day-last-week',
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
+			toState( state, { data } ) {
+				if ( ! state.sameDayLastWeek ) {
+					return {
+						sameDayLastWeek: data,
+					};
+				}
+			},
 		},
 		{
 			type: TYPE_MODULES,
 			identifier: 'adsense',
-			datapoint: 'earning-7days',
-			data: {},
+			datapoint: 'earnings',
+			data: {
+				dateRange: 'last-7-days',
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
+			toState( state, { data } ) {
+				if ( ! state.sevenDays ) {
+					return {
+						sevenDays: data,
+					};
+				}
+			},
 		},
 		{
 			type: TYPE_MODULES,
 			identifier: 'adsense',
-			datapoint: 'earning-prev7days',
-			data: {},
+			datapoint: 'earnings',
+			data: {
+				dateRange: 'prev-7-days',
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
+			toState( state, { data } ) {
+				if ( ! state.prev7Days ) {
+					return {
+						prev7Days: data,
+					};
+				}
+			},
 		},
 		{
 			type: TYPE_MODULES,
 			identifier: 'adsense',
-			datapoint: 'earning-this-month',
-			data: {},
+			datapoint: 'earnings',
+			data: {
+				dateRange: 'this-month',
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
+			toState( state, { data } ) {
+				if ( ! state.month ) {
+					return {
+						month: data,
+					};
+				}
+			},
 		},
 		{
 			type: TYPE_MODULES,
 			identifier: 'adsense',
-			datapoint: 'earning-this-month-last-year',
-			data: {},
+			datapoint: 'earnings',
+			data: {
+				dateRange: 'this-month-last-year',
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
+			toState( state, { data } ) {
+				if ( ! state.monthLastYear ) {
+					return {
+						monthLastYear: data,
+					};
+				}
+			},
 		},
 		{
 			type: TYPE_MODULES,
 			identifier: 'adsense',
-			datapoint: 'earning-28days',
-			data: {},
+			datapoint: 'earnings',
+			data: {
+				dateRange: 'last-28-days',
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
+			toState( state, { data } ) {
+				if ( ! state.twentyEightDays ) {
+					return {
+						twentyEightDays: data,
+					};
+				}
+			},
 		},
 		{
 			type: TYPE_MODULES,
 			identifier: 'adsense',
-			datapoint: 'earning-prev28days',
-			data: {},
+			datapoint: 'earnings',
+			data: {
+				dateRange: 'prev-28-days',
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
+			toState( state, { data } ) {
+				if ( ! state.prev28Days ) {
+					return {
+						prev28Days: data,
+					};
+				}
+			},
 		},
 	],
 	AdSenseEstimateEarningsWidget.renderPreviews(),
 	{ createGrid: true },
-	isDataZero,
+	isDataZeroAdSense,
 );

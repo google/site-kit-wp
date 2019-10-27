@@ -11,13 +11,13 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
-use Google_Client;
-use Google_Service;
-use Google_Service_Exception;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Google\Site_Kit\Core\Modules\Module_With_Scopes;
+use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit_Dependencies\Google_Service_Pagespeedonline;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
-use Exception;
 
 /**
  * Class representing the PageSpeed Insights module.
@@ -26,7 +26,8 @@ use Exception;
  * @access private
  * @ignore
  */
-final class PageSpeed_Insights extends Module {
+final class PageSpeed_Insights extends Module implements Module_With_Scopes {
+	use Module_With_Scopes_Trait;
 
 	const OPTION = 'googlesitekit_pagespeed_insights_settings';
 
@@ -36,24 +37,6 @@ final class PageSpeed_Insights extends Module {
 	 * @since 1.0.0
 	 */
 	public function register() {}
-
-	/**
-	 * Checks whether the module is connected.
-	 *
-	 * A module being connected means that all steps required as part of its activation are completed.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return bool True if module is connected, false otherwise.
-	 */
-	public function is_connected() {
-		$api_key = $this->authentication->get_api_key_client()->get_api_key();
-		if ( empty( $api_key ) ) {
-			return false;
-		}
-
-		return parent::is_connected();
-	}
 
 	/**
 	 * Cleans up when the module is deactivated.
@@ -74,8 +57,7 @@ final class PageSpeed_Insights extends Module {
 	protected function get_datapoint_services() {
 		return array(
 			// GET.
-			'site-pagespeed-mobile'  => 'pagespeedonline',
-			'site-pagespeed-desktop' => 'pagespeedonline',
+			'pagespeed' => 'pagespeedonline',
 		);
 	}
 
@@ -84,28 +66,57 @@ final class PageSpeed_Insights extends Module {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to get request object for.
-	 * @param array  $data      Optional. Contextual data to provide or set. Default empty array.
+	 * @param Data_Request $data Data request object.
+	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
-	protected function create_data_request( $method, $datapoint, array $data = array() ) {
+	protected function create_data_request( Data_Request $data ) {
+		$method    = $data->method;
+		$datapoint = $data->datapoint;
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'site-pagespeed-mobile':
-				case 'site-pagespeed-desktop':
-					$strategy = str_replace( 'site-pagespeed-', '', $datapoint );
+				case 'pagespeed':
+					if ( empty( $data['strategy'] ) ) {
+						return new WP_Error(
+							'missing_required_param',
+							sprintf(
+								/* translators: %s: Missing parameter name */
+								__( 'Request parameter is empty: %s.', 'google-site-kit' ),
+								'strategy'
+							),
+							array( 'status' => 400 )
+						);
+					}
+
+					$valid_strategies = array( 'mobile', 'desktop' );
+
+					if ( ! in_array( $data['strategy'], $valid_strategies, true ) ) {
+						return new WP_Error(
+							'invalid_param',
+							sprintf(
+								/* translators: 1: Invalid parameter name, 2: list of valid values */
+								__( 'Request parameter %1$s is not one of %2$s', 'google-site-kit' ),
+								'strategy',
+								implode( ', ', $valid_strategies )
+							),
+							array( 'status' => 400 )
+						);
+					}
+
 					if ( ! empty( $data['url'] ) ) {
 						$page_url = $data['url'];
 					} else {
 						$page_url = $this->context->get_reference_site_url();
 					}
+
 					$service = $this->get_service( 'pagespeedonline' );
+
 					return $service->pagespeedapi->runpagespeed(
 						$page_url,
 						array(
 							'locale'   => substr( get_locale(), 0, 2 ),
-							'strategy' => $strategy,
+							'strategy' => $data['strategy'],
 						)
 					);
 			}
@@ -119,16 +130,18 @@ final class PageSpeed_Insights extends Module {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to resolve response for.
-	 * @param mixed  $response  Response object or array.
+	 * @param Data_Request $data Data request object.
+	 * @param mixed        $response Request response.
+	 *
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
-	protected function parse_data_response( $method, $datapoint, $response ) {
+	protected function parse_data_response( Data_Request $data, $response ) {
+		$method    = $data->method;
+		$datapoint = $data->datapoint;
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'site-pagespeed-mobile':
-				case 'site-pagespeed-desktop':
+				case 'pagespeed':
 					// TODO: Parse this response to a regular array.
 					return $response->getLighthouseResult();
 			}
@@ -158,20 +171,6 @@ final class PageSpeed_Insights extends Module {
 	}
 
 	/**
-	 * Sets up the Google client the module should use.
-	 *
-	 * This method is invoked once by {@see Module::get_client()} to lazily set up the client when it is requested
-	 * for the first time.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return Google_Client Google client instance.
-	 */
-	protected function setup_client() {
-		return $this->authentication->get_api_key_client()->get_client();
-	}
-
-	/**
 	 * Sets up the Google services the module should use.
 	 *
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
@@ -185,7 +184,7 @@ final class PageSpeed_Insights extends Module {
 	 */
 	protected function setup_services( Google_Client $client ) {
 		return array(
-			'pagespeedonline' => new \Google_Service_Pagespeedonline( $client ),
+			'pagespeedonline' => new Google_Service_Pagespeedonline( $client ),
 		);
 	}
 
@@ -204,5 +203,17 @@ final class PageSpeed_Insights extends Module {
 		);
 
 		return $info;
+	}
+
+	/**
+	 * Gets required Google OAuth scopes for the module.
+	 *
+	 * @return array List of Google OAuth scopes.
+	 * @since 1.0.0
+	 */
+	public function get_scopes() {
+		return array(
+			'openid',
+		);
 	}
 }

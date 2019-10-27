@@ -143,8 +143,8 @@ class AdSenseDashboardWidget extends Component {
 							">
 								{
 									( ! error && googlesitekit.modules.adsense.setupComplete ) ?
-										<PageHeader title={ __( 'AdSense', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconId="adsense" status="connected" statusText={ __( 'AdSense is connected', 'google-site-kit' ) } /> :
-										<PageHeader title={ __( 'AdSense', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconId="adsense" status="not-connected" statusText={ __( 'AdSense is not connected', 'google-site-kit' ) } />
+										<PageHeader title={ __( 'AdSense', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="connected" statusText={ __( 'AdSense is connected', 'google-site-kit' ) } /> :
+										<PageHeader title={ __( 'AdSense', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="not-connected" statusText={ __( 'AdSense is not connected', 'google-site-kit' ) } />
 								}
 								{ loading && <ProgressBar /> }
 							</div>
@@ -198,7 +198,12 @@ class AdSenseDashboardWidget extends Component {
 									headerCtaLink={ homepage }
 								>
 									<AdSensePerformanceWidget
-										handleZeroData={ this.handleZeroData }
+										handleDataError={ ( err ) => {
+											// If there is no error, it is a zero data condition.
+											if ( ! err ) {
+												this.handleZeroData();
+											}
+										} }
 									/>
 								</Layout>
 							</div>

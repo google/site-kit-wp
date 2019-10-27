@@ -7,9 +7,9 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
-	deactivateAllOtherPlugins,
+	deactivateUtilityPlugins,
 	resetSiteKit,
-	setAnalyticsExistingPropertyId,
+	setAnalyticsExistingPropertyID,
 	setAuthToken,
 	setClientConfig,
 	setSearchConsoleProperty,
@@ -35,7 +35,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( 'modules/analytics/data/get-accounts' ) && getAccountsRequestHandler ) {
+			if ( request.url().match( 'modules/analytics/data/accounts-properties-profiles' ) && getAccountsRequestHandler ) {
 				getAccountsRequestHandler( request );
 			} else if ( request.url().match( 'modules/analytics/data/tag-permission' ) && tagPermissionRequestHandler ) {
 				tagPermissionRequestHandler( request );
@@ -68,7 +68,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 	} );
 
 	afterEach( async () => {
-		await deactivateAllOtherPlugins();
+		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
 
@@ -77,14 +77,15 @@ describe( 'setting up the Analytics module with an existing account and existing
 			request.respond( {
 				status: 200,
 				body: JSON.stringify( {
-					accountId: EXISTING_ACCOUNT_ID,
-					propertyId: EXISTING_PROPERTY_ID,
+					accountID: EXISTING_ACCOUNT_ID,
+					propertyID: EXISTING_PROPERTY_ID,
 				} ),
 			} );
 		};
-		await setAnalyticsExistingPropertyId( EXISTING_PROPERTY_ID );
+		await setAnalyticsExistingPropertyID( EXISTING_PROPERTY_ID );
 		await proceedToSetUpAnalytics();
 
+		await page.waitForResponse( ( res ) => res.url().match( 'modules/analytics/data/accounts-properties-profiles' ) );
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module--analytics p', { text: new RegExp( `An existing analytics tag was found on your site with the id ${ EXISTING_PROPERTY_ID }`, 'i' ) } );
 
 		await expect( page ).toMatchElement( '.mdc-select--disabled .mdc-select__selected-text', { text: /test account a/i } );

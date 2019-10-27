@@ -24,13 +24,13 @@ import md5 from 'md5';
 
 import {
 	getStorage,
-	stringToSlug,
+	getCurrentDateRangeSlug,
 	fillFilterWithComponent,
 	getQueryParameter,
 	sortObjectProperties,
 } from 'SiteKitCore/util';
 
-const { each, sortBy } = lodash;
+const { cloneDeep, each, sortBy } = lodash;
 const { addQueryArgs } = wp.url;
 const {
 	addAction,
@@ -39,7 +39,6 @@ const {
 	addFilter,
 	removeFilter,
 } = wp.hooks;
-const { __ } = wp.i18n;
 
 export const TYPE_CORE = 'core';
 export const TYPE_MODULES = 'modules';
@@ -57,6 +56,23 @@ const lazilySetupLocalCache = () => {
 	if ( 'object' !== typeof googlesitekit.admin.datacache ) {
 		googlesitekit.admin.datacache = {};
 	}
+};
+
+/**
+ * Gets a copy of the given data request object with the data.dateRange populated via filter, if not set.
+ * Respects the current dateRange value, if set.
+ *
+ * @param {Object} originalRequest Data request object.
+ * @param {string} dateRange Default date range slug to use if not specified in the request.
+ * @return {Object} New data request object.
+ */
+const requestWithDateRange = ( originalRequest, dateRange ) => {
+	// Make copies for reference safety, ensuring data exists.
+	const request = { data: {}, ...originalRequest };
+	// Use the dateRange in request.data if passed, fallback to provided default value.
+	request.data = { dateRange, ...request.data };
+
+	return request;
 };
 
 const dataAPI = {
@@ -93,20 +109,12 @@ const dataAPI = {
 		return new Promise( ( resolve, reject ) => {
 			try {
 				const responseData = [];
-
-				/**
-				 * Filter the date range used for queries.
-				 *
-				 * @param String The selected date range. Default 'Last 28 days'.
-				 */
-				const dateRangeSlug = stringToSlug( applyFilters( 'googlesitekit.dateRange', __( 'Last 28 days', 'google-site-kit' ) ) );
-				each( combinedRequest, ( request ) => {
-					request.data = request.data || {};
-					request.data.dateRange = dateRangeSlug;
-
+				const dateRange = getCurrentDateRangeSlug();
+				each( combinedRequest, ( originalRequest ) => {
+					const request = requestWithDateRange( originalRequest, dateRange );
 					request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
-
 					const cache = this.getCache( request.key, request.maxAge );
+
 					if ( 'undefined' !== typeof cache ) {
 						responseData[ request.key ] = cache;
 
@@ -130,21 +138,13 @@ const dataAPI = {
 	combinedGet( combinedRequest, secondaryRequest = false ) {
 		// First, resolve any cache matches immediately, queue resolution of the rest.
 		let dataRequest = [];
-
-		/**
-		 * Filter the date range used for queries.
-		 *
-		 * @param String The selected date range. Default 'Last 28 days'.
-		 */
-		const dateRangeSlug = stringToSlug( applyFilters( 'googlesitekit.dateRange', __( 'Last 28 days', 'google-site-kit' ) ) );
 		let cacheDelay = 25;
-		each( combinedRequest, ( request ) => {
-			request.data = request.data || {};
-			request.data.dateRange = dateRangeSlug;
-
+		const dateRange = getCurrentDateRangeSlug();
+		each( combinedRequest, ( originalRequest ) => {
+			const request = requestWithDateRange( originalRequest, dateRange );
 			request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
-
 			const cache = this.getCache( request.key, request.maxAge );
+
 			if ( 'undefined' !== typeof cache ) {
 				setTimeout( () => {
 					this.resolve( request, cache );
@@ -163,9 +163,12 @@ const dataAPI = {
 		const toRequest = [];
 		const deferredRequests = [];
 		const keyIndexesMap = {};
+		const noLowPriorityRequests = !! dataRequest.find( ( request ) => {
+			return request.priority < 10;
+		} );
 		each( dataRequest, ( request, index ) => {
 			// Defer any datapoints with a priority of 10 or greater into a second request.
-			if ( ! secondaryRequest && 10 <= request.priority ) {
+			if ( ! secondaryRequest && 10 <= request.priority && noLowPriorityRequests ) {
 				deferredRequests.push( request );
 			} else if ( ! keyIndexesMap[ request.key ] ) {
 				keyIndexesMap[ request.key ] = [ index ];
@@ -277,7 +280,7 @@ const dataAPI = {
 	/**
 	 * Sets data in the cache.
 	 *
-	 * @param {string} key  The cache key,
+	 * @param {string} key  The cache key.
 	 * @param {mixed}  data The data to cache.
 	 */
 	setCache( key, data ) {
@@ -292,7 +295,7 @@ const dataAPI = {
 
 		lazilySetupLocalCache();
 
-		googlesitekit.admin.datacache[ key ] = data;
+		googlesitekit.admin.datacache[ key ] = cloneDeep( data );
 
 		const toStore = {
 			value: data,
@@ -304,7 +307,7 @@ const dataAPI = {
 	/**
 	 * Gets data from the cache.
 	 *
-	 * @param {string} key    The cache key,
+	 * @param {string} key    The cache key.
 	 * @param {number} maxAge The cache TTL in seconds. If not provided, no TTL will be checked.
 	 *
 	 * @return {mixed} Cached data, or undefined if lookup failed.
@@ -328,9 +331,9 @@ const dataAPI = {
 			// Only return value if no maximum age given or if cache age is less than the maximum.
 			if ( ! maxAge || ( Date.now() / 1000 ) - cache.date < maxAge ) {
 				// Set variable cache.
-				googlesitekit.admin.datacache[ key ] = cache.value;
+				googlesitekit.admin.datacache[ key ] = cloneDeep( cache.value );
 
-				return cache.value;
+				return cloneDeep( googlesitekit.admin.datacache[ key ] );
 			}
 		}
 
@@ -340,7 +343,7 @@ const dataAPI = {
 	/**
 	 * Removes data from the cache.
 	 *
-	 * @param {string} key The cache key,
+	 * @param {string} key The cache key.
 	 */
 	deleteCache( key ) {
 		lazilySetupLocalCache();

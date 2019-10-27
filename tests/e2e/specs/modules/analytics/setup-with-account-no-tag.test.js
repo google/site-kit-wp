@@ -7,7 +7,7 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
  * Internal dependencies
  */
 import {
-	deactivateAllOtherPlugins,
+	deactivateUtilityPlugins,
 	resetSiteKit,
 	setSearchConsoleProperty,
 	wpApiFetch,
@@ -22,7 +22,7 @@ async function proceedToSetUpAnalytics() {
 	] );
 }
 
-const setReferenceUrl = async () => {
+const setReferenceURL = async () => {
 	return wpApiFetch( {
 		path: 'google-site-kit/v1/e2e/reference-url',
 		method: 'post',
@@ -73,7 +73,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 	} );
 
 	afterEach( async () => {
-		await deactivateAllOtherPlugins();
+		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
 
@@ -117,7 +117,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 	} );
 
 	it( 'prompts for account and property if the site URL does not match a property belonging to the user', async () => {
-		await setReferenceUrl();
+		await setReferenceURL();
 
 		await proceedToSetUpAnalytics();
 

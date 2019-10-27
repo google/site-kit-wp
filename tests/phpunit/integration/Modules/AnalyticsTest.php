@@ -58,45 +58,45 @@ class AnalyticsTest extends TestCase {
 		remove_all_filters( 'googlesitekit_analytics_view_id' );
 		$analytics->register();
 
-		// Test accountId can be overridden by non-empty value via filter
-		update_option( Analytics::OPTION, array( 'accountId' => 'saved-account-id' ) );
-		$this->assertEquals( 'saved-account-id', get_option( Analytics::OPTION )['accountId'] );
+		// Test accountID can be overridden by non-empty value via filter
+		update_option( Analytics::OPTION, array( 'accountID' => 'saved-account-id' ) );
+		$this->assertEquals( 'saved-account-id', get_option( Analytics::OPTION )['accountID'] );
 		add_filter( 'googlesitekit_analytics_account_id', '__return_empty_string' );
-		$this->assertEquals( 'saved-account-id', get_option( Analytics::OPTION )['accountId'] );
+		$this->assertEquals( 'saved-account-id', get_option( Analytics::OPTION )['accountID'] );
 		add_filter( 'googlesitekit_analytics_account_id', function () {
 			return 'filtered-account-id';
 		} );
-		$this->assertEquals( 'filtered-account-id', get_option( Analytics::OPTION )['accountId'] );
+		$this->assertEquals( 'filtered-account-id', get_option( Analytics::OPTION )['accountID'] );
 
-		// Test propertyId can be overridden by non-empty value via filter
-		update_option( Analytics::OPTION, array( 'propertyId' => 'saved-property-id' ) );
-		$this->assertEquals( 'saved-property-id', get_option( Analytics::OPTION )['propertyId'] );
+		// Test propertyID can be overridden by non-empty value via filter
+		update_option( Analytics::OPTION, array( 'propertyID' => 'saved-property-id' ) );
+		$this->assertEquals( 'saved-property-id', get_option( Analytics::OPTION )['propertyID'] );
 		add_filter( 'googlesitekit_analytics_property_id', '__return_empty_string' );
-		$this->assertEquals( 'saved-property-id', get_option( Analytics::OPTION )['propertyId'] );
+		$this->assertEquals( 'saved-property-id', get_option( Analytics::OPTION )['propertyID'] );
 		add_filter( 'googlesitekit_analytics_property_id', function () {
 			return 'filtered-property-id';
 		} );
-		$this->assertEquals( 'filtered-property-id', get_option( Analytics::OPTION )['propertyId'] );
+		$this->assertEquals( 'filtered-property-id', get_option( Analytics::OPTION )['propertyID'] );
 
-		// Test internalWebPropertyId can be overridden by non-empty value via filter
-		update_option( Analytics::OPTION, array( 'internalWebPropertyId' => 'saved-internal-web-property-id' ) );
-		$this->assertEquals( 'saved-internal-web-property-id', get_option( Analytics::OPTION )['internalWebPropertyId'] );
+		// Test internalWebPropertyID can be overridden by non-empty value via filter
+		update_option( Analytics::OPTION, array( 'internalWebPropertyID' => 'saved-internal-web-property-id' ) );
+		$this->assertEquals( 'saved-internal-web-property-id', get_option( Analytics::OPTION )['internalWebPropertyID'] );
 		add_filter( 'googlesitekit_analytics_internal_web_property_id', '__return_empty_string' );
-		$this->assertEquals( 'saved-internal-web-property-id', get_option( Analytics::OPTION )['internalWebPropertyId'] );
+		$this->assertEquals( 'saved-internal-web-property-id', get_option( Analytics::OPTION )['internalWebPropertyID'] );
 		add_filter( 'googlesitekit_analytics_internal_web_property_id', function () {
 			return 'filtered-internal-web-property-id';
 		} );
-		$this->assertEquals( 'filtered-internal-web-property-id', get_option( Analytics::OPTION )['internalWebPropertyId'] );
+		$this->assertEquals( 'filtered-internal-web-property-id', get_option( Analytics::OPTION )['internalWebPropertyID'] );
 
-		// Test profileId can be overridden by non-empty value via filter
-		update_option( Analytics::OPTION, array( 'profileId' => 'saved-profile-id' ) );
-		$this->assertEquals( 'saved-profile-id', get_option( Analytics::OPTION )['profileId'] );
+		// Test profileID can be overridden by non-empty value via filter
+		update_option( Analytics::OPTION, array( 'profileID' => 'saved-profile-id' ) );
+		$this->assertEquals( 'saved-profile-id', get_option( Analytics::OPTION )['profileID'] );
 		add_filter( 'googlesitekit_analytics_view_id', '__return_empty_string' );
-		$this->assertEquals( 'saved-profile-id', get_option( Analytics::OPTION )['profileId'] );
+		$this->assertEquals( 'saved-profile-id', get_option( Analytics::OPTION )['profileID'] );
 		add_filter( 'googlesitekit_analytics_view_id', function () {
 			return 'filtered-profile-id';
 		} );
-		$this->assertEquals( 'filtered-profile-id', get_option( Analytics::OPTION )['profileId'] );
+		$this->assertEquals( 'filtered-profile-id', get_option( Analytics::OPTION )['profileID'] );
 	}
 
 	public function test_prepare_info_for_js() {
@@ -119,21 +119,22 @@ class AnalyticsTest extends TestCase {
 				'required',
 				'autoActivate',
 				'internal',
-				'screenId',
+				'screenID',
 				'hasSettings',
 				'provides',
 				'settings',
+				'adsenseLinked',
 			),
 			array_keys( $info )
 		);
 
 		$this->assertEquals( 'analytics', $info['slug'] );
-		$this->assertArrayHasKey( 'accountId', $info['settings'] );
-		$this->assertArrayHasKey( 'propertyId', $info['settings'] );
-		$this->assertArrayHasKey( 'profileId', $info['settings'] );
-		$this->assertArrayHasKey( 'internalWebPropertyId', $info['settings'] );
+		$this->assertArrayHasKey( 'accountID', $info['settings'] );
+		$this->assertArrayHasKey( 'propertyID', $info['settings'] );
+		$this->assertArrayHasKey( 'profileID', $info['settings'] );
+		$this->assertArrayHasKey( 'internalWebPropertyID', $info['settings'] );
 		$this->assertArrayHasKey( 'useSnippet', $info['settings'] );
-		$this->assertArrayHasKey( 'ampClientIdOptIn', $info['settings'] );
+		$this->assertArrayHasKey( 'ampClientIDOptIn', $info['settings'] );
 	}
 
 	public function test_is_connected() {
@@ -184,16 +185,12 @@ class AnalyticsTest extends TestCase {
 				'use-snippet',
 				'amp-client-id-opt-in',
 				'goals',
-				'get-accounts',
-				'get-properties',
-				'get-profiles',
+				'accounts-properties-profiles',
+				'properties-profiles',
+				'profiles',
 				'tag-permission',
-				'adsense',
-				'site-analytics',
-				'top-pages',
-				'overview',
-				'traffic-sources',
-				'save',
+				'report',
+				'settings',
 			),
 			$analytics->get_datapoints()
 		);
@@ -209,7 +206,7 @@ class AnalyticsTest extends TestCase {
 		$this->assertSame( $data, $result );
 
 		$analytics->set_data( 'use-snippet', array( 'useSnippet' => true ) );
-		$analytics->set_data( 'property-id', array( 'propertyId' => '12345678' ) );
+		$analytics->set_data( 'property-id', array( 'propertyID' => '12345678' ) );
 
 		$result = apply_filters( 'amp_post_template_data', $data );
 		$this->assertArrayHasKey( 'amp-analytics', $result['amp_component_scripts'] );

@@ -15,8 +15,11 @@ use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
-use Google_Client;
-use Psr\Http\Message\RequestInterface;
+use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit_Dependencies\Google_Service_AdSense;
+use Google\Site_Kit_Dependencies\Google_Service_AdSense_Alert;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
 /**
@@ -62,8 +65,25 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 				 * @param string $account_id Empty by default, will fall back to the option value if not set.
 				 */
 				$account_id = apply_filters( 'googlesitekit_adsense_account_id', '' );
+
 				if ( ! empty( $account_id ) ) {
-					$option['accountId'] = $account_id;
+					$option['accountID'] = $account_id;
+				}
+
+				/**
+				 * Migrate 'adsenseTagEnabled' to 'useSnippet'.
+				 */
+				if ( ! isset( $option['useSnippet'] ) && isset( $option['adsenseTagEnabled'] ) ) {
+					$option['useSnippet'] = (bool) $option['adsenseTagEnabled'];
+				}
+				// Ensure the old key is removed regardless. No-op if not set.
+				unset( $option['adsenseTagEnabled'] );
+
+				/**
+				 * Enable the snippet by default.
+				 */
+				if ( ! isset( $option['useSnippet'] ) ) {
+					$option['useSnippet'] = true;
 				}
 
 				return $option;
@@ -123,12 +143,8 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 			__( 'Monetize your website', 'google-site-kit' ),
 			__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
 		);
-		$info['settings'] = (array) $this->options->get( self::OPTION );
 
-		// If adsenseTagEnabled not saved, default tag enabled to true.
-		if ( ! isset( $info['settings']['adsenseTagEnabled'] ) ) {
-			$info['settings']['adsenseTagEnabled'] = true;
-		}
+		$info['settings'] = $this->options->get( self::OPTION );
 
 		// Clear datapoints that don't need to be localized.
 		$idenfifier_args = array(
@@ -198,7 +214,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 			return;
 		}
 
-		$tag_enabled = $this->get_data( 'adsense-tag-enabled' );
+		$tag_enabled = $this->get_data( 'use-snippet' );
 
 		// If we have client id default behaviour should be placing the tag unless the user has opted out.
 		if ( false === $tag_enabled ) {
@@ -258,7 +274,7 @@ tag_partner: "site_kit"
 			return $data;
 		}
 
-		$tag_enabled = $this->get_data( 'adsense-tag-enabled' );
+		$tag_enabled = $this->get_data( 'use-snippet' );
 		if ( is_wp_error( $tag_enabled ) || ! $tag_enabled ) {
 			return $data;
 		}
@@ -289,7 +305,7 @@ tag_partner: "site_kit"
 			return $content;
 		}
 
-		$tag_enabled = $this->get_data( 'adsense-tag-enabled' );
+		$tag_enabled = $this->get_data( 'use-snippet' );
 		if ( is_wp_error( $tag_enabled ) || ! $tag_enabled ) {
 			return $content;
 		}
@@ -317,32 +333,22 @@ tag_partner: "site_kit"
 	protected function get_datapoint_services() {
 		return array(
 			// GET / POST.
-			'connection'                   => '',
-			'account-id'                   => '',
-			'client-id'                    => '',
-			'adsense-tag-enabled'          => '',
-			'account-status'               => '',
+			'connection'     => '',
+			'account-id'     => '',
+			'client-id'      => '',
+			'use-snippet'    => '',
+			'account-status' => '',
 			// GET.
-			'account-url'                  => '',
-			'reports-url'                  => '',
-			'notifications'                => '',
-			'accounts'                     => 'adsense',
-			'alerts'                       => 'adsense',
-			'clients'                      => 'adsense',
-			'urlchannels'                  => 'adsense',
-			'earning-today'                => 'adsense',
-			'earning-yesterday'            => 'adsense',
-			'earning-samedaylastweek'      => 'adsense',
-			'earning-7days'                => 'adsense',
-			'earning-prev7days'            => 'adsense',
-			'earning-this-month'           => 'adsense',
-			'earning-this-month-last-year' => 'adsense',
-			'earning-28days'               => 'adsense',
-			'earning-prev28days'           => 'adsense',
-			'earning-daily-this-month'     => 'adsense',
-			'earnings-this-period'         => 'adsense',
+			'account-url'    => '',
+			'reports-url'    => '',
+			'notifications'  => '',
+			'accounts'       => 'adsense',
+			'alerts'         => 'adsense',
+			'clients'        => 'adsense',
+			'urlchannels'    => 'adsense',
+			'earnings'       => 'adsense',
 			// POST.
-			'setup-complete'               => '',
+			'setup-complete' => '',
 		);
 	}
 
@@ -351,12 +357,14 @@ tag_partner: "site_kit"
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to get request object for.
-	 * @param array  $data      Optional. Contextual data to provide or set. Default empty array.
+	 * @param Data_Request $data Data request object.
+	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
-	protected function create_data_request( $method, $datapoint, array $data = array() ) {
+	protected function create_data_request( Data_Request $data ) {
+		$method    = $data->method;
+		$datapoint = $data->datapoint;
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'connection':
@@ -365,14 +373,14 @@ tag_partner: "site_kit"
 						// TODO: Remove this at some point (migration of old options).
 						if ( isset( $option['account_id'] ) || isset( $option['client_id'] ) || isset( $option['account_status'] ) ) {
 							if ( isset( $option['account_id'] ) ) {
-								if ( ! isset( $option['accountId'] ) ) {
-									$option['accountId'] = $option['account_id'];
+								if ( ! isset( $option['accountID'] ) ) {
+									$option['accountID'] = $option['account_id'];
 								}
 								unset( $option['account_id'] );
 							}
 							if ( isset( $option['client_id'] ) ) {
-								if ( ! isset( $option['clientId'] ) ) {
-									$option['clientId'] = $option['client_id'];
+								if ( ! isset( $option['clientID'] ) ) {
+									$option['clientID'] = $option['client_id'];
 								}
 								unset( $option['client_id'] );
 							}
@@ -384,9 +392,25 @@ tag_partner: "site_kit"
 							}
 							$this->options->set( self::OPTION, $option );
 						}
+						// TODO: Remove this at some point (migration of old 'accountId' option).
+						if ( isset( $option['accountId'] ) ) {
+							if ( ! isset( $option['accountID'] ) ) {
+								$option['accountID'] = $option['accountId'];
+							}
+							unset( $option['accountId'] );
+						}
+
+						// TODO: Remove this at some point (migration of old 'clientId' option).
+						if ( isset( $option['clientId'] ) ) {
+							if ( ! isset( $option['clientID'] ) ) {
+								$option['clientID'] = $option['clientId'];
+							}
+							unset( $option['clientId'] );
+						}
+
 						$defaults = array(
-							'accountId'     => '',
-							'clientId'      => '',
+							'accountID'     => '',
+							'clientID'      => '',
 							'accountStatus' => '',
 						);
 						return array_intersect_key( array_merge( $defaults, $option ), $defaults );
@@ -396,37 +420,38 @@ tag_partner: "site_kit"
 						$option = (array) $this->options->get( self::OPTION );
 						// TODO: Remove this at some point (migration of old option).
 						if ( isset( $option['account_id'] ) ) {
-							if ( ! isset( $option['accountId'] ) ) {
-								$option['accountId'] = $option['account_id'];
+							if ( ! isset( $option['accountID'] ) ) {
+								$option['accountID'] = $option['account_id'];
 							}
 							unset( $option['account_id'] );
 							$this->options->set( self::OPTION, $option );
 						}
-						if ( empty( $option['accountId'] ) ) {
+						if ( empty( $option['accountID'] ) ) {
 							return new WP_Error( 'account_id_not_set', __( 'AdSense account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
-						return $option['accountId'];
+						return $option['accountID'];
 					};
 				case 'client-id':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
 						// TODO: Remove this at some point (migration of old option).
 						if ( isset( $option['client_id'] ) ) {
-							if ( ! isset( $option['clientId'] ) ) {
-								$option['clientId'] = $option['client_id'];
+							if ( ! isset( $option['clientID'] ) ) {
+								$option['clientID'] = $option['client_id'];
 							}
 							unset( $option['client_id'] );
 							$this->options->set( self::OPTION, $option );
 						}
-						if ( empty( $option['clientId'] ) ) {
+						if ( empty( $option['clientID'] ) ) {
 							return new WP_Error( 'client_id_not_set', __( 'AdSense client ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
-						return $option['clientId'];
+						return $option['clientID'];
 					};
-				case 'adsense-tag-enabled':
+				case 'use-snippet':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
-						return ! isset( $option['adsenseTagEnabled'] ) ? null : ! empty( $option['adsenseTagEnabled'] );
+
+						return ! empty( $option['useSnippet'] );
 					};
 				case 'account-status':
 					return function() {
@@ -468,7 +493,7 @@ tag_partner: "site_kit"
 						}
 						$alerts = array_filter(
 							$alerts,
-							function( \Google_Service_AdSense_Alert $alert ) {
+							function( Google_Service_AdSense_Alert $alert ) {
 								return 'SEVERE' === $alert->getSeverity();
 							}
 						);
@@ -481,7 +506,7 @@ tag_partner: "site_kit"
 						/**
 						 * First Alert
 						 *
-						 * @var \Google_Service_AdSense_Alert $alert
+						 * @var Google_Service_AdSense_Alert $alert
 						 */
 						$alert = array_shift( $alerts );
 						return array(
@@ -493,7 +518,7 @@ tag_partner: "site_kit"
 								'winImage'      => 'sun-small.png',
 								'format'        => 'large',
 								'severity'      => 'win-info',
-								'ctaUrl'        => $this->get_data( 'account-url' ),
+								'ctaURL'        => $this->get_data( 'account-url' ),
 								'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
 								'ctaTarget'     => '_blank',
 							),
@@ -503,128 +528,49 @@ tag_partner: "site_kit"
 					$service = $this->get_service( 'adsense' );
 					return $service->accounts->listAccounts();
 				case 'alerts':
-					if ( ! isset( $data['accountId'] ) ) {
-						$data['accountId'] = $this->get_data( 'account-id' );
-						if ( is_wp_error( $data['accountId'] ) || ! $data['accountId'] ) {
+					if ( ! isset( $data['accountID'] ) ) {
+						$data['accountID'] = $this->get_data( 'account-id' );
+						if ( is_wp_error( $data['accountID'] ) || ! $data['accountID'] ) {
 							/* translators: %s: Missing parameter name */
-							return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
+							return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 						}
 					}
 					$service = $this->get_service( 'adsense' );
-					return $service->accounts_alerts->listAccountsAlerts( $data['accountId'] );
+					return $service->accounts_alerts->listAccountsAlerts( $data['accountID'] );
 				case 'clients':
 					$service = $this->get_service( 'adsense' );
 					return $service->adclients->listAdclients();
 				case 'urlchannels':
-					if ( ! isset( $data['clientId'] ) ) {
+					if ( ! isset( $data['clientID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
 					}
 					$service = $this->get_service( 'adsense' );
-					return $service->urlchannels->listUrlchannels( $data['clientId'] );
-				case 'earning-today':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( 'today' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( 'today' ) ),
-						)
-					);
-				case 'earning-yesterday':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( 'yesterday' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( 'yesterday' ) ),
-						)
-					);
-				case 'earning-samedaylastweek':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( '7daysAgo' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( '7daysAgo' ) ),
-						)
-					);
-				case 'earning-7days':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( '7daysAgo' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( 'yesterday' ) ),
-						)
-					);
-				case 'earning-prev7days':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( '14daysAgo' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( '8daysAgo' ) ),
-						)
-					);
-				case 'earning-this-month':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-01' ),
-							'end_date'   => date( 'Y-m-d', strtotime( 'today' ) ),
-						)
-					);
-				case 'earning-this-month-last-year':
-					$last_year          = intval( date( 'Y' ) ) - 1;
-					$last_date_of_month = date( 't', strtotime( $last_year . '-' . date( 'm' ) . '-01' ) );
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( $last_year . '-m-01' ),
-							'end_date'   => date( $last_year . '-m-' . $last_date_of_month ),
-						)
-					);
-				case 'earning-28days':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( '28daysAgo' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( 'yesterday' ) ),
-						)
-					);
-				case 'earning-prev28days':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( '56daysAgo' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( '29daysAgo' ) ),
-						)
-					);
-				case 'earning-daily-this-month':
-					return $this->create_adsense_earning_data_request(
-						array(
-							'dimensions' => array( 'DATE' ),
-							'start_date' => date( 'Y-m-01' ),
-							'end_date'   => date( 'Y-m-d', strtotime( 'today' ) ),
-						)
-					);
-				case 'earnings-this-period':
-					$date_range = ! empty( $data['dateRange'] ) ? $data['dateRange'] : 'last-28-days';
-					switch ( $date_range ) {
-						case 'last-7-days':
-							$daysago = 7;
-							break;
-						case 'last-14-days':
-							$daysago = 14;
-							break;
-						case 'last-90-days':
-							$daysago = 90;
-							break;
-						case 'last-28-days':
-						default:
-							$daysago = 28;
-							break;
+					return $service->urlchannels->listUrlchannels( $data['clientID'] );
+				case 'earnings':
+					$dates = $this->date_range_to_dates( $data['dateRange'] ?: 'last-28-days' );
+
+					if ( is_wp_error( $dates ) ) {
+						return $dates;
 					}
-					return $this->create_adsense_earning_data_request(
-						array(
-							'start_date' => date( 'Y-m-d', strtotime( '' . $daysago . 'daysAgo' ) ),
-							'end_date'   => date( 'Y-m-d', strtotime( 'today' ) ),
-						)
-					);
+
+					list ( $start_date, $end_date ) = $dates;
+
+					$dimensions = (array) $data['dimensions'];
+					$args       = compact( 'start_date', 'end_date', 'dimensions' );
+
+					if ( isset( $data['limit'] ) ) {
+						$args['row_limit'] = $data['limit'];
+					}
+
+					return $this->create_adsense_earning_data_request( $args );
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
 				case 'connection':
 					return function() use ( $data ) {
 						$option = (array) $this->options->get( self::OPTION );
-						$keys   = array( 'accountId', 'clientId', 'accountStatus' );
+						$keys   = array( 'accountID', 'clientID', 'accountStatus' );
 						foreach ( $keys as $key ) {
 							if ( isset( $data[ $key ] ) ) {
 								$option[ $key ] = $data[ $key ];
@@ -634,36 +580,46 @@ tag_partner: "site_kit"
 						return true;
 					};
 				case 'account-id':
-					if ( ! isset( $data['accountId'] ) ) {
+					if ( ! isset( $data['accountID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 					}
 					return function() use ( $data ) {
 						$option              = (array) $this->options->get( self::OPTION );
-						$option['accountId'] = $data['accountId'];
+						$option['accountID'] = $data['accountID'];
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
 				case 'client-id':
-					if ( ! isset( $data['clientId'] ) ) {
+					if ( ! isset( $data['clientID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
 					}
 					return function() use ( $data ) {
 						$option             = (array) $this->options->get( self::OPTION );
-						$option['clientId'] = $data['clientId'];
+						$option['clientID'] = $data['clientID'];
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'adsense-tag-enabled':
-					if ( ! isset( $data['adsenseTagEnabled'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'adsenseTagEnabled' ), array( 'status' => 400 ) );
+				case 'use-snippet':
+					if ( ! isset( $data['useSnippet'] ) ) {
+						return new WP_Error(
+							'missing_required_param',
+							sprintf(
+								/* translators: %s: Missing parameter name */
+								__( 'Request parameter is empty: %s.', 'google-site-kit' ),
+								'useSnippet'
+							),
+							array( 'status' => 400 )
+						);
 					}
+
 					return function() use ( $data ) {
-						$option                      = (array) $this->options->get( self::OPTION );
-						$option['adsenseTagEnabled'] = (bool) $data['adsenseTagEnabled'];
+						$option               = (array) $this->options->get( self::OPTION );
+						$option['useSnippet'] = (bool) $data['useSnippet'];
+
 						$this->options->set( self::OPTION, $option );
+
 						return true;
 					};
 				case 'account-status':
@@ -678,18 +634,18 @@ tag_partner: "site_kit"
 						return true;
 					};
 				case 'setup-complete':
-					if ( ! isset( $data['clientId'] ) ) {
+					if ( ! isset( $data['clientID'] ) ) {
 						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientId' ), array( 'status' => 400 ) );
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
 					}
 					return function() use ( $data ) {
 						$option                  = (array) $this->options->get( self::OPTION );
 						$option['setupComplete'] = true;
-						$option['clientId']      = $data['clientId'];
-						if ( isset( $data['adsenseTagEnabled'] ) ) {
-							$option['adsenseTagEnabled'] = (bool) $data['adsenseTagEnabled'];
-						}
+						$option['clientID']      = $data['clientID'];
+						$option['useSnippet']    = ! empty( $data['useSnippet'] );
+
 						$this->options->set( self::OPTION, $option );
+
 						return true;
 					};
 			}
@@ -703,12 +659,15 @@ tag_partner: "site_kit"
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to resolve response for.
-	 * @param mixed  $response  Response object or array.
+	 * @param Data_Request $data Data request object.
+	 * @param mixed        $response Request response.
+	 *
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
-	protected function parse_data_response( $method, $datapoint, $response ) {
+	protected function parse_data_response( Data_Request $data, $response ) {
+		$method    = $data->method;
+		$datapoint = $data->datapoint;
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'accounts':
@@ -717,7 +676,7 @@ tag_partner: "site_kit"
 					if ( ! empty( $accounts ) ) {
 						$account_id = $this->get_data( 'account-id' );
 						if ( is_wp_error( $account_id ) || ! $account_id ) {
-							$this->set_data( 'account-id', array( 'accountId' => $accounts[0]->id ) );
+							$this->set_data( 'account-id', array( 'accountID' => $accounts[0]->id ) );
 						}
 					}
 					// TODO: Parse this response to a regular array.
@@ -731,23 +690,71 @@ tag_partner: "site_kit"
 				case 'urlchannels':
 					// TODO: Parse this response to a regular array.
 					return $response->getItems();
-				case 'earning-today':
-				case 'earning-yesterday':
-				case 'earning-samedaylastweek':
-				case 'earning-7days':
-				case 'earning-prev7days':
-				case 'earning-this-month':
-				case 'earning-this-month-last-year':
-				case 'earning-28days':
-				case 'earning-prev28days':
-				case 'earning-daily-this-month':
-				case 'earnings-this-period':
-					// TODO: Parse this response to a regular array.
+				case 'earnings':
 					return $response;
 			}
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Gets an array of dates for the given named date range.
+	 *
+	 * @param string $date_range Named date range.
+	 *                           E.g. 'last-28-days'.
+	 *
+	 * @return array|WP_Error Array of [startDate, endDate] or WP_Error if invalid named range.
+	 */
+	private function date_range_to_dates( $date_range ) {
+		switch ( $date_range ) {
+			case 'today':
+				return array(
+					date( 'Y-m-d', strtotime( 'today' ) ),
+					date( 'Y-m-d', strtotime( 'today' ) ),
+				);
+			case 'yesterday':
+				return array(
+					date( 'Y-m-d', strtotime( 'yesterday' ) ),
+					date( 'Y-m-d', strtotime( 'yesterday' ) ),
+				);
+			case 'same-day-last-week':
+				return array(
+					date( 'Y-m-d', strtotime( '7 days ago' ) ),
+					date( 'Y-m-d', strtotime( '7 days ago' ) ),
+				);
+			case 'this-month':
+				return array(
+					date( 'Y-m-01' ),
+					date( 'Y-m-d', strtotime( 'today' ) ),
+				);
+			case 'this-month-last-year':
+				$last_year          = intval( date( 'Y' ) ) - 1;
+				$last_date_of_month = date( 't', strtotime( $last_year . '-' . date( 'm' ) . '-01' ) );
+
+				return array(
+					date( $last_year . '-m-01' ),
+					date( $last_year . '-m-' . $last_date_of_month ),
+				);
+			case 'prev-7-days':
+				return array(
+					date( 'Y-m-d', strtotime( '14 days ago' ) ),
+					date( 'Y-m-d', strtotime( '8 days ago' ) ),
+				);
+			case 'prev-28-days':
+				return array(
+					date( 'Y-m-d', strtotime( '56 days ago' ) ),
+					date( 'Y-m-d', strtotime( '29 days ago' ) ),
+				);
+			// Intentional fallthrough.
+			case 'last-7-days':
+			case 'last-14-days':
+			case 'last-28-days':
+			case 'last-90-days':
+				return $this->parse_date_range( $date_range );
+		}
+
+		return new WP_Error( 'invalid_date_range', __( 'Invalid date range.', 'google-site-kit' ) );
 	}
 
 	/**
@@ -843,7 +850,7 @@ tag_partner: "site_kit"
 	 */
 	protected function setup_services( Google_Client $client ) {
 		return array(
-			'adsense' => new \Google_Service_AdSense( $client ),
+			'adsense' => new Google_Service_AdSense( $client ),
 		);
 	}
 }

@@ -27,39 +27,36 @@ add_action( 'rest_api_init', function () {
 
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'modules/site-verification/data/siteverification-list',
+		'modules/site-verification/data/verification',
 		array(
-			'callback' => function () {
-				return array(
-					'type'       => 'SITE',
-					'identifier' => home_url( '/' ),
-					'verified'   => (bool) get_transient( 'gsk_e2e_site_verified' ),
-				);
-			}
-		),
-		true
-	);
+			array(
+				'methods'  => WP_REST_Server::READABLE,
+				'callback' => function () {
+					return array(
+						'type'       => 'SITE',
+						'identifier' => home_url( '/' ),
+						'verified'   => (bool) get_transient( 'gsk_e2e_site_verified' ),
+					);
+				}
+			),
+			array(
+				'methods'  => WP_REST_Server::CREATABLE,
+				'callback' => function ( WP_REST_Request $request ) {
+					$data = $request->get_param( 'data' );
 
-	register_rest_route(
-		REST_Routes::REST_ROOT,
-		'modules/site-verification/data/siteverification',
-		array(
-			'methods'  => 'POST',
-			'callback' => function ( WP_REST_Request $request ) {
-				$data = $request->get_param( 'data' );
+					update_user_option(
+						get_current_user_id(),
+						'googlesitekit_site_verified_meta',
+						'verified'
+					);
 
-				update_user_option(
-					get_current_user_id(),
-					'googlesitekit_site_verified_meta',
-					'verified'
-				);
-
-				return array(
-					'updated'    => true,
-					'sites'      => array(),
-					'identifier' => $data['siteURL'],
-				);
-			}
+					return array(
+						'type'       => 'SITE',
+						'identifier' => $data['siteURL'],
+						'verified'   => true,
+					);
+				}
+			),
 		),
 		true
 	);
@@ -70,7 +67,10 @@ add_action( 'rest_api_init', function () {
 		array(
 			'callback' => function () {
 				return array(
-					'exact_match' => home_url( '/' ),
+					'exactMatch' => array(
+						'siteURL'         => home_url( '/' ),
+						'permissionLevel' => 'siteOwner',
+					),
 				);
 			}
 		),
@@ -79,23 +79,7 @@ add_action( 'rest_api_init', function () {
 
 	register_rest_route(
 		REST_Routes::REST_ROOT,
-		'modules/search-console/data/is-site-exist',
-		array(
-			'callback' => function ( WP_REST_Request $request ) {
-				$data = $request->get_param( 'data' );
-
-				return array(
-					'siteURL'  => 'https://example.org/',
-					'verified' => (bool) get_transient( 'gsk_e2e_sc_site_exists' ),
-				);
-			}
-		),
-		true
-	);
-
-	register_rest_route(
-		REST_Routes::REST_ROOT,
-		'modules/search-console/data/insert',
+		'modules/search-console/data/site',
 		array(
 			'methods'  => 'POST',
 			'callback' => function ( WP_REST_Request $request ) {
@@ -104,25 +88,8 @@ add_action( 'rest_api_init', function () {
 				update_option( 'googlesitekit_search_console_property', $data['siteURL'] );
 
 				return array(
-					'sites' => array( $data['siteURL'] ),
-				);
-			}
-		),
-		true
-	);
-
-	register_rest_route(
-		REST_Routes::REST_ROOT,
-		'modules/search-console/data/save-property',
-		array(
-			'methods'  => 'POST',
-			'callback' => function ( WP_REST_Request $request ) {
-				$data = $request->get_param( 'data' );
-
-				$response = update_option( 'googlesitekit_search_console_property', $data['siteURL'] );
-				return array(
-					'updated' => $response,
-					'status'  => true,
+					'siteURL'         => $data['siteURL'],
+					'permissionLevel' => 'siteOwner',
 				);
 			}
 		),

@@ -160,7 +160,7 @@ final class Modules {
 				'Google\Site_Kit\Modules\Search_Console',
 				'Google\Site_Kit\Modules\Analytics',
 				'Google\Site_Kit\Modules\Optimize',
-				'Google\Site_Kit\Modules\TagManager',
+				'Google\Site_Kit\Modules\Tag_Manager',
 				'Google\Site_Kit\Modules\AdSense',
 				'Google\Site_Kit\Modules\PageSpeed_Insights',
 			);

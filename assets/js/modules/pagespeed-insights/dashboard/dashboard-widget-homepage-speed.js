@@ -51,9 +51,9 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 		} );
 	}
 
-	handleDataError() {
+	handleDataError( error ) {
 		this.setState( {
-			error: true,
+			error,
 		} );
 	}
 
@@ -77,7 +77,7 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 					{
 						getDataErrorComponent(
 							__( 'PageSpeed Insights', 'google-site-kit' ),
-							__( 'Issue accessing data, please ensure the API key is set correctly.', 'google-site-kit' ),
+							error,
 							true,
 							true,
 							false

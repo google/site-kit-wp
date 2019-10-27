@@ -39,6 +39,9 @@ import {
 	calculateOverviewData,
 	extractAnalyticsDashboardSparklineData,
 	getAnalyticsErrorMessageFromData,
+	siteAnalyticsReportDataDefaults,
+	overviewReportDataDefaults,
+	isDataZeroForReporting,
 } from '../util';
 
 const { __ } = wp.i18n;
@@ -52,103 +55,29 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 			accounts: false,
 			goals: false,
 		};
-
-		this.processCallbackData = this.processCallbackData.bind( this );
-		this.setOverviewData = this.setOverviewData.bind( this );
-		this.setGoalsData = this.setGoalsData.bind( this );
-		this.setAnalyticsData = this.setAnalyticsData.bind( this );
 	}
 
 	// When additional data is returned, componentDidUpdate will fire.
-	componentDidUpdate( prevProps ) {
-		const {
-			data,
-			datapoint,
-		} = this.props;
-
-		this.processCallbackData( data, datapoint, prevProps );
+	componentDidUpdate() {
+		this.processCallbackData();
 	}
 
 	componentDidMount() {
-		const {
-			data,
-			datapoint,
-		} = this.props;
-
-		this.processCallbackData( data, datapoint, {} );
+		this.processCallbackData();
 	}
 
 	/**
 	 * Process callback data received from the API.
-	 *
-	 * @param {Object} data Response data from the API.
-	 * @param {string} datapoint data point for the callback conditional.
-	 * @param {Object} prevProps previous props when component did update.
-	 * @return {null}
 	 */
-	processCallbackData( data, datapoint, prevProps = {} ) {
-		if ( ! data ) {
-			return null;
+	processCallbackData() {
+		const {
+			data,
+			requestDataToState,
+		} = this.props;
+
+		if ( data && ! data.error && 'function' === typeof requestDataToState ) {
+			this.setState( requestDataToState );
 		}
-
-		switch ( datapoint ) {
-			case 'site-analytics':
-				this.setAnalyticsData( data, prevProps );
-				break;
-			case 'goals':
-				this.setGoalsData( data, prevProps );
-				break;
-			case 'overview':
-				this.setOverviewData( data, prevProps );
-				break;
-		}
-	}
-
-	setAnalyticsData( data, prevProps = {} ) {
-		if ( this.state.extractedAnalytics || 'site-analytics' === prevProps.datapoint ) {
-			return null;
-		}
-
-		if ( data && data.error ) {
-			return null;
-		}
-
-		this.setState( {
-			extractedAnalytics: extractAnalyticsDashboardSparklineData( data ),
-		} );
-	}
-
-	setOverviewData( data, prevProps = {} ) {
-		if ( this.state.overview || 'overview' === prevProps.datapoint ) {
-			return null;
-		}
-
-		if ( data && data.error ) {
-			return null;
-		}
-
-		this.setState( {
-			overview: calculateOverviewData( data ),
-		} );
-	}
-
-	setGoalsData( data, prevProps = {} ) {
-		if ( this.state.goals || 'goals' === prevProps.datapoint ) {
-			return null;
-		}
-
-		if ( data && data.error ) {
-			return null;
-		}
-
-		// do nothing.
-		if ( 'goals' === prevProps.datapoint ) {
-			return null;
-		}
-
-		this.setState( {
-			goals: data,
-		} );
 	}
 
 	render() {
@@ -167,16 +96,16 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 			totalUsersChange = '',
 			goalCompletions = '',
 			goalCompletionsChange = '',
-			averageSessionDuration = '',
-			averageSessionDurationChange = '';
+			averageBounceRate = '',
+			averageBounceRateChange = '';
 
 		if ( overview ) {
 			totalUsers = overview.totalUsers;
 			totalUsersChange = overview.totalUsersChange;
 			goalCompletions = overview.goalCompletions;
 			goalCompletionsChange = overview.goalCompletionsChange;
-			averageSessionDuration = overview.averageSessionDuration;
-			averageSessionDurationChange = overview.averageSessionDurationChange;
+			averageBounceRate = overview.averageBounceRate;
+			averageBounceRateChange = overview.averageBounceRateChange;
 		}
 
 		return (
@@ -223,12 +152,13 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 					{
 						permaLink && (
 							<DataBlock
-								className="overview-average-time-on-page"
-								title={ __( 'Average Session Duration', 'google-site-kit' ) }
-								datapoint={ Math.round( averageSessionDuration ) }
-								datapointUnit={ __( 's', 'google-site-kit' ) }
-								change={ averageSessionDurationChange }
+								className="overview-bounce-rate"
+								title={ __( 'Bounce Rate', 'google-site-kit' ) }
+								datapoint={ Number( averageBounceRate ).toFixed( 2 ) }
+								datapointUnit={ __( '%', 'google-site-kit' ) }
+								change={ averageBounceRateChange }
 								changeDataUnit="%"
+								reverseArrowDirection
 								source={ {
 									name: __( 'Analytics', 'google-site-kit' ),
 									link: href,
@@ -236,8 +166,8 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 								sparkline={
 									extractedAnalytics &&
 										<Sparkline
-											data={ extractForSparkline( extractedAnalytics, 3 ) }
-											change={ averageSessionDurationChange }
+											data={ extractForSparkline( extractedAnalytics, 2 ) }
+											change={ averageBounceRateChange }
 											id="analytics-sessions-sparkline"
 										/>
 								}
@@ -283,34 +213,17 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 }
 
 const isDataZero = ( data, datapoint ) => {
-	if ( 'overview' !== datapoint ) {
-		return false;
+	if ( 'report' === datapoint ) {
+		return isDataZeroForReporting( data );
 	}
 
-	// Handle empty data.
-	if ( ! data || ! data.length ) {
-		return true;
-	}
-
-	const overview = calculateOverviewData( data );
-
-	let totalUsers = '',
-		totalSessions = '',
-		totalPageViews = '';
-
-	if ( overview ) {
-		totalUsers = overview.totalUsers;
-		totalSessions = overview.totalSessions;
-		totalPageViews = overview.totalPageViews;
-	}
-
-	const analyticsDataIsEmpty =
-		0 === parseInt( totalUsers ) &&
-		0 === parseInt( totalSessions ) &&
-		0 === parseInt( totalPageViews );
-
-	return analyticsDataIsEmpty;
+	return false;
 };
+
+/*
+Note: toState callbacks below accept the current data and state into an object which is passed to setState.
+This is because withData changes the props passed to the child for each request.
+*/
 
 export default withData(
 	AnalyticsDashboardWidgetTopLevel,
@@ -318,24 +231,40 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'overview',
+			datapoint: 'report',
 			data: {
+				...overviewReportDataDefaults,
 				url: googlesitekit.permaLink,
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
+			toState( state, { data } ) {
+				if ( ! state.overview ) {
+					return {
+						overview: calculateOverviewData( data ),
+					};
+				}
+			},
 		},
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'site-analytics',
+			datapoint: 'report',
 			data: {
+				...siteAnalyticsReportDataDefaults,
 				url: googlesitekit.permaLink,
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Dashboard',
+			toState( state, { data } ) {
+				if ( ! state.extractedAnalytics ) {
+					return {
+						extractedAnalytics: extractAnalyticsDashboardSparklineData( data ),
+					};
+				}
+			},
 		},
 		{
 			type: TYPE_MODULES,
@@ -347,6 +276,13 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'hour' ),
 			context: 'Dashboard',
+			toState( state, { data } ) {
+				if ( ! state.goals ) {
+					return {
+						goals: data,
+					};
+				}
+			},
 		},
 	],
 	<Fragment>

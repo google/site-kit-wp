@@ -17,13 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
+import Layout from 'GoogleComponents/layout/layout';
+
+/**
  * Internal dependencies
  */
 import AnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/dashboard-widget-top-acquisition-sources-table';
-/**
- * External dependencies
- */
-import Layout from 'GoogleComponents/layout/layout';
 import DashboardAcquisitionPieChart from '../dashboard/dashboard-widget-acquisition-piechart';
 
 const { Component, Fragment } = wp.element;
@@ -37,11 +39,18 @@ class AnalyticsDashboardDetailsWidgetTopAcquisitionSources extends Component {
 					mdc-layout-grid__cell
 					mdc-layout-grid__cell--span-12
 				">
+					<DashboardModuleHeader
+						title={ __( 'All Traffic', 'google-site-kit' ) }
+						description={ __( 'How people found your page.', 'google-site-kit' ) }
+					/>
+				</div>
+				<div className="
+					mdc-layout-grid__cell
+					mdc-layout-grid__cell--span-12
+				">
 					<Layout
 						className="googlesitekit-analytics-acquisition-sources"
-						header
 						footer
-						title={ __( 'Acquisition Sources', 'google-site-kit' ) }
 						headerCtaLink="https://analytics.google.com"
 						headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
 						footerCtaLabel={ __( 'Analytics', 'google-site-kit' ) }

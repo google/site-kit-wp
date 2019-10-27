@@ -26,6 +26,11 @@ import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/d
 import Layout from 'GoogleComponents/layout/layout';
 import PreviewTable from 'GoogleComponents/preview-table';
 
+/**
+ * Internal dependencies
+ */
+import { analyticsAdsenseReportDataDefaults } from '../util';
+
 const { __ } = wp.i18n;
 const { map } = lodash;
 const { Component } = wp.element;
@@ -89,13 +94,13 @@ class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
 		} );
 
 		const {
-			accountId,
-			internalWebPropertyId,
-			profileId,
+			accountID,
+			internalWebPropertyID,
+			profileID,
 		} = googlesitekit.modules.analytics.settings;
 
 		// Construct a deep link.
-		const adsenseDeepLink = `https://analytics.google.com/analytics/web/?pli=1#/report/content-pages/a${ accountId }w${ internalWebPropertyId }p${ profileId }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath:~2F`;
+		const adsenseDeepLink = `https://analytics.google.com/analytics/web/?pli=1#/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath:~2F`;
 
 		const linksMapped = map( data[ 0 ].data.rows, ( row ) => {
 			const pagePath = row.dimensions[ 1 ].replace( /\//g, '~2F' );
@@ -158,8 +163,8 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'adsense',
-			data: {},
+			datapoint: 'report',
+			data: analyticsAdsenseReportDataDefaults,
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'Single',

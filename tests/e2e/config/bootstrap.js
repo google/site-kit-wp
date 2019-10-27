@@ -11,15 +11,19 @@ import {
 	enablePageDialogAccept,
 	setBrowserViewport,
 } from '@wordpress/e2e-test-utils';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import {
 	clearSessionStorage,
-	deactivateAllOtherPlugins,
+	deactivateUtilityPlugins,
 	resetSiteKit,
 } from '../utils';
+import {
+	toHaveAdSenseTag,
+} from '../matchers';
 
 /**
  * Environment variables
@@ -48,6 +52,11 @@ const pageEvents = [];
 
 // The Jest timeout is increased because these tests are a bit slow
 jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
+
+// Add custom matchers specific to Site Kit.
+expect.extend( {
+	toHaveAdSenseTag,
+} );
 
 /**
  * Adds an event listener to the page to handle additions of page event
@@ -156,6 +165,18 @@ function observeRestRequest( req ) {
 		// eslint-disable-next-line no-console
 		console.log( '>>>', req.method(), req.url(), req.postData() );
 	}
+	if ( req.url().match( 'google-site-kit/v1/data/' ) ) {
+		const rawBatchRequest = getQueryArg( req.url(), 'request' );
+		try {
+			const batchRequests = JSON.parse( rawBatchRequest );
+			if ( Array.isArray( batchRequests ) ) {
+				batchRequests.forEach( ( r ) => {
+					// eslint-disable-next-line no-console
+					console.log( '>>>', r.key, r.data );
+				} );
+			}
+		} catch {}
+	}
 }
 
 /**
@@ -183,13 +204,17 @@ beforeAll( async () => {
 	optOutOfEventTracking();
 	enablePageDialogAccept();
 	observeConsoleLogging();
+	// Log uncaught exceptions on the client.
+	// eslint-disable-next-line no-console
+	page.on( 'pageerror', console.error );
+
 	if ( '1' === process.env.DEBUG_REST ) {
 		page.on( 'request', observeRestRequest );
 		page.on( 'response', observeRestResponse );
 	}
 	await setBrowserViewport( 'large' );
 
-	await deactivateAllOtherPlugins();
+	await deactivateUtilityPlugins();
 	await resetSiteKit();
 } );
 
@@ -200,7 +225,7 @@ afterEach( async () => {
 } );
 
 afterAll( async () => {
-	await deactivateAllOtherPlugins();
+	await deactivateUtilityPlugins();
 	await resetSiteKit();
 	removePageEvents();
 	await page.setRequestInterception( false );

@@ -28,7 +28,7 @@ import Layout from 'GoogleComponents/layout/layout';
 /**
  * Internal dependencies
  */
-import { isDataZeroForReporting } from '../util';
+import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../util';
 
 const { __ } = wp.i18n;
 const { map } = lodash;
@@ -57,6 +57,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 
 	render() {
 		const { data } = this.props;
+		const { siteURL: siteURL } = googlesitekit.admin;
 
 		if ( ! data || ! data.length ) {
 			return null;
@@ -73,9 +74,9 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 
 		const links = [];
 		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
-			const url = row.dimensions[ 0 ];
-			const title = row.dimensions[ 1 ];
-			links[ i ] = url;
+			const [ title, url ] = row.dimensions;
+			links[ i ] = siteURL + url;
+
 			return [
 				title,
 				numberFormat( row.metrics[ 0 ].values[ 0 ] ),
@@ -86,7 +87,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 			hideHeader: false,
 			chartsEnabled: false,
 			links,
-			showUrls: true,
+			showURLs: true,
 		};
 
 		const dataTable = getDataTableFromData( dataMapped, headers, options );
@@ -107,8 +108,8 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'top-pages',
-			data: {},
+			datapoint: 'report',
+			data: getTopPagesReportDataDefaults(),
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],

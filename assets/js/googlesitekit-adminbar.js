@@ -70,6 +70,11 @@ export class GoogleSitekitAdminbar extends Component {
 	}
 
 	render() {
+		const {
+			pageTitle,
+			permaLink,
+		} = googlesitekit;
+
 		return (
 			<Fragment>
 				<div className="mdc-layout-grid">
@@ -80,7 +85,12 @@ export class GoogleSitekitAdminbar extends Component {
 							mdc-layout-grid__cell--align-middle
 						">
 							<span className="googlesitekit-adminbar__subtitle">{ __( 'Stats for:', 'google-site-kit' ) }</span>
-							<h2 className="googlesitekit-adminbar__title">{ googlesitekit.pageTitle && decodeHtmlEntity( googlesitekit.pageTitle ) }</h2>
+							<h2 className="googlesitekit-adminbar__title">
+								{ pageTitle ?
+									decodeHtmlEntity( pageTitle ) :
+									permaLink
+								}
+							</h2>
 						</div>
 						<div className="
 							mdc-layout-grid__cell

@@ -6,18 +6,12 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
 /**
  * Internal dependencies
  */
-import { resetSiteKit, deactivateAllOtherPlugins, pasteText, wpApiFetch, useRequestInterception } from '../utils';
-
-const oauthClientConfig = JSON.stringify( {
-	web: {
-		client_id: 'test-client-id',
-		client_secret: 'test-client-secret',
-		project_id: 'test-project-id',
-		auth_uri: 'https://accounts.google.com/o/oauth2/auth',
-		token_uri: 'https://accounts.google.com/o/oauth2/token',
-		auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
-	},
-} );
+import {
+	deactivateUtilityPlugins,
+	resetSiteKit,
+	useRequestInterception,
+	wpApiFetch,
+} from '../utils';
 
 describe( 'Site Kit set up flow for the first time with search console setup', () => {
 	beforeAll( async () => {
@@ -41,6 +35,7 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 	} );
 
 	beforeEach( async () => {
+		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
 
@@ -52,19 +47,14 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 	} );
 
 	afterEach( async () => {
-		await deactivateAllOtherPlugins();
+		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
 
 	it( 'inserts property to search console when site does not exist', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
-		await page.waitForSelector( '#client-configuration' );
 
-		await pasteText( '#client-configuration', oauthClientConfig );
-		await expect( page ).toClick( '#wizard-step-one-proceed' );
-		await page.waitForSelector( '.googlesitekit-wizard-step--two button' );
-
-		await expect( page ).toClick( '.googlesitekit-wizard-step--two button', { text: /sign in with Google/i } );
+		await expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with Google/i } );
 		await page.waitForNavigation();
 
 		await page.waitForSelector( '.googlesitekit-setup-module__title' );
@@ -80,20 +70,9 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 	} );
 
 	it( 'saves search console property when site exists', async () => {
-		// Simulate that site exists.
-		await wpApiFetch( {
-			path: 'google-site-kit/v1/e2e/sc-site-exists',
-			method: 'post',
-		} );
-
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
-		await page.waitForSelector( '#client-configuration' );
 
-		await pasteText( '#client-configuration', oauthClientConfig );
-		await expect( page ).toClick( '#wizard-step-one-proceed' );
-		await page.waitForSelector( '.googlesitekit-wizard-step--two button' );
-
-		await expect( page ).toClick( '.googlesitekit-wizard-step--two button', { text: /sign in with Google/i } );
+		await expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with Google/i } );
 		await page.waitForNavigation();
 
 		await page.waitForSelector( '.googlesitekit-setup-module__title' );

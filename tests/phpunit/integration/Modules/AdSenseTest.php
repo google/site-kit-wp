@@ -44,16 +44,22 @@ class AdSenseTest extends TestCase {
 		$this->assertContains( $adsense->get_screen(), apply_filters( 'googlesitekit_module_screens', array() ) );
 		$this->assertFalse( get_option( AdSense::OPTION ) );
 
-		update_option( AdSense::OPTION, array( 'accountId' => 'saved-account-id' ) );
-		$this->assertArraySubset( array( 'accountId' => 'saved-account-id' ), get_option( AdSense::OPTION ) );
+		update_option( AdSense::OPTION, array( 'accountID' => 'saved-account-id' ) );
+		$this->assertArraySubset( array( 'accountID' => 'saved-account-id' ), get_option( AdSense::OPTION ) );
 		add_filter( 'googlesitekit_adsense_account_id', '__return_empty_string' );
-		$this->assertArraySubset( array( 'accountId' => 'saved-account-id' ), get_option( AdSense::OPTION ) );
+		$this->assertArraySubset( array( 'accountID' => 'saved-account-id' ), get_option( AdSense::OPTION ) );
 		remove_filter( 'googlesitekit_adsense_account_id', '__return_empty_string' );
 
 		add_filter( 'googlesitekit_adsense_account_id', function () {
 			return 'filtered-adsense-account-id';
 		} );
-		$this->assertEquals( array( 'accountId' => 'filtered-adsense-account-id' ), get_option( AdSense::OPTION ) );
+		$this->assertArraySubset( array( 'accountID' => 'filtered-adsense-account-id' ), get_option( AdSense::OPTION ) );
+
+		// Default value filtered into saved value.
+		$this->assertArraySubset( array( 'useSnippet' => true ), get_option( AdSense::OPTION ) );
+		update_option( AdSense::OPTION, array( 'useSnippet' => false ) );
+		// Default respects saved value.
+		$this->assertArraySubset( array( 'useSnippet' => false ), get_option( AdSense::OPTION ) );
 	}
 
 	public function test_get_module_scope() {
@@ -85,7 +91,7 @@ class AdSenseTest extends TestCase {
 				'required',
 				'autoActivate',
 				'internal',
-				'screenId',
+				'screenID',
 				'hasSettings',
 				'provides',
 				'settings',
@@ -134,7 +140,7 @@ class AdSenseTest extends TestCase {
 				'connection',
 				'account-id',
 				'client-id',
-				'adsense-tag-enabled',
+				'use-snippet',
 				'account-status',
 				'account-url',
 				'reports-url',
@@ -143,17 +149,7 @@ class AdSenseTest extends TestCase {
 				'alerts',
 				'clients',
 				'urlchannels',
-				'earning-today',
-				'earning-yesterday',
-				'earning-samedaylastweek',
-				'earning-7days',
-				'earning-prev7days',
-				'earning-this-month',
-				'earning-this-month-last-year',
-				'earning-28days',
-				'earning-prev28days',
-				'earning-daily-this-month',
-				'earnings-this-period',
+				'earnings',
 				'setup-complete',
 			),
 			$adsense->get_datapoints()

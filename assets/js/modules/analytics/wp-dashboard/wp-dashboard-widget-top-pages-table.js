@@ -27,7 +27,7 @@ import PreviewTable from 'GoogleComponents/preview-table';
 /**
  * Internal dependencies
  */
-import { isDataZeroForReporting } from '../util';
+import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../util';
 
 const { __ } = wp.i18n;
 const { map } = lodash;
@@ -36,21 +36,17 @@ const { Component } = wp.element;
 class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 	render() {
 		const { data } = this.props;
+		const { siteURL: siteURL } = googlesitekit.admin;
 
 		if ( isDataZeroForReporting( data ) ) {
 			return null;
 		}
 
-		const headers = [
-			__( 'URL', 'google-site-kit' ),
-			__( 'Pageviews', 'google-site-kit' ),
-		];
-
 		const links = [];
 		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
-			const url = row.dimensions[ 0 ];
-			const title = row.dimensions[ 1 ];
-			links[ i ] = url;
+			const [ title, url ] = row.dimensions;
+			links[ i ] = siteURL + url;
+
 			return [
 				title,
 				numberFormat( row.metrics[ 0 ].values[ 0 ] ),
@@ -62,10 +58,10 @@ class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 			chartsEnabled: true,
 			links,
 			cap: 5,
-			showUrls: true,
+			showURLs: true,
 		};
 
-		const dataTable = getDataTableFromData( dataMapped, headers, options );
+		const dataTable = getDataTableFromData( dataMapped, [], options );
 
 		return (
 			<div className="googlesitekit-search-console-widget">
@@ -86,8 +82,8 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'analytics',
-			datapoint: 'top-pages',
-			data: {},
+			datapoint: 'report',
+			data: getTopPagesReportDataDefaults(),
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: 'WPDashboard',

@@ -43,7 +43,7 @@ class SiteVerification extends Component {
 			loading: isAuthenticated && shouldSetup,
 			loadingMsg: __( 'Getting your verified sites...', 'google-site-kit' ),
 			siteURL: ' ', // Space allows TextField label to look right.
-			selectedUrl: '',
+			selectedURL: '',
 			errorCode: false,
 			errorMsg: '',
 		};
@@ -66,17 +66,15 @@ class SiteVerification extends Component {
 
 		( async () => {
 			try {
-				const responseData = await data.get( TYPE_MODULES, 'site-verification',
-					'siteverification-list' );
-
-				const { verified, identifier } = responseData;
+				const { verified, identifier } = await data.get( TYPE_MODULES, 'site-verification', 'verification' );
 
 				// Our current siteURL has been verified. Proceed to next step.
 				if ( verified ) {
 					sendAnalyticsTrackingEvent( 'verification_setup', 'verification_check_true' );
 
 					const response = await this.insertSiteVerification( identifier );
-					if ( true === response.updated ) {
+
+					if ( true === response.verified ) {
 						this.props.siteVerificationSetup( true );
 						return true;
 					}
@@ -86,14 +84,14 @@ class SiteVerification extends Component {
 
 				this.setState( {
 					loading: false,
-					siteURL: responseData.identifier,
+					siteURL: identifier,
 				} );
 			} catch ( err ) {
 				let message = err.message;
 
 				if ( validateJSON( err.message ) ) {
-					const errorJson = JSON.parse( err.message );
-					message = errorJson.error.message || err.message;
+					const errorJSON = JSON.parse( err.message );
+					message = errorJSON.error.message || err.message;
 				}
 
 				setErrorMessage( message );
@@ -109,7 +107,7 @@ class SiteVerification extends Component {
 	}
 
 	async insertSiteVerification( siteURL ) {
-		return await data.set( TYPE_MODULES, 'site-verification', 'siteverification', { siteURL } );
+		return await data.set( TYPE_MODULES, 'site-verification', 'verification', { siteURL } );
 	}
 
 	async onProceed() {
@@ -130,7 +128,7 @@ class SiteVerification extends Component {
 		try {
 			const response = await this.insertSiteVerification( siteURL );
 
-			if ( true === response.updated ) {
+			if ( true === response.verified ) {
 				sendAnalyticsTrackingEvent( 'verification_setup', 'verification_insert_tag' );
 
 				// We have everything we need here. go to next step.
@@ -140,8 +138,8 @@ class SiteVerification extends Component {
 			let message = err.message;
 
 			if ( validateJSON( err.message ) ) {
-				const errorJson = JSON.parse( err.message );
-				message = errorJson.error.message || err.message;
+				const errorJSON = JSON.parse( err.message );
+				message = errorJSON.error.message || err.message;
 			}
 
 			setErrorMessage( message );

@@ -481,9 +481,9 @@ final class Assets {
 		$admin_data = array(
 			'siteURL'          => esc_url_raw( $site_url ),
 			'siteName'         => get_bloginfo( 'name' ),
-			'siteUserId'       => md5( $site_url . $current_user->ID ),
+			'siteUserID'       => md5( $site_url . $current_user->ID ),
 			'adminRoot'        => esc_url_raw( get_admin_url() . 'admin.php' ),
-			'pluginUri'        => esc_url_raw( $this->context->url( '/' ) ),
+			'pluginURI'        => esc_url_raw( $this->context->url( '/' ) ),
 			'assetsRoot'       => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
 			'nojscache'        => current_user_can( 'manage_options' ) && isset( $_GET['nojscache'] ), // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 			'datacache'        => ( current_user_can( 'manage_options' ) && isset( $_GET['datacache'] ) ) ? // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
@@ -500,7 +500,7 @@ final class Assets {
 				'name'    => $current_user->display_name,
 				'picture' => get_avatar_url( $current_user->user_email ),
 			),
-			'AMPenabled'       => (bool) $this->context->get_amp_mode(),
+			'ampEnabled'       => (bool) $this->context->get_amp_mode(),
 			'ampMode'          => $this->context->get_amp_mode(),
 			'homeURL'          => home_url(),
 		);
@@ -508,7 +508,7 @@ final class Assets {
 		if ( isset( $_GET['permaLink'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 			$permalink = esc_url_raw( $_GET['permaLink'] );
 		} else {
-			$permalink = esc_url_raw( $this->context->get_reference_permalink() );
+			$permalink = esc_url_raw( $this->context->get_reference_canonical() );
 		}
 
 		if ( isset( $_GET['pageTitle'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification

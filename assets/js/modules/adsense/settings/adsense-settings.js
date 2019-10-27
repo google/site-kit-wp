@@ -37,14 +37,14 @@ const {
 class AdSenseSettings extends Component {
 	constructor( props ) {
 		super( props );
-		const { adsenseTagEnabled = true } = googlesitekit.modules.adsense.settings;
+		const { useSnippet = true } = googlesitekit.modules.adsense.settings;
 
 		this.state = {
-			adsenseTagEnabled: !! adsenseTagEnabled,
+			useSnippet: !! useSnippet,
 			disabled: false,
 		};
 
-		this.handleadsenseTagEnabledSwitch = this.handleadsenseTagEnabledSwitch.bind( this );
+		this.handleUseSnippetSwitch = this.handleUseSnippetSwitch.bind( this );
 	}
 
 	componentDidMount() {
@@ -76,41 +76,41 @@ class AdSenseSettings extends Component {
 	}
 
 	save() {
-		const { adsenseTagEnabled } = this.state;
+		const { useSnippet } = this.state;
 		if ( this._isMounted ) {
 			this.setState( {
-				adsenseTagEnabled,
+				useSnippet,
 			} );
 		}
 
 		const toSave = {
-			adsenseTagEnabled: adsenseTagEnabled || false,
+			useSnippet: useSnippet || false,
 		};
 
 		// Reset the localized variable.
 		if ( googlesitekit.modules.adsense.settings ) {
-			googlesitekit.modules.adsense.settings.adsenseTagEnabled = adsenseTagEnabled;
+			googlesitekit.modules.adsense.settings.useSnippet = useSnippet;
 		}
 
-		return data.set( TYPE_MODULES, 'adsense', 'adsense-tag-enabled', toSave ).then( ( res ) => res ).catch( ( e ) => e );
+		return data.set( TYPE_MODULES, 'adsense', 'use-snippet', toSave ).then( ( res ) => res ).catch( ( e ) => e );
 	}
 
-	handleadsenseTagEnabledSwitch( ) {
+	handleUseSnippetSwitch( ) {
 		const { saveOnChange } = this.props;
-		let { adsenseTagEnabled } = this.state;
-		adsenseTagEnabled = ! adsenseTagEnabled;
+		let { useSnippet } = this.state;
+		useSnippet = ! useSnippet;
 
 		if ( this._isMounted ) {
 			this.setState( {
-				adsenseTagEnabled,
+				useSnippet,
 			} );
 		}
 
 		// Track the event.
-		sendAnalyticsTrackingEvent( 'adsense_setup', adsenseTagEnabled ? 'adsense_tag_enabled' : 'adsense_tag_disabled' );
+		sendAnalyticsTrackingEvent( 'adsense_setup', useSnippet ? 'adsense_tag_enabled' : 'adsense_tag_disabled' );
 
 		if ( saveOnChange ) {
-			data.set( TYPE_MODULES, 'adsense', 'adsense-tag-enabled', { adsenseTagEnabled } ).then( ( res ) => res ).catch( ( e ) => e );
+			data.set( TYPE_MODULES, 'adsense', 'use-snippet', { useSnippet } ).then( ( res ) => res ).catch( ( e ) => e );
 		}
 	}
 
@@ -123,7 +123,7 @@ class AdSenseSettings extends Component {
 		}
 
 		const settingsMapping = {
-			adsenseTagEnabled: 'adsenseTagEnabled',
+			useSnippet: 'useSnippet',
 		};
 
 		toggleConfirmModuleSettings( 'adsense', settingsMapping, this.state );
@@ -131,7 +131,7 @@ class AdSenseSettings extends Component {
 
 	render() {
 		const {
-			adsenseTagEnabled,
+			useSnippet,
 		} = this.state;
 		const {
 			isEditing,
@@ -149,14 +149,14 @@ class AdSenseSettings extends Component {
 								<Switch
 									id="enableAutoAds"
 									label={ switchLabel }
-									onClick={ this.handleadsenseTagEnabledSwitch }
-									checked={ adsenseTagEnabled }
+									onClick={ this.handleUseSnippetSwitch }
+									checked={ useSnippet }
 									hideLabel={ false }
 								/> <span className="googlesitekit-recommended">{ __( 'RECOMMENDED', 'google-site-kit' ) }</span>
 							</div>
 
 							{
-								adsenseTagEnabled && switchOnMessage &&
+								useSnippet && switchOnMessage &&
 								<div className="googlesitekit-settings-notice googlesitekit-settings-notice--suggestion">
 									<div className="googlesitekit-settings-notice__text">
 										{ switchOnMessage }
@@ -164,7 +164,7 @@ class AdSenseSettings extends Component {
 								</div>
 							}
 							{
-								! adsenseTagEnabled && switchOffMessage &&
+								! useSnippet && switchOffMessage &&
 								<div className="googlesitekit-settings-notice">
 									<div className="googlesitekit-settings-notice__text">
 										{ switchOffMessage }
@@ -174,7 +174,7 @@ class AdSenseSettings extends Component {
 						</Fragment> :
 						<Fragment>
 							{	__( 'The AdSense code has', 'google-site-kit' ) } {
-								adsenseTagEnabled ?
+								useSnippet ?
 									__( 'been placed on your site.', 'google-site-kit' ) :
 									__( 'not been placed on your site.', 'google-site-kit' )
 							}

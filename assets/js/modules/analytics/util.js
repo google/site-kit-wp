@@ -316,23 +316,180 @@ export const isDataZeroForReporting = ( data ) => {
 };
 
 /**
- * Check for Zero data from Analytics API 'traffic-sources'.
- *
- * @param {Object} data The data returned from the Analytics API call.
- * @return {boolean}
+ * Default data object for making Analytics adsense requests.
+ * @type {Object}
  */
-export const isDataZeroForTrafficSources = ( data ) => {
-	// Handle empty data.
-	if ( ! data || ! data.length || ! data[ 0 ].data ) {
-		return true;
+export const analyticsAdsenseReportDataDefaults = {
+	dimensions: [
+		'ga:pageTitle',
+		'ga:pagePath',
+	].join( ',' ),
+	metrics: [
+		{
+			expression: 'ga:adsenseRevenue',
+			alias: 'Earnings',
+		},
+		{
+			expression: 'ga:adsenseECPM',
+			alias: 'Page RPM',
+		},
+		{
+			expression: 'ga:adsensePageImpressions',
+			alias: 'Impressions',
+		},
+	],
+	orderby: [
+		{
+			fieldName: 'ga:adsenseRevenue',
+			sortOrder: 'DESCENDING',
+		},
+	],
+	limit: 10,
+};
+
+/**
+ * Default data object for making Analytics site analytics report requests.
+ * @type {Object}
+ */
+export const siteAnalyticsReportDataDefaults = {
+	compareDateRanges: 1,
+	dimensions: 'ga:date',
+	metrics: [
+		{
+			expression: 'ga:users',
+			alias: 'Users',
+		},
+		{
+			expression: 'ga:sessions',
+			alias: 'Sessions',
+		},
+		{
+			expression: 'ga:bounceRate',
+			alias: 'Bounce Rate',
+		},
+		{
+			expression: 'ga:avgSessionDuration',
+			alias: 'Average Session Duration',
+		},
+		{
+			expression: 'ga:goalCompletionsAll',
+			alias: 'Goal Completions',
+		},
+	],
+	limit: 180,
+};
+
+/**
+ * Default data object for making Analytics site analytics report requests.
+ * @type {Object}
+ */
+export const overviewReportDataDefaults = {
+	multiDateRange: 1,
+	dimensions: 'ga:date',
+	metrics: [
+		{
+			expression: 'ga:users',
+			alias: 'Users',
+		},
+		{
+			expression: 'ga:sessions',
+			alias: 'Sessions',
+		},
+		{
+			expression: 'ga:bounceRate',
+			alias: 'Bounce Rate',
+		},
+		{
+			expression: 'ga:avgSessionDuration',
+			alias: 'Average Session Duration',
+		},
+		{
+			expression: 'ga:goalCompletionsAll',
+			alias: 'Goal Completions',
+		},
+		{
+			expression: 'ga:pageviews',
+			alias: 'Pageviews',
+		},
+	],
+	limit: 10,
+};
+
+/**
+ * Default data object for making Analytics traffic sources report requests.
+ * @type {Object}
+ */
+export const trafficSourcesReportDataDefaults = {
+	dimensions: 'ga:medium',
+	metrics: [
+		{
+			expression: 'ga:sessions',
+			alias: 'Sessions',
+		},
+		{
+			expression: 'ga:users',
+			alias: 'Users',
+		},
+		{
+			expression: 'ga:newUsers',
+			alias: 'New Users',
+		},
+	],
+	orderby: [
+		{
+			fieldName: 'ga:sessions',
+			sortOrder: 'DESCENDING',
+		},
+	],
+	limit: 10,
+};
+
+/**
+ * Returns the default data object for making Analytics top pages report requests.
+ *
+ * @return {Object} Request data object defaults.
+ */
+export const getTopPagesReportDataDefaults = () => {
+	const metrics = [
+		{
+			expression: 'ga:pageviews',
+			alias: 'Pageviews',
+		},
+		{
+			expression: 'ga:uniquePageviews',
+			alias: 'Unique Pageviews',
+		},
+		{
+			expression: 'ga:bounceRate',
+			alias: 'Bounce rate',
+		},
+	];
+
+	if ( window.googlesitekit.modules.analytics.adsenseLinked ) {
+		metrics.push(
+			{
+				expression: 'ga:adsenseRevenue',
+				alias: 'AdSense Revenue',
+			},
+			{
+				expression: 'ga:adsenseECPM',
+				alias: 'AdSense ECPM',
+			}
+		);
 	}
 
-	const { totals } = data[ 0 ].data;
-	const { values } = totals[ 0 ];
-
-	if ( '0' === values[ 0 ] && '0' === values[ 1 ] && '0' === values[ 2 ] ) {
-		return true;
-	}
-
-	return false;
+	return {
+		dimensions: [
+			'ga:pageTitle',
+			'ga:pagePath',
+		].join( ',' ),
+		metrics,
+		orderby: [
+			{
+				fieldName: 'ga:pageviews',
+				sortOrder: 'DESCENDING',
+			},
+		],
+		limit: 10,
+	};
 };

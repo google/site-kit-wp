@@ -11,22 +11,21 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
  * @group Modules
  */
 class PageSpeed_InsightsTest extends TestCase {
+	use Module_With_Scopes_ContractTests;
 
 	public function test_is_connected() {
 		$pagespeed = new PageSpeed_Insights( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$this->assertFalse( $pagespeed->is_connected() );
-
-		// The module is connected if the API key is truthy
-		add_filter( 'googlesitekit_api_key', '__return_true' );
 
 		$this->assertTrue( $pagespeed->is_connected() );
 	}
@@ -62,7 +61,7 @@ class PageSpeed_InsightsTest extends TestCase {
 				'required',
 				'autoActivate',
 				'internal',
-				'screenId',
+				'screenID',
 				'hasSettings',
 				'provides',
 			),
@@ -76,10 +75,16 @@ class PageSpeed_InsightsTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'site-pagespeed-mobile',
-				'site-pagespeed-desktop',
+				'pagespeed',
 			),
 			$pagespeed->get_datapoints()
 		);
+	}
+
+	/**
+	 * @return Module_With_Scopes
+	 */
+	protected function get_module_with_scopes() {
+		return new PageSpeed_Insights( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 }

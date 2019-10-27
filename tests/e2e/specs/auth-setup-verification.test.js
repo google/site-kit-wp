@@ -7,10 +7,8 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
  * Internal dependencies
  */
 import {
-	deactivateAllOtherPlugins,
-	pasteText,
+	deactivateUtilityPlugins,
 	resetSiteKit,
-	testClientConfig,
 	useRequestInterception,
 	wpApiFetch,
 } from '../utils';
@@ -37,12 +35,13 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 	} );
 
 	beforeEach( async () => {
+		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
 	} );
 
 	afterEach( async () => {
-		await deactivateAllOtherPlugins();
+		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
 
@@ -52,13 +51,8 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 
 	it( 'prompts for confirmation if user is not verified for the site', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
-		await page.waitForSelector( '#client-configuration' );
 
-		await pasteText( '#client-configuration', JSON.stringify( testClientConfig ) );
-		await expect( page ).toClick( '#wizard-step-one-proceed' );
-		await page.waitForSelector( '.googlesitekit-wizard-step--two button' );
-
-		await expect( page ).toClick( '.googlesitekit-wizard-step--two button', { text: /sign in with Google/i } );
+		await expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with Google/i } );
 		await page.waitForNavigation();
 
 		await expect( page ).toMatchElement( '.googlesitekit-wizard-step__title', { text: /Verify URL/i } );
@@ -85,13 +79,8 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 		} );
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
-		await page.waitForSelector( '#client-configuration' );
 
-		await pasteText( '#client-configuration', JSON.stringify( testClientConfig ) );
-		await expect( page ).toClick( '#wizard-step-one-proceed' );
-		await page.waitForSelector( '.googlesitekit-wizard-step--two button' );
-
-		await expect( page ).toClick( '.googlesitekit-wizard-step--two button', { text: /sign in with Google/i } );
+		await expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with Google/i } );
 		await page.waitForNavigation();
 
 		await page.waitForSelector( '.googlesitekit-wizard-step__action button' );

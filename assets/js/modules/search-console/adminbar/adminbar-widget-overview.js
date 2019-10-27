@@ -88,9 +88,11 @@ export default withData(
 		{
 			type: TYPE_MODULES,
 			identifier: 'search-console',
-			datapoint: 'sc-site-analytics',
+			datapoint: 'searchanalytics',
 			data: {
 				url: googlesitekit.permaLink,
+				dimensions: 'date',
+				compareDateRanges: true,
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
