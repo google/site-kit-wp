@@ -11,7 +11,6 @@ import {
 	resetSiteKit,
 	setSearchConsoleProperty,
 	useRequestInterception,
-	setClientConfig,
 	setAuthToken,
 	setSiteVerification,
 } from '../utils';
@@ -30,7 +29,7 @@ function stubGoogleSignIn( request ) {
 			contentType: 'application/json',
 			body: JSON.stringify( {
 				exactMatch: {
-					siteUrl: process.env.WP_BASE_URL,
+					siteURL: process.env.WP_BASE_URL,
 				},
 			} ),
 		} );
@@ -53,8 +52,11 @@ const signOut = async () => {
 
 describe( 'Site Kit set up flow for the first time', () => {
 	beforeAll( async () => {
-		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await setSearchConsoleProperty();
+	} );
+
+	beforeEach( async () => {
+		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 	} );
 
 	afterEach( async () => {
@@ -63,9 +65,8 @@ describe( 'Site Kit set up flow for the first time', () => {
 	} );
 
 	it( 'authenticates from splash page', async () => {
-		await setClientConfig();
+		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
-
 		// Sign in with Google
 		await page.setRequestInterception( true );
 		useRequestInterception( stubGoogleSignIn );
@@ -77,7 +78,6 @@ describe( 'Site Kit set up flow for the first time', () => {
 	} );
 
 	it( 'disconnects user from Site Kit', async () => {
-		await setClientConfig();
 		await setAuthToken();
 		await setSiteVerification();
 		await setSearchConsoleProperty();

@@ -78,6 +78,8 @@ class UserMenu extends Component {
 	}
 
 	handleMenuItemSelect( index, e ) {
+		const { proxyPermissionsURL } = googlesitekit.admin;
+
 		if (
 			( ( 'keydown' === e.type && (
 				13 === e.keyCode || // Enter
@@ -88,6 +90,9 @@ class UserMenu extends Component {
 			switch ( index ) {
 				case 0:
 					this.handleDialog();
+					break;
+				case 1:
+					window.location.assign( proxyPermissionsURL );
 					break;
 				default:
 					this.handleMenu();
@@ -136,7 +141,10 @@ class UserMenu extends Component {
 	}
 
 	render() {
-		const { userData: { email = '', picture = '' } } = googlesitekit.admin;
+		const {
+			userData: { email = '', picture = '' },
+			proxyPermissionsURL,
+		} = googlesitekit.admin;
 		const { dialogActive, menuOpen } = this.state;
 
 		return (
@@ -160,7 +168,15 @@ class UserMenu extends Component {
 					<Menu
 						ref={ this.menuRef }
 						menuOpen={ menuOpen }
-						menuItems={ [ __( 'Disconnect', 'google-site-kit' ) ] }
+						menuItems={
+							[
+								__( 'Disconnect', 'google-site-kit' ),
+							].concat(
+								proxyPermissionsURL ? [
+									__( 'Manage sites...', 'google-site-kit' ),
+								] : []
+							)
+						}
 						onSelected={ this.handleMenuItemSelect }
 						id="user-menu" />
 				</div>

@@ -30,6 +30,9 @@ trait Module_With_Scopes_ContractTests {
 
 		$testcase->assertInternalType( 'array', $scopes );
 
+		// Test that anything else is only a Google scope.
+		$scopes = array_diff( $scopes, array( 'openid', 'profile', 'email' ) );
+
 		foreach ( $scopes as $scope ) {
 			$testcase->assertStringStartsWith( 'https://www.googleapis.com/auth/', $scope );
 		}

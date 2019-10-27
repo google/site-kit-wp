@@ -9,7 +9,6 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
 import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
-	setClientConfig,
 	useRequestInterception,
 	wpApiFetch,
 } from '../utils';
@@ -36,6 +35,7 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 	} );
 
 	beforeEach( async () => {
+		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
 	} );
@@ -50,7 +50,6 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 	} );
 
 	it( 'prompts for confirmation if user is not verified for the site', async () => {
-		await setClientConfig();
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 
 		await expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with Google/i } );
@@ -73,7 +72,6 @@ describe( 'Site Kit set up flow for the first time with site verification', () =
 	} );
 
 	it( 'does not prompt for verification if the user is already verified for the site', async () => {
-		await setClientConfig();
 		// Simulate that the user is already verified.
 		await wpApiFetch( {
 			path: 'google-site-kit/v1/e2e/verify-site',

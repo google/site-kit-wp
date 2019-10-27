@@ -39,20 +39,22 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 	 * Add a deep link to Google Analytics Dashboard.
 	 *
 	 * @param {string} url to be used in the deep link.
+	 *
+	 * @return {string} new url.
 	 */
 	static addDeepLink( url ) {
 		const {
-			accountId,
-			internalWebPropertyId,
-			profileId,
+			accountID,
+			internalWebPropertyID,
+			profileID,
 		} = googlesitekit.modules.analytics.settings;
 
-		if ( ! accountId ) {
+		if ( ! accountID ) {
 			return 'https://analytics.google.com/analytics/web/';
 		}
 
 		// The pagePath param requires / to be replaced by ~2F.
-		return `https://analytics.google.com/analytics/web/#/report/content-drilldown/a${ accountId }w${ internalWebPropertyId }p${ profileId }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath:${ encodeURIComponent( url.replace( /\//g, '~2F' ) ) }`;
+		return `https://analytics.google.com/analytics/web/#/report/content-drilldown/a${ accountID }w${ internalWebPropertyID }p${ profileID }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath:${ encodeURIComponent( url.replace( /\//g, '~2F' ) ) }`;
 	}
 
 	render() {
@@ -83,8 +85,7 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 		const links = [];
 		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
 			const percent = Number( row.metrics[ 0 ].values[ 2 ] );
-			const url = row.dimensions[ 0 ];
-			const title = row.dimensions[ 1 ];
+			const [ title, url ] = row.dimensions;
 			links[ i ] = AnalyticsDashboardWidgetTopPagesTable.addDeepLink( url );
 			return [
 				title,

@@ -94,13 +94,13 @@ class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
 		} );
 
 		const {
-			accountId,
-			internalWebPropertyId,
-			profileId,
+			accountID,
+			internalWebPropertyID,
+			profileID,
 		} = googlesitekit.modules.analytics.settings;
 
 		// Construct a deep link.
-		const adsenseDeepLink = `https://analytics.google.com/analytics/web/?pli=1#/report/content-pages/a${ accountId }w${ internalWebPropertyId }p${ profileId }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath:~2F`;
+		const adsenseDeepLink = `https://analytics.google.com/analytics/web/?pli=1#/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath:~2F`;
 
 		const linksMapped = map( data[ 0 ].data.rows, ( row ) => {
 			const pagePath = row.dimensions[ 1 ].replace( /\//g, '~2F' );

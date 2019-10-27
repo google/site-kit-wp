@@ -11,22 +11,21 @@
 namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\API_Key;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\First_Admin;
-use Google\Site_Kit\Core\Authentication\GCP_Project;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_Tag;
 use Google\Site_Kit\Core\Util\Activation;
+use Google\Site_Kit\Core\Util\Beta_Migration;
 use Google\Site_Kit\Core\Util\Reset;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
-use Google\Site_Kit\Modules\TagManager;
+use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -79,14 +78,13 @@ class ResetTest extends TestCase {
 			Activation::OPTION_SHOW_ACTIVATION_NOTICE,
 			AdSense::OPTION,
 			Analytics::OPTION,
-			API_Key::OPTION,
 			Credentials::OPTION,
 			First_Admin::OPTION,
-			GCP_Project::OPTION,
 			Optimize::OPTION,
 			PageSpeed_Insights::OPTION,
 			Search_Console::PROPERTY_OPTION,
-			TagManager::OPTION,
+			Tag_Manager::OPTION,
+			Beta_Migration::OPTION_IS_PRE_PROXY_INSTALL,
 		);
 	}
 

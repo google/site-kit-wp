@@ -66,15 +66,10 @@ class AuthenticationTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'apikey',
-				'clientID',
-				'clientSecret',
-				'connectUrl',
-				'disconnectUrl',
-				'externalAPIKeyURL',
-				'externalCredentialsURL',
-				'projectId',
-				'projectUrl',
+				'connectURL',
+				'disconnectURL',
+				'proxySetupURL',
+				'proxyPermissionsURL',
 				'userData',
 			),
 			array_keys( $data )
@@ -151,7 +146,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertTrue( $auth->is_authenticated() );
 		// Set a refresh token and expect it to be passed to the Google Client.
 		$client->set_refresh_token( 'test-refresh-token' );
-		$mock_google_client = $this->getMock( 'Google_Client', array(
+		$mock_google_client = $this->getMock( 'Google\Site_Kit_Dependencies\Google_Client', array(
 			'fetchAccessTokenWithRefreshToken',
 			'revokeToken'
 		) );
@@ -211,15 +206,6 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
-	public function test_api_key() {
-		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$this->assertInstanceOf(
-			'\Google\Site_Kit\Core\Authentication\API_Key',
-			$auth->api_key()
-		);
-	}
-
 	public function test_verification() {
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -247,15 +233,6 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
-	public function test_get_api_key_client() {
-		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$this->assertInstanceOf(
-			'\Google\Site_Kit\Core\Authentication\Clients\API_Key_Client',
-			$auth->get_api_key_client()
-		);
-	}
-
 	public function test_disconnect() {
 		$user_id      = $this->factory()->user->create();
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
@@ -267,7 +244,7 @@ class AuthenticationTest extends TestCase {
 			$user_options->set( $key, "test-$key-value" );
 		}
 
-		$mock_google_client = $this->getMock( 'Google_Client', array( 'revokeToken' ) );
+		$mock_google_client = $this->getMock( 'Google\Site_Kit_Dependencies\Google_Client', array( 'revokeToken' ) );
 		$mock_google_client->expects( $this->once() )->method( 'revokeToken' );
 		$this->force_set_property( $auth->get_oauth_client(), 'google_client', $mock_google_client );
 
