@@ -82,6 +82,10 @@ final class Admin_Bar {
 			$this->assets->enqueue_asset( 'googlesitekit_adminbar_css' );
 
 			if ( $this->context->is_amp() ) {
+				if ( ! function_exists( 'amp_is_dev_mode' ) || ! amp_is_dev_mode() ) {
+					// AMP Dev Mode support was added in v1.4, and if it is not enabled then short-circuit since scripts will be invalid.
+					return;
+				}
 				add_filter( 'amp_dev_mode_element_xpaths', [ $this, 'add_amp_dev_mode' ] );
 			}
 
