@@ -14,9 +14,31 @@ namespace Google\Site_Kit;
 define( 'GOOGLESITEKIT_PLUGIN_BASENAME', plugin_basename( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 define( 'GOOGLESITEKIT_PLUGIN_DIR_PATH', plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-// Autoload files.
-require_once GOOGLESITEKIT_PLUGIN_DIR_PATH . 'includes/vendor/autoload.php';
-require_once GOOGLESITEKIT_PLUGIN_DIR_PATH . 'third-party/vendor/autoload.php';
+/**
+ * Loads generated class maps for autoloading.
+ *
+ * @since 1.0.0
+ * @access private
+ */
+function autoload_classes() {
+	$class_map = array_merge(
+		include GOOGLESITEKIT_PLUGIN_DIR_PATH . 'third-party/vendor/composer/autoload_classmap.php',
+		include GOOGLESITEKIT_PLUGIN_DIR_PATH . 'includes/vendor/composer/autoload_classmap.php'
+	);
+
+	spl_autoload_register(
+		function ( $class ) use ( $class_map ) {
+			if ( isset( $class_map[ $class ] ) ) {
+				require_once $class_map[ $class ];
+
+				return true;
+			}
+		},
+		true,
+		true
+	);
+}
+autoload_classes();
 
 /**
  * Loads vendor files containing functions etc.
