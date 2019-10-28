@@ -162,20 +162,33 @@ final class Activation {
 
 							var trackingScriptPresent = !! googlesitekit.admin.trackingOptIn;
 
-							if ( googlesitekit.admin.trackingOptIn ) {
-								document.getElementById( 'googlesitekit-opt-in' ).checked = googlesitekit.admin.trackingOptIn;
-							}
-							if ( googlesitekit.admin.proxySetupURL ) {
-								document.getElementById( 'start-setup-link' ).href = googlesitekit.admin.proxySetupURL
+							var optInCheckbox = document.getElementById( 'googlesitekit-opt-in' );
+							var startSetupLink = document.getElementById( 'start-setup-link' ).
+
+							if ( ! optInCheckbox ) {
+								console.error( "Expected element #googlesitekit-opt-in to be found on page, but it wasn't. Tracking may not work." );
+								return;
 							}
 
-							document.getElementById( 'start-setup-link' ).addEventListener( 'click' , function() {
+							if ( ! startSetupLink ) {
+								console.error( "Expected element #start-setup-link to be found on page, but it wasn't. Tracking may not work." );
+								return;
+							}
+
+							if ( googlesitekit.admin.trackingOptIn ) {
+								optInCheckbox.checked = googlesitekit.admin.trackingOptIn;
+							}
+							if ( googlesitekit.admin.proxySetupURL ) {
+								startSetupLink.href = googlesitekit.admin.proxySetupURL
+							}
+
+							startSetupLink.addEventListener( 'click' , function() {
 								if ( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
 									sendAnalyticsTrackingEvent( 'plugin_setup', googlesitekit.admin.proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
 								}
 							} );
 
-							document.getElementById( 'googlesitekit-opt-in' ).addEventListener( 'change' , function( event ) {
+							optInCheckbox.addEventListener( 'change' , function( event ) {
 								if ( event.target.disabled ) {
 									event.preventDefault();
 									return;
