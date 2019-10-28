@@ -203,7 +203,7 @@ final class Activation {
 										window.googlesitekitTrackingEnabled = !! checked;
 
 										var trackingId = googlesitekit.admin.trackingID;
-										var trackingScriptPresent = document.querySelectorAll( `script[src="https://www.googletagmanager.com/gtag/js?id=${ trackingId }"]` ).length > 0;
+										var trackingScriptPresent = document.querySelector( `script[src="https://www.googletagmanager.com/gtag/js?id=${ trackingId }"]` );
 
 										if ( ! trackingScriptPresent ) {
 											document.body.insertAdjacentHTML( 'beforeend', `
