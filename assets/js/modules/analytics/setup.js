@@ -472,6 +472,7 @@ class AnalyticsSetup extends Component {
 		if ( propertyID === '0' ) {
 			internalWebPropertyID = '0';
 		} else {
+			// Capitalization rule exception: `internalWebPropertyId` is a property of an API returned value.
 			internalWebPropertyID = selectedinternalWebProperty || ( properties[ 0 ].internalWebPropertyId || properties[ 0 ].internalWebPropertyId === 0 ? properties[ 0 ].internalWebPropertyId.toString() : null );
 		}
 
