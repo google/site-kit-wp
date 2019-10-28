@@ -163,7 +163,7 @@ final class Activation {
 							var trackingScriptPresent = !! googlesitekit.admin.trackingOptIn;
 
 							var optInCheckbox = document.getElementById( 'googlesitekit-opt-in' );
-							var startSetupLink = document.getElementById( 'start-setup-link' ).
+							var startSetupLink = document.getElementById( 'start-setup-link' );
 
 							if ( ! optInCheckbox ) {
 								console.error( "Expected element #googlesitekit-opt-in to be found on page, but it wasn't. Tracking may not work." );
