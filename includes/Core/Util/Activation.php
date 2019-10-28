@@ -216,20 +216,20 @@ final class Activation {
 										window.googlesitekitTrackingEnabled = !! checked;
 
 										var trackingId = googlesitekit.admin.trackingID;
-										var trackingScriptPresent = document.querySelector( `script[src="https://www.googletagmanager.com/gtag/js?id=${ trackingId }"]` );
+										var trackingScriptPresent = document.querySelector( 'script[src="https://www.googletagmanager.com/gtag/js?id=' + trackingId + '"]' );
 
 										if ( ! trackingScriptPresent ) {
-											document.body.insertAdjacentHTML( 'beforeend', `
-												\<script async src="https://www.googletagmanager.com/gtag/js?id=${ trackingId }"\>\</script\><?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-											` );
-											document.body.insertAdjacentHTML( 'beforeend', `
+											document.body.insertAdjacentHTML( 'beforeend', '
+												\<script async src="https://www.googletagmanager.com/gtag/js?id=' + trackingId + '"\>\</script\><?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+											' );
+											document.body.insertAdjacentHTML( 'beforeend', "
 												\<script\>
 													window.dataLayer = window.dataLayer || [];
 													function gtag(){dataLayer.push(arguments);}
 													gtag('js', new Date());
-													gtag('config', '${ trackingId }');
+													gtag('config', '" + trackingId + "');
 												\</script\>
-											` );
+											" );
 										}
 									} )
 									.catch( function( err ) {
