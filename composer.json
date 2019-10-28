@@ -48,18 +48,22 @@
       "php-scoper/vendor/bin/php-scoper add --output-dir=./third-party --force --quiet",
       "@autoload-includes",
       "@autoload-third-party",
-      "cp vendor/composer/autoload_files.php third-party/vendor/composer/",
+      "cp vendor/composer/autoload_files.php third-party/vendor/",
       "rm -rf php-scoper"
     ],
     "autoload-includes": [
       "echo '{ \"autoload\": { \"classmap\": [\"\"] } }' > includes/composer.json",
       "@composer --working-dir=includes dump-autoload --classmap-authoritative --no-interaction",
-      "rm includes/composer.json"
+      "cp includes/vendor/composer/autoload_classmap.php includes/",
+      "rm -rf includes/vendor && rm includes/composer.json",
+      "mkdir -p includes/vendor/composer && mv includes/autoload_classmap.php includes/vendor/composer/"
     ],
     "autoload-third-party": [
       "echo '{ \"autoload\": { \"classmap\": [\"\"] } }' > third-party/composer.json",
       "@composer --working-dir=third-party dump-autoload --classmap-authoritative --no-interaction",
-      "rm third-party/composer.json"
+      "cp third-party/vendor/composer/autoload_classmap.php third-party/",
+      "rm -rf third-party/vendor && rm third-party/composer.json",
+      "mkdir -p third-party/vendor/composer && mv third-party/autoload_classmap.php third-party/vendor/composer/"
     ],
     "install-php-scoper": [
       "mkdir php-scoper",
