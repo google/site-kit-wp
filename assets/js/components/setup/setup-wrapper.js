@@ -142,20 +142,20 @@ class SetupWrapper extends Component {
 			args.slug = googlesitekit.setup.moduleToSetup;
 		}
 
-		const redirectUrl = getSiteKitAdminURL(
+		const redirectURL = getSiteKitAdminURL(
 			'googlesitekit-dashboard',
 			args,
 		);
 
 		delay( function() {
-			window.location.replace( redirectUrl );
+			window.location.replace( redirectURL );
 		}, 500, 'later' );
 	}
 
 	render() {
 		const { currentModule } = this.state;
 		const setupModule = SetupWrapper.loadSetupModule( currentModule );
-		const settingsPageUrl = getSiteKitAdminURL(
+		const settingsPageURL = getSiteKitAdminURL(
 			'googlesitekit-settings',
 			{}
 		);
@@ -198,7 +198,7 @@ class SetupWrapper extends Component {
 													">
 													<Link
 														id={ `setup-${ currentModule }-cancel` }
-														href={ settingsPageUrl }
+														href={ settingsPageURL }
 													>{ __( 'Cancel', 'google-site-kit' ) }</Link>
 												</div>
 												<div className="

@@ -40,8 +40,8 @@ class TagmanagerSetup extends Component {
 		super( props );
 
 		const {
-			accountId,
-			containerId,
+			accountID,
+			containerID,
 		} = googlesitekit.modules.tagmanager.settings;
 
 		this.state = {
@@ -51,8 +51,8 @@ class TagmanagerSetup extends Component {
 			errorCode: false,
 			errorMsg: '',
 			refetch: false,
-			selectedAccount: accountId ? accountId : 0,
-			selectedContainer: containerId ? containerId : 0,
+			selectedAccount: accountID ? accountID : 0,
+			selectedContainer: containerID ? containerID : 0,
 			containersLoading: false,
 		};
 
@@ -108,7 +108,7 @@ class TagmanagerSetup extends Component {
 		}
 
 		const settingsMapping = {
-			selectedContainer: 'containerId',
+			selectedContainer: 'containerID',
 			selectedAccount: 'selectedAccount',
 		};
 
@@ -126,7 +126,7 @@ class TagmanagerSetup extends Component {
 			} = this.state;
 
 			const queryArgs = {
-				accountId: selectedAccount,
+				accountID: selectedAccount,
 			};
 
 			let errorCode = false;
@@ -142,28 +142,28 @@ class TagmanagerSetup extends Component {
 			}
 
 			// Verify if user has access to the selected account.
-			if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.accountId === selectedAccount ) ) {
+			if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.accountId === selectedAccount ) ) { // Capitalization rule exception: `accountId` is a property of an API returned value.
 				data.invalidateCacheGroup( TYPE_MODULES, 'tagmanager', 'accounts-containers' );
 				errorCode = 'insufficientPermissions';
 				errorMsg = __( 'You currently don\'t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.', 'google-site-kit' );
 			}
 
 			const chooseContainer = {
-				containerId: 0,
-				publicId: 0,
+				containerId: 0, // Capitalization rule exception: `containerId` matches an API returned value.
+				publicId: 0, // Capitalization rule exception: `publicId` is a property of an API returned value.
 			};
 			responseData.containers.push( chooseContainer );
 
 			if ( this._isMounted ) {
-				const accountId = responseData.accounts[ 0 ] ? responseData.accounts[ 0 ].accountId : null;
-				const publicId = responseData.containers[ 0 ] ? responseData.containers[ 0 ].publicId : null;
+				const accountID = responseData.accounts[ 0 ] ? responseData.accounts[ 0 ].accountId : null; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const publicID = responseData.containers[ 0 ] ? responseData.containers[ 0 ].publicId : null; // Capitalization rule exception: `publicId` is a property of an API returned value.
 
 				this.setState( {
 					isLoading: false,
 					accounts: responseData.accounts,
-					selectedAccount: ( selectedAccount ) ? selectedAccount : accountId,
+					selectedAccount: ( selectedAccount ) ? selectedAccount : accountID,
 					containers: responseData.containers,
-					selectedContainer: ( selectedContainer ) ? selectedContainer : publicId,
+					selectedContainer: ( selectedContainer ) ? selectedContainer : publicID,
 					refetch: false,
 					errorCode,
 					errorMsg,
@@ -189,21 +189,21 @@ class TagmanagerSetup extends Component {
 	async requestTagManagerContainers( selectedAccount ) {
 		try {
 			const queryArgs = {
-				accountId: selectedAccount,
+				accountID: selectedAccount,
 			};
 
 			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'containers', queryArgs );
 
 			const chooseContainer = {
-				containerId: 0,
-				publicId: 0,
+				containerId: 0, // Capitalization rule exception: `containerId` matches an API returned value.
+				publicId: 0, // Capitalization rule exception: `publicId` matches an API returned value.
 			};
 			responseData.push( chooseContainer );
 			if ( this._isMounted ) {
 				this.setState( {
 					containersLoading: false,
 					containers: responseData,
-					selectedContainer: responseData[ 0 ].publicId,
+					selectedContainer: responseData[ 0 ].publicId, // Capitalization rule exception: `publicId` is a property of an API returned value.
 					errorCode: false,
 				} );
 			}
@@ -227,8 +227,8 @@ class TagmanagerSetup extends Component {
 
 		try {
 			const optionData = {
-				accountId: selectedAccount,
-				containerId: selectedContainer,
+				accountID: selectedAccount,
+				containerID: selectedContainer,
 			};
 
 			const responseData = await data.set( TYPE_MODULES, 'tagmanager', 'settings', optionData );
@@ -237,8 +237,8 @@ class TagmanagerSetup extends Component {
 			}
 
 			googlesitekit.modules.tagmanager.settings = {
-				accountId: responseData.accountId,
-				containerId: responseData.containerId,
+				accountID: responseData.accountId, // Capitalization rule exception: `accountId` is a property of an API returned value.
+				containerID: responseData.containerId, // Capitalization rule exception: `containerId` is a property of an API returned value.
 			};
 
 			if ( this._isMounted ) {
@@ -392,8 +392,8 @@ class TagmanagerSetup extends Component {
 					>
 						{ accounts.map( ( account ) =>
 							<Option
-								key={ account.accountId }
-								value={ account.accountId }>
+								key={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }
+								value={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }>
 								{ account.name }
 							</Option> ) }
 					</Select>
@@ -409,12 +409,12 @@ class TagmanagerSetup extends Component {
 						>
 							{ containers.map( ( container ) =>
 								<Option
-									key={ container.containerId }
-									value={ container.publicId }>
+									key={ container.containerId /* Capitalization rule exception: `containerId` is a property of an API returned value. */ }
+									value={ container.publicId /* Capitalization rule exception: `publicId` is a property of an API returned value. */ }>
 									{
-										0 === container.publicId ?
+										0 === container.publicId ? // Capitalization rule exception: `publicId` is a property of an API returned value.
 											__( 'Set up a new container', 'google-site-kit' ) :
-											container.publicId
+											container.publicId /* Capitalization rule exception: `publicId` is a property of an API returned value. */
 									}
 								</Option> ) }
 						</Select>

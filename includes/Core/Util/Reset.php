@@ -15,20 +15,17 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Credentials;
-use Google\Site_Kit\Core\Authentication\API_Key;
 use Google\Site_Kit\Core\Authentication\First_Admin;
-use Google\Site_Kit\Core\Authentication\GCP_Project;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_Tag;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
-use Google\Site_Kit\Core\Util\Activation;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Optimize;
-use Google\Site_Kit\Modules\TagManager;
+use Google\Site_Kit\Modules\Tag_Manager;
 
 /**
  * Class providing functions to reset the plugin.
@@ -110,8 +107,6 @@ final class Reset {
 		$this->options->delete( Activation::OPTION_SHOW_ACTIVATION_NOTICE );
 		$this->options->delete( Activation::OPTION_NEW_SITE_POSTS );
 		$this->options->delete( Credentials::OPTION );
-		$this->options->delete( API_Key::OPTION );
-		$this->options->delete( GCP_Project::OPTION );
 		$this->options->delete( 'googlesitekit-active-modules' );
 		$this->options->delete( Search_Console::PROPERTY_OPTION );
 		$this->options->delete( AdSense::OPTION );
@@ -119,17 +114,21 @@ final class Reset {
 		$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 		$this->options->delete( PageSpeed_Insights::OPTION );
 		$this->options->delete( Optimize::OPTION );
-		$this->options->delete( TagManager::OPTION );
+		$this->options->delete( Tag_Manager::OPTION );
 		$this->options->delete( First_Admin::OPTION );
+		$this->options->delete( OAuth_Client::OPTION_PROXY_NONCE );
+		$this->options->delete( Beta_Migration::OPTION_IS_PRE_PROXY_INSTALL );
 
 		// Clean up old site verification data, moved to user options.
 		// Also clean up other old unused options.
 		// @todo remove after RC.
 		$this->options->delete( Verification::OPTION );
 		$this->options->delete( Verification_Tag::OPTION );
+		$this->options->delete( 'googlesitekit_api_key' );
 		$this->options->delete( 'googlesitekit_available_modules' );
 		$this->options->delete( 'googlesitekit_secret_token' );
 		$this->options->delete( 'googlesitekit_project_id' );
+		$this->options->delete( 'googlesitekit_gcp_project' );
 	}
 
 	/**
@@ -162,13 +161,14 @@ final class Reset {
 			$user_options->delete( OAuth_Client::OPTION_REDIRECT_URL );
 			$user_options->delete( OAuth_Client::OPTION_AUTH_SCOPES );
 			$user_options->delete( OAuth_Client::OPTION_ERROR_CODE );
+			$user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 			$user_options->delete( Verification::OPTION );
 			$user_options->delete( Verification_Tag::OPTION );
 			$user_options->delete( Profile::OPTION );
 
 			// Clean up old user  api key data, moved to options.
 			// @todo remove after RC.
-			$user_options->delete( API_Key::OPTION );
+			$user_options->delete( 'googlesitekit_api_key' );
 			$user_options->delete( 'sitekit_authentication' );
 			$user_options->delete( 'googlesitekit_stored_nonce_user_id' );
 		}

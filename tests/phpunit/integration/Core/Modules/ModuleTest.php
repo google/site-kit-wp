@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -73,7 +74,7 @@ class ModuleTest extends TestCase {
 			'required',
 			'autoActivate',
 			'internal',
-			'screenId',
+			'screenID',
 			'hasSettings',
 		);
 
@@ -97,6 +98,32 @@ class ModuleTest extends TestCase {
 		$this->assertEquals( 2, $method->getNumberOfParameters() );
 		// Number of required parameters can decrease while preserving B/C, but not increase
 		$this->assertEquals( 1, $method->getNumberOfRequiredParameters() );
+
+		$module   = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$response = $module->get_data( 'test-request', array( 'foo' => 'bar' ) );
+		$this->assertInternalType( 'object', $response );
+		$this->assertEquals( 'GET', $response->method );
+		$this->assertEquals( 'test-request', $response->datapoint );
+		$this->assertEquals( array( 'foo' => 'bar' ), (array) $response->data );
+
+		// Test that $data is available in parse_data_response
+		$response = $module->get_data(
+			'test-request',
+			array(
+				'foo'     => 'bar',
+				'asArray' => true,
+			)
+		);
+		$this->assertInternalType( 'array', $response );
+		$this->assertEquals( 'GET', $response['method'] );
+		$this->assertEquals( 'test-request', $response['datapoint'] );
+		$this->assertEquals(
+			array(
+				'foo'     => 'bar',
+				'asArray' => true,
+			),
+			$response['data']
+		);
 	}
 
 	public function test_set_data() {
@@ -119,13 +146,44 @@ class ModuleTest extends TestCase {
 		$this->assertEquals( 1, $method->getNumberOfParameters() );
 		// Number of required parameters can decrease while preserving B/C, but not increase
 		$this->assertEquals( 1, $method->getNumberOfRequiredParameters() );
+
+		$module          = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$batch_responses = $module->get_batch_data(
+			array(
+				new Data_Request(
+					'GET',
+					'modules',
+					$module->slug,
+					'test-request',
+					array( 'foo' => 'bar' ),
+					'request-1'
+				),
+				new Data_Request(
+					'GET',
+					'modules',
+					$module->slug,
+					'test-request',
+					array( 'bar' => 'baz' ),
+					'request-2'
+				),
+			)
+		);
+		$response        = $batch_responses['request-1'];
+		$this->assertEquals( 'GET', $response->method );
+		$this->assertEquals( 'test-request', $response->datapoint );
+		$this->assertEquals( array( 'foo' => 'bar' ), (array) $response->data );
+		$response = $batch_responses['request-2'];
+		$this->assertEquals( 'GET', $response->method );
+		$this->assertEquals( 'test-request', $response->datapoint );
+		$this->assertEquals( array( 'bar' => 'baz' ), (array) $response->data );
 	}
 
 	public function test_get_datapoints() {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$datapoints = $module->get_datapoints();
-
-		$this->assertEquals( 'array', gettype( $datapoints ) );
+		$this->assertEqualSets(
+			array( 'test-request' ),
+			$module->get_datapoints()
+		);
 	}
 }

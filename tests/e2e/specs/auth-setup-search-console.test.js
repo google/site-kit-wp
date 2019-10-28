@@ -8,9 +8,7 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
  */
 import {
 	deactivateUtilityPlugins,
-	pasteText,
 	resetSiteKit,
-	testClientConfig,
 	useRequestInterception,
 	wpApiFetch,
 } from '../utils';
@@ -37,6 +35,7 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 	} );
 
 	beforeEach( async () => {
+		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-api-mock' );
 
@@ -54,13 +53,8 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 
 	it( 'inserts property to search console when site does not exist', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
-		await page.waitForSelector( '#client-configuration' );
 
-		await pasteText( '#client-configuration', JSON.stringify( testClientConfig ) );
-		await expect( page ).toClick( '#wizard-step-one-proceed' );
-		await page.waitForSelector( '.googlesitekit-wizard-step--two button' );
-
-		await expect( page ).toClick( '.googlesitekit-wizard-step--two button', { text: /sign in with Google/i } );
+		await expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with Google/i } );
 		await page.waitForNavigation();
 
 		await page.waitForSelector( '.googlesitekit-setup-module__title' );
@@ -77,13 +71,8 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 
 	it( 'saves search console property when site exists', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
-		await page.waitForSelector( '#client-configuration' );
 
-		await pasteText( '#client-configuration', JSON.stringify( testClientConfig ) );
-		await expect( page ).toClick( '#wizard-step-one-proceed' );
-		await page.waitForSelector( '.googlesitekit-wizard-step--two button' );
-
-		await expect( page ).toClick( '.googlesitekit-wizard-step--two button', { text: /sign in with Google/i } );
+		await expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with Google/i } );
 		await page.waitForNavigation();
 
 		await page.waitForSelector( '.googlesitekit-setup-module__title' );

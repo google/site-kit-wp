@@ -100,7 +100,7 @@ class Notification extends Component {
 			winImage,
 			smallImage,
 			format,
-			learnMoreUrl,
+			learnMoreURL,
 			learnMoreDescription,
 			learnMoreLabel,
 			ctaLink,
@@ -183,7 +183,7 @@ class Notification extends Component {
 							{ learnMoreLabel &&
 								<Fragment>
 									{ ' ' }
-									<Link href={ learnMoreUrl } external inherit>
+									<Link href={ learnMoreURL } external inherit>
 										{ learnMoreLabel }
 									</Link>
 									{ learnMoreDescription }
@@ -299,7 +299,7 @@ Notification.propTypes = {
 	id: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string,
-	learnMoreUrl: PropTypes.string,
+	learnMoreURL: PropTypes.string,
 	learnMoreDescription: PropTypes.string,
 	learnMoreLabel: PropTypes.string,
 	blockData: PropTypes.array,

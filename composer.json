@@ -1,7 +1,6 @@
 {
   "name": "google/google-site-kit",
   "description": "Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.",
-  "version": "1.0.0-beta.1.0.8",
   "license": "Apache-2.0",
   "type": "wordpress-plugin",
   "homepage": "https://sitekit.withgoogle.com",
@@ -36,6 +35,21 @@
     }
   },
   "scripts": {
+    "post-install-cmd": [
+      "@prefix-dependencies"
+    ],
+    "post-update-cmd": [
+      "@prefix-dependencies"
+    ],
+    "prefix-dependencies": [
+      "rm -rf php-scoper && mkdir php-scoper",
+      "cd php-scoper && composer init -q && composer config minimum-stability dev && composer config prefer-stable true && composer require humbug/php-scoper",
+      "php-scoper/vendor/bin/php-scoper add --output-dir=./third-party --force",
+      "cd includes && echo '{ \"autoload\": { \"classmap\": [\"\"] } }' > composer.json && composer dump-autoload --classmap-authoritative --no-interaction && rm composer.json",
+      "cd third-party && echo '{ \"autoload\": { \"classmap\": [\"\"] } }' > composer.json && composer dump-autoload --classmap-authoritative --no-interaction && rm composer.json",
+      "cp vendor/composer/autoload_files.php third-party/vendor/composer/autoload_files.php",
+      "rm -rf php-scoper"
+    ],
     "lint": "vendor/bin/phpcs",
     "lint-fix": "vendor/bin/phpcbf"
   }

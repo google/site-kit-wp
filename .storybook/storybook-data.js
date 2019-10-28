@@ -529,10 +529,10 @@ module.exports = [
 		},
 	},
 	{
-		id: 'setup--client-id',
+		id: 'setup--step-one',
 		kind: 'Setup',
-		name: 'Client ID',
-		story: 'Client ID',
+		name: 'Step One',
+		story: 'Step One',
 		parameters: {
 			fileName: './stories/setup.stories.js',
 			options: {
@@ -574,19 +574,6 @@ module.exports = [
 		story: 'Text Fields',
 		parameters: {
 			fileName: './stories/text-field.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'wordpress--wordpress-activation',
-		kind: 'WordPress',
-		name: 'WordPress Activation',
-		story: 'WordPress Activation',
-		parameters: {
-			fileName: './stories/wp-activation.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},

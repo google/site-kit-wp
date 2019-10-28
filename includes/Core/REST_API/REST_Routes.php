@@ -16,7 +16,9 @@ use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Util\Reset;
+use Google\Site_Kit_Dependencies\Google_Collection;
 use WP_Post;
 use WP_REST_Server;
 use WP_REST_Request;
@@ -191,121 +193,6 @@ final class REST_Routes {
 							return new WP_REST_Response( true );
 						},
 						'permission_callback' => $can_setup,
-					),
-				)
-			),
-			// This route is forward-compatible with a potential 'core/(?P<slug>[a-z\-]+)/data/(?P<datapoint>[a-z\-]+)'.
-			new REST_Route(
-				'core/site/data/gcpproject',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function() {
-							return new WP_REST_Response( $this->authentication->gcp_project()->get() );
-						},
-						'permission_callback' => $can_setup,
-					),
-					array(
-						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$data = isset( $request['data'] ) ? $request['data'] : array();
-							if ( ! isset( $data['projectID'] ) ) {
-								/* translators: %s: Missing parameter name */
-								return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'projectID' ), array( 'status' => 400 ) );
-							}
-							$data = array(
-								'id'          => sanitize_text_field( $data['projectID'] ),
-								'wp_owner_id' => get_current_user_id(),
-							);
-							return new WP_REST_Response( $this->authentication->gcp_project()->set( $data ) );
-						},
-						'permission_callback' => $can_setup,
-						'args'                => array(
-							'data' => array(
-								'type'              => 'object',
-								'description'       => __( 'Data to set.', 'google-site-kit' ),
-								'validate_callback' => function( $value ) {
-									return is_array( $value );
-								},
-							),
-						),
-					),
-				)
-			),
-			// This route is forward-compatible with a potential 'core/(?P<slug>[a-z\-]+)/data/(?P<datapoint>[a-z\-]+)'.
-			new REST_Route(
-				'core/site/data/apikey',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function() {
-							return new WP_REST_Response( $this->authentication->api_key()->get() ?: '' );
-						},
-						'permission_callback' => $can_setup,
-					),
-					array(
-						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$data = isset( $request['data'] ) ? $request['data'] : array();
-							if ( ! isset( $data['apikey'] ) ) {
-								/* translators: %s: Missing parameter name */
-								return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'apikey' ), array( 'status' => 400 ) );
-							}
-							return new WP_REST_Response( $this->authentication->api_key()->set( $data['apikey'] ) );
-						},
-						'permission_callback' => $can_setup,
-						'args'                => array(
-							'data' => array(
-								'type'              => 'object',
-								'description'       => __( 'Data to set.', 'google-site-kit' ),
-								'validate_callback' => function( $value ) {
-									return is_array( $value );
-								},
-							),
-						),
-					),
-				)
-			),
-			// This route is forward-compatible with a potential 'core/(?P<slug>[a-z\-]+)/data/(?P<datapoint>[a-z\-]+)'.
-			new REST_Route(
-				'core/site/data/credentials',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function() {
-							return new WP_REST_Response( $this->authentication->credentials()->get() );
-						},
-						'permission_callback' => $can_setup,
-					),
-					array(
-						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$data = isset( $request['data'] ) ? $request['data'] : array();
-							if ( ! isset( $data['clientID'] ) ) {
-								/* translators: %s: Missing parameter name */
-								return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
-							}
-							if ( ! isset( $data['clientSecret'] ) ) {
-								/* translators: %s: Missing parameter name */
-								return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientSecret' ), array( 'status' => 400 ) );
-							}
-							$data = array(
-								'oauth2_client_id'     => sanitize_text_field( $data['clientID'] ),
-								'oauth2_client_secret' => sanitize_text_field( $data['clientSecret'] ),
-							);
-							$credentials = $this->authentication->credentials();
-							return new WP_REST_Response( $credentials->set( $data ) );
-						},
-						'permission_callback' => $can_setup,
-						'args'                => array(
-							'data' => array(
-								'type'              => 'object',
-								'description'       => __( 'Data to set.', 'google-site-kit' ),
-								'validate_callback' => function( $value ) {
-									return is_array( $value );
-								},
-							),
-						),
 					),
 				)
 			),
@@ -578,6 +465,49 @@ final class REST_Routes {
 					),
 				)
 			),
+			new REST_Route(
+				'oauth/site',
+				array(
+					array(
+						'methods'  => WP_REST_Server::CREATABLE,
+						'callback' => function( WP_REST_Request $request ) {
+							$auth_client = $this->authentication->get_oauth_client();
+							if ( ! $auth_client->using_proxy() ) {
+								return new WP_Error( 'invalid_authentication_mode', __( 'Invalid authentication mode.', 'google-site-kit' ), array( 'status' => 500 ) );
+							}
+							if ( ! $auth_client->validate_proxy_nonce( $request['nonce'] ) ) {
+								return new WP_Error( 'invalid_nonce', __( 'Invalid nonce.', 'google-site-kit' ), array( 'status' => 400 ) );
+							}
+							$data = array(
+								'oauth2_client_id'     => sanitize_text_field( $request['site_id'] ),
+								'oauth2_client_secret' => sanitize_text_field( $request['site_secret'] ),
+							);
+							$credentials = $this->authentication->credentials();
+							if ( ! $credentials->set( $data ) ) {
+								return new WP_Error( 'set_credentials_failed', __( 'Failed to set credentials.', 'google-site-kit' ), array( 'status' => 500 ) );
+							}
+							return new WP_REST_Response( array( 'status' => true ), 200 );
+						},
+						'args'     => array(
+							'nonce'       => array(
+								'type'        => 'string',
+								'description' => __( 'WordPress nonce for the authentication proxy setup.', 'google-site-kit' ),
+								'required'    => true,
+							),
+							'site_id'     => array(
+								'type'        => 'string',
+								'description' => __( 'Site ID for the authentication proxy.', 'google-site-kit' ),
+								'required'    => true,
+							),
+							'site_secret' => array(
+								'type'        => 'string',
+								'description' => __( 'Site secret for the authentication proxy.', 'google-site-kit' ),
+								'required'    => true,
+							),
+						),
+					),
+				)
+			),
 			// TODO: Remove this and replace usage with calls to wp/v1/posts.
 			new REST_Route(
 				'core/search/data/post-search',
@@ -590,8 +520,8 @@ final class REST_Routes {
 							if ( filter_var( $query, FILTER_VALIDATE_URL ) ) {
 								// Translate public/alternate reference URLs to local if different.
 								$query_url = str_replace(
-									trailingslashit( $this->context->get_reference_site_url() ),
-									trailingslashit( home_url() ),
+									$this->context->get_reference_site_url(),
+									home_url(),
 									$query
 								);
 								$post_id = url_to_postid( $query_url );
@@ -743,7 +673,7 @@ final class REST_Routes {
 			return $data;
 		}
 
-		// There is an compatibility issue with \Google_Collection object and wp_json_encode in PHP 5.4 only.
+		// There is an compatibility issue with Google_Collection object and wp_json_encode in PHP 5.4 only.
 		// These lines will encode/decode to deep convert objects, ensuring all data is returned.
 		if ( version_compare( PHP_VERSION, '5.5.0', '<' ) ) {
 			$data = json_decode( json_encode( $data ) );  // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode

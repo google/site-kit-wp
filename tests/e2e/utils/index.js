@@ -3,7 +3,7 @@ export { deactivateUtilityPlugins } from './deactivate-utility-plugins';
 export { logoutUser } from './logout-user';
 export { pasteText } from './paste-text';
 export { resetSiteKit } from './reset';
-export { setAnalyticsExistingPropertyId } from './set-analytics-existing-property-id';
+export { setAnalyticsExistingPropertyID } from './set-analytics-existing-property-id';
 export { setAuthToken } from './set-auth-token';
 export { setClientConfig } from './set-client-config';
 export { setSiteVerification } from './set-site-verification';

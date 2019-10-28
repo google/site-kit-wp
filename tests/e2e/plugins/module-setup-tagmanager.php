@@ -12,7 +12,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\E2E\Modules\TagManager;
+namespace Google\Site_Kit\Tests\E2E\Modules\Tag_Manager;
 
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 
@@ -70,12 +70,12 @@ add_action(
 			'modules/tagmanager/data/accounts-containers',
 			array(
 				'callback' => function ( $request ) use ( $accounts, $containers ) {
-					$account_id = $request['accountId'] ?: $accounts[0]['accountId'];
+					$account_id = $request['accountID'] ?: $accounts[0]['accountId'];
 
-					return array(
-						'accounts'   => $accounts,
-						'containers' => filter_by_account_id( $containers, $account_id ),
-					);
+						return array(
+							'accounts'   => $accounts,
+							'containers' => filter_by_account_id( $containers, $account_id ),
+						);
 				},
 			),
 			true
@@ -86,7 +86,7 @@ add_action(
 			'modules/tagmanager/data/containers',
 			array(
 				'callback' => function ( $request ) use ( $containers ) {
-					return filter_by_account_id( $containers, $request['accountId'] );
+					return filter_by_account_id( $containers, $request['accountID'] );
 				},
 			),
 			true

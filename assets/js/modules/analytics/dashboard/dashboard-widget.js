@@ -163,7 +163,7 @@ class AnalyticsDashboardWidget extends Component {
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 							">
-								<PageHeader title={ __( 'Analytics', 'google-site-kit' ) } icon iconWidth="24" iconHeight="26" iconId="analytics" status="connected" statusText={ __( 'Analytics is connected', 'google-site-kit' ) } />
+								<PageHeader title={ __( 'Analytics', 'google-site-kit' ) } icon iconWidth="24" iconHeight="26" iconID="analytics" status="connected" statusText={ __( 'Analytics is connected', 'google-site-kit' ) } />
 								{ loading && <ProgressBar /> }
 							</div>
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }

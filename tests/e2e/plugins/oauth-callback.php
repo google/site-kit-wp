@@ -33,8 +33,8 @@ add_action(
 
 		if ( filter_input( INPUT_GET, 'googlesitekit_connect' ) ) {
 			$redirect_url = '';
-			if ( ! empty( $_GET['redirect'] ) ) { // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
-				$redirect_url = esc_url_raw( wp_unslash( $_GET['redirect'] ) ); // phpcs:ignore WordPress.CSRF.NonceVerification.NoNonceVerification
+			if ( ! empty( $_GET['redirect'] ) ) {
+				$redirect_url = esc_url_raw( wp_unslash( $_GET['redirect'] ) );
 			}
 
 			status_header( 302 );

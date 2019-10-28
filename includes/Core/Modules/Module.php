@@ -15,11 +15,12 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google_Client;
-use Google_Service;
-use Google_Service_Exception;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit_Dependencies\Google_Service;
+use Google\Site_Kit_Dependencies\Google_Service_Exception;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
 use WP_Error;
 use Exception;
 
@@ -200,8 +201,8 @@ abstract class Module {
 			'required'     => $this->depends_on,
 			'autoActivate' => $this->force_active,
 			'internal'     => $this->internal,
-			'screenId'     => $this instanceof Module_With_Screen ? $this->get_screen()->get_slug() : false,
-			'hasSettings'  => ! in_array( $this->slug, array( 'site-verification', 'search-console' ), true ),
+			'screenID'     => $this instanceof Module_With_Screen ? $this->get_screen()->get_slug() : false,
+			'hasSettings'  => ! in_array( $this->slug, array( 'site-verification', 'search-console', 'pagespeed-insights' ), true ),
 		);
 	}
 
@@ -223,12 +224,14 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $datapoint Datapoint to get data for.
-	 * @param array  $data      Optional. Contextual data to provide. Default empty array.
+	 * @param string             $datapoint Datapoint to get data for.
+	 * @param array|Data_Request $data      Optional. Contextual data to provide. Default empty array.
 	 * @return mixed Data on success, or WP_Error on failure.
 	 */
-	final public function get_data( $datapoint, array $data = array() ) {
-		return $this->execute_data_request( 'GET', $datapoint, $data );
+	final public function get_data( $datapoint, $data = array() ) {
+		return $this->execute_data_request(
+			new Data_Request( 'GET', 'modules', $this->slug, $datapoint, $data )
+		);
 	}
 
 	/**
@@ -236,12 +239,14 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $datapoint Datapoint to get data for.
-	 * @param array  $data      Data to set.
+	 * @param string             $datapoint Datapoint to get data for.
+	 * @param array|Data_Request $data Data to set.
 	 * @return mixed Response data on success, or WP_Error on failure.
 	 */
-	final public function set_data( $datapoint, array $data ) {
-		return $this->execute_data_request( 'POST', $datapoint, $data );
+	final public function set_data( $datapoint, $data ) {
+		return $this->execute_data_request(
+			new Data_Request( 'POST', 'modules', $this->slug, $datapoint, $data )
+		);
 	}
 
 	/**
@@ -252,7 +257,7 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array $datasets List of datapoints with data attached.
+	 * @param \stdClass[]|Data_Request[] $datasets List of datapoints with data attached.
 	 * @return array List of responses. Each item is either the response data, or a WP_Error on failure.
 	 */
 	final public function get_batch_data( array $datasets ) {
@@ -273,8 +278,21 @@ abstract class Module {
 		$datapoint_services = $this->get_datapoint_services();
 		$service_batches    = array();
 
-		$results = array();
+		$data_requests = array();
+		$results       = array();
 		foreach ( $datasets as $dataset ) {
+			if ( ! $dataset instanceof Data_Request ) {
+				$dataset = new Data_Request(
+					'GET',
+					'modules',
+					$dataset->identifier,
+					$dataset->datapoint,
+					(array) $dataset->data,
+					$dataset->key
+				);
+			}
+
+			/* @var Data_Request $dataset Request object. */
 			if ( $this->slug !== $dataset->identifier ) {
 				continue;
 			}
@@ -283,11 +301,11 @@ abstract class Module {
 				continue;
 			}
 
-			$key       = ! empty( $dataset->key ) ? $dataset->key : wp_rand();
-			$datapoint = $dataset->datapoint;
-			$data      = ! empty( $dataset->data ) ? (array) $dataset->data : array();
+			$key                   = $dataset->key ?: wp_rand();
+			$data_requests[ $key ] = $dataset;
+			$datapoint             = $dataset->datapoint;
+			$request               = $this->create_data_request( $dataset );
 
-			$request = $this->create_data_request( 'GET', $datapoint, $data );
 			if ( is_wp_error( $request ) ) {
 				$results[ $key ] = $request;
 				continue;
@@ -297,7 +315,7 @@ abstract class Module {
 				try {
 					$results[ $key ] = call_user_func( $request );
 					if ( ! is_wp_error( $results[ $key ] ) ) {
-						$results[ $key ] = $this->parse_data_response( 'GET', $datapoint, $results[ $key ] );
+						$results[ $key ] = $this->parse_data_response( $dataset, $results[ $key ] );
 					}
 				} catch ( Exception $e ) {
 					$results[ $key ] = $this->exception_to_error( $e, $datapoint );
@@ -344,7 +362,7 @@ abstract class Module {
 
 				if ( ! $result instanceof Exception ) {
 					$results[ $key ] = $result;
-					$results[ $key ] = $this->parse_data_response( 'GET', $datapoint, $result );
+					$results[ $key ] = $this->parse_data_response( $data_requests[ $key ], $result );
 				} else {
 					$results[ $key ] = $this->exception_to_error( $result, $datapoint );
 				}
@@ -391,41 +409,39 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to get request object for.
-	 * @param array  $data      Optional. Contextual data to provide or set. Default empty array.
+	 * @param Data_Request $data Data request object.
+	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
-	abstract protected function create_data_request( $method, $datapoint, array $data = array() );
+	abstract protected function create_data_request( Data_Request $data );
 
 	/**
 	 * Parses a response for the given datapoint.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to resolve response for.
-	 * @param mixed  $response  Response object or array.
+	 * @param Data_Request $data Data request object.
+	 * @param mixed        $response Request response.
+	 *
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
-	abstract protected function parse_data_response( $method, $datapoint, $response );
+	abstract protected function parse_data_response( Data_Request $data, $response );
 
 	/**
 	 * Creates a request object for the given datapoint.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to get request object for.
-	 * @param array  $data      Optional. Contextual data to provide or set. Default empty array.
+	 * @param Data_Request $data Data request object.
+	 *
 	 * @return mixed Data on success, or WP_Error on failure.
 	 */
-	final protected function execute_data_request( $method, $datapoint, array $data = array() ) {
+	final protected function execute_data_request( Data_Request $data ) {
 		$client     = $this->get_client();
 		$orig_defer = $client->shouldDefer();
 		$client->setDefer( true );
 
-		$request = $this->create_data_request( $method, $datapoint, $data );
+		$request = $this->create_data_request( $data );
 
 		$client->setDefer( $orig_defer );
 
@@ -440,14 +456,14 @@ abstract class Module {
 				$response = $client->execute( $request );
 			}
 		} catch ( Exception $e ) {
-			return $this->exception_to_error( $e, $datapoint );
+			return $this->exception_to_error( $e, $data->datapoint );
 		}
 
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
 
-		return $this->parse_data_response( $method, $datapoint, $response );
+		return $this->parse_data_response( $data, $response );
 	}
 
 	/**

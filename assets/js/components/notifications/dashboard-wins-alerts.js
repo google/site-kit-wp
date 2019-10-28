@@ -82,7 +82,7 @@ class DashboardWinsAlerts extends Component {
 						blockData={ notification.blockData || [] }
 						winImage={ notification.winImage || '' }
 						format={ notification.format || 'small' }
-						learnMoreUrl={ notification.learnMoreUrl || '' }
+						learnMoreURL={ notification.learnMoreURL || '' }
 						learnMoreDescription={ notification.learnMoreDescription || '' }
 						learnMoreLabel={ notification.learnMoreLabel || '' }
 						ctaLink={ notification.ctaLink || '' }

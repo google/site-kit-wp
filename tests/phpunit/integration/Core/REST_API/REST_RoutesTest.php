@@ -41,9 +41,6 @@ class REST_RoutesTest extends TestCase {
 			'/',
 			'/' . REST_Routes::REST_ROOT,
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/reset',
-			'/' . REST_Routes::REST_ROOT . '/core/site/data/apikey',
-			'/' . REST_Routes::REST_ROOT . '/core/site/data/credentials',
-			'/' . REST_Routes::REST_ROOT . '/core/site/data/gcpproject',
 			'/' . REST_Routes::REST_ROOT . '/core/user/data/disconnect',
 			'/' . REST_Routes::REST_ROOT . '/core/user/data/authentication',
 			'/' . REST_Routes::REST_ROOT . '/modules',
@@ -51,6 +48,7 @@ class REST_RoutesTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z\\-]+)/data/(?P<datapoint>[a-z\\-]+)',
 			'/' . REST_Routes::REST_ROOT . '/data',
 			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z\\-]+)/notifications',
+			'/' . REST_Routes::REST_ROOT . '/oauth/site',
 			'/' . REST_Routes::REST_ROOT . '/core/search/data/post-search',
 		);
 

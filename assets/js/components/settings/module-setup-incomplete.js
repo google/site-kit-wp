@@ -20,7 +20,7 @@
  * External dependencies
  */
 import {
-	getReAuthUrl,
+	getReAuthURL,
 } from 'GoogleUtil';
 import Link from 'GoogleComponents/link';
 import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
@@ -42,7 +42,7 @@ class ModuleSetupIncomplete extends Component {
 				<Link
 					className="googlesitekit-settings-module__edit-button"
 					onClick={ () => {
-						window.location = getReAuthUrl( slug, true );
+						window.location = getReAuthURL( slug, true );
 					} }
 					inherit
 				>

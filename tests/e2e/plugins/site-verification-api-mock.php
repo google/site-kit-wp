@@ -106,13 +106,48 @@ add_action(
 
 		register_rest_route(
 			REST_Routes::REST_ROOT,
+			'modules/search-console/data/matched-sites',
+			array(
+				'callback' => function () {
+					return array(
+						'exactMatch' => array(
+							'siteURL'         => home_url( '/' ),
+							'permissionLevel' => 'siteOwner',
+						),
+					);
+				},
+			),
+			true
+		);
+
+		register_rest_route(
+			REST_Routes::REST_ROOT,
+			'modules/search-console/data/site',
+			array(
+				'methods'  => 'POST',
+				'callback' => function ( WP_REST_Request $request ) {
+					$data = $request->get_param( 'data' );
+
+					update_option( 'googlesitekit_search_console_property', $data['siteURL'] );
+
+					return array(
+						'siteURL'         => $data['siteURL'],
+						'permissionLevel' => 'siteOwner',
+					);
+				},
+			),
+			true
+		);
+
+		register_rest_route(
+			REST_Routes::REST_ROOT,
 			'e2e/verify-site',
 			array(
 				'methods'  => 'POST',
 				'callback' => function () {
 					set_transient( 'gsk_e2e_site_verified', true );
 
-					return array( 'success' => true );
+						return array( 'success' => true );
 				},
 			)
 		);
