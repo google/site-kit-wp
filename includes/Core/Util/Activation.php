@@ -179,7 +179,7 @@ final class Activation {
 								optInCheckbox.checked = googlesitekit.admin.trackingOptIn;
 							}
 							if ( googlesitekit.admin.proxySetupURL ) {
-								startSetupLink.href = googlesitekit.admin.proxySetupURL
+								startSetupLink.href = googlesitekit.admin.proxySetupURL;
 							}
 
 							startSetupLink.addEventListener( 'click' , function() {
