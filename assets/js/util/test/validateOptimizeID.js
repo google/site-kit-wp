@@ -6,24 +6,24 @@ import { validateOptimizeID } from '../';
 const valuesToTest = [
 	[
 		'GTM-XXXXXXX',
-		true
+		true,
 	],
 	[
 		'GTM-XXXXXX',
-		false
+		false,
 	],
 	[
 		'GTM-1234567',
-		true
+		true,
 	],
 	[
 		'GTMXXXXXXXX',
-		false
+		false,
 	],
 	[
 		'gtm-xxxxxxx',
-		false
-	]
+		false,
+	],
 ];
 
 describe( 'validateOptimizeID', () => {

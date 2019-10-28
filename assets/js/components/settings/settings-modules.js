@@ -28,6 +28,9 @@ import Notification from 'GoogleComponents/notifications/notification';
 import SettingsOverlay from './settings-overlay';
 import { clearAppLocalStorage } from 'GoogleUtil/index';
 
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { map, filter, sortBy } from 'lodash';
 import { Component, Fragment } from '@wordpress/element';

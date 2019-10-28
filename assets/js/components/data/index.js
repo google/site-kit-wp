@@ -28,14 +28,13 @@ import {
 	getQueryParameter,
 	sortObjectProperties,
 } from 'SiteKitCore/util';
-import { each, sortBy } from 'lodash';
+import { cloneDeep, each, sortBy } from 'lodash';
 
 /**
  * WordPress dependencies
  */
 import { addQueryArgs } from '@wordpress/url';
 import { addAction, applyFilters, doAction, addFilter, removeFilter } from '@wordpress/hooks';
-import { __ } from '@wordpress/i18n';
 
 export const TYPE_CORE = 'core';
 export const TYPE_MODULES = 'modules';
@@ -509,6 +508,7 @@ const dataAPI = {
 		const key = [];
 		const pieces = [ type, identifier, datapoint ];
 
+		// eslint-disable-next-line no-unused-vars
 		for ( const piece of pieces ) {
 			if ( ! piece || ! piece.length ) {
 				break;

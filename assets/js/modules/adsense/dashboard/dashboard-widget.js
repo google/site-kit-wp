@@ -38,6 +38,9 @@ import ModuleSettingsWarning from 'GoogleComponents/notifications/module-setting
 import AdSenseInProcessStatus from './adsense-in-process-status';
 import HelpLink from 'GoogleComponents/help-link';
 
+/**
+ * WordPress dependencies
+ */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 

@@ -25,7 +25,7 @@ import { Suspense as ReactSuspense, lazy as ReactLazy } from 'react';
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Component, Fragment, Suspense as WPSuspense, lazy as WPlazy } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -40,8 +40,8 @@ import 'GoogleComponents/notifications';
 // Check for `Suspense` and `lazy` in `wp.element`; versions before 2.4.0 did
 // not include either, so we need to fallback to the React versions. See:
 // https://github.com/WordPress/gutenberg/blob/master/packages/element/CHANGELOG.md#240-2019-05-21
-let Suspense;
-let lazy;
+let Suspense = WPSuspense;
+let lazy = WPlazy;
 if ( ! Suspense ) {
 	Suspense = ReactSuspense;
 }

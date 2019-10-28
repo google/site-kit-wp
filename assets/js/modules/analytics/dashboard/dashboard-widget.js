@@ -39,6 +39,9 @@ import { isAdsenseConnectedAnalytics } from 'GoogleModules/adsense/util';
 import { getDateRangeFrom } from 'GoogleUtil';
 import HelpLink from 'GoogleComponents/help-link';
 
+/**
+ * WordPress dependencies
+ */
 import { Component, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 

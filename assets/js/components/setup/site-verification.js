@@ -30,6 +30,9 @@ import {
 } from 'GoogleUtil';
 import HelpLink from 'GoogleComponents/help-link';
 
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 

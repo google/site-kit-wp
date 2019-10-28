@@ -22,33 +22,25 @@
 import ProgressBar from 'GoogleComponents/progress-bar';
 import Notification from 'GoogleComponents/notifications/notification';
 import { Suspense as ReactSuspense, lazy as ReactLazy } from 'react';
-
-// Load the data module.
-/**
- * Internal dependencies
- */
 import 'GoogleComponents/data';
 
 /**
- * Internal dependencies.
+ * Internal dependencies
  */
 import ModuleApp from './components/module-app';
 
-<<<<<<< HEAD
-const { setLocaleData } = wp.i18n;
-const { doAction, applyFilters } = wp.hooks;
-const { Component, render, Fragment } = wp.element;
-let { Suspense, lazy } = wp.element;
-=======
+/**
+ * WordPress dependencies
+ */
 import { setLocaleData } from '@wordpress/i18n';
 import { doAction, applyFilters } from '@wordpress/hooks';
-import { Component, render, Fragment } from '@wordpress/element';
-const { lazy, Suspense } = React;
->>>>>>> Use proper module imports
+import { Component, render, Fragment, Suspense as WPSuspense, lazy as WPlazy } from '@wordpress/element';
 
 // Check for `Suspense` and `lazy` in `wp.element`; versions before 2.4.0 did
 // not include either, so we need to fallback to the React versions. See:
 // https://github.com/WordPress/gutenberg/blob/master/packages/element/CHANGELOG.md#240-2019-05-21
+let Suspense = WPSuspense;
+let lazy = WPlazy;
 if ( ! Suspense ) {
 	Suspense = ReactSuspense;
 }

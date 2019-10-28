@@ -22,6 +22,9 @@
 import PropTypes from 'prop-types';
 import Link from 'GoogleComponents/link';
 
+/**
+ * WordPress dependencies
+ */
 import { Component } from '@wordpress/element';
 
 class CTA extends Component {

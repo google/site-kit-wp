@@ -25,6 +25,9 @@ import Logo from 'GoogleComponents/logo';
  * Internal dependencies
  */
 import UserMenu from './user-menu';
+/**
+ * WordPress dependencies
+ */
 import { Component, Fragment } from '@wordpress/element';
 
 class Header extends Component {

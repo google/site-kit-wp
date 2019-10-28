@@ -31,6 +31,9 @@ import { decodeHtmlEntity } from 'GoogleUtil';
 import DateRangeSelector from 'GoogleComponents/date-range-selector';
 import HelpLink from 'GoogleComponents/help-link';
 
+/**
+ * WordPress dependencies
+ */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 

@@ -28,6 +28,9 @@ import {
 	sendAnalyticsTrackingEvent,
 } from 'GoogleUtil';
 
+/**
+ * WordPress dependencies
+ */
 import { doAction } from '@wordpress/hooks';
 import { Component, Fragment, render } from '@wordpress/element';
 import { setLocaleData, __ } from '@wordpress/i18n';

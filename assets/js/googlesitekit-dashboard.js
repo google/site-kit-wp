@@ -25,6 +25,9 @@ import Setup from 'GoogleComponents/setup/setup-wrapper';
 import DashboardApp from 'GoogleComponents/dashboard/dashboard-app';
 import NotificationCounter from 'GoogleComponents/notifications/notification-counter';
 
+/**
+ * WordPress dependencies
+ */
 import { setLocaleData } from '@wordpress/i18n';
 import { Component, render, Fragment } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';

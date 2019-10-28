@@ -29,6 +29,9 @@ import PreviewTable from 'GoogleComponents/preview-table';
  */
 import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../util';
 
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { map } from 'lodash';
 import { Component } from '@wordpress/element';

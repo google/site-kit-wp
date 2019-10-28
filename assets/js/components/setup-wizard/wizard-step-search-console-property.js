@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
 import SearchConsole from 'GoogleComponents/setup/search-console';
 
 /**
- * WordPress dependencies.
+ * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
 

@@ -22,6 +22,9 @@
 import { extractSearchConsoleDashboardData } from 'GoogleModules/search-console/dashboard/util';
 import { getTimeInSeconds, getDaysBetweenDates } from 'GoogleUtil';
 
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 
 const totalStats = ( data, id ) => {

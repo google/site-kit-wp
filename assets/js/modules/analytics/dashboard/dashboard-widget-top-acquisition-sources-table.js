@@ -34,6 +34,9 @@ import MiniChart from 'GoogleComponents/mini-chart';
  */
 import { trafficSourcesReportDataDefaults } from '../util';
 
+/**
+ * WordPress dependencies
+ */
 import { __, sprintf } from '@wordpress/i18n';
 import { map } from 'lodash';
 import { Component, Fragment } from '@wordpress/element';

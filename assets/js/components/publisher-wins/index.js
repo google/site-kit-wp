@@ -27,6 +27,9 @@ import * as publisherWinCallbacks from 'GoogleComponents/publisher-wins/callback
  */
 import { overviewReportDataDefaults } from '../../modules/analytics/util';
 
+/**
+ * WordPress dependencies
+ */
 import { addFilter } from '@wordpress/hooks';
 const notification = getQueryParameter( 'notification' );
 

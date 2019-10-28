@@ -6,24 +6,24 @@ import { validateJSON } from '../';
 const valuesToTest = [
 	[
 		'{"foo":"bar"}',
-		true
+		true,
 	],
 	[
 		'{"foo":"bar","x":1,"y":true}',
-		true
+		true,
 	],
 	[
 		'{"foo":"bar"',
-		false
+		false,
 	],
 	[
 		'',
-		false
+		false,
 	],
 	[
 		false,
-		false
-	]
+		false,
+	],
 ];
 
 describe( 'validateJSON', () => {

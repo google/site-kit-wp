@@ -44,6 +44,9 @@ import {
 	isDataZeroForReporting,
 } from '../util';
 
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 import { isEmpty } from 'lodash';

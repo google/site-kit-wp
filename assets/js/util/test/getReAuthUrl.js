@@ -31,7 +31,7 @@ describe( 'getReAuthUrl', () => {
 		expect(
 			getReAuthUrl( 'pagespeed-insights', false, googlesitekit )
 		).toStrictEqual(
-			'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&reAuth=false&slug=pagespeed-insights'
+			'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=pagespeed-insights&notification=authentication_success'
 		);
 
 		googlesitekit = createSiteKit( false );
@@ -39,7 +39,7 @@ describe( 'getReAuthUrl', () => {
 		expect(
 			getReAuthUrl( 'pagespeed-insights', true, googlesitekit )
 		).toStrictEqual(
-			'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=true&slug=pagespeed-insights'
+			'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&slug=pagespeed-insights&notification=authentication_success'
 		);
 
 		googlesitekit = createSiteKit( 'abc123' );
@@ -47,7 +47,7 @@ describe( 'getReAuthUrl', () => {
 		expect(
 			getReAuthUrl( 'pagespeed-insights', false, googlesitekit )
 		).toStrictEqual(
-			'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&reAuth=false&slug=pagespeed-insights'
+			'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=pagespeed-insights&notification=authentication_success'
 		);
 
 		googlesitekit = createSiteKit( 'abc123' );
@@ -55,7 +55,7 @@ describe( 'getReAuthUrl', () => {
 		expect(
 			getReAuthUrl( 'pagespeed-insights', true, googlesitekit )
 		).toStrictEqual(
-			'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=false&slug=pagespeed-insights'
+			'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&slug=pagespeed-insights&notification=authentication_success'
 		);
 	} );
 } );

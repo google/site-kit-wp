@@ -30,6 +30,9 @@ import PropTypes from 'prop-types';
  */
 import { getTopPagesReportDataDefaults } from '../util';
 
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { map } from 'lodash';
 import { Component, Fragment } from '@wordpress/element';

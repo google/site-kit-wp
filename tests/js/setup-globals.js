@@ -1,3 +1,6 @@
+/**
+ * External dependencies
+ */
 import intlLocalesSupported from 'intl-locales-supported';
 import intl from 'intl';
 import React from 'react';
@@ -21,16 +24,14 @@ global.googlesitekit = {
 		connectUrl: 'http://sitekit.withgoogle.com/wp-admin/admin.php?googlesitekit_connect=1&nonce=12345&page=googlesitekit-splash',
 		adminRoot: 'http://sitekit.withgoogle.com/wp-admin/admin.php',
 	},
-
 	modules: {
 		'search-console': {
-			screenId: 'googlesitekit-module-search-console'
+			screenId: 'googlesitekit-module-search-console',
 		},
 		'pagespeed-insights': {
-			screenId: 'googlesitekit-module-pagespeed-insights'
-		}
+			screenId: 'googlesitekit-module-pagespeed-insights',
+		},
 	},
-
 	setup: {
 
 	},
@@ -39,11 +40,11 @@ global.googlesitekit = {
 // eslint-disable-next-line no-undef
 global.gtag = function( type, name, sendto, category, label, value ) {
 	return {
-		type: type,
-		name: name,
-		sendto: sendto,
-		category: category,
-		label: label,
-		value: value
+		type,
+		name,
+		sendto,
+		category,
+		label,
+		value,
 	};
 };

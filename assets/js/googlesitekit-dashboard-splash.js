@@ -22,6 +22,9 @@
 import { clearAppLocalStorage } from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
 
+/**
+ * WordPress dependencies
+ */
 import { setLocaleData } from '@wordpress/i18n';
 import { Component, render, Fragment } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';

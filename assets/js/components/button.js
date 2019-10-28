@@ -22,6 +22,9 @@
 import { MDCRipple } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
 
+/**
+ * WordPress dependencies
+ */
 import { Component, createRef } from '@wordpress/element';
 
 class Button extends Component {

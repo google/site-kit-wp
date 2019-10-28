@@ -21,6 +21,9 @@
  */
 import PropTypes from 'prop-types';
 
+/**
+ * WordPress dependencies
+ */
 import { Component } from '@wordpress/element';
 
 class ProgressBar extends Component {

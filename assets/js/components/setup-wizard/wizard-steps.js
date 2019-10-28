@@ -24,6 +24,9 @@ import WizardStepVerification from 'GoogleComponents/setup-wizard/wizard-step-ve
 import WizardStepSearchConsoleProperty from 'GoogleComponents/setup-wizard/wizard-step-search-console-property';
 import WizardStepCompleteSetup from 'GoogleComponents/setup-wizard/wizard-step-complete-setup';
 
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 
 const STEPS = {

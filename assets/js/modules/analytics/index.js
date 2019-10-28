@@ -36,6 +36,9 @@ import AnalyticsDashboardWidgetPopularPagesTable from './dashboard/dashboard-wid
 import AdSenseDashboardWidgetTopPagesTableSmall from './dashboard/dashboard-widget-top-earning-pages-small';
 import AnalyticsSetup from './setup';
 
+/**
+ * WordPress dependencies
+ */
 import { addFilter } from '@wordpress/hooks';
 const slug = 'analytics';
 

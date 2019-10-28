@@ -7,33 +7,33 @@ const valuesToTest = [
 	[
 		'analytics',
 		true,
-		true
+		true,
 	],
 	[
 		'analytics',
 		false,
-		false
+		false,
 	],
 	[
 		'adsense',
 		true,
-		true
+		true,
 	],
 	[
 		'adsense',
 		false,
-		false
-	]
+		false,
+	],
 ];
 
 const restApiClient = {
-	setModuleData: function( slug, type, status ) {
+	setModuleActive( slug, status ) {
 		return {
-			then: function() {
+			then() {
 				return status;
-			}
+			},
 		};
-	}
+	},
 };
 
 describe( 'activateOrDeactivateModule', () => {

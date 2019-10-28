@@ -21,6 +21,9 @@
  */
 import { fillFilterWithComponent } from 'GoogleUtil';
 import OptimizeSetup from 'GoogleModules/optimize/setup';
+/**
+ * WordPress dependencies
+ */
 import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 const slug = 'optimize';

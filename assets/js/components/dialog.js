@@ -25,6 +25,9 @@ import Link from 'GoogleComponents/link';
 import { MDCDialog } from 'SiteKitCore/material-components';
 import FocusTrap from 'focus-trap-react';
 
+/**
+ * WordPress dependencies
+ */
 import { Component, createRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 

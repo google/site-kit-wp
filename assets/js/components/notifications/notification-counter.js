@@ -21,6 +21,9 @@
  */
 import { getTotalNotifications, incrementCount, decrementCount } from 'GoogleComponents/notifications/util';
 
+/**
+ * WordPress dependencies
+ */
 import { Component, createPortal } from '@wordpress/element';
 import { _n, sprintf } from '@wordpress/i18n';
 import { addAction, removeAction } from '@wordpress/hooks';

@@ -32,6 +32,9 @@ import { TYPE_MODULES } from 'GoogleComponents/data';
  */
 import { isDataZeroAdSense } from '../util';
 
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 

@@ -23,6 +23,9 @@ import Button from 'GoogleComponents/button';
 import Logo from 'GoogleComponents/logo';
 import PropTypes from 'prop-types';
 
+/**
+ * WordPress dependencies
+ */
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 

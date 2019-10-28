@@ -32,6 +32,9 @@ import {
 	isDataZeroSearchConsole,
 } from '../dashboard/util';
 
+/**
+ * WordPress dependencies
+ */
 import { __, sprintf } from '@wordpress/i18n';
 import { map } from 'lodash';
 import { Component } from '@wordpress/element';

@@ -21,6 +21,9 @@
  */
 import Layout from 'GoogleComponents/layout/layout';
 
+/**
+ * WordPress dependencies
+ */
 import { Fragment } from '@wordpress/element';
 
 /**

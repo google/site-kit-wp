@@ -25,6 +25,9 @@ import { showErrorNotification } from 'GoogleUtil';
 import InvalidCredentialsWarning
 	from 'SiteKitCore/components/notifications/invalid-credentials-warning';
 
+/**
+ * WordPress dependencies
+ */
 import { __, sprintf } from '@wordpress/i18n';
 
 /**

@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
 import SiteVerification from 'GoogleComponents/setup/site-verification';
 
 /**
- * WordPress dependencies.
+ * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
 

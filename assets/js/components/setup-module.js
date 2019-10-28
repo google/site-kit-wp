@@ -33,6 +33,9 @@ import {
 } from 'GoogleUtil';
 import GenericError from 'GoogleComponents/notifications/generic-error';
 
+/**
+ * WordPress dependencies
+ */
 import { sprintf, __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 import { applyFilters } from '@wordpress/hooks';

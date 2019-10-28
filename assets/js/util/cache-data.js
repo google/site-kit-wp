@@ -56,6 +56,7 @@ rl.question( 'Username: ', ( username ) => {
 			await ( page.tap( '#wp-submit' ) );
 
 			// Go thru each endpoint from the predefined list.
+			// eslint-disable-next-line no-unused-vars
 			for ( const endpoint of endpoints ) {
 				console.log( 'Caching %s', endpoint ); // eslint-disable-line no-console
 
@@ -105,6 +106,7 @@ rl.question( 'Username: ', ( username ) => {
 					'googlesitekitCurrentModule',
 					'googlesitekitAdminbar',
 				];
+				// eslint-disable-next-line no-unused-vars
 				for ( const scriptName of scriptsToMatch ) {
 					// A regex that looks for the localized variable.
 					const matchStringRegex = '[window.|var ]' + scriptName + ' = (.*)';

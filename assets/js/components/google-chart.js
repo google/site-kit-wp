@@ -22,6 +22,9 @@
 import ProgressBar from 'GoogleComponents/progress-bar';
 import PropTypes from 'prop-types';
 
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { Component, createRef } from '@wordpress/element';
 import { doAction, addAction } from '@wordpress/hooks';

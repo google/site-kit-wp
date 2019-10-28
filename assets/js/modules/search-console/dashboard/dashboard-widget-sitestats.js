@@ -30,6 +30,9 @@ import { decodeHtmlEntity, getTimeInSeconds } from 'GoogleUtil';
  */
 import { extractSearchConsoleDashboardData } from './util';
 
+/**
+ * WordPress dependencies
+ */
 import { __, sprintf } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 

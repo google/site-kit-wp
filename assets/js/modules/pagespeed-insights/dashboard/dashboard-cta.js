@@ -13,6 +13,9 @@ import {
  */
 import { getReAuthURL } from '../../../util';
 
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 
 const PageSpeedInsightsCTA = () => {

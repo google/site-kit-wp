@@ -20,6 +20,9 @@
  * Internal dependencies
  */
 import DashboardModules from './dashboard-modules';
+/**
+ * WordPress dependencies
+ */
 import { Component, Fragment } from '@wordpress/element';
 
 class DashboardMain extends Component {

@@ -21,6 +21,9 @@
  */
 import { fillFilterWithComponent } from 'GoogleUtil';
 import TagmanagerSetup from 'GoogleModules/tagmanager/setup';
+/**
+ * WordPress dependencies
+ */
 import { addFilter } from '@wordpress/hooks';
 const slug = 'tagmanager';
 

@@ -22,6 +22,9 @@
 import { extractSearchConsoleDashboardData } from 'GoogleModules/search-console/dashboard/util';
 import { readableLargeNumber } from 'GoogleUtil';
 
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 
 const publishingWin = ( data, id ) => {

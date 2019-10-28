@@ -25,6 +25,9 @@ import AnalyticsAdminbarWidgetOverview from './adminbar-widget-overview';
  */
 import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
 
+/**
+ * WordPress dependencies
+ */
 import { Component, Fragment } from '@wordpress/element';
 
 class AnalyticsAdminbarWidget extends Component {

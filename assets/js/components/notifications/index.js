@@ -26,6 +26,9 @@ import DashboardAuthAlert from 'GoogleComponents/notifications/dashboard-auth-al
 import { createAddToFilter } from 'GoogleUtil/helpers';
 import { getQueryParameter } from 'GoogleUtil';
 
+/**
+ * WordPress dependencies
+ */
 import { addFilter } from '@wordpress/hooks';
 const { setup } = window.googlesitekit;
 const notification = getQueryParameter( 'notification' );

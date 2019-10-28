@@ -31,6 +31,9 @@ import { PageSpeedReportScale } from './util';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
 
+/**
+ * WordPress dependencies
+ */
 import { Component, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 

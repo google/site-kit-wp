@@ -7,28 +7,28 @@ const valuesToTest = [
 	[
 		'localStorage',
 		true,
-		false
+		false,
 	],
 	[
 		'sessionStorage',
 		true,
-		false
+		false,
 	],
 	[
 		'localStorage',
 		false,
-		true
+		true,
 	],
 	[
 		'sessionStorage',
 		false,
-		true
+		true,
 	],
 	[
 		'nonExistantStorage',
 		false,
-		false
-	]
+		false,
+	],
 ];
 
 const setItem = Storage.prototype.setItem;

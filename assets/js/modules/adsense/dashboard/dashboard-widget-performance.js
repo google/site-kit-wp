@@ -32,6 +32,9 @@ import {
 import { isDataZeroAdSense } from '../util';
 import withData from '../../../components/higherorder/withdata';
 
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 import { isUndefined } from 'lodash';

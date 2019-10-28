@@ -26,6 +26,9 @@ import { getDaysBetweenDates, getTimeInSeconds } from 'GoogleUtil';
  */
 import WinsWithData from './wins-withdata';
 
+/**
+ * WordPress dependencies
+ */
 import { applyFilters } from '@wordpress/hooks';
 import { camelCase } from 'lodash';
 

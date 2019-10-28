@@ -21,6 +21,9 @@
  */
 import Button from 'GoogleComponents/button';
 
+/**
+ * WordPress dependencies
+ */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 

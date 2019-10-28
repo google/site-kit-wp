@@ -37,6 +37,9 @@ import {
 } from '../util';
 import PreviewBlock from 'GoogleComponents/preview-block';
 
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 

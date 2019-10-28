@@ -31,6 +31,9 @@ import { TYPE_MODULES } from 'GoogleComponents/data';
 import { extractAnalyticsDashboardData, siteAnalyticsReportDataDefaults } from '../util';
 import PreviewBlock from 'GoogleComponents/preview-block';
 
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 

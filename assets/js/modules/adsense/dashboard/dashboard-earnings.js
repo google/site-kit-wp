@@ -27,6 +27,9 @@ import DashboardAdSenseTopEarningPagesSmall from './dashboard-adsense-top-pages-
 import AdSenseDashboardMainSummary from './dashboard-widget-main-summary';
 import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
 
+/**
+ * WordPress dependencies
+ */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 

@@ -6,6 +6,7 @@ module.exports = async ( page, scenario ) => {
 	const postInteractionWait = scenario.postInteractionWait; // selector [str] | ms [int]
 
 	if ( keyPressSelector ) {
+		// eslint-disable-next-line no-unused-vars
 		for ( const keyPressSelectorItem of [].concat( keyPressSelector ) ) {
 			await page.waitFor( keyPressSelectorItem.selector );
 			await page.type( keyPressSelectorItem.selector, keyPressSelectorItem.keyPress );
@@ -13,6 +14,7 @@ module.exports = async ( page, scenario ) => {
 	}
 
 	if ( hoverSelector ) {
+		// eslint-disable-next-line no-unused-vars
 		for ( const hoverSelectorIndex of [].concat( hoverSelector ) ) {
 			await page.waitFor( hoverSelectorIndex );
 			await page.hover( hoverSelectorIndex );
@@ -20,6 +22,7 @@ module.exports = async ( page, scenario ) => {
 	}
 
 	if ( clickSelector ) {
+		// eslint-disable-next-line no-unused-vars
 		for ( const clickSelectorIndex of [].concat( clickSelector ) ) {
 			await page.waitFor( clickSelectorIndex );
 			await page.click( clickSelectorIndex );

@@ -22,6 +22,9 @@
 import { getTimeInSeconds, readableLargeNumber } from 'GoogleUtil';
 import { calculateOverviewData } from 'GoogleModules/analytics/util';
 
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 
 const trafficIncrease = ( data, id ) => {

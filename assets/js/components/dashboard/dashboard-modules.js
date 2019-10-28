@@ -25,6 +25,9 @@ import DashboardModule from './dashboard-module';
  */
 import HelpLink from 'GoogleComponents/help-link';
 import { Fragment } from 'react';
+/**
+ * WordPress dependencies
+ */
 import { Component } from '@wordpress/element';
 
 class DashboardModules extends Component {

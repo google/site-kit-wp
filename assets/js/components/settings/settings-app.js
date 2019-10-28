@@ -31,6 +31,9 @@ import TabBar from '@material/react-tab-bar';
 import SettingsAdmin from './settings-admin';
 import HelpLink from 'GoogleComponents/help-link';
 
+/**
+ * WordPress dependencies
+ */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 

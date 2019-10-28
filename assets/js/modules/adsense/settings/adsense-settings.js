@@ -27,6 +27,9 @@ import {
 	toggleConfirmModuleSettings,
 } from 'GoogleUtil';
 
+/**
+ * WordPress dependencies
+ */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addFilter, removeFilter } from '@wordpress/hooks';

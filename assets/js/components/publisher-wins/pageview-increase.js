@@ -22,6 +22,9 @@
 import { numberFormat, getTimeInSeconds } from 'GoogleUtil';
 import { calculateOverviewData } from 'GoogleModules/analytics/util';
 
+/**
+ * WordPress dependencies
+ */
 import { __ } from '@wordpress/i18n';
 
 const pageviewIncrease = ( data, id ) => {

@@ -26,6 +26,9 @@ import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import AdSenseSetupAuthFlowWidget from './setup-auth-flow-widget';
 import Spinner from 'GoogleComponents/spinner';
 
+/**
+ * WordPress dependencies
+ */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
