@@ -190,10 +190,7 @@ class SettingsAdmin extends Component {
 												googlesitekit-settings-module__meta-item
 												googlesitekit-settings-module__meta-item--nomargin
 											">
-												<Optin
-													id="opt-in"
-													name="optin"
-												/>
+												<Optin />
 											</div>
 										</div>
 									</div>

@@ -155,9 +155,80 @@ final class Activation {
 					ob_start();
 					?>
 					<script type="text/javascript">
-					if( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
-						sendAnalyticsTrackingEvent( 'plugin_setup', 'plugin_activated' );
-					}
+						document.addEventListener( 'DOMContentLoaded' , function() {
+							if ( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
+								sendAnalyticsTrackingEvent( 'plugin_setup', 'plugin_activated' );
+							}
+
+							var trackingScriptPresent = !! googlesitekit.admin.trackingOptIn;
+
+							var optInCheckbox = document.getElementById( 'googlesitekit-opt-in' );
+							var startSetupLink = document.getElementById( 'start-setup-link' );
+
+							if ( ! optInCheckbox ) {
+								console.error( "Expected element #googlesitekit-opt-in to be found on page, but it wasn't. Tracking may not work." );
+								return;
+							}
+
+							if ( ! startSetupLink ) {
+								console.error( "Expected element #start-setup-link to be found on page, but it wasn't. Tracking may not work." );
+								return;
+							}
+
+							if ( googlesitekit.admin.trackingOptIn ) {
+								optInCheckbox.checked = googlesitekit.admin.trackingOptIn;
+							}
+							if ( googlesitekit.admin.proxySetupURL ) {
+								startSetupLink.href = googlesitekit.admin.proxySetupURL;
+							}
+
+							startSetupLink.addEventListener( 'click' , function() {
+								if ( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
+									sendAnalyticsTrackingEvent( 'plugin_setup', googlesitekit.admin.proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
+								}
+							} );
+
+							optInCheckbox.addEventListener( 'change' , function( event ) {
+								if ( event.target.disabled ) {
+									event.preventDefault();
+									return;
+								}
+
+								var checked = event.target.checked;
+
+								var body = {
+									googlesitekit_tracking_optin: checked,
+								};
+								var self = this;
+
+								event.target.disabled = true;
+
+								wp.apiFetch( {
+									path: '/wp/v2/settings',
+									headers: {
+										'Content-Type': 'application/json; charset=UTF-8',
+									},
+									body: JSON.stringify( body ),
+									method: 'POST',
+								} )
+									.then( function() {
+										event.target.disabled = null;
+										window.googlesitekitTrackingEnabled = !! checked;
+
+										var trackingId = googlesitekit.admin.trackingID;
+										var trackingScriptPresent = document.querySelector( 'script[src="https://www.googletagmanager.com/gtag/js?id=' + trackingId + '"]' );
+
+										if ( ! trackingScriptPresent ) {
+											document.body.insertAdjacentHTML( 'beforeend', '\<script async src="https://www.googletagmanager.com/gtag/js?id=' + trackingId + '"\>\</script\>' );<?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+											document.body.insertAdjacentHTML( 'beforeend', "\<script\>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '" + trackingId + "');\</script\>" );
+										}
+									} )
+									.catch( function( err ) {
+										event.target.checked = ! checked;
+										event.target.disabled = false;
+									} );
+							} );
+						} );
 					</script>
 					<div class="googlesitekit-plugin">
 						<div class="googlesitekit-activation">
@@ -165,7 +236,7 @@ final class Activation {
 								<div class="mdc-layout-grid__inner">
 									<div class="
 										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-7
+										mdc-layout-grid__cell--span-12
 									">
 										<div class="googlesitekit-logo">
 											<?php
@@ -186,20 +257,49 @@ final class Activation {
 											); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
 											?>
 										</div>
-										<h3 class="googlesitekit-heading-1 googlesitekit-activation__title">
+										<h3 class="googlesitekit-heading-3 googlesitekit-activation__title">
 											<?php esc_html_e( 'Congratulations, the Site Kit plugin is now activated.', 'google-site-kit' ); ?>
 										</h3>
-									</div>
-									<div class="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--start-8-desktop
-										mdc-layout-grid__cell--offset-1-desktop
-										mdc-layout-grid__cell--align-middle
-									">
-										<a href="#" onClick="javascript:if( 'undefined' !== typeof sendAnalyticsTrackingEvent ) { sendAnalyticsTrackingEvent( 'plugin_setup', 'goto_sitekit' ) };document.location='<?php echo esc_url( $sitekit_splash_url ); ?>';"
-											class="googlesitekit-activation__button mdc-button mdc-button--raised">
+
+										<a id="start-setup-link" href="<?php echo esc_url( $sitekit_splash_url ); ?>" class="googlesitekit-activation__button googlesitekit-activation__start-setup mdc-button mdc-button--raised">
 											<?php esc_html_e( 'Start Setup', 'google-site-kit' ); ?>
 										</a>
+
+										<div class="googlesitekit-opt-in googlesitekit-activation__opt-in">
+											<div class="mdc-form-field">
+												<div class="mdc-checkbox mdc-checkbox--upgraded mdc-ripple-upgraded mdc-ripple-upgraded--unbounded">
+													<input class="mdc-checkbox__native-control" type="checkbox" id="googlesitekit-opt-in" value="1" />
+													<div class="mdc-checkbox__background">
+														<svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+															<path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
+														</svg>
+														<div class="mdc-checkbox__mixedmark">
+														</div>
+													</div>
+												</div>
+												<label for="googlesitekit-opt-in">
+													<?php
+														$locale = str_replace( '_', '-', get_locale() );
+														echo wp_kses(
+															sprintf(
+																// translators: %s: https://policies.google.com/privacy?hl=LOCALE (where LOCALE is the current WordPress locale, translating the privacy policy if a translation exists).
+																__(
+																	'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with <a href="%s" rel="noopener noreferrer">Google Privacy Policy</a>.',
+																	'google-site-kit'
+																),
+																"https://policies.google.com/privacy?hl=${locale}"
+															),
+															array(
+																'a' => array(
+																	'href' => array(),
+																	'rel' => array(),
+																),
+															)
+														)
+													?>
+												</label>
+											</div>
+										</div>
 									</div>
 								</div>
 							</div>
