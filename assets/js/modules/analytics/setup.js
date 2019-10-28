@@ -80,7 +80,7 @@ class AnalyticsSetup extends Component {
 		this.processPropertyChange = this.processPropertyChange.bind( this );
 		this.handleSubmit = this.handleSubmit.bind( this );
 		this.handleRadioClick = this.handleRadioClick.bind( this );
-		this.handleAMPClientIdSwitch = this.handleAMPClientIdSwitch.bind( this );
+		this.handleAMPClientIDSwitch = this.handleAMPClientIDSwitch.bind( this );
 		this.handleRefetchAccount = this.handleRefetchAccount.bind( this );
 	}
 
@@ -252,8 +252,8 @@ class AnalyticsSetup extends Component {
 		try {
 			// Send existing tag data to get account.
 			const queryArgs = existingTagData ? {
-				existingAccountId: existingTagData.accountId,
-				existingPropertyId: existingTagData.propertyId,
+				existingAccountID: existingTagData.accountId, // Capitalization rule exception: `accountId` is a property of an API returned value.
+				existingPropertyID: existingTagData.propertyId, // Capitalization rule exception: `propertyId` is a property of an API returned value.
 			} : {};
 
 			const responseData = await data.get( TYPE_MODULES, 'analytics', 'accounts-properties-profiles', queryArgs );
@@ -273,10 +273,10 @@ class AnalyticsSetup extends Component {
 				}
 
 				if ( matchedProperty ) {
-					selectedAccount = matchedProperty.accountId;
+					selectedAccount = matchedProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 					selectedProperty = matchedProperty.id;
 					const matchedProfile = responseData.profiles.find( ( profile ) => {
-						return profile.accountId === selectedAccount;
+						return profile.accountId === selectedAccount; // Capitalization rule exception: `accountId` is a property of an API returned value.
 					} );
 					if ( matchedProfile ) {
 						selectedProfile = matchedProfile.id;
@@ -472,6 +472,7 @@ class AnalyticsSetup extends Component {
 		if ( propertyID === '0' ) {
 			internalWebPropertyID = '0';
 		} else {
+			// Capitalization rule exception: `internalWebPropertyId` is a property of an API returned value.
 			internalWebPropertyID = selectedinternalWebProperty || ( properties[ 0 ].internalWebPropertyId || properties[ 0 ].internalWebPropertyId === 0 ? properties[ 0 ].internalWebPropertyId.toString() : null );
 		}
 
@@ -539,7 +540,7 @@ class AnalyticsSetup extends Component {
 		sendAnalyticsTrackingEvent( 'analytics_setup', useSnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled' );
 	}
 
-	handleAMPClientIdSwitch( ) {
+	handleAMPClientIDSwitch( ) {
 		this.setState( {
 			ampClientIDOptIn: ! this.state.ampClientIDOptIn,
 		} );
@@ -625,7 +626,7 @@ class AnalyticsSetup extends Component {
 						<Switch
 							id="ampClientIDOptIn"
 							label={ __( 'Opt in AMP Client ID', 'google-site-kit' ) }
-							onClick={ this.handleAMPClientIdSwitch }
+							onClick={ this.handleAMPClientIDSwitch }
 							checked={ ampClientIDOptIn }
 							hideLabel={ false }
 						/>
