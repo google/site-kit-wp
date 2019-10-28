@@ -14,22 +14,44 @@ namespace Google\Site_Kit;
 define( 'GOOGLESITEKIT_PLUGIN_BASENAME', plugin_basename( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 define( 'GOOGLESITEKIT_PLUGIN_DIR_PATH', plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-// Autoload files.
-require_once GOOGLESITEKIT_PLUGIN_DIR_PATH . 'includes/vendor/autoload.php';
-require_once GOOGLESITEKIT_PLUGIN_DIR_PATH . 'third-party/vendor/autoload.php';
+/**
+ * Loads generated class maps for autoloading.
+ *
+ * @since 1.0.0
+ * @access private
+ */
+function autoload_classes() {
+	$class_map = array_merge(
+		// Site Kit classes.
+		include GOOGLESITEKIT_PLUGIN_DIR_PATH . 'includes/vendor/composer/autoload_classmap.php',
+		// Third-party classes.
+		include GOOGLESITEKIT_PLUGIN_DIR_PATH . 'third-party/vendor/composer/autoload_classmap.php'
+	);
+
+	spl_autoload_register(
+		function ( $class ) use ( $class_map ) {
+			if ( isset( $class_map[ $class ] ) ) {
+				require_once $class_map[ $class ];
+
+				return true;
+			}
+		},
+		true,
+		true
+	);
+}
+autoload_classes();
 
 /**
- * Loads vendor files containing functions etc.
- *
- * This integrates with the dependency prefixing script. Its autoloader loads all classes, but not the other files.
+ * Loads files containing functions from generated file map.
  *
  * @since 1.0.0
  * @access private
  */
 function autoload_vendor_files() {
-	$files = require GOOGLESITEKIT_PLUGIN_DIR_PATH . 'third-party/vendor/composer/autoload_files.php';
+	// Third-party files.
+	$files = require GOOGLESITEKIT_PLUGIN_DIR_PATH . 'third-party/vendor/autoload_files.php';
 	foreach ( $files as $file_identifier => $file ) {
-		$file = str_replace( 'third-party/vendor', 'third-party', $file );
 		if ( file_exists( $file ) ) {
 			require_once $file;
 		}
