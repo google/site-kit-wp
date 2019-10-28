@@ -219,17 +219,8 @@ final class Activation {
 										var trackingScriptPresent = document.querySelector( 'script[src="https://www.googletagmanager.com/gtag/js?id=' + trackingId + '"]' );
 
 										if ( ! trackingScriptPresent ) {
-											document.body.insertAdjacentHTML( 'beforeend', '
-												\<script async src="https://www.googletagmanager.com/gtag/js?id=' + trackingId + '"\>\</script\><?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-											' );
-											document.body.insertAdjacentHTML( 'beforeend', "
-												\<script\>
-													window.dataLayer = window.dataLayer || [];
-													function gtag(){dataLayer.push(arguments);}
-													gtag('js', new Date());
-													gtag('config', '" + trackingId + "');
-												\</script\>
-											" );
+											document.body.insertAdjacentHTML( 'beforeend', '\<script async src="https://www.googletagmanager.com/gtag/js?id=' + trackingId + '"\>\</script\>' );<?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+											document.body.insertAdjacentHTML( 'beforeend', "\<script\>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '" + trackingId + "');\</script\>" );
 										}
 									} )
 									.catch( function( err ) {
