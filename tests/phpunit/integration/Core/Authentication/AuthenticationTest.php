@@ -39,8 +39,6 @@ class AuthenticationTest extends TestCase {
 
 		// Authentication::handle_oauth is invoked on init but we cannot test it due to use of filter_input.
 		$this->assertTrue( has_action( 'init' ) );
-		// Unable to test for sensitive scopes warning due to use of filter_input.
-		$this->assertTrue( has_action( 'admin_head' ) );
 
 		$this->assertAdminDataExtended();
 		$this->assertSetupDataExtended();
