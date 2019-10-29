@@ -53,7 +53,6 @@ class AuthenticationTest extends TestCase {
 		);
 		$this->assertEqualSets(
 			array(
-				'googlesitekit_user_disconnected',
 				'needs_reauthentication',
 				'oauth_error',
 			),
