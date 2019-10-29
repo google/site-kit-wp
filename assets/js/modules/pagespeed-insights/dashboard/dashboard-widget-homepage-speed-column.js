@@ -40,7 +40,7 @@ const { Component } = wp.element;
 const { __ } = wp.i18n;
 
 const isZeroData = ( data ) => {
-	return data.categories.performance.score < 0.01;
+	return 0 === data.categories.performance.score;
 };
 
 class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
