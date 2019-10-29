@@ -42,13 +42,15 @@
     "post-update-cmd": [
       "@prefix-dependencies"
     ],
+    "post-autoload-dump": [
+      "@autoload-includes",
+      "@autoload-third-party",
+      "cp vendor/composer/autoload_files.php third-party/vendor/"
+    ],
     "prefix-dependencies": [
       "rm -rf php-scoper",
       "@install-php-scoper",
       "php-scoper/vendor/bin/php-scoper add --output-dir=./third-party --force --quiet",
-      "@autoload-includes",
-      "@autoload-third-party",
-      "cp vendor/composer/autoload_files.php third-party/vendor/",
       "rm -rf php-scoper"
     ],
     "autoload-includes": [
