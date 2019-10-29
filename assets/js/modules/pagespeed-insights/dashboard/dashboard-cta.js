@@ -11,7 +11,7 @@ import {
 /**
  * Internal dependencies
  */
-import { getReAuthURL } from '../../../util';
+import { getReAuthUrl } from '../../../util';
 
 /**
  * WordPress dependencies
@@ -33,7 +33,7 @@ const PageSpeedInsightsCTA = () => {
 	const handleSetUpClick = async () => {
 		try {
 			await activateOrDeactivateModule( data, 'pagespeed-insights', true );
-			window.location = getReAuthURL( 'pagespeed-insights' );
+			window.location = getReAuthUrl( 'pagespeed-insights' );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'pagespeed-insights-setup-error',

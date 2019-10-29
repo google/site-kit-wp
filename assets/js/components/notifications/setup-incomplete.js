@@ -22,7 +22,7 @@
  */
 import CTA from 'GoogleComponents/notifications/cta';
 import ctaWrapper from 'GoogleComponents/notifications/cta-wrapper';
-import { getReAuthURL } from 'GoogleUtil';
+import { getReAuthUrl } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -48,7 +48,7 @@ const getSetupIncompleteComponent = ( module, inGrid = false, fullWidth = false,
 		description={ sprintf( __( '%s module needs to be configured', 'google-site-kit' ), name ) }
 		ctaLabel={ __( 'Complete activation', 'google-site-kit' ) }
 		onClick={ () => {
-			window.location = getReAuthURL( module, true );
+			window.location = getReAuthUrl( module, true );
 		} }
 	/>;
 

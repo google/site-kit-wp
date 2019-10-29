@@ -31,7 +31,7 @@ import ModuleSetupIncomplete from 'GoogleComponents/settings/module-setup-incomp
 import {
 	activateOrDeactivateModule,
 	refreshAuthentication,
-	getReAuthURL,
+	getReAuthUrl,
 	moduleIcon,
 	showErrorNotification,
 } from 'GoogleUtil';
@@ -102,7 +102,7 @@ class SettingsModule extends Component {
 				active: newActiveState,
 			} );
 
-			window.location = getReAuthURL( this.props.slug, false );
+			window.location = getReAuthUrl( this.props.slug, false );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'activate-module-error',

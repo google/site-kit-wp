@@ -23,7 +23,7 @@ import { map } from 'lodash';
 import data from 'SiteKitCore/components/data';
 import {
 	refreshAuthentication,
-	getReAuthURL,
+	getReAuthUrl,
 	activateOrDeactivateModule,
 	showErrorNotification,
 	moduleIcon,
@@ -62,7 +62,7 @@ class ModulesList extends Component {
 			await refreshAuthentication();
 
 			// Redirect to ReAuthentication URL
-			window.location = getReAuthURL( slug, true );
+			window.location = getReAuthUrl( slug, true );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'setup-module-error',
