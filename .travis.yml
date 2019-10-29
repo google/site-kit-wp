@@ -38,6 +38,8 @@ branches:
 
 # Before install, failures in this section will result in build status 'errored'
 before_install:
+  - nvm install
+  - nvm use
   - npm install || exit 1
   - docker run --rm -v "$PWD:/app" composer install
   - |
