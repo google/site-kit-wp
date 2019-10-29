@@ -22,7 +22,6 @@ import Dialog from 'GoogleComponents/dialog';
 import Button from 'GoogleComponents/button';
 import Menu from 'GoogleComponents/menu';
 import { clearAppLocalStorage } from 'GoogleUtil';
-import data, { TYPE_CORE } from 'GoogleComponents/data';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
 
 const { Component, Fragment, createRef } = wp.element;
@@ -120,9 +119,6 @@ class UserMenu extends Component {
 
 	// Log the user out if they confirm the dialog.
 	async handleUnlinkConfirm() {
-		// Disconnect the user.
-		await data.set( TYPE_CORE, 'user', 'disconnect' );
-
 		// Close the modal.
 		this.setState( {
 			dialogActive: false,
