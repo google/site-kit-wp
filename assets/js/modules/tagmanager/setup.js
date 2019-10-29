@@ -414,7 +414,7 @@ class TagmanagerSetup extends Component {
 									{
 										0 === container.publicId ? // Capitalization rule exception: `publicId` is a property of an API returned value.
 											__( 'Set up a new container', 'google-site-kit' ) :
-											container.publicId /* Capitalization rule exception: `publicId` is a property of an API returned value. */
+											container.name
 									}
 								</Option> ) }
 						</Select>
