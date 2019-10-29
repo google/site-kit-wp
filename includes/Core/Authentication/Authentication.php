@@ -277,9 +277,7 @@ final class Authentication {
 	 * @since 1.0.0
 	 */
 	public function disconnect() {
-		$auth_client = $this->get_oauth_client();
-
-		$auth_client->revoke_token();
+		$this->get_oauth_client()->revoke_token();
 
 		$this->user_options->delete( Clients\OAuth_Client::OPTION_ACCESS_TOKEN );
 		$this->user_options->delete( Clients\OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN );
