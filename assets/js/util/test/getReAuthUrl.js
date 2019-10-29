@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { getReAuthUrl } from '../';
+import { getReAuthURL } from '../';
 
 const createSiteKit = ( apiKey ) => {
 	return {
@@ -24,12 +24,12 @@ const createSiteKit = ( apiKey ) => {
 	};
 };
 
-describe( 'getReAuthUrl', () => {
+describe( 'getReAuthURL', () => {
 	it( 'should return URL for slug with status/API key', () => {
 		let googlesitekit = createSiteKit( false );
 
 		expect(
-			getReAuthUrl( 'pagespeed-insights', false, googlesitekit )
+			getReAuthURL( 'pagespeed-insights', false, googlesitekit )
 		).toStrictEqual(
 			'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=pagespeed-insights&notification=authentication_success'
 		);
@@ -37,7 +37,7 @@ describe( 'getReAuthUrl', () => {
 		googlesitekit = createSiteKit( false );
 
 		expect(
-			getReAuthUrl( 'pagespeed-insights', true, googlesitekit )
+			getReAuthURL( 'pagespeed-insights', true, googlesitekit )
 		).toStrictEqual(
 			'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&slug=pagespeed-insights&notification=authentication_success'
 		);
@@ -45,7 +45,7 @@ describe( 'getReAuthUrl', () => {
 		googlesitekit = createSiteKit( 'abc123' );
 
 		expect(
-			getReAuthUrl( 'pagespeed-insights', false, googlesitekit )
+			getReAuthURL( 'pagespeed-insights', false, googlesitekit )
 		).toStrictEqual(
 			'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=pagespeed-insights&notification=authentication_success'
 		);
@@ -53,7 +53,7 @@ describe( 'getReAuthUrl', () => {
 		googlesitekit = createSiteKit( 'abc123' );
 
 		expect(
-			getReAuthUrl( 'pagespeed-insights', true, googlesitekit )
+			getReAuthURL( 'pagespeed-insights', true, googlesitekit )
 		).toStrictEqual(
 			'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&slug=pagespeed-insights&notification=authentication_success'
 		);

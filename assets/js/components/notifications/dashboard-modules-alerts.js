@@ -21,12 +21,12 @@
  */
 import Notification from 'GoogleComponents/notifications/notification';
 import { modulesNotificationsToRequest, getModulesNotifications } from 'GoogleComponents/notifications/util';
+import { each } from 'lodash';
 
 /**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
-import { each } from 'lodash';
 import { __ } from '@wordpress/i18n';
 
 class DashboardModulesAlerts extends Component {

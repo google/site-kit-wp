@@ -22,7 +22,7 @@
 import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import {
 	getSiteKitAdminURL,
-	getReAuthUrl,
+	getReAuthURL,
 	sendAnalyticsTrackingEvent,
 } from 'GoogleUtil';
 import { each, find, filter } from 'lodash';
@@ -138,7 +138,7 @@ export async function getAdSenseAccountStatus( statusUpdateCallback, existingTag
 					statusMessage = __( 'We’ve found some AdSense code on your site, but it’s not linked to this Google account.', 'google-site-kit' );
 					profile = false;
 					ctaLinkText = __( 'Switch Google account', 'google-site-kit' );
-					ctaLink = getReAuthUrl( 'adsense', true );
+					ctaLink = getReAuthURL( 'adsense', true );
 					buttonLink = true;
 					switchLabel = __( 'Let Site Kit place code on your site to get your site approved', 'google-site-kit' );
 					continueAction = {
@@ -164,7 +164,7 @@ export async function getAdSenseAccountStatus( statusUpdateCallback, existingTag
 					footerText = __( 'Already have an AdSense account?', 'google-site-kit' );
 					footerAppendedText = __( 'to connect to it', 'google-site-kit' );
 					footerCTA = __( 'Switch Google account', 'google-site-kit' );
-					footerCTALink = getReAuthUrl( 'adsense', true );
+					footerCTALink = getReAuthURL( 'adsense', true );
 					tracking = {
 						eventCategory: 'adsense_setup',
 						eventName: 'create_adsense_account',
@@ -317,7 +317,7 @@ export async function getAdSenseAccountStatus( statusUpdateCallback, existingTag
 							statusMessage = __( 'We’ve found some AdSense code on your site, but it’s not linked to this AdSense account.', 'google-site-kit' );
 							profile = false;
 							ctaLinkText = __( 'Switch Google account', 'google-site-kit' );
-							ctaLink = getReAuthUrl( 'adsense', true );
+							ctaLink = getReAuthURL( 'adsense', true );
 							buttonLink = true;
 							continueAction = {
 								accountStatus: 'account-connected',

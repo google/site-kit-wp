@@ -357,7 +357,7 @@ export const refreshAuthentication = async () => {
  * @param {string}  slug   The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
  * @param {boolean} status The module activation status.
  */
-export const getReAuthUrl = ( slug, status, _googlesitekit = googlesitekit ) => {
+export const getReAuthURL = ( slug, status, _googlesitekit = googlesitekit ) => {
 	const {
 		connectURL,
 		adminRoot,
