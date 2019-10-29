@@ -38,7 +38,7 @@ function stubGoogleSignIn( request ) {
 	}
 }
 
-const signOut = async () => {
+const disconnectFromSiteKit = async () => {
 	await page.waitForSelector( 'button[aria-controls="user-menu"]' );
 	await page.click( 'button[aria-controls="user-menu"]' );
 
@@ -83,7 +83,7 @@ describe( 'Site Kit set up flow for the first time', () => {
 		await setSearchConsoleProperty();
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
-		await signOut();
+		await disconnectFromSiteKit();
 
 		await expect( page ).toMatchElement(
 			'.notice-success',
