@@ -47,22 +47,6 @@
 		}
 	}
 
-	.googlesitekit-logo__logo-sitekit--beta,
-	.googlesitekit-svg-logo-sitekit-beta {
-		fill: currentColor;
-		height: 18px;
-		margin-left: $grid-gap-phone / 2;
-		margin-top: 2px;
-		vertical-align: middle;
-		width: 132px;
-
-		@media (min-width: $bp-tablet) {
-			height: 28px;
-			margin-left: $grid-gap-phone;
-			width: 206px;
-		}
-	}
-
 	&--mini {
 
 		.googlesitekit-logo__logo-g,
@@ -76,13 +60,6 @@
 			height: 17px;
 			margin-left: $grid-gap-phone / 4;
 			width: 78px;
-		}
-
-		.googlesitekit-logo__logo-sitekit--beta,
-		.googlesitekit-svg-logo-sitekit-beta {
-			height: 17px;
-			margin-left: $grid-gap-phone / 2;
-			width: 102px;
 		}
 	}
 }

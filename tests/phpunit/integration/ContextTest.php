@@ -154,12 +154,6 @@ class ContextTest extends TestCase {
 		$this->assertEquals( 'https://test.com/hello-world/', $context->get_reference_permalink( $post_id ) );
 	}
 
-	public function test_is_beta() {
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-
-		$this->assertEquals( false !== strpos( GOOGLESITEKIT_VERSION, 'beta' ), $context->is_beta() );
-	}
-
 	/**
 	 * @group ms-excluded
 	 */
