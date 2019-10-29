@@ -38,6 +38,10 @@ import {
 const { Component } = wp.element;
 const { __ } = wp.i18n;
 
+const isZeroData = ( data ) => {
+	return data.categories.performance.score < 0.01;
+};
+
 class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
 	componentDidMount() {
 		const {
@@ -129,6 +133,7 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedMobile = withData(
 	{
 		inGrid: true,
 	},
+	isZeroData
 );
 
 export const PageSpeedInsightsDashboardWidgetHomepageSpeedDesktop = withData(
@@ -151,4 +156,5 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedDesktop = withData(
 	{
 		inGrid: true,
 	},
+	isZeroData
 );
