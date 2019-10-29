@@ -96,7 +96,6 @@ final class Dashboard {
 		if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
 			return;
 		}
-		$is_beta = $this->context->is_beta();
 
 		$logo = $this->assets->svg_sprite(
 			'logo-g',
@@ -107,10 +106,10 @@ final class Dashboard {
 		); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped.
 
 		$logo_text = $this->assets->svg_sprite(
-			'logo-sitekit' . ( $is_beta ? '-beta' : '' ),
+			'logo-sitekit',
 			[
 				'height' => '17',
-				'width'  => ( $is_beta ? '102' : '78' ),
+				'width'  => '78',
 			]
 		); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped.
 

@@ -22,14 +22,13 @@ import Dialog from 'GoogleComponents/dialog';
 import Button from 'GoogleComponents/button';
 import Menu from 'GoogleComponents/menu';
 import { clearAppLocalStorage } from 'GoogleUtil';
-import data, { TYPE_CORE } from 'GoogleComponents/data';
+import { getSiteKitAdminURL } from 'SiteKitCore/util';
 
 /**
  * WordPress dependencies
  */
 import { Component, Fragment, createRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { addQueryArgs } from '@wordpress/url';
 
 class UserMenu extends Component {
 	constructor( props ) {
@@ -123,9 +122,6 @@ class UserMenu extends Component {
 
 	// Log the user out if they confirm the dialog.
 	async handleUnlinkConfirm() {
-		// Disconnect the user.
-		await data.set( TYPE_CORE, 'user', 'disconnect' );
-
 		// Close the modal.
 		this.setState( {
 			dialogActive: false,
@@ -134,13 +130,13 @@ class UserMenu extends Component {
 		// Clear caches.
 		clearAppLocalStorage();
 
-		// Return to the Site Kit Dashboard.
-		const { adminRoot } = googlesitekit.admin;
-
-		document.location = addQueryArgs( adminRoot.replace( 'admin.php', '' ),
+		// Navigate back to the splash screen to reconnect.
+		document.location = getSiteKitAdminURL(
+			'googlesitekit-splash',
 			{
-				notification: 'googlesitekit_user_disconnected',
-			} );
+				googlesitekit_context: 'revoked',
+			}
+		);
 	}
 
 	render() {

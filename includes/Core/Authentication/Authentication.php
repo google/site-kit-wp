@@ -277,9 +277,7 @@ final class Authentication {
 	 * @since 1.0.0
 	 */
 	public function disconnect() {
-		$auth_client = $this->get_oauth_client();
-
-		$auth_client->revoke_token();
+		$this->get_oauth_client()->revoke_token();
 
 		$this->user_options->delete( Clients\OAuth_Client::OPTION_ACCESS_TOKEN );
 		$this->user_options->delete( Clients\OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN );
@@ -607,40 +605,8 @@ final class Authentication {
 
 		$notices[] = $this->get_reauthentication_needed_notice();
 		$notices[] = $this->get_authentication_oauth_error_notice();
-		$notices[] = $this->get_disconnected_user_notice();
 
 		return $notices;
-	}
-
-	/**
-	 * Gets disconnected user notice.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return Notice Notice object.
-	 */
-	private function get_disconnected_user_notice() {
-		return new Notice(
-			'googlesitekit_user_disconnected',
-			array(
-				'content'         => function() {
-					ob_start();
-					?>
-					<p>
-						<?php esc_html_e( 'Successfully disconnected from Site Kit by Google.', 'google-site-kit' ); ?>
-					</p>
-					<?php
-					return ob_get_clean();
-				},
-				'type'            => Notice::TYPE_SUCCESS,
-				'active_callback' => function() {
-					if ( isset( $_GET['notification'] ) && 'googlesitekit_user_disconnected' === $_GET['notification'] ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-						return true;
-					}
-					return false;
-				},
-			)
-		);
 	}
 
 	/**

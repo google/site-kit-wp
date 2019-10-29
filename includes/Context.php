@@ -221,15 +221,6 @@ final class Context {
 	}
 
 	/**
-	 * Gets the current version is beta released.
-	 *
-	 * @return bool True if the version is in beta mode, false otherwise.
-	 */
-	public function is_beta() {
-		return false !== strpos( GOOGLESITEKIT_VERSION, 'beta' );
-	}
-
-	/**
 	 * Checks whether AMP content is being served.
 	 *
 	 * @since 1.0.0
