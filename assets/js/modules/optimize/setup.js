@@ -72,7 +72,7 @@ class OptimizeSetup extends Component {
 			OptimizeIDValidated: true,
 		};
 
-		this.handleOptimizeIdEntry = this.handleOptimizeIdEntry.bind( this );
+		this.handleOptimizeIDEntry = this.handleOptimizeIDEntry.bind( this );
 		this.handleSubmit = this.handleSubmit.bind( this );
 		this.renderInstructionInfo = this.renderInstructionInfo.bind( this );
 		this.handleAMPOptimizeEntry = this.handleAMPOptimizeEntry.bind( this );
@@ -162,7 +162,7 @@ class OptimizeSetup extends Component {
 		} );
 	}
 
-	handleOptimizeIdEntry( e ) {
+	handleOptimizeIDEntry( e ) {
 		const validOptimizeID = validateOptimizeID( e.target.value );
 		if ( this._isMounted ) {
 			this.setState( {
@@ -302,7 +302,7 @@ class OptimizeSetup extends Component {
 						` }
 						label={ __( 'Optimize Container ID', 'google-site-kit' ) }
 						name="optimizeID"
-						onChange={ this.handleOptimizeIdEntry }
+						onChange={ this.handleOptimizeIDEntry }
 						helperText={ <HelperText>{ __( 'Format: GTM-XXXXXXX.', 'google-site-kit' ) }</HelperText> }
 						outlined
 						required

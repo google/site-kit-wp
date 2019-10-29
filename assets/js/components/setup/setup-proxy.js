@@ -22,6 +22,7 @@
 import Header from 'GoogleComponents/header';
 import Button from 'GoogleComponents/button';
 import Layout from 'GoogleComponents/layout/layout';
+import Optin from 'GoogleComponents/optin';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
 
@@ -98,11 +99,12 @@ class SetupUsingProxy extends Component {
 														<Button
 															href={ proxySetupURL }
 															onClick={ () => {
-																sendAnalyticsTrackingEvent( 'plugin_setup', 'signin_with_google' );
+																sendAnalyticsTrackingEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
 															} }
 														>
 															{ __( 'Start setup', 'google-site-kit' ) }
 														</Button>
+														<Optin />
 													</div>
 												</div>
 											</div>

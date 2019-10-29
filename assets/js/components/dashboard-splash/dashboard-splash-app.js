@@ -116,7 +116,11 @@ class DashboardSplashApp extends Component {
 
 		const { proxySetupURL } = googlesitekit.admin;
 
-		if ( ! this.state.showAuthenticationSetupWizard && ! this.state.showModuleSetupWizard ) {
+		// If `proxySetupURL` is set it means the proxy is in use. We should never
+		// show the GCP splash screen when the proxy is being used, so skip this
+		// when `proxySetupURL` is set.
+		// See: https://github.com/google/site-kit-wp/issues/704.
+		if ( ! proxySetupURL && ! this.state.showAuthenticationSetupWizard && ! this.state.showModuleSetupWizard ) {
 			let introDescription, outroDescription, buttonLabel, onButtonClick;
 
 			switch ( this.state.buttonMode ) {
@@ -152,7 +156,7 @@ class DashboardSplashApp extends Component {
 
 		let Setup = null;
 
-		// proxySetupURL is only set if the proxy is in use.
+		// `proxySetupURL` is only set if the proxy is in use.
 		if ( proxySetupURL ) {
 			Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wizard-proxy" */'../setup/setup-proxy' ) );
 		} else if ( this.state.showAuthenticationSetupWizard ) {
