@@ -149,7 +149,6 @@ final class Plugin {
 		( new Core\Util\Activation( $this->context, $options, $assets ) )->register();
 		( new Core\Util\Beta_Migration( $this->context ) )->register();
 		( new Core\Util\Uninstallation( $reset ) )->register();
-		( new Core\Util\Updater() )->register();
 
 		if ( defined( 'WP_DEBUG' ) && true === WP_DEBUG ) {
 			add_filter(
