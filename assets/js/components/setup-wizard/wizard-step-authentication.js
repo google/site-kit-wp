@@ -84,10 +84,7 @@ class WizardStepAuthentication extends Component {
 								}
 							</p>
 							<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
-								<Optin
-									id="opt-in"
-									name="optin"
-								/>
+								<Optin />
 								<HelpLink />
 							</div>
 						</div>
