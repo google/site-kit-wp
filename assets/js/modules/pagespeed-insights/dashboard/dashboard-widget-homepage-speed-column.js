@@ -20,6 +20,7 @@
  * External dependencies
  */
 import withData from 'GoogleComponents/higherorder/withdata';
+import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
 import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds } from 'GoogleUtil';
 import {
@@ -59,6 +60,14 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
 		// Waiting for withData resolution.
 		if ( ! data || data.error ) {
 			return null;
+		}
+
+		if ( isZeroData( data ) ) {
+			return getDataErrorComponent(
+				__( 'PageSpeed Insights', 'google-site-kit' ),
+				__( 'An unknown error occurred while trying to fetch PageSpeed Insights data. Please try again later.', 'google-site-kit' ),
+				true
+			);
 		}
 
 		const headers = [];
@@ -133,7 +142,6 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedMobile = withData(
 	{
 		inGrid: true,
 	},
-	isZeroData
 );
 
 export const PageSpeedInsightsDashboardWidgetHomepageSpeedDesktop = withData(
@@ -156,5 +164,4 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedDesktop = withData(
 	{
 		inGrid: true,
 	},
-	isZeroData
 );
