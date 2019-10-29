@@ -63,7 +63,7 @@ For more information, visit the [official Site Kit website](https://sitekit.with
 
 = Where should I submit my support request? =
 
-First, check our [troubleshooting guide](https://dev-site-kit.pantheonsite.io/documentation/fix-common-issues/). If you're still experiencing issues, use the [wordpress.org support forums](https://wordpress.org/support/plugin/google-site-kit). If you have a technical issue with the plugin where you already have more insight on how to fix it, you can also [open an issue on GitHub instead](https://github.com/google/site-kit-wp/issues).
+First, check our [troubleshooting guide](https://sitekit.withgoogle.com/documentation/fix-common-issues/). If you're still experiencing issues, use the [wordpress.org support forums](https://wordpress.org/support/plugin/google-site-kit). If you have a technical issue with the plugin where you already have more insight on how to fix it, you can also [open an issue on GitHub instead](https://github.com/google/site-kit-wp/issues).
 
 = Is Site Kit free? =
 
