@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { each, isArray } from 'lodash';
+import { each } from 'lodash';
 import getNoDataComponent from 'GoogleComponents/notifications/nodata';
 import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
 import getSetupIncompleteComponent from 'GoogleComponents/notifications/setup-incomplete';
@@ -192,7 +192,7 @@ const withData = (
 			// Resolve all selectedData.
 			each( selectData, ( data ) => {
 				// Handle single contexts, or arrays of contexts.
-				if ( isArray( data.context ) ) {
+				if ( Array.isArray( data.context ) ) {
 					each( data.context, ( acontext ) => {
 						/**
 						 * Request data for the context.

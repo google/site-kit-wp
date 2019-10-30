@@ -15,7 +15,7 @@
     "release-zip-wp50": "npm run build && gulp release && gulp copy && gulp pre-zip-wp50 && gulp zip-wp50 && rm -rf release",
     "release": "rm -rf release && git worktree prune && git worktree add -B stable release origin/stable && npm run build && gulp release && gulp copy",
     "remove-dist": "rm -rf dist/*",
-    "test": "webpack --mode=production --verbose && bundlesize",
+    "test": "webpack --mode=production && bundlesize",
     "test:visualtest": "npm run build && start-server-and-test storybook http-get://localhost:9001 backstopjs",
     "test:visualapprove": "backstop approve --config=backstop.js",
     "test:analyze": "webpack -p --mode=production --env.analyze=true --json --progress --profile > /tmp/stats.json && cp ./dist/assets/js/*.js /tmp && webpack-bundle-analyzer /tmp/stats.json",
@@ -118,10 +118,10 @@
     "@wordpress/api-fetch": "^3.5.0",
     "@wordpress/babel-preset-default": "^4.5.0",
     "@wordpress/browserslist-config": "^2.6.0",
-    "@wordpress/components": "^7.2.0",
+    "@wordpress/components": "^8.3.0",
     "@wordpress/dom-ready": "^2.2.0",
     "@wordpress/e2e-test-utils": "^2.1.0",
-    "@wordpress/element": "^2.3.0",
+    "@wordpress/element": "^2.8.0",
     "@wordpress/eslint-plugin": "^2.4.0",
     "@wordpress/hooks": "^2.2.0",
     "@wordpress/i18n": "^3.3.0",
@@ -141,8 +141,6 @@
     "cssnano": "^4.1.10",
     "element-closest": "^2.0.2",
     "eslint": "^6.4.0",
-    "eslint-config-standard": "^11.0.0",
-    "eslint-config-wordpress": "^2.0.0",
     "eslint-loader": "^2.1.2",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jest": "^22.15.2",
@@ -180,6 +178,7 @@
     "require-dir": "^1.2.0",
     "run-sequence": "^2.2.1",
     "sass-loader": "^7.0.3",
+    "svgo": "^1.3.0",
     "start-server-and-test": "^1.7.13",
     "storybook-chrome-screenshot": "^1.4.0",
     "stylelint": "^9.10.1",
@@ -195,6 +194,5 @@
     "webpack-stream": "^5.2.1",
     "webpackbar": "^3.1.5",
     "whatwg-fetch": "^3.0.0"
-  },
-  "dependencies": {}
+  }
 }
