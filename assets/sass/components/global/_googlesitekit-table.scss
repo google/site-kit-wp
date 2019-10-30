@@ -173,6 +173,15 @@
 		}
 	}
 
+	.googlesitekit-table__body-item-content .googlesitekit-cta-link {
+
+		@media (max-width: $bp-tablet) {
+			display: block;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	}
+
 	.googlesitekit-wp-dashboard & .googlesitekit-table__body-item-link {
 		background-image: none;
 	}
