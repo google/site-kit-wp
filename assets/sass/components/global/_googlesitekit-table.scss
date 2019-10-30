@@ -65,6 +65,10 @@
 			padding-right: 0;
 		}
 
+		&--primary {
+			width: 50%;
+		}
+
 		.googlesitekit-table-overflow &:last-child {
 			padding-right: $grid-gap-phone;
 
@@ -101,6 +105,10 @@
 				left: 0;
 			}
 		}
+	}
+
+	.googlesitekit-table__wrapper--2-col .googlesitekit-table__head-item--primary {
+		width: 75%;
 	}
 
 	.googlesitekit-table__body {
