@@ -46,6 +46,7 @@
 	.googlesitekit-table__head-item {
 		color: $c-secondary;
 		font-weight: $fw-primary-medium;
+		hyphens: auto;
 		outline: 0;
 		padding: 0 ($grid-gap-phone / 2) ($grid-gap-phone / 2) ($grid-gap-phone / 2);
 		position: relative;
