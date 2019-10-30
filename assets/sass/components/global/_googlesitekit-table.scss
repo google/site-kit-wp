@@ -52,6 +52,7 @@
 		position: relative;
 		text-align: right;
 		text-decoration: none;
+		white-space: normal;
 
 		@media (min-width: $bp-desktop) {
 			padding: 0 ($grid-gap-desktop / 2) ($grid-gap-desktop / 2) ($grid-gap-desktop / 2);
