@@ -80,7 +80,7 @@ export const getDataTableFromData = ( data, headers, options ) => {
 							>
 								{ cell }
 							</Link>
-							<br />
+
 							{ showURLs && '' !== trim( link, '/' ) &&
 								<Link
 									className="googlesitekit-table__body-item-url"
