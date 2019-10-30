@@ -38,7 +38,7 @@ function stubGoogleSignIn( request ) {
 	}
 }
 
-const signOut = async () => {
+const disconnectFromSiteKit = async () => {
 	await page.waitForSelector( 'button[aria-controls="user-menu"]' );
 	await page.click( 'button[aria-controls="user-menu"]' );
 
@@ -83,11 +83,12 @@ describe( 'Site Kit set up flow for the first time', () => {
 		await setSearchConsoleProperty();
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
-		await signOut();
+		await disconnectFromSiteKit();
 
+		// Ensure the user is on step one of the setup wizard.
 		await expect( page ).toMatchElement(
-			'.notice-success',
-			{ text: /Successfully disconnected from Site Kit by Google./i }
+			'.googlesitekit-wizard-progress-step__number-text--inprogress',
+			{ text: '1' }
 		);
 	} );
 } );
