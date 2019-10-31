@@ -47,15 +47,15 @@ function camelCaseDash( string ) {
 const externalPackages = [
 	'a11y',
 	'api-fetch',
-	'dom',
+	'components',
+	'compose',
 	'dom-ready',
+	'dom',
 	'element',
 	'hooks',
 	'i18n',
 	'keycodes',
 	'url',
-	'compose',
-	'components',
 ];
 
 const externals = {
@@ -71,9 +71,7 @@ const externals = {
 [
 	...externalPackages,
 ].forEach( ( name ) => {
-	externals[ `@wordpress/${ name }` ] = {
-		this: [ 'wp', camelCaseDash( name ) ],
-	};
+	externals[ `@wordpress/${ name }` ] = [ 'wp', camelCaseDash( name ) ];
 } );
 
 const externalEntry = {};
