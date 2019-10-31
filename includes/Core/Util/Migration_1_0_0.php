@@ -45,7 +45,7 @@ class Migration_1_0_0 {
 	protected $options;
 
 	/**
-	 * Migration_1_0_0 constructor.
+	 * Constructor.
 	 *
 	 * @param Context $context Plugin context instance.
 	 */
