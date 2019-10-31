@@ -100,17 +100,15 @@ class Migration_1_0_0 {
 		$user_options   = new User_Options( $this->context );
 		$authentication = new Authentication( $this->context, $this->options, $user_options );
 
-		$user_ids = $wpdb->get_col(
-			$wpdb->prepare(
-				"
-				SELECT user_id
-				FROM {$wpdb->usermeta}
-				WHERE meta_key IN ( %s, %s )
-				",
-				OAuth_Client::OPTION_ACCESS_TOKEN,
-				$wpdb->get_blog_prefix() . OAuth_Client::OPTION_ACCESS_TOKEN
+		// User option keys are prefixed in single site and multisite when not in network mode.
+		$key_prefix = $this->context->is_network_mode() ? '' : $wpdb->get_blog_prefix();
+		$user_ids   = ( new \WP_User_Query(
+			array(
+				'fields'   => 'id',
+				'meta_key' => $key_prefix . OAuth_Client::OPTION_ACCESS_TOKEN,
+				'compare'  => 'EXISTS',
 			)
-		);
+		) )->get_results();
 
 		foreach ( $user_ids as $user_id ) {
 			$user_options->switch_user( (int) $user_id );
