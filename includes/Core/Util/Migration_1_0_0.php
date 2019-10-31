@@ -21,7 +21,9 @@ use Google\Site_Kit\Core\Storage\User_Options;
 /**
  * Class Migration_1_0_0
  *
- * @package Google\Site_Kit\Core\Util
+ * @since 1.0.0
+ * @access private
+ * @ignore
  */
 class Migration_1_0_0 {
 
@@ -47,6 +49,8 @@ class Migration_1_0_0 {
 	/**
 	 * Constructor.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @param Context $context Plugin context instance.
 	 */
 	public function __construct( Context $context ) {
@@ -56,6 +60,8 @@ class Migration_1_0_0 {
 
 	/**
 	 * Registers hooks.
+	 *
+	 * @since 1.0.0
 	 */
 	public function register() {
 		add_action( 'admin_init', array( $this, 'migrate' ) );
@@ -63,6 +69,8 @@ class Migration_1_0_0 {
 
 	/**
 	 * Migrates the DB.
+	 *
+	 * @since 1.0.0
 	 */
 	public function migrate() {
 		$db_version = $this->options->get( 'googlesitekit_db_version' );
@@ -76,6 +84,8 @@ class Migration_1_0_0 {
 
 	/**
 	 * Migrates old credentials and disconnects users.
+	 *
+	 * @since 1.0.0
 	 */
 	private function migrate_install() {
 		$credentials = ( new Encrypted_Options( $this->options ) )->get( Credentials::OPTION );
@@ -93,6 +103,8 @@ class Migration_1_0_0 {
 
 	/**
 	 * Disconnects authenticated users.
+	 *
+	 * @since 1.0.0
 	 */
 	private function disconnect_users() {
 		global $wpdb;
