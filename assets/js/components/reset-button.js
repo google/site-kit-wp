@@ -90,6 +90,7 @@ export default class ResetButton extends Component {
 		return (
 			<Fragment>
 				<Link
+					className="googlesitekit-reset-button"
 					onClick={ () => this.setState( { dialogActive: true } ) }
 					inherit
 				>
