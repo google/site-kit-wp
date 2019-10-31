@@ -23,7 +23,7 @@ export default class Modal extends Component {
 		super( props );
 		this.el = document.createElement( 'div' );
 		// This class is the outermost wrapper which is present on all Site Kit pages.
-		this.root = document.querySelector( '.googlesitekit-plugin' );
+		this.root = document.querySelector( '.googlesitekit-plugin' ) || document.body;
 	}
 
 	componentDidMount() {
