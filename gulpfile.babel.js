@@ -91,11 +91,11 @@ gulp.task( 'default', () => {
 	);
 } );
 
-gulp.task( 'qunit', function() {
+gulp.task( 'qunit', () => {
 	execSync( 'node-qunit-phantomjs ./tests/qunit/index.html', { stdio: [ 0, 1, 2 ] } );
 } );
 
-gulp.task( 'phpunit', function() {
+gulp.task( 'phpunit', () => {
 	gulp.src( '' )
 		.pipe( phpunit( './vendor/bin/phpunit' ) );
 } );
