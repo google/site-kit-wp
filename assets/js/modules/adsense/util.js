@@ -179,7 +179,6 @@ export async function getAdSenseAccountStatus( statusUpdateCallback, existingTag
 			if ( 1 < accounts.length ) {
 				// Find accounts with a matching URL channel.
 				statusUpdateCallback( __( 'Searching for domain…', 'google-site-kit' ) );
-				// eslint-disable-next-line no-unused-vars
 				for ( const account of accounts ) {
 					const accountID = account.id;
 					const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { clientID: accountID } ).then( ( res ) => res ).catch( ( e ) => e );

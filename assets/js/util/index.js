@@ -311,7 +311,6 @@ export const getQueryParameter = ( name, _location = location ) => {
 		return url.searchParams.get( name );
 	}
 	const query = {};
-	// eslint-disable-next-line no-unused-vars
 	for ( const [ key, value ] of url.searchParams.entries() ) {
 		query[ key ] = value;
 	}

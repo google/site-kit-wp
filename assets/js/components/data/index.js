@@ -508,7 +508,6 @@ const dataAPI = {
 		const key = [];
 		const pieces = [ type, identifier, datapoint ];
 
-		// eslint-disable-next-line no-unused-vars
 		for ( const piece of pieces ) {
 			if ( ! piece || ! piece.length ) {
 				break;
