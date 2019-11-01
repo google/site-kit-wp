@@ -13,6 +13,7 @@ import {
 	createRef,
 	Fragment,
 	createElement,
+	createPortal,
 } from '@wordpress/element';
 import {
 	withFilters,
@@ -68,6 +69,7 @@ wp.element.Component = Component;
 wp.element.createRef = createRef;
 wp.element.Fragment = Fragment;
 wp.element.createElement = createElement;
+wp.element.createPortal = createPortal;
 wp.components.withFilters = withFilters;
 window.lodash = lodash;
 wp.i18n.__ = __ || {};

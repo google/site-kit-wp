@@ -20,14 +20,12 @@
  * External dependencies
  */
 import Layout from 'GoogleComponents/layout/layout';
-import Link from 'GoogleComponents/link';
-import Dialog from 'GoogleComponents/dialog';
 import Optin from 'GoogleComponents/optin';
-import data, { TYPE_CORE } from 'GoogleComponents/data';
-import {
-	clearAppLocalStorage,
-	getSiteKitAdminURL,
-} from 'GoogleUtil';
+
+/**
+ * Internal dependencies
+ */
+import ResetButton from '../reset-button';
 
 /**
  * WordPress dependencies
@@ -47,50 +45,10 @@ class SettingsAdmin extends Component {
 				img: picture,
 				user: name,
 			},
-			dialogActive: false,
 		};
-
-		this.handleDialog = this.handleDialog.bind( this );
-		this.handleUnlinkConfirm = this.handleUnlinkConfirm.bind( this );
-		this.handleCloseModal = this.handleCloseModal.bind( this );
-	}
-
-	componentDidMount() {
-		window.addEventListener( 'keyup', this.handleCloseModal, false );
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener( 'keyup', this.handleCloseModal );
-	}
-
-	handleDialog() {
-		this.setState( ( prevState ) => {
-			return {
-				dialogActive: ! prevState.dialogActive,
-			};
-		} );
-	}
-
-	async handleUnlinkConfirm() {
-		await data.set( TYPE_CORE, 'site', 'reset' );
-		clearAppLocalStorage();
-		this.handleDialog();
-		document.location = getSiteKitAdminURL( 'googlesitekit-splash' );
-	}
-
-	handleCloseModal( e ) {
-		if ( 27 === e.keyCode ) {
-			this.setState( {
-				dialogActive: false,
-			} );
-		}
 	}
 
 	render() {
-		const {
-			dialogActive,
-		} = this.state;
-
 		return (
 			<Fragment>
 				<div className="
@@ -155,12 +113,7 @@ class SettingsAdmin extends Component {
 											mdc-layout-grid__cell--span-8-tablet
 											mdc-layout-grid__cell--span-4-phone
 										">
-											<Link
-												onClick={ this.handleDialog }
-												inherit
-											>
-												{ __( 'Reset Site Kit', 'google-site-kit' ) }
-											</Link>
+											<ResetButton />
 										</div>
 									</div>
 								</div>
@@ -202,15 +155,6 @@ class SettingsAdmin extends Component {
 						</div>
 					</Layout>
 				</div>
-				<Dialog
-					dialogActive={ dialogActive }
-					handleConfirm={ this.handleUnlinkConfirm }
-					handleDialog={ this.handleDialog }
-					title={ __( 'Reset Site Kit', 'google-site-kit' ) }
-					subtitle={ __( 'Resetting this site will remove access to all services. After disconnecting, you will need to re-authorize your access to restore service.', 'google-site-kit' ) }
-					confirmButton={ __( 'Reset', 'google-site-kit' ) }
-					provides={ [] }
-				/>
 			</Fragment>
 		);
 	}
