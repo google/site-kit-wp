@@ -12,10 +12,10 @@ const createSiteKit = ( apiKey ) => {
 		},
 		modules: {
 			'search-console': {
-				screenId: 'googlesitekit-module-search-console',
+				screenID: 'googlesitekit-module-search-console',
 			},
 			'pagespeed-insights': {
-				screenId: 'googlesitekit-module-pagespeed-insights',
+				screenID: 'googlesitekit-module-pagespeed-insights',
 			},
 		},
 		setup: {

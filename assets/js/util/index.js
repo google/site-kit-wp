@@ -355,6 +355,8 @@ export const refreshAuthentication = async () => {
  *
  * @param {string}  slug   The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
  * @param {boolean} status The module activation status.
+ * @param {Object}  _googlesitekit googlesitekit global; can be replaced for testing.
+ * @return {string} Authentication URL
  */
 export const getReAuthURL = ( slug, status, _googlesitekit = googlesitekit ) => {
 	const {
@@ -364,7 +366,7 @@ export const getReAuthURL = ( slug, status, _googlesitekit = googlesitekit ) => 
 
 	const { needReauthenticate } = _googlesitekit.setup;
 
-	const { screenId } = _googlesitekit.modules[ slug ];
+	const { screenID } = _googlesitekit.modules[ slug ];
 
 	// Special case handling for PageSpeed Insights.
 	// TODO: Refactor this out.
@@ -376,7 +378,7 @@ export const getReAuthURL = ( slug, status, _googlesitekit = googlesitekit ) => 
 	let redirect = addQueryArgs(
 		adminRoot, {
 			// If the module has a submenu page, and is being activated, redirect back to the module page.
-			page: ( slug && status && screenId ) ? screenId : 'googlesitekit-dashboard',
+			page: ( slug && status && screenID ) ? screenID : 'googlesitekit-dashboard',
 			slug,
 			reAuth: status,
 			...pageSpeedQueryArgs,
@@ -732,6 +734,8 @@ export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) 
  * @param {Object} settingsMapping The mapping between form settings names and saved settings.
  * @param {Object} settingsState   The changed settings component state to compare with.
  * @param {Object} skipDOM         Skip DOm checks/modifications, used for testing.
+ * @param {Object}  _googlesitekit googlesitekit global; can be replaced for testing.
+ * @return {void|boolean} True if a module has been toggled.
  */
 export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, _googlesitekit = googlesitekit ) => {
 	const { settings, setupComplete } = _googlesitekit.modules[ moduleSlug ];
