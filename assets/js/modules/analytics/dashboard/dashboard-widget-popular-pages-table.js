@@ -25,17 +25,18 @@ import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
 import Layout from 'GoogleComponents/layout/layout';
-/**
- * Internal dependencies
- */
-import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../util';
+import { map } from 'lodash';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { map } from 'lodash';
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../util';
 
 class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 	static renderLayout( component ) {

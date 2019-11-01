@@ -25,12 +25,12 @@ import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import Layout from 'GoogleComponents/layout/layout';
 import PreviewTable from 'GoogleComponents/preview-table';
+import { map } from 'lodash';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { map } from 'lodash';
 import { Component } from '@wordpress/element';
 
 /**

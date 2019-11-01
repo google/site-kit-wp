@@ -24,12 +24,12 @@ import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
+import { map } from 'lodash';
 
 /**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { map } from 'lodash';
 import { Component } from '@wordpress/element';
 
 class SearchConsoleDashboardWidgetKeywordTable extends Component {
