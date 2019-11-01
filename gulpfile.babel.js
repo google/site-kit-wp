@@ -91,10 +91,6 @@ gulp.task( 'default', () => {
 	);
 } );
 
-gulp.task( 'jest', function() {
-	execSync( 'npm run test:js', { stdio: [ 0, 1, 2 ] } );
-} );
-
 gulp.task( 'phpunit', function() {
 	gulp.src( '' )
 		.pipe( phpunit( './vendor/bin/phpunit' ) );
