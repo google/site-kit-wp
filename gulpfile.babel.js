@@ -99,14 +99,3 @@ gulp.task( 'phpunit', function() {
 	gulp.src( '' )
 		.pipe( phpunit( './vendor/bin/phpunit' ) );
 } );
-
-/**
- * Gulp task to run the default tests.
- */
-gulp.task( 'test', () => {
-	runSequence(
-		'jest',
-		'phpunit'
-	);
-} );
-
