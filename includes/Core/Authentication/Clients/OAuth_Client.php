@@ -632,10 +632,10 @@ final class OAuth_Client {
 					'nonce'      => $nonce,
 					'name'       => rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ) ) ),
 					'url'        => rawurlencode( $home_url ),
+					'version'    => GOOGLESITEKIT_VERSION,
 					'rest_root'  => rawurlencode( $rest_root ),
 					'admin_root' => rawurlencode( $admin_root ),
 					'scope'      => rawurlencode( $scope ),
-					'version'    => GOOGLESITEKIT_VERSION,
 				),
 				$url
 			);
@@ -644,8 +644,8 @@ final class OAuth_Client {
 		$query_args = array(
 			'site_id' => $credentials->web->client_id,
 			'code'    => $access_code,
-			'scope'   => rawurlencode( $scope ),
 			'version' => GOOGLESITEKIT_VERSION,
+			'scope'   => rawurlencode( $scope ),
 		);
 		if ( 'missing_verification' === $error_code ) {
 			$query_args['verification_nonce'] = wp_create_nonce( 'googlesitekit_verification' );
