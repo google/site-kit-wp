@@ -635,6 +635,7 @@ final class OAuth_Client {
 					'rest_root'  => rawurlencode( $rest_root ),
 					'admin_root' => rawurlencode( $admin_root ),
 					'scope'      => rawurlencode( $scope ),
+					'version'    => GOOGLESITEKIT_VERSION,
 				),
 				$url
 			);
@@ -644,6 +645,7 @@ final class OAuth_Client {
 			'site_id' => $credentials->web->client_id,
 			'code'    => $access_code,
 			'scope'   => rawurlencode( $scope ),
+			'version' => GOOGLESITEKIT_VERSION,
 		);
 		if ( 'missing_verification' === $error_code ) {
 			$query_args['verification_nonce'] = wp_create_nonce( 'googlesitekit_verification' );
