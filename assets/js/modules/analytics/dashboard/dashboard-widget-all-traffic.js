@@ -83,7 +83,7 @@ class AnalyticsAllTraffic extends Component {
 		}
 
 		if ( ! receivingData ) {
-			return error ? getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( __( 'Analytics', 'google-site-kit' ), true, true, true );
+			return error ? getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), true, true, true );
 		}
 
 		return null;

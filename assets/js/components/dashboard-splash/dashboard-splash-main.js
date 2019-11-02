@@ -49,22 +49,22 @@ class DashboardSplashMain extends Component {
 		const splashModules = {
 			searchConsole: {
 				icon: 'search-console',
-				title: __( 'Search Console', 'google-site-kit' ),
+				title: _x( 'Search Console', 'Service name', 'google-site-kit' ),
 				content: __( 'Keep track of how people find you in Search, and how many of them visit your site.', 'google-site-kit' ),
 			},
 			analytics: {
 				icon: 'analytics',
-				title: __( 'Analytics', 'google-site-kit' ),
+				title: _x( 'Analytics', 'Service name', 'google-site-kit' ),
 				content: __( 'Understand your customers better: track how they navigate across your site and evaluate the performance of your products or posts.', 'google-site-kit' ),
 			},
 			adsense: {
 				icon: 'adsense',
-				title: __( 'AdSense', 'google-site-kit' ),
+				title: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 				content: __( 'Make your content work for you -- earning money by placing ads on your site.', 'google-site-kit' ),
 			},
 			pagespeed: {
 				icon: 'pagespeed',
-				title: __( 'PageSpeed', 'google-site-kit' ),
+				title: _x( 'PageSpeed', 'Service name', 'google-site-kit' ),
 				content: __( 'Analyze your site’s performance and get actionable tips to improve its speed across all devices.', 'google-site-kit' ),
 			},
 		};
@@ -82,7 +82,7 @@ class DashboardSplashMain extends Component {
 				title: __( 'You want to be found on the web. We want to help.', 'google-site-kit' ),
 				content: __( 'Track your site’s search performance with Google Search Console and browse around for more webmaster resources.', 'google-site-kit' ),
 				link: 'https://search.google.com/search-console/about',
-				linkText: __( 'Search Console', 'google-site-kit' ),
+				linkText: _x( 'Search Console', 'Service name', 'google-site-kit' ),
 				opposite: true,
 			},
 		};

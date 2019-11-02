@@ -144,7 +144,7 @@ class AdSenseModuleStatus extends Component {
 							googlesitekit-heading-3
 							googlesitekit-setup-module__title
 						">
-						{ __( 'AdSense', 'google-site-kit' ) }
+						{ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
 					</h2>
 				</div>
 				<div className="googlesitekit-setup-module__step">

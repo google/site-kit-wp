@@ -163,12 +163,12 @@ class AnalyticsDashboardWidget extends Component {
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 							">
-								<PageHeader title={ __( 'Analytics', 'google-site-kit' ) } icon iconWidth="24" iconHeight="26" iconID="analytics" status="connected" statusText={ __( 'Analytics is connected', 'google-site-kit' ) } />
+								<PageHeader title={ _x( 'Analytics', 'Service name', 'google-site-kit' ) } icon iconWidth="24" iconHeight="26" iconID="analytics" status="connected" statusText={ __( 'Analytics is connected', 'google-site-kit' ) } />
 								{ loading && <ProgressBar /> }
 							</div>
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
 							{ ! receivingData && (
-								error ? getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( __( 'Analytics', 'google-site-kit' ), true, true, true )
+								error ? getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
 							<div className={ `
 								mdc-layout-grid__cell
@@ -206,7 +206,7 @@ class AnalyticsDashboardWidget extends Component {
 									title={ sprintf( __( 'Top content over the last %s', 'google-site-kit' ), dateRangeFrom ) }
 									headerCtaLink="https://analytics.google.com"
 									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-									footerCtaLabel={ __( 'Analytics', 'google-site-kit' ) }
+									footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 									footerCtaLink="https://analytics.google.com"
 								>
 									<AnalyticsDashboardWidgetTopPagesTable />
@@ -223,7 +223,7 @@ class AnalyticsDashboardWidget extends Component {
 									title={ sprintf( __( 'Top acquisition sources over the last %s', 'google-site-kit' ), dateRangeFrom ) }
 									headerCtaLink="https://analytics.google.com"
 									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-									footerCtaLabel={ __( 'Analytics', 'google-site-kit' ) }
+									footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 									footerCtaLink="https://analytics.google.com"
 								>
 									<div className="mdc-layout-grid">

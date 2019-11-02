@@ -47,7 +47,7 @@ class AdSenseDashboardWidgetTopPagesTableSmall extends Component {
 				<Layout
 					className="googlesitekit-top-earnings-pages"
 					footer
-					footerCtaLabel={ __( 'Analytics', 'google-site-kit' ) }
+					footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 					footerCtaLink="http://analytics.google.com"
 					fill
 				>

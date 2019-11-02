@@ -125,7 +125,7 @@ class AdSenseDashboardMainSummary extends Component {
 										title={ __( 'RPM', 'google-site-kit' ) }
 										datapoint={ readableLargeNumber( period.totals[ 1 ], currencyCode ) }
 										source={ {
-											name: __( 'AdSense', 'google-site-kit' ),
+											name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 											link: href,
 										} }
 										sparkline={ daily &&
@@ -148,7 +148,7 @@ class AdSenseDashboardMainSummary extends Component {
 										title={ __( 'Total Earnings', 'google-site-kit' ) }
 										datapoint={ readableLargeNumber( period.totals[ 0 ], currencyCode ) }
 										source={ {
-											name: __( 'AdSense', 'google-site-kit' ),
+											name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 											link: href,
 										} }
 										change={ today.totals[ 0 ] }
@@ -173,7 +173,7 @@ class AdSenseDashboardMainSummary extends Component {
 										title={ __( 'Ad Impressions', 'google-site-kit' ) }
 										datapoint={ readableLargeNumber( period.totals[ 2 ] ) }
 										source={ {
-											name: __( 'AdSense', 'google-site-kit' ),
+											name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 											link: href,
 										} }
 										sparkline={ daily &&

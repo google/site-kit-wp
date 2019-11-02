@@ -161,12 +161,12 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 							">
-								<PageHeader title={ __( 'Search Console', 'google-site-kit' ) } icon iconWidth="23" iconHeight="21" iconID="search-console" status="connected" statusText={ __( 'Search Console is connected', 'google-site-kit' ) } />
+								<PageHeader title={ _x( 'Search Console', 'Service name', 'google-site-kit' ) } icon iconWidth="23" iconHeight="21" iconID="search-console" status="connected" statusText={ __( 'Search Console is connected', 'google-site-kit' ) } />
 								{ loading && <ProgressBar /> }
 							</div>
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }
 							{ ! receivingData && (
-								error ? getDataErrorComponent( __( 'Search Console', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( __( 'Search Console', 'google-site-kit' ), true, true, true )
+								error ? getDataErrorComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
 							<div className={ `
 								mdc-layout-grid__cell
@@ -199,7 +199,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 									footer
 									headerCtaLabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
 									headerCtaLink={ searchConsoleDeepLink }
-									footerCtaLabel={ __( 'Search Console', 'google-site-kit' ) }
+									footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 									footerCtaLink={ searchConsoleDeepLink }
 								>
 									<SearchConsoleDashboardWidgetKeywordTable />

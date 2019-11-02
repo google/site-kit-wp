@@ -124,7 +124,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 						change={ totalUsersChange }
 						changeDataUnit="%"
 						source={ {
-							name: __( 'Analytics', 'google-site-kit' ),
+							name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
 							link: href,
 						} }
 						sparkline={
@@ -160,7 +160,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 								changeDataUnit="%"
 								reverseArrowDirection
 								source={ {
-									name: __( 'Analytics', 'google-site-kit' ),
+									name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
 									link: href,
 								} }
 								sparkline={
@@ -190,7 +190,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 							change={ goalCompletionsChange }
 							changeDataUnit="%"
 							source={ {
-								name: __( 'Analytics', 'google-site-kit' ),
+								name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
 								link: href,
 							} }
 							sparkline={

@@ -88,7 +88,7 @@ class DashboardAcquisitionPieChart extends Component {
 							href={ getSiteKitAdminURL( 'googlesitekit-module-analytics' ) }
 							inherit
 						>
-							{ __( 'Analytics', 'google-site-kit' ) }
+							{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 						</Link>
 					</div>
 				}

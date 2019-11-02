@@ -483,7 +483,7 @@ class TagmanagerSetup extends Component {
 							googlesitekit-heading-3
 							googlesitekit-setup-module__title
 						">
-							{ __( 'Tag Manager', 'google-site-kit' ) }
+							{ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) }
 						</h2>
 					</Fragment>
 				}

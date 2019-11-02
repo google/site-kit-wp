@@ -47,7 +47,7 @@ class DashboardWidgetPopularKeywordsTable extends Component {
 				<Layout
 					className="googlesitekit-popular-content"
 					footer
-					footerCtaLabel={ __( 'Search Console', 'google-site-kit' ) }
+					footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 					footerCtaLink={
 						sprintf( 'https://search.google.com/u/1/search-console?resource_id=%s', googlesitekit.admin.siteURL )
 					}

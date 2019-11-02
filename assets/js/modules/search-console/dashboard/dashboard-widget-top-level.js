@@ -120,7 +120,7 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 						change={ totalClicksChange }
 						changeDataUnit="%"
 						source={ {
-							name: __( 'Search Console', 'google-site-kit' ),
+							name: _x( 'Search Console', 'Service name', 'google-site-kit' ),
 							link: href,
 						} }
 						sparkline={
@@ -146,7 +146,7 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 						change={ totalImpressionsChange }
 						changeDataUnit="%"
 						source={ {
-							name: __( 'Search Console', 'google-site-kit' ),
+							name: _x( 'Search Console', 'Service name', 'google-site-kit' ),
 							link: href,
 						} }
 						sparkline={

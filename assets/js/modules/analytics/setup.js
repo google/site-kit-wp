@@ -932,7 +932,7 @@ class AnalyticsSetup extends Component {
 								googlesitekit-heading-3
 								googlesitekit-setup-module__title
 							">
-								{ __( 'Analytics', 'google-site-kit' ) }
+								{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 							</h2>
 						</Fragment>
 				}

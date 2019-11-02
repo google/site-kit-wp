@@ -64,7 +64,7 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 		} = this.state;
 
 		const source = {
-			name: __( 'PageSpeed Insights', 'google-site-kit' ),
+			name: _x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ),
 			link: sprintf( 'https://developers.google.com/speed/pagespeed/insights/?url=%s', googlesitekit.admin.siteURL ),
 		};
 
@@ -76,7 +76,7 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 				">
 					{
 						getDataErrorComponent(
-							__( 'PageSpeed Insights', 'google-site-kit' ),
+							_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ),
 							error,
 							true,
 							true,

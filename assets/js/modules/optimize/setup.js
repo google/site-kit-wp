@@ -346,7 +346,7 @@ class OptimizeSetup extends Component {
 									googlesitekit-heading-3
 									googlesitekit-setup-module__title
 								">
-							{ __( 'Optimize', 'google-site-kit' ) }
+							{ _x( 'Optimize', 'Service name', 'google-site-kit' ) }
 						</h2>
 					</Fragment>
 				}
