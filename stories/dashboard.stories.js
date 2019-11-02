@@ -30,7 +30,7 @@ storiesOf( 'Dashboard', module )
 		<DashboardModuleHeader
 			title={ __( 'Module Header', 'google-site-kit' ) }
 			description={ __( 'Description of Module', 'google-site-kit' ) }
-			timePeriod={ __( 'Last 28 Days', 'google-site-kit' ) }
+			timePeriod={ __( 'Last 28 days', 'google-site-kit' ) }
 		/>
 	) )
 	.add( 'All Traffic', () => {

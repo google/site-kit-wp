@@ -83,7 +83,7 @@ class DashboardAcquisitionPieChart extends Component {
 				/>
 				{ source &&
 					<div className="googlesitekit-chart__source">
-						{ __( 'Source: ', 'google-site-kit' ) }
+						{ __( 'Source:', 'google-site-kit' ) }
 						<Link
 							href={ getSiteKitAdminURL( 'googlesitekit-module-analytics' ) }
 							inherit

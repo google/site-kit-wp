@@ -39,7 +39,7 @@ class AdSenseModuleStatus extends Component {
 	constructor( props ) {
 		super( props );
 		this.state = {
-			loadStatus: __( 'Loading…', 'google-site-kit' ),
+			loadStatus: __( 'Loading...', 'google-site-kit' ),
 			existingTag: false,
 		};
 		this.updateLoadStatus = this.updateLoadStatus.bind( this );
