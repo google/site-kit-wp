@@ -17,9 +17,13 @@
  */
 
 /**
+ * External dependencies
+ */
+import withFilters from 'GoogleComponents/higherorder/with-filters';
+
+/**
  * WordPress dependencies
  */
-import { withFilters } from '@wordpress/components';
 import { Component } from '@wordpress/element';
 
 class DashboardAdSenseTopPages extends Component {

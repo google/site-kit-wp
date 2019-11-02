@@ -777,14 +777,6 @@ final class Assets {
 				)
 			),
 			new Script(
-				'wp-components',
-				array(
-					'src'      => $base_url . 'js/externals/components.js',
-					'version'  => '7.2.0',
-					'fallback' => true,
-				)
-			),
-			new Script(
 				'svgxuse',
 				array(
 					'src'       => $base_url . 'js/externals/svgxuse.js',

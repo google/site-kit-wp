@@ -38,6 +38,7 @@ import {
 import Spinner from 'GoogleComponents/spinner';
 import SettingsOverlay from 'GoogleComponents/settings/settings-overlay';
 import GenericError from 'GoogleComponents/notifications/generic-error';
+import withFilters from 'GoogleComponents/higherorder/with-filters';
 
 /**
  * WordPress dependencies
@@ -46,7 +47,6 @@ import { Component, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { filter, map } from 'lodash';
 import { applyFilters } from '@wordpress/hooks';
-import { withFilters } from '@wordpress/components';
 
 /**
  * A single module. Keeps track of its own active state and settings.
