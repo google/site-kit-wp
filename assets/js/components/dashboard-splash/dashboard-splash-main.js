@@ -25,7 +25,7 @@ import DashboardSplashOutro from './dashboard-splash-outro';
 import DashboardSplashModule from './dashboard-splash-module';
 
 const { Component } = wp.element;
-const { __ } = wp.i18n;
+const { __, _x } = wp.i18n;
 
 class DashboardSplashMain extends Component {
 	constructor( props ) {

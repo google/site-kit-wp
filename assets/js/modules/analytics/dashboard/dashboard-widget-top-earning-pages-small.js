@@ -32,7 +32,7 @@ import CTA from 'GoogleComponents/notifications/cta';
  */
 import { analyticsAdsenseReportDataDefaults } from '../util';
 
-const { __ } = wp.i18n;
+const { __, _x } = wp.i18n;
 const { map } = lodash;
 const { Component } = wp.element;
 

@@ -33,7 +33,7 @@ import {
 } from 'GoogleUtil';
 
 const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
+const { __, _x } = wp.i18n;
 
 class AdSenseModuleStatus extends Component {
 	constructor( props ) {

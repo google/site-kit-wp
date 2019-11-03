@@ -29,7 +29,7 @@ import AnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/dashboar
 import DashboardAcquisitionPieChart from '../dashboard/dashboard-widget-acquisition-piechart';
 
 const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
+const { __, _x } = wp.i18n;
 
 class AnalyticsDashboardDetailsWidgetTopAcquisitionSources extends Component {
 	render() {

@@ -34,7 +34,7 @@ import {
 	toggleConfirmModuleSettings,
 } from 'GoogleUtil';
 
-const { __, sprintf } = wp.i18n;
+const { __, _x, sprintf } = wp.i18n;
 const { Component, Fragment } = wp.element;
 const {
 	removeFilter,

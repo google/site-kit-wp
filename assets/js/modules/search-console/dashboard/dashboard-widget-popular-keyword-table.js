@@ -32,7 +32,7 @@ import {
 	isDataZeroSearchConsole,
 } from '../dashboard/util';
 
-const { __, sprintf } = wp.i18n;
+const { __, _x, sprintf } = wp.i18n;
 const { map } = lodash;
 const { Component } = wp.element;
 

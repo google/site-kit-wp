@@ -39,7 +39,7 @@ import AdSenseInProcessStatus from './adsense-in-process-status';
 import HelpLink from 'GoogleComponents/help-link';
 
 const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
+const { __, _x } = wp.i18n;
 
 class AdSenseDashboardWidget extends Component {
 	constructor( props ) {

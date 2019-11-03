@@ -30,7 +30,7 @@ import Layout from 'GoogleComponents/layout/layout';
  */
 import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../util';
 
-const { __ } = wp.i18n;
+const { __, _x } = wp.i18n;
 const { map } = lodash;
 const { Component } = wp.element;
 

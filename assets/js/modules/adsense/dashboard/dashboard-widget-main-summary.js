@@ -39,7 +39,7 @@ import {
 } from '../util';
 import Layout from 'GoogleComponents/layout/layout';
 
-const { __ } = wp.i18n;
+const { __, _x } = wp.i18n;
 const { Component, Fragment } = wp.element;
 
 class AdSenseDashboardMainSummary extends Component {

@@ -37,7 +37,7 @@ import {
 } from './util';
 
 const { Component } = wp.element;
-const { __ } = wp.i18n;
+const { __, _x } = wp.i18n;
 
 const isZeroData = ( data ) => {
 	return 0 === data.categories.performance.score;

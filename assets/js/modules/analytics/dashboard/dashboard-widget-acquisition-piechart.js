@@ -32,7 +32,7 @@ import PreviewBlock from 'GoogleComponents/preview-block';
 import { extractAnalyticsDataForTrafficChart, getAnalyticsErrorMessageFromData, trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../util';
 
 const { Component } = wp.element;
-const { __ } = wp.i18n;
+const { __, _x } = wp.i18n;
 
 class DashboardAcquisitionPieChart extends Component {
 	render() {

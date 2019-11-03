@@ -27,7 +27,7 @@ import Button from 'SiteKitCore/components/button';
 import HelpLink from 'GoogleComponents/help-link';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 
-const { __, sprintf } = wp.i18n;
+const { __, _x, sprintf } = wp.i18n;
 const { Component, Fragment } = wp.element;
 
 class SearchConsole extends Component {

@@ -44,7 +44,7 @@ import {
 	isDataZeroForReporting,
 } from '../util';
 
-const { __ } = wp.i18n;
+const { __, _x } = wp.i18n;
 const { Component, Fragment } = wp.element;
 const { isEmpty } = lodash;
 

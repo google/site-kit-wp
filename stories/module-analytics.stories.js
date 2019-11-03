@@ -5,7 +5,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import Layout from 'GoogleComponents/layout/layout';
 import AnalyticsDashboardWidgetOverview from 'GoogleModules/analytics/dashboard/dashboard-widget-overview';
 import AnalyticsDashboardWidgetSiteStats from 'GoogleModules/analytics/dashboard/dashboard-widget-sitestats';

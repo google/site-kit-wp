@@ -28,7 +28,7 @@ import Layout from 'GoogleComponents/layout/layout';
 import SearchConsoleDashboardWidgetKeywordTable from '../dashboard/dashboard-widget-keyword-table';
 
 const { Component, Fragment } = wp.element;
-const { __, sprintf } = wp.i18n;
+const { __, _x, sprintf } = wp.i18n;
 
 class DashboardDetailsWidgetKeywordsTable extends Component {
 	render() {

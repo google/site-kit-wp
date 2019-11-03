@@ -31,7 +31,7 @@ import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
 import getSetupIncompleteComponent from 'GoogleComponents/notifications/setup-incomplete';
 
 const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
+const { __, _x } = wp.i18n;
 
 class AnalyticsAllTraffic extends Component {
 	constructor( props ) {

@@ -39,7 +39,7 @@ import {
 } from 'GoogleUtil';
 import CTA from 'GoogleComponents/notifications/cta';
 
-const { __ } = wp.i18n;
+const { __, _x } = wp.i18n;
 const { Component, Fragment } = wp.element;
 
 class SearchConsoleDashboardWidgetTopLevel extends Component {

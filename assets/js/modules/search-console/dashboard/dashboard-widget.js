@@ -36,7 +36,7 @@ import { getDateRangeFrom } from 'GoogleUtil';
 import HelpLink from 'GoogleComponents/help-link';
 
 const { Component, Fragment } = wp.element;
-const { __, sprintf } = wp.i18n;
+const { __, _x, sprintf } = wp.i18n;
 
 class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 	constructor( props ) {
