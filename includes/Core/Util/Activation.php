@@ -262,7 +262,7 @@ final class Activation {
 										</h3>
 
 										<a id="start-setup-link" href="<?php echo esc_url( $sitekit_splash_url ); ?>" class="googlesitekit-activation__button googlesitekit-activation__start-setup mdc-button mdc-button--raised">
-											<?php esc_html_e( 'Start setup', 'google-site-kit' ); ?>
+											<?php esc_html_e( 'Start Setup', 'google-site-kit' ); ?>
 										</a>
 
 										<div class="googlesitekit-opt-in googlesitekit-activation__opt-in">
