@@ -35,6 +35,16 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	const OPTION = 'googlesitekit_tagmanager_settings';
 
 	/**
+	 * Container usage context for web.
+	 */
+	const USAGE_CONTEXT_WEB = 'web';
+
+	/**
+	 * Container usage context for AMP.
+	 */
+	const USAGE_CONTEXT_AMP = 'amp';
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
