@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import GoogleChart from 'GoogleComponents/google-chart.js';
+import GoogleChart from 'GoogleComponents/google-chart';
 import { colors } from 'GoogleComponents/colors';
 
 /**

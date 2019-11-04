@@ -25,6 +25,7 @@ import Notification from 'GoogleComponents/notifications/notification';
 /**
  * WordPress dependencies
  */
+import domReady from '@wordpress/dom-ready';
 import { setLocaleData } from '@wordpress/i18n';
 import { doAction } from '@wordpress/hooks';
 import { Component, render } from '@wordpress/element';
@@ -76,7 +77,7 @@ class GoogleSitekitDashboardDetails extends Component {
 }
 
 // Initialize the app once the DOM is ready.
-wp.domReady( function() {
+domReady( function() {
 	const dashboardDetails = document.getElementById( 'js-googlesitekit-dashboard-details' );
 	if ( null !== dashboardDetails ) {
 		// Render the Dashboard App.

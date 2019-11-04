@@ -25,6 +25,7 @@ import Notification from 'GoogleComponents/notifications/notification';
 /**
  * WordPress dependencies
  */
+import domReady from '@wordpress/dom-ready';
 import { setLocaleData } from '@wordpress/i18n';
 import { Component, render, Fragment } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
@@ -84,7 +85,7 @@ class GoogleSitekitDashboardSplash extends Component {
 }
 
 // Initialize the app once the DOM is ready.
-wp.domReady( function() {
+domReady( function() {
 	if ( googlesitekit.admin.resetSession ) {
 		clearAppLocalStorage();
 	}

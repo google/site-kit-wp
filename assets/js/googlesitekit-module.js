@@ -21,32 +21,21 @@
  */
 import ProgressBar from 'GoogleComponents/progress-bar';
 import Notification from 'GoogleComponents/notifications/notification';
-import { Suspense as ReactSuspense, lazy as ReactLazy } from 'react';
 import 'GoogleComponents/data';
-
-/**
- * Internal dependencies
- */
-import ModuleApp from './components/module-app';
 
 /**
  * WordPress dependencies
  */
+import domReady from '@wordpress/dom-ready';
 import { setLocaleData } from '@wordpress/i18n';
 import { doAction, applyFilters } from '@wordpress/hooks';
-import { Component, render, Fragment, Suspense as WPSuspense, lazy as WPlazy } from '@wordpress/element';
+import { Component, render, Fragment } from '@wordpress/element';
 
-// Check for `Suspense` and `lazy` in `wp.element`; versions before 2.4.0 did
-// not include either, so we need to fallback to the React versions. See:
-// https://github.com/WordPress/gutenberg/blob/master/packages/element/CHANGELOG.md#240-2019-05-21
-let Suspense = WPSuspense;
-let lazy = WPlazy;
-if ( ! Suspense ) {
-	Suspense = ReactSuspense;
-}
-if ( ! lazy ) {
-	lazy = ReactLazy;
-}
+/**
+ * Internal dependencies
+ */
+import { Suspense, lazy } from 'GoogleUtil/react-features';
+import ModuleApp from './components/module-app';
 
 class GoogleSitekitModule extends Component {
 	constructor( props ) {
@@ -152,7 +141,7 @@ class GoogleSitekitModule extends Component {
 }
 
 // Initialize the app once the DOM is ready.
-wp.domReady( function() {
+domReady( function() {
 	const siteKitModule = document.getElementById( 'js-googlesitekit-module' );
 	if ( null !== siteKitModule ) {
 		// Render the Dashboard App.

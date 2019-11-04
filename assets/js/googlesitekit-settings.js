@@ -26,6 +26,7 @@ import Notification from 'GoogleComponents/notifications/notification';
 /**
  * WordPress dependencies
  */
+import domReady from '@wordpress/dom-ready';
 import { setLocaleData } from '@wordpress/i18n';
 import { doAction } from '@wordpress/hooks';
 import { Component, render } from '@wordpress/element';
@@ -72,7 +73,7 @@ class GoogleSitekitSettings extends Component {
 }
 
 // Initialize the app once the DOM is ready.
-wp.domReady( function() {
+domReady( function() {
 	const settingsWrapper = document.getElementById( 'googlesitekit-settings-wrapper' );
 	if ( null !== settingsWrapper ) {
 		// Render the Settings App.

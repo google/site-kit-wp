@@ -49,7 +49,7 @@ import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admi
 const googlesitekit = dashboardData;
 
 // Setup.
-window.wp = window.wp || {};
+const wp = {};
 wp.element = wp.element || {};
 wp.components = wp.components || {};
 wp.i18n = wp.i18n || {};
@@ -75,6 +75,7 @@ window.lodash = lodash;
 wp.i18n.__ = __ || {};
 wp.i18n.setLocaleData = setLocaleData || {};
 wp.i18n.sprintf = sprintf || {};
+window.wp = window.wp || wp;
 window.React = React;
 window.lodash = lodash;
 window.googlesitekit = window.googlesitekit || googlesitekit;

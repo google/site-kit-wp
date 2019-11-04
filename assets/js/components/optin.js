@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { apiFetch } from '@wordpress/api-fetch';
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -48,7 +49,7 @@ class Optin extends Component {
 			googlesitekit_tracking_optin: checked,
 		};
 
-		wp.apiFetch( { path: '/wp/v2/settings',
+		apiFetch( { path: '/wp/v2/settings',
 			headers: {
 				'Content-Type': 'application/json; charset=UTF-8',
 			},

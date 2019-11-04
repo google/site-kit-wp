@@ -30,6 +30,7 @@ import {
 } from 'lodash';
 import data, { TYPE_CORE } from 'GoogleComponents/data';
 import SvgIcon from 'GoogleUtil/svg-icon';
+import React from 'react';
 
 /**
  * WordPress dependencies

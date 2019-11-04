@@ -2,17 +2,20 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
+
 /**
  * WordPress dependencies
  */
+import { doAction } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
-import Layout from 'GoogleComponents/layout/layout';
-import SearchConsoleDashboardWidgetOverview from 'GoogleModules/search-console/dashboard/dashboard-widget-overview';
-import SearchConsoleDashboardWidgetSiteStats from 'GoogleModules/search-console/dashboard/dashboard-widget-sitestats';
+
 /**
  * Internal dependencies
  */
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
+import Layout from 'GoogleComponents/layout/layout';
+import SearchConsoleDashboardWidgetOverview from 'GoogleModules/search-console/dashboard/dashboard-widget-overview';
+import SearchConsoleDashboardWidgetSiteStats from 'GoogleModules/search-console/dashboard/dashboard-widget-sitestats';
 
 storiesOf( 'Search Console Module', module )
 	.add( 'Overview Chart', () => {
@@ -43,7 +46,7 @@ storiesOf( 'Search Console Module', module )
 
 		// Load the datacache with data.
 		setTimeout( () => {
-			wp.hooks.doAction(
+			doAction(
 				'googlesitekit.moduleLoaded',
 				'Single'
 			);

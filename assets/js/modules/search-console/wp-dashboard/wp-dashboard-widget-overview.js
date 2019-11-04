@@ -20,7 +20,7 @@
  * External dependencies
  */
 import PreviewBlocks from 'GoogleComponents/preview-blocks';
-import DataBlock from 'GoogleComponents/data-block.js';
+import DataBlock from 'GoogleComponents/data-block';
 import withData from 'GoogleComponents/higherorder/withdata';
 import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds } from 'GoogleUtil';

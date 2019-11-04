@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import GoogleChart from 'GoogleComponents/google-chart.js';
+import GoogleChart from 'GoogleComponents/google-chart';
 import { getSiteKitAdminURL, getTimeInSeconds } from 'GoogleUtil';
 import withData from 'GoogleComponents/higherorder/withdata';
 import { TYPE_MODULES } from 'GoogleComponents/data';

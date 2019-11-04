@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import DataBlock from 'GoogleComponents/data-block.js';
+import DataBlock from 'GoogleComponents/data-block';
 import PreviewBlock from 'GoogleComponents/preview-block';
 import {
 	getTimeInSeconds,
