@@ -66,6 +66,27 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 			}
 		);
 
+		add_filter(
+			'option_' . self::OPTION,
+			function ( $option ) {
+				if ( ! is_array( $option ) ) {
+					$option = array();
+				}
+
+				// TODO: Remove this at some point (migration of old option).
+				if ( isset( $option['container_id'] ) && ! isset( $option['containerID'] ) ) {
+					$option['containerID'] = $option['container_id'];
+				}
+				if ( isset( $option['containerId'] ) && ! isset( $option['containerID'] ) ) {
+					$option['containerID'] = $option['containerId'];
+				}
+				// Ensure old keys are removed regardless. No-op if not set.
+				unset( $option['container_id'], $option['containerId'] );
+
+				return $option;
+			}
+		);
+
 		$print_amp_gtm = function() {
 			// This hook is only available in AMP plugin version >=1.3, so if it
 			// has already completed, do nothing.
