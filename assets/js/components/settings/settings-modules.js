@@ -67,7 +67,6 @@ class SettingsModules extends Component {
 		this.setState( ( prevState ) => {
 			return {
 				openModules: {
-					...prevState.openModules,
 					[ module ]: ! prevState.openModules[ module ],
 				},
 			};
