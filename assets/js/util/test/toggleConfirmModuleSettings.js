@@ -8,7 +8,7 @@ describe( 'toggleConfirmModuleSettings', () => {
 		const googlesitekit = {
 			modules: {
 				analytics: {
-					settings: { accountId: '12345678' },
+					settings: { accountID: '12345678' },
 					setupComplete: true,
 					confirm: true,
 				},
@@ -22,7 +22,7 @@ describe( 'toggleConfirmModuleSettings', () => {
 		expect(
 			toggleConfirmModuleSettings(
 				'analytics',
-				{ selectedAccount: 'accountId' },
+				{ selectedAccount: 'accountID' },
 				settings,
 				true,
 				googlesitekit
@@ -34,12 +34,12 @@ describe( 'toggleConfirmModuleSettings', () => {
 		const googlesitekit = {
 			modules: {
 				adsense: {
-					settings: { accountId: '99999999' },
+					settings: { accountID: '99999999' },
 					setupComplete: false,
 					confirm: true,
 				},
 				analytics: {
-					settings: { accountId: '12345678' },
+					settings: { accountID: '12345678' },
 					setupComplete: true,
 					confirm: true,
 				},
@@ -53,7 +53,7 @@ describe( 'toggleConfirmModuleSettings', () => {
 		expect(
 			toggleConfirmModuleSettings(
 				'adsense',
-				{ selectedAccount: 'accountId' },
+				{ selectedAccount: 'accountID' },
 				settings,
 				true,
 				googlesitekit
