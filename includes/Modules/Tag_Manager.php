@@ -467,11 +467,12 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * Creates GTM Container.
 	 *
 	 * @since 1.0.0
+	 * @param string       $account_id The account ID.
+	 * @param string|array $usage_context The container usage context(s).
 	 *
-	 * @param string $account_id  The account ID.
 	 * @return mixed Container ID on success, or WP_Error on failure.
 	 */
-	protected function create_container( $account_id ) {
+	protected function create_container( $account_id, $usage_context = self::USAGE_CONTEXT_WEB ) {
 		$client     = $this->get_client();
 		$orig_defer = $client->shouldDefer();
 
@@ -479,7 +480,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 
 		$container = new Google_Service_TagManager_Container();
 		$container->setName( remove_accents( get_bloginfo( 'name' ) ) );
-		$container->setUsageContext( array( 'web' ) );
+		$container->setUsageContext( (array) $usage_context );
 
 		try {
 			$container = $this->get_service( 'tagmanager' )->accounts_containers->create( "accounts/{$account_id}", $container );
