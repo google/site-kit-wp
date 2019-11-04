@@ -382,29 +382,40 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						return $option['accountID'];
 					};
 				case 'container-id':
-					return function() {
-						$option = (array) $this->options->get( self::OPTION );
-						// TODO: Remove this at some point (migration of old option).
-						if ( isset( $option['container_id'] ) ) {
-							if ( ! isset( $option['containerID'] ) ) {
-								$option['containerID'] = $option['container_id'];
-							}
-							unset( $option['container_id'] );
-							$this->options->set( self::OPTION, $option );
+					return function() use ( $data ) {
+						$option      = $this->options->get( self::OPTION );
+						$context_map = array(
+							self::USAGE_CONTEXT_WEB => 'containerID',
+							self::USAGE_CONTEXT_AMP => 'ampContainerID',
+						);
+
+						$usage_context        = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
+						$valid_usage_contexts = array_keys( $context_map );
+
+						if ( ! in_array( $usage_context, $valid_usage_contexts, true ) ) {
+							return new WP_Error(
+								'invalid_param',
+								sprintf(
+									/* translators: 1: Invalid parameter name, 2: list of valid values */
+									__( 'Request parameter %1$s is not one of %2$s', 'google-site-kit' ),
+									'usageContext',
+									implode( ', ', $valid_usage_contexts )
+								),
+								array( 'status' => 400 )
+							);
 						}
 
-						// TODO: Remove this at some point (migration of old 'containerId' option).
-						if ( isset( $option['containerId'] ) ) {
-							if ( ! isset( $option['containerID'] ) ) {
-								$option['containerID'] = $option['containerId'];
-							}
-							unset( $option['containerId'] );
+						$option_key = $context_map[ $usage_context ];
+
+						if ( empty( $option[ $option_key ] ) ) {
+							return new WP_Error(
+								'container_id_not_set',
+								__( 'Tag Manager container ID not set.', 'google-site-kit' ),
+								array( 'status' => 404 )
+							);
 						}
 
-						if ( empty( $option['containerID'] ) ) {
-							return new WP_Error( 'container_id_not_set', __( 'Tag Manager container ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-						}
-						return $option['containerID'];
+						return $option[ $option_key ];
 					};
 				case 'accounts-containers':
 					$service = $this->get_service( 'tagmanager' );
