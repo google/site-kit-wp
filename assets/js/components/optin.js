@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { apiFetch } from '@wordpress/api-fetch';
+import apiFetch from '@wordpress/api-fetch';
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
