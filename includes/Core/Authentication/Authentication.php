@@ -567,7 +567,12 @@ final class Authentication {
 		);
 
 		foreach ( $verification_tags as $verification_tag ) {
-			echo wp_kses( html_entity_decode( $verification_tag ), $allowed_html );
+			$verification_tag = html_entity_decode( $verification_tag );
+			if ( 0 !== strpos( $verification_tag, '<meta ' ) ) {
+				$verification_tag = '<meta name="google-site-verification" content="' . esc_attr( $verification_tag ) . '">';
+			}
+
+			echo wp_kses( $verification_tag, $allowed_html );
 		}
 	}
 

@@ -143,9 +143,26 @@ final class Reset {
 		$key_prefix = $this->context->is_network_mode() ? '' : $wpdb->get_blog_prefix();
 		$user_query = new \WP_User_Query(
 			array(
-				'fields'   => 'id',
-				'meta_key' => $key_prefix . OAuth_Client::OPTION_ACCESS_TOKEN,
-				'compare'  => 'EXISTS',
+				'fields'     => 'id',
+				'meta_query' => array(
+					'relation' => 'OR',
+					array(
+						'key'     => $key_prefix . Verification_Tag::OPTION,
+						'compare' => 'EXISTS',
+					),
+					array(
+						'key'     => $key_prefix . OAuth_Client::OPTION_ACCESS_TOKEN,
+						'compare' => 'EXISTS',
+					),
+					array(
+						'key'     => $key_prefix . OAuth_Client::OPTION_PROXY_ACCESS_CODE,
+						'compare' => 'EXISTS',
+					),
+					array(
+						'key'     => $key_prefix . OAuth_Client::OPTION_ERROR_CODE,
+						'compare' => 'EXISTS',
+					),
+				),
 			)
 		);
 

@@ -274,6 +274,7 @@ class OAuth_ClientTest extends TestCase {
 		$url = $client->get_proxy_setup_url();
 		$this->assertContains( 'name=', $url );
 		$this->assertContains( 'url=', $url );
+		$this->assertContains( 'version=', $url );
 		$this->assertContains( 'rest_root=', $url );
 		$this->assertContains( 'admin_root=', $url );
 		$this->assertContains( 'scope=', $url );
@@ -285,6 +286,7 @@ class OAuth_ClientTest extends TestCase {
 		$url = $client->get_proxy_setup_url( 'temp-code' );
 		$this->assertContains( 'site_id=' . self::SITE_ID, $url );
 		$this->assertContains( 'code=temp-code', $url );
+		$this->assertContains( 'version=', $url );
 		$this->assertContains( 'scope=', $url );
 		$this->assertNotContains( 'name=', $url );
 		$this->assertNotContains( 'url=', $url );
