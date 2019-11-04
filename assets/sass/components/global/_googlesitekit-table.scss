@@ -138,6 +138,14 @@
 			padding-right: 0;
 		}
 
+		.googlesitekit-mini-chart {
+			display: none;
+
+			@media (min-width: $bp-tablet) {
+				display: block;
+			}
+		}
+
 		.googlesitekit-table-overflow &:last-child {
 			padding-right: $grid-gap-phone;
 
