@@ -19,7 +19,7 @@
 const glob = require( 'glob' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const path = require( 'path' );
-
+const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 
 /**
@@ -158,6 +158,29 @@ module.exports = ( env, argv ) => {
 				} ),
 			],
 			optimization: {
+				minimizer: [
+					new TerserPlugin( {
+						parallel: true,
+						sourceMap: false,
+						cache: true,
+						terserOptions: {
+							// compress: {
+							// 	keep_classnames: true,
+							// 	keep_fnames: true,
+							// },
+							// mangle: {
+							// 	keep_classnames: true,
+							// 	keep_fnames: true,
+							// },
+							// keep_classnames: true,
+							// keep_fnames: false,
+							output: {
+								comments: /translators:/i,
+							},
+						},
+						extractComments: false,
+					} ),
+				],
 				splitChunks: {
 					cacheGroups: {
 						default: false,
