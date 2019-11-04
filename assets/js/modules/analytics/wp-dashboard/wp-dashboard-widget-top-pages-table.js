@@ -36,7 +36,7 @@ const { Component } = wp.element;
 class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 	render() {
 		const { data } = this.props;
-		const { siteURL: siteURL } = googlesitekit.admin;
+		const { siteURL } = googlesitekit.admin;
 
 		if ( isDataZeroForReporting( data ) ) {
 			return null;
