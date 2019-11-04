@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Admin;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Assets\Assets;
 
@@ -307,6 +308,17 @@ final class Screens {
 
 				// This callback will redirect to the dashboard on successful authentication.
 				'initialize_callback' => function( Context $context ) {
+					$splash_context = filter_input( INPUT_GET, 'googlesitekit_context' );
+					$authentication = new Authentication( $context );
+
+					// If the user is authenticated, redirect them to the disconnect URL and then send them back here.
+					if ( empty( $_GET['googlesitekit_reset_session'] ) && 'revoked' === $splash_context && $authentication->is_authenticated() ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+						$authentication->disconnect();
+
+						wp_safe_redirect( add_query_arg( array( 'googlesitekit_reset_session' => 1 ) ) );
+						exit;
+					}
+
 					$notification = filter_input( INPUT_GET, 'notification' );
 					$error        = filter_input( INPUT_GET, 'error' );
 

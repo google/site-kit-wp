@@ -34,7 +34,7 @@ class ModulesTest extends TestCase {
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
 				'site-verification'  => 'Google\\Site_Kit\\Modules\\Site_Verification',
-				'tagmanager'         => 'Google\\Site_Kit\\Modules\\TagManager',
+				'tagmanager'         => 'Google\\Site_Kit\\Modules\\Tag_Manager',
 			),
 			$available
 		);

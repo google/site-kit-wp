@@ -43,7 +43,7 @@ class SiteVerification extends Component {
 			loading: isAuthenticated && shouldSetup,
 			loadingMsg: __( 'Getting your verified sites...', 'google-site-kit' ),
 			siteURL: ' ', // Space allows TextField label to look right.
-			selectedUrl: '',
+			selectedURL: '',
 			errorCode: false,
 			errorMsg: '',
 		};
@@ -90,8 +90,8 @@ class SiteVerification extends Component {
 				let message = err.message;
 
 				if ( validateJSON( err.message ) ) {
-					const errorJson = JSON.parse( err.message );
-					message = errorJson.error.message || err.message;
+					const errorJSON = JSON.parse( err.message );
+					message = errorJSON.error.message || err.message;
 				}
 
 				setErrorMessage( message );
@@ -138,8 +138,8 @@ class SiteVerification extends Component {
 			let message = err.message;
 
 			if ( validateJSON( err.message ) ) {
-				const errorJson = JSON.parse( err.message );
-				message = errorJson.error.message || err.message;
+				const errorJSON = JSON.parse( err.message );
+				message = errorJSON.error.message || err.message;
 			}
 
 			setErrorMessage( message );

@@ -53,7 +53,7 @@ class OptimizeTest extends TestCase {
 				'required',
 				'autoActivate',
 				'internal',
-				'screenId',
+				'screenID',
 				'hasSettings',
 				'provides',
 				'settings',
@@ -61,9 +61,9 @@ class OptimizeTest extends TestCase {
 			array_keys( $info )
 		);
 		$this->assertEquals( 'optimize', $info['slug'] );
-		$this->assertArrayHasKey( 'optimizeId', $info['settings'] );
-		$this->assertArrayHasKey( 'ampClientIdOptIn', $info['settings'] );
-		$this->assertArrayHasKey( 'ampExperimentJson', $info['settings'] );
+		$this->assertArrayHasKey( 'optimizeID', $info['settings'] );
+		$this->assertArrayHasKey( 'ampClientIDOptIn', $info['settings'] );
+		$this->assertArrayHasKey( 'ampExperimentJSON', $info['settings'] );
 	}
 
 	public function test_on_deactivation() {
