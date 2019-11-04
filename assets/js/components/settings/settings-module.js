@@ -31,7 +31,7 @@ import ModuleSetupIncomplete from 'GoogleComponents/settings/module-setup-incomp
 import {
 	activateOrDeactivateModule,
 	refreshAuthentication,
-	getReAuthUrl,
+	getReAuthURL,
 	moduleIcon,
 	showErrorNotification,
 } from 'GoogleUtil';
@@ -99,7 +99,7 @@ class SettingsModule extends Component {
 				active: newActiveState,
 			} );
 
-			window.location = getReAuthUrl( this.props.slug, false );
+			window.location = getReAuthURL( this.props.slug, false );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'activate-module-error',
@@ -177,7 +177,7 @@ class SettingsModule extends Component {
 			autoActivate,
 			provides,
 			isSaving,
-			screenId,
+			screenID,
 			error,
 		} = this.props;
 
@@ -314,14 +314,14 @@ class SettingsModule extends Component {
 													mdc-layout-grid__cell
 													mdc-layout-grid__cell--span-12
 												">
-											<FilteredModuleSettingsDetails module={ moduleKey } isEditing={ isEditing[ moduleKey ] } />
+											<FilteredModuleSettingsDetails module={ moduleKey } isEditing={ isEditing[ moduleKey ] } isOpen={ isOpen } />
 										</div>
 									</Fragment>
 									}
 									{
 										hasSettings && ! setupComplete &&
 											<ModuleSetupIncomplete
-												screenId={ screenId }
+												screenID={ screenID }
 												slug={ slug }
 											/>
 									}

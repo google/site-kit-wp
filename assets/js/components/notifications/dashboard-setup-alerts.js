@@ -81,7 +81,7 @@ class DashboardSetupAlerts extends Component {
 							type="win-success"
 							learnMoreLabel={ winData.learnMore.label }
 							learnMoreDescription={ winData.learnMore.description }
-							learnMoreUrl={ winData.learnMore.url }
+							learnMoreURL={ winData.learnMore.url }
 						>
 							<ModulesList />
 						</Notification>

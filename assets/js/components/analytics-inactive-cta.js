@@ -22,7 +22,7 @@
 import {
 	activateOrDeactivateModule,
 	refreshAuthentication,
-	getReAuthUrl,
+	getReAuthURL,
 	showErrorNotification,
 } from 'GoogleUtil';
 import data from 'GoogleComponents/data';
@@ -41,7 +41,7 @@ class AnalyticsInactiveCTA extends Component {
 			await refreshAuthentication();
 
 			// Redirect to ReAuthentication URL
-			window.location = getReAuthUrl( 'analytics', true );
+			window.location = getReAuthURL( 'analytics', true );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'analytics-setup-error',

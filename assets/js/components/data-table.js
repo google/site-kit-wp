@@ -52,7 +52,7 @@ export const getDataTableFromData = ( data, headers, options ) => {
 		</tr>
 	);
 
-	const { links, source, showUrls } = options;
+	const { links, source, showURLs } = options;
 
 	if ( options.cap ) {
 		data = data.slice( 0, options.cap );
@@ -81,7 +81,7 @@ export const getDataTableFromData = ( data, headers, options ) => {
 								{ cell }
 							</Link>
 							<br />
-							{ showUrls && '' !== trim( link, '/' ) &&
+							{ showURLs && '' !== trim( link, '/' ) &&
 								<Link
 									className="googlesitekit-table__body-item-url"
 									href={ link }

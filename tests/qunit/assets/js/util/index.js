@@ -5,16 +5,16 @@ QUnit.module( 'Utility function tests' );
 
 // Set up default admin data.
 googlesitekit.admin = {
-	connectUrl: 'http://sitekit.withgoogle.com/wp-admin/admin.php?googlesitekit_connect=1&nonce=12345&page=googlesitekit-splash',
+	connectURL: 'http://sitekit.withgoogle.com/wp-admin/admin.php?googlesitekit_connect=1&nonce=12345&page=googlesitekit-splash',
 	adminRoot: 'http://sitekit.withgoogle.com/wp-admin/admin.php',
 };
 
 googlesitekit.modules = {
 	'search-console': {
-		screenId: 'googlesitekit-module-search-console'
+		screenID: 'googlesitekit-module-search-console'
 	},
 	'pagespeed-insights': {
-		screenId: 'googlesitekit-module-pagespeed-insights'
+		screenID: 'googlesitekit-module-pagespeed-insights'
 	}
 };
 
@@ -49,18 +49,18 @@ valuesToTest.forEach( function( itemToTest ) {
 		assert.equal ( '', '', '' );
 		window.googlesitekit.modules = window.googlesitekit.modules || {};
 		window.googlesitekit.modules.analytics = {
-			settings: { accountId: '12345678' },
+			settings: { accountID: '12345678' },
 			setupComplete: true,
 			confirm: true,
 		};
 
 		window.googlesitekit.modules.adsense = {
-			settings: { accountId: '12345678' },
+			settings: { accountID: '12345678' },
 			setupComplete: false,
 			confirm: true,
 		};
 
-		var value = testFunctions.toggleConfirmModuleSettings( itemToTest.moduleSlug, { selectedAccount: 'accountId' }, itemToTest.settingsState, true );
+		var value = testFunctions.toggleConfirmModuleSettings( itemToTest.moduleSlug, { selectedAccount: 'accountID' }, itemToTest.settingsState, true );
 		assert.equal( value, itemToTest.expected, 'Expect toggleConfirmModuleSettings( \'' + itemToTest.moduleSlug + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
@@ -404,33 +404,32 @@ QUnit.test( 'fillFilterWithComponent::', function ( assert ) {
 } );
 
 /**
- * Test getReAuthUrl.
+ * Test getReAuthURL.
  */
 valuesToTest = [
-
 	{
 		slug: 'pagespeed-insights',
 		status: false,
 		apikey: false,
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&reAuth=false&slug=pagespeed-insights'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=pagespeed-insights&notification=authentication_success'
 	},
 	{
 		slug: 'pagespeed-insights',
 		status: true,
 		apikey: false,
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=false&slug=pagespeed-insights'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&slug=pagespeed-insights&notification=authentication_success'
 	},
 	{
 		slug: 'pagespeed-insights',
 		status: false,
 		apikey: 'abc123',
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&reAuth=false&slug=pagespeed-insights'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=pagespeed-insights&notification=authentication_success'
 	},
 	{
 		slug: 'pagespeed-insights',
 		status: true,
 		apikey: 'abc123',
-		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&reAuth=false&slug=pagespeed-insights'
+		expected: 'http://sitekit.withgoogle.com/wp-admin/admin.php?page=googlesitekit-module-pagespeed-insights&slug=pagespeed-insights&notification=authentication_success'
 	},
 ];
 
@@ -449,11 +448,11 @@ const addQueryArgs = function( url, args ) {
 
 valuesToTest.forEach( function( itemToTest ) {
 	googlesitekit.admin.apikey = itemToTest.apikey;
-	QUnit.test( 'getReAuthUrl::' + itemToTest.slug, function ( assert ) {
+	QUnit.test( 'getReAuthURL::' + itemToTest.slug, function ( assert ) {
 
 		wp.url.addQueryArgs = addQueryArgs;
-		var value = testFunctions.getReAuthUrl( itemToTest.slug, itemToTest.status );
-		assert.equal( value, itemToTest.expected, 'Expect getReAuthUrl( \'' + itemToTest.slug + ', ' + itemToTest.status + ', ' + itemToTest.apikey  + '\' ) to return ' + itemToTest.expected );
+		var value = testFunctions.getReAuthURL( itemToTest.slug, itemToTest.status );
+		assert.equal( value, itemToTest.expected, 'Expect getReAuthURL( \'' + itemToTest.slug + ', ' + itemToTest.status + ', ' + itemToTest.apikey  + '\' ) to return ' + itemToTest.expected );
 	} );
 } );
 

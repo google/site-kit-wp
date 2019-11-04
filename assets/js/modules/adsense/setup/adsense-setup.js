@@ -43,6 +43,16 @@ class AdSenseSetupWidget extends Component {
 	}
 
 	componentDidMount() {
+		const {
+			isOpen,
+			onSettingsPage,
+		} = this.props;
+
+		// If on settings page, only run the rest if the module is "open".
+		if ( onSettingsPage && ! isOpen ) {
+			return;
+		}
+
 		this.getAccounts();
 	}
 

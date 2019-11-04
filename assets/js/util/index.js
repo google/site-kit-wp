@@ -81,14 +81,14 @@ const removeURLFallBack = ( url, parameter ) => {
  * @param {string} parameter The URL parameter to remove.
  */
 export const removeURLParameter = ( url, parameter ) => {
-	const parsedUrl = new URL( url );
+	const parsedURL = new URL( url );
 
-	// If the URL implementation doesn't support ! parsedUrl.searchParams, use the fallback handler.
-	if ( ! parsedUrl.searchParams || ! parsedUrl.searchParams.delete ) {
+	// If the URL implementation doesn't support ! parsedURL.searchParams, use the fallback handler.
+	if ( ! parsedURL.searchParams || ! parsedURL.searchParams.delete ) {
 		return removeURLFallBack( url, parameter );
 	}
-	parsedUrl.searchParams.delete( parameter );
-	return parsedUrl.href;
+	parsedURL.searchParams.delete( parameter );
+	return parsedURL.href;
 };
 
 /**
@@ -354,27 +354,31 @@ export const refreshAuthentication = async () => {
  * @param {string}  slug   The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
  * @param {boolean} status The module activation status.
  */
-export const getReAuthUrl = ( slug, status ) => {
+export const getReAuthURL = ( slug, status ) => {
 	const {
-		connectUrl,
+		connectURL,
 		adminRoot,
-		apikey,
 	} = googlesitekit.admin;
 
 	const { needReauthenticate } = window.googlesitekit.setup;
 
-	const { screenId } = googlesitekit.modules[ slug ];
+	const { screenID } = googlesitekit.modules[ slug ];
 
-	// For PageSpeedInsights, there is no setup needed if an API key already exists.
-	const reAuth = ( 'pagespeed-insights' === slug && apikey && apikey.length ) ? false : status;
+	// Special case handling for PageSpeed Insights.
+	// TODO: Refactor this out.
+	const pageSpeedQueryArgs = 'pagespeed-insights' === slug ? {
+		notification: 'authentication_success',
+		reAuth: undefined,
+	} : {};
 
 	let redirect = addQueryArgs(
-		adminRoot, {
-
+		adminRoot,
+		{
 			// If the module has a submenu page, and is being activated, redirect back to the module page.
-			page: ( slug && status && screenId ) ? screenId : 'googlesitekit-dashboard',
-			reAuth,
+			page: ( slug && status && screenID ) ? screenID : 'googlesitekit-dashboard',
 			slug,
+			reAuth: status,
+			...pageSpeedQueryArgs,
 		}
 	);
 
@@ -389,7 +393,7 @@ export const getReAuthUrl = ( slug, status ) => {
 	redirect = adminRoot + '?' + queryString;
 
 	return addQueryArgs(
-		connectUrl, {
+		connectURL, {
 			redirect,
 			status,
 		}
@@ -555,7 +559,7 @@ export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel
 	}
 	const {
 		siteURL,
-		siteUserId,
+		siteUserID,
 	} = googlesitekit.admin;
 
 	const { isFirstAdmin } = googlesitekit.setup;
@@ -569,7 +573,7 @@ export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel
 			event_value: eventValue, /*eslint camelcase: 0*/
 			dimension1: trimEnd( siteURL, '/' ), // Domain.
 			dimension2: isFirstAdmin ? 'true' : 'false', // First Admin?
-			dimension3: siteUserId, // Identifier.
+			dimension3: siteUserID, // Identifier.
 		} );
 	}
 };

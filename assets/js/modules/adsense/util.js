@@ -58,7 +58,7 @@ export function reduceAdSenseData( rows ) {
 /**
  * Determine the AdSense account status.
  *
- * @param {string|boolean} existingTag String existing clientId, or false.
+ * @param {string|boolean} existingTag String existing clientID, or false.
  * @param {function} statusUpdateCallback The function to call back with status updates.
  */
 export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdateCallback = () => {} ) => {
@@ -66,7 +66,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 	 * Defines the account status variables.
 	 */
 	let accountStatus;
-	let clientId = false;
+	let clientID = false;
 
 	try {
 		// First, fetch the list of accounts connected to this user.
@@ -82,7 +82,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 			statusUpdateCallback( __( 'Searching for domain…', 'google-site-kit' ) );
 			for ( const account of accountData ) {
 				const accountId = account.id;
-				const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { clientId: accountId } ).then( ( res ) => res ).catch( ( e ) => e );
+				const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { clientID: accountId } ).then( ( res ) => res ).catch( ( e ) => e );
 				const parsedUrl = new URL( googlesitekit.admin.siteURL );
 				const matches = urlchannels && urlchannels.length ? filter( urlchannels, { urlPattern: parsedUrl.hostname } ) : [];
 
@@ -132,7 +132,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 
 			statusUpdateCallback( __( 'Account found, checking account status…', 'google-site-kit' ) );
 
-			const alertsResults = await data.get( TYPE_MODULES, 'adsense', 'alerts', { accountId: id } ).then( ( res ) => res ).catch( ( e ) => e );
+			const alertsResults = await data.get( TYPE_MODULES, 'adsense', 'alerts', { accountID: id } ).then( ( res ) => res ).catch( ( e ) => e );
 			const alerts = alertsResults.data && ( ! alertsResults.data.status || 200 === alertsResults.data.status ) ? alertsResults.data : alertsResults;
 			const hasAlertsError = alerts && alerts.message && alerts.message.error;
 
@@ -146,10 +146,10 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 				const hasClientError = clients && clients.message && clients.message.error;
 				const item = clients && clients.length ? find( clients, { productCode: 'AFC' } ) : false;
 				if ( item ) {
-					clientId = item.id;
+					clientID = item.id;
 
 					// Save the client ID immediately so we can verify the site by inserting the tag.
-					await data.set( TYPE_MODULES, 'adsense', 'client-id', { clientId } ).then( ( res ) => res ).catch( ( e ) => e );
+					await data.set( TYPE_MODULES, 'adsense', 'client-id', { clientID } ).then( ( res ) => res ).catch( ( e ) => e );
 				}
 
 				if ( hasAlertsError ) {
@@ -182,12 +182,12 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 						accountStatus = 'account-required-action';
 						sendAnalyticsTrackingEvent( 'adsense_setup', 'adsense_required_action', 'accountRequiredAction status' );
 					} else if ( item ) {
-						clientId = item.id;
+						clientID = item.id;
 
 						// Check the URL channels.
 						statusUpdateCallback( __( 'Looking for site domain…', 'google-site-kit' ) );
 
-						const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { clientId } ).then( ( res ) => res ).catch( ( e ) => e );
+						const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { clientID } ).then( ( res ) => res ).catch( ( e ) => e );
 
 						// Find a URL channel with a matching domain
 						const matches = urlchannels && urlchannels.length && filter( urlchannels, ( channel ) => {
@@ -204,7 +204,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 							// the account is still pending.
 							accountStatus = 'account-pending-review';
 							sendAnalyticsTrackingEvent( 'adsense_setup', 'adsense_account_pending', 'accountPendingReview status account-pending-review' );
-						} else if ( existingTag && clientId === existingTag ) {
+						} else if ( existingTag && clientID === existingTag ) {
 							// AdSense existing tag id matches detected client id.
 							/**
 							 * No error, matched domain, account is connected.
@@ -213,7 +213,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 							 */
 							accountStatus = 'account-connected';
 							sendAnalyticsTrackingEvent( 'adsense_setup', 'adsense_account_connected', 'existing_matching_tag' );
-						} else if ( existingTag && clientId !== existingTag ) {
+						} else if ( existingTag && clientID !== existingTag ) {
 							/**
 							 * No error, matched domain, account is connected.
 							 *
@@ -232,8 +232,8 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 
 							sendAnalyticsTrackingEvent( 'adsense_setup', 'adsense_account_connected' );
 
-							// Save the publisher clientId: AdSense setup is complete!
-							await data.set( TYPE_MODULES, 'adsense', 'setup-complete', { clientId } ).then( ( res ) => res ).catch( ( e ) => e );
+							// Save the publisher clientID: AdSense setup is complete!
+							await data.set( TYPE_MODULES, 'adsense', 'setup-complete', { clientID } ).then( ( res ) => res ).catch( ( e ) => e );
 						}
 					} else {
 						/**
@@ -252,7 +252,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 
 		return ( {
 			accountStatus,
-			clientId,
+			clientID,
 		} );
 	} catch ( err ) {
 		return ( {

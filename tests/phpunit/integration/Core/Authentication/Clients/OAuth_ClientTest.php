@@ -20,10 +20,13 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class OAuth_ClientTest extends TestCase {
 
+	const SITE_ID   = '12345678.apps.sitekit.withgoogle.com';
+	const CLIENT_ID = 'test-client-id';
+
 	public function test_get_client() {
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertInstanceOf( 'Google_Client', $client->get_client() );
+		$this->assertInstanceOf( 'Google\Site_Kit_Dependencies\Google_Client', $client->get_client() );
 	}
 
 	public function test_refresh_token() {
@@ -50,19 +53,8 @@ class OAuth_ClientTest extends TestCase {
 		$client->refresh_token();
 
 		// At this point an error is triggered internally due to undefined indexes on $authentication_token
-		// and the saved error code is an integer from a PHPUnit exception.
-		// Let's just make sure the error code is not one related to client error handling.
-		$this->assertNotContains(
-			get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ),
-			array(
-				'oauth_credentials_not_exist',
-				'refresh_token_not_exist',
-				'cannot_log_in',
-				'invalid_grant',
-				'invalid_code',
-				'access_token_not_received',
-			)
-		);
+		// and the saved error code is 'invalid_grant' by default.
+		$this->assertEquals( 'invalid_grant', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
 	}
 
 	public function test_revoke_token() {
@@ -79,10 +71,11 @@ class OAuth_ClientTest extends TestCase {
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 
-		$this->assertArraySubset(
+		$this->assertEqualSets(
 			array(
 				'https://www.googleapis.com/auth/userinfo.profile',
 				'https://www.googleapis.com/auth/userinfo.email',
+				'openid',
 			),
 			$client->get_required_scopes()
 		);
@@ -205,7 +198,7 @@ class OAuth_ClientTest extends TestCase {
 		 * @see \Google\Site_Kit\Core\Authentication\Authentication::handle_oauth
 		 */
 		$this->assertEquals( add_query_arg( 'oauth2callback', 1, home_url() ), $params['redirect_uri'] );
-		$this->assertEquals( 'test-client-id', $params['client_id'] );
+		$this->assertEquals( self::CLIENT_ID, $params['client_id'] );
 	}
 
 	public function test_authorize_user() {
@@ -239,14 +232,11 @@ class OAuth_ClientTest extends TestCase {
 
 		$_GET['code'] = 'test-code';
 		$this->fake_authentication();
-		$credentials_mock = $this->getMock( 'MockClass', array( 'has' ) );
-		$credentials_mock->method( 'has' )->willReturn( true );
-		$this->force_set_property( $client, 'credentials', $credentials_mock );
 		// If all goes smooth, we expect to be redirected to $success_redirect
 		$success_redirect = admin_url( 'success-redirect' );
 		$client->get_authentication_url( $success_redirect );
 		// No other way around this but to mock the Google_Client
-		$google_client_mock = $this->getMock( 'Google_Client', array( 'fetchAccessTokenWithAuthCode' ) );
+		$google_client_mock = $this->getMock( 'Google\Site_Kit_Dependencies\Google_Client', array( 'fetchAccessTokenWithAuthCode' ) );
 		$google_client_mock->method( 'fetchAccessTokenWithAuthCode' )->willReturn( array( 'access_token' => 'test-access-token' ) );
 		$this->force_set_property( $client, 'google_client', $google_client_mock );
 
@@ -256,6 +246,75 @@ class OAuth_ClientTest extends TestCase {
 			$this->assertStringStartsWith( "$success_redirect?", $redirect->get_location() );
 			$this->assertContains( 'notification=authentication_success', $redirect->get_location() );
 		}
+	}
+
+	public function test_using_proxy() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		// Use proxy by default.
+		$client = new OAuth_Client( $context );
+		$this->assertTrue( $client->using_proxy() );
+
+		// Don't use proxy when regular OAuth client ID is used.
+		$this->fake_authentication();
+		$client = new OAuth_Client( $context );
+		$this->assertFalse( $client->using_proxy() );
+
+		// Use proxy when proxy site ID is used.
+		$this->fake_proxy_authentication();
+		$client = new OAuth_Client( $context );
+		$this->assertTrue( $client->using_proxy() );
+	}
+
+	public function test_get_proxy_setup_url() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		// If no site ID, pass site registration args.
+		$client = new OAuth_Client( $context );
+		$url = $client->get_proxy_setup_url();
+		$this->assertContains( 'name=', $url );
+		$this->assertContains( 'url=', $url );
+		$this->assertContains( 'version=', $url );
+		$this->assertContains( 'rest_root=', $url );
+		$this->assertContains( 'admin_root=', $url );
+		$this->assertContains( 'scope=', $url );
+		$this->assertNotContains( 'site_id=', $url );
+
+		// Otherwise, pass site ID and given temporary access code.
+		$this->fake_proxy_authentication();
+		$client = new OAuth_Client( $context );
+		$url = $client->get_proxy_setup_url( 'temp-code' );
+		$this->assertContains( 'site_id=' . self::SITE_ID, $url );
+		$this->assertContains( 'code=temp-code', $url );
+		$this->assertContains( 'version=', $url );
+		$this->assertContains( 'scope=', $url );
+		$this->assertNotContains( 'name=', $url );
+		$this->assertNotContains( 'url=', $url );
+		$this->assertNotContains( 'rest_root=', $url );
+		$this->assertNotContains( 'admin_root=', $url );
+	}
+
+	public function test_get_proxy_permissions_url() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		// If no access token, this does not work.
+		$client = new OAuth_Client( $context );
+		$url = $client->get_proxy_permissions_url();
+		$this->assertEmpty( $url );
+
+		// The URL has to include the access token.
+		$client                 = new OAuth_Client( $context );
+		$client->set_access_token( 'test-access-token', 3600 );
+		$url = $client->get_proxy_permissions_url();
+		$this->assertContains( 'token=test-access-token', $url );
+
+		// If there is a site ID, it should also include that.
+		$this->fake_proxy_authentication();
+		$client = new OAuth_Client( $context );
+		$client->set_access_token( 'test-access-token', 3600 );
+		$url = $client->get_proxy_permissions_url();
+		$this->assertContains( 'token=test-access-token', $url );
+		$this->assertContains( 'site_id=' . self::SITE_ID, $url );
 	}
 
 	public function test_get_error_message_unknown() {
@@ -293,7 +352,18 @@ class OAuth_ClientTest extends TestCase {
 		add_filter( 'googlesitekit_oauth_secret', function () {
 			return json_encode( array(
 				'web' => array(
-					'client_id'     => 'test-client-id',
+					'client_id'     => self::CLIENT_ID,
+					'client_secret' => 'test-client-secret',
+				),
+			) );
+		} );
+	}
+
+	protected function fake_proxy_authentication() {
+		add_filter( 'googlesitekit_oauth_secret', function () {
+			return json_encode( array(
+				'web' => array(
+					'client_id'     => self::SITE_ID,
 					'client_secret' => 'test-client-secret',
 				),
 			) );

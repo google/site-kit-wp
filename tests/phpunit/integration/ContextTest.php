@@ -108,6 +108,15 @@ class ContextTest extends TestCase {
 		$this->assertEquals( 'https://test.com', $context->get_reference_site_url() );
 		remove_filter( 'googlesitekit_site_url', $other_url_filter );
 
+		$trailing_slash_url = function () {
+			return 'https://test.com/';
+		};
+
+		// It always returns a URL without a trailing slash.
+		add_filter( 'googlesitekit_site_url', $trailing_slash_url );
+		$this->assertEquals( 'https://test.com', $context->get_reference_site_url() );
+		remove_filter( 'googlesitekit_site_url', $trailing_slash_url );
+
 		// If the filtered value returns an empty value, it falls back to the home_url.
 		add_filter( 'googlesitekit_site_url', '__return_empty_string' );
 		$this->assertEquals( $home_url, $context->get_reference_site_url() );
@@ -143,12 +152,6 @@ class ContextTest extends TestCase {
 		$this->go_to( '/' );
 		$this->assertEquals( 'https://test.com/', $context->get_reference_permalink() );
 		$this->assertEquals( 'https://test.com/hello-world/', $context->get_reference_permalink( $post_id ) );
-	}
-
-	public function test_is_beta() {
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-
-		$this->assertEquals( false !== strpos( GOOGLESITEKIT_VERSION, 'beta' ), $context->is_beta() );
 	}
 
 	/**
