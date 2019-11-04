@@ -21,6 +21,7 @@
  */
 import Header from 'GoogleComponents/header';
 import Button from 'GoogleComponents/button';
+import ResetButton from 'GoogleComponents/reset-button';
 import Layout from 'GoogleComponents/layout/layout';
 import Optin from 'GoogleComponents/optin';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
@@ -118,6 +119,7 @@ class SetupUsingProxy extends Component {
 															</Fragment>
 														) }
 														<Button
+															className="googlesitekit-start-setup"
 															href={ proxySetupURL }
 															onClick={ () => {
 																sendAnalyticsTrackingEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
@@ -125,6 +127,7 @@ class SetupUsingProxy extends Component {
 														>
 															{ __( 'Start setup', 'google-site-kit' ) }
 														</Button>
+														<ResetButton />
 														<Optin />
 													</div>
 												</div>
