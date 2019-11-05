@@ -116,6 +116,12 @@ valuesToTest = [
 		expected: 'UA-XXXXX-Y'
 	},
 	{
+		html: '<script>(window,document,\'script\',\'//www.google-analytics.com/analytics.js\',\'ga\');\
+				ga(\'create\', \'UA-12345-1\', \'auto\');ga(\'send\', \'pageview\');</script>',
+		module: 'analytics',
+		expected: 'UA-12345-1',
+	},
+	{
 		html: '<script> window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date; ga(\'create\', \'UA-XXXXX-Y\', \'auto\'); ga(\'send\', \'pageview\'); </script><script async src=\'https://www.google-analytics.com/analytics.js\'></script>',
 		module: 'analytics',
 		expected: 'UA-XXXXX-Y'

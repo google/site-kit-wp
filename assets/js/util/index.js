@@ -660,6 +660,12 @@ export const extractTag = ( string, tag ) => {
 
 			// Detect common analytics code usage.
 			if ( ! result ) {
+				reg = new RegExp( /<script[^>]*>[^<]+google-analytics\.com\/analytics\.js[^<]+(UA-\d+-\d+)/gm );
+				result = reg.exec( string );
+				result = result ? result[ 1 ] : false;
+			}
+
+			if ( ! result ) {
 				reg = new RegExp( /__gaTracker\( ?['|"]create['|"], ?['|"](UA-.*?)['|"], ?['|"]auto['|"] ?\)/gm );
 				result = reg.exec( string );
 				result = result ? result[ 1 ] : false;
