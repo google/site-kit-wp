@@ -44,6 +44,7 @@ class AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources extends Component 
 		const headers = [
 			{
 				title: __( 'Source', 'google-site-kit' ),
+				primary: true,
 			},
 			{
 				title: __( 'Percent', 'google-site-kit' ),

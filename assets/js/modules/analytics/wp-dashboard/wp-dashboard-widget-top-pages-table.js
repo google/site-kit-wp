@@ -36,7 +36,7 @@ const { Component } = wp.element;
 class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 	render() {
 		const { data } = this.props;
-		const { siteURL: siteURL } = googlesitekit.admin;
+		const { siteURL } = googlesitekit.admin;
 
 		if ( isDataZeroForReporting( data ) ) {
 			return null;
@@ -53,15 +53,26 @@ class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 			];
 		} );
 
+		const headers = [
+			{
+				title: __( 'Title', 'google-site-kit' ),
+				tooltip: __( 'Page Title', 'google-site-kit' ),
+				primary: true,
+			},
+			{
+				title: __( 'Pageviews', 'google-site-kit' ),
+				tooltip: __( 'Pageviews', 'google-site-kit' ),
+			},
+		];
+
 		const options = {
-			hideHeader: true,
 			chartsEnabled: true,
 			links,
 			cap: 5,
 			showURLs: true,
 		};
 
-		const dataTable = getDataTableFromData( dataMapped, [], options );
+		const dataTable = getDataTableFromData( dataMapped, headers, options );
 
 		return (
 			<div className="googlesitekit-search-console-widget">

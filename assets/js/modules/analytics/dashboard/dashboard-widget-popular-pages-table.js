@@ -66,6 +66,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 		const headers = [
 			{
 				title: __( 'Most popular content', 'google-site-kit' ),
+				primary: true,
 			},
 			{
 				title: __( 'Views', 'google-site-kit' ),
