@@ -105,7 +105,7 @@ class SearchConsole extends Component {
 						propertyMatches[ 0 ].siteUrl
 					);
 				} else {
-					errorMessage = __( 'We did not find a Search Console property for this site, would you like to create one?', 'google-site-kit' );
+					errorMessage = __( 'Your site has not yet been added to Search Console. Would you like to add it now?', 'google-site-kit' );
 				}
 
 				setErrorMessage( errorMessage );
