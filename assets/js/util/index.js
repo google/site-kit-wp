@@ -632,7 +632,7 @@ export const getExistingTag = async ( module ) => {
  */
 export const scrapeTag = async ( url, module ) => {
 	try {
-		const html = await fetch( url ).then( ( res ) => res.text() );
+		const html = await fetch( url, { credentials: 'omit' } ).then( ( res ) => res.text() );
 		return extractTag( html, module ) || null;
 	} catch ( error ) {
 		return null;
