@@ -49,7 +49,6 @@ const googlesitekit = dashboardData;
 // Setup.
 const wp = {};
 wp.element = wp.element || {};
-wp.components = wp.components || {};
 wp.i18n = wp.i18n || {};
 wp.hooks = wp.hooks || {};
 wp.url = {
