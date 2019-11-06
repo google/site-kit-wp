@@ -627,12 +627,6 @@ final class Assets {
 
 		return array(
 			new Script(
-				'wp-sanitize',
-				array(
-					'fallback' => false,
-				)
-			),
-			new Script(
 				'lodash',
 				array(
 					'src'           => $base_url . 'vendor/lodash' . $suffix . '.js',
