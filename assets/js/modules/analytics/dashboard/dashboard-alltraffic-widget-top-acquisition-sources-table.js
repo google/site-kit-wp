@@ -25,17 +25,18 @@ import { getTimeInSeconds } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import MiniChart from 'GoogleComponents/mini-chart';
 import PreviewTable from 'GoogleComponents/preview-table';
-/**
- * Internal dependencies
- */
-import { trafficSourcesReportDataDefaults } from '../util';
+import { map } from 'lodash';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { map } from 'lodash';
 import { Component, Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { trafficSourcesReportDataDefaults } from '../util';
 
 class AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources extends Component {
 	render() {
