@@ -35,7 +35,7 @@ import { extractAnalyticsDataForTrafficChart, getAnalyticsErrorMessageFromData, 
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 class DashboardAcquisitionPieChart extends Component {
 	render() {
@@ -86,13 +86,17 @@ class DashboardAcquisitionPieChart extends Component {
 				/>
 				{ source &&
 					<div className="googlesitekit-chart__source">
-						{ __( 'Source: ', 'google-site-kit' ) }
-						<Link
-							href={ getSiteKitAdminURL( 'googlesitekit-module-analytics' ) }
-							inherit
-						>
-							{ __( 'Analytics', 'google-site-kit' ) }
-						</Link>
+						{ [
+							__( 'Source:', 'google-site-kit' ),
+							' ',
+							<Link
+								key="link"
+								href={ getSiteKitAdminURL( 'googlesitekit-module-analytics' ) }
+								inherit
+							>
+								{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+							</Link>,
+						] }
 					</div>
 				}
 			</div>

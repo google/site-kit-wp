@@ -34,7 +34,7 @@ import getSetupIncompleteComponent from 'GoogleComponents/notifications/setup-in
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 class AnalyticsAllTraffic extends Component {
 	constructor( props ) {
@@ -86,7 +86,7 @@ class AnalyticsAllTraffic extends Component {
 		}
 
 		if ( ! receivingData ) {
-			return error ? getDataErrorComponent( __( 'Analytics', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( __( 'Analytics', 'google-site-kit' ), true, true, true );
+			return error ? getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), true, true, true );
 		}
 
 		return null;

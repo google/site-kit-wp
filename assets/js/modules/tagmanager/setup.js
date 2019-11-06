@@ -31,7 +31,7 @@ import { toggleConfirmModuleSettings } from 'GoogleUtil';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 import { addFilter, removeFilter } from '@wordpress/hooks';
 
@@ -493,7 +493,7 @@ class TagmanagerSetup extends Component {
 							googlesitekit-heading-3
 							googlesitekit-setup-module__title
 						">
-							{ __( 'Tag Manager', 'google-site-kit' ) }
+							{ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) }
 						</h2>
 					</Fragment>
 				}

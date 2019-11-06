@@ -32,7 +32,7 @@ import DashboardAcquisitionPieChart from '../dashboard/dashboard-widget-acquisit
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 class AnalyticsDashboardDetailsWidgetTopAcquisitionSources extends Component {
 	render() {
@@ -56,7 +56,7 @@ class AnalyticsDashboardDetailsWidgetTopAcquisitionSources extends Component {
 						footer
 						headerCtaLink="https://analytics.google.com"
 						headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-						footerCtaLabel={ __( 'Analytics', 'google-site-kit' ) }
+						footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 						footerCtaLink="https://analytics.google.com"
 					>
 						<div className="mdc-layout-grid">
