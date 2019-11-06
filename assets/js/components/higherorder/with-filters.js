@@ -1,14 +1,14 @@
 /**
  * External dependencies
  */
-const { debounce, without } = lodash;
+import { debounce, without } from 'lodash';
 
 /**
  * WordPress dependencies
  */
-const { Component } = wp.element;
-const { addAction, applyFilters, removeAction } = wp.hooks;
-const { createHigherOrderComponent } = wp.compose;
+import { Component } from '@wordpress/element';
+import { addAction, applyFilters, removeAction } from '@wordpress/hooks';
+import { createHigherOrderComponent } from '@wordpress/compose';
 
 const ANIMATION_FRAME_PERIOD = 16;
 
