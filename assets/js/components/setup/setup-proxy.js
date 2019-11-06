@@ -125,7 +125,7 @@ class SetupUsingProxy extends Component {
 																sendAnalyticsTrackingEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
 															} }
 														>
-															{ __( 'Start Setup', 'google-site-kit' ) }
+															{ __( 'Start setup', 'google-site-kit' ) }
 														</Button>
 														<ResetButton />
 														<Optin />
