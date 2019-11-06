@@ -55,6 +55,7 @@ wp.url = {
 	getQueryString,
 	addQueryArgs,
 };
+wp.compose = {};
 wp.compose.createHigherOrderComponent = createHigherOrderComponent;
 wp.hooks.addFilter = addFilter;
 wp.hooks.removeFilter = removeFilter;
