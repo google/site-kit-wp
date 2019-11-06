@@ -76,7 +76,7 @@ const setupSettings = () => {
 				created: '2016-12-06T14:48:54.188Z',
 				dataRetentionResetOnNewActivity: true,
 				dataRetentionTtl: 'MONTHS_26',
-				defaultProfileId: '12345678',
+				defaultProfileID: '12345678',
 				id: 'UA-12345678-3',
 				industryVertical: 'INTERNET_AND_TELECOM',
 				internalWebPropertyID: '12345678',
