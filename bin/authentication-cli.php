@@ -48,6 +48,6 @@ class Authentication_CLI_Command extends WP_CLI_Command {
 		);
 		$authentication->disconnect();
 
-		WP_CLI::success( sprintf( 'Site Kit revoke token from user ID: %d success', $user_id ) );
+		WP_CLI::success( sprintf( 'User with ID %d successfully disconnected.', $user_id ) );
 	}
 }
