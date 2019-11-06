@@ -21,12 +21,12 @@ storiesOf( 'Global', module )
 	.add( 'Admin Bar', () => {
 		window.googlesitekit = wpAdminBarData;
 		const addGoogleSitekitSearchConsoleAdminbarWidget = createAddToFilter( <GoogleSitekitSearchConsoleAdminbarWidget /> );
-		const nalyticsAdminbarWidget = createAddToFilter( <AnalyticsAdminbarWidget /> );
+		const addAnalyticsAdminbarWidget = createAddToFilter( <AnalyticsAdminbarWidget /> );
 
 		removeAllFilters( 'googlesitekit.AdminbarModules' );
 		addFilter( 'googlesitekit.AdminbarModules',
 			'googlesitekit.Analytics',
-			nalyticsAdminbarWidget, 11 );
+			addAnalyticsAdminbarWidget, 11 );
 
 		addFilter( 'googlesitekit.AdminbarModules',
 			'googlesitekit.SearchConsole',
