@@ -164,16 +164,7 @@ module.exports = ( env, argv ) => {
 						sourceMap: false,
 						cache: true,
 						terserOptions: {
-							// compress: {
-							// 	keep_classnames: true,
-							// 	keep_fnames: true,
-							// },
-							// mangle: {
-							// 	keep_classnames: true,
-							// 	keep_fnames: true,
-							// },
-							// keep_classnames: true,
-							// keep_fnames: false,
+							keep_fnames: /__|sprintf/,
 							output: {
 								comments: /translators:/i,
 							},
