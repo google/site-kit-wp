@@ -440,7 +440,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			'cta'          => __( 'Connect your site to Google Search Console.', 'google-site-kit' ),
 			'order'        => 1,
 			'homepage'     => __( 'https://search.google.com/search-console', 'google-site-kit' ),
-			'learn_more'   => __( 'https://www.google.com/webmasters/tools/home', 'google-site-kit' ),
+			'learn_more'   => __( 'https://search.google.com/search-console/about', 'google-site-kit' ),
 			'force_active' => true,
 		);
 	}
