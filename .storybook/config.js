@@ -8,6 +8,7 @@ import { addDecorator, configure } from '@storybook/react';
 /**
  * WordPress dependencies
  */
+import { createHigherOrderComponent } from '@wordpress/compose';
 import {
 	Component,
 	createRef,
@@ -55,6 +56,7 @@ wp.url = {
 	getQueryString,
 	addQueryArgs,
 };
+wp.compose.createHigherOrderComponent = createHigherOrderComponent;
 wp.hooks.addFilter = addFilter;
 wp.hooks.removeFilter = removeFilter;
 wp.hooks.addAction = addAction;
