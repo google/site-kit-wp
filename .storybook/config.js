@@ -15,9 +15,6 @@ import {
 	createElement,
 	createPortal,
 } from '@wordpress/element';
-import {
-	withFilters,
-} from '@wordpress/components';
 import { __, sprintf, setLocaleData } from '@wordpress/i18n';
 import {
 	getQueryString,
@@ -70,7 +67,6 @@ wp.element.createRef = createRef;
 wp.element.Fragment = Fragment;
 wp.element.createElement = createElement;
 wp.element.createPortal = createPortal;
-wp.components.withFilters = withFilters;
 wp.i18n.__ = __ || {};
 wp.i18n.setLocaleData = setLocaleData || {};
 wp.i18n.sprintf = sprintf || {};
