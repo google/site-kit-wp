@@ -16,8 +16,11 @@
  * limitations under the License.
  */
 
-const { Component } = wp.element;
-const { withFilters } = wp.components;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { withFilters } from '@wordpress/components';
 
 /**
  * A single module. Keeps track of its own active state and settings.

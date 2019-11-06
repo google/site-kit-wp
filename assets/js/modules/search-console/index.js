@@ -37,7 +37,10 @@ import SearchConsoleSettingStatus from './settings/search-console-settings-statu
 import { createAddToFilter } from 'GoogleUtil/helpers';
 import { fillFilterWithComponent } from 'GoogleUtil';
 
-const { addFilter } = wp.hooks;
+/**
+ * WordPress dependencies
+ */
+import { addFilter } from '@wordpress/hooks';
 
 const slug = 'search-console';
 

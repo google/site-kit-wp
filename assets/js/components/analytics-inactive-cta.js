@@ -30,8 +30,11 @@ import CTA from 'GoogleComponents/notifications/cta';
 import PropTypes from 'prop-types';
 import GenericError from 'GoogleComponents/notifications/generic-error';
 
-const { Component } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class AnalyticsInactiveCTA extends Component {
 	static async setupAnalyticsClick() {

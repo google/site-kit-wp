@@ -30,8 +30,11 @@ import getNoDataComponent from 'GoogleComponents/notifications/nodata';
 import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
 import getSetupIncompleteComponent from 'GoogleComponents/notifications/setup-incomplete';
 
-const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class AnalyticsAllTraffic extends Component {
 	constructor( props ) {

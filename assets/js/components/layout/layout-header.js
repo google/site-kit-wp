@@ -22,7 +22,10 @@
 import PropTypes from 'prop-types';
 import Link from 'GoogleComponents/link';
 
-const { Component } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
 
 class LayoutHeader extends Component {
 	render() {

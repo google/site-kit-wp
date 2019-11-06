@@ -19,13 +19,9 @@
 /**
  * External dependencies
  */
-import DataBlock from 'GoogleComponents/data-block.js';
+import DataBlock from 'GoogleComponents/data-block';
 import withData from 'GoogleComponents/higherorder/withdata';
 import { TYPE_MODULES } from 'GoogleComponents/data';
-
-/**
- * Internal dependencies
- */
 import Sparkline from 'GoogleComponents/sparkline';
 import CTA from 'GoogleComponents/notifications/cta';
 import PreviewBlock from 'GoogleComponents/preview-block';
@@ -35,6 +31,17 @@ import {
 	extractForSparkline,
 	getSiteKitAdminURL,
 } from 'GoogleUtil';
+import { isEmpty } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
 import {
 	calculateOverviewData,
 	extractAnalyticsDashboardSparklineData,
@@ -43,10 +50,6 @@ import {
 	overviewReportDataDefaults,
 	isDataZeroForReporting,
 } from '../util';
-
-const { __ } = wp.i18n;
-const { Component, Fragment } = wp.element;
-const { isEmpty } = lodash;
 
 class AnalyticsDashboardWidgetTopLevel extends Component {
 	constructor( props ) {

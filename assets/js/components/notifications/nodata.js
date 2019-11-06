@@ -22,7 +22,10 @@
 import CTA from 'GoogleComponents/notifications/cta';
 import ctaWrapper from 'GoogleComponents/notifications/cta-wrapper';
 
-const { __, sprintf } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Creates a CTA component when no data is available.

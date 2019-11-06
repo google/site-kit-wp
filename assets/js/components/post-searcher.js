@@ -19,6 +19,12 @@
 /**
  * External dependencies
  */
+import {
+	map,
+	find,
+	debounce,
+	trim,
+} from 'lodash';
 import Autocomplete from 'accessible-autocomplete/react';
 import data, { TYPE_CORE } from 'GoogleComponents/data';
 import Button from 'GoogleComponents/button';
@@ -27,20 +33,17 @@ import {
 	getSiteKitAdminURL,
 } from 'GoogleUtil';
 
-const { Component } = wp.element;
-const {
-	map,
-	find,
-	debounce,
-	trim,
-} = lodash;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
-// Shim wp.sanitize for WordPress < 4.9 when it was introduced.
+// Shim window.wp.sanitize for WordPress < 4.9 when it was introduced.
 // @todo remove this when the plugin drops support for WordPress < 4.9.
-if ( ! wp.sanitize ) {
+if ( ! window.wp.sanitize ) {
 	// Code directly from core.
-	wp.sanitize = {
+	window.wp.sanitize = {
 
 		/**
 		 * Strip HTML tags.
@@ -67,11 +70,11 @@ if ( ! wp.sanitize ) {
 		 */
 		stripTagsAndEncodeText( text ) {
 			const textarea = document.createElement( 'textarea' );
-			let _text = wp.sanitize.stripTags( text );
+			let _text = window.wp.sanitize.stripTags( text );
 
 			try {
 				textarea.innerHTML = _text;
-				_text = wp.sanitize.stripTags( textarea.value );
+				_text = window.wp.sanitize.stripTags( textarea.value );
 			} catch ( er ) {
 
 				// No-op.

@@ -33,9 +33,12 @@ import {
 } from 'GoogleUtil';
 import GenericError from 'GoogleComponents/notifications/generic-error';
 
-const { sprintf, __ } = wp.i18n;
-const { Component } = wp.element;
-const { applyFilters } = wp.hooks;
+/**
+ * WordPress dependencies
+ */
+import { sprintf, __ } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
+import { applyFilters } from '@wordpress/hooks';
 
 /**
  * A single module. Keeps track of its own active state and settings.

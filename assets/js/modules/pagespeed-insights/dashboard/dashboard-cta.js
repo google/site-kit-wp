@@ -6,14 +6,14 @@ import data from 'GoogleComponents/data';
 import GenericError from 'GoogleComponents/notifications/generic-error';
 import {
 	activateOrDeactivateModule,
+	getReAuthURL,
 	showErrorNotification,
 } from 'GoogleUtil';
-/**
- * Internal dependencies
- */
-import { getReAuthURL } from '../../../util';
 
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 const PageSpeedInsightsCTA = () => {
 	const {

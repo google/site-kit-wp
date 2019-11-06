@@ -49,7 +49,7 @@ import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admi
 const googlesitekit = dashboardData;
 
 // Setup.
-window.wp = window.wp || {};
+const wp = {};
 wp.element = wp.element || {};
 wp.components = wp.components || {};
 wp.i18n = wp.i18n || {};
@@ -71,10 +71,10 @@ wp.element.Fragment = Fragment;
 wp.element.createElement = createElement;
 wp.element.createPortal = createPortal;
 wp.components.withFilters = withFilters;
-window.lodash = lodash;
 wp.i18n.__ = __ || {};
 wp.i18n.setLocaleData = setLocaleData || {};
 wp.i18n.sprintf = sprintf || {};
+window.wp = window.wp || wp;
 window.React = React;
 window.lodash = lodash;
 window.googlesitekit = window.googlesitekit || googlesitekit;
@@ -83,7 +83,7 @@ window.googlesitekit.admin = window.googlesitekit.admin || googlesitekit.admin;
 window.googlesitekit.modules = window.googlesitekit.modules || googlesitekit.modules;
 window.googlesitekit.admin.assetsRoot = '/assets/';
 window.googlesitekit.isStorybook = true;
-wp.apiFetch = ( vars ) => {
+window.wp.apiFetch = ( vars ) => {
 	const matches = vars.path.match( '/google-site-kit/v1/modules/(.*)/data/(.*[^/])' );
 
 	if ( window.googlesitekit.modules[ matches[ 1 ] ][ matches[ 2 ] ] ) {

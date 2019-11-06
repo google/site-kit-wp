@@ -24,10 +24,10 @@ import Button from 'GoogleComponents/button';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 
 /**
- * WordPress dependencies.
+ * WordPress dependencies
  */
-const { __ } = wp.i18n;
-const { Component } = wp.element;
+import { __ } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
 
 class WizardStepCompleteSetup extends Component {
 	constructor( props ) {

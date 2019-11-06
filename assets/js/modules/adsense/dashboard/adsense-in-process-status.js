@@ -23,8 +23,11 @@ import PropTypes from 'prop-types';
 import Link from 'GoogleComponents/link';
 import Error from 'GoogleComponents/notifications/error';
 
-const { Component } = wp.element;
-const { __, sprintf } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 class AdSenseInProcessStatus extends Component {
 	render() {

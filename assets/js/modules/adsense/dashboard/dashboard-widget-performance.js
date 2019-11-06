@@ -32,9 +32,12 @@ import {
 import { isDataZeroAdSense } from '../util';
 import withData from '../../../components/higherorder/withdata';
 
-const { __ } = wp.i18n;
-const { Component } = wp.element;
-const { isUndefined } = lodash;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
+import { isUndefined } from 'lodash';
 
 class AdSensePerformanceWidget extends Component {
 	constructor( props ) {

@@ -28,8 +28,11 @@ import Error from 'GoogleComponents/notifications/error';
 import Link from 'GoogleComponents/link';
 import SvgIcon from 'GoogleUtil/svg-icon';
 
-const { map } = lodash;
-const { Component, Fragment, createRef } = wp.element;
+import { map } from 'lodash';
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment, createRef } from '@wordpress/element';
 
 class Notification extends Component {
 	constructor( props ) {

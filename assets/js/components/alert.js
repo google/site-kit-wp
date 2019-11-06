@@ -23,8 +23,11 @@ import data from 'GoogleComponents/data';
 import Notification from 'GoogleComponents/notifications/notification';
 import PropTypes from 'prop-types';
 
-const { __ } = wp.i18n;
-const { Component, Fragment } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
 
 class Alert extends Component {
 	constructor( props ) {

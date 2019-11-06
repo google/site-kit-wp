@@ -17,13 +17,6 @@
  */
 
 /**
- * Internal dependencies
- */
-import Link from './link';
-import Modal from './modal';
-const { __ } = wp.i18n;
-
-/**
  * External dependencies
  */
 import data, { TYPE_CORE } from 'GoogleComponents/data';
@@ -32,8 +25,18 @@ import {
 	getSiteKitAdminURL,
 } from 'GoogleUtil';
 import Dialog from 'GoogleComponents/dialog';
-import { Fragment } from 'react';
-const { Component } = wp.element;
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Link from './link';
+import Modal from './modal';
 
 export default class ResetButton extends Component {
 	constructor( props ) {

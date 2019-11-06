@@ -19,7 +19,7 @@
 const glob = require( 'glob' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const path = require( 'path' );
-
+const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 
 /**
@@ -47,15 +47,15 @@ function camelCaseDash( string ) {
 const externalPackages = [
 	'a11y',
 	'api-fetch',
-	'dom',
+	'components',
+	'compose',
 	'dom-ready',
+	'dom',
 	'element',
 	'hooks',
 	'i18n',
 	'keycodes',
 	'url',
-	'compose',
-	'components',
 ];
 
 const externals = {
@@ -71,9 +71,7 @@ const externals = {
 [
 	...externalPackages,
 ].forEach( ( name ) => {
-	externals[ `@wordpress/${ name }` ] = {
-		this: [ 'wp', camelCaseDash( name ) ],
-	};
+	externals[ `@wordpress/${ name }` ] = [ 'wp', camelCaseDash( name ) ];
 } );
 
 const externalEntry = {};
@@ -160,6 +158,20 @@ module.exports = ( env, argv ) => {
 				} ),
 			],
 			optimization: {
+				minimizer: [
+					new TerserPlugin( {
+						parallel: true,
+						sourceMap: false,
+						cache: true,
+						terserOptions: {
+							keep_fnames: /__|_x|_n|_nx|sprintf/,
+							output: {
+								comments: /translators:/i,
+							},
+						},
+						extractComments: false,
+					} ),
+				],
 				splitChunks: {
 					cacheGroups: {
 						default: false,

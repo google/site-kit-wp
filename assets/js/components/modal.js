@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-const { Component, createPortal } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { Component, createPortal } from '@wordpress/element';
 
 export default class Modal extends Component {
 	constructor( props ) {

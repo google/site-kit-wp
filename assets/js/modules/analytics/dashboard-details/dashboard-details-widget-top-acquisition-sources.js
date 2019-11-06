@@ -28,8 +28,11 @@ import Layout from 'GoogleComponents/layout/layout';
 import AnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/dashboard-widget-top-acquisition-sources-table';
 import DashboardAcquisitionPieChart from '../dashboard/dashboard-widget-acquisition-piechart';
 
-const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class AnalyticsDashboardDetailsWidgetTopAcquisitionSources extends Component {
 	render() {

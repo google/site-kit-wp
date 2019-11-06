@@ -25,16 +25,20 @@ import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
 import Layout from 'GoogleComponents/layout/layout';
+import { map } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
+
 /**
  * Internal dependencies
  */
 import {
 	isDataZeroSearchConsole,
 } from '../dashboard/util';
-
-const { __, sprintf } = wp.i18n;
-const { map } = lodash;
-const { Component } = wp.element;
 
 class DashboardWidgetPopularKeywordsTable extends Component {
 	static renderLayout( component ) {

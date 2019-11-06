@@ -22,9 +22,13 @@
 import { clearAppLocalStorage } from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
 
-const { setLocaleData } = wp.i18n;
-const { Component, render, Fragment } = wp.element;
-const { doAction } = wp.hooks;
+/**
+ * WordPress dependencies
+ */
+import domReady from '@wordpress/dom-ready';
+import { setLocaleData } from '@wordpress/i18n';
+import { Component, render, Fragment } from '@wordpress/element';
+import { doAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -81,7 +85,7 @@ class GoogleSitekitDashboardSplash extends Component {
 }
 
 // Initialize the app once the DOM is ready.
-wp.domReady( function() {
+domReady( function() {
 	if ( googlesitekit.admin.resetSession ) {
 		clearAppLocalStorage();
 	}

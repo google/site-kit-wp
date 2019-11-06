@@ -3,6 +3,12 @@
  */
 import { storiesOf } from '@storybook/react';
 import { GoogleSitekitAdminbar } from 'SiteKitCore/googlesitekit-adminbar';
+
+/**
+ * WordPress dependencies
+ */
+import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
+
 /**
  * Internal dependencies
  */
@@ -17,18 +23,18 @@ storiesOf( 'Global', module )
 		const addGoogleSitekitSearchConsoleAdminbarWidget = createAddToFilter( <GoogleSitekitSearchConsoleAdminbarWidget /> );
 		const addAnalyticsAdminbarWidget = createAddToFilter( <AnalyticsAdminbarWidget /> );
 
-		wp.hooks.removeAllFilters( 'googlesitekit.AdminbarModules' );
-		wp.hooks.addFilter( 'googlesitekit.AdminbarModules',
+		removeAllFilters( 'googlesitekit.AdminbarModules' );
+		addFilter( 'googlesitekit.AdminbarModules',
 			'googlesitekit.Analytics',
 			addAnalyticsAdminbarWidget, 11 );
 
-		wp.hooks.addFilter( 'googlesitekit.AdminbarModules',
+		addFilter( 'googlesitekit.AdminbarModules',
 			'googlesitekit.SearchConsole',
 			addGoogleSitekitSearchConsoleAdminbarWidget );
 
 		// Load the datacache with data.
 		setTimeout( () => {
-			wp.hooks.doAction(
+			doAction(
 				'googlesitekit.moduleLoaded',
 				'Adminbar'
 			);

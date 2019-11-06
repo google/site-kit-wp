@@ -20,7 +20,12 @@
  * External dependencies
  */
 import DashboardSplashMain from 'GoogleComponents/dashboard-splash/dashboard-splash-main';
-import { Suspense as ReactSuspense, lazy as ReactLazy } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -28,22 +33,9 @@ import { Suspense as ReactSuspense, lazy as ReactLazy } from 'react';
 import DashboardSplashNotifications from './dashboard-splash-notifications';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
+import { Suspense, lazy } from 'GoogleUtil/react-features';
 import 'GoogleComponents/publisher-wins';
 import 'GoogleComponents/notifications';
-
-const { Component, Fragment } = wp.element;
-let { Suspense, lazy } = wp.element;
-const { __ } = wp.i18n;
-
-// Check for `Suspense` and `lazy` in `wp.element`; versions before 2.4.0 did
-// not include either, so we need to fallback to the React versions. See:
-// https://github.com/WordPress/gutenberg/blob/master/packages/element/CHANGELOG.md#240-2019-05-21
-if ( ! Suspense ) {
-	Suspense = ReactSuspense;
-}
-if ( ! lazy ) {
-	lazy = ReactLazy;
-}
 
 const AUTHENTICATION = 1;
 const SETUP = 2;

@@ -21,8 +21,7 @@
     "lodash": "readonly",
     "googlesitekitCurrentModule": "readonly",
     "gtag": "readonly",
-    "process": "readonly",
-    "wp": "readonly"
+    "process": "readonly"
   },
   "rules": {
     "valid-jsdoc": "warn"

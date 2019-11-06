@@ -24,14 +24,18 @@ import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
+import { map } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
+
 /**
  * Internal dependencies
  */
 import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../util';
-
-const { __ } = wp.i18n;
-const { map } = lodash;
-const { Component } = wp.element;
 
 class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 	render() {
