@@ -164,7 +164,7 @@ module.exports = ( env, argv ) => {
 						sourceMap: false,
 						cache: true,
 						terserOptions: {
-							keep_fnames: /__|sprintf/,
+							keep_fnames: /__|_x|_n|_nx|sprintf/,
 							output: {
 								comments: /translators:/i,
 							},
