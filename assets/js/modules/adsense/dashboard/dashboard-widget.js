@@ -22,6 +22,13 @@
 import Header from 'GoogleComponents/header';
 import PageHeader from 'GoogleComponents/page-header';
 import Layout from 'GoogleComponents/layout/layout';
+
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
+
 /**
  * Internal dependencies
  */
@@ -37,12 +44,6 @@ import { isAdsenseConnectedAnalytics } from '../util';
 import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
 import AdSenseInProcessStatus from './adsense-in-process-status';
 import HelpLink from 'GoogleComponents/help-link';
-
-/**
- * WordPress dependencies
- */
-import { Component, Fragment } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
 
 class AdSenseDashboardWidget extends Component {
 	constructor( props ) {

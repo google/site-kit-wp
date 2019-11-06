@@ -23,16 +23,16 @@ import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-h
 import Layout from 'GoogleComponents/layout/layout';
 
 /**
- * Internal dependencies
- */
-import AnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/dashboard-widget-top-acquisition-sources-table';
-import DashboardAcquisitionPieChart from '../dashboard/dashboard-widget-acquisition-piechart';
-
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import AnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/dashboard-widget-top-acquisition-sources-table';
+import DashboardAcquisitionPieChart from '../dashboard/dashboard-widget-acquisition-piechart';
 
 class AnalyticsDashboardDetailsWidgetTopAcquisitionSources extends Component {
 	render() {

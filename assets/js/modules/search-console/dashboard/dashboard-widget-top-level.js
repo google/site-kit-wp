@@ -22,6 +22,13 @@
 import DataBlock from 'GoogleComponents/data-block';
 import withData from 'GoogleComponents/higherorder/withdata';
 import { TYPE_MODULES } from 'GoogleComponents/data';
+
+/**
+ * WordPress dependencies
+ */
+import { __, _x } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
+
 /**
  * Internal dependencies
  */
@@ -38,12 +45,6 @@ import {
 	sendAnalyticsTrackingEvent,
 } from 'GoogleUtil';
 import CTA from 'GoogleComponents/notifications/cta';
-
-/**
- * WordPress dependencies
- */
-import { __, _x } from '@wordpress/i18n';
-import { Component, Fragment } from '@wordpress/element';
 
 class SearchConsoleDashboardWidgetTopLevel extends Component {
 	render() {

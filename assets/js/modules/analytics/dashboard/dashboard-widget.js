@@ -20,6 +20,13 @@
  * External dependencies
  */
 import Header from 'GoogleComponents/header';
+
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __, _x, sprintf } from '@wordpress/i18n';
+
 /**
  * Internal dependencies
  */
@@ -38,12 +45,6 @@ import AdSenseDashboardOutro from 'GoogleModules/adsense/dashboard/dashboard-out
 import { isAdsenseConnectedAnalytics } from 'GoogleModules/adsense/util';
 import { getDateRangeFrom } from 'GoogleUtil';
 import HelpLink from 'GoogleComponents/help-link';
-
-/**
- * WordPress dependencies
- */
-import { Component, Fragment } from '@wordpress/element';
-import { __, _x, sprintf } from '@wordpress/i18n';
 
 class AnalyticsDashboardWidget extends Component {
 	constructor( props ) {

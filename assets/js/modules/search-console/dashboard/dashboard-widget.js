@@ -20,6 +20,13 @@
  * External dependencies
  */
 import Header from 'GoogleComponents/header';
+
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __, _x, sprintf } from '@wordpress/i18n';
+
 /**
  * Internal dependencies
  */
@@ -34,12 +41,6 @@ import getNoDataComponent from 'GoogleComponents/notifications/nodata';
 import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
 import { getDateRangeFrom } from 'GoogleUtil';
 import HelpLink from 'GoogleComponents/help-link';
-
-/**
- * WordPress dependencies
- */
-import { Component, Fragment } from '@wordpress/element';
-import { __, _x, sprintf } from '@wordpress/i18n';
 
 class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 	constructor( props ) {

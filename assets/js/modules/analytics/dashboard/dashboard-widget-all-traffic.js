@@ -21,6 +21,13 @@
  */
 import DashboardAcquisitionPieChart from './dashboard-widget-acquisition-piechart';
 import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from './dashboard-alltraffic-widget-top-acquisition-sources-table';
+
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
+
 /**
  * External dependencies
  */
@@ -29,12 +36,6 @@ import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-h
 import getNoDataComponent from 'GoogleComponents/notifications/nodata';
 import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
 import getSetupIncompleteComponent from 'GoogleComponents/notifications/setup-incomplete';
-
-/**
- * WordPress dependencies
- */
-import { Component, Fragment } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
 
 class AnalyticsAllTraffic extends Component {
 	constructor( props ) {

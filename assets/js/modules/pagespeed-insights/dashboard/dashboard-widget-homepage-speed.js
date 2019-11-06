@@ -17,17 +17,9 @@
  */
 
 /**
- * Internal dependencies
- */
-import {
-	PageSpeedInsightsDashboardWidgetHomepageSpeedDesktop,
-	PageSpeedInsightsDashboardWidgetHomepageSpeedMobile,
-} from './dashboard-widget-homepage-speed-column';
-/**
  * External dependencies
  */
 import SourceLink from 'GoogleComponents/source-link';
-import { PageSpeedReportScale } from './util';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
 
@@ -36,6 +28,15 @@ import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
  */
 import { Component, Fragment } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import {
+	PageSpeedInsightsDashboardWidgetHomepageSpeedDesktop,
+	PageSpeedInsightsDashboardWidgetHomepageSpeedMobile,
+} from './dashboard-widget-homepage-speed-column';
+import { PageSpeedReportScale } from './util';
 
 class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 	constructor( props ) {

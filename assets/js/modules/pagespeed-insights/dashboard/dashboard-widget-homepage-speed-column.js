@@ -27,6 +27,13 @@ import {
 	getDataTableFromData,
 	TableOverflowContainer,
 } from 'GoogleComponents/data-table';
+
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
+
 /**
  * Internal dependencies
  */
@@ -35,12 +42,6 @@ import {
 	PageSpeedReportScoreCategoryWrapper,
 	PageSpeedReportScoreGauge,
 } from './util';
-
-/**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
 
 const isZeroData = ( data ) => {
 	return 0 === data.categories.performance.score;

@@ -30,6 +30,13 @@ import {
 } from 'GoogleUtil';
 import DataBlock from 'GoogleComponents/data-block';
 import Sparkline from 'GoogleComponents/sparkline';
+
+/**
+ * WordPress dependencies
+ */
+import { __, _x } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
+
 /**
  * Internal dependencies
  */
@@ -38,12 +45,6 @@ import {
 	isDataZeroAdSense,
 } from '../util';
 import Layout from 'GoogleComponents/layout/layout';
-
-/**
- * WordPress dependencies
- */
-import { __, _x } from '@wordpress/i18n';
-import { Component, Fragment } from '@wordpress/element';
 
 class AdSenseDashboardMainSummary extends Component {
 	constructor( props ) {

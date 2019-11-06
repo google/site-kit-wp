@@ -17,18 +17,18 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import DashboardSplashIntro from './dashboard-splash-intro';
 import DashboardSplashService from './dashboard-splash-service';
 import DashboardSplashOutro from './dashboard-splash-outro';
 import DashboardSplashModule from './dashboard-splash-module';
-
-/**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
 
 class DashboardSplashMain extends Component {
 	constructor( props ) {

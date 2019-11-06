@@ -21,6 +21,13 @@
  */
 import PropTypes from 'prop-types';
 import SvgIcon from 'GoogleUtil/svg-icon';
+
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
+
 /**
  * Internal dependencies
  */
@@ -31,12 +38,6 @@ import AdSenseInProcessStatus from './adsense-in-process-status';
 import {
 	getExistingTag,
 } from 'GoogleUtil';
-
-/**
- * WordPress dependencies
- */
-import { Component, Fragment } from '@wordpress/element';
-import { __, _x } from '@wordpress/i18n';
 
 class AdSenseModuleStatus extends Component {
 	constructor( props ) {
