@@ -95,11 +95,6 @@ window.wp.apiFetch = ( vars ) => {
 		},
 	};
 };
-wp.sanitize = {
-	stripTags( s ) {
-		return s;
-	},
-};
 
 // Global Decorator.
 addDecorator( ( story ) => <div className="googlesitekit-plugin-preview">
