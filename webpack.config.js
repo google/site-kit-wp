@@ -46,7 +46,6 @@ function camelCaseDash( string ) {
 
 const externalPackages = [
 	'api-fetch',
-	'components',
 	'compose',
 	'dom-ready',
 	'element',

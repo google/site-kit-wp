@@ -719,14 +719,6 @@ final class Assets {
 				)
 			),
 			new Script(
-				'wp-a11y',
-				array(
-					'src'      => $base_url . 'js/externals/a11y.js',
-					'version'  => '2.2.0',
-					'fallback' => true,
-				)
-			),
-			new Script(
 				'wp-i18n',
 				array(
 					'src'      => $base_url . 'js/externals/i18n.js',
