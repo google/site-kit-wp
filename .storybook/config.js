@@ -71,7 +71,6 @@ wp.element.Fragment = Fragment;
 wp.element.createElement = createElement;
 wp.element.createPortal = createPortal;
 wp.components.withFilters = withFilters;
-window.lodash = lodash;
 wp.i18n.__ = __ || {};
 wp.i18n.setLocaleData = setLocaleData || {};
 wp.i18n.sprintf = sprintf || {};
@@ -84,7 +83,7 @@ window.googlesitekit.admin = window.googlesitekit.admin || googlesitekit.admin;
 window.googlesitekit.modules = window.googlesitekit.modules || googlesitekit.modules;
 window.googlesitekit.admin.assetsRoot = '/assets/';
 window.googlesitekit.isStorybook = true;
-wp.apiFetch = ( vars ) => {
+window.wp.apiFetch = ( vars ) => {
 	const matches = vars.path.match( '/google-site-kit/v1/modules/(.*)/data/(.*[^/])' );
 
 	if ( window.googlesitekit.modules[ matches[ 1 ] ][ matches[ 2 ] ] ) {
