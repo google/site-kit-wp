@@ -71,6 +71,7 @@ class AdSenseDashboardWidgetTopPagesTableSmall extends Component {
 			{
 				title: __( 'Top Earning Pages', 'google-site-kit' ),
 				tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
+				primary: true,
 			},
 			{
 				title: __( 'Revenue', 'google-site-kit' ),

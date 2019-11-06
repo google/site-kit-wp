@@ -64,6 +64,7 @@ class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
 			{
 				title: __( 'Page Title', 'google-site-kit' ),
 				tooltip: __( 'Page Title', 'google-site-kit' ),
+				primary: true,
 			},
 			{
 				title: __( 'Earnings', 'google-site-kit' ),

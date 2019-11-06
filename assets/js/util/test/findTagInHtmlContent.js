@@ -29,6 +29,11 @@ const valuesToTest = [
 		'adsense',
 		'ca-pub-123456789',
 	],
+	[
+		'<script>(window,document,\'script\',\'//www.google-analytics.com/analytics.js\',\'ga\');ga(\'create\', \'UA-12345-1\', \'auto\');ga(\'send\', \'pageview\');</script>',
+		'analytics',
+		'UA-12345-1',
+	],
 ];
 
 describe( 'findTagInHtmlContent', () => {

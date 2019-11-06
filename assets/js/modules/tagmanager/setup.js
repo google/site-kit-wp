@@ -64,7 +64,17 @@ class TagmanagerSetup extends Component {
 	}
 
 	componentDidMount() {
+		const {
+			isOpen,
+			onSettingsPage,
+		} = this.props;
 		this._isMounted = true;
+
+		// If on settings page, only run the rest if the module is "open".
+		if ( onSettingsPage && ! isOpen ) {
+			return;
+		}
+
 		this.requestTagManagerAccounts();
 
 		// Handle save hook from the settings page.

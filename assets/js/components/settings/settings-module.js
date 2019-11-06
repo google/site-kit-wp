@@ -317,7 +317,7 @@ class SettingsModule extends Component {
 													mdc-layout-grid__cell
 													mdc-layout-grid__cell--span-12
 												">
-											<FilteredModuleSettingsDetails module={ moduleKey } isEditing={ isEditing[ moduleKey ] } />
+											<FilteredModuleSettingsDetails module={ moduleKey } isEditing={ isEditing[ moduleKey ] } isOpen={ isOpen } />
 										</div>
 									</Fragment>
 									}

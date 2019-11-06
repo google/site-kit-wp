@@ -432,7 +432,14 @@ final class Authentication {
 
 		$code = (string) filter_input( INPUT_GET, 'googlesitekit_code' );
 
-		wp_safe_redirect( add_query_arg( 'verify', 'true', $auth_client->get_proxy_setup_url( $code ) ) );
+		// We need to pass the 'missing_verification' error code here so that the URL includes a verification nonce.
+		wp_safe_redirect(
+			add_query_arg(
+				'verify',
+				'true',
+				$auth_client->get_proxy_setup_url( $code, 'missing_verification' )
+			)
+		);
 		exit;
 	}
 

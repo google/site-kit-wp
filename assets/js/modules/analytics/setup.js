@@ -85,7 +85,16 @@ class AnalyticsSetup extends Component {
 	}
 
 	async componentDidMount() {
+		const {
+			isOpen,
+			onSettingsPage,
+		} = this.props;
 		this._isMounted = true;
+
+		// If on settings page, only run the rest if the module is "open".
+		if ( onSettingsPage && ! isOpen ) {
+			return;
+		}
 
 		const existingTagProperty = await getExistingTag( 'analytics' );
 

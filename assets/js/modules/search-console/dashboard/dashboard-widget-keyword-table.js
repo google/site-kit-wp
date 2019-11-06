@@ -44,6 +44,7 @@ class SearchConsoleDashboardWidgetKeywordTable extends Component {
 			{
 				title: __( 'Keyword', 'google-site-kit' ),
 				tooltip: __( 'Most searched for keywords related to your content', 'google-site-kit' ),
+				primary: true,
 			},
 			{
 				title: __( 'Clicks', 'google-site-kit' ),
