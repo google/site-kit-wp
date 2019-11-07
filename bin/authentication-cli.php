@@ -48,7 +48,6 @@ class Authentication_CLI_Command extends WP_CLI_Command {
 		);
 		$authentication->disconnect();
 
-		/* translators: %d: User ID */
-		WP_CLI::success( sprintf( __( 'Site Kit revoke token from user ID: %d success', 'google-site-kit' ), $user_id ) );
+		WP_CLI::success( sprintf( 'User with ID %d successfully disconnected.', $user_id ) );
 	}
 }

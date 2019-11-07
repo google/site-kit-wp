@@ -22,6 +22,13 @@
 import Header from 'GoogleComponents/header';
 import PageHeader from 'GoogleComponents/page-header';
 import Layout from 'GoogleComponents/layout/layout';
+
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
+
 /**
  * Internal dependencies
  */
@@ -37,12 +44,6 @@ import { isAdsenseConnectedAnalytics } from '../util';
 import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
 import AdSenseInProcessStatus from './adsense-in-process-status';
 import HelpLink from 'GoogleComponents/help-link';
-
-/**
- * WordPress dependencies
- */
-import { Component, Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 class AdSenseDashboardWidget extends Component {
 	constructor( props ) {
@@ -146,8 +147,8 @@ class AdSenseDashboardWidget extends Component {
 							">
 								{
 									( ! error && googlesitekit.modules.adsense.setupComplete ) ?
-										<PageHeader title={ __( 'AdSense', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="connected" statusText={ __( 'AdSense is connected', 'google-site-kit' ) } /> :
-										<PageHeader title={ __( 'AdSense', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="not-connected" statusText={ __( 'AdSense is not connected', 'google-site-kit' ) } />
+										<PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="connected" statusText={ __( 'AdSense is connected', 'google-site-kit' ) } /> :
+										<PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="not-connected" statusText={ __( 'AdSense is not connected', 'google-site-kit' ) } />
 								}
 								{ loading && <ProgressBar /> }
 							</div>
@@ -169,7 +170,7 @@ class AdSenseDashboardWidget extends Component {
 								</div>
 							}
 							{ ! receivingData && (
-								error ? getDataErrorComponent( __( 'AdSense', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( __( 'AdSense', 'google-site-kit' ), true, true, true )
+								error ? getDataErrorComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
 							<div className={ `
 								mdc-layout-grid__cell
