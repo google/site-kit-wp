@@ -21,7 +21,10 @@
  */
 import Layout from 'GoogleComponents/layout/layout';
 
-const { Fragment } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
 
 /**
  * Get CTA html wrapper.

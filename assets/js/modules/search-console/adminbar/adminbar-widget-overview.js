@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import DataBlock from 'GoogleComponents/data-block.js';
+import DataBlock from 'GoogleComponents/data-block';
 import withData from 'GoogleComponents/higherorder/withdata';
 import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds } from 'GoogleUtil';
@@ -29,8 +29,11 @@ import { getTimeInSeconds } from 'GoogleUtil';
 import { extractSearchConsoleDashboardData, isDataZeroSearchConsole } from '../dashboard/util';
 import PreviewBlock from 'GoogleComponents/preview-block';
 
-const { __ } = wp.i18n;
-const { Component, Fragment } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
 
 class SearchConsoleAdminbarWidgetOverview extends Component {
 	render() {

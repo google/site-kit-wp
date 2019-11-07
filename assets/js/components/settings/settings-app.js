@@ -31,8 +31,11 @@ import TabBar from '@material/react-tab-bar';
 import SettingsAdmin from './settings-admin';
 import HelpLink from 'GoogleComponents/help-link';
 
-const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class SettingsApp extends Component {
 	constructor( props ) {

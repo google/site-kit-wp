@@ -111,14 +111,12 @@ final class Tracking {
 	/**
 	 * Is tracking active for this plugin install?
 	 *
-	 * During the beta, this defaults to true.
-	 *
 	 * @since 1.0.0
 	 *
 	 * @return bool True if tracking enabled, and False if not.
 	 */
 	public function is_active() {
-		return (bool) get_option( self::TRACKING_OPTIN_KEY, true );
+		return (bool) get_option( self::TRACKING_OPTIN_KEY, false );
 	}
 
 	/**
@@ -196,7 +194,7 @@ final class Tracking {
 		$args = array(
 			'type'         => 'boolean',
 			'description'  => __( 'Allowing tracking of anonymous usage stats.', 'google-site-kit' ),
-			'default'      => true,
+			'default'      => false,
 			'show_in_rest' => true,
 		);
 		register_setting( 'google-site-kit', self::TRACKING_OPTIN_KEY, $args );

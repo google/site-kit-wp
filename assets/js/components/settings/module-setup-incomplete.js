@@ -20,14 +20,17 @@
  * External dependencies
  */
 import {
-	getReAuthUrl,
+	getReAuthURL,
 } from 'GoogleUtil';
 import Link from 'GoogleComponents/link';
 import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
 
-const { withFilters } = wp.components;
-const { Component } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { withFilters } from '@wordpress/components';
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class ModuleSetupIncomplete extends Component {
 	render() {
@@ -42,7 +45,7 @@ class ModuleSetupIncomplete extends Component {
 				<Link
 					className="googlesitekit-settings-module__edit-button"
 					onClick={ () => {
-						window.location = getReAuthUrl( slug, true );
+						window.location = getReAuthURL( slug, true );
 					} }
 					inherit
 				>

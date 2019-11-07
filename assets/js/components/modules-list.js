@@ -17,16 +17,13 @@
  */
 
 /**
- * Internal dependencies
- */
-import Link from './link';
-/**
  * External dependencies
  */
+import { map } from 'lodash';
 import data from 'SiteKitCore/components/data';
 import {
 	refreshAuthentication,
-	getReAuthUrl,
+	getReAuthURL,
 	activateOrDeactivateModule,
 	showErrorNotification,
 	moduleIcon,
@@ -34,9 +31,16 @@ import {
 import GenericError from 'GoogleComponents/notifications/generic-error';
 import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
 
-const { Component } = wp.element;
-const { __, sprintf } = wp.i18n;
-const { map } = lodash;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Link from './link';
 
 class ModulesList extends Component {
 	constructor( props ) {
@@ -58,7 +62,7 @@ class ModulesList extends Component {
 			await refreshAuthentication();
 
 			// Redirect to ReAuthentication URL
-			window.location = getReAuthUrl( slug, true );
+			window.location = getReAuthURL( slug, true );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'setup-module-error',

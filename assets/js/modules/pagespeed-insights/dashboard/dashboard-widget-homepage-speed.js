@@ -31,8 +31,11 @@ import { PageSpeedReportScale } from './util';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
 
-const { Component, Fragment } = wp.element;
-const { __, sprintf } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 	constructor( props ) {
@@ -51,9 +54,9 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 		} );
 	}
 
-	handleDataError() {
+	handleDataError( error ) {
 		this.setState( {
-			error: true,
+			error,
 		} );
 	}
 
@@ -77,7 +80,7 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 					{
 						getDataErrorComponent(
 							__( 'PageSpeed Insights', 'google-site-kit' ),
-							__( 'Issue accessing data, please ensure the API key is set correctly.', 'google-site-kit' ),
+							error,
 							true,
 							true,
 							false

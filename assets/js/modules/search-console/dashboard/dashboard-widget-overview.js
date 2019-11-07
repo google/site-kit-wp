@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import DataBlock from 'GoogleComponents/data-block.js';
+import DataBlock from 'GoogleComponents/data-block';
 import withData from 'GoogleComponents/higherorder/withdata';
 import { TYPE_MODULES } from 'GoogleComponents/data';
 import PreviewBlock from 'GoogleComponents/preview-block';
@@ -33,8 +33,11 @@ import {
 } from './util';
 import PropTypes from 'prop-types';
 
-const { __ } = wp.i18n;
-const { Component, Fragment } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
 
 class SearchConsoleDashboardWidgetOverview extends Component {
 	render() {

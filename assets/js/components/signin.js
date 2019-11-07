@@ -21,8 +21,11 @@
  */
 import Button from './button';
 
-const { __ } = wp.i18n;
-const { Component } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
 
 class SignIn extends Component {
 	render() {

@@ -21,7 +21,10 @@
  */
 import Notification from 'GoogleComponents/notifications/notification';
 
-const { Component } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
 
 class GenericError extends Component {
 	render() {

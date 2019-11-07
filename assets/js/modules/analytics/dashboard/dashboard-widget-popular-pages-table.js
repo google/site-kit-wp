@@ -25,14 +25,18 @@ import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
 import Layout from 'GoogleComponents/layout/layout';
+import { map } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
+
 /**
  * Internal dependencies
  */
 import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../util';
-
-const { __ } = wp.i18n;
-const { map } = lodash;
-const { Component } = wp.element;
 
 class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 	static renderLayout( component ) {
@@ -57,6 +61,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 
 	render() {
 		const { data } = this.props;
+		const { siteURL: siteURL } = googlesitekit.admin;
 
 		if ( ! data || ! data.length ) {
 			return null;
@@ -65,6 +70,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 		const headers = [
 			{
 				title: __( 'Most popular content', 'google-site-kit' ),
+				primary: true,
 			},
 			{
 				title: __( 'Views', 'google-site-kit' ),
@@ -73,9 +79,9 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 
 		const links = [];
 		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
-			const url = row.dimensions[ 0 ];
-			const title = row.dimensions[ 1 ];
-			links[ i ] = url;
+			const [ title, url ] = row.dimensions;
+			links[ i ] = siteURL + url;
+
 			return [
 				title,
 				numberFormat( row.metrics[ 0 ].values[ 0 ] ),
@@ -86,7 +92,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 			hideHeader: false,
 			chartsEnabled: false,
 			links,
-			showUrls: true,
+			showURLs: true,
 		};
 
 		const dataTable = getDataTableFromData( dataMapped, headers, options );

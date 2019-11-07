@@ -22,11 +22,13 @@ import Dialog from 'GoogleComponents/dialog';
 import Button from 'GoogleComponents/button';
 import Menu from 'GoogleComponents/menu';
 import { clearAppLocalStorage } from 'GoogleUtil';
-import data, { TYPE_CORE } from 'GoogleComponents/data';
+import { getSiteKitAdminURL } from 'SiteKitCore/util';
 
-const { Component, Fragment, createRef } = wp.element;
-const { __ } = wp.i18n;
-const { addQueryArgs } = wp.url;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment, createRef } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class UserMenu extends Component {
 	constructor( props ) {
@@ -78,6 +80,8 @@ class UserMenu extends Component {
 	}
 
 	handleMenuItemSelect( index, e ) {
+		const { proxyPermissionsURL } = googlesitekit.admin;
+
 		if (
 			( ( 'keydown' === e.type && (
 				13 === e.keyCode || // Enter
@@ -88,6 +92,9 @@ class UserMenu extends Component {
 			switch ( index ) {
 				case 0:
 					this.handleDialog();
+					break;
+				case 1:
+					window.location.assign( proxyPermissionsURL );
 					break;
 				default:
 					this.handleMenu();
@@ -115,9 +122,6 @@ class UserMenu extends Component {
 
 	// Log the user out if they confirm the dialog.
 	async handleUnlinkConfirm() {
-		// Disconnect the user.
-		await data.set( TYPE_CORE, 'user', 'disconnect' );
-
 		// Close the modal.
 		this.setState( {
 			dialogActive: false,
@@ -126,17 +130,20 @@ class UserMenu extends Component {
 		// Clear caches.
 		clearAppLocalStorage();
 
-		// Return to the Site Kit Dashboard.
-		const { adminRoot } = googlesitekit.admin;
-
-		document.location = addQueryArgs( adminRoot.replace( 'admin.php', '' ),
+		// Navigate back to the splash screen to reconnect.
+		document.location = getSiteKitAdminURL(
+			'googlesitekit-splash',
 			{
-				notification: 'googlesitekit_user_disconnected',
-			} );
+				googlesitekit_context: 'revoked',
+			}
+		);
 	}
 
 	render() {
-		const { userData: { email = '', picture = '' } } = googlesitekit.admin;
+		const {
+			userData: { email = '', picture = '' },
+			proxyPermissionsURL,
+		} = googlesitekit.admin;
 		const { dialogActive, menuOpen } = this.state;
 
 		return (
@@ -160,7 +167,15 @@ class UserMenu extends Component {
 					<Menu
 						ref={ this.menuRef }
 						menuOpen={ menuOpen }
-						menuItems={ [ __( 'Disconnect', 'google-site-kit' ) ] }
+						menuItems={
+							[
+								__( 'Disconnect', 'google-site-kit' ),
+							].concat(
+								proxyPermissionsURL ? [
+									__( 'Manage sites...', 'google-site-kit' ),
+								] : []
+							)
+						}
 						onSelected={ this.handleMenuItemSelect }
 						id="user-menu" />
 				</div>

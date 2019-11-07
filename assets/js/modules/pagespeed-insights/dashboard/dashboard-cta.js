@@ -6,11 +6,14 @@ import data from 'GoogleComponents/data';
 import GenericError from 'GoogleComponents/notifications/generic-error';
 import {
 	activateOrDeactivateModule,
-	getReAuthUrl,
+	getReAuthURL,
 	showErrorNotification,
 } from 'GoogleUtil';
 
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 const PageSpeedInsightsCTA = () => {
 	const {
@@ -27,9 +30,7 @@ const PageSpeedInsightsCTA = () => {
 	const handleSetUpClick = async () => {
 		try {
 			await activateOrDeactivateModule( data, 'pagespeed-insights', true );
-
-			// Redirect to continue setup.
-			window.location = getReAuthUrl( 'pagespeed-insights', true );
+			window.location = getReAuthURL( 'pagespeed-insights' );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'pagespeed-insights-setup-error',

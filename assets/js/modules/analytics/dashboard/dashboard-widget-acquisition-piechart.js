@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import GoogleChart from 'GoogleComponents/google-chart.js';
+import GoogleChart from 'GoogleComponents/google-chart';
 import { getSiteKitAdminURL, getTimeInSeconds } from 'GoogleUtil';
 import withData from 'GoogleComponents/higherorder/withdata';
 import { TYPE_MODULES } from 'GoogleComponents/data';
@@ -31,8 +31,11 @@ import Link from 'GoogleComponents/link';
 import PreviewBlock from 'GoogleComponents/preview-block';
 import { extractAnalyticsDataForTrafficChart, getAnalyticsErrorMessageFromData, trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../util';
 
-const { Component } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class DashboardAcquisitionPieChart extends Component {
 	render() {

@@ -68,7 +68,7 @@ add_action( 'rest_api_init', function () {
 			'callback' => function () {
 				return array(
 					'exactMatch' => array(
-						'siteUrl'         => home_url( '/' ),
+						'siteURL'         => home_url( '/' ),
 						'permissionLevel' => 'siteOwner',
 					),
 				);
@@ -85,10 +85,10 @@ add_action( 'rest_api_init', function () {
 			'callback' => function ( WP_REST_Request $request ) {
 				$data = $request->get_param( 'data' );
 
-				update_option( 'googlesitekit_search_console_property', $data['siteUrl'] );
+				update_option( 'googlesitekit_search_console_property', $data['siteURL'] );
 
 				return array(
-					'siteUrl'         => $data['siteUrl'],
+					'siteURL'         => $data['siteURL'],
 					'permissionLevel' => 'siteOwner',
 				);
 			}

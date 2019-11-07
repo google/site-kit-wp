@@ -28,8 +28,11 @@ import Error from 'GoogleComponents/notifications/error';
 import Link from 'GoogleComponents/link';
 import SvgIcon from 'GoogleUtil/svg-icon';
 
-const { map } = lodash;
-const { Component, Fragment, createRef } = wp.element;
+import { map } from 'lodash';
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment, createRef } from '@wordpress/element';
 
 class Notification extends Component {
 	constructor( props ) {
@@ -100,7 +103,7 @@ class Notification extends Component {
 			winImage,
 			smallImage,
 			format,
-			learnMoreUrl,
+			learnMoreURL,
 			learnMoreDescription,
 			learnMoreLabel,
 			ctaLink,
@@ -183,7 +186,7 @@ class Notification extends Component {
 							{ learnMoreLabel &&
 								<Fragment>
 									{ ' ' }
-									<Link href={ learnMoreUrl } external inherit>
+									<Link href={ learnMoreURL } external inherit>
 										{ learnMoreLabel }
 									</Link>
 									{ learnMoreDescription }
@@ -299,7 +302,7 @@ Notification.propTypes = {
 	id: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	description: PropTypes.string,
-	learnMoreUrl: PropTypes.string,
+	learnMoreURL: PropTypes.string,
 	learnMoreDescription: PropTypes.string,
 	learnMoreLabel: PropTypes.string,
 	blockData: PropTypes.array,

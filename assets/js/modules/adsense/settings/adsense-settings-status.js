@@ -24,14 +24,17 @@ import {
 } from 'GoogleUtil';
 import Link from 'GoogleComponents/link';
 
-const { Component } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class AdSenseSettingsStatus extends Component {
 	render() {
 		const {
 			slug,
-			screenId,
+			screenID,
 			OriginalComponent,
 		} = this.props;
 
@@ -49,7 +52,7 @@ class AdSenseSettingsStatus extends Component {
 					<Link
 						className="googlesitekit-settings-module__edit-button"
 						onClick={ () => {
-							const page = screenId ? screenId : 'googlesitekit-dashboard';
+							const page = screenID ? screenID : 'googlesitekit-dashboard';
 
 							window.location = getSiteKitAdminURL( page, { reAuth: true, slug } );
 						} }

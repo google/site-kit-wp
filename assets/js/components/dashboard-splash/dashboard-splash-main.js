@@ -24,8 +24,11 @@ import DashboardSplashService from './dashboard-splash-service';
 import DashboardSplashOutro from './dashboard-splash-outro';
 import DashboardSplashModule from './dashboard-splash-module';
 
-const { Component } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class DashboardSplashMain extends Component {
 	constructor( props ) {

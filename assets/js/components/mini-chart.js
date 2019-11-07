@@ -16,12 +16,17 @@
  * limitations under the License.
  */
 
-const { Component } = wp.element;
 /**
  * External dependencies
  */
-import GoogleChart from 'GoogleComponents/google-chart.js';
+import GoogleChart from 'GoogleComponents/google-chart';
 import { colors } from 'GoogleComponents/colors';
+
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+
 class MiniChart extends Component {
 	render() {
 		const { index, percent } = this.props;

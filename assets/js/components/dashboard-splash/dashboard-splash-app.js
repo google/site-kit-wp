@@ -20,7 +20,12 @@
  * External dependencies
  */
 import DashboardSplashMain from 'GoogleComponents/dashboard-splash/dashboard-splash-main';
-import { Suspense as ReactSuspense, lazy as ReactLazy } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -28,22 +33,9 @@ import { Suspense as ReactSuspense, lazy as ReactLazy } from 'react';
 import DashboardSplashNotifications from './dashboard-splash-notifications';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
+import { Suspense, lazy } from 'GoogleUtil/react-features';
 import 'GoogleComponents/publisher-wins';
 import 'GoogleComponents/notifications';
-
-const { Component, Fragment } = wp.element;
-let { Suspense, lazy } = wp.element;
-const { __ } = wp.i18n;
-
-// Check for `Suspense` and `lazy` in `wp.element`; versions before 2.4.0 did
-// not include either, so we need to fallback to the React versions. See:
-// https://github.com/WordPress/gutenberg/blob/master/packages/element/CHANGELOG.md#240-2019-05-21
-if ( ! Suspense ) {
-	Suspense = ReactSuspense;
-}
-if ( ! lazy ) {
-	lazy = ReactLazy;
-}
 
 const AUTHENTICATION = 1;
 const SETUP = 2;
@@ -52,7 +44,7 @@ class DashboardSplashApp extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { connectUrl } = googlesitekit.admin;
+		const { connectURL } = googlesitekit.admin;
 
 		const {
 			showModuleSetupWizard,
@@ -74,7 +66,7 @@ class DashboardSplashApp extends Component {
 			canViewDashboard,
 			canPublishPosts,
 			buttonMode: 0,
-			connectUrl,
+			connectURL,
 		};
 
 		if ( canAuthenticate && ! isAuthenticated ) {
@@ -85,7 +77,7 @@ class DashboardSplashApp extends Component {
 		}
 
 		this.openAuthenticationSetupWizard = this.openAuthenticationSetupWizard.bind( this );
-		this.gotoConnectUrl = this.gotoConnectUrl.bind( this );
+		this.gotoConnectURL = this.gotoConnectURL.bind( this );
 	}
 
 	openAuthenticationSetupWizard() {
@@ -96,7 +88,7 @@ class DashboardSplashApp extends Component {
 		} );
 	}
 
-	gotoConnectUrl() {
+	gotoConnectURL() {
 		this.setState( {
 			showAuthenticationInstructionsWizard: false,
 			showAuthenticationSetupWizard: false,
@@ -104,7 +96,7 @@ class DashboardSplashApp extends Component {
 
 		sendAnalyticsTrackingEvent( 'plugin_setup', 'connect_account' );
 
-		document.location = this.state.connectUrl;
+		document.location = this.state.connectURL;
 	}
 
 	render() {
@@ -114,7 +106,13 @@ class DashboardSplashApp extends Component {
 			__webpack_public_path__ = window.googlesitekit.publicPath;
 		}
 
-		if ( ! this.state.showAuthenticationSetupWizard && ! this.state.showModuleSetupWizard ) {
+		const { proxySetupURL } = googlesitekit.admin;
+
+		// If `proxySetupURL` is set it means the proxy is in use. We should never
+		// show the GCP splash screen when the proxy is being used, so skip this
+		// when `proxySetupURL` is set.
+		// See: https://github.com/google/site-kit-wp/issues/704.
+		if ( ! proxySetupURL && ! this.state.showAuthenticationSetupWizard && ! this.state.showModuleSetupWizard ) {
 			let introDescription, outroDescription, buttonLabel, onButtonClick;
 
 			switch ( this.state.buttonMode ) {
@@ -122,7 +120,7 @@ class DashboardSplashApp extends Component {
 					introDescription = __( 'You’re one step closer to connecting Google services to your WordPress site.', 'google-site-kit' );
 					outroDescription = __( 'Connecting your account only takes a few minutes. Faster than brewing a cup of coffee.', 'google-site-kit' );
 					buttonLabel = __( 'Connect your account', 'google-site-kit' );
-					onButtonClick = this.gotoConnectUrl;
+					onButtonClick = this.gotoConnectURL;
 					break;
 				case SETUP:
 					introDescription = __( 'You’re one step closer to connecting Google services to your WordPress site.', 'google-site-kit' );
@@ -150,7 +148,10 @@ class DashboardSplashApp extends Component {
 
 		let Setup = null;
 
-		if ( this.state.showAuthenticationSetupWizard ) {
+		// `proxySetupURL` is only set if the proxy is in use.
+		if ( proxySetupURL ) {
+			Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wizard-proxy" */'../setup/setup-proxy' ) );
+		} else if ( this.state.showAuthenticationSetupWizard ) {
 			Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wizard" */'../setup' ) );
 		} else {
 			Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wrapper" */'../setup/setup-wrapper' ) );

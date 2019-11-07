@@ -35,8 +35,11 @@ import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
 import { getDateRangeFrom } from 'GoogleUtil';
 import HelpLink from 'GoogleComponents/help-link';
 
-const { Component, Fragment } = wp.element;
-const { __, sprintf } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 	constructor( props ) {
@@ -161,7 +164,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-12
 							">
-								<PageHeader title={ __( 'Search Console', 'google-site-kit' ) } icon iconWidth="23" iconHeight="21" iconId="search-console" status="connected" statusText={ __( 'Search Console is connected', 'google-site-kit' ) } />
+								<PageHeader title={ __( 'Search Console', 'google-site-kit' ) } icon iconWidth="23" iconHeight="21" iconID="search-console" status="connected" statusText={ __( 'Search Console is connected', 'google-site-kit' ) } />
 								{ loading && <ProgressBar /> }
 							</div>
 							{ /* Data issue: on error display a notification. On missing data: display a CTA. */ }

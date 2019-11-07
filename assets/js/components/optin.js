@@ -22,15 +22,20 @@
 import Checkbox from 'GoogleComponents/checkbox';
 import PropTypes from 'prop-types';
 
-const { Component } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import apiFetch from '@wordpress/api-fetch';
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class Optin extends Component {
 	constructor( props ) {
 		super( props );
 
 		this.state = {
-			optIn: googlesitekit.admin.trackingOptin || false,
+			scriptOnPage: !! googlesitekit.admin.trackingOptin,
+			optIn: !! googlesitekit.admin.trackingOptin,
 			error: false,
 		};
 
@@ -44,7 +49,7 @@ class Optin extends Component {
 			googlesitekit_tracking_optin: checked,
 		};
 
-		wp.apiFetch( { path: '/wp/v2/settings',
+		apiFetch( { path: '/wp/v2/settings',
 			headers: {
 				'Content-Type': 'application/json; charset=UTF-8',
 			},
@@ -52,9 +57,32 @@ class Optin extends Component {
 			method: 'POST',
 		} )
 			.then( () => {
+				if ( !! checked && ! this.state.scriptOnPage ) {
+					const { document } = window;
+
+					if ( ! document ) {
+						return;
+					}
+
+					window.googlesitekitTrackingEnabled = !! checked;
+
+					document.body.insertAdjacentHTML( 'beforeend', `
+						<script async src="https://www.googletagmanager.com/gtag/js?id=${ googlesitekit.admin.trackingID }"></script>
+					` );
+					document.body.insertAdjacentHTML( 'beforeend', `
+						<script>
+							window.dataLayer = window.dataLayer || [];
+							function gtag(){dataLayer.push(arguments);}
+							gtag('js', new Date());
+							gtag('config', '${ googlesitekit.admin.trackingID }');
+						</script>
+					` );
+				}
+
 				this.setState( {
 					optIn: !! checked,
 					error: false,
+					scriptOnPage: true,
 				} );
 			} )
 			.catch( ( err ) => {
@@ -107,7 +135,7 @@ Optin.propTypes = {
 };
 
 Optin.defaultProps = {
-	id: 'opt-in',
+	id: 'googlesitekit-opt-in',
 	name: 'optIn',
 };
 

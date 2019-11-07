@@ -2,15 +2,18 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
+
 /**
  * WordPress dependencies
  */
+import { doAction } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
-import Layout from 'GoogleComponents/layout/layout';
-import AnalyticsDashboardWidgetTopPagesTable from 'GoogleModules/analytics/dashboard/dashboard-widget-top-pages-table.js';
+
 /**
  * Internal dependencies
  */
+import Layout from 'GoogleComponents/layout/layout';
+import AnalyticsDashboardWidgetTopPagesTable from 'GoogleModules/analytics/dashboard/dashboard-widget-top-pages-table';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 
 storiesOf( 'Global', module )
@@ -19,7 +22,7 @@ storiesOf( 'Global', module )
 
 		// Load the datacache with data.
 		setTimeout( () => {
-			wp.hooks.doAction(
+			doAction(
 				'googlesitekit.moduleLoaded',
 				'Dashboard'
 			);

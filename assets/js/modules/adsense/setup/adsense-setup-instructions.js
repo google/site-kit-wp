@@ -31,8 +31,11 @@ import Spinner from 'GoogleComponents/spinner';
 import { Fragment } from 'react';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 
-const { Component } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class AdSenseSetupInstructions extends Component {
 	constructor( props ) {
@@ -63,7 +66,7 @@ class AdSenseSetupInstructions extends Component {
 			continueSetup,
 			accountStatus,
 			accountTagMatch,
-			clientId,
+			clientID,
 			existingTag,
 			switchLabel,
 			tracking,
@@ -144,13 +147,13 @@ class AdSenseSetupInstructions extends Component {
 												tracking.eventName
 											);
 										}
-										if ( 'account-connected' === accountStatus && clientId ) {
+										if ( 'account-connected' === accountStatus && clientID ) {
 											this.setState( { isSaving: true } );
 											const enableAutoAds = document.getElementById( 'enableAutoAds' );
 											const useSnippet = enableAutoAds && enableAutoAds.checked;
 
-											// Save the publisher clientId: AdSense setup is complete!
-											data.set( TYPE_MODULES, 'adsense', 'setup-complete', { clientId, useSnippet } ).then( () => {
+											// Save the publisher clientID: AdSense setup is complete!
+											data.set( TYPE_MODULES, 'adsense', 'setup-complete', { clientID, useSnippet } ).then( () => {
 												document.location = ctaLink;
 											} ).catch( () => {
 												this.setState( { isSaving: false } );

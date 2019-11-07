@@ -19,25 +19,31 @@
 /**
  * External dependencies
  */
+import { delay } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
 import Header from 'GoogleComponents/header';
 import Button from 'GoogleComponents/button';
 import Layout from 'GoogleComponents/layout/layout';
 import data, { TYPE_CORE } from 'GoogleComponents/data';
 import { sendAnalyticsTrackingEvent, clearAppLocalStorage } from 'GoogleUtil';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
-
 import STEPS from 'GoogleComponents/setup-wizard/wizard-steps';
 import WizardProgressStep from 'GoogleComponents/setup-wizard/wizard-progress-step';
-
-const { __ } = wp.i18n;
-const { Component, Fragment } = wp.element;
-const { delay } = lodash;
 
 class Setup extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { connectUrl } = googlesitekit.admin;
+		const { connectURL } = googlesitekit.admin;
 
 		const {
 			isAuthenticated,
@@ -56,7 +62,7 @@ class Setup extends Component {
 			needReauthenticate,
 			hasSearchConsoleProperty,
 			hasSearchConsolePropertyFromTheStart: hasSearchConsoleProperty,
-			connectUrl,
+			connectURL,
 			errorMsg: '',
 			isSiteKitConnected,
 			completeSetup: false,
@@ -176,12 +182,12 @@ class Setup extends Component {
 			isVerified,
 			needReauthenticate,
 			hasSearchConsoleProperty,
-			connectUrl,
+			connectURL,
 			isSiteKitConnected,
 		} = this.state;
 
 		if ( this.isSetupFinished() ) {
-			const redirectUrl = getSiteKitAdminURL(
+			const redirectURL = getSiteKitAdminURL(
 				'googlesitekit-dashboard',
 				{
 					notification: 'authentication_success',
@@ -189,7 +195,7 @@ class Setup extends Component {
 			);
 
 			delay( function() {
-				window.location.replace( redirectUrl );
+				window.location.replace( redirectURL );
 			}, 500, 'later' );
 		}
 
@@ -199,7 +205,7 @@ class Setup extends Component {
 		const WizardStepComponent = progressSteps[ currentStep ].Component;
 		const wizardStepComponent = <WizardStepComponent
 			siteConnectedSetup={ this.siteConnectedSetup }
-			connectUrl={ connectUrl }
+			connectURL={ connectURL }
 			siteVerificationSetup={ this.siteVerificationSetup }
 			searchConsoleSetup={ this.searchConsoleSetup }
 			completeSetup={ this.completeSetup }
@@ -272,7 +278,7 @@ class Setup extends Component {
 																href="#"
 																onClick={ () => {
 																	sendAnalyticsTrackingEvent( 'plugin_setup', 'signin_with_google' );
-																	document.location = connectUrl;
+																	document.location = connectURL;
 																} }
 															>{ __( 'Sign in with Google', 'google-site-kit' ) }</Button>
 														</div>

@@ -30,8 +30,11 @@ import {
 } from 'GoogleUtil';
 import HelpLink from 'GoogleComponents/help-link';
 
-const { __ } = wp.i18n;
-const { Component, Fragment } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
 
 class SiteVerification extends Component {
 	constructor( props ) {
@@ -43,7 +46,7 @@ class SiteVerification extends Component {
 			loading: isAuthenticated && shouldSetup,
 			loadingMsg: __( 'Getting your verified sites...', 'google-site-kit' ),
 			siteURL: ' ', // Space allows TextField label to look right.
-			selectedUrl: '',
+			selectedURL: '',
 			errorCode: false,
 			errorMsg: '',
 		};
@@ -90,8 +93,8 @@ class SiteVerification extends Component {
 				let message = err.message;
 
 				if ( validateJSON( err.message ) ) {
-					const errorJson = JSON.parse( err.message );
-					message = errorJson.error.message || err.message;
+					const errorJSON = JSON.parse( err.message );
+					message = errorJSON.error.message || err.message;
 				}
 
 				setErrorMessage( message );
@@ -138,8 +141,8 @@ class SiteVerification extends Component {
 			let message = err.message;
 
 			if ( validateJSON( err.message ) ) {
-				const errorJson = JSON.parse( err.message );
-				message = errorJson.error.message || err.message;
+				const errorJSON = JSON.parse( err.message );
+				message = errorJSON.error.message || err.message;
 			}
 
 			setErrorMessage( message );

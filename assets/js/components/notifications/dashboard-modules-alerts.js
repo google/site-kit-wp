@@ -21,10 +21,13 @@
  */
 import Notification from 'GoogleComponents/notifications/notification';
 import { modulesNotificationsToRequest, getModulesNotifications } from 'GoogleComponents/notifications/util';
+import { each } from 'lodash';
 
-const { Component, Fragment } = wp.element;
-const { each } = lodash;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class DashboardModulesAlerts extends Component {
 	constructor( props ) {
@@ -67,10 +70,10 @@ class DashboardModulesAlerts extends Component {
 						blockData={ notification.blockData || [] }
 						winImage={ notification.winImage ? `${ googlesitekit.admin.assetsRoot }images/${ notification.winImage }` : '' }
 						format={ notification.format || 'small' }
-						learnMoreUrl={ notification.learnMoreUrl || '' }
+						learnMoreURL={ notification.learnMoreURL || '' }
 						learnMoreDescription={ notification.learnMoreDescription || '' }
 						learnMoreLabel={ notification.learnMoreLabel || '' }
-						ctaLink={ notification.ctaUrl || '' }
+						ctaLink={ notification.ctaURL || '' }
 						ctaLabel={ notification.ctaLabel || '' }
 						ctaTarget={ notification.ctaTarget || '' }
 						type={ notification.severity || '' }

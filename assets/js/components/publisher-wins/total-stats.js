@@ -22,7 +22,10 @@
 import { extractSearchConsoleDashboardData } from 'GoogleModules/search-console/dashboard/util';
 import { getTimeInSeconds, getDaysBetweenDates } from 'GoogleUtil';
 
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 const totalStats = ( data, id ) => {
 	if ( 5 >= parseInt( googlesitekit.admin.newSitePosts, 10 ) ) {

@@ -23,7 +23,10 @@ import PropTypes from 'prop-types';
 import LayoutHeader from 'GoogleComponents/layout/layout-header';
 import LayoutFooter from 'GoogleComponents/layout/layout-footer';
 
-const { Component } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
 
 class Layout extends Component {
 	render() {

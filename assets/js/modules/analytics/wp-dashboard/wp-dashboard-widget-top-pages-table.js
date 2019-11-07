@@ -24,45 +24,56 @@ import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
+import { map } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
+
 /**
  * Internal dependencies
  */
 import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../util';
 
-const { __ } = wp.i18n;
-const { map } = lodash;
-const { Component } = wp.element;
-
 class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 	render() {
 		const { data } = this.props;
+		const { siteURL } = googlesitekit.admin;
 
 		if ( isDataZeroForReporting( data ) ) {
 			return null;
 		}
 
-		const headers = [
-			__( 'URL', 'google-site-kit' ),
-			__( 'Pageviews', 'google-site-kit' ),
-		];
-
 		const links = [];
 		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
-			const url = row.dimensions[ 0 ];
-			const title = row.dimensions[ 1 ];
-			links[ i ] = url;
+			const [ title, url ] = row.dimensions;
+			links[ i ] = siteURL + url;
+
 			return [
 				title,
 				numberFormat( row.metrics[ 0 ].values[ 0 ] ),
 			];
 		} );
 
+		const headers = [
+			{
+				title: __( 'Title', 'google-site-kit' ),
+				tooltip: __( 'Page Title', 'google-site-kit' ),
+				primary: true,
+			},
+			{
+				title: __( 'Pageviews', 'google-site-kit' ),
+				tooltip: __( 'Pageviews', 'google-site-kit' ),
+			},
+		];
+
 		const options = {
-			hideHeader: true,
 			chartsEnabled: true,
 			links,
 			cap: 5,
-			showUrls: true,
+			showURLs: true,
 		};
 
 		const dataTable = getDataTableFromData( dataMapped, headers, options );

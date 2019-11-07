@@ -38,8 +38,11 @@ import ModuleSettingsWarning from 'GoogleComponents/notifications/module-setting
 import AdSenseInProcessStatus from './adsense-in-process-status';
 import HelpLink from 'GoogleComponents/help-link';
 
-const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class AdSenseDashboardWidget extends Component {
 	constructor( props ) {
@@ -143,8 +146,8 @@ class AdSenseDashboardWidget extends Component {
 							">
 								{
 									( ! error && googlesitekit.modules.adsense.setupComplete ) ?
-										<PageHeader title={ __( 'AdSense', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconId="adsense" status="connected" statusText={ __( 'AdSense is connected', 'google-site-kit' ) } /> :
-										<PageHeader title={ __( 'AdSense', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconId="adsense" status="not-connected" statusText={ __( 'AdSense is not connected', 'google-site-kit' ) } />
+										<PageHeader title={ __( 'AdSense', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="connected" statusText={ __( 'AdSense is connected', 'google-site-kit' ) } /> :
+										<PageHeader title={ __( 'AdSense', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="not-connected" statusText={ __( 'AdSense is not connected', 'google-site-kit' ) } />
 								}
 								{ loading && <ProgressBar /> }
 							</div>

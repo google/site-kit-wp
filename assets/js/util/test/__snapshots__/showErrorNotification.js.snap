@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`showErrorNotification filters the ErrorNotification component 1`] = `
+<div>
+  Error Message
+</div>
+`;
+
+exports[`showErrorNotification returns null if nothing is passed 1`] = `<div />`;

@@ -4,6 +4,12 @@
 import { storiesOf } from '@storybook/react';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import WPDashboardMain from 'GoogleComponents/wp-dashboard/wp-dashboard-main';
+
+/**
+ * WordPress dependencies
+ */
+import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
+
 /**
  * Internal dependencies
  */
@@ -21,20 +27,20 @@ storiesOf( 'WordPress', module )
 		const addWPAnalyticsDashboardWidgetOverview = createAddToFilter( <WPAnalyticsDashboardWidgetOverview /> );
 		const addWPAnalyticsDashboardWidgetTopPagesTable = createAddToFilter( <WPAnalyticsDashboardWidgetTopPagesTable /> );
 
-		wp.hooks.removeAllFilters( 'googlesitekit.WPDashboardHeader' );
-		wp.hooks.addFilter( 'googlesitekit.WPDashboardHeader',
+		removeAllFilters( 'googlesitekit.WPDashboardHeader' );
+		addFilter( 'googlesitekit.WPDashboardHeader',
 			'googlesitekit.SearchConsole',
 			addWPSearchConsoleDashboardWidget, 11 );
 
-		wp.hooks.addFilter( 'googlesitekit.WPDashboardHeader',
+		addFilter( 'googlesitekit.WPDashboardHeader',
 			'googlesitekit.Analytics',
 			addWPAnalyticsDashboardWidgetOverview );
-		wp.hooks.addFilter( 'googlesitekit.WPDashboardModule',
+		addFilter( 'googlesitekit.WPDashboardModule',
 			'googlesitekit.Analytics',
 			addWPAnalyticsDashboardWidgetTopPagesTable );
 
 		setTimeout( () => {
-			wp.hooks.doAction(
+			doAction(
 				'googlesitekit.moduleLoaded',
 				'WPDashboard'
 			);

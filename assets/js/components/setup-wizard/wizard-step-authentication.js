@@ -29,15 +29,15 @@ import Optin from 'GoogleComponents/optin';
 import HelpLink from 'GoogleComponents/help-link';
 
 /**
- * WordPress dependencies.
+ * WordPress dependencies
  */
-const { __ } = wp.i18n;
-const { Component } = wp.element;
+import { __ } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
 
 class WizardStepAuthentication extends Component {
 	render() {
 		const {
-			connectUrl,
+			connectURL,
 			needReauthenticate,
 			resetAndRestart,
 		} = this.props;
@@ -69,7 +69,7 @@ class WizardStepAuthentication extends Component {
 								<Button
 									onClick={ () => {
 										sendAnalyticsTrackingEvent( 'plugin_setup', 'signin_with_google' );
-										document.location = connectUrl;
+										document.location = connectURL;
 									} }
 								>
 									{ __( 'Sign in with Google', 'google-site-kit' ) }
@@ -84,10 +84,7 @@ class WizardStepAuthentication extends Component {
 								}
 							</p>
 							<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
-								<Optin
-									id="opt-in"
-									name="optin"
-								/>
+								<Optin />
 								<HelpLink />
 							</div>
 						</div>
@@ -99,7 +96,7 @@ class WizardStepAuthentication extends Component {
 }
 
 WizardStepAuthentication.propTypes = {
-	connectUrl: PropTypes.string.isRequired,
+	connectURL: PropTypes.string.isRequired,
 	resetAndRestart: PropTypes.func,
 };
 

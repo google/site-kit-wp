@@ -156,7 +156,7 @@ final class Context {
 			$site_url = $orig_site_url;
 		}
 
-		return $site_url;
+		return untrailingslashit( $site_url );
 	}
 
 	/**
@@ -169,8 +169,8 @@ final class Context {
 	 * @return string|false The reference permalink URL or false if post does not exist.
 	 */
 	public function get_reference_permalink( $post = 0 ) {
-		$reference_site_url = untrailingslashit( $this->get_reference_site_url() );
-		$orig_site_url      = untrailingslashit( home_url() );
+		$reference_site_url = $this->get_reference_site_url();
+		$orig_site_url      = home_url();
 
 		// Gets post object. On front area we need to use get_queried_object to get the current post object.
 		if ( ! $post ) {
@@ -218,15 +218,6 @@ final class Context {
 
 		// Unidentified URL.
 		return false;
-	}
-
-	/**
-	 * Gets the current version is beta released.
-	 *
-	 * @return bool True if the version is in beta mode, false otherwise.
-	 */
-	public function is_beta() {
-		return false !== strpos( GOOGLESITEKIT_VERSION, 'beta' );
 	}
 
 	/**

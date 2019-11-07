@@ -24,35 +24,41 @@ import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
+import { map } from 'lodash';
 import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
+
 /**
  * Internal dependencies
  */
 import { getTopPagesReportDataDefaults } from '../util';
-
-const { __ } = wp.i18n;
-const { map } = lodash;
-const { Component, Fragment } = wp.element;
 
 class AnalyticsDashboardWidgetTopPagesTable extends Component {
 	/**
 	 * Add a deep link to Google Analytics Dashboard.
 	 *
 	 * @param {string} url to be used in the deep link.
+	 *
+	 * @return {string} new url.
 	 */
 	static addDeepLink( url ) {
 		const {
-			accountId,
-			internalWebPropertyId,
-			profileId,
+			accountID,
+			internalWebPropertyID,
+			profileID,
 		} = googlesitekit.modules.analytics.settings;
 
-		if ( ! accountId ) {
+		if ( ! accountID ) {
 			return 'https://analytics.google.com/analytics/web/';
 		}
 
 		// The pagePath param requires / to be replaced by ~2F.
-		return `https://analytics.google.com/analytics/web/#/report/content-drilldown/a${ accountId }w${ internalWebPropertyId }p${ profileId }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath:${ encodeURIComponent( url.replace( /\//g, '~2F' ) ) }`;
+		return `https://analytics.google.com/analytics/web/#/report/content-drilldown/a${ accountID }w${ internalWebPropertyID }p${ profileID }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath:${ encodeURIComponent( url.replace( /\//g, '~2F' ) ) }`;
 	}
 
 	render() {
@@ -65,6 +71,7 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 			{
 				title: __( 'Title', 'google-site-kit' ),
 				tooltip: __( 'Page Title', 'google-site-kit' ),
+				primary: true,
 			},
 			{
 				title: __( 'Pageviews', 'google-site-kit' ),
@@ -83,8 +90,7 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 		const links = [];
 		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
 			const percent = Number( row.metrics[ 0 ].values[ 2 ] );
-			const url = row.dimensions[ 0 ];
-			const title = row.dimensions[ 1 ];
+			const [ title, url ] = row.dimensions;
 			links[ i ] = AnalyticsDashboardWidgetTopPagesTable.addDeepLink( url );
 			return [
 				title,

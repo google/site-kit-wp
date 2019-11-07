@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-const { createElement, Fragment } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { createElement, Fragment } from '@wordpress/element';
 
 /**
  * Append the passed component to a filtered component.

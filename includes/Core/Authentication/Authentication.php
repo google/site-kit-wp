@@ -71,37 +71,12 @@ final class Authentication {
 	private $auth_client = null;
 
 	/**
-	 * API key client object.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @var Clients\API_Key_Client
-	 */
-	private $api_key_client = null;
-
-	/**
 	 * OAuth credentials instance.
 	 *
 	 * @since 1.0.0
 	 * @var Credentials
 	 */
 	protected $credentials;
-
-	/**
-	 * API key instance.
-	 *
-	 * @since 1.0.0
-	 * @var API_Key
-	 */
-	protected $api_key;
-
-	/**
-	 * GCP project instance.
-	 *
-	 * @since 1.0.0
-	 * @var GCP_Project
-	 */
-	protected $gcp_project;
 
 	/**
 	 * Verification instance.
@@ -169,8 +144,6 @@ final class Authentication {
 		$this->transients = $transients;
 
 		$this->credentials      = new Credentials( $this->options );
-		$this->api_key          = new API_Key( $this->options );
-		$this->gcp_project      = new GCP_Project( $this->options );
 		$this->verification     = new Verification( $this->user_options );
 		$this->verification_tag = new Verification_Tag( $this->user_options, $this->transients );
 		$this->profile          = new Profile( $user_options, $this->get_oauth_client() );
@@ -187,8 +160,14 @@ final class Authentication {
 			'init',
 			function() {
 				$this->handle_oauth();
-			},
-			10
+			}
+		);
+
+		add_action(
+			'admin_init',
+			function() {
+				$this->handle_verification_token();
+			}
 		);
 
 		add_action(
@@ -232,31 +211,6 @@ final class Authentication {
 
 		add_action( 'wp_head', $print_site_verification_meta );
 		add_action( 'login_head', $print_site_verification_meta );
-
-		add_action(
-			'admin_head',
-			function() {
-				global $hook_suffix;
-
-				// Highjack current admin page with OAuth sensitive scopes warning.
-				if ( filter_input( INPUT_GET, Sensitive_Scopes_Warning::QUERY_PARAMETER ) ) {
-					remove_all_actions( "{$hook_suffix}" );
-
-					$redirect_url = '';
-					if ( ! empty( $_GET['redirect'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-						$redirect_url = esc_url_raw( wp_unslash( $_GET['redirect'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-					}
-
-					$connect_url = $this->get_connect_url();
-					if ( ! empty( $redirect_url ) ) {
-						$connect_url = add_query_arg( 'redirect', rawurlencode( $redirect_url ), $connect_url );
-					}
-
-					$warning = new Sensitive_Scopes_Warning( $this->context, $connect_url );
-					add_action( "{$hook_suffix}", array( $warning, 'render' ), 1 );
-				}
-			}
-		);
 	}
 
 	/**
@@ -268,28 +222,6 @@ final class Authentication {
 	 */
 	public function credentials() {
 		return $this->credentials;
-	}
-
-	/**
-	 * Gets the API key instance.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return API_Key API key instance.
-	 */
-	public function api_key() {
-		return $this->api_key;
-	}
-
-	/**
-	 * Gets the GCP project instance.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return GCP_Project Project ID instance.
-	 */
-	public function gcp_project() {
-		return $this->gcp_project;
 	}
 
 	/**
@@ -340,28 +272,12 @@ final class Authentication {
 	}
 
 	/**
-	 * Gets the API key client instance.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return Clients\API_Key_Client API key client instance.
-	 */
-	public function get_api_key_client() {
-		if ( ! $this->api_key_client instanceof Clients\API_Key_Client ) {
-			$this->api_key_client = new Clients\API_Key_Client( $this->context, $this->options, $this->api_key );
-		}
-		return $this->api_key_client;
-	}
-
-	/**
 	 * Revokes authentication along with user options settings.
 	 *
 	 * @since 1.0.0
 	 */
 	public function disconnect() {
-		$auth_client = $this->get_oauth_client();
-
-		$auth_client->revoke_token();
+		$this->get_oauth_client()->revoke_token();
 
 		$this->user_options->delete( Clients\OAuth_Client::OPTION_ACCESS_TOKEN );
 		$this->user_options->delete( Clients\OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN );
@@ -370,6 +286,7 @@ final class Authentication {
 		$this->user_options->delete( Clients\OAuth_Client::OPTION_REDIRECT_URL );
 		$this->user_options->delete( Clients\OAuth_Client::OPTION_AUTH_SCOPES );
 		$this->user_options->delete( Clients\OAuth_Client::OPTION_ERROR_CODE );
+		$this->user_options->delete( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 		$this->user_options->delete( Verification::OPTION );
 		$this->user_options->delete( Verification_Tag::OPTION );
 		$this->user_options->delete( Profile::OPTION );
@@ -425,11 +342,9 @@ final class Authentication {
 	}
 
 	/**
-	 * Handle OAuth process.
+	 * Handles receiving a temporary OAuth code.
 	 *
 	 * @since 1.0.0
-	 *
-	 * @return void
 	 */
 	private function handle_oauth() {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -486,22 +401,46 @@ final class Authentication {
 				$redirect_url = esc_url_raw( wp_unslash( $_GET['redirect'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 			}
 
-			$required_scopes = $this->get_oauth_client()->get_required_scopes();
-
-			$warning = new Sensitive_Scopes_Warning( $this->context, $this->get_connect_url() );
-			if ( $warning->should_display( $required_scopes ) ) {
-				$warning_url = $warning->get_url();
-				if ( ! empty( $redirect_url ) ) {
-					$warning_url = add_query_arg( 'redirect', $redirect_url, $warning_url );
-				}
-				wp_safe_redirect( $warning_url );
-				exit;
-			}
-
 			// User is trying to authenticate, but access token hasn't been set.
 			header( 'Location: ' . filter_var( $auth_client->get_authentication_url( $redirect_url ), FILTER_SANITIZE_URL ) );
 			exit();
 		}
+	}
+
+	/**
+	 * Handles receiving a verification token for a user by the authentication proxy.
+	 *
+	 * @since 1.0.0
+	 */
+	private function handle_verification_token() {
+		$auth_client = $this->get_oauth_client();
+		if ( ! $auth_client->using_proxy() ) {
+			return;
+		}
+
+		$verification_token = filter_input( INPUT_GET, 'googlesitekit_verification_token' );
+		if ( empty( $verification_token ) ) {
+			return;
+		}
+
+		$verification_nonce = filter_input( INPUT_GET, 'googlesitekit_verification_nonce' );
+		if ( empty( $verification_nonce ) || ! wp_verify_nonce( $verification_nonce, 'googlesitekit_verification' ) ) {
+			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
+		}
+
+		$this->verification_tag->set( $verification_token );
+
+		$code = (string) filter_input( INPUT_GET, 'googlesitekit_code' );
+
+		// We need to pass the 'missing_verification' error code here so that the URL includes a verification nonce.
+		wp_safe_redirect(
+			add_query_arg(
+				'verify',
+				'true',
+				$auth_client->get_proxy_setup_url( $code, 'missing_verification' )
+			)
+		);
+		exit;
 	}
 
 	/**
@@ -547,52 +486,15 @@ final class Authentication {
 			$data['userData']['picture'] = $profile_data['photo'];
 		}
 
-		$client_data = $this->credentials->get();
-		$apikey      = $this->get_api_key_client()->get_api_key();
-		$gcp_project = $this->gcp_project->get();
-
-		if ( current_user_can( Permissions::MANAGE_OPTIONS ) && isset( $client_data['oauth2_client_id'] ) ) {
-			$data['clientID'] = $client_data['oauth2_client_id'];
-		} else {
-			$data['clientID'] = '';
-		}
-		if ( current_user_can( Permissions::MANAGE_OPTIONS ) && isset( $client_data['oauth2_client_secret'] ) ) {
-			$data['clientSecret'] = str_repeat( '•', strlen( $client_data['oauth2_client_secret'] ) );
-		} else {
-			$data['clientSecret'] = '';
+		$auth_client = $this->get_oauth_client();
+		if ( $auth_client->using_proxy() ) {
+			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+			$data['proxySetupURL']       = esc_url_raw( $auth_client->get_proxy_setup_url( $access_code ) );
+			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
 		}
 
-		if ( current_user_can( Permissions::MANAGE_OPTIONS ) && $apikey ) {
-			$data['apikey'] = $apikey;
-		} else {
-			$data['apikey'] = false;
-		}
-
-		// Make GCP project information available only to the creator.
-		if ( ! empty( $gcp_project['id'] ) && (int) get_current_user_id() === $gcp_project['wp_owner_id'] ) {
-			$data['projectId']  = $gcp_project['id'];
-			$data['projectUrl'] = add_query_arg( 'project', $gcp_project['id'], 'https://console.cloud.google.com/apis/credentials' );
-		} else {
-			$data['projectId']  = false;
-			$data['projectUrl'] = false;
-		}
-
-		$data['connectUrl']    = esc_url_raw( $this->get_connect_url() );
-		$data['disconnectUrl'] = esc_url_raw( $this->get_disconnect_url() );
-
-		$external_sitename = html_entity_decode( get_bloginfo( 'name' ), ENT_QUOTES );
-		$external_sitename = str_replace( '&', 'and', $external_sitename );
-		$external_sitename = trim( preg_replace( '/([^A-Za-z0-9 ]+|google)/i', '', $external_sitename ) );
-		if ( strlen( $external_sitename ) < 4 ) {
-			$external_sitename .= ' Site Kit';
-		}
-		$external_page_params = array(
-			'sitename' => substr( $external_sitename, 0, 30 ), // limit to 30 chars.
-			'siteurl'  => untrailingslashit( home_url() ),
-		);
-
-		$data['externalCredentialsURL'] = esc_url_raw( add_query_arg( $external_page_params, 'https://developers.google.com/web/site-kit' ) );
-		$data['externalAPIKeyURL']      = esc_url_raw( add_query_arg( $external_page_params, 'https://developers.google.com/web/site-kit/apikey' ) );
+		$data['connectURL']    = esc_url_raw( $this->get_connect_url() );
+		$data['disconnectURL'] = esc_url_raw( $this->get_disconnect_url() );
 
 		return $data;
 	}
@@ -672,7 +574,12 @@ final class Authentication {
 		);
 
 		foreach ( $verification_tags as $verification_tag ) {
-			echo wp_kses( html_entity_decode( $verification_tag ), $allowed_html );
+			$verification_tag = html_entity_decode( $verification_tag );
+			if ( 0 !== strpos( $verification_tag, '<meta ' ) ) {
+				$verification_tag = '<meta name="google-site-verification" content="' . esc_attr( $verification_tag ) . '">';
+			}
+
+			echo wp_kses( $verification_tag, $allowed_html );
 		}
 	}
 
@@ -710,40 +617,8 @@ final class Authentication {
 
 		$notices[] = $this->get_reauthentication_needed_notice();
 		$notices[] = $this->get_authentication_oauth_error_notice();
-		$notices[] = $this->get_disconnected_user_notice();
 
 		return $notices;
-	}
-
-	/**
-	 * Gets disconnected user notice.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return Notice Notice object.
-	 */
-	private function get_disconnected_user_notice() {
-		return new Notice(
-			'googlesitekit_user_disconnected',
-			array(
-				'content'         => function() {
-					ob_start();
-					?>
-					<p>
-						<?php esc_html_e( 'Successfully disconnected from Site Kit by Google.', 'google-site-kit' ); ?>
-					</p>
-					<?php
-					return ob_get_clean();
-				},
-				'type'            => Notice::TYPE_SUCCESS,
-				'active_callback' => function() {
-					if ( isset( $_GET['notification'] ) && 'googlesitekit_user_disconnected' === $_GET['notification'] ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-						return true;
-					}
-					return false;
-				},
-			)
-		);
 	}
 
 	/**
@@ -822,7 +697,18 @@ final class Authentication {
 						return '';
 					}
 
-					return '<p>' . esc_html( $message ) . '</p>';
+					$message = wp_kses(
+						$message,
+						array(
+							'a'      => array(
+								'href' => array(),
+							),
+							'strong' => array(),
+							'em'     => array(),
+						)
+					);
+
+					return '<p>' . $message . '</p>';
 				},
 				'type'            => Notice::TYPE_ERROR,
 				'active_callback' => function() {

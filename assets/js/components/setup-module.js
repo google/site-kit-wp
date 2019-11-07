@@ -27,15 +27,18 @@ import ModuleSettingsWarning from 'GoogleComponents/notifications/module-setting
 import {
 	activateOrDeactivateModule,
 	refreshAuthentication,
-	getReAuthUrl,
+	getReAuthURL,
 	showErrorNotification,
 	moduleIcon,
 } from 'GoogleUtil';
 import GenericError from 'GoogleComponents/notifications/generic-error';
 
-const { sprintf, __ } = wp.i18n;
-const { Component } = wp.element;
-const { applyFilters } = wp.hooks;
+/**
+ * WordPress dependencies
+ */
+import { sprintf, __ } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
+import { applyFilters } from '@wordpress/hooks';
 
 /**
  * A single module. Keeps track of its own active state and settings.
@@ -63,7 +66,7 @@ class SetupModule extends Component {
 			await refreshAuthentication();
 
 			// Redirect to ReAuthentication URL.
-			window.location = getReAuthUrl( slug, true );
+			window.location = getReAuthURL( slug, true );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'activate-module-error',

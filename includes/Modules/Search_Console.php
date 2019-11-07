@@ -15,10 +15,17 @@ use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
-use Google_Client;
-use Google_Service_Exception;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\RequestInterface;
+use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit_Dependencies\Google_Service_Exception;
+use Google\Site_Kit_Dependencies\Google_Service_Webmasters;
+use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SitesListResponse;
+use Google\Site_Kit_Dependencies\Google_Service_Webmasters_WmxSite;
+use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SearchAnalyticsQueryRequest;
+use Google\Site_Kit_Dependencies\Google_Service_Webmasters_ApiDimensionFilter;
+use Google\Site_Kit_Dependencies\Google_Service_Webmasters_ApiDimensionFilterGroup;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
 /**
@@ -138,30 +145,22 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to get request object for.
-	 * @param array  $data      Optional. Contextual data to provide or set. Default empty array.
+	 * @param Data_Request $data Data request object.
+	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
-	protected function create_data_request( $method, $datapoint, array $data = array() ) {
+	protected function create_data_request( Data_Request $data ) {
+		$method    = $data->method;
+		$datapoint = $data->datapoint;
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'sites':
 				case 'matched-sites':
 					return $this->get_webmasters_service()->sites->listSites();
 				case 'searchanalytics':
-					$data = array_merge(
-						array(
-							'compareDateRanges' => false,
-							'dateRange'         => 'last-28-days',
-							'dimensions'        => '',
-							'url'               => '',
-						),
-						$data
-					);
-
 					list ( $start_date, $end_date ) = $this->parse_date_range(
-						$data['dateRange'],
+						$data['dateRange'] ?: 'last-28-days',
 						$data['compareDateRanges'] ? 2 : 1,
 						3
 					);
@@ -170,7 +169,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						'page'       => $data['url'],
 						'start_date' => $start_date,
 						'end_date'   => $end_date,
-						'dimensions' => explode( ',', $data['dimensions'] ),
+						'dimensions' => array_filter( explode( ',', $data['dimensions'] ) ),
 					);
 
 					if ( isset( $data['limit'] ) ) {
@@ -182,16 +181,16 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
 				case 'site':
-					if ( empty( $data['siteUrl'] ) ) {
+					if ( empty( $data['siteURL'] ) ) {
 						return new WP_Error(
 							'missing_required_param',
 							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'siteUrl' ),
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'siteURL' ),
 							array( 'status' => 400 )
 						);
 					}
 
-					$site_url = trailingslashit( $data['siteUrl'] );
+					$site_url = trailingslashit( $data['siteURL'] );
 
 					return function () use ( $site_url ) {
 						$orig_defer = $this->get_client()->shouldDefer();
@@ -221,7 +220,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						$this->options->set( self::PROPERTY_OPTION, $site_url );
 
 						return array(
-							'siteUrl'         => $site->getSiteUrl(),
+							'siteURL'         => $site->getSiteUrl(),
 							'permissionLevel' => $site->getPermissionLevel(),
 						);
 					};
@@ -236,26 +235,29 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $method    Request method. Either 'GET' or 'POST'.
-	 * @param string $datapoint Datapoint to resolve response for.
-	 * @param mixed  $response  Response object or array.
+	 * @param Data_Request $data Data request object.
+	 * @param mixed        $response Request response.
+	 *
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
-	protected function parse_data_response( $method, $datapoint, $response ) {
+	protected function parse_data_response( Data_Request $data, $response ) {
+		$method    = $data->method;
+		$datapoint = $data->datapoint;
+
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'sites':
-					/* @var \Google_Service_Webmasters_SitesListResponse $response Response object. */
+					/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
 					return $this->map_sites( (array) $response->getSiteEntry() );
 				case 'matched-sites':
-					/* @var \Google_Service_Webmasters_SitesListResponse $response Response object. */
+					/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
 					$sites            = $this->map_sites( (array) $response->getSiteEntry() );
 					$current_url      = $this->context->get_reference_site_url();
 					$current_host     = wp_parse_url( $current_url, PHP_URL_HOST );
 					$property_matches = array_filter(
 						$sites,
 						function ( array $site ) use ( $current_host ) {
-							$site_host = wp_parse_url( $site['siteUrl'], PHP_URL_HOST );
+							$site_host = wp_parse_url( str_replace( 'sc-domain:', 'https://', $site['siteURL'] ), PHP_URL_HOST );
 
 							// Ensure host names overlap, from right to left.
 							return 0 === strpos( strrev( $current_host ), strrev( $site_host ) );
@@ -265,7 +267,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					$exact_match = array_reduce(
 						$property_matches,
 						function ( $match, array $site ) use ( $current_url ) {
-							if ( ! $match && trailingslashit( $current_url ) === trailingslashit( $site['siteUrl'] ) ) {
+							if ( ! $match && trailingslashit( $current_url ) === trailingslashit( $site['siteURL'] ) ) {
 								return $site;
 							}
 							return $match;
@@ -288,15 +290,15 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	/**
 	 * Map Site model objects to primitives used for API responses.
 	 *
-	 * @param \Google_Service_Webmasters_WmxSite[] $sites Site objects.
+	 * @param array $sites Site objects.
 	 *
 	 * @return array
 	 */
 	private function map_sites( $sites ) {
 		return array_map(
-			function ( \Google_Service_Webmasters_WmxSite $site ) {
+			function ( Google_Service_Webmasters_WmxSite $site ) {
 				return array(
-					'siteUrl'         => $site->getSiteUrl(),
+					'siteURL'         => $site->getSiteUrl(),
 					'permissionLevel' => $site->getPermissionLevel(),
 				);
 			},
@@ -332,7 +334,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			)
 		);
 
-		$request = new \Google_Service_Webmasters_SearchAnalyticsQueryRequest();
+		$request = new Google_Service_Webmasters_SearchAnalyticsQueryRequest();
 		if ( ! empty( $args['dimensions'] ) ) {
 			$request->setDimensions( (array) $args['dimensions'] );
 		}
@@ -343,10 +345,10 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			$request->setEndDate( $args['end_date'] );
 		}
 		if ( ! empty( $args['page'] ) ) {
-			$filter = new \Google_Service_Webmasters_ApiDimensionFilter();
+			$filter = new Google_Service_Webmasters_ApiDimensionFilter();
 			$filter->setDimension( 'page' );
 			$filter->setExpression( esc_url_raw( $args['page'] ) );
-			$filters = new \Google_Service_Webmasters_ApiDimensionFilterGroup();
+			$filters = new Google_Service_Webmasters_ApiDimensionFilterGroup();
 			$filters->setFilters( array( $filter ) );
 			$request->setDimensionFilterGroups( array( $filters ) );
 		}
@@ -446,7 +448,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	/**
 	 * Get the configured Webmasters service instance.
 	 *
-	 * @return \Google_Service_Webmasters The Search Console API service.
+	 * @return Google_Service_Webmasters The Search Console API service.
 	 */
 	private function get_webmasters_service() {
 		return $this->get_service( 'webmasters' );
@@ -466,7 +468,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 */
 	protected function setup_services( Google_Client $client ) {
 		return array(
-			'webmasters' => new \Google_Service_Webmasters( $client ),
+			'webmasters' => new Google_Service_Webmasters( $client ),
 		);
 	}
 }

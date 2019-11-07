@@ -9,11 +9,8 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
 import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
-	pasteText,
 	setSearchConsoleProperty,
-	testClientConfig,
 	useRequestInterception,
-	setClientConfig,
 	setAuthToken,
 	setSiteVerification,
 } from '../utils';
@@ -32,7 +29,7 @@ function stubGoogleSignIn( request ) {
 			contentType: 'application/json',
 			body: JSON.stringify( {
 				exactMatch: {
-					siteUrl: process.env.WP_BASE_URL,
+					siteURL: process.env.WP_BASE_URL,
 				},
 			} ),
 		} );
@@ -41,7 +38,7 @@ function stubGoogleSignIn( request ) {
 	}
 }
 
-const signOut = async () => {
+const disconnectFromSiteKit = async () => {
 	await page.waitForSelector( 'button[aria-controls="user-menu"]' );
 	await page.click( 'button[aria-controls="user-menu"]' );
 
@@ -55,8 +52,11 @@ const signOut = async () => {
 
 describe( 'Site Kit set up flow for the first time', () => {
 	beforeAll( async () => {
-		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await setSearchConsoleProperty();
+	} );
+
+	beforeEach( async () => {
+		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 	} );
 
 	afterEach( async () => {
@@ -65,17 +65,12 @@ describe( 'Site Kit set up flow for the first time', () => {
 	} );
 
 	it( 'authenticates from splash page', async () => {
+		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
-		await page.waitForSelector( '#client-configuration' );
-
-		await pasteText( '#client-configuration', JSON.stringify( testClientConfig ) );
-		await page.click( '#wizard-step-one-proceed' );
-		await page.waitForSelector( '.googlesitekit-wizard-step--two .mdc-button' );
-
 		// Sign in with Google
 		await page.setRequestInterception( true );
 		useRequestInterception( stubGoogleSignIn );
-		await page.click( '.googlesitekit-wizard-step--two .mdc-button' );
+		await expect( page ).toClick( '.googlesitekit-wizard-step button', { text: /sign in with Google/i } );
 		await page.waitForNavigation();
 
 		await expect( page ).toMatchElement( '#js-googlesitekit-dashboard' );
@@ -83,17 +78,17 @@ describe( 'Site Kit set up flow for the first time', () => {
 	} );
 
 	it( 'disconnects user from Site Kit', async () => {
-		await setClientConfig();
 		await setAuthToken();
 		await setSiteVerification();
 		await setSearchConsoleProperty();
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
-		await signOut();
+		await disconnectFromSiteKit();
 
+		// Ensure the user is on step one of the setup wizard.
 		await expect( page ).toMatchElement(
-			'.notice-success',
-			{ text: /Successfully disconnected from Site Kit by Google./i }
+			'.googlesitekit-wizard-progress-step__number-text--inprogress',
+			{ text: '1' }
 		);
 	} );
 } );

@@ -1,9 +1,12 @@
-const { Component } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
 
 /**
  * WordPress dependencies.
  */
-const { withFilters } = wp.components;
+import { withFilters } from '@wordpress/components';
 
 /**
  * A single module. Keeps track of its own active state and settings.

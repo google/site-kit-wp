@@ -21,10 +21,13 @@
  */
 import Notification from 'GoogleComponents/notifications/notification';
 
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 const DashboardAuthAlert = () => {
-	const { admin: { connectUrl } } = googlesitekit;
+	const { admin: { connectURL } } = googlesitekit;
 	return (
 		<Notification
 			id="authentication error"
@@ -34,7 +37,7 @@ const DashboardAuthAlert = () => {
 			format="small"
 			type="win-error"
 			isDismissable={ true }
-			ctaLink={ connectUrl }
+			ctaLink={ connectURL }
 			ctaLabel={ __( 'Click here', 'google-site-kit' ) }
 		/>
 	);

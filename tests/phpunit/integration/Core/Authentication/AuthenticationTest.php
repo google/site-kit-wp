@@ -39,8 +39,6 @@ class AuthenticationTest extends TestCase {
 
 		// Authentication::handle_oauth is invoked on init but we cannot test it due to use of filter_input.
 		$this->assertTrue( has_action( 'init' ) );
-		// Unable to test for sensitive scopes warning due to use of filter_input.
-		$this->assertTrue( has_action( 'admin_head' ) );
 
 		$this->assertAdminDataExtended();
 		$this->assertSetupDataExtended();
@@ -55,7 +53,6 @@ class AuthenticationTest extends TestCase {
 		);
 		$this->assertEqualSets(
 			array(
-				'googlesitekit_user_disconnected',
 				'needs_reauthentication',
 				'oauth_error',
 			),
@@ -68,15 +65,10 @@ class AuthenticationTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'apikey',
-				'clientID',
-				'clientSecret',
-				'connectUrl',
-				'disconnectUrl',
-				'externalAPIKeyURL',
-				'externalCredentialsURL',
-				'projectId',
-				'projectUrl',
+				'connectURL',
+				'disconnectURL',
+				'proxySetupURL',
+				'proxyPermissionsURL',
 				'userData',
 			),
 			array_keys( $data )
@@ -103,23 +95,39 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
-	public function test_register_head_verification_tags() {
+	/**
+	 * @dataProvider data_register_head_verification_tags
+	 */
+	public function test_register_head_verification_tags( $saved_tag, $expected_output ) {
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'login_head' );
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$auth->register();
 
-		$tag_html = '<meta name="google-site-verification" content="test-verification-content">';
-		set_transient( 'googlesitekit_verification_meta_tags', array( $tag_html ) );
+		set_transient( 'googlesitekit_verification_meta_tags', array( $saved_tag ) );
 
 		$this->assertContains(
-			$tag_html,
+			$expected_output,
 			$this->capture_action( 'wp_head' )
 		);
 
 		$this->assertContains(
-			$tag_html,
+			$expected_output,
 			$this->capture_action( 'login_head' )
+		);
+	}
+
+	public function data_register_head_verification_tags() {
+		return array(
+			array( // Full meta tag stored.
+				'<meta name="google-site-verification" content="test-verification-content">',
+				'<meta name="google-site-verification" content="test-verification-content">',
+			),
+			array(
+				// Only verification token stored.
+				'test-verification-content-2',
+				'<meta name="google-site-verification" content="test-verification-content-2">',
+			),
 		);
 	}
 
@@ -153,7 +161,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertTrue( $auth->is_authenticated() );
 		// Set a refresh token and expect it to be passed to the Google Client.
 		$client->set_refresh_token( 'test-refresh-token' );
-		$mock_google_client = $this->getMock( 'Google_Client', array(
+		$mock_google_client = $this->getMock( 'Google\Site_Kit_Dependencies\Google_Client', array(
 			'fetchAccessTokenWithRefreshToken',
 			'revokeToken'
 		) );
@@ -213,15 +221,6 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
-	public function test_api_key() {
-		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$this->assertInstanceOf(
-			'\Google\Site_Kit\Core\Authentication\API_Key',
-			$auth->api_key()
-		);
-	}
-
 	public function test_verification() {
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -249,15 +248,6 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
-	public function test_get_api_key_client() {
-		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$this->assertInstanceOf(
-			'\Google\Site_Kit\Core\Authentication\Clients\API_Key_Client',
-			$auth->get_api_key_client()
-		);
-	}
-
 	public function test_disconnect() {
 		$user_id      = $this->factory()->user->create();
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
@@ -269,7 +259,7 @@ class AuthenticationTest extends TestCase {
 			$user_options->set( $key, "test-$key-value" );
 		}
 
-		$mock_google_client = $this->getMock( 'Google_Client', array( 'revokeToken' ) );
+		$mock_google_client = $this->getMock( 'Google\Site_Kit_Dependencies\Google_Client', array( 'revokeToken' ) );
 		$mock_google_client->expects( $this->once() )->method( 'revokeToken' );
 		$this->force_set_property( $auth->get_oauth_client(), 'google_client', $mock_google_client );
 

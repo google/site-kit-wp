@@ -29,14 +29,18 @@ import {
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
 import MiniChart from 'GoogleComponents/mini-chart';
+import { map } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
+
 /**
  * Internal dependencies
  */
 import { trafficSourcesReportDataDefaults } from '../util';
-
-const { __, sprintf } = wp.i18n;
-const { map } = lodash;
-const { Component, Fragment } = wp.element;
 
 class AnalyticsDashboardWidgetTopAcquisitionSources extends Component {
 	render() {

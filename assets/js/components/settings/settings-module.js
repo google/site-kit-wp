@@ -31,19 +31,22 @@ import ModuleSetupIncomplete from 'GoogleComponents/settings/module-setup-incomp
 import {
 	activateOrDeactivateModule,
 	refreshAuthentication,
-	getReAuthUrl,
+	getReAuthURL,
 	moduleIcon,
 	showErrorNotification,
 } from 'GoogleUtil';
 import Spinner from 'GoogleComponents/spinner';
 import SettingsOverlay from 'GoogleComponents/settings/settings-overlay';
 import GenericError from 'GoogleComponents/notifications/generic-error';
+import { filter, map } from 'lodash';
 
-const { Component, Fragment } = wp.element;
-const { __, sprintf } = wp.i18n;
-const { filter, map } = lodash;
-const { applyFilters } = wp.hooks;
-const { withFilters } = wp.components;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+import { applyFilters } from '@wordpress/hooks';
+import { withFilters } from '@wordpress/components';
 
 /**
  * A single module. Keeps track of its own active state and settings.
@@ -99,7 +102,7 @@ class SettingsModule extends Component {
 				active: newActiveState,
 			} );
 
-			window.location = getReAuthUrl( this.props.slug, false );
+			window.location = getReAuthURL( this.props.slug, false );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'activate-module-error',
@@ -177,7 +180,7 @@ class SettingsModule extends Component {
 			autoActivate,
 			provides,
 			isSaving,
-			screenId,
+			screenID,
 			error,
 		} = this.props;
 
@@ -314,14 +317,14 @@ class SettingsModule extends Component {
 													mdc-layout-grid__cell
 													mdc-layout-grid__cell--span-12
 												">
-											<FilteredModuleSettingsDetails module={ moduleKey } isEditing={ isEditing[ moduleKey ] } />
+											<FilteredModuleSettingsDetails module={ moduleKey } isEditing={ isEditing[ moduleKey ] } isOpen={ isOpen } />
 										</div>
 									</Fragment>
 									}
 									{
 										hasSettings && ! setupComplete &&
 											<ModuleSetupIncomplete
-												screenId={ screenId }
+												screenID={ screenID }
 												slug={ slug }
 											/>
 									}

@@ -23,12 +23,15 @@ import DateRangeSelector from 'GoogleComponents/date-range-selector';
 import PropTypes from 'prop-types';
 import SvgIcon from 'GoogleUtil/svg-icon';
 
-const { Component } = wp.element;
-const { applyFilters } = wp.hooks;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { applyFilters } from '@wordpress/hooks';
 
 class PageHeader extends Component {
 	render() {
-		const { title, icon, iconWidth, iconHeight, iconId, className, status, statusText, fullWidth } = this.props;
+		const { title, icon, iconWidth, iconHeight, iconID, className, status, statusText, fullWidth } = this.props;
 
 		const widthClasses = fullWidth ?
 			`
@@ -47,7 +50,7 @@ class PageHeader extends Component {
 		 *
 		 * Modules can op into the date range selection feature by returning true.
 		 */
-		const showDateRangeSelector = applyFilters( `googlesitekit.showDateRangeSelector-${ iconId }`, false );
+		const showDateRangeSelector = applyFilters( `googlesitekit.showDateRangeSelector-${ iconID }`, false );
 
 		// Determine whether the details cell should display.
 		const hasDetails = '' !== status || showDateRangeSelector ? true : false;
@@ -58,7 +61,7 @@ class PageHeader extends Component {
 					{ title &&
 						<div className={ widthClasses }>
 							{ icon &&
-								<SvgIcon id={ iconId } height={ iconHeight } width={ iconWidth } className="googlesitekit-page-header__icon" />
+								<SvgIcon id={ iconID } height={ iconHeight } width={ iconWidth } className="googlesitekit-page-header__icon" />
 							}
 							<h1 className={ `googlesitekit-page-header__title ${ className }` }>
 								{ title }
@@ -100,7 +103,7 @@ class PageHeader extends Component {
 PageHeader.propTypes = {
 	title: PropTypes.string,
 	icon: PropTypes.bool,
-	iconId: PropTypes.string,
+	iconID: PropTypes.string,
 	iconWidth: PropTypes.string,
 	iconHeight: PropTypes.string,
 	className: PropTypes.string,
@@ -112,7 +115,7 @@ PageHeader.propTypes = {
 PageHeader.defaultProps = {
 	title: '',
 	icon: false,
-	iconId: '',
+	iconID: '',
 	iconWidth: '',
 	iconHeight: '',
 	className: 'googlesitekit-heading-3',

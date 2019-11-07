@@ -4,6 +4,12 @@
 import { storiesOf } from '@storybook/react';
 import SettingsModules from 'GoogleComponents/settings/settings-modules';
 import Layout from 'GoogleComponents/layout/layout';
+
+/**
+ * WordPress dependencies
+ */
+import { addFilter } from '@wordpress/hooks';
+
 /**
  * Internal dependencies
  */
@@ -66,14 +72,14 @@ const setupSettings = () => {
 		],
 		properties: [
 			{
-				accountId: '12345678',
+				accountID: '12345678',
 				created: '2016-12-06T14:48:54.188Z',
 				dataRetentionResetOnNewActivity: true,
 				dataRetentionTtl: 'MONTHS_26',
 				defaultProfileId: '12345678',
 				id: 'UA-12345678-3',
 				industryVertical: 'INTERNET_AND_TELECOM',
-				internalWebPropertyId: '12345678',
+				internalWebPropertyID: '12345678',
 				kind: 'analytics#webproperty',
 				level: 'STANDARD',
 				name: 'testwebsite.com',
@@ -81,7 +87,7 @@ const setupSettings = () => {
 				selfLink: 'https://www.googleapis.com/analytics/v3/management/accounts/12345678/webproperties/UA-12345678-3',
 				starred: null,
 				updated: '2016-12-06T14:53:41.965Z',
-				websiteUrl: 'https://www.testwebsite.com',
+				websiteURL: 'https://www.testwebsite.com',
 				permissions: {
 					effective: [
 						'READ_AND_ANALYZE',
@@ -103,7 +109,7 @@ const setupSettings = () => {
 		],
 		profiles: [
 			{
-				accountId: '12345678',
+				accountID: '12345678',
 				botFilteringEnabled: false,
 				created: '2016-12-06T14:48:54.188Z',
 				currency: 'USD',
@@ -112,7 +118,7 @@ const setupSettings = () => {
 				enhancedECommerceTracking: null,
 				excludeQueryParameters: null,
 				id: '12345678',
-				internalWebPropertyId: '12345678',
+				internalWebPropertyID: '12345678',
 				kind: 'analytics#profile',
 				name: 'All Web Site Data',
 				selfLink: 'https://www.googleapis.com/analytics/v3/management/accounts/12345678/webproperties/UA-12345678-3/profiles/12345678',
@@ -124,8 +130,8 @@ const setupSettings = () => {
 				timezone: 'America/Los_Angeles',
 				type: 'WEB',
 				updated: '2019-01-25T20:15:27.426Z',
-				webPropertyId: 'UA-12345678-3',
-				websiteUrl: 'https://www.testwebsite.com',
+				webPropertyID: 'UA-12345678-3',
+				websiteURL: 'https://www.testwebsite.com',
 				permissions: {
 					effective: [
 						'READ_AND_ANALYZE',
@@ -184,12 +190,12 @@ storiesOf( 'Settings', module )
 		// Load the datacache with data.
 		setTimeout( () => {
 			setupSettings();
-			wp.hooks.addFilter( 'googlesitekit.ModuleSettingsDetails-analytics',
+			addFilter( 'googlesitekit.ModuleSettingsDetails-analytics',
 				'googlesitekit.AnalyticsModuleSettingsDetails',
 				fillFilterWithComponent( AnalyticsSetup, {
 					onSettingsPage: true,
 				} ) );
-			wp.hooks.addFilter( 'googlesitekit.ModuleSettingsDetails-search-console',
+			addFilter( 'googlesitekit.ModuleSettingsDetails-search-console',
 				'googlesitekit.SearchConsoleModuleSettingsDetails',
 				fillFilterWithComponent( SearchConsoleSettingStatus, {
 					onSettingsPage: true,
@@ -213,12 +219,12 @@ storiesOf( 'Settings', module )
 		// Load the datacache with data.
 		setTimeout( () => {
 			setupSettings();
-			wp.hooks.addFilter( 'googlesitekit.ModuleSettingsDetails-analytics',
+			addFilter( 'googlesitekit.ModuleSettingsDetails-analytics',
 				'googlesitekit.AnalyticsModuleSettingsDetails',
 				fillFilterWithComponent( AnalyticsSetup, {
 					onSettingsPage: true,
 				} ) );
-			wp.hooks.addFilter( 'googlesitekit.ModuleSettingsDetails-search-console',
+			addFilter( 'googlesitekit.ModuleSettingsDetails-search-console',
 				'googlesitekit.SearchConsoleModuleSettingsDetails',
 				fillFilterWithComponent( SearchConsoleSettingStatus, {
 					onSettingsPage: true,

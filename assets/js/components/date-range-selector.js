@@ -3,16 +3,19 @@
  */
 import { Select } from 'SiteKitCore/material-components';
 
-const { __ } = wp.i18n;
-const { Component } = wp.element;
-const {
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
+import {
 	applyFilters,
 	addAction,
 	removeAction,
 	removeFilter,
 	addFilter,
 	doAction,
-} = wp.hooks;
+} from '@wordpress/hooks';
 
 class DateRangeSelector extends Component {
 	constructor( props ) {

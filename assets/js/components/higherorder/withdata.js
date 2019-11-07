@@ -19,17 +19,17 @@
 /**
  * External dependencies
  */
+import { each } from 'lodash';
 import getNoDataComponent from 'GoogleComponents/notifications/nodata';
 import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
 import getSetupIncompleteComponent from 'GoogleComponents/notifications/setup-incomplete';
 
-const {
-	addFilter,
-	addAction,
-} = wp.hooks;
-const { each, isArray } = lodash;
-const { Component } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { addFilter, addAction } from '@wordpress/hooks';
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * A Higher order Component that provides data functionality to Components.
@@ -192,7 +192,7 @@ const withData = (
 			// Resolve all selectedData.
 			each( selectData, ( data ) => {
 				// Handle single contexts, or arrays of contexts.
-				if ( isArray( data.context ) ) {
+				if ( Array.isArray( data.context ) ) {
 					each( data.context, ( acontext ) => {
 						/**
 						 * Request data for the context.

@@ -20,7 +20,10 @@
  * Internal dependencies
  */
 import DashboardDetailsModule from './dashboard-details-module';
-const { Component } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
 
 class DashboardDetailsModules extends Component {
 	render() {

@@ -16,8 +16,11 @@
  * limitations under the License.
  */
 
-const { withFilters } = wp.components;
-const { Component, Fragment } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { withFilters } from '@wordpress/components';
+import { Component, Fragment } from '@wordpress/element';
 
 class AdminbarModules extends Component {
 	render() {

@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import { map } from 'lodash';
 import withData from 'GoogleComponents/higherorder/withdata';
 import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds } from 'GoogleUtil';
@@ -28,13 +29,15 @@ import Layout from 'GoogleComponents/layout/layout';
 import CTA from 'GoogleComponents/notifications/cta';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import { analyticsAdsenseReportDataDefaults } from '../util';
-
-const { __ } = wp.i18n;
-const { map } = lodash;
-const { Component } = wp.element;
 
 class AdSenseDashboardWidgetTopPagesTableSmall extends Component {
 	static renderLayout( component ) {
@@ -68,6 +71,7 @@ class AdSenseDashboardWidgetTopPagesTableSmall extends Component {
 			{
 				title: __( 'Top Earning Pages', 'google-site-kit' ),
 				tooltip: __( 'Top Earning Pages', 'google-site-kit' ),
+				primary: true,
 			},
 			{
 				title: __( 'Revenue', 'google-site-kit' ),

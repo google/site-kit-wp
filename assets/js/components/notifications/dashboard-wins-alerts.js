@@ -21,14 +21,15 @@
  */
 import Notification from 'GoogleComponents/notifications/notification';
 import { winsNotificationsToRequest, getWinsNotifications } from 'GoogleComponents/notifications/util';
+import { each } from 'lodash';
 
-const { Component, Fragment } = wp.element;
-const { each } = lodash;
-const { __ } = wp.i18n;
-const {
-	addAction,
-	removeAction,
-} = wp.hooks;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+import { addAction, removeAction } from '@wordpress/hooks';
+
 class DashboardWinsAlerts extends Component {
 	constructor( props ) {
 		super( props );
@@ -82,7 +83,7 @@ class DashboardWinsAlerts extends Component {
 						blockData={ notification.blockData || [] }
 						winImage={ notification.winImage || '' }
 						format={ notification.format || 'small' }
-						learnMoreUrl={ notification.learnMoreUrl || '' }
+						learnMoreURL={ notification.learnMoreURL || '' }
 						learnMoreDescription={ notification.learnMoreDescription || '' }
 						learnMoreLabel={ notification.learnMoreLabel || '' }
 						ctaLink={ notification.ctaLink || '' }

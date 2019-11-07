@@ -20,6 +20,7 @@
  * External dependencies
  */
 import withData from 'GoogleComponents/higherorder/withdata';
+import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
 import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds } from 'GoogleUtil';
 import {
@@ -35,8 +36,15 @@ import {
 	PageSpeedReportScoreGauge,
 } from './util';
 
-const { Component } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+const isZeroData = ( data ) => {
+	return 0 === data.categories.performance.score;
+};
 
 class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
 	componentDidMount() {
@@ -55,6 +63,14 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
 		// Waiting for withData resolution.
 		if ( ! data || data.error ) {
 			return null;
+		}
+
+		if ( isZeroData( data ) ) {
+			return getDataErrorComponent(
+				__( 'PageSpeed Insights', 'google-site-kit' ),
+				__( 'An unknown error occurred while trying to fetch PageSpeed Insights data. Please try again later.', 'google-site-kit' ),
+				true
+			);
 		}
 
 		const headers = [];
