@@ -1,19 +1,12 @@
 /**
  * WordPress dependencies
  */
-import { activatePlugin, deactivatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { deactivatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
  */
-import {
-	deactivateUtilityPlugins,
-	resetSiteKit,
-	setSearchConsoleProperty,
-	useRequestInterception,
-	setAuthToken,
-	setSiteVerification,
-} from '../utils';
+import { resetSiteKit } from '../utils';
 
 describe( 'Site Kit set up flow for the first time', () => {
 	afterEach( async () => {
