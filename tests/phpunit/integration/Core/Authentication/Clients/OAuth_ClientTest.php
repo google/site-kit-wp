@@ -30,6 +30,7 @@ class OAuth_ClientTest extends TestCase {
 	}
 
 	public function test_refresh_token() {
+		$this->fake_authentication();
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
