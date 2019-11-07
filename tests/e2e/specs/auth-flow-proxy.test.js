@@ -21,6 +21,7 @@ describe( 'Site Kit set up flow for the first time', () => {
 
 		await expect( page ).toMatchElement( '.googlesitekit-setup__title', { text: 'The Site Kit plugin is active but requires setup' } );
 		await expect( page ).toMatchElement( '.googlesitekit-start-setup', { text: 'Start setup' } );
+		await expect( page ).toMatchElement( '.googlesitekit-start-setup', { href: /^https:\/\/sitekit.withgoogle.com\/site-management\/setup\/\?/i } );
 	} );
 } );
 
