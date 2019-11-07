@@ -360,7 +360,7 @@ final class Optimize extends Module {
 	protected function setup_info() {
 		return array(
 			'slug'        => 'optimize',
-			'name'        => __( 'Optimize', 'google-site-kit' ),
+			'name'        => _x( 'Optimize', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Create free A/B tests that help you drive metric-based design solutions to your site.', 'google-site-kit' ),
 			'cta'         => __( 'Increase your CTR.', 'google-site-kit' ),
 			'order'       => 5,

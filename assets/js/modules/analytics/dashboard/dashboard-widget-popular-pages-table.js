@@ -30,7 +30,7 @@ import { map } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 
 /**
@@ -49,7 +49,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 				<Layout
 					className="googlesitekit-popular-content"
 					footer
-					footerCtaLabel={ __( 'Analytics', 'google-site-kit' ) }
+					footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 					footerCtaLink={ googlesitekit.modules.analytics.homepage }
 					fill
 				>

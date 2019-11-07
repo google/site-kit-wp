@@ -36,7 +36,7 @@ import { isEmpty } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 
 /**
@@ -127,7 +127,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 						change={ totalUsersChange }
 						changeDataUnit="%"
 						source={ {
-							name: __( 'Analytics', 'google-site-kit' ),
+							name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
 							link: href,
 						} }
 						sparkline={
@@ -163,7 +163,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 								changeDataUnit="%"
 								reverseArrowDirection
 								source={ {
-									name: __( 'Analytics', 'google-site-kit' ),
+									name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
 									link: href,
 								} }
 								sparkline={
@@ -178,7 +178,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 						) }
 					{ ! permaLink && goals && isEmpty( goals.items ) && (
 						<CTA
-							title={ __( 'Use goals to measure success. ', 'google-site-kit' ) }
+							title={ __( 'Use goals to measure success.', 'google-site-kit' ) }
 							description={ __( 'Goals measure how well your site or app fulfills your target objectives.', 'google-site-kit' ) }
 							ctaLink={ goalURL }
 							ctaLabel={ __( 'Create a new goal', 'google-site-kit' ) }
@@ -193,7 +193,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 							change={ goalCompletionsChange }
 							changeDataUnit="%"
 							source={ {
-								name: __( 'Analytics', 'google-site-kit' ),
+								name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
 								link: href,
 							} }
 							sparkline={
