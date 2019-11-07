@@ -915,8 +915,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 								return new WP_Error( $e->getCode(), $e->getMessage() );
 							}
 							$client->setDefer( $orig_defer );
-							$property_id              = $property->id;
-							$internal_web_property_id = $property->internalWebPropertyID; // phpcs:ignore WordPress.NamingConventions.ValidVariableName
+							/* @var Google_Service_Analytics_Webproperty $property Property instance. */
+							$property_id              = $property->getId();
+							$internal_web_property_id = $property->getInternalWebPropertyId();
 						} else {
 							$is_new_property          = false;
 							$property_id              = $data['propertyID'];
