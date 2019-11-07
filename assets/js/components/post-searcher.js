@@ -39,52 +39,6 @@ import {
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
-// Shim window.wp.sanitize for WordPress < 4.9 when it was introduced.
-// @todo remove this when the plugin drops support for WordPress < 4.9.
-if ( ! window.wp.sanitize ) {
-	// Code directly from core.
-	window.wp.sanitize = {
-
-		/**
-		 * Strip HTML tags.
-		 *
-		 * @param {string} text Text to have the HTML tags striped out of.
-		 *
-		 * @return  Stripped text.
-		 */
-		stripTags( text ) {
-			text = text || '';
-
-			return text
-				.replace( /<!--[\s\S]*?(-->|$)/g, '' )
-				.replace( /<(script|style)[^>]*>[\s\S]*?(<\/\1>|$)/ig, '' )
-				.replace( /<\/?[a-z][\s\S]*?(>|$)/ig, '' );
-		},
-
-		/**
-		 * Strip HTML tags and convert HTML entities.
-		 *
-		 * @param {string} text Text to strip tags and convert HTML entities.
-		 *
-		 * @return Sanitized text. False on failure.
-		 */
-		stripTagsAndEncodeText( text ) {
-			const textarea = document.createElement( 'textarea' );
-			let _text = window.wp.sanitize.stripTags( text );
-
-			try {
-				textarea.innerHTML = _text;
-				_text = window.wp.sanitize.stripTags( textarea.value );
-			} catch ( er ) {
-
-				// No-op.
-			}
-
-			return _text;
-		},
-	};
-}
-
 class PostSearcher extends Component {
 	constructor( props ) {
 		super( props );

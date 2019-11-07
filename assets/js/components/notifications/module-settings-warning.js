@@ -4,9 +4,9 @@
 import { Component } from '@wordpress/element';
 
 /**
- * WordPress dependencies.
+ * External dependencies
  */
-import { withFilters } from '@wordpress/components';
+import withFilters from 'GoogleComponents/higherorder/with-filters';
 
 /**
  * A single module. Keeps track of its own active state and settings.

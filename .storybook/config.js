@@ -8,6 +8,7 @@ import { addDecorator, configure } from '@storybook/react';
 /**
  * WordPress dependencies
  */
+import { createHigherOrderComponent } from '@wordpress/compose';
 import {
 	Component,
 	createRef,
@@ -15,9 +16,6 @@ import {
 	createElement,
 	createPortal,
 } from '@wordpress/element';
-import {
-	withFilters,
-} from '@wordpress/components';
 import { __, sprintf, setLocaleData } from '@wordpress/i18n';
 import {
 	getQueryString,
@@ -51,13 +49,14 @@ const googlesitekit = dashboardData;
 // Setup.
 const wp = {};
 wp.element = wp.element || {};
-wp.components = wp.components || {};
 wp.i18n = wp.i18n || {};
 wp.hooks = wp.hooks || {};
 wp.url = {
 	getQueryString,
 	addQueryArgs,
 };
+wp.compose = {};
+wp.compose.createHigherOrderComponent = createHigherOrderComponent;
 wp.hooks.addFilter = addFilter;
 wp.hooks.removeFilter = removeFilter;
 wp.hooks.addAction = addAction;
@@ -70,7 +69,6 @@ wp.element.createRef = createRef;
 wp.element.Fragment = Fragment;
 wp.element.createElement = createElement;
 wp.element.createPortal = createPortal;
-wp.components.withFilters = withFilters;
 wp.i18n.__ = __ || {};
 wp.i18n.setLocaleData = setLocaleData || {};
 wp.i18n.sprintf = sprintf || {};
@@ -96,11 +94,6 @@ window.wp.apiFetch = ( vars ) => {
 			};
 		},
 	};
-};
-wp.sanitize = {
-	stripTags( s ) {
-		return s;
-	},
 };
 
 // Global Decorator.

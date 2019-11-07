@@ -34,7 +34,7 @@ import {
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 import { addFilter, removeFilter } from '@wordpress/hooks';
 
@@ -346,7 +346,7 @@ class OptimizeSetup extends Component {
 									googlesitekit-heading-3
 									googlesitekit-setup-module__title
 								">
-							{ __( 'Optimize', 'google-site-kit' ) }
+							{ _x( 'Optimize', 'Service name', 'google-site-kit' ) }
 						</h2>
 					</Fragment>
 				}

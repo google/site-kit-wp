@@ -1215,7 +1215,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	protected function setup_info() {
 		return array(
 			'slug'        => 'analytics',
-			'name'        => __( 'Analytics', 'google-site-kit' ),
+			'name'        => _x( 'Analytics', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.', 'google-site-kit' ),
 			'cta'         => __( 'Get to know your customers.', 'google-site-kit' ),
 			'order'       => 3,

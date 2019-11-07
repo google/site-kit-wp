@@ -21,6 +21,13 @@
  */
 import PropTypes from 'prop-types';
 import SvgIcon from 'GoogleUtil/svg-icon';
+
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
+
 /**
  * Internal dependencies
  */
@@ -32,17 +39,11 @@ import {
 	getExistingTag,
 } from 'GoogleUtil';
 
-/**
- * WordPress dependencies
- */
-import { Component, Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
-
 class AdSenseModuleStatus extends Component {
 	constructor( props ) {
 		super( props );
 		this.state = {
-			loadStatus: __( 'Loading…', 'google-site-kit' ),
+			loadStatus: __( 'Loading...', 'google-site-kit' ),
 			existingTag: false,
 		};
 		this.updateLoadStatus = this.updateLoadStatus.bind( this );
@@ -147,7 +148,7 @@ class AdSenseModuleStatus extends Component {
 							googlesitekit-heading-3
 							googlesitekit-setup-module__title
 						">
-						{ __( 'AdSense', 'google-site-kit' ) }
+						{ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
 					</h2>
 				</div>
 				<div className="googlesitekit-setup-module__step">

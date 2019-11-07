@@ -23,6 +23,13 @@ import GoogleChart from 'GoogleComponents/google-chart';
 import { getSiteKitAdminURL, getTimeInSeconds } from 'GoogleUtil';
 import withData from 'GoogleComponents/higherorder/withdata';
 import { TYPE_MODULES } from 'GoogleComponents/data';
+
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
+
 /**
  * Internal dependencies
  */
@@ -30,12 +37,6 @@ import PropTypes from 'prop-types';
 import Link from 'GoogleComponents/link';
 import PreviewBlock from 'GoogleComponents/preview-block';
 import { extractAnalyticsDataForTrafficChart, getAnalyticsErrorMessageFromData, trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../util';
-
-/**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 class DashboardAcquisitionPieChart extends Component {
 	render() {
@@ -86,13 +87,17 @@ class DashboardAcquisitionPieChart extends Component {
 				/>
 				{ source &&
 					<div className="googlesitekit-chart__source">
-						{ __( 'Source: ', 'google-site-kit' ) }
-						<Link
-							href={ getSiteKitAdminURL( 'googlesitekit-module-analytics' ) }
-							inherit
-						>
-							{ __( 'Analytics', 'google-site-kit' ) }
-						</Link>
+						{ [
+							__( 'Source:', 'google-site-kit' ),
+							' ',
+							<Link
+								key="link"
+								href={ getSiteKitAdminURL( 'googlesitekit-module-analytics' ) }
+								inherit
+							>
+								{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+							</Link>,
+						] }
 					</div>
 				}
 			</div>
