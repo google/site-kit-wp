@@ -435,12 +435,12 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	protected function setup_info() {
 		return array(
 			'slug'         => 'search-console',
-			'name'         => __( 'Search Console', 'google-site-kit' ),
+			'name'         => _x( 'Search Console', 'Service name', 'google-site-kit' ),
 			'description'  => __( 'Google Search Console and helps you understand how Google views your site and optimize its performance in search results.', 'google-site-kit' ),
 			'cta'          => __( 'Connect your site to Google Search Console.', 'google-site-kit' ),
 			'order'        => 1,
 			'homepage'     => __( 'https://search.google.com/search-console', 'google-site-kit' ),
-			'learn_more'   => __( 'https://www.google.com/webmasters/tools/home', 'google-site-kit' ),
+			'learn_more'   => __( 'https://search.google.com/search-console/about', 'google-site-kit' ),
 			'force_active' => true,
 		);
 	}
