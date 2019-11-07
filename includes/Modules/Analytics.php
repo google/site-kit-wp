@@ -893,7 +893,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return function() use ( $data ) {
 						$property_id              = null;
 						$internal_web_property_id = null;
-						$property_name            = '';
+
 						if ( '0' === $data['propertyID'] ) {
 							$is_new_property = true;
 							$client          = $this->get_client();
