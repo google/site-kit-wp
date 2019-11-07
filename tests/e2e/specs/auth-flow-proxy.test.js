@@ -1,20 +1,10 @@
 /**
  * WordPress dependencies
  */
-import { deactivatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
-
-/**
- * Internal dependencies
- */
-import { resetSiteKit } from '../utils';
+import { visitAdminPage } from '@wordpress/e2e-test-utils';
 
 describe( 'Site Kit set up flow for the first time', () => {
-	afterEach( async () => {
-		await resetSiteKit();
-	} );
-
 	it( 'renders a splash page for proxy set up when no GCP credentials are provided', async () => {
-		await deactivatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 
 		await page.waitForSelector( '.googlesitekit-start-setup' );
