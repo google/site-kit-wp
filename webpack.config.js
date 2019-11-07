@@ -45,16 +45,12 @@ function camelCaseDash( string ) {
 }
 
 const externalPackages = [
-	'a11y',
 	'api-fetch',
-	'components',
 	'compose',
 	'dom-ready',
-	'dom',
 	'element',
 	'hooks',
 	'i18n',
-	'keycodes',
 	'url',
 ];
 

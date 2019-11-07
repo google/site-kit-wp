@@ -627,12 +627,6 @@ final class Assets {
 
 		return array(
 			new Script(
-				'wp-sanitize',
-				array(
-					'fallback' => false,
-				)
-			),
-			new Script(
 				'lodash',
 				array(
 					'src'           => $base_url . 'vendor/lodash' . $suffix . '.js',
@@ -719,14 +713,6 @@ final class Assets {
 				)
 			),
 			new Script(
-				'wp-a11y',
-				array(
-					'src'      => $base_url . 'js/externals/a11y.js',
-					'version'  => '2.2.0',
-					'fallback' => true,
-				)
-			),
-			new Script(
 				'wp-i18n',
 				array(
 					'src'      => $base_url . 'js/externals/i18n.js',
@@ -773,14 +759,6 @@ final class Assets {
 				array(
 					'src'      => $base_url . 'js/externals/compose.js',
 					'version'  => '3.2.0',
-					'fallback' => true,
-				)
-			),
-			new Script(
-				'wp-components',
-				array(
-					'src'      => $base_url . 'js/externals/components.js',
-					'version'  => '7.2.0',
 					'fallback' => true,
 				)
 			),
