@@ -511,7 +511,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 							array( 'accountID' => $data['accountID'] )
 						);
 
-						$response      = $option;
 						$container_key = $this->context_map[ $usage_context ];
 						$container_id  = $data[ $container_key ];
 
@@ -524,13 +523,12 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 								return $create_container_response;
 							}
 
-							$option[ $container_key ]       = $create_container_response;
-							$response['createdContainerID'] = $container_id;
+							$option[ $container_key ] = $create_container_response;
 						}
 
 						$this->options->set( self::OPTION, $option );
 
-						return $response;
+						return $option;
 					};
 			}
 		}
