@@ -18,6 +18,7 @@ use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
+use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListContainersResponse;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
@@ -571,10 +572,19 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 
 					return array_merge( $response, compact( 'containers' ) );
 				case 'containers':
-					$account_id = $data['accountID'];
-					$response   = $response->getContainer();
+					/* @var Google_Service_TagManager_ListContainersResponse $response Response object. */
+					$account_id    = $data['accountID'];
+					$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
+					/* @var Google_Service_TagManager_Container[] $containers Filtered containers. */
+					$containers = array_filter(
+						(array) $response->getContainer(),
+						function ( Google_Service_TagManager_Container $container ) use ( $usage_context ) {
+							return $usage_context === $container->getUsageContext();
+						}
+					);
 
-					if ( empty( $response ) && ! empty( $account_id ) ) {
+					if ( ! $containers && $account_id ) {
+
 						// If empty containers, attempt to create a new container.
 						$new_container = $this->create_container( $account_id );
 						if ( is_wp_error( $new_container ) ) {
@@ -582,7 +592,8 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						}
 						return $this->get_data( 'containers', array( 'accountID' => $account_id ) );
 					}
-					return $response;
+
+					return $containers;
 			}
 		}
 
