@@ -588,8 +588,9 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						$new_container = $this->create_container( $account_id, $usage_context );
 
 						if ( is_wp_error( $new_container ) ) {
-							return new WP_Error( 'google_tagmanager_container_empty', __( 'No Google Tag Manager Containers Found.', 'google-site-kit' ), array( 'status' => 500 ) );
+							return $new_container;
 						}
+
 						return $this->get_data( 'containers', array( 'accountID' => $account_id ) );
 					}
 
