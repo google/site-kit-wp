@@ -476,22 +476,27 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 					}
-					if ( ! isset( $data['containerID'] ) ) {
+
+					$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
+
+					if ( self::USAGE_CONTEXT_WEB === $usage_context && ! isset( $data['containerID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ), array( 'status' => 400 ) );
 					}
-					return function() use ( $data ) {
+					if ( self::USAGE_CONTEXT_AMP === $usage_context && ! isset( $data['ampContainerID'] ) ) {
+						/* translators: %s: Missing parameter name */
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampContainerID' ), array( 'status' => 400 ) );
+					}
+
+					return function() use ( $data, $usage_context ) {
 						$option = array_merge(
 							$this->options->get( self::OPTION ),
-							array(
-								'accountID' => $data['accountID'],
-							)
+							array( 'accountID' => $data['accountID'] )
 						);
 
 						$response      = $option;
-						$container_id  = $data['containerID'];
-						$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
 						$container_key = $this->context_map[ $usage_context ];
+						$container_id  = $data[ $container_key ];
 
 						$option[ $container_key ] = $container_id;
 
