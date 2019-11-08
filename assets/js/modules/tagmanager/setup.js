@@ -416,16 +416,16 @@ class TagmanagerSetup extends Component {
 							onEnhancedChange={ this.handleContainerChange }
 							outlined
 						>
-							{ containers.map( ( container ) =>
+							{ containers.concat( {
+								name: __( 'Set up a new container', 'google-site-kit' ),
+								publicId: 0,
+							} ).map( ( { name, publicId }, i ) =>
 								<Option
-									key={ container.containerId /* Capitalization rule exception: `containerId` is a property of an API returned value. */ }
-									value={ container.publicId /* Capitalization rule exception: `publicId` is a property of an API returned value. */ }>
-									{
-										0 === container.publicId ? // Capitalization rule exception: `publicId` is a property of an API returned value.
-											__( 'Set up a new container', 'google-site-kit' ) :
-											container.publicId /* Capitalization rule exception: `publicId` is a property of an API returned value. */
-									}
-								</Option> ) }
+									key={ i }
+									value={ publicId /* Capitalization rule exception: `publicId` is a property of an API returned value. */ }
+									children={ name }
+								/>
+							) }
 						</Select>
 					) }
 				</div>
