@@ -2,18 +2,21 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
+
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { doAction } from '@wordpress/hooks';
+import { __, _x } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
 import Layout from 'GoogleComponents/layout/layout';
 import AnalyticsDashboardWidgetOverview from 'GoogleModules/analytics/dashboard/dashboard-widget-overview';
 import AnalyticsDashboardWidgetSiteStats from 'GoogleModules/analytics/dashboard/dashboard-widget-sitestats';
 import DashboardAcquisitionPieChart from 'GoogleModules/analytics/dashboard/dashboard-widget-acquisition-piechart';
 import AnalyticsDashboardWidgetTopAcquisitionSources from 'GoogleModules/analytics/dashboard/dashboard-widget-top-acquisition-sources-table';
-/**
- * Internal dependencies
- */
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 
 storiesOf( 'Analytics Module', module )
@@ -42,7 +45,7 @@ storiesOf( 'Analytics Module', module )
 
 		// Load the datacache with data.
 		setTimeout( () => {
-			wp.hooks.doAction(
+			doAction(
 				'googlesitekit.moduleLoaded',
 				'Single'
 			);
@@ -73,7 +76,7 @@ storiesOf( 'Analytics Module', module )
 
 		// Load the datacache with data.
 		setTimeout( () => {
-			wp.hooks.doAction(
+			doAction(
 				'googlesitekit.moduleLoaded',
 				'Single'
 			);
@@ -85,7 +88,7 @@ storiesOf( 'Analytics Module', module )
 				title={ __( 'Top acquisition sources over the last 28 days', 'google-site-kit' ) }
 				headerCtaLink="https://analytics.google.com"
 				headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-				footerCtaLabel={ __( 'Analytics', 'google-site-kit' ) }
+				footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 				footerCtaLink="https://analytics.google.com"
 			>
 				<div className="mdc-layout-grid">

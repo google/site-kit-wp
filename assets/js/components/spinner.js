@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-const { Component } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
 
 /**
  * A single module. Keeps track of its own active state and settings.

@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 const firstPostWin = ( id ) => {
 	const showNotification = 1 === parseInt( googlesitekit.admin.newSitePosts, 10 );

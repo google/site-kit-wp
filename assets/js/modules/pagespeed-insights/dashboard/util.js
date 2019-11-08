@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 /**
  * Retrieve the score category slug based on the given score.

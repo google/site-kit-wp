@@ -25,14 +25,18 @@ import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
 import Layout from 'GoogleComponents/layout/layout';
+import { map } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __, _x } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
+
 /**
  * Internal dependencies
  */
 import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../util';
-
-const { __ } = wp.i18n;
-const { map } = lodash;
-const { Component } = wp.element;
 
 class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 	static renderLayout( component ) {
@@ -45,7 +49,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 				<Layout
 					className="googlesitekit-popular-content"
 					footer
-					footerCtaLabel={ __( 'Analytics', 'google-site-kit' ) }
+					footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 					footerCtaLink={ googlesitekit.modules.analytics.homepage }
 					fill
 				>
@@ -66,6 +70,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 		const headers = [
 			{
 				title: __( 'Most popular content', 'google-site-kit' ),
+				primary: true,
 			},
 			{
 				title: __( 'Views', 'google-site-kit' ),

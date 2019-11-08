@@ -34,12 +34,12 @@ import {
 	toggleConfirmModuleSettings,
 } from 'GoogleUtil';
 
-const { __, sprintf } = wp.i18n;
-const { Component, Fragment } = wp.element;
-const {
-	removeFilter,
-	addFilter,
-} = wp.hooks;
+/**
+ * WordPress dependencies
+ */
+import { __, _x, sprintf } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
+import { addFilter, removeFilter } from '@wordpress/hooks';
 
 class AnalyticsSetup extends Component {
 	constructor( props ) {
@@ -85,7 +85,16 @@ class AnalyticsSetup extends Component {
 	}
 
 	async componentDidMount() {
+		const {
+			isOpen,
+			onSettingsPage,
+		} = this.props;
 		this._isMounted = true;
+
+		// If on settings page, only run the rest if the module is "open".
+		if ( onSettingsPage && ! isOpen ) {
+			return;
+		}
 
 		const existingTagProperty = await getExistingTag( 'analytics' );
 
@@ -932,7 +941,7 @@ class AnalyticsSetup extends Component {
 								googlesitekit-heading-3
 								googlesitekit-setup-module__title
 							">
-								{ __( 'Analytics', 'google-site-kit' ) }
+								{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 							</h2>
 						</Fragment>
 				}

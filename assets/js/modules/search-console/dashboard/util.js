@@ -20,8 +20,8 @@
  * External dependencies
  */
 import { changeToPercent, readableLargeNumber } from 'GoogleUtil';
+import { each } from 'lodash';
 
-const { each } = lodash;
 let searchConsoleData = false;
 
 function reduceSearchConsoleData( rows ) {

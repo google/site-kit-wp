@@ -27,8 +27,11 @@ import DashboardAdSenseTopEarningPagesSmall from './dashboard-adsense-top-pages-
 import AdSenseDashboardMainSummary from './dashboard-widget-main-summary';
 import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
 
-const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class DashboardEarnings extends Component {
 	render() {

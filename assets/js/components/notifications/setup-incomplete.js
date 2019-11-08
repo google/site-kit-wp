@@ -24,7 +24,10 @@ import CTA from 'GoogleComponents/notifications/cta';
 import ctaWrapper from 'GoogleComponents/notifications/cta-wrapper';
 import { getReAuthURL } from 'GoogleUtil';
 
-const { __, sprintf } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Creates a CTA component when modue needs to be configured. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.

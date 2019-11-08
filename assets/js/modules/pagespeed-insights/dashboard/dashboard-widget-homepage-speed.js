@@ -17,22 +17,26 @@
  */
 
 /**
+ * External dependencies
+ */
+import SourceLink from 'GoogleComponents/source-link';
+import ProgressBar from 'GoogleComponents/progress-bar';
+import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
+
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __, _x, sprintf } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import {
 	PageSpeedInsightsDashboardWidgetHomepageSpeedDesktop,
 	PageSpeedInsightsDashboardWidgetHomepageSpeedMobile,
 } from './dashboard-widget-homepage-speed-column';
-/**
- * External dependencies
- */
-import SourceLink from 'GoogleComponents/source-link';
 import { PageSpeedReportScale } from './util';
-import ProgressBar from 'GoogleComponents/progress-bar';
-import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
-
-const { Component, Fragment } = wp.element;
-const { __, sprintf } = wp.i18n;
 
 class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 	constructor( props ) {
@@ -64,7 +68,7 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 		} = this.state;
 
 		const source = {
-			name: __( 'PageSpeed Insights', 'google-site-kit' ),
+			name: _x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ),
 			link: sprintf( 'https://developers.google.com/speed/pagespeed/insights/?url=%s', googlesitekit.admin.siteURL ),
 		};
 
@@ -76,7 +80,7 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 				">
 					{
 						getDataErrorComponent(
-							__( 'PageSpeed Insights', 'google-site-kit' ),
+							_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ),
 							error,
 							true,
 							true,

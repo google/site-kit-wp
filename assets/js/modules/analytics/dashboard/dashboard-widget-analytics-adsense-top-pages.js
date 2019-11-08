@@ -25,15 +25,18 @@ import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import Layout from 'GoogleComponents/layout/layout';
 import PreviewTable from 'GoogleComponents/preview-table';
+import { map } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { analyticsAdsenseReportDataDefaults } from '../util';
-
-const { __ } = wp.i18n;
-const { map } = lodash;
-const { Component } = wp.element;
 
 class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
 	static renderLayout( component ) {
@@ -61,6 +64,7 @@ class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
 			{
 				title: __( 'Page Title', 'google-site-kit' ),
 				tooltip: __( 'Page Title', 'google-site-kit' ),
+				primary: true,
 			},
 			{
 				title: __( 'Earnings', 'google-site-kit' ),

@@ -17,21 +17,25 @@
  */
 
 /**
- * Internal dependencies
- */
-import SettingsModule from './settings-module';
-/**
  * External dependencies
  */
 import Layout from 'GoogleComponents/layout/layout';
 import Notification from 'GoogleComponents/notifications/notification';
-import SettingsOverlay from './settings-overlay';
 import { clearAppLocalStorage } from 'GoogleUtil/index';
+import { map, filter, sortBy } from 'lodash';
 
-const { __ } = wp.i18n;
-const { map, filter, sortBy } = lodash;
-const { Component, Fragment } = wp.element;
-const { applyFilters } = wp.hooks;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
+import { applyFilters } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import SettingsModule from './settings-module';
+import SettingsOverlay from './settings-overlay';
 
 class SettingsModules extends Component {
 	constructor( props ) {
@@ -67,7 +71,6 @@ class SettingsModules extends Component {
 		this.setState( ( prevState ) => {
 			return {
 				openModules: {
-					...prevState.openModules,
 					[ module ]: ! prevState.openModules[ module ],
 				},
 			};

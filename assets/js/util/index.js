@@ -18,18 +18,7 @@
 /**
  * External dependencies
  */
-import data, { TYPE_CORE } from 'GoogleComponents/data';
-import SvgIcon from 'GoogleUtil/svg-icon';
-
-export * from './storage';
-
-const { apiFetch } = wp;
-const {
-	addFilter,
-	applyFilters,
-} = wp.hooks;
-
-const {
+import {
 	map,
 	isNull,
 	isUndefined,
@@ -37,15 +26,28 @@ const {
 	deburr,
 	toLower,
 	trim,
-} = lodash;
+	trimEnd,
+} from 'lodash';
+import data, { TYPE_CORE } from 'GoogleComponents/data';
+import SvgIcon from 'GoogleUtil/svg-icon';
+import React from 'react';
 
-const {
+/**
+ * WordPress dependencies
+ */
+import apiFetch from '@wordpress/api-fetch';
+import {
+	addFilter,
+	applyFilters,
+} from '@wordpress/hooks';
+import {
+	__,
 	_n,
 	sprintf,
-} = wp.i18n;
+} from '@wordpress/i18n';
+import { addQueryArgs, getQueryString } from '@wordpress/url';
 
-const { addQueryArgs, getQueryString } = wp.url;
-const { __ } = wp.i18n;
+export * from './storage';
 
 /**
  * Remove a parameter from a URL string.
@@ -147,7 +149,7 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
 		return `${ currency }${ readableNumber }`;
 	}
 
-	return readableNumber;
+	return readableNumber.toString();
 };
 
 /**
@@ -297,11 +299,12 @@ const fallbackGetQueryParamater = ( name ) => {
 /**
  * Get query parameter from the current URL.
  *
- * @param {string} name Query param to search for.
- * @return {string}
+ * @param  {string} name      Query param to search for.
+ * @param  {Object} _location Global `location` variable; used for DI-testing.
+ * @return {string}           Value of the query param.
  */
-export const getQueryParameter = ( name ) => {
-	const url = new URL( location.href );
+export const getQueryParameter = ( name, _location = location ) => {
+	const url = new URL( _location.href );
 	if ( name ) {
 		if ( ! url.searchParams || ! url.searchParams.get ) {
 			return fallbackGetQueryParamater( name );
@@ -353,16 +356,18 @@ export const refreshAuthentication = async () => {
  *
  * @param {string}  slug   The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
  * @param {boolean} status The module activation status.
+ * @param {Object}  _googlesitekit googlesitekit global; can be replaced for testing.
+ * @return {string} Authentication URL
  */
-export const getReAuthURL = ( slug, status ) => {
+export const getReAuthURL = ( slug, status, _googlesitekit = googlesitekit ) => {
 	const {
 		connectURL,
 		adminRoot,
-	} = googlesitekit.admin;
+	} = _googlesitekit.admin;
 
-	const { needReauthenticate } = window.googlesitekit.setup;
+	const { needReauthenticate } = _googlesitekit.setup;
 
-	const { screenID } = googlesitekit.modules[ slug ];
+	const { screenID } = _googlesitekit.modules[ slug ];
 
 	// Special case handling for PageSpeed Insights.
 	// TODO: Refactor this out.
@@ -372,8 +377,7 @@ export const getReAuthURL = ( slug, status ) => {
 	} : {};
 
 	let redirect = addQueryArgs(
-		adminRoot,
-		{
+		adminRoot, {
 			// If the module has a submenu page, and is being activated, redirect back to the module page.
 			page: ( slug && status && screenID ) ? screenID : 'googlesitekit-dashboard',
 			slug,
@@ -443,20 +447,6 @@ export const getSiteKitAdminURL = ( page, args ) => {
 
 	args = { page, ...args };
 	return addQueryArgs( adminRoot, args );
-};
-
-/**
- * Verifies if the Front End site has been loaded in the iframe to check for tag presence.
- *
- * @return mixed Returns the iframe if it's loaded, false if not loaded.
- */
-export const isFrontendIframeLoaded = () => {
-	const iframe = document.getElementById( 'sitekit_fe_load_check' );
-	if ( iframe ) {
-		return iframe;
-	}
-
-	return false;
 };
 
 /**
@@ -563,7 +553,6 @@ export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel
 	} = googlesitekit.admin;
 
 	const { isFirstAdmin } = googlesitekit.setup;
-	const { trimEnd } = lodash;
 
 	if ( googlesitekit.admin.trackingOptin ) {
 		return gtag( 'event', eventName, {
@@ -632,7 +621,7 @@ export const getExistingTag = async ( module ) => {
  */
 export const scrapeTag = async ( url, module ) => {
 	try {
-		const html = await fetch( url ).then( ( res ) => res.text() );
+		const html = await fetch( url, { credentials: 'omit' } ).then( ( res ) => res.text() );
 		return extractTag( html, module ) || null;
 	} catch ( error ) {
 		return null;
@@ -654,39 +643,45 @@ export const extractTag = ( string, tag ) => {
 		case 'analytics':
 
 			// Detect gtag script calls.
-			reg = new RegExp( /<script [^>]*src=['|"]https:\/\/www.googletagmanager.com\/gtag\/js\?id=(.*?)['|"][^>]*><\/script>/gm );
+			reg = new RegExp( /<script [^>]*src=['|"]https:\/\/www.googletagmanager.com\/gtag\/js\?id=(UA-.*?)['|"][^>]*><\/script>/gm );
 			result = reg.exec( string );
 			result = result ? result[ 1 ] : false;
 
 			// Detect common analytics code usage.
 			if ( ! result ) {
-				reg = new RegExp( /__gaTracker\( ?['|"]create['|"], ?['|"](.*?)['|"], ?['|"]auto['|"] ?\)/gm );
+				reg = new RegExp( /<script[^>]*>[^<]+google-analytics\.com\/analytics\.js[^<]+(UA-\d+-\d+)/gm );
+				result = reg.exec( string );
+				result = result ? result[ 1 ] : false;
+			}
+
+			if ( ! result ) {
+				reg = new RegExp( /__gaTracker\( ?['|"]create['|"], ?['|"](UA-.*?)['|"], ?['|"]auto['|"] ?\)/gm );
 				result = reg.exec( string );
 				result = result ? result[ 1 ] : false;
 			}
 
 			// Detect ga create calls.
 			if ( ! result ) {
-				reg = new RegExp( /ga\( ?['|"]create['|"], ?['|"](.*?)['|"], ?['|"]auto['|"] ?\)/gm );
+				reg = new RegExp( /ga\( ?['|"]create['|"], ?['|"](UA-.*?)['|"], ?['|"]auto['|"] ?\)/gm );
 				result = reg.exec( string );
 				result = result ? result[ 1 ] : false;
 			}
 			if ( ! result ) {
-				reg = new RegExp( /_gaq.push\( ?\[ ?['|"]_setAccount['|"], ?['|"](.*?)['|"] ?] ?\)/gm );
+				reg = new RegExp( /_gaq.push\( ?\[ ?['|"]_setAccount['|"], ?['|"](UA-.*?)['|"] ?] ?\)/gm );
 				result = reg.exec( string );
 				result = result ? result[ 1 ] : false;
 			}
 
 			// Detect amp-analytics gtag.
 			if ( ! result ) {
-				reg = new RegExp( /<amp-analytics [^>]*type="gtag"[^>]*>[^<]*<script type="application\/json">[^<]*"gtag_id":\s*"([^"]+)"/gm );
+				reg = new RegExp( /<amp-analytics [^>]*type="gtag"[^>]*>[^<]*<script type="application\/json">[^<]*"gtag_id":\s*"(UA-[^"]+)"/gm );
 				result = reg.exec( string );
 				result = result ? result[ 1 ] : false;
 			}
 
 			// Detect amp-analytics googleanalytics.
 			if ( ! result ) {
-				reg = new RegExp( /<amp-analytics [^>]*type="googleanalytics"[^>]*>[^<]*<script type="application\/json">[^<]*"account":\s*"([^"]+)"/gm );
+				reg = new RegExp( /<amp-analytics [^>]*type="googleanalytics"[^>]*>[^<]*<script type="application\/json">[^<]*"account":\s*"(UA-[^"]+)"/gm );
 				result = reg.exec( string );
 				result = result ? result[ 1 ] : false;
 			}
@@ -746,9 +741,11 @@ export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) 
  * @param {Object} settingsMapping The mapping between form settings names and saved settings.
  * @param {Object} settingsState   The changed settings component state to compare with.
  * @param {Object} skipDOM         Skip DOm checks/modifications, used for testing.
+ * @param {Object}  _googlesitekit googlesitekit global; can be replaced for testing.
+ * @return {void|boolean} True if a module has been toggled.
  */
-export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false ) => {
-	const { settings, setupComplete } = googlesitekit.modules[ moduleSlug ];
+export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, _googlesitekit = googlesitekit ) => {
+	const { settings, setupComplete } = _googlesitekit.modules[ moduleSlug ];
 	const confirm = skipDOM || document.getElementById( `confirm-changes-${ moduleSlug }` );
 
 	if ( ! setupComplete || ! confirm ) {

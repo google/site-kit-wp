@@ -599,7 +599,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	protected function setup_info() {
 		return array(
 			'slug'        => 'tagmanager',
-			'name'        => __( 'Tag Manager', 'google-site-kit' ),
+			'name'        => _x( 'Tag Manager', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Tag Manager creates an easy to manage way to create tags on your site without updating code.', 'google-site-kit' ),
 			'cta'         => __( 'Tag management made simple.', 'google-site-kit' ),
 			'order'       => 6,

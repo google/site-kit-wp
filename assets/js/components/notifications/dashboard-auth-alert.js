@@ -21,7 +21,10 @@
  */
 import Notification from 'GoogleComponents/notifications/notification';
 
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 const DashboardAuthAlert = () => {
 	const { admin: { connectURL } } = googlesitekit;

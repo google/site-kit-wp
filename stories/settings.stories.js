@@ -4,6 +4,12 @@
 import { storiesOf } from '@storybook/react';
 import SettingsModules from 'GoogleComponents/settings/settings-modules';
 import Layout from 'GoogleComponents/layout/layout';
+
+/**
+ * WordPress dependencies
+ */
+import { addFilter } from '@wordpress/hooks';
+
 /**
  * Internal dependencies
  */
@@ -184,12 +190,12 @@ storiesOf( 'Settings', module )
 		// Load the datacache with data.
 		setTimeout( () => {
 			setupSettings();
-			wp.hooks.addFilter( 'googlesitekit.ModuleSettingsDetails-analytics',
+			addFilter( 'googlesitekit.ModuleSettingsDetails-analytics',
 				'googlesitekit.AnalyticsModuleSettingsDetails',
 				fillFilterWithComponent( AnalyticsSetup, {
 					onSettingsPage: true,
 				} ) );
-			wp.hooks.addFilter( 'googlesitekit.ModuleSettingsDetails-search-console',
+			addFilter( 'googlesitekit.ModuleSettingsDetails-search-console',
 				'googlesitekit.SearchConsoleModuleSettingsDetails',
 				fillFilterWithComponent( SearchConsoleSettingStatus, {
 					onSettingsPage: true,
@@ -213,12 +219,12 @@ storiesOf( 'Settings', module )
 		// Load the datacache with data.
 		setTimeout( () => {
 			setupSettings();
-			wp.hooks.addFilter( 'googlesitekit.ModuleSettingsDetails-analytics',
+			addFilter( 'googlesitekit.ModuleSettingsDetails-analytics',
 				'googlesitekit.AnalyticsModuleSettingsDetails',
 				fillFilterWithComponent( AnalyticsSetup, {
 					onSettingsPage: true,
 				} ) );
-			wp.hooks.addFilter( 'googlesitekit.ModuleSettingsDetails-search-console',
+			addFilter( 'googlesitekit.ModuleSettingsDetails-search-console',
 				'googlesitekit.SearchConsoleModuleSettingsDetails',
 				fillFilterWithComponent( SearchConsoleSettingStatus, {
 					onSettingsPage: true,

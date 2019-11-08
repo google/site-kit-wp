@@ -22,7 +22,10 @@
 import { extractSearchConsoleDashboardData } from 'GoogleModules/search-console/dashboard/util';
 import { readableLargeNumber } from 'GoogleUtil';
 
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 const publishingWin = ( data, id ) => {
 	const showNotification = 5 === parseInt( googlesitekit.admin.newSitePosts, 10 );
@@ -31,7 +34,7 @@ const publishingWin = ( data, id ) => {
 		return false;
 	}
 
-	let message = __( 'Thats out of this world.', 'google-site-kit' );
+	let message = __( 'That’s out of this world.', 'google-site-kit' );
 	let dataBlocks = [];
 
 	if ( googlesitekit.modules[ 'search-console' ] && googlesitekit.modules[ 'search-console' ].active && data ) {
@@ -61,7 +64,7 @@ const publishingWin = ( data, id ) => {
 			},
 		];
 
-		message = __( 'Thats out of this world. Here are the combined stats for your posts', 'google-site-kit' );
+		message = __( 'That’s out of this world. Here are the combined stats for your posts', 'google-site-kit' );
 	}
 
 	return {

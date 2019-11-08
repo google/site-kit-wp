@@ -21,7 +21,6 @@
 import DashboardAuthAlert from 'GoogleComponents/notifications/dashboard-auth-alert';
 import DashboardPermissionAlert from 'GoogleComponents/notifications/dashboard-permission-alert';
 import md5 from 'md5';
-
 import {
 	getStorage,
 	getCurrentDateRangeSlug,
@@ -29,16 +28,14 @@ import {
 	getQueryParameter,
 	sortObjectProperties,
 } from 'SiteKitCore/util';
+import { cloneDeep, each, sortBy } from 'lodash';
 
-const { cloneDeep, each, sortBy } = lodash;
-const { addQueryArgs } = wp.url;
-const {
-	addAction,
-	applyFilters,
-	doAction,
-	addFilter,
-	removeFilter,
-} = wp.hooks;
+/**
+ * WordPress dependencies
+ */
+import apiFetch from '@wordpress/api-fetch';
+import { addQueryArgs } from '@wordpress/url';
+import { addAction, applyFilters, doAction, addFilter, removeFilter } from '@wordpress/hooks';
 
 export const TYPE_CORE = 'core';
 export const TYPE_MODULES = 'modules';
@@ -200,7 +197,7 @@ const dataAPI = {
 		}
 
 		const datacache = null !== getQueryParameter( 'datacache' );
-		return wp.apiFetch( {
+		return apiFetch( {
 			path: addQueryArgs( `/google-site-kit/v1/data/${ datacache ? '?datacache' : '' }`,
 				{
 					request: JSON.stringify( currentRequest ),
@@ -426,7 +423,7 @@ const dataAPI = {
 		}
 
 		// Make an API request to retrieve the results.
-		return wp.apiFetch( {
+		return apiFetch( {
 			path: addQueryArgs( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`, data ),
 		} ).then( ( results ) => {
 			if ( ! nocache ) {
@@ -462,7 +459,7 @@ const dataAPI = {
 
 		if ( ! notifications || 0 === notifications.length ) {
 			// Make an API request to retrieve the notifications.
-			notifications = await wp.apiFetch( {
+			notifications = await apiFetch( {
 				path: `/google-site-kit/v1/modules/${ moduleSlug }/notifications/`,
 			} );
 
@@ -487,7 +484,7 @@ const dataAPI = {
 		body.data = data;
 
 		// Make an API request to store the data.
-		return wp.apiFetch( { path: `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
+		return apiFetch( { path: `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
 			data: body,
 			method: 'POST',
 		} ).then( ( response ) => {
@@ -536,7 +533,7 @@ const dataAPI = {
 	 */
 	setModuleActive( moduleSlug, active ) {
 		// Make an API request to store the value.
-		return wp.apiFetch( { path: `/google-site-kit/v1/modules/${ moduleSlug }`,
+		return apiFetch( { path: `/google-site-kit/v1/modules/${ moduleSlug }`,
 			data: { active },
 			method: 'POST',
 		} ).then( ( response ) => {

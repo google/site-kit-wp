@@ -26,8 +26,11 @@ import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import AdSenseSetupAuthFlowWidget from './setup-auth-flow-widget';
 import Spinner from 'GoogleComponents/spinner';
 
-const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class AdSenseSetupWidget extends Component {
 	constructor( props ) {
@@ -43,6 +46,16 @@ class AdSenseSetupWidget extends Component {
 	}
 
 	componentDidMount() {
+		const {
+			isOpen,
+			onSettingsPage,
+		} = this.props;
+
+		// If on settings page, only run the rest if the module is "open".
+		if ( onSettingsPage && ! isOpen ) {
+			return;
+		}
+
 		this.getAccounts();
 	}
 

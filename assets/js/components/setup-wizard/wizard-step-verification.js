@@ -23,9 +23,9 @@ import PropTypes from 'prop-types';
 import SiteVerification from 'GoogleComponents/setup/site-verification';
 
 /**
- * WordPress dependencies.
+ * WordPress dependencies
  */
-const { Component } = wp.element;
+import { Component } from '@wordpress/element';
 
 class WizardStepVerification extends Component {
 	render() {

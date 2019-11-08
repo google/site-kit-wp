@@ -28,12 +28,12 @@ import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
 import { toggleConfirmModuleSettings } from 'GoogleUtil';
 
-const { __, sprintf } = wp.i18n;
-const { Component, Fragment } = wp.element;
-const {
-	removeFilter,
-	addFilter,
-} = wp.hooks;
+/**
+ * WordPress dependencies
+ */
+import { __, _x, sprintf } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
+import { addFilter, removeFilter } from '@wordpress/hooks';
 
 class TagmanagerSetup extends Component {
 	constructor( props ) {
@@ -64,7 +64,17 @@ class TagmanagerSetup extends Component {
 	}
 
 	componentDidMount() {
+		const {
+			isOpen,
+			onSettingsPage,
+		} = this.props;
 		this._isMounted = true;
+
+		// If on settings page, only run the rest if the module is "open".
+		if ( onSettingsPage && ! isOpen ) {
+			return;
+		}
+
 		this.requestTagManagerAccounts();
 
 		// Handle save hook from the settings page.
@@ -483,7 +493,7 @@ class TagmanagerSetup extends Component {
 							googlesitekit-heading-3
 							googlesitekit-setup-module__title
 						">
-							{ __( 'Tag Manager', 'google-site-kit' ) }
+							{ _x( 'Tag Manager', 'Service name', 'google-site-kit' ) }
 						</h2>
 					</Fragment>
 				}

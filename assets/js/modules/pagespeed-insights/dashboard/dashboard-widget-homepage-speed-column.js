@@ -27,6 +27,13 @@ import {
 	getDataTableFromData,
 	TableOverflowContainer,
 } from 'GoogleComponents/data-table';
+
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
+
 /**
  * Internal dependencies
  */
@@ -35,9 +42,6 @@ import {
 	PageSpeedReportScoreCategoryWrapper,
 	PageSpeedReportScoreGauge,
 } from './util';
-
-const { Component } = wp.element;
-const { __ } = wp.i18n;
 
 const isZeroData = ( data ) => {
 	return 0 === data.categories.performance.score;
@@ -64,7 +68,7 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
 
 		if ( isZeroData( data ) ) {
 			return getDataErrorComponent(
-				__( 'PageSpeed Insights', 'google-site-kit' ),
+				_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ),
 				__( 'An unknown error occurred while trying to fetch PageSpeed Insights data. Please try again later.', 'google-site-kit' ),
 				true
 			);

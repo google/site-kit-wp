@@ -59,7 +59,7 @@ describe( 'Plugin Activation Notice', () => {
 
 		await page.waitForSelector( '.googlesitekit-activation' );
 
-		await expect( page ).toMatchElement( '.googlesitekit-activation__button', { text: 'Start Setup' } );
+		await expect( page ).toMatchElement( '.googlesitekit-activation__button', { text: 'Start setup' } );
 
 		await page.click( '.googlesitekit-activation__button' );
 		await page.waitForSelector( '.googlesitekit-wizard-step__title' );

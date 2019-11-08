@@ -2,15 +2,18 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
+
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
-import Layout from 'GoogleComponents/layout/layout';
-import AnalyticsDashboardWidgetTopPagesTable from 'GoogleModules/analytics/dashboard/dashboard-widget-top-pages-table.js';
+import { doAction } from '@wordpress/hooks';
+import { __, _x } from '@wordpress/i18n';
+
 /**
  * Internal dependencies
  */
+import Layout from 'GoogleComponents/layout/layout';
+import AnalyticsDashboardWidgetTopPagesTable from 'GoogleModules/analytics/dashboard/dashboard-widget-top-pages-table';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 
 storiesOf( 'Global', module )
@@ -19,7 +22,7 @@ storiesOf( 'Global', module )
 
 		// Load the datacache with data.
 		setTimeout( () => {
-			wp.hooks.doAction(
+			doAction(
 				'googlesitekit.moduleLoaded',
 				'Dashboard'
 			);
@@ -31,7 +34,7 @@ storiesOf( 'Global', module )
 				title={ __( 'Top content over the last 28 days', 'google-site-kit' ) }
 				headerCtaLink="https://analytics.google.com"
 				headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-				footerCtaLabel={ __( 'Analytics', 'google-site-kit' ) }
+				footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 				footerCtaLink="https://analytics.google.com"
 			>
 				<AnalyticsDashboardWidgetTopPagesTable />
