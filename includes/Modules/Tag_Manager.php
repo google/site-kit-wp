@@ -46,6 +46,16 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	const USAGE_CONTEXT_AMP = 'amp';
 
 	/**
+	 * Map of container usageContext to option key for containerID.
+	 *
+	 * @var array
+	 */
+	protected $context_map = array(
+		self::USAGE_CONTEXT_WEB => 'containerID',
+		self::USAGE_CONTEXT_AMP => 'ampContainerID',
+	);
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -384,14 +394,10 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 					};
 				case 'container-id':
 					return function() use ( $data ) {
-						$option      = $this->options->get( self::OPTION );
-						$context_map = array(
-							self::USAGE_CONTEXT_WEB => 'containerID',
-							self::USAGE_CONTEXT_AMP => 'ampContainerID',
-						);
+						$option = $this->options->get( self::OPTION );
 
 						$usage_context        = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
-						$valid_usage_contexts = array_keys( $context_map );
+						$valid_usage_contexts = array_keys( $this->context_map );
 
 						if ( ! in_array( $usage_context, $valid_usage_contexts, true ) ) {
 							return new WP_Error(
@@ -406,7 +412,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 							);
 						}
 
-						$option_key = $context_map[ $usage_context ];
+						$option_key = $this->context_map[ $usage_context ];
 
 						if ( empty( $option[ $option_key ] ) ) {
 							return new WP_Error(
