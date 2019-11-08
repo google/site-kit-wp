@@ -50,7 +50,7 @@ class TagmanagerSetup extends Component {
 			errorCode: false,
 			errorMsg: '',
 			refetch: false,
-			selectedAccount: settings.accountID || 0,
+			selectedAccount: settings.accountID,
 			selectedContainer: settings[ containerKey ] || 0,
 			containersLoading: false,
 			usageContext,
