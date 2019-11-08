@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Core\Authentication\Clients;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Tests\Exception\RedirectException;
+use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -50,7 +51,7 @@ class OAuth_ClientTest extends TestCase {
 		// Google client must be initialized first
 		$this->assertEquals( 'refresh_token_not_exist', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
 
-		$client->get_client();
+		$client->get_client()->setHttpClient( new FakeHttpClient() );
 		$client->refresh_token();
 
 		// At this point an error is triggered internally due to undefined indexes on $authentication_token
