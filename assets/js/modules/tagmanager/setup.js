@@ -134,9 +134,9 @@ class TagmanagerSetup extends Component {
 		try {
 			const {
 				selectedAccount,
-				selectedContainer,
 				usageContext,
 			} = this.state;
+			let { selectedContainer } = this.state;
 
 			const queryArgs = {
 				accountID: selectedAccount,
@@ -160,6 +160,11 @@ class TagmanagerSetup extends Component {
 				data.invalidateCacheGroup( TYPE_MODULES, 'tagmanager', 'accounts-containers' );
 				errorCode = 'insufficientPermissions';
 				errorMsg = __( 'You currently don\'t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.', 'google-site-kit' );
+			}
+
+			// If the selectedContainer is not in the list of containers, clear it.
+			if ( selectedContainer && ! containers.find( ( container ) => container.publicId === selectedContainer ) ) {
+				selectedContainer = null;
 			}
 
 			if ( this._isMounted ) {
