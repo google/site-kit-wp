@@ -144,9 +144,9 @@ class TagmanagerSetup extends Component {
 
 			let errorCode = false;
 			let errorMsg = '';
-			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'accounts-containers', queryArgs );
+			const { accounts, containers } = await data.get( TYPE_MODULES, 'tagmanager', 'accounts-containers', queryArgs );
 
-			if ( ! selectedAccount && 0 === responseData.accounts.length ) {
+			if ( ! selectedAccount && 0 === accounts.length ) {
 				errorCode = 'accountEmpty';
 				errorMsg = __(
 					'We didn’t find an associated Google Tag Manager account, would you like to set it up now? If you’ve just set up an account please re-fetch your account to sync it with Site Kit.',
@@ -155,28 +155,22 @@ class TagmanagerSetup extends Component {
 			}
 
 			// Verify if user has access to the selected account.
-			if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.accountId === selectedAccount ) ) { // Capitalization rule exception: `accountId` is a property of an API returned value.
+			if ( selectedAccount && ! accounts.find( ( account ) => account.accountId === selectedAccount ) ) { // Capitalization rule exception: `accountId` is a property of an API returned value.
 				data.invalidateCacheGroup( TYPE_MODULES, 'tagmanager', 'accounts-containers' );
 				errorCode = 'insufficientPermissions';
 				errorMsg = __( 'You currently don\'t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.', 'google-site-kit' );
 			}
 
-			const chooseContainer = {
-				containerId: 0, // Capitalization rule exception: `containerId` matches an API returned value.
-				publicId: 0, // Capitalization rule exception: `publicId` is a property of an API returned value.
-			};
-			responseData.containers.push( chooseContainer );
-
 			if ( this._isMounted ) {
-				const accountID = responseData.accounts[ 0 ] ? responseData.accounts[ 0 ].accountId : null; // Capitalization rule exception: `accountId` is a property of an API returned value.
-				const publicID = responseData.containers[ 0 ] ? responseData.containers[ 0 ].publicId : null; // Capitalization rule exception: `publicId` is a property of an API returned value.
+				const accountID = accounts[ 0 ] ? accounts[ 0 ].accountId : null; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const publicID = containers[ 0 ] ? containers[ 0 ].publicId : null; // Capitalization rule exception: `publicId` is a property of an API returned value.
 
 				this.setState( {
 					isLoading: false,
-					accounts: responseData.accounts,
-					selectedAccount: ( selectedAccount ) ? selectedAccount : accountID,
-					containers: responseData.containers,
-					selectedContainer: ( selectedContainer ) ? selectedContainer : publicID,
+					accounts,
+					selectedAccount: selectedAccount || accountID,
+					containers,
+					selectedContainer: selectedContainer || publicID,
 					refetch: false,
 					errorCode,
 					errorMsg,
