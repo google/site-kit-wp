@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
@@ -287,6 +288,17 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 
 		$data['amp_component_scripts']['amp-analytics'] = 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js';
 		return $data;
+	}
+
+	/**
+	 * Gets the current container usage context based on the current AMP mode (defaults to 'web').
+	 *
+	 * @return string
+	 */
+	protected function get_usage_context() {
+		return Context::AMP_MODE_PRIMARY === $this->context->get_amp_mode()
+			? self::USAGE_CONTEXT_AMP
+			: self::USAGE_CONTEXT_WEB;
 	}
 
 	/**
