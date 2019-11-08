@@ -481,18 +481,29 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ), array( 'status' => 400 ) );
 					}
 					return function() use ( $data ) {
-						if ( '0' === $data['containerID'] ) {
-							$response = $this->create_container( $data['accountID'] );
+						$option = array_merge(
+							$this->options->get( self::OPTION ),
+							array(
+								'accountID' => $data['accountID'],
+							)
+						);
+
+						$container_id  = $data['containerID'];
+						$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
+						$container_key = $this->context_map[ $usage_context ];
+
+						if ( '0' === $container_id ) {
+							$response = $this->create_container( $data['accountID'], $usage_context );
+
 							if ( is_wp_error( $response ) ) {
 								return $response;
 							}
 
-							$data['containerID'] = $response;
+							$container_id = $response;
 						}
-						$option = array(
-							'accountID'   => $data['accountID'],
-							'containerID' => $data['containerID'],
-						);
+
+						$option[ $container_key ] = $container_id;
+
 						$this->options->set( self::OPTION, $option );
 						return $option;
 					};
