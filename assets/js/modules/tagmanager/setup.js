@@ -202,11 +202,6 @@ class TagmanagerSetup extends Component {
 
 			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'containers', queryArgs );
 
-			const chooseContainer = {
-				containerId: 0, // Capitalization rule exception: `containerId` matches an API returned value.
-				publicId: 0, // Capitalization rule exception: `publicId` matches an API returned value.
-			};
-			responseData.push( chooseContainer );
 			if ( this._isMounted ) {
 				this.setState( {
 					containersLoading: false,
