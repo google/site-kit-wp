@@ -27,6 +27,7 @@ import { Select, Option } from 'SiteKitCore/material-components';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
 import { toggleConfirmModuleSettings } from 'GoogleUtil';
+import { get } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -162,15 +163,12 @@ class TagmanagerSetup extends Component {
 			}
 
 			if ( this._isMounted ) {
-				const accountID = accounts[ 0 ] ? accounts[ 0 ].accountId : null; // Capitalization rule exception: `accountId` is a property of an API returned value.
-				const publicID = containers[ 0 ] ? containers[ 0 ].publicId : null; // Capitalization rule exception: `publicId` is a property of an API returned value.
-
 				this.setState( {
 					isLoading: false,
 					accounts,
-					selectedAccount: selectedAccount || accountID,
+					selectedAccount: selectedAccount || get( containers, [ 0, 'accountId' ] ), // Capitalization rule exception: `accountId` is a property of an API returned value.
 					containers,
-					selectedContainer: selectedContainer || publicID,
+					selectedContainer: selectedContainer || get( containers, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
 					refetch: false,
 					errorCode,
 					errorMsg,
@@ -200,13 +198,13 @@ class TagmanagerSetup extends Component {
 				usageContext: this.state.usageContext,
 			};
 
-			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'containers', queryArgs );
+			const containers = await data.get( TYPE_MODULES, 'tagmanager', 'containers', queryArgs );
 
 			if ( this._isMounted ) {
 				this.setState( {
 					containersLoading: false,
-					containers: responseData,
-					selectedContainer: responseData[ 0 ].publicId, // Capitalization rule exception: `publicId` is a property of an API returned value.
+					containers,
+					selectedContainer: get( containers, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
 					errorCode: false,
 				} );
 			}
