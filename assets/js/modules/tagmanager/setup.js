@@ -235,25 +235,26 @@ class TagmanagerSetup extends Component {
 		const {
 			selectedAccount,
 			selectedContainer,
+			usageContext,
 		} = this.state;
 
 		const { finishSetup } = this.props;
+		const containerKey = usageContext === 'amp' ? 'ampContainerID' : 'containerID';
 
 		try {
-			const optionData = {
+			const dataParams = {
 				accountID: selectedAccount,
-				containerID: selectedContainer,
+				[ containerKey ]: selectedContainer,
+				usageContext,
 			};
 
-			const responseData = await data.set( TYPE_MODULES, 'tagmanager', 'settings', optionData );
+			const savedSettings = await data.set( TYPE_MODULES, 'tagmanager', 'settings', dataParams );
+
 			if ( finishSetup ) {
 				finishSetup();
 			}
 
-			googlesitekit.modules.tagmanager.settings = {
-				accountID: responseData.accountId, // Capitalization rule exception: `accountId` is a property of an API returned value.
-				containerID: responseData.containerId, // Capitalization rule exception: `containerId` is a property of an API returned value.
-			};
+			googlesitekit.modules.tagmanager.settings = savedSettings;
 
 			if ( this._isMounted ) {
 				this.setState( {
