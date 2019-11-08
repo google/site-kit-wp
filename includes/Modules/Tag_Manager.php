@@ -604,7 +604,13 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						$account_id = $response['accounts'][0]->getAccountId();
 					}
 
-					$containers = $this->get_data( 'containers', array( 'accountID' => $account_id ) );
+					$containers = $this->get_data(
+						'containers',
+						array(
+							'accountID'    => $account_id,
+							'usageContext' => $data['usageContext'] ?: self::USAGE_CONTEXT_WEB,
+						)
+					);
 
 					if ( is_wp_error( $containers ) ) {
 						return $response;
