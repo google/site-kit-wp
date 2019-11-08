@@ -170,7 +170,8 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * @return bool True if module is connected, false otherwise.
 	 */
 	public function is_connected() {
-		$container_id = $this->get_data( 'container-id' );
+		$container_id = $this->get_data( 'container-id', array( 'usageContext' => $this->get_usage_context() ) );
+
 		if ( is_wp_error( $container_id ) || ! $container_id ) {
 			return false;
 		}
@@ -198,7 +199,8 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 			return;
 		}
 
-		$container_id = $this->get_data( 'container-id' );
+		$container_id = $this->get_data( 'container-id', array( 'usageContext' => $this->get_usage_context() ) );
+
 		if ( is_wp_error( $container_id ) || ! $container_id ) {
 			return;
 		}
@@ -230,7 +232,8 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 			return;
 		}
 
-		$container_id = $this->get_data( 'container-id' );
+		$container_id = $this->get_data( 'container-id', array( 'usageContext' => $this->get_usage_context() ) );
+
 		if ( is_wp_error( $container_id ) || ! $container_id ) {
 			return;
 		}
@@ -254,7 +257,8 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 			return;
 		}
 
-		$container_id = $this->get_data( 'container-id' );
+		$container_id = $this->get_data( 'container-id', array( 'usageContext' => $this->get_usage_context() ) );
+
 		if ( is_wp_error( $container_id ) || ! $container_id ) {
 			return;
 		}
@@ -281,7 +285,8 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 			return $data;
 		}
 
-		$container_id = $this->get_data( 'container-id' );
+		$container_id = $this->get_data( 'container-id', array( 'usageContext' => $this->get_usage_context() ) );
+
 		if ( is_wp_error( $container_id ) || ! $container_id ) {
 			return $data;
 		}
