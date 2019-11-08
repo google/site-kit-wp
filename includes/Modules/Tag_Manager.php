@@ -488,24 +488,27 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 							)
 						);
 
+						$response      = $option;
 						$container_id  = $data['containerID'];
 						$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
 						$container_key = $this->context_map[ $usage_context ];
 
-						if ( '0' === $container_id ) {
-							$response = $this->create_container( $data['accountID'], $usage_context );
-
-							if ( is_wp_error( $response ) ) {
-								return $response;
-							}
-
-							$container_id = $response;
-						}
-
 						$option[ $container_key ] = $container_id;
 
+						if ( '0' === $container_id ) {
+							$create_container_response = $this->create_container( $data['accountID'], $usage_context );
+
+							if ( is_wp_error( $create_container_response ) ) {
+								return $create_container_response;
+							}
+
+							$option[ $container_key ]       = $create_container_response;
+							$response['createdContainerID'] = $container_id;
+						}
+
 						$this->options->set( self::OPTION, $option );
-						return $option;
+
+						return $response;
 					};
 			}
 		}
