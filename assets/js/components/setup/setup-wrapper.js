@@ -19,16 +19,19 @@
 /**
  * External dependencies
  */
+import { delay } from 'lodash';
 import Header from 'GoogleComponents/header';
 import Link from 'GoogleComponents/link';
 import HelpLink from 'GoogleComponents/help-link';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
+import withFilters from 'GoogleComponents/higherorder/with-filters';
 
-const { Component, Fragment } = wp.element;
-const { delay } = lodash;
-const { __ } = wp.i18n;
-const { applyFilters } = wp.hooks;
-const { withFilters } = wp.components;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+import { applyFilters } from '@wordpress/hooks';
 
 class BaseComponent extends Component {
 	render() {

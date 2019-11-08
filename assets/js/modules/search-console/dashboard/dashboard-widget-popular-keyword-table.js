@@ -25,16 +25,20 @@ import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
 import Layout from 'GoogleComponents/layout/layout';
+import { map } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __, _x, sprintf } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
+
 /**
  * Internal dependencies
  */
 import {
 	isDataZeroSearchConsole,
 } from '../dashboard/util';
-
-const { __, sprintf } = wp.i18n;
-const { map } = lodash;
-const { Component } = wp.element;
 
 class DashboardWidgetPopularKeywordsTable extends Component {
 	static renderLayout( component ) {
@@ -47,7 +51,7 @@ class DashboardWidgetPopularKeywordsTable extends Component {
 				<Layout
 					className="googlesitekit-popular-content"
 					footer
-					footerCtaLabel={ __( 'Search Console', 'google-site-kit' ) }
+					footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 					footerCtaLink={
 						sprintf( 'https://search.google.com/u/1/search-console?resource_id=%s', googlesitekit.admin.siteURL )
 					}
@@ -70,6 +74,7 @@ class DashboardWidgetPopularKeywordsTable extends Component {
 			{
 				title: __( 'Top search queries for your site', 'google-site-kit' ),
 				tooltip: __( 'Most searched for keywords related to your content', 'google-site-kit' ),
+				primary: true,
 			},
 			{
 				title: __( 'Clicks', 'google-site-kit' ),

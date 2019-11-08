@@ -24,8 +24,11 @@ import Menu from 'GoogleComponents/menu';
 import { clearAppLocalStorage } from 'GoogleUtil';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
 
-const { Component, Fragment, createRef } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment, createRef } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class UserMenu extends Component {
 	constructor( props ) {

@@ -24,15 +24,19 @@ import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
+import { map } from 'lodash';
 import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
+
 /**
  * Internal dependencies
  */
 import { getTopPagesReportDataDefaults } from '../util';
-
-const { __ } = wp.i18n;
-const { map } = lodash;
-const { Component, Fragment } = wp.element;
 
 class AnalyticsDashboardWidgetTopPagesTable extends Component {
 	/**
@@ -67,6 +71,7 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 			{
 				title: __( 'Title', 'google-site-kit' ),
 				tooltip: __( 'Page Title', 'google-site-kit' ),
+				primary: true,
 			},
 			{
 				title: __( 'Pageviews', 'google-site-kit' ),

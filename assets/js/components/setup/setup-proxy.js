@@ -26,11 +26,14 @@ import Layout from 'GoogleComponents/layout/layout';
 import Optin from 'GoogleComponents/optin';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
+import { delay } from 'lodash';
 
-const { __, sprintf } = wp.i18n;
-const { Component, Fragment } = wp.element;
-const { getQueryArg } = wp.url;
-const { delay } = lodash;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+import { getQueryArg } from '@wordpress/url';
 
 class SetupUsingProxy extends Component {
 	constructor( props ) {

@@ -20,7 +20,7 @@
  * External dependencies
  */
 import PreviewBlocks from 'GoogleComponents/preview-blocks';
-import DataBlock from 'GoogleComponents/data-block.js';
+import DataBlock from 'GoogleComponents/data-block';
 import withData from 'GoogleComponents/higherorder/withdata';
 import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds } from 'GoogleUtil';
@@ -33,8 +33,11 @@ import {
 } from '../dashboard/util';
 import CTA from 'GoogleComponents/notifications/cta';
 
-const { __ } = wp.i18n;
-const { Component, Fragment } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
 
 class WPSearchConsoleDashboardWidgetOverview extends Component {
 	render() {

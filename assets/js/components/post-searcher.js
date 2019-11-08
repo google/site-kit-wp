@@ -19,6 +19,12 @@
 /**
  * External dependencies
  */
+import {
+	map,
+	find,
+	debounce,
+	trim,
+} from 'lodash';
 import Autocomplete from 'accessible-autocomplete/react';
 import data, { TYPE_CORE } from 'GoogleComponents/data';
 import Button from 'GoogleComponents/button';
@@ -27,60 +33,11 @@ import {
 	getSiteKitAdminURL,
 } from 'GoogleUtil';
 
-const { Component } = wp.element;
-const {
-	map,
-	find,
-	debounce,
-	trim,
-} = lodash;
-const { __ } = wp.i18n;
-
-// Shim wp.sanitize for WordPress < 4.9 when it was introduced.
-// @todo remove this when the plugin drops support for WordPress < 4.9.
-if ( ! wp.sanitize ) {
-	// Code directly from core.
-	wp.sanitize = {
-
-		/**
-		 * Strip HTML tags.
-		 *
-		 * @param {string} text Text to have the HTML tags striped out of.
-		 *
-		 * @return  Stripped text.
-		 */
-		stripTags( text ) {
-			text = text || '';
-
-			return text
-				.replace( /<!--[\s\S]*?(-->|$)/g, '' )
-				.replace( /<(script|style)[^>]*>[\s\S]*?(<\/\1>|$)/ig, '' )
-				.replace( /<\/?[a-z][\s\S]*?(>|$)/ig, '' );
-		},
-
-		/**
-		 * Strip HTML tags and convert HTML entities.
-		 *
-		 * @param {string} text Text to strip tags and convert HTML entities.
-		 *
-		 * @return Sanitized text. False on failure.
-		 */
-		stripTagsAndEncodeText( text ) {
-			const textarea = document.createElement( 'textarea' );
-			let _text = wp.sanitize.stripTags( text );
-
-			try {
-				textarea.innerHTML = _text;
-				_text = wp.sanitize.stripTags( textarea.value );
-			} catch ( er ) {
-
-				// No-op.
-			}
-
-			return _text;
-		},
-	};
-}
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class PostSearcher extends Component {
 	constructor( props ) {

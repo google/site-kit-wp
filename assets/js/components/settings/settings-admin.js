@@ -27,8 +27,11 @@ import Optin from 'GoogleComponents/optin';
  */
 import ResetButton from '../reset-button';
 
-const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class SettingsAdmin extends Component {
 	constructor() {

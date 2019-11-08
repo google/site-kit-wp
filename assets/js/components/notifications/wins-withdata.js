@@ -21,7 +21,7 @@
  */
 import data from 'GoogleComponents/data';
 
-const { filter } = lodash;
+import { filter } from 'lodash';
 
 class WinsWithData {
 	constructor( wins ) {

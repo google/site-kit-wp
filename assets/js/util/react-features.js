@@ -6,10 +6,13 @@ import {
 	lazy as ReactLazy,
 } from 'react';
 
-const {
-	Suspense: wpSuspense,
-	lazy: wpLazy,
-} = wp.element;
+/**
+ * WordPress dependencies
+ */
+import {
+	Suspense as wpSuspense,
+	lazy as wpLazy,
+} from '@wordpress/element';
 
 export const Suspense = !! wpSuspense ? wpSuspense : ReactSuspense;
 export const lazy = !! wpLazy ? wpLazy : ReactLazy;

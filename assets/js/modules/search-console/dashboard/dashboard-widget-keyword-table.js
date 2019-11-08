@@ -24,10 +24,13 @@ import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
+import { map } from 'lodash';
 
-const { __, sprintf } = wp.i18n;
-const { map } = lodash;
-const { Component } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
 
 class SearchConsoleDashboardWidgetKeywordTable extends Component {
 	render() {
@@ -41,6 +44,7 @@ class SearchConsoleDashboardWidgetKeywordTable extends Component {
 			{
 				title: __( 'Keyword', 'google-site-kit' ),
 				tooltip: __( 'Most searched for keywords related to your content', 'google-site-kit' ),
+				primary: true,
 			},
 			{
 				title: __( 'Clicks', 'google-site-kit' ),

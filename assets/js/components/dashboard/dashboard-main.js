@@ -20,7 +20,10 @@
  * Internal dependencies
  */
 import DashboardModules from './dashboard-modules';
-const { Component, Fragment } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
 
 class DashboardMain extends Component {
 	render() {

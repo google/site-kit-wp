@@ -30,8 +30,11 @@ import CTA from 'GoogleComponents/notifications/cta';
 import PropTypes from 'prop-types';
 import GenericError from 'GoogleComponents/notifications/generic-error';
 
-const { Component } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class AnalyticsInactiveCTA extends Component {
 	static async setupAnalyticsClick() {
@@ -86,7 +89,7 @@ AnalyticsInactiveCTA.propTypes = {
 AnalyticsInactiveCTA.defaultProps = {
 	title: __( 'Learn more about what visitors do on your site.', 'google-site-kit' ),
 	description: __( 'Connecting with Google Analytics to see unique vistors, goal completions, top pages and more.', 'google-site-kit' ),
-	ctaLabel: __( 'Set up analytics', 'google-site-kit' ),
+	ctaLabel: __( 'Set up Analytics', 'google-site-kit' ),
 };
 
 export default AnalyticsInactiveCTA;

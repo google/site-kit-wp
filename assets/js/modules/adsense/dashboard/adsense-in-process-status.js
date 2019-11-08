@@ -24,8 +24,11 @@ import Link from 'GoogleComponents/link';
 import Error from 'GoogleComponents/notifications/error';
 import ProgressBar from 'GoogleComponents/progress-bar';
 
-const { Component, Fragment } = wp.element;
-const { __, sprintf } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 class AdSenseInProcessStatus extends Component {
 	render() {

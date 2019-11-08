@@ -27,8 +27,11 @@ import Button from 'SiteKitCore/components/button';
 import HelpLink from 'GoogleComponents/help-link';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 
-const { __, sprintf } = wp.i18n;
-const { Component, Fragment } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { __, _x, sprintf } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
 
 class SearchConsole extends Component {
 	constructor( props ) {
@@ -220,7 +223,7 @@ class SearchConsole extends Component {
 					googlesitekit-heading-3
 					googlesitekit-setup-module__title
 				">
-					{ __( 'Search Console', 'google-site-kit' ) }
+					{ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 				</h2>
 				<p className="googlesitekit-setup-module__text--no-margin">{ __( 'Your Search Console is set up with Site Kit.', 'google-site-kit' ) }</p>
 				{ /* TODO This needs a continue button or redirect. */ }
@@ -293,7 +296,7 @@ class SearchConsole extends Component {
 					googlesitekit-heading-3
 					googlesitekit-setup-module__title
 				">
-					{ __( 'Search Console', 'google-site-kit' ) }
+					{ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 				</h2>
 
 				{

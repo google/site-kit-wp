@@ -22,35 +22,20 @@
 import PropTypes from 'prop-types';
 import SourceLink from 'GoogleComponents/source-link';
 import Link from 'GoogleComponents/link';
-
-const {
+import {
 	each,
 	debounce,
 	trim,
-} = lodash;
-const { Component, createRef } = wp.element;
+} from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { Component, createRef } from '@wordpress/element';
 
 // Construct a table component from a data object.
 export const getDataTableFromData = ( data, headers, options ) => {
-	const headerRows = [];
 	const dataRows = [];
-
-	each( headers, ( header, i ) => {
-		headerRows.push(
-			<th key={ 'gksc_data_row_header-' + i } className="googlesitekit-table__head-item" data-tooltip={ header.tooltip }>
-				{ header.title }
-			</th>
-		);
-	} );
-
-	const headerRow = (
-		<tr
-			key={ 'gksc_data_row_header-wrap' }
-			style={ ( options && options.hideHeader ) ? { display: 'none' } : {} }
-			className="googlesitekit-table__head-row">
-			{ headerRows }
-		</tr>
-	);
 
 	const { links, source, showURLs } = options;
 
@@ -80,7 +65,7 @@ export const getDataTableFromData = ( data, headers, options ) => {
 							>
 								{ cell }
 							</Link>
-							<br />
+
 							{ showURLs && '' !== trim( link, '/' ) &&
 								<Link
 									className="googlesitekit-table__body-item-url"
@@ -107,9 +92,31 @@ export const getDataTableFromData = ( data, headers, options ) => {
 
 	return (
 		<div className={ `googlesitekit-table${ ( options && options.disableListMode ? '' : ' googlesitekit-table--with-list' ) }` }>
-			<table key={ 'gksc_data_table' } className="googlesitekit-table__wrapper">
+			<table
+				className={ `
+					googlesitekit-table__wrapper
+					googlesitekit-table__wrapper--${ data && data[ 0 ] ? data[ 0 ].length : 1 }-col
+				` }
+			>
 				<thead className="googlesitekit-table__head">
-					{ headerRow }
+					<tr
+						key="gksc_data_row_header-wrap"
+						style={ ( options && options.hideHeader ) ? { display: 'none' } : {} }
+						className="googlesitekit-table__head-row"
+					>
+						{ headers.map( ( header, i ) => (
+							<th
+								key={ `gksc_data_row_header-${ i }` }
+								className={ `
+									googlesitekit-table__head-item
+									${ header.primary ? 'googlesitekit-table__head-item--primary' : '' }
+								` }
+								data-tooltip={ header.tooltip }
+							>
+								{ header.title }
+							</th>
+						) ) }
+					</tr>
 				</thead>
 				<tbody className="googlesitekit-table__body">
 					{ dataRows }

@@ -16,8 +16,15 @@
  * limitations under the License.
  */
 
-const { withFilters } = wp.components;
-const { Component } = wp.element;
+/**
+ * External dependencies
+ */
+import withFilters from 'GoogleComponents/higherorder/with-filters';
+
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
 
 class DashboardPopularityInner extends Component {
 	render() {

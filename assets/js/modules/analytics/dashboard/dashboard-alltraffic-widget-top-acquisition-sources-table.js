@@ -25,14 +25,18 @@ import { getTimeInSeconds } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import MiniChart from 'GoogleComponents/mini-chart';
 import PreviewTable from 'GoogleComponents/preview-table';
+import { map } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
+
 /**
  * Internal dependencies
  */
 import { trafficSourcesReportDataDefaults } from '../util';
-
-const { __ } = wp.i18n;
-const { map } = lodash;
-const { Component, Fragment } = wp.element;
 
 class AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources extends Component {
 	render() {
@@ -44,6 +48,7 @@ class AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources extends Component 
 		const headers = [
 			{
 				title: __( 'Source', 'google-site-kit' ),
+				primary: true,
 			},
 			{
 				title: __( 'Percent', 'google-site-kit' ),

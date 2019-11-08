@@ -22,15 +22,19 @@
  */
 import Notification from 'GoogleComponents/notifications/notification';
 
-const { setLocaleData } = wp.i18n;
-const { doAction } = wp.hooks;
-const { Component, render } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import domReady from '@wordpress/dom-ready';
+import { setLocaleData } from '@wordpress/i18n';
+import { doAction } from '@wordpress/hooks';
+import { Component, render } from '@wordpress/element';
 
 // Load the data module.
 /**
  * Internal dependencies
  */
-import './components/data.js';
+import 'GoogleComponents/data';
 
 /**
  * Internal dependencies.
@@ -78,7 +82,7 @@ class GoogleSitekitWPDashboard extends Component {
 }
 
 // Initialize the app once the DOM is ready.
-wp.domReady( function() {
+domReady( function() {
 	const wpDashboard = document.getElementById( 'js-googlesitekit-wp-dashboard' );
 	if ( null !== wpDashboard ) {
 		// Render the Dashboard App.

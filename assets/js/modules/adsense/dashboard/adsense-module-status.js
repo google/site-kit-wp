@@ -21,6 +21,13 @@
  */
 import PropTypes from 'prop-types';
 import SvgIcon from 'GoogleUtil/svg-icon';
+
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
+
 /**
  * Internal dependencies
  */
@@ -28,9 +35,6 @@ import AdSenseSetupInstructions from '../setup/adsense-setup-instructions';
 import AdSenseInProcessStatus from './adsense-in-process-status';
 import { getExistingTag, getReAuthUrl, getSiteKitAdminURL } from 'GoogleUtil';
 import { getAdSenseAccountStatus } from '../util';
-
-const { Component } = wp.element;
-const { __ } = wp.i18n;
 
 const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 	/**
@@ -213,7 +217,7 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 	};
 };
 
-export class AdSenseModuleStatus extends Component {
+class AdSenseModuleStatus extends Component {
 	constructor( props ) {
 		super( props );
 
@@ -288,10 +292,10 @@ export class AdSenseModuleStatus extends Component {
 						<SvgIcon id="adsense" width="33" height="33" />
 					</div>
 					<h2 className="
-						googlesitekit-heading-3
-						googlesitekit-setup-module__title
-					">
-						{ __( 'AdSense', 'google-site-kit' ) }
+							googlesitekit-heading-3
+							googlesitekit-setup-module__title
+						">
+						{ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
 					</h2>
 				</div>
 				<div className="googlesitekit-setup-module__step">

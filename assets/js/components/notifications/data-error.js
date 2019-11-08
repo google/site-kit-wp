@@ -25,7 +25,10 @@ import { showErrorNotification } from 'GoogleUtil';
 import InvalidCredentialsWarning
 	from 'SiteKitCore/components/notifications/invalid-credentials-warning';
 
-const { __, sprintf } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Creates a CTA component when there's a data error. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.

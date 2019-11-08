@@ -19,5 +19,9 @@ module.exports = async ( { config } ) => {
 		}
 	);
 
+	config.externals = {
+		'@wordpress/api-fetch': [ 'wp', 'apiFetch' ],
+	};
+
 	return config;
 };

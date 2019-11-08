@@ -432,7 +432,14 @@ final class Authentication {
 
 		$code = (string) filter_input( INPUT_GET, 'googlesitekit_code' );
 
-		wp_safe_redirect( add_query_arg( 'verify', 'true', $auth_client->get_proxy_setup_url( $code ) ) );
+		// We need to pass the 'missing_verification' error code here so that the URL includes a verification nonce.
+		wp_safe_redirect(
+			add_query_arg(
+				'verify',
+				'true',
+				$auth_client->get_proxy_setup_url( $code, 'missing_verification' )
+			)
+		);
 		exit;
 	}
 
@@ -458,6 +465,9 @@ final class Authentication {
 		// If 'invalid_grant' error, disconnect the account.
 		if ( 'invalid_grant' === $this->user_options->get( Clients\OAuth_Client::OPTION_ERROR_CODE ) ) {
 			$this->disconnect();
+
+			// We need to re-set this error so that it is displayed to the user.
+			$this->user_options->set( Clients\OAuth_Client::OPTION_ERROR_CODE, 'invalid_grant' );
 		}
 	}
 

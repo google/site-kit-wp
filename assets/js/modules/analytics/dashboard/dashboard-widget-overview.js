@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import DataBlock from 'GoogleComponents/data-block.js';
+import DataBlock from 'GoogleComponents/data-block';
 import withData from 'GoogleComponents/higherorder/withdata';
 import { TYPE_MODULES } from 'GoogleComponents/data';
 import {
@@ -39,8 +39,11 @@ import {
 import PreviewBlock from 'GoogleComponents/preview-block';
 import PropTypes from 'prop-types';
 
-const { __ } = wp.i18n;
-const { Component } = wp.element;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
 
 class AnalyticsDashboardWidgetOverview extends Component {
 	render() {

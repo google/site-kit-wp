@@ -19,9 +19,16 @@
 /**
  * External dependencies
  */
-import DataBlock from 'GoogleComponents/data-block.js';
+import DataBlock from 'GoogleComponents/data-block';
 import withData from 'GoogleComponents/higherorder/withdata';
 import { TYPE_MODULES } from 'GoogleComponents/data';
+
+/**
+ * WordPress dependencies
+ */
+import { __, _x } from '@wordpress/i18n';
+import { Component, Fragment } from '@wordpress/element';
+
 /**
  * Internal dependencies
  */
@@ -38,9 +45,6 @@ import {
 	sendAnalyticsTrackingEvent,
 } from 'GoogleUtil';
 import CTA from 'GoogleComponents/notifications/cta';
-
-const { __ } = wp.i18n;
-const { Component, Fragment } = wp.element;
 
 class SearchConsoleDashboardWidgetTopLevel extends Component {
 	render() {
@@ -120,7 +124,7 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 						change={ totalClicksChange }
 						changeDataUnit="%"
 						source={ {
-							name: __( 'Search Console', 'google-site-kit' ),
+							name: _x( 'Search Console', 'Service name', 'google-site-kit' ),
 							link: href,
 						} }
 						sparkline={
@@ -146,7 +150,7 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 						change={ totalImpressionsChange }
 						changeDataUnit="%"
 						source={ {
-							name: __( 'Search Console', 'google-site-kit' ),
+							name: _x( 'Search Console', 'Service name', 'google-site-kit' ),
 							link: href,
 						} }
 						sparkline={

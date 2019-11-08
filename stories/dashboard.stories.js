@@ -5,11 +5,15 @@ import { storiesOf } from '@storybook/react';
 /**
  * WordPress dependencies
  */
+import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
 import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
 import CTA from 'GoogleComponents/notifications/cta';
 import { createAddToFilter } from 'GoogleUtil/helpers';
-
 import Layout from 'GoogleComponents/layout/layout';
 import DashboardAcquisitionPieChart from 'GoogleModules/analytics/dashboard/dashboard-widget-acquisition-piechart';
 import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from 'GoogleModules/analytics/dashboard/dashboard-alltraffic-widget-top-acquisition-sources-table';
@@ -18,10 +22,6 @@ import DashboardSearchFunnelInner from 'GoogleModules/search-console/dashboard/d
 import AnalyticsDashboardWidgetTopLevel from 'GoogleModules/analytics/dashboard/dashboard-widget-top-level';
 import SearchConsoleDashboardWidgetTopLevel from 'GoogleModules/search-console/dashboard/dashboard-widget-top-level';
 import PostSearcher from 'GoogleComponents/post-searcher';
-
-/**
- * Internal dependencies
- */
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
 
@@ -30,7 +30,7 @@ storiesOf( 'Dashboard', module )
 		<DashboardModuleHeader
 			title={ __( 'Module Header', 'google-site-kit' ) }
 			description={ __( 'Description of Module', 'google-site-kit' ) }
-			timePeriod={ __( 'Last 28 Days', 'google-site-kit' ) }
+			timePeriod={ __( 'Last 28 days', 'google-site-kit' ) }
 		/>
 	) )
 	.add( 'All Traffic', () => {
@@ -38,7 +38,7 @@ storiesOf( 'Dashboard', module )
 
 		// Load the datacache with data.
 		setTimeout( () => {
-			wp.hooks.doAction(
+			doAction(
 				'googlesitekit.moduleLoaded',
 				'Dashboard'
 			);
@@ -74,7 +74,7 @@ storiesOf( 'Dashboard', module )
 
 		// Load the datacache with data.
 		setTimeout( () => {
-			wp.hooks.doAction(
+			doAction(
 				'googlesitekit.moduleLoaded',
 				'Dashboard'
 			);
@@ -102,15 +102,15 @@ storiesOf( 'Dashboard', module )
 
 		const addSearchConsoleDashboardWidgetTopLevel = createAddToFilter( <SearchConsoleDashboardWidgetTopLevel /> );
 
-		wp.hooks.removeAllFilters( 'googlesitekit.DashboardSearchFunnel' );
+		removeAllFilters( 'googlesitekit.DashboardSearchFunnel' );
 
-		wp.hooks.addFilter( 'googlesitekit.DashboardSearchFunnel',
+		addFilter( 'googlesitekit.DashboardSearchFunnel',
 			'googlesitekit.SearchConsoleSearchFunnel',
 			addSearchConsoleDashboardWidgetTopLevel );
 
 		// Load the datacache with data.
 		setTimeout( () => {
-			wp.hooks.doAction(
+			doAction(
 				'googlesitekit.moduleLoaded',
 				'Dashboard'
 			);
@@ -146,12 +146,12 @@ storiesOf( 'Dashboard', module )
 		const addAnalyticsDashboardWidgetTopLevel = createAddToFilter( <AnalyticsDashboardWidgetTopLevel /> );
 		const addSearchConsoleDashboardWidgetTopLevel = createAddToFilter( <SearchConsoleDashboardWidgetTopLevel /> );
 
-		wp.hooks.removeAllFilters( 'googlesitekit.DashboardSearchFunnel' );
-		wp.hooks.addFilter( 'googlesitekit.DashboardSearchFunnel',
+		removeAllFilters( 'googlesitekit.DashboardSearchFunnel' );
+		addFilter( 'googlesitekit.DashboardSearchFunnel',
 			'googlesitekit.Analytics',
 			addAnalyticsDashboardWidgetTopLevel, 11 );
 
-		wp.hooks.addFilter( 'googlesitekit.DashboardSearchFunnel',
+		addFilter( 'googlesitekit.DashboardSearchFunnel',
 			'googlesitekit.SearchConsoleSearchFunnel',
 			addSearchConsoleDashboardWidgetTopLevel );
 
@@ -167,7 +167,7 @@ storiesOf( 'Dashboard', module )
 
 		// Load the datacache with data.
 		setTimeout( () => {
-			wp.hooks.doAction(
+			doAction(
 				'googlesitekit.moduleLoaded',
 				'Dashboard'
 			);

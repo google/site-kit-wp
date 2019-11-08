@@ -21,14 +21,17 @@
  */
 import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
+import { each, find, filter } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { analyticsAdsenseReportDataDefaults } from '../analytics/util';
-
-const { each, find, filter } = lodash;
-const { __, sprintf } = wp.i18n;
 
 export function reduceAdSenseData( rows ) {
 	const dataMap = [

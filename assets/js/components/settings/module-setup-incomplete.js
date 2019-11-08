@@ -24,10 +24,13 @@ import {
 } from 'GoogleUtil';
 import Link from 'GoogleComponents/link';
 import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
+import withFilters from 'GoogleComponents/higherorder/with-filters';
 
-const { withFilters } = wp.components;
-const { Component } = wp.element;
-const { __ } = wp.i18n;
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 class ModuleSetupIncomplete extends Component {
 	render() {

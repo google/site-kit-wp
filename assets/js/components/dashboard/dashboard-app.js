@@ -26,13 +26,16 @@ import 'GoogleComponents/publisher-wins';
 import 'GoogleComponents/notifications';
 
 /**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import DashboardMain from './dashboard-main';
 import DashboardNotifications from './dashboard-notifications';
-
-const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
 
 class DashboardApp extends Component {
 	render() {

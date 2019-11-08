@@ -23,13 +23,16 @@ import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-h
 import Layout from 'GoogleComponents/layout/layout';
 
 /**
+ * WordPress dependencies
+ */
+import { Component, Fragment } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import AnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/dashboard-widget-top-acquisition-sources-table';
 import DashboardAcquisitionPieChart from '../dashboard/dashboard-widget-acquisition-piechart';
-
-const { Component, Fragment } = wp.element;
-const { __ } = wp.i18n;
 
 class AnalyticsDashboardDetailsWidgetTopAcquisitionSources extends Component {
 	render() {
@@ -53,7 +56,7 @@ class AnalyticsDashboardDetailsWidgetTopAcquisitionSources extends Component {
 						footer
 						headerCtaLink="https://analytics.google.com"
 						headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-						footerCtaLabel={ __( 'Analytics', 'google-site-kit' ) }
+						footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 						footerCtaLink="https://analytics.google.com"
 					>
 						<div className="mdc-layout-grid">
