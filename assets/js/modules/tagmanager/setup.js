@@ -39,10 +39,9 @@ class TagmanagerSetup extends Component {
 	constructor( props ) {
 		super( props );
 
-		const {
-			accountID,
-			containerID,
-		} = googlesitekit.modules.tagmanager.settings;
+		const { settings } = googlesitekit.modules.tagmanager;
+		const usageContext = googlesitekit.admin.ampMode === 'primary' ? 'amp' : 'web';
+		const containerKey = usageContext === 'amp' ? 'ampContainerID' : 'containerID';
 
 		this.state = {
 			isLoading: true,
@@ -51,10 +50,11 @@ class TagmanagerSetup extends Component {
 			errorCode: false,
 			errorMsg: '',
 			refetch: false,
-			selectedAccount: accountID ? accountID : 0,
-			selectedContainer: containerID ? containerID : 0,
+			selectedAccount: settings.accountID || 0,
+			selectedContainer: settings[ containerKey ] || 0,
 			containersLoading: false,
-			usageContext: googlesitekit.admin.ampMode === 'primary' ? 'amp' : 'web',
+			usageContext,
+			containerKey,
 		};
 
 		this.handleSubmit = this.handleSubmit.bind( this );
@@ -236,10 +236,10 @@ class TagmanagerSetup extends Component {
 			selectedAccount,
 			selectedContainer,
 			usageContext,
+			containerKey,
 		} = this.state;
 
 		const { finishSetup } = this.props;
-		const containerKey = usageContext === 'amp' ? 'ampContainerID' : 'containerID';
 
 		try {
 			const dataParams = {
