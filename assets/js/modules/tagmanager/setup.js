@@ -54,6 +54,7 @@ class TagmanagerSetup extends Component {
 			selectedAccount: accountID ? accountID : 0,
 			selectedContainer: containerID ? containerID : 0,
 			containersLoading: false,
+			usageContext: googlesitekit.admin.ampMode === 'primary' ? 'amp' : 'web',
 		};
 
 		this.handleSubmit = this.handleSubmit.bind( this );
@@ -133,10 +134,12 @@ class TagmanagerSetup extends Component {
 			const {
 				selectedAccount,
 				selectedContainer,
+				usageContext,
 			} = this.state;
 
 			const queryArgs = {
 				accountID: selectedAccount,
+				usageContext,
 			};
 
 			let errorCode = false;
@@ -200,6 +203,7 @@ class TagmanagerSetup extends Component {
 		try {
 			const queryArgs = {
 				accountID: selectedAccount,
+				usageContext: this.state.usageContext,
 			};
 
 			const responseData = await data.get( TYPE_MODULES, 'tagmanager', 'containers', queryArgs );
