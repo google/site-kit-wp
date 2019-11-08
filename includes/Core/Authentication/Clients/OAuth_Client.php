@@ -246,7 +246,11 @@ final class OAuth_Client {
 			$this->user_options->set( self::OPTION_PROXY_ACCESS_CODE, $e->getAccessCode() );
 			return;
 		} catch ( \Exception $e ) {
-			$this->user_options->set( self::OPTION_ERROR_CODE, 'invalid_grant' );
+			$error_code = 'invalid_grant';
+			if ( $this->using_proxy() ) { // Only the Google_Proxy_Client exposes the real error response.
+				$error_code = $e->getMessage();
+			}
+			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
 			return;
 		}
 
