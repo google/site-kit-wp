@@ -640,7 +640,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						return $this->get_data( 'containers', array( 'accountID' => $account_id ) );
 					}
 
-					return $containers;
+					return array_values( $containers );
 			}
 		}
 
