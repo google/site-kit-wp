@@ -119,7 +119,7 @@ class TagmanagerSetup extends Component {
 		}
 
 		const settingsMapping = {
-			selectedContainer: 'containerID',
+			selectedContainer: this.state.containerKey,
 			selectedAccount: 'selectedAccount',
 		};
 
