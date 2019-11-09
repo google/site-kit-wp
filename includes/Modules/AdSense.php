@@ -220,7 +220,17 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 		if ( false === $tag_enabled ) {
 			return;
 		}
-
+		// check if user is logged in and is a subscriber or contributor or customer
+		if(is_user_logged_in()) {
+			$user = wp_get_current_user();
+			$roles = ( array ) $user->roles;
+			if(!(in_array('Subscriber', $roles) || in_array('Contributor', $roles) || in_array('Customer', $roles))) {
+				echo "<!-- AdSense tag was not printed by site kit to avoid invalid clicks -->";
+				return;
+			}
+			
+			
+		}
 		// On AMP, preferably use the new 'wp_body_open' hook, falling back to 'the_content' below.
 		if ( $this->context->is_amp() ) {
 			add_action(
