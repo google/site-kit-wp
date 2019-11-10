@@ -250,13 +250,11 @@ final class OAuth_Client {
 			if ( $this->using_proxy() ) { // Only the Google_Proxy_Client exposes the real error response.
 				$error_code = $e->getMessage();
 			}
+			// Revoke and delete user connection data if the refresh token is invalid or expired.
+			if ( 'invalid_grant' === $error_code ) {
+				$this->revoke_token();
+			}
 			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
-			return;
-		}
-
-		// Refresh token is expired or revoked.
-		if ( ! empty( $authentication_token['error'] ) ) {
-			$this->user_options->set( self::OPTION_ERROR_CODE, $authentication_token['error'] );
 			return;
 		}
 
@@ -287,6 +285,8 @@ final class OAuth_Client {
 		}
 
 		$this->google_client->revokeToken();
+
+		$this->delete_token();
 	}
 
 	/**
@@ -500,12 +500,6 @@ final class OAuth_Client {
 				$error_code = $e->getMessage();
 			}
 			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
-			wp_safe_redirect( admin_url() );
-			exit();
-		}
-
-		if ( ! empty( $authentication_token['error'] ) ) {
-			$this->user_options->set( self::OPTION_ERROR_CODE, $authentication_token['error'] );
 			wp_safe_redirect( admin_url() );
 			exit();
 		}
@@ -766,6 +760,22 @@ final class OAuth_Client {
 		}
 
 		return $message;
+	}
+
+	/**
+	 * Deletes the current user's token and all associated data.
+	 *
+	 * @since 1.0.3
+	 */
+	private function delete_token() {
+		$this->user_options->delete( self::OPTION_ACCESS_TOKEN );
+		$this->user_options->delete( self::OPTION_ACCESS_TOKEN_EXPIRES_IN );
+		$this->user_options->delete( self::OPTION_ACCESS_TOKEN_CREATED );
+		$this->user_options->delete( self::OPTION_REFRESH_TOKEN );
+		$this->user_options->delete( self::OPTION_REDIRECT_URL );
+		$this->user_options->delete( self::OPTION_AUTH_SCOPES );
+		$this->user_options->delete( self::OPTION_ERROR_CODE );
+		$this->user_options->delete( self::OPTION_PROXY_ACCESS_CODE );
 	}
 
 	/**

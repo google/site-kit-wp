@@ -279,14 +279,7 @@ final class Authentication {
 	public function disconnect() {
 		$this->get_oauth_client()->revoke_token();
 
-		$this->user_options->delete( Clients\OAuth_Client::OPTION_ACCESS_TOKEN );
-		$this->user_options->delete( Clients\OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN );
-		$this->user_options->delete( Clients\OAuth_Client::OPTION_ACCESS_TOKEN_CREATED );
-		$this->user_options->delete( Clients\OAuth_Client::OPTION_REFRESH_TOKEN );
-		$this->user_options->delete( Clients\OAuth_Client::OPTION_REDIRECT_URL );
-		$this->user_options->delete( Clients\OAuth_Client::OPTION_AUTH_SCOPES );
-		$this->user_options->delete( Clients\OAuth_Client::OPTION_ERROR_CODE );
-		$this->user_options->delete( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+		// Delete additional user data.
 		$this->user_options->delete( Verification::OPTION );
 		$this->user_options->delete( Verification_Tag::OPTION );
 		$this->user_options->delete( Profile::OPTION );
@@ -461,14 +454,6 @@ final class Authentication {
 
 		// Refresh auth token.
 		$auth_client->refresh_token();
-
-		// If 'invalid_grant' error, disconnect the account.
-		if ( 'invalid_grant' === $this->user_options->get( Clients\OAuth_Client::OPTION_ERROR_CODE ) ) {
-			$this->disconnect();
-
-			// We need to re-set this error so that it is displayed to the user.
-			$this->user_options->set( Clients\OAuth_Client::OPTION_ERROR_CODE, 'invalid_grant' );
-		}
 	}
 
 	/**
