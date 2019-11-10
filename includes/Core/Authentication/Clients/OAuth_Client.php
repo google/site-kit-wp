@@ -284,7 +284,11 @@ final class OAuth_Client {
 			return;
 		}
 
-		$this->google_client->revokeToken();
+		try {
+			$this->google_client->revokeToken();
+		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement
+			// No special handling, we just need to make sure this goes through.
+		}
 
 		$this->delete_token();
 	}
