@@ -465,6 +465,9 @@ final class Authentication {
 		// If 'invalid_grant' error, disconnect the account.
 		if ( 'invalid_grant' === $this->user_options->get( Clients\OAuth_Client::OPTION_ERROR_CODE ) ) {
 			$this->disconnect();
+
+			// We need to re-set this error so that it is displayed to the user.
+			$this->user_options->set( Clients\OAuth_Client::OPTION_ERROR_CODE, 'invalid_grant' );
 		}
 	}
 
