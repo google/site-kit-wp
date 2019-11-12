@@ -449,11 +449,11 @@ final class Authentication {
 
 		$auth_client = $this->get_oauth_client();
 
-		// Initiates Google Client object.
-		$auth_client->get_client();
-
-		// Refresh auth token.
-		$auth_client->refresh_token();
+		// Make sure to refresh the access token if necessary.
+		$google_client = $auth_client->get_client();
+		if ( $auth_client->get_access_token() && $google_client->isAccessTokenExpired() ) {
+			$auth_client->refresh_token();
+		}
 	}
 
 	/**
