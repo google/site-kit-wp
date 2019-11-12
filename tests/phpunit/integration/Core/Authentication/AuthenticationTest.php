@@ -90,6 +90,7 @@ class AuthenticationTest extends TestCase {
 				'needReauthenticate',
 				'requiredScopes',
 				'showModuleSetupWizard',
+				'isResettable',
 			),
 			array_keys( $data )
 		);
