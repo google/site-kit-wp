@@ -88,7 +88,9 @@ describe( 'setting up the AdSense module', () => {
 	} );
 
 	afterEach( async () => {
-		Object.keys( datapointHandlers ).forEach( ( key ) => datapointHandlers[ key ] = defaultHandler );
+		Object.keys( datapointHandlers ).forEach( ( key ) => {
+			return datapointHandlers[ key ] = defaultHandler;
+		} );
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
@@ -269,7 +271,10 @@ describe( 'setting up the AdSense module', () => {
 		await proceedToAdsenseSetup();
 
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Create your AdSense account/i } );
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module__action button', { text: /Create AdSense Account/i } );
+
+		await page.waitForSelector( '.googlesitekit-cta-link' );
+
+		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Create AdSense Account/i } );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
 	} );
