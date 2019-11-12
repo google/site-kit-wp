@@ -51,12 +51,9 @@ const disconnectFromSiteKit = async () => {
 };
 
 describe( 'Site Kit set up flow for the first time', () => {
-	beforeAll( async () => {
-		await setSearchConsoleProperty();
-	} );
-
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
+		await setSearchConsoleProperty();
 	} );
 
 	afterEach( async () => {
@@ -80,7 +77,6 @@ describe( 'Site Kit set up flow for the first time', () => {
 	it( 'disconnects user from Site Kit', async () => {
 		await setAuthToken();
 		await setSiteVerification();
-		await setSearchConsoleProperty();
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
 		await disconnectFromSiteKit();

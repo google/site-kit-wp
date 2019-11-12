@@ -397,12 +397,15 @@ class TagmanagerSetup extends Component {
 						onEnhancedChange={ this.handleAccountChange }
 						outlined
 					>
-						{ accounts.map( ( account ) =>
-							<Option
-								key={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }
-								value={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }>
-								{ account.name }
-							</Option> ) }
+						{ accounts.map( ( account ) => {
+							return (
+								<Option
+									key={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }
+									value={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }>
+									{ account.name }
+								</Option>
+							);
+						} ) }
 					</Select>
 
 					{ containersLoading ? ( <ProgressBar small /> ) : (
@@ -421,8 +424,9 @@ class TagmanagerSetup extends Component {
 								<Option
 									key={ i }
 									value={ publicId /* Capitalization rule exception: `publicId` is a property of an API returned value. */ }
-									children={ name }
-								/>
+								>
+									{ name }
+								</Option>
 							) }
 						</Select>
 					) }
@@ -442,6 +446,7 @@ class TagmanagerSetup extends Component {
 
 	/**
 	 * Render Error or Notice format depending on the errorCode.
+	 * @return {WPElement|null} Error message if any, or null.
 	 */
 	renderErrorOrNotice() {
 		const {

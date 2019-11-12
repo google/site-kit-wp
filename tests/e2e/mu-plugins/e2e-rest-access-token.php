@@ -9,8 +9,9 @@
  * @link      https://sitekit.withgoogle.com
  */
 
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\Storage\Data_Encryption;
 
 add_action( 'rest_api_init', function () {
 	if ( ! defined( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE' ) ) {
@@ -23,13 +24,8 @@ add_action( 'rest_api_init', function () {
 		array(
 			'methods'  => WP_REST_Server::EDITABLE,
 			'callback' => function ( WP_REST_Request $request ) {
-				update_user_option(
-					get_current_user_id(),
-					'googlesitekit_access_token',
-					( new Data_Encryption() )->encrypt(
-						serialize( array( 'access_token' => $request['token'] ) )
-					)
-				);
+				( new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )
+					->set_access_token( $request['token'], HOUR_IN_SECONDS );
 
 				return array( 'success' => true, 'token' => $request['token'] );
 			}
