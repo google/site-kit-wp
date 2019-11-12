@@ -16,6 +16,7 @@ use Google\Site_Kit_Dependencies\Google\Auth\HttpHandler\HttpHandlerFactory;
 use Google\Site_Kit_Dependencies\Google\Auth\HttpHandler\HttpClientCache;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
+use Google\Site_Kit_Dependencies\GuzzleHttp\ClientInterface;
 use Exception;
 use InvalidArgumentException;
 use LogicException;
@@ -138,6 +139,37 @@ final class Google_Proxy_Client extends Google_Client {
 		$response = $http_handler( $request );
 
 		return 200 === (int) $response->getStatusCode();
+	}
+
+	/**
+	 * Adds auth listeners to the HTTP client based on the credentials set in the Google API Client object.
+	 *
+	 * @since 1.0.3
+	 *
+	 * @param ClientInterface $http The HTTP client object.
+	 * @return ClientInterface The HTTP client object
+	 */
+	public function authorize( ClientInterface $http = null ) {
+		if ( $this->isUsingApplicationDefaultCredentials() ) {
+			return parent::authorize( $http );
+		}
+
+		$token = $this->getAccessToken();
+		if ( isset( $token['refresh_token'] ) && $this->isAccessTokenExpired() ) {
+			$callback = $this->config['token_callback'];
+
+			try {
+				$creds = $this->fetchAccessTokenWithRefreshToken( $token['refresh_token'] );
+				if ( $callback ) {
+					// Due to original callback signature this can only accept the token itself.
+					call_user_func( $callback, '', $creds['access_token'] );
+				}
+			} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement
+				// Ignore exceptions.
+			}
+		}
+
+		return parent::authorize( $http );
 	}
 
 	/**

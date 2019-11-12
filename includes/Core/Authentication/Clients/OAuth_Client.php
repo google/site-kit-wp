@@ -205,15 +205,21 @@ final class OAuth_Client {
 		}
 
 		$token = array(
-			'access_token' => $access_token,
-			'expires_in'   => $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
-			'created'      => $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
+			'access_token'  => $access_token,
+			'expires_in'    => $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
+			'created'       => $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
+			'refresh_token' => $this->get_refresh_token(),
 		);
-		if ( ! $this->using_proxy() ) {
-			$token['refresh_token'] = $this->get_refresh_token();
-		}
 
 		$this->google_client->setAccessToken( $token );
+
+		// This is called when the client refreshes the access token on-the-fly.
+		$this->google_client->setTokenCallback(
+			function( $cache_key, $access_token ) {
+				// All we can do here is assume an hour as it usually is.
+				$this->set_access_token( $access_token, HOUR_IN_SECONDS );
+			}
+		);
 
 		// If the token expired or is going to expire in the next 30 seconds.
 		if ( $this->google_client->isAccessTokenExpired() ) {
