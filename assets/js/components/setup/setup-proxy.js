@@ -40,12 +40,13 @@ class SetupUsingProxy extends Component {
 		super( props );
 
 		const { proxySetupURL, siteURL } = googlesitekit.admin;
-		const { isSiteKitConnected } = googlesitekit.setup;
+		const { isSiteKitConnected, isResettable } = googlesitekit.setup;
 		const { canSetup } = googlesitekit.permissions;
 
 		this.state = {
 			canSetup,
 			isSiteKitConnected,
+			isResettable,
 			completeSetup: false,
 			proxySetupURL,
 			context: getQueryArg( location.href, 'googlesitekit_context' ),
@@ -76,7 +77,7 @@ class SetupUsingProxy extends Component {
 			}, 500, 'later' );
 		}
 
-		const { context, proxySetupURL, siteHostname } = this.state;
+		const { context, isResettable, proxySetupURL, siteHostname } = this.state;
 		const isRevoked = 'revoked' === context;
 
 		return (
@@ -130,7 +131,7 @@ class SetupUsingProxy extends Component {
 														>
 															{ __( 'Start setup', 'google-site-kit' ) }
 														</Button>
-														<ResetButton />
+														{ isResettable && <ResetButton /> }
 														<Optin />
 													</div>
 												</div>
