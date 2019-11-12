@@ -257,9 +257,7 @@ final class OAuth_Client {
 				$error_code = $e->getMessage();
 			}
 			// Revoke and delete user connection data if the refresh token is invalid or expired.
-			if ( 'invalid_grant' === $error_code ) {
-				$this->revoke_token();
-			}
+			$this->revoke_token();
 			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
 			return;
 		}
