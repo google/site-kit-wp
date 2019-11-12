@@ -33,7 +33,7 @@ import { __, _x } from '@wordpress/i18n';
  */
 import AdSenseSetupInstructions from '../setup/adsense-setup-instructions';
 import AdSenseInProcessStatus from './adsense-in-process-status';
-import { getExistingTag, getReAuthUrl, getSiteKitAdminURL } from 'GoogleUtil';
+import { getExistingTag, getReAuthURL, getSiteKitAdminURL } from 'GoogleUtil';
 import { getAdSenseAccountStatus } from '../util';
 
 const propsFromAccountStatus = ( accountStatus, existingTag ) => {
@@ -41,7 +41,6 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 	 * Defines the account status variables.
 	 */
 	let accountTagMatch = false;
-	const clientId = false;
 	let continueAction = false;
 	let ctaLink;
 	let ctaLinkText;
@@ -71,7 +70,7 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 
 	switch ( accountStatus ) {
 		case 'account-connected':
-			if ( existingTag && clientId === existingTag ) {
+			if ( existingTag ) {
 				issue = false;
 				icon = 'alert';
 				statusHeadline = __( 'Site Kit will place AdSense code to your site', 'google-site-kit' );
@@ -104,7 +103,7 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 			statusMessage = __( 'We’ve found some AdSense code on your site, but it’s not linked to this AdSense account.', 'google-site-kit' );
 			profile = false;
 			ctaLinkText = __( 'Switch Google account', 'google-site-kit' );
-			ctaLink = getReAuthUrl( 'adsense', true );
+			ctaLink = getReAuthURL( 'adsense', true );
 			continueAction = {
 				accountStatus: 'account-connected',
 				continueText: __( 'Continue anyway', 'google-site-kit' ),
@@ -163,7 +162,7 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 			footerText = __( 'Already have an AdSense account?', 'google-site-kit' );
 			footerAppendedText = __( 'to connect to it', 'google-site-kit' );
 			footerCTA = __( 'Switch Google account', 'google-site-kit' );
-			footerCTALink = getReAuthUrl( 'adsense', true );
+			footerCTALink = getReAuthURL( 'adsense', true );
 			tracking = {
 				eventCategory: 'adsense_setup',
 				eventName: 'create_adsense_account',
@@ -174,7 +173,7 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 			statusMessage = __( 'We’ve found some AdSense code on your site, but it’s not linked to this Google account.', 'google-site-kit' );
 			profile = false;
 			ctaLinkText = __( 'Switch Google account', 'google-site-kit' );
-			ctaLink = getReAuthUrl( 'adsense', true );
+			ctaLink = getReAuthURL( 'adsense', true );
 			switchLabel = __( 'Let Site Kit place code on your site to get your site approved', 'google-site-kit' );
 			continueAction = {
 				statusHeadline: __( 'Create a new AdSense account', 'google-site-kit' ),
@@ -194,7 +193,6 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 
 	return {
 		accountTagMatch,
-		clientId,
 		continueAction,
 		ctaLink,
 		ctaLinkText,
