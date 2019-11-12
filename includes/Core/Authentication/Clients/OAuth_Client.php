@@ -237,7 +237,9 @@ final class OAuth_Client {
 	public function refresh_token() {
 		$refresh_token = $this->get_refresh_token();
 		if ( empty( $refresh_token ) ) {
+			$this->revoke_token();
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'refresh_token_not_exist' );
+			return;
 		}
 
 		// Stop if google_client not initialized yet.
@@ -257,7 +259,9 @@ final class OAuth_Client {
 				$error_code = $e->getMessage();
 			}
 			// Revoke and delete user connection data if the refresh token is invalid or expired.
-			$this->revoke_token();
+			if ( 'invalid_grant' === $error_code ) {
+				$this->revoke_token();
+			}
 			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
 			return;
 		}
