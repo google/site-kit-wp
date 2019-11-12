@@ -84,10 +84,10 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 			// Find accounts with a matching URL channel.
 			statusUpdateCallback( __( 'Searching for domain…', 'google-site-kit' ) );
 			for ( const account of accountData ) {
-				const accountId = account.id;
-				const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { clientID: accountId } ).then( ( res ) => res ).catch( ( e ) => e );
-				const parsedUrl = new URL( googlesitekit.admin.siteURL );
-				const matches = urlchannels && urlchannels.length ? filter( urlchannels, { urlPattern: parsedUrl.hostname } ) : [];
+				const accountID = account.id;
+				const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { clientID: accountID } ).then( ( res ) => res ).catch( ( e ) => e );
+				const parsedURL = new URL( googlesitekit.admin.siteURL );
+				const matches = urlchannels && urlchannels.length ? filter( urlchannels, { urlPattern: parsedURL.hostname } ) : [];
 
 				if ( ! matches || 0 === matches.length ) {
 					accountStatus = 'account-pending-review';
