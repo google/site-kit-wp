@@ -54,19 +54,6 @@ final class Profile {
 	public function __construct( User_Options $user_options, OAuth_Client $auth_client ) {
 		$this->user_options = $user_options;
 		$this->auth_client  = $auth_client;
-
-		// Ensure we have fresh profile data.
-		$profile_data = $this->get();
-		$timestamp    = isset( $profile_data['timestamp'] ) ? (int) $profile_data['timestamp'] : 0;
-		$currenttime  = time();
-
-		// If the stored profile data is missing, or older than a week, re-fetch it.
-		if ( ! $profile_data || ( ( $currenttime - $timestamp ) > ( 7 * DAY_IN_SECONDS ) ) ) {
-			$profile_data = $this->retrieve_google_profile_from_api();
-		}
-		if ( 0 !== $profile_data['timestamp'] ) {
-			$this->set( $profile_data );
-		}
 	}
 
 	/**
@@ -77,7 +64,17 @@ final class Profile {
 	 * @return array|bool Value set for the profile, or false if not set.
 	 */
 	public function get() {
-		return $this->user_options->get( self::OPTION );
+		// Ensure we have fresh profile data.
+		$profile_data = $this->user_options->get( self::OPTION );
+		$profile_time = isset( $profile_data['timestamp'] ) ? (int) $profile_data['timestamp'] : 0;
+		$current_time = current_time( 'timestamp' );
+
+		// If the stored profile data is missing, or older than a week, re-fetch it.
+		if ( ! $profile_data || ( $current_time - $profile_time ) > WEEK_IN_SECONDS ) {
+			$profile_data = $this->retrieve_google_profile_from_api();
+		}
+
+		return $profile_data;
 	}
 
 	/**
