@@ -95,6 +95,7 @@ class SetupUsingProxy extends Component {
 					<Notification
 						id="reset_success"
 						title={ __( 'Site Kit by Google was successfully reset.', 'google-site-kit' ) }
+						isDismissable={ false }
 					/>
 				) }
 				<div className="googlesitekit-wizard">
