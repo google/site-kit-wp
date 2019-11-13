@@ -694,9 +694,9 @@ export const extractTag = ( string, tag ) => {
 			result = reg.exec( string );
 			result = result ? result[ 1 ] : false;
 
-			// Detect amp-auto-ads tag.
+			// Detect auto-ads tags.
 			if ( ! result ) {
-				reg = new RegExp( /<amp-auto-ads [^>]*data-ad-client="([^"]+)"/gm );
+				reg = new RegExp( /<(?:script|amp-auto-ads) [^>]*data-ad-client="([^"]+)"/gm );
 				result = reg.exec( string );
 				result = result ? result[ 1 ] : false;
 			}
