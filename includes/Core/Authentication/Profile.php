@@ -112,13 +112,7 @@ final class Profile {
 	 */
 	private function retrieve_google_profile_from_api() {
 
-		// Fall back to the user's WordPress profile information.
-		$current_user = wp_get_current_user();
-		$profile_data = array(
-			'email'     => $current_user->user_email,
-			'photo'     => get_avatar_url( $current_user->user_email ),
-			'timestamp' => 0, // Don't cache WP user data.
-		);
+		$profile_data = false;
 
 		// Retrieve and store the user's Google profile data.
 		try {
