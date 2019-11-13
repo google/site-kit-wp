@@ -26,7 +26,7 @@ import Layout from 'GoogleComponents/layout/layout';
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -52,7 +52,7 @@ class DashboardDetailsWidgetKeywordsTable extends Component {
 				">
 					<Layout
 						footer
-						footerCtaLabel={ __( 'Search Console', 'google-site-kit' ) }
+						footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 						footerCtaLink={
 							sprintf( 'https://search.google.com/u/1/search-console?resource_id=%s', googlesitekit.admin.siteURL )
 						}

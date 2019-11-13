@@ -26,12 +26,12 @@ import Layout from 'GoogleComponents/layout/layout';
 import Optin from 'GoogleComponents/optin';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
-import { Component, Fragment } from 'GoogleUtil/react-features';
 import { delay } from 'lodash';
 
 /**
  * WordPress dependencies
  */
+import { Component, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { getQueryArg } from '@wordpress/url';
 
@@ -121,6 +121,7 @@ class SetupUsingProxy extends Component {
 																</p>
 															</Fragment>
 														) }
+														<Optin />
 														<Button
 															className="googlesitekit-start-setup"
 															href={ proxySetupURL }
@@ -131,7 +132,6 @@ class SetupUsingProxy extends Component {
 															{ __( 'Start setup', 'google-site-kit' ) }
 														</Button>
 														<ResetButton />
-														<Optin />
 													</div>
 												</div>
 											</div>

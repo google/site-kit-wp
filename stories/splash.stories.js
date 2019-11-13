@@ -5,7 +5,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import DashboardSplashIntro from 'GoogleComponents/dashboard-splash/dashboard-splash-intro';
 import DashboardSplashModule from 'GoogleComponents/dashboard-splash/dashboard-splash-module';
 import DashboardSplashService from 'GoogleComponents/dashboard-splash/dashboard-splash-service';
@@ -37,7 +37,7 @@ storiesOf( 'Splash', module )
 						">
 							<DashboardSplashModule
 								icon="search-console"
-								title={ __( 'Search Console', 'google-site-kit' ) }
+								title={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 								content={ __( 'Keep track of how people find you in Search, and how many of them visit your site.', 'google-site-kit' ) }
 							/>
 						</div>
@@ -49,7 +49,7 @@ storiesOf( 'Splash', module )
 						">
 							<DashboardSplashModule
 								icon="analytics"
-								title={ __( 'Analytics', 'google-site-kit' ) }
+								title={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 								content={ __( 'Understand your customers better: track how they navigate across your site and evaluate the performance of your products or posts.', 'google-site-kit' ) }
 							/>
 						</div>
@@ -61,7 +61,7 @@ storiesOf( 'Splash', module )
 						">
 							<DashboardSplashModule
 								icon="adsense"
-								title={ __( 'AdSense', 'google-site-kit' ) }
+								title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
 								content={ __( 'Make your content work for you -- earning money by placing ads on your site.', 'google-site-kit' ) }
 							/>
 						</div>
@@ -73,7 +73,7 @@ storiesOf( 'Splash', module )
 						">
 							<DashboardSplashModule
 								icon="pagespeed"
-								title={ __( 'PageSpeed', 'google-site-kit' ) }
+								title={ _x( 'PageSpeed', 'Service name', 'google-site-kit' ) }
 								content={ __( 'Analyze your site’s performance and get actionable tips to improve its speed across all devices.', 'google-site-kit' ) }
 							/>
 						</div>
@@ -102,7 +102,7 @@ storiesOf( 'Splash', module )
 								title={ __( 'You want to be found on the web. We want to help.', 'google-site-kit' ) }
 								content={ __( 'Track your site’s search performance with Google Search Console and browse around for more webmaster resources.', 'google-site-kit' ) }
 								link="https://search.google.com/search-console/about"
-								linkText={ __( 'Search Console', 'google-site-kit' ) }
+								linkText={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 								opposite={ true }
 							/>
 						</div>

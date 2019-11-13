@@ -825,7 +825,7 @@ tag_partner: "site_kit"
 
 		return array(
 			'slug'        => 'adsense',
-			'name'        => __( 'AdSense', 'google-site-kit' ),
+			'name'        => _x( 'AdSense', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Earn money by placing ads on your website. It’s free and easy.', 'google-site-kit' ),
 			'cta'         => __( 'Monetize Your Site.', 'google-site-kit' ),
 			'order'       => 2,

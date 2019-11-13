@@ -24,6 +24,7 @@ import Header from 'GoogleComponents/header';
 import Link from 'GoogleComponents/link';
 import HelpLink from 'GoogleComponents/help-link';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
+import withFilters from 'GoogleComponents/higherorder/with-filters';
 
 /**
  * WordPress dependencies
@@ -31,7 +32,6 @@ import { getSiteKitAdminURL } from 'SiteKitCore/util';
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { applyFilters } from '@wordpress/hooks';
-import { withFilters } from '@wordpress/components';
 
 class BaseComponent extends Component {
 	render() {
