@@ -383,7 +383,11 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 							'containerID'    => '',
 							'ampContainerID' => '',
 						);
-						return array_intersect_key( array_merge( $defaults, $option ), $defaults );
+
+						return array_intersect_key(
+							array_merge( $defaults, $option ),
+							$defaults
+						);
 					};
 				case 'account-id':
 					return function() {
