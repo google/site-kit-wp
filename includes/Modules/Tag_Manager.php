@@ -379,8 +379,9 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						}
 
 						$defaults = array(
-							'accountID'   => '',
-							'containerID' => '',
+							'accountID'      => '',
+							'containerID'    => '',
+							'ampContainerID' => '',
 						);
 						return array_intersect_key( array_merge( $defaults, $option ), $defaults );
 					};
