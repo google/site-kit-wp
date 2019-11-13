@@ -23,6 +23,7 @@ import Header from 'GoogleComponents/header';
 import Button from 'GoogleComponents/button';
 import ResetButton from 'GoogleComponents/reset-button';
 import Layout from 'GoogleComponents/layout/layout';
+import Notification from 'GoogleComponents/notifications/notification';
 import Optin from 'GoogleComponents/optin';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
@@ -49,6 +50,7 @@ class SetupUsingProxy extends Component {
 			isResettable,
 			completeSetup: false,
 			proxySetupURL,
+			resetSuccess: getQueryArg( location.href, 'notification' ) === 'reset_success',
 			context: getQueryArg( location.href, 'googlesitekit_context' ),
 			siteHostname: ( new URL( siteURL ) ).hostname,
 		};
@@ -77,12 +79,24 @@ class SetupUsingProxy extends Component {
 			}, 500, 'later' );
 		}
 
-		const { context, isResettable, proxySetupURL, siteHostname } = this.state;
+		const {
+			context,
+			isResettable,
+			proxySetupURL,
+			resetSuccess,
+			siteHostname,
+		} = this.state;
 		const isRevoked = 'revoked' === context;
 
 		return (
 			<Fragment>
 				<Header />
+				{ resetSuccess && (
+					<Notification
+						id="reset_success"
+						title={ __( 'Site Kit by Google was successfully reset.', 'google-site-kit' ) }
+					/>
+				) }
 				<div className="googlesitekit-wizard">
 					<div className="mdc-layout-grid">
 						<div className="mdc-layout-grid__inner">
