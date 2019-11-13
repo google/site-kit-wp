@@ -72,14 +72,14 @@ const setupSettings = () => {
 		],
 		properties: [
 			{
-				accountID: '12345678',
+				accountId: '12345678',
 				created: '2016-12-06T14:48:54.188Z',
 				dataRetentionResetOnNewActivity: true,
 				dataRetentionTtl: 'MONTHS_26',
 				defaultProfileId: '12345678',
 				id: 'UA-12345678-3',
 				industryVertical: 'INTERNET_AND_TELECOM',
-				internalWebPropertyID: '12345678',
+				internalWebPropertyId: '12345678',
 				kind: 'analytics#webproperty',
 				level: 'STANDARD',
 				name: 'testwebsite.com',
@@ -87,7 +87,7 @@ const setupSettings = () => {
 				selfLink: 'https://www.googleapis.com/analytics/v3/management/accounts/12345678/webproperties/UA-12345678-3',
 				starred: null,
 				updated: '2016-12-06T14:53:41.965Z',
-				websiteURL: 'https://www.testwebsite.com',
+				websiteUrl: 'https://www.testwebsite.com',
 				permissions: {
 					effective: [
 						'READ_AND_ANALYZE',
@@ -109,7 +109,7 @@ const setupSettings = () => {
 		],
 		profiles: [
 			{
-				accountID: '12345678',
+				accountId: '12345678',
 				botFilteringEnabled: false,
 				created: '2016-12-06T14:48:54.188Z',
 				currency: 'USD',
@@ -118,7 +118,7 @@ const setupSettings = () => {
 				enhancedECommerceTracking: null,
 				excludeQueryParameters: null,
 				id: '12345678',
-				internalWebPropertyID: '12345678',
+				internalWebPropertyId: '12345678',
 				kind: 'analytics#profile',
 				name: 'All Web Site Data',
 				selfLink: 'https://www.googleapis.com/analytics/v3/management/accounts/12345678/webproperties/UA-12345678-3/profiles/12345678',
@@ -130,8 +130,8 @@ const setupSettings = () => {
 				timezone: 'America/Los_Angeles',
 				type: 'WEB',
 				updated: '2019-01-25T20:15:27.426Z',
-				webPropertyID: 'UA-12345678-3',
-				websiteURL: 'https://www.testwebsite.com',
+				webPropertyId: 'UA-12345678-3',
+				websiteUrl: 'https://www.testwebsite.com',
 				permissions: {
 					effective: [
 						'READ_AND_ANALYZE',
