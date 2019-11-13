@@ -126,14 +126,14 @@ final class Profile {
 			$people_service = new Google_Service_PeopleService( $client );
 			$profile        = $people_service->people->get( 'people/me', array( 'personFields' => 'emailAddresses,photos' ) );
 
-			if ( isset( $profile['emailAddresses'][0]['value'] ) && isset( $profile['photos'][0]['url'] ) ) {
-
-				// Success - we have the profile data from the People API.
+			if ( isset( $profile['emailAddresses'][0]['value'], $profile['photos'][0]['url'] ) ) {
 				$profile_data = array(
 					'email'     => $profile['emailAddresses'][0]['value'],
 					'photo'     => $profile['photos'][0]['url'],
-					'timestamp' => time(),
+					'timestamp' => current_time( 'timestamp' ),
 				);
+
+				$this->set( $profile_data );
 			}
 		} catch ( \Exception $e ) {
 			return $profile_data;
