@@ -507,7 +507,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 
 					return function() use ( $data, $usage_context ) {
 						$option = array_merge(
-							(array) $this->options->get( self::OPTION ),
+							$this->options->get( self::OPTION ) ?: array(),
 							array( 'accountID' => $data['accountID'] )
 						);
 
