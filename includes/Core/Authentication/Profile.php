@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Core\Authentication;
 
-use Google\Site_Kit\Helpers;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit_Dependencies\Google_Service_PeopleService;
