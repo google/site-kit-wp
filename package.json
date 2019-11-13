@@ -195,5 +195,8 @@
     "webpack-stream": "^5.2.1",
     "webpackbar": "^3.1.5",
     "whatwg-fetch": "^3.0.0"
+  },
+  "dependencies": {
+    "psl": "^1.4.0"
   }
 }
