@@ -25,6 +25,16 @@ const valuesToTest = [
 		false,
 	],
 	[
+		'<script data-ad-client="ca-pub-1234567890" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>',
+		'adsense',
+		'ca-pub-1234567890',
+	],
+	[
+		'<script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js" async data-ad-client="ca-pub-1234567890"></script>',
+		'adsense',
+		'ca-pub-1234567890',
+	],
+	[
 		'<script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> <script> (adsbygoogle = window.adsbygoogle || []).push({ google_ad_client: "ca-pub-123456789", enable_page_level_ads: true }); </script>',
 		'adsense',
 		'ca-pub-123456789',

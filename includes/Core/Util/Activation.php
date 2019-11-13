@@ -261,10 +261,6 @@ final class Activation {
 											<?php esc_html_e( 'Congratulations, the Site Kit plugin is now activated.', 'google-site-kit' ); ?>
 										</h3>
 
-										<a id="start-setup-link" href="<?php echo esc_url( $sitekit_splash_url ); ?>" class="googlesitekit-activation__button googlesitekit-activation__start-setup mdc-button mdc-button--raised">
-											<?php esc_html_e( 'Start setup', 'google-site-kit' ); ?>
-										</a>
-
 										<div class="googlesitekit-opt-in googlesitekit-activation__opt-in">
 											<div class="mdc-form-field">
 												<div class="mdc-checkbox mdc-checkbox--upgraded mdc-ripple-upgraded mdc-ripple-upgraded--unbounded">
@@ -300,6 +296,10 @@ final class Activation {
 												</label>
 											</div>
 										</div>
+
+										<a id="start-setup-link" href="<?php echo esc_url( $sitekit_splash_url ); ?>" class="googlesitekit-activation__button googlesitekit-activation__start-setup mdc-button mdc-button--raised">
+											<?php esc_html_e( 'Start setup', 'google-site-kit' ); ?>
+										</a>
 									</div>
 								</div>
 							</div>

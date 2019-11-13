@@ -400,12 +400,15 @@ class TagmanagerSetup extends Component {
 						onEnhancedChange={ this.handleAccountChange }
 						outlined
 					>
-						{ accounts.map( ( account ) =>
-							<Option
-								key={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }
-								value={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }>
-								{ account.name }
-							</Option> ) }
+						{ accounts.map( ( account ) => {
+							return (
+								<Option
+									key={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }
+									value={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }>
+									{ account.name }
+								</Option>
+							);
+						} ) }
 					</Select>
 
 					{ containersLoading ? ( <ProgressBar small /> ) : (
@@ -417,16 +420,19 @@ class TagmanagerSetup extends Component {
 							onEnhancedChange={ this.handleContainerChange }
 							outlined
 						>
-							{ containers.map( ( container ) =>
-								<Option
-									key={ container.containerId /* Capitalization rule exception: `containerId` is a property of an API returned value. */ }
-									value={ container.publicId /* Capitalization rule exception: `publicId` is a property of an API returned value. */ }>
-									{
-										0 === container.publicId ? // Capitalization rule exception: `publicId` is a property of an API returned value.
-											__( 'Set up a new container', 'google-site-kit' ) :
-											container.publicId /* Capitalization rule exception: `publicId` is a property of an API returned value. */
-									}
-								</Option> ) }
+							{ containers.map( ( container ) => {
+								return (
+									<Option
+										key={ container.containerId /* Capitalization rule exception: `containerId` is a property of an API returned value. */ }
+										value={ container.publicId /* Capitalization rule exception: `publicId` is a property of an API returned value. */ }>
+										{
+											0 === container.publicId ? // Capitalization rule exception: `publicId` is a property of an API returned value.
+												__( 'Set up a new container', 'google-site-kit' ) :
+												container.publicId /* Capitalization rule exception: `publicId` is a property of an API returned value. */
+										}
+									</Option>
+								);
+							} ) }
 						</Select>
 					) }
 				</div>
@@ -445,6 +451,7 @@ class TagmanagerSetup extends Component {
 
 	/**
 	 * Render Error or Notice format depending on the errorCode.
+	 * @return {WPElement|null} Error message if any, or null.
 	 */
 	renderErrorOrNotice() {
 		const {
