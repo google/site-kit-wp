@@ -307,6 +307,30 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	}
 
 	/**
+	 * Sanitizes a string to be used for a container name.
+	 *
+	 * @param string $name String to sanitize.
+	 *
+	 * @return string
+	 */
+	public static function sanitize_container_name( $name ) {
+		// Remove any leading or trailing whitespace.
+		$name = trim( $name );
+		// Must not start with an underscore.
+		$name = ltrim( $name, '_' );
+		// Decode entities for special characters so that they are stripped properly.
+		$name = wp_specialchars_decode( $name, ENT_QUOTES );
+		// Convert accents to basic characters to prevent them from being stripped.
+		$name = remove_accents( $name );
+		// Strip all non-simple characters.
+		$name = preg_replace( '/[^a-zA-Z0-9_., -]/', '', $name );
+		// Collapse multiple whitespaces.
+		$name = preg_replace( '/\s+/', ' ', $name );
+
+		return $name;
+	}
+
+	/**
 	 * Returns the mapping between available datapoints and their services.
 	 *
 	 * @since 1.0.0
@@ -553,11 +577,14 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	protected function create_container( $account_id, $usage_context = self::USAGE_CONTEXT_WEB ) {
 		$client     = $this->get_client();
 		$orig_defer = $client->shouldDefer();
-
 		$client->setDefer( false );
 
+		// Use site name for container, fallback to domain of reference URL.
+		$container_name = get_bloginfo( 'name' ) ?: wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
+		$container_name = self::sanitize_container_name( $container_name );
+
 		$container = new Google_Service_TagManager_Container();
-		$container->setName( remove_accents( get_bloginfo( 'name' ) ) );
+		$container->setName( $container_name );
 		$container->setUsageContext( (array) $usage_context );
 
 		try {
