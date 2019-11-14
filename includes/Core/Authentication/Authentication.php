@@ -501,7 +501,7 @@ final class Authentication {
 		$access_token = $auth_client->get_client()->getAccessToken();
 
 		$data['isSiteKitConnected'] = $this->credentials->has();
-
+		$data['isResettable']       = (bool) $this->options->get( Credentials::OPTION );
 		$data['isAuthenticated']    = ! empty( $access_token );
 		$data['requiredScopes']     = $auth_client->get_required_scopes();
 		$data['grantedScopes']      = ! empty( $access_token ) ? $auth_client->get_granted_scopes() : array();
