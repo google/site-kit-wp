@@ -633,7 +633,7 @@ final class OAuth_Client {
 
 			$nonce = $this->options->get( self::OPTION_PROXY_NONCE );
 			if ( empty( $nonce ) ) {
-				$nonce = wp_create_nonce( 'googlesitekit_proxy' );
+				$nonce = wp_generate_password();
 				$this->options->set( self::OPTION_PROXY_NONCE, $nonce );
 			}
 
@@ -658,7 +658,7 @@ final class OAuth_Client {
 			'scope'   => rawurlencode( $scope ),
 		);
 		if ( 'missing_verification' === $error_code ) {
-			$query_args['verification_nonce'] = wp_create_nonce( 'googlesitekit_verification' );
+			$query_args['verification_nonce'] = wp_generate_password();
 		}
 
 		return add_query_arg( $query_args, $url );
