@@ -423,9 +423,9 @@ class TagmanagerSetup extends Component {
 							} ).map( ( { name, publicId }, i ) =>
 								<Option
 									key={ i }
-									value={ publicId /* Capitalization rule exception: `publicId` is a property of an API returned value. */ }
-									children={ name }
-								/>
+									value={ publicId /* Capitalization rule exception: `publicId` is a property of an API returned value. */ }>
+									{ name }
+								</Option>
 							) }
 						</Select>
 					) }
