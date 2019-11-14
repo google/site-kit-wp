@@ -466,7 +466,11 @@ final class Authentication {
 	 */
 	private function inline_js_admin_data( $data ) {
 		if ( ! isset( $data['userData'] ) ) {
-			$data['userData'] = array();
+			$current_user     = wp_get_current_user();
+			$data['userData'] = array(
+				'email'   => $current_user->user_email,
+				'picture' => get_avatar_url( $current_user->user_email ),
+			);
 		}
 		$profile_data = $this->profile->get();
 		if ( $profile_data ) {
