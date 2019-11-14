@@ -146,7 +146,7 @@ describe( 'setting up the AdSense module', () => {
 		await expect( '/' ).not.toHaveAdSenseTag();
 	} );
 
-	it( 'displays ““Let’s get your site ready for ads” when the Adsense account is missing the address or phone not verified', async () => {
+	it( 'displays “Let’s get your site ready for ads” when the Adsense account is missing the address or phone not verified', async () => {
 		datapointHandlers.accounts = ( request ) => {
 			request.respond( {
 				status: 200,
