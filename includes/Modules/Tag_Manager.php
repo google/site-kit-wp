@@ -309,6 +309,8 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	/**
 	 * Sanitizes a string to be used for a container name.
 	 *
+	 * @since 1.0.4
+	 *
 	 * @param string $name String to sanitize.
 	 *
 	 * @return string
