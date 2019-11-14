@@ -127,7 +127,7 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 				'google-site-kit'
 			);
 			ctaLinkText = __( 'Go to your AdSense account to check on your site’s status or to complete setting up', 'google-site-kit' );
-			ctaLink = `https://www.google.com/adsense/new/sites?url=${ parsedDomain.domain || siteURL.hostname }&source=site-kit`;
+			ctaLink = `https://www.google.com/adsense/new/sites?url=${ parsedDomain || siteURL.hostname }&source=site-kit`;
 			break;
 		case 'account-pending-review':
 			statusHeadline = __( 'We’re getting your site ready for ads', 'google-site-kit' );
