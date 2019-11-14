@@ -119,7 +119,7 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 			};
 			break;
 		case 'ads-display-pending':
-			const parsedDomain = pslParse( siteURL.hostname );
+			const { domain: parsedDomain } = pslParse( siteURL.hostname );
 
 			statusHeadline = __( 'Let’s get your site ready for ads', 'google-site-kit' );
 			statusMessage = __(
