@@ -658,7 +658,7 @@ final class OAuth_Client {
 			'scope'   => rawurlencode( $scope ),
 		);
 		if ( 'missing_verification' === $error_code ) {
-			$query_args['verification_nonce'] = wp_generate_password();
+			$query_args['verification_nonce'] = wp_create_nonce( 'googlesitekit_verification' );
 		}
 
 		return add_query_arg( $query_args, $url );

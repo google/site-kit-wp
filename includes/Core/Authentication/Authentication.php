@@ -297,7 +297,7 @@ final class Authentication {
 			'splash',
 			array(
 				'googlesitekit_connect' => 1,
-				'nonce'                 => wp_generate_password(),
+				'nonce'                 => wp_create_nonce( 'connect' ),
 			)
 		);
 	}
@@ -314,7 +314,7 @@ final class Authentication {
 			'splash',
 			array(
 				'googlesitekit_disconnect' => 1,
-				'nonce'                    => wp_generate_password(),
+				'nonce'                    => wp_create_nonce( 'disconnect' ),
 			)
 		);
 	}
