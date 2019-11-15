@@ -131,6 +131,67 @@ class Tag_ManagerTest extends TestCase {
 	}
 
 	/**
+	 * @param string $input String to sanitize
+	 * @param string $expected Expected output
+	 * @dataProvider container_name_provider
+	 */
+	public function test_sanitize_container_name( $input, $expected ) {
+		$this->assertEquals(
+			$expected,
+			Tag_Manager::sanitize_container_name( $input )
+		);
+	}
+
+	public function container_name_provider() {
+		return array(
+			array(
+				'Example Site Name',
+				'Example Site Name',
+			),
+			array(
+				'Exåmplé Sïtē Nàmę',
+				'Example Site Name',
+			),
+			array(
+				'_Example_Site_Name_',
+				'Example_Site_Name_',
+			),
+			array(
+				'Example Site & Name',
+				'Example Site Name',
+			),
+			array(
+				'Example Site &amp; Name',
+				'Example Site Name',
+			),
+			array(
+				'Example Site with 🔥 Name',
+				'Example Site with Name',
+			),
+			array(
+				'Example Site with "double quotes"',
+				'Example Site with double quotes',
+			),
+			array(
+				'Example Site with &quot;double quotes&quot;',
+				'Example Site with double quotes',
+			),
+			array(
+				'Example Site with \'single quotes\'',
+				'Example Site with single quotes',
+			),
+			array(
+				'Example Site with &#039;single quotes&#039;',
+				'Example Site with single quotes',
+			),
+			array(
+				'Example Site with `~!@#$%^&*()_+[]{}\\|;"<>,./?',
+				'Example Site with _,.',
+			),
+		);
+	}
+
+	/**
 	 * @return Module_With_Scopes
 	 */
 	protected function get_module_with_scopes() {

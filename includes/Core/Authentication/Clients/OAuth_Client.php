@@ -287,13 +287,8 @@ final class OAuth_Client {
 	 * @since 1.0.0
 	 */
 	public function revoke_token() {
-		// Stop if google_client not initialized yet.
-		if ( ! $this->google_client instanceof Google_Client ) {
-			return;
-		}
-
 		try {
-			$this->google_client->revokeToken();
+			$this->get_client()->revokeToken();
 		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement
 			// No special handling, we just need to make sure this goes through.
 		}
