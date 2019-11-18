@@ -165,6 +165,7 @@ class AnalyticsSetup extends Component {
 			selectedinternalWebProperty: 'internalWebPropertyID',
 			useSnippet: 'useSnippet',
 			ampClientIDOptIn: 'ampClientIDOptIn',
+			trackingDisabled: 'trackingDisabled',
 		};
 
 		toggleConfirmModuleSettings( 'analytics', settingsMapping, this.state );
@@ -471,6 +472,7 @@ class AnalyticsSetup extends Component {
 			properties,
 			profiles,
 			ampClientIDOptIn,
+			trackingDisabled,
 		} = this.state;
 
 		this.setState( {
@@ -501,6 +503,7 @@ class AnalyticsSetup extends Component {
 			internalWebPropertyID,
 			useSnippet: useSnippet || false,
 			ampClientIDOptIn: ampClientIDOptIn || false,
+			trackingDisabled,
 		};
 
 		try {
