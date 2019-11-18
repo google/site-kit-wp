@@ -930,10 +930,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'useSnippet' ), array( 'status' => 400 ) );
 					}
-					if ( ! isset( $data['trackingDisabled'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'trackingDisabled' ), array( 'status' => 400 ) );
-					}
+
 					return function() use ( $data ) {
 						$property_id              = null;
 						$internal_web_property_id = null;
@@ -1021,7 +1018,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'profileID'             => $profile_id,
 							'useSnippet'            => ! empty( $data['useSnippet'] ),
 							'ampClientIDOptIn'      => ! empty( $data['ampClientIDOptIn'] ),
-							'trackingDisabled'      => $data['trackingDisabled'],
+							'trackingDisabled'      => (array) $data['trackingDisabled'],
 						);
 						$this->options->set( self::OPTION, $option );
 						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
