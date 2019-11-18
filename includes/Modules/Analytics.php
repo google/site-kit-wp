@@ -194,6 +194,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		$info['settings']                     = $this->get_data( 'connection' );
 		$info['settings']['useSnippet']       = $this->get_data( 'use-snippet' );
 		$info['settings']['ampClientIDOptIn'] = $this->get_data( 'amp-client-id-opt-in' );
+		$info['settings']['trackingDisabled'] = $this->get_data( 'tracking-disabled' );
 
 		$info['adsenseLinked'] = (bool) $this->options->get( 'googlesitekit_analytics_adsense_linked' );
 
