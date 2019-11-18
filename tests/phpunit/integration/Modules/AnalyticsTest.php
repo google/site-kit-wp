@@ -217,17 +217,18 @@ class AnalyticsTest extends TestCase {
 	/**
 	 * @dataProvider tracking_disabled_provider
 	 */
-	public function test_tracking_disabled( $settings, $user_id, $expectation ) {
+	public function test_tracking_disabled( $settings, $logged_in, $expectation ) {
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
 		wp_scripts()->done      = array();
 		remove_all_actions( 'wp_enqueue_scripts' );
+		// Set the current user (can be 0 for no user)
+		wp_set_current_user( $logged_in ? $this->factory()->user->create() : 0 );
+
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$analytics->register();
 		$analytics->set_data( 'settings', $settings );
 
-		// Set the current user (can be 0 for no user)
-		wp_set_current_user( $user_id );
 		$head_html = $this->capture_action( 'wp_head' );
 
 		switch ( $expectation ) {
@@ -249,44 +250,42 @@ class AnalyticsTest extends TestCase {
 			'useSnippet'            => true,
 			'trackingDisabled'      => array( 'loggedinUsers' ),
 		);
-		$not_logged_in_id = 0;
-		$real_user_id     = $this->factory()->user->create();
 
 		return array(
 			// Tracking is active by default.
 			array(
 				$base_settings,
-				$not_logged_in_id,
+				false,
 				'contains',
 			),
 			// Tracking is not active if snippet is disabled.
 			array(
 				array_merge( $base_settings, array( 'useSnippet' => false ) ),
-				$not_logged_in_id,
+				false,
 				'not_contains',
 			),
 			// Tracking is not active for logged in users by default.
 			array(
 				$base_settings,
-				$real_user_id,
+				true,
 				'not_contains',
 			),
 			// Tracking is not active if snippet is disabled for logged in users.
 			array(
 				array_merge( $base_settings, array( 'useSnippet' => false ) ),
-				$real_user_id,
+				true,
 				'not_contains',
 			),
 			// Tracking is active for logged in users if enabled via settings.
 			array(
 				array_merge( $base_settings, array( 'trackingDisabled' => array() ) ),
-				$real_user_id,
+				true,
 				'contains',
 			),
 			// Tracking is active for guests if disabled for logged in users.
 			array(
 				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
-				$not_logged_in_id,
+				false,
 				'contains',
 			),
 		);
