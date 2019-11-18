@@ -216,11 +216,15 @@ class AnalyticsTest extends TestCase {
 
 	/**
 	 * @dataProvider tracking_disabled_provider
+	 *
+	 * @param array $settings
+	 * @param bool $logged_in
+	 * @param string $test_method
 	 */
 	public function test_tracking_disabled( $settings, $logged_in, $test_method ) {
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
-		wp_scripts()->done      = array();
+		wp_scripts()->done       = array();
 		remove_all_actions( 'wp_enqueue_scripts' );
 		// Set the current user (can be 0 for no user)
 		wp_set_current_user( $logged_in ? $this->factory()->user->create() : 0 );
@@ -230,6 +234,8 @@ class AnalyticsTest extends TestCase {
 		$analytics->set_data( 'settings', $settings );
 
 		$head_html = $this->capture_action( 'wp_head' );
+		// Sanity check.
+		$this->assertNotEmpty( $head_html );
 
 		$this->{$test_method}( "id={$settings['propertyID']}", $head_html );
 	}
