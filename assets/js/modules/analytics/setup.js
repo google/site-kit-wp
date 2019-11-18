@@ -512,7 +512,7 @@ class AnalyticsSetup extends Component {
 			data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 			await this.getAccounts();
 
-			googlesitekit.modules.analytics.settings.accountID = savedSettings;
+			googlesitekit.modules.analytics.settings = savedSettings;
 
 			// Track event.
 			sendAnalyticsTrackingEvent( 'analytics_setup', 'analytics_configured' );
