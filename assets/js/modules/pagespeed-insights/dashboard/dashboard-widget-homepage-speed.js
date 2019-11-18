@@ -69,7 +69,7 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 
 		const source = {
 			name: _x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ),
-			link: sprintf( 'https://developers.google.com/speed/pagespeed/insights/?url=%s', googlesitekit.admin.siteURL ),
+			link: sprintf( 'https://developers.google.com/speed/pagespeed/insights/?url=%s', googlesitekit.permaLink || googlesitekit.admin.siteURL ),
 		};
 
 		if ( error ) {
@@ -107,8 +107,11 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 				<PageSpeedInsightsDashboardWidgetHomepageSpeedMobile
 					handleDataLoaded={ this.handleDataLoaded }
 					handleDataError={ this.handleDataError }
+					title={ __( 'Mobile', 'google-site-kit' ) }
 				/>
-				<PageSpeedInsightsDashboardWidgetHomepageSpeedDesktop />
+				<PageSpeedInsightsDashboardWidgetHomepageSpeedDesktop
+					title={ __( 'Desktop', 'google-site-kit' ) }
+				/>
 				{ ! loading &&
 					<Fragment>
 						<div className="
