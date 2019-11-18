@@ -612,9 +612,10 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					};
 				case 'tracking-disabled':
 					return function() {
-						$option = $this->options->get( self::OPTION );
+						$option     = $this->options->get( self::OPTION );
+						$exclusions = isset( $option['trackingDisabled'] ) ? $option['trackingDisabled'] : array();
 
-						return isset( $option['trackingDisabled'] ) ? $option['trackingDisabled'] : array();
+						return is_array( $exclusions ) ? $exclusions : array();
 					};
 				case 'goals':
 					$connection = $this->get_data( 'connection' );
