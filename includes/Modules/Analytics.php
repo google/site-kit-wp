@@ -62,7 +62,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		add_filter(
 			'option_' . self::OPTION,
 			function( $option ) {
-				$option = (array) $option;
+				if ( ! is_array( $option ) ) {
+					$option = array();
+				}
 
 				/**
 				 * Filters the Google Analytics account ID to use.
@@ -110,6 +112,11 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				$profile_id = apply_filters( 'googlesitekit_analytics_view_id', '' );
 				if ( ! empty( $profile_id ) ) {
 					$option['profileID'] = $profile_id;
+				}
+
+				// Disable tracking for logged-in users unless enabled via settings.
+				if ( ! isset( $option['trackingDisabled'] ) ) {
+					$option['trackingDisabled'] = array( 'loggedinUsers' );
 				}
 
 				return $option;
@@ -644,9 +651,10 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				case 'tracking-disabled':
 					return function() {
 						$option     = $this->options->get( self::OPTION );
-						$exclusions = isset( $option['trackingDisabled'] ) ? $option['trackingDisabled'] : array();
+						$default    = array( 'loggedinUsers' );
+						$exclusions = isset( $option['trackingDisabled'] ) ? $option['trackingDisabled'] : $default;
 
-						return is_array( $exclusions ) ? $exclusions : array();
+						return is_array( $exclusions ) ? $exclusions : $default;
 					};
 				case 'goals':
 					$connection = $this->get_data( 'connection' );
