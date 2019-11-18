@@ -18,6 +18,7 @@ use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
+use WP_User;
 
 /**
  * @group Modules
@@ -212,6 +213,85 @@ class AnalyticsTest extends TestCase {
 
 		$result = apply_filters( 'amp_post_template_data', $data );
 		$this->assertArrayHasKey( 'amp-analytics', $result['amp_component_scripts'] );
+	}
+
+	/**
+	 * @dataProvider tracking_disabled_provider
+	 */
+	public function test_tracking_disabled( $settings, $user_id, $expectation ) {
+		wp_scripts()->registered = array();
+		wp_scripts()->queue      = array();
+		wp_scripts()->done      = array();
+		remove_all_actions( 'wp_enqueue_scripts' );
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$analytics->register();
+		$analytics->set_data( 'settings', $settings );
+
+		// Set the current user (can be 0 for no user)
+		wp_set_current_user( $user_id );
+
+		do_action( 'wp_enqueue_scripts' );
+		$head_html = $this->capture_action( 'wp_head' );
+
+		switch ( $expectation ) {
+			case 'contains':
+				$this->assertContains( "id={$settings['propertyID']}", $head_html );
+				break;
+			case 'not_contains':
+				$this->assertNotContains( "id={$settings['propertyID']}", $head_html );
+				break;
+		}
+	}
+
+	public function tracking_disabled_provider() {
+		$base_settings = array(
+			'accountID'             => 123456789,
+			'propertyID'            => 'UA-21234567-8',
+			'internalWebPropertyID' => 212345678,
+			'profileID'             => 321234567,
+			'useSnippet'            => true,
+		);
+		$not_logged_in_id = 0;
+		$real_user_id     = $this->factory()->user->create();
+
+		return array(
+			// Tracking is active by default.
+			array(
+				$base_settings,
+				$not_logged_in_id,
+				'contains',
+			),
+			// Tracking is not active if snippet is disabled.
+			array(
+				array_merge( $base_settings, array( 'useSnippet' => false ) ),
+				$not_logged_in_id,
+				'not_contains',
+			),
+			// Tracking is active for all visitors by default, including logged in users.
+			array(
+				$base_settings,
+				$real_user_id,
+				'contains',
+			),
+			// Tracking is not active if snippet is disabled for logged in users.
+			array(
+				array_merge( $base_settings, array( 'useSnippet' => false ) ),
+				$real_user_id,
+				'not_contains',
+			),
+			// Tracking is not active for logged in users if excluded via settings.
+			array(
+				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
+				$real_user_id,
+				'not_contains',
+			),
+			// Tracking is active for guests if disabled for logged in users.
+			array(
+				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
+				$not_logged_in_id,
+				'contains',
+			),
+		);
 	}
 
 	/**
