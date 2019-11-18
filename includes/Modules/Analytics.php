@@ -126,10 +126,27 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			}
 		);
 
-		$print_amp_gtag = function() {
+		$tracking_disabled = function() {
+			$exclusions = $this->get_data( 'tracking-disabled' );
+			$disabled   = in_array( 'loggedinUsers', $exclusions, true ) && is_user_logged_in();
+
+			/**
+			 * Filters whether or not the Analytics tracking snippet is output for the current request.
+			 *
+			 * @since 1.0.5
+			 *
+			 * @param $disabled bool Whether to disable tracking or not.
+			 */
+			return apply_filters( 'googlesitekit_analytics_tracking_disabled', $disabled );
+		};
+		$print_amp_gtag    = function() use ( $tracking_disabled ) {
 			// This hook is only available in AMP plugin version >=1.3, so if it
 			// has already completed, do nothing.
 			if ( ! doing_action( 'amp_print_analytics' ) && did_action( 'amp_print_analytics' ) ) {
+				return;
+			}
+
+			if ( $tracking_disabled() ) {
 				return;
 			}
 
@@ -145,7 +162,11 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		// For AMP Reader, AMP plugin version <1.3.
 		add_action( 'amp_post_template_footer', $print_amp_gtag, 20 );
 
-		$print_amp_client_id_optin = function() {
+		$print_amp_client_id_optin = function() use ( $tracking_disabled ) {
+			if ( $tracking_disabled() ) {
+				return;
+			}
+
 			$this->print_amp_client_id_optin();
 		};
 		add_action( 'wp_head', $print_amp_client_id_optin ); // For AMP Native and Transitional.
