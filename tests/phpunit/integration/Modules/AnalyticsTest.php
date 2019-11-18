@@ -226,6 +226,8 @@ class AnalyticsTest extends TestCase {
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
 		remove_all_actions( 'wp_enqueue_scripts' );
+		// Remove irrelevant script from throwing errors in CI from readfile().
+		remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
 		// Set the current user (can be 0 for no user)
 		wp_set_current_user( $logged_in ? $this->factory()->user->create() : 0 );
 
