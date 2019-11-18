@@ -51,6 +51,7 @@ class AnalyticsSetup extends Component {
 			propertyID,
 			useSnippet,
 			ampClientIDOptIn,
+			trackingDisabled,
 		} = googlesitekit.modules.analytics.settings;
 
 		this.state = {
@@ -71,6 +72,7 @@ class AnalyticsSetup extends Component {
 			selectedinternalWebProperty: internalWebPropertyID,
 			ampClientIDOptIn,
 			existingTag: false,
+			trackingDisabled: trackingDisabled || [],
 		};
 
 		this.handleAccountChange = this.handleAccountChange.bind( this );
