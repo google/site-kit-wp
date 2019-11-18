@@ -217,7 +217,7 @@ class AnalyticsTest extends TestCase {
 	/**
 	 * @dataProvider tracking_disabled_provider
 	 */
-	public function test_tracking_disabled( $settings, $logged_in, $expectation ) {
+	public function test_tracking_disabled( $settings, $logged_in, $test_method ) {
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
 		wp_scripts()->done      = array();
@@ -231,14 +231,7 @@ class AnalyticsTest extends TestCase {
 
 		$head_html = $this->capture_action( 'wp_head' );
 
-		switch ( $expectation ) {
-			case 'contains':
-				$this->assertContains( "id={$settings['propertyID']}", $head_html );
-				break;
-			case 'not_contains':
-				$this->assertNotContains( "id={$settings['propertyID']}", $head_html );
-				break;
-		}
+		$this->{$test_method}( "id={$settings['propertyID']}", $head_html );
 	}
 
 	public function tracking_disabled_provider() {
@@ -256,37 +249,37 @@ class AnalyticsTest extends TestCase {
 			array(
 				$base_settings,
 				false,
-				'contains',
+				'assertContains',
 			),
 			// Tracking is not active if snippet is disabled.
 			array(
 				array_merge( $base_settings, array( 'useSnippet' => false ) ),
 				false,
-				'not_contains',
+				'assertNotContains',
 			),
 			// Tracking is not active for logged in users by default.
 			array(
 				$base_settings,
 				true,
-				'not_contains',
+				'assertNotContains',
 			),
 			// Tracking is not active if snippet is disabled for logged in users.
 			array(
 				array_merge( $base_settings, array( 'useSnippet' => false ) ),
 				true,
-				'not_contains',
+				'assertNotContains',
 			),
 			// Tracking is active for logged in users if enabled via settings.
 			array(
 				array_merge( $base_settings, array( 'trackingDisabled' => array() ) ),
 				true,
-				'contains',
+				'assertContains',
 			),
 			// Tracking is active for guests if disabled for logged in users.
 			array(
 				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
 				false,
-				'contains',
+				'assertContains',
 			),
 		);
 	}
