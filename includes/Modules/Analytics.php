@@ -133,10 +133,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				return;
 			}
 
-			if ( $this->is_tracking_disabled() ) {
-				return;
-			}
-
 			$this->print_amp_gtag();
 		};
 		// Which actions are run depends on the version of the AMP Plugin
@@ -150,10 +146,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		add_action( 'amp_post_template_footer', $print_amp_gtag, 20 );
 
 		$print_amp_client_id_optin = function() {
-			if ( $this->is_tracking_disabled() ) {
-				return;
-			}
-
 			$this->print_amp_client_id_optin();
 		};
 		add_action( 'wp_head', $print_amp_client_id_optin ); // For AMP Native and Transitional.
@@ -289,6 +281,10 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			return;
 		}
 
+		if ( $this->is_tracking_disabled() ) {
+			return;
+		}
+
 		wp_enqueue_script( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 			'google_gtagjs',
 			'https://www.googletagmanager.com/gtag/js?id=' . esc_attr( $tracking_id ),
@@ -362,6 +358,10 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			return;
 		}
 
+		if ( $this->is_tracking_disabled() ) {
+			return;
+		}
+
 		$gtag_amp_opt = array(
 			'vars' => array(
 				'gtag_id' => $tracking_id,
@@ -422,6 +422,10 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 		$amp_client_id_optin = $this->get_data( 'amp-client-id-opt-in' );
 		if ( is_wp_error( $amp_client_id_optin ) || ! $amp_client_id_optin ) {
+			return;
+		}
+
+		if ( $this->is_tracking_disabled() ) {
 			return;
 		}
 
