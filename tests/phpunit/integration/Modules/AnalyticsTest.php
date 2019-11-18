@@ -228,8 +228,6 @@ class AnalyticsTest extends TestCase {
 
 		// Set the current user (can be 0 for no user)
 		wp_set_current_user( $user_id );
-
-		do_action( 'wp_enqueue_scripts' );
 		$head_html = $this->capture_action( 'wp_head' );
 
 		switch ( $expectation ) {
