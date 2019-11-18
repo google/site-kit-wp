@@ -446,6 +446,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			'internal-web-property-id'     => '',
 			'use-snippet'                  => '',
 			'amp-client-id-opt-in'         => '',
+			'tracking-disabled'            => '',
 			// GET.
 			'goals'                        => 'analytics',
 			'accounts-properties-profiles' => 'analytics',
@@ -607,6 +608,12 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							return true; // Default to true.
 						}
 						return ! empty( $option['ampClientIDOptIn'] );
+					};
+				case 'tracking-disabled':
+					return function() {
+						$option = $this->options->get( self::OPTION );
+
+						return isset( $option['trackingDisabled'] ) ? $option['trackingDisabled'] : array();
 					};
 				case 'goals':
 					$connection = $this->get_data( 'connection' );
