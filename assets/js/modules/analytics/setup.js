@@ -41,6 +41,12 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 import { addFilter, removeFilter } from '@wordpress/hooks';
 
+const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
+
+const trackingExclusionLabels = {
+	[ TRACKING_LOGGED_IN_USERS ]: __( 'Logged-in users', 'google-site-kit' ),
+};
+
 class AnalyticsSetup extends Component {
 	constructor( props ) {
 		super( props );
@@ -857,6 +863,8 @@ class AnalyticsSetup extends Component {
 				{ /*Render the auto snippet toggle form.*/ }
 				{ this.renderAutoInsertSnippetForm() }
 
+				{ onSettingsPage && this.renderExclusionsForm() }
+
 				{ /*Render the continue and skip button.*/ }
 				{
 					! onSettingsPage &&
@@ -867,6 +875,32 @@ class AnalyticsSetup extends Component {
 					</div>
 				}
 			</Fragment>
+		);
+	}
+
+	renderExclusionsForm() {
+		const { trackingDisabled } = this.state;
+
+		return (
+			<div>
+				<h5>{ __( 'Exclude from Analytics', 'google-site-kit' ) }</h5>
+
+				<div className="googlesitekit-setup-module__input">
+					<Switch
+						id={ TRACKING_LOGGED_IN_USERS }
+						label={ trackingExclusionLabels[ TRACKING_LOGGED_IN_USERS ] }
+						onClick={ this.handleExclusionsChange }
+						checked={ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) }
+						hideLabel={ false }
+					/>
+					<p>
+						{ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) ?
+							__( 'Logged-in users will be excluded from Analytics tracking.', 'google-site-kit' ) :
+							__( 'Logged-in users will be included in Analytics tracking.', 'google-site-kit' )
+						}
+					</p>
+				</div>
+			</div>
 		);
 	}
 
