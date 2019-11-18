@@ -18,7 +18,6 @@ use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
-use WP_User;
 
 /**
  * @group Modules
@@ -250,6 +249,7 @@ class AnalyticsTest extends TestCase {
 			'internalWebPropertyID' => 212345678,
 			'profileID'             => 321234567,
 			'useSnippet'            => true,
+			'trackingDisabled'      => array( 'loggedinUsers' ),
 		);
 		$not_logged_in_id = 0;
 		$real_user_id     = $this->factory()->user->create();
@@ -267,11 +267,11 @@ class AnalyticsTest extends TestCase {
 				$not_logged_in_id,
 				'not_contains',
 			),
-			// Tracking is active for all visitors by default, including logged in users.
+			// Tracking is not active for logged in users by default.
 			array(
 				$base_settings,
 				$real_user_id,
-				'contains',
+				'not_contains',
 			),
 			// Tracking is not active if snippet is disabled for logged in users.
 			array(
@@ -279,11 +279,11 @@ class AnalyticsTest extends TestCase {
 				$real_user_id,
 				'not_contains',
 			),
-			// Tracking is not active for logged in users if excluded via settings.
+			// Tracking is active for logged in users if enabled via settings.
 			array(
-				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
+				array_merge( $base_settings, array( 'trackingDisabled' => array() ) ),
 				$real_user_id,
-				'not_contains',
+				'contains',
 			),
 			// Tracking is active for guests if disabled for logged in users.
 			array(
