@@ -90,6 +90,7 @@ class AnalyticsSetup extends Component {
 		this.handleRadioClick = this.handleRadioClick.bind( this );
 		this.handleAMPClientIDSwitch = this.handleAMPClientIDSwitch.bind( this );
 		this.handleRefetchAccount = this.handleRefetchAccount.bind( this );
+		this.handleExclusionsChange = this.handleExclusionsChange.bind( this );
 	}
 
 	async componentDidMount() {
@@ -571,6 +572,25 @@ class AnalyticsSetup extends Component {
 		} );
 
 		this.getAccounts();
+	}
+
+	handleExclusionsChange( e ) {
+		const { trackingDisabled } = this.state;
+		const { id: exclusion, checked } = e.target;
+
+		// Rebuild the exclusions list.
+		const exclusionMap = Object.assign(
+			{},
+			// Convert [ key1, key2, .. ] to { key1: true, key2: true, ..}
+			...trackingDisabled.map( ( exclusionKey ) => ( { [ exclusionKey ]: true } ) ),
+			// Add in the current change
+			{ [ exclusion ]: checked },
+		);
+
+		// Re-set the state as a list of enabled exclusions.
+		this.setState( {
+			trackingDisabled: Object.keys( exclusionMap ).filter( ( key ) => exclusionMap[ key ] ),
+		} );
 	}
 
 	renderAutoInsertSnippetForm() {
