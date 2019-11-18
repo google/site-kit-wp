@@ -507,17 +507,12 @@ class AnalyticsSetup extends Component {
 		};
 
 		try {
-			const response = await data.set( TYPE_MODULES, 'analytics', 'settings', analyticAccount );
+			const savedSettings = await data.set( TYPE_MODULES, 'analytics', 'settings', analyticAccount );
 
 			data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 			await this.getAccounts();
 
-			googlesitekit.modules.analytics.settings.accountID = response.accountID;
-			googlesitekit.modules.analytics.settings.profileID = response.profileID;
-			googlesitekit.modules.analytics.settings.propertyID = response.propertyID;
-			googlesitekit.modules.analytics.settings.internalWebPropertyID = response.internalWebPropertyID;
-			googlesitekit.modules.analytics.settings.useSnippet = response.useSnippet;
-			googlesitekit.modules.analytics.settings.ampClientIDOptIn = response.ampClientIDOptIn;
+			googlesitekit.modules.analytics.settings.accountID = savedSettings;
 
 			// Track event.
 			sendAnalyticsTrackingEvent( 'analytics_setup', 'analytics_configured' );
@@ -529,10 +524,10 @@ class AnalyticsSetup extends Component {
 			if ( this._isMounted ) {
 				this.setState( {
 					isSaving: false,
-					selectedAccount: response.accountID,
-					selectedProfile: response.profileID,
-					selectedProperty: response.propertyID,
-					selectedinternalWebProperty: response.internalWebPropertyID,
+					selectedAccount: savedSettings.accountID,
+					selectedProfile: savedSettings.profileID,
+					selectedProperty: savedSettings.propertyID,
+					selectedinternalWebProperty: savedSettings.internalWebPropertyID,
 				} );
 			}
 		} catch ( err ) {
