@@ -740,6 +740,7 @@ class AnalyticsSetup extends Component {
 			useSnippet,
 			existingTag,
 			errorCode,
+			trackingDisabled,
 		} = this.state;
 
 		const {
@@ -819,7 +820,6 @@ class AnalyticsSetup extends Component {
 					<div className="googlesitekit-settings-module__meta-items">
 						<div className="
 							googlesitekit-settings-module__meta-item
-							googlesitekit-settings-module__meta-item--nomargin
 						">
 							<p className="googlesitekit-settings-module__meta-item-type">
 								{ __( 'Analytics Code Snippet', 'google-site-kit' ) }
@@ -827,6 +827,25 @@ class AnalyticsSetup extends Component {
 							<h5 className="googlesitekit-settings-module__meta-item-data">
 								{ tagStateMessage }
 							</h5>
+						</div>
+					</div>
+					<div className="googlesitekit-settings-module__meta-items">
+						<div className="
+							googlesitekit-settings-module__meta-item
+						">
+							<p className="googlesitekit-settings-module__meta-item-type">
+								{ __( 'Excluded from Analytics', 'google-site-kit' ) }
+							</p>
+							{ !! trackingDisabled.length &&
+								<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive">
+									{ trackingDisabled.map( ( exclusion, i ) => <li className="mdc-list-item" key={ i }>{ trackingExclusionLabels[ exclusion ] }</li> ) }
+								</ul>
+							}
+							{ ! trackingDisabled.length &&
+								<h5 className="googlesitekit-settings-module__meta-item-data">
+									{ __( 'Analytics is currently enabled for all visitors.', 'google-site-kit' ) }
+								</h5>
+							}
 						</div>
 					</div>
 				</Fragment>
