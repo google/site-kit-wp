@@ -126,27 +126,14 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			}
 		);
 
-		$tracking_disabled = function() {
-			$exclusions = $this->get_data( 'tracking-disabled' );
-			$disabled   = in_array( 'loggedinUsers', $exclusions, true ) && is_user_logged_in();
-
-			/**
-			 * Filters whether or not the Analytics tracking snippet is output for the current request.
-			 *
-			 * @since 1.0.5
-			 *
-			 * @param $disabled bool Whether to disable tracking or not.
-			 */
-			return apply_filters( 'googlesitekit_analytics_tracking_disabled', $disabled );
-		};
-		$print_amp_gtag    = function() use ( $tracking_disabled ) {
+		$print_amp_gtag = function() {
 			// This hook is only available in AMP plugin version >=1.3, so if it
 			// has already completed, do nothing.
 			if ( ! doing_action( 'amp_print_analytics' ) && did_action( 'amp_print_analytics' ) ) {
 				return;
 			}
 
-			if ( $tracking_disabled() ) {
+			if ( $this->is_tracking_disabled() ) {
 				return;
 			}
 
@@ -162,8 +149,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		// For AMP Reader, AMP plugin version <1.3.
 		add_action( 'amp_post_template_footer', $print_amp_gtag, 20 );
 
-		$print_amp_client_id_optin = function() use ( $tracking_disabled ) {
-			if ( $tracking_disabled() ) {
+		$print_amp_client_id_optin = function() {
+			if ( $this->is_tracking_disabled() ) {
 				return;
 			}
 
@@ -178,6 +165,25 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				return $this->amp_data_load_analytics_component( $data );
 			}
 		);
+	}
+
+	/**
+	 * Checks whether or not tracking snippet should be contextually disabled for this request.
+	 *
+	 * @return bool
+	 */
+	protected function is_tracking_disabled() {
+		$exclusions = $this->get_data( 'tracking-disabled' );
+		$disabled   = in_array( 'loggedinUsers', $exclusions, true ) && is_user_logged_in();
+
+		/**
+		 * Filters whether or not the Analytics tracking snippet is output for the current request.
+		 *
+		 * @since 1.0.5
+		 *
+		 * @param $disabled bool Whether to disable tracking or not.
+		 */
+		return (bool) apply_filters( 'googlesitekit_analytics_tracking_disabled', $disabled );
 	}
 
 	/**
