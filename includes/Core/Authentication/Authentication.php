@@ -90,7 +90,7 @@ final class Authentication {
 	 * Verification tag instance.
 	 *
 	 * @since 1.0.0
-	 * @var Verification_Tag
+	 * @var Verification_Meta
 	 */
 	protected $verification_tag;
 
@@ -145,7 +145,7 @@ final class Authentication {
 
 		$this->credentials      = new Credentials( $this->options );
 		$this->verification     = new Verification( $this->user_options );
-		$this->verification_tag = new Verification_Tag( $this->user_options, $this->transients );
+		$this->verification_tag = new Verification_Meta( $this->user_options, $this->transients );
 		$this->profile          = new Profile( $user_options, $this->get_oauth_client() );
 		$this->first_admin      = new First_Admin( $this->options );
 	}
@@ -238,9 +238,8 @@ final class Authentication {
 	/**
 	 * Gets the verification tag instance.
 	 *
+	 * @return Verification_Meta Verification tag instance.
 	 * @since 1.0.0
-	 *
-	 * @return Verification_Tag Verification tag instance.
 	 */
 	public function verification_tag() {
 		return $this->verification_tag;
@@ -281,7 +280,7 @@ final class Authentication {
 
 		// Delete additional user data.
 		$this->user_options->delete( Verification::OPTION );
-		$this->user_options->delete( Verification_Tag::OPTION );
+		$this->user_options->delete( Verification_Meta::OPTION );
 		$this->user_options->delete( Profile::OPTION );
 	}
 

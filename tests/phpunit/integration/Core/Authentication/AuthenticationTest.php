@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
-use Google\Site_Kit\Core\Authentication\Verification_Tag;
+use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\TestCase;
@@ -225,7 +225,7 @@ class AuthenticationTest extends TestCase {
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertInstanceOf(
-			'\Google\Site_Kit\Core\Authentication\Verification_Tag',
+			'\Google\Site_Kit\Core\Authentication\Verification_Meta',
 			$auth->verification_tag()
 		);
 	}
@@ -306,7 +306,7 @@ class AuthenticationTest extends TestCase {
 			OAuth_Client::OPTION_REFRESH_TOKEN,
 			Profile::OPTION,
 			Verification::OPTION,
-			Verification_Tag::OPTION,
+			Verification_Meta::OPTION,
 		);
 	}
 }

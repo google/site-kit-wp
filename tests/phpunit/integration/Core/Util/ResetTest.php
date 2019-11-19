@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\First_Admin;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
-use Google\Site_Kit\Core\Authentication\Verification_Tag;
+use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Util\Activation;
 use Google\Site_Kit\Core\Util\Beta_Migration;
 use Google\Site_Kit\Core\Util\Reset;
@@ -99,7 +99,7 @@ class ResetTest extends TestCase {
 			OAuth_Client::OPTION_REFRESH_TOKEN,
 			Profile::OPTION,
 			Verification::OPTION,
-			Verification_Tag::OPTION,
+			Verification_Meta::OPTION,
 		);
 	}
 
