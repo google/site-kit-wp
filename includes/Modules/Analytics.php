@@ -169,6 +169,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	/**
 	 * Checks whether or not tracking snippet should be contextually disabled for this request.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @return bool
 	 */
 	protected function is_tracking_disabled() {
