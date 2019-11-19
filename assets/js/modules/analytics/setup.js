@@ -920,7 +920,9 @@ class AnalyticsSetup extends Component {
 
 		return (
 			<div>
-				<h5>{ __( 'Exclude from Analytics', 'google-site-kit' ) }</h5>
+				<p className="googlesitekit-setup-module__text">
+					{ __( 'Exclude from Analytics', 'google-site-kit' ) }
+				</p>
 
 				<div className="googlesitekit-setup-module__input">
 					<Switch
