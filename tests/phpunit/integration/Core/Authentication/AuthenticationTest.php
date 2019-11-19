@@ -96,42 +96,6 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
-	/**
-	 * @dataProvider data_register_head_verification_tags
-	 */
-	public function test_register_head_verification_tags( $saved_tag, $expected_output ) {
-		remove_all_actions( 'wp_head' );
-		remove_all_actions( 'login_head' );
-		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$auth->register();
-
-		set_transient( 'googlesitekit_verification_meta_tags', array( $saved_tag ) );
-
-		$this->assertContains(
-			$expected_output,
-			$this->capture_action( 'wp_head' )
-		);
-
-		$this->assertContains(
-			$expected_output,
-			$this->capture_action( 'login_head' )
-		);
-	}
-
-	public function data_register_head_verification_tags() {
-		return array(
-			array( // Full meta tag stored.
-				'<meta name="google-site-verification" content="test-verification-content">',
-				'<meta name="google-site-verification" content="test-verification-content">',
-			),
-			array(
-				// Only verification token stored.
-				'test-verification-content-2',
-				'<meta name="google-site-verification" content="test-verification-content-2">',
-			),
-		);
-	}
-
 	public function test_register_allowed_redirect_hosts() {
 		remove_all_filters( 'allowed_redirect_hosts' );
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );

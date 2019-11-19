@@ -59,6 +59,13 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 				$this->handle_verification_token();
 			}
 		);
+
+		$print_site_verification_meta = function() {
+			$this->print_site_verification_meta();
+		};
+
+		add_action( 'wp_head', $print_site_verification_meta );
+		add_action( 'login_head', $print_site_verification_meta );
 	}
 
 	/**
@@ -392,5 +399,31 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			)
 		);
 		exit;
+	}
+
+	/**
+	 * Prints site verification meta in wp_head().
+	 *
+	 * @since 1.0.5
+	 */
+	private function print_site_verification_meta() {
+		// Get verification meta tags for all users.
+		$verification_tags = $this->authentication->verification_tag()->get_all();
+		$allowed_html      = array(
+			'meta' => array(
+				'name'    => array(),
+				'content' => array(),
+			),
+		);
+
+		foreach ( $verification_tags as $verification_tag ) {
+			$verification_tag = html_entity_decode( $verification_tag );
+
+			if ( 0 !== strpos( $verification_tag, '<meta ' ) ) {
+				$verification_tag = '<meta name="google-site-verification" content="' . esc_attr( $verification_tag ) . '">';
+			}
+
+			echo wp_kses( $verification_tag, $allowed_html );
+		}
 	}
 }
