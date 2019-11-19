@@ -362,7 +362,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	/**
 	 * Handles receiving a verification token for a user by the authentication proxy.
 	 *
-	 * @since 1.0.0
+	 * @since 1.0.5
 	 */
 	private function handle_verification_token() {
 		$authentication = $this->authentication;
