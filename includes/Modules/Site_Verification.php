@@ -10,9 +10,11 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Authentication\Verification_File;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
@@ -46,6 +48,11 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	const VERIFICATION_TYPE_FILE = 'FILE';
 
 	/**
+	 * Query variable for site verification file match.
+	 */
+	const QUERY_VAR_VERIFICATION_FILE = 'googlesitekit_site_verification_file';
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -66,6 +73,30 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 		add_action( 'wp_head', $print_site_verification_meta );
 		add_action( 'login_head', $print_site_verification_meta );
+
+		add_action(
+			'init',
+			function () {
+				global $wp;
+
+				if ( $this->supports_file_verification() ) {
+					$wp->add_query_var( self::QUERY_VAR_VERIFICATION_FILE );
+					add_rewrite_rule( '^(google[a-z0-9]+\.html)$', 'index.php?' . self::QUERY_VAR_VERIFICATION_FILE . '=$matches[1]', 'top' );
+				}
+			}
+		);
+
+		add_action(
+			'template_redirect',
+			function () {
+				$verification_file_name = get_query_var( self::QUERY_VAR_VERIFICATION_FILE );
+
+				if ( $verification_file_name ) {
+					$this->serve_verification_file( $verification_file_name );
+				}
+			},
+			0
+		);
 	}
 
 	/**
@@ -383,6 +414,8 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		switch ( $verification_type ) {
 			case self::VERIFICATION_TYPE_FILE:
 				$authentication->verification_file()->set( $_GET['googlesitekit_verification_token'] );
+				// Ensure rewrite rules include file handler.
+				flush_rewrite_rules();
 				break;
 			case self::VERIFICATION_TYPE_META:
 				$authentication->verification_tag()->set( $_GET['googlesitekit_verification_token'] );
@@ -427,5 +460,50 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 			echo wp_kses( $verification_tag, $allowed_html );
 		}
+	}
+
+	/**
+	 * Serves the verification file response.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $verification_file_name File name of verification.
+	 */
+	private function serve_verification_file( $verification_file_name ) {
+		global $wpdb;
+
+		$user_ids = ( new \WP_User_Query(
+			array(
+				'meta_key'   => $wpdb->get_blog_prefix() . Verification_File::OPTION,
+				'meta_value' => $verification_file_name,
+				'fields'     => 'id',
+				'number'     => 1,
+			)
+		) )->get_results();
+
+		$user_id = array_shift( $user_ids ) ?: 0;
+
+		if ( user_can( $user_id, Permissions::SETUP ) ) {
+			printf( 'google-site-verification: %s', esc_html( $verification_file_name ) );
+		}
+
+		// If the user does not have the necessary permissions then let the request pass through.
+	}
+
+	/**
+	 * Checks if the site supports file-based site verification.
+	 *
+	 * The site must be a root install, with no path in the home URL
+	 * to be able to serve the verification response properly.
+	 *
+	 * @since n.e.x.t
+	 * @see \WP_Rewrite::rewrite_rules for robots.txt
+	 *
+	 * @return bool
+	 */
+	private function supports_file_verification() {
+		$home_path = wp_parse_url( home_url(), PHP_URL_PATH );
+
+		return ( ! $home_path || '/' === $home_path );
 	}
 }
