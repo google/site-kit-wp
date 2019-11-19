@@ -660,6 +660,23 @@ final class OAuth_Client {
 	}
 
 	/**
+	 * Checks if the site supports file-based site verification.
+	 *
+	 * The site must be a root install, with no path in the home URL
+	 * to be able to serve the verification response properly.
+	 *
+	 * @since n.e.x.t
+	 * @see \WP_Rewrite::rewrite_rules for robots.txt
+	 *
+	 * @return bool
+	 */
+	private function supports_file_verification() {
+		$home_path = wp_parse_url( home_url(), PHP_URL_PATH );
+
+		return ( ! $home_path || '/' === $home_path );
+	}
+
+	/**
 	 * Returns the permissions URL to the authentication proxy.
 	 *
 	 * This only returns a URL if the user already has an access token set.

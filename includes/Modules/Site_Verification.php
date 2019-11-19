@@ -486,21 +486,4 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 		// If the user does not have the necessary permissions then let the request pass through.
 	}
-
-	/**
-	 * Checks if the site supports file-based site verification.
-	 *
-	 * The site must be a root install, with no path in the home URL
-	 * to be able to serve the verification response properly.
-	 *
-	 * @since n.e.x.t
-	 * @see \WP_Rewrite::rewrite_rules for robots.txt
-	 *
-	 * @return bool
-	 */
-	private function supports_file_verification() {
-		$home_path = wp_parse_url( home_url(), PHP_URL_PATH );
-
-		return ( ! $home_path || '/' === $home_path );
-	}
 }
