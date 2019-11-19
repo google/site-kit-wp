@@ -410,8 +410,6 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		switch ( $verification_type ) {
 			case self::VERIFICATION_TYPE_FILE:
 				$authentication->verification_file()->set( $_GET['googlesitekit_verification_token'] );
-				// Ensure rewrite rules include file handler.
-				flush_rewrite_rules();
 				break;
 			case self::VERIFICATION_TYPE_META:
 				$authentication->verification_tag()->set( $_GET['googlesitekit_verification_token'] );
