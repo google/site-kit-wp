@@ -613,11 +613,13 @@ final class OAuth_Client {
 	 * @return string URL to the setup page on the authentication proxy.
 	 */
 	public function get_proxy_setup_url( $access_code = '', $error_code = '' ) {
-		$url = self::PROXY_URL . '/site-management/setup/';
-
+		$url         = self::PROXY_URL . '/site-management/setup/';
 		$credentials = $this->get_client_credentials();
-
-		$scope = implode( ' ', $this->get_required_scopes() );
+		$base_args   = array(
+			'version'  => GOOGLESITEKIT_VERSION,
+			'scope'    => rawurlencode( implode( ' ', $this->get_required_scopes() ) ),
+			'supports' => rawurlencode( implode( ' ', $this->get_proxy_setup_supports() ) ),
+		);
 
 		if ( ! is_object( $credentials ) || empty( $credentials->web->client_id ) ) {
 			$home_url           = home_url();
@@ -633,30 +635,47 @@ final class OAuth_Client {
 			}
 
 			return add_query_arg(
-				array(
-					'nonce'      => $nonce,
-					'name'       => rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ) ) ),
-					'url'        => rawurlencode( $home_url ),
-					'version'    => GOOGLESITEKIT_VERSION,
-					'rest_root'  => rawurlencode( $rest_root ),
-					'admin_root' => rawurlencode( $admin_root ),
-					'scope'      => rawurlencode( $scope ),
+				array_merge(
+					$base_args,
+					array(
+						'nonce'      => $nonce,
+						'name'       => rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ) ) ),
+						'url'        => rawurlencode( $home_url ),
+						'rest_root'  => rawurlencode( $rest_root ),
+						'admin_root' => rawurlencode( $admin_root ),
+					)
 				),
 				$url
 			);
 		}
 
-		$query_args = array(
-			'site_id' => $credentials->web->client_id,
-			'code'    => $access_code,
-			'version' => GOOGLESITEKIT_VERSION,
-			'scope'   => rawurlencode( $scope ),
+		$query_args = array_merge(
+			$base_args,
+			array(
+				'site_id' => $credentials->web->client_id,
+				'code'    => $access_code,
+			)
 		);
+
 		if ( 'missing_verification' === $error_code ) {
 			$query_args['verification_nonce'] = wp_create_nonce( 'googlesitekit_verification' );
 		}
 
 		return add_query_arg( $query_args, $url );
+	}
+
+	/**
+	 * Gets the list of features to declare support for when setting up with the proxy.
+	 *
+	 * @since n.e.x.t
+	 * @return array
+	 */
+	private function get_proxy_setup_supports() {
+		return array_filter(
+			array(
+				$this->supports_file_verification() ? 'file_verification' : false,
+			)
+		);
 	}
 
 	/**
