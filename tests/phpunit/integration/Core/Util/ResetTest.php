@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\First_Admin;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
+use Google\Site_Kit\Core\Authentication\Verification_File;
 use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Util\Activation;
 use Google\Site_Kit\Core\Util\Beta_Migration;
@@ -100,6 +101,7 @@ class ResetTest extends TestCase {
 			Profile::OPTION,
 			Verification::OPTION,
 			Verification_Meta::OPTION,
+			Verification_File::OPTION,
 		);
 	}
 

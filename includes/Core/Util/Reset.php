@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Verification_File;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -181,6 +182,7 @@ final class Reset {
 			$user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 			$user_options->delete( Verification::OPTION );
 			$user_options->delete( Verification_Meta::OPTION );
+			$user_options->delete( Verification_File::OPTION );
 			$user_options->delete( Profile::OPTION );
 
 			// Clean up old user  api key data, moved to options.
