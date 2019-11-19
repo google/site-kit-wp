@@ -48,9 +48,11 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	const VERIFICATION_TYPE_FILE = 'FILE';
 
 	/**
-	 * Query variable for site verification file match.
+	 * Callback invoked after serving verification file.
+	 *
+	 * @var \Closure
 	 */
-	const QUERY_VAR_VERIFICATION_FILE = 'googlesitekit_site_verification_file';
+	private $post_serve_verification_file_callback;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -74,29 +76,23 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		add_action( 'wp_head', $print_site_verification_meta );
 		add_action( 'login_head', $print_site_verification_meta );
 
+		// Exit handled by callback for testability.
+		$this->post_serve_verification_file_callback = function () {
+			exit;
+		};
 		add_action(
 			'init',
 			function () {
-				global $wp;
-
-				if ( $this->supports_file_verification() ) {
-					$wp->add_query_var( self::QUERY_VAR_VERIFICATION_FILE );
-					add_rewrite_rule( '^(google[a-z0-9]+\.html)$', 'index.php?' . self::QUERY_VAR_VERIFICATION_FILE . '=$matches[1]', 'top' );
+				if (
+					isset( $_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'] )
+					&& 'GET' === strtoupper( $_SERVER['REQUEST_METHOD'] )
+					&& preg_match( '/^\/(?P<filename>google[a-z0-9]+\.html)$/', $_SERVER['REQUEST_URI'], $matches )
+				) {
+					$this->serve_verification_file( $matches['filename'] );
 				}
 			}
 		);
 
-		add_action(
-			'template_redirect',
-			function () {
-				$verification_file_name = get_query_var( self::QUERY_VAR_VERIFICATION_FILE );
-
-				if ( $verification_file_name ) {
-					$this->serve_verification_file( $verification_file_name );
-				}
-			},
-			0
-		);
 	}
 
 	/**
@@ -485,6 +481,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 		if ( user_can( $user_id, Permissions::SETUP ) ) {
 			printf( 'google-site-verification: %s', esc_html( $verification_file_name ) );
+			call_user_func( $this->post_serve_verification_file_callback );
 		}
 
 		// If the user does not have the necessary permissions then let the request pass through.

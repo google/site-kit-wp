@@ -11,8 +11,10 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Verification_File;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
+use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
@@ -37,6 +39,7 @@ class Site_VerificationTest extends TestCase {
 
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 		remove_all_filters( 'admin_init' );
+		remove_all_actions( 'init' );
 
 		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
 
@@ -48,6 +51,7 @@ class Site_VerificationTest extends TestCase {
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
 		$this->assertTrue( has_action( 'admin_init' ) );
+		$this->assertTrue( has_action( 'init' ) );
 	}
 
 	/**
@@ -95,6 +99,35 @@ class Site_VerificationTest extends TestCase {
 			),
 			$site_verification->get_scopes()
 		);
+	}
+
+	public function test_file_verification() {
+		$context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$site_verification = new Site_Verification( $context );
+		$user_id           = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$user_options      = new User_Options( $context, $user_id );
+		remove_all_actions( 'init' );
+		$site_verification->register();
+		$this->force_set_property( $site_verification, 'post_serve_verification_file_callback', function () {} );
+
+		// Ensure no verification file response if the user does not have one.
+		$this->go_to( '/google1234.html' );
+		$this->assertNotContains( 'google-site-verification', $this->capture_action( 'init' ) );
+
+		// Set correct verification for user
+		$user_options->set( Verification_File::OPTION, 'google1234.html' );
+		$this->assertEquals( 'google-site-verification: google1234.html', $this->capture_action( 'init' ) );
+
+		// Ensure that the verification isn't served if there is no match
+		$user_options->set( Verification_File::OPTION, 'google9999.html' );
+		$this->assertEquals( '', $this->capture_action( 'init' ) );
+
+		// Ensure that the verification isn't served if there is a match, but the user does not have the permission.
+		$user_options->set( Verification_File::OPTION, 'google1234.html' );
+		$this->assertTrue( user_can( $user_id, Permissions::SETUP ) );
+		( new \WP_User( $user_id ) )->remove_role( 'administrator' );
+		$this->assertFalse( user_can( $user_id, Permissions::SETUP ) );
+		$this->assertEquals( '', $this->capture_action( 'init' ) );
 	}
 
 	/**
