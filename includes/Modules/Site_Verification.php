@@ -15,7 +15,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit_Dependencies\Google_Client;
-use Google\Site_Kit_Dependencies\Google_Service;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_SiteVerification;
 use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequest;
@@ -23,7 +22,6 @@ use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificatio
 use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificationWebResourceResource;
 use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificationWebResourceResourceSite;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
-use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
 use WP_Error;
 use Exception;
 
