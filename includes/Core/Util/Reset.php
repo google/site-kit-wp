@@ -11,21 +11,21 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Authentication\Credentials;
+use Google\Site_Kit\Core\Authentication\First_Admin;
+use Google\Site_Kit\Core\Authentication\Profile;
+use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_File;
+use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Authentication\Credentials;
-use Google\Site_Kit\Core\Authentication\First_Admin;
-use Google\Site_Kit\Core\Authentication\Verification;
-use Google\Site_Kit\Core\Authentication\Verification_Meta;
-use Google\Site_Kit\Core\Authentication\Profile;
-use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
-use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
-use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Optimize;
+use Google\Site_Kit\Modules\PageSpeed_Insights;
+use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Tag_Manager;
 
 /**
