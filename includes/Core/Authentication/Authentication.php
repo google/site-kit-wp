@@ -95,6 +95,14 @@ final class Authentication {
 	protected $verification_tag;
 
 	/**
+	 * Verification file instance.
+	 *
+	 * @since 1.0.5
+	 * @var Verification_File
+	 */
+	protected $verification_file;
+
+	/**
 	 * Profile instance.
 	 *
 	 * @since 1.0.0
@@ -141,13 +149,14 @@ final class Authentication {
 		if ( ! $transients ) {
 			$transients = new Transients( $this->context );
 		}
-		$this->transients = $transients;
 
-		$this->credentials      = new Credentials( $this->options );
-		$this->verification     = new Verification( $this->user_options );
-		$this->verification_tag = new Verification_Meta( $this->user_options, $this->transients );
-		$this->profile          = new Profile( $user_options, $this->get_oauth_client() );
-		$this->first_admin      = new First_Admin( $this->options );
+		$this->transients        = $transients;
+		$this->credentials       = new Credentials( $this->options );
+		$this->verification      = new Verification( $this->user_options );
+		$this->verification_tag  = new Verification_Meta( $this->user_options, $this->transients );
+		$this->verification_file = new Verification_File( $this->user_options );
+		$this->profile           = new Profile( $user_options, $this->get_oauth_client() );
+		$this->first_admin       = new First_Admin( $this->options );
 	}
 
 	/**
@@ -236,6 +245,17 @@ final class Authentication {
 	 */
 	public function verification_tag() {
 		return $this->verification_tag;
+	}
+
+	/**
+	 * Gets the verification file instance.
+	 *
+	 * @since 1.0.5
+	 *
+	 * @return Verification_File Verification file instance.
+	 */
+	public function verification_file() {
+		return $this->verification_file;
 	}
 
 	/**

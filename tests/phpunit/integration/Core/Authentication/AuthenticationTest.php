@@ -230,6 +230,15 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
+	public function test_verification_file() {
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertInstanceOf(
+			'\Google\Site_Kit\Core\Authentication\Verification_File',
+			$auth->verification_file()
+		);
+	}
+
 	public function test_profile() {
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
