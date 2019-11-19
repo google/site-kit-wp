@@ -35,6 +35,7 @@ class Site_VerificationTest extends TestCase {
 		$site_verification = new Site_Verification( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		remove_all_filters( 'googlesitekit_auth_scopes' );
+		remove_all_filters( 'admin_init' );
 
 		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
 
@@ -45,6 +46,7 @@ class Site_VerificationTest extends TestCase {
 			$site_verification->get_scopes(),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
+		$this->assertTrue( has_action( 'admin_init' ) );
 	}
 
 	public function test_get_module_scopes() {

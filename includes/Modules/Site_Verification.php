@@ -44,6 +44,13 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+
+		add_action(
+			'admin_init',
+			function() {
+				$this->handle_verification_token();
+			}
+		);
 	}
 
 	/**
@@ -335,5 +342,39 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		return array(
 			'siteverification' => new Google_Service_SiteVerification( $client ),
 		);
+	}
+
+	/**
+	 * Handles receiving a verification token for a user by the authentication proxy.
+	 *
+	 * @since 1.0.0
+	 */
+	private function handle_verification_token() {
+		$authentication = $this->authentication;
+		$auth_client    = $authentication->get_oauth_client();
+
+		if ( ! $auth_client->using_proxy()
+			|| empty( $_GET['googlesitekit_verification_token'] )
+			|| empty( $_GET['googlesitekit_verification_nonce'] )
+		) {
+			return;
+		}
+
+		if ( ! wp_verify_nonce( $_GET['googlesitekit_verification_nonce'], 'googlesitekit_verification' ) ) {
+			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
+		}
+
+		$authentication->verification_tag()->set( $_GET['googlesitekit_verification_token'] );
+		$code = isset( $_GET['googlesitekit_code'] ) ? $_GET['googlesitekit_code'] : '';
+
+		// We need to pass the 'missing_verification' error code here so that the URL includes a verification nonce.
+		wp_safe_redirect(
+			add_query_arg(
+				'verify',
+				'true',
+				$auth_client->get_proxy_setup_url( $code, 'missing_verification' )
+			)
+		);
+		exit;
 	}
 }
