@@ -97,7 +97,7 @@ final class Authentication {
 	/**
 	 * Verification file instance.
 	 *
-	 * @since 1.0.5
+	 * @since n.e.x.t
 	 * @var Verification_File
 	 */
 	protected $verification_file;
@@ -243,7 +243,7 @@ final class Authentication {
 	/**
 	 * Gets the verification file instance.
 	 *
-	 * @since 1.0.5
+	 * @since n.e.x.t
 	 *
 	 * @return Verification_File Verification file instance.
 	 */

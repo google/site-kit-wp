@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 /**
  * Class representing the site verification file for a user.
  *
- * @since 1.0.5
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ final class Verification_File {
 	/**
 	 * User_Options object.
 	 *
-	 * @since 1.0.5
+	 * @since n.e.x.t
 	 * @var User_Options
 	 */
 	private $user_options;
@@ -37,7 +37,7 @@ final class Verification_File {
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.0.5
+	 * @since n.e.x.t
 	 *
 	 * @param User_Options $user_options User Options instance.
 	 */
@@ -48,7 +48,7 @@ final class Verification_File {
 	/**
 	 * Retrieves the user verification file.
 	 *
-	 * @since 1.0.5
+	 * @since n.e.x.t
 	 *
 	 * @return string|bool Verification file, or false if not set.
 	 */
@@ -59,7 +59,7 @@ final class Verification_File {
 	/**
 	 * Saves the user verification file.
 	 *
-	 * @since 1.0.5
+	 * @since n.e.x.t
 	 *
 	 * @param string $filename File name to store.
 	 *
@@ -72,7 +72,7 @@ final class Verification_File {
 	/**
 	 * Checks whether a verification file for the user is present.
 	 *
-	 * @since 1.0.5
+	 * @since n.e.x.t
 	 *
 	 * @return bool True if verification file file is set, false otherwise.
 	 */
