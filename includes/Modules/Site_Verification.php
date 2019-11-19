@@ -36,6 +36,16 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	use Module_With_Scopes_Trait;
 
 	/**
+	 * Meta site verification type.
+	 */
+	const VERIFICATION_TYPE_META = 'META';
+
+	/**
+	 * File site verification type.
+	 */
+	const VERIFICATION_TYPE_FILE = 'FILE';
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -362,7 +372,15 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
 		}
 
-		$authentication->verification_tag()->set( $_GET['googlesitekit_verification_token'] );
+		$verification_type = isset( $_GET['googlesitekit_verification_token_type'] ) ? $_GET['googlesitekit_verification_token_type'] : self::VERIFICATION_TYPE_META;
+		switch ( $verification_type ) {
+			case self::VERIFICATION_TYPE_FILE:
+				$authentication->verification_file()->set( $_GET['googlesitekit_verification_token'] );
+				break;
+			case self::VERIFICATION_TYPE_META:
+				$authentication->verification_tag()->set( $_GET['googlesitekit_verification_token'] );
+		}
+
 		$code = isset( $_GET['googlesitekit_code'] ) ? $_GET['googlesitekit_code'] : '';
 
 		// We need to pass the 'missing_verification' error code here so that the URL includes a verification nonce.
