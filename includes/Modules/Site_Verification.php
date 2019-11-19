@@ -393,8 +393,10 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		// We need to pass the 'missing_verification' error code here so that the URL includes a verification nonce.
 		wp_safe_redirect(
 			add_query_arg(
-				'verify',
-				'true',
+				array(
+					'verify'              => 'true',
+					'verification_method' => $verification_type,
+				),
 				$auth_client->get_proxy_setup_url( $code, 'missing_verification' )
 			)
 		);
