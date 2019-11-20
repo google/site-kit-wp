@@ -33,6 +33,7 @@ class Exit_Handler {
 			 * Allows the callback to be filtered during tests.
 			 *
 			 * @since n.e.x.t
+			 * @param \Closure $callback Exit handler callback.
 			 */
 			$callback = apply_filters( 'googlesitekit_exit_handler', $callback );
 		}
