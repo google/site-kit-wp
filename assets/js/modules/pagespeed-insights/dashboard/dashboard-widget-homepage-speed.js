@@ -100,7 +100,7 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 					">
 						<div className="googlesitekit-pagespeed-report__loading">
 							<ProgressBar />
-							<p>{ __( 'PageSpeed Insights is preparing data for your home page…', 'google-site-kit' ) }</p>
+							<p>{ __( 'PageSpeed Insights is preparing data…', 'google-site-kit' ) }</p>
 						</div>
 					</div>
 				}
