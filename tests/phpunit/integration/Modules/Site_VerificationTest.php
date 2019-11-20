@@ -108,6 +108,7 @@ class Site_VerificationTest extends TestCase {
 		$user_options      = new User_Options( $context, $user_id );
 		remove_all_actions( 'init' );
 		$site_verification->register();
+		add_filter( 'googlesitekit_exit_handler', '__return_null' );
 
 		// Ensure no verification file response if the user does not have one.
 		$this->go_to( '/google1234.html' );

@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\Exit_Handler;
 use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_SiteVerification;
@@ -470,9 +471,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 		if ( $user_id && user_can( $user_id, Permissions::SETUP ) ) {
 			printf( 'google-site-verification: google%s.html', esc_html( $verification_token ) );
-			if ( ! defined( 'GOOGLESITEKIT_TESTS' ) ) {
-				exit;
-			}
+			( new Exit_Handler() )->invoke();
 		}
 
 		// If the user does not have the necessary permissions then let the request pass through.
