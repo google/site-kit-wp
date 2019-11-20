@@ -82,7 +82,7 @@ final class Admin_Bar {
 			$this->assets->enqueue_asset( 'googlesitekit_adminbar_css' );
 
 			if ( $this->context->is_amp() ) {
-				if ( ! function_exists( 'amp_is_dev_mode' ) || ! amp_is_dev_mode() ) {
+				if ( ! $this->is_amp_dev_mode() ) {
 					// AMP Dev Mode support was added in v1.4, and if it is not enabled then short-circuit since scripts will be invalid.
 					return;
 				}
@@ -131,7 +131,7 @@ final class Admin_Bar {
 			),
 		);
 
-		if ( $this->context->is_amp() ) {
+		if ( $this->context->is_amp() && ! $this->is_amp_dev_mode() ) {
 			$post = get_post();
 			if ( ! $post || ! current_user_can( 'edit_post', $post->ID ) ) {
 				return;
@@ -231,6 +231,19 @@ final class Admin_Bar {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Checks whether AMP dev mode is enabled.
+	 *
+	 * This is only relevant if the current context is AMP.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if AMP dev mode is enabled, false otherwise.
+	 */
+	private function is_amp_dev_mode() {
+		return function_exists( 'amp_is_dev_mode' ) && amp_is_dev_mode();
 	}
 
 	/**
