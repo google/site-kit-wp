@@ -834,16 +834,16 @@ class AnalyticsSetup extends Component {
 							<p className="googlesitekit-settings-module__meta-item-type">
 								{ __( 'Excluded from Analytics', 'google-site-kit' ) }
 							</p>
-							{ !! trackingDisabled.length &&
-								<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive">
-									{ trackingDisabled.map( ( exclusion, i ) => <li className="mdc-list-item" key={ i }>{ trackingExclusionLabels[ exclusion ] }</li> ) }
-								</ul>
-							}
-							{ ! trackingDisabled.length &&
-								<h5 className="googlesitekit-settings-module__meta-item-data">
-									{ __( 'Analytics is currently enabled for all visitors.', 'google-site-kit' ) }
-								</h5>
-							}
+							<h5 className="googlesitekit-settings-module__meta-item-data">
+								{ !! trackingDisabled.length &&
+										trackingDisabled
+											.map( ( exclusion ) => trackingExclusionLabels[ exclusion ] )
+											.join( _x( ', ', 'list separator', 'google-site-kit' ) )
+								}
+								{ ! trackingDisabled.length &&
+									__( 'Analytics is currently enabled for all visitors.', 'google-site-kit' )
+								}
+							</h5>
 						</div>
 					</div>
 				</Fragment>
