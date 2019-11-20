@@ -58,8 +58,9 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
 			handleDataLoaded();
 		}
 	}
+
 	render() {
-		const { data } = this.props;
+		const { data, title } = this.props;
 
 		// Waiting for withData resolution.
 		if ( ! data || data.error ) {
@@ -81,8 +82,6 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
 			chartsEnabled: false,
 			links: [],
 		};
-
-		const title = 'mobile' === data.configSettings.emulatedFormFactor ? __( 'Mobile', 'google-site-kit' ) : __( 'Desktop', 'google-site-kit' );
 
 		const score = data.categories.performance.score;
 		const scoreCategory = getScoreCategoryLabel( score );
