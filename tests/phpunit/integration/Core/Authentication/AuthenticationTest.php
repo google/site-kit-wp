@@ -90,6 +90,7 @@ class AuthenticationTest extends TestCase {
 				'needReauthenticate',
 				'requiredScopes',
 				'showModuleSetupWizard',
+				'isResettable',
 			),
 			array_keys( $data )
 		);
@@ -165,31 +166,21 @@ class AuthenticationTest extends TestCase {
 			'fetchAccessTokenWithRefreshToken',
 			'revokeToken'
 		) );
-		$mock_google_client->expects( $this->once() )->method( 'fetchAccessTokenWithRefreshToken' )->with( 'test-refresh-token' );
+		$mock_google_client->expects( $this->once() )->method( 'fetchAccessTokenWithRefreshToken' )
+			->with( 'test-refresh-token' )
+			->willThrowException( new \Exception( 'invalid_grant' ) );
 		$mock_google_client->expects( $this->once() )->method( 'revokeToken' );
 		$this->force_set_property( $client, 'google_client', $mock_google_client );
 
-		// Force invalid_grant error to trigger disconnect.
-		add_filter(
-			'get_user_metadata',
-			function ( $given, $object_id, $meta_key, $single ) use ( $context, $user_id ) {
-				if ( $context->is_network_mode() ) {
-					$error_meta_key = OAuth_Client::OPTION_ERROR_CODE;
-				} else {
-					$error_meta_key = $GLOBALS['wpdb']->get_blog_prefix() . OAuth_Client::OPTION_ERROR_CODE;
-				}
-
-				if ( (int) $object_id === (int) $user_id && $error_meta_key === $meta_key ) {
-					return $single ? 'invalid_grant' : array( 'invalid_grant' );
-				}
-
-				return $given;
-			},
-			10,
-			4
-		);
-
 		do_action( 'wp_login' );
+
+		if ( $context->is_network_mode() ) {
+			$error_meta_key = OAuth_Client::OPTION_ERROR_CODE;
+		} else {
+			$error_meta_key = $GLOBALS['wpdb']->get_blog_prefix() . OAuth_Client::OPTION_ERROR_CODE;
+		}
+
+		$this->assertSame( 'invalid_grant', get_user_meta( $user_id, $error_meta_key, true ) );
 	}
 
 	public function test_get_oauth_client() {

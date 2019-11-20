@@ -63,7 +63,7 @@ export default class ResetButton extends Component {
 		await data.set( TYPE_CORE, 'site', 'reset' );
 		clearAppLocalStorage();
 		this.handleDialog();
-		document.location = getSiteKitAdminURL( 'googlesitekit-splash' );
+		document.location = getSiteKitAdminURL( 'googlesitekit-splash', { notification: 'reset_success' } );
 	}
 
 	handleCloseModal( e ) {

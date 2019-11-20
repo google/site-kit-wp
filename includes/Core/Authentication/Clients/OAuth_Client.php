@@ -205,15 +205,21 @@ final class OAuth_Client {
 		}
 
 		$token = array(
-			'access_token' => $access_token,
-			'expires_in'   => $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
-			'created'      => $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
+			'access_token'  => $access_token,
+			'expires_in'    => $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
+			'created'       => $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
+			'refresh_token' => $this->get_refresh_token(),
 		);
-		if ( ! $this->using_proxy() ) {
-			$token['refresh_token'] = $this->get_refresh_token();
-		}
 
 		$this->google_client->setAccessToken( $token );
+
+		// This is called when the client refreshes the access token on-the-fly.
+		$this->google_client->setTokenCallback(
+			function( $cache_key, $access_token ) {
+				// All we can do here is assume an hour as it usually is.
+				$this->set_access_token( $access_token, HOUR_IN_SECONDS );
+			}
+		);
 
 		// If the token expired or is going to expire in the next 30 seconds.
 		if ( $this->google_client->isAccessTokenExpired() ) {
@@ -231,7 +237,9 @@ final class OAuth_Client {
 	public function refresh_token() {
 		$refresh_token = $this->get_refresh_token();
 		if ( empty( $refresh_token ) ) {
+			$this->revoke_token();
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'refresh_token_not_exist' );
+			return;
 		}
 
 		// Stop if google_client not initialized yet.
@@ -250,13 +258,11 @@ final class OAuth_Client {
 			if ( $this->using_proxy() ) { // Only the Google_Proxy_Client exposes the real error response.
 				$error_code = $e->getMessage();
 			}
+			// Revoke and delete user connection data if the refresh token is invalid or expired.
+			if ( 'invalid_grant' === $error_code ) {
+				$this->revoke_token();
+			}
 			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
-			return;
-		}
-
-		// Refresh token is expired or revoked.
-		if ( ! empty( $authentication_token['error'] ) ) {
-			$this->user_options->set( self::OPTION_ERROR_CODE, $authentication_token['error'] );
 			return;
 		}
 
@@ -281,12 +287,13 @@ final class OAuth_Client {
 	 * @since 1.0.0
 	 */
 	public function revoke_token() {
-		// Stop if google_client not initialized yet.
-		if ( ! $this->google_client instanceof Google_Client ) {
-			return;
+		try {
+			$this->get_client()->revokeToken();
+		} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement
+			// No special handling, we just need to make sure this goes through.
 		}
 
-		$this->google_client->revokeToken();
+		$this->delete_token();
 	}
 
 	/**
@@ -504,12 +511,6 @@ final class OAuth_Client {
 			exit();
 		}
 
-		if ( ! empty( $authentication_token['error'] ) ) {
-			$this->user_options->set( self::OPTION_ERROR_CODE, $authentication_token['error'] );
-			wp_safe_redirect( admin_url() );
-			exit();
-		}
-
 		if ( ! isset( $authentication_token['access_token'] ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'access_token_not_received' );
 			wp_safe_redirect( admin_url() );
@@ -627,7 +628,7 @@ final class OAuth_Client {
 
 			$nonce = $this->options->get( self::OPTION_PROXY_NONCE );
 			if ( empty( $nonce ) ) {
-				$nonce = wp_create_nonce( 'googlesitekit_proxy' );
+				$nonce = wp_generate_password();
 				$this->options->set( self::OPTION_PROXY_NONCE, $nonce );
 			}
 
@@ -766,6 +767,22 @@ final class OAuth_Client {
 		}
 
 		return $message;
+	}
+
+	/**
+	 * Deletes the current user's token and all associated data.
+	 *
+	 * @since 1.0.3
+	 */
+	private function delete_token() {
+		$this->user_options->delete( self::OPTION_ACCESS_TOKEN );
+		$this->user_options->delete( self::OPTION_ACCESS_TOKEN_EXPIRES_IN );
+		$this->user_options->delete( self::OPTION_ACCESS_TOKEN_CREATED );
+		$this->user_options->delete( self::OPTION_REFRESH_TOKEN );
+		$this->user_options->delete( self::OPTION_REDIRECT_URL );
+		$this->user_options->delete( self::OPTION_AUTH_SCOPES );
+		$this->user_options->delete( self::OPTION_ERROR_CODE );
+		$this->user_options->delete( self::OPTION_PROXY_ACCESS_CODE );
 	}
 
 	/**

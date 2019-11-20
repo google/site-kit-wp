@@ -512,7 +512,6 @@ tag_partner: "site_kit"
 						return array(
 							array(
 								'id'            => 'adsense-notification',
-								'title'         => __( 'Alert found!', 'google-site-kit' ),
 								'description'   => $alert->getMessage(),
 								'isDismissible' => true,
 								'winImage'      => 'sun-small.png',

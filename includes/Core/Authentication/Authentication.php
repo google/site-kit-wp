@@ -279,14 +279,7 @@ final class Authentication {
 	public function disconnect() {
 		$this->get_oauth_client()->revoke_token();
 
-		$this->user_options->delete( Clients\OAuth_Client::OPTION_ACCESS_TOKEN );
-		$this->user_options->delete( Clients\OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN );
-		$this->user_options->delete( Clients\OAuth_Client::OPTION_ACCESS_TOKEN_CREATED );
-		$this->user_options->delete( Clients\OAuth_Client::OPTION_REFRESH_TOKEN );
-		$this->user_options->delete( Clients\OAuth_Client::OPTION_REDIRECT_URL );
-		$this->user_options->delete( Clients\OAuth_Client::OPTION_AUTH_SCOPES );
-		$this->user_options->delete( Clients\OAuth_Client::OPTION_ERROR_CODE );
-		$this->user_options->delete( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+		// Delete additional user data.
 		$this->user_options->delete( Verification::OPTION );
 		$this->user_options->delete( Verification_Tag::OPTION );
 		$this->user_options->delete( Profile::OPTION );
@@ -456,18 +449,10 @@ final class Authentication {
 
 		$auth_client = $this->get_oauth_client();
 
-		// Initiates Google Client object.
-		$auth_client->get_client();
-
-		// Refresh auth token.
-		$auth_client->refresh_token();
-
-		// If 'invalid_grant' error, disconnect the account.
-		if ( 'invalid_grant' === $this->user_options->get( Clients\OAuth_Client::OPTION_ERROR_CODE ) ) {
-			$this->disconnect();
-
-			// We need to re-set this error so that it is displayed to the user.
-			$this->user_options->set( Clients\OAuth_Client::OPTION_ERROR_CODE, 'invalid_grant' );
+		// Make sure to refresh the access token if necessary.
+		$google_client = $auth_client->get_client();
+		if ( $auth_client->get_access_token() && $google_client->isAccessTokenExpired() ) {
+			$auth_client->refresh_token();
 		}
 	}
 
@@ -481,7 +466,11 @@ final class Authentication {
 	 */
 	private function inline_js_admin_data( $data ) {
 		if ( ! isset( $data['userData'] ) ) {
-			$data['userData'] = array();
+			$current_user     = wp_get_current_user();
+			$data['userData'] = array(
+				'email'   => $current_user->user_email,
+				'picture' => get_avatar_url( $current_user->user_email ),
+			);
 		}
 		$profile_data = $this->profile->get();
 		if ( $profile_data ) {
@@ -516,7 +505,7 @@ final class Authentication {
 		$access_token = $auth_client->get_client()->getAccessToken();
 
 		$data['isSiteKitConnected'] = $this->credentials->has();
-
+		$data['isResettable']       = (bool) $this->options->get( Credentials::OPTION );
 		$data['isAuthenticated']    = ! empty( $access_token );
 		$data['requiredScopes']     = $auth_client->get_required_scopes();
 		$data['grantedScopes']      = ! empty( $access_token ) ? $auth_client->get_granted_scopes() : array();
