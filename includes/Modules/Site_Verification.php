@@ -145,7 +145,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 				case 'verification':
 					return $this->get_siteverification_service()->webResource->listWebResource();
 				case 'verification-token':
-					$existing_token = $this->authentication->verification_tag()->get();
+					$existing_token = $this->authentication->verification_meta()->get();
 
 					if ( ! empty( $existing_token ) ) {
 						return function() use ( $existing_token ) {
@@ -200,7 +200,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 								return $token;
 							}
 
-							$this->authentication->verification_tag()->set( $token['token'] );
+							$this->authentication->verification_meta()->set( $token['token'] );
 
 							$client     = $this->get_client();
 							$orig_defer = $client->shouldDefer();
@@ -412,7 +412,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 				$authentication->verification_file()->set( $_GET['googlesitekit_verification_token'] );
 				break;
 			case self::VERIFICATION_TYPE_META:
-				$authentication->verification_tag()->set( $_GET['googlesitekit_verification_token'] );
+				$authentication->verification_meta()->set( $_GET['googlesitekit_verification_token'] );
 		}
 
 		$code = isset( $_GET['googlesitekit_code'] ) ? $_GET['googlesitekit_code'] : '';
@@ -437,7 +437,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 */
 	private function print_site_verification_meta() {
 		// Get verification meta tags for all users.
-		$verification_tags = $this->authentication->verification_tag()->get_all();
+		$verification_tags = $this->authentication->verification_meta()->get_all();
 		$allowed_html      = array(
 			'meta' => array(
 				'name'    => array(),
