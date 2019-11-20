@@ -103,7 +103,7 @@ final class Screens {
 				?>
 				<style type="text/css">
 					#adminmenu .toplevel_page_googlesitekit-dashboard img {
-						width: 18px;
+						width: 16px;
 					}
 					#adminmenu .toplevel_page_googlesitekit-dashboard.current img,
 					#adminmenu .toplevel_page_googlesitekit-dashboard.wp-has-current-submenu img {

@@ -108,7 +108,7 @@ class SearchConsole extends Component {
 						propertyMatches[ 0 ].siteURL
 					);
 				} else {
-					errorMessage = __( 'We found no verified accounts, would you like to verify this URL?', 'google-site-kit' );
+					errorMessage = __( 'Your site has not been added to Search Console yet. Would you like to add it now?', 'google-site-kit' );
 				}
 
 				setErrorMessage( errorMessage );
