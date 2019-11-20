@@ -185,6 +185,9 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
+	/**
+	 * @expectedDeprecated Google\Site_Kit\Core\Authentication\Authentication::verification_tag
+	 */
 	public function test_verification_tag() {
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 

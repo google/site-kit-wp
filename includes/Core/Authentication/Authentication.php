@@ -233,10 +233,13 @@ final class Authentication {
 	/**
 	 * Gets the verification tag instance.
 	 *
+	 * @deprecated n.e.x.t
+	 *
 	 * @return Verification_Meta Verification tag instance.
 	 * @since 1.0.0
 	 */
 	public function verification_tag() {
+		_deprecated_function( __METHOD__, 'n.e.x.t', __CLASS__ . '\\verification_meta' );
 		return $this->verification_meta;
 	}
 
