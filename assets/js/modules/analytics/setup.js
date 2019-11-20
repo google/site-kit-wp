@@ -924,7 +924,7 @@ class AnalyticsSetup extends Component {
 					{ __( 'Exclude from Analytics', 'google-site-kit' ) }
 				</p>
 
-				<div className="googlesitekit-setup-module__input">
+				<div className="mdc-form-field">
 					<Switch
 						id={ TRACKING_LOGGED_IN_USERS }
 						label={ trackingExclusionLabels[ TRACKING_LOGGED_IN_USERS ] }
@@ -932,13 +932,14 @@ class AnalyticsSetup extends Component {
 						checked={ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) }
 						hideLabel={ false }
 					/>
-					<p>
-						{ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) ?
-							__( 'Logged-in users will be excluded from Analytics tracking.', 'google-site-kit' ) :
-							__( 'Logged-in users will be included in Analytics tracking.', 'google-site-kit' )
-						}
-					</p>
 				</div>
+
+				<p>
+					{ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) ?
+						__( 'Logged-in users will be excluded from Analytics tracking.', 'google-site-kit' ) :
+						__( 'Logged-in users will be included in Analytics tracking.', 'google-site-kit' )
+					}
+				</p>
 			</div>
 		);
 	}
