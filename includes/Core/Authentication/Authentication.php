@@ -89,7 +89,7 @@ final class Authentication {
 	/**
 	 * Verification meta instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.0
 	 * @var Verification_Meta
 	 */
 	protected $verification_meta;
@@ -97,7 +97,7 @@ final class Authentication {
 	/**
 	 * Verification file instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.0
 	 * @var Verification_File
 	 */
 	protected $verification_file;
@@ -234,19 +234,19 @@ final class Authentication {
 	 * Gets the verification tag instance.
 	 *
 	 * @since 1.0.0
-	 * @deprecated n.e.x.t
+	 * @deprecated 1.1.0
 	 *
 	 * @return Verification_Meta Verification tag instance.
 	 */
 	public function verification_tag() {
-		_deprecated_function( __METHOD__, 'n.e.x.t', __CLASS__ . '::verification_meta()' );
+		_deprecated_function( __METHOD__, '1.1.0', __CLASS__ . '::verification_meta()' );
 		return $this->verification_meta;
 	}
 
 	/**
 	 * Gets the verification meta instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.0
 	 *
 	 * @return Verification_Meta Verification tag instance.
 	 */
@@ -257,7 +257,7 @@ final class Authentication {
 	/**
 	 * Gets the verification file instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.0
 	 *
 	 * @return Verification_File Verification file instance.
 	 */

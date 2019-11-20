@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Exit_Handler class.
  *
- * @since n.e.x.t
+ * @since 1.1.0
  * @access private
  * @ignore
  */
@@ -21,7 +21,7 @@ class Exit_Handler {
 	/**
 	 * Invokes the handler.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.0
 	 */
 	public function invoke() {
 		$callback = static function () {
@@ -32,7 +32,7 @@ class Exit_Handler {
 			/**
 			 * Allows the callback to be filtered during tests.
 			 *
-			 * @since n.e.x.t
+			 * @since 1.1.0
 			 * @param \Closure $callback Exit handler callback.
 			 */
 			$callback = apply_filters( 'googlesitekit_exit_handler', $callback );

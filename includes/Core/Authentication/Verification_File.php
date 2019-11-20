@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 /**
  * Class representing the site verification file token for a user.
  *
- * @since n.e.x.t
+ * @since 1.1.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ final class Verification_File {
 	/**
 	 * User_Options object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.0
 	 * @var User_Options
 	 */
 	private $user_options;
@@ -37,7 +37,7 @@ final class Verification_File {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.0
 	 *
 	 * @param User_Options $user_options User Options instance.
 	 */
@@ -48,7 +48,7 @@ final class Verification_File {
 	/**
 	 * Retrieves the user verification file token.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.0
 	 *
 	 * @return string|bool Verification file token, or false if not set.
 	 */
@@ -59,7 +59,7 @@ final class Verification_File {
 	/**
 	 * Saves the user verification file token.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.0
 	 * @param string $token Token portion of file name to store.
 	 *
 	 * @return bool True on success, false on failure.
@@ -71,7 +71,7 @@ final class Verification_File {
 	/**
 	 * Checks whether a verification file token for the user is present.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.0
 	 *
 	 * @return bool True if verification file token is set, false otherwise.
 	 */

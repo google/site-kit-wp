@@ -667,7 +667,7 @@ final class OAuth_Client {
 	/**
 	 * Gets the list of features to declare support for when setting up with the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.0
 	 * @return array
 	 */
 	private function get_proxy_setup_supports() {
@@ -684,7 +684,7 @@ final class OAuth_Client {
 	 * The site must be a root install, with no path in the home URL
 	 * to be able to serve the verification response properly.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.0
 	 * @see \WP_Rewrite::rewrite_rules for robots.txt
 	 *
 	 * @return bool

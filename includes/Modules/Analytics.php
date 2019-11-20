@@ -169,7 +169,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	/**
 	 * Checks whether or not tracking snippet should be contextually disabled for this request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.0
 	 *
 	 * @return bool
 	 */
@@ -180,7 +180,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		/**
 		 * Filters whether or not the Analytics tracking snippet is output for the current request.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.1.0
 		 *
 		 * @param $disabled bool Whether to disable tracking or not.
 		 */

@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Transients;
 /**
  * Class representing the site verification meta tag for a user.
  *
- * @since n.e.x.t
+ * @since 1.1.0
  * @access private
  * @ignore
  */

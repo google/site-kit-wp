@@ -379,7 +379,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	/**
 	 * Handles receiving a verification token for a user by the authentication proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.0
 	 */
 	private function handle_verification_token() {
 		$authentication = $this->authentication;
@@ -423,7 +423,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	/**
 	 * Prints site verification meta in wp_head().
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.0
 	 */
 	private function print_site_verification_meta() {
 		// Get verification meta tags for all users.
@@ -451,7 +451,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 *
 	 * @param string $verification_token Token portion of verification.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.0
 	 */
 	private function serve_verification_file( $verification_token ) {
 		global $wpdb;
