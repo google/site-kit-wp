@@ -244,6 +244,17 @@ final class Authentication {
 	}
 
 	/**
+	 * Gets the verification meta instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Verification_Meta Verification tag instance.
+	 */
+	public function verification_meta() {
+		return $this->verification_meta;
+	}
+
+	/**
 	 * Gets the verification file instance.
 	 *
 	 * @since n.e.x.t

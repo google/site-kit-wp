@@ -197,6 +197,15 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
+	public function test_verification_meta() {
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertInstanceOf(
+			'\Google\Site_Kit\Core\Authentication\Verification_Meta',
+			$auth->verification_meta()
+		);
+	}
+
 	public function test_verification_file() {
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
