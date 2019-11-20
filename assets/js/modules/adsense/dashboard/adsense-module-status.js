@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import { parse as pslParse } from 'psl';
 import PropTypes from 'prop-types';
 import SvgIcon from 'GoogleUtil/svg-icon';
 
@@ -118,13 +119,15 @@ const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 			};
 			break;
 		case 'ads-display-pending':
-			statusHeadline = __( 'We’re getting your site ready for ads', 'google-site-kit' );
+			const { domain: parsedDomain } = pslParse( siteURL.hostname );
+
+			statusHeadline = __( 'Let’s get your site ready for ads', 'google-site-kit' );
 			statusMessage = __(
-				'This usually takes less than a day, but it can sometimes take a bit longer. We’ll let you know when everything’s ready.',
+				'After you’ve finished setting up your account, we’ll let you know when your site is ready to show ads. This usually takes less than a day, but it can sometimes take a bit longer.',
 				'google-site-kit'
 			);
-			ctaLinkText = __( 'Go to your AdSense account to check on your site’s status', 'google-site-kit' );
-			ctaLink = `https://www.google.com/adsense/new/sites?url=${ siteURL.hostname }&source=site-kit`;
+			ctaLinkText = __( 'Go to your AdSense account to check on your site’s status or to complete setting up', 'google-site-kit' );
+			ctaLink = `https://www.google.com/adsense/new/sites?url=${ parsedDomain || siteURL.hostname }&source=site-kit`;
 			break;
 		case 'account-pending-review':
 			statusHeadline = __( 'We’re getting your site ready for ads', 'google-site-kit' );
