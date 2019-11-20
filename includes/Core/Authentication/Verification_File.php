@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Authentication;
 use Google\Site_Kit\Core\Storage\User_Options;
 
 /**
- * Class representing the site verification file for a user.
+ * Class representing the site verification file token for a user.
  *
  * @since n.e.x.t
  * @access private
@@ -46,35 +46,34 @@ final class Verification_File {
 	}
 
 	/**
-	 * Retrieves the user verification file.
+	 * Retrieves the user verification file token.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string|bool Verification file, or false if not set.
+	 * @return string|bool Verification file token, or false if not set.
 	 */
 	public function get() {
 		return $this->user_options->get( self::OPTION );
 	}
 
 	/**
-	 * Saves the user verification file.
+	 * Saves the user verification file token.
 	 *
 	 * @since n.e.x.t
-	 *
-	 * @param string $filename File name to store.
+	 * @param string $token Token portion of file name to store.
 	 *
 	 * @return bool True on success, false on failure.
 	 */
-	public function set( $filename ) {
-		return $this->user_options->set( self::OPTION, $filename );
+	public function set( $token ) {
+		return $this->user_options->set( self::OPTION, $token );
 	}
 
 	/**
-	 * Checks whether a verification file for the user is present.
+	 * Checks whether a verification file token for the user is present.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return bool True if verification file file is set, false otherwise.
+	 * @return bool True if verification file token is set, false otherwise.
 	 */
 	public function has() {
 		return (bool) $this->get();
