@@ -10,12 +10,14 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Authentication\Verification_File;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\Exit_Handler;
 use Google\Site_Kit_Dependencies\Google_Client;
-use Google\Site_Kit_Dependencies\Google_Service;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_SiteVerification;
 use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequest;
@@ -23,7 +25,6 @@ use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificatio
 use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificationWebResourceResource;
 use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificationWebResourceResourceSite;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
-use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
 use WP_Error;
 use Exception;
 
@@ -38,12 +39,50 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	use Module_With_Scopes_Trait;
 
 	/**
+	 * Meta site verification type.
+	 */
+	const VERIFICATION_TYPE_META = 'META';
+
+	/**
+	 * File site verification type.
+	 */
+	const VERIFICATION_TYPE_FILE = 'FILE';
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+
+		add_action(
+			'admin_init',
+			function() {
+				$this->handle_verification_token();
+			}
+		);
+
+		$print_site_verification_meta = function() {
+			$this->print_site_verification_meta();
+		};
+
+		add_action( 'wp_head', $print_site_verification_meta );
+		add_action( 'login_head', $print_site_verification_meta );
+
+		add_action(
+			'init',
+			function () {
+				if (
+					isset( $_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'] )
+					&& 'GET' === strtoupper( $_SERVER['REQUEST_METHOD'] )
+					&& preg_match( '/^\/google(?P<token>[a-z0-9]+)\.html$/', $_SERVER['REQUEST_URI'], $matches )
+				) {
+					$this->serve_verification_file( $matches['token'] );
+				}
+			}
+		);
+
 	}
 
 	/**
@@ -96,7 +135,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 				case 'verification':
 					return $this->get_siteverification_service()->webResource->listWebResource();
 				case 'verification-token':
-					$existing_token = $this->authentication->verification_tag()->get();
+					$existing_token = $this->authentication->verification_meta()->get();
 
 					if ( ! empty( $existing_token ) ) {
 						return function() use ( $existing_token ) {
@@ -151,7 +190,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 								return $token;
 							}
 
-							$this->authentication->verification_tag()->set( $token['token'] );
+							$this->authentication->verification_meta()->set( $token['token'] );
 
 							$client     = $this->get_client();
 							$orig_defer = $client->shouldDefer();
@@ -335,5 +374,106 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		return array(
 			'siteverification' => new Google_Service_SiteVerification( $client ),
 		);
+	}
+
+	/**
+	 * Handles receiving a verification token for a user by the authentication proxy.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function handle_verification_token() {
+		$authentication = $this->authentication;
+		$auth_client    = $authentication->get_oauth_client();
+
+		$verification_token = filter_input( INPUT_GET, 'googlesitekit_verification_token' );
+		if ( empty( $verification_token ) ) {
+			return;
+		}
+
+		$verification_nonce = filter_input( INPUT_GET, 'googlesitekit_verification_nonce' );
+		if ( empty( $verification_nonce ) || ! wp_verify_nonce( $verification_nonce, 'googlesitekit_verification' ) ) {
+			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
+		}
+
+		$verification_type = filter_input( INPUT_GET, 'googlesitekit_verification_token_type' ) ?: self::VERIFICATION_TYPE_META;
+		switch ( $verification_type ) {
+			case self::VERIFICATION_TYPE_FILE:
+				$authentication->verification_file()->set( $verification_token );
+				break;
+			case self::VERIFICATION_TYPE_META:
+				$authentication->verification_meta()->set( $verification_token );
+		}
+
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'verify'              => 'true',
+					'verification_method' => $verification_type,
+				),
+				// We need to pass the 'missing_verification' error code here so that the URL includes a verification nonce.
+				$auth_client->get_proxy_setup_url(
+					filter_input( INPUT_GET, 'googlesitekit_code' ),
+					'missing_verification'
+				)
+			)
+		);
+		exit;
+	}
+
+	/**
+	 * Prints site verification meta in wp_head().
+	 *
+	 * @since n.e.x.t
+	 */
+	private function print_site_verification_meta() {
+		// Get verification meta tags for all users.
+		$verification_tags = $this->authentication->verification_meta()->get_all();
+		$allowed_html      = array(
+			'meta' => array(
+				'name'    => array(),
+				'content' => array(),
+			),
+		);
+
+		foreach ( $verification_tags as $verification_tag ) {
+			$verification_tag = html_entity_decode( $verification_tag );
+
+			if ( 0 !== strpos( $verification_tag, '<meta ' ) ) {
+				$verification_tag = '<meta name="google-site-verification" content="' . esc_attr( $verification_tag ) . '">';
+			}
+
+			echo wp_kses( $verification_tag, $allowed_html );
+		}
+	}
+
+	/**
+	 * Serves the verification file response.
+	 *
+	 * @param string $verification_token Token portion of verification.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function serve_verification_file( $verification_token ) {
+		global $wpdb;
+
+		// User option keys are prefixed in single site and multisite when not in network mode.
+		$key_prefix = $this->context->is_network_mode() ? '' : $wpdb->get_blog_prefix();
+		$user_ids   = ( new \WP_User_Query(
+			array(
+				'meta_key'   => $key_prefix . Verification_File::OPTION,
+				'meta_value' => $verification_token,
+				'fields'     => 'id',
+				'number'     => 1,
+			)
+		) )->get_results();
+
+		$user_id = array_shift( $user_ids ) ?: 0;
+
+		if ( $user_id && user_can( $user_id, Permissions::SETUP ) ) {
+			printf( 'google-site-verification: google%s.html', esc_html( $verification_token ) );
+			( new Exit_Handler() )->invoke();
+		}
+
+		// If the user does not have the necessary permissions then let the request pass through.
 	}
 }

@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
-use Google\Site_Kit\Core\Authentication\Verification_Tag;
+use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\TestCase;
@@ -93,42 +93,6 @@ class AuthenticationTest extends TestCase {
 				'isResettable',
 			),
 			array_keys( $data )
-		);
-	}
-
-	/**
-	 * @dataProvider data_register_head_verification_tags
-	 */
-	public function test_register_head_verification_tags( $saved_tag, $expected_output ) {
-		remove_all_actions( 'wp_head' );
-		remove_all_actions( 'login_head' );
-		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$auth->register();
-
-		set_transient( 'googlesitekit_verification_meta_tags', array( $saved_tag ) );
-
-		$this->assertContains(
-			$expected_output,
-			$this->capture_action( 'wp_head' )
-		);
-
-		$this->assertContains(
-			$expected_output,
-			$this->capture_action( 'login_head' )
-		);
-	}
-
-	public function data_register_head_verification_tags() {
-		return array(
-			array( // Full meta tag stored.
-				'<meta name="google-site-verification" content="test-verification-content">',
-				'<meta name="google-site-verification" content="test-verification-content">',
-			),
-			array(
-				// Only verification token stored.
-				'test-verification-content-2',
-				'<meta name="google-site-verification" content="test-verification-content-2">',
-			),
 		);
 	}
 
@@ -221,12 +185,33 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
+	/**
+	 * @expectedDeprecated Google\Site_Kit\Core\Authentication\Authentication::verification_tag
+	 */
 	public function test_verification_tag() {
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertInstanceOf(
-			'\Google\Site_Kit\Core\Authentication\Verification_Tag',
+			'\Google\Site_Kit\Core\Authentication\Verification_Meta',
 			$auth->verification_tag()
+		);
+	}
+
+	public function test_verification_meta() {
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertInstanceOf(
+			'\Google\Site_Kit\Core\Authentication\Verification_Meta',
+			$auth->verification_meta()
+		);
+	}
+
+	public function test_verification_file() {
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertInstanceOf(
+			'\Google\Site_Kit\Core\Authentication\Verification_File',
+			$auth->verification_file()
 		);
 	}
 
@@ -306,7 +291,7 @@ class AuthenticationTest extends TestCase {
 			OAuth_Client::OPTION_REFRESH_TOKEN,
 			Profile::OPTION,
 			Verification::OPTION,
-			Verification_Tag::OPTION,
+			Verification_Meta::OPTION,
 		);
 	}
 }

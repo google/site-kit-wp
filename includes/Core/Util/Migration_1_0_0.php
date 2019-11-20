@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
-use Google\Site_Kit\Core\Authentication\Verification_Tag;
+use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
@@ -121,7 +121,7 @@ class Migration_1_0_0 {
 				'meta_query' => array(
 					'relation' => 'OR',
 					array(
-						'key'     => $key_prefix . Verification_Tag::OPTION,
+						'key'     => $key_prefix . Verification_Meta::OPTION,
 						'compare' => 'EXISTS',
 					),
 					array(

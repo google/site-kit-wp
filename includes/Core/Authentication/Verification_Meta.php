@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Authentication\Verification_Tag
+ * Class Verification_Meta
  *
  * @package   Google\Site_Kit
  * @copyright 2019 Google LLC
@@ -14,13 +14,13 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
 
 /**
- * Class representing the site verification tag for a user.
+ * Class representing the site verification meta tag for a user.
  *
- * @since 1.0.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
-final class Verification_Tag {
+final class Verification_Meta {
 
 	/**
 	 * User option key.
