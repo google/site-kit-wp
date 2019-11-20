@@ -665,7 +665,7 @@ final class Assets {
 				'lodash',
 				array(
 					'src'           => $base_url . 'vendor/lodash' . $suffix . '.js',
-					'version'       => '4.17.11',
+					'version'       => '4.17.15',
 					'fallback'      => true,
 					'post_register' => function( $handle ) {
 						wp_add_inline_script( $handle, '/*googlesitekit*/ window.lodash = window.lodash || _.noConflict(); window.lodash_load = true;' );
@@ -684,7 +684,7 @@ final class Assets {
 				'react',
 				array(
 					'src'      => $base_url . 'vendor/react' . $react_suffix . '.js',
-					'version'  => '16.8.5',
+					'version'  => '16.11.0',
 					'fallback' => true,
 				)
 			),
@@ -692,7 +692,7 @@ final class Assets {
 				'react-dom',
 				array(
 					'src'      => $base_url . 'vendor/react-dom' . $react_suffix . '.js',
-					'version'  => '16.8.5',
+					'version'  => '16.11.0',
 					'fallback' => true,
 				)
 			),
@@ -743,7 +743,7 @@ final class Assets {
 				'wp-hooks',
 				array(
 					'src'      => $base_url . 'js/externals/hooks.js',
-					'version'  => '2.2.0',
+					'version'  => '2.6.0',
 					'fallback' => true,
 				)
 			),
@@ -751,7 +751,7 @@ final class Assets {
 				'wp-element',
 				array(
 					'src'      => $base_url . 'js/externals/element.js',
-					'version'  => '2.3.0',
+					'version'  => '2.8.2',
 					'fallback' => true,
 				)
 			),
@@ -759,7 +759,7 @@ final class Assets {
 				'wp-dom-ready',
 				array(
 					'src'      => $base_url . 'js/externals/domReady.js',
-					'version'  => '2.2.0',
+					'version'  => '2.5.1',
 					'fallback' => true,
 				)
 			),
@@ -767,7 +767,7 @@ final class Assets {
 				'wp-i18n',
 				array(
 					'src'      => $base_url . 'js/externals/i18n.js',
-					'version'  => '3.3.0',
+					'version'  => '3.6.1',
 					'fallback' => true,
 				)
 			),
@@ -775,7 +775,7 @@ final class Assets {
 				'wp-url',
 				array(
 					'src'      => $base_url . 'js/externals/url.js',
-					'version'  => '2.3.3',
+					'version'  => '2.8.2',
 					'fallback' => true,
 				)
 			),
@@ -783,7 +783,7 @@ final class Assets {
 				'wp-api-fetch',
 				array(
 					'src'           => $base_url . 'js/externals/apiFetch.js',
-					'version'       => '2.2.8',
+					'version'       => '3.6.4',
 					'fallback'      => true,
 					'post_register' => function( $handle ) {
 						wp_add_inline_script(
@@ -809,7 +809,7 @@ final class Assets {
 				'wp-compose',
 				array(
 					'src'      => $base_url . 'js/externals/compose.js',
-					'version'  => '3.2.0',
+					'version'  => '3.7.2',
 					'fallback' => true,
 				)
 			),
