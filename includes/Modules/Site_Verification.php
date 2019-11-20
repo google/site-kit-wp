@@ -466,9 +466,11 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	private function serve_verification_file( $verification_file_name ) {
 		global $wpdb;
 
-		$user_ids = ( new \WP_User_Query(
+		// User option keys are prefixed in single site and multisite when not in network mode.
+		$key_prefix = $this->context->is_network_mode() ? '' : $wpdb->get_blog_prefix();
+		$user_ids   = ( new \WP_User_Query(
 			array(
-				'meta_key'   => $wpdb->get_blog_prefix() . Verification_File::OPTION,
+				'meta_key'   => $key_prefix . Verification_File::OPTION,
 				'meta_value' => $verification_file_name,
 				'fields'     => 'id',
 				'number'     => 1,
