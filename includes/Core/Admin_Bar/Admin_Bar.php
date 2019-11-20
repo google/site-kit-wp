@@ -82,7 +82,11 @@ final class Admin_Bar {
 			$this->assets->enqueue_asset( 'googlesitekit_adminbar_css' );
 
 			if ( $this->context->is_amp() ) {
-				return;
+				if ( ! function_exists( 'amp_is_dev_mode' ) || ! amp_is_dev_mode() ) {
+					// AMP Dev Mode support was added in v1.4, and if it is not enabled then short-circuit since scripts will be invalid.
+					return;
+				}
+				add_filter( 'amp_dev_mode_element_xpaths', [ $this, 'add_amp_dev_mode' ] );
 			}
 
 			// Enqueue scripts.
@@ -90,6 +94,20 @@ final class Admin_Bar {
 		};
 		add_action( 'admin_enqueue_scripts', $admin_bar_callback, 40 );
 		add_action( 'wp_enqueue_scripts', $admin_bar_callback, 40 );
+	}
+
+	/**
+	 * Add data-ampdevmode attributes to the elements that need it.
+	 *
+	 * @see \Google\Site_Kit\Core\Assets\Assets::get_assets() The 'googlesitekit' string is added to all inline scripts.
+	 * @see \Google\Site_Kit\Core\Assets\Assets::add_amp_dev_mode_attributes() The data-ampdevmode attribute is added to registered scripts/styles here.
+	 *
+	 * @param string[] $xpath_queries XPath queries for elements that should get the data-ampdevmode attribute.
+	 * @return string[] XPath queries.
+	 */
+	public function add_amp_dev_mode( $xpath_queries ) {
+		$xpath_queries[] = '//script[ contains( text(), "googlesitekit" ) ]';
+		return $xpath_queries;
 	}
 
 	/**
