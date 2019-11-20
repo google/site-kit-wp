@@ -48,15 +48,6 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	const VERIFICATION_TYPE_FILE = 'FILE';
 
 	/**
-	 * Callback invoked after serving verification file.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @var \Closure
-	 */
-	private $post_serve_verification_file_callback;
-
-	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -78,10 +69,6 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		add_action( 'wp_head', $print_site_verification_meta );
 		add_action( 'login_head', $print_site_verification_meta );
 
-		// Exit handled by callback for testability.
-		$this->post_serve_verification_file_callback = function () {
-			exit;
-		};
 		add_action(
 			'init',
 			function () {
@@ -483,7 +470,9 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 		if ( $user_id && user_can( $user_id, Permissions::SETUP ) ) {
 			printf( 'google-site-verification: google%s.html', esc_html( $verification_token ) );
-			call_user_func( $this->post_serve_verification_file_callback );
+			if ( ! defined( 'GOOGLESITEKIT_TESTS' ) ) {
+				exit;
+			}
 		}
 
 		// If the user does not have the necessary permissions then let the request pass through.
