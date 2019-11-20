@@ -239,7 +239,7 @@ final class Authentication {
 	 * @since 1.0.0
 	 */
 	public function verification_tag() {
-		_deprecated_function( __METHOD__, 'n.e.x.t', __CLASS__ . '\\verification_meta' );
+		_deprecated_function( __METHOD__, 'n.e.x.t', __CLASS__ . '::verification_meta' );
 		return $this->verification_meta;
 	}
 
