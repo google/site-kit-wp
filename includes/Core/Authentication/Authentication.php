@@ -87,12 +87,12 @@ final class Authentication {
 	protected $verification;
 
 	/**
-	 * Verification tag instance.
+	 * Verification meta instance.
 	 *
-	 * @since 1.0.0
+	 * @since n.e.x.t
 	 * @var Verification_Meta
 	 */
-	protected $verification_tag;
+	protected $verification_meta;
 
 	/**
 	 * Verification file instance.
@@ -153,7 +153,7 @@ final class Authentication {
 		$this->transients        = $transients;
 		$this->credentials       = new Credentials( $this->options );
 		$this->verification      = new Verification( $this->user_options );
-		$this->verification_tag  = new Verification_Meta( $this->user_options, $this->transients );
+		$this->verification_meta = new Verification_Meta( $this->user_options, $this->transients );
 		$this->verification_file = new Verification_File( $this->user_options );
 		$this->profile           = new Profile( $user_options, $this->get_oauth_client() );
 		$this->first_admin       = new First_Admin( $this->options );
@@ -237,7 +237,7 @@ final class Authentication {
 	 * @since 1.0.0
 	 */
 	public function verification_tag() {
-		return $this->verification_tag;
+		return $this->verification_meta;
 	}
 
 	/**
