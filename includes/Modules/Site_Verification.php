@@ -479,7 +479,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 		$user_id = array_shift( $user_ids ) ?: 0;
 
-		if ( user_can( $user_id, Permissions::SETUP ) ) {
+		if ( $user_id && user_can( $user_id, Permissions::SETUP ) ) {
 			printf( 'google-site-verification: %s', esc_html( $verification_file_name ) );
 			call_user_func( $this->post_serve_verification_file_callback );
 		}
