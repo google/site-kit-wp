@@ -115,15 +115,15 @@ class Site_VerificationTest extends TestCase {
 		$this->assertNotContains( 'google-site-verification', $this->capture_action( 'init' ) );
 
 		// Set correct verification for user
-		$user_options->set( Verification_File::OPTION, 'google1234.html' );
+		$user_options->set( Verification_File::OPTION, '1234' );
 		$this->assertEquals( 'google-site-verification: google1234.html', $this->capture_action( 'init' ) );
 
 		// Ensure that the verification isn't served if there is no match
-		$user_options->set( Verification_File::OPTION, 'google9999.html' );
+		$user_options->set( Verification_File::OPTION, '9999' );
 		$this->assertEquals( '', $this->capture_action( 'init' ) );
 
 		// Ensure that the verification isn't served if there is a match, but the user does not have the permission.
-		$user_options->set( Verification_File::OPTION, 'google1234.html' );
+		$user_options->set( Verification_File::OPTION, '1234' );
 		$this->assertTrue( user_can( $user_id, Permissions::SETUP ) );
 		( new \WP_User( $user_id ) )->remove_role( 'administrator' );
 		$this->assertFalse( user_can( $user_id, Permissions::SETUP ) );

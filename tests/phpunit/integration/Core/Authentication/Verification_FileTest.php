@@ -29,8 +29,8 @@ class Verification_FileTest extends TestCase {
 
 		$this->assertFalse( $user_options->get( Verification_File::OPTION ) );
 		$this->assertFalse( $verification_file->get() );
-		$user_options->set( Verification_File::OPTION, 'google123456789.html' );
-		$this->assertEquals( 'google123456789.html', $verification_file->get() );
+		$user_options->set( Verification_File::OPTION, 'a1b2c3d4f5' );
+		$this->assertEquals( 'a1b2c3d4f5', $verification_file->get() );
 	}
 
 	public function test_set() {
@@ -40,8 +40,8 @@ class Verification_FileTest extends TestCase {
 
 		$verification_file = new Verification_File( $user_options );
 
-		$this->assertTrue( $verification_file->set( 'google123456789.html' ) );
-		$this->assertEquals( 'google123456789.html', $user_options->get( Verification_File::OPTION ) );
+		$this->assertTrue( $verification_file->set( 'a1b2c3d4f5' ) );
+		$this->assertEquals( 'a1b2c3d4f5', $user_options->get( Verification_File::OPTION ) );
 	}
 
 	public function test_has() {
@@ -52,7 +52,7 @@ class Verification_FileTest extends TestCase {
 		$verification_file = new Verification_File( $user_options );
 
 		$this->assertFalse( $verification_file->has() );
-		$user_options->set( Verification_File::OPTION, 'google123456789.html' );
+		$user_options->set( Verification_File::OPTION, 'a1b2c3d4f5' );
 		$this->assertTrue( $verification_file->has() );
 	}
 }

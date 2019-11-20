@@ -86,9 +86,9 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 				if (
 					isset( $_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'] )
 					&& 'GET' === strtoupper( $_SERVER['REQUEST_METHOD'] )
-					&& preg_match( '/^\/(?P<filename>google[a-z0-9]+\.html)$/', $_SERVER['REQUEST_URI'], $matches )
+					&& preg_match( '/^\/google(?P<token>[a-z0-9]+)\.html$/', $_SERVER['REQUEST_URI'], $matches )
 				) {
-					$this->serve_verification_file( $matches['filename'] );
+					$this->serve_verification_file( $matches['token'] );
 				}
 			}
 		);
@@ -459,11 +459,11 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	/**
 	 * Serves the verification file response.
 	 *
-	 * @since n.e.x.t
+	 * @param string $verification_token Token portion of verification.
 	 *
-	 * @param string $verification_file_name File name of verification.
+	 * @since n.e.x.t
 	 */
-	private function serve_verification_file( $verification_file_name ) {
+	private function serve_verification_file( $verification_token ) {
 		global $wpdb;
 
 		// User option keys are prefixed in single site and multisite when not in network mode.
@@ -471,7 +471,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		$user_ids   = ( new \WP_User_Query(
 			array(
 				'meta_key'   => $key_prefix . Verification_File::OPTION,
-				'meta_value' => $verification_file_name,
+				'meta_value' => $verification_token,
 				'fields'     => 'id',
 				'number'     => 1,
 			)
@@ -480,7 +480,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		$user_id = array_shift( $user_ids ) ?: 0;
 
 		if ( $user_id && user_can( $user_id, Permissions::SETUP ) ) {
-			printf( 'google-site-verification: %s', esc_html( $verification_file_name ) );
+			printf( 'google-site-verification: google%s.html', esc_html( $verification_token ) );
 			call_user_func( $this->post_serve_verification_file_callback );
 		}
 
