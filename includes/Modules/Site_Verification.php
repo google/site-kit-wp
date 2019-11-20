@@ -50,6 +50,8 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	/**
 	 * Callback invoked after serving verification file.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @var \Closure
 	 */
 	private $post_serve_verification_file_callback;
