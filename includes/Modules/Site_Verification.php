@@ -400,10 +400,10 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		$verification_type = filter_input( INPUT_GET, 'googlesitekit_verification_token_type' ) ?: self::VERIFICATION_TYPE_META;
 		switch ( $verification_type ) {
 			case self::VERIFICATION_TYPE_FILE:
-				$authentication->verification_file()->set( $_GET['googlesitekit_verification_token'] );
+				$authentication->verification_file()->set( filter_input( INPUT_GET, 'googlesitekit_verification_token' ) );
 				break;
 			case self::VERIFICATION_TYPE_META:
-				$authentication->verification_meta()->set( $_GET['googlesitekit_verification_token'] );
+				$authentication->verification_meta()->set( filter_input( INPUT_GET, 'googlesitekit_verification_token' ) );
 		}
 
 		wp_safe_redirect(
