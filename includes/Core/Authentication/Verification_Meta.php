@@ -14,9 +14,9 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
 
 /**
- * Class representing the site verification tag for a user.
+ * Class representing the site verification meta tag for a user.
  *
- * @since 1.0.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
