@@ -86,7 +86,7 @@ final class Admin_Bar {
 					// AMP Dev Mode support was added in v1.4, and if it is not enabled then short-circuit since scripts will be invalid.
 					return;
 				}
-				add_filter( 'amp_dev_mode_element_xpaths', [ $this, 'add_amp_dev_mode' ] );
+				add_filter( 'amp_dev_mode_element_xpaths', array( $this, 'add_amp_dev_mode' ) );
 			}
 
 			// Enqueue scripts.
