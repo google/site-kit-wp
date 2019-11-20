@@ -724,6 +724,22 @@ final class Assets {
 				)
 			),
 			new Script(
+				'wp-escape-html',
+				array(
+					'src'      => $base_url . 'js/externals/escapeHtml.js',
+					'version'  => '1.5.1',
+					'fallback' => true,
+				)
+			),
+			new Script(
+				'wp-is-shallow-equal',
+				array(
+					'src'      => $base_url . 'js/externals/isShallowEqual.js',
+					'version'  => '1.6.1',
+					'fallback' => true,
+				)
+			),
+			new Script(
 				'wp-hooks',
 				array(
 					'src'      => $base_url . 'js/externals/hooks.js',
