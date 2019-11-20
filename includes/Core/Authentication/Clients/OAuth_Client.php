@@ -638,7 +638,7 @@ final class OAuth_Client {
 				array_merge(
 					$base_args,
 					array(
-						'nonce'      => $nonce,
+						'nonce'      => rawurlencode( $nonce ),
 						'name'       => rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ) ) ),
 						'url'        => rawurlencode( $home_url ),
 						'rest_root'  => rawurlencode( $rest_root ),
