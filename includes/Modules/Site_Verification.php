@@ -385,25 +385,23 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		$authentication = $this->authentication;
 		$auth_client    = $authentication->get_oauth_client();
 
-		if (
-			! filter_input( INPUT_GET, 'googlesitekit_verification_token' )
-			|| ! filter_input( INPUT_GET, 'googlesitekit_verification_nonce' )
-			|| ! $auth_client->using_proxy()
-		) {
+		$verification_token = filter_input( INPUT_GET, 'googlesitekit_verification_token' );
+		if ( empty( $verification_token ) ) {
 			return;
 		}
 
-		if ( ! wp_verify_nonce( filter_input( INPUT_GET, 'googlesitekit_verification_nonce' ), 'googlesitekit_verification' ) ) {
+		$verification_nonce = filter_input( INPUT_GET, 'googlesitekit_verification_nonce' );
+		if ( empty( $verification_nonce ) || ! wp_verify_nonce( $verification_nonce, 'googlesitekit_verification' ) ) {
 			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
 		}
 
 		$verification_type = filter_input( INPUT_GET, 'googlesitekit_verification_token_type' ) ?: self::VERIFICATION_TYPE_META;
 		switch ( $verification_type ) {
 			case self::VERIFICATION_TYPE_FILE:
-				$authentication->verification_file()->set( filter_input( INPUT_GET, 'googlesitekit_verification_token' ) );
+				$authentication->verification_file()->set( $verification_token );
 				break;
 			case self::VERIFICATION_TYPE_META:
-				$authentication->verification_meta()->set( filter_input( INPUT_GET, 'googlesitekit_verification_token' ) );
+				$authentication->verification_meta()->set( $verification_token );
 		}
 
 		wp_safe_redirect(
