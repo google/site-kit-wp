@@ -43,30 +43,15 @@ class SearchConsoleAdminbarWidgetOverview extends Component {
 			return null;
 		}
 
-		const processedData = extractSearchConsoleDashboardData( data );
-
 		const {
 			totalClicks,
 			totalImpressions,
 			totalClicksChange,
 			totalImpressionsChange,
-		} = processedData;
+		} = extractSearchConsoleDashboardData( data );
 
 		return (
 			<Fragment>
-				<div className="
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-2-tablet
-					mdc-layout-grid__cell--span-3-desktop
-				">
-					<DataBlock
-						className="overview-total-clicks"
-						title={ __( 'Total Clicks', 'google-site-kit' ) }
-						datapoint={ totalClicks }
-						change={ totalClicksChange }
-						changeDataUnit="%"
-					/>
-				</div>
 				<div className="
 					mdc-layout-grid__cell
 					mdc-layout-grid__cell--span-2-tablet
@@ -77,6 +62,19 @@ class SearchConsoleAdminbarWidgetOverview extends Component {
 						title={ __( 'Total Impressions', 'google-site-kit' ) }
 						datapoint={ totalImpressions }
 						change={ totalImpressionsChange }
+						changeDataUnit="%"
+					/>
+				</div>
+				<div className="
+					mdc-layout-grid__cell
+					mdc-layout-grid__cell--span-2-tablet
+					mdc-layout-grid__cell--span-3-desktop
+				">
+					<DataBlock
+						className="overview-total-clicks"
+						title={ __( 'Total Clicks', 'google-site-kit' ) }
+						datapoint={ totalClicks }
+						change={ totalClicksChange }
 						changeDataUnit="%"
 					/>
 				</div>
