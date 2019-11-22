@@ -36,6 +36,7 @@ import AnalyticsDashboardWidgetOverview from './dashboard-widget-overview';
 import AnalyticsDashboardWidgetTopAcquisitionSources from './dashboard-widget-top-acquisition-sources-table';
 import Layout from 'GoogleComponents/layout/layout';
 import PageHeader from 'GoogleComponents/page-header';
+import DashboardNotifications from 'GoogleComponents/dashboard/dashboard-notifications';
 import DashboardAcquisitionPieChart from './dashboard-widget-acquisition-piechart';
 import Alert from 'GoogleComponents/alert';
 import ProgressBar from 'GoogleComponents/progress-bar';
@@ -159,6 +160,7 @@ class AnalyticsDashboardWidget extends Component {
 		return (
 			<Fragment>
 				<Header />
+				<DashboardNotifications />
 				<Alert module="analytics" />
 				<div className="googlesitekit-module-page googlesitekit-module-page--analytics">
 					<div className="mdc-layout-grid">
