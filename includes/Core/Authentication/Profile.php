@@ -50,7 +50,7 @@ final class Profile {
 	 * @param User_Options $user_options User_Options instance.
 	 * @param OAuth_Client $auth_client  OAuth_Client instance.
 	 */
-	public function __construct( User_Options $user_options, OAuth_Client $auth_client ) {
+	public function __construct( User_Options $user_options, OAuth_Client $auth_client = null ) {
 		$this->user_options = $user_options;
 		$this->auth_client  = $auth_client;
 	}
@@ -67,6 +67,10 @@ final class Profile {
 		$profile_data = $this->user_options->get( self::OPTION );
 		$profile_time = isset( $profile_data['timestamp'] ) ? (int) $profile_data['timestamp'] : 0;
 		$current_time = current_time( 'timestamp' );
+
+		if ( ! $this->auth_client ) {
+			return $profile_data;
+		}
 
 		// If the stored profile data is missing, or older than a week, re-fetch it.
 		if ( ! $profile_data || ( $current_time - $profile_time ) > WEEK_IN_SECONDS ) {
