@@ -274,6 +274,7 @@ final class Assets {
 	 */
 	private function enqueue_minimal_admin_script() {
 		$this->enqueue_asset( 'googlesitekit_admin' );
+		$this->enqueue_asset( 'googlesitekit-api' );
 	}
 
 	/**
@@ -352,6 +353,15 @@ final class Assets {
 					},
 				)
 			),
+			// Begin JSR Assets.
+			new Script(
+				'googlesitekit-api',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-api.js',
+					'dependencies' => $dependencies,
+				)
+			),
+			// End JSR Assets.
 			new Script(
 				'googlesitekit_ads_detect',
 				array(
