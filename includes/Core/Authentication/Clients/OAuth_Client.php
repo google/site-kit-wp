@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Authentication\Clients;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
@@ -210,11 +211,14 @@ final class OAuth_Client {
 		// Offline access so we can access the refresh token even when the user is logged out.
 		$this->google_client->setAccessType( 'offline' );
 		$this->google_client->setPrompt( 'consent' );
-
 		$this->google_client->setRedirectUri( $this->get_redirect_uri() );
-
 		$this->google_client->setScopes( $this->get_required_scopes() );
 		$this->google_client->prepareScopes();
+
+		$profile = ( new Profile( $this->user_options ) )->get();
+		if ( ! empty( $profile['email'] ) ) {
+			$this->google_client->setLoginHint( $profile['email'] );
+		}
 
 		$access_token = $this->get_access_token();
 
