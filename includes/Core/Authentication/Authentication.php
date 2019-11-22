@@ -87,12 +87,20 @@ final class Authentication {
 	protected $verification;
 
 	/**
-	 * Verification tag instance.
+	 * Verification meta instance.
 	 *
-	 * @since 1.0.0
-	 * @var Verification_Tag
+	 * @since 1.1.0
+	 * @var Verification_Meta
 	 */
-	protected $verification_tag;
+	protected $verification_meta;
+
+	/**
+	 * Verification file instance.
+	 *
+	 * @since 1.1.0
+	 * @var Verification_File
+	 */
+	protected $verification_file;
 
 	/**
 	 * Profile instance.
@@ -141,13 +149,14 @@ final class Authentication {
 		if ( ! $transients ) {
 			$transients = new Transients( $this->context );
 		}
-		$this->transients = $transients;
 
-		$this->credentials      = new Credentials( $this->options );
-		$this->verification     = new Verification( $this->user_options );
-		$this->verification_tag = new Verification_Tag( $this->user_options, $this->transients );
-		$this->profile          = new Profile( $user_options, $this->get_oauth_client() );
-		$this->first_admin      = new First_Admin( $this->options );
+		$this->transients        = $transients;
+		$this->credentials       = new Credentials( $this->options );
+		$this->verification      = new Verification( $this->user_options );
+		$this->verification_meta = new Verification_Meta( $this->user_options, $this->transients );
+		$this->verification_file = new Verification_File( $this->user_options );
+		$this->profile           = new Profile( $user_options, $this->get_oauth_client() );
+		$this->first_admin       = new First_Admin( $this->options );
 	}
 
 	/**
@@ -160,13 +169,6 @@ final class Authentication {
 			'init',
 			function() {
 				$this->handle_oauth();
-			}
-		);
-
-		add_action(
-			'admin_init',
-			function() {
-				$this->handle_verification_token();
 			}
 		);
 
@@ -204,13 +206,6 @@ final class Authentication {
 				return $this->authentication_admin_notices( $notices );
 			}
 		);
-
-		$print_site_verification_meta = function() {
-			$this->print_site_verification_meta();
-		};
-
-		add_action( 'wp_head', $print_site_verification_meta );
-		add_action( 'login_head', $print_site_verification_meta );
 	}
 
 	/**
@@ -239,11 +234,35 @@ final class Authentication {
 	 * Gets the verification tag instance.
 	 *
 	 * @since 1.0.0
+	 * @deprecated 1.1.0
 	 *
-	 * @return Verification_Tag Verification tag instance.
+	 * @return Verification_Meta Verification tag instance.
 	 */
 	public function verification_tag() {
-		return $this->verification_tag;
+		_deprecated_function( __METHOD__, '1.1.0', __CLASS__ . '::verification_meta()' );
+		return $this->verification_meta;
+	}
+
+	/**
+	 * Gets the verification meta instance.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @return Verification_Meta Verification tag instance.
+	 */
+	public function verification_meta() {
+		return $this->verification_meta;
+	}
+
+	/**
+	 * Gets the verification file instance.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @return Verification_File Verification file instance.
+	 */
+	public function verification_file() {
+		return $this->verification_file;
 	}
 
 	/**
@@ -281,7 +300,7 @@ final class Authentication {
 
 		// Delete additional user data.
 		$this->user_options->delete( Verification::OPTION );
-		$this->user_options->delete( Verification_Tag::OPTION );
+		$this->user_options->delete( Verification_Meta::OPTION );
 		$this->user_options->delete( Profile::OPTION );
 	}
 
@@ -401,42 +420,6 @@ final class Authentication {
 	}
 
 	/**
-	 * Handles receiving a verification token for a user by the authentication proxy.
-	 *
-	 * @since 1.0.0
-	 */
-	private function handle_verification_token() {
-		$auth_client = $this->get_oauth_client();
-		if ( ! $auth_client->using_proxy() ) {
-			return;
-		}
-
-		$verification_token = filter_input( INPUT_GET, 'googlesitekit_verification_token' );
-		if ( empty( $verification_token ) ) {
-			return;
-		}
-
-		$verification_nonce = filter_input( INPUT_GET, 'googlesitekit_verification_nonce' );
-		if ( empty( $verification_nonce ) || ! wp_verify_nonce( $verification_nonce, 'googlesitekit_verification' ) ) {
-			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
-		}
-
-		$this->verification_tag->set( $verification_token );
-
-		$code = (string) filter_input( INPUT_GET, 'googlesitekit_code' );
-
-		// We need to pass the 'missing_verification' error code here so that the URL includes a verification nonce.
-		wp_safe_redirect(
-			add_query_arg(
-				'verify',
-				'true',
-				$auth_client->get_proxy_setup_url( $code, 'missing_verification' )
-			)
-		);
-		exit;
-	}
-
-	/**
 	 * Refresh authentication token when user login.
 	 *
 	 * @since 1.0.0
@@ -539,40 +522,6 @@ final class Authentication {
 		$data['moduleToSetup'] = $module_to_setup;
 
 		return $data;
-	}
-
-	/**
-	 * Prints site verification meta in wp_head().
-	 *
-	 * @since 1.0.0
-	 *
-	 * @global wpdb $wpdb WordPress database abstraction object.
-	 */
-	private function print_site_verification_meta() {
-		global $wpdb;
-
-		// Get verification meta tags for all users.
-		$verification_tags = $this->verification_tag->get_all();
-
-		if ( empty( $verification_tags ) ) {
-			return;
-		}
-
-		$allowed_html = array(
-			'meta' => array(
-				'name'    => array(),
-				'content' => array(),
-			),
-		);
-
-		foreach ( $verification_tags as $verification_tag ) {
-			$verification_tag = html_entity_decode( $verification_tag );
-			if ( 0 !== strpos( $verification_tag, '<meta ' ) ) {
-				$verification_tag = '<meta name="google-site-verification" content="' . esc_attr( $verification_tag ) . '">';
-			}
-
-			echo wp_kses( $verification_tag, $allowed_html );
-		}
 	}
 
 	/**

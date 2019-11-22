@@ -97,25 +97,9 @@ final class Dashboard {
 			return;
 		}
 
-		$logo = $this->assets->svg_sprite(
-			'logo-g',
-			[
-				'height' => '19',
-				'width'  => '19',
-			]
-		); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped.
-
-		$logo_text = $this->assets->svg_sprite(
-			'logo-sitekit',
-			[
-				'height' => '17',
-				'width'  => '78',
-			]
-		); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped.
-
 		wp_add_dashboard_widget(
 			'google_dashboard_widget',
-			'<span class="googlesitekit-logo googlesitekit-logo--mini">' . $logo . $logo_text . '</span>',
+			__( 'Site Kit Summary', 'google-site-kit' ),
 			function () {
 				$this->render_googlesitekit_wp_dashboard();
 			}
