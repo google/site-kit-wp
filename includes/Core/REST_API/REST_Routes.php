@@ -423,7 +423,17 @@ final class REST_Routes {
 									$responses = array_merge( $responses, $additional_responses );
 								}
 							}
-							return new WP_REST_Response( $this->parse_google_response_data( $responses ) );
+							$responses = $this->parse_google_response_data( $responses );
+							$responses = array_map(
+								function ( $response ) {
+									if ( is_wp_error( $response ) ) {
+										return $this->error_to_response( $response );
+									}
+									return $response;
+								},
+								$responses
+							);
+							return new WP_REST_Response( $responses );
 						},
 						'permission_callback' => $can_view_insights_cron,
 						'args'                => array(
@@ -650,6 +660,37 @@ final class REST_Routes {
 		// These lines will encode/decode to deep convert objects, ensuring all data is returned.
 		if ( version_compare( PHP_VERSION, '5.5.0', '<' ) ) {
 			$data = json_decode( json_encode( $data ) );  // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Converts a WP_Error to response data.
+	 * Based on `\WP_REST_Server::error_to_response`
+	 *
+	 * @param WP_Error $error Error to transform.
+	 *
+	 * @return array
+	 */
+	protected function error_to_response( WP_Error $error ) {
+		$errors = array();
+
+		foreach ( (array) $error->errors as $code => $messages ) {
+			foreach ( (array) $messages as $message ) {
+				$errors[] = array(
+					'code'    => $code,
+					'message' => $message,
+					'data'    => $error->get_error_data( $code ),
+				);
+			}
+		}
+
+		$data = $errors[0];
+		if ( count( $errors ) > 1 ) {
+			// Remove the primary error.
+			array_shift( $errors );
+			$data['additional_errors'] = $errors;
 		}
 
 		return $data;
