@@ -62,7 +62,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		add_filter(
 			'option_' . self::OPTION,
 			function( $option ) {
-				$option = (array) $option;
+				if ( ! is_array( $option ) ) {
+					$option = array();
+				}
 
 				/**
 				 * Filters the Google Analytics account ID to use.
@@ -110,6 +112,11 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				$profile_id = apply_filters( 'googlesitekit_analytics_view_id', '' );
 				if ( ! empty( $profile_id ) ) {
 					$option['profileID'] = $profile_id;
+				}
+
+				// Disable tracking for logged-in users unless enabled via settings.
+				if ( ! isset( $option['trackingDisabled'] ) ) {
+					$option['trackingDisabled'] = array( 'loggedinUsers' );
 				}
 
 				return $option;
@@ -160,6 +167,27 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	}
 
 	/**
+	 * Checks whether or not tracking snippet should be contextually disabled for this request.
+	 *
+	 * @since 1.1.0
+	 *
+	 * @return bool
+	 */
+	protected function is_tracking_disabled() {
+		$exclusions = $this->get_data( 'tracking-disabled' );
+		$disabled   = in_array( 'loggedinUsers', $exclusions, true ) && is_user_logged_in();
+
+		/**
+		 * Filters whether or not the Analytics tracking snippet is output for the current request.
+		 *
+		 * @since 1.1.0
+		 *
+		 * @param $disabled bool Whether to disable tracking or not.
+		 */
+		return (bool) apply_filters( 'googlesitekit_analytics_tracking_disabled', $disabled );
+	}
+
+	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
 	 * @since 1.0.0
@@ -194,6 +222,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		$info['settings']                     = $this->get_data( 'connection' );
 		$info['settings']['useSnippet']       = $this->get_data( 'use-snippet' );
 		$info['settings']['ampClientIDOptIn'] = $this->get_data( 'amp-client-id-opt-in' );
+		$info['settings']['trackingDisabled'] = $this->get_data( 'tracking-disabled' );
 
 		$info['adsenseLinked'] = (bool) $this->options->get( 'googlesitekit_analytics_adsense_linked' );
 
@@ -258,6 +287,10 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 		$tracking_id = $this->get_data( 'property-id' );
 		if ( is_wp_error( $tracking_id ) ) {
+			return;
+		}
+
+		if ( $this->is_tracking_disabled() ) {
 			return;
 		}
 
@@ -334,6 +367,10 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			return;
 		}
 
+		if ( $this->is_tracking_disabled() ) {
+			return;
+		}
+
 		$gtag_amp_opt = array(
 			'vars' => array(
 				'gtag_id' => $tracking_id,
@@ -397,6 +434,10 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			return;
 		}
 
+		if ( $this->is_tracking_disabled() ) {
+			return;
+		}
+
 		echo '<meta name="amp-google-client-id-api" content="googleanalytics">';
 	}
 
@@ -446,6 +487,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			'internal-web-property-id'     => '',
 			'use-snippet'                  => '',
 			'amp-client-id-opt-in'         => '',
+			'tracking-disabled'            => '',
 			// GET.
 			'goals'                        => 'analytics',
 			'accounts-properties-profiles' => 'analytics',
@@ -607,6 +649,14 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							return true; // Default to true.
 						}
 						return ! empty( $option['ampClientIDOptIn'] );
+					};
+				case 'tracking-disabled':
+					return function() {
+						$option     = $this->options->get( self::OPTION );
+						$default    = array( 'loggedinUsers' );
+						$exclusions = isset( $option['trackingDisabled'] ) ? $option['trackingDisabled'] : $default;
+
+						return is_array( $exclusions ) ? $exclusions : $default;
 					};
 				case 'goals':
 					$connection = $this->get_data( 'connection' );
@@ -890,10 +940,11 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'useSnippet' ), array( 'status' => 400 ) );
 					}
+
 					return function() use ( $data ) {
 						$property_id              = null;
 						$internal_web_property_id = null;
-						$property_name            = '';
+
 						if ( '0' === $data['propertyID'] ) {
 							$is_new_property = true;
 							$client          = $this->get_client();
@@ -915,8 +966,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 								return new WP_Error( $e->getCode(), $e->getMessage() );
 							}
 							$client->setDefer( $orig_defer );
-							$property_id              = $property->id;
-							$internal_web_property_id = $property->internalWebPropertyID; // phpcs:ignore WordPress.NamingConventions.ValidVariableName
+							/* @var Google_Service_Analytics_Webproperty $property Property instance. */
+							$property_id              = $property->getId();
+							$internal_web_property_id = $property->getInternalWebPropertyId();
 						} else {
 							$is_new_property          = false;
 							$property_id              = $data['propertyID'];
@@ -976,6 +1028,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'profileID'             => $profile_id,
 							'useSnippet'            => ! empty( $data['useSnippet'] ),
 							'ampClientIDOptIn'      => ! empty( $data['ampClientIDOptIn'] ),
+							'trackingDisabled'      => (array) $data['trackingDisabled'],
 						);
 						$this->options->set( self::OPTION, $option );
 						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
@@ -1215,7 +1268,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	protected function setup_info() {
 		return array(
 			'slug'        => 'analytics',
-			'name'        => __( 'Analytics', 'google-site-kit' ),
+			'name'        => _x( 'Analytics', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.', 'google-site-kit' ),
 			'cta'         => __( 'Get to know your customers.', 'google-site-kit' ),
 			'order'       => 3,

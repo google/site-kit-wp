@@ -13,6 +13,8 @@ namespace Google\Site_Kit\Tests\Core\Authentication\Clients;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Tests\Exception\RedirectException;
+use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -30,6 +32,7 @@ class OAuth_ClientTest extends TestCase {
 	}
 
 	public function test_refresh_token() {
+		$this->fake_authentication();
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -46,10 +49,9 @@ class OAuth_ClientTest extends TestCase {
 
 		$client->refresh_token();
 
-		// Google client must be initialized first
-		$this->assertEquals( 'refresh_token_not_exist', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+		$this->assertEquals( 'access_token_not_received', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
 
-		$client->get_client();
+		$client->get_client()->setHttpClient( new FakeHttpClient() );
 		$client->refresh_token();
 
 		// At this point an error is triggered internally due to undefined indexes on $authentication_token
@@ -60,11 +62,23 @@ class OAuth_ClientTest extends TestCase {
 	public function test_revoke_token() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
-		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options = new User_Options( $context, $user_id );
+		$client       = new OAuth_Client( $context, null, $user_options );
+
+		foreach ( $this->get_user_credential_keys() as $key ) {
+			$user_options->set( $key, "test-$key-value" );
+		}
+
 		// Initialize Google Client
 		$client->get_client();
 		// Nothing to assert here other than to make sure no errors are raised or exceptions thrown.
 		$client->revoke_token();
+
+		foreach ( $this->get_user_credential_keys() as $key ) {
+			$this->assertFalse( $user_options->get( $key ) );
+		}
 	}
 
 	public function test_get_required_scopes() {
@@ -368,5 +382,17 @@ class OAuth_ClientTest extends TestCase {
 				),
 			) );
 		} );
+	}
+
+	protected function get_user_credential_keys() {
+		return array(
+			OAuth_Client::OPTION_ACCESS_TOKEN,
+			OAuth_Client::OPTION_ACCESS_TOKEN_CREATED,
+			OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN,
+			OAuth_Client::OPTION_AUTH_SCOPES,
+			OAuth_Client::OPTION_ERROR_CODE,
+			OAuth_Client::OPTION_REDIRECT_URL,
+			OAuth_Client::OPTION_REFRESH_TOKEN,
+		);
 	}
 }

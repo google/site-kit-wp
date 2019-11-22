@@ -31,7 +31,7 @@ import CTA from 'GoogleComponents/notifications/cta';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 
 /**
@@ -50,7 +50,7 @@ class AdSenseDashboardWidgetTopPagesTableSmall extends Component {
 				<Layout
 					className="googlesitekit-top-earnings-pages"
 					footer
-					footerCtaLabel={ __( 'Analytics', 'google-site-kit' ) }
+					footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 					footerCtaLink="http://analytics.google.com"
 					fill
 				>

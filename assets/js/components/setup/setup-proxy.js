@@ -23,15 +23,16 @@ import Header from 'GoogleComponents/header';
 import Button from 'GoogleComponents/button';
 import ResetButton from 'GoogleComponents/reset-button';
 import Layout from 'GoogleComponents/layout/layout';
+import Notification from 'GoogleComponents/notifications/notification';
 import Optin from 'GoogleComponents/optin';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
-import { Component, Fragment } from 'GoogleUtil/react-features';
 import { delay } from 'lodash';
 
 /**
  * WordPress dependencies
  */
+import { Component, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { getQueryArg } from '@wordpress/url';
 
@@ -40,14 +41,16 @@ class SetupUsingProxy extends Component {
 		super( props );
 
 		const { proxySetupURL, siteURL } = googlesitekit.admin;
-		const { isSiteKitConnected } = googlesitekit.setup;
+		const { isSiteKitConnected, isResettable } = googlesitekit.setup;
 		const { canSetup } = googlesitekit.permissions;
 
 		this.state = {
 			canSetup,
 			isSiteKitConnected,
+			isResettable,
 			completeSetup: false,
 			proxySetupURL,
+			resetSuccess: getQueryArg( location.href, 'notification' ) === 'reset_success',
 			context: getQueryArg( location.href, 'googlesitekit_context' ),
 			siteHostname: ( new URL( siteURL ) ).hostname,
 		};
@@ -76,12 +79,25 @@ class SetupUsingProxy extends Component {
 			}, 500, 'later' );
 		}
 
-		const { context, proxySetupURL, siteHostname } = this.state;
+		const {
+			context,
+			isResettable,
+			proxySetupURL,
+			resetSuccess,
+			siteHostname,
+		} = this.state;
 		const isRevoked = 'revoked' === context;
 
 		return (
 			<Fragment>
 				<Header />
+				{ resetSuccess && (
+					<Notification
+						id="reset_success"
+						title={ __( 'Site Kit by Google was successfully reset.', 'google-site-kit' ) }
+						isDismissable={ false }
+					/>
+				) }
 				<div className="googlesitekit-wizard">
 					<div className="mdc-layout-grid">
 						<div className="mdc-layout-grid__inner">
@@ -121,6 +137,7 @@ class SetupUsingProxy extends Component {
 																</p>
 															</Fragment>
 														) }
+														<Optin />
 														<Button
 															className="googlesitekit-start-setup"
 															href={ proxySetupURL }
@@ -130,8 +147,7 @@ class SetupUsingProxy extends Component {
 														>
 															{ __( 'Start setup', 'google-site-kit' ) }
 														</Button>
-														<ResetButton />
-														<Optin />
+														{ isResettable && <ResetButton /> }
 													</div>
 												</div>
 											</div>

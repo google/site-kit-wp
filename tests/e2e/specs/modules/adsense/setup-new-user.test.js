@@ -88,12 +88,14 @@ describe( 'setting up the AdSense module', () => {
 	} );
 
 	afterEach( async () => {
-		Object.keys( datapointHandlers ).forEach( ( key ) => datapointHandlers[ key ] = defaultHandler );
+		Object.keys( datapointHandlers ).forEach( ( key ) => {
+			return datapointHandlers[ key ] = defaultHandler;
+		} );
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
 
-	it( 'displays “We’re getting your site ready for ads” when account is graylisted', async () => {
+	it( 'displays “Let’s get your site ready for ads” when account is graylisted', async () => {
 		datapointHandlers.accounts = ( request ) => {
 			request.respond( {
 				status: 200,
@@ -138,13 +140,13 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /We’re getting your site ready for ads/i } );
-		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Let’s get your site ready for ads/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status or to complete setting up/i } );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
 	} );
 
-	it( 'displays “We’re getting your site ready for ads” when the Adsense account is missing the address or phone not verified', async () => {
+	it( 'displays “Let’s get your site ready for ads” when the Adsense account is missing the address or phone not verified', async () => {
 		datapointHandlers.accounts = ( request ) => {
 			request.respond( {
 				status: 200,
@@ -196,8 +198,8 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /We’re getting your site ready for ads/i } );
-		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Let’s get your site ready for ads/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status or to complete setting up/i } );
 
 		await expect( '/' ).toHaveAdSenseTag();
 	} );
@@ -269,7 +271,10 @@ describe( 'setting up the AdSense module', () => {
 		await proceedToAdsenseSetup();
 
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Create your AdSense account/i } );
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module__action button', { text: /Create AdSense Account/i } );
+
+		await page.waitForSelector( '.googlesitekit-cta-link' );
+
+		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Create AdSense Account/i } );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
 	} );

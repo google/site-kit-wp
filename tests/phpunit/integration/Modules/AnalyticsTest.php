@@ -135,6 +135,7 @@ class AnalyticsTest extends TestCase {
 		$this->assertArrayHasKey( 'internalWebPropertyID', $info['settings'] );
 		$this->assertArrayHasKey( 'useSnippet', $info['settings'] );
 		$this->assertArrayHasKey( 'ampClientIDOptIn', $info['settings'] );
+		$this->assertArrayHasKey( 'trackingDisabled', $info['settings'] );
 	}
 
 	public function test_is_connected() {
@@ -191,6 +192,7 @@ class AnalyticsTest extends TestCase {
 				'tag-permission',
 				'report',
 				'settings',
+				'tracking-disabled',
 			),
 			$analytics->get_datapoints()
 		);
@@ -210,6 +212,84 @@ class AnalyticsTest extends TestCase {
 
 		$result = apply_filters( 'amp_post_template_data', $data );
 		$this->assertArrayHasKey( 'amp-analytics', $result['amp_component_scripts'] );
+	}
+
+	/**
+	 * @dataProvider tracking_disabled_provider
+	 *
+	 * @param array $settings
+	 * @param bool $logged_in
+	 * @param string $test_method
+	 */
+	public function test_tracking_disabled( $settings, $logged_in, $test_method ) {
+		wp_scripts()->registered = array();
+		wp_scripts()->queue      = array();
+		wp_scripts()->done       = array();
+		remove_all_actions( 'wp_enqueue_scripts' );
+		// Remove irrelevant script from throwing errors in CI from readfile().
+		remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+		// Set the current user (can be 0 for no user)
+		wp_set_current_user( $logged_in ? $this->factory()->user->create() : 0 );
+
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$analytics->register();
+		$analytics->set_data( 'settings', $settings );
+
+		$head_html = $this->capture_action( 'wp_head' );
+		// Sanity check.
+		$this->assertNotEmpty( $head_html );
+
+		$this->{$test_method}( "id={$settings['propertyID']}", $head_html );
+	}
+
+	public function tracking_disabled_provider() {
+		$base_settings = array(
+			'accountID'             => 123456789,
+			'propertyID'            => 'UA-21234567-8',
+			'internalWebPropertyID' => 212345678,
+			'profileID'             => 321234567,
+			'useSnippet'            => true,
+			'trackingDisabled'      => array( 'loggedinUsers' ),
+		);
+
+		return array(
+			// Tracking is active by default.
+			array(
+				$base_settings,
+				false,
+				'assertContains',
+			),
+			// Tracking is not active if snippet is disabled.
+			array(
+				array_merge( $base_settings, array( 'useSnippet' => false ) ),
+				false,
+				'assertNotContains',
+			),
+			// Tracking is not active for logged in users by default.
+			array(
+				$base_settings,
+				true,
+				'assertNotContains',
+			),
+			// Tracking is not active if snippet is disabled for logged in users.
+			array(
+				array_merge( $base_settings, array( 'useSnippet' => false ) ),
+				true,
+				'assertNotContains',
+			),
+			// Tracking is active for logged in users if enabled via settings.
+			array(
+				array_merge( $base_settings, array( 'trackingDisabled' => array() ) ),
+				true,
+				'assertContains',
+			),
+			// Tracking is active for guests if disabled for logged in users.
+			array(
+				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
+				false,
+				'assertContains',
+			),
+		);
 	}
 
 	/**

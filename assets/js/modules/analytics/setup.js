@@ -37,9 +37,15 @@ import {
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 import { addFilter, removeFilter } from '@wordpress/hooks';
+
+const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
+
+const trackingExclusionLabels = {
+	[ TRACKING_LOGGED_IN_USERS ]: __( 'Logged-in users', 'google-site-kit' ),
+};
 
 class AnalyticsSetup extends Component {
 	constructor( props ) {
@@ -51,6 +57,7 @@ class AnalyticsSetup extends Component {
 			propertyID,
 			useSnippet,
 			ampClientIDOptIn,
+			trackingDisabled,
 		} = googlesitekit.modules.analytics.settings;
 
 		this.state = {
@@ -71,6 +78,7 @@ class AnalyticsSetup extends Component {
 			selectedinternalWebProperty: internalWebPropertyID,
 			ampClientIDOptIn,
 			existingTag: false,
+			trackingDisabled: trackingDisabled || [],
 		};
 
 		this.handleAccountChange = this.handleAccountChange.bind( this );
@@ -82,6 +90,7 @@ class AnalyticsSetup extends Component {
 		this.handleRadioClick = this.handleRadioClick.bind( this );
 		this.handleAMPClientIDSwitch = this.handleAMPClientIDSwitch.bind( this );
 		this.handleRefetchAccount = this.handleRefetchAccount.bind( this );
+		this.handleExclusionsChange = this.handleExclusionsChange.bind( this );
 	}
 
 	async componentDidMount() {
@@ -156,6 +165,7 @@ class AnalyticsSetup extends Component {
 			selectedinternalWebProperty: 'internalWebPropertyID',
 			useSnippet: 'useSnippet',
 			ampClientIDOptIn: 'ampClientIDOptIn',
+			trackingDisabled: 'trackingDisabled',
 		};
 
 		toggleConfirmModuleSettings( 'analytics', settingsMapping, this.state );
@@ -462,6 +472,7 @@ class AnalyticsSetup extends Component {
 			properties,
 			profiles,
 			ampClientIDOptIn,
+			trackingDisabled,
 		} = this.state;
 
 		this.setState( {
@@ -492,20 +503,16 @@ class AnalyticsSetup extends Component {
 			internalWebPropertyID,
 			useSnippet: useSnippet || false,
 			ampClientIDOptIn: ampClientIDOptIn || false,
+			trackingDisabled,
 		};
 
 		try {
-			const response = await data.set( TYPE_MODULES, 'analytics', 'settings', analyticAccount );
+			const savedSettings = await data.set( TYPE_MODULES, 'analytics', 'settings', analyticAccount );
 
 			data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 			await this.getAccounts();
 
-			googlesitekit.modules.analytics.settings.accountID = response.accountID;
-			googlesitekit.modules.analytics.settings.profileID = response.profileID;
-			googlesitekit.modules.analytics.settings.propertyID = response.propertyID;
-			googlesitekit.modules.analytics.settings.internalWebPropertyID = response.internalWebPropertyID;
-			googlesitekit.modules.analytics.settings.useSnippet = response.useSnippet;
-			googlesitekit.modules.analytics.settings.ampClientIDOptIn = response.ampClientIDOptIn;
+			googlesitekit.modules.analytics.settings = savedSettings;
 
 			// Track event.
 			sendAnalyticsTrackingEvent( 'analytics_setup', 'analytics_configured' );
@@ -517,10 +524,10 @@ class AnalyticsSetup extends Component {
 			if ( this._isMounted ) {
 				this.setState( {
 					isSaving: false,
-					selectedAccount: response.accountID,
-					selectedProfile: response.profileID,
-					selectedProperty: response.propertyID,
-					selectedinternalWebProperty: response.internalWebPropertyID,
+					selectedAccount: savedSettings.accountID,
+					selectedProfile: savedSettings.profileID,
+					selectedProperty: savedSettings.propertyID,
+					selectedinternalWebProperty: savedSettings.internalWebPropertyID,
 				} );
 			}
 		} catch ( err ) {
@@ -563,6 +570,25 @@ class AnalyticsSetup extends Component {
 		} );
 
 		this.getAccounts();
+	}
+
+	handleExclusionsChange( e ) {
+		const { trackingDisabled } = this.state;
+		const { id: exclusion, checked } = e.target;
+
+		// Rebuild the exclusions list.
+		const exclusionMap = Object.assign(
+			{},
+			// Convert [ key1, key2, .. ] to { key1: true, key2: true, ..}
+			...trackingDisabled.map( ( exclusionKey ) => ( { [ exclusionKey ]: true } ) ),
+			// Add in the current change
+			{ [ exclusion ]: checked },
+		);
+
+		// Re-set the state as a list of enabled exclusions.
+		this.setState( {
+			trackingDisabled: Object.keys( exclusionMap ).filter( ( key ) => exclusionMap[ key ] ),
+		} );
 	}
 
 	renderAutoInsertSnippetForm() {
@@ -712,6 +738,7 @@ class AnalyticsSetup extends Component {
 			useSnippet,
 			existingTag,
 			errorCode,
+			trackingDisabled,
 		} = this.state;
 
 		const {
@@ -791,13 +818,31 @@ class AnalyticsSetup extends Component {
 					<div className="googlesitekit-settings-module__meta-items">
 						<div className="
 							googlesitekit-settings-module__meta-item
-							googlesitekit-settings-module__meta-item--nomargin
 						">
 							<p className="googlesitekit-settings-module__meta-item-type">
 								{ __( 'Analytics Code Snippet', 'google-site-kit' ) }
 							</p>
 							<h5 className="googlesitekit-settings-module__meta-item-data">
 								{ tagStateMessage }
+							</h5>
+						</div>
+					</div>
+					<div className="googlesitekit-settings-module__meta-items">
+						<div className="
+							googlesitekit-settings-module__meta-item
+						">
+							<p className="googlesitekit-settings-module__meta-item-type">
+								{ __( 'Excluded from Analytics', 'google-site-kit' ) }
+							</p>
+							<h5 className="googlesitekit-settings-module__meta-item-data">
+								{ !! trackingDisabled.length &&
+										trackingDisabled
+											.map( ( exclusion ) => trackingExclusionLabels[ exclusion ] )
+											.join( _x( ', ', 'list separator', 'google-site-kit' ) )
+								}
+								{ ! trackingDisabled.length &&
+									__( 'Analytics is currently enabled for all visitors.', 'google-site-kit' )
+								}
 							</h5>
 						</div>
 					</div>
@@ -855,6 +900,8 @@ class AnalyticsSetup extends Component {
 				{ /*Render the auto snippet toggle form.*/ }
 				{ this.renderAutoInsertSnippetForm() }
 
+				{ onSettingsPage && this.renderExclusionsForm() }
+
 				{ /*Render the continue and skip button.*/ }
 				{
 					! onSettingsPage &&
@@ -865,6 +912,35 @@ class AnalyticsSetup extends Component {
 					</div>
 				}
 			</Fragment>
+		);
+	}
+
+	renderExclusionsForm() {
+		const { trackingDisabled } = this.state;
+
+		return (
+			<div>
+				<p className="googlesitekit-setup-module__text">
+					{ __( 'Exclude from Analytics', 'google-site-kit' ) }
+				</p>
+
+				<div className="mdc-form-field">
+					<Switch
+						id={ TRACKING_LOGGED_IN_USERS }
+						label={ trackingExclusionLabels[ TRACKING_LOGGED_IN_USERS ] }
+						onClick={ this.handleExclusionsChange }
+						checked={ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) }
+						hideLabel={ false }
+					/>
+				</div>
+
+				<p>
+					{ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) ?
+						__( 'Logged-in users will be excluded from Analytics tracking.', 'google-site-kit' ) :
+						__( 'Logged-in users will be included in Analytics tracking.', 'google-site-kit' )
+					}
+				</p>
+			</div>
 		);
 	}
 
@@ -941,7 +1017,7 @@ class AnalyticsSetup extends Component {
 								googlesitekit-heading-3
 								googlesitekit-setup-module__title
 							">
-								{ __( 'Analytics', 'google-site-kit' ) }
+								{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 							</h2>
 						</Fragment>
 				}

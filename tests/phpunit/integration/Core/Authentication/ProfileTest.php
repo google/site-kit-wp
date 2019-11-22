@@ -14,7 +14,10 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
 
 /**
  * @group Authentication
@@ -28,12 +31,51 @@ class ProfileTest extends TestCase {
 		$client       = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$profile      = new Profile( $user_options, $client );
 
+		// Profile data is always an array with email, photo, and a timestamp otherwise false.
 		$this->assertFalse( $profile->get() );
 
-		// get() is a simple wrapper for fetching the option value.
-		$user_options->set( Profile::OPTION, 'test-profile' );
+		$valid_profile_data = array(
+			'email'     => 'user@foo.com',
+			'photo'     => 'https://example.com/me.jpg',
+			'timestamp' => current_time( 'timestamp' ) - DAY_IN_SECONDS,
+		);
+		$user_options->set( Profile::OPTION, $valid_profile_data );
 
-		$this->assertEquals( 'test-profile', $profile->get() );
+		$this->assertEquals( $valid_profile_data, $profile->get() );
+
+		// If there is no data, or the timestamp is older than 1 week it attempts to fetch new data.
+		$stale_profile_data = $valid_profile_data;
+		$stale_profile_data['timestamp'] = current_time( 'timestamp' ) - WEEK_IN_SECONDS - MINUTE_IN_SECONDS;
+		update_user_option( $user_id, Profile::OPTION, $stale_profile_data );
+
+		// Stub the response to return fresh profile data from the API.
+		$fake_http = new FakeHttpClient();
+		$fake_http->set_request_handler( function () {
+			return new Response(
+				200,
+				array(),
+				Stream::factory(json_encode(array(
+					// ['emailAddresses'][0]['value']
+					'emailAddresses' => array(
+						array( 'value' => 'fresh@foo.com' ),
+					),
+					// ['photos'][0]['url']
+					'photos' => array(
+						array( 'url' => 'https://example.com/fresh.jpg' ),
+					),
+				)))
+			);
+		});
+		$client->get_client()->setHttpClient( $fake_http );
+
+		$fresh_profile_data = $profile->get();
+
+		$this->assertEquals( 'fresh@foo.com', $fresh_profile_data['email'] );
+		$this->assertEquals( 'https://example.com/fresh.jpg', $fresh_profile_data['photo'] );
+		$this->assertGreaterThan(
+			$valid_profile_data['timestamp'],
+			$fresh_profile_data['timestamp']
+		);
 	}
 
 	public function test_has() {
@@ -58,6 +100,8 @@ class ProfileTest extends TestCase {
 		$user_options->set( Profile::OPTION, array( 'email' => '', 'photo' => 'test-photo.jpg' ) );
 		$this->assertFalse( $profile->has() );
 		$user_options->set( Profile::OPTION, array( 'email' => 'user@example.com', 'photo' => 'test-photo.jpg' ) );
+		$this->assertFalse( $profile->has() );
+		$user_options->set( Profile::OPTION, array( 'email' => 'user@example.com', 'photo' => 'test-photo.jpg', 'timestamp' => current_time( 'timestamp' ) ) );
 		$this->assertTrue( $profile->has() );
 	}
 

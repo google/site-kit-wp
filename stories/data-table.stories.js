@@ -7,7 +7,7 @@ import { storiesOf } from '@storybook/react';
  * WordPress dependencies
  */
 import { doAction } from '@wordpress/hooks';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -34,7 +34,7 @@ storiesOf( 'Global', module )
 				title={ __( 'Top content over the last 28 days', 'google-site-kit' ) }
 				headerCtaLink="https://analytics.google.com"
 				headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-				footerCtaLabel={ __( 'Analytics', 'google-site-kit' ) }
+				footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 				footerCtaLink="https://analytics.google.com"
 			>
 				<AnalyticsDashboardWidgetTopPagesTable />

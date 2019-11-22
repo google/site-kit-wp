@@ -11,20 +11,21 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Authentication\Credentials;
+use Google\Site_Kit\Core\Authentication\First_Admin;
+use Google\Site_Kit\Core\Authentication\Profile;
+use Google\Site_Kit\Core\Authentication\Verification;
+use Google\Site_Kit\Core\Authentication\Verification_File;
+use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Authentication\Credentials;
-use Google\Site_Kit\Core\Authentication\First_Admin;
-use Google\Site_Kit\Core\Authentication\Verification;
-use Google\Site_Kit\Core\Authentication\Verification_Tag;
-use Google\Site_Kit\Core\Authentication\Profile;
-use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
-use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
-use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Optimize;
+use Google\Site_Kit\Modules\PageSpeed_Insights;
+use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Tag_Manager;
 
 /**
@@ -123,7 +124,7 @@ final class Reset {
 		// Also clean up other old unused options.
 		// @todo remove after RC.
 		$this->options->delete( Verification::OPTION );
-		$this->options->delete( Verification_Tag::OPTION );
+		$this->options->delete( Verification_Meta::OPTION );
 		$this->options->delete( 'googlesitekit_api_key' );
 		$this->options->delete( 'googlesitekit_available_modules' );
 		$this->options->delete( 'googlesitekit_secret_token' );
@@ -147,7 +148,7 @@ final class Reset {
 				'meta_query' => array(
 					'relation' => 'OR',
 					array(
-						'key'     => $key_prefix . Verification_Tag::OPTION,
+						'key'     => $key_prefix . Verification_Meta::OPTION,
 						'compare' => 'EXISTS',
 					),
 					array(
@@ -180,7 +181,8 @@ final class Reset {
 			$user_options->delete( OAuth_Client::OPTION_ERROR_CODE );
 			$user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 			$user_options->delete( Verification::OPTION );
-			$user_options->delete( Verification_Tag::OPTION );
+			$user_options->delete( Verification_Meta::OPTION );
+			$user_options->delete( Verification_File::OPTION );
 			$user_options->delete( Profile::OPTION );
 
 			// Clean up old user  api key data, moved to options.

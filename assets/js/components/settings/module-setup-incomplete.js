@@ -24,11 +24,11 @@ import {
 } from 'GoogleUtil';
 import Link from 'GoogleComponents/link';
 import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
+import withFilters from 'GoogleComponents/higherorder/with-filters';
 
 /**
  * WordPress dependencies
  */
-import { withFilters } from '@wordpress/components';
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 

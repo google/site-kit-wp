@@ -27,6 +27,13 @@ import {
 	getDataTableFromData,
 	TableOverflowContainer,
 } from 'GoogleComponents/data-table';
+
+/**
+ * WordPress dependencies
+ */
+import { Component } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
+
 /**
  * Internal dependencies
  */
@@ -35,12 +42,6 @@ import {
 	PageSpeedReportScoreCategoryWrapper,
 	PageSpeedReportScoreGauge,
 } from './util';
-
-/**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 const isZeroData = ( data ) => {
 	return 0 === data.categories.performance.score;
@@ -57,8 +58,9 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
 			handleDataLoaded();
 		}
 	}
+
 	render() {
-		const { data } = this.props;
+		const { data, title } = this.props;
 
 		// Waiting for withData resolution.
 		if ( ! data || data.error ) {
@@ -67,7 +69,7 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
 
 		if ( isZeroData( data ) ) {
 			return getDataErrorComponent(
-				__( 'PageSpeed Insights', 'google-site-kit' ),
+				_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ),
 				__( 'An unknown error occurred while trying to fetch PageSpeed Insights data. Please try again later.', 'google-site-kit' ),
 				true
 			);
@@ -80,8 +82,6 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
 			chartsEnabled: false,
 			links: [],
 		};
-
-		const title = 'mobile' === data.configSettings.emulatedFormFactor ? __( 'Mobile', 'google-site-kit' ) : __( 'Desktop', 'google-site-kit' );
 
 		const score = data.categories.performance.score;
 		const scoreCategory = getScoreCategoryLabel( score );

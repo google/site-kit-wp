@@ -29,5 +29,5 @@ function reset() {
 	$reset = new Reset( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	$reset->all();
 
-	WP_CLI::success( __( 'Reset all settings success', 'google-site-kit' ) );
+	WP_CLI::success( 'Settings successfully reset.' );
 }

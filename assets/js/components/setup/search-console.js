@@ -30,7 +30,7 @@ import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 
 class SearchConsole extends Component {
@@ -108,7 +108,7 @@ class SearchConsole extends Component {
 						propertyMatches[ 0 ].siteURL
 					);
 				} else {
-					errorMessage = __( 'We found no verified accounts, would you like to verify this URL?', 'google-site-kit' );
+					errorMessage = __( 'Your site has not been added to Search Console yet. Would you like to add it now?', 'google-site-kit' );
 				}
 
 				setErrorMessage( errorMessage );
@@ -223,7 +223,7 @@ class SearchConsole extends Component {
 					googlesitekit-heading-3
 					googlesitekit-setup-module__title
 				">
-					{ __( 'Search Console', 'google-site-kit' ) }
+					{ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 				</h2>
 				<p className="googlesitekit-setup-module__text--no-margin">{ __( 'Your Search Console is set up with Site Kit.', 'google-site-kit' ) }</p>
 				{ /* TODO This needs a continue button or redirect. */ }
@@ -296,7 +296,7 @@ class SearchConsole extends Component {
 					googlesitekit-heading-3
 					googlesitekit-setup-module__title
 				">
-					{ __( 'Search Console', 'google-site-kit' ) }
+					{ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 				</h2>
 
 				{

@@ -81,12 +81,12 @@ describe( 'setting up the TagManager module with no existing account', () => {
 
 		// Ensure account and container are selected by default.
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account a/i } );
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /gtm-abcxyz/i } );
+		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test container x/i } );
 
 		// Ensure "Set up a new container" option is present in container select.
-		await expect( page ).toClick( '.mdc-select', { text: /gtm-abcxyz/i } );
+		await expect( page ).toClick( '.mdc-select', { text: /test container x/i } );
 		await expect( page ).toMatchElement( '.mdc-menu-surface--open .mdc-list-item', { text: /set up a new container/i } );
-		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /gtm-abcxyz/i } );
+		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test container x/i } );
 
 		await Promise.all( [
 			expect( page ).toClick( 'button', { text: /confirm \& continue/i } ),
@@ -109,7 +109,7 @@ describe( 'setting up the TagManager module with no existing account', () => {
 
 		// Ensure account and container are selected by default.
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account a/i } );
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /gtm-abcxyz/i } );
+		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test container x/i } );
 
 		// Ensure choosing a different account loads the proper values.
 		await expect( page ).toClick( '.mdc-select', { text: /test account a/i } );
@@ -120,7 +120,7 @@ describe( 'setting up the TagManager module with no existing account', () => {
 
 		// Ensure proper account and container are now selected.
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account b/i } );
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /gtm-bcdwxy/i } );
+		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test container y/i } );
 
 		await Promise.all( [
 			expect( page ).toClick( 'button', { text: /confirm \& continue/i } ),
