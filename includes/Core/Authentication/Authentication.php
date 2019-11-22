@@ -376,7 +376,7 @@ final class Authentication {
 		}
 
 		if ( filter_input( INPUT_GET, 'googlesitekit_disconnect' ) ) {
-			$nonce = filter_input( INPUT_GET, 'nonce' );
+			$nonce = filter_input( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
 			if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'disconnect' ) ) {
 				wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
 			}
@@ -399,7 +399,7 @@ final class Authentication {
 		}
 
 		if ( filter_input( INPUT_GET, 'googlesitekit_connect' ) ) {
-			$nonce = filter_input( INPUT_GET, 'nonce' );
+			$nonce = filter_input( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
 			if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'connect' ) ) {
 				wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
 			}

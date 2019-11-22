@@ -385,17 +385,17 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		$authentication = $this->authentication;
 		$auth_client    = $authentication->get_oauth_client();
 
-		$verification_token = filter_input( INPUT_GET, 'googlesitekit_verification_token' );
+		$verification_token = filter_input( INPUT_GET, 'googlesitekit_verification_token', FILTER_SANITIZE_STRING );
 		if ( empty( $verification_token ) ) {
 			return;
 		}
 
-		$verification_nonce = filter_input( INPUT_GET, 'googlesitekit_verification_nonce' );
+		$verification_nonce = filter_input( INPUT_GET, 'googlesitekit_verification_nonce', FILTER_SANITIZE_STRING );
 		if ( empty( $verification_nonce ) || ! wp_verify_nonce( $verification_nonce, 'googlesitekit_verification' ) ) {
 			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
 		}
 
-		$verification_type = filter_input( INPUT_GET, 'googlesitekit_verification_token_type' ) ?: self::VERIFICATION_TYPE_META;
+		$verification_type = filter_input( INPUT_GET, 'googlesitekit_verification_token_type', FILTER_SANITIZE_STRING ) ?: self::VERIFICATION_TYPE_META;
 		switch ( $verification_type ) {
 			case self::VERIFICATION_TYPE_FILE:
 				$authentication->verification_file()->set( $verification_token );
@@ -412,7 +412,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 				),
 				// We need to pass the 'missing_verification' error code here so that the URL includes a verification nonce.
 				$auth_client->get_proxy_setup_url(
-					filter_input( INPUT_GET, 'googlesitekit_code' ),
+					filter_input( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING ),
 					'missing_verification'
 				)
 			)

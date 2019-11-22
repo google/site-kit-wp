@@ -308,7 +308,7 @@ final class Screens {
 
 				// This callback will redirect to the dashboard on successful authentication.
 				'initialize_callback' => function( Context $context ) {
-					$splash_context = filter_input( INPUT_GET, 'googlesitekit_context' );
+					$splash_context = filter_input( INPUT_GET, 'googlesitekit_context', FILTER_SANITIZE_STRING );
 					$authentication = new Authentication( $context );
 
 					// If the user is authenticated, redirect them to the disconnect URL and then send them back here.
@@ -319,8 +319,8 @@ final class Screens {
 						exit;
 					}
 
-					$notification = filter_input( INPUT_GET, 'notification' );
-					$error        = filter_input( INPUT_GET, 'error' );
+					$notification = filter_input( INPUT_GET, 'notification', FILTER_SANITIZE_STRING );
+					$error        = filter_input( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
 
 					// Bail if no success parameter indicator.
 					if ( 'authentication_success' !== $notification || ! empty( $error ) ) {
