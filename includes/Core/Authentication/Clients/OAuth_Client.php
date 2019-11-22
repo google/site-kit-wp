@@ -529,9 +529,9 @@ final class OAuth_Client {
 
 		// Update granted scopes.
 		if ( isset( $authentication_token['scope'] ) ) {
-			$scopes = explode( ' ', $authentication_token['scope'] );
+			$scopes = explode( ' ', sanitize_text_field( $authentication_token['scope'] ) );
 		} elseif ( isset( $_GET['scope'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			$scopes = explode( ' ', $_GET['scope'] ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			$scopes = explode( ' ', sanitize_text_field( $_GET['scope'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 		} else {
 			$scopes = $this->get_required_scopes();
 		}
