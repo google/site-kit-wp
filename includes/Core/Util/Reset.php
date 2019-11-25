@@ -11,27 +11,12 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
-use Google\Site_Kit\Core\Authentication\Credentials;
-use Google\Site_Kit\Core\Authentication\First_Admin;
-use Google\Site_Kit\Core\Authentication\Profile;
-use Google\Site_Kit\Core\Authentication\Verification;
-use Google\Site_Kit\Core\Authentication\Verification_File;
-use Google\Site_Kit\Core\Authentication\Verification_Meta;
-use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\Transients;
-use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Modules\AdSense;
-use Google\Site_Kit\Modules\Analytics;
-use Google\Site_Kit\Modules\Optimize;
-use Google\Site_Kit\Modules\PageSpeed_Insights;
-use Google\Site_Kit\Modules\Search_Console;
-use Google\Site_Kit\Modules\Tag_Manager;
 
 /**
  * Class providing functions to reset the plugin.
  *
  * @since 1.0.0
+ * @since n.e.x.t Removed delete_all_plugin_options(), delete_all_user_metas() and delete_all_transients() methods.
  * @access private
  * @ignore
  */
@@ -46,42 +31,15 @@ final class Reset {
 	private $context;
 
 	/**
-	 * Options object.
-	 *
-	 * @since 1.0.0
-	 * @var Options
-	 */
-	private $options;
-
-	/**
-	 * Transients object.
-	 *
-	 * @since 1.0.0
-	 * @var Transients
-	 */
-	private $transients;
-
-	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Removed $options and $transients params.
 	 *
-	 * @param Context    $context Plugin context.
-	 * @param Options    $options Optional. Options instance. Default is a new instance.
-	 * @param Transients $transients Optional. Transients instance. Default is a new instance.
+	 * @param Context $context Plugin context.
 	 */
-	public function __construct( Context $context, Options $options = null, Transients $transients = null ) {
+	public function __construct( Context $context ) {
 		$this->context = $context;
-
-		if ( ! $options ) {
-			$options = new Options( $this->context );
-		}
-		$this->options = $options;
-
-		if ( ! $transients ) {
-			$transients = new Transients( $this->context );
-		}
-		$this->transients = $transients;
 	}
 
 	/**
@@ -90,115 +48,12 @@ final class Reset {
 	 * @since 1.0.0
 	 */
 	public function all() {
-		$this->delete_all_plugin_options();
-		$this->delete_all_user_metas();
-		$this->delete_all_transients();
+		$googlesitekit_reset = true;
+
+		// Call uninstaller.
+		require $this->context->path( 'uninstall.php' );
 
 		// Clear options cache.
-		wp_cache_delete( 'alloptions', 'options' );
-	}
-
-	/**
-	 * Deletes all the plugin options.
-	 *
-	 * @since 1.0.0
-	 */
-	private function delete_all_plugin_options() {
-		// Deletes all options from the options table.
-		$this->options->delete( Activation::OPTION_SHOW_ACTIVATION_NOTICE );
-		$this->options->delete( Activation::OPTION_NEW_SITE_POSTS );
-		$this->options->delete( Credentials::OPTION );
-		$this->options->delete( 'googlesitekit-active-modules' );
-		$this->options->delete( Search_Console::PROPERTY_OPTION );
-		$this->options->delete( AdSense::OPTION );
-		$this->options->delete( Analytics::OPTION );
-		$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
-		$this->options->delete( PageSpeed_Insights::OPTION );
-		$this->options->delete( Optimize::OPTION );
-		$this->options->delete( Tag_Manager::OPTION );
-		$this->options->delete( First_Admin::OPTION );
-		$this->options->delete( OAuth_Client::OPTION_PROXY_NONCE );
-		$this->options->delete( Beta_Migration::OPTION_IS_PRE_PROXY_INSTALL );
-
-		// Clean up old site verification data, moved to user options.
-		// Also clean up other old unused options.
-		// @todo remove after RC.
-		$this->options->delete( Verification::OPTION );
-		$this->options->delete( Verification_Meta::OPTION );
-		$this->options->delete( 'googlesitekit_api_key' );
-		$this->options->delete( 'googlesitekit_available_modules' );
-		$this->options->delete( 'googlesitekit_secret_token' );
-		$this->options->delete( 'googlesitekit_project_id' );
-		$this->options->delete( 'googlesitekit_gcp_project' );
-	}
-
-	/**
-	 * Deletes all the user stored options in user meta.
-	 *
-	 * @since 1.0.0
-	 */
-	private function delete_all_user_metas() {
-		global $wpdb;
-
-		// User option keys are prefixed in single site and multisite when not in network mode.
-		$key_prefix = $this->context->is_network_mode() ? '' : $wpdb->get_blog_prefix();
-		$user_query = new \WP_User_Query(
-			array(
-				'fields'     => 'id',
-				'meta_query' => array(
-					'relation' => 'OR',
-					array(
-						'key'     => $key_prefix . Verification_Meta::OPTION,
-						'compare' => 'EXISTS',
-					),
-					array(
-						'key'     => $key_prefix . OAuth_Client::OPTION_ACCESS_TOKEN,
-						'compare' => 'EXISTS',
-					),
-					array(
-						'key'     => $key_prefix . OAuth_Client::OPTION_PROXY_ACCESS_CODE,
-						'compare' => 'EXISTS',
-					),
-					array(
-						'key'     => $key_prefix . OAuth_Client::OPTION_ERROR_CODE,
-						'compare' => 'EXISTS',
-					),
-				),
-			)
-		);
-
-		$users = $user_query->get_results();
-
-		foreach ( $users as $user_id ) {
-			// Deletes all user stored options.
-			$user_options = new User_Options( $this->context, $user_id );
-			$user_options->delete( OAuth_Client::OPTION_ACCESS_TOKEN );
-			$user_options->delete( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN );
-			$user_options->delete( OAuth_Client::OPTION_ACCESS_TOKEN_CREATED );
-			$user_options->delete( OAuth_Client::OPTION_REFRESH_TOKEN );
-			$user_options->delete( OAuth_Client::OPTION_REDIRECT_URL );
-			$user_options->delete( OAuth_Client::OPTION_AUTH_SCOPES );
-			$user_options->delete( OAuth_Client::OPTION_ERROR_CODE );
-			$user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
-			$user_options->delete( Verification::OPTION );
-			$user_options->delete( Verification_Meta::OPTION );
-			$user_options->delete( Verification_File::OPTION );
-			$user_options->delete( Profile::OPTION );
-
-			// Clean up old user  api key data, moved to options.
-			// @todo remove after RC.
-			$user_options->delete( 'googlesitekit_api_key' );
-			$user_options->delete( 'sitekit_authentication' );
-			$user_options->delete( 'googlesitekit_stored_nonce_user_id' );
-		}
-	}
-
-	/**
-	 * Deletes all the stored transients.
-	 *
-	 * @since 1.0.0
-	 */
-	private function delete_all_transients() {
-		$this->transients->delete( 'googlesitekit_verification_meta_tags' );
+		wp_cache_flush();
 	}
 }

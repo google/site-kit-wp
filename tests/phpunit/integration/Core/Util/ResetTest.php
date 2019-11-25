@@ -56,7 +56,7 @@ class ResetTest extends TestCase {
 		wp_load_alloptions();
 		$this->assertNotFalse( wp_cache_get( 'alloptions', 'options' ) );
 		$user_id         = $this->factory()->user->create();
-		$reset           = new Reset( $context );
+		$reset           = new Reset();
 		$is_network_mode = $context->is_network_mode();
 		$this->init_option_values( $is_network_mode );
 		$this->init_user_option_values( $user_id, $is_network_mode );
