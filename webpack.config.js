@@ -109,7 +109,7 @@ const resolve = {
 		GoogleUtil: path.resolve( 'assets/js/util/' ),
 		GoogleModules: path.resolve( './assets/js/modules/' ),
 	},
-	modules: [ projectPath( 'assets' ), projectPath( '.' ), 'node_modules' ],
+	modules: [ projectPath( '.' ), 'node_modules' ],
 };
 
 module.exports = ( env, argv ) => {
