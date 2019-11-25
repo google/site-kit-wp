@@ -20,8 +20,8 @@ require_once plugin_dir_path( __FILE__ ) . 'includes/Context.php';
 
 global $wpdb;
 
-$context = new Context( __FILE__ );
-$prefix = 'googlesitekit%';
+$context     = new Context( __FILE__ );
+$prefix      = 'googlesitekit%';
 $user_prefix = $context->is_network_mode() ? $prefix : $wpdb->get_blog_prefix() . $prefix;
 
 // Delete options and transients.
