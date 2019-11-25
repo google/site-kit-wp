@@ -271,8 +271,8 @@ class AnalyticsSetup extends Component {
 		try {
 			// Send existing tag data to get account.
 			const queryArgs = existingTagData ? {
-				existingAccountID: existingTagData.accountId, // Capitalization rule exception: `accountId` is a property of an API returned value.
-				existingPropertyID: existingTagData.propertyId, // Capitalization rule exception: `propertyId` is a property of an API returned value.
+				existingAccountID: existingTagData.accountID,
+				existingPropertyID: existingTagData.propertyID,
 			} : {};
 
 			const responseData = await data.get( TYPE_MODULES, 'analytics', 'accounts-properties-profiles', queryArgs );
