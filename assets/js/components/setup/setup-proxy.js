@@ -41,11 +41,12 @@ class SetupUsingProxy extends Component {
 		super( props );
 
 		const { proxySetupURL, siteURL } = googlesitekit.admin;
-		const { isSiteKitConnected, isResettable } = googlesitekit.setup;
+		const { isSiteKitConnected, isResettable, errorCode } = googlesitekit.setup;
 		const { canSetup } = googlesitekit.permissions;
 
 		this.state = {
 			canSetup,
+			errorCode,
 			isSiteKitConnected,
 			isResettable,
 			completeSetup: false,
@@ -81,6 +82,7 @@ class SetupUsingProxy extends Component {
 
 		const {
 			context,
+			errorCode,
 			isResettable,
 			proxySetupURL,
 			resetSuccess,
@@ -91,6 +93,15 @@ class SetupUsingProxy extends Component {
 		return (
 			<Fragment>
 				<Header />
+				{ errorCode && (
+					<Notification
+						id="setup_error"
+						type="win-error"
+						title={ __( 'Oops! There was a problem during set up. Please try again.', 'google-site-kit' ) }
+						description={ errorCode }
+						isDismissable={ false }
+					/>
+				) }
 				{ resetSuccess && (
 					<Notification
 						id="reset_success"
