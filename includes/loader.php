@@ -14,6 +14,13 @@ namespace Google\Site_Kit;
 define( 'GOOGLESITEKIT_PLUGIN_BASENAME', plugin_basename( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 define( 'GOOGLESITEKIT_PLUGIN_DIR_PATH', plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
+// Enable this ENV variable to load the new, refactored JavaScript code.
+if ( false !== getenv( 'GOOGLESITEKIT_JS_REFACTOR' ) ) {
+	define( 'GOOGLESITEKIT_JS_REFACTOR', bool( getenv( 'GOOGLESITEKIT_JS_REFACTOR' ) ) );
+} else {
+	define( 'GOOGLESITEKIT_JS_REFACTOR', false );
+}
+
 /**
  * Loads generated class maps for autoloading.
  *

@@ -274,7 +274,9 @@ final class Assets {
 	 */
 	private function enqueue_minimal_admin_script() {
 		$this->enqueue_asset( 'googlesitekit_admin' );
-		$this->enqueue_asset( 'googlesitekit-api' );
+		if ( GOOGLESITEKIT_JS_REFACTOR === true ) {
+			$this->enqueue_asset( 'googlesitekit-api' );
+		}
 	}
 
 	/**
