@@ -74,20 +74,6 @@ function googlesitekit_deactivate_plugin( $network_wide ) {
 
 register_deactivation_hook( __FILE__, 'googlesitekit_deactivate_plugin' );
 
-/**
- * Handles plugin uninstall.
- *
- * @access private
- */
-function googlesitekit_uninstall_plugin() {
-	if ( version_compare( PHP_VERSION, '5.4.0', '<' ) ) {
-		return;
-	}
-
-	do_action( 'googlesitekit_uninstall' );
-}
-register_uninstall_hook( __FILE__, 'googlesitekit_uninstall_plugin' );
-
 if ( version_compare( PHP_VERSION, '5.4.0', '>=' ) ) {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/loader.php';
 }
