@@ -75,14 +75,14 @@ export const useCache = ( shouldUseCache ) => {
 };
 
 /**
- * Invalid the cache for a specific datapoint or all data.
+ * Invalidate the cache for a specific datapoint or all data.
  *
  * Invalidate cache data for either a specific datapoint, identifier, type, or
  * all data. The more specificity supplied the more granularly cache data will
  * be invalidated.
  *
  * Calling `invalidateCache()` will invalidate _all_ cached data, while calling
- * `invalidateCache( 'core', 'adsense' )` will invalidate all AdSense data only.
+ * `invalidateCache( 'modules', 'adsense' )` will invalidate all AdSense data only.
  *
  * @param {string} type       The data type to operate on. One of 'core' or 'modules'.
  * @param {string} identifier The data identifier, eg. a module slug like `'adsense'`.
