@@ -60,7 +60,8 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			'admin_action_googlesitekit_proxy_setup',
 			function() {
 				$this->handle_verification_token();
-			}
+			},
+			0
 		);
 
 		$print_site_verification_meta = function() {
