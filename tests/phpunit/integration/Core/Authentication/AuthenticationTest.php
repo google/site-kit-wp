@@ -14,11 +14,14 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Tests\Exception\RedirectException;
+use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -106,6 +109,69 @@ class AuthenticationTest extends TestCase {
 
 		$this->assertEquals( 'https://accounts.google.com', wp_validate_redirect( 'https://accounts.google.com' ) );
 		$this->assertEquals( 'https://sitekit.withgoogle.com', wp_validate_redirect( 'https://sitekit.withgoogle.com' ) );
+	}
+
+	public function test_handle_site_code_and_redirect_to_proxy() {
+		remove_all_actions( 'admin_action_googlesitekit_proxy_setup' );
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$credentials = new Credentials( new Options( $context ) );
+		$auth = new Authentication( $context );
+		$auth->register();
+
+		$this->assertTrue( has_action( 'admin_action_googlesitekit_proxy_setup' ) );
+		$this->assertFalse( $credentials->has() );
+
+		// For site code to be processed, the code and nonce must be present.
+		$_GET['googlesitekit_code']      = 'test-code';
+		$_GET['googlesitekit_site_code'] = 'test-site-code';
+		// Nonce is the same as was provided in initial setup URL
+		$_GET['googlesitekit_site_nonce'] = wp_create_nonce( 'googlesitekit_proxy_setup' );
+
+		// Stub the response to the proxy oauth API.
+		add_filter(
+			'pre_http_request',
+			function ( $preempt, $args, $url ) {
+				if ( 'https://sitekit.withgoogle.com/o/oauth/site/' !== $url ) {
+					return $preempt;
+				}
+
+				return array(
+					'headers'       => array(),
+					'body'          => json_encode(
+						array(
+							'site_id'     => 'test-site-id.apps.sitekit.withgoogle.com',
+							'site_secret' => 'test-site-secret',
+						)
+					),
+					'response'      => array(
+						'code'    => 200,
+						'message' => 'OK',
+					),
+					'cookies'       => array(),
+					'http_response' => null,
+				);
+			},
+			10,
+			3
+		);
+
+		try {
+			do_action( 'admin_action_googlesitekit_proxy_setup' );
+			$this->fail( 'Expected redirection to proxy setup URL!' );
+		} catch ( RedirectException $redirect ) {
+			$location = $redirect->get_location();
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/setup/', $location );
+			$parsed = wp_parse_url( $location );
+			parse_str( $parsed['query'], $query_args );
+			$this->assertEquals( 'test-site-id.apps.sitekit.withgoogle.com', $query_args['site_id'] );
+			$this->assertEquals( 'test-code', $query_args['code'] );
+		}
+
+		$saved_creds = $credentials->get();
+		$this->assertEquals( 'test-site-id.apps.sitekit.withgoogle.com', $saved_creds['oauth2_client_id'] );
+		$this->assertEquals( 'test-site-secret', $saved_creds['oauth2_client_secret'] );
 	}
 
 	public function test_get_oauth_client() {

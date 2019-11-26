@@ -10,7 +10,9 @@
 
 namespace Google\Site_Kit\Core\Authentication;
 
+use Exception;
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -197,6 +199,14 @@ final class Authentication {
 			'googlesitekit_admin_notices',
 			function ( $notices ) {
 				return $this->authentication_admin_notices( $notices );
+			}
+		);
+
+		add_action(
+			'admin_action_googlesitekit_proxy_setup',
+			function () {
+				$this->handle_site_code();
+				$this->redirect_to_proxy();
 			}
 		);
 	}
@@ -657,5 +667,96 @@ final class Authentication {
 		$required_and_granted_scopes = array_intersect( $granted_scopes, $required_scopes );
 
 		return count( $required_and_granted_scopes ) < count( $required_scopes );
+	}
+
+	/**
+	 * Handles the exchange of a code and site code for client credentials from the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.Missing
+	 */
+	private function handle_site_code() {
+		$code       = $this->context->filter_input( INPUT_GET, 'googlesitekit_code' );
+		$site_code  = $this->context->filter_input( INPUT_GET, 'googlesitekit_site_code' );
+		$site_nonce = $this->context->filter_input( INPUT_GET, 'googlesitekit_site_nonce' );
+
+		if ( ! $code || ! $site_code || ! $site_nonce ) {
+			return;
+		}
+
+		if ( ! wp_verify_nonce( $site_nonce, 'googlesitekit_proxy_setup' ) ) {
+			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
+		}
+
+		$response = wp_remote_post(
+			'https://sitekit.withgoogle.com/o/oauth/site/',
+			array(
+				'body' => array(
+					'code'      => rawurlencode( $code ),
+					'site_code' => rawurlencode( $site_code ),
+				),
+			)
+		);
+
+		try {
+			if ( is_wp_error( $response ) ) {
+				throw new Exception( $response->get_error_code() );
+			}
+
+			$raw_body      = wp_remote_retrieve_body( $response );
+			$response_data = json_decode( $raw_body, true );
+
+			if ( ! $response_data || isset( $response_data['error'] ) ) {
+				throw new Exception(
+					isset( $response_data['error'] ) ? $response_data['error'] : 'failed_to_parse_response'
+				);
+			}
+
+			if ( ! isset( $response_data['site_id'], $response_data['site_secret'] ) ) {
+				throw new Exception( 'oauth_credentials_not_exist' );
+			}
+
+			$this->credentials->set(
+				array(
+					'oauth2_client_id'     => $response_data['site_id'],
+					'oauth2_client_secret' => $response_data['site_secret'],
+				)
+			);
+		} catch ( Exception $exception ) {
+			$this->user_options->set( OAuth_Client::OPTION_ERROR_CODE, $exception->getMessage() );
+			wp_safe_redirect(
+				add_query_arg(
+					'error',
+					rawurlencode( $exception->getMessage() ),
+					$this->context->admin_url( 'splash' )
+				)
+			);
+			exit;
+		}
+	}
+
+	/**
+	 * Redirects back to the authentication service with any added parameters.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function redirect_to_proxy() {
+		/**
+		 * Filters parameters included in return setup URL.
+		 *
+		 * @since n.e.x.t
+		 */
+		$query_params = apply_filters( 'googlesitekit_proxy_setup_return_params', array() );
+
+		wp_safe_redirect(
+			add_query_arg(
+				$query_params,
+				$this->auth_client->get_proxy_setup_url(
+					$this->context->filter_input( INPUT_GET, 'googlesitekit_code' )
+				)
+			)
+		);
+		exit;
 	}
 }
