@@ -75,7 +75,7 @@ export const useCache = ( shouldUseCache ) => {
 };
 
 /**
- * Invalid the cache for a specific datapoint or all data.
+ * Invalidate the cache for a specific datapoint or all data.
  *
  * Invalidate cache data for either a specific datapoint, identifier, type, or
  * all data. The more specificity supplied the more granularly cache data will
