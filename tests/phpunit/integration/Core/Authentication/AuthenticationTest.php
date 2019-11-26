@@ -108,45 +108,6 @@ class AuthenticationTest extends TestCase {
 		$this->assertEquals( 'https://sitekit.withgoogle.com', wp_validate_redirect( 'https://sitekit.withgoogle.com' ) );
 	}
 
-	public function test_register_wp_login() {
-		$user_id = $this->factory()->user->create();
-		wp_set_current_user( $user_id );
-		remove_all_actions( 'wp_login' );
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$auth    = new Authentication( $context );
-
-		$auth->register();
-
-		// Test authentication token is refreshed on login.
-		$this->assertTrue( has_action( 'wp_login' ) );
-
-		$client = $auth->get_oauth_client();
-		// Fake authentication.
-		$client->set_access_token( 'test-access-token', 123 );
-		$this->assertTrue( $auth->is_authenticated() );
-		// Set a refresh token and expect it to be passed to the Google Client.
-		$client->set_refresh_token( 'test-refresh-token' );
-		$mock_google_client = $this->getMock( 'Google\Site_Kit_Dependencies\Google_Client', array(
-			'fetchAccessTokenWithRefreshToken',
-			'revokeToken'
-		) );
-		$mock_google_client->expects( $this->once() )->method( 'fetchAccessTokenWithRefreshToken' )
-			->with( 'test-refresh-token' )
-			->willThrowException( new \Exception( 'invalid_grant' ) );
-		$mock_google_client->expects( $this->once() )->method( 'revokeToken' );
-		$this->force_set_property( $client, 'google_client', $mock_google_client );
-
-		do_action( 'wp_login' );
-
-		if ( $context->is_network_mode() ) {
-			$error_meta_key = OAuth_Client::OPTION_ERROR_CODE;
-		} else {
-			$error_meta_key = $GLOBALS['wpdb']->get_blog_prefix() . OAuth_Client::OPTION_ERROR_CODE;
-		}
-
-		$this->assertSame( 'invalid_grant', get_user_meta( $user_id, $error_meta_key, true ) );
-	}
-
 	public function test_get_oauth_client() {
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 

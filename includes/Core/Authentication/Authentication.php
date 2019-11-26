@@ -172,13 +172,6 @@ final class Authentication {
 			}
 		);
 
-		add_action(
-			'wp_login',
-			function() {
-				$this->refresh_auth_token_on_login();
-			}
-		);
-
 		add_filter(
 			'googlesitekit_admin_data',
 			function ( $data ) {
@@ -416,26 +409,6 @@ final class Authentication {
 			// User is trying to authenticate, but access token hasn't been set.
 			header( 'Location: ' . filter_var( $auth_client->get_authentication_url( $redirect_url ), FILTER_SANITIZE_URL ) );
 			exit();
-		}
-	}
-
-	/**
-	 * Refresh authentication token when user login.
-	 *
-	 * @since 1.0.0
-	 */
-	private function refresh_auth_token_on_login() {
-		// Bail if the user is not authenticated at all yet.
-		if ( ! $this->is_authenticated() ) {
-			return;
-		}
-
-		$auth_client = $this->get_oauth_client();
-
-		// Make sure to refresh the access token if necessary.
-		$google_client = $auth_client->get_client();
-		if ( $auth_client->get_access_token() && $google_client->isAccessTokenExpired() ) {
-			$auth_client->refresh_token();
 		}
 	}
 
