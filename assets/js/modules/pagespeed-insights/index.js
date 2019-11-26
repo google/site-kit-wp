@@ -47,6 +47,9 @@ if ( active && setupComplete ) {
 	addFilter( 'googlesitekit.DashboardModule',
 		'googlesitekit.PageSpeedInsights',
 		addDashboardSpeed, 45 );
+	addFilter( 'googlesitekit.DashboardDetailsModule',
+		'googlesitekit.PageSpeedInsights',
+		addDashboardSpeed, 45 );
 	addFilter( 'googlesitekit.DashboardSpeed',
 		'googlesitekit.PageSpeedInsightsHomepageSpeed',
 		addPageSpeedInsightsDashboardWidgetHomepageSpeed );
