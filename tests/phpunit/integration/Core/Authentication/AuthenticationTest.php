@@ -94,6 +94,7 @@ class AuthenticationTest extends TestCase {
 				'requiredScopes',
 				'showModuleSetupWizard',
 				'isResettable',
+				'errorCode',
 			),
 			array_keys( $data )
 		);

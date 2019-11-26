@@ -476,6 +476,7 @@ final class Authentication {
 		$data['requiredScopes']     = $auth_client->get_required_scopes();
 		$data['grantedScopes']      = ! empty( $access_token ) ? $auth_client->get_granted_scopes() : array();
 		$data['needReauthenticate'] = $data['isAuthenticated'] && $this->need_reauthenticate();
+		$data['errorCode']          = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
 
 		// All admins need to go through site verification process.
 		if ( current_user_can( Permissions::MANAGE_OPTIONS ) ) {
