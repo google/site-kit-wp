@@ -32,10 +32,11 @@ class UninstallationTest extends TestCase {
 		$this->init_user_option_values( $user_id, $is_multisite );
 		$this->init_transient_values( $is_multisite );
 
+		// As long as we test uninstallation only once, this should not have any side-effects.
 		if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 			define( 'WP_UNINSTALL_PLUGIN', GOOGLESITEKIT_PLUGIN_BASENAME );
 		}
-		$uninstall_file = ( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) )->path( 'uninstall.php' );
+		$uninstall_file = plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . 'uninstall.php';
 		require $uninstall_file;
 
 		// Ensure options cache is flushed (must check before accessing other options as this will re-prime the cache)
