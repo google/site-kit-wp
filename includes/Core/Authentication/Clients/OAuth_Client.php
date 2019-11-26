@@ -628,17 +628,11 @@ final class OAuth_Client {
 			$rest_root  = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', rest_url() );
 			$admin_root = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', admin_url() );
 
-			$nonce = $this->options->get( self::OPTION_PROXY_NONCE );
-			if ( empty( $nonce ) ) {
-				$nonce = wp_generate_password();
-				$this->options->set( self::OPTION_PROXY_NONCE, $nonce );
-			}
-
 			return add_query_arg(
 				array_merge(
 					$base_args,
 					array(
-						'nonce'      => rawurlencode( $nonce ),
+						'nonce'      => rawurlencode( wp_create_nonce( 'googlesitekit_proxy_setup' ) ),
 						'name'       => rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ) ) ),
 						'url'        => rawurlencode( $home_url ),
 						'rest_root'  => rawurlencode( $rest_root ),
