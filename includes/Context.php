@@ -101,6 +101,21 @@ final class Context {
 	}
 
 	/**
+	 * Gets a variable from one of the input superglobals.
+	 *
+	 * @param int    $type One of INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV.
+	 * @param string $variable_name Name of a variable to get.
+	 * @param int    $filter [optional] The ID of the filter to apply. The manual page lists the available filters.
+	 * @param mixed  $options [optional] Associative array of options or bitwise disjunction of flags.
+	 *                                   If filter accepts options, flags can be provided in "flags" field of array.
+	 *
+	 * @return mixed
+	 */
+	public function filter_input( $type, $variable_name, $filter = FILTER_DEFAULT, $options = null ) {
+		return $this->input->filter( $type, $variable_name, $filter, $options );
+	}
+
+	/**
 	 * Gets the full URL to an admin screen part of the plugin.
 	 *
 	 * @since 1.0.0
