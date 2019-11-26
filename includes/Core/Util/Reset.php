@@ -48,12 +48,9 @@ final class Reset {
 	 * @since 1.0.0
 	 */
 	public function all() {
-		$googlesitekit_reset = true;
+		$googlesitekit_reset_context = $this->context;
 
 		// Call uninstaller.
 		require $this->context->path( 'uninstall.php' );
-
-		// Clear options cache.
-		wp_cache_flush();
 	}
 }
