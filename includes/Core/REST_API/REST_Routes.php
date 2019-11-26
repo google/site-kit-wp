@@ -465,49 +465,6 @@ final class REST_Routes {
 					),
 				)
 			),
-			new REST_Route(
-				'oauth/site',
-				array(
-					array(
-						'methods'  => WP_REST_Server::CREATABLE,
-						'callback' => function( WP_REST_Request $request ) {
-							$auth_client = $this->authentication->get_oauth_client();
-							if ( ! $auth_client->using_proxy() ) {
-								return new WP_Error( 'invalid_authentication_mode', __( 'Invalid authentication mode.', 'google-site-kit' ), array( 'status' => 500 ) );
-							}
-							if ( ! $auth_client->validate_proxy_nonce( $request['nonce'] ) ) {
-								return new WP_Error( 'invalid_nonce', __( 'Invalid nonce.', 'google-site-kit' ), array( 'status' => 400 ) );
-							}
-							$data = array(
-								'oauth2_client_id'     => sanitize_text_field( $request['site_id'] ),
-								'oauth2_client_secret' => sanitize_text_field( $request['site_secret'] ),
-							);
-							$credentials = $this->authentication->credentials();
-							if ( ! $credentials->set( $data ) ) {
-								return new WP_Error( 'set_credentials_failed', __( 'Failed to set credentials.', 'google-site-kit' ), array( 'status' => 500 ) );
-							}
-							return new WP_REST_Response( array( 'status' => true ), 200 );
-						},
-						'args'     => array(
-							'nonce'       => array(
-								'type'        => 'string',
-								'description' => __( 'WordPress nonce for the authentication proxy setup.', 'google-site-kit' ),
-								'required'    => true,
-							),
-							'site_id'     => array(
-								'type'        => 'string',
-								'description' => __( 'Site ID for the authentication proxy.', 'google-site-kit' ),
-								'required'    => true,
-							),
-							'site_secret' => array(
-								'type'        => 'string',
-								'description' => __( 'Site secret for the authentication proxy.', 'google-site-kit' ),
-								'required'    => true,
-							),
-						),
-					),
-				)
-			),
 			// TODO: Remove this and replace usage with calls to wp/v1/posts.
 			new REST_Route(
 				'core/search/data/post-search',
