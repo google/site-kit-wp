@@ -662,7 +662,7 @@ final class OAuth_Client {
 	 * Gets the list of features to declare support for when setting up with the proxy.
 	 *
 	 * @since 1.1.0
-	 * @since n.e.x.t Add 'credentials_retrieval'
+	 * @since n.e.x.t Added 'credentials_retrieval'
 	 * @return array
 	 */
 	private function get_proxy_setup_supports() {
