@@ -11,6 +11,7 @@ gulp.task( 'copy', () => {
 		[
 			'readme.txt',
 			'google-site-kit.php',
+			'uninstall.php',
 			'dist/*.js',
 			'dist/assets/**/*',
 			'bin/**/*',
