@@ -41,7 +41,7 @@ class Site_VerificationTest extends TestCase {
 		$site_verification = new Site_Verification( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		remove_all_filters( 'googlesitekit_auth_scopes' );
-		remove_all_filters( 'admin_init' );
+		remove_all_filters( 'admin_action_googlesitekit_proxy_setup' );
 		remove_all_actions( 'init' );
 
 		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
@@ -53,7 +53,7 @@ class Site_VerificationTest extends TestCase {
 			$site_verification->get_scopes(),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
-		$this->assertTrue( has_action( 'admin_init' ) );
+		$this->assertTrue( has_action( 'admin_action_googlesitekit_proxy_setup' ) );
 		$this->assertTrue( has_action( 'init' ) );
 	}
 
