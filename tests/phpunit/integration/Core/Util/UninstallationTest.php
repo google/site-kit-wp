@@ -10,30 +10,39 @@
 
 namespace Google\Site_Kit\Tests\Core\Util;
 
-use Google\Site_Kit\Core\Util\Uninstallation;
-use Google\Site_Kit\Tests\MethodSpy;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\OptionsTestTrait;
+use Google\Site_Kit\Tests\UserOptionsTestTrait;
+use Google\Site_Kit\Tests\TransientsTestTrait;
 
 /**
  * @group Util
  */
 class UninstallationTest extends TestCase {
+	use OptionsTestTrait, UserOptionsTestTrait, TransientsTestTrait;
 
-	public function test_register() {
-		$uninstall = new Uninstallation();
-		remove_all_actions( 'googlesitekit_uninstall' );
+	public function test_uninstallation() {
+		wp_load_alloptions();
+		$this->assertNotFalse( wp_cache_get( 'alloptions', 'options' ) );
 
-		$spy = new MethodSpy();
-		$this->assertCount( 0, $spy->invocations );
-		$this->force_set_property( $uninstall, 'reset', $spy );
+		$user_id      = $this->factory()->user->create();
+		$is_multisite = is_multisite();
 
-		do_action( 'googlesitekit_uninstall' );
-		$this->assertCount( 0, $spy->invocations );
+		$this->init_option_values( $is_multisite );
+		$this->init_user_option_values( $user_id, $is_multisite );
+		$this->init_transient_values( $is_multisite );
 
-		$uninstall->register();
+		// As long as we test uninstallation only once, this should not have any side-effects.
+		if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+			define( 'WP_UNINSTALL_PLUGIN', GOOGLESITEKIT_PLUGIN_BASENAME );
+		}
+		$uninstall_file = plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . 'uninstall.php';
+		require $uninstall_file;
 
-		do_action( 'googlesitekit_uninstall' );
-		$this->assertCount( 1, $spy->invocations );
-		$this->assertCount( 1, $spy->invocations['all'] );
+		// Ensure options cache is flushed (must check before accessing other options as this will re-prime the cache)
+		$this->assertFalse( wp_cache_get( 'alloptions', 'options' ) );
+		$this->assertOptionsDeleted( $is_multisite );
+		$this->assertUserOptionsDeleted( $user_id, $is_multisite );
+		$this->assertTransientsDeleted( $is_multisite );
 	}
 }
