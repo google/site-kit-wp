@@ -6,7 +6,7 @@ import { sendAnalyticsTrackingEvent } from '../';
 describe( 'sendAnalyticsTrackingEvent', () => {
 	it( 'sends a tracking event', () => {
 		// eslint-disable-next-line no-undef
-		global.global.googlesitekitTrackingEnabled = true;
+		global.googlesitekitTrackingEnabled = true;
 		// eslint-disable-next-line no-undef
 		global.googlesitekit.setup.isFirstAdmin = true;
 
