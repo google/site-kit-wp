@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Modules\Search_Console;
+use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit_Dependencies\Google_Client;
 use Exception;
 
@@ -651,7 +652,7 @@ final class OAuth_Client {
 		);
 
 		if ( 'missing_verification' === $error_code ) {
-			$query_args['verification_nonce'] = wp_create_nonce( 'googlesitekit_verification' );
+			$query_args['verification_nonce'] = wp_create_nonce( Site_Verification::ACTION_VERIFICATION );
 		}
 
 		return add_query_arg( $query_args, $url );

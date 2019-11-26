@@ -39,6 +39,11 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	use Module_With_Scopes_Trait;
 
 	/**
+	 * Nonce action for receiving a verification token.
+	 */
+	const ACTION_VERIFICATION = 'googlesitekit_verification';
+
+	/**
 	 * Meta site verification type.
 	 */
 	const VERIFICATION_TYPE_META = 'META';
@@ -392,7 +397,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			return;
 		}
 
-		if ( empty( $verification_nonce ) || ! wp_verify_nonce( $verification_nonce, 'googlesitekit_verification' ) ) {
+		if ( empty( $verification_nonce ) || ! wp_verify_nonce( $verification_nonce, self::ACTION_VERIFICATION ) ) {
 			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
 		}
 
@@ -412,7 +417,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 					array(
 						'verify'              => 'true',
 						'verification_method' => $verification_type,
-						'verification_nonce'  => wp_create_nonce( 'googlesitekit_verification' ),
+						'verification_nonce'  => wp_create_nonce( self::ACTION_VERIFICATION ),
 					)
 				);
 			}
