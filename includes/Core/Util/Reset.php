@@ -16,7 +16,7 @@ use Google\Site_Kit\Context;
  * Class providing functions to reset the plugin.
  *
  * @since 1.0.0
- * @since n.e.x.t Removed delete_all_plugin_options(), delete_all_user_metas() and delete_all_transients() methods.
+ * @since 1.1.1 Removed delete_all_plugin_options(), delete_all_user_metas() and delete_all_transients() methods.
  * @access private
  * @ignore
  */
@@ -34,7 +34,7 @@ final class Reset {
 	 * Constructor.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Removed $options and $transients params.
+	 * @since 1.1.1 Removed $options and $transients params.
 	 *
 	 * @param Context $context Plugin context.
 	 */
