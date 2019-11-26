@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit;
 
-// Bail if not uninstalling or reseting the plugin.
+// Bail if not uninstalling or resetting the plugin.
 if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) && empty( $googlesitekit_reset_context ) ) {
 	return;
 }
@@ -35,7 +35,7 @@ $wpdb->query(
 	$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE meta_key LIKE %s", $wpdb->get_blog_prefix() . $prefix )
 );
 
-// Clear network data if multisite and uninstall or reseting networkwise.
+// Clear network data if multisite and uninstalling or resetting network-wide.
 $conditions = (
 	is_multisite()
 	&&
