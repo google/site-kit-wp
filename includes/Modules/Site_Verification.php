@@ -57,7 +57,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		$this->register_scopes_hook();
 
 		add_action(
-			'admin_init',
+			'admin_action_googlesitekit_proxy_setup',
 			function() {
 				$this->handle_verification_token();
 			}
@@ -380,44 +380,42 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * Handles receiving a verification token for a user by the authentication proxy.
 	 *
 	 * @since 1.1.0
+	 * @since n.e.x.t Runs on `admin_action_googlesitekit_proxy_setup` and no longer redirects directly.
 	 */
 	private function handle_verification_token() {
-		$authentication = $this->authentication;
-		$auth_client    = $authentication->get_oauth_client();
+		$verification_token = $this->context->filter_input( INPUT_GET, 'googlesitekit_verification_token' );
+		$verification_nonce = $this->context->filter_input( INPUT_GET, 'googlesitekit_verification_nonce' );
+		$verification_type  = $this->context->filter_input( INPUT_GET, 'googlesitekit_verification_token_type' ) ?: self::VERIFICATION_TYPE_META;
 
-		$verification_token = filter_input( INPUT_GET, 'googlesitekit_verification_token' );
 		if ( empty( $verification_token ) ) {
 			return;
 		}
 
-		$verification_nonce = filter_input( INPUT_GET, 'googlesitekit_verification_nonce' );
 		if ( empty( $verification_nonce ) || ! wp_verify_nonce( $verification_nonce, 'googlesitekit_verification' ) ) {
 			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
 		}
 
-		$verification_type = filter_input( INPUT_GET, 'googlesitekit_verification_token_type' ) ?: self::VERIFICATION_TYPE_META;
 		switch ( $verification_type ) {
 			case self::VERIFICATION_TYPE_FILE:
-				$authentication->verification_file()->set( $verification_token );
+				$this->authentication->verification_file()->set( $verification_token );
 				break;
 			case self::VERIFICATION_TYPE_META:
-				$authentication->verification_meta()->set( $verification_token );
+				$this->authentication->verification_meta()->set( $verification_token );
 		}
 
-		wp_safe_redirect(
-			add_query_arg(
-				array(
-					'verify'              => 'true',
-					'verification_method' => $verification_type,
-				),
-				// We need to pass the 'missing_verification' error code here so that the URL includes a verification nonce.
-				$auth_client->get_proxy_setup_url(
-					filter_input( INPUT_GET, 'googlesitekit_code' ),
-					'missing_verification'
-				)
-			)
+		add_filter(
+			'googlesitekit_proxy_setup_return_params',
+			function ( $params ) use ( $verification_type ) {
+				return array_merge(
+					$params,
+					array(
+						'verify'              => 'true',
+						'verification_method' => $verification_type,
+						'verification_nonce'  => wp_create_nonce( 'googlesitekit_verification' ),
+					)
+				);
+			}
 		);
-		exit;
 	}
 
 	/**

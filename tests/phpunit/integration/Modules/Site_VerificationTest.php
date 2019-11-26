@@ -11,12 +11,15 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Verification_File;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
+use Google\Site_Kit\Tests\Exception\RedirectException;
+use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -87,6 +90,38 @@ class Site_VerificationTest extends TestCase {
 				'test-verification-content-2',
 				'<meta name="google-site-verification" content="test-verification-content-2">',
 			),
+		);
+	}
+
+	public function test_receive_verification_token() {
+		remove_all_actions( 'admin_action_googlesitekit_proxy_setup' );
+		remove_all_actions( 'googlesitekit_proxy_setup_return_params' );
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_options = new User_Options( $context, $user_id );
+		wp_set_current_user( $user_id );
+		$site_verification = new Site_Verification( $context );
+		$site_verification->register();
+
+		$this->assertTrue( has_action( 'admin_action_googlesitekit_proxy_setup' ) );
+
+		$_GET['googlesitekit_verification_token']      = 'testtoken';
+		$_GET['googlesitekit_verification_token_type'] = 'FILE';
+		$_GET['googlesitekit_verification_nonce']      = wp_create_nonce( 'googlesitekit_verification' );
+
+		$this->assertEquals( array(), apply_filters( 'googlesitekit_proxy_setup_return_params', array() ) );
+
+		do_action( 'admin_action_googlesitekit_proxy_setup' );
+
+		$this->assertEquals( 'testtoken', $user_options->get( Verification_File::OPTION ) );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'verification_method' => 'FILE',
+				'verification_nonce'  => wp_create_nonce( 'googlesitekit_verification' ),
+				'verify'              => 'true',
+			),
+			apply_filters( 'googlesitekit_proxy_setup_return_params', array() )
 		);
 	}
 
