@@ -37,7 +37,6 @@ final class OAuth_Client {
 	const OPTION_REDIRECT_URL            = 'googlesitekit_redirect_url';
 	const OPTION_AUTH_SCOPES             = 'googlesitekit_auth_scopes';
 	const OPTION_ERROR_CODE              = 'googlesitekit_error_code';
-	const OPTION_PROXY_NONCE             = 'googlesitekit_proxy_nonce';
 	const OPTION_PROXY_ACCESS_CODE       = 'googlesitekit_proxy_access_code';
 	const PROXY_URL                      = 'https://sitekit.withgoogle.com';
 
@@ -718,24 +717,6 @@ final class OAuth_Client {
 			$query_args,
 			self::PROXY_URL . '/site-management/permissions/'
 		);
-	}
-
-	/**
-	 * Checks whether the given proxy nonce is valid.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $nonce Nonce to validate.
-	 * @return bool True if nonce is valid, false otherwise.
-	 */
-	public function validate_proxy_nonce( $nonce ) {
-		$valid_nonce = $this->options->get( self::OPTION_PROXY_NONCE );
-		if ( $nonce !== $valid_nonce ) {
-			return false;
-		}
-
-		$this->options->delete( self::OPTION_PROXY_NONCE );
-		return true;
 	}
 
 	/**
