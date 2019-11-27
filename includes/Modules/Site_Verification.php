@@ -391,7 +391,8 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	private function handle_verification_token() {
 		$verification_token = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_token' );
 		$verification_nonce = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_nonce' );
-		$verification_type  = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_token_type' ) ?: self::VERIFICATION_TYPE_META;
+		$verification_type  = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_token_type' );
+		$verification_type  = $verification_type ?: self::VERIFICATION_TYPE_META;
 
 		if ( empty( $verification_token ) ) {
 			return;
