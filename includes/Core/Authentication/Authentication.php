@@ -682,9 +682,9 @@ final class Authentication {
 	 * phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.Missing
 	 */
 	private function handle_site_code() {
-		$code       = $this->context->filter_input( INPUT_GET, 'googlesitekit_code' );
-		$site_code  = $this->context->filter_input( INPUT_GET, 'googlesitekit_site_code' );
-		$site_nonce = $this->context->filter_input( INPUT_GET, 'googlesitekit_site_nonce' );
+		$code       = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code' );
+		$site_code  = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code' );
+		$site_nonce = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_nonce' );
 
 		if ( ! $code || ! $site_code || ! $site_nonce ) {
 			return;
@@ -758,7 +758,7 @@ final class Authentication {
 			add_query_arg(
 				$query_params,
 				$this->auth_client->get_proxy_setup_url(
-					$this->context->filter_input( INPUT_GET, 'googlesitekit_code' )
+					$this->context->input()->filter( INPUT_GET, 'googlesitekit_code' )
 				)
 			)
 		);
