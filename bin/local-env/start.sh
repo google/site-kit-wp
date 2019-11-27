@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Exit if any command fails
-set -e
+# set -e
 
 # Include useful functions
 . "$(dirname "$0")/includes.sh"
