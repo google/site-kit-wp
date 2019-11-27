@@ -34,8 +34,8 @@ class Optin extends Component {
 		super( props );
 
 		this.state = {
-			scriptOnPage: !! global.googlesitekitTrackingEnabled,
-			optIn: !! global.googlesitekitTrackingEnabled,
+			scriptOnPage: !! window.googlesitekitTrackingEnabled,
+			optIn: !! window.googlesitekitTrackingEnabled,
 			error: false,
 		};
 

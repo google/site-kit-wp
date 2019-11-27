@@ -544,7 +544,7 @@ export const appendNotificationsCount = ( count = 0 ) => {
  *
  */
 export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel = '', eventValue = '' ) => {
-	if ( 'undefined' === typeof gtag || ! global.googlesitekitTrackingEnabled ) {
+	if ( 'undefined' === typeof gtag || ! window.googlesitekitTrackingEnabled ) {
 		return;
 	}
 
