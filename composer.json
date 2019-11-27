@@ -10,7 +10,8 @@
     "wp-coding-standards/wpcs": "^1",
     "phpcompatibility/php-compatibility": "^9",
     "dealerdirect/phpcodesniffer-composer-installer": "0.4.4",
-    "johnpbloch/wordpress-core": "^5.2"
+    "johnpbloch/wordpress-core": "^5.2",
+    "automattic/vipwpcs": "^0.3.0"
   },
   "require": {
     "php": ">=5.4",
