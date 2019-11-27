@@ -128,7 +128,7 @@ class AuthenticationTest extends TestCase {
 		$_GET['googlesitekit_code']      = 'test-code';
 		$_GET['googlesitekit_site_code'] = 'test-site-code';
 		// Nonce is the same as was provided in initial setup URL
-		$_GET['googlesitekit_site_nonce'] = wp_create_nonce( 'googlesitekit_proxy_setup' );
+		$_GET['nonce'] = wp_create_nonce( 'googlesitekit_proxy_setup' );
 
 		// Stub the response to the proxy oauth API.
 		add_filter(

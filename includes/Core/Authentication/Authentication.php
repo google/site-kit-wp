@@ -205,6 +205,14 @@ final class Authentication {
 		add_action(
 			'admin_action_googlesitekit_proxy_setup',
 			function () {
+				$this->verify_proxy_setup_nonce();
+			},
+			-1
+		);
+
+		add_action(
+			'admin_action_googlesitekit_proxy_setup',
+			function () {
 				$this->handle_site_code();
 				$this->redirect_to_proxy();
 			}
@@ -676,6 +684,19 @@ final class Authentication {
 	}
 
 	/**
+	 * Verifies the nonce for processing proxy setup.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function verify_proxy_setup_nonce() {
+		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
+
+		if ( ! wp_verify_nonce( $nonce, 'googlesitekit_proxy_setup' ) ) {
+			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
+		}
+	}
+
+	/**
 	 * Handles the exchange of a code and site code for client credentials from the proxy.
 	 *
 	 * @since n.e.x.t
@@ -683,16 +704,11 @@ final class Authentication {
 	 * phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.Missing
 	 */
 	private function handle_site_code() {
-		$code       = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
-		$site_code  = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
-		$site_nonce = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_nonce', FILTER_SANITIZE_STRING );
+		$code      = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
+		$site_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
 
-		if ( ! $code || ! $site_code || ! $site_nonce ) {
+		if ( ! $code || ! $site_code ) {
 			return;
-		}
-
-		if ( ! wp_verify_nonce( $site_nonce, 'googlesitekit_proxy_setup' ) ) {
-			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
 		}
 
 		$response = wp_remote_post(
