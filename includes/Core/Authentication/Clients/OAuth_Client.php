@@ -630,36 +630,23 @@ final class OAuth_Client {
 		 */
 		$query_params = apply_filters( 'googlesitekit_proxy_setup_url_params', $base_args, $access_code, $error_code );
 
-		if ( ! $this->credentials->has() ) {
+		if ( $this->credentials->has() ) {
+			$query_params['site_id'] = $this->credentials->get()['oauth2_client_id'];
+			$query_params['code']    = $access_code;
+		} else {
 			$home_url           = home_url();
 			$home_url_no_scheme = str_replace( array( 'http://', 'https://' ), '', $home_url );
 			$rest_root          = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', rest_url() );
 			$admin_root         = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', admin_url() );
 
-			return add_query_arg(
-				array_merge(
-					$query_params,
-					array(
-						'nonce'      => rawurlencode( wp_create_nonce( 'googlesitekit_proxy_setup' ) ),
-						'name'       => rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ) ) ),
-						'url'        => rawurlencode( $home_url ),
-						'rest_root'  => rawurlencode( $rest_root ),
-						'admin_root' => rawurlencode( $admin_root ),
-					)
-				),
-				$url
-			);
+			$query_params['nonce']      = rawurlencode( wp_create_nonce( 'googlesitekit_proxy_setup' ) );
+			$query_params['name']       = rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ) ) );
+			$query_params['url']        = rawurlencode( $home_url );
+			$query_params['rest_root']  = rawurlencode( $rest_root );
+			$query_params['admin_root'] = rawurlencode( $admin_root );
 		}
 
-		$query_args = array_merge(
-			$query_params,
-			array(
-				'site_id' => $this->credentials->get()['oauth2_client_id'],
-				'code'    => $access_code,
-			)
-		);
-
-		return add_query_arg( $query_args, $url );
+		return add_query_arg( $query_params, $url );
 	}
 
 	/**
