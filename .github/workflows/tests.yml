@@ -39,7 +39,7 @@ jobs:
       - name: Build plugin
         run: npm run build
       - name: Start Docker Containers
-        run: env:start
+        run: npm run env:start
       - name: Run E2E Tests (WordPress release)
         run: npm run test:e2e:ci
   e2e-wp47:
@@ -74,7 +74,7 @@ jobs:
       - name: Build plugin
         run: npm run build
       - name: Start Docker Containers
-        run: env:start
+        run: npm run env:start
       - name: Run E2E Tests (WordPress 4.7)
         run: WP_VERSION=4.7.13 npm run test:e2e:ci
   e2e-wp49:
@@ -109,6 +109,6 @@ jobs:
       - name: Build plugin
         run: npm run build
       - name: Start Docker Containers
-        run: env:start
+        run: npm run env:start
       - name: Run E2E Tests (WordPress 4.9 + Gutenberg 4.9)
         run: WP_VERSION=4.9.10 GUTENBERG_VERSION=4.9.0 npm run test:e2e:ci
