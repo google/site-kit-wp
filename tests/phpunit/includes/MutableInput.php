@@ -1,6 +1,6 @@
 <?php
 /**
- * Mutable Input class.
+ * Class Google\Site_Kit\Tests\MutableInput
  *
  * @package   Google\Site_Kit\Tests
  * @copyright 2019 Google LLC
@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Tests;
 use Google\Site_Kit\Core\Util\Input;
 
 /**
- * Class MutableInput
+ * Class for Mutable Input implementation.
  */
 class MutableInput extends Input {
 	/**
