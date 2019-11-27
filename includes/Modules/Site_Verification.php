@@ -39,11 +39,6 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	use Module_With_Scopes_Trait;
 
 	/**
-	 * Nonce action for receiving a verification token.
-	 */
-	const ACTION_VERIFICATION = 'googlesitekit_verification';
-
-	/**
 	 * Meta site verification type.
 	 */
 	const VERIFICATION_TYPE_META = 'META';
@@ -67,18 +62,6 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 				$this->handle_verification_token();
 			},
 			0
-		);
-
-		add_filter(
-			'googlesitekit_proxy_setup_url_params',
-			function ( $params, $access_code, $error_code ) {
-				if ( 'missing_verification' === $error_code ) {
-					$params['verification_nonce'] = wp_create_nonce( self::ACTION_VERIFICATION );
-				}
-				return $params;
-			},
-			10,
-			3
 		);
 
 		$print_site_verification_meta = function() {
@@ -402,16 +385,11 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 */
 	private function handle_verification_token() {
 		$verification_token = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_token', FILTER_SANITIZE_STRING );
-		$verification_nonce = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_nonce', FILTER_SANITIZE_STRING );
 		$verification_type  = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_token_type', FILTER_SANITIZE_STRING );
 		$verification_type  = $verification_type ?: self::VERIFICATION_TYPE_META;
 
 		if ( empty( $verification_token ) ) {
 			return;
-		}
-
-		if ( empty( $verification_nonce ) || ! wp_verify_nonce( $verification_nonce, self::ACTION_VERIFICATION ) ) {
-			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
 		}
 
 		switch ( $verification_type ) {
@@ -430,7 +408,6 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 					array(
 						'verify'              => 'true',
 						'verification_method' => $verification_type,
-						'verification_nonce'  => wp_create_nonce( self::ACTION_VERIFICATION ),
 					)
 				);
 			}

@@ -55,23 +55,6 @@ class Site_VerificationTest extends TestCase {
 		$this->assertTrue( has_action( 'init' ) );
 	}
 
-	public function test_register_googlesitekit_proxy_setup_url_params_filter() {
-		remove_all_filters( 'googlesitekit_proxy_setup_url_params' );
-		$context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$site_verification = new Site_Verification( $context );
-		$site_verification->register();
-
-		$this->assertEquals(
-			array(),
-			apply_filters( 'googlesitekit_proxy_setup_url_params', array(), $access_code = '', $error_code = '' )
-		);
-
-		// Adds a verification_nonce parameter which is a valid nonce if the missing_verification error code is present.
-		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', array(), $access_code = '', $error_code = 'missing_verification' );
-		$this->assertArrayHasKey( 'verification_nonce', $params );
-		$this->assertEquals( 1, wp_verify_nonce( $params['verification_nonce'], Site_Verification::ACTION_VERIFICATION ) );
-	}
-
 	/**
 	 * @dataProvider data_register_head_verification_tags
 	 */
@@ -133,7 +116,6 @@ class Site_VerificationTest extends TestCase {
 		$this->assertEqualSetsWithIndex(
 			array(
 				'verification_method' => 'FILE',
-				'verification_nonce'  => wp_create_nonce( 'googlesitekit_verification' ),
 				'verify'              => 'true',
 			),
 			apply_filters( 'googlesitekit_proxy_setup_url_params', array(), '', '' )
