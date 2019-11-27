@@ -614,6 +614,7 @@ final class Authentication {
 		return new Notice(
 			'oauth_error',
 			array(
+				'type'            => Notice::TYPE_ERROR,
 				'content'         => function() {
 					$message     = '';
 					$auth_client = $this->get_oauth_client();
@@ -648,7 +649,6 @@ final class Authentication {
 
 					return '<p>' . $message . '</p>';
 				},
-				'type'            => Notice::TYPE_ERROR,
 				'active_callback' => function() {
 					if ( isset( $_GET['notification'] ) && 'authentication_success' === $_GET['notification'] && ! empty( $_GET['error'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 						return true;
