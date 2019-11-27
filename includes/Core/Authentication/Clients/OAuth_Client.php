@@ -613,9 +613,8 @@ final class OAuth_Client {
 	 * @return string URL to the setup page on the authentication proxy.
 	 */
 	public function get_proxy_setup_url( $access_code = '', $error_code = '' ) {
-		$url         = self::PROXY_URL . '/site-management/setup/';
-		$credentials = $this->get_client_credentials();
-		$base_args   = array(
+		$url       = self::PROXY_URL . '/site-management/setup/';
+		$base_args = array(
 			'version'  => GOOGLESITEKIT_VERSION,
 			'scope'    => rawurlencode( implode( ' ', $this->get_required_scopes() ) ),
 			'supports' => rawurlencode( implode( ' ', $this->get_proxy_setup_supports() ) ),
@@ -631,7 +630,7 @@ final class OAuth_Client {
 		 */
 		$query_params = apply_filters( 'googlesitekit_proxy_setup_url_params', $base_args, $access_code, $error_code );
 
-		if ( ! is_object( $credentials ) || empty( $credentials->web->client_id ) ) {
+		if ( ! $this->credentials->has() ) {
 			$home_url           = home_url();
 			$home_url_no_scheme = str_replace( array( 'http://', 'https://' ), '', $home_url );
 
@@ -656,7 +655,7 @@ final class OAuth_Client {
 		$query_args = array_merge(
 			$query_params,
 			array(
-				'site_id' => $credentials->web->client_id,
+				'site_id' => $this->credentials->get()['oauth2_client_id'],
 				'code'    => $access_code,
 			)
 		);
