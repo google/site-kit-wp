@@ -809,6 +809,10 @@ export const showErrorNotification = ( ErrorComponent, props = {} ) => {
  * @return {string}
  */
 export const decodeHtmlEntity = ( str ) => {
+	if ( ! str ) {
+		return '';
+	}
+
 	const decoded = str.replace( /&#(\d+);/g, function( match, dec ) {
 		return String.fromCharCode( dec );
 	} ).replace( /(\\)/g, '' );
