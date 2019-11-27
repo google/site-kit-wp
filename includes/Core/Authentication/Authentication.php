@@ -618,20 +618,29 @@ final class Authentication {
 				'content'         => function() {
 					$auth_client = $this->get_oauth_client();
 					$error_code  = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
-					$message     = $auth_client->get_error_message( $error_code );
 
-					// If message is empty, check if we have the stored error message.
-					if ( empty( $message ) ) {
-						$message     = $this->user_options->get( Clients\OAuth_Client::OPTION_ERROR_CODE );
-						if ( $message ) {
-							$message = $auth_client->get_error_message( $message );
-							// Delete it from database to prevent future notice.
-							$this->user_options->delete( Clients\OAuth_Client::OPTION_ERROR_CODE );
-						}
+					if ( ! $error_code ) {
+						$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
 					}
 
-					if ( empty( $message ) ) {
+					if ( $error_code ) {
+						// Delete error code from database to prevent future notice.
+						$this->user_options->delete( OAuth_Client::OPTION_ERROR_CODE );
+					} else {
 						return '';
+					}
+
+					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+					if ( $auth_client->using_proxy() && $access_code ) {
+						$message = sprintf(
+							/* translators: 1: error code from API, 2: URL to re-authenticate */
+							__( 'Setup Error (code: %1$s). <a href="%2$s">Re-authenticate with Google</a>', 'google-site-kit' ),
+							$error_code,
+							esc_url( $auth_client->get_proxy_setup_url( $access_code, $error_code ) )
+						);
+						$this->user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+					} else {
+						$message = $auth_client->get_error_message( $error_code );
 					}
 
 					$message = wp_kses(

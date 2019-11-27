@@ -743,19 +743,6 @@ final class OAuth_Client {
 			case 'unsupported_grant_type':
 				return __( 'Unable to receive access token because of an unsupported grant type.', 'google-site-kit' );
 			default:
-				if ( $this->using_proxy() ) {
-					$access_code = $this->user_options->get( self::OPTION_PROXY_ACCESS_CODE );
-					if ( ! empty( $access_code ) ) {
-						$message = sprintf(
-							/* translators: 1: error code from API, 2: URL to re-authenticate */
-							__( 'Setup Error (code: %1$s). <a href="%2$s">Re-authenticate with Google</a>', 'google-site-kit' ),
-							$error_code,
-							esc_url( $this->get_proxy_setup_url( $access_code, $error_code ) )
-						);
-						$this->user_options->delete( self::OPTION_PROXY_ACCESS_CODE );
-						return $message;
-					}
-				}
 				/* translators: %s: error code from API */
 				return sprintf( __( 'Unknown Error (code: %s).', 'google-site-kit' ), $error_code );
 		}
