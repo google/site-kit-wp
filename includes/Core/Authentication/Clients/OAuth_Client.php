@@ -607,6 +607,7 @@ final class OAuth_Client {
 	 * Returns the setup URL to the authentication proxy.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Added googlesitekit_proxy_setup_url_params filter.
 	 *
 	 * @param string $access_code Optional. Temporary access code for an undelegated access token. Default empty string.
 	 * @param string $error_code  Optional. Error code, if the user should be redirected because of an error. Default empty string.
