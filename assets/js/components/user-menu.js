@@ -21,6 +21,7 @@
 import Dialog from 'GoogleComponents/dialog';
 import Button from 'GoogleComponents/button';
 import Menu from 'GoogleComponents/menu';
+import Modal from 'GoogleComponents/modal';
 import { clearAppLocalStorage } from 'GoogleUtil';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
 
@@ -179,15 +180,17 @@ class UserMenu extends Component {
 						onSelected={ this.handleMenuItemSelect }
 						id="user-menu" />
 				</div>
-				<Dialog
-					dialogActive={ dialogActive }
-					handleConfirm={ this.handleUnlinkConfirm }
-					handleDialog={ this.handleDialog }
-					title={ __( 'Disconnect', 'google-site-kit' ) }
-					subtitle={ __( 'Disconnecting Site Kit by Google will remove your access to all services. After disconnecting, you will need to re-authorize to restore service.', 'google-site-kit' ) }
-					confirmButton={ __( 'Disconnect', 'google-site-kit' ) }
-					provides={ [] }
-				/>
+				<Modal>
+					<Dialog
+						dialogActive={ dialogActive }
+						handleConfirm={ this.handleUnlinkConfirm }
+						handleDialog={ this.handleDialog }
+						title={ __( 'Disconnect', 'google-site-kit' ) }
+						subtitle={ __( 'Disconnecting Site Kit by Google will remove your access to all services. After disconnecting, you will need to re-authorize to restore service.', 'google-site-kit' ) }
+						confirmButton={ __( 'Disconnect', 'google-site-kit' ) }
+						provides={ [] }
+					/>
+				</Modal>
 			</Fragment>
 
 		);

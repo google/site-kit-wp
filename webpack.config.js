@@ -49,8 +49,10 @@ const externalPackages = [
 	'compose',
 	'dom-ready',
 	'element',
+	'escape-html',
 	'hooks',
 	'i18n',
+	'is-shallow-equal',
 	'url',
 ];
 

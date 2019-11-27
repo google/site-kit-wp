@@ -12,5 +12,6 @@
         <ini name="error_reporting" value="32767" />
         <ini name="display_errors" value="1" />
         <ini name="display_startup_errors" value="1" />
+        <const name="GOOGLESITEKIT_TESTS" value="1" />
     </php>
 </phpunit>

@@ -93,7 +93,7 @@ window.addEventListener( 'load', function() {
 		}
 
 		// Track the menu hover event.
-		if ( googlesitekit.admin.trackingOptin ) {
+		if ( window.googlesitekitTrackingEnabled ) {
 			// Dynamically load the gtag script if not loaded.
 			if ( 'undefined' === typeof gtag && ! loadingGtag ) {
 				loadingGtag = true;

@@ -2,7 +2,7 @@
 /**
  * TestCase class.
  *
- * @package   Google\Site_Kit
+ * @package   Google\Site_Kit\Tests
  * @copyright 2019 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
