@@ -618,6 +618,7 @@ final class OAuth_Client {
 			'version'  => GOOGLESITEKIT_VERSION,
 			'scope'    => rawurlencode( implode( ' ', $this->get_required_scopes() ) ),
 			'supports' => rawurlencode( implode( ' ', $this->get_proxy_setup_supports() ) ),
+			'nonce'    => rawurlencode( wp_create_nonce( 'googlesitekit_proxy_setup' ) ),
 		);
 
 		if ( $this->credentials->has() ) {
@@ -629,7 +630,6 @@ final class OAuth_Client {
 			$rest_root          = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', rest_url() );
 			$admin_root         = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', admin_url() );
 
-			$query_params['nonce']      = rawurlencode( wp_create_nonce( 'googlesitekit_proxy_setup' ) );
 			$query_params['name']       = rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ) ) );
 			$query_params['url']        = rawurlencode( $home_url );
 			$query_params['rest_root']  = rawurlencode( $rest_root );
