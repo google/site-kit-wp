@@ -51,20 +51,20 @@ class ContextTest extends TestCase {
 		$_GET['foo'] = 'bar';
 		// By default, everything will be null using the default Input since filter_input
 		// ignores runtime changes.
-		$this->assertNull( $context->filter_input( INPUT_GET, 'foo' ) );
+		$this->assertNull( $context->input()->filter( INPUT_GET, 'foo' ) );
 
 		// Use MutableInput to allow for runtime changes with the same API.
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 
-		$this->assertEquals( 'bar', $context->filter_input( INPUT_GET, 'foo' ) );
-		$this->assertEquals( 'bar', $context->filter_input( INPUT_GET, 'foo' ) );
+		$this->assertEquals( 'bar', $context->input()->filter( INPUT_GET, 'foo' ) );
+		$this->assertEquals( 'bar', $context->input()->filter( INPUT_GET, 'foo' ) );
 
 		// All the same filter flags work.
-		$this->assertFalse( $context->filter_input( INPUT_GET, 'foo', FILTER_VALIDATE_BOOLEAN ) );
+		$this->assertFalse( $context->input()->filter( INPUT_GET, 'foo', FILTER_VALIDATE_BOOLEAN ) );
 
 		$_GET['foo'] = true;
 
-		$this->assertTrue( $context->filter_input( INPUT_GET, 'foo', FILTER_VALIDATE_BOOLEAN ) );
+		$this->assertTrue( $context->input()->filter( INPUT_GET, 'foo', FILTER_VALIDATE_BOOLEAN ) );
 	}
 
 	public function test_admin_url() {
