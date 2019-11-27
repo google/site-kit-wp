@@ -613,22 +613,11 @@ final class OAuth_Client {
 	 * @return string URL to the setup page on the authentication proxy.
 	 */
 	public function get_proxy_setup_url( $access_code = '', $error_code = '' ) {
-		$url       = self::PROXY_URL . '/site-management/setup/';
-		$base_args = array(
+		$query_params = array(
 			'version'  => GOOGLESITEKIT_VERSION,
 			'scope'    => rawurlencode( implode( ' ', $this->get_required_scopes() ) ),
 			'supports' => rawurlencode( implode( ' ', $this->get_proxy_setup_supports() ) ),
 		);
-
-		/**
-		 * Filters parameters included in return setup URL.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param string $access_code Temporary access code for an undelegated access token.
-		 * @param string $error_code  Error code, if the user should be redirected because of an error.
-		 */
-		$query_params = apply_filters( 'googlesitekit_proxy_setup_url_params', $base_args, $access_code, $error_code );
 
 		if ( $this->credentials->has() ) {
 			$query_params['site_id'] = $this->credentials->get()['oauth2_client_id'];
@@ -646,7 +635,17 @@ final class OAuth_Client {
 			$query_params['admin_root'] = rawurlencode( $admin_root );
 		}
 
-		return add_query_arg( $query_params, $url );
+		/**
+		 * Filters parameters included in proxy setup URL.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param string $access_code Temporary access code for an undelegated access token.
+		 * @param string $error_code  Error code, if the user should be redirected because of an error.
+		 */
+		$query_params = apply_filters( 'googlesitekit_proxy_setup_url_params', $query_params, $access_code, $error_code );
+
+		return add_query_arg( $query_params, self::PROXY_URL . '/site-management/setup/' );
 	}
 
 	/**
