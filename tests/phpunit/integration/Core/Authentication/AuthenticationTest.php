@@ -133,7 +133,7 @@ class AuthenticationTest extends TestCase {
 		add_filter(
 			'pre_http_request',
 			function ( $preempt, $args, $url ) {
-				if ( 'https://sitekit.withgoogle.com/o/oauth/site/' !== $url ) {
+				if ( OAuth_Client::PROXY_URL . '/o/oauth/site/' !== $url ) {
 					return $preempt;
 				}
 

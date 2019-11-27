@@ -722,7 +722,7 @@ final class Authentication {
 		}
 
 		$response = wp_remote_post(
-			'https://sitekit.withgoogle.com/o/oauth/site/',
+			OAuth_Client::PROXY_URL . '/o/oauth/site/',
 			array(
 				'body' => array(
 					'code'      => rawurlencode( $code ),
