@@ -722,36 +722,26 @@ final class OAuth_Client {
 	public function get_error_message( $error_code ) {
 		switch ( $error_code ) {
 			case 'oauth_credentials_not_exist':
-				$message = __( 'Unable to authenticate Site Kit. Check your client configuration is in the correct JSON format.', 'google-site-kit' );
-				break;
+				return __( 'Unable to authenticate Site Kit. Check your client configuration is in the correct JSON format.', 'google-site-kit' );
 			case 'refresh_token_not_exist':
-				$message = __( 'Unable to refresh access token, as no refresh token exists.', 'google-site-kit' );
-				break;
+				return __( 'Unable to refresh access token, as no refresh token exists.', 'google-site-kit' );
 			case 'cannot_log_in':
-				$message = __( 'Internal error that the Google login redirect failed.', 'google-site-kit' );
-				break;
+				return __( 'Internal error that the Google login redirect failed.', 'google-site-kit' );
 			case 'invalid_code':
-				$message = __( 'Unable to receive access token because of an empty authorization code.', 'google-site-kit' );
-				break;
+				return __( 'Unable to receive access token because of an empty authorization code.', 'google-site-kit' );
 			case 'access_token_not_received':
-				$message = __( 'Unable to receive access token because of an unknown error.', 'google-site-kit' );
-				break;
+				return __( 'Unable to receive access token because of an unknown error.', 'google-site-kit' );
 			// The following messages are based on https://tools.ietf.org/html/rfc6749#section-5.2.
 			case 'invalid_request':
-				$message = __( 'Unable to receive access token because of an invalid OAuth request.', 'google-site-kit' );
-				break;
+				return __( 'Unable to receive access token because of an invalid OAuth request.', 'google-site-kit' );
 			case 'invalid_client':
-				$message = __( 'Unable to receive access token because of an invalid client.', 'google-site-kit' );
-				break;
+				return __( 'Unable to receive access token because of an invalid client.', 'google-site-kit' );
 			case 'invalid_grant':
-				$message = __( 'Unable to receive access token because of an invalid authorization code or refresh token.', 'google-site-kit' );
-				break;
+				return __( 'Unable to receive access token because of an invalid authorization code or refresh token.', 'google-site-kit' );
 			case 'unauthorized_client':
-				$message = __( 'Unable to receive access token because of an unauthorized client.', 'google-site-kit' );
-				break;
+				return __( 'Unable to receive access token because of an unauthorized client.', 'google-site-kit' );
 			case 'unsupported_grant_type':
-				$message = __( 'Unable to receive access token because of an unsupported grant type.', 'google-site-kit' );
-				break;
+				return __( 'Unable to receive access token because of an unsupported grant type.', 'google-site-kit' );
 			default:
 				if ( $this->using_proxy() ) {
 					$access_code = $this->user_options->get( self::OPTION_PROXY_ACCESS_CODE );
@@ -767,11 +757,8 @@ final class OAuth_Client {
 					}
 				}
 				/* translators: %s: error code from API */
-				$message = sprintf( __( 'Unknown Error (code: %s).', 'google-site-kit' ), $error_code );
-				break;
+				return sprintf( __( 'Unknown Error (code: %s).', 'google-site-kit' ), $error_code );
 		}
-
-		return $message;
 	}
 
 	/**
