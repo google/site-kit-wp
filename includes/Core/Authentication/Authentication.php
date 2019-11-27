@@ -682,9 +682,9 @@ final class Authentication {
 	 * phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.Missing
 	 */
 	private function handle_site_code() {
-		$code       = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code' );
-		$site_code  = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code' );
-		$site_nonce = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_nonce' );
+		$code       = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
+		$site_code  = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
+		$site_nonce = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_nonce', FILTER_SANITIZE_STRING );
 
 		if ( ! $code || ! $site_code || ! $site_nonce ) {
 			return;
@@ -749,7 +749,7 @@ final class Authentication {
 	private function redirect_to_proxy() {
 		wp_safe_redirect(
 			$this->auth_client->get_proxy_setup_url(
-				$this->context->input()->filter( INPUT_GET, 'googlesitekit_code' )
+				$this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING )
 			)
 		);
 		exit;

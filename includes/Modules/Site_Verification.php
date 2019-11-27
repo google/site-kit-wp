@@ -401,9 +401,9 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * @since n.e.x.t Runs on `admin_action_googlesitekit_proxy_setup` and no longer redirects directly.
 	 */
 	private function handle_verification_token() {
-		$verification_token = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_token' );
-		$verification_nonce = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_nonce' );
-		$verification_type  = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_token_type' );
+		$verification_token = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_token', FILTER_SANITIZE_STRING );
+		$verification_nonce = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_nonce', FILTER_SANITIZE_STRING );
+		$verification_type  = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_token_type', FILTER_SANITIZE_STRING );
 		$verification_type  = $verification_type ?: self::VERIFICATION_TYPE_META;
 
 		if ( empty( $verification_token ) ) {

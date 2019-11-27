@@ -65,6 +65,9 @@ class ContextTest extends TestCase {
 		$_GET['foo'] = true;
 
 		$this->assertTrue( $context->input()->filter( INPUT_GET, 'foo', FILTER_VALIDATE_BOOLEAN ) );
+
+		$_GET['dirty'] = '<script>dirt</script>';
+		$this->assertEquals( 'dirt', $context->input()->filter( INPUT_GET, 'dirty', FILTER_SANITIZE_STRING ) );
 	}
 
 	public function test_admin_url() {
