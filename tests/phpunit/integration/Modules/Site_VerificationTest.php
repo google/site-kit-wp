@@ -105,7 +105,6 @@ class Site_VerificationTest extends TestCase {
 
 		$_GET['googlesitekit_verification_token']      = 'testtoken';
 		$_GET['googlesitekit_verification_token_type'] = 'FILE';
-		$_GET['googlesitekit_verification_nonce']      = wp_create_nonce( 'googlesitekit_verification' );
 
 		$this->assertEquals( array(), apply_filters( 'googlesitekit_proxy_setup_url_params', array(), '', '' ) );
 
