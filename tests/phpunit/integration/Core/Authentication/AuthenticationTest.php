@@ -23,6 +23,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use WPDieException;
 
 /**
  * @group Authentication
@@ -127,8 +128,6 @@ class AuthenticationTest extends TestCase {
 		// For site code to be processed, the code and nonce must be present.
 		$_GET['googlesitekit_code']      = 'test-code';
 		$_GET['googlesitekit_site_code'] = 'test-site-code';
-		// Nonce is the same as was provided in initial setup URL
-		$_GET['nonce'] = wp_create_nonce( 'googlesitekit_proxy_setup' );
 
 		// Stub the response to the proxy oauth API.
 		add_filter(
@@ -157,6 +156,17 @@ class AuthenticationTest extends TestCase {
 			10,
 			3
 		);
+
+		$_GET['nonce'] = 'bad-nonce';
+
+		try {
+			do_action( 'admin_action_googlesitekit_proxy_setup' );
+			$this->fail( 'Expected WPDieException!' );
+		} catch ( WPDieException $exception ) {
+			$this->assertEquals( 'Invalid nonce.', $exception->getMessage() );
+		}
+
+		$_GET['nonce'] = wp_create_nonce( 'googlesitekit_proxy_setup' );
 
 		try {
 			do_action( 'admin_action_googlesitekit_proxy_setup' );
