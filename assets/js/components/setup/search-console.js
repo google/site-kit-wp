@@ -208,7 +208,7 @@ class SearchConsole extends Component {
 						value={ selectedURL }
 					/>
 				</div>
-				<div className="googlesitekit-setup-module__action googlesitekit-setup-module__action--justify">
+				<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
 					<Button onClick={ this.submitPropertyEventHandler }>{ __( 'Continue', 'google-site-kit' ) }</Button>
 					<HelpLink />
 				</div>
@@ -249,7 +249,7 @@ class SearchConsole extends Component {
 						/>
 					</TextField>
 				</div>
-				<div className="googlesitekit-setup-module__action googlesitekit-setup-module__action--justify">
+				<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
 					<Button onClick={ this.submitPropertyEventHandler }>{ __( 'Continue', 'google-site-kit' ) }</Button>
 					<HelpLink />
 				</div>
