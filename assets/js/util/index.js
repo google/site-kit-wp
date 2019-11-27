@@ -544,9 +544,10 @@ export const appendNotificationsCount = ( count = 0 ) => {
  *
  */
 export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel = '', eventValue = '' ) => {
-	if ( 'undefined' === typeof gtag ) {
+	if ( 'undefined' === typeof gtag || ! window.googlesitekitTrackingEnabled ) {
 		return;
 	}
+
 	const {
 		siteURL,
 		siteUserID,
@@ -554,17 +555,15 @@ export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel
 
 	const { isFirstAdmin } = googlesitekit.setup;
 
-	if ( googlesitekit.admin.trackingOptin ) {
-		return gtag( 'event', eventName, {
-			send_to: googlesitekit.admin.trackingID, /*eslint camelcase: 0*/
-			event_category: eventCategory, /*eslint camelcase: 0*/
-			event_label: eventLabel, /*eslint camelcase: 0*/
-			event_value: eventValue, /*eslint camelcase: 0*/
-			dimension1: trimEnd( siteURL, '/' ), // Domain.
-			dimension2: isFirstAdmin ? 'true' : 'false', // First Admin?
-			dimension3: siteUserID, // Identifier.
-		} );
-	}
+	return gtag( 'event', eventName, {
+		send_to: googlesitekit.admin.trackingID, /*eslint camelcase: 0*/
+		event_category: eventCategory, /*eslint camelcase: 0*/
+		event_label: eventLabel, /*eslint camelcase: 0*/
+		event_value: eventValue, /*eslint camelcase: 0*/
+		dimension1: trimEnd( siteURL, '/' ), // Domain.
+		dimension2: isFirstAdmin ? 'true' : 'false', // First Admin?
+		dimension3: siteUserID, // Identifier.
+	} );
 };
 
 export const findTagInHtmlContent = ( html, module ) => {
