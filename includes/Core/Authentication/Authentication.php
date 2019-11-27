@@ -752,7 +752,7 @@ final class Authentication {
 		 *
 		 * @since n.e.x.t
 		 */
-		$query_params = apply_filters( 'googlesitekit_proxy_setup_return_params', array() );
+		$query_params = apply_filters( 'googlesitekit_proxy_setup_url_params', array() );
 
 		wp_safe_redirect(
 			add_query_arg(

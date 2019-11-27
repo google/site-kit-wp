@@ -95,7 +95,7 @@ class Site_VerificationTest extends TestCase {
 
 	public function test_receive_verification_token() {
 		remove_all_actions( 'admin_action_googlesitekit_proxy_setup' );
-		remove_all_actions( 'googlesitekit_proxy_setup_return_params' );
+		remove_all_actions( 'googlesitekit_proxy_setup_url_params' );
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$user_options = new User_Options( $context, $user_id );
@@ -109,7 +109,7 @@ class Site_VerificationTest extends TestCase {
 		$_GET['googlesitekit_verification_token_type'] = 'FILE';
 		$_GET['googlesitekit_verification_nonce']      = wp_create_nonce( 'googlesitekit_verification' );
 
-		$this->assertEquals( array(), apply_filters( 'googlesitekit_proxy_setup_return_params', array() ) );
+		$this->assertEquals( array(), apply_filters( 'googlesitekit_proxy_setup_url_params', array() ) );
 
 		do_action( 'admin_action_googlesitekit_proxy_setup' );
 
@@ -121,7 +121,7 @@ class Site_VerificationTest extends TestCase {
 				'verification_nonce'  => wp_create_nonce( 'googlesitekit_verification' ),
 				'verify'              => 'true',
 			),
-			apply_filters( 'googlesitekit_proxy_setup_return_params', array() )
+			apply_filters( 'googlesitekit_proxy_setup_url_params', array() )
 		);
 	}
 

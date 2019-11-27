@@ -411,7 +411,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		}
 
 		add_filter(
-			'googlesitekit_proxy_setup_return_params',
+			'googlesitekit_proxy_setup_url_params',
 			function ( $params ) use ( $verification_type ) {
 				return array_merge(
 					$params,
