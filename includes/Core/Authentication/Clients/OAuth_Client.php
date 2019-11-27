@@ -625,8 +625,11 @@ final class OAuth_Client {
 		 * Filters parameters included in return setup URL.
 		 *
 		 * @since n.e.x.t
+		 *
+		 * @param string $access_code Temporary access code for an undelegated access token.
+		 * @param string $error_code  Error code, if the user should be redirected because of an error.
 		 */
-		$query_params = apply_filters( 'googlesitekit_proxy_setup_url_params', $base_args );
+		$query_params = apply_filters( 'googlesitekit_proxy_setup_url_params', $base_args, $access_code, $error_code );
 
 		if ( ! is_object( $credentials ) || empty( $credentials->web->client_id ) ) {
 			$home_url           = home_url();
@@ -657,10 +660,6 @@ final class OAuth_Client {
 				'code'    => $access_code,
 			)
 		);
-
-		if ( 'missing_verification' === $error_code ) {
-			$query_args['verification_nonce'] = wp_create_nonce( Site_Verification::ACTION_VERIFICATION );
-		}
 
 		return add_query_arg( $query_args, $url );
 	}

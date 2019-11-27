@@ -69,6 +69,18 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			0
 		);
 
+		add_filter(
+			'googlesitekit_proxy_setup_url_params',
+			function ( $params, $access_code, $error_code ) {
+				if ( 'missing_verification' === $error_code ) {
+					$params['verification_nonce'] = wp_create_nonce( self::ACTION_VERIFICATION );
+				}
+				return $params;
+			},
+			10,
+			3
+		);
+
 		$print_site_verification_meta = function() {
 			$this->print_site_verification_meta();
 		};
