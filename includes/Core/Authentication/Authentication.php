@@ -476,10 +476,11 @@ final class Authentication {
 		$data['requiredScopes']     = $auth_client->get_required_scopes();
 		$data['grantedScopes']      = ! empty( $access_token ) ? $auth_client->get_granted_scopes() : array();
 		$data['needReauthenticate'] = $data['isAuthenticated'] && $this->need_reauthenticate();
-		$data['errorCode']          = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
 
-		if ( $data['errorCode'] && $auth_client->using_proxy() ) {
-			$data['errorCode'] = $auth_client->get_error_message( $data['errorCode'] );
+		if ( $auth_client->using_proxy() ) {
+			$data['errorMessage'] = $auth_client->get_error_message(
+				$this->user_options->get( OAuth_Client::OPTION_ERROR_CODE )
+			);
 		}
 
 		// All admins need to go through site verification process.
