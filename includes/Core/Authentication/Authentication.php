@@ -213,8 +213,11 @@ final class Authentication {
 		add_action(
 			'admin_action_googlesitekit_proxy_setup',
 			function () {
-				$this->handle_site_code();
-				$this->redirect_to_proxy();
+				$code      = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
+				$site_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
+
+				$this->handle_site_code( $code, $site_code );
+				$this->redirect_to_proxy( $code );
 			}
 		);
 	}
@@ -711,12 +714,12 @@ final class Authentication {
 	 *
 	 * @since n.e.x.t
 	 *
+	 * @param string $code      Code ('googlesitekit_code') provided by proxy.
+	 * @param string $site_code Site code ('googlesitekit_site_code') provided by proxy.
+	 *
 	 * phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.Missing
 	 */
-	private function handle_site_code() {
-		$code      = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
-		$site_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
-
+	private function handle_site_code( $code, $site_code ) {
 		if ( ! $code || ! $site_code ) {
 			return;
 		}
@@ -772,12 +775,12 @@ final class Authentication {
 	 * Redirects back to the authentication service with any added parameters.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @param string $code Code ('googlesitekit_code') provided by proxy.
 	 */
-	private function redirect_to_proxy() {
+	private function redirect_to_proxy( $code ) {
 		wp_safe_redirect(
-			$this->auth_client->get_proxy_setup_url(
-				$this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING )
-			)
+			$this->auth_client->get_proxy_setup_url( $code )
 		);
 		exit;
 	}
