@@ -633,9 +633,8 @@ final class OAuth_Client {
 		if ( ! $this->credentials->has() ) {
 			$home_url           = home_url();
 			$home_url_no_scheme = str_replace( array( 'http://', 'https://' ), '', $home_url );
-
-			$rest_root  = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', rest_url() );
-			$admin_root = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', admin_url() );
+			$rest_root          = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', rest_url() );
+			$admin_root         = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', admin_url() );
 
 			return add_query_arg(
 				array_merge(
