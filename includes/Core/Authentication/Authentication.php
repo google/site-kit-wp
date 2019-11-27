@@ -616,11 +616,9 @@ final class Authentication {
 			array(
 				'type'            => Notice::TYPE_ERROR,
 				'content'         => function() {
-					$message     = '';
 					$auth_client = $this->get_oauth_client();
-					if ( isset( $_GET['notification'] ) && 'authentication_success' === $_GET['notification'] && ! empty( $_GET['error'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-						$message = $auth_client->get_error_message( sanitize_key( $_GET['error'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-					}
+					$error_code  = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
+					$message     = $auth_client->get_error_message( $error_code );
 
 					// If message is empty, check if we have the stored error message.
 					if ( empty( $message ) ) {
@@ -650,11 +648,14 @@ final class Authentication {
 					return '<p>' . $message . '</p>';
 				},
 				'active_callback' => function() {
-					if ( isset( $_GET['notification'] ) && 'authentication_success' === $_GET['notification'] && ! empty( $_GET['error'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+					$notification = $this->context->input()->filter( INPUT_GET, 'notification', FILTER_SANITIZE_STRING );
+					$error_code   = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
+
+					if ( 'authentication_success' === $notification && $error_code ) {
 						return true;
 					}
 
-					return (bool) $this->user_options->get( Clients\OAuth_Client::OPTION_ERROR_CODE );
+					return (bool) $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
 				},
 			)
 		);
