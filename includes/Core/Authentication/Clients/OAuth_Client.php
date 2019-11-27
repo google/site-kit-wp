@@ -654,7 +654,7 @@ final class OAuth_Client {
 	 *
 	 * @since 1.1.0
 	 * @since n.e.x.t Added 'credentials_retrieval'
-	 * @return array
+	 * @return array Array of supported features.
 	 */
 	private function get_proxy_setup_supports() {
 		return array_filter(
