@@ -25,6 +25,7 @@ class Input {
 	 * @since n.e.x.t
 	 *
 	 * @link https://php.net/manual/en/function.filter-input.php
+	 *
 	 * @param int    $type               One of INPUT_GET, INPUT_POST, INPUT_COOKIE, INPUT_SERVER, or INPUT_ENV.
 	 * @param string $variable_name      Name of a variable to get.
 	 * @param int    $filter [optional]  The ID of the filter to apply. The manual page lists the available filters.
