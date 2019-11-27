@@ -747,19 +747,9 @@ final class Authentication {
 	 * @since n.e.x.t
 	 */
 	private function redirect_to_proxy() {
-		/**
-		 * Filters parameters included in return setup URL.
-		 *
-		 * @since n.e.x.t
-		 */
-		$query_params = apply_filters( 'googlesitekit_proxy_setup_url_params', array() );
-
 		wp_safe_redirect(
-			add_query_arg(
-				$query_params,
-				$this->auth_client->get_proxy_setup_url(
-					$this->context->input()->filter( INPUT_GET, 'googlesitekit_code' )
-				)
+			$this->auth_client->get_proxy_setup_url(
+				$this->context->input()->filter( INPUT_GET, 'googlesitekit_code' )
 			)
 		);
 		exit;

@@ -621,6 +621,13 @@ final class OAuth_Client {
 			'supports' => rawurlencode( implode( ' ', $this->get_proxy_setup_supports() ) ),
 		);
 
+		/**
+		 * Filters parameters included in return setup URL.
+		 *
+		 * @since n.e.x.t
+		 */
+		$query_params = apply_filters( 'googlesitekit_proxy_setup_url_params', $base_args );
+
 		if ( ! is_object( $credentials ) || empty( $credentials->web->client_id ) ) {
 			$home_url           = home_url();
 			$home_url_no_scheme = str_replace( array( 'http://', 'https://' ), '', $home_url );
@@ -630,7 +637,7 @@ final class OAuth_Client {
 
 			return add_query_arg(
 				array_merge(
-					$base_args,
+					$query_params,
 					array(
 						'nonce'      => rawurlencode( wp_create_nonce( 'googlesitekit_proxy_setup' ) ),
 						'name'       => rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ) ) ),
@@ -644,7 +651,7 @@ final class OAuth_Client {
 		}
 
 		$query_args = array_merge(
-			$base_args,
+			$query_params,
 			array(
 				'site_id' => $credentials->web->client_id,
 				'code'    => $access_code,
