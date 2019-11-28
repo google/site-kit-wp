@@ -216,7 +216,7 @@ final class Screens {
 					'title'            => __( 'Dashboard', 'google-site-kit' ),
 					'capability'       => Permissions::VIEW_DASHBOARD,
 					'enqueue_callback' => function( Assets $assets ) {
-						if ( filter_input( INPUT_GET, 'permaLink' ) ) {
+						if ( $this->context->input()->filter( INPUT_GET, 'permaLink' ) ) {
 							$assets->enqueue_asset( 'googlesitekit_dashboard_details' );
 						} else {
 							$assets->enqueue_asset( 'googlesitekit_dashboard' );
@@ -226,7 +226,7 @@ final class Screens {
 						?>
 						<div class="googlesitekit-plugin">
 							<?php
-							if ( filter_input( INPUT_GET, 'permaLink' ) ) {
+							if ( $context->input()->filter( INPUT_GET, 'permaLink' ) ) {
 								/**
 								 * Fires before the Dashboard Details App wrapper is rendered.
 								 *
