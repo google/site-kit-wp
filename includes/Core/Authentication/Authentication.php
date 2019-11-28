@@ -417,7 +417,7 @@ final class Authentication {
 				)
 			);
 
-			header( 'Location: ' . filter_var( $redirect_url, FILTER_SANITIZE_URL ) );
+			wp_safe_redirect( $redirect_url );
 			exit();
 		}
 
@@ -437,7 +437,7 @@ final class Authentication {
 			}
 
 			// User is trying to authenticate, but access token hasn't been set.
-			header( 'Location: ' . filter_var( $auth_client->get_authentication_url( $redirect_url ), FILTER_SANITIZE_URL ) );
+			wp_safe_redirect( $auth_client->get_authentication_url( $redirect_url ) );
 			exit();
 		}
 	}
