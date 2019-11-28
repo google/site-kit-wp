@@ -501,8 +501,9 @@ final class OAuth_Client {
 	 * @since 1.0.0
 	 */
 	public function authorize_user() {
-		// If the OAuth redirects with an error code, handle it.
+		$code       = $this->context->input()->filter( INPUT_GET, 'code', FILTER_SANITIZE_STRING );
 		$error_code = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
+		// If the OAuth redirects with an error code, handle it.
 		if ( ! empty( $error_code ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
 			wp_safe_redirect( admin_url() );
@@ -516,7 +517,7 @@ final class OAuth_Client {
 		}
 
 		try {
-			$authentication_token = $this->get_client()->fetchAccessTokenWithAuthCode( $_GET['code'] ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			$authentication_token = $this->get_client()->fetchAccessTokenWithAuthCode( $code );
 		} catch ( Google_Proxy_Exception $e ) {
 			wp_safe_redirect( $this->get_proxy_setup_url( $e->getAccessCode(), $e->getMessage() ) );
 			exit();
@@ -549,8 +550,9 @@ final class OAuth_Client {
 		// Update granted scopes.
 		if ( isset( $authentication_token['scope'] ) ) {
 			$scopes = explode( ' ', $authentication_token['scope'] );
-		} elseif ( isset( $_GET['scope'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			$scopes = explode( ' ', $_GET['scope'] ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+		} elseif ( $this->context->input()->filter( INPUT_GET, 'scope' ) ) {
+			$scope  = $this->context->input()->filter( INPUT_GET, 'scope', FILTER_SANITIZE_STRING );
+			$scopes = explode( ' ', $scope );
 		} else {
 			$scopes = $this->get_required_scopes();
 		}
