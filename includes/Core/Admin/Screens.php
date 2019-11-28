@@ -308,19 +308,20 @@ final class Screens {
 
 				// This callback will redirect to the dashboard on successful authentication.
 				'initialize_callback' => function( Context $context ) {
-					$splash_context = filter_input( INPUT_GET, 'googlesitekit_context' );
+					$splash_context = $context->input()->filter( INPUT_GET, 'googlesitekit_context' );
+					$reset_session  = $context->input()->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN );
 					$authentication = new Authentication( $context );
 
 					// If the user is authenticated, redirect them to the disconnect URL and then send them back here.
-					if ( empty( $_GET['googlesitekit_reset_session'] ) && 'revoked' === $splash_context && $authentication->is_authenticated() ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+					if ( ! $reset_session && 'revoked' === $splash_context && $authentication->is_authenticated() ) {
 						$authentication->disconnect();
 
 						wp_safe_redirect( add_query_arg( array( 'googlesitekit_reset_session' => 1 ) ) );
 						exit;
 					}
 
-					$notification = filter_input( INPUT_GET, 'notification' );
-					$error        = filter_input( INPUT_GET, 'error' );
+					$notification = $context->input()->filter( INPUT_GET, 'notification' );
+					$error        = $context->input()->filter( INPUT_GET, 'error' );
 
 					// Bail if no success parameter indicator.
 					if ( 'authentication_success' !== $notification || ! empty( $error ) ) {
