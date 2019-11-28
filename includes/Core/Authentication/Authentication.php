@@ -387,9 +387,10 @@ final class Authentication {
 		}
 
 		$auth_client = $this->get_oauth_client();
+		$input       = $this->context->input();
 
 		// Handles Direct OAuth client request.
-		if ( filter_input( INPUT_GET, 'oauth2callback' ) ) {
+		if ( $input->filter( INPUT_GET, 'oauth2callback' ) ) {
 			$auth_client->authorize_user();
 		}
 
@@ -397,8 +398,8 @@ final class Authentication {
 			return;
 		}
 
-		if ( filter_input( INPUT_GET, 'googlesitekit_disconnect' ) ) {
-			$nonce = filter_input( INPUT_GET, 'nonce' );
+		if ( $input->filter( INPUT_GET, 'googlesitekit_disconnect' ) ) {
+			$nonce = $input->filter( INPUT_GET, 'nonce' );
 			if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'disconnect' ) ) {
 				wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
 			}
@@ -420,8 +421,8 @@ final class Authentication {
 			exit();
 		}
 
-		if ( filter_input( INPUT_GET, 'googlesitekit_connect' ) ) {
-			$nonce = filter_input( INPUT_GET, 'nonce' );
+		if ( $input->filter( INPUT_GET, 'googlesitekit_connect' ) ) {
+			$nonce = $input->filter( INPUT_GET, 'nonce' );
 			if ( empty( $nonce ) || ! wp_verify_nonce( $nonce, 'connect' ) ) {
 				wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
 			}
@@ -430,9 +431,9 @@ final class Authentication {
 				wp_die( esc_html__( 'You don\'t have permissions to perform this action.', 'google-site-kit' ), 403 );
 			}
 
-			$redirect_url = '';
-			if ( ! empty( $_GET['redirect'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-				$redirect_url = esc_url_raw( wp_unslash( $_GET['redirect'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			$redirect_url = $input->filter( INPUT_GET, 'redirect' );
+			if ( $redirect_url ) {
+				$redirect_url = esc_url_raw( wp_unslash( $redirect_url ) );
 			}
 
 			// User is trying to authenticate, but access token hasn't been set.
@@ -524,11 +525,9 @@ final class Authentication {
 			$data['hasSearchConsoleProperty'] = false;
 		}
 
-		$reauth                        = isset( $_GET['reAuth'] ) ? ( 'true' === $_GET['reAuth'] ) : false; // phpcs:ignore WordPress.CSRF.NoNonceVerification.
-		$data['showModuleSetupWizard'] = $reauth;
+		$data['showModuleSetupWizard'] = $this->context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
 
-		$module_to_setup       = isset( $_GET['slug'] ) ? sanitize_key( $_GET['slug'] ) : ''; // phpcs:ignore WordPress.CSRF.NoNonceVerification.
-		$data['moduleToSetup'] = $module_to_setup;
+		$data['moduleToSetup'] = sanitize_key( $this->context->input()->filter( INPUT_GET, 'slug' ) );
 
 		return $data;
 	}
