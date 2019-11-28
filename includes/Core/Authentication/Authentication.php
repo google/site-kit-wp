@@ -391,7 +391,6 @@ final class Authentication {
 		// Handles Direct OAuth client request.
 		if ( filter_input( INPUT_GET, 'oauth2callback' ) ) {
 			$auth_client->authorize_user();
-			exit;
 		}
 
 		if ( ! is_admin() ) {
