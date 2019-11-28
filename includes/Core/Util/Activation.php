@@ -145,10 +145,12 @@ final class Activation {
 			'activated',
 			array(
 				'content'         => function() {
-					// Remove the default WordPress "Plugin Activated" notice.
-					if ( isset( $_GET['activate'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-						unset( $_GET['activate'] ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-					}
+					/**
+					 * Prevent the default WordPress "Plugin Activated" notice from rendering.
+					 *
+					 * @link https://github.com/WordPress/WordPress/blob/e1996633228749cdc2d92bc04cc535d45367bfa4/wp-admin/plugins.php#L569-L570
+					 */
+					unset( $_GET['activate'] ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 
 					$sitekit_splash_url = $this->context->admin_url( 'splash' );
 
