@@ -16,6 +16,7 @@ use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\FakeHttpClient;
+use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
