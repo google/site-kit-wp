@@ -477,6 +477,15 @@ final class Assets {
 		$cache        = new Cache();
 		$current_user = wp_get_current_user();
 		$site_url     = $this->context->get_reference_site_url();
+		$input        = $this->context->input();
+		$page         = $input->filter( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+		$permalink    = $input->filter( INPUT_GET, 'permaLink', FILTER_SANITIZE_STRING );
+		$permalink    = $permalink ?: $this->context->get_reference_canonical();
+		$page_title   = $input->filter( INPUT_GET, 'pageTitle', FILTER_SANITIZE_STRING );
+
+		if ( ! $page_title ) {
+			$page_title = is_home() ? get_bloginfo( 'blogname' ) : get_the_title();
+		}
 
 		$admin_data = array(
 			'siteURL'          => esc_url_raw( $site_url ),
@@ -485,15 +494,15 @@ final class Assets {
 			'adminRoot'        => esc_url_raw( get_admin_url() . 'admin.php' ),
 			'pluginURI'        => esc_url_raw( $this->context->url( '/' ) ),
 			'assetsRoot'       => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
-			'nojscache'        => current_user_can( 'manage_options' ) && isset( $_GET['nojscache'] ), // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			'datacache'        => ( current_user_can( 'manage_options' ) && isset( $_GET['datacache'] ) ) ? // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-				json_encode( $cache->get_current_cache_data() ) : // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
-				false,
+			'nojscache'        => current_user_can( 'manage_options' ) && null !== $input->filter( INPUT_GET, 'nojscache' ),
+			'datacache'        => ( current_user_can( 'manage_options' ) && null !== $input->filter( INPUT_GET, 'datacache' ) )
+				? json_encode( $cache->get_current_cache_data() ) // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
+				: false,
 			'timestamp'        => time(),
 			'currentScreen'    => is_admin() ? get_current_screen() : null,
-			'currentAdminPage' => ( is_admin() && isset( $_GET['page'] ) ) ? sanitize_key( $_GET['page'] ) : null, // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			'resetSession'     => isset( $_GET['googlesitekit_reset_session'] ), // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			'reAuth'           => isset( $_GET['reAuth'] ) && 'true' === sanitize_key( $_GET['reAuth'] ), // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			'currentAdminPage' => ( is_admin() && $page ) ? sanitize_key( $page ) : null,
+			'resetSession'     => $input->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN ),
+			'reAuth'           => $input->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN ),
 			'userData'         => array(
 				'id'      => $current_user->ID,
 				'email'   => $current_user->user_email,
@@ -505,23 +514,7 @@ final class Assets {
 			'homeURL'          => home_url(),
 		);
 
-		if ( isset( $_GET['permaLink'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			$permalink = esc_url_raw( $_GET['permaLink'] );
-		} else {
-			$permalink = esc_url_raw( $this->context->get_reference_canonical() );
-		}
-
-		if ( isset( $_GET['pageTitle'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			$page_title = sanitize_text_field( $_GET['pageTitle'] );
-		} else {
-			if ( is_home() ) {
-				$page_title = get_bloginfo( 'blogname' );
-			} else {
-				$page_title = get_the_title();
-			}
-		}
-
-		$googlesitekit = array(
+		return array(
 
 			/**
 			 * Filters the admin data to pass to JS.
@@ -570,16 +563,14 @@ final class Assets {
 			 * @param array $data Notification Data.
 			 */
 			'notifications'      => apply_filters( 'googlesitekit_notification_data', array() ),
-			'permaLink'          => $permalink,
+			'permaLink'          => esc_url_raw( $permalink ),
 			'pageTitle'          => $page_title,
 			'postID'             => get_the_ID(),
 			'postType'           => get_post_type(),
 			'dashboardPermalink' => $this->context->admin_url( 'dashboard' ),
 			'publicPath'         => $this->context->url( 'dist/assets/js/' ),
-			'editmodule'         => isset( $_GET['editmodule'] ) ? sanitize_key( $_GET['editmodule'] ) : '', // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			'editmodule'         => $input->filter( INPUT_GET, 'editmodule', FILTER_SANITIZE_STRING ),
 		);
-
-		return $googlesitekit;
 	}
 
 	/**
