@@ -8,9 +8,11 @@ module.exports = {
 	},
 	setupFiles: [
 		'<rootDir>/tests/js/setup-globals',
+		'jest-localstorage-mock',
 	],
 	setupFilesAfterEnv: [
 		'<rootDir>/tests/js/jest-matchers',
+		'<rootDir>/tests/js/setup-before-after',
 	],
 	testMatch: [
 		'<rootDir>/assets/**/__tests__/**/*.js',
