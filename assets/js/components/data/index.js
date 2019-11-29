@@ -202,7 +202,7 @@ const dataAPI = {
 				{
 					request: JSON.stringify( currentRequest ),
 				} ),
-			method: 'GET',
+			method: 'POST',
 		} ).then( ( results ) => {
 			each( results, ( result, key ) => {
 				if ( result.xdebug_message ) {

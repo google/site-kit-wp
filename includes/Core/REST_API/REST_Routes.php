@@ -392,7 +392,7 @@ final class REST_Routes {
 				'data',
 				array(
 					array(
-						'methods'             => WP_REST_Server::READABLE,
+						'methods'             => WP_REST_Server::CREATABLE,
 						'callback'            => function( WP_REST_Request $request ) {
 							$datasets = json_decode( $request['request'] );
 							if ( ! $datasets || empty( $datasets ) ) {
