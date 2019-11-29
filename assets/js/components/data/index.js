@@ -198,10 +198,8 @@ const dataAPI = {
 
 		const datacache = null !== getQueryParameter( 'datacache' );
 		return apiFetch( {
-			path: addQueryArgs( `/google-site-kit/v1/data/${ datacache ? '?datacache' : '' }`,
-				{
-					request: JSON.stringify( currentRequest ),
-				} ),
+			path: addQueryArgs( '/google-site-kit/v1/data/', { datacache: datacache || undefined } ),
+			data: { request: currentRequest },
 			method: 'POST',
 		} ).then( ( results ) => {
 			each( results, ( result, key ) => {
