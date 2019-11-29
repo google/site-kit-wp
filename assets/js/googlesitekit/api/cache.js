@@ -3,6 +3,18 @@
  */
 import { cloneDeep, isEqual } from 'lodash';
 
+let storageBackend;
+/**
+ * Override the storage backend.
+ *
+ * Largely used for tests. Should not be used directly.
+ *
+ * @param {*} backend Backend to set for the cache.
+ */
+export const _setSelectedStorageBackend = ( backend ) => {
+	storageBackend = backend;
+};
+
 let storageKeyPrefix = 'googlesitekit_';
 /**
  * Override the key prefix used in storage.
@@ -15,13 +27,25 @@ export const _setStorageKeyPrefix = ( keyPrefix ) => {
 	storageKeyPrefix = keyPrefix;
 };
 
+let storageOrder = [ 'localStorage', 'sessionStorage' ];
+/**
+ * Override the priority of storage mechanisms.
+ *
+ * Largely used for tests.
+ *
+ * @param {Array} order Ordered array of storage backends to use.
+ */
+export const _setStorageOrder = ( order ) => {
+	storageOrder = order;
+};
+
 /**
  * Detects whether browser storage is both supported and available.
  *
  * @param {string} type Browser storage to test. Should be one of `localStorage` or `sessionStorage`.
  * @return {boolean} True if the given storage is available, false otherwise.
  */
-const isStorageAvailable = ( type = 'localStorage' ) => {
+const isStorageAvailable = ( type ) => {
 	const storage = global[ type ];
 
 	if ( ! storage ) {
@@ -55,25 +79,36 @@ const isStorageAvailable = ( type = 'localStorage' ) => {
 	}
 };
 
-let cacheStorage;
 /**
  * Gets the storage object to use.
  *
  * @return {Object} Return a storage mechanism (`localStorage` or `sessionStorage`) if available; otherwise returns `null`;
  */
 const getStorage = () => {
+	// If `googlesitekit.admin.nojscache` is `true`, we should never use
+	// the cache.
+	if ( global.googlesitekit && global.googlesitekit.admin && global.googlesitekit.admin.nojscache ) {
+		return null;
+	}
+
 	// Only run the logic to determine the storage object once.
-	if ( cacheStorage === undefined ) {
-		if ( isStorageAvailable( 'localStorage' ) ) {
-			cacheStorage = global.localStorage;
-		} else if ( isStorageAvailable( 'sessionStorage' ) ) {
-			cacheStorage = global.sessionStorage;
-		} else {
-			cacheStorage = null;
+	if ( storageBackend === undefined ) {
+		storageOrder.forEach( ( backend ) => {
+			if ( storageBackend ) {
+				return;
+			}
+
+			if ( isStorageAvailable( backend ) ) {
+				storageBackend = global[ backend ];
+			}
+		} );
+
+		if ( storageBackend === undefined ) {
+			storageBackend = null;
 		}
 	}
 
-	return cacheStorage;
+	return storageBackend;
 };
 
 /**
@@ -184,5 +219,24 @@ export const deleteItem = async ( key ) => {
 };
 
 export const getKeys = async () => {
-	throw new Error( 'Not yet implemented.' );
+	const storage = getStorage();
+
+	if ( storage ) {
+		try {
+			const keys = [];
+			for ( let i = 0; i < storage.length; i++ ) {
+				const itemKey = storage.key( i );
+				if ( itemKey.indexOf( storageKeyPrefix ) === 0 ) {
+					keys.push( itemKey.substring( storageKeyPrefix.length ) );
+				}
+			}
+
+			return keys;
+		} catch ( error ) {
+			global.console.warn( 'Encountered an unexpected storage error:', error );
+			return [];
+		}
+	}
+
+	return [];
 };
