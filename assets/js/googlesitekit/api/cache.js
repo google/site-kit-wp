@@ -218,6 +218,11 @@ export const deleteItem = async ( key ) => {
 	return false;
 };
 
+/**
+ * Get all cache keys created by Site Kit.
+ *
+ * @return {Promise} A promise: resolves to an array of all keys.
+ */
 export const getKeys = async () => {
 	const storage = getStorage();
 
@@ -239,4 +244,25 @@ export const getKeys = async () => {
 	}
 
 	return [];
+};
+
+/**
+ * Remove the entire cache created by Site Kit.
+ *
+ * @return {Promise} A promise: resolves to `true` if the cache was cleared; `false` if there was an error.
+ */
+export const clearCache = async () => {
+	const storage = getStorage();
+
+	if ( storage ) {
+		const keys = await getKeys();
+
+		for ( const key of keys ) {
+			await deleteItem( key );
+		}
+
+		return true;
+	}
+
+	return false;
 };

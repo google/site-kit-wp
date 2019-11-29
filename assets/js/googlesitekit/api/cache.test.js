@@ -2,7 +2,7 @@
  * Internal dependencies
  */
 // eslint-disable-next-line @wordpress/dependency-group
-import { _setStorageKeyPrefix, _setSelectedStorageBackend, get, set, deleteItem, getKeys } from './cache';
+import { _setStorageKeyPrefix, _setSelectedStorageBackend, get, set, deleteItem, getKeys, clearCache } from './cache';
 
 describe( 'googlesitekit.api.cache', () => {
 	[ 'localStorage', 'sessionStorage' ].forEach( ( backend ) => {
@@ -196,6 +196,53 @@ describe( 'googlesitekit.api.cache', () => {
 					expect( keys ).toEqual( [ 'key1', 'key2' ] );
 				} );
 			} );
+
+			describe( 'clearCache', () => {
+				beforeEach( () => {
+				// Set the storage key prefix so we can compare Site Kit and
+				// non-Site Kit keys.
+					_setStorageKeyPrefix( 'sitekit_' );
+				} );
+
+				afterEach( () => {
+				// Restore the empty storage key prefix for the rest of the tests.
+					_setStorageKeyPrefix( '' );
+				} );
+
+				it( 'should return true when storage is cleared', async () => {
+					await set( 'key1', 'data' );
+					await set( 'key2', 'data' );
+
+					const didClearCache = await clearCache();
+					expect( didClearCache ).toEqual( true );
+				} );
+
+				it( 'should clear all storage', async () => {
+					await set( 'key1', 'data' );
+					await set( 'key2', 'data' );
+
+					await clearCache();
+					expect( storageMechanism.removeItem ).toHaveBeenCalled();
+					expect( storageMechanism.key ).toHaveBeenCalled();
+
+					const keys = await getKeys();
+					expect( keys.length ).toEqual( 0 );
+					expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 0 );
+				} );
+
+				it( 'should clear only Site Kit keys', async () => {
+					// Set a non-Site Kit key to ensure we don't return it.
+					storageMechanism.setItem( 'whatever', 'cool' );
+					await set( 'key1', 'data' );
+					await set( 'key2', 'data' );
+
+					await clearCache();
+
+					const keys = await getKeys();
+					expect( keys.length ).toEqual( 0 );
+					expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 1 );
+				} );
+			} );
 		} );
 	} );
 
@@ -252,6 +299,20 @@ describe( 'googlesitekit.api.cache', () => {
 
 				const keys = await getKeys();
 				expect( keys ).toEqual( [] );
+				expect( localStorage.key ).not.toHaveBeenCalled();
+				expect( sessionStorage.key ).not.toHaveBeenCalled();
+			} );
+		} );
+
+		describe( 'clearCache', () => {
+			it( 'should return false when no storage is available', async () => {
+				await set( 'key1', 'data' );
+				await set( 'key2', 'data' );
+
+				const didClearCache = await clearCache();
+				expect( didClearCache ).toEqual( false );
+				expect( localStorage.removeItem ).not.toHaveBeenCalled();
+				expect( sessionStorage.removeItem ).not.toHaveBeenCalled();
 				expect( localStorage.key ).not.toHaveBeenCalled();
 				expect( sessionStorage.key ).not.toHaveBeenCalled();
 			} );
