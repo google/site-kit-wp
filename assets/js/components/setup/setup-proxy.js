@@ -89,8 +89,8 @@ class SetupUsingProxy extends Component {
 		const isRevoked = 'revoked' === context;
 		const isSecondAdmin = ! isRevoked && isResettable;
 
-		let title = __( 'The Site Kit plugin is active but requires setup', 'google-site-kit' );
-		let description = __( 'Site Kit Service will guide you through 3 simple setup steps.', 'google-site-kit' );
+		let title = __( 'Sign in with Google to set up Site Kit', 'google-site-kit' );
+		let description = __( 'The Site Kit service will guide you through 3 simple setup steps.', 'google-site-kit' );
 		let startSetupText = __( 'Start setup', 'google-site-kit' );
 
 		if ( isSecondAdmin ) {
