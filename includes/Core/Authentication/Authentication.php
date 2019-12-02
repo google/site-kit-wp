@@ -759,11 +759,26 @@ final class Authentication {
 				)
 			);
 		} catch ( Exception $exception ) {
-			$this->user_options->set( OAuth_Client::OPTION_ERROR_CODE, $exception->getMessage() );
+			$error_message = $exception->getMessage();
+
+			// If missing verification, rely on the redirect back to the proxy,
+			// passing the site code instead of site ID.
+			if ( 'missing_verification' === $error_message ) {
+				add_filter(
+					'googlesitekit_proxy_setup_url_params',
+					function ( $params ) use ( $site_code ) {
+						$params['site_code'] = $site_code;
+						return $params;
+					}
+				);
+				return;
+			}
+
+			$this->user_options->set( OAuth_Client::OPTION_ERROR_CODE, $error_message );
 			wp_safe_redirect(
 				add_query_arg(
 					'error',
-					rawurlencode( $exception->getMessage() ),
+					rawurlencode( $error_message ),
 					$this->context->admin_url( 'splash' )
 				)
 			);
