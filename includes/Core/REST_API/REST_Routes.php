@@ -392,12 +392,20 @@ final class REST_Routes {
 				'data',
 				array(
 					array(
-						'methods'             => WP_REST_Server::READABLE,
+						'methods'             => WP_REST_Server::CREATABLE,
 						'callback'            => function( WP_REST_Request $request ) {
-							$datasets = json_decode( $request['request'] );
-							if ( ! $datasets || empty( $datasets ) ) {
+							if ( ! $request['request'] ) {
 								return new WP_Error( 'no_data_requested', __( 'Missing request data.', 'google-site-kit' ), array( 'status' => 400 ) );
 							}
+
+							// Datasets are expected to be objects but the REST API parses the JSON into an array.
+							$datasets = array_map(
+								function ( $dataset_array ) {
+									return (object) $dataset_array;
+								},
+								$request['request']
+							);
+
 							$modules   = $this->modules->get_active_modules();
 							$responses = array();
 							foreach ( $modules as $module ) {
@@ -420,9 +428,12 @@ final class REST_Routes {
 						'permission_callback' => $can_view_insights_cron,
 						'args'                => array(
 							'request' => array(
-								'type'        => 'string',
-								'description' => __( 'JSON-encoded list of request objects.', 'google-site-kit' ),
+								'type'        => 'array',
+								'description' => __( 'List of request objects.', 'google-site-kit' ),
 								'required'    => true,
+								'items'       => array(
+									'type' => 'object',
+								),
 							),
 						),
 					),
