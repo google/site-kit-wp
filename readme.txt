@@ -44,7 +44,8 @@ However, if you have a staging environment in addition to your production site, 
 
 1. Visit **Plugins > Add New**.
 2. Search for **Site Kit by Google**.
-3. Install and activate the Site Kit by Google plugin. If there are multiple WordPress admins, keep in mind that each admin must activate and set up Site Kit in order to access the plugin.
+3. Install and activate the Site Kit by Google plugin.
+4. Connect Site Kit to your Google account. If there are multiple WordPress admins, keep in mind that each admin must connect their own Google account in order to access the plugin.
 
 
 = Manual installation =
@@ -52,6 +53,7 @@ However, if you have a staging environment in addition to your production site, 
 1. Upload the entire `google-site-kit` folder to the `/wp-content/plugins/` directory.
 2. Visit **Plugins**.
 3. Activate the Site Kit by Google plugin.
+4. Connect Site Kit to your Google account. If there are multiple WordPress admins, keep in mind that each admin must connect their own Google account in order to access the plugin.
 
 = After activation =
 
