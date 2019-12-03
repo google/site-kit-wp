@@ -39,7 +39,6 @@ final class OAuth_Client {
 	const OPTION_AUTH_SCOPES             = 'googlesitekit_auth_scopes';
 	const OPTION_ERROR_CODE              = 'googlesitekit_error_code';
 	const OPTION_PROXY_ACCESS_CODE       = 'googlesitekit_proxy_access_code';
-	const PROXY_URL                      = 'https://sitekit.withgoogle.com';
 
 	/**
 	 * Plugin context.
@@ -646,7 +645,7 @@ final class OAuth_Client {
 		 */
 		$query_params = apply_filters( 'googlesitekit_proxy_setup_url_params', $query_params, $access_code, $error_code );
 
-		return add_query_arg( $query_params, self::PROXY_URL . '/site-management/setup/' );
+		return add_query_arg( $query_params, Google_Proxy_Client::get_base_url() . '/site-management/setup/' );
 	}
 
 	/**
@@ -707,7 +706,7 @@ final class OAuth_Client {
 
 		return add_query_arg(
 			$query_args,
-			self::PROXY_URL . '/site-management/permissions/'
+			Google_Proxy_Client::get_base_url() . '/site-management/permissions/'
 		);
 	}
 

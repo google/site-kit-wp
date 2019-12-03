@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Proxy_Client;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
@@ -133,7 +134,7 @@ class AuthenticationTest extends TestCase {
 		add_filter(
 			'pre_http_request',
 			function ( $preempt, $args, $url ) {
-				if ( OAuth_Client::PROXY_URL . '/o/oauth/site/' !== $url ) {
+				if ( Google_Proxy_Client::get_base_url() . '/o/oauth/site/' !== $url ) {
 					return $preempt;
 				}
 
