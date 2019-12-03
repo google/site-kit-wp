@@ -33,10 +33,9 @@ add_action( 'init', function () {
 			$redirect_url = esc_url_raw( wp_unslash( $_GET['redirect'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
 		}
 
-		status_header( 302 );
 		$auth_client = new OAuth_Client( $context );
 		// User is trying to authenticate, but access token hasn't been set.
-		header( 'Location: ' . filter_var( $auth_client->get_authentication_url( $redirect_url ), FILTER_SANITIZE_URL ) );
+		wp_safe_redirect( $auth_client->get_authentication_url( $redirect_url ) );
 		exit();
 	}
 
