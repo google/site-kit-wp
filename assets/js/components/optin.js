@@ -34,8 +34,8 @@ class Optin extends Component {
 		super( props );
 
 		this.state = {
-			scriptOnPage: !! googlesitekit.admin.trackingOptin,
-			optIn: !! googlesitekit.admin.trackingOptin,
+			scriptOnPage: !! window.googlesitekitTrackingEnabled,
+			optIn: !! window.googlesitekitTrackingEnabled,
 			error: false,
 		};
 
@@ -57,14 +57,14 @@ class Optin extends Component {
 			method: 'POST',
 		} )
 			.then( () => {
+				window.googlesitekitTrackingEnabled = !! checked;
+
 				if ( !! checked && ! this.state.scriptOnPage ) {
 					const { document } = window;
 
 					if ( ! document ) {
 						return;
 					}
-
-					window.googlesitekitTrackingEnabled = !! checked;
 
 					document.body.insertAdjacentHTML( 'beforeend', `
 						<script async src="https://www.googletagmanager.com/gtag/js?id=${ googlesitekit.admin.trackingID }"></script>
