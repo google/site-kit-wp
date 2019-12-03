@@ -537,7 +537,7 @@ final class Authentication {
 	 */
 	private function allowed_redirect_hosts( $hosts ) {
 		$hosts[] = 'accounts.google.com';
-		$hosts[] = 'sitekit.withgoogle.com';
+		$hosts[] = str_replace( array( 'http://', 'https://' ), '', Google_Proxy_Client::get_base_url() );
 
 		return $hosts;
 	}
