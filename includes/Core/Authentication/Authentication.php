@@ -489,9 +489,10 @@ final class Authentication {
 		$data['needReauthenticate'] = $data['isAuthenticated'] && $this->need_reauthenticate();
 
 		if ( $auth_client->using_proxy() ) {
-			$data['errorMessage'] = $auth_client->get_error_message(
-				$this->user_options->get( OAuth_Client::OPTION_ERROR_CODE )
-			);
+			$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
+			if ( ! empty( $error_code ) ) {
+				$data['errorMessage'] = $auth_client->get_error_message( $error_code );
+			}
 		}
 
 		// All admins need to go through site verification process.
