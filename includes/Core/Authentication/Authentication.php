@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Authentication;
 use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Proxy_Client;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -726,7 +727,7 @@ final class Authentication {
 		}
 
 		$response = wp_remote_post(
-			OAuth_Client::PROXY_URL . '/o/oauth/site/',
+			Google_Proxy_Client::get_base_url() . '/o/oauth/site/',
 			array(
 				'body' => array(
 					'code'      => rawurlencode( $code ),
