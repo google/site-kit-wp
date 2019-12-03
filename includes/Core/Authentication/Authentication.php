@@ -431,13 +431,17 @@ final class Authentication {
 				wp_die( esc_html__( 'You don\'t have permissions to perform this action.', 'google-site-kit' ), 403 );
 			}
 
-			$redirect_url = $input->filter( INPUT_GET, 'redirect' );
+			$redirect_url = $input->filter( INPUT_GET, 'redirect', FILTER_VALIDATE_URL );
 			if ( $redirect_url ) {
 				$redirect_url = esc_url_raw( wp_unslash( $redirect_url ) );
 			}
 
 			// User is trying to authenticate, but access token hasn't been set.
-			wp_safe_redirect( $auth_client->get_authentication_url( $redirect_url ) );
+			wp_safe_redirect(
+				esc_url_raw(
+					$auth_client->get_authentication_url( $redirect_url )
+				)
+			);
 			exit();
 		}
 	}
