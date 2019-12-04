@@ -204,15 +204,7 @@ final class Authentication {
 		);
 
 		add_action(
-			'admin_action_googlesitekit_proxy_setup',
-			function () {
-				$this->verify_proxy_setup_nonce();
-			},
-			-1
-		);
-
-		add_action(
-			'admin_action_googlesitekit_proxy_setup',
+			'admin_action_' . Google_Proxy::ACTION_SETUP,
 			function () {
 				$code      = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
 				$site_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
@@ -537,7 +529,7 @@ final class Authentication {
 	 */
 	private function allowed_redirect_hosts( $hosts ) {
 		$hosts[] = 'accounts.google.com';
-		$hosts[] = str_replace( array( 'http://', 'https://' ), '', Google_Proxy_Client::get_base_url() );
+		$hosts[] = wp_parse_url( Google_Proxy::url(), PHP_URL_HOST );
 
 		return $hosts;
 	}
@@ -699,19 +691,6 @@ final class Authentication {
 	}
 
 	/**
-	 * Verifies the nonce for processing proxy setup.
-	 *
-	 * @since n.e.x.t
-	 */
-	private function verify_proxy_setup_nonce() {
-		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
-
-		if ( ! wp_verify_nonce( $nonce, 'googlesitekit_proxy_setup' ) ) {
-			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
-		}
-	}
-
-	/**
 	 * Handles the exchange of a code and site code for client credentials from the proxy.
 	 *
 	 * @since n.e.x.t
@@ -727,7 +706,7 @@ final class Authentication {
 		}
 
 		$response = wp_remote_post(
-			Google_Proxy_Client::get_base_url() . '/o/oauth/site/',
+			Google_Proxy::url( Google_Proxy::OAUTH_SITE_URI ),
 			array(
 				'body' => array(
 					'code'      => rawurlencode( $code ),
