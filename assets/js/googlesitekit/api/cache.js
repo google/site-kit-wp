@@ -27,16 +27,32 @@ export const _setStorageKeyPrefix = ( keyPrefix ) => {
 	storageKeyPrefix = keyPrefix;
 };
 
-let storageOrder = [ 'localStorage', 'sessionStorage' ];
+const defaultOrder = [ 'localStorage', 'sessionStorage' ];
+let storageOrder = [ ...defaultOrder	];
 /**
  * Override the priority of storage mechanisms.
  *
- * Largely used for tests.
+ * Largely used for tests. Implicitly resets the selected storage backend,
+ * causing `_getStorage` to re-run its checks for the best available
+ * storage backend.
  *
  * @param {Array} order Ordered array of storage backends to use.
  */
 export const _setStorageOrder = ( order ) => {
-	storageOrder = order;
+	storageOrder = [ ...order ];
+	_setSelectedStorageBackend( undefined );
+};
+
+/**
+ * Reset the storage mechanism order.
+ *
+ * Largely used for tests. Implicitly resets the selected storage backend,
+ * causing `_getStorage` to re-run its checks for the best available
+ * storage backend.
+ */
+export const _resetDefaultStorageOrder = () => {
+	storageOrder = [ ...defaultOrder ];
+	_setSelectedStorageBackend( undefined );
 };
 
 /**

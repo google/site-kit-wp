@@ -2,7 +2,18 @@
  * Internal dependencies
  */
 // eslint-disable-next-line @wordpress/dependency-group
-import { _setStorageKeyPrefix, _setSelectedStorageBackend, _getStorage, get, set, deleteItem, getKeys, clearCache } from './cache';
+import {
+	_getStorage,
+	_resetDefaultStorageOrder,
+	_setSelectedStorageBackend,
+	_setStorageKeyPrefix,
+	_setStorageOrder,
+	clearCache,
+	deleteItem,
+	get,
+	getKeys,
+	set,
+} from './cache';
 
 let previousCacheValue;
 const disableCache = () => {
@@ -20,11 +31,24 @@ const NO_BACKEND = 'Null backend';
 describe( 'googlesitekit.api.cache', () => {
 	describe( '_getStorage', () => {
 		it( 'should return the most applicable storage driver available', async () => {
-			const storage = await _getStorage();
+			let storage = await _getStorage();
 
 			// localStorage is the best storage mechanism available in the test suite
-			// and should be returned.
+			// by default and should be returned.
 			expect( storage ).toEqual( localStorage );
+
+			_setStorageOrder( [ 'sessionStorage', 'localStorage' ] );
+			storage = await _getStorage();
+
+			expect( storage ).toEqual( sessionStorage );
+
+			// Ensure an empty order still works.
+			_setStorageOrder( [] );
+			storage = await _getStorage();
+
+			expect( storage ).toEqual( null );
+
+			_resetDefaultStorageOrder();
 		} );
 
 		it( 'should return null if googlesitekit.admin.nojscache is true', async () => {
