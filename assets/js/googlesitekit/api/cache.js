@@ -135,7 +135,7 @@ export const get = async ( key, cacheTimeToLive = null ) => {
 			// false-y if `0`, `null`, etc.)
 			if ( parsedData.timestamp && (
 				cacheTimeToLive === null || // Ensure the cached data isn't too old.
-				Date.now() - parsedData.timestamp < cacheTimeToLive
+				Math.round( Date.now() / 1000 ) - parsedData.timestamp < cacheTimeToLive
 			) ) {
 				return {
 					cacheHit: true,
@@ -178,7 +178,7 @@ export const set = async ( key, value, _timestamp = undefined ) => {
 			}
 
 			storage.setItem( `${ storageKeyPrefix }${ key }`, JSON.stringify( {
-				timestamp: _timestamp || Date.now(),
+				timestamp: _timestamp || Math.round( Date.now() / 1000 ),
 				value,
 			} ) );
 

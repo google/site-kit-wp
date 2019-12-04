@@ -60,7 +60,7 @@ describe( 'googlesitekit.api.cache', () => {
 
 				it( 'should return undefined when the key is found but the cached value is too old', async () => {
 					// Save with a timestamp ten seconds in the past.
-					const didSave = await set( 'old-key', 'something', Date.now() - 10 );
+					const didSave = await set( 'old-key', 'something', Math.round( Date.now() / 1000 ) - 10 );
 					expect( didSave ).toEqual( true );
 
 					// Only return if the cache hit is less than five seconds old.
