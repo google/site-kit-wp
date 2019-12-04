@@ -709,8 +709,8 @@ final class Authentication {
 			Google_Proxy::url( Google_Proxy::OAUTH_SITE_URI ),
 			array(
 				'body' => array(
-					'code'      => rawurlencode( $code ),
-					'site_code' => rawurlencode( $site_code ),
+					'code'      => $code,
+					'site_code' => $site_code,
 				),
 			)
 		);
