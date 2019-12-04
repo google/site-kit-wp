@@ -299,8 +299,8 @@ final class Authentication {
 	 * @return Clients\OAuth_Client OAuth client instance.
 	 */
 	public function get_oauth_client() {
-		if ( ! $this->auth_client instanceof Clients\OAuth_Client ) {
-			$this->auth_client = new Clients\OAuth_Client( $this->context, $this->options, $this->user_options, $this->credentials );
+		if ( ! $this->auth_client instanceof OAuth_Client ) {
+			$this->auth_client = new OAuth_Client( $this->context, $this->options, $this->user_options, $this->credentials );
 		}
 		return $this->auth_client;
 	}
