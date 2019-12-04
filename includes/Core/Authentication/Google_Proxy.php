@@ -22,7 +22,7 @@ use Google\Site_Kit\Context;
 class Google_Proxy {
 
 	const BASE_URL       = 'https://sitekit.withgoogle.com';
-	const OAUTH_SITE_URI = '/o/oauth/site/';
+	const OAUTH_SITE_URI = '/o/oauth2/site/';
 	const ACTION_SETUP   = 'googlesitekit_proxy_setup';
 
 	/**
