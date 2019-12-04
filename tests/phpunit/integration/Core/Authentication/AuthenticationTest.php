@@ -14,8 +14,8 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
-use Google\Site_Kit\Core\Authentication\Clients\Google_Proxy_Client;
 use Google\Site_Kit\Core\Authentication\Credentials;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_Meta;
@@ -24,7 +24,6 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
-use WPDieException;
 
 /**
  * @group Authentication
@@ -133,7 +132,7 @@ class AuthenticationTest extends TestCase {
 		add_filter(
 			'pre_http_request',
 			function ( $preempt, $args, $url ) {
-				if ( Google_Proxy_Client::get_base_url() . '/o/oauth/site/' !== $url ) {
+				if ( Google_Proxy::url( Google_Proxy::OAUTH_SITE_URI ) !== $url ) {
 					return $preempt;
 				}
 
@@ -156,15 +155,6 @@ class AuthenticationTest extends TestCase {
 			10,
 			3
 		);
-
-		$_GET['nonce'] = 'bad-nonce';
-
-		try {
-			do_action( 'admin_action_googlesitekit_proxy_setup' );
-			$this->fail( 'Expected WPDieException!' );
-		} catch ( WPDieException $exception ) {
-			$this->assertEquals( 'Invalid nonce.', $exception->getMessage() );
-		}
 
 		$_GET['nonce'] = wp_create_nonce( 'googlesitekit_proxy_setup' );
 

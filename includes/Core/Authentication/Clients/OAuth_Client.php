@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Authentication\Clients;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
@@ -645,7 +646,7 @@ final class OAuth_Client {
 		 */
 		$query_params = apply_filters( 'googlesitekit_proxy_setup_url_params', $query_params, $access_code, $error_code );
 
-		return add_query_arg( $query_params, Google_Proxy_Client::get_base_url() . '/site-management/setup/' );
+		return add_query_arg( $query_params, Google_Proxy::url( '/site-management/setup/' ) );
 	}
 
 	/**
@@ -704,10 +705,7 @@ final class OAuth_Client {
 			$query_args['site_id'] = $credentials->web->client_id;
 		}
 
-		return add_query_arg(
-			$query_args,
-			Google_Proxy_Client::get_base_url() . '/site-management/permissions/'
-		);
+		return add_query_arg( $query_args, Google_Proxy::url( '/site-management/permissions/' ) );
 	}
 
 	/**

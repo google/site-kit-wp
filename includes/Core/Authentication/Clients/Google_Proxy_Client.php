@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\Authentication\Clients;
 
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google\Auth\OAuth2;
 use Google\Site_Kit_Dependencies\Google\Auth\HttpHandler\HttpHandlerFactory;
@@ -30,10 +31,9 @@ use LogicException;
  */
 final class Google_Proxy_Client extends Google_Client {
 
-	const PROXY_BASE_URL    = 'https://sitekit.withgoogle.com';
-	const OAUTH2_REVOKE_URI = 'https://sitekit.withgoogle.com/o/oauth2/revoke/';
-	const OAUTH2_TOKEN_URI  = 'https://sitekit.withgoogle.com/o/oauth2/token/';
-	const OAUTH2_AUTH_URL   = 'https://sitekit.withgoogle.com/o/oauth2/auth/';
+	const OAUTH2_REVOKE_URI = '/o/oauth2/revoke/';
+	const OAUTH2_TOKEN_URI  = '/o/oauth2/token/';
+	const OAUTH2_AUTH_URL   = '/o/oauth2/auth/';
 
 	/**
 	 * Fetches an OAuth 2.0 access token by using a temporary code.
@@ -127,7 +127,7 @@ final class Google_Proxy_Client extends Google_Client {
 		);
 		$request = new Request(
 			'POST',
-			str_replace( self::PROXY_BASE_URL, self::get_base_url(), self::OAUTH2_REVOKE_URI ),
+			Google_Proxy::url( self::OAUTH2_REVOKE_URI ),
 			array(
 				'Cache-Control' => 'no-store',
 				'Content-Type'  => 'application/x-www-form-urlencoded',
@@ -179,20 +179,18 @@ final class Google_Proxy_Client extends Google_Client {
 	 * @since 1.0.0
 	 */
 	protected function createOAuth2Service() {
-		$auth = new OAuth2(
+		return new OAuth2(
 			array(
 				'clientId'           => $this->getClientId(),
 				'clientSecret'       => $this->getClientSecret(),
-				'authorizationUri'   => str_replace( self::PROXY_BASE_URL, self::get_base_url(), self::OAUTH2_AUTH_URL ),
-				'tokenCredentialUri' => str_replace( self::PROXY_BASE_URL, self::get_base_url(), self::OAUTH2_TOKEN_URI ),
+				'authorizationUri'   => Google_Proxy::url( self::OAUTH2_AUTH_URL ),
+				'tokenCredentialUri' => Google_Proxy::url( self::OAUTH2_TOKEN_URI ),
 				'redirectUri'        => $this->getRedirectUri(),
 				'issuer'             => $this->getClientId(),
 				'signingKey'         => null,
 				'signingAlgorithm'   => null,
 			)
 		);
-
-		return $auth;
 	}
 
 	/**
@@ -227,20 +225,5 @@ final class Google_Proxy_Client extends Google_Client {
 		$auth->updateToken( $credentials );
 
 		return $credentials;
-	}
-
-	/**
-	 * Gets the base URL to the authentication service.
-	 *
-	 * @since n.e.x.t
-	 * @static
-	 *
-	 * @return string Base URL to the authentication service, without trailing slash.
-	 */
-	public static function get_base_url() {
-		if ( defined( 'GOOGLESITEKIT_PROXY_URL' ) ) {
-			return untrailingslashit( GOOGLESITEKIT_PROXY_URL );
-		}
-		return self::PROXY_BASE_URL;
 	}
 }
