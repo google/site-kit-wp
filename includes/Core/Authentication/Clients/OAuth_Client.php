@@ -481,11 +481,11 @@ final class OAuth_Client {
 	 * @since 1.0.0
 	 */
 	public function authorize_user() {
-		if ( ! isset( $_GET['code'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			$auth_url = $this->get_client()->createAuthUrl();
-			$auth_url = filter_var( $auth_url, FILTER_SANITIZE_URL );
-
-			wp_safe_redirect( $auth_url );
+		// If the OAuth redirects with an error code, handle it.
+		$error_code = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
+		if ( ! empty( $error_code ) ) {
+			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
+			wp_safe_redirect( admin_url() );
 			exit();
 		}
 
