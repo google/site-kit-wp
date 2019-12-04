@@ -77,10 +77,10 @@ final class Google_Proxy_Client extends Google_Client {
 	 */
 	public function fetchAccessTokenWithRefreshToken( $refresh_token = null ) {
 		if ( null === $refresh_token ) {
-			if ( ! isset( $this->token['refresh_token'] ) ) {
+			$refresh_token = $this->getRefreshToken();
+			if ( ! $refresh_token ) {
 				throw new LogicException( 'refresh token must be passed in or set as part of setAccessToken' );
 			}
-			$refresh_token = $this->token['refresh_token'];
 		}
 
 		$this->getLogger()->info( 'OAuth2 access token refresh' );
@@ -157,7 +157,7 @@ final class Google_Proxy_Client extends Google_Client {
 
 		$token = $this->getAccessToken();
 		if ( isset( $token['refresh_token'] ) && $this->isAccessTokenExpired() ) {
-			$callback = $this->config['token_callback'];
+			$callback = $this->getConfig( 'token_callback' );
 
 			try {
 				$creds = $this->fetchAccessTokenWithRefreshToken( $token['refresh_token'] );
