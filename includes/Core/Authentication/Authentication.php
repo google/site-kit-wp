@@ -10,10 +10,8 @@
 
 namespace Google\Site_Kit\Core\Authentication;
 
-use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
-use Google\Site_Kit\Core\Authentication\Clients\Google_Proxy_Client;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -122,6 +120,14 @@ final class Authentication {
 	protected $first_admin;
 
 	/**
+	 * Google_Proxy instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Google_Proxy
+	 */
+	protected $google_proxy;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -152,8 +158,9 @@ final class Authentication {
 		if ( ! $transients ) {
 			$transients = new Transients( $this->context );
 		}
+		$this->transients = $transients;
 
-		$this->transients        = $transients;
+		$this->google_proxy      = new Google_Proxy( $this->context );
 		$this->credentials       = new Credentials( $this->options );
 		$this->verification      = new Verification( $this->user_options );
 		$this->verification_meta = new Verification_Meta( $this->user_options, $this->transients );
@@ -201,6 +208,14 @@ final class Authentication {
 			function ( $notices ) {
 				return $this->authentication_admin_notices( $notices );
 			}
+		);
+
+		add_action(
+			'admin_action_' . Google_Proxy::ACTION_SETUP,
+			function () {
+				$this->verify_proxy_setup_nonce();
+			},
+			-1
 		);
 
 		add_action(
@@ -292,7 +307,7 @@ final class Authentication {
 	 */
 	public function get_oauth_client() {
 		if ( ! $this->auth_client instanceof OAuth_Client ) {
-			$this->auth_client = new OAuth_Client( $this->context, $this->options, $this->user_options, $this->credentials );
+			$this->auth_client = new OAuth_Client( $this->context, $this->options, $this->user_options, $this->credentials, $this->google_proxy );
 		}
 		return $this->auth_client;
 	}
@@ -529,7 +544,7 @@ final class Authentication {
 	 */
 	private function allowed_redirect_hosts( $hosts ) {
 		$hosts[] = 'accounts.google.com';
-		$hosts[] = wp_parse_url( Google_Proxy::url(), PHP_URL_HOST );
+		$hosts[] = wp_parse_url( $this->google_proxy->url(), PHP_URL_HOST );
 
 		return $hosts;
 	}
@@ -691,6 +706,19 @@ final class Authentication {
 	}
 
 	/**
+	 * Verifies the nonce for processing proxy setup.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function verify_proxy_setup_nonce() {
+		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
+
+		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_SETUP ) ) {
+			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
+		}
+	}
+
+	/**
 	 * Handles the exchange of a code and site code for client credentials from the proxy.
 	 *
 	 * @since n.e.x.t
@@ -705,38 +733,13 @@ final class Authentication {
 			return;
 		}
 
-		$response = wp_remote_post(
-			Google_Proxy::url( Google_Proxy::OAUTH_SITE_URI ),
-			array(
-				'body' => array(
-					'code'      => $code,
-					'site_code' => $site_code,
-				),
-			)
-		);
-
 		try {
-			if ( is_wp_error( $response ) ) {
-				throw new Exception( $response->get_error_code() );
-			}
-
-			$raw_body      = wp_remote_retrieve_body( $response );
-			$response_data = json_decode( $raw_body, true );
-
-			if ( ! $response_data || isset( $response_data['error'] ) ) {
-				throw new Exception(
-					isset( $response_data['error'] ) ? $response_data['error'] : 'failed_to_parse_response'
-				);
-			}
-
-			if ( ! isset( $response_data['site_id'], $response_data['site_secret'] ) ) {
-				throw new Exception( 'oauth_credentials_not_exist' );
-			}
+			$data = $this->google_proxy->exchange_site_code( $site_code, $code );
 
 			$this->credentials->set(
 				array(
-					'oauth2_client_id'     => $response_data['site_id'],
-					'oauth2_client_secret' => $response_data['site_secret'],
+					'oauth2_client_id'     => $data['site_id'],
+					'oauth2_client_secret' => $data['site_secret'],
 				)
 			);
 		} catch ( Exception $exception ) {

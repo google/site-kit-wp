@@ -11,13 +11,13 @@
 namespace Google\Site_Kit\Core\Authentication\Clients;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Verification;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit_Dependencies\Google_Client;
@@ -90,6 +90,14 @@ final class OAuth_Client {
 	private $credentials;
 
 	/**
+	 * Google_Proxy instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Google_Proxy
+	 */
+	private $google_proxy;
+
+	/**
 	 * Google Client object.
 	 *
 	 * @since 1.0.0
@@ -130,12 +138,14 @@ final class OAuth_Client {
 	 * @param Options      $options      Optional. Option API instance. Default is a new instance.
 	 * @param User_Options $user_options Optional. User Option API instance. Default is a new instance.
 	 * @param Credentials  $credentials  Optional. Credentials instance. Default is a new instance from $options.
+	 * @param Google_Proxy $google_proxy Optional. Google proxy instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Options $options = null,
 		User_Options $user_options = null,
-		Credentials $credentials = null
+		Credentials $credentials = null,
+		Google_Proxy $google_proxy = null
 	) {
 		$this->context = $context;
 
@@ -156,6 +166,11 @@ final class OAuth_Client {
 			$credentials = new Credentials( $this->options );
 		}
 		$this->credentials = $credentials;
+
+		if ( ! $google_proxy ) {
+			$google_proxy = new Google_Proxy( $this->context );
+		}
+		$this->google_proxy = $google_proxy;
 	}
 
 	/**
@@ -171,7 +186,11 @@ final class OAuth_Client {
 		}
 
 		if ( $this->using_proxy() ) {
-			$this->google_client = new Google_Proxy_Client();
+			$this->google_client = new Google_Proxy_Client(
+				array(
+					'proxy_base_path' => $this->google_proxy->url(),
+				)
+			);
 		} else {
 			$this->google_client = new Google_Client();
 		}
@@ -618,7 +637,7 @@ final class OAuth_Client {
 			'version'  => GOOGLESITEKIT_VERSION,
 			'scope'    => rawurlencode( implode( ' ', $this->get_required_scopes() ) ),
 			'supports' => rawurlencode( implode( ' ', $this->get_proxy_setup_supports() ) ),
-			'nonce'    => rawurlencode( wp_create_nonce( 'googlesitekit_proxy_setup' ) ),
+			'nonce'    => rawurlencode( wp_create_nonce( Google_Proxy::ACTION_SETUP ) ),
 		);
 
 		if ( $this->credentials->has() ) {
@@ -646,7 +665,7 @@ final class OAuth_Client {
 		 */
 		$query_params = apply_filters( 'googlesitekit_proxy_setup_url_params', $query_params, $access_code, $error_code );
 
-		return add_query_arg( $query_params, Google_Proxy::url( '/site-management/setup/' ) );
+		return add_query_arg( $query_params, $this->google_proxy->url( Google_Proxy::SETUP_URI ) );
 	}
 
 	/**
@@ -705,7 +724,7 @@ final class OAuth_Client {
 			$query_args['site_id'] = $credentials->web->client_id;
 		}
 
-		return add_query_arg( $query_args, Google_Proxy::url( '/site-management/permissions/' ) );
+		return add_query_arg( $query_args, $this->google_proxy->url( Google_Proxy::PERMISSIONS_URI ) );
 	}
 
 	/**

@@ -31,9 +31,28 @@ use LogicException;
  */
 final class Google_Proxy_Client extends Google_Client {
 
-	const OAUTH2_REVOKE_URI = '/o/oauth2/revoke/';
-	const OAUTH2_TOKEN_URI  = '/o/oauth2/token/';
-	const OAUTH2_AUTH_URL   = '/o/oauth2/auth/';
+	/**
+	 * Base URL to the proxy.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	protected $proxy_base_path = '';
+
+	/**
+	 * Construct the Google Client.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $config Proxy client configuration.
+	 */
+	public function __construct( array $config = array() ) {
+		$this->proxy_base_path = ! empty( $config['proxy_base_path'] ) ? $config['proxy_base_path'] : Google_Proxy::BASE_URL;
+		$this->proxy_base_path = untrailingslashit( $this->proxy_base_path );
+		unset( $config['proxy_base_path'] );
+
+		parent::__construct( $config );
+	}
 
 	/**
 	 * Fetches an OAuth 2.0 access token by using a temporary code.
@@ -127,7 +146,7 @@ final class Google_Proxy_Client extends Google_Client {
 		);
 		$request = new Request(
 			'POST',
-			Google_Proxy::url( self::OAUTH2_REVOKE_URI ),
+			$this->proxy_base_path . Google_Proxy::OAUTH2_REVOKE_URI,
 			array(
 				'Cache-Control' => 'no-store',
 				'Content-Type'  => 'application/x-www-form-urlencoded',
@@ -183,8 +202,8 @@ final class Google_Proxy_Client extends Google_Client {
 			array(
 				'clientId'           => $this->getClientId(),
 				'clientSecret'       => $this->getClientSecret(),
-				'authorizationUri'   => Google_Proxy::url( self::OAUTH2_AUTH_URL ),
-				'tokenCredentialUri' => Google_Proxy::url( self::OAUTH2_TOKEN_URI ),
+				'authorizationUri'   => $this->proxy_base_path . Google_Proxy::OAUTH2_AUTH_URI,
+				'tokenCredentialUri' => $this->proxy_base_path . Google_Proxy::OAUTH2_TOKEN_URI,
 				'redirectUri'        => $this->getRedirectUri(),
 				'issuer'             => $this->getClientId(),
 				'signingKey'         => null,

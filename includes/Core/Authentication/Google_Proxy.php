@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Authentication\Google_Proxy.php
+ * Class Google\Site_Kit\Core\Authentication\Google_Proxy
  *
  * @package   Google\Site_Kit\Core\Authentication
  * @copyright 2019 Google LLC
@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
+use Exception;
 
 /**
  * Class for authentication service.
@@ -21,9 +22,14 @@ use Google\Site_Kit\Context;
  */
 class Google_Proxy {
 
-	const BASE_URL       = 'https://sitekit.withgoogle.com';
-	const OAUTH_SITE_URI = '/o/oauth2/site/';
-	const ACTION_SETUP   = 'googlesitekit_proxy_setup';
+	const BASE_URL          = 'https://sitekit.withgoogle.com';
+	const OAUTH2_SITE_URI   = '/o/oauth2/site/';
+	const OAUTH2_REVOKE_URI = '/o/oauth2/revoke/';
+	const OAUTH2_TOKEN_URI  = '/o/oauth2/token/';
+	const OAUTH2_AUTH_URI   = '/o/oauth2/auth/';
+	const SETUP_URI         = '/site-management/setup/';
+	const PERMISSIONS_URI   = '/site-management/permissions/';
+	const ACTION_SETUP      = 'googlesitekit_proxy_setup';
 
 	/**
 	 * Plugin context.
@@ -36,6 +42,8 @@ class Google_Proxy {
 	/**
 	 * Google_Proxy constructor.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param Context $context Plugin context.
 	 */
 	public function __construct( Context $context ) {
@@ -43,31 +51,14 @@ class Google_Proxy {
 	}
 
 	/**
-	 * Registers functionality through WordPress hooks.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function register() {
-		add_action(
-			'admin_action_' . self::ACTION_SETUP,
-			function () {
-				$this->verify_proxy_setup_nonce();
-			},
-			-1
-		);
-	}
-
-	/**
 	 * Gets a URL to the proxy with optional path.
 	 *
 	 * @since n.e.x.t
-	 * @static
 	 *
-	 * @param string $path Optional path to append to the base URL.
-	 *
+	 * @param string $path Optional. Path to append to the base URL.
 	 * @return string Complete proxy URL.
 	 */
-	public static function url( $path = '' ) {
+	public function url( $path = '' ) {
 		if ( defined( 'GOOGLESITEKIT_PROXY_URL' ) && GOOGLESITEKIT_PROXY_URL ) {
 			$url = GOOGLESITEKIT_PROXY_URL;
 		} else {
@@ -84,15 +75,44 @@ class Google_Proxy {
 	}
 
 	/**
-	 * Verifies the nonce for processing proxy setup.
+	 * Exchanges a site code for client credentials from the proxy.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @param string $site_code        Site code identifying the site.
+	 * @param string $undelegated_code Undelegated code identifying the undelegated token.
+	 * @return array Response data containing site_id and site_secret.
+	 *
+	 * @throws Exception Thrown when the request resulted in an error response.
 	 */
-	private function verify_proxy_setup_nonce() {
-		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
+	public function exchange_site_code( $site_code, $undelegated_code ) {
+		$response = wp_remote_post(
+			$this->url( self::OAUTH2_SITE_URI ),
+			array(
+				'body' => array(
+					'code'      => $undelegated_code,
+					'site_code' => $site_code,
+				),
+			)
+		);
 
-		if ( ! wp_verify_nonce( $nonce, self::ACTION_SETUP ) ) {
-			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
+		if ( is_wp_error( $response ) ) {
+			throw new Exception( $response->get_error_code() );
 		}
+
+		$raw_body      = wp_remote_retrieve_body( $response );
+		$response_data = json_decode( $raw_body, true );
+
+		if ( ! $response_data || isset( $response_data['error'] ) ) {
+			throw new Exception(
+				isset( $response_data['error'] ) ? $response_data['error'] : 'failed_to_parse_response'
+			);
+		}
+
+		if ( ! isset( $response_data['site_id'], $response_data['site_secret'] ) ) {
+			throw new Exception( 'oauth_credentials_not_exist' );
+		}
+
+		return $response_data;
 	}
 }
