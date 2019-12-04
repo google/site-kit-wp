@@ -27,10 +27,12 @@ describe( 'googlesitekit.api.cache', () => {
 					expect( result.value ).toEqual( undefined );
 				} );
 
-				it( 'should return undefined when the key is found but the TTL is too high', async () => {
-					const didSave = await set( 'old-key', 'something', 1 );
+				it( 'should return undefined when the key is found but the cached value is too old', async () => {
+					// Save with a timestamp ten seconds in the past.
+					const didSave = await set( 'old-key', 'something', Date.now() - 10 );
 					expect( didSave ).toEqual( true );
 
+					// Only return if the cache hit is less than five seconds old.
 					const result = await get( 'old-key', 5 );
 
 					expect( storageMechanism.getItem ).toHaveBeenCalledWith( 'old-key' );
@@ -64,7 +66,7 @@ describe( 'googlesitekit.api.cache', () => {
 					const didSave = await set( 'number', 500 );
 					expect( didSave ).toEqual( true );
 
-					const result = await get( 'number', 100 );
+					const result = await get( 'number' );
 
 					expect( storageMechanism.getItem ).toHaveBeenCalledWith( 'number' );
 					expect( result.cacheHit ).toEqual( true );
@@ -75,7 +77,7 @@ describe( 'googlesitekit.api.cache', () => {
 					const didSave = await set( 'array', [ 1, '2', 3 ] );
 					expect( didSave ).toEqual( true );
 
-					const result = await get( 'array', 100 );
+					const result = await get( 'array' );
 
 					expect( storageMechanism.getItem ).toHaveBeenCalledWith( 'array' );
 					expect( result.cacheHit ).toEqual( true );
@@ -86,7 +88,7 @@ describe( 'googlesitekit.api.cache', () => {
 					const didSave = await set( 'object', { foo: 'barr' } );
 					expect( didSave ).toEqual( true );
 
-					const result = await get( 'object', 100 );
+					const result = await get( 'object' );
 
 					expect( storageMechanism.getItem ).toHaveBeenCalledWith( 'object' );
 					expect( result.cacheHit ).toEqual( true );
@@ -97,11 +99,44 @@ describe( 'googlesitekit.api.cache', () => {
 					const didSave = await set( 'complex', [ 1, '2', { cool: 'times', other: [ { time: { to: 'see' } } ] } ] );
 					expect( didSave ).toEqual( true );
 
-					const result = await get( 'complex', 100 );
+					const result = await get( 'complex' );
 
 					expect( storageMechanism.getItem ).toHaveBeenCalledWith( 'complex' );
 					expect( result.cacheHit ).toEqual( true );
 					expect( result.value ).toEqual( [ 1, '2', { cool: 'times', other: [ { time: { to: 'see' } } ] } ] );
+				} );
+
+				it( 'should not mutate a value', async () => {
+					await set( 'value', 'hello' );
+
+					const result1 = await get( 'value' );
+					const result2 = await get( 'value' );
+
+					result1.value = 'mutate';
+
+					expect( result1.value ).not.toEqual( result2.value );
+				} );
+
+				it( 'should not mutate an object value', async () => {
+					await set( 'object', { foo: 'barr' } );
+
+					const result1 = await get( 'object' );
+					const result2 = await get( 'object' );
+
+					result1.value.foo = 'mutate';
+
+					expect( result1.value.foo ).not.toEqual( result2.value.foo );
+				} );
+
+				it( 'should not mutate an array value', async () => {
+					await set( 'array', [ 1, 2, 3 ] );
+
+					const result1 = await get( 'array' );
+					const result2 = await get( 'array' );
+
+					result1.value[ 2 ] = 4;
+
+					expect( result1.value[ 2 ] ).not.toEqual( result2.value[ 2 ] );
 				} );
 			} );
 
@@ -120,6 +155,9 @@ describe( 'googlesitekit.api.cache', () => {
 				} );
 
 				it( 'should save data', async () => {
+					// We specify a manual timestamp here to ensure the entire call to
+					// `setItem` can be verified. If we don't set a timestamp manually,
+					// it's obnoxious to test this :-)
 					const didSave = await set( 'array', [ 1, 2, 3 ], 500 );
 					const storedData = JSON.stringify( {
 						timestamp: 500,
@@ -134,7 +172,7 @@ describe( 'googlesitekit.api.cache', () => {
 
 			describe( 'deleteItem', () => {
 				it( 'should delete data', async () => {
-					const didSave = await set( 'array', [ 1, 2, 3 ], 500 );
+					const didSave = await set( 'array', [ 1, 2, 3 ] );
 					expect( didSave ).toEqual( true );
 
 					const didDelete = await deleteItem( 'array' );

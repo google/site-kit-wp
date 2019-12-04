@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { cloneDeep, isEqual } from 'lodash';
+import { isEqual } from 'lodash';
 
 let storageBackend;
 /**
@@ -135,11 +135,11 @@ export const get = async ( key, cacheTimeToLive = null ) => {
 			// false-y if `0`, `null`, etc.)
 			if ( parsedData.timestamp && (
 				cacheTimeToLive === null || // Ensure the cached data isn't too old.
-        ( Date.now() / 1000 ) - parsedData.timestamp < cacheTimeToLive
+				Date.now() - parsedData.timestamp < cacheTimeToLive
 			) ) {
 				return {
 					cacheHit: true,
-					value: cloneDeep( parsedData.value ),
+					value: parsedData.value,
 				};
 			}
 		}
@@ -178,7 +178,7 @@ export const set = async ( key, value, _timestamp = undefined ) => {
 			}
 
 			storage.setItem( `${ storageKeyPrefix }${ key }`, JSON.stringify( {
-				timestamp: _timestamp || ( Date.now() / 1000 ),
+				timestamp: _timestamp || Date.now(),
 				value,
 			} ) );
 
