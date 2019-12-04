@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Admin\Notice;
+use Exception;
 
 /**
  * Authentication Class.
