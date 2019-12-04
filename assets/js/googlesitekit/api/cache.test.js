@@ -2,9 +2,40 @@
  * Internal dependencies
  */
 // eslint-disable-next-line @wordpress/dependency-group
-import { _setStorageKeyPrefix, _setSelectedStorageBackend, get, set, deleteItem, getKeys, clearCache } from './cache';
+import { _setStorageKeyPrefix, _setSelectedStorageBackend, _getStorage, get, set, deleteItem, getKeys, clearCache } from './cache';
+
+let previousCacheValue;
+const disableCache = () => {
+	previousCacheValue = global.googlesitekit.admin.nojscache;
+	global.googlesitekit.admin.nojscache = true;
+};
+
+const restoreCache = () => {
+	global.googlesitekit.admin.nojscache = previousCacheValue;
+};
+
+const DISABLE_CACHE = 'Cache disabled';
+const NO_BACKEND = 'Null backend';
 
 describe( 'googlesitekit.api.cache', () => {
+	describe( '_getStorage', () => {
+		it( 'should return the most applicable storage driver available', async () => {
+			const storage = await _getStorage();
+
+			// localStorage is the best storage mechanism available in the test suite
+			// and should be returned.
+			expect( storage ).toEqual( localStorage );
+		} );
+
+		it( 'should return null if googlesitekit.admin.nojscache is true', async () => {
+			disableCache();
+			const storage = await _getStorage();
+
+			expect( storage ).toEqual( null );
+			restoreCache();
+		} );
+	} );
+
 	[ 'localStorage', 'sessionStorage' ].forEach( ( backend ) => {
 		describe( `${ backend } backend`, () => {
 			let storageMechanism;
@@ -237,13 +268,13 @@ describe( 'googlesitekit.api.cache', () => {
 
 			describe( 'clearCache', () => {
 				beforeEach( () => {
-				// Set the storage key prefix so we can compare Site Kit and
-				// non-Site Kit keys.
+					// Set the storage key prefix so we can compare Site Kit and
+					// non-Site Kit keys.
 					_setStorageKeyPrefix( 'sitekit_' );
 				} );
 
 				afterEach( () => {
-				// Restore the empty storage key prefix for the rest of the tests.
+					// Restore the empty storage key prefix for the rest of the tests.
 					_setStorageKeyPrefix( '' );
 				} );
 
@@ -284,75 +315,91 @@ describe( 'googlesitekit.api.cache', () => {
 		} );
 	} );
 
-	describe( 'no backend', () => {
-		beforeAll( () => {
-		// Set the backend storage mechanism to nothing; this will cause all
-		// caching to be skipped.
-			_setSelectedStorageBackend( null );
-		} );
+	[ DISABLE_CACHE, NO_BACKEND ].forEach( ( testSuite ) => {
+		describe( `No-op caching (${ testSuite })`, () => {
+			beforeAll( () => {
+				if ( testSuite === DISABLE_CACHE ) {
+					// Set googlesitekit.admin.nojscache to `true`.
+					disableCache();
+				}
 
-		afterAll( () => {
-		// Reset the backend storage mechanism.
-			_setSelectedStorageBackend( undefined );
-		} );
+				if ( testSuite === NO_BACKEND ) {
+					// Set the backend storage mechanism to nothing; this will cause all
+					// caching to be skipped.
+					_setSelectedStorageBackend( null );
+				}
+			} );
 
-		describe( 'get', () => {
-			it( 'should return nothing when no storage is available', async () => {
-				await set( 'key1', 'data' );
+			afterAll( () => {
+				if ( testSuite === DISABLE_CACHE ) {
+					// Restore the default googlesitekit.admin.nojscache value.
+					restoreCache();
+				}
 
-				const cacheData = await get( 'key1' );
-				expect( cacheData ).toEqual( {
-					cacheHit: false,
-					value: undefined,
+				if ( testSuite === NO_BACKEND ) {
+					// Reset the backend storage mechanism to "unknown".
+					_setSelectedStorageBackend( undefined );
+				}
+			} );
+
+			describe( 'get', () => {
+				it( 'should return nothing when no storage is available', async () => {
+					await set( 'key1', 'data' );
+
+					const cacheData = await get( 'key1' );
+					expect( cacheData ).toEqual( {
+						cacheHit: false,
+						value: undefined,
+					} );
+					expect( localStorage.getItem ).not.toHaveBeenCalled();
+					expect( sessionStorage.getItem ).not.toHaveBeenCalled();
 				} );
-				expect( localStorage.getItem ).not.toHaveBeenCalled();
-				expect( sessionStorage.getItem ).not.toHaveBeenCalled();
 			} );
-		} );
 
-		describe( 'set', () => {
-			it( 'should not save when no storage is available', async () => {
-				const didSave = await set( 'key1', 'data' );
-				expect( didSave ).toEqual( false );
-				expect( localStorage.setItem ).not.toHaveBeenCalled();
-				expect( sessionStorage.setItem ).not.toHaveBeenCalled();
+			describe( 'set', () => {
+				it( 'should not save when no storage is available', async () => {
+					const didSave = await set( 'key1', 'data' );
+					expect( didSave ).toEqual( false );
+					expect( localStorage.setItem ).not.toHaveBeenCalled();
+					expect( sessionStorage.setItem ).not.toHaveBeenCalled();
+				} );
 			} );
-		} );
 
-		describe( 'deleteItem', () => {
-			it( 'should not call delete when no storage is available', async () => {
-				await set( 'key1', 'data' );
+			describe( 'deleteItem', () => {
+				it( 'should not call delete when no storage is available', async () => {
+					await set( 'key1', 'data' );
 
-				const didDelete = await deleteItem( 'key1' );
-				expect( didDelete ).toEqual( false );
-				expect( localStorage.removeItem ).not.toHaveBeenCalled();
-				expect( sessionStorage.removeItem ).not.toHaveBeenCalled();
+					const didDelete = await deleteItem( 'key1' );
+					expect( didDelete ).toEqual( false );
+					expect( localStorage.removeItem ).not.toHaveBeenCalled();
+					expect( sessionStorage.removeItem ).not.toHaveBeenCalled();
+				} );
 			} );
-		} );
 
-		describe( 'getKeys', () => {
-			it( 'should return nothing when no storage is available', async () => {
-				await set( 'key1', 'data' );
-				await set( 'key2', 'data' );
+			describe( 'getKeys', () => {
+				it( 'should return nothing when no storage is available', async () => {
+					await set( 'key1', 'data' );
+					await set( 'key2', 'data' );
 
-				const keys = await getKeys();
-				expect( keys ).toEqual( [] );
-				expect( localStorage.key ).not.toHaveBeenCalled();
-				expect( sessionStorage.key ).not.toHaveBeenCalled();
+					const keys = await getKeys();
+					expect( keys ).toEqual( [] );
+					expect( localStorage.key ).not.toHaveBeenCalled();
+					expect( sessionStorage.key ).not.toHaveBeenCalled();
+				} );
 			} );
-		} );
 
-		describe( 'clearCache', () => {
-			it( 'should return false when no storage is available', async () => {
-				await set( 'key1', 'data' );
-				await set( 'key2', 'data' );
+			describe( 'clearCache', () => {
+				it( 'should return false when no storage is available', async () => {
+					await set( 'key1', 'data' );
+					await set( 'key2', 'data' );
 
-				const didClearCache = await clearCache();
-				expect( didClearCache ).toEqual( false );
-				expect( localStorage.removeItem ).not.toHaveBeenCalled();
-				expect( sessionStorage.removeItem ).not.toHaveBeenCalled();
-				expect( localStorage.key ).not.toHaveBeenCalled();
-				expect( sessionStorage.key ).not.toHaveBeenCalled();
+					const didClearCache = await clearCache();
+					expect( didClearCache ).toEqual( false );
+					expect( localStorage.removeItem ).not.toHaveBeenCalled();
+					expect( sessionStorage.removeItem ).not.toHaveBeenCalled();
+					expect( localStorage.key ).not.toHaveBeenCalled();
+					expect( sessionStorage.key ).not.toHaveBeenCalled();
+				} );
 			} );
 		} );
 	} );

@@ -45,7 +45,7 @@ export const _setStorageOrder = ( order ) => {
  * @param {string} type Browser storage to test. Should be one of `localStorage` or `sessionStorage`.
  * @return {boolean} True if the given storage is available, false otherwise.
  */
-const isStorageAvailable = ( type ) => {
+export const _isStorageAvailable = async ( type ) => {
 	const storage = global[ type ];
 
 	if ( ! storage ) {
@@ -84,7 +84,7 @@ const isStorageAvailable = ( type ) => {
  *
  * @return {Object} Return a storage mechanism (`localStorage` or `sessionStorage`) if available; otherwise returns `null`;
  */
-const getStorage = () => {
+export const _getStorage = async () => {
 	// If `googlesitekit.admin.nojscache` is `true`, we should never use
 	// the cache.
 	if ( global.googlesitekit && global.googlesitekit.admin && global.googlesitekit.admin.nojscache ) {
@@ -93,15 +93,15 @@ const getStorage = () => {
 
 	// Only run the logic to determine the storage object once.
 	if ( storageBackend === undefined ) {
-		storageOrder.forEach( ( backend ) => {
+		for ( const backend of storageOrder ) {
 			if ( storageBackend ) {
-				return;
+				continue;
 			}
 
-			if ( isStorageAvailable( backend ) ) {
+			if ( await _isStorageAvailable( backend ) ) {
 				storageBackend = global[ backend ];
 			}
-		} );
+		}
 
 		if ( storageBackend === undefined ) {
 			storageBackend = null;
@@ -122,7 +122,7 @@ const getStorage = () => {
  * @return {Promise} A promise returned, containing an object with the cached value (if found) and whether or not there was a cache hit.
  */
 export const get = async ( key, cacheTimeToLive = null ) => {
-	const storage = getStorage();
+	const storage = await _getStorage();
 
 	if ( storage ) {
 		const cachedData = storage.getItem( `${ storageKeyPrefix }${ key }` );
@@ -163,7 +163,7 @@ export const get = async ( key, cacheTimeToLive = null ) => {
  * @return {Promise} A promise: resolves to `true` if the value was saved; `false` if not (usually because no storage method was available).
  */
 export const set = async ( key, value, _timestamp = undefined ) => {
-	const storage = getStorage();
+	const storage = await _getStorage();
 
 	if ( storage ) {
 		try {
@@ -202,7 +202,7 @@ export const set = async ( key, value, _timestamp = undefined ) => {
  * @return {Promise} A promise: resolves to `true` if the value was deleted; `false` if not (usually because no storage method was available).
  */
 export const deleteItem = async ( key ) => {
-	const storage = getStorage();
+	const storage = await _getStorage();
 
 	if ( storage ) {
 		try {
@@ -224,7 +224,7 @@ export const deleteItem = async ( key ) => {
  * @return {Promise} A promise: resolves to an array of all keys.
  */
 export const getKeys = async () => {
-	const storage = getStorage();
+	const storage = await _getStorage();
 
 	if ( storage ) {
 		try {
@@ -252,7 +252,7 @@ export const getKeys = async () => {
  * @return {Promise} A promise: resolves to `true` if the cache was cleared; `false` if there was an error.
  */
 export const clearCache = async () => {
-	const storage = getStorage();
+	const storage = await _getStorage();
 
 	if ( storage ) {
 		const keys = await getKeys();
