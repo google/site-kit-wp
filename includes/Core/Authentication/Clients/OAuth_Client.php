@@ -640,19 +640,12 @@ final class OAuth_Client {
 			'nonce'    => rawurlencode( wp_create_nonce( Google_Proxy::ACTION_SETUP ) ),
 		);
 
+		if ( ! empty( $access_code ) ) {
+			$query_params['code'] = $access_code;
+		}
+
 		if ( $this->credentials->has() ) {
 			$query_params['site_id'] = $this->credentials->get()['oauth2_client_id'];
-			$query_params['code']    = $access_code;
-		} else {
-			$home_url           = home_url();
-			$home_url_no_scheme = str_replace( array( 'http://', 'https://' ), '', $home_url );
-			$rest_root          = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', rest_url() );
-			$admin_root         = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', admin_url() );
-
-			$query_params['name']       = rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ) ) );
-			$query_params['url']        = rawurlencode( $home_url );
-			$query_params['rest_root']  = rawurlencode( $rest_root );
-			$query_params['admin_root'] = rawurlencode( $admin_root );
 		}
 
 		/**
@@ -664,6 +657,19 @@ final class OAuth_Client {
 		 * @param string $error_code  Error code, if the user should be redirected because of an error.
 		 */
 		$query_params = apply_filters( 'googlesitekit_proxy_setup_url_params', $query_params, $access_code, $error_code );
+
+		// If no site identification information is present, we need to provide details for a new site.
+		if ( empty( $query_params['site_id'] ) && empty( $query_params['site_code'] ) ) {
+			$home_url           = home_url();
+			$home_url_no_scheme = str_replace( array( 'http://', 'https://' ), '', $home_url );
+			$rest_root          = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', rest_url() );
+			$admin_root         = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', admin_url() );
+
+			$query_params['name']       = rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ) ) );
+			$query_params['url']        = rawurlencode( $home_url );
+			$query_params['rest_root']  = rawurlencode( $rest_root );
+			$query_params['admin_root'] = rawurlencode( $admin_root );
+		}
 
 		return add_query_arg( $query_params, $this->google_proxy->url( Google_Proxy::SETUP_URI ) );
 	}
