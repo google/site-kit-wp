@@ -721,7 +721,7 @@ final class OAuth_Client {
 	public function get_error_message( $error_code ) {
 		switch ( $error_code ) {
 			case 'oauth_credentials_not_exist':
-				return __( 'Unable to authenticate Site Kit. Check your client configuration is in the correct JSON format.', 'google-site-kit' );
+				return __( 'Unable to authenticate Site Kit, as no client credentials exist.', 'google-site-kit' );
 			case 'refresh_token_not_exist':
 				return __( 'Unable to refresh access token, as no refresh token exists.', 'google-site-kit' );
 			case 'cannot_log_in':
