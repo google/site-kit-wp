@@ -24,6 +24,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use WPDieException;
 
 /**
  * @group Authentication
@@ -43,6 +44,8 @@ class AuthenticationTest extends TestCase {
 
 		// Authentication::handle_oauth is invoked on init but we cannot test it due to use of filter_input.
 		$this->assertTrue( has_action( 'init' ) );
+
+		$this->assertTrue( has_action( 'admin_action_' . Google_Proxy::ACTION_SETUP ) );
 
 		$this->assertAdminDataExtended();
 		$this->assertSetupDataExtended();
@@ -112,6 +115,29 @@ class AuthenticationTest extends TestCase {
 		$this->assertEquals( 'https://sitekit.withgoogle.com', wp_validate_redirect( 'https://sitekit.withgoogle.com' ) );
 	}
 
+	public function test_verify_proxy_setup_nonce() {
+		$setup_proxy_admin_action = 'admin_action_' . Google_Proxy::ACTION_SETUP;
+		remove_all_actions( $setup_proxy_admin_action );
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$credentials = new Credentials( new Options( $context ) );
+		$auth = new Authentication( $context );
+		$auth->register();
+
+		// Ensure that wp_die is called if nonce verification fails.
+		$_GET['nonce'] = 'bad-nonce';
+
+		try {
+			do_action( $setup_proxy_admin_action );
+		} catch ( WPDieException $exception ) {
+			$this->assertEquals( 'Invalid nonce.', $exception->getMessage() );
+			return;
+		}
+
+		$this->fail( 'Expected WPDieException!' );
+	}
+
 	public function test_handle_site_code_and_redirect_to_proxy() {
 		remove_all_actions( 'admin_action_googlesitekit_proxy_setup' );
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
@@ -120,6 +146,7 @@ class AuthenticationTest extends TestCase {
 		$credentials = new Credentials( new Options( $context ) );
 		$auth = new Authentication( $context );
 		$auth->register();
+		$google_proxy = new Google_Proxy( $context );
 
 		$this->assertTrue( has_action( 'admin_action_googlesitekit_proxy_setup' ) );
 		$this->assertFalse( $credentials->has() );
@@ -131,8 +158,8 @@ class AuthenticationTest extends TestCase {
 		// Stub the response to the proxy oauth API.
 		add_filter(
 			'pre_http_request',
-			function ( $preempt, $args, $url ) {
-				if ( Google_Proxy::url( Google_Proxy::OAUTH_SITE_URI ) !== $url ) {
+			function ( $preempt, $args, $url ) use ( $google_proxy ) {
+				if ( $google_proxy->url( Google_Proxy::OAUTH2_SITE_URI ) !== $url ) {
 					return $preempt;
 				}
 

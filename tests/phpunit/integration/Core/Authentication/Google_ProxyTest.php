@@ -14,39 +14,46 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
-use WPDieException;
 
 class Google_ProxyTest extends TestCase {
-
-	public function test_register() {
-		$proxy = new Google_Proxy( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$setup_proxy_admin_action = 'admin_action_' . Google_Proxy::ACTION_SETUP;
-		remove_all_actions( $setup_proxy_admin_action );
-
-		$proxy->register();
-
-		$this->assertTrue( has_action( $setup_proxy_admin_action ) );
-	}
-
-	public function test_verify_proxy_setup_nonce() {
-		$setup_proxy_admin_action = 'admin_action_' . Google_Proxy::ACTION_SETUP;
-		remove_all_actions( $setup_proxy_admin_action );
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
+	public function test_exchange_site_code() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$proxy = new Google_Proxy( $context );
-		$proxy->register();
+		$google_proxy = new Google_Proxy( $context );
 
-		// Ensure that wp_die is called if nonce verification fails.
-		$_GET['nonce'] = 'bad-nonce';
+		$expected_credentials = array(
+			'site_id'     => 'test-site-id.apps.sitekit.withgoogle.com',
+			'site_secret' => 'test-site-secret',
+		);
 
-		try {
-			do_action( $setup_proxy_admin_action );
-		} catch ( WPDieException $exception ) {
-			$this->assertEquals( 'Invalid nonce.', $exception->getMessage() );
-			return;
-		}
+		// Stub the response to the proxy oauth API.
+		add_filter(
+			'pre_http_request',
+			function ( $preempt, $args, $url ) use ( $google_proxy, $expected_credentials ) {
+				if ( $google_proxy->url( Google_Proxy::OAUTH2_SITE_URI ) !== $url ) {
+					return $preempt;
+				}
 
-		$this->fail( 'Expected WPDieException!' );
+				return array(
+					'headers'       => array(),
+					'body'          => json_encode(
+						$expected_credentials
+					),
+					'response'      => array(
+						'code'    => 200,
+						'message' => 'OK',
+					),
+					'cookies'       => array(),
+					'http_response' => null,
+				);
+			},
+			10,
+			3
+		);
+
+		$credentials = $google_proxy->exchange_site_code( 'test-site-code', 'test-undelegated-code' );
+		$this->assertEqualSetsWithIndex(
+			$expected_credentials,
+			$credentials
+		);
 	}
 }
