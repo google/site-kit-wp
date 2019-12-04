@@ -110,6 +110,7 @@ final class Plugin {
 				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication );
 				$modules->register();
 
+				( new Core\Authentication\Google_Proxy( $this->context ) )->register();
 				( new Core\Permissions\Permissions( $this->context, $authentication ) )->register();
 				( new Core\Util\Tracking( $this->context, $authentication ) )->register();
 				( new Core\REST_API\REST_Routes( $this->context, $authentication, $modules ) )->register();
