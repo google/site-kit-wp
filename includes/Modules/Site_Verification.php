@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Verification_File;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
@@ -57,7 +58,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		$this->register_scopes_hook();
 
 		add_action(
-			'admin_action_googlesitekit_proxy_setup',
+			'admin_action_' . Google_Proxy::ACTION_SETUP,
 			function() {
 				$this->handle_verification_token();
 			},
