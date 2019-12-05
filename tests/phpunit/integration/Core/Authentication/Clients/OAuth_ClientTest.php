@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -218,21 +219,23 @@ class OAuth_ClientTest extends TestCase {
 	public function test_authorize_user() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_options = new User_Options( $context );
 
-		// If GET[code] is not set, it redirects to auth URL.
-		$client = new OAuth_Client( $context );
+		// If GET[error] is set, it redirects to admin URL.
+		$client = new OAuth_Client( $context, null, $user_options );
+		$_GET['error'] = 'callback_error';
 		$this->fake_authentication(); // required by get_authentication_url
-		$auth_url = $client->get_authentication_url();
 
 		try {
 			$client->authorize_user();
 		} catch ( RedirectException $redirect ) {
-			$this->assertEquals( $auth_url, $redirect->get_location() );
+			$this->assertEquals( 'callback_error', $user_options->get( OAuth_Client::OPTION_ERROR_CODE ) );
+			$this->assertEquals( admin_url(), $redirect->get_location() );
 		}
 
-		// GET[code] is set and no credentials
-		$_GET['code'] = 'truthy';
+		// If no credentials.
+		unset( $_GET['error'] );
 		remove_all_filters( 'googlesitekit_oauth_secret' );
 		$client = new OAuth_Client( $context );
 
@@ -292,6 +295,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'rest_root=', $url );
 		$this->assertContains( 'admin_root=', $url );
 		$this->assertContains( 'scope=', $url );
+		$this->assertContains( 'nonce=', $url );
 		$this->assertNotContains( 'site_id=', $url );
 
 		// Otherwise, pass site ID and given temporary access code.
@@ -302,6 +306,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'code=temp-code', $url );
 		$this->assertContains( 'version=', $url );
 		$this->assertContains( 'scope=', $url );
+		$this->assertContains( 'nonce=', $url );
 		$this->assertNotContains( 'name=', $url );
 		$this->assertNotContains( 'url=', $url );
 		$this->assertNotContains( 'rest_root=', $url );
