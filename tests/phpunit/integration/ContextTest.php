@@ -44,6 +44,32 @@ class ContextTest extends TestCase {
 		$this->assertEquals( $plugin_url . '/relative/path.css', $context->url( 'relative/path.css' ) );
 	}
 
+	public function test_filter_input() {
+		$this->assertArrayNotHasKey( 'foo', $_GET );
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		$_GET['foo'] = 'bar';
+		// By default, everything will be null using the default Input since filter_input
+		// ignores runtime changes.
+		$this->assertNull( $context->input()->filter( INPUT_GET, 'foo' ) );
+
+		// Use MutableInput to allow for runtime changes with the same API.
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+
+		$this->assertEquals( 'bar', $context->input()->filter( INPUT_GET, 'foo' ) );
+		$this->assertEquals( 'bar', $context->input()->filter( INPUT_GET, 'foo' ) );
+
+		// All the same filter flags work.
+		$this->assertFalse( $context->input()->filter( INPUT_GET, 'foo', FILTER_VALIDATE_BOOLEAN ) );
+
+		$_GET['foo'] = true;
+
+		$this->assertTrue( $context->input()->filter( INPUT_GET, 'foo', FILTER_VALIDATE_BOOLEAN ) );
+
+		$_GET['dirty'] = '<script>dirt</script>';
+		$this->assertEquals( 'dirt', $context->input()->filter( INPUT_GET, 'dirty', FILTER_SANITIZE_STRING ) );
+	}
+
 	public function test_admin_url() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 

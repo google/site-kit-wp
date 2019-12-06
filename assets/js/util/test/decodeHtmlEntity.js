@@ -16,6 +16,11 @@ const valuesToTest = [
 		'Symbols &#162; &#163; &#8364; &#165; &#169; &#174;',
 		'Symbols ¢ £ € ¥ © ®',
 	],
+	// Make sure instances where a string is null doesn't break the app.
+	[
+		null,
+		'',
+	],
 ];
 
 describe( 'decodeHtmlEntity', () => {

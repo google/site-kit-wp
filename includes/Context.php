@@ -12,6 +12,7 @@ namespace Google\Site_Kit;
 
 use AMP_Options_Manager;
 use AMP_Theme_Support;
+use Google\Site_Kit\Core\Util\Input;
 
 /**
  * Class representing the context in which the plugin is running.
@@ -55,14 +56,25 @@ final class Context {
 	private $network_active = null;
 
 	/**
+	 * Input access abstraction.
+	 *
+	 * @since n.e.x.t
+	 * @var Input
+	 */
+	private $input;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Added optional $input instance.
 	 *
 	 * @param string $main_file Absolute path to the plugin main file.
+	 * @param Input  $input Input instance.
 	 */
-	public function __construct( $main_file ) {
+	public function __construct( $main_file, Input $input = null ) {
 		$this->main_file = $main_file;
+		$this->input     = $input ?: new Input();
 	}
 
 	/**
@@ -86,6 +98,17 @@ final class Context {
 	 */
 	public function url( $relative_path = '/' ) {
 		return plugin_dir_url( $this->main_file ) . ltrim( $relative_path, '/' );
+	}
+
+	/**
+	 * Gets the Input instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Input
+	 */
+	public function input() {
+		return $this->input;
 	}
 
 	/**
