@@ -271,8 +271,8 @@ class AnalyticsSetup extends Component {
 		try {
 			// Send existing tag data to get account.
 			const queryArgs = existingTagData ? {
-				existingAccountID: existingTagData.accountId, // Capitalization rule exception: `accountId` is a property of an API returned value.
-				existingPropertyID: existingTagData.propertyId, // Capitalization rule exception: `propertyId` is a property of an API returned value.
+				existingAccountID: existingTagData.accountID,
+				existingPropertyID: existingTagData.propertyID,
 			} : {};
 
 			const responseData = await data.get( TYPE_MODULES, 'analytics', 'accounts-properties-profiles', queryArgs );
@@ -715,15 +715,6 @@ class AnalyticsSetup extends Component {
 		);
 	}
 
-	hasAccessToExistingTagProperty() {
-		const {
-			existingTag,
-			selectedProfile,
-		} = this.state;
-
-		return existingTag && selectedProfile;
-	}
-
 	renderForm() {
 		const {
 			isLoading,
@@ -1022,7 +1013,7 @@ class AnalyticsSetup extends Component {
 						</Fragment>
 				}
 
-				{ this.hasAccessToExistingTagProperty() && existingTag !== googlesitekit.admin.trackingID &&
+				{ !! existingTag &&
 					<p>{ sprintf( __( 'An existing analytics tag was found on your site with the id %s. If later on you decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.', 'google-site-kit' ), existingTag ) }</p>
 				}
 
