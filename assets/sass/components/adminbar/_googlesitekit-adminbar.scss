@@ -41,12 +41,12 @@
 
 		.googlesitekit-adminbar__subtitle {
 			color: $c-primary;
-			font-size: 0.75rem;
+			font-size: 16px;
 		}
 
 		.googlesitekit-adminbar__title {
 			color: $c-secondary;
-			font-size: 1rem;
+			font-size: 22px;
 			font-weight: $fw-primary-medium;
 			margin: 5px 0 0 0;
 		}
@@ -62,6 +62,7 @@
 
 		.googlesitekit-adminbar__link {
 			display: none;
+			font-size: 16px;
 		}
 	}
 

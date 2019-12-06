@@ -110,7 +110,7 @@
 		margin: 0 0 12px 0;
 
 		.googlesitekit-adminbar & {
-			font-size: 0.75rem;
+			font-size: 16px;
 			margin-bottom: 5px;
 		}
 
@@ -140,7 +140,7 @@
 
 		.googlesitekit-adminbar & {
 			display: inline-block;
-			font-size: 1.5625rem;
+			font-size: 36px;
 			margin-right: 5px;
 		}
 
@@ -229,6 +229,10 @@
 		letter-spacing: 0;
 		line-height: 1;
 		text-transform: none;
+
+		.googlesitekit-adminbar & {
+			font-size: 16px;
+		}
 	}
 
 	.googlesitekit-data-block__source {
