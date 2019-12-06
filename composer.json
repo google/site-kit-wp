@@ -73,6 +73,7 @@
       "@composer --working-dir=php-scoper require humbug/php-scoper"
     ],
     "lint": "vendor/bin/phpcs",
-    "lint-fix": "vendor/bin/phpcbf"
+    "lint-fix": "vendor/bin/phpcbf",
+    "test":  "phpunit"
   }
 }
