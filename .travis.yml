@@ -68,7 +68,7 @@ before_install:
 script:
   - |
     if [[ "$SNIFF" == "1" ]]; then
-      gulp phpcs || exit 1
+      composer lint || exit 1
       npm run lint:js || exit 1
       npm run lint:css || exit 1
     fi
@@ -81,7 +81,7 @@ script:
     fi
   - |
     if [[ "$PHP" == "1" ]]; then
-      gulp phpunit || exit 1
+      composer test || exit 1
     fi
   - |
     if [[ "$E2E" == "1" ]]; then
