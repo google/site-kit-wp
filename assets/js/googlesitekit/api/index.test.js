@@ -1,11 +1,11 @@
 /**
  * Internal dependencies
  */
-import API, { invalidateCache, get, set, useCache } from './index';
+import { invalidateCache, isAPICachingEnabled, get, set, useCache } from './index';
 
 describe( 'googlesitekit.api', () => {
 	it( 'should have caching enabled by default', () => {
-		expect( API._useCache ).toEqual( true );
+		expect( isAPICachingEnabled() ).toEqual( true );
 	} );
 
 	describe( 'invalidateCache', () => {
@@ -48,12 +48,12 @@ describe( 'googlesitekit.api', () => {
 			useCache( false );
 
 			expect( useCache( true ) ).toEqual( true );
-			expect( API._useCache ).toEqual( true );
+			expect( isAPICachingEnabled() ).toEqual( true );
 		} );
 
 		it( 'should disable the caching API', () => {
 			expect( useCache( false ) ).toEqual( false );
-			expect( API._useCache ).toEqual( false );
+			expect( isAPICachingEnabled() ).toEqual( false );
 		} );
 	} );
 } );
