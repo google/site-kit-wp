@@ -87,23 +87,27 @@ class SetupUsingProxy extends Component {
 			siteHostname,
 		} = this.state;
 		const isRevoked = 'revoked' === context;
-		const isSecondAdmin = ! isRevoked && isResettable;
+		const isSecondAdmin = isResettable;
 
-		let title = __( 'Sign in with Google to set up Site Kit', 'google-site-kit' );
-		let description = __( 'The Site Kit service will guide you through 3 simple setup steps.', 'google-site-kit' );
-		let startSetupText = __( 'Start setup', 'google-site-kit' );
+		let title;
+		let description;
+		let startSetupText;
 
-		if ( isSecondAdmin ) {
-			title = __( 'Sign in with Google to configure Site Kit' );
-			description = __( 'To use Site Kit, sign in with your Google account. Site Kit Service will guide you through 3 simple steps to complete the connection and configure the plugin.' );
-			startSetupText = __( 'Sign in with Google', 'google-site-kit' );
-		} else if ( isRevoked ) {
+		if ( isRevoked ) {
 			title = sprintf(
 				/* translators: %s is the site's hostname. (e.g. example.com) */
 				__( 'You revoked access to Site Kit for %s', 'google-site-kit' ),
 				siteHostname
 			);
 			description = __( 'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Start Setup" below to generate new credentials.', 'google-site-kit' );
+		} else if ( isSecondAdmin ) {
+			title = __( 'Sign in with Google to configure Site Kit' );
+			description = __( 'To use Site Kit, sign in with your Google account. Site Kit Service will guide you through 3 simple steps to complete the connection and configure the plugin.' );
+			startSetupText = __( 'Sign in with Google', 'google-site-kit' );
+		} else {
+			title = __( 'Sign in with Google to set up Site Kit', 'google-site-kit' );
+			description = __( 'The Site Kit service will guide you through 3 simple setup steps.', 'google-site-kit' );
+			startSetupText = __( 'Start setup', 'google-site-kit' );
 		}
 
 		return (
