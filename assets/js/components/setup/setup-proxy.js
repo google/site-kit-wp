@@ -105,7 +105,7 @@ class SetupUsingProxy extends Component {
 			startSetupText = __( 'Sign in with Google', 'google-site-kit' );
 		} else if ( isSecondAdmin ) {
 			title = __( 'Sign in with Google to configure Site Kit' );
-			description = __( 'To use Site Kit, sign in with your Google account. Site Kit Service will guide you through 3 simple steps to complete the connection and configure the plugin.' );
+			description = __( 'To use Site Kit, sign in with your Google account. The Site Kit service will guide you through 3 simple steps to complete the connection and configure the plugin.' );
 			startSetupText = __( 'Sign in with Google', 'google-site-kit' );
 		} else {
 			title = __( 'Sign in with Google to set up Site Kit', 'google-site-kit' );
