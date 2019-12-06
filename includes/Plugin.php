@@ -110,15 +110,9 @@ final class Plugin {
 				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication );
 				$modules->register();
 
-				$permissions = new Core\Permissions\Permissions( $this->context, $authentication );
-				$permissions->register();
-
-				$tracking = new Core\Util\Tracking( $this->context, $authentication );
-				$tracking->register();
-
-				$rest_routes = new Core\REST_API\REST_Routes( $this->context, $authentication, $modules );
-				$rest_routes->register();
-
+				( new Core\Permissions\Permissions( $this->context, $authentication ) )->register();
+				( new Core\Util\Tracking( $this->context, $authentication ) )->register();
+				( new Core\REST_API\REST_Routes( $this->context, $authentication, $modules ) )->register();
 				( new Core\Admin_Bar\Admin_Bar( $this->context, $assets ) )->register();
 				( new Core\Admin\Screens( $this->context, $assets ) )->register();
 				( new Core\Admin\Notices() )->register();
