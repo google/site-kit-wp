@@ -49,7 +49,7 @@ before_install:
     fi
   - |
     if [[ "$JS" == "1" ]]; then
-      composer require johnpbloch/wordpress-core
+      docker run --rm -v "$PWD:/app" composer install --no-scripts
     fi
   - |
     if [[ "$WP_VERSION" == "latest" ]]; then
