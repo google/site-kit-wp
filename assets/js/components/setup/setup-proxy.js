@@ -89,6 +89,29 @@ class SetupUsingProxy extends Component {
 			siteHostname,
 		} = this.state;
 		const isRevoked = 'revoked' === context;
+		const isSecondAdmin = isResettable;
+
+		let title;
+		let description;
+		let startSetupText;
+
+		if ( isRevoked ) {
+			title = sprintf(
+				/* translators: %s is the site's hostname. (e.g. example.com) */
+				__( 'You revoked access to Site Kit for %s', 'google-site-kit' ),
+				siteHostname
+			);
+			description = __( 'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Start Setup" below to generate new credentials.', 'google-site-kit' );
+			startSetupText = __( 'Sign in with Google', 'google-site-kit' );
+		} else if ( isSecondAdmin ) {
+			title = __( 'Sign in with Google to configure Site Kit' );
+			description = __( 'To use Site Kit, sign in with your Google account. The Site Kit service will guide you through 3 simple steps to complete the connection and configure the plugin.' );
+			startSetupText = __( 'Sign in with Google', 'google-site-kit' );
+		} else {
+			title = __( 'Sign in with Google to set up Site Kit', 'google-site-kit' );
+			description = __( 'The Site Kit service will guide you through 3 simple setup steps.', 'google-site-kit' );
+			startSetupText = __( 'Start setup', 'google-site-kit' );
+		}
 
 		return (
 			<Fragment>
@@ -125,29 +148,12 @@ class SetupUsingProxy extends Component {
 														mdc-layout-grid__cell
 														mdc-layout-grid__cell--span-12
 													">
-														{ isRevoked ? (
-															<Fragment>
-																<h1 className="googlesitekit-setup__title">
-																	{ sprintf(
-																		/* translators: %s is the site's hostname. (e.g. example.com) */
-																		__( 'You revoked access to Site Kit for %s', 'google-site-kit' ),
-																		siteHostname
-																	) }
-																</h1>
-																<p className="googlesitekit-setup__description">
-																	{ __( 'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Start Setup" below to generate new credentials.', 'google-site-kit' ) }
-																</p>
-															</Fragment>
-														) : (
-															<Fragment>
-																<h1 className="googlesitekit-setup__title">
-																	{ __( 'The Site Kit plugin is active but requires setup', 'google-site-kit' ) }
-																</h1>
-																<p className="googlesitekit-setup__description">
-																	{ __( 'Site Kit Service will guide you through 3 simple setup steps.', 'google-site-kit' ) }
-																</p>
-															</Fragment>
-														) }
+														<h1 className="googlesitekit-setup__title">
+															{ title }
+														</h1>
+														<p className="googlesitekit-setup__description">
+															{ description }
+														</p>
 														<Optin />
 														<Button
 															className="googlesitekit-start-setup"
@@ -156,7 +162,7 @@ class SetupUsingProxy extends Component {
 																sendAnalyticsTrackingEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
 															} }
 														>
-															{ __( 'Start setup', 'google-site-kit' ) }
+															{ startSetupText }
 														</Button>
 														{ isResettable && <ResetButton /> }
 													</div>
