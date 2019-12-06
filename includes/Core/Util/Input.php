@@ -18,6 +18,26 @@ namespace Google\Site_Kit\Core\Util;
  * @ignore
  */
 class Input {
+	/**
+	 * Map of input type to superglobal array.
+	 *
+	 * For use as fallback only.
+	 *
+	 * @var array
+	 */
+	protected $map;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function __construct() {
+		$this->map = array(
+			INPUT_ENV    => $_ENV,
+			INPUT_SERVER => $_SERVER,
+		);
+	}
 
 	/**
 	 * Gets a specific external variable by name and optionally filters it.
@@ -39,6 +59,20 @@ class Input {
 	 *                                      and NULL if the filter fails.
 	 */
 	public function filter( $type, $variable_name, $filter = FILTER_DEFAULT, $options = null ) {
-		return filter_input( $type, $variable_name, $filter, $options );
+		$value = filter_input( $type, $variable_name, $filter, $options );
+
+		// Fallback for environments where filter_input may not work with SERVER or ENV types.
+		if (
+			// Only use this fallback for affected input types.
+			in_array( $type, array( INPUT_SERVER, INPUT_ENV ), true )
+			// Only use the fallback if the value is not-set (could be either depending on FILTER_NULL_ON_FAILURE).
+			&& in_array( $value, array( null, false ), true )
+			// Only use the fallback if the key exists in the input map.
+			&& array_key_exists( $variable_name, $this->map[ $type ] )
+		) {
+			return filter_var( $this->map[ $type ][ $variable_name ], $filter, $options );
+		}
+
+		return $value;
 	}
 }
