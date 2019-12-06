@@ -38,12 +38,18 @@ branches:
 
 # Before install, failures in this section will result in build status 'errored'
 before_install:
-  - nvm install
-  - npm ci
-  - docker run --rm -v "$PWD:/app" composer install
   - |
-    if [[ "$PHP" == "1" ]] || [[ "$JS" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
-      npm install -g gulp-cli
+    if [[ "$JS" == "1" ]] || [[ "$E2E" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
+      nvm install
+      npm ci
+    fi
+  - |
+    if [[ "$PHP" == "1" ]] || [[ "$E2E" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
+      docker run --rm -v "$PWD:/app" composer install
+    fi
+  - |
+    if [[ "$JS" == "1" ]]; then
+      docker run --rm -v "$PWD:/app" composer install --no-scripts
     fi
   - |
     if [[ "$WP_VERSION" == "latest" ]]; then
@@ -62,7 +68,7 @@ before_install:
 script:
   - |
     if [[ "$SNIFF" == "1" ]]; then
-      gulp phpcs || exit 1
+      composer lint || exit 1
       npm run lint:js || exit 1
       npm run lint:css || exit 1
     fi
@@ -75,7 +81,7 @@ script:
     fi
   - |
     if [[ "$PHP" == "1" ]]; then
-      gulp phpunit || exit 1
+      composer test || exit 1
     fi
   - |
     if [[ "$E2E" == "1" ]]; then
@@ -87,7 +93,7 @@ script:
 
 jobs:
   allow_failures:
-    - php: 7.4snapshot
+    - php: nightly
   include:
     - stage: test
       name: Lint
@@ -96,18 +102,18 @@ jobs:
     - name: PHP Tests (PHP 5.6, WordPress latest)
       php: 5.6
       env: WP_VERSION=latest PHP=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-    - name: PHP Tests (PHP 7.3, WordPress latest)
-      php: 7.3
+    - name: PHP Tests (PHP 7.4, WordPress latest)
+      php: 7.4
       env: WP_VERSION=latest PHP=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-    - name: PHP Tests (PHP 7.3, WordPress Multisite latest)
-      php: 7.3
+    - name: PHP Tests (PHP 7.4, WordPress Multisite latest)
+      php: 7.4
       env: WP_VERSION=latest WP_MULTISITE=1 PHP=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
     - name: JS Tests
-      php: 7.3
+      php: 7.4
       env: WP_VERSION=latest JS=1
-    - name: PHP Tests (PHP 7.4, WordPress trunk)
+    - name: PHP Tests (PHP nightly, WordPress trunk)
       stage: test
-      php: 7.4snapshot
+      php: nightly
       env: WP_VERSION=master PHP=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
     - stage: test
       name: E2E Tests (WordPress latest)
