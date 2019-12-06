@@ -531,7 +531,7 @@ final class Authentication {
 
 		$data['showModuleSetupWizard'] = $this->context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
 
-		$data['moduleToSetup'] = sanitize_key( $this->context->input()->filter( INPUT_GET, 'slug' ) );
+		$data['moduleToSetup'] = sanitize_key( (string) $this->context->input()->filter( INPUT_GET, 'slug' ) );
 
 		return $data;
 	}
