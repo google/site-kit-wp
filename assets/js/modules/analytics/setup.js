@@ -61,6 +61,7 @@ class AnalyticsSetup extends Component {
 		} = googlesitekit.modules.analytics.settings;
 
 		this.state = {
+			anonymizeIPAddress: true,
 			isLoading: true,
 			isSaving: false,
 			propertiesLoading: false,
@@ -88,9 +89,9 @@ class AnalyticsSetup extends Component {
 		this.processPropertyChange = this.processPropertyChange.bind( this );
 		this.handleSubmit = this.handleSubmit.bind( this );
 		this.handleRadioClick = this.handleRadioClick.bind( this );
-		this.handleAMPClientIDSwitch = this.handleAMPClientIDSwitch.bind( this );
 		this.handleRefetchAccount = this.handleRefetchAccount.bind( this );
 		this.handleExclusionsChange = this.handleExclusionsChange.bind( this );
+		this.onSwitchState = this.onSwitchState.bind( this );
 	}
 
 	async componentDidMount() {
@@ -159,6 +160,7 @@ class AnalyticsSetup extends Component {
 		}
 
 		const settingsMapping = {
+			anonymizeIPAddress: 'anonymizeIPAddress',
 			selectedAccount: 'accountID',
 			selectedProperty: 'propertyID',
 			selectedProfile: 'profileID',
@@ -463,6 +465,7 @@ class AnalyticsSetup extends Component {
 		}
 
 		const {
+			anonymizeIPAddress,
 			selectedAccount,
 			selectedProperty,
 			selectedProfile,
@@ -497,6 +500,7 @@ class AnalyticsSetup extends Component {
 		}
 
 		const analyticAccount = {
+			anonymizeIPAddress,
 			accountID: selectedAccount || accounts[ 0 ].id || null,
 			profileID,
 			propertyID,
@@ -556,10 +560,12 @@ class AnalyticsSetup extends Component {
 		sendAnalyticsTrackingEvent( 'analytics_setup', useSnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled' );
 	}
 
-	handleAMPClientIDSwitch( ) {
-		this.setState( {
-			ampClientIDOptIn: ! this.state.ampClientIDOptIn,
-		} );
+	onSwitchState( stateVariable ) {
+		return () => {
+			this.setState( {
+				[ stateVariable ]: ! this.state[ stateVariable ],
+			} );
+		};
 	}
 
 	handleRefetchAccount() {
@@ -593,6 +599,7 @@ class AnalyticsSetup extends Component {
 
 	renderAutoInsertSnippetForm() {
 		const {
+			anonymizeIPAddress,
 			useSnippet,
 			isSaving,
 			ampClientIDOptIn,
@@ -656,12 +663,24 @@ class AnalyticsSetup extends Component {
 						</Radio>
 					</Fragment>
 				}
+				{ useSnippet && (
+					<div className="googlesitekit-setup-module__input">
+						<Switch
+							id="anonymizeIPAddress"
+							label={ __( 'Anonymize user IP addresses', 'google-site-kit' ) }
+							onClick={ this.onSwitchState( 'anonymizeIPAddress' ) }
+							checked={ anonymizeIPAddress }
+							hideLabel={ false }
+						/>
+						<p>{ __( 'Anonymizing IP addresses is required by GDPR.', 'google-site-kit' ) }</p>
+					</div>
+				) }
 				{ useSnippet && ampEnabled &&
 					<div className="googlesitekit-setup-module__input">
 						<Switch
 							id="ampClientIDOptIn"
 							label={ __( 'Opt in AMP Client ID', 'google-site-kit' ) }
-							onClick={ this.handleAMPClientIDSwitch }
+							onClick={ this.onSwitchState( 'ampClientIDOptIn' ) }
 							checked={ ampClientIDOptIn }
 							hideLabel={ false }
 						/>

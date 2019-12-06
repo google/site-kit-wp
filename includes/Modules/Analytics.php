@@ -219,10 +219,11 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			__( 'Top acquisition sources', 'google-site-kit' ),
 		);
 
-		$info['settings']                     = $this->get_data( 'connection' );
-		$info['settings']['useSnippet']       = $this->get_data( 'use-snippet' );
-		$info['settings']['ampClientIDOptIn'] = $this->get_data( 'amp-client-id-opt-in' );
-		$info['settings']['trackingDisabled'] = $this->get_data( 'tracking-disabled' );
+		$info['settings']                       = $this->get_data( 'connection' );
+		$info['settings']['useSnippet']         = $this->get_data( 'use-snippet' );
+		$info['settings']['anonymizeIPAddress'] = $this->get_data( 'anonymize-ip-addresses' );
+		$info['settings']['ampClientIDOptIn']   = $this->get_data( 'amp-client-id-opt-in' );
+		$info['settings']['trackingDisabled']   = $this->get_data( 'tracking-disabled' );
 
 		$info['adsenseLinked'] = (bool) $this->options->get( 'googlesitekit_analytics_adsense_linked' );
 
@@ -312,6 +313,12 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		$amp_client_id_optin = $this->get_data( 'amp-client-id-opt-in' );
 		if ( ! is_wp_error( $amp_client_id_optin ) && $amp_client_id_optin ) {
 			$gtag_opt = array( 'useAmpClientId' => true );
+		}
+
+		$anonymize_ip_address = $this->get_data( 'anonymize-ip-address' );
+		if ( ! is_wp_error( $anonymize_ip_address ) && $anonymize_ip_address ) {
+			// See https://developers.google.com/analytics/devguides/collection/gtagjs/ip-anonymization.
+			$gtag_opt['anonymize_ip'] = true;
 		}
 
 		/**
@@ -484,6 +491,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			'profile-id'                   => '',
 			'internal-web-property-id'     => '',
 			'use-snippet'                  => '',
+			'anonymize-ip-address'         => '',
 			'amp-client-id-opt-in'         => '',
 			'tracking-disabled'            => '',
 			// GET.
