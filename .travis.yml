@@ -87,7 +87,7 @@ script:
 
 jobs:
   allow_failures:
-    - php: 7.4snapshot
+    - php: nightly
   include:
     - stage: test
       name: Lint
@@ -105,9 +105,9 @@ jobs:
     - name: JS Tests
       php: 7.3
       env: WP_VERSION=latest JS=1
-    - name: PHP Tests (PHP 7.4, WordPress trunk)
+    - name: PHP Tests (PHP nightly, WordPress trunk)
       stage: test
-      php: 7.4snapshot
+      php: nightly
       env: WP_VERSION=master PHP=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
     - stage: test
       name: E2E Tests (WordPress latest)
