@@ -1,3 +1,5 @@
+let cachingEnabled = true;
+
 /**
  * Get Google Site Kit data.
  *
@@ -65,13 +67,22 @@ export const set = async (
  *
  * @param {boolean} shouldUseCache Set to `true` to use this cache across requests; set to `false` to disable caching.
  *
- * @return {boolean} The current caching state (`true` for on, `false` for off).
+ * @return {boolean} The new caching state (`true` for on, `false` for off).
  */
 // eslint-disable-next-line no-unused-vars
 export const useCache = ( shouldUseCache ) => {
-	API._useCache = !! shouldUseCache;
+	cachingEnabled = !! shouldUseCache;
 
-	return API._useCache;
+	return cachingEnabled;
+};
+
+/**
+ * Get current caching state for the API.
+ *
+ * @return {boolean} The current caching state (`true` for on, `false` for off).
+ */
+export const isAPICachingEnabled = () => {
+	return cachingEnabled;
 };
 
 /**
@@ -94,13 +105,3 @@ export const useCache = ( shouldUseCache ) => {
 export const invalidateCache = ( type, identifier, datapoint ) => {
 	throw new Error( 'Not yet implemented.' );
 };
-
-const API = {
-	_useCache: true,
-	invalidateCache,
-	get,
-	set,
-	useCache,
-};
-
-export default API;
