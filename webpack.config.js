@@ -16,9 +16,17 @@
  * limitations under the License.
  */
 
+/**
+ * Node dependencies
+ */
+const fs = require( 'fs' );
+const path = require( 'path' );
+
+/**
+ * External dependencies
+ */
 const glob = require( 'glob' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
-const path = require( 'path' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 
@@ -44,6 +52,10 @@ function camelCaseDash( string ) {
 	);
 }
 
+const projectPath = ( relativePath ) => {
+	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
+};
+
 const externalPackages = [
 	'api-fetch',
 	'compose',
@@ -64,6 +76,7 @@ const externals = {
 	jquery: 'jQuery',
 	lodash: 'lodash',
 	'lodash-es': 'lodash',
+	'js/googlesitekit/api': [ 'googlesitekit', 'api' ],
 };
 
 [
@@ -96,14 +109,17 @@ const resolve = {
 		GoogleUtil: path.resolve( 'assets/js/util/' ),
 		GoogleModules: path.resolve( './assets/js/modules/' ),
 	},
+	modules: [ projectPath( '.' ), 'node_modules' ],
 };
 
 module.exports = ( env, argv ) => {
 	return [
-
 		// Build the settings js..
 		{
 			entry: {
+				// New Modules (Post-JSR).
+				'googlesitekit-api': './assets/js/googlesitekit-api.js',
+				// Old Modules
 				'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
 				'googlesitekit-dashboard': './assets/js/googlesitekit-dashboard.js',
 				'googlesitekit-dashboard-details': './assets/js/googlesitekit-dashboard-details.js',
