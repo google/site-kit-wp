@@ -23,9 +23,10 @@ class Input {
 	 *
 	 * For use as fallback only.
 	 *
+	 * @since n.e.x.t
 	 * @var array
 	 */
-	protected $map;
+	protected $fallback_map;
 
 	/**
 	 * Constructor.
@@ -33,7 +34,8 @@ class Input {
 	 * @since n.e.x.t
 	 */
 	public function __construct() {
-		$this->map = array(
+		// Fallback map for environments where filter_input may not work with ENV or SERVER types.
+		$this->fallback_map = array(
 			INPUT_ENV    => $_ENV,
 			INPUT_SERVER => $_SERVER,
 		);
@@ -61,16 +63,16 @@ class Input {
 	public function filter( $type, $variable_name, $filter = FILTER_DEFAULT, $options = null ) {
 		$value = filter_input( $type, $variable_name, $filter, $options );
 
-		// Fallback for environments where filter_input may not work with SERVER or ENV types.
+		// Fallback for environments where filter_input may not work with specific types.
 		if (
 			// Only use this fallback for affected input types.
-			in_array( $type, array( INPUT_SERVER, INPUT_ENV ), true )
+			isset( $this->fallback_map[ $type ] )
 			// Only use the fallback if the value is not-set (could be either depending on FILTER_NULL_ON_FAILURE).
 			&& in_array( $value, array( null, false ), true )
 			// Only use the fallback if the key exists in the input map.
-			&& array_key_exists( $variable_name, $this->map[ $type ] )
+			&& array_key_exists( $variable_name, $this->fallback_map[ $type ] )
 		) {
-			return filter_var( $this->map[ $type ][ $variable_name ], $filter, $options );
+			return filter_var( $this->fallback_map[ $type ][ $variable_name ], $filter, $options );
 		}
 
 		return $value;
