@@ -1,11 +1,11 @@
 /**
  * Internal dependencies
  */
-import { invalidateCache, isAPICachingEnabled, get, set, useCache } from './index';
+import { invalidateCache, usingCache, get, set, setUsingCache } from './index';
 
 describe( 'googlesitekit.api', () => {
 	it( 'should have caching enabled by default', () => {
-		expect( isAPICachingEnabled() ).toEqual( true );
+		expect( usingCache() ).toEqual( true );
 	} );
 
 	describe( 'invalidateCache', () => {
@@ -36,24 +36,24 @@ describe( 'googlesitekit.api', () => {
 		} );
 	} );
 
-	describe( 'useCache', () => {
+	describe( 'setUsingCache', () => {
 		afterEach( () => {
 			// Re-enable the default caching setting after each test.
-			useCache( true );
+			setUsingCache( true );
 		} );
 
 		it( 'should enable the caching API', () => {
 			// The cache is enabled by default, so ensure it is disabled first
 			// to ensure re-enabling works as expected.
-			useCache( false );
+			setUsingCache( false );
 
-			expect( useCache( true ) ).toEqual( true );
-			expect( isAPICachingEnabled() ).toEqual( true );
+			expect( setUsingCache( true ) ).toEqual( true );
+			expect( usingCache() ).toEqual( true );
 		} );
 
 		it( 'should disable the caching API', () => {
-			expect( useCache( false ) ).toEqual( false );
-			expect( isAPICachingEnabled() ).toEqual( false );
+			expect( setUsingCache( false ) ).toEqual( false );
+			expect( usingCache() ).toEqual( false );
 		} );
 	} );
 } );

@@ -69,8 +69,7 @@ export const set = async (
  *
  * @return {boolean} The new caching state (`true` for on, `false` for off).
  */
-// eslint-disable-next-line no-unused-vars
-export const useCache = ( shouldUseCache ) => {
+export const setUsingCache = ( shouldUseCache ) => {
 	cachingEnabled = !! shouldUseCache;
 
 	return cachingEnabled;
@@ -81,7 +80,7 @@ export const useCache = ( shouldUseCache ) => {
  *
  * @return {boolean} The current caching state (`true` for on, `false` for off).
  */
-export const isAPICachingEnabled = () => {
+export const usingCache = () => {
 	return cachingEnabled;
 };
 
