@@ -123,7 +123,7 @@ final class Authentication {
 	/**
 	 * Google_Proxy instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.2
 	 * @var Google_Proxy
 	 */
 	protected $google_proxy;
@@ -709,7 +709,7 @@ final class Authentication {
 	/**
 	 * Verifies the nonce for processing proxy setup.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.2
 	 */
 	private function verify_proxy_setup_nonce() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
@@ -722,7 +722,7 @@ final class Authentication {
 	/**
 	 * Handles the exchange of a code and site code for client credentials from the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.2
 	 *
 	 * @param string $code      Code ('googlesitekit_code') provided by proxy.
 	 * @param string $site_code Site code ('googlesitekit_site_code') provided by proxy.
@@ -774,7 +774,7 @@ final class Authentication {
 	/**
 	 * Redirects back to the authentication service with any added parameters.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.2
 	 *
 	 * @param string $code Code ('googlesitekit_code') provided by proxy.
 	 */

@@ -382,7 +382,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * Handles receiving a verification token for a user by the authentication proxy.
 	 *
 	 * @since 1.1.0
-	 * @since n.e.x.t Runs on `admin_action_googlesitekit_proxy_setup` and no longer redirects directly.
+	 * @since 1.1.2 Runs on `admin_action_googlesitekit_proxy_setup` and no longer redirects directly.
 	 */
 	private function handle_verification_token() {
 		$verification_token = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_token', FILTER_SANITIZE_STRING );
