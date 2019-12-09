@@ -58,7 +58,7 @@ final class Context {
 	/**
 	 * Input access abstraction.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.2
 	 * @var Input
 	 */
 	private $input;
@@ -67,7 +67,7 @@ final class Context {
 	 * Constructor.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Added optional $input instance.
+	 * @since 1.1.2 Added optional $input instance.
 	 *
 	 * @param string $main_file Absolute path to the plugin main file.
 	 * @param Input  $input Input instance.
@@ -103,7 +103,7 @@ final class Context {
 	/**
 	 * Gets the Input instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.2
 	 *
 	 * @return Input
 	 */
