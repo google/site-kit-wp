@@ -17,7 +17,9 @@ use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Verification;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Modules\Search_Console;
+use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit_Dependencies\Google_Client;
 use Exception;
 
@@ -37,9 +39,7 @@ final class OAuth_Client {
 	const OPTION_REDIRECT_URL            = 'googlesitekit_redirect_url';
 	const OPTION_AUTH_SCOPES             = 'googlesitekit_auth_scopes';
 	const OPTION_ERROR_CODE              = 'googlesitekit_error_code';
-	const OPTION_PROXY_NONCE             = 'googlesitekit_proxy_nonce';
 	const OPTION_PROXY_ACCESS_CODE       = 'googlesitekit_proxy_access_code';
-	const PROXY_URL                      = 'https://sitekit.withgoogle.com';
 
 	/**
 	 * Plugin context.
@@ -90,6 +90,14 @@ final class OAuth_Client {
 	private $credentials;
 
 	/**
+	 * Google_Proxy instance.
+	 *
+	 * @since 1.1.2
+	 * @var Google_Proxy
+	 */
+	private $google_proxy;
+
+	/**
 	 * Google Client object.
 	 *
 	 * @since 1.0.0
@@ -130,12 +138,14 @@ final class OAuth_Client {
 	 * @param Options      $options      Optional. Option API instance. Default is a new instance.
 	 * @param User_Options $user_options Optional. User Option API instance. Default is a new instance.
 	 * @param Credentials  $credentials  Optional. Credentials instance. Default is a new instance from $options.
+	 * @param Google_Proxy $google_proxy Optional. Google proxy instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Options $options = null,
 		User_Options $user_options = null,
-		Credentials $credentials = null
+		Credentials $credentials = null,
+		Google_Proxy $google_proxy = null
 	) {
 		$this->context = $context;
 
@@ -156,6 +166,11 @@ final class OAuth_Client {
 			$credentials = new Credentials( $this->options );
 		}
 		$this->credentials = $credentials;
+
+		if ( ! $google_proxy ) {
+			$google_proxy = new Google_Proxy( $this->context );
+		}
+		$this->google_proxy = $google_proxy;
 	}
 
 	/**
@@ -171,7 +186,11 @@ final class OAuth_Client {
 		}
 
 		if ( $this->using_proxy() ) {
-			$this->google_client = new Google_Proxy_Client();
+			$this->google_client = new Google_Proxy_Client(
+				array(
+					'proxy_base_path' => $this->google_proxy->url(),
+				)
+			);
 		} else {
 			$this->google_client = new Google_Client();
 		}
@@ -482,11 +501,12 @@ final class OAuth_Client {
 	 * @since 1.0.0
 	 */
 	public function authorize_user() {
-		if ( ! isset( $_GET['code'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			$auth_url = $this->get_client()->createAuthUrl();
-			$auth_url = filter_var( $auth_url, FILTER_SANITIZE_URL );
-
-			wp_safe_redirect( $auth_url );
+		$code       = $this->context->input()->filter( INPUT_GET, 'code', FILTER_SANITIZE_STRING );
+		$error_code = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
+		// If the OAuth redirects with an error code, handle it.
+		if ( ! empty( $error_code ) ) {
+			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
+			wp_safe_redirect( admin_url() );
 			exit();
 		}
 
@@ -497,7 +517,7 @@ final class OAuth_Client {
 		}
 
 		try {
-			$authentication_token = $this->get_client()->fetchAccessTokenWithAuthCode( $_GET['code'] ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			$authentication_token = $this->get_client()->fetchAccessTokenWithAuthCode( $code );
 		} catch ( Google_Proxy_Exception $e ) {
 			wp_safe_redirect( $this->get_proxy_setup_url( $e->getAccessCode(), $e->getMessage() ) );
 			exit();
@@ -530,8 +550,9 @@ final class OAuth_Client {
 		// Update granted scopes.
 		if ( isset( $authentication_token['scope'] ) ) {
 			$scopes = explode( ' ', sanitize_text_field( $authentication_token['scope'] ) );
-		} elseif ( isset( $_GET['scope'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-			$scopes = explode( ' ', sanitize_text_field( $_GET['scope'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+		} elseif ( $this->context->input()->filter( INPUT_GET, 'scope' ) ) {
+			$scope  = $this->context->input()->filter( INPUT_GET, 'scope', FILTER_SANITIZE_STRING );
+			$scopes = explode( ' ', $scope );
 		} else {
 			$scopes = $this->get_required_scopes();
 		}
@@ -607,72 +628,65 @@ final class OAuth_Client {
 	 * Returns the setup URL to the authentication proxy.
 	 *
 	 * @since 1.0.0
+	 * @since 1.1.2 Added googlesitekit_proxy_setup_url_params filter.
 	 *
 	 * @param string $access_code Optional. Temporary access code for an undelegated access token. Default empty string.
 	 * @param string $error_code  Optional. Error code, if the user should be redirected because of an error. Default empty string.
 	 * @return string URL to the setup page on the authentication proxy.
 	 */
 	public function get_proxy_setup_url( $access_code = '', $error_code = '' ) {
-		$url         = self::PROXY_URL . '/site-management/setup/';
-		$credentials = $this->get_client_credentials();
-		$base_args   = array(
+		$query_params = array(
 			'version'  => GOOGLESITEKIT_VERSION,
 			'scope'    => rawurlencode( implode( ' ', $this->get_required_scopes() ) ),
 			'supports' => rawurlencode( implode( ' ', $this->get_proxy_setup_supports() ) ),
+			'nonce'    => rawurlencode( wp_create_nonce( Google_Proxy::ACTION_SETUP ) ),
 		);
 
-		if ( ! is_object( $credentials ) || empty( $credentials->web->client_id ) ) {
+		if ( ! empty( $access_code ) ) {
+			$query_params['code'] = $access_code;
+		}
+
+		if ( $this->credentials->has() ) {
+			$query_params['site_id'] = $this->credentials->get()['oauth2_client_id'];
+		}
+
+		/**
+		 * Filters parameters included in proxy setup URL.
+		 *
+		 * @since 1.1.2
+		 *
+		 * @param string $access_code Temporary access code for an undelegated access token.
+		 * @param string $error_code  Error code, if the user should be redirected because of an error.
+		 */
+		$query_params = apply_filters( 'googlesitekit_proxy_setup_url_params', $query_params, $access_code, $error_code );
+
+		// If no site identification information is present, we need to provide details for a new site.
+		if ( empty( $query_params['site_id'] ) && empty( $query_params['site_code'] ) ) {
 			$home_url           = home_url();
 			$home_url_no_scheme = str_replace( array( 'http://', 'https://' ), '', $home_url );
+			$rest_root          = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', rest_url() );
+			$admin_root         = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', admin_url() );
 
-			$rest_root  = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', rest_url() );
-			$admin_root = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', admin_url() );
-
-			$nonce = $this->options->get( self::OPTION_PROXY_NONCE );
-			if ( empty( $nonce ) ) {
-				$nonce = wp_generate_password();
-				$this->options->set( self::OPTION_PROXY_NONCE, $nonce );
-			}
-
-			return add_query_arg(
-				array_merge(
-					$base_args,
-					array(
-						'nonce'      => rawurlencode( $nonce ),
-						'name'       => rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ) ) ),
-						'url'        => rawurlencode( $home_url ),
-						'rest_root'  => rawurlencode( $rest_root ),
-						'admin_root' => rawurlencode( $admin_root ),
-					)
-				),
-				$url
-			);
+			$query_params['name']       = rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ) ) );
+			$query_params['url']        = rawurlencode( $home_url );
+			$query_params['rest_root']  = rawurlencode( $rest_root );
+			$query_params['admin_root'] = rawurlencode( $admin_root );
 		}
 
-		$query_args = array_merge(
-			$base_args,
-			array(
-				'site_id' => $credentials->web->client_id,
-				'code'    => $access_code,
-			)
-		);
-
-		if ( 'missing_verification' === $error_code ) {
-			$query_args['verification_nonce'] = wp_create_nonce( 'googlesitekit_verification' );
-		}
-
-		return add_query_arg( $query_args, $url );
+		return add_query_arg( $query_params, $this->google_proxy->url( Google_Proxy::SETUP_URI ) );
 	}
 
 	/**
 	 * Gets the list of features to declare support for when setting up with the proxy.
 	 *
 	 * @since 1.1.0
-	 * @return array
+	 * @since 1.1.2 Added 'credentials_retrieval'
+	 * @return array Array of supported features.
 	 */
 	private function get_proxy_setup_supports() {
 		return array_filter(
 			array(
+				'credentials_retrieval',
 				$this->supports_file_verification() ? 'file_verification' : false,
 			)
 		);
@@ -718,28 +732,7 @@ final class OAuth_Client {
 			$query_args['site_id'] = $credentials->web->client_id;
 		}
 
-		return add_query_arg(
-			$query_args,
-			self::PROXY_URL . '/site-management/permissions/'
-		);
-	}
-
-	/**
-	 * Checks whether the given proxy nonce is valid.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $nonce Nonce to validate.
-	 * @return bool True if nonce is valid, false otherwise.
-	 */
-	public function validate_proxy_nonce( $nonce ) {
-		$valid_nonce = $this->options->get( self::OPTION_PROXY_NONCE );
-		if ( $nonce !== $valid_nonce ) {
-			return false;
-		}
-
-		$this->options->delete( self::OPTION_PROXY_NONCE );
-		return true;
+		return add_query_arg( $query_args, $this->google_proxy->url( Google_Proxy::PERMISSIONS_URI ) );
 	}
 
 	/**
@@ -753,56 +746,30 @@ final class OAuth_Client {
 	public function get_error_message( $error_code ) {
 		switch ( $error_code ) {
 			case 'oauth_credentials_not_exist':
-				$message = __( 'Unable to authenticate Site Kit. Check your client configuration is in the correct JSON format.', 'google-site-kit' );
-				break;
+				return __( 'Unable to authenticate Site Kit, as no client credentials exist.', 'google-site-kit' );
 			case 'refresh_token_not_exist':
-				$message = __( 'Unable to refresh access token, as no refresh token exists.', 'google-site-kit' );
-				break;
+				return __( 'Unable to refresh access token, as no refresh token exists.', 'google-site-kit' );
 			case 'cannot_log_in':
-				$message = __( 'Internal error that the Google login redirect failed.', 'google-site-kit' );
-				break;
+				return __( 'Internal error that the Google login redirect failed.', 'google-site-kit' );
 			case 'invalid_code':
-				$message = __( 'Unable to receive access token because of an empty authorization code.', 'google-site-kit' );
-				break;
+				return __( 'Unable to receive access token because of an empty authorization code.', 'google-site-kit' );
 			case 'access_token_not_received':
-				$message = __( 'Unable to receive access token because of an unknown error.', 'google-site-kit' );
-				break;
+				return __( 'Unable to receive access token because of an unknown error.', 'google-site-kit' );
 			// The following messages are based on https://tools.ietf.org/html/rfc6749#section-5.2.
 			case 'invalid_request':
-				$message = __( 'Unable to receive access token because of an invalid OAuth request.', 'google-site-kit' );
-				break;
+				return __( 'Unable to receive access token because of an invalid OAuth request.', 'google-site-kit' );
 			case 'invalid_client':
-				$message = __( 'Unable to receive access token because of an invalid client.', 'google-site-kit' );
-				break;
+				return __( 'Unable to receive access token because of an invalid client.', 'google-site-kit' );
 			case 'invalid_grant':
-				$message = __( 'Unable to receive access token because of an invalid authorization code or refresh token.', 'google-site-kit' );
-				break;
+				return __( 'Unable to receive access token because of an invalid authorization code or refresh token.', 'google-site-kit' );
 			case 'unauthorized_client':
-				$message = __( 'Unable to receive access token because of an unauthorized client.', 'google-site-kit' );
-				break;
+				return __( 'Unable to receive access token because of an unauthorized client.', 'google-site-kit' );
 			case 'unsupported_grant_type':
-				$message = __( 'Unable to receive access token because of an unsupported grant type.', 'google-site-kit' );
-				break;
+				return __( 'Unable to receive access token because of an unsupported grant type.', 'google-site-kit' );
 			default:
-				if ( $this->using_proxy() ) {
-					$access_code = $this->user_options->get( self::OPTION_PROXY_ACCESS_CODE );
-					if ( ! empty( $access_code ) ) {
-						$message = sprintf(
-							/* translators: 1: error code from API, 2: URL to re-authenticate */
-							__( 'Setup Error (code: %1$s). <a href="%2$s">Re-authenticate with Google</a>', 'google-site-kit' ),
-							$error_code,
-							esc_url( $this->get_proxy_setup_url( $access_code, $error_code ) )
-						);
-						$this->user_options->delete( self::OPTION_PROXY_ACCESS_CODE );
-						return $message;
-					}
-				}
 				/* translators: %s: error code from API */
-				$message = sprintf( __( 'Unknown Error (code: %s).', 'google-site-kit' ), $error_code );
-				break;
+				return sprintf( __( 'Unknown Error (code: %s).', 'google-site-kit' ), $error_code );
 		}
-
-		return $message;
 	}
 
 	/**

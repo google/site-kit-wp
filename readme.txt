@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.3
 Requires PHP:      5.4
-Stable tag:        1.1.0
+Stable tag:        1.1.2
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -25,7 +25,7 @@ Site Kit includes powerful features that make using these Google products seamle
 * Metrics for your entire site and for individual posts
 * Easy-to-manage, granular permissions across WordPress and different Google products
 
-= Supported Google Services =
+= Supported Google tools =
 
 Site Kit shows key metrics and insights from different Google products:
 
@@ -37,25 +37,30 @@ Site Kit shows key metrics and insights from different Google products:
 * **Optimize:** Use Site Kit to easily set up Optimize- no code editing required. Then, set up A/B tests in Optimize.
 
 == Installation ==
+**Note**: Make sure that your website is live. If your website isn't live yet, Site Kit can't show you any data. 
+However, if you have a staging environment in addition to your production site, Site Kit can display data from your production site in the staging environment. Learn how to use [Site Kit with a staging environment] (https://sitekit.withgoogle.com/documentation/using-site-kit-on-a-staging-environment/).
 
 = Installation from within WordPress =
 
 1. Visit **Plugins > Add New**.
 2. Search for **Site Kit by Google**.
 3. Install and activate the Site Kit by Google plugin.
+4. Connect Site Kit to your Google account. If there are multiple WordPress admins, keep in mind that each admin must connect their own Google account in order to access the plugin.
 
-= Manual Installation =
+
+= Manual installation =
 
 1. Upload the entire `google-site-kit` folder to the `/wp-content/plugins/` directory.
 2. Visit **Plugins**.
 3. Activate the Site Kit by Google plugin.
+4. Connect Site Kit to your Google account. If there are multiple WordPress admins, keep in mind that each admin must connect their own Google account in order to access the plugin.
 
-= After Activation =
+= After activation =
 
 1. Visit the new **Site Kit** menu.
 2. Follow the instructions in the setup flow.
 3. Go to the main Site Kit dashboard which already displays key metrics from Search Console.
-4. Connect additional Google services under **Site Kit > Settings**.
+4. Connect additional Google tools under **Site Kit > Settings**. Learn more about [which tools are right for you](https://sitekit.withgoogle.com/documentation/choose-tools/).
 
 == Frequently Asked Questions ==
 

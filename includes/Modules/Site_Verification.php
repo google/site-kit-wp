@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Verification_File;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
@@ -57,10 +58,11 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		$this->register_scopes_hook();
 
 		add_action(
-			'admin_init',
+			'admin_action_' . Google_Proxy::ACTION_SETUP,
 			function() {
 				$this->handle_verification_token();
-			}
+			},
+			0
 		);
 
 		$print_site_verification_meta = function() {
@@ -73,10 +75,13 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		add_action(
 			'init',
 			function () {
+				$request_uri    = $this->context->input()->filter( INPUT_SERVER, 'REQUEST_URI' );
+				$request_method = $this->context->input()->filter( INPUT_SERVER, 'REQUEST_METHOD' );
+
 				if (
-					isset( $_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'] )
-					&& 'GET' === strtoupper( $_SERVER['REQUEST_METHOD'] )
-					&& preg_match( '/^\/google(?P<token>[a-z0-9]+)\.html$/', $_SERVER['REQUEST_URI'], $matches )
+					( $request_uri && $request_method )
+					&& 'GET' === strtoupper( $request_method )
+					&& preg_match( '/^\/google(?P<token>[a-z0-9]+)\.html$/', $request_uri, $matches )
 				) {
 					$this->serve_verification_file( $matches['token'] );
 				}
@@ -380,44 +385,37 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * Handles receiving a verification token for a user by the authentication proxy.
 	 *
 	 * @since 1.1.0
+	 * @since 1.1.2 Runs on `admin_action_googlesitekit_proxy_setup` and no longer redirects directly.
 	 */
 	private function handle_verification_token() {
-		$authentication = $this->authentication;
-		$auth_client    = $authentication->get_oauth_client();
+		$verification_token = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_token', FILTER_SANITIZE_STRING );
+		$verification_type  = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_token_type', FILTER_SANITIZE_STRING );
+		$verification_type  = $verification_type ?: self::VERIFICATION_TYPE_META;
 
-		$verification_token = filter_input( INPUT_GET, 'googlesitekit_verification_token', FILTER_SANITIZE_STRING );
 		if ( empty( $verification_token ) ) {
 			return;
 		}
 
-		$verification_nonce = filter_input( INPUT_GET, 'googlesitekit_verification_nonce', FILTER_SANITIZE_STRING );
-		if ( empty( $verification_nonce ) || ! wp_verify_nonce( $verification_nonce, 'googlesitekit_verification' ) ) {
-			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
-		}
-
-		$verification_type = filter_input( INPUT_GET, 'googlesitekit_verification_token_type', FILTER_SANITIZE_STRING ) ?: self::VERIFICATION_TYPE_META;
 		switch ( $verification_type ) {
 			case self::VERIFICATION_TYPE_FILE:
-				$authentication->verification_file()->set( $verification_token );
+				$this->authentication->verification_file()->set( $verification_token );
 				break;
 			case self::VERIFICATION_TYPE_META:
-				$authentication->verification_meta()->set( $verification_token );
+				$this->authentication->verification_meta()->set( $verification_token );
 		}
 
-		wp_safe_redirect(
-			add_query_arg(
-				array(
-					'verify'              => 'true',
-					'verification_method' => $verification_type,
-				),
-				// We need to pass the 'missing_verification' error code here so that the URL includes a verification nonce.
-				$auth_client->get_proxy_setup_url(
-					filter_input( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING ),
-					'missing_verification'
-				)
-			)
+		add_filter(
+			'googlesitekit_proxy_setup_url_params',
+			function ( $params ) use ( $verification_type ) {
+				return array_merge(
+					$params,
+					array(
+						'verify'              => 'true',
+						'verification_method' => $verification_type,
+					)
+				);
+			}
 		);
-		exit;
 	}
 
 	/**

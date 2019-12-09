@@ -110,15 +110,9 @@ final class Plugin {
 				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication );
 				$modules->register();
 
-				$permissions = new Core\Permissions\Permissions( $this->context, $authentication );
-				$permissions->register();
-
-				$tracking = new Core\Util\Tracking( $this->context, $authentication );
-				$tracking->register();
-
-				$rest_routes = new Core\REST_API\REST_Routes( $this->context, $authentication, $modules );
-				$rest_routes->register();
-
+				( new Core\Permissions\Permissions( $this->context, $authentication ) )->register();
+				( new Core\Util\Tracking( $this->context, $authentication ) )->register();
+				( new Core\REST_API\REST_Routes( $this->context, $authentication, $modules ) )->register();
 				( new Core\Admin_Bar\Admin_Bar( $this->context, $assets ) )->register();
 				( new Core\Admin\Screens( $this->context, $assets ) )->register();
 				( new Core\Admin\Notices() )->register();
@@ -144,12 +138,9 @@ final class Plugin {
 			-999
 		);
 
-		$reset = new Core\Util\Reset( $this->context, $options );
-
 		( new Core\Util\Activation( $this->context, $options, $assets ) )->register();
 		( new Core\Util\Beta_Migration( $this->context ) )->register();
 		( new Core\Util\Migration_1_0_0( $this->context ) )->register();
-		( new Core\Util\Uninstallation( $reset ) )->register();
 
 		if ( defined( 'WP_DEBUG' ) && true === WP_DEBUG ) {
 			add_filter(

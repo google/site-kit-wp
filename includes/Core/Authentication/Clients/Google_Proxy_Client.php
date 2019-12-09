@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\Authentication\Clients;
 
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google\Auth\OAuth2;
 use Google\Site_Kit_Dependencies\Google\Auth\HttpHandler\HttpHandlerFactory;
@@ -30,9 +31,28 @@ use LogicException;
  */
 final class Google_Proxy_Client extends Google_Client {
 
-	const OAUTH2_REVOKE_URI = 'https://sitekit.withgoogle.com/o/oauth2/revoke/';
-	const OAUTH2_TOKEN_URI  = 'https://sitekit.withgoogle.com/o/oauth2/token/';
-	const OAUTH2_AUTH_URL   = 'https://sitekit.withgoogle.com/o/oauth2/auth/';
+	/**
+	 * Base URL to the proxy.
+	 *
+	 * @since 1.1.2
+	 * @var string
+	 */
+	protected $proxy_base_path = '';
+
+	/**
+	 * Construct the Google Client.
+	 *
+	 * @since 1.1.2
+	 *
+	 * @param array $config Proxy client configuration.
+	 */
+	public function __construct( array $config = array() ) {
+		$this->proxy_base_path = ! empty( $config['proxy_base_path'] ) ? $config['proxy_base_path'] : Google_Proxy::BASE_URL;
+		$this->proxy_base_path = untrailingslashit( $this->proxy_base_path );
+		unset( $config['proxy_base_path'] );
+
+		parent::__construct( $config );
+	}
 
 	/**
 	 * Fetches an OAuth 2.0 access token by using a temporary code.
@@ -76,10 +96,10 @@ final class Google_Proxy_Client extends Google_Client {
 	 */
 	public function fetchAccessTokenWithRefreshToken( $refresh_token = null ) {
 		if ( null === $refresh_token ) {
-			if ( ! isset( $this->token['refresh_token'] ) ) {
+			$refresh_token = $this->getRefreshToken();
+			if ( ! $refresh_token ) {
 				throw new LogicException( 'refresh token must be passed in or set as part of setAccessToken' );
 			}
-			$refresh_token = $this->token['refresh_token'];
 		}
 
 		$this->getLogger()->info( 'OAuth2 access token refresh' );
@@ -126,7 +146,7 @@ final class Google_Proxy_Client extends Google_Client {
 		);
 		$request = new Request(
 			'POST',
-			self::OAUTH2_REVOKE_URI,
+			$this->proxy_base_path . Google_Proxy::OAUTH2_REVOKE_URI,
 			array(
 				'Cache-Control' => 'no-store',
 				'Content-Type'  => 'application/x-www-form-urlencoded',
@@ -156,7 +176,7 @@ final class Google_Proxy_Client extends Google_Client {
 
 		$token = $this->getAccessToken();
 		if ( isset( $token['refresh_token'] ) && $this->isAccessTokenExpired() ) {
-			$callback = $this->config['token_callback'];
+			$callback = $this->getConfig( 'token_callback' );
 
 			try {
 				$creds = $this->fetchAccessTokenWithRefreshToken( $token['refresh_token'] );
@@ -178,20 +198,18 @@ final class Google_Proxy_Client extends Google_Client {
 	 * @since 1.0.0
 	 */
 	protected function createOAuth2Service() {
-		$auth = new OAuth2(
+		return new OAuth2(
 			array(
 				'clientId'           => $this->getClientId(),
 				'clientSecret'       => $this->getClientSecret(),
-				'authorizationUri'   => self::OAUTH2_AUTH_URL,
-				'tokenCredentialUri' => self::OAUTH2_TOKEN_URI,
+				'authorizationUri'   => $this->proxy_base_path . Google_Proxy::OAUTH2_AUTH_URI,
+				'tokenCredentialUri' => $this->proxy_base_path . Google_Proxy::OAUTH2_TOKEN_URI,
 				'redirectUri'        => $this->getRedirectUri(),
 				'issuer'             => $this->getClientId(),
 				'signingKey'         => null,
 				'signingAlgorithm'   => null,
 			)
 		);
-
-		return $auth;
 	}
 
 	/**
