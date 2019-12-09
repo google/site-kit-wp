@@ -272,13 +272,13 @@ class AdSenseModuleStatus extends Component {
 			this.setState( { loadingMessage: message } );
 		};
 
-		const status = await getAdSenseAccountStatus( existingTag, setLoadingMessage );
+		const { accountStatus, clientId } = await getAdSenseAccountStatus( existingTag, setLoadingMessage );
 
-		this.setState( { accountStatus: status.accountStatus } );
+		this.setState( { accountStatus, clientId } );
 	}
 
 	render() {
-		const { accountStatus, loadingMessage, instructionProps } = this.state;
+		const { accountStatus, clientId, loadingMessage, instructionProps } = this.state;
 
 		const showInProcess = ! accountStatus || ! googlesitekit.modules.adsense.setupComplete || [
 			'ads-display-pending',
@@ -323,6 +323,7 @@ class AdSenseModuleStatus extends Component {
 						<AdSenseSetupInstructions
 							{ ...instructionProps }
 							accountStatus={ accountStatus }
+							clientId={ clientId }
 							continueSetup={ this.continueSetup }
 							goBack={ this.goBack }
 						/>
