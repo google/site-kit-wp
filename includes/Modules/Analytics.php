@@ -270,8 +270,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 */
 	protected function enqueue_gtag_js() {
 		// Bail early if we are checking for the tag presence from the back end.
-		$tag_verify = ! empty( $_GET['tagverify'] ) ? true : false; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-		if ( $tag_verify ) {
+		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
 			return;
 		}
 
@@ -348,8 +347,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 */
 	protected function print_amp_gtag() {
 		// Bail early if we are checking for the tag presence from the back end.
-		$tag_verify = ! empty( $_GET['tagverify'] ) ? true : false; // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-		if ( $tag_verify ) {
+		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
 			return;
 		}
 
