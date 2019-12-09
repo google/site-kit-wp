@@ -114,6 +114,7 @@ final class Verification_Meta {
 			if ( ! \Google\Site_Kit\Plugin::instance()->context()->is_network_mode() ) {
 				$meta_key = $wpdb->get_blog_prefix() . $meta_key;
 			}
+			// phpcs:ignore WordPress.VIP.DirectDatabaseQuery
 			$meta_tags = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT meta_value FROM {$wpdb->usermeta} WHERE meta_key = %s", $meta_key ) );
 			$this->transients->set( 'googlesitekit_verification_meta_tags', $meta_tags );
 		}
