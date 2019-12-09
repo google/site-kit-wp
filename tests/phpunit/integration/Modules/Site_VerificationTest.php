@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
+use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -38,7 +39,7 @@ class Site_VerificationTest extends TestCase {
 		$site_verification = new Site_Verification( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		remove_all_filters( 'googlesitekit_auth_scopes' );
-		remove_all_filters( 'admin_init' );
+		remove_all_filters( 'admin_action_googlesitekit_proxy_setup' );
 		remove_all_actions( 'init' );
 
 		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
@@ -50,7 +51,7 @@ class Site_VerificationTest extends TestCase {
 			$site_verification->get_scopes(),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
-		$this->assertTrue( has_action( 'admin_init' ) );
+		$this->assertTrue( has_action( 'admin_action_googlesitekit_proxy_setup' ) );
 		$this->assertTrue( has_action( 'init' ) );
 	}
 
@@ -87,6 +88,36 @@ class Site_VerificationTest extends TestCase {
 				'test-verification-content-2',
 				'<meta name="google-site-verification" content="test-verification-content-2">',
 			),
+		);
+	}
+
+	public function test_receive_verification_token() {
+		remove_all_actions( 'admin_action_googlesitekit_proxy_setup' );
+		remove_all_actions( 'googlesitekit_proxy_setup_url_params' );
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_options = new User_Options( $context, $user_id );
+		wp_set_current_user( $user_id );
+		$site_verification = new Site_Verification( $context );
+		$site_verification->register();
+
+		$this->assertTrue( has_action( 'admin_action_googlesitekit_proxy_setup' ) );
+
+		$_GET['googlesitekit_verification_token']      = 'testtoken';
+		$_GET['googlesitekit_verification_token_type'] = 'FILE';
+
+		$this->assertEquals( array(), apply_filters( 'googlesitekit_proxy_setup_url_params', array(), '', '' ) );
+
+		do_action( 'admin_action_googlesitekit_proxy_setup' );
+
+		$this->assertEquals( 'testtoken', $user_options->get( Verification_File::OPTION ) );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'verification_method' => 'FILE',
+				'verify'              => 'true',
+			),
+			apply_filters( 'googlesitekit_proxy_setup_url_params', array(), '', '' )
 		);
 	}
 

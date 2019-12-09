@@ -179,8 +179,7 @@ final class Tracking {
 	 * @return array Filtered $data.
 	 */
 	private function inline_js_admin_data( $data ) {
-		$data['trackingOptin'] = $this->is_active();
-		$data['trackingID']    = self::TRACKING_ID;
+		$data['trackingID'] = self::TRACKING_ID;
 
 		return $data;
 	}

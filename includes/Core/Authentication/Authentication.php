@@ -11,11 +11,13 @@
 namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Admin\Notice;
+use Exception;
 
 /**
  * Authentication Class.
@@ -119,6 +121,14 @@ final class Authentication {
 	protected $first_admin;
 
 	/**
+	 * Google_Proxy instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Google_Proxy
+	 */
+	protected $google_proxy;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -149,8 +159,9 @@ final class Authentication {
 		if ( ! $transients ) {
 			$transients = new Transients( $this->context );
 		}
+		$this->transients = $transients;
 
-		$this->transients        = $transients;
+		$this->google_proxy      = new Google_Proxy( $this->context );
 		$this->credentials       = new Credentials( $this->options );
 		$this->verification      = new Verification( $this->user_options );
 		$this->verification_meta = new Verification_Meta( $this->user_options, $this->transients );
@@ -169,13 +180,6 @@ final class Authentication {
 			'init',
 			function() {
 				$this->handle_oauth();
-			}
-		);
-
-		add_action(
-			'wp_login',
-			function() {
-				$this->refresh_auth_token_on_login();
 			}
 		);
 
@@ -204,6 +208,25 @@ final class Authentication {
 			'googlesitekit_admin_notices',
 			function ( $notices ) {
 				return $this->authentication_admin_notices( $notices );
+			}
+		);
+
+		add_action(
+			'admin_action_' . Google_Proxy::ACTION_SETUP,
+			function () {
+				$this->verify_proxy_setup_nonce();
+			},
+			-1
+		);
+
+		add_action(
+			'admin_action_' . Google_Proxy::ACTION_SETUP,
+			function () {
+				$code      = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
+				$site_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
+
+				$this->handle_site_code( $code, $site_code );
+				$this->redirect_to_proxy( $code );
 			}
 		);
 	}
@@ -284,8 +307,8 @@ final class Authentication {
 	 * @return Clients\OAuth_Client OAuth client instance.
 	 */
 	public function get_oauth_client() {
-		if ( ! $this->auth_client instanceof Clients\OAuth_Client ) {
-			$this->auth_client = new Clients\OAuth_Client( $this->context, $this->options, $this->user_options, $this->credentials );
+		if ( ! $this->auth_client instanceof OAuth_Client ) {
+			$this->auth_client = new OAuth_Client( $this->context, $this->options, $this->user_options, $this->credentials, $this->google_proxy );
 		}
 		return $this->auth_client;
 	}
@@ -420,26 +443,6 @@ final class Authentication {
 	}
 
 	/**
-	 * Refresh authentication token when user login.
-	 *
-	 * @since 1.0.0
-	 */
-	private function refresh_auth_token_on_login() {
-		// Bail if the user is not authenticated at all yet.
-		if ( ! $this->is_authenticated() ) {
-			return;
-		}
-
-		$auth_client = $this->get_oauth_client();
-
-		// Make sure to refresh the access token if necessary.
-		$google_client = $auth_client->get_client();
-		if ( $auth_client->get_access_token() && $google_client->isAccessTokenExpired() ) {
-			$auth_client->refresh_token();
-		}
-	}
-
-	/**
 	 * Modifies the admin data to pass to JS.
 	 *
 	 * @since 1.0.0
@@ -494,6 +497,13 @@ final class Authentication {
 		$data['grantedScopes']      = ! empty( $access_token ) ? $auth_client->get_granted_scopes() : array();
 		$data['needReauthenticate'] = $data['isAuthenticated'] && $this->need_reauthenticate();
 
+		if ( $auth_client->using_proxy() ) {
+			$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
+			if ( ! empty( $error_code ) ) {
+				$data['errorMessage'] = $auth_client->get_error_message( $error_code );
+			}
+		}
+
 		// All admins need to go through site verification process.
 		if ( current_user_can( Permissions::MANAGE_OPTIONS ) ) {
 			$data['isVerified'] = $this->verification->has();
@@ -535,7 +545,7 @@ final class Authentication {
 	 */
 	private function allowed_redirect_hosts( $hosts ) {
 		$hosts[] = 'accounts.google.com';
-		$hosts[] = 'sitekit.withgoogle.com';
+		$hosts[] = wp_parse_url( $this->google_proxy->url(), PHP_URL_HOST );
 
 		return $hosts;
 	}
@@ -617,25 +627,33 @@ final class Authentication {
 		return new Notice(
 			'oauth_error',
 			array(
+				'type'            => Notice::TYPE_ERROR,
 				'content'         => function() {
-					$message     = '';
 					$auth_client = $this->get_oauth_client();
-					if ( isset( $_GET['notification'] ) && 'authentication_success' === $_GET['notification'] && ! empty( $_GET['error'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-						$message = $auth_client->get_error_message( sanitize_key( $_GET['error'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+					$error_code  = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
+
+					if ( ! $error_code ) {
+						$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
 					}
 
-					// If message is empty, check if we have the stored error message.
-					if ( empty( $message ) ) {
-						$message     = $this->user_options->get( Clients\OAuth_Client::OPTION_ERROR_CODE );
-						if ( $message ) {
-							$message = $auth_client->get_error_message( $message );
-							// Delete it from database to prevent future notice.
-							$this->user_options->delete( Clients\OAuth_Client::OPTION_ERROR_CODE );
-						}
-					}
-
-					if ( empty( $message ) ) {
+					if ( $error_code ) {
+						// Delete error code from database to prevent future notice.
+						$this->user_options->delete( OAuth_Client::OPTION_ERROR_CODE );
+					} else {
 						return '';
+					}
+
+					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+					if ( $auth_client->using_proxy() && $access_code ) {
+						$message = sprintf(
+							/* translators: 1: error code from API, 2: URL to re-authenticate */
+							__( 'Setup Error (code: %1$s). <a href="%2$s">Re-authenticate with Google</a>', 'google-site-kit' ),
+							$error_code,
+							esc_url( $auth_client->get_proxy_setup_url( $access_code, $error_code ) )
+						);
+						$this->user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+					} else {
+						$message = $auth_client->get_error_message( $error_code );
 					}
 
 					$message = wp_kses(
@@ -651,13 +669,15 @@ final class Authentication {
 
 					return '<p>' . $message . '</p>';
 				},
-				'type'            => Notice::TYPE_ERROR,
 				'active_callback' => function() {
-					if ( isset( $_GET['notification'] ) && 'authentication_success' === $_GET['notification'] && ! empty( $_GET['error'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+					$notification = $this->context->input()->filter( INPUT_GET, 'notification', FILTER_SANITIZE_STRING );
+					$error_code   = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
+
+					if ( 'authentication_success' === $notification && $error_code ) {
 						return true;
 					}
 
-					return (bool) $this->user_options->get( Clients\OAuth_Client::OPTION_ERROR_CODE );
+					return (bool) $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
 				},
 			)
 		);
@@ -684,5 +704,84 @@ final class Authentication {
 		$required_and_granted_scopes = array_intersect( $granted_scopes, $required_scopes );
 
 		return count( $required_and_granted_scopes ) < count( $required_scopes );
+	}
+
+	/**
+	 * Verifies the nonce for processing proxy setup.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function verify_proxy_setup_nonce() {
+		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
+
+		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_SETUP ) ) {
+			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
+		}
+	}
+
+	/**
+	 * Handles the exchange of a code and site code for client credentials from the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $code      Code ('googlesitekit_code') provided by proxy.
+	 * @param string $site_code Site code ('googlesitekit_site_code') provided by proxy.
+	 *
+	 * phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.Missing
+	 */
+	private function handle_site_code( $code, $site_code ) {
+		if ( ! $code || ! $site_code ) {
+			return;
+		}
+
+		try {
+			$data = $this->google_proxy->exchange_site_code( $site_code, $code );
+
+			$this->credentials->set(
+				array(
+					'oauth2_client_id'     => $data['site_id'],
+					'oauth2_client_secret' => $data['site_secret'],
+				)
+			);
+		} catch ( Exception $exception ) {
+			$error_message = $exception->getMessage();
+
+			// If missing verification, rely on the redirect back to the proxy,
+			// passing the site code instead of site ID.
+			if ( 'missing_verification' === $error_message ) {
+				add_filter(
+					'googlesitekit_proxy_setup_url_params',
+					function ( $params ) use ( $site_code ) {
+						$params['site_code'] = $site_code;
+						return $params;
+					}
+				);
+				return;
+			}
+
+			$this->user_options->set( OAuth_Client::OPTION_ERROR_CODE, $error_message );
+			wp_safe_redirect(
+				add_query_arg(
+					'error',
+					rawurlencode( $error_message ),
+					$this->context->admin_url( 'splash' )
+				)
+			);
+			exit;
+		}
+	}
+
+	/**
+	 * Redirects back to the authentication service with any added parameters.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $code Code ('googlesitekit_code') provided by proxy.
+	 */
+	private function redirect_to_proxy( $code ) {
+		wp_safe_redirect(
+			$this->auth_client->get_proxy_setup_url( $code )
+		);
+		exit;
 	}
 }

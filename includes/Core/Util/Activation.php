@@ -160,8 +160,6 @@ final class Activation {
 								sendAnalyticsTrackingEvent( 'plugin_setup', 'plugin_activated' );
 							}
 
-							var trackingScriptPresent = !! googlesitekit.admin.trackingOptIn;
-
 							var optInCheckbox = document.getElementById( 'googlesitekit-opt-in' );
 							var startSetupLink = document.getElementById( 'start-setup-link' );
 
@@ -175,8 +173,8 @@ final class Activation {
 								return;
 							}
 
-							if ( googlesitekit.admin.trackingOptIn ) {
-								optInCheckbox.checked = googlesitekit.admin.trackingOptIn;
+							if ( window.googlesitekitTrackingEnabled ) {
+								optInCheckbox.checked = !! window.googlesitekitTrackingEnabled;
 							}
 							if ( googlesitekit.admin.proxySetupURL ) {
 								startSetupLink.href = googlesitekit.admin.proxySetupURL;
