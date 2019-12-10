@@ -34,7 +34,7 @@ final class Google_Proxy_Client extends Google_Client {
 	/**
 	 * Base URL to the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.2
 	 * @var string
 	 */
 	protected $proxy_base_path = '';
@@ -42,7 +42,7 @@ final class Google_Proxy_Client extends Google_Client {
 	/**
 	 * Construct the Google Client.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.2
 	 *
 	 * @param array $config Proxy client configuration.
 	 */

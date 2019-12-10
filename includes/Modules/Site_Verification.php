@@ -75,10 +75,13 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		add_action(
 			'init',
 			function () {
+				$request_uri    = $this->context->input()->filter( INPUT_SERVER, 'REQUEST_URI' );
+				$request_method = $this->context->input()->filter( INPUT_SERVER, 'REQUEST_METHOD' );
+
 				if (
-					isset( $_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD'] )
-					&& 'GET' === strtoupper( $_SERVER['REQUEST_METHOD'] )
-					&& preg_match( '/^\/google(?P<token>[a-z0-9]+)\.html$/', $_SERVER['REQUEST_URI'], $matches )
+					( $request_uri && $request_method )
+					&& 'GET' === strtoupper( $request_method )
+					&& preg_match( '/^\/google(?P<token>[a-z0-9]+)\.html$/', $request_uri, $matches )
 				) {
 					$this->serve_verification_file( $matches['token'] );
 				}
@@ -382,7 +385,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * Handles receiving a verification token for a user by the authentication proxy.
 	 *
 	 * @since 1.1.0
-	 * @since n.e.x.t Runs on `admin_action_googlesitekit_proxy_setup` and no longer redirects directly.
+	 * @since 1.1.2 Runs on `admin_action_googlesitekit_proxy_setup` and no longer redirects directly.
 	 */
 	private function handle_verification_token() {
 		$verification_token = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_token', FILTER_SANITIZE_STRING );
