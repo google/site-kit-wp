@@ -22,7 +22,7 @@
  */
 #wpadminbar {
 
-	.googlesitekit-plugin .googlesitekit-adminbar {
+	.googlesitekit-adminbar {
 
 		// General
 		* {
@@ -214,4 +214,12 @@
 		}
 	}
 
+	// Higher-specificity overrides.
+	.googlesitekit-plugin .googlesitekit-adminbar {
+
+		.googlesitekit-cta-link {
+
+			font-size: 16px;
+		}
+	}
 }
