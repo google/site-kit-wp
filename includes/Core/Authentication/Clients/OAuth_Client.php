@@ -10,19 +10,19 @@
 
 namespace Google\Site_Kit\Core\Authentication\Clients;
 
+use Exception;
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Credentials;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Profile;
-use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
-use Google\Site_Kit\Core\Authentication\Credentials;
-use Google\Site_Kit\Core\Authentication\Verification;
-use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Search_Console;
-use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit_Dependencies\Google_Client;
-use Exception;
+use Google\Site_Kit_Dependencies\Google_Service_PeopleService;
 
 /**
  * Class for connecting to Google APIs via OAuth.
@@ -148,30 +148,13 @@ final class OAuth_Client {
 		Credentials $credentials = null,
 		Google_Proxy $google_proxy = null
 	) {
-		$this->context = $context;
-
-		if ( ! $options ) {
-			$options = new Options( $this->context );
-		}
-		$this->options = $options;
-
-		if ( ! $user_options ) {
-			$user_options = new User_Options( $this->context );
-		}
-		$this->user_options = $user_options;
-
+		$this->context                = $context;
+		$this->options                = $options ?: new Options( $this->context );
+		$this->user_options           = $user_options ?: new User_Options( $this->context );
 		$this->encrypted_options      = new Encrypted_Options( $this->options );
 		$this->encrypted_user_options = new Encrypted_User_Options( $this->user_options );
-
-		if ( ! $credentials ) {
-			$credentials = new Credentials( $this->options );
-		}
-		$this->credentials = $credentials;
-
-		if ( ! $google_proxy ) {
-			$google_proxy = new Google_Proxy( $this->context );
-		}
-		$this->google_proxy = $google_proxy;
+		$this->credentials            = $credentials ?: new Credentials( $this->options );
+		$this->google_proxy           = $google_proxy ?: new Google_Proxy( $this->context );
 	}
 
 	/**
