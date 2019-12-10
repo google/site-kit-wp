@@ -641,8 +641,7 @@ tag_partner: "site_kit"
 						$option                  = (array) $this->options->get( self::OPTION );
 						$option['setupComplete'] = true;
 						$option['clientID']      = $data['clientID'];
-						$option['useSnippet']    = ! empty( $data['useSnippet'] );
-
+						$option['useSnippet']    = empty( $data['useSnippet'] ) ? true : $data['useSnippet'];
 						$this->options->set( self::OPTION, $option );
 
 						return true;
