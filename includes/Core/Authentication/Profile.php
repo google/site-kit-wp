@@ -75,7 +75,8 @@ final class Profile {
 	 */
 	public function has() {
 		$profile = (array) $this->get();
-		if ( ! empty( $profile ) && ! empty( $profile['email'] ) && ! empty( $profile['photo'] ) ) {
+
+		if ( ! empty( $profile['email'] ) && ! empty( $profile['photo'] ) ) {
 			return true;
 		}
 
