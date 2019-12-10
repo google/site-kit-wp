@@ -91,7 +91,7 @@ class AnalyticsSetup extends Component {
 		this.handleRadioClick = this.handleRadioClick.bind( this );
 		this.handleRefetchAccount = this.handleRefetchAccount.bind( this );
 		this.handleExclusionsChange = this.handleExclusionsChange.bind( this );
-		this.onSwitchState = this.onSwitchState.bind( this );
+		this.switchStatus = this.switchStatus.bind( this );
 	}
 
 	async componentDidMount() {
@@ -560,7 +560,7 @@ class AnalyticsSetup extends Component {
 		sendAnalyticsTrackingEvent( 'analytics_setup', useSnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled' );
 	}
 
-	onSwitchState( stateVariable ) {
+	switchStatus( stateVariable ) {
 		return () => {
 			this.setState( {
 				[ stateVariable ]: ! this.state[ stateVariable ],
@@ -663,16 +663,16 @@ class AnalyticsSetup extends Component {
 						</Radio>
 					</Fragment>
 				}
-				{ useSnippet && (
+				{ onSettingsPage && useSnippet && (
 					<div className="googlesitekit-setup-module__input">
 						<Switch
 							id="anonymizeIPAddress"
-							label={ __( 'Anonymize user IP addresses', 'google-site-kit' ) }
-							onClick={ this.onSwitchState( 'anonymizeIPAddress' ) }
+							label={ __( 'Anonymize IP address', 'google-site-kit' ) }
+							onClick={ this.switchStatus( 'anonymizeIPAddress' ) }
 							checked={ anonymizeIPAddress }
 							hideLabel={ false }
 						/>
-						<p>{ __( 'Anonymizing IP addresses is required by GDPR.', 'google-site-kit' ) }</p>
+						<p>{ anonymizeIPAddress ? __( 'IP addresses will be anonymized', 'google-site-kit' ) : __( 'IP addresses will not be anonymized', 'google-site-kit' ) }</p>
 					</div>
 				) }
 				{ useSnippet && ampEnabled &&
@@ -680,7 +680,7 @@ class AnalyticsSetup extends Component {
 						<Switch
 							id="ampClientIDOptIn"
 							label={ __( 'Opt in AMP Client ID', 'google-site-kit' ) }
-							onClick={ this.onSwitchState( 'ampClientIDOptIn' ) }
+							onClick={ this.switchStatus( 'ampClientIDOptIn' ) }
 							checked={ ampClientIDOptIn }
 							hideLabel={ false }
 						/>

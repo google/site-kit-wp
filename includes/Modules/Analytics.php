@@ -316,6 +316,11 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		}
 
 		$anonymize_ip_address = $this->get_data( 'anonymize-ip-address' );
+		// If $anonymize_ip_address is empty but not false, we consider it unset
+		// and should default to true.
+		if ( empty( $anonymize_ip_address ) && $anonymize_ip_address !== false ) {
+			$anonymize_ip_address = true;
+		}
 		if ( ! is_wp_error( $anonymize_ip_address ) && $anonymize_ip_address ) {
 			// See https://developers.google.com/analytics/devguides/collection/gtagjs/ip-anonymization.
 			$gtag_opt['anonymize_ip'] = true;
@@ -633,6 +638,12 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							return new WP_Error( 'internal_web_property_id_not_set', __( 'Analytics internal web property ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
 						return $option['internalWebPropertyID'];
+					};
+				case 'anonymize-ip-address':
+					return function() {
+						$default = true;
+						$option = (array) $this->options->get( self::OPTION );
+						return ! empty( $option['anonymize-ip-address'] ) || (bool) $option['anonymize-ip-address'] === false ? (bool) $option['anonymize-ip-address'] : $default;
 					};
 				case 'use-snippet':
 					return function() {
