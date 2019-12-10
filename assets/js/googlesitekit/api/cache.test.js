@@ -3,17 +3,19 @@
  */
 // eslint-disable-next-line @wordpress/dependency-group
 import {
-	_getStorage,
-	_resetDefaultStorageOrder,
-	_setSelectedStorageBackend,
-	_setStorageKeyPrefix,
-	_setStorageOrder,
 	clearCache,
 	deleteItem,
 	get,
 	getKeys,
 	set,
 } from './cache';
+import {
+	StorageKeyPrefix,
+	getStorage,
+	resetDefaultStorageOrder,
+	setSelectedStorageBackend,
+	setStorageOrder,
+} from './cache.private';
 
 let previousCacheValue;
 const disableCache = () => {
@@ -29,31 +31,31 @@ const DISABLE_CACHE = 'Cache disabled';
 const NO_BACKEND = 'Null backend';
 
 describe( 'googlesitekit.api.cache', () => {
-	describe( '_getStorage', () => {
+	describe( 'getStorage', () => {
 		it( 'should return the most applicable storage driver available', async () => {
-			let storage = await _getStorage();
+			let storage = await getStorage();
 
 			// localStorage is the best storage mechanism available in the test suite
 			// by default and should be returned.
 			expect( storage ).toEqual( localStorage );
 
-			_setStorageOrder( [ 'sessionStorage', 'localStorage' ] );
-			storage = await _getStorage();
+			setStorageOrder( [ 'sessionStorage', 'localStorage' ] );
+			storage = await getStorage();
 
 			expect( storage ).toEqual( sessionStorage );
 
 			// Ensure an empty order still works.
-			_setStorageOrder( [] );
-			storage = await _getStorage();
+			setStorageOrder( [] );
+			storage = await getStorage();
 
 			expect( storage ).toEqual( null );
 
-			_resetDefaultStorageOrder();
+			resetDefaultStorageOrder();
 		} );
 
 		it( 'should return null if googlesitekit.admin.nojscache is true', async () => {
 			disableCache();
-			const storage = await _getStorage();
+			const storage = await getStorage();
 
 			expect( storage ).toEqual( null );
 			restoreCache();
@@ -65,19 +67,19 @@ describe( 'googlesitekit.api.cache', () => {
 			let storageMechanism;
 			beforeAll( () => {
 				storageMechanism = global[ backend ];
-				_setSelectedStorageBackend( storageMechanism );
+				setSelectedStorageBackend( storageMechanism );
 			} );
 
 			afterAll( () => {
 				// Reset the backend storage mechanism.
-				_setSelectedStorageBackend( undefined );
+				setSelectedStorageBackend( undefined );
 			} );
 
 			describe( 'get', () => {
 				it( 'should return undefined when the key is not found', async () => {
 					const result = await get( 'not-a-key' );
 
-					expect( storageMechanism.getItem ).toHaveBeenCalledWith( 'not-a-key' );
+					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }not-a-key` );
 					expect( result.cacheHit ).toEqual( false );
 					expect( result.value ).toEqual( undefined );
 				} );
@@ -90,7 +92,7 @@ describe( 'googlesitekit.api.cache', () => {
 					// Only return if the cache hit is less than five seconds old.
 					const result = await get( 'old-key', 5 );
 
-					expect( storageMechanism.getItem ).toHaveBeenCalledWith( 'old-key' );
+					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }old-key` );
 					expect( result.cacheHit ).toEqual( false );
 					expect( result.value ).toEqual( undefined );
 				} );
@@ -101,7 +103,7 @@ describe( 'googlesitekit.api.cache', () => {
 
 					const result = await get( 'modern-key', 100 );
 
-					expect( storageMechanism.getItem ).toHaveBeenCalledWith( 'modern-key' );
+					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }modern-key` );
 					expect( result.cacheHit ).toEqual( true );
 					expect( result.value ).toEqual( 'something' );
 				} );
@@ -112,7 +114,7 @@ describe( 'googlesitekit.api.cache', () => {
 
 					const result = await get( 'undefined' );
 
-					expect( storageMechanism.getItem ).toHaveBeenCalledWith( 'undefined' );
+					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }undefined` );
 					expect( result.cacheHit ).toEqual( true );
 					expect( result.value ).toEqual( undefined );
 				} );
@@ -123,7 +125,7 @@ describe( 'googlesitekit.api.cache', () => {
 
 					const result = await get( 'number' );
 
-					expect( storageMechanism.getItem ).toHaveBeenCalledWith( 'number' );
+					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }number` );
 					expect( result.cacheHit ).toEqual( true );
 					expect( result.value ).toEqual( 500 );
 				} );
@@ -134,7 +136,7 @@ describe( 'googlesitekit.api.cache', () => {
 
 					const result = await get( 'array' );
 
-					expect( storageMechanism.getItem ).toHaveBeenCalledWith( 'array' );
+					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }array` );
 					expect( result.cacheHit ).toEqual( true );
 					expect( result.value ).toEqual( [ 1, '2', 3 ] );
 				} );
@@ -145,7 +147,7 @@ describe( 'googlesitekit.api.cache', () => {
 
 					const result = await get( 'object' );
 
-					expect( storageMechanism.getItem ).toHaveBeenCalledWith( 'object' );
+					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }object` );
 					expect( result.cacheHit ).toEqual( true );
 					expect( result.value ).toEqual( { foo: 'barr' } );
 				} );
@@ -156,7 +158,7 @@ describe( 'googlesitekit.api.cache', () => {
 
 					const result = await get( 'complex' );
 
-					expect( storageMechanism.getItem ).toHaveBeenCalledWith( 'complex' );
+					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }complex` );
 					expect( result.cacheHit ).toEqual( true );
 					expect( result.value ).toEqual( [ 1, '2', { cool: 'times', other: [ { time: { to: 'see' } } ] } ] );
 				} );
@@ -205,7 +207,7 @@ describe( 'googlesitekit.api.cache', () => {
 					} );
 
 					expect( didSave ).toEqual( false );
-					expect( storageMechanism.setItem ).not.toHaveBeenCalledWith( 'arrayBuffer', storedData );
+					expect( storageMechanism.setItem ).not.toHaveBeenCalledWith( `${ StorageKeyPrefix }arrayBuffer`, storedData );
 					expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 0 );
 				} );
 
@@ -220,7 +222,7 @@ describe( 'googlesitekit.api.cache', () => {
 					} );
 
 					expect( didSave ).toEqual( true );
-					expect( storageMechanism.setItem ).toHaveBeenCalledWith( 'array', storedData );
+					expect( storageMechanism.setItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }array`, storedData );
 					expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 1 );
 				} );
 			} );
@@ -232,29 +234,18 @@ describe( 'googlesitekit.api.cache', () => {
 
 					const didDelete = await deleteItem( 'array' );
 					expect( didDelete ).toEqual( true );
-					expect( storageMechanism.removeItem ).toHaveBeenCalledWith( 'array' );
+					expect( storageMechanism.removeItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }array` );
 					expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 0 );
 				} );
 
 				it( "should not error when trying to delete data that doesn't exist", async () => {
 					const didDelete = await deleteItem( 'array' );
 					expect( didDelete ).toEqual( true );
-					expect( storageMechanism.removeItem ).toHaveBeenCalledWith( 'array' );
+					expect( storageMechanism.removeItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }array` );
 				} );
 			} );
 
 			describe( 'getKeys', () => {
-				beforeEach( () => {
-					// Set the storage key prefix so we can compare Site Kit and
-					// non-Site Kit keys.
-					_setStorageKeyPrefix( 'sitekit_' );
-				} );
-
-				afterEach( () => {
-					// Restore the empty storage key prefix for the rest of the tests.
-					_setStorageKeyPrefix( '' );
-				} );
-
 				it( 'should return an empty array when there are no keys', async () => {
 					const keys = await getKeys();
 					expect( keys ).toEqual( [] );
@@ -275,6 +266,8 @@ describe( 'googlesitekit.api.cache', () => {
 					await set( 'key2', 'data' );
 
 					const keys = await getKeys();
+					// The returned keys should not include the Site Kit prefix.
+					expect( keys ).not.toEqual( [ `${ StorageKeyPrefix }key1`, `${ StorageKeyPrefix }key2` ] );
 					expect( keys ).toEqual( [ 'key1', 'key2' ] );
 				} );
 
@@ -286,22 +279,13 @@ describe( 'googlesitekit.api.cache', () => {
 					expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 3 );
 
 					const keys = await getKeys();
+					// The returned keys should not include the Site Kit prefix.
+					expect( keys ).not.toEqual( [ `${ StorageKeyPrefix }key1`, `${ StorageKeyPrefix }key2` ] );
 					expect( keys ).toEqual( [ 'key1', 'key2' ] );
 				} );
 			} );
 
 			describe( 'clearCache', () => {
-				beforeEach( () => {
-					// Set the storage key prefix so we can compare Site Kit and
-					// non-Site Kit keys.
-					_setStorageKeyPrefix( 'sitekit_' );
-				} );
-
-				afterEach( () => {
-					// Restore the empty storage key prefix for the rest of the tests.
-					_setStorageKeyPrefix( '' );
-				} );
-
 				it( 'should return true when storage is cleared', async () => {
 					await set( 'key1', 'data' );
 					await set( 'key2', 'data' );
@@ -350,7 +334,7 @@ describe( 'googlesitekit.api.cache', () => {
 				if ( testSuite === NO_BACKEND ) {
 					// Set the backend storage mechanism to nothing; this will cause all
 					// caching to be skipped.
-					_setSelectedStorageBackend( null );
+					setSelectedStorageBackend( null );
 				}
 			} );
 
@@ -362,7 +346,7 @@ describe( 'googlesitekit.api.cache', () => {
 
 				if ( testSuite === NO_BACKEND ) {
 					// Reset the backend storage mechanism to "unknown".
-					_setSelectedStorageBackend( undefined );
+					setSelectedStorageBackend( undefined );
 				}
 			} );
 

@@ -3,129 +3,13 @@
  */
 import { isEqual } from 'lodash';
 
-let storageBackend;
 /**
- * Override the storage backend.
- *
- * Largely used for tests. Should not be used directly.
- *
- * @param {*} backend Backend to set for the cache.
+ * Internal dependencies
  */
-export const _setSelectedStorageBackend = ( backend ) => {
-	storageBackend = backend;
-};
-
-let storageKeyPrefix = 'googlesitekit_';
-/**
- * Override the key prefix used in storage.
- *
- * Largely used for tests.
- *
- * @param {string} keyPrefix String to prefix storage keys with.
- */
-export const _setStorageKeyPrefix = ( keyPrefix ) => {
-	storageKeyPrefix = keyPrefix;
-};
-
-const defaultOrder = [ 'localStorage', 'sessionStorage' ];
-let storageOrder = [ ...defaultOrder	];
-/**
- * Override the priority of storage mechanisms.
- *
- * Largely used for tests. Implicitly resets the selected storage backend,
- * causing `_getStorage` to re-run its checks for the best available
- * storage backend.
- *
- * @param {Array} order Ordered array of storage backends to use.
- */
-export const _setStorageOrder = ( order ) => {
-	storageOrder = [ ...order ];
-	_setSelectedStorageBackend( undefined );
-};
-
-/**
- * Reset the storage mechanism order.
- *
- * Largely used for tests. Implicitly resets the selected storage backend,
- * causing `_getStorage` to re-run its checks for the best available
- * storage backend.
- */
-export const _resetDefaultStorageOrder = () => {
-	storageOrder = [ ...defaultOrder ];
-	_setSelectedStorageBackend( undefined );
-};
-
-/**
- * Detects whether browser storage is both supported and available.
- *
- * @param {string} type Browser storage to test. Should be one of `localStorage` or `sessionStorage`.
- * @return {boolean} True if the given storage is available, false otherwise.
- */
-export const _isStorageAvailable = async ( type ) => {
-	const storage = global[ type ];
-
-	if ( ! storage ) {
-		return false;
-	}
-
-	try {
-		const x = '__storage_test__';
-
-		storage.setItem( x, x );
-		storage.removeItem( x );
-		return true;
-	} catch ( e ) {
-		return e instanceof DOMException && (
-
-			// everything except Firefox
-			22 === e.code ||
-
-			// Firefox
-			1014 === e.code ||
-
-			// test name field too, because code might not be present
-			// everything except Firefox
-			'QuotaExceededError' === e.name ||
-
-			// Firefox
-			'NS_ERROR_DOM_QUOTA_REACHED' === e.name ) &&
-
-			// acknowledge QuotaExceededError only if there's something already stored
-			0 !== storage.length;
-	}
-};
-
-/**
- * Gets the storage object to use.
- *
- * @return {Object} Return a storage mechanism (`localStorage` or `sessionStorage`) if available; otherwise returns `null`;
- */
-export const _getStorage = async () => {
-	// If `googlesitekit.admin.nojscache` is `true`, we should never use
-	// the cache.
-	if ( global.googlesitekit && global.googlesitekit.admin && global.googlesitekit.admin.nojscache ) {
-		return null;
-	}
-
-	// Only run the logic to determine the storage object once.
-	if ( storageBackend === undefined ) {
-		for ( const backend of storageOrder ) {
-			if ( storageBackend ) {
-				continue;
-			}
-
-			if ( await _isStorageAvailable( backend ) ) {
-				storageBackend = global[ backend ];
-			}
-		}
-
-		if ( storageBackend === undefined ) {
-			storageBackend = null;
-		}
-	}
-
-	return storageBackend;
-};
+import {
+	StorageKeyPrefix,
+	getStorage,
+} from './cache.private';
 
 /**
  * Get cached data.
@@ -138,10 +22,10 @@ export const _getStorage = async () => {
  * @return {Promise} A promise returned, containing an object with the cached value (if found) and whether or not there was a cache hit.
  */
 export const get = async ( key, cacheTimeToLive = null ) => {
-	const storage = await _getStorage();
+	const storage = await getStorage();
 
 	if ( storage ) {
-		const cachedData = storage.getItem( `${ storageKeyPrefix }${ key }` );
+		const cachedData = storage.getItem( `${ StorageKeyPrefix }${ key }` );
 
 		if ( cachedData ) {
 			const parsedData = JSON.parse( cachedData );
@@ -179,7 +63,7 @@ export const get = async ( key, cacheTimeToLive = null ) => {
  * @return {Promise} A promise: resolves to `true` if the value was saved; `false` if not (usually because no storage method was available).
  */
 export const set = async ( key, value, _timestamp = undefined ) => {
-	const storage = await _getStorage();
+	const storage = await getStorage();
 
 	if ( storage ) {
 		try {
@@ -193,7 +77,7 @@ export const set = async ( key, value, _timestamp = undefined ) => {
 				return false;
 			}
 
-			storage.setItem( `${ storageKeyPrefix }${ key }`, JSON.stringify( {
+			storage.setItem( `${ StorageKeyPrefix }${ key }`, JSON.stringify( {
 				timestamp: _timestamp || Math.round( Date.now() / 1000 ),
 				value,
 			} ) );
@@ -218,11 +102,11 @@ export const set = async ( key, value, _timestamp = undefined ) => {
  * @return {Promise} A promise: resolves to `true` if the value was deleted; `false` if not (usually because no storage method was available).
  */
 export const deleteItem = async ( key ) => {
-	const storage = await _getStorage();
+	const storage = await getStorage();
 
 	if ( storage ) {
 		try {
-			storage.removeItem( `${ storageKeyPrefix }${ key }` );
+			storage.removeItem( `${ StorageKeyPrefix }${ key }` );
 
 			return true;
 		} catch ( error ) {
@@ -240,15 +124,15 @@ export const deleteItem = async ( key ) => {
  * @return {Promise} A promise: resolves to an array of all keys.
  */
 export const getKeys = async () => {
-	const storage = await _getStorage();
+	const storage = await getStorage();
 
 	if ( storage ) {
 		try {
 			const keys = [];
 			for ( let i = 0; i < storage.length; i++ ) {
 				const itemKey = storage.key( i );
-				if ( itemKey.indexOf( storageKeyPrefix ) === 0 ) {
-					keys.push( itemKey.substring( storageKeyPrefix.length ) );
+				if ( itemKey.indexOf( StorageKeyPrefix ) === 0 ) {
+					keys.push( itemKey.substring( StorageKeyPrefix.length ) );
 				}
 			}
 
@@ -268,7 +152,7 @@ export const getKeys = async () => {
  * @return {Promise} A promise: resolves to `true` if the cache was cleared; `false` if there was an error.
  */
 export const clearCache = async () => {
-	const storage = await _getStorage();
+	const storage = await getStorage();
 
 	if ( storage ) {
 		const keys = await getKeys();
