@@ -150,7 +150,7 @@ final class Activation {
 					 *
 					 * @link https://github.com/WordPress/WordPress/blob/e1996633228749cdc2d92bc04cc535d45367bfa4/wp-admin/plugins.php#L569-L570
 					 */
-					unset( $_GET['activate'] ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+					unset( $_GET['activate'] ); // phpcs:ignore WordPress.Security.NonceVerification, WordPress.VIP.SuperGlobalInputUsage
 
 					$sitekit_splash_url = $this->context->admin_url( 'splash' );
 

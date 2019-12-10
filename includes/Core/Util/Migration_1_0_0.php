@@ -118,7 +118,7 @@ class Migration_1_0_0 {
 		$user_ids   = ( new \WP_User_Query(
 			array(
 				'fields'     => 'id',
-				'meta_query' => array(
+				'meta_query' => array( // phpcs:ignore WordPress.VIP.SlowDBQuery
 					'relation' => 'OR',
 					array(
 						'key'     => $key_prefix . Verification_Meta::OPTION,

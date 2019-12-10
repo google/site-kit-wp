@@ -549,7 +549,7 @@ final class OAuth_Client {
 
 		// Update granted scopes.
 		if ( isset( $authentication_token['scope'] ) ) {
-			$scopes = explode( ' ', $authentication_token['scope'] );
+			$scopes = explode( ' ', sanitize_text_field( $authentication_token['scope'] ) );
 		} elseif ( $this->context->input()->filter( INPUT_GET, 'scope' ) ) {
 			$scope  = $this->context->input()->filter( INPUT_GET, 'scope', FILTER_SANITIZE_STRING );
 			$scopes = explode( ' ', $scope );
