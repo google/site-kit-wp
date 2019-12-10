@@ -568,6 +568,8 @@ final class OAuth_Client {
 		);
 		$this->set_granted_scopes( $scopes );
 
+		$this->refresh_profile_data();
+
 		// If using the proxy, these values can reliably be set at this point because the proxy already took care of
 		// them.
 		// TODO: In the future, once the old authentication mechanism no longer exists, this should be resolved in
@@ -593,6 +595,30 @@ final class OAuth_Client {
 
 		wp_safe_redirect( $redirect_url );
 		exit();
+	}
+
+	/**
+	 * Fetches and updates the user profile data for the currently authenticated Google account.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function refresh_profile_data() {
+		try {
+			$people_service = new Google_Service_PeopleService( $this->get_client() );
+			$response       = $people_service->people->get( 'people/me', array( 'personFields' => 'emailAddresses,photos' ) );
+
+			if ( isset( $response['emailAddresses'][0]['value'], $response['photos'][0]['url'] ) ) {
+				$this->profile->set(
+					array(
+						'email' => $response['emailAddresses'][0]['value'],
+						'photo' => $response['photos'][0]['url'],
+					)
+				);
+			}
+		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// This request is unlikely to fail and isn't critical as Site Kit will fallback to the current WP user
+			// if no Profile data exists. Don't do anything for now.
+		}
 	}
 
 	/**
