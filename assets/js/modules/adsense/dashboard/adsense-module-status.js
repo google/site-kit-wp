@@ -319,7 +319,7 @@ class AdSenseModuleStatus extends Component {
 						/>
 					) }
 
-					{ googlesitekit.canAdsRun && ( googlesitekit.modules.adsense.setupComplete || 'account-connected' === accountStatus ) && accountStatus && (
+					{ googlesitekit.canAdsRun && accountStatus && ( googlesitekit.modules.adsense.setupComplete || 'account-connected' === accountStatus ) && (
 						<AdSenseSetupInstructions
 							{ ...instructionProps }
 							accountStatus={ accountStatus }
