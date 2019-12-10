@@ -37,7 +37,7 @@ class Input {
 		// Fallback map for environments where filter_input may not work with ENV or SERVER types.
 		$this->fallback_map = array(
 			INPUT_ENV    => $_ENV,
-			INPUT_SERVER => $_SERVER,
+			INPUT_SERVER => $_SERVER, // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage
 		);
 	}
 
