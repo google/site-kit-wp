@@ -16,7 +16,7 @@ use Exception;
 /**
  * Class for authentication service.
  *
- * @since n.e.x.t
+ * @since 1.1.2
  * @access private
  * @ignore
  */
@@ -34,7 +34,7 @@ class Google_Proxy {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.2
 	 * @var Context
 	 */
 	private $context;
@@ -42,7 +42,7 @@ class Google_Proxy {
 	/**
 	 * Google_Proxy constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.2
 	 *
 	 * @param Context $context Plugin context.
 	 */
@@ -53,7 +53,7 @@ class Google_Proxy {
 	/**
 	 * Gets a URL to the proxy with optional path.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.2
 	 *
 	 * @param string $path Optional. Path to append to the base URL.
 	 * @return string Complete proxy URL.
@@ -77,7 +77,7 @@ class Google_Proxy {
 	/**
 	 * Exchanges a site code for client credentials from the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.2
 	 *
 	 * @param string $site_code        Site code identifying the site.
 	 * @param string $undelegated_code Undelegated code identifying the undelegated token.

@@ -133,7 +133,7 @@ class Site_VerificationTest extends TestCase {
 	}
 
 	public function test_file_verification() {
-		$context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$site_verification = new Site_Verification( $context );
 		$user_id           = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		$user_options      = new User_Options( $context, $user_id );
