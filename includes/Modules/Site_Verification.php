@@ -458,7 +458,9 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		$key_prefix = $this->context->is_network_mode() ? '' : $wpdb->get_blog_prefix();
 		$user_ids   = ( new \WP_User_Query(
 			array(
+				// phpcs:ignore WordPress.VIP.SlowDBQuery
 				'meta_key'   => $key_prefix . Verification_File::OPTION,
+				// phpcs:ignore WordPress.VIP.SlowDBQuery
 				'meta_value' => $verification_token,
 				'fields'     => 'id',
 				'number'     => 1,
