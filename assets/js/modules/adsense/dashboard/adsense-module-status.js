@@ -307,7 +307,7 @@ class AdSenseModuleStatus extends Component {
 						</div>
 					) }
 
-					{ showInProcess && (
+					{ showInProcess && 'account-connected' !== accountStatus && (
 						<AdSenseInProcessStatus
 							ctaLink={ instructionProps.ctaLink }
 							ctaLinkText={ instructionProps.ctaLinkText }
@@ -319,7 +319,7 @@ class AdSenseModuleStatus extends Component {
 						/>
 					) }
 
-					{ googlesitekit.canAdsRun && googlesitekit.modules.adsense.setupComplete && accountStatus && (
+					{ googlesitekit.canAdsRun && ( googlesitekit.modules.adsense.setupComplet || 'account-connected' === accountStatus ) && accountStatus && (
 						<AdSenseSetupInstructions
 							{ ...instructionProps }
 							accountStatus={ accountStatus }
