@@ -332,7 +332,7 @@ final class Authentication {
 		}
 
 		$wpdb->query( // phpcs:ignore WordPress.VIP.DirectDatabaseQuery
-			$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE user_id = %s AND meta_key LIKE %s", $user_id, $prefix )
+			$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE user_id = %d AND meta_key LIKE %s", $user_id, $prefix )
 		);
 		wp_cache_delete( $user_id, 'user_meta' );
 	}
