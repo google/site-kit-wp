@@ -107,6 +107,14 @@ final class OAuth_Client {
 	private $google_client;
 
 	/**
+	 * Profile instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Profile
+	 */
+	private $profile;
+
+	/**
 	 * Access token for communication with Google APIs, for temporary storage.
 	 *
 	 * @since 1.0.0
@@ -140,13 +148,15 @@ final class OAuth_Client {
 	 * @param User_Options $user_options Optional. User Option API instance. Default is a new instance.
 	 * @param Credentials  $credentials  Optional. Credentials instance. Default is a new instance from $options.
 	 * @param Google_Proxy $google_proxy Optional. Google proxy instance. Default is a new instance.
+	 * @param Profile      $profile Optional. Profile instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Options $options = null,
 		User_Options $user_options = null,
 		Credentials $credentials = null,
-		Google_Proxy $google_proxy = null
+		Google_Proxy $google_proxy = null,
+		Profile $profile = null
 	) {
 		$this->context                = $context;
 		$this->options                = $options ?: new Options( $this->context );
@@ -155,6 +165,7 @@ final class OAuth_Client {
 		$this->encrypted_user_options = new Encrypted_User_Options( $this->user_options );
 		$this->credentials            = $credentials ?: new Credentials( $this->options );
 		$this->google_proxy           = $google_proxy ?: new Google_Proxy( $this->context );
+		$this->profile                = $profile ?: new Profile( $this->user_options );
 	}
 
 	/**
