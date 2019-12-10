@@ -92,7 +92,7 @@ final class OAuth_Client {
 	/**
 	 * Google_Proxy instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.2
 	 * @var Google_Proxy
 	 */
 	private $google_proxy;
@@ -626,7 +626,7 @@ final class OAuth_Client {
 	 * Returns the setup URL to the authentication proxy.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Added googlesitekit_proxy_setup_url_params filter.
+	 * @since 1.1.2 Added googlesitekit_proxy_setup_url_params filter.
 	 *
 	 * @param string $access_code Optional. Temporary access code for an undelegated access token. Default empty string.
 	 * @param string $error_code  Optional. Error code, if the user should be redirected because of an error. Default empty string.
@@ -651,7 +651,7 @@ final class OAuth_Client {
 		/**
 		 * Filters parameters included in proxy setup URL.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.1.2
 		 *
 		 * @param string $access_code Temporary access code for an undelegated access token.
 		 * @param string $error_code  Error code, if the user should be redirected because of an error.
@@ -678,7 +678,7 @@ final class OAuth_Client {
 	 * Gets the list of features to declare support for when setting up with the proxy.
 	 *
 	 * @since 1.1.0
-	 * @since n.e.x.t Added 'credentials_retrieval'
+	 * @since 1.1.2 Added 'credentials_retrieval'
 	 * @return array Array of supported features.
 	 */
 	private function get_proxy_setup_supports() {

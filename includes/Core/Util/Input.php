@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Class for input superglobal access.
  *
- * @since n.e.x.t
+ * @since 1.1.2
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Input {
 	/**
 	 * Gets a specific external variable by name and optionally filters it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.2
 	 *
 	 * @link https://php.net/manual/en/function.filter-input.php
 	 *
