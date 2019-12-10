@@ -105,6 +105,13 @@ class User_OptionsTest extends TestCase {
 		$this->assertFalse( metadata_exists( 'user', $user_id, 'test-key' ) );
 	}
 
+	public function test_get_user_id() {
+		$user_id = $this->factory()->user->create();
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options = new User_Options( $context, $user_id );
+		$this->assertSame( $user_id, $options->get_user_id() );
+	}
+
 	public function test_switch_user() {
 		$user_id_a = $this->factory()->user->create();
 		$user_id_b = $this->factory()->user->create();
