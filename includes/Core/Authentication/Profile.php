@@ -11,8 +11,6 @@
 namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
-use Google\Site_Kit_Dependencies\Google_Service_PeopleService;
 
 /**
  * Class controlling the user's Google profile.
@@ -35,24 +33,14 @@ final class Profile {
 	private $user_options;
 
 	/**
-	 * OAuth_Client OAuth client instance.
-	 *
-	 * @since 1.0.0
-	 * @var OAuth_Client
-	 */
-	protected $auth_client;
-
-	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param User_Options $user_options User_Options instance.
-	 * @param OAuth_Client $auth_client  OAuth_Client instance.
 	 */
-	public function __construct( User_Options $user_options, OAuth_Client $auth_client = null ) {
+	public function __construct( User_Options $user_options ) {
 		$this->user_options = $user_options;
-		$this->auth_client  = $auth_client;
 	}
 
 	/**
@@ -63,21 +51,7 @@ final class Profile {
 	 * @return array|bool Value set for the profile, or false if not set.
 	 */
 	public function get() {
-		// Ensure we have fresh profile data.
-		$profile_data = $this->user_options->get( self::OPTION );
-		$profile_time = isset( $profile_data['timestamp'] ) ? (int) $profile_data['timestamp'] : 0;
-		$current_time = current_time( 'timestamp' );
-
-		if ( ! $this->auth_client ) {
-			return $profile_data;
-		}
-
-		// If the stored profile data is missing, or older than a week, re-fetch it.
-		if ( ! $profile_data || ( $current_time - $profile_time ) > WEEK_IN_SECONDS ) {
-			$profile_data = $this->retrieve_google_profile_from_api();
-		}
-
-		return $profile_data;
+		return $this->user_options->get( self::OPTION );
 	}
 
 	/**
@@ -106,36 +80,5 @@ final class Profile {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Retrieves the user profile data from the People API.
-	 *
-	 * @return array The user profile data. Falls back to the user's WordPress profile data on failure.
-	 */
-	private function retrieve_google_profile_from_api() {
-
-		$profile_data = false;
-
-		// Retrieve and store the user's Google profile data.
-		try {
-			$client         = $this->auth_client->get_client();
-			$people_service = new Google_Service_PeopleService( $client );
-			$profile        = $people_service->people->get( 'people/me', array( 'personFields' => 'emailAddresses,photos' ) );
-
-			if ( isset( $profile['emailAddresses'][0]['value'], $profile['photos'][0]['url'] ) ) {
-				$profile_data = array(
-					'email'     => $profile['emailAddresses'][0]['value'],
-					'photo'     => $profile['photos'][0]['url'],
-					'timestamp' => current_time( 'timestamp' ),
-				);
-
-				$this->set( $profile_data );
-			}
-		} catch ( \Exception $e ) {
-			return $profile_data;
-		}
-
-		return $profile_data;
 	}
 }
