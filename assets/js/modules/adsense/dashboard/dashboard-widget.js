@@ -40,7 +40,7 @@ import getNoDataComponent from 'GoogleComponents/notifications/nodata';
 import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import AdSenseDashboardOutro from './dashboard-outro';
-import { isAdsenseConnectedAnalytics } from '../util';
+import { isAdsenseConnectedAnalytics, propsFromAccountStatus } from '../util';
 import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
 import AdSenseInProcessStatus from './adsense-in-process-status';
 import HelpLink from 'GoogleComponents/help-link';
@@ -54,6 +54,7 @@ class AdSenseDashboardWidget extends Component {
 			loading: true,
 			isAdSenseConnected: true,
 			zeroData: false,
+			instructionProps: {},
 		};
 		this.handleDataError = this.handleDataError.bind( this );
 		this.handleDataSuccess = this.handleDataSuccess.bind( this );
@@ -112,9 +113,12 @@ class AdSenseDashboardWidget extends Component {
 	 * Show the "We're getting your site ready for ads. screen until we have data.".
 	 */
 	handleZeroData() {
+		const instructionProps = propsFromAccountStatus( 'account-connected-no-data' );
+
 		this.setState( {
 			zeroData: true,
 			loading: false,
+			instructionProps,
 		} );
 	}
 
@@ -125,6 +129,7 @@ class AdSenseDashboardWidget extends Component {
 			loading,
 			isAdSenseConnected,
 			zeroData,
+			instructionProps,
 		} = this.state;
 		const { homepage } = googlesitekit.modules.adsense;
 
@@ -162,7 +167,14 @@ class AdSenseDashboardWidget extends Component {
 										<div className="mdc-layout-grid mdc-layout-grid--fill">
 											<div className="mdc-layout-grid__inner">
 												<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-													<AdSenseInProcessStatus status="incomplete" />
+													<AdSenseInProcessStatus
+														ctaLink={ instructionProps.ctaLink }
+														ctaLinkText={ instructionProps.ctaLinkText }
+														header={ instructionProps.statusHeadline }
+														subHeader={ instructionProps.statusMessage }
+														incomplete={ instructionProps.incomplete }
+														required={ instructionProps.required }
+													/>
 												</div>
 											</div>
 										</div>

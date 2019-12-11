@@ -86,13 +86,13 @@ export class GoogleSitekitAdminbar extends Component {
 							mdc-layout-grid__cell--span-3
 							mdc-layout-grid__cell--align-middle
 						">
-							<span className="googlesitekit-adminbar__subtitle">{ __( 'Stats for:', 'google-site-kit' ) }</span>
-							<h2 className="googlesitekit-adminbar__title">
+							<div className="googlesitekit-adminbar__subtitle">{ __( 'Stats for', 'google-site-kit' ) }</div>
+							<div className="googlesitekit-adminbar__title">
 								{ pageTitle ?
 									decodeHtmlEntity( pageTitle ) :
 									permaLink
 								}
-							</h2>
+							</div>
 						</div>
 						<div className="
 							mdc-layout-grid__cell
