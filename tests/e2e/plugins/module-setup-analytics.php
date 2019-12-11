@@ -241,7 +241,7 @@ add_action( 'rest_api_init', function () {
 					'internalWebPropertyID' => $request['internalWebPropertyID'],
 					'profileID'             => $request['profileID'] ?: time(),  // fake a new profile ID if empty
 					'useSnippet'            => ! empty( $request['useSnippet'] ),
-					'anonymizeIPAddress'    => (bool) $request['anonymizeIPAddress'],
+					'anonymizeIPAddress'    => isset( $request['anonymizeIPAddress'] ) ? (bool) $request['anonymizeIPAddress'] : true,
 					'ampClientIDOptIn'      => ! empty( $request['ampClientIDOptIn'] )
 				);
 				update_option( 'googlesitekit_analytics_settings', $option );
