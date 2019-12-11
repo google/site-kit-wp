@@ -52,6 +52,7 @@ class AnalyticsSetup extends Component {
 		super( props );
 		const {
 			accountID,
+			anonymizeIPAddress,
 			internalWebPropertyID,
 			profileID,
 			propertyID,
@@ -61,7 +62,7 @@ class AnalyticsSetup extends Component {
 		} = googlesitekit.modules.analytics.settings;
 
 		this.state = {
-			anonymizeIPAddress: true,
+			anonymizeIPAddress,
 			isLoading: true,
 			isSaving: false,
 			propertiesLoading: false,
@@ -736,6 +737,7 @@ class AnalyticsSetup extends Component {
 
 	renderForm() {
 		const {
+			anonymizeIPAddress,
 			isLoading,
 			propertiesLoading,
 			profilesLoading,
@@ -837,6 +839,25 @@ class AnalyticsSetup extends Component {
 							</h5>
 						</div>
 					</div>
+					{ onSettingsPage && (
+						<div className="googlesitekit-settings-module__meta-items">
+							<div className="
+								googlesitekit-settings-module__meta-item
+							">
+								<p className="googlesitekit-settings-module__meta-item-type">
+									{ __( 'IP Address Anonymization', 'google-site-kit' ) }
+								</p>
+								<h5 className="googlesitekit-settings-module__meta-item-data">
+									{ anonymizeIPAddress &&
+										__( 'IP addresses are being anonymized.', 'google-site-kit' )
+									}
+									{ ! anonymizeIPAddress &&
+										__( 'IP addresses are not being anonymized.', 'google-site-kit' )
+									}
+								</h5>
+							</div>
+						</div>
+					) }
 					<div className="googlesitekit-settings-module__meta-items">
 						<div className="
 							googlesitekit-settings-module__meta-item
