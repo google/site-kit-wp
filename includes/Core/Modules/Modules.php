@@ -24,8 +24,8 @@ use Exception;
  * @ignore
  */
 final class Modules {
-	
-	const OPTION_ACTIVE_MODULES = 'googlesitekit-active-modules';
+
+	const OPTION_ACTIVE_MODULES = 'googlesitekit_active_modules';
 
 	/**
 	 * Plugin context.
