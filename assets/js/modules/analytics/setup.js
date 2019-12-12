@@ -668,12 +668,12 @@ class AnalyticsSetup extends Component {
 					<div className="googlesitekit-setup-module__input">
 						<Switch
 							id="anonymizeIPAddress"
-							label={ __( 'Anonymize IP address', 'google-site-kit' ) }
+							label={ __( 'Anonymize IP addresses', 'google-site-kit' ) }
 							onClick={ this.switchStatus( 'anonymizeIPAddress' ) }
 							checked={ anonymizeIPAddress }
 							hideLabel={ false }
 						/>
-						<p>{ anonymizeIPAddress ? __( 'IP addresses will be anonymized', 'google-site-kit' ) : __( 'IP addresses will not be anonymized', 'google-site-kit' ) }</p>
+						<p>{ anonymizeIPAddress ? __( 'IP addresses will be anonymized.', 'google-site-kit' ) : __( 'IP addresses will not be anonymized.', 'google-site-kit' ) } <Link href="https://support.google.com/analytics/answer/2763052" external inherit>{ __( 'Learn more about IP anonymization.', 'google-site-kit' ) }</Link></p>
 					</div>
 				) }
 				{ useSnippet && ampEnabled &&
@@ -839,7 +839,7 @@ class AnalyticsSetup extends Component {
 							</h5>
 						</div>
 					</div>
-					{ onSettingsPage && (
+					{ onSettingsPage && useSnippet && (
 						<div className="googlesitekit-settings-module__meta-items">
 							<div className="
 								googlesitekit-settings-module__meta-item
