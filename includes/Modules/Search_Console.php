@@ -150,11 +150,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
 	protected function create_data_request( Data_Request $data ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
-
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
+			switch ( "{$data->method}:{$data->datapoint}" ) {
 				case 'GET:sites':
 				case 'GET:matched-sites':
 					return $this->get_webmasters_service()->sites->listSites();
@@ -177,9 +173,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					}
 
 					return $this->create_search_analytics_data_request( $data_request );
-			}
-		} elseif ( 'POST' === $method ) {
-			switch ( $datapoint ) {
 				case 'POST:site':
 					if ( empty( $data['siteURL'] ) ) {
 						return new WP_Error(
@@ -225,7 +218,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						);
 					};
 			}
-		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
 	}
@@ -241,11 +233,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
-
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
+			switch ( "{$data->method}:{$data->datapoint}" ) {
 				case 'GET:sites':
 					/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
 					return $this->map_sites( (array) $response->getSiteEntry() );
@@ -282,7 +270,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 				case 'GET:searchanalytics':
 					return $response->getRows();
 			}
-		}
 
 		return $response;
 	}
