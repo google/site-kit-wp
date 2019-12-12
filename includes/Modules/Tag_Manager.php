@@ -368,7 +368,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'connection':
+				case 'GET:connection':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
 						// TODO: Remove this at some point (migration of old options).
@@ -415,7 +415,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 							$defaults
 						);
 					};
-				case 'account-id':
+				case 'GET:account-id':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
 						// TODO: Remove this at some point (migration of old option).
@@ -440,7 +440,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						}
 						return $option['accountID'];
 					};
-				case 'container-id':
+				case 'GET:container-id':
 					return function() use ( $data ) {
 						$option = $this->options->get( self::OPTION );
 
@@ -472,10 +472,10 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 
 						return $option[ $option_key ];
 					};
-				case 'accounts-containers':
+				case 'GET:accounts-containers':
 					$service = $this->get_service( 'tagmanager' );
 					return $service->accounts->listAccounts();
-				case 'containers':
+				case 'GET:containers':
 					if ( ! isset( $data['accountID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
@@ -485,7 +485,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
-				case 'connection':
+				case 'POST:connection':
 					return function() use ( $data ) {
 						$option = (array) $this->options->get( self::OPTION );
 						$keys   = array( 'accountID', 'containerID' );
@@ -497,7 +497,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'account-id':
+				case 'POST:account-id':
 					if ( ! isset( $data['accountID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
@@ -508,7 +508,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'container-id':
+				case 'POST:container-id':
 					if ( ! isset( $data['containerID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ), array( 'status' => 400 ) );
@@ -519,7 +519,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'settings':
+				case 'POST:settings':
 					if ( ! isset( $data['accountID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
@@ -623,7 +623,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'accounts-containers':
+				case 'GET:accounts-containers':
 					$response = array(
 						// TODO: Parse this response to a regular array.
 						'accounts'   => $response->getAccount(),
@@ -651,7 +651,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 					}
 
 					return array_merge( $response, compact( 'containers' ) );
-				case 'containers':
+				case 'GET:containers':
 					/* @var Google_Service_TagManager_ListContainersResponse $response Response object. */
 					$account_id    = $data['accountID'];
 					$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
