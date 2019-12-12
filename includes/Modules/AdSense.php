@@ -361,11 +361,7 @@ tag_partner: "site_kit"
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
 	protected function create_data_request( Data_Request $data ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
-
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
+			switch ( "{$data->method}:{$data->datapoint}" ) {
 				case 'GET:connection':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
@@ -562,9 +558,6 @@ tag_partner: "site_kit"
 					}
 
 					return $this->create_adsense_earning_data_request( $args );
-			}
-		} elseif ( 'POST' === $method ) {
-			switch ( $datapoint ) {
 				case 'POST:connection':
 					return function() use ( $data ) {
 						$option = (array) $this->options->get( self::OPTION );
@@ -654,7 +647,6 @@ tag_partner: "site_kit"
 						return true;
 					};
 			}
-		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
 	}
@@ -670,11 +662,7 @@ tag_partner: "site_kit"
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
-
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
+			switch ( "{$data->method}:{$data->datapoint}" ) {
 				case 'GET:accounts':
 					// Store the matched account as soon as we have it.
 					$accounts = $response->getItems();
@@ -698,7 +686,7 @@ tag_partner: "site_kit"
 				case 'GET:earnings':
 					return $response;
 			}
-		}
+
 
 		return $response;
 	}
