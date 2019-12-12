@@ -26,8 +26,14 @@ class ResetTest extends TestCase {
 	public function test_all() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->assertFalse( $context->is_network_mode() );
+		update_option( 'googlesitekitkeep', 'keep' );
+		update_option( 'googlesitekit-keep', 'keep' );
 
 		$this->run_reset( $context );
+
+		// Ensure options that don't start with googlesitekit_ are not deleted.
+		$this->assertEquals( 'keep', get_option( 'googlesitekitkeep' ) );
+		$this->assertEquals( 'keep', get_option( 'googlesitekit-keep' ) );
 	}
 
 	/**
