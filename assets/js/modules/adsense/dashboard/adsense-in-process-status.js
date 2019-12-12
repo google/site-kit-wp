@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
 import Link from 'GoogleComponents/link';
 import Error from 'GoogleComponents/notifications/error';
 import ProgressBar from 'GoogleComponents/progress-bar';
@@ -113,10 +112,5 @@ class AdSenseInProcessStatus extends Component {
 		);
 	}
 }
-
-AdSenseInProcessStatus.propTypes = {
-	status: PropTypes.string,
-	module: PropTypes.string,
-};
 
 export default AdSenseInProcessStatus;

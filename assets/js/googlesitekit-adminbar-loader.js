@@ -113,37 +113,8 @@ window.addEventListener( 'load', function() {
 			}
 		}
 
-		const { isAdmin } = window.googlesitekitAdminbar.properties;
-		const isPostScreen = isAdmin && window.googlesitekit.admin.currentScreen && 'post' === window.googlesitekit.admin.currentScreen.id;
-		const scriptPath = `${ window.googlesitekitAdminbar.publicPath }allmodules.js`;
-		const isScriptLoaded = document.querySelector( `script[src="${ scriptPath }"]` );
-
-		// Dynamically load the script if not loaded yet.
-		if ( ! isAdmin || ( isAdmin && isPostScreen && ! isScriptLoaded ) ) {
-			// Load all modules.
-			const script = document.createElement( 'script' );
-			script.type = 'text/javascript';
-			script.onload = () => {
-				// Cleanup onload handler
-				script.onload = null;
-
-				initAdminbar();
-			};
-
-			// Add the script to the DOM
-			( document.getElementsByTagName( 'head' )[ 0 ] ).appendChild( script );
-
-			// Set the `src` to begin transport
-			script.src = scriptPath;
-
-			// Set adminbar as loaded.
-			isAdminbarLoaded = true;
-		} else {
-			initAdminbar();
-
-			// Set adminbar as loaded.
-			isAdminbarLoaded = true;
-		}
+		initAdminbar();
+		isAdminbarLoaded = true;
 	};
 
 	if ( 'true' === getQueryParameter( 'googlesitekit_adminbar_open' ) ) {

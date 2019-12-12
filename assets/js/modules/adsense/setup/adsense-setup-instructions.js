@@ -64,7 +64,7 @@ class AdSenseSetupInstructions extends Component {
 			continueSetup,
 			accountStatus,
 			accountTagMatch,
-			clientId,
+			clientID,
 			existingTag,
 			switchLabel,
 			tracking,
@@ -134,7 +134,7 @@ class AdSenseSetupInstructions extends Component {
 					}
 
 					<div className="googlesitekit-setup-module__action">
-						{ 'account-connected' === accountStatus && clientId &&
+						{ 'account-connected' === accountStatus &&
 							<Fragment>
 								<Button
 									disabled={ isSaving }
@@ -149,8 +149,8 @@ class AdSenseSetupInstructions extends Component {
 										const enableAutoAds = document.getElementById( 'enableAutoAds' );
 										const useSnippet = enableAutoAds && enableAutoAds.checked;
 
-										// Save the publisher clientId: AdSense setup is complete!
-										data.set( TYPE_MODULES, 'adsense', 'setup-complete', { clientId, useSnippet } ).then( () => {
+										// Save the publisher clientID: AdSense setup is complete!
+										data.set( TYPE_MODULES, 'adsense', 'setup-complete', { clientID, useSnippet } ).then( () => {
 											document.location = ctaLink;
 										} ).catch( () => {
 											this.setState( { isSaving: false } );
@@ -162,7 +162,7 @@ class AdSenseSetupInstructions extends Component {
 								<Spinner isSaving={ isSaving } />
 							</Fragment>
 						}
-						{ ( ! 'account-connected' === accountStatus || ! clientId ) && (
+						{ 'account-connected' !== accountStatus && (
 							<Link
 								className="googlesitekit-setup-module__cta-link"
 								external
