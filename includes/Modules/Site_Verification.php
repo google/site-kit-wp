@@ -135,11 +135,11 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'verified-sites':
+				case 'GET:verified-sites':
 					return $this->get_siteverification_service()->webResource->listWebResource();
-				case 'verification':
+				case 'GET:verification':
 					return $this->get_siteverification_service()->webResource->listWebResource();
-				case 'verification-token':
+				case 'GET:verification-token':
 					$existing_token = $this->authentication->verification_meta()->get();
 
 					if ( ! empty( $existing_token ) ) {
@@ -163,7 +163,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
-				case 'verification':
+				case 'POST:verification':
 					if ( ! isset( $data['siteURL'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'siteURL' ), array( 'status' => 400 ) );
@@ -264,7 +264,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'verified-sites':
+				case 'GET:verified-sites':
 					$items = $response->getItems();
 					$data  = array();
 
@@ -277,7 +277,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 					}
 
 					return $data;
-				case 'verification':
+				case 'GET:verification':
 					if ( $data['siteURL'] ) {
 						$current_url = trailingslashit( $data['siteURL'] );
 					} else {
@@ -318,7 +318,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 						'type'       => 'SITE',
 						'verified'   => false,
 					);
-				case 'verification-token':
+				case 'GET:verification-token':
 					if ( is_array( $response ) ) {
 						return $response;
 					}
