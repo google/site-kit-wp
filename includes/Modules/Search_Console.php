@@ -155,10 +155,10 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'sites':
-				case 'matched-sites':
+				case 'GET:sites':
+				case 'GET:matched-sites':
 					return $this->get_webmasters_service()->sites->listSites();
-				case 'searchanalytics':
+				case 'GET:searchanalytics':
 					list ( $start_date, $end_date ) = $this->parse_date_range(
 						$data['dateRange'] ?: 'last-28-days',
 						$data['compareDateRanges'] ? 2 : 1,
@@ -180,7 +180,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
-				case 'site':
+				case 'POST:site':
 					if ( empty( $data['siteURL'] ) ) {
 						return new WP_Error(
 							'missing_required_param',
@@ -246,10 +246,10 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'sites':
+				case 'GET:sites':
 					/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
 					return $this->map_sites( (array) $response->getSiteEntry() );
-				case 'matched-sites':
+				case 'GET:matched-sites':
 					/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
 					$sites            = $this->map_sites( (array) $response->getSiteEntry() );
 					$current_url      = $this->context->get_reference_site_url();
@@ -279,7 +279,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						'exactMatch'      => $exact_match, // (array) single site object, or null if no match.
 						'propertyMatches' => $property_matches, // (array) of site objects, or empty array if none.
 					);
-				case 'searchanalytics':
+				case 'GET:searchanalytics':
 					return $response->getRows();
 			}
 		}
