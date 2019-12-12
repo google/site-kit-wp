@@ -215,7 +215,7 @@ final class Optimize extends Module {
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'optimize-id':
+				case 'GET:optimize-id':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
 						// TODO: Remove this at some point (migration of old option).
@@ -240,7 +240,7 @@ final class Optimize extends Module {
 						}
 						return $option['optimizeID'];
 					};
-				case 'amp-client-id-opt-in': // Get this from Analytics, read-only from here.
+				case 'GET:amp-client-id-opt-in': // Get this from Analytics, read-only from here.
 					return function() {
 						$option = (array) $this->options->get( Analytics::OPTION );
 
@@ -257,7 +257,7 @@ final class Optimize extends Module {
 						}
 						return ! empty( $option['ampClientIDOptIn'] );
 					};
-				case 'amp-experiment-json':
+				case 'GET:amp-experiment-json':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
 						// TODO: Remove this at some point (migration of old option).
@@ -285,7 +285,7 @@ final class Optimize extends Module {
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
-				case 'optimize-id':
+				case 'POST:optimize-id':
 					if ( ! isset( $data['optimizeID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'optimizeID' ), array( 'status' => 400 ) );
@@ -296,7 +296,7 @@ final class Optimize extends Module {
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'amp-experiment-json':
+				case 'POST:amp-experiment-json':
 					if ( ! isset( $data['ampExperimentJSON'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampExperimentJSON' ), array( 'status' => 400 ) );
@@ -310,7 +310,7 @@ final class Optimize extends Module {
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'settings':
+				case 'POST:settings':
 					if ( ! isset( $data['optimizeID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'optimizeID' ), array( 'status' => 400 ) );
