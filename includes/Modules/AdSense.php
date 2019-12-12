@@ -410,6 +410,18 @@ tag_partner: "site_kit"
 					);
 					return array_intersect_key( array_merge( $defaults, $option ), $defaults );
 				};
+			case 'POST:connection':
+				return function() use ( $data ) {
+					$option = (array) $this->options->get( self::OPTION );
+					$keys   = array( 'accountID', 'clientID', 'accountStatus' );
+					foreach ( $keys as $key ) {
+						if ( isset( $data[ $key ] ) ) {
+							$option[ $key ] = $data[ $key ];
+						}
+					}
+					$this->options->set( self::OPTION, $option );
+					return true;
+				};
 			case 'GET:account-id':
 				return function() {
 					$option = (array) $this->options->get( self::OPTION );
@@ -425,6 +437,17 @@ tag_partner: "site_kit"
 						return new WP_Error( 'account_id_not_set', __( 'AdSense account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}
 					return $option['accountID'];
+				};
+			case 'POST:account-id':
+				if ( ! isset( $data['accountID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$option              = (array) $this->options->get( self::OPTION );
+					$option['accountID'] = $data['accountID'];
+					$this->options->set( self::OPTION, $option );
+					return true;
 				};
 			case 'GET:client-id':
 				return function() {
@@ -442,11 +465,43 @@ tag_partner: "site_kit"
 					}
 					return $option['clientID'];
 				};
+			case 'POST:client-id':
+				if ( ! isset( $data['clientID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$option             = (array) $this->options->get( self::OPTION );
+					$option['clientID'] = $data['clientID'];
+					$this->options->set( self::OPTION, $option );
+					return true;
+				};
 			case 'GET:use-snippet':
 				return function() {
 					$option = (array) $this->options->get( self::OPTION );
 
 					return ! empty( $option['useSnippet'] );
+				};
+			case 'POST:use-snippet':
+				if ( ! isset( $data['useSnippet'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						sprintf(
+						/* translators: %s: Missing parameter name */
+							__( 'Request parameter is empty: %s.', 'google-site-kit' ),
+							'useSnippet'
+						),
+						array( 'status' => 400 )
+					);
+				}
+
+				return function() use ( $data ) {
+					$option               = (array) $this->options->get( self::OPTION );
+					$option['useSnippet'] = (bool) $data['useSnippet'];
+
+					$this->options->set( self::OPTION, $option );
+
+					return true;
 				};
 			case 'GET:account-status':
 				return function() {
@@ -463,6 +518,17 @@ tag_partner: "site_kit"
 						return new WP_Error( 'account_status_not_set', __( 'AdSense account status not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}
 					return $option['accountStatus'];
+				};
+			case 'POST:account-status':
+				if ( ! isset( $data['accountStatus'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountStatus' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$option                  = (array) $this->options->get( self::OPTION );
+					$option['accountStatus'] = $data['accountStatus'];
+					$this->options->set( self::OPTION, $option );
+					return true;
 				};
 			case 'GET:account-url':
 				return function() {
@@ -558,72 +624,6 @@ tag_partner: "site_kit"
 				}
 
 				return $this->create_adsense_earning_data_request( $args );
-			case 'POST:connection':
-				return function() use ( $data ) {
-					$option = (array) $this->options->get( self::OPTION );
-					$keys   = array( 'accountID', 'clientID', 'accountStatus' );
-					foreach ( $keys as $key ) {
-						if ( isset( $data[ $key ] ) ) {
-							$option[ $key ] = $data[ $key ];
-						}
-					}
-					$this->options->set( self::OPTION, $option );
-					return true;
-				};
-			case 'POST:account-id':
-				if ( ! isset( $data['accountID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$option              = (array) $this->options->get( self::OPTION );
-					$option['accountID'] = $data['accountID'];
-					$this->options->set( self::OPTION, $option );
-					return true;
-				};
-			case 'POST:client-id':
-				if ( ! isset( $data['clientID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$option             = (array) $this->options->get( self::OPTION );
-					$option['clientID'] = $data['clientID'];
-					$this->options->set( self::OPTION, $option );
-					return true;
-				};
-			case 'POST:use-snippet':
-				if ( ! isset( $data['useSnippet'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						sprintf(
-							/* translators: %s: Missing parameter name */
-							__( 'Request parameter is empty: %s.', 'google-site-kit' ),
-							'useSnippet'
-						),
-						array( 'status' => 400 )
-					);
-				}
-
-				return function() use ( $data ) {
-					$option               = (array) $this->options->get( self::OPTION );
-					$option['useSnippet'] = (bool) $data['useSnippet'];
-
-					$this->options->set( self::OPTION, $option );
-
-					return true;
-				};
-			case 'POST:account-status':
-				if ( ! isset( $data['accountStatus'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountStatus' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$option                  = (array) $this->options->get( self::OPTION );
-					$option['accountStatus'] = $data['accountStatus'];
-					$this->options->set( self::OPTION, $option );
-					return true;
-				};
 			case 'POST:setup-complete':
 				if ( ! isset( $data['clientID'] ) ) {
 					/* translators: %s: Missing parameter name */
