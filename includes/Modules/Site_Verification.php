@@ -131,8 +131,6 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:verified-sites':
-				return $this->get_siteverification_service()->webResource->listWebResource();
 			case 'GET:verification':
 				return $this->get_siteverification_service()->webResource->listWebResource();
 			case 'POST:verification':
@@ -235,6 +233,8 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 				$request->setVerificationMethod( 'META' );
 
 				return $this->get_siteverification_service()->webResource->getToken( $request );
+			case 'GET:verified-sites':
+				return $this->get_siteverification_service()->webResource->listWebResource();
 		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
@@ -252,19 +252,6 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:verified-sites':
-				$items = $response->getItems();
-				$data  = array();
-
-				foreach ( $items as $item ) {
-					$site                   = $item->getSite();
-					$data[ $item->getId() ] = array(
-						'identifier' => $site->getIdentifier(),
-						'type'       => $site->getType(),
-					);
-				}
-
-				return $data;
 			case 'GET:verification':
 				if ( $data['siteURL'] ) {
 					$current_url = trailingslashit( $data['siteURL'] );
@@ -315,6 +302,19 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 					'method' => $response->getMethod(),
 					'token'  => $response->getToken(),
 				);
+			case 'GET:verified-sites':
+				$items = $response->getItems();
+				$data  = array();
+
+				foreach ( $items as $item ) {
+					$site                   = $item->getSite();
+					$data[ $item->getId() ] = array(
+						'identifier' => $site->getIdentifier(),
+						'type'       => $site->getType(),
+					);
+				}
+
+				return $data;
 		}
 
 		return $response;
