@@ -12,11 +12,15 @@ namespace Google\Site_Kit\Tests\Core\Authentication\Clients;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
 
 /**
  * @group Authentication
@@ -254,8 +258,33 @@ class OAuth_ClientTest extends TestCase {
 		$client->get_authentication_url( $success_redirect );
 		// No other way around this but to mock the Google_Client
 		$google_client_mock = $this->getMock( 'Google\Site_Kit_Dependencies\Google_Client', array( 'fetchAccessTokenWithAuthCode' ) );
+		$http_client = new FakeHttpClient();
+		$http_client->set_request_handler( function ( Request $request ) {
+			$url = parse_url( $request->getUrl() );
+			if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
+				return new Response( 200 );
+			}
+
+			return new Response(
+				200,
+				array(),
+				Stream::factory( json_encode( array(
+					// ['emailAddresses'][0]['value']
+					'emailAddresses' => array(
+						array( 'value' => 'fresh@foo.com' ),
+					),
+					// ['photos'][0]['url']
+					'photos'         => array(
+						array( 'url' => 'https://example.com/fresh.jpg' ),
+					),
+				) ) )
+			);
+		});
+		$google_client_mock->setHttpClient( $http_client );
 		$google_client_mock->method( 'fetchAccessTokenWithAuthCode' )->willReturn( array( 'access_token' => 'test-access-token' ) );
 		$this->force_set_property( $client, 'google_client', $google_client_mock );
+
+		$this->assertFalse( $user_options->get( Profile::OPTION ) );
 
 		try {
 			$client->authorize_user();
@@ -263,6 +292,10 @@ class OAuth_ClientTest extends TestCase {
 			$this->assertStringStartsWith( "$success_redirect?", $redirect->get_location() );
 			$this->assertContains( 'notification=authentication_success', $redirect->get_location() );
 		}
+
+		$profile = $user_options->get( Profile::OPTION );
+		$this->assertEquals( 'fresh@foo.com', $profile['email'] );
+		$this->assertEquals( 'https://example.com/fresh.jpg', $profile['photo'] );
 	}
 
 	public function test_using_proxy() {
