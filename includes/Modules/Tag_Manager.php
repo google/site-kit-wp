@@ -363,11 +363,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
 	protected function create_data_request( Data_Request $data ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
-
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
+			switch ( "{$data->method}:{$data->datapoint}" ) {
 				case 'GET:connection':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
@@ -415,6 +411,18 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 							$defaults
 						);
 					};
+				case 'POST:connection':
+					return function() use ( $data ) {
+						$option = (array) $this->options->get( self::OPTION );
+						$keys   = array( 'accountID', 'containerID' );
+						foreach ( $keys as $key ) {
+							if ( isset( $data[ $key ] ) ) {
+								$option[ $key ] = $data[ $key ];
+							}
+						}
+						$this->options->set( self::OPTION, $option );
+						return true;
+					};
 				case 'GET:account-id':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
@@ -439,6 +447,17 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 							return new WP_Error( 'account_id_not_set', __( 'Tag Manager account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 						}
 						return $option['accountID'];
+					};
+				case 'POST:account-id':
+					if ( ! isset( $data['accountID'] ) ) {
+						/* translators: %s: Missing parameter name */
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
+					}
+					return function() use ( $data ) {
+						$option              = (array) $this->options->get( self::OPTION );
+						$option['accountID'] = $data['accountID'];
+						$this->options->set( self::OPTION, $option );
+						return true;
 					};
 				case 'GET:container-id':
 					return function() use ( $data ) {
@@ -472,42 +491,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 
 						return $option[ $option_key ];
 					};
-				case 'GET:accounts-containers':
-					$service = $this->get_service( 'tagmanager' );
-					return $service->accounts->listAccounts();
-				case 'GET:containers':
-					if ( ! isset( $data['accountID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
-					}
-					$service = $this->get_service( 'tagmanager' );
-					return $service->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
-			}
-		} elseif ( 'POST' === $method ) {
-			switch ( $datapoint ) {
-				case 'POST:connection':
-					return function() use ( $data ) {
-						$option = (array) $this->options->get( self::OPTION );
-						$keys   = array( 'accountID', 'containerID' );
-						foreach ( $keys as $key ) {
-							if ( isset( $data[ $key ] ) ) {
-								$option[ $key ] = $data[ $key ];
-							}
-						}
-						$this->options->set( self::OPTION, $option );
-						return true;
-					};
-				case 'POST:account-id':
-					if ( ! isset( $data['accountID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
-					}
-					return function() use ( $data ) {
-						$option              = (array) $this->options->get( self::OPTION );
-						$option['accountID'] = $data['accountID'];
-						$this->options->set( self::OPTION, $option );
-						return true;
-					};
 				case 'POST:container-id':
 					if ( ! isset( $data['containerID'] ) ) {
 						/* translators: %s: Missing parameter name */
@@ -519,6 +502,16 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
+				case 'GET:accounts-containers':
+					$service = $this->get_service( 'tagmanager' );
+					return $service->accounts->listAccounts();
+				case 'GET:containers':
+					if ( ! isset( $data['accountID'] ) ) {
+						/* translators: %s: Missing parameter name */
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
+					}
+					$service = $this->get_service( 'tagmanager' );
+					return $service->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
 				case 'POST:settings':
 					if ( ! isset( $data['accountID'] ) ) {
 						/* translators: %s: Missing parameter name */
@@ -562,7 +555,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						return $option;
 					};
 			}
-		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
 	}
@@ -618,11 +610,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
-
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
+			switch ( "{$data->method}:{$data->datapoint}" ) {
 				case 'GET:accounts-containers':
 					$response = array(
 						// TODO: Parse this response to a regular array.
@@ -676,7 +664,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 
 					return array_values( $containers );
 			}
-		}
 
 		return $response;
 	}
