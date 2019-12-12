@@ -674,14 +674,11 @@ tag_partner: "site_kit"
 				}
 				// TODO: Parse this response to a regular array.
 				return $accounts;
+
+			// Intentional fallthrough.
 			case 'GET:alerts':
-				// TODO: Parse this response to a regular array.
-				return $response->getItems();
 			case 'GET:clients':
-				// TODO: Parse this response to a regular array.
-				return $response->getItems();
 			case 'GET:urlchannels':
-				// TODO: Parse this response to a regular array.
 				return $response->getItems();
 			case 'GET:earnings':
 				return $response;
