@@ -366,7 +366,7 @@ tag_partner: "site_kit"
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'connection':
+				case 'GET:connection':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
 						// TODO: Remove this at some point (migration of old options).
@@ -414,7 +414,7 @@ tag_partner: "site_kit"
 						);
 						return array_intersect_key( array_merge( $defaults, $option ), $defaults );
 					};
-				case 'account-id':
+				case 'GET:account-id':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
 						// TODO: Remove this at some point (migration of old option).
@@ -430,7 +430,7 @@ tag_partner: "site_kit"
 						}
 						return $option['accountID'];
 					};
-				case 'client-id':
+				case 'GET:client-id':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
 						// TODO: Remove this at some point (migration of old option).
@@ -446,13 +446,13 @@ tag_partner: "site_kit"
 						}
 						return $option['clientID'];
 					};
-				case 'use-snippet':
+				case 'GET:use-snippet':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
 
 						return ! empty( $option['useSnippet'] );
 					};
-				case 'account-status':
+				case 'GET:account-status':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
 						// TODO: Remove this at some point (migration of old option).
@@ -468,7 +468,7 @@ tag_partner: "site_kit"
 						}
 						return $option['accountStatus'];
 					};
-				case 'account-url':
+				case 'GET:account-url':
 					return function() {
 						$account_id = $this->get_data( 'account-id' );
 						if ( ! is_wp_error( $account_id ) && $account_id ) {
@@ -476,7 +476,7 @@ tag_partner: "site_kit"
 						}
 						return 'https://www.google.com/adsense/signup/new';
 					};
-				case 'reports-url':
+				case 'GET:reports-url':
 					return function() {
 						$account_id = $this->get_data( 'account-id' );
 						if ( ! is_wp_error( $account_id ) && $account_id ) {
@@ -484,7 +484,7 @@ tag_partner: "site_kit"
 						}
 						return 'https://www.google.com/adsense/start';
 					};
-				case 'notifications':
+				case 'GET:notifications':
 					return function() {
 						$alerts = $this->get_data( 'alerts' );
 						if ( is_wp_error( $alerts ) || empty( $alerts ) ) {
@@ -522,10 +522,10 @@ tag_partner: "site_kit"
 							),
 						);
 					};
-				case 'accounts':
+				case 'GET:accounts':
 					$service = $this->get_service( 'adsense' );
 					return $service->accounts->listAccounts();
-				case 'alerts':
+				case 'GET:alerts':
 					if ( ! isset( $data['accountID'] ) ) {
 						$data['accountID'] = $this->get_data( 'account-id' );
 						if ( is_wp_error( $data['accountID'] ) || ! $data['accountID'] ) {
@@ -535,17 +535,17 @@ tag_partner: "site_kit"
 					}
 					$service = $this->get_service( 'adsense' );
 					return $service->accounts_alerts->listAccountsAlerts( $data['accountID'] );
-				case 'clients':
+				case 'GET:clients':
 					$service = $this->get_service( 'adsense' );
 					return $service->adclients->listAdclients();
-				case 'urlchannels':
+				case 'GET:urlchannels':
 					if ( ! isset( $data['clientID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
 					}
 					$service = $this->get_service( 'adsense' );
 					return $service->urlchannels->listUrlchannels( $data['clientID'] );
-				case 'earnings':
+				case 'GET:earnings':
 					$dates = $this->date_range_to_dates( $data['dateRange'] ?: 'last-28-days' );
 
 					if ( is_wp_error( $dates ) ) {
@@ -565,7 +565,7 @@ tag_partner: "site_kit"
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
-				case 'connection':
+				case 'POST:connection':
 					return function() use ( $data ) {
 						$option = (array) $this->options->get( self::OPTION );
 						$keys   = array( 'accountID', 'clientID', 'accountStatus' );
@@ -577,7 +577,7 @@ tag_partner: "site_kit"
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'account-id':
+				case 'POST:account-id':
 					if ( ! isset( $data['accountID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
@@ -588,7 +588,7 @@ tag_partner: "site_kit"
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'client-id':
+				case 'POST:client-id':
 					if ( ! isset( $data['clientID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
@@ -599,7 +599,7 @@ tag_partner: "site_kit"
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'use-snippet':
+				case 'POST:use-snippet':
 					if ( ! isset( $data['useSnippet'] ) ) {
 						return new WP_Error(
 							'missing_required_param',
@@ -620,7 +620,7 @@ tag_partner: "site_kit"
 
 						return true;
 					};
-				case 'account-status':
+				case 'POST:account-status':
 					if ( ! isset( $data['accountStatus'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountStatus' ), array( 'status' => 400 ) );
@@ -631,7 +631,7 @@ tag_partner: "site_kit"
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'setup-complete':
+				case 'POST:setup-complete':
 					if ( ! isset( $data['clientID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
@@ -675,7 +675,7 @@ tag_partner: "site_kit"
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'accounts':
+				case 'GET:accounts':
 					// Store the matched account as soon as we have it.
 					$accounts = $response->getItems();
 					if ( ! empty( $accounts ) ) {
@@ -686,16 +686,16 @@ tag_partner: "site_kit"
 					}
 					// TODO: Parse this response to a regular array.
 					return $accounts;
-				case 'alerts':
+				case 'GET:alerts':
 					// TODO: Parse this response to a regular array.
 					return $response->getItems();
-				case 'clients':
+				case 'GET:clients':
 					// TODO: Parse this response to a regular array.
 					return $response->getItems();
-				case 'urlchannels':
+				case 'GET:urlchannels':
 					// TODO: Parse this response to a regular array.
 					return $response->getItems();
-				case 'earnings':
+				case 'GET:earnings':
 					return $response;
 			}
 		}
