@@ -43,16 +43,35 @@ class ModulesTest extends TestCase {
 	public function test_get_active_modules() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$active = array_map( function ( $instance ) {
-			return get_class( $instance );
-		}, $modules->get_active_modules() );
-
+		$always_on_modules = array(
+			'search-console'    => 'Google\\Site_Kit\\Modules\\Search_Console',
+			'site-verification' => 'Google\\Site_Kit\\Modules\\Site_Verification',
+		);
 		$this->assertEqualSets(
-			array(
-				'search-console'    => 'Google\\Site_Kit\\Modules\\Search_Console',
-				'site-verification' => 'Google\\Site_Kit\\Modules\\Site_Verification',
+			$always_on_modules,
+			array_map( 'get_class', $modules->get_active_modules() )
+		);
+
+		// Active modules other than always-on modules are stored in an option.
+
+		// Active modules will fallback to legacy option if set.
+		update_option( 'googlesitekit-active-modules', array( 'analytics' ) );
+
+		$this->assertEquals(
+			$always_on_modules + array(
+				'analytics' => 'Google\\Site_Kit\\Modules\\Analytics',
 			),
-			$active
+			array_map( 'get_class', $modules->get_active_modules() )
+		);
+
+		// If the modern option is set, it will take precedence over legacy (set or not).
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'adsense' ) );
+
+		$this->assertEquals(
+			$always_on_modules + array(
+				'adsense' => 'Google\\Site_Kit\\Modules\\AdSense',
+			),
+			array_map( 'get_class', $modules->get_active_modules() )
 		);
 	}
 

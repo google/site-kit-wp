@@ -398,10 +398,18 @@ final class Modules {
 	 */
 	private function get_active_modules_option() {
 		$option = $this->options->get( self::OPTION_ACTIVE_MODULES );
-		if ( empty( $option ) ) {
-			return array();
+
+		if ( is_array( $option ) ) {
+			return $option;
 		}
-		return (array) $option;
+
+		$legacy_option = $this->options->get( 'googlesitekit-active-modules' );
+
+		if ( is_array( $legacy_option ) ) {
+			return $legacy_option;
+		}
+
+		return array();
 	}
 
 	/**
