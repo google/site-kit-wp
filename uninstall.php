@@ -17,7 +17,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) && empty( $googlesitekit_reset_context )
 
 global $wpdb;
 
-$prefix = 'googlesitekit_%';
+$prefix = 'googlesitekit\_%';
 
 // Delete options and transients.
 $wpdb->query( // phpcs:ignore WordPress.VIP.DirectDatabaseQuery
