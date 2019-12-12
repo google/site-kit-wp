@@ -24,6 +24,8 @@ use Exception;
  * @ignore
  */
 final class Modules {
+	
+	const OPTION_ACTIVE_MODULES = 'googlesitekit-active-modules';
 
 	/**
 	 * Plugin context.
@@ -395,7 +397,7 @@ final class Modules {
 	 * @return array List of active module slugs.
 	 */
 	private function get_active_modules_option() {
-		$option = $this->options->get( 'googlesitekit-active-modules' );
+		$option = $this->options->get( self::OPTION_ACTIVE_MODULES );
 		if ( empty( $option ) ) {
 			return array();
 		}
@@ -410,6 +412,6 @@ final class Modules {
 	 * @param array $option List of active module slugs.
 	 */
 	private function set_active_modules_option( array $option ) {
-		$this->options->set( 'googlesitekit-active-modules', $option );
+		$this->options->set( self::OPTION_ACTIVE_MODULES, $option );
 	}
 }
