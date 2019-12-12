@@ -112,7 +112,7 @@ class Migration_1_0_0 {
 
 		// Delete all user data. Tokens will not actually be revoked because
 		// of external API requests causing overhead.
-		$prefix = 'googlesitekit_%';
+		$prefix = 'googlesitekit\_%';
 		if ( ! $this->context->is_network_mode() ) {
 			$prefix = $wpdb->get_blog_prefix() . $prefix;
 		}
