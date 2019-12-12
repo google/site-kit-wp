@@ -29,6 +29,7 @@ import { Component } from '@wordpress/element';
 class Link extends Component {
 	render() {
 		const {
+			dangerouslySetInnerHTML,
 			onClick,
 			href,
 			children,
@@ -70,6 +71,7 @@ class Link extends Component {
 				target={ isAnchor && external ? '_blank' : undefined }
 				rel={ external ? 'noopener noreferrer' : undefined }
 				disabled={ disabled }
+				dangerouslySetInnerHTML={ dangerouslySetInnerHTML }
 			>
 				{ children }
 			</SemanticLink>
@@ -78,6 +80,9 @@ class Link extends Component {
 }
 
 Link.propTypes = {
+	dangerouslySetInnerHTML: PropTypes.shape( {
+		__html: PropTypes.string,
+	} ),
 	onClick: PropTypes.func,
 	href: PropTypes.string,
 	children: PropTypes.oneOfType( [
@@ -97,6 +102,7 @@ Link.propTypes = {
 };
 
 Link.defaultProps = {
+	dangerouslySetInnerHTML: undefined,
 	onClick: null,
 	href: '',
 	className: '',
