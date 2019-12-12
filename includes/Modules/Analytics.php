@@ -312,10 +312,11 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 		$amp_client_id_optin = $this->get_data( 'amp-client-id-opt-in' );
 		if ( ! is_wp_error( $amp_client_id_optin ) && $amp_client_id_optin ) {
-			$gtag_opt = array( 'useAmpClientId' => true );
+			$gtag_opt['useAmpClientId'] = true;
 		}
 
-		if ( $this->get_data( 'anonymize-ip-address' ) ) {
+		$anonymize_ip_address = $this->get_data( 'anonymize-ip-address' );
+		if ( ! is_wp_error( $anonymize_ip_address ) && $anonymize_ip_address ) {
 			// See https://developers.google.com/analytics/devguides/collection/gtagjs/ip-anonymization.
 			$gtag_opt['anonymize_ip'] = true;
 		}
