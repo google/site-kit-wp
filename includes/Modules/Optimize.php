@@ -213,7 +213,6 @@ final class Optimize extends Module {
 		$method    = $data->method;
 		$datapoint = $data->datapoint;
 
-		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
 				case 'GET:optimize-id':
 					return function() {
@@ -282,9 +281,6 @@ final class Optimize extends Module {
 						}
 						return wp_json_encode( $option['ampExperimentJSON'] );
 					};
-			}
-		} elseif ( 'POST' === $method ) {
-			switch ( $datapoint ) {
 				case 'POST:optimize-id':
 					if ( ! isset( $data['optimizeID'] ) ) {
 						/* translators: %s: Missing parameter name */
@@ -331,7 +327,6 @@ final class Optimize extends Module {
 						return $option;
 					};
 			}
-		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
 	}
