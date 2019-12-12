@@ -52,7 +52,7 @@ class AnalyticsSetup extends Component {
 		super( props );
 		const {
 			accountID,
-			anonymizeIPAddress,
+			anonymizeIP,
 			internalWebPropertyID,
 			profileID,
 			propertyID,
@@ -62,7 +62,7 @@ class AnalyticsSetup extends Component {
 		} = googlesitekit.modules.analytics.settings;
 
 		this.state = {
-			anonymizeIPAddress,
+			anonymizeIP,
 			isLoading: true,
 			isSaving: false,
 			propertiesLoading: false,
@@ -161,7 +161,7 @@ class AnalyticsSetup extends Component {
 		}
 
 		const settingsMapping = {
-			anonymizeIPAddress: 'anonymizeIPAddress',
+			anonymizeIP: 'anonymizeIP',
 			selectedAccount: 'accountID',
 			selectedProperty: 'propertyID',
 			selectedProfile: 'profileID',
@@ -466,7 +466,7 @@ class AnalyticsSetup extends Component {
 		}
 
 		const {
-			anonymizeIPAddress,
+			anonymizeIP,
 			selectedAccount,
 			selectedProperty,
 			selectedProfile,
@@ -501,7 +501,7 @@ class AnalyticsSetup extends Component {
 		}
 
 		const analyticAccount = {
-			anonymizeIPAddress,
+			anonymizeIP,
 			accountID: selectedAccount || accounts[ 0 ].id || null,
 			profileID,
 			propertyID,
@@ -600,7 +600,7 @@ class AnalyticsSetup extends Component {
 
 	renderAutoInsertSnippetForm() {
 		const {
-			anonymizeIPAddress,
+			anonymizeIP,
 			useSnippet,
 			isSaving,
 			ampClientIDOptIn,
@@ -664,18 +664,6 @@ class AnalyticsSetup extends Component {
 						</Radio>
 					</Fragment>
 				}
-				{ onSettingsPage && useSnippet && (
-					<div className="googlesitekit-setup-module__input">
-						<Switch
-							id="anonymizeIPAddress"
-							label={ __( 'Anonymize IP addresses', 'google-site-kit' ) }
-							onClick={ this.switchStatus( 'anonymizeIPAddress' ) }
-							checked={ anonymizeIPAddress }
-							hideLabel={ false }
-						/>
-						<p>{ anonymizeIPAddress ? __( 'IP addresses will be anonymized.', 'google-site-kit' ) : __( 'IP addresses will not be anonymized.', 'google-site-kit' ) } <Link href="https://support.google.com/analytics/answer/2763052" external inherit>{ __( 'Learn more about IP anonymization.', 'google-site-kit' ) }</Link></p>
-					</div>
-				) }
 				{ useSnippet && ampEnabled &&
 					<div className="googlesitekit-setup-module__input">
 						<Switch
@@ -694,6 +682,18 @@ class AnalyticsSetup extends Component {
 						</p>
 					</div>
 				}
+				{ onSettingsPage && useSnippet && ( ! ampEnabled || ( ampEnabled && ! ampClientIDOptIn ) ) && (
+					<div className="googlesitekit-setup-module__input">
+						<Switch
+							id="anonymizeIP"
+							label={ __( 'Anonymize IP addresses', 'google-site-kit' ) }
+							onClick={ this.switchStatus( 'anonymizeIP' ) }
+							checked={ anonymizeIP }
+							hideLabel={ false }
+						/>
+						<p>{ anonymizeIP ? __( 'IP addresses will be anonymized.', 'google-site-kit' ) : __( 'IP addresses will not be anonymized.', 'google-site-kit' ) } <Link href="https://support.google.com/analytics/answer/2763052" external inherit>{ __( 'Learn more about IP anonymization.', 'google-site-kit' ) }</Link></p>
+					</div>
+				) }
 			</div>
 		);
 	}
@@ -737,7 +737,8 @@ class AnalyticsSetup extends Component {
 
 	renderForm() {
 		const {
-			anonymizeIPAddress,
+			anonymizeIP,
+			ampClientIDOptIn,
 			isLoading,
 			propertiesLoading,
 			profilesLoading,
@@ -764,6 +765,7 @@ class AnalyticsSetup extends Component {
 			disabledProperty = true;
 		}
 
+		const { ampEnabled } = window.googlesitekit.admin;
 		const { setupComplete } = googlesitekit.modules.analytics;
 
 		if ( isLoading ) {
@@ -839,7 +841,7 @@ class AnalyticsSetup extends Component {
 							</h5>
 						</div>
 					</div>
-					{ onSettingsPage && useSnippet && (
+					{ onSettingsPage && useSnippet && ( ! ampEnabled || ( ampEnabled && ! ampClientIDOptIn ) ) && (
 						<div className="googlesitekit-settings-module__meta-items">
 							<div className="
 								googlesitekit-settings-module__meta-item
@@ -848,10 +850,10 @@ class AnalyticsSetup extends Component {
 									{ __( 'IP Address Anonymization', 'google-site-kit' ) }
 								</p>
 								<h5 className="googlesitekit-settings-module__meta-item-data">
-									{ anonymizeIPAddress &&
+									{ anonymizeIP &&
 										__( 'IP addresses are being anonymized.', 'google-site-kit' )
 									}
-									{ ! anonymizeIPAddress &&
+									{ ! anonymizeIP &&
 										__( 'IP addresses are not being anonymized.', 'google-site-kit' )
 									}
 								</h5>

@@ -219,11 +219,11 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			__( 'Top acquisition sources', 'google-site-kit' ),
 		);
 
-		$info['settings']                       = $this->get_data( 'connection' );
-		$info['settings']['useSnippet']         = $this->get_data( 'use-snippet' );
-		$info['settings']['anonymizeIPAddress'] = $this->get_data( 'anonymize-ip-address' );
-		$info['settings']['ampClientIDOptIn']   = $this->get_data( 'amp-client-id-opt-in' );
-		$info['settings']['trackingDisabled']   = $this->get_data( 'tracking-disabled' );
+		$info['settings']                     = $this->get_data( 'connection' );
+		$info['settings']['useSnippet']       = $this->get_data( 'use-snippet' );
+		$info['settings']['anonymizeIP']      = $this->get_data( 'anonymize-ip' );
+		$info['settings']['ampClientIDOptIn'] = $this->get_data( 'amp-client-id-opt-in' );
+		$info['settings']['trackingDisabled'] = $this->get_data( 'tracking-disabled' );
 
 		$info['adsenseLinked'] = (bool) $this->options->get( 'googlesitekit_analytics_adsense_linked' );
 
@@ -315,8 +315,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			$gtag_opt['useAmpClientId'] = true;
 		}
 
-		$anonymize_ip_address = $this->get_data( 'anonymize-ip-address' );
-		if ( ! is_wp_error( $anonymize_ip_address ) && $anonymize_ip_address ) {
+		$anonymize_ip = $this->get_data( 'anonymize-ip' );
+		if ( ! is_wp_error( $anonymize_ip ) && $anonymize_ip ) {
 			// See https://developers.google.com/analytics/devguides/collection/gtagjs/ip-anonymization.
 			$gtag_opt['anonymize_ip'] = true;
 		}
@@ -494,7 +494,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			'amp-client-id-opt-in'         => '',
 			'tracking-disabled'            => '',
 			// GET.
-			'anonymize-ip-address'         => '',
+			'anonymize-ip'                 => '',
 			'goals'                        => 'analytics',
 			'accounts-properties-profiles' => 'analytics',
 			'properties-profiles'          => 'analytics',
@@ -634,11 +634,11 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						}
 						return $option['internalWebPropertyID'];
 					};
-				case 'anonymize-ip-address':
+				case 'anonymize-ip':
 					return function() {
 						$default = true;
 						$option  = (array) $this->options->get( self::OPTION );
-						return isset( $option['anonymizeIPAddress'] ) ? (bool) $option['anonymizeIPAddress'] : $default;
+						return isset( $option['anonymizeIP'] ) ? (bool) $option['anonymizeIP'] : $default;
 					};
 				case 'use-snippet':
 					return function() {
@@ -1039,7 +1039,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'internalWebPropertyID' => $internal_web_property_id,
 							'profileID'             => $profile_id,
 							'useSnippet'            => ! empty( $data['useSnippet'] ),
-							'anonymizeIPAddress'    => (bool) $data['anonymizeIPAddress'],
+							'anonymizeIP'           => (bool) $data['anonymizeIP'],
 							'ampClientIDOptIn'      => ! empty( $data['ampClientIDOptIn'] ),
 							'trackingDisabled'      => (array) $data['trackingDisabled'],
 						);
