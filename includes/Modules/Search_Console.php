@@ -151,7 +151,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:sites':
 			case 'GET:matched-sites':
 				return $this->get_webmasters_service()->sites->listSites();
 			case 'GET:searchanalytics':
@@ -217,6 +216,8 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						'permissionLevel' => $site->getPermissionLevel(),
 					);
 				};
+			case 'GET:sites':
+				return $this->get_webmasters_service()->sites->listSites();
 		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
@@ -234,9 +235,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:sites':
-				/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
-				return $this->map_sites( (array) $response->getSiteEntry() );
 			case 'GET:matched-sites':
 				/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
 				$sites            = $this->map_sites( (array) $response->getSiteEntry() );
@@ -269,6 +267,9 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 				);
 			case 'GET:searchanalytics':
 				return $response->getRows();
+			case 'GET:sites':
+				/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
+				return $this->map_sites( (array) $response->getSiteEntry() );
 		}
 
 		return $response;
