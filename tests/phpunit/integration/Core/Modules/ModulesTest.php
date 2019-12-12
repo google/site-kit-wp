@@ -43,16 +43,35 @@ class ModulesTest extends TestCase {
 	public function test_get_active_modules() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$active = array_map( function ( $instance ) {
-			return get_class( $instance );
-		}, $modules->get_active_modules() );
-
+		$always_on_modules = array(
+			'search-console'    => 'Google\\Site_Kit\\Modules\\Search_Console',
+			'site-verification' => 'Google\\Site_Kit\\Modules\\Site_Verification',
+		);
 		$this->assertEqualSets(
-			array(
-				'search-console'    => 'Google\\Site_Kit\\Modules\\Search_Console',
-				'site-verification' => 'Google\\Site_Kit\\Modules\\Site_Verification',
+			$always_on_modules,
+			array_map( 'get_class', $modules->get_active_modules() )
+		);
+
+		// Active modules other than always-on modules are stored in an option.
+
+		// Active modules will fallback to legacy option if set.
+		update_option( 'googlesitekit-active-modules', array( 'analytics' ) );
+
+		$this->assertEquals(
+			$always_on_modules + array(
+				'analytics' => 'Google\\Site_Kit\\Modules\\Analytics',
 			),
-			$active
+			array_map( 'get_class', $modules->get_active_modules() )
+		);
+
+		// If the modern option is set, it will take precedence over legacy (set or not).
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'adsense' ) );
+
+		$this->assertEquals(
+			$always_on_modules + array(
+				'adsense' => 'Google\\Site_Kit\\Modules\\AdSense',
+			),
+			array_map( 'get_class', $modules->get_active_modules() )
 		);
 	}
 
@@ -152,16 +171,16 @@ class ModulesTest extends TestCase {
 	public function test_is_module_active() {
 		$modules     = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$fake_module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		delete_option( 'googlesitekit-active-modules' );
+		delete_option( Modules::OPTION_ACTIVE_MODULES );
 
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
 
 		// Modules can be active by presence in active modules option
 		$this->assertFalse( $modules->is_module_active( 'fake-module' ) );
-		update_option( 'googlesitekit-active-modules', array( 'fake-module' ) );
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'fake-module' ) );
 		$this->assertTrue( $modules->is_module_active( 'fake-module' ) );
 
-		delete_option( 'googlesitekit-active-modules' );
+		delete_option( Modules::OPTION_ACTIVE_MODULES );
 
 		// Some modules are always active
 		$this->assertFalse( $modules->is_module_active( 'fake-module' ) );
@@ -196,11 +215,11 @@ class ModulesTest extends TestCase {
 
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
 
-		$this->assertNotContains( 'fake-module', get_option( 'googlesitekit-active-modules', array() ) );
+		$this->assertNotContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ) );
 		$this->assertEquals( 0, $activation_invocations );
 		$this->assertTrue( $modules->activate_module( 'fake-module' ) );
 		$this->assertEquals( 1, $activation_invocations );
-		$this->assertContains( 'fake-module', get_option( 'googlesitekit-active-modules', array() ) );
+		$this->assertContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ) );
 
 		// Subsequent calls to activate an active module do not call the on_activation method
 		$this->assertTrue( $modules->activate_module( 'fake-module' ) );
@@ -221,20 +240,20 @@ class ModulesTest extends TestCase {
 		} );
 
 		$this->force_set_property( $modules, 'modules', array( 'fake-module' => $fake_module ) );
-		update_option( 'googlesitekit-active-modules', array( 'fake-module' ) );
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'fake-module' ) );
 
-		$this->assertContains( 'fake-module', get_option( 'googlesitekit-active-modules', array() ) );
+		$this->assertContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ) );
 
 		// Force-active modules cannot be deactivated
 		$fake_module->set_force_active( true );
 		$this->assertFalse( $modules->deactivate_module( 'fake-module' ) );
 		$this->assertEquals( 0, $deactivation_invocations );
-		$this->assertContains( 'fake-module', get_option( 'googlesitekit-active-modules', array() ) );
+		$this->assertContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ) );
 
 		$fake_module->set_force_active( false );
 		$this->assertTrue( $modules->deactivate_module( 'fake-module' ) );
 		$this->assertEquals( 1, $deactivation_invocations );
-		$this->assertNotContains( 'fake-module', get_option( 'googlesitekit-active-modules', array() ) );
+		$this->assertNotContains( 'fake-module', get_option( Modules::OPTION_ACTIVE_MODULES, array() ) );
 
 		// Subsequent calls to deactivate an inactive module do not call the on_deactivation method
 		$this->assertTrue( $modules->deactivate_module( 'fake-module' ) );
