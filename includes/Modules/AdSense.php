@@ -361,292 +361,292 @@ tag_partner: "site_kit"
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
 	protected function create_data_request( Data_Request $data ) {
-			switch ( "{$data->method}:{$data->datapoint}" ) {
-				case 'GET:connection':
-					return function() {
-						$option = (array) $this->options->get( self::OPTION );
-						// TODO: Remove this at some point (migration of old options).
-						if ( isset( $option['account_id'] ) || isset( $option['client_id'] ) || isset( $option['account_status'] ) ) {
-							if ( isset( $option['account_id'] ) ) {
-								if ( ! isset( $option['accountID'] ) ) {
-									$option['accountID'] = $option['account_id'];
-								}
-								unset( $option['account_id'] );
-							}
-							if ( isset( $option['client_id'] ) ) {
-								if ( ! isset( $option['clientID'] ) ) {
-									$option['clientID'] = $option['client_id'];
-								}
-								unset( $option['client_id'] );
-							}
-							if ( isset( $option['account_status'] ) ) {
-								if ( ! isset( $option['accountStatus'] ) ) {
-									$option['accountStatus'] = $option['account_status'];
-								}
-								unset( $option['account_status'] );
-							}
-							$this->options->set( self::OPTION, $option );
-						}
-						// TODO: Remove this at some point (migration of old 'accountId' option).
-						if ( isset( $option['accountId'] ) ) {
-							if ( ! isset( $option['accountID'] ) ) {
-								$option['accountID'] = $option['accountId'];
-							}
-							unset( $option['accountId'] );
-						}
-
-						// TODO: Remove this at some point (migration of old 'clientId' option).
-						if ( isset( $option['clientId'] ) ) {
-							if ( ! isset( $option['clientID'] ) ) {
-								$option['clientID'] = $option['clientId'];
-							}
-							unset( $option['clientId'] );
-						}
-
-						$defaults = array(
-							'accountID'     => '',
-							'clientID'      => '',
-							'accountStatus' => '',
-						);
-						return array_intersect_key( array_merge( $defaults, $option ), $defaults );
-					};
-				case 'GET:account-id':
-					return function() {
-						$option = (array) $this->options->get( self::OPTION );
-						// TODO: Remove this at some point (migration of old option).
+		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:connection':
+				return function() {
+					$option = (array) $this->options->get( self::OPTION );
+					// TODO: Remove this at some point (migration of old options).
+					if ( isset( $option['account_id'] ) || isset( $option['client_id'] ) || isset( $option['account_status'] ) ) {
 						if ( isset( $option['account_id'] ) ) {
 							if ( ! isset( $option['accountID'] ) ) {
 								$option['accountID'] = $option['account_id'];
 							}
 							unset( $option['account_id'] );
-							$this->options->set( self::OPTION, $option );
 						}
-						if ( empty( $option['accountID'] ) ) {
-							return new WP_Error( 'account_id_not_set', __( 'AdSense account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-						}
-						return $option['accountID'];
-					};
-				case 'GET:client-id':
-					return function() {
-						$option = (array) $this->options->get( self::OPTION );
-						// TODO: Remove this at some point (migration of old option).
 						if ( isset( $option['client_id'] ) ) {
 							if ( ! isset( $option['clientID'] ) ) {
 								$option['clientID'] = $option['client_id'];
 							}
 							unset( $option['client_id'] );
-							$this->options->set( self::OPTION, $option );
 						}
-						if ( empty( $option['clientID'] ) ) {
-							return new WP_Error( 'client_id_not_set', __( 'AdSense client ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-						}
-						return $option['clientID'];
-					};
-				case 'GET:use-snippet':
-					return function() {
-						$option = (array) $this->options->get( self::OPTION );
-
-						return ! empty( $option['useSnippet'] );
-					};
-				case 'GET:account-status':
-					return function() {
-						$option = (array) $this->options->get( self::OPTION );
-						// TODO: Remove this at some point (migration of old option).
 						if ( isset( $option['account_status'] ) ) {
 							if ( ! isset( $option['accountStatus'] ) ) {
 								$option['accountStatus'] = $option['account_status'];
 							}
 							unset( $option['account_status'] );
-							$this->options->set( self::OPTION, $option );
-						}
-						if ( empty( $option['accountStatus'] ) ) {
-							return new WP_Error( 'account_status_not_set', __( 'AdSense account status not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-						}
-						return $option['accountStatus'];
-					};
-				case 'GET:account-url':
-					return function() {
-						$account_id = $this->get_data( 'account-id' );
-						if ( ! is_wp_error( $account_id ) && $account_id ) {
-							return sprintf( 'https://www.google.com/adsense/new/%s/home', $account_id );
-						}
-						return 'https://www.google.com/adsense/signup/new';
-					};
-				case 'GET:reports-url':
-					return function() {
-						$account_id = $this->get_data( 'account-id' );
-						if ( ! is_wp_error( $account_id ) && $account_id ) {
-							return sprintf( 'https://www.google.com/adsense/new/u/0/%s/main/viewreports', $account_id );
-						}
-						return 'https://www.google.com/adsense/start';
-					};
-				case 'GET:notifications':
-					return function() {
-						$alerts = $this->get_data( 'alerts' );
-						if ( is_wp_error( $alerts ) || empty( $alerts ) ) {
-							return array();
-						}
-						$alerts = array_filter(
-							$alerts,
-							function( Google_Service_AdSense_Alert $alert ) {
-								return 'SEVERE' === $alert->getSeverity();
-							}
-						);
-
-						// There is no SEVERE alert, return empty.
-						if ( empty( $alerts ) ) {
-							return array();
-						}
-
-						/**
-						 * First Alert
-						 *
-						 * @var Google_Service_AdSense_Alert $alert
-						 */
-						$alert = array_shift( $alerts );
-						return array(
-							array(
-								'id'            => 'adsense-notification',
-								'description'   => $alert->getMessage(),
-								'isDismissible' => true,
-								'winImage'      => 'sun-small.png',
-								'format'        => 'large',
-								'severity'      => 'win-info',
-								'ctaURL'        => $this->get_data( 'account-url' ),
-								'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
-								'ctaTarget'     => '_blank',
-							),
-						);
-					};
-				case 'GET:accounts':
-					$service = $this->get_service( 'adsense' );
-					return $service->accounts->listAccounts();
-				case 'GET:alerts':
-					if ( ! isset( $data['accountID'] ) ) {
-						$data['accountID'] = $this->get_data( 'account-id' );
-						if ( is_wp_error( $data['accountID'] ) || ! $data['accountID'] ) {
-							/* translators: %s: Missing parameter name */
-							return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
-						}
-					}
-					$service = $this->get_service( 'adsense' );
-					return $service->accounts_alerts->listAccountsAlerts( $data['accountID'] );
-				case 'GET:clients':
-					$service = $this->get_service( 'adsense' );
-					return $service->adclients->listAdclients();
-				case 'GET:urlchannels':
-					if ( ! isset( $data['clientID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
-					}
-					$service = $this->get_service( 'adsense' );
-					return $service->urlchannels->listUrlchannels( $data['clientID'] );
-				case 'GET:earnings':
-					$dates = $this->date_range_to_dates( $data['dateRange'] ?: 'last-28-days' );
-
-					if ( is_wp_error( $dates ) ) {
-						return $dates;
-					}
-
-					list ( $start_date, $end_date ) = $dates;
-
-					$dimensions = (array) $data['dimensions'];
-					$args       = compact( 'start_date', 'end_date', 'dimensions' );
-
-					if ( isset( $data['limit'] ) ) {
-						$args['row_limit'] = $data['limit'];
-					}
-
-					return $this->create_adsense_earning_data_request( $args );
-				case 'POST:connection':
-					return function() use ( $data ) {
-						$option = (array) $this->options->get( self::OPTION );
-						$keys   = array( 'accountID', 'clientID', 'accountStatus' );
-						foreach ( $keys as $key ) {
-							if ( isset( $data[ $key ] ) ) {
-								$option[ $key ] = $data[ $key ];
-							}
 						}
 						$this->options->set( self::OPTION, $option );
-						return true;
-					};
-				case 'POST:account-id':
-					if ( ! isset( $data['accountID'] ) ) {
+					}
+					// TODO: Remove this at some point (migration of old 'accountId' option).
+					if ( isset( $option['accountId'] ) ) {
+						if ( ! isset( $option['accountID'] ) ) {
+							$option['accountID'] = $option['accountId'];
+						}
+						unset( $option['accountId'] );
+					}
+
+					// TODO: Remove this at some point (migration of old 'clientId' option).
+					if ( isset( $option['clientId'] ) ) {
+						if ( ! isset( $option['clientID'] ) ) {
+							$option['clientID'] = $option['clientId'];
+						}
+						unset( $option['clientId'] );
+					}
+
+					$defaults = array(
+						'accountID'     => '',
+						'clientID'      => '',
+						'accountStatus' => '',
+					);
+					return array_intersect_key( array_merge( $defaults, $option ), $defaults );
+				};
+			case 'GET:account-id':
+				return function() {
+					$option = (array) $this->options->get( self::OPTION );
+					// TODO: Remove this at some point (migration of old option).
+					if ( isset( $option['account_id'] ) ) {
+						if ( ! isset( $option['accountID'] ) ) {
+							$option['accountID'] = $option['account_id'];
+						}
+						unset( $option['account_id'] );
+						$this->options->set( self::OPTION, $option );
+					}
+					if ( empty( $option['accountID'] ) ) {
+						return new WP_Error( 'account_id_not_set', __( 'AdSense account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
+					}
+					return $option['accountID'];
+				};
+			case 'GET:client-id':
+				return function() {
+					$option = (array) $this->options->get( self::OPTION );
+					// TODO: Remove this at some point (migration of old option).
+					if ( isset( $option['client_id'] ) ) {
+						if ( ! isset( $option['clientID'] ) ) {
+							$option['clientID'] = $option['client_id'];
+						}
+						unset( $option['client_id'] );
+						$this->options->set( self::OPTION, $option );
+					}
+					if ( empty( $option['clientID'] ) ) {
+						return new WP_Error( 'client_id_not_set', __( 'AdSense client ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
+					}
+					return $option['clientID'];
+				};
+			case 'GET:use-snippet':
+				return function() {
+					$option = (array) $this->options->get( self::OPTION );
+
+					return ! empty( $option['useSnippet'] );
+				};
+			case 'GET:account-status':
+				return function() {
+					$option = (array) $this->options->get( self::OPTION );
+					// TODO: Remove this at some point (migration of old option).
+					if ( isset( $option['account_status'] ) ) {
+						if ( ! isset( $option['accountStatus'] ) ) {
+							$option['accountStatus'] = $option['account_status'];
+						}
+						unset( $option['account_status'] );
+						$this->options->set( self::OPTION, $option );
+					}
+					if ( empty( $option['accountStatus'] ) ) {
+						return new WP_Error( 'account_status_not_set', __( 'AdSense account status not set.', 'google-site-kit' ), array( 'status' => 404 ) );
+					}
+					return $option['accountStatus'];
+				};
+			case 'GET:account-url':
+				return function() {
+					$account_id = $this->get_data( 'account-id' );
+					if ( ! is_wp_error( $account_id ) && $account_id ) {
+						return sprintf( 'https://www.google.com/adsense/new/%s/home', $account_id );
+					}
+					return 'https://www.google.com/adsense/signup/new';
+				};
+			case 'GET:reports-url':
+				return function() {
+					$account_id = $this->get_data( 'account-id' );
+					if ( ! is_wp_error( $account_id ) && $account_id ) {
+						return sprintf( 'https://www.google.com/adsense/new/u/0/%s/main/viewreports', $account_id );
+					}
+					return 'https://www.google.com/adsense/start';
+				};
+			case 'GET:notifications':
+				return function() {
+					$alerts = $this->get_data( 'alerts' );
+					if ( is_wp_error( $alerts ) || empty( $alerts ) ) {
+						return array();
+					}
+					$alerts = array_filter(
+						$alerts,
+						function( Google_Service_AdSense_Alert $alert ) {
+							return 'SEVERE' === $alert->getSeverity();
+						}
+					);
+
+					// There is no SEVERE alert, return empty.
+					if ( empty( $alerts ) ) {
+						return array();
+					}
+
+					/**
+					 * First Alert
+					 *
+					 * @var Google_Service_AdSense_Alert $alert
+					 */
+					$alert = array_shift( $alerts );
+					return array(
+						array(
+							'id'            => 'adsense-notification',
+							'description'   => $alert->getMessage(),
+							'isDismissible' => true,
+							'winImage'      => 'sun-small.png',
+							'format'        => 'large',
+							'severity'      => 'win-info',
+							'ctaURL'        => $this->get_data( 'account-url' ),
+							'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
+							'ctaTarget'     => '_blank',
+						),
+					);
+				};
+			case 'GET:accounts':
+				$service = $this->get_service( 'adsense' );
+				return $service->accounts->listAccounts();
+			case 'GET:alerts':
+				if ( ! isset( $data['accountID'] ) ) {
+					$data['accountID'] = $this->get_data( 'account-id' );
+					if ( is_wp_error( $data['accountID'] ) || ! $data['accountID'] ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 					}
-					return function() use ( $data ) {
-						$option              = (array) $this->options->get( self::OPTION );
-						$option['accountID'] = $data['accountID'];
-						$this->options->set( self::OPTION, $option );
-						return true;
-					};
-				case 'POST:client-id':
-					if ( ! isset( $data['clientID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
-					}
-					return function() use ( $data ) {
-						$option             = (array) $this->options->get( self::OPTION );
-						$option['clientID'] = $data['clientID'];
-						$this->options->set( self::OPTION, $option );
-						return true;
-					};
-				case 'POST:use-snippet':
-					if ( ! isset( $data['useSnippet'] ) ) {
-						return new WP_Error(
-							'missing_required_param',
-							sprintf(
-								/* translators: %s: Missing parameter name */
-								__( 'Request parameter is empty: %s.', 'google-site-kit' ),
-								'useSnippet'
-							),
-							array( 'status' => 400 )
-						);
-					}
+				}
+				$service = $this->get_service( 'adsense' );
+				return $service->accounts_alerts->listAccountsAlerts( $data['accountID'] );
+			case 'GET:clients':
+				$service = $this->get_service( 'adsense' );
+				return $service->adclients->listAdclients();
+			case 'GET:urlchannels':
+				if ( ! isset( $data['clientID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
+				}
+				$service = $this->get_service( 'adsense' );
+				return $service->urlchannels->listUrlchannels( $data['clientID'] );
+			case 'GET:earnings':
+				$dates = $this->date_range_to_dates( $data['dateRange'] ?: 'last-28-days' );
 
-					return function() use ( $data ) {
-						$option               = (array) $this->options->get( self::OPTION );
-						$option['useSnippet'] = (bool) $data['useSnippet'];
+				if ( is_wp_error( $dates ) ) {
+					return $dates;
+				}
 
-						$this->options->set( self::OPTION, $option );
+				list ( $start_date, $end_date ) = $dates;
 
-						return true;
-					};
-				case 'POST:account-status':
-					if ( ! isset( $data['accountStatus'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountStatus' ), array( 'status' => 400 ) );
-					}
-					return function() use ( $data ) {
-						$option                  = (array) $this->options->get( self::OPTION );
-						$option['accountStatus'] = $data['accountStatus'];
-						$this->options->set( self::OPTION, $option );
-						return true;
-					};
-				case 'POST:setup-complete':
-					if ( ! isset( $data['clientID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
-					}
-					return function() use ( $data ) {
-						$option                  = (array) $this->options->get( self::OPTION );
-						$option['setupComplete'] = true;
-						$option['clientID']      = $data['clientID'];
-						$option['useSnippet']    = isset( $option['useSnippet'] ) ? true : $data['useSnippet'];
+				$dimensions = (array) $data['dimensions'];
+				$args       = compact( 'start_date', 'end_date', 'dimensions' );
 
-						// Set useSnippet explicitly using $data param, otherwise default to true if not set in option.
-						if ( isset( $data['useSnippet'] ) ) {
-							$option['useSnippet'] = $data['useSnippet'];
-						} elseif ( ! isset( $option['useSnippet'] ) ) {
-							$option['useSnippet'] = true;
+				if ( isset( $data['limit'] ) ) {
+					$args['row_limit'] = $data['limit'];
+				}
+
+				return $this->create_adsense_earning_data_request( $args );
+			case 'POST:connection':
+				return function() use ( $data ) {
+					$option = (array) $this->options->get( self::OPTION );
+					$keys   = array( 'accountID', 'clientID', 'accountStatus' );
+					foreach ( $keys as $key ) {
+						if ( isset( $data[ $key ] ) ) {
+							$option[ $key ] = $data[ $key ];
 						}
+					}
+					$this->options->set( self::OPTION, $option );
+					return true;
+				};
+			case 'POST:account-id':
+				if ( ! isset( $data['accountID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$option              = (array) $this->options->get( self::OPTION );
+					$option['accountID'] = $data['accountID'];
+					$this->options->set( self::OPTION, $option );
+					return true;
+				};
+			case 'POST:client-id':
+				if ( ! isset( $data['clientID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$option             = (array) $this->options->get( self::OPTION );
+					$option['clientID'] = $data['clientID'];
+					$this->options->set( self::OPTION, $option );
+					return true;
+				};
+			case 'POST:use-snippet':
+				if ( ! isset( $data['useSnippet'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						sprintf(
+							/* translators: %s: Missing parameter name */
+							__( 'Request parameter is empty: %s.', 'google-site-kit' ),
+							'useSnippet'
+						),
+						array( 'status' => 400 )
+					);
+				}
 
-						$this->options->set( self::OPTION, $option );
+				return function() use ( $data ) {
+					$option               = (array) $this->options->get( self::OPTION );
+					$option['useSnippet'] = (bool) $data['useSnippet'];
 
-						return true;
-					};
-			}
+					$this->options->set( self::OPTION, $option );
+
+					return true;
+				};
+			case 'POST:account-status':
+				if ( ! isset( $data['accountStatus'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountStatus' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$option                  = (array) $this->options->get( self::OPTION );
+					$option['accountStatus'] = $data['accountStatus'];
+					$this->options->set( self::OPTION, $option );
+					return true;
+				};
+			case 'POST:setup-complete':
+				if ( ! isset( $data['clientID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$option                  = (array) $this->options->get( self::OPTION );
+					$option['setupComplete'] = true;
+					$option['clientID']      = $data['clientID'];
+					$option['useSnippet']    = isset( $option['useSnippet'] ) ? true : $data['useSnippet'];
+
+					// Set useSnippet explicitly using $data param, otherwise default to true if not set in option.
+					if ( isset( $data['useSnippet'] ) ) {
+						$option['useSnippet'] = $data['useSnippet'];
+					} elseif ( ! isset( $option['useSnippet'] ) ) {
+						$option['useSnippet'] = true;
+					}
+
+					$this->options->set( self::OPTION, $option );
+
+					return true;
+				};
+		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
 	}
@@ -662,31 +662,30 @@ tag_partner: "site_kit"
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
-			switch ( "{$data->method}:{$data->datapoint}" ) {
-				case 'GET:accounts':
-					// Store the matched account as soon as we have it.
-					$accounts = $response->getItems();
-					if ( ! empty( $accounts ) ) {
-						$account_id = $this->get_data( 'account-id' );
-						if ( is_wp_error( $account_id ) || ! $account_id ) {
-							$this->set_data( 'account-id', array( 'accountID' => $accounts[0]->id ) );
-						}
+		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:accounts':
+				// Store the matched account as soon as we have it.
+				$accounts = $response->getItems();
+				if ( ! empty( $accounts ) ) {
+					$account_id = $this->get_data( 'account-id' );
+					if ( is_wp_error( $account_id ) || ! $account_id ) {
+						$this->set_data( 'account-id', array( 'accountID' => $accounts[0]->id ) );
 					}
-					// TODO: Parse this response to a regular array.
-					return $accounts;
-				case 'GET:alerts':
-					// TODO: Parse this response to a regular array.
-					return $response->getItems();
-				case 'GET:clients':
-					// TODO: Parse this response to a regular array.
-					return $response->getItems();
-				case 'GET:urlchannels':
-					// TODO: Parse this response to a regular array.
-					return $response->getItems();
-				case 'GET:earnings':
-					return $response;
-			}
-
+				}
+				// TODO: Parse this response to a regular array.
+				return $accounts;
+			case 'GET:alerts':
+				// TODO: Parse this response to a regular array.
+				return $response->getItems();
+			case 'GET:clients':
+				// TODO: Parse this response to a regular array.
+				return $response->getItems();
+			case 'GET:urlchannels':
+				// TODO: Parse this response to a regular array.
+				return $response->getItems();
+			case 'GET:earnings':
+				return $response;
+		}
 
 		return $response;
 	}
