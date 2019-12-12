@@ -130,39 +130,11 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
 	protected function create_data_request( Data_Request $data ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
-
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
+			switch ( "{$data->method}:{$data->datapoint}" ) {
 				case 'GET:verified-sites':
 					return $this->get_siteverification_service()->webResource->listWebResource();
 				case 'GET:verification':
 					return $this->get_siteverification_service()->webResource->listWebResource();
-				case 'GET:verification-token':
-					$existing_token = $this->authentication->verification_meta()->get();
-
-					if ( ! empty( $existing_token ) ) {
-						return function() use ( $existing_token ) {
-							return array(
-								'method' => 'META',
-								'token'  => $existing_token,
-							);
-						};
-					}
-
-					$current_url = ! empty( $data['siteURL'] ) ? $data['siteURL'] : $this->context->get_reference_site_url();
-					$site        = new Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequestSite();
-					$site->setIdentifier( $current_url );
-					$site->setType( 'SITE' );
-					$request = new Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequest();
-					$request->setSite( $site );
-					$request->setVerificationMethod( 'META' );
-
-					return $this->get_siteverification_service()->webResource->getToken( $request );
-			}
-		} elseif ( 'POST' === $method ) {
-			switch ( $datapoint ) {
 				case 'POST:verification':
 					if ( ! isset( $data['siteURL'] ) ) {
 						/* translators: %s: Missing parameter name */
@@ -242,8 +214,28 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 							'verified'   => true,
 						);
 					};
+				case 'GET:verification-token':
+					$existing_token = $this->authentication->verification_meta()->get();
+
+					if ( ! empty( $existing_token ) ) {
+						return function() use ( $existing_token ) {
+							return array(
+								'method' => 'META',
+								'token'  => $existing_token,
+							);
+						};
+					}
+
+					$current_url = ! empty( $data['siteURL'] ) ? $data['siteURL'] : $this->context->get_reference_site_url();
+					$site        = new Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequestSite();
+					$site->setIdentifier( $current_url );
+					$site->setType( 'SITE' );
+					$request = new Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequest();
+					$request->setSite( $site );
+					$request->setVerificationMethod( 'META' );
+
+					return $this->get_siteverification_service()->webResource->getToken( $request );
 			}
-		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
 	}
@@ -259,11 +251,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
-
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
+			switch ( "{$data->method}:{$data->datapoint}" ) {
 				case 'GET:verified-sites':
 					$items = $response->getItems();
 					$data  = array();
@@ -328,7 +316,6 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 						'token'  => $response->getToken(),
 					);
 			}
-		}
 
 		return $response;
 	}
