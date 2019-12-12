@@ -209,7 +209,7 @@ final class OAuth_Client {
 		$this->google_client->setScopes( $this->get_required_scopes() );
 		$this->google_client->prepareScopes();
 
-		$profile = ( new Profile( $this->user_options ) )->get();
+		$profile = $this->profile->get();
 		if ( ! empty( $profile['email'] ) ) {
 			$this->google_client->setLoginHint( $profile['email'] );
 		}
