@@ -364,6 +364,45 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:account-id':
+				return function() {
+					$option = (array) $this->options->get( self::OPTION );
+					// TODO: Remove this at some point (migration of old option).
+					if ( isset( $option['account_id'] ) ) {
+						if ( ! isset( $option['accountID'] ) ) {
+							$option['accountID'] = $option['account_id'];
+						}
+						unset( $option['account_id'] );
+						$this->options->set( self::OPTION, $option );
+					}
+
+					// TODO: Remove this at some point (migration of old 'accountId' option).
+					if ( isset( $option['accountId'] ) ) {
+						if ( ! isset( $option['accountID'] ) ) {
+							$option['accountID'] = $option['accountId'];
+						}
+						unset( $option['accountId'] );
+					}
+
+					if ( empty( $option['accountID'] ) ) {
+						return new WP_Error( 'account_id_not_set', __( 'Tag Manager account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
+					}
+					return $option['accountID'];
+				};
+			case 'POST:account-id':
+				if ( ! isset( $data['accountID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$option              = (array) $this->options->get( self::OPTION );
+					$option['accountID'] = $data['accountID'];
+					$this->options->set( self::OPTION, $option );
+					return true;
+				};
+			case 'GET:accounts-containers':
+				$service = $this->get_service( 'tagmanager' );
+				return $service->accounts->listAccounts();
 			case 'GET:connection':
 				return function() {
 					$option = (array) $this->options->get( self::OPTION );
@@ -423,42 +462,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 					$this->options->set( self::OPTION, $option );
 					return true;
 				};
-			case 'GET:account-id':
-				return function() {
-					$option = (array) $this->options->get( self::OPTION );
-					// TODO: Remove this at some point (migration of old option).
-					if ( isset( $option['account_id'] ) ) {
-						if ( ! isset( $option['accountID'] ) ) {
-							$option['accountID'] = $option['account_id'];
-						}
-						unset( $option['account_id'] );
-						$this->options->set( self::OPTION, $option );
-					}
-
-					// TODO: Remove this at some point (migration of old 'accountId' option).
-					if ( isset( $option['accountId'] ) ) {
-						if ( ! isset( $option['accountID'] ) ) {
-							$option['accountID'] = $option['accountId'];
-						}
-						unset( $option['accountId'] );
-					}
-
-					if ( empty( $option['accountID'] ) ) {
-						return new WP_Error( 'account_id_not_set', __( 'Tag Manager account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-					}
-					return $option['accountID'];
-				};
-			case 'POST:account-id':
-				if ( ! isset( $data['accountID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$option              = (array) $this->options->get( self::OPTION );
-					$option['accountID'] = $data['accountID'];
-					$this->options->set( self::OPTION, $option );
-					return true;
-				};
 			case 'GET:container-id':
 				return function() use ( $data ) {
 					$option = $this->options->get( self::OPTION );
@@ -502,9 +505,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 					$this->options->set( self::OPTION, $option );
 					return true;
 				};
-			case 'GET:accounts-containers':
-				$service = $this->get_service( 'tagmanager' );
-				return $service->accounts->listAccounts();
 			case 'GET:containers':
 				if ( ! isset( $data['accountID'] ) ) {
 					/* translators: %s: Missing parameter name */
