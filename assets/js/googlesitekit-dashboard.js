@@ -30,8 +30,14 @@ import NotificationCounter from 'GoogleComponents/notifications/notification-cou
  */
 import domReady from '@wordpress/dom-ready';
 import { setLocaleData } from '@wordpress/i18n';
-import { Component, render, Fragment } from '@wordpress/element';
+import { Component, Fragment, render } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+// import ErrorHandler from 'GoogleComponents/ErrorHandler';
+import ErrorComponent from 'GoogleComponents/ErrorHandler/ErrorComponent';
 
 class GoogleSitekitDashboard extends Component {
 	constructor( props ) {
@@ -44,13 +50,13 @@ class GoogleSitekitDashboard extends Component {
 		setLocaleData( googlesitekit.locale, 'google-site-kit' );
 	}
 
-	componentDidCatch( error, info ) {
-		this.setState( {
-			hasError: true,
-			error,
-			info,
-		} );
-	}
+	// componentDidCatch( error, info ) {
+	// 	this.setState( {
+	// 		hasError: true,
+	// 		error,
+	// 		info,
+	// 	} );
+	// }
 
 	render() {
 		const {
@@ -86,6 +92,7 @@ class GoogleSitekitDashboard extends Component {
 			<Fragment>
 				<NotificationCounter />
 				<DashboardApp />
+				<ErrorComponent />
 			</Fragment>
 		);
 	}

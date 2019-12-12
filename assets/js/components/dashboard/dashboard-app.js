@@ -36,6 +36,8 @@ import { __ } from '@wordpress/i18n';
  */
 import DashboardMain from './dashboard-main';
 import DashboardNotifications from './dashboard-notifications';
+// import ErrorHandler from '../ErrorHandler';
+import ErrorComponent from '../ErrorHandler/ErrorComponent';
 
 class DashboardApp extends Component {
 	render() {
@@ -71,6 +73,7 @@ class DashboardApp extends Component {
 								">
 									<DateRangeSelector />
 								</div>
+								<ErrorComponent />
 								<DashboardMain />
 							</div>
 						</div>

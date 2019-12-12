@@ -44,13 +44,13 @@ class GoogleSitekitDashboardDetails extends Component {
 		setLocaleData( googlesitekit.locale, 'google-site-kit' );
 	}
 
-	componentDidCatch( error, info ) {
-		this.setState( {
-			hasError: true,
-			error,
-			info,
-		} );
-	}
+	// componentDidCatch( error, info ) {
+	// 	this.setState( {
+	// 		hasError: true,
+	// 		error,
+	// 		info,
+	// 	} );
+	// }
 
 	render() {
 		const {

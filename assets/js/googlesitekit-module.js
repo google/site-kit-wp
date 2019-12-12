@@ -54,13 +54,13 @@ class GoogleSitekitModule extends Component {
 		};
 	}
 
-	componentDidCatch( error, info ) {
-		this.setState( {
-			hasError: true,
-			error,
-			info,
-		} );
-	}
+	// componentDidCatch( error, info ) {
+	// 	this.setState( {
+	// 		hasError: true,
+	// 		error,
+	// 		info,
+	// 	} );
+	// }
 
 	render() {
 		const {
