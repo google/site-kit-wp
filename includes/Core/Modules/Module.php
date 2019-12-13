@@ -433,17 +433,25 @@ abstract class Module {
 	 * @since 1.0.0
 	 *
 	 * @param Data_Request $data Data request object.
-	 *
 	 * @return mixed Data on success, or WP_Error on failure.
+	 *
+	 * phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.Missing
 	 */
 	final protected function execute_data_request( Data_Request $data ) {
-		$client     = $this->get_client();
-		$orig_defer = $client->shouldDefer();
-		$client->setDefer( true );
+		$datapoint_services = $this->get_datapoint_services();
+
+		// We only need to initialize the client if this datapoint relies on a service.
+		if ( ! empty( $datapoint_services[ $data->datapoint ] ) ) {
+			$client     = $this->get_client();
+			$orig_defer = $client->shouldDefer();
+			$client->setDefer( true );
+		}
 
 		$request = $this->create_data_request( $data );
 
-		$client->setDefer( $orig_defer );
+		if ( isset( $client ) ) {
+			$client->setDefer( $orig_defer );
+		}
 
 		if ( is_wp_error( $request ) ) {
 			return $request;
@@ -452,8 +460,10 @@ abstract class Module {
 		try {
 			if ( ! $request instanceof RequestInterface ) {
 				$response = call_user_func( $request );
-			} else {
+			} elseif ( isset( $client ) ) {
 				$response = $client->execute( $request );
+			} else {
+				throw new Exception( __( 'Datapoint registered incorrectly.', 'google-site-kit' ) );
 			}
 		} catch ( Exception $e ) {
 			return $this->exception_to_error( $e, $data->datapoint );
