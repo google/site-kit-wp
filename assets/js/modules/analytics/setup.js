@@ -682,7 +682,7 @@ class AnalyticsSetup extends Component {
 						</p>
 					</div>
 				}
-				{ onSettingsPage && useSnippet && ! ampClientIDOptIn && ( ! ampEnabled || ( ampEnabled && ampMode !== 'primary' ) ) && (
+				{ onSettingsPage && useSnippet && ampMode !== 'primary' && (
 					<div className="googlesitekit-setup-module__input">
 						<Switch
 							id="anonymizeIP"
@@ -691,7 +691,7 @@ class AnalyticsSetup extends Component {
 							checked={ anonymizeIP }
 							hideLabel={ false }
 						/>
-						<p>{ anonymizeIP ? __( 'IP addresses will be anonymized.', 'google-site-kit' ) : __( 'IP addresses will not be anonymized.', 'google-site-kit' ) } <Link href="https://support.google.com/analytics/answer/2763052" external inherit dangerouslySetInnerHTML={ { __html: __( 'Learn more<span class="screen-reader-text"> about IP anonymization.</span>', 'google-site-kit' ) } } /></p>
+						<p>{ anonymizeIP ? __( 'IP addresses will be anonymized.', 'google-site-kit' ) : __( 'IP addresses will not be anonymized.', 'google-site-kit' ) } <br /><Link href="https://support.google.com/analytics/answer/2763052" external inherit dangerouslySetInnerHTML={ { __html: __( 'Learn more<span class="screen-reader-text"> about IP anonymization.</span>', 'google-site-kit' ) } } /></p>
 					</div>
 				) }
 			</div>
@@ -738,7 +738,6 @@ class AnalyticsSetup extends Component {
 	renderForm() {
 		const {
 			anonymizeIP,
-			ampClientIDOptIn,
 			isLoading,
 			propertiesLoading,
 			profilesLoading,
@@ -765,7 +764,7 @@ class AnalyticsSetup extends Component {
 			disabledProperty = true;
 		}
 
-		const { ampEnabled, ampMode } = window.googlesitekit.admin;
+		const { ampMode } = window.googlesitekit.admin;
 		const { setupComplete } = googlesitekit.modules.analytics;
 
 		if ( isLoading ) {
@@ -841,7 +840,7 @@ class AnalyticsSetup extends Component {
 							</h5>
 						</div>
 					</div>
-					{ onSettingsPage && useSnippet && ! ampClientIDOptIn && ( ! ampEnabled || ( ampEnabled && ampMode !== 'primary' ) ) && (
+					{ onSettingsPage && useSnippet && ampMode !== 'primary' && (
 						<div className="googlesitekit-settings-module__meta-items">
 							<div className="
 								googlesitekit-settings-module__meta-item
