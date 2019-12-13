@@ -84,7 +84,7 @@ export const set = async ( key, value, _timestamp = undefined ) => {
 
 			return true;
 		} catch ( error ) {
-			global.console.warn( 'Encountered an unexpected storage error:', error );
+			window.console.warn( 'Encountered an unexpected storage error:', error );
 			return false;
 		}
 	}
@@ -110,7 +110,7 @@ export const deleteItem = async ( key ) => {
 
 			return true;
 		} catch ( error ) {
-			global.console.warn( 'Encountered an unexpected storage error:', error );
+			window.console.warn( 'Encountered an unexpected storage error:', error );
 			return false;
 		}
 	}
@@ -138,7 +138,7 @@ export const getKeys = async () => {
 
 			return keys;
 		} catch ( error ) {
-			global.console.warn( 'Encountered an unexpected storage error:', error );
+			window.console.warn( 'Encountered an unexpected storage error:', error );
 			return [];
 		}
 	}
