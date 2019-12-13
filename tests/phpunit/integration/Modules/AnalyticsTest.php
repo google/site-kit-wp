@@ -193,6 +193,7 @@ class AnalyticsTest extends TestCase {
 				'report',
 				'settings',
 				'tracking-disabled',
+				'anonymize-ip',
 			),
 			$analytics->get_datapoints()
 		);
