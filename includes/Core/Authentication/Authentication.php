@@ -502,7 +502,7 @@ final class Authentication {
 	private function inline_js_setup_data( $data ) {
 		$auth_client = $this->get_oauth_client();
 
-		$access_token = $auth_client->get_client()->getAccessToken();
+		$access_token = $auth_client->get_access_token();
 
 		$data['isSiteKitConnected'] = $this->credentials->has();
 		$data['isResettable']       = (bool) $this->options->get( Credentials::OPTION );
