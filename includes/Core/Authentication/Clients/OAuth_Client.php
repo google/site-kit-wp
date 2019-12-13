@@ -306,9 +306,6 @@ final class OAuth_Client {
 			isset( $authentication_token['expires_in'] ) ? $authentication_token['expires_in'] : '',
 			isset( $authentication_token['created'] ) ? $authentication_token['created'] : 0
 		);
-
-		$refresh_token = $this->get_client()->getRefreshToken();
-		$this->set_refresh_token( $refresh_token );
 	}
 
 	/**
