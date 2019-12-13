@@ -266,7 +266,12 @@ final class Context {
 			return false;
 		}
 
-		if ( method_exists( 'AMP_Theme_Support', 'get_support_mode' ) && defined( 'AMP_Theme_Support::STANDARD_MODE_SLUG' ) && defined( 'AMP_Theme_Support::TRANSITIONAL_MODE_SLUG' ) && defined( 'AMP_Theme_Support::READER_MODE_SLUG' ) ) {
+		$exposes_support_mode = method_exists( 'AMP_Theme_Support', 'get_support_mode' )
+			&& defined( 'AMP_Theme_Support::STANDARD_MODE_SLUG' )
+			&& defined( 'AMP_Theme_Support::TRANSITIONAL_MODE_SLUG' )
+			&& defined( 'AMP_Theme_Support::READER_MODE_SLUG' );
+
+		if ( $exposes_support_mode ) {
 			// If recent version, we can properly detect the mode.
 			$mode = AMP_Theme_Support::get_support_mode();
 
