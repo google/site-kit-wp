@@ -181,11 +181,8 @@ final class OAuth_Client {
 		}
 
 		if ( $this->using_proxy() ) {
-			$this->google_client = new Google_Proxy_Client(
-				array(
-					'proxy_base_path' => $this->google_proxy->url(),
-				)
-			);
+			$this->google_client = new Google_Proxy_Client();
+			$this->google_client->setProxyBasePath( $this->google_proxy->url() );
 		} else {
 			$this->google_client = new Google_Client();
 		}
@@ -221,14 +218,14 @@ final class OAuth_Client {
 			return $this->google_client;
 		}
 
-		$token = array(
-			'access_token'  => $access_token,
-			'expires_in'    => $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
-			'created'       => $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
-			'refresh_token' => $this->get_refresh_token(),
+		$this->google_client->setAccessToken(
+			array(
+				'access_token'  => $access_token,
+				'expires_in'    => $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
+				'created'       => $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
+				'refresh_token' => $this->get_refresh_token(),
+			)
 		);
-
-		$this->google_client->setAccessToken( $token );
 
 		// This is called when the client refreshes the access token on-the-fly.
 		$this->google_client->setTokenCallback(
@@ -238,9 +235,21 @@ final class OAuth_Client {
 			}
 		);
 
-		// If the token expired or is going to expire in the next 30 seconds.
-		if ( $this->google_client->isAccessTokenExpired() ) {
-			$this->refresh_token();
+		// This is called when refreshing the access token on-the-fly fails.
+		if ( $this->google_client instanceof Google_Proxy_Client ) {
+			$this->google_client->setTokenExceptionCallback(
+				function( Exception $e ) {
+					$error_code = $e->getMessage();
+					// Revoke and delete user connection data if the refresh token is invalid or expired.
+					if ( 'invalid_grant' === $error_code ) {
+						$this->revoke_token();
+					}
+					$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
+					if ( $e instanceof Google_Proxy_Exception ) {
+						$this->user_options->set( self::OPTION_PROXY_ACCESS_CODE, $e->getAccessCode() );
+					}
+				}
+			);
 		}
 
 		return $this->google_client;
@@ -248,6 +257,10 @@ final class OAuth_Client {
 
 	/**
 	 * Refreshes the access token.
+	 *
+	 * While this method can be used to explicitly refresh the current access token, the preferred way
+	 * should be to rely on the Google_Client to do that automatically whenever the current access token
+	 * has expired.
 	 *
 	 * @since 1.0.0
 	 */

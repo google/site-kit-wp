@@ -37,7 +37,15 @@ final class Google_Proxy_Client extends Google_Client {
 	 * @since 1.1.2
 	 * @var string
 	 */
-	protected $proxy_base_path = '';
+	protected $proxy_base_path = Google_Proxy::BASE_URL;
+
+	/**
+	 * Callback to pass a potential exception to while refreshing an access token.
+	 *
+	 * @since n.e.x.t
+	 * @var callable|null
+	 */
+	protected $token_exception_callback = null;
 
 	/**
 	 * Construct the Google Client.
@@ -47,11 +55,38 @@ final class Google_Proxy_Client extends Google_Client {
 	 * @param array $config Proxy client configuration.
 	 */
 	public function __construct( array $config = array() ) {
-		$this->proxy_base_path = ! empty( $config['proxy_base_path'] ) ? $config['proxy_base_path'] : Google_Proxy::BASE_URL;
-		$this->proxy_base_path = untrailingslashit( $this->proxy_base_path );
-		unset( $config['proxy_base_path'] );
+		if ( ! empty( $config['proxy_base_path'] ) ) {
+			$this->setProxyBasePath( $config['proxy_base_path'] );
+		}
+		if ( isset( $config['token_exception_callback'] ) ) {
+			$this->setTokenExceptionCallback( $config['token_exception_callback'] );
+		}
+
+		unset( $config['proxy_base_path'], $config['token_exception_callback'] );
 
 		parent::__construct( $config );
+	}
+
+	/**
+	 * Sets the base URL to the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $base_path Proxy base URL.
+	 */
+	public function setProxyBasePath( $base_path ) {
+		$this->proxy_base_path = untrailingslashit( $base_path );
+	}
+
+	/**
+	 * Sets the function to be called when fetching an access token results in an exception.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param callable $exception_callback Function accepting an exception as single parameter.
+	 */
+	public function setTokenExceptionCallback( callable $exception_callback ) {
+		$this->token_exception_callback = $exception_callback;
 	}
 
 	/**
@@ -184,8 +219,11 @@ final class Google_Proxy_Client extends Google_Client {
 					// Due to original callback signature this can only accept the token itself.
 					call_user_func( $callback, '', $creds['access_token'] );
 				}
-			} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement
-				// Ignore exceptions.
+			} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement
+				// Pass exception to special callback if provided.
+				if ( $this->token_exception_callback ) {
+					call_user_func( $this->token_exception_callback, $e );
+				}
 			}
 		}
 
