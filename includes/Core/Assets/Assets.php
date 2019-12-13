@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Assets;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Cache;
+use WP_Dependencies;
 
 /**
  * Class managing assets.
@@ -38,6 +39,14 @@ final class Assets {
 	 * @var array
 	 */
 	private $assets = array();
+
+	/**
+	 * Internal list of print callbacks already done.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	private $print_callbacks_done = array();
 
 	/**
 	 * Constructor.
@@ -72,6 +81,24 @@ final class Assets {
 				$this->enqueue_minimal_admin_script();
 			}
 		);
+
+		$scripts_print_callback = function() {
+			$scripts = wp_scripts();
+			$queue   = $scripts->queue;
+
+			$this->run_before_print_callbacks( $scripts, $queue );
+		};
+		add_action( 'wp_print_scripts', $scripts_print_callback );
+		add_action( 'admin_print_scripts', $scripts_print_callback );
+
+		$styles_print_callback = function() {
+			$styles = wp_styles();
+			$queue  = $styles->queue;
+
+			$this->run_before_print_callbacks( $styles, $queue );
+		};
+		add_action( 'wp_print_styles', $styles_print_callback );
+		add_action( 'admin_print_styles', $styles_print_callback );
 
 		add_filter(
 			'script_loader_tag',
@@ -311,9 +338,9 @@ final class Assets {
 			new Script(
 				'sitekit-commons',
 				array(
-					'src'           => $base_url . 'js/commons.js',
-					'dependencies'  => array( 'sitekit-vendor' ),
-					'post_register' => function( $handle ) use ( $base_url ) {
+					'src'          => $base_url . 'js/commons.js',
+					'dependencies' => array( 'sitekit-vendor' ),
+					'before_print' => function( $handle ) use ( $base_url ) {
 						$url_polyfill = (
 							'/*googlesitekit*/ ( typeof URL === \'function\') || ' .
 							'document.write( \'<script src="' . // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
@@ -323,6 +350,13 @@ final class Assets {
 						wp_add_inline_script(
 							'sitekit-commons',
 							$url_polyfill,
+							'before'
+						);
+
+						$inline_data = $this->get_inline_data();
+						wp_add_inline_script(
+							$handle,
+							'window.googlesitekit = ' . wp_json_encode( $inline_data ),
 							'before'
 						);
 					},
@@ -340,16 +374,8 @@ final class Assets {
 				'googlesitekit_admin',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-admin.js',
-					'dependencies' => $dependencies,
+					'dependencies' => array( 'wp-i18n' ),
 					'execution'    => 'defer',
-					'post_enqueue' => function( $handle ) use ( $base_url ) {
-						$inline_data = $this->get_inline_data();
-						wp_add_inline_script(
-							$handle,
-							'window.googlesitekit = ' . wp_json_encode( $inline_data ),
-							'before'
-						);
-					},
 				)
 			),
 			new Script(
@@ -383,7 +409,7 @@ final class Assets {
 				'googlesitekit_module_page',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-module.js',
-					'dependencies' => array( 'googlesitekit_admin' ),
+					'dependencies' => $dependencies,
 				)
 			),
 			new Script(
@@ -421,7 +447,7 @@ final class Assets {
 					'src'          => $base_url . 'js/googlesitekit-adminbar-loader.js',
 					'dependencies' => $dependencies,
 					'execution'    => 'defer',
-					'post_enqueue' => function( $handle ) use ( $base_url ) {
+					'before_print' => function( $handle ) use ( $base_url ) {
 						$inline_data = array(
 							'publicPath' => $base_url . 'js/',
 							'properties' => array(
@@ -435,14 +461,6 @@ final class Assets {
 							'window.googlesitekitAdminbar = ' . wp_json_encode( $inline_data ),
 							'after'
 						);
-						if ( ! is_admin() && is_admin_bar_showing() ) {
-							$inline_data = $this->get_inline_data();
-							wp_add_inline_script(
-								$handle,
-								'window.googlesitekit = ' . wp_json_encode( $inline_data ),
-								'after'
-							);
-						}
 					},
 				)
 			),
@@ -637,6 +655,37 @@ final class Assets {
 	}
 
 	/**
+	 * Executes all extra callbacks before printing a list of dependencies.
+	 *
+	 * This method ensures that such callbacks that run e.g. `wp_add_inline_script()` are executed just-in-time,
+	 * only when the asset is actually loaded in the current request.
+	 *
+	 * This method works recursively, also looking at dependencies, and supports both scripts and stylesheets.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Dependencies $dependencies WordPress dependencies class instance.
+	 * @param array           $handles      List of handles to run before print callbacks for.
+	 */
+	private function run_before_print_callbacks( WP_Dependencies $dependencies, array $handles ) {
+		foreach ( $handles as $handle ) {
+			if ( isset( $this->print_callbacks_done[ $handle ] ) ) {
+				continue;
+			}
+
+			if ( isset( $this->assets[ $handle ] ) ) {
+				$this->assets[ $handle ]->before_print();
+			}
+
+			if ( isset( $dependencies->registered[ $handle ] ) && is_array( $dependencies->registered[ $handle ]->deps ) ) {
+				$this->run_before_print_callbacks( $dependencies, $dependencies->registered[ $handle ]->deps );
+			}
+
+			$this->print_callbacks_done[ $handle ] = true;
+		}
+	}
+
+	/**
 	 * Gets all external assets.
 	 *
 	 * This method should only be called once as it will create a new instance for each asset.
@@ -655,10 +704,10 @@ final class Assets {
 			new Script(
 				'lodash',
 				array(
-					'src'           => $base_url . 'vendor/lodash' . $suffix . '.js',
-					'version'       => '4.17.15',
-					'fallback'      => true,
-					'post_register' => function( $handle ) {
+					'src'          => $base_url . 'vendor/lodash' . $suffix . '.js',
+					'version'      => '4.17.15',
+					'fallback'     => true,
+					'before_print' => function( $handle ) {
 						wp_add_inline_script( $handle, '/*googlesitekit*/ window.lodash = window.lodash || _.noConflict(); window.lodash_load = true;' );
 					},
 				)
@@ -690,11 +739,10 @@ final class Assets {
 			new Script(
 				'wp-polyfill',
 				array(
-					'src'           => $base_url . 'js/externals/wp-polyfill.js',
-					'version'       => '7.4.0',
-					'fallback'      => true,
-					// Note: For whatever reason, PHPCS reports weird errors here although everything is right.
-					'post_register' => function( $handle ) use ( $base_url ) {
+					'src'          => $base_url . 'js/externals/wp-polyfill.js',
+					'version'      => '7.4.0',
+					'fallback'     => true,
+					'before_print' => function( $handle ) use ( $base_url ) {
 						$inline_polyfill_tests = array(
 							'\'fetch\' in window'                                    => $base_url . 'js/externals/wp-polyfill-fetch.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
 							'document.contains'                                      => $base_url . 'js/externals/wp-polyfill-node-contains.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
@@ -773,10 +821,10 @@ final class Assets {
 			new Script(
 				'wp-api-fetch',
 				array(
-					'src'           => $base_url . 'js/externals/apiFetch.js',
-					'version'       => '3.6.4',
-					'fallback'      => true,
-					'post_register' => function( $handle ) {
+					'src'          => $base_url . 'js/externals/apiFetch.js',
+					'version'      => '3.6.4',
+					'fallback'     => true,
+					'before_print' => function( $handle ) {
 						wp_add_inline_script(
 							$handle,
 							sprintf(
