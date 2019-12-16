@@ -208,6 +208,21 @@ final class OAuth_Client {
 		$this->google_client->setScopes( $this->get_required_scopes() );
 		$this->google_client->prepareScopes();
 
+		// This is called when the client refreshes the access token on-the-fly.
+		$this->google_client->setTokenCallback(
+			function( $cache_key, $access_token ) {
+				// All we can do here is assume an hour as it usually is.
+				$this->set_access_token( $access_token, HOUR_IN_SECONDS );
+			}
+		);
+
+		// This is called when refreshing the access token on-the-fly fails.
+		$this->google_client->setTokenExceptionCallback(
+			function( Exception $e ) {
+				$this->handle_fetch_token_exception( $e );
+			}
+		);
+
 		$profile = $this->profile->get();
 		if ( ! empty( $profile['email'] ) ) {
 			$this->google_client->setLoginHint( $profile['email'] );
@@ -227,21 +242,6 @@ final class OAuth_Client {
 				'created'       => $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
 				'refresh_token' => $this->get_refresh_token(),
 			)
-		);
-
-		// This is called when the client refreshes the access token on-the-fly.
-		$this->google_client->setTokenCallback(
-			function( $cache_key, $access_token ) {
-				// All we can do here is assume an hour as it usually is.
-				$this->set_access_token( $access_token, HOUR_IN_SECONDS );
-			}
-		);
-
-		// This is called when refreshing the access token on-the-fly fails.
-		$this->google_client->setTokenExceptionCallback(
-			function( Exception $e ) {
-				$this->handle_fetch_token_exception( $e );
-			}
 		);
 
 		return $this->google_client;
