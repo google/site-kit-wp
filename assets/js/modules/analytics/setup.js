@@ -696,6 +696,7 @@ class AnalyticsSetup extends Component {
 								__( 'IP addresses will be anonymized.', 'google-site-kit' ) :
 								__( 'IP addresses will not be anonymized.', 'google-site-kit' )
 							}
+							{ ' ' }
 							<Link
 								href="https://support.google.com/analytics/answer/2763052"
 								external
