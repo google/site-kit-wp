@@ -530,7 +530,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'internalWebPropertyID' => '',
 						);
 
-						$options = (array) $this->options->get( self::OPTION );
+						$option = (array) $this->options->get( self::OPTION );
 
 						// TODO: Remove this at some point (migration of old 'accountId' option).
 						if ( isset( $option['accountId'] ) ) {
@@ -564,7 +564,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							unset( $option['internalWebPropertyId'] );
 						}
 
-						return array_intersect_key( array_merge( $defaults, $options ), $defaults );
+						return array_intersect_key( array_merge( $defaults, $option ), $defaults );
 					};
 				case 'GET:account-id':
 					return function() {
