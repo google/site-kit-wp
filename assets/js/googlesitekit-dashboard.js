@@ -50,24 +50,24 @@ class GoogleSitekitDashboard extends Component {
 		setLocaleData( googlesitekit.locale, 'google-site-kit' );
 	}
 
-	componentDidCatch() {
+	componentDidCatch( error, info ) {
 		// eslint-disable-next-line no-console
 		console.log( 'componentDidCatch', arguments );
-		// this.setState( {
-		// 	hasError: true,
-		// 	error,
-		// 	info,
-		// } );
+		this.setState( {
+			hasError: true,
+			error,
+			info,
+		} );
 	}
 
-	static getDerivedStateFromError( error ) {
+	static getDerivedStateFromError() {
 		// eslint-disable-next-line no-console
 		console.log( 'getDerivedStateFromError', arguments );
 		// Update state so the next render will show the fallback UI.
-		return {
-			hasError: true,
-			error,
-		};
+		// return {
+		// 	hasError: true,
+		// 	error,
+		// };
 	}
 
 	render() {
@@ -78,6 +78,7 @@ class GoogleSitekitDashboard extends Component {
 		const {
 			hasError,
 			error,
+			info,
 		} = this.state;
 
 		if ( hasError ) {
@@ -85,7 +86,7 @@ class GoogleSitekitDashboard extends Component {
 				id={ 'googlesitekit-error' }
 				key={ 'googlesitekit-error' }
 				title={ error.message }
-				description={ error.stack }
+				description={ info.componentStack }
 				dismiss={ '' }
 				isDismissable={ false }
 				format="small"
