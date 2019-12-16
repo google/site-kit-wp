@@ -521,7 +521,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'connection':
+				case 'GET:connection':
 					return function() {
 						$defaults = array(
 							'accountID'             => '',
@@ -566,7 +566,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 						return array_intersect_key( array_merge( $defaults, $options ), $defaults );
 					};
-				case 'account-id':
+				case 'GET:account-id':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
 
@@ -583,7 +583,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						}
 						return $option['accountID'];
 					};
-				case 'property-id':
+				case 'GET:property-id':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
 
@@ -600,7 +600,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						}
 						return $option['propertyID'];
 					};
-				case 'profile-id':
+				case 'GET:profile-id':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
 
@@ -617,7 +617,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						}
 						return $option['profileID'];
 					};
-				case 'internal-web-property-id':
+				case 'GET:internal-web-property-id':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
 
@@ -634,18 +634,18 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						}
 						return $option['internalWebPropertyID'];
 					};
-				case 'anonymize-ip':
+				case 'GET:anonymize-ip':
 					return function() {
 						$default = true;
 						$option  = (array) $this->options->get( self::OPTION );
 						return isset( $option['anonymizeIP'] ) ? (bool) $option['anonymizeIP'] : $default;
 					};
-				case 'use-snippet':
+				case 'GET:use-snippet':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
 						return ! empty( $option['useSnippet'] );
 					};
-				case 'amp-client-id-opt-in':
+				case 'GET:amp-client-id-opt-in':
 					return function() {
 						$option = (array) $this->options->get( self::OPTION );
 
@@ -662,7 +662,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						}
 						return ! empty( $option['ampClientIDOptIn'] );
 					};
-				case 'tracking-disabled':
+				case 'GET:tracking-disabled':
 					return function() {
 						$option     = $this->options->get( self::OPTION );
 						$default    = array( 'loggedinUsers' );
@@ -670,7 +670,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 						return is_array( $exclusions ) ? $exclusions : $default;
 					};
-				case 'goals':
+				case 'GET:goals':
 					$connection = $this->get_data( 'connection' );
 					if (
 						empty( $connection['accountID'] ) ||
@@ -690,9 +690,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 					$service = $this->get_service( 'analytics' );
 					return $service->management_goals->listManagementGoals( $connection['accountID'], $connection['propertyID'], $connection['profileID'] );
-				case 'accounts-properties-profiles':
+				case 'GET:accounts-properties-profiles':
 					return $this->get_service( 'analytics' )->management_accounts->listManagementAccounts();
-				case 'properties-profiles':
+				case 'GET:properties-profiles':
 					if ( ! isset( $data['accountID'] ) ) {
 						return new WP_Error(
 							'missing_required_param',
@@ -703,7 +703,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 
 					return $this->get_service( 'analytics' )->management_webproperties->listManagementWebproperties( $data['accountID'] );
-				case 'profiles':
+				case 'GET:profiles':
 					if ( ! isset( $data['accountID'] ) ) {
 						return new WP_Error(
 							'missing_required_param',
@@ -722,7 +722,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 
 					return $this->get_service( 'analytics' )->management_profiles->listManagementProfiles( $data['accountID'], $data['propertyID'] );
-				case 'tag-permission':
+				case 'GET:tag-permission':
 					return function() use ( $data ) {
 						if ( ! isset( $data['tag'] ) ) {
 							return new WP_Error(
@@ -749,7 +749,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 						return $has_access_to_property;
 					};
-				case 'report':
+				case 'GET:report':
 					$date_range = $data['dateRange'] ?: 'last-28-days';
 
 					$dimensions = array_map(
@@ -848,7 +848,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			}
 		} elseif ( 'POST' === $method ) {
 			switch ( $datapoint ) {
-				case 'connection':
+				case 'POST:connection':
 					return function() use ( $data ) {
 						$option = (array) $this->options->get( self::OPTION );
 						$keys   = array( 'accountID', 'propertyID', 'profileID', 'internalWebPropertyID' );
@@ -861,7 +861,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 						return true;
 					};
-				case 'account-id':
+				case 'POST:account-id':
 					if ( ! isset( $data['accountID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
@@ -873,7 +873,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 						return true;
 					};
-				case 'property-id':
+				case 'POST:property-id':
 					if ( ! isset( $data['propertyID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ), array( 'status' => 400 ) );
@@ -885,7 +885,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 						return true;
 					};
-				case 'profile-id':
+				case 'POST:profile-id':
 					if ( ! isset( $data['profileID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileID' ), array( 'status' => 400 ) );
@@ -897,7 +897,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 						return true;
 					};
-				case 'internal-web-property-id':
+				case 'POST:internal-web-property-id':
 					if ( ! isset( $data['internalWebPropertyID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalWebPropertyID' ), array( 'status' => 400 ) );
@@ -909,7 +909,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 						return true;
 					};
-				case 'use-snippet':
+				case 'POST:use-snippet':
 					if ( ! isset( $data['useSnippet'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'useSnippet' ), array( 'status' => 400 ) );
@@ -920,7 +920,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'amp-client-id-opt-in':
+				case 'POST:amp-client-id-opt-in':
 					if ( ! isset( $data['ampClientIDOptIn'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampClientIDOptIn' ), array( 'status' => 400 ) );
@@ -931,7 +931,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						$this->options->set( self::OPTION, $option );
 						return true;
 					};
-				case 'settings':
+				case 'POST:settings':
 					if ( ! isset( $data['accountID'] ) ) {
 						/* translators: %s: Missing parameter name */
 						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
@@ -1069,13 +1069,13 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 		if ( 'GET' === $method ) {
 			switch ( $datapoint ) {
-				case 'goals':
+				case 'GET:goals':
 					if ( is_array( $response ) ) {
 						return $response;
 					}
 					// TODO: Parse this response to a regular array.
 					break;
-				case 'accounts-properties-profiles':
+				case 'GET:accounts-properties-profiles':
 					/* @var Google_Service_Analytics_Accounts $response listManagementAccounts response. */
 					$accounts            = (array) $response->getItems();
 					$account_ids         = array_map(
@@ -1123,7 +1123,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					}
 
 					return array_merge( compact( 'accounts' ), $properties_profiles );
-				case 'properties-profiles':
+				case 'GET:properties-profiles':
 					/* @var Google_Service_Analytics_Webproperties $response listManagementWebproperties response. */
 					$properties = (array) $response->getItems();
 					$response   = array(
@@ -1185,12 +1185,12 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					$response['profiles'] = $profiles;
 
 					return $response;
-				case 'profiles':
+				case 'GET:profiles':
 					// TODO: Parse this response to a regular array.
 					$response = $response->getItems();
 
 					return $response;
-				case 'report':
+				case 'GET:report':
 					if ( $this->is_adsense_request( $data ) ) {
 						if ( isset( $response->error ) ) {
 							$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
