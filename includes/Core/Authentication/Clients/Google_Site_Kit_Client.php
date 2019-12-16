@@ -87,7 +87,7 @@ class Google_Site_Kit_Client extends Google_Client {
 					// Due to original callback signature this can only accept the token itself.
 					call_user_func( $callback, '', $creds['access_token'] );
 				}
-			} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement
+			} catch ( Exception $e ) {
 				// Pass exception to special callback if provided.
 				if ( $this->token_exception_callback ) {
 					call_user_func( $this->token_exception_callback, $e );
