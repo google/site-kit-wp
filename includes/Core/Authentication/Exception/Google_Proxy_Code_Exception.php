@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Authentication\Clients\Google_Proxy_Exception
+ * Class Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception
  *
  * @package   Google\Site_Kit
  * @copyright 2019 Google LLC
@@ -8,7 +8,7 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Authentication\Clients;
+namespace Google\Site_Kit\Core\Authentication\Exception;
 
 use Exception;
 
@@ -16,10 +16,11 @@ use Exception;
  * Exception thrown when Google proxy returns an error accompanied with a temporary access code.
  *
  * @since 1.0.0
+ * @since n.e.x.t Renamed to Google_Proxy_Code_Exception.
  * @access private
  * @ignore
  */
-final class Google_Proxy_Exception extends Exception {
+final class Google_Proxy_Code_Exception extends Exception {
 
 	/**
 	 * Constructor.

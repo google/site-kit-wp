@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
+use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Storage\Options;
@@ -181,10 +182,11 @@ final class OAuth_Client {
 		}
 
 		if ( $this->using_proxy() ) {
-			$this->google_client = new Google_Proxy_Client();
-			$this->google_client->setProxyBasePath( $this->google_proxy->url() );
+			$this->google_client = new Google_Site_Kit_Proxy_Client(
+				array( 'proxy_base_path' => $this->google_proxy->url() )
+			);
 		} else {
-			$this->google_client = new Google_Client();
+			$this->google_client = new Google_Site_Kit_Client();
 		}
 
 		// Return unconfigured client if credentials not yet set.
@@ -236,7 +238,7 @@ final class OAuth_Client {
 		);
 
 		// This is called when refreshing the access token on-the-fly fails.
-		if ( $this->google_client instanceof Google_Proxy_Client ) {
+		if ( $this->google_client instanceof Google_Site_Kit_Proxy_Client ) {
 			$this->google_client->setTokenExceptionCallback(
 				function( Exception $e ) {
 					$error_code = $e->getMessage();
@@ -245,7 +247,7 @@ final class OAuth_Client {
 						$this->revoke_token();
 					}
 					$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
-					if ( $e instanceof Google_Proxy_Exception ) {
+					if ( $e instanceof Google_Proxy_Code_Exception ) {
 						$this->user_options->set( self::OPTION_PROXY_ACCESS_CODE, $e->getAccessCode() );
 					}
 				}
@@ -279,13 +281,13 @@ final class OAuth_Client {
 
 		try {
 			$authentication_token = $this->google_client->fetchAccessTokenWithRefreshToken( $refresh_token );
-		} catch ( Google_Proxy_Exception $e ) {
+		} catch ( Google_Proxy_Code_Exception $e ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, $e->getMessage() );
 			$this->user_options->set( self::OPTION_PROXY_ACCESS_CODE, $e->getAccessCode() );
 			return;
 		} catch ( \Exception $e ) {
 			$error_code = 'invalid_grant';
-			if ( $this->using_proxy() ) { // Only the Google_Proxy_Client exposes the real error response.
+			if ( $this->using_proxy() ) { // Only the Google_Site_Kit_Proxy_Client exposes the real error response.
 				$error_code = $e->getMessage();
 			}
 			// Revoke and delete user connection data if the refresh token is invalid or expired.
@@ -526,12 +528,12 @@ final class OAuth_Client {
 
 		try {
 			$authentication_token = $this->get_client()->fetchAccessTokenWithAuthCode( $code );
-		} catch ( Google_Proxy_Exception $e ) {
+		} catch ( Google_Proxy_Code_Exception $e ) {
 			wp_safe_redirect( $this->get_proxy_setup_url( $e->getAccessCode(), $e->getMessage() ) );
 			exit();
 		} catch ( Exception $e ) {
 			$error_code = 'invalid_code';
-			if ( $this->using_proxy() ) { // Only the Google_Proxy_Client exposes the real error response.
+			if ( $this->using_proxy() ) { // Only the Google_Site_Kit_Proxy_Client exposes the real error response.
 				$error_code = $e->getMessage();
 			}
 			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
