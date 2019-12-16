@@ -1,15 +1,15 @@
+export const ThrowError = ( event ) => {
+	event.preventDefault();
+
+	// throw new Error( 'Something bad happened. 💣' );
+	const badArrayAccess = null;
+	return badArrayAccess[ 1 ].length;
+};
+
 const ErrorComponent = () => {
-	const throwError = ( event ) => {
-		event.preventDefault();
-
-		// throw new Error( 'Something bad happened. 💣' );
-		const badArrayAccess = null;
-		return badArrayAccess[ 1 ].length;
-	};
-
 	return (
 		<div>
-			<button onClick={ throwError } type="button">Throw error</button>
+			<button onClick={ ThrowError } type="button">Throw error</button>
 		</div>
 	);
 };
