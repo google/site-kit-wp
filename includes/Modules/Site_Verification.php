@@ -197,10 +197,8 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 							$this->authentication->verification_meta()->set( $token['token'] );
 
-							$client     = $this->get_client();
-							$orig_defer = $client->shouldDefer();
-							$client->setDefer( false );
-							$errors = new WP_Error();
+							$restore_defer = $this->with_client_defer( false );
+							$errors        = new WP_Error();
 
 							foreach ( $this->permute_site_url( $data['siteURL'] ) as $url ) {
 								$site = new Google_Service_SiteVerification_SiteVerificationWebResourceResourceSite();
@@ -221,7 +219,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 								}
 							}
 
-							$client->setDefer( $orig_defer );
+							call_user_func( $restore_defer );
 
 							if ( empty( $sites ) ) {
 								return $errors;

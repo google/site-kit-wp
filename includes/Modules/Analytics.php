@@ -959,25 +959,23 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 						if ( '0' === $data['propertyID'] ) {
 							$is_new_property = true;
-							$client          = $this->get_client();
-							$orig_defer      = $client->shouldDefer();
-							$client->setDefer( false );
-							$property = new Google_Service_Analytics_Webproperty();
+							$restore_defer   = $this->with_client_defer( false );
+							$property        = new Google_Service_Analytics_Webproperty();
 							$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 							try {
 								$property = $this->get_service( 'analytics' )->management_webproperties->insert( $data['accountID'], $property );
 							} catch ( Google_Service_Exception $e ) {
-								$client->setDefer( $orig_defer );
+								call_user_func( $restore_defer );
 								$message = $e->getErrors();
 								if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
 									$message = $message[0]['message'];
 								}
 								return new WP_Error( $e->getCode(), $message );
 							} catch ( Exception $e ) {
-								$client->setDefer( $orig_defer );
+								call_user_func( $restore_defer );
 								return new WP_Error( $e->getCode(), $e->getMessage() );
 							}
-							$client->setDefer( $orig_defer );
+							call_user_func( $restore_defer );
 							/* @var Google_Service_Analytics_Webproperty $property Property instance. */
 							$property_id              = $property->getId();
 							$internal_web_property_id = $property->getInternalWebPropertyId();
@@ -988,50 +986,46 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						}
 						$profile_id = null;
 						if ( '0' === $data['profileID'] ) {
-							$client     = $this->get_client();
-							$orig_defer = $client->shouldDefer();
-							$client->setDefer( false );
-							$profile = new Google_Service_Analytics_Profile();
+							$restore_defer = $this->with_client_defer( false );
+							$profile       = new Google_Service_Analytics_Profile();
 							$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
 							try {
 								$profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $property_id, $profile );
 							} catch ( Google_Service_Exception $e ) {
-								$client->setDefer( $orig_defer );
+								call_user_func( $restore_defer );
 								$message = $e->getErrors();
 								if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
 									$message = $message[0]['message'];
 								}
 								return new WP_Error( $e->getCode(), $message );
 							} catch ( Exception $e ) {
-								$client->setDefer( $orig_defer );
+								call_user_func( $restore_defer );
 								return new WP_Error( $e->getCode(), $e->getMessage() );
 							}
-							$client->setDefer( $orig_defer );
+							call_user_func( $restore_defer );
 							$profile_id = $profile->id;
 						} else {
 							$profile_id = $data['profileID'];
 						}
 						// Set default profile for new property.
 						if ( $is_new_property ) {
-							$client     = $this->get_client();
-							$orig_defer = $client->shouldDefer();
-							$client->setDefer( false );
-							$property = new Google_Service_Analytics_Webproperty();
+							$restore_defer = $this->with_client_defer( false );
+							$property      = new Google_Service_Analytics_Webproperty();
 							$property->setDefaultProfileId( $profile_id );
 							try {
 								$property = $this->get_service( 'analytics' )->management_webproperties->patch( $data['accountID'], $property_id, $property );
 							} catch ( Google_Service_Exception $e ) {
-								$client->setDefer( $orig_defer );
+								call_user_func( $restore_defer );
 								$message = $e->getErrors();
 								if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
 									$message = $message[0]['message'];
 								}
 								return new WP_Error( $e->getCode(), $message );
 							} catch ( Exception $e ) {
-								$client->setDefer( $orig_defer );
+								call_user_func( $restore_defer );
 								return new WP_Error( $e->getCode(), $e->getMessage() );
 							}
-							$client->setDefer( $orig_defer );
+							call_user_func( $restore_defer );
 						}
 						$option = array(
 							'accountID'             => $data['accountID'],

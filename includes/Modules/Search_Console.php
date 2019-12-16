@@ -193,8 +193,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					$site_url = trailingslashit( $data['siteURL'] );
 
 					return function () use ( $site_url ) {
-						$orig_defer = $this->get_client()->shouldDefer();
-						$this->get_client()->setDefer( false );
+						$restore_defer = $this->with_client_defer( false );
 
 						try {
 							// If the site does not exist in the account, an exception will be thrown.
@@ -216,7 +215,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 							$site = $this->get_webmasters_service()->sites->get( $site_url );
 						}
 
-						$this->get_client()->setDefer( $orig_defer );
+						call_user_func( $restore_defer );
 						$this->options->set( self::PROPERTY_OPTION, $site_url );
 
 						return array(
