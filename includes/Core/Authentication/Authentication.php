@@ -319,12 +319,22 @@ final class Authentication {
 	 * @since 1.0.0
 	 */
 	public function disconnect() {
+		global $wpdb;
+
+		// Revoke token via API call.
 		$this->get_oauth_client()->revoke_token();
 
-		// Delete additional user data.
-		$this->user_options->delete( Verification::OPTION );
-		$this->user_options->delete( Verification_Meta::OPTION );
-		$this->user_options->delete( Profile::OPTION );
+		// Delete all user data.
+		$user_id = $this->user_options->get_user_id();
+		$prefix  = 'googlesitekit\_%';
+		if ( ! $this->context->is_network_mode() ) {
+			$prefix = $wpdb->get_blog_prefix() . $prefix;
+		}
+
+		$wpdb->query( // phpcs:ignore WordPress.VIP.DirectDatabaseQuery
+			$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE user_id = %d AND meta_key LIKE %s", $user_id, $prefix )
+		);
+		wp_cache_delete( $user_id, 'user_meta' );
 	}
 
 	/**

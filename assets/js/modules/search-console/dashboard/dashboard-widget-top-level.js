@@ -94,8 +94,6 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 			);
 		}
 
-		const processedData = extractSearchConsoleDashboardData( data );
-
 		const href = getSiteKitAdminURL(
 			'googlesitekit-module-search-console',
 			{}
@@ -106,7 +104,8 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 			totalImpressions,
 			totalClicksChange,
 			totalImpressionsChange,
-		} = processedData;
+			dataMap,
+		} = extractSearchConsoleDashboardData( data );
 
 		return (
 			<Fragment>
@@ -121,7 +120,7 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 						className="overview-total-impressions"
 						title={ __( 'Impressions', 'google-site-kit' ) }
 						datapoint={ totalImpressions }
-						change={ totalClicksChange }
+						change={ totalImpressionsChange }
 						changeDataUnit="%"
 						source={ {
 							name: _x( 'Search Console', 'Service name', 'google-site-kit' ),
@@ -129,8 +128,8 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 						} }
 						sparkline={
 							<Sparkline
-								data={ extractForSparkline( processedData.dataMap, 1 ) }
-								change={ totalClicksChange }
+								data={ extractForSparkline( dataMap, 2 ) }
+								change={ totalImpressionsChange }
 								id="search-console-impressions-sparkline"
 							/>
 						}
@@ -147,7 +146,7 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 						className="overview-total-clicks"
 						title={ __( 'Clicks', 'google-site-kit' ) }
 						datapoint={ totalClicks }
-						change={ totalImpressionsChange }
+						change={ totalClicksChange }
 						changeDataUnit="%"
 						source={ {
 							name: _x( 'Search Console', 'Service name', 'google-site-kit' ),
@@ -155,8 +154,8 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 						} }
 						sparkline={
 							<Sparkline
-								data={ extractForSparkline( processedData.dataMap, 2 ) }
-								change={ totalImpressionsChange }
+								data={ extractForSparkline( dataMap, 1 ) }
+								change={ totalClicksChange }
 								id="search-console-clicks-sparkline"
 							/>
 						}

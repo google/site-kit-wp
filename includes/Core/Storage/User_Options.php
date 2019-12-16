@@ -45,7 +45,7 @@ final class User_Options {
 	 * @since 1.0.0
 	 *
 	 * @param Context $context Plugin context.
-	 * @param integer $user_id Optional. User ID for whom options should be managed. Default is the current user.
+	 * @param int     $user_id Optional. User ID for whom options should be managed. Default is the current user.
 	 */
 	public function __construct( Context $context, $user_id = 0 ) {
 		$this->context = $context;
@@ -53,7 +53,7 @@ final class User_Options {
 		if ( empty( $user_id ) ) {
 			$user_id = get_current_user_id();
 		}
-		$this->user_id = $user_id;
+		$this->user_id = (int) $user_id;
 	}
 
 	/**
@@ -120,6 +120,17 @@ final class User_Options {
 		}
 
 		return (bool) delete_user_option( $this->user_id, $option );
+	}
+
+	/**
+	 * Gets the ID of the user that options are controlled for.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return int User ID.
+	 */
+	public function get_user_id() {
+		return $this->user_id;
 	}
 
 	/**

@@ -52,6 +52,7 @@ class AnalyticsSetup extends Component {
 		super( props );
 		const {
 			accountID,
+			anonymizeIP,
 			internalWebPropertyID,
 			profileID,
 			propertyID,
@@ -61,6 +62,7 @@ class AnalyticsSetup extends Component {
 		} = googlesitekit.modules.analytics.settings;
 
 		this.state = {
+			anonymizeIP,
 			isLoading: true,
 			isSaving: false,
 			propertiesLoading: false,
@@ -88,9 +90,9 @@ class AnalyticsSetup extends Component {
 		this.processPropertyChange = this.processPropertyChange.bind( this );
 		this.handleSubmit = this.handleSubmit.bind( this );
 		this.handleRadioClick = this.handleRadioClick.bind( this );
-		this.handleAMPClientIDSwitch = this.handleAMPClientIDSwitch.bind( this );
 		this.handleRefetchAccount = this.handleRefetchAccount.bind( this );
 		this.handleExclusionsChange = this.handleExclusionsChange.bind( this );
+		this.switchStatus = this.switchStatus.bind( this );
 	}
 
 	async componentDidMount() {
@@ -159,6 +161,7 @@ class AnalyticsSetup extends Component {
 		}
 
 		const settingsMapping = {
+			anonymizeIP: 'anonymizeIP',
 			selectedAccount: 'accountID',
 			selectedProperty: 'propertyID',
 			selectedProfile: 'profileID',
@@ -463,6 +466,7 @@ class AnalyticsSetup extends Component {
 		}
 
 		const {
+			anonymizeIP,
 			selectedAccount,
 			selectedProperty,
 			selectedProfile,
@@ -497,6 +501,7 @@ class AnalyticsSetup extends Component {
 		}
 
 		const analyticAccount = {
+			anonymizeIP,
 			accountID: selectedAccount || accounts[ 0 ].id || null,
 			profileID,
 			propertyID,
@@ -556,10 +561,12 @@ class AnalyticsSetup extends Component {
 		sendAnalyticsTrackingEvent( 'analytics_setup', useSnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled' );
 	}
 
-	handleAMPClientIDSwitch( ) {
-		this.setState( {
-			ampClientIDOptIn: ! this.state.ampClientIDOptIn,
-		} );
+	switchStatus( stateVariable ) {
+		return () => {
+			this.setState( {
+				[ stateVariable ]: ! this.state[ stateVariable ],
+			} );
+		};
 	}
 
 	handleRefetchAccount() {
@@ -593,6 +600,7 @@ class AnalyticsSetup extends Component {
 
 	renderAutoInsertSnippetForm() {
 		const {
+			anonymizeIP,
 			useSnippet,
 			isSaving,
 			ampClientIDOptIn,
@@ -604,7 +612,7 @@ class AnalyticsSetup extends Component {
 			onSettingsPage,
 		} = this.props;
 		const disabled = ! isEditing;
-		const { ampEnabled } = window.googlesitekit.admin;
+		const { ampEnabled, ampMode } = window.googlesitekit.admin;
 		const useSnippetSettings = window.googlesitekit.modules.analytics.settings.useSnippet;
 
 		return (
@@ -661,7 +669,7 @@ class AnalyticsSetup extends Component {
 						<Switch
 							id="ampClientIDOptIn"
 							label={ __( 'Opt in AMP Client ID', 'google-site-kit' ) }
-							onClick={ this.handleAMPClientIDSwitch }
+							onClick={ this.switchStatus( 'ampClientIDOptIn' ) }
 							checked={ ampClientIDOptIn }
 							hideLabel={ false }
 						/>
@@ -674,6 +682,33 @@ class AnalyticsSetup extends Component {
 						</p>
 					</div>
 				}
+				{ onSettingsPage && useSnippet && ampMode !== 'primary' && (
+					<div className="googlesitekit-setup-module__input">
+						<Switch
+							id="anonymizeIP"
+							label={ __( 'Anonymize IP addresses', 'google-site-kit' ) }
+							onClick={ this.switchStatus( 'anonymizeIP' ) }
+							checked={ anonymizeIP }
+							hideLabel={ false }
+						/>
+						<p>
+							{ anonymizeIP ?
+								__( 'IP addresses will be anonymized.', 'google-site-kit' ) :
+								__( 'IP addresses will not be anonymized.', 'google-site-kit' )
+							}
+							{ ' ' }
+							<Link
+								href="https://support.google.com/analytics/answer/2763052"
+								external
+								inherit
+								dangerouslySetInnerHTML={
+									{
+										__html: __( 'Learn more<span class="screen-reader-text"> about IP anonymization.</span>', 'google-site-kit' ),
+									}
+								} />
+						</p>
+					</div>
+				) }
 			</div>
 		);
 	}
@@ -717,6 +752,7 @@ class AnalyticsSetup extends Component {
 
 	renderForm() {
 		const {
+			anonymizeIP,
 			isLoading,
 			propertiesLoading,
 			profilesLoading,
@@ -743,6 +779,7 @@ class AnalyticsSetup extends Component {
 			disabledProperty = true;
 		}
 
+		const { ampMode } = window.googlesitekit.admin;
 		const { setupComplete } = googlesitekit.modules.analytics;
 
 		if ( isLoading ) {
@@ -818,6 +855,25 @@ class AnalyticsSetup extends Component {
 							</h5>
 						</div>
 					</div>
+					{ onSettingsPage && useSnippet && ampMode !== 'primary' && (
+						<div className="googlesitekit-settings-module__meta-items">
+							<div className="
+								googlesitekit-settings-module__meta-item
+							">
+								<p className="googlesitekit-settings-module__meta-item-type">
+									{ __( 'IP Address Anonymization', 'google-site-kit' ) }
+								</p>
+								<h5 className="googlesitekit-settings-module__meta-item-data">
+									{ anonymizeIP &&
+										__( 'IP addresses are being anonymized.', 'google-site-kit' )
+									}
+									{ ! anonymizeIP &&
+										__( 'IP addresses are not being anonymized.', 'google-site-kit' )
+									}
+								</h5>
+							</div>
+						</div>
+					) }
 					<div className="googlesitekit-settings-module__meta-items">
 						<div className="
 							googlesitekit-settings-module__meta-item
