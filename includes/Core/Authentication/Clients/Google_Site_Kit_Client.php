@@ -65,6 +65,26 @@ class Google_Site_Kit_Client extends Google_Client {
 	}
 
 	/**
+	 * Sets whether or not to return raw requests and returns a callback to reset to the previous value.
+	 *
+	 * This works similar to e.g. a higher-order component in JavaScript.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param bool $defer Whether or not to return raw requests.
+	 * @return callable Callback function that resets to the original $defer value.
+	 */
+	public function withDefer( $defer ) {
+		$orig_defer = $this->shouldDefer();
+		$this->setDefer( $defer );
+
+		// Return a function to restore the original refer value.
+		return function () use ( $orig_defer ) {
+			$this->setDefer( $orig_defer );
+		};
+	}
+
+	/**
 	 * Adds auth listeners to the HTTP client based on the credentials set in the Google API Client object.
 	 *
 	 * @since n.e.x.t

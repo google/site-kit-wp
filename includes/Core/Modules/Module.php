@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service;
@@ -271,9 +272,7 @@ abstract class Module {
 			}
 		}
 
-		$client     = $this->get_client();
-		$orig_defer = $client->shouldDefer();
-		$client->setDefer( true );
+		$restore_defer = $this->with_client_defer( true );
 
 		$datapoint_services = $this->get_datapoint_services();
 		$service_batches    = array();
@@ -369,7 +368,7 @@ abstract class Module {
 			}
 		}
 
-		$client->setDefer( $orig_defer );
+		call_user_func( $restore_defer );
 
 		// Cache the results for storybook.
 		if (
@@ -442,15 +441,13 @@ abstract class Module {
 
 		// We only need to initialize the client if this datapoint relies on a service.
 		if ( ! empty( $datapoint_services[ $data->datapoint ] ) ) {
-			$client     = $this->get_client();
-			$orig_defer = $client->shouldDefer();
-			$client->setDefer( true );
+			$restore_defer = $this->with_client_defer( true );
 		}
 
 		$request = $this->create_data_request( $data );
 
-		if ( isset( $client ) ) {
-			$client->setDefer( $orig_defer );
+		if ( isset( $restore_defer ) ) {
+			call_user_func( $restore_defer );
 		}
 
 		if ( is_wp_error( $request ) ) {
@@ -654,6 +651,31 @@ abstract class Module {
 	 *               instance of Google_Service.
 	 */
 	abstract protected function setup_services( Google_Client $client );
+
+	/**
+	 * Sets whether or not to return raw requests and returns a callback to reset to the previous value.
+	 *
+	 * This works similar to e.g. a higher-order component in JavaScript.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param bool $defer Whether or not to return raw requests.
+	 * @return callable Callback function that resets to the original $defer value.
+	 */
+	protected function with_client_defer( $defer ) {
+		$client = $this->get_client();
+		if ( $client instanceof Google_Site_Kit_Client ) {
+			return $client->withDefer( $defer );
+		}
+
+		// "Poly-fill" if not a Site Kit client instance.
+		$orig_defer = $client->shouldDefer();
+		$client->setDefer( $defer );
+
+		return function () use ( $client, $orig_defer ) {
+			$this->setDefer( $orig_defer );
+		};
+	}
 
 	/**
 	 * Parses information about the module.
