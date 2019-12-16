@@ -37,7 +37,7 @@ import { doAction } from '@wordpress/hooks';
  * Internal dependencies
  */
 // import ErrorHandler from 'GoogleComponents/ErrorHandler';
-import ErrorComponent from 'GoogleComponents/ErrorHandler/ErrorComponent';
+import ErrorComponent, { ThrowError } from 'GoogleComponents/ErrorHandler/ErrorComponent';
 
 class GoogleSitekitDashboard extends Component {
 	constructor( props ) {
@@ -50,37 +50,42 @@ class GoogleSitekitDashboard extends Component {
 		setLocaleData( googlesitekit.locale, 'google-site-kit' );
 	}
 
-	// componentDidCatch( error, info ) {
-	// 	this.setState( {
-	// 		hasError: true,
-	// 		error,
-	// 		info,
-	// 	} );
-	// }
+	componentDidCatch() {
+		// eslint-disable-next-line no-console
+		console.log( 'componentDidCatch', arguments );
+		// this.setState( {
+		// 	hasError: true,
+		// 	error,
+		// 	info,
+		// } );
+	}
+
+	static getDerivedStateFromError( error ) {
+		// eslint-disable-next-line no-console
+		console.log( 'getDerivedStateFromError', arguments );
+		// Update state so the next render will show the fallback UI.
+		return {
+			hasError: true,
+			error,
+		};
+	}
 
 	render() {
 		const {
 			showModuleSetupWizard,
 		} = window.googlesitekit.setup;
 
-		if ( showModuleSetupWizard ) {
-			return (
-				<Setup />
-			);
-		}
-
 		const {
 			hasError,
 			error,
-			info,
 		} = this.state;
 
 		if ( hasError ) {
 			return <Notification
 				id={ 'googlesitekit-error' }
 				key={ 'googlesitekit-error' }
-				title={ error }
-				description={ info.componentStack }
+				title={ error.message }
+				description={ error.stack }
 				dismiss={ '' }
 				isDismissable={ false }
 				format="small"
@@ -88,10 +93,17 @@ class GoogleSitekitDashboard extends Component {
 			/>;
 		}
 
+		if ( showModuleSetupWizard ) {
+			return (
+				<Setup />
+			);
+		}
+
 		return (
 			<Fragment>
 				<NotificationCounter />
 				<DashboardApp />
+				<ThrowError />
 				<ErrorComponent />
 			</Fragment>
 		);
