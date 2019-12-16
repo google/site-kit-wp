@@ -84,18 +84,14 @@ final class Assets {
 
 		$scripts_print_callback = function() {
 			$scripts = wp_scripts();
-			$queue   = $scripts->queue;
-
-			$this->run_before_print_callbacks( $scripts, $queue );
+			$this->run_before_print_callbacks( $scripts, $scripts->queue );
 		};
 		add_action( 'wp_print_scripts', $scripts_print_callback );
 		add_action( 'admin_print_scripts', $scripts_print_callback );
 
 		$styles_print_callback = function() {
 			$styles = wp_styles();
-			$queue  = $styles->queue;
-
-			$this->run_before_print_callbacks( $styles, $queue );
+			$this->run_before_print_callbacks( $styles, $styles->queue );
 		};
 		add_action( 'wp_print_styles', $styles_print_callback );
 		add_action( 'admin_print_styles', $styles_print_callback );
@@ -673,6 +669,8 @@ final class Assets {
 				continue;
 			}
 
+			$this->print_callbacks_done[ $handle ] = true;
+
 			if ( isset( $this->assets[ $handle ] ) ) {
 				$this->assets[ $handle ]->before_print();
 			}
@@ -680,8 +678,6 @@ final class Assets {
 			if ( isset( $dependencies->registered[ $handle ] ) && is_array( $dependencies->registered[ $handle ]->deps ) ) {
 				$this->run_before_print_callbacks( $dependencies, $dependencies->registered[ $handle ]->deps );
 			}
-
-			$this->print_callbacks_done[ $handle ] = true;
 		}
 	}
 
