@@ -516,11 +516,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
 	protected function create_data_request( Data_Request $data ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
-
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
+			switch ( "{$data->method}:{$data->datapoint}" ) {
 				case 'GET:connection':
 					return function() {
 						$defaults = array(
@@ -845,9 +841,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					$body->setReportRequests( array( $request ) );
 
 					return $this->get_analyticsreporting_service()->reports->batchGet( $body );
-			}
-		} elseif ( 'POST' === $method ) {
-			switch ( $datapoint ) {
 				case 'POST:connection':
 					return function() use ( $data ) {
 						$option = (array) $this->options->get( self::OPTION );
@@ -1048,7 +1041,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						return $option;
 					};
 			}
-		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
 	}
@@ -1064,11 +1056,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
-
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
+			switch ( "{$data->method}:{$data->datapoint}" ) {
 				case 'GET:goals':
 					if ( is_array( $response ) ) {
 						return $response;
@@ -1201,7 +1189,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 					return $response->getReports();
 			}
-		}
 
 		return $response;
 	}
