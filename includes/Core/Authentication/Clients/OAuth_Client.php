@@ -238,21 +238,11 @@ final class OAuth_Client {
 		);
 
 		// This is called when refreshing the access token on-the-fly fails.
-		if ( $this->google_client instanceof Google_Site_Kit_Proxy_Client ) {
-			$this->google_client->setTokenExceptionCallback(
-				function( Exception $e ) {
-					$error_code = $e->getMessage();
-					// Revoke and delete user connection data if the refresh token is invalid or expired.
-					if ( 'invalid_grant' === $error_code ) {
-						$this->revoke_token();
-					}
-					$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
-					if ( $e instanceof Google_Proxy_Code_Exception ) {
-						$this->user_options->set( self::OPTION_PROXY_ACCESS_CODE, $e->getAccessCode() );
-					}
-				}
-			);
-		}
+		$this->google_client->setTokenExceptionCallback(
+			function( Exception $e ) {
+				$this->handle_fetch_token_exception( $e );
+			}
+		);
 
 		return $this->google_client;
 	}
@@ -281,20 +271,8 @@ final class OAuth_Client {
 
 		try {
 			$authentication_token = $this->google_client->fetchAccessTokenWithRefreshToken( $refresh_token );
-		} catch ( Google_Proxy_Code_Exception $e ) {
-			$this->user_options->set( self::OPTION_ERROR_CODE, $e->getMessage() );
-			$this->user_options->set( self::OPTION_PROXY_ACCESS_CODE, $e->getAccessCode() );
-			return;
 		} catch ( \Exception $e ) {
-			$error_code = 'invalid_grant';
-			if ( $this->using_proxy() ) { // Only the Google_Site_Kit_Proxy_Client exposes the real error response.
-				$error_code = $e->getMessage();
-			}
-			// Revoke and delete user connection data if the refresh token is invalid or expired.
-			if ( 'invalid_grant' === $error_code ) {
-				$this->revoke_token();
-			}
-			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
+			$this->handle_fetch_token_exception( $e );
 			return;
 		}
 
@@ -529,14 +507,11 @@ final class OAuth_Client {
 		try {
 			$authentication_token = $this->get_client()->fetchAccessTokenWithAuthCode( $code );
 		} catch ( Google_Proxy_Code_Exception $e ) {
+			// Redirect back to proxy immediately with the access code.
 			wp_safe_redirect( $this->get_proxy_setup_url( $e->getAccessCode(), $e->getMessage() ) );
 			exit();
 		} catch ( Exception $e ) {
-			$error_code = 'invalid_code';
-			if ( $this->using_proxy() ) { // Only the Google_Site_Kit_Proxy_Client exposes the real error response.
-				$error_code = $e->getMessage();
-			}
-			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
+			$this->handle_fetch_token_exception( $e );
 			wp_safe_redirect( admin_url() );
 			exit();
 		}
@@ -805,6 +780,28 @@ final class OAuth_Client {
 			default:
 				/* translators: %s: error code from API */
 				return sprintf( __( 'Unknown Error (code: %s).', 'google-site-kit' ), $error_code );
+		}
+	}
+
+	/**
+	 * Handles an exception thrown when fetching an access token.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Exception $e Exception thrown.
+	 */
+	private function handle_fetch_token_exception( Exception $e ) {
+		$error_code = $e->getMessage();
+
+		// Revoke and delete user connection data on 'invalid_grant'.
+		// This typically happens during refresh if the refresh token is invalid or expired.
+		if ( 'invalid_grant' === $error_code ) {
+			$this->revoke_token();
+		}
+
+		$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
+		if ( $e instanceof Google_Proxy_Code_Exception ) {
+			$this->user_options->set( self::OPTION_PROXY_ACCESS_CODE, $e->getAccessCode() );
 		}
 	}
 
