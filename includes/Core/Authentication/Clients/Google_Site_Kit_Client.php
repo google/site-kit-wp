@@ -89,7 +89,9 @@ class Google_Site_Kit_Client extends Google_Client {
 	 * @since n.e.x.t
 	 *
 	 * @param ClientInterface $http The HTTP client object.
-	 * @return ClientInterface The HTTP client object
+	 * @return ClientInterface The HTTP client object.
+	 *
+	 * @throws Exception Thrown when fetching a new access token via refresh token on-the-fly fails.
 	 */
 	public function authorize( ClientInterface $http = null ) {
 		if ( $this->isUsingApplicationDefaultCredentials() ) {
@@ -111,6 +113,7 @@ class Google_Site_Kit_Client extends Google_Client {
 				if ( $this->token_exception_callback ) {
 					call_user_func( $this->token_exception_callback, $e );
 				}
+				throw $e;
 			}
 		}
 
