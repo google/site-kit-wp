@@ -673,7 +673,7 @@ abstract class Module {
 		$client->setDefer( $defer );
 
 		return function () use ( $client, $orig_defer ) {
-			$this->setDefer( $orig_defer );
+			$client->setDefer( $orig_defer );
 		};
 	}
 
