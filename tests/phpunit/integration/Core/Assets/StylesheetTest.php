@@ -41,22 +41,16 @@ class StylesheetTest extends TestCase {
 		$this->assertTrue( wp_style_is( 'test-handle', 'registered' ) );
 	}
 
-	public function test_register_with_post_register_callback() {
+	public function test_register_with_before_print_callback() {
 		$invocations = array();
 		$callback    = function () use ( &$invocations ) {
 			$invocations[] = func_get_args();
 		};
 		$style       = new Stylesheet( 'test-handle', array(
-			'post_register' => $callback,
+			'before_print' => $callback,
 		) );
 
-		$style->register();
-
-		$this->assertCount( 1, $invocations );
-		// Callback is only invoked once when style is registered.
-		$style->register();
-		$style->register();
-
+		$style->before_print();
 		$this->assertCount( 1, $invocations );
 	}
 
@@ -110,27 +104,5 @@ class StylesheetTest extends TestCase {
 		$style->enqueue();
 
 		$this->assertTrue( wp_style_is( 'test-handle', 'enqueued' ) );
-	}
-
-	public function test_register_with_post_enqueue_callback() {
-		$invocations = array();
-		$callback    = function () use ( &$invocations ) {
-			$invocations[] = func_get_args();
-		};
-		$style       = new Stylesheet( 'test-handle', array(
-			'post_enqueue' => $callback,
-		) );
-
-		$style->register();
-		$this->assertCount( 0, $invocations );
-
-		$style->enqueue();
-
-		$this->assertCount( 1, $invocations );
-		// Callback is only invoked once when style is enqueued.
-		$style->enqueue();
-		$style->enqueue();
-
-		$this->assertCount( 1, $invocations );
 	}
 }
