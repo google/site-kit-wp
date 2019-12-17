@@ -663,8 +663,11 @@ final class REST_Routes {
 	}
 
 	/**
-	 * Converts a WP_Error to response data.
-	 * Based on `\WP_REST_Server::error_to_response`
+	 * Converts a WP_Error to its response representation.
+	 *
+	 * Adapted from \WP_REST_Server::error_to_response
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param WP_Error $error Error to transform.
 	 *
