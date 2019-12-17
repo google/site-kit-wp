@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { delay } from 'lodash';
-import DashboardNotifications from 'GoogleComponents/dashboard/dashboard-notifications';
 import Header from 'GoogleComponents/header';
 import Link from 'GoogleComponents/link';
 import HelpLink from 'GoogleComponents/help-link';
@@ -167,7 +166,6 @@ class SetupWrapper extends Component {
 		return (
 			<Fragment>
 				<Header />
-				<DashboardNotifications />
 				<div className="googlesitekit-setup">
 					<div className="mdc-layout-grid">
 						<div className="mdc-layout-grid__inner">
