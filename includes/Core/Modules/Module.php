@@ -440,7 +440,9 @@ abstract class Module {
 		$datapoint_services = $this->get_datapoint_services();
 
 		// We only need to initialize the client if this datapoint relies on a service.
-		if ( ! empty( $datapoint_services[ $data->datapoint ] ) ) {
+		$requires_client = ! empty( $datapoint_services[ $data->datapoint ] );
+
+		if ( $requires_client ) {
 			$restore_defer = $this->with_client_defer( true );
 		}
 
@@ -457,8 +459,8 @@ abstract class Module {
 		try {
 			if ( ! $request instanceof RequestInterface ) {
 				$response = call_user_func( $request );
-			} elseif ( isset( $client ) ) {
-				$response = $client->execute( $request );
+			} elseif ( $requires_client ) {
+				$response = $this->get_client()->execute( $request );
 			} else {
 				throw new Exception( __( 'Datapoint registered incorrectly.', 'google-site-kit' ) );
 			}
