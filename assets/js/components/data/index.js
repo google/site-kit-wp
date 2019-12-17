@@ -257,14 +257,14 @@ const dataAPI = {
 
 		if ( [ 'authError', 'insufficientPermissions' ].includes( reason ) ) {
 			// Handle insufficient scope warnings by informing the user.
-			addFilter( 'googlesitekit.DashboardNotifications',
+			addFilter( 'googlesitekit.ErrorNotification',
 				'googlesitekit.AuthNotification',
 				fillFilterWithComponent( DashboardAuthAlert ), 1 );
 		}
 
 		if ( 'forbidden' === reason ) {
 			// Insufficient access permissions - add a notice.
-			addFilter( 'googlesitekit.DashboardNotifications',
+			addFilter( 'googlesitekit.ErrorNotification',
 				'googlesitekit.AuthNotification',
 				fillFilterWithComponent( DashboardPermissionAlert ), 1 );
 		}
