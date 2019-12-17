@@ -59,9 +59,8 @@ class OAuth_ClientTest extends TestCase {
 		$client->get_client()->setHttpClient( new FakeHttpClient() );
 		$client->refresh_token();
 
-		// At this point an error is triggered internally due to undefined indexes on $authentication_token
-		// and the saved error code is 'invalid_grant' by default.
-		$this->assertEquals( 'invalid_grant', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+		// There is no actual response, so attempting to decode JSON fails.
+		$this->assertEquals( 'Invalid JSON response', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
 	}
 
 	public function test_revoke_token() {
