@@ -23,7 +23,6 @@ import Header from 'GoogleComponents/header';
 import DateRangeSelector from 'GoogleComponents/date-range-selector';
 import PageHeader from 'GoogleComponents/page-header';
 import 'GoogleComponents/publisher-wins';
-import 'GoogleComponents/notifications';
 
 /**
  * WordPress dependencies
