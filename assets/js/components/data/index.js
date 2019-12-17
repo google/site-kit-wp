@@ -28,7 +28,7 @@ import {
 	getQueryParameter,
 	sortObjectProperties,
 } from 'SiteKitCore/util';
-import { cloneDeep, each, get, sortBy } from 'lodash';
+import { cloneDeep, each, sortBy } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -208,9 +208,7 @@ const dataAPI = {
 					return;
 				}
 
-				if ( result.code && result.data && result.data.reason ) {
-					this.handleWpError( result );
-				}
+				this.handleWpError( result );
 
 				each( keyIndexesMap[ key ], ( index ) => {
 					const request = dataRequest[ index ];
@@ -228,56 +226,55 @@ const dataAPI = {
 			// Resolve any returned data requests, then re-request the remainder after a pause.
 		} ).catch( ( err ) => {
 			// Handle the error and give up trying.
-			console.log( 'error', err ); // eslint-disable-line no-console
+			if ( ! err._logged ) {
+				console.warn( 'Error caught during combinedGet', err ); // eslint-disable-line no-console
+			}
 		} );
 	},
 
 	handleWpError( error ) {
-		const { code, data, message } = error;
-		// eslint-disable-next-line no-console
-		console.log( 'handleError', { error } );
+		const { code, data } = error;
 
 		if ( ! code || ! data ) {
 			return;
 		}
 
 		// eslint-disable-next-line no-console
-		console.log(
-			{
-				'error.errors': get( message, 'error.errors' ),
-				'error.errors.0.reason': get( message, 'error.errors.0.reason' ),
-				'error.errors[0].reason': get( message, 'error.errors[0].reason' ),
-			}
-		);
+		console.warn( 'WP Error in data response', error );
 
-		const reason = data.reason || get( message, 'error.errors[ 0 ].reason' );
+		let addedNoticeCount = 0;
 
-		// eslint-disable-next-line no-console
-		console.log( { code, data, message, reason, msgReason: get( message, 'error.errors.0.reason' ) } );
-
-		if ( [ 'authError', 'insufficientPermissions' ].includes( reason ) ) {
-			// Handle insufficient scope warnings by informing the user.
+		// Add insufficient scopes warning.
+		if ( [ 'authError', 'insufficientPermissions' ].includes( data.reason ) ) {
 			addFilter( 'googlesitekit.ErrorNotification',
 				'googlesitekit.AuthNotification',
 				fillFilterWithComponent( DashboardAuthAlert ), 1 );
+			addedNoticeCount++;
 		}
 
-		if ( 'forbidden' === reason ) {
-			// Insufficient access permissions - add a notice.
+		// Insufficient access permissions.
+		if ( 'forbidden' === data.reason ) {
 			addFilter( 'googlesitekit.ErrorNotification',
 				'googlesitekit.AuthNotification',
 				fillFilterWithComponent( DashboardPermissionAlert ), 1 );
+			addedNoticeCount++;
 		}
 
-		// Increase the notice count.
-		addFilter( 'googlesitekit.TotalNotifications',
-			'googlesitekit.AuthCountIncrease', ( count ) => {
-				// Only run once.
-				removeFilter( 'googlesitekit.TotalNotifications', 'googlesitekit.AuthCountIncrease' );
-				return count + 1;
-			} );
+		if ( addedNoticeCount ) {
+			addFilter( 'googlesitekit.TotalNotifications',
+				'googlesitekit.AuthCountIncrease', ( count ) => {
+					// Only run once.
+					removeFilter( 'googlesitekit.TotalNotifications', 'googlesitekit.AuthCountIncrease' );
+					return count + addedNoticeCount;
+				} );
+		}
 
-		throw error;
+		// Ensure error is still thrown to let consumers handle the error.
+		// Throw a copy of the error to not mutate the original.
+		throw {
+			_logged: true, // Prevent double logging.
+			...error,
+		};
 	},
 
 	/**
