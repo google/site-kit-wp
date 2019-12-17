@@ -54,7 +54,7 @@ class OAuth_ClientTest extends TestCase {
 
 		$client->refresh_token();
 
-		$this->assertEquals( 'access_token_not_received', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+		$this->assertEquals( 'invalid_client', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
 
 		$client->get_client()->setHttpClient( new FakeHttpClient() );
 		$client->refresh_token();
