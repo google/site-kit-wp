@@ -68,8 +68,6 @@ class Google_Site_Kit_Client extends Google_Client {
 	/**
 	 * Sets whether or not to return raw requests and returns a callback to reset to the previous value.
 	 *
-	 * This works similar to e.g. a higher-order component in JavaScript.
-	 *
 	 * @since n.e.x.t
 	 *
 	 * @param bool $defer Whether or not to return raw requests.
