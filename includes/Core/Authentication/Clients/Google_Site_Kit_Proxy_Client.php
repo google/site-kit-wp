@@ -128,7 +128,7 @@ class Google_Site_Kit_Proxy_Client extends Google_Site_Kit_Client {
 
 
 	/**
-	 * Handles an error response from a request to fetch an auth token.
+	 * Handles an erroneous response from a request to fetch an auth token.
 	 *
 	 * @since n.e.x.t
 	 *
