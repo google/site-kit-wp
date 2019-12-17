@@ -226,9 +226,7 @@ const dataAPI = {
 			// Resolve any returned data requests, then re-request the remainder after a pause.
 		} ).catch( ( err ) => {
 			// Handle the error and give up trying.
-			if ( ! err._logged ) {
-				console.warn( 'Error caught during combinedGet', err ); // eslint-disable-line no-console
-			}
+			console.warn( 'Error caught during combinedGet', err ); // eslint-disable-line no-console
 		} );
 	},
 
@@ -268,13 +266,6 @@ const dataAPI = {
 					return count + addedNoticeCount;
 				} );
 		}
-
-		// Ensure error is still thrown to let consumers handle the error.
-		// Throw a copy of the error to not mutate the original.
-		throw {
-			_logged: true, // Prevent double logging.
-			...error,
-		};
 	},
 
 	/**
