@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\Authentication\Clients;
 
+use Google\Site_Kit\Core\Authentication\Exception\Google_OAuth_Exception;
 use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google\Auth\OAuth2;
 use Google\Site_Kit_Dependencies\Google\Auth\HttpHandler\HttpHandlerFactory;
@@ -216,16 +217,16 @@ class Google_Site_Kit_Client extends Google_Client {
 	}
 
 	/**
-	 * Handles an errorneous response from a request to fetch an auth token.
+	 * Handles an error response from a request to fetch an auth token.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param string $error Error code / error message.
 	 * @param array  $data  Associative array of full response data.
 	 *
-	 * @throws Exception Thrown with the given $error as message.
+	 * @throws Google_OAuth_Exception Thrown with the given $error as message.
 	 */
 	protected function handleAuthTokenErrorResponse( $error, array $data ) {
-		throw new Exception( $error );
+		throw new Google_OAuth_Exception( $error );
 	}
 }

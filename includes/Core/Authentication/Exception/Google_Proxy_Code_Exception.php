@@ -20,7 +20,7 @@ use Exception;
  * @access private
  * @ignore
  */
-final class Google_Proxy_Code_Exception extends Exception {
+class Google_Proxy_Code_Exception extends Exception {
 
 	/**
 	 * Constructor.
