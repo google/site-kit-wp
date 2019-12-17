@@ -110,7 +110,7 @@ final class OAuth_Client {
 	/**
 	 * Profile instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.4
 	 * @var Profile
 	 */
 	private $profile;
@@ -599,7 +599,7 @@ final class OAuth_Client {
 	/**
 	 * Fetches and updates the user profile data for the currently authenticated Google account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.4
 	 */
 	private function refresh_profile_data() {
 		try {

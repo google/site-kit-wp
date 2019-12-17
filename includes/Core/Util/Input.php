@@ -23,7 +23,7 @@ class Input {
 	 *
 	 * For use as fallback only.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.4
 	 * @var array
 	 */
 	protected $fallback_map;
@@ -31,7 +31,7 @@ class Input {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.4
 	 */
 	public function __construct() {
 		// Fallback map for environments where filter_input may not work with ENV or SERVER types.
