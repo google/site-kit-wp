@@ -17,7 +17,6 @@ use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
@@ -92,9 +91,9 @@ abstract class Module {
 	 * Google API client instance.
 	 *
 	 * @since 1.0.0
-	 * @var Google_Client|null
+	 * @var Google_Site_Kit_Client|null
 	 */
-	private $google_client = null;
+	private $google_client;
 
 	/**
 	 * Google services as $identifier => $service_instance pairs.
@@ -102,7 +101,7 @@ abstract class Module {
 	 * @since 1.0.0
 	 * @var array|null
 	 */
-	private $google_services = null;
+	private $google_services;
 
 	/**
 	 * Constructor.
@@ -566,15 +565,16 @@ abstract class Module {
 	 * This method should be used to access the client.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Now returns Google_Site_Kit_Client instance.
 	 *
-	 * @return Google_Client Google client instance.
+	 * @return Google_Site_Kit_Client Google client instance.
 	 *
 	 * @throws Exception Thrown when the module did not correctly set up the client.
 	 */
 	final protected function get_client() {
 		if ( null === $this->google_client ) {
 			$client = $this->setup_client();
-			if ( ! $client instanceof Google_Client ) {
+			if ( ! $client instanceof Google_Site_Kit_Client ) {
 				throw new Exception( __( 'Google client not set up correctly.', 'google-site-kit' ) );
 			}
 			$this->google_client = $client;
@@ -633,8 +633,9 @@ abstract class Module {
 	 * for the first time.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Now returns Google_Site_Kit_Client instance.
 	 *
-	 * @return Google_Client Google client instance.
+	 * @return Google_Site_Kit_Client Google client instance.
 	 */
 	protected function setup_client() {
 		return $this->authentication->get_oauth_client()->get_client();
@@ -647,12 +648,13 @@ abstract class Module {
 	 * for the first time.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Now requires Google_Site_Kit_Client instance.
 	 *
-	 * @param Google_Client $client Google client instance.
+	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
 	 *               instance of Google_Service.
 	 */
-	abstract protected function setup_services( Google_Client $client );
+	abstract protected function setup_services( Google_Site_Kit_Client $client );
 
 	/**
 	 * Sets whether or not to return raw requests and returns a callback to reset to the previous value.
@@ -665,18 +667,7 @@ abstract class Module {
 	 * @return callable Callback function that resets to the original $defer value.
 	 */
 	protected function with_client_defer( $defer ) {
-		$client = $this->get_client();
-		if ( $client instanceof Google_Site_Kit_Client ) {
-			return $client->withDefer( $defer );
-		}
-
-		// "Poly-fill" if not a Site Kit client instance.
-		$orig_defer = $client->shouldDefer();
-		$client->setDefer( $defer );
-
-		return function () use ( $client, $orig_defer ) {
-			$client->setDefer( $orig_defer );
-		};
+		return $this->get_client()->withDefer( $defer );
 	}
 
 	/**
