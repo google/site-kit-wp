@@ -41,6 +41,22 @@ final class Assets {
 	private $assets = array();
 
 	/**
+	 * Internal flag for whether assets have been registered yet.
+	 *
+	 * @since n.e.x.t
+	 * @var bool
+	 */
+	private $assets_registered = false;
+
+	/**
+	 * Internal flag for whether fonts have been enqueued yet.
+	 *
+	 * @since n.e.x.t
+	 * @var bool
+	 */
+	private $fonts_enqueued = false;
+
+	/**
 	 * Internal list of print callbacks already done.
 	 *
 	 * @since n.e.x.t
@@ -70,6 +86,11 @@ final class Assets {
 				return;
 			}
 
+			if ( $this->assets_registered ) {
+				return;
+			}
+
+			$this->assets_registered = true;
 			$this->register_assets();
 		};
 		add_action( 'admin_enqueue_scripts', $register_callback );
@@ -117,9 +138,8 @@ final class Assets {
 	 */
 	public function enqueue_asset( $handle ) {
 		// Register assets on-the-fly if necessary (currently the case for admin bar in frontend).
-		static $assets_registered = false;
-		if ( ! $assets_registered ) {
-			$assets_registered = true;
+		if ( ! $this->assets_registered ) {
+			$this->assets_registered = true;
 			$this->register_assets();
 		}
 
@@ -137,11 +157,11 @@ final class Assets {
 	 * @since 1.0.0
 	 */
 	public function enqueue_fonts() {
-		static $enqueued = false;
-
-		if ( $enqueued ) {
+		if ( $this->fonts_enqueued ) {
 			return;
 		}
+
+		$this->fonts_enqueued = true;
 
 		$font_families = array(
 			'Google+Sans:300,300i,400,400i,500,500i,700,700i',
