@@ -125,7 +125,7 @@ final class User_Options {
 	/**
 	 * Gets the ID of the user that options are controlled for.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.4
 	 *
 	 * @return int User ID.
 	 */
