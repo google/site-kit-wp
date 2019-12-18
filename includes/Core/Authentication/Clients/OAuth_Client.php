@@ -163,7 +163,7 @@ final class OAuth_Client {
 		$this->user_options           = $user_options ?: new User_Options( $this->context );
 		$this->encrypted_options      = new Encrypted_Options( $this->options );
 		$this->encrypted_user_options = new Encrypted_User_Options( $this->user_options );
-		$this->credentials            = $credentials ?: new Credentials( $this->options );
+		$this->credentials            = $credentials ?: new Credentials( $this->encrypted_options );
 		$this->google_proxy           = $google_proxy ?: new Google_Proxy( $this->context );
 		$this->profile                = $profile ?: new Profile( $this->user_options );
 	}
