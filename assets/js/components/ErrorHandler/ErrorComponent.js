@@ -1,5 +1,7 @@
 export const ThrowError = ( event ) => {
-	event.preventDefault();
+	if ( event ) {
+		event.preventDefault();
+	}
 
 	// throw new Error( 'Something bad happened. 💣' );
 	const badArrayAccess = null;
@@ -7,6 +9,8 @@ export const ThrowError = ( event ) => {
 };
 
 const ErrorComponent = () => {
+	ThrowError();
+
 	return (
 		<div>
 			<button onClick={ ThrowError } type="button">Throw error</button>

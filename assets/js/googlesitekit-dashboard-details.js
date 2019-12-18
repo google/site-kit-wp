@@ -18,11 +18,6 @@
 /* eslint camelcase:[0] */
 
 /**
- * External dependencies
- */
-import Notification from 'GoogleComponents/notifications/notification';
-
-/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
@@ -33,46 +28,24 @@ import { Component, render } from '@wordpress/element';
 /**
  * Internal dependencies.
  */
+// eslint-disable-next-line @wordpress/dependency-group
 import DashboardDetailsApp from 'GoogleComponents/dashboard-details/dashboard-details-app';
+import ErrorHandler from 'GoogleComponents/ErrorHandler';
 
 class GoogleSitekitDashboardDetails extends Component {
 	constructor( props ) {
 		super( props );
-		this.state = { hasError: false };
 
 		// Set up translations.
 		setLocaleData( googlesitekit.locale, 'google-site-kit' );
 	}
 
-	// componentDidCatch( error, info ) {
-	// 	this.setState( {
-	// 		hasError: true,
-	// 		error,
-	// 		info,
-	// 	} );
-	// }
-
 	render() {
-		const {
-			hasError,
-			error,
-			info,
-		} = this.state;
-
-		if ( hasError ) {
-			return <Notification
-				id={ 'googlesitekit-error' }
-				key={ 'googlesitekit-error' }
-				title={ error }
-				description={ info.componentStack }
-				dismiss={ '' }
-				isDismissable={ false }
-				format="small"
-				type="win-error"
-			/>;
-		}
-
-		return <DashboardDetailsApp />;
+		return (
+			<ErrorHandler>
+				<DashboardDetailsApp />
+			</ErrorHandler>
+		);
 	}
 }
 

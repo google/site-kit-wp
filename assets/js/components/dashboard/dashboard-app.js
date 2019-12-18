@@ -28,7 +28,7 @@ import 'GoogleComponents/notifications';
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -36,13 +36,13 @@ import { __ } from '@wordpress/i18n';
  */
 import DashboardMain from './dashboard-main';
 import DashboardNotifications from './dashboard-notifications';
-// import ErrorHandler from '../ErrorHandler';
+import ErrorHandler from '../ErrorHandler';
 import ErrorComponent from '../ErrorHandler/ErrorComponent';
 
 class DashboardApp extends Component {
 	render() {
 		return (
-			<Fragment>
+			<ErrorHandler>
 				<Header />
 				<DashboardNotifications />
 				<div className="googlesitekit-module-page">
@@ -79,7 +79,7 @@ class DashboardApp extends Component {
 						</div>
 					</div>
 				</div>
-			</Fragment>
+			</ErrorHandler>
 		);
 	}
 }

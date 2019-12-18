@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { clearAppLocalStorage } from 'GoogleUtil';
-import Notification from 'GoogleComponents/notifications/notification';
 import Setup from 'GoogleComponents/setup/setup-wrapper';
 import DashboardApp from 'GoogleComponents/dashboard/dashboard-app';
 import NotificationCounter from 'GoogleComponents/notifications/notification-counter';
@@ -30,83 +29,52 @@ import NotificationCounter from 'GoogleComponents/notifications/notification-cou
  */
 import domReady from '@wordpress/dom-ready';
 import { setLocaleData } from '@wordpress/i18n';
-import { Component, Fragment, render } from '@wordpress/element';
+import { Component, render } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
  */
-// import ErrorHandler from 'GoogleComponents/ErrorHandler';
-import ErrorComponent, { ThrowError } from 'GoogleComponents/ErrorHandler/ErrorComponent';
+import ErrorHandler from 'GoogleComponents/ErrorHandler';
+import ErrorComponent from 'GoogleComponents/ErrorHandler/ErrorComponent';
 
 class GoogleSitekitDashboard extends Component {
 	constructor( props ) {
 		super( props );
-		this.state = {
-			hasError: false,
-		};
 
 		// Set up translations.
 		setLocaleData( googlesitekit.locale, 'google-site-kit' );
 	}
 
-	componentDidCatch( error, info ) {
-		// eslint-disable-next-line no-console
-		console.log( 'componentDidCatch', arguments );
-		this.setState( {
-			hasError: true,
-			error,
-			info,
-		} );
-	}
-
-	static getDerivedStateFromError() {
-		// eslint-disable-next-line no-console
-		console.log( 'getDerivedStateFromError', arguments );
-		// Update state so the next render will show the fallback UI.
-		// return {
-		// 	hasError: true,
-		// 	error,
-		// };
-	}
+	// static getDerivedStateFromError() {
+	// 	// eslint-disable-next-line no-console
+	// 	console.log( 'getDerivedStateFromError', arguments );
+	// 	// Update state so the next render will show the fallback UI.
+	// 	// return {
+	// 	// 	hasError: true,
+	// 	// 	error,
+	// 	// };
+	// }
 
 	render() {
 		const {
 			showModuleSetupWizard,
 		} = window.googlesitekit.setup;
 
-		const {
-			hasError,
-			error,
-			info,
-		} = this.state;
-
-		if ( hasError ) {
-			return <Notification
-				id={ 'googlesitekit-error' }
-				key={ 'googlesitekit-error' }
-				title={ error.message }
-				description={ info.componentStack }
-				dismiss={ '' }
-				isDismissable={ false }
-				format="small"
-				type="win-error"
-			/>;
-		}
-
 		if ( showModuleSetupWizard ) {
 			return (
-				<Setup />
+				<ErrorHandler>
+					<Setup />
+				</ErrorHandler>
 			);
 		}
 
 		return (
-			<Fragment>
+			<ErrorHandler>
 				<NotificationCounter />
 				<DashboardApp />
-				<ThrowError />
 				<ErrorComponent />
-			</Fragment>
+			</ErrorHandler>
 		);
 	}
 }

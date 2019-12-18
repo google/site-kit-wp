@@ -20,7 +20,6 @@
  * External dependencies
  */
 import ProgressBar from 'GoogleComponents/progress-bar';
-import Notification from 'GoogleComponents/notifications/notification';
 import 'GoogleComponents/data';
 
 /**
@@ -29,18 +28,18 @@ import 'GoogleComponents/data';
 import domReady from '@wordpress/dom-ready';
 import { setLocaleData } from '@wordpress/i18n';
 import { doAction, applyFilters } from '@wordpress/hooks';
-import { Component, render, Fragment } from '@wordpress/element';
+import { Component, render } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import ErrorHandler from 'GoogleComponents/ErrorHandler';
 import { Suspense, lazy } from 'GoogleUtil/react-features';
 import ModuleApp from './components/module-app';
 
 class GoogleSitekitModule extends Component {
 	constructor( props ) {
 		super( props );
-		this.state = { hasError: false };
 
 		// Set up translations.
 		setLocaleData( googlesitekit.locale, 'google-site-kit' );
@@ -54,34 +53,10 @@ class GoogleSitekitModule extends Component {
 		};
 	}
 
-	// componentDidCatch( error, info ) {
-	// 	this.setState( {
-	// 		hasError: true,
-	// 		error,
-	// 		info,
-	// 	} );
-	// }
-
 	render() {
 		const {
-			hasError,
-			error,
-			info,
 			showModuleSetupWizard,
 		} = this.state;
-
-		if ( hasError ) {
-			return <Notification
-				id={ 'googlesitekit-error' }
-				key={ 'googlesitekit-error' }
-				title={ error }
-				description={ info.componentStack }
-				dismiss={ '' }
-				isDismissable={ false }
-				format="small"
-				type="win-error"
-			/>;
-		}
 
 		const { currentAdminPage } = googlesitekit.admin;
 
@@ -102,8 +77,9 @@ class GoogleSitekitModule extends Component {
 			const Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wrapper" */'./components/setup/setup-wrapper' ) );
 
 			return (
+
 				<Suspense fallback={
-					<Fragment>
+					<ErrorHandler>
 						<div className="googlesitekit-setup">
 							<div className="mdc-layout-grid">
 								<div className="mdc-layout-grid__inner">
@@ -127,15 +103,19 @@ class GoogleSitekitModule extends Component {
 								</div>
 							</div>
 						</div>
-					</Fragment>
+					</ErrorHandler>
 				}>
-					<Setup />
+					<ErrorHandler>
+						<Setup />
+					</ErrorHandler>
 				</Suspense>
 			);
 		}
 
 		return (
-			<ModuleApp />
+			<ErrorHandler>
+				<ModuleApp />
+			</ErrorHandler>
 		);
 	}
 }
