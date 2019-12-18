@@ -26,10 +26,10 @@ abstract class Setting {
 	const OPTION = '';
 
 	/**
-	 * Options instance.
+	 * Options instance implementing Options_Interface.
 	 *
 	 * @since n.e.x.t
-	 * @var Options
+	 * @var Options_Interface
 	 */
 	protected $options;
 
@@ -38,9 +38,9 @@ abstract class Setting {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Options $options Options instance.
+	 * @param Options_Interface $options Options_Interface instance.
 	 */
-	public function __construct( Options $options ) {
+	public function __construct( Options_Interface $options ) {
 		$this->options = $options;
 	}
 
