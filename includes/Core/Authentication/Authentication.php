@@ -793,7 +793,7 @@ final class Authentication {
 	 */
 	private function redirect_to_proxy( $code ) {
 		wp_safe_redirect(
-			$this->auth_client->get_proxy_setup_url( $code )
+			$this->get_oauth_client()->get_proxy_setup_url( $code )
 		);
 		exit;
 	}
