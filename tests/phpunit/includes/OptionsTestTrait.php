@@ -54,8 +54,10 @@ trait OptionsTestTrait {
 	protected function assertOptionsDeleted( $is_network_mode ) {
 		foreach ( $this->get_option_keys() as $option_name ) {
 			if ( $is_network_mode ) {
+				remove_all_filters( "default_site_option_$option_name" );
 				$this->assertFalse( get_network_option( null, $option_name ) );
 			} else {
+				remove_all_filters( "default_option_$option_name" );
 				$this->assertFalse( get_option( $option_name ) );
 			}
 		}
