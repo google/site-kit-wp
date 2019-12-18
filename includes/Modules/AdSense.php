@@ -15,7 +15,9 @@ use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Setting;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service_AdSense;
 use Google\Site_Kit_Dependencies\Google_Service_AdSense_Alert;
@@ -29,10 +31,18 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class AdSense extends Module implements Module_With_Screen, Module_With_Scopes {
+final class AdSense extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Setting {
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait;
 
 	const OPTION = 'googlesitekit_adsense_settings';
+
+	/**
+	 * Settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Settings
+	 */
+	protected $settings;
 
 	/**
 	 * Internal flag for whether the AdSense tag has been printed.
@@ -51,44 +61,6 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 		$this->register_scopes_hook();
 
 		$this->register_screen_hook();
-
-		add_filter(
-			'option_' . self::OPTION,
-			function( $option ) {
-				$option = (array) $option;
-
-				/**
-				 * Filters the AdSense account ID to use.
-				 *
-				 * @since 1.0.0
-				 *
-				 * @param string $account_id Empty by default, will fall back to the option value if not set.
-				 */
-				$account_id = apply_filters( 'googlesitekit_adsense_account_id', '' );
-
-				if ( ! empty( $account_id ) ) {
-					$option['accountID'] = $account_id;
-				}
-
-				/**
-				 * Migrate 'adsenseTagEnabled' to 'useSnippet'.
-				 */
-				if ( ! isset( $option['useSnippet'] ) && isset( $option['adsenseTagEnabled'] ) ) {
-					$option['useSnippet'] = (bool) $option['adsenseTagEnabled'];
-				}
-				// Ensure the old key is removed regardless. No-op if not set.
-				unset( $option['adsenseTagEnabled'] );
-
-				/**
-				 * Enable the snippet by default.
-				 */
-				if ( ! isset( $option['useSnippet'] ) ) {
-					$option['useSnippet'] = true;
-				}
-
-				return $option;
-			}
-		);
 
 		add_action( // For non-AMP, plus AMP Native and Transitional.
 			'wp_head',
@@ -176,8 +148,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 	public function is_connected() {
 		$settings = (array) $this->options->get( self::OPTION );
 
-		// TODO: Remove the latter at some point as it's here for back-compat.
-		if ( empty( $settings['setupComplete'] ) && empty( $settings['setup_complete'] ) ) {
+		if ( empty( $settings['setupComplete'] ) ) {
 			return false;
 		}
 
@@ -841,5 +812,20 @@ tag_partner: "site_kit"
 		return array(
 			'adsense' => new Google_Service_AdSense( $client ),
 		);
+	}
+
+	/**
+	 * Gets the module's Settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Settings AdSense module settings instance.
+	 */
+	public function get_setting() {
+		if ( ! $this->settings instanceof Settings ) {
+			$this->settings = new Settings( $this->options );
+		}
+
+		return $this->settings;
 	}
 }

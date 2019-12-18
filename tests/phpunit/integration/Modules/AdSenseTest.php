@@ -31,35 +31,14 @@ class AdSenseTest extends TestCase {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 		remove_all_filters( 'googlesitekit_module_screens' );
-		remove_all_filters( 'option_' . AdSense::OPTION );
-		remove_all_filters( 'googlesitekit_adsense_account_id' );
 
 		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
 		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
-		$this->assertFalse( get_option( AdSense::OPTION ) );
 
 		$adsense->register();
 
 		$this->assertNotEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
 		$this->assertContains( $adsense->get_screen(), apply_filters( 'googlesitekit_module_screens', array() ) );
-		$this->assertFalse( get_option( AdSense::OPTION ) );
-
-		update_option( AdSense::OPTION, array( 'accountID' => 'saved-account-id' ) );
-		$this->assertArraySubset( array( 'accountID' => 'saved-account-id' ), get_option( AdSense::OPTION ) );
-		add_filter( 'googlesitekit_adsense_account_id', '__return_empty_string' );
-		$this->assertArraySubset( array( 'accountID' => 'saved-account-id' ), get_option( AdSense::OPTION ) );
-		remove_filter( 'googlesitekit_adsense_account_id', '__return_empty_string' );
-
-		add_filter( 'googlesitekit_adsense_account_id', function () {
-			return 'filtered-adsense-account-id';
-		} );
-		$this->assertArraySubset( array( 'accountID' => 'filtered-adsense-account-id' ), get_option( AdSense::OPTION ) );
-
-		// Default value filtered into saved value.
-		$this->assertArraySubset( array( 'useSnippet' => true ), get_option( AdSense::OPTION ) );
-		update_option( AdSense::OPTION, array( 'useSnippet' => false ) );
-		// Default respects saved value.
-		$this->assertArraySubset( array( 'useSnippet' => false ), get_option( AdSense::OPTION ) );
 	}
 
 	public function test_get_module_scope() {
@@ -113,7 +92,7 @@ class AdSenseTest extends TestCase {
 		$options  = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$settings = $options->get( AdSense::OPTION );
 
-		$this->assertFalse( $settings );
+		$this->assertFalse( $settings['setupComplete'] );
 		$this->assertFalse( $adsense->is_connected() );
 
 		$options->set( AdSense::OPTION, array( 'setupComplete' => true ) );
@@ -125,11 +104,11 @@ class AdSenseTest extends TestCase {
 		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$options->set( AdSense::OPTION, 'test-value' );
-		$this->assertEquals( 'test-value', $options->get( AdSense::OPTION ) );
+		$this->assertOptionExists( AdSense::OPTION );
 
 		$adsense->on_deactivation();
 
-		$this->assertFalse( $options->get( AdSense::OPTION ) );
+		$this->assertOptionNotExists( AdSense::OPTION );
 	}
 
 	public function test_get_datapoints() {
