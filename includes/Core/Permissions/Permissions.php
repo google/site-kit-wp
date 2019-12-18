@@ -287,4 +287,24 @@ final class Permissions {
 		 */
 		return (bool) apply_filters( 'googlesitekit_setup_complete', true );
 	}
+
+	/**
+	 * Get all capabilities used in Google Site Kit.
+	 *
+	 * @since 1.x
+	 *
+	 * @return array
+	 */
+	public static function get_capabilities() {
+		return array(
+			self::AUTHENTICATE,
+			self::SETUP,
+			self::VIEW_POSTS_INSIGHTS,
+			self::VIEW_DASHBOARD,
+			self::VIEW_MODULE_DETAILS,
+			self::MANAGE_OPTIONS,
+			self::PUBLISH_POSTS,
+			self::VIEW_POST_INSIGHTS,
+		);
+	}	
 }
