@@ -17,7 +17,7 @@ namespace Google\Site_Kit\Core\Storage;
  * @access private
  * @ignore
  */
-final class Encrypted_Options {
+final class Encrypted_Options implements Options_Interface {
 
 	/**
 	 * Data Encryption API instance.
@@ -70,12 +70,14 @@ final class Encrypted_Options {
 	 * Sets the value for a option.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Added autoload parameter.
 	 *
-	 * @param string $option Option name.
-	 * @param mixed  $value  Option value. Must be serializable if non-scalar.
+	 * @param string $option    Option name.
+	 * @param mixed  $value     Option value. Must be serializable if non-scalar.
+	 * @param mixed  $autoload  Autoload. False or 'no' to prevent autoloading on page load.
 	 * @return bool True on success, false on failure.
 	 */
-	public function set( $option, $value ) {
+	public function set( $option, $value, $autoload = true ) {
 		if ( ! is_scalar( $value ) ) {
 			$value = maybe_serialize( $value );
 		}
@@ -84,7 +86,7 @@ final class Encrypted_Options {
 			return false;
 		}
 
-		return $this->options->set( $option, $raw_value );
+		return $this->options->set( $option, $raw_value, $autoload );
 	}
 
 	/**

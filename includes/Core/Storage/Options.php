@@ -21,7 +21,7 @@ use Google\Site_Kit\Context;
  * @access private
  * @ignore
  */
-final class Options {
+final class Options implements Options_Interface {
 
 	/**
 	 * Plugin context.
