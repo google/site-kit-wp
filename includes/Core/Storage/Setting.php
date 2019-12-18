@@ -96,4 +96,34 @@ abstract class Setting {
 	public function delete() {
 		return $this->options->delete( static::OPTION );
 	}
+
+	/**
+	 * Gets the default value.
+	 *
+	 * For use with register_setting and fetching the default directly.
+	 * Returns false by default for consistency with get_option.
+	 * Override in a sub-class if different.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return mixed The default value.
+	 */
+	public function get_default() {
+		return false;
+	}
+
+	/**
+	 * Gets the callback for sanitizing the setting's value before saving.
+	 *
+	 * For use internally with register_setting.
+	 * Returns `null` for consistency with the default in register_setting.
+	 * Override in a sub-class.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return callable|null
+	 */
+	protected function get_sanitize_callback() {
+		return null;
+	}
 }
