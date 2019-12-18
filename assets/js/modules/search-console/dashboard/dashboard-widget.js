@@ -133,7 +133,15 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 		};
 
 		return selectedStats.map( function( stat ) {
-			return { title: vAxesMap[ stat ] };
+			const otherSettings = {};
+			// The third index refers to the "Average Position" stat.
+			// We need to reverse the y-axis for this stat, see:
+			// https://github.com/google/site-kit-wp/issues/874
+			if ( stat === 3 ) {
+				otherSettings.direction = -1;
+			}
+
+			return { title: vAxesMap[ stat ], ...otherSettings };
 		} );
 	}
 
