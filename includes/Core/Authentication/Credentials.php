@@ -10,8 +10,7 @@
 
 namespace Google\Site_Kit\Core\Authentication;
 
-use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\Encrypted_Options;
+use Google\Site_Kit\Core\Storage\Setting;
 
 /**
  * Class representing the OAuth client ID and secret credentials.
@@ -20,7 +19,7 @@ use Google\Site_Kit\Core\Storage\Encrypted_Options;
  * @access private
  * @ignore
  */
-final class Credentials {
+final class Credentials extends Setting {
 
 	/**
 	 * Option key in options table.
@@ -28,22 +27,21 @@ final class Credentials {
 	const OPTION = 'googlesitekit_credentials';
 
 	/**
-	 * Encrypted_Options object.
+	 * Registers the setting in WordPress.
 	 *
-	 * @since 1.0.0
-	 * @var Encrypted_Options
+	 * @since n.e.x.t
 	 */
-	private $encrypted_options;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param Options $options Options instance.
-	 */
-	public function __construct( Options $options ) {
-		$this->encrypted_options = new Encrypted_Options( $options );
+	public function register() {
+		register_setting(
+			self::OPTION,
+			self::OPTION,
+			array(
+				// Credentials are stored as a serialized encrypted string.
+				'type'              => 'string',
+				'sanitize_callback' => $this->get_sanitize_callback(),
+				'default'           => '',
+			)
+		);
 	}
 
 	/**
@@ -82,20 +80,8 @@ final class Credentials {
 		}
 
 		return $this->parse_defaults(
-			$this->encrypted_options->get( self::OPTION )
+			$this->options->get( self::OPTION )
 		);
-	}
-
-	/**
-	 * Saves encrypted Site Kit credentials.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $data Client ID and Secret data.
-	 * @return bool True on success, false on failure.
-	 */
-	public function set( $data ) {
-		return $this->encrypted_options->set( self::OPTION, $data );
 	}
 
 	/**
@@ -123,15 +109,26 @@ final class Credentials {
 	 * @return array Parsed $data.
 	 */
 	private function parse_defaults( $data ) {
-		$defaults = array(
-			'oauth2_client_id'     => '',
-			'oauth2_client_secret' => '',
-		);
+		$defaults = $this->get_default();
 
 		if ( ! is_array( $data ) ) {
 			return $defaults;
 		}
 
 		return wp_parse_args( $data, $defaults );
+	}
+
+	/**
+	 * Gets the default value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_default() {
+		return array(
+			'oauth2_client_id'     => '',
+			'oauth2_client_secret' => '',
+		);
 	}
 }
