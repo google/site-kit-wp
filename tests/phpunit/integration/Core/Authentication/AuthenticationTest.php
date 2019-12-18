@@ -122,7 +122,6 @@ class AuthenticationTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$credentials = new Credentials( new Options( $context ) );
 		$auth = new Authentication( $context );
 		$auth->register();
 
