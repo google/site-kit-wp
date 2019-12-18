@@ -126,6 +126,15 @@ final class Modules {
 		);
 
 		array_walk(
+			$this->get_available_modules(),
+			function( Module $module ) {
+				if ( $module instanceof Module_With_Setting ) {
+					$module->get_setting()->register();
+				}
+			}
+		);
+
+		array_walk(
 			$this->get_active_modules(),
 			function( Module $module ) {
 				$module->register();
