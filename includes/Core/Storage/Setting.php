@@ -48,8 +48,6 @@ abstract class Setting {
 	 * Registers the setting in WordPress.
 	 *
 	 * @since n.e.x.t
-	 *
-	 * @return mixed
 	 */
 	abstract public function register();
 
