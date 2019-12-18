@@ -99,22 +99,10 @@ final class Modules {
 		User_Options $user_options = null,
 		Authentication $authentication = null
 	) {
-		$this->context = $context;
-
-		if ( ! $options ) {
-			$options = new Options( $this->context );
-		}
-		$this->options = $options;
-
-		if ( ! $user_options ) {
-			$user_options = new User_Options( $this->context );
-		}
-		$this->user_options = $user_options;
-
-		if ( ! $authentication ) {
-			$authentication = new Authentication( $this->context, $this->options, $this->user_options );
-		}
-		$this->authentication = $authentication;
+		$this->context        = $context;
+		$this->options        = $options ?: new Options( $this->context );
+		$this->user_options   = $user_options ?: new User_Options( $this->context );
+		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
 	}
 
 	/**
@@ -126,8 +114,7 @@ final class Modules {
 		add_filter(
 			'googlesitekit_modules_data',
 			function( $data ) {
-				$modules = $this->get_available_modules();
-				foreach ( $modules as $module ) {
+				foreach ( $this->get_available_modules() as $module ) {
 					$data[ $module->slug ]                  = $module->prepare_info_for_js();
 					$data[ $module->slug ]['active']        = $this->is_module_active( $module->slug );
 					$data[ $module->slug ]['setupComplete'] = $data[ $module->slug ]['active'] && $this->is_module_connected( $module->slug );
@@ -138,10 +125,8 @@ final class Modules {
 			}
 		);
 
-		$active_modules = $this->get_active_modules();
-
 		array_walk(
-			$active_modules,
+			$this->get_active_modules(),
 			function( Module $module ) {
 				$module->register();
 			}
