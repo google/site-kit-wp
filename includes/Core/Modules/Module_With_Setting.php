@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Setting;
 interface Module_With_Setting {
 
 	/**
-	 * Gets the module's setting instance.
+	 * Gets the module's Setting instance.
 	 *
 	 * @since n.e.x.t
 	 *
