@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Optimize;
+use Google\Site_Kit\Modules\Optimize\Settings;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -69,12 +70,12 @@ class OptimizeTest extends TestCase {
 	public function test_on_deactivation() {
 		$optimize = new Optimize( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options  = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$options->set( Optimize::OPTION, 'test-value' );
-		$this->assertEquals( 'test-value', $options->get( Optimize::OPTION ) );
+		$options->set( Settings::OPTION, 'test-value' );
+		$this->assertEquals( 'test-value', $options->get( Settings::OPTION ) );
 
 		$optimize->on_deactivation();
 
-		$this->assertFalse( $options->get( Optimize::OPTION ) );
+		$this->assertFalse( $options->get( Settings::OPTION ) );
 	}
 
 	public function test_get_datapoints() {

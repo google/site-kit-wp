@@ -33,7 +33,7 @@ trait OptionsTestTrait {
 			Analytics\Settings::OPTION,
 			Credentials::OPTION,
 			First_Admin::OPTION,
-			Optimize::OPTION,
+			Optimize\Settings::OPTION,
 			PageSpeed_Insights::OPTION,
 			Search_Console::PROPERTY_OPTION,
 			Tag_Manager::OPTION,
