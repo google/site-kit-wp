@@ -335,15 +335,7 @@ tag_partner: "site_kit"
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:account-id':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
-					// TODO: Remove this at some point (migration of old option).
-					if ( isset( $option['account_id'] ) ) {
-						if ( ! isset( $option['accountID'] ) ) {
-							$option['accountID'] = $option['account_id'];
-						}
-						unset( $option['account_id'] );
-						$this->options->set( self::OPTION, $option );
-					}
+					$option = $this->settings->get();
 					if ( empty( $option['accountID'] ) ) {
 						return new WP_Error( 'account_id_not_set', __( 'AdSense account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}

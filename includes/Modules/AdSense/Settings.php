@@ -44,6 +44,8 @@ class Settings extends Setting {
 			function ( $option ) {
 				if ( ! is_array( $option ) ) {
 					$option = $this->get_default();
+				} else {
+					$option = $this->migrate_legacy_keys( $option );
 				}
 
 				/**
@@ -59,26 +61,41 @@ class Settings extends Setting {
 					$option['accountID'] = $account_id;
 				}
 
-				/**
-				 * Migrate 'adsenseTagEnabled' to 'useSnippet'.
-				 */
-				if ( ! isset( $option['useSnippet'] ) && isset( $option['adsenseTagEnabled'] ) ) {
-					$option['useSnippet'] = (bool) $option['adsenseTagEnabled'];
-				}
-				// Ensure the old key is removed regardless. No-op if not set.
-				unset( $option['adsenseTagEnabled'] );
-
-				// Migrate `setup_complete` to `setupComplete`.
-				if ( ! isset( $option['setupComplete'] ) && isset( $settings['setup_complete'] ) ) {
-					$option['setupComplete'] = $option['setup_complete'];
-				}
-				// Ensure the old key is removed regardless. No-op if not set.
-				unset( $option['setup_complete'] );
-
 				// Fill in any missing keys with defaults.
 				return $option + $this->get_default();
 			}
 		);
+	}
+
+	/**
+	 * Migrates legacy option keys to the current key.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $option The current saved option.
+	 * @return array Migrated option.
+	 */
+	protected function migrate_legacy_keys( array $option ) {
+
+		// Migrate 'account_id' to 'accountID'.
+		if ( ! isset( $option['accountID'] ) && isset( $option['account_id'] ) ) {
+			$option['accountID'] = $option['account_id'];
+		}
+		unset( $option['account_id'] );
+
+		// Migrate 'adsenseTagEnabled' to 'useSnippet'.
+		if ( ! isset( $option['useSnippet'] ) && isset( $option['adsenseTagEnabled'] ) ) {
+			$option['useSnippet'] = (bool) $option['adsenseTagEnabled'];
+		}
+		unset( $option['adsenseTagEnabled'] );
+
+		// Migrate 'setup_complete' to 'setupComplete'.
+		if ( ! isset( $option['setupComplete'] ) && isset( $settings['setup_complete'] ) ) {
+			$option['setupComplete'] = $option['setup_complete'];
+		}
+		unset( $option['setup_complete'] );
+
+		return $option;
 	}
 
 	/**
