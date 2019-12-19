@@ -36,7 +36,7 @@ trait OptionsTestTrait {
 			Optimize\Settings::OPTION,
 			PageSpeed_Insights::OPTION,
 			Search_Console::PROPERTY_OPTION,
-			Tag_Manager::OPTION,
+			Tag_Manager\Settings::OPTION,
 			Beta_Migration::OPTION_IS_PRE_PROXY_INSTALL,
 		);
 	}
