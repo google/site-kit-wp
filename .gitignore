@@ -3,7 +3,6 @@ bower_components
 vendor
 /third-party
 release
-composer.lock
 phpunit.xml
 .idea
 npm-debug.log
