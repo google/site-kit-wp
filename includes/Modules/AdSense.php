@@ -34,8 +34,6 @@ use WP_Error;
 final class AdSense extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Settings {
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait;
 
-	const OPTION = 'googlesitekit_adsense_settings';
-
 	/**
 	 * Settings instance.
 	 *
@@ -116,7 +114,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 			__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
 		);
 
-		$info['settings'] = $this->options->get( self::OPTION );
+		$info['settings'] = $this->get_settings()->get();
 
 		// Clear datapoints that don't need to be localized.
 		$idenfifier_args = array(
@@ -146,7 +144,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 	 * @return bool True if module is connected, false otherwise.
 	 */
 	public function is_connected() {
-		$settings = (array) $this->options->get( self::OPTION );
+		$settings = $this->get_settings()->get();
 
 		if ( empty( $settings['setupComplete'] ) ) {
 			return false;
@@ -161,7 +159,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 	 * @since 1.0.0
 	 */
 	public function on_deactivation() {
-		$this->options->delete( self::OPTION );
+		$this->get_settings()->delete();
 	}
 
 	/**
@@ -335,7 +333,7 @@ tag_partner: "site_kit"
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:account-id':
 				return function() {
-					$option = $this->settings->get();
+					$option = $this->get_settings()->get();
 					if ( empty( $option['accountID'] ) ) {
 						return new WP_Error( 'account_id_not_set', __( 'AdSense account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}
@@ -347,21 +345,21 @@ tag_partner: "site_kit"
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option              = (array) $this->options->get( self::OPTION );
+					$option              = $this->get_settings()->get();
 					$option['accountID'] = $data['accountID'];
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return true;
 				};
 			case 'GET:account-status':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 					// TODO: Remove this at some point (migration of old option).
 					if ( isset( $option['account_status'] ) ) {
 						if ( ! isset( $option['accountStatus'] ) ) {
 							$option['accountStatus'] = $option['account_status'];
 						}
 						unset( $option['account_status'] );
-						$this->options->set( self::OPTION, $option );
+						$this->get_settings()->set( $option );
 					}
 					if ( empty( $option['accountStatus'] ) ) {
 						return new WP_Error( 'account_status_not_set', __( 'AdSense account status not set.', 'google-site-kit' ), array( 'status' => 404 ) );
@@ -374,9 +372,9 @@ tag_partner: "site_kit"
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountStatus' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option                  = (array) $this->options->get( self::OPTION );
+					$option                  = $this->get_settings()->get();
 					$option['accountStatus'] = $data['accountStatus'];
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return true;
 				};
 			case 'GET:account-url':
@@ -402,14 +400,14 @@ tag_partner: "site_kit"
 				return $service->accounts_alerts->listAccountsAlerts( $data['accountID'] );
 			case 'GET:client-id':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 					// TODO: Remove this at some point (migration of old option).
 					if ( isset( $option['client_id'] ) ) {
 						if ( ! isset( $option['clientID'] ) ) {
 							$option['clientID'] = $option['client_id'];
 						}
 						unset( $option['client_id'] );
-						$this->options->set( self::OPTION, $option );
+						$this->get_settings()->set( $option );
 					}
 					if ( empty( $option['clientID'] ) ) {
 						return new WP_Error( 'client_id_not_set', __( 'AdSense client ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
@@ -422,9 +420,9 @@ tag_partner: "site_kit"
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option             = (array) $this->options->get( self::OPTION );
+					$option             = $this->get_settings()->get();
 					$option['clientID'] = $data['clientID'];
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return true;
 				};
 			case 'GET:clients':
@@ -432,7 +430,7 @@ tag_partner: "site_kit"
 				return $service->adclients->listAdclients();
 			case 'GET:connection':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 					// TODO: Remove this at some point (migration of old options).
 					if ( isset( $option['account_id'] ) || isset( $option['client_id'] ) || isset( $option['account_status'] ) ) {
 						if ( isset( $option['account_id'] ) ) {
@@ -453,7 +451,7 @@ tag_partner: "site_kit"
 							}
 							unset( $option['account_status'] );
 						}
-						$this->options->set( self::OPTION, $option );
+						$this->get_settings()->set( $option );
 					}
 					// TODO: Remove this at some point (migration of old 'accountId' option).
 					if ( isset( $option['accountId'] ) ) {
@@ -480,14 +478,14 @@ tag_partner: "site_kit"
 				};
 			case 'POST:connection':
 				return function() use ( $data ) {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 					$keys   = array( 'accountID', 'clientID', 'accountStatus' );
 					foreach ( $keys as $key ) {
 						if ( isset( $data[ $key ] ) ) {
 							$option[ $key ] = $data[ $key ];
 						}
 					}
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return true;
 				};
 			case 'GET:earnings':
@@ -559,7 +557,7 @@ tag_partner: "site_kit"
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option                  = (array) $this->options->get( self::OPTION );
+					$option                  = $this->get_settings()->get();
 					$option['setupComplete'] = true;
 					$option['clientID']      = $data['clientID'];
 					$option['useSnippet']    = isset( $option['useSnippet'] ) ? true : $data['useSnippet'];
@@ -567,11 +565,9 @@ tag_partner: "site_kit"
 					// Set useSnippet explicitly using $data param, otherwise default to true if not set in option.
 					if ( isset( $data['useSnippet'] ) ) {
 						$option['useSnippet'] = $data['useSnippet'];
-					} elseif ( ! isset( $option['useSnippet'] ) ) {
-						$option['useSnippet'] = true;
 					}
 
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 
 					return true;
 				};
@@ -584,7 +580,7 @@ tag_partner: "site_kit"
 				return $service->urlchannels->listUrlchannels( $data['clientID'] );
 			case 'GET:use-snippet':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 
 					return ! empty( $option['useSnippet'] );
 				};
@@ -602,10 +598,10 @@ tag_partner: "site_kit"
 				}
 
 				return function() use ( $data ) {
-					$option               = (array) $this->options->get( self::OPTION );
+					$option               = $this->get_settings()->get();
 					$option['useSnippet'] = (bool) $data['useSnippet'];
 
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 
 					return true;
 				};
