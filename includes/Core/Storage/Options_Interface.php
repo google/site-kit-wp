@@ -36,10 +36,9 @@ interface Options_Interface {
 	 *
 	 * @param string $option    Option name.
 	 * @param mixed  $value     Option value. Must be serializable if non-scalar.
-	 * @param mixed  $autoload  Autoload. False or 'no' to prevent autoloading on page load.
 	 * @return bool True on success, false on failure.
 	 */
-	public function set( $option, $value, $autoload = true );
+	public function set( $option, $value );
 
 	/**
 	 * Deletes the given option.
