@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
-use Google\Site_Kit\Core\Modules\Module_With_Setting;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit_Dependencies\Google_Client;
@@ -31,7 +31,7 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class AdSense extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Setting {
+final class AdSense extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Settings {
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait;
 
 	const OPTION = 'googlesitekit_adsense_settings';
@@ -821,7 +821,7 @@ tag_partner: "site_kit"
 	 *
 	 * @return Settings AdSense module settings instance.
 	 */
-	public function get_setting() {
+	public function get_settings() {
 		if ( ! $this->settings instanceof Settings ) {
 			$this->settings = new Settings( $this->options );
 		}

@@ -10,22 +10,22 @@
 
 namespace Google\Site_Kit\Tests\Core\Modules;
 
-use Google\Site_Kit\Core\Modules\Module_With_Setting;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Tests\TestCase_Context_Trait;
 
-trait Module_With_Setting_ContractTests {
+trait Module_With_Settings_ContractTests {
 
 	use TestCase_Context_Trait;
 
 	/**
-	 * @return Module_With_Setting
+	 * @return Module_With_Settings
 	 */
 	abstract protected function get_module_with_setting();
 
 	public function test_get_setting() {
 		$testcase = $this->get_testcase();
 		$module   = $this->get_module_with_setting();
-		$setting  = $module->get_setting();
+		$setting  = $module->get_settings();
 
 		$testcase->assertInstanceOf( 'Google\\Site_Kit\\Core\\Storage\\Setting', $setting );
 

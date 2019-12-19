@@ -12,7 +12,7 @@ namespace Google\Site_Kit\Core\Modules;
 
 use Google\Site_Kit\Core\Storage\Setting;
 
-interface Module_With_Setting {
+interface Module_With_Settings {
 
 	/**
 	 * Gets the module's Setting instance.
@@ -21,5 +21,5 @@ interface Module_With_Setting {
 	 *
 	 * @return Setting The Setting instance for the current module.
 	 */
-	public function get_setting();
+	public function get_settings();
 }

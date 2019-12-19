@@ -127,8 +127,8 @@ final class Modules {
 
 		array_map(
 			function( Module $module ) {
-				if ( $module instanceof Module_With_Setting ) {
-					$module->get_setting()->register();
+				if ( $module instanceof Module_With_Settings ) {
+					$module->get_settings()->register();
 				}
 			},
 			$this->get_available_modules()
