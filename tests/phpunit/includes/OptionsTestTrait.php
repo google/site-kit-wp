@@ -29,7 +29,7 @@ trait OptionsTestTrait {
 			'googlesitekit_analytics_adsense_linked',
 			Activation::OPTION_NEW_SITE_POSTS,
 			Activation::OPTION_SHOW_ACTIVATION_NOTICE,
-			AdSense::OPTION,
+			AdSense\Settings::OPTION,
 			Analytics::OPTION,
 			Credentials::OPTION,
 			First_Admin::OPTION,

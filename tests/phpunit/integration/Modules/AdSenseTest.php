@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\AdSense;
+use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
@@ -93,12 +94,12 @@ class AdSenseTest extends TestCase {
 	public function test_is_connected() {
 		$adsense  = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options  = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$settings = $options->get( AdSense::OPTION );
+		$settings = $options->get( Settings::OPTION );
 
 		$this->assertFalse( $settings['setupComplete'] );
 		$this->assertFalse( $adsense->is_connected() );
 
-		$options->set( AdSense::OPTION, array( 'setupComplete' => true ) );
+		$options->set( Settings::OPTION, array( 'setupComplete' => true ) );
 		$this->assertTrue( $adsense->is_connected() );
 	}
 
@@ -106,12 +107,12 @@ class AdSenseTest extends TestCase {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$options->set( AdSense::OPTION, 'test-value' );
-		$this->assertOptionExists( AdSense::OPTION );
+		$options->set( Settings::OPTION, 'test-value' );
+		$this->assertOptionExists( Settings::OPTION );
 
 		$adsense->on_deactivation();
 
-		$this->assertOptionNotExists( AdSense::OPTION );
+		$this->assertOptionNotExists( Settings::OPTION );
 	}
 
 	public function test_get_datapoints() {
