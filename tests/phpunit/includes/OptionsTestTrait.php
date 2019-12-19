@@ -30,7 +30,7 @@ trait OptionsTestTrait {
 			Activation::OPTION_NEW_SITE_POSTS,
 			Activation::OPTION_SHOW_ACTIVATION_NOTICE,
 			AdSense\Settings::OPTION,
-			Analytics::OPTION,
+			Analytics\Settings::OPTION,
 			Credentials::OPTION,
 			First_Admin::OPTION,
 			Optimize::OPTION,
