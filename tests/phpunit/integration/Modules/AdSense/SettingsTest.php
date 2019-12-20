@@ -13,35 +13,26 @@ namespace Google\Site_Kit\Tests\Modules\AdSense;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\AdSense\Settings;
-use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 /**
  * @group Modules
  * @group AdSense
  */
-class SettingsTest extends TestCase {
+class SettingsTest extends SettingsTestCase {
 
 	public function test_register() {
-		remove_all_filters( 'default_option_' . Settings::OPTION );
-		remove_all_filters( 'option_' . Settings::OPTION );
-		delete_option( Settings::OPTION );
-		$this->assertFalse( get_option( Settings::OPTION ) );
 		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$this->assertSettingNotRegistered( Settings::OPTION );
+
 		$settings->register();
 
-		$default_value = get_option( Settings::OPTION );
-		$this->assertEquals( $default_value, $settings->get_default() );
+		$this->assertSettingRegistered( Settings::OPTION );
+	}
 
-		$this->assertEqualSets(
-			array(
-				'setupComplete' => false,
-				'accountID'     => '',
-				'accountStatus' => '',
-				'clientID'      => '',
-				'useSnippet'    => true,
-			),
-			$default_value
-		);
+	public function test_register_filters() {
+		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$settings->register();
 
 		update_option( Settings::OPTION, array( 'accountID' => 'saved-account-id' ) );
 		$this->assertArraySubset( array( 'accountID' => 'saved-account-id' ), get_option( Settings::OPTION ) );
@@ -59,5 +50,31 @@ class SettingsTest extends TestCase {
 		update_option( Settings::OPTION, array( 'useSnippet' => false ) );
 		// Default respects saved value.
 		$this->assertArraySubset( array( 'useSnippet' => false ), get_option( Settings::OPTION ) );
+	}
+
+	public function test_get_default() {
+		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$settings->register();
+
+		$default_value = get_option( Settings::OPTION );
+		$this->assertEquals( $default_value, $settings->get_default() );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'setupComplete' => false,
+				'accountID'     => '',
+				'accountStatus' => '',
+				'clientID'      => '',
+				'useSnippet'    => true,
+			),
+			$default_value
+		);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function get_option_name() {
+		return Settings::OPTION;
 	}
 }

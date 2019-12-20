@@ -12,19 +12,23 @@ namespace Google\Site_Kit\Tests\Modules\Analytics;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings;
-use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 /**
  * @group Modules
  * @group Analytics
  */
-class SettingsTest extends TestCase {
+class SettingsTest extends SettingsTestCase {
 
 	public function test_register() {
-	}
+		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$this->assertSettingNotRegistered( Settings::OPTION );
 
+		$settings->register();
+
+		$this->assertSettingRegistered( Settings::OPTION );
+	}
 
 	public function test_register_option_filters() {
 		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
@@ -75,7 +79,29 @@ class SettingsTest extends TestCase {
 		$this->assertEquals( 'filtered-profile-id', get_option( Settings::OPTION )['profileID'] );
 	}
 
-
 	public function test_get_default() {
+		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$settings->register();
+
+		$default_value = get_option( Settings::OPTION );
+		$this->assertEquals( $default_value, $settings->get_default() );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'setupComplete' => false,
+				'accountID'     => '',
+				'accountStatus' => '',
+				'clientID'      => '',
+				'useSnippet'    => true,
+			),
+			$settings->get_default()
+		);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	protected function get_option_name() {
+		return Settings::OPTION;
 	}
 }
