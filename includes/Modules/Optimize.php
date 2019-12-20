@@ -229,26 +229,11 @@ final class Optimize extends Module implements Module_With_Settings {
 			case 'GET:amp-experiment-json':
 				return function() {
 					$option = $this->get_settings()->get();
-					// TODO: Remove this at some point (migration of old option).
-					if ( isset( $option['AMPExperimentJson'] ) ) {
-						if ( ! isset( $option['ampExperimentJSON'] ) ) {
-							$option['ampExperimentJSON'] = $option['AMPExperimentJson'];
-						}
-						unset( $option['AMPExperimentJson'] );
-						$this->get_settings()->set( $option );
-					}
-
-					// TODO: Remove this at some point (migration of old 'ampExperimentJson' option).
-					if ( isset( $option['ampExperimentJson'] ) ) {
-						if ( ! isset( $option['ampExperimentJSON'] ) ) {
-							$option['ampExperimentJSON'] = $option['ampExperimentJson'];
-						}
-						unset( $option['ampExperimentJson'] );
-					}
 
 					if ( empty( $option['ampExperimentJSON'] ) ) {
 						return new WP_Error( 'amp_experiment_json_not_set', __( 'AMP experiment JSON not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}
+
 					return wp_json_encode( $option['ampExperimentJSON'] );
 				};
 			case 'POST:amp-experiment-json':
@@ -268,26 +253,11 @@ final class Optimize extends Module implements Module_With_Settings {
 			case 'GET:optimize-id':
 				return function() {
 					$option = $this->get_settings()->get();
-					// TODO: Remove this at some point (migration of old option).
-					if ( isset( $option['optimize_id'] ) ) {
-						if ( ! isset( $option['optimizeID'] ) ) {
-							$option['optimizeID'] = $option['optimize_id'];
-						}
-						unset( $option['optimize_id'] );
-						$this->get_settings()->set( $option );
-					}
-
-					// TODO: Remove this at some point (migration of old 'optimizeId' option).
-					if ( isset( $option['optimizeId'] ) ) {
-						if ( ! isset( $option['optimizeID'] ) ) {
-							$option['optimizeID'] = $option['optimizeId'];
-						}
-						unset( $option['optimizeId'] );
-					}
 
 					if ( empty( $option['optimizeID'] ) ) {
 						return new WP_Error( 'optimize_id_not_set', __( 'Optimize ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}
+
 					return $option['optimizeID'];
 				};
 			case 'POST:optimize-id':

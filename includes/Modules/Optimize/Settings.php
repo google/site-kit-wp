@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Optimize;
 
 use Google\Site_Kit\Core\Storage\Setting;
+use Google\Site_Kit\Core\Util\Migrate_Legacy_Keys;
 
 /**
  * Class for Optimize settings.
@@ -20,8 +21,22 @@ use Google\Site_Kit\Core\Storage\Setting;
  * @ignore
  */
 class Settings extends Setting {
+	use Migrate_Legacy_Keys;
 
 	const OPTION = 'googlesitekit_optimize_settings';
+
+	/**
+	 * Mapping of legacy keys to current key.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	protected $legacy_key_map = array(
+		'AMPExperimentJson' => 'ampExperimentJSON',
+		'ampExperimentJson' => 'ampExperimentJSON',
+		'optimize_id'       => 'optimizeID',
+		'optimizeId'        => 'optimizeID',
+	);
 
 	/**
 	 * Registers the setting in WordPress.
@@ -44,6 +59,8 @@ class Settings extends Setting {
 			function ( $option ) {
 				if ( ! is_array( $option ) ) {
 					$option = $this->get_default();
+				} else {
+					$option = $this->migrate_legacy_keys( $option, $this->legacy_key_map );
 				}
 
 				// Fill in any missing keys with defaults.
