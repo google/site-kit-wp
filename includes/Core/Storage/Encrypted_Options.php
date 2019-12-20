@@ -70,7 +70,6 @@ final class Encrypted_Options implements Options_Interface {
 	 * Sets the value for a option.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Added autoload parameter.
 	 *
 	 * @param string $option    Option name.
 	 * @param mixed  $value     Option value. Must be serializable if non-scalar.
