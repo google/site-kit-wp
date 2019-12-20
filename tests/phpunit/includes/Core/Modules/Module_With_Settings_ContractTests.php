@@ -39,6 +39,7 @@ trait Module_With_Settings_ContractTests {
 		$testcase    = $this->get_testcase();
 		$settings    = $this->get_module_with_settings()->get_settings();
 		$option_name = constant( get_class( $settings ) . '::OPTION' );
+		unregister_setting( $option_name, $option_name );
 
 		$testcase->assertSettingNotRegistered( $option_name );
 
