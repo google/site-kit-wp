@@ -74,11 +74,10 @@ class OptimizeTest extends TestCase {
 		$optimize = new Optimize( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options  = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options->set( Settings::OPTION, 'test-value' );
-		$this->assertEquals( 'test-value', $options->get( Settings::OPTION ) );
 
 		$optimize->on_deactivation();
 
-		$this->assertFalse( $options->get( Settings::OPTION ) );
+		$this->assertOptionNotExists( Settings::OPTION );
 	}
 
 	public function test_get_datapoints() {
