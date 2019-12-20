@@ -213,7 +213,7 @@ final class Optimize extends Module {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:amp-client-id-opt-in': // Get this from Analytics, read-only from here.
 				return function() {
-					$option = (array) $this->options->get( Analytics::OPTION );
+					$option = $this->options->get( Analytics\Settings::OPTION );
 
 					// TODO: Remove this at some point (migration of old 'ampClientIdOptIn' option).
 					if ( isset( $option['ampClientIdOptIn'] ) ) {

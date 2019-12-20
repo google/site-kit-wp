@@ -49,8 +49,6 @@ use Exception;
 final class Analytics extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Settings {
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait;
 
-	const OPTION = 'googlesitekit_analytics_settings';
-
 	/**
 	 * Settings instance.
 	 *
@@ -206,7 +204,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 * @since 1.0.0
 	 */
 	public function on_deactivation() {
-		$this->options->delete( self::OPTION );
+		$this->get_settings()->delete();
 		$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 	}
 
@@ -465,7 +463,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:account-id':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 
 					// TODO: Remove this at some point (migration of old 'accountId' option).
 					if ( isset( $option['accountId'] ) ) {
@@ -486,9 +484,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option              = (array) $this->options->get( self::OPTION );
+					$option              = $this->get_settings()->get();
 					$option['accountID'] = $data['accountID'];
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 					return true;
 				};
@@ -496,7 +494,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				return $this->get_service( 'analytics' )->management_accounts->listManagementAccounts();
 			case 'GET:amp-client-id-opt-in':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 
 					// TODO: Remove this at some point (migration of old 'ampClientIdOptIn' option).
 					if ( isset( $option['ampClientIdOptIn'] ) ) {
@@ -517,15 +515,15 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampClientIDOptIn' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option                     = (array) $this->options->get( self::OPTION );
+					$option                     = $this->get_settings()->get();
 					$option['ampClientIDOptIn'] = (bool) $data['ampClientIDOptIn'];
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return true;
 				};
 			case 'GET:anonymize-ip':
 				return function() {
 					$default = true;
-					$option  = (array) $this->options->get( self::OPTION );
+					$option  = $this->get_settings()->get();
 					return isset( $option['anonymizeIP'] ) ? (bool) $option['anonymizeIP'] : $default;
 				};
 			case 'GET:connection':
@@ -537,7 +535,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						'internalWebPropertyID' => '',
 					);
 
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 
 					// TODO: Remove this at some point (migration of old 'accountId' option).
 					if ( isset( $option['accountId'] ) ) {
@@ -575,14 +573,14 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				};
 			case 'POST:connection':
 				return function() use ( $data ) {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 					$keys   = array( 'accountID', 'propertyID', 'profileID', 'internalWebPropertyID' );
 					foreach ( $keys as $key ) {
 						if ( isset( $data[ $key ] ) ) {
 							$option[ $key ] = $data[ $key ];
 						}
 					}
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 					return true;
 				};
@@ -608,7 +606,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				return $service->management_goals->listManagementGoals( $connection['accountID'], $connection['propertyID'], $connection['profileID'] );
 			case 'GET:internal-web-property-id':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 
 					// TODO: Remove this at some point (migration of old 'internalWebPropertyId' option).
 					if ( isset( $option['internalWebPropertyId'] ) ) {
@@ -629,15 +627,15 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalWebPropertyID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option                          = (array) $this->options->get( self::OPTION );
+					$option                          = $this->get_settings()->get();
 					$option['internalWebPropertyID'] = $data['internalWebPropertyID'];
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 					return true;
 				};
 			case 'GET:profile-id':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 
 					// TODO: Remove this at some point (migration of old 'profileId' option).
 					if ( isset( $option['profileId'] ) ) {
@@ -658,9 +656,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option              = (array) $this->options->get( self::OPTION );
+					$option              = $this->get_settings()->get();
 					$option['profileID'] = $data['profileID'];
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 					return true;
 				};
@@ -696,7 +694,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				return $this->get_service( 'analytics' )->management_webproperties->listManagementWebproperties( $data['accountID'] );
 			case 'GET:property-id':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 
 					// TODO: Remove this at some point (migration of old 'propertyId' option).
 					if ( isset( $option['propertyId'] ) ) {
@@ -717,9 +715,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option               = (array) $this->options->get( self::OPTION );
+					$option               = $this->get_settings()->get();
 					$option['propertyID'] = $data['propertyID'];
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 					return true;
 				};
@@ -931,7 +929,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						'ampClientIDOptIn'      => ! empty( $data['ampClientIDOptIn'] ),
 						'trackingDisabled'      => (array) $data['trackingDisabled'],
 					);
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 					return $option;
 				};
@@ -964,7 +962,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				};
 			case 'GET:tracking-disabled':
 				return function() {
-					$option     = $this->options->get( self::OPTION );
+					$option     = $this->get_settings()->get();
 					$default    = array( 'loggedinUsers' );
 					$exclusions = isset( $option['trackingDisabled'] ) ? $option['trackingDisabled'] : $default;
 
@@ -972,7 +970,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				};
 			case 'GET:use-snippet':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 					return ! empty( $option['useSnippet'] );
 				};
 			case 'POST:use-snippet':
@@ -981,9 +979,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'useSnippet' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option               = (array) $this->options->get( self::OPTION );
+					$option               = $this->get_settings()->get();
 					$option['useSnippet'] = (bool) $data['useSnippet'];
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return true;
 				};
 		}
