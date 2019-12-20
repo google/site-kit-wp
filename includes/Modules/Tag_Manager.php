@@ -36,8 +36,6 @@ use Exception;
 final class Tag_Manager extends Module implements Module_With_Scopes, Module_With_Settings {
 	use Module_With_Scopes_Trait;
 
-	const OPTION = 'googlesitekit_tagmanager_settings';
-
 	/**
 	 * Container usage context for web.
 	 */
@@ -174,7 +172,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * @since 1.0.0
 	 */
 	public function on_deactivation() {
-		$this->options->delete( self::OPTION );
+		$this->get_settings()->delete();
 	}
 
 	/**
@@ -355,7 +353,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:account-id':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 
 					if ( empty( $option['accountID'] ) ) {
 						return new WP_Error( 'account_id_not_set', __( 'Tag Manager account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
@@ -368,9 +366,9 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option              = (array) $this->options->get( self::OPTION );
+					$option              = $this->get_settings()->get();
 					$option['accountID'] = $data['accountID'];
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return true;
 				};
 			case 'GET:accounts-containers':
@@ -378,7 +376,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				return $service->accounts->listAccounts();
 			case 'GET:connection':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 
 					$connection = array(
 						'accountID'      => '',
@@ -390,19 +388,19 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				};
 			case 'POST:connection':
 				return function() use ( $data ) {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 					$keys   = array( 'accountID', 'containerID' );
 					foreach ( $keys as $key ) {
 						if ( isset( $data[ $key ] ) ) {
 							$option[ $key ] = $data[ $key ];
 						}
 					}
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return true;
 				};
 			case 'GET:container-id':
 				return function() use ( $data ) {
-					$option = $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 
 					$usage_context        = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
 					$valid_usage_contexts = array_keys( $this->context_map );
@@ -438,9 +436,9 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option                = (array) $this->options->get( self::OPTION );
+					$option                = $this->get_settings()->get();
 					$option['containerID'] = $data['containerID'];
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return true;
 				};
 			case 'GET:containers':
@@ -468,10 +466,8 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				}
 
 				return function() use ( $data, $usage_context ) {
-					$option = array_merge(
-						$this->options->get( self::OPTION ) ?: array(),
-						array( 'accountID' => $data['accountID'] )
-					);
+					$option              = $this->get_settings()->get();
+					$option['accountID'] = $data['accountID'];
 
 					$container_key = $this->context_map[ $usage_context ];
 					$container_id  = $data[ $container_key ];
@@ -488,7 +484,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 						$option[ $container_key ] = $create_container_response;
 					}
 
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 
 					return $option;
 				};
