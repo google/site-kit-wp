@@ -14,7 +14,9 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager;
@@ -31,7 +33,7 @@ use Exception;
  * @access private
  * @ignore
  */
-final class Tag_Manager extends Module implements Module_With_Scopes {
+final class Tag_Manager extends Module implements Module_With_Scopes, Module_With_Settings {
 	use Module_With_Scopes_Trait;
 
 	const OPTION = 'googlesitekit_tagmanager_settings';
@@ -45,6 +47,14 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * Container usage context for AMP.
 	 */
 	const USAGE_CONTEXT_AMP = 'amp';
+
+	/**
+	 * Settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Settings
+	 */
+	protected $settings;
 
 	/**
 	 * Map of container usageContext to option key for containerID.
@@ -706,5 +716,20 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 		return array(
 			'tagmanager' => new Google_Service_TagManager( $client ),
 		);
+	}
+
+	/**
+	 * Gets the module's Settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Settings Tag_Manager\Settings instance.
+	 */
+	public function get_settings() {
+		if ( ! $this->settings instanceof Settings ) {
+			$this->settings = new Settings( $this->options );
+		}
+
+		return $this->settings;
 	}
 }
