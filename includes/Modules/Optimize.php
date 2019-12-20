@@ -162,7 +162,7 @@ final class Optimize extends Module implements Module_With_Settings {
 		?>
 		<amp-experiment>
 			<script type="application/json">
-				<?php echo wp_json_encode( $optimize_option['ampExperimentJSON'] ); ?>
+				<?php echo $amp_experiment_json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			</script>
 		</amp-experiment>
 		<?php
