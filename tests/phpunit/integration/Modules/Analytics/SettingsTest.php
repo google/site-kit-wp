@@ -101,6 +101,33 @@ class SettingsTest extends SettingsTestCase {
 		);
 	}
 
+	public function test_legacy_options() {
+		$legacy_option = array(
+			'accountId'             => 'test-account-id',
+			'profileId'             => 'test-profile-id',
+			'propertyId'            => 'test-property-id',
+			'internalWebPropertyId' => 'test-internal-web-property-id',
+		);
+		update_option( Settings::OPTION, $legacy_option );
+		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$settings->register();
+
+		$option = $settings->get();
+		$this->assertArraySubset(
+			array(
+				'accountID'             => 'test-account-id',
+				'profileID'             => 'test-profile-id',
+				'propertyID'            => 'test-property-id',
+				'internalWebPropertyID' => 'test-internal-web-property-id',
+			),
+			$option
+		);
+
+		foreach ( array_keys( $legacy_option ) as $legacy_key ) {
+			$this->assertArrayNotHasKey( $legacy_key, $option );
+		}
+	}
+
 	/**
 	 * @inheritDoc
 	 */
