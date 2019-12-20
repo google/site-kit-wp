@@ -27,8 +27,6 @@ use WP_Error;
  */
 final class Optimize extends Module implements Module_With_Settings {
 
-	const OPTION = 'googlesitekit_optimize_settings';
-
 	/**
 	 * Settings instance.
 	 *
@@ -117,7 +115,7 @@ final class Optimize extends Module implements Module_With_Settings {
 	 * @since 1.0.0
 	 */
 	public function on_deactivation() {
-		$this->options->delete( self::OPTION );
+		$this->get_settings()->delete();
 	}
 
 	/**
@@ -240,14 +238,14 @@ final class Optimize extends Module implements Module_With_Settings {
 				};
 			case 'GET:amp-experiment-json':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 					// TODO: Remove this at some point (migration of old option).
 					if ( isset( $option['AMPExperimentJson'] ) ) {
 						if ( ! isset( $option['ampExperimentJSON'] ) ) {
 							$option['ampExperimentJSON'] = $option['AMPExperimentJson'];
 						}
 						unset( $option['AMPExperimentJson'] );
-						$this->options->set( self::OPTION, $option );
+						$this->get_settings()->set( $option );
 					}
 
 					// TODO: Remove this at some point (migration of old 'ampExperimentJson' option).
@@ -269,24 +267,24 @@ final class Optimize extends Module implements Module_With_Settings {
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampExperimentJSON' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option                      = (array) $this->options->get( self::OPTION );
+					$option                      = $this->get_settings()->get();
 					$option['ampExperimentJSON'] = $data['ampExperimentJSON'];
 					if ( is_string( $option['ampExperimentJSON'] ) ) {
 						$option['ampExperimentJSON'] = json_decode( $option['ampExperimentJSON'] );
 					}
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return true;
 				};
 			case 'GET:optimize-id':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 					// TODO: Remove this at some point (migration of old option).
 					if ( isset( $option['optimize_id'] ) ) {
 						if ( ! isset( $option['optimizeID'] ) ) {
 							$option['optimizeID'] = $option['optimize_id'];
 						}
 						unset( $option['optimize_id'] );
-						$this->options->set( self::OPTION, $option );
+						$this->get_settings()->set( $option );
 					}
 
 					// TODO: Remove this at some point (migration of old 'optimizeId' option).
@@ -308,9 +306,9 @@ final class Optimize extends Module implements Module_With_Settings {
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'optimizeID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option               = (array) $this->options->get( self::OPTION );
+					$option               = $this->get_settings()->get();
 					$option['optimizeID'] = $data['optimizeID'];
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return true;
 				};
 			case 'POST:settings':
@@ -330,7 +328,7 @@ final class Optimize extends Module implements Module_With_Settings {
 					if ( is_string( $option['ampExperimentJSON'] ) ) {
 						$option['ampExperimentJSON'] = json_decode( $option['ampExperimentJSON'] );
 					}
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return $option;
 				};
 		}
