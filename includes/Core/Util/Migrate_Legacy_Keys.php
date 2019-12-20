@@ -20,23 +20,16 @@ namespace Google\Site_Kit\Core\Util;
 trait Migrate_Legacy_Keys {
 
 	/**
-	 * Mapping of legacy keys to current key.
-	 *
-	 * @since n.e.x.t
-	 * @var array
-	 */
-	protected $legacy_key_map = array();
-
-	/**
-	 * Migrates legacy option keys to the current key.
+	 * Migrates legacy array keys to the current key.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $array Input associative array to migrate keys for.
+	 * @param array $array          Input associative array to migrate keys for.
+	 * @param array $key_mapping    Map of legacy key to current key.
 	 * @return array Updated array.
 	 */
-	protected function migrate_legacy_keys( array $array ) {
-		foreach ( $this->legacy_key_map as $legacy_key => $current_key ) {
+	protected function migrate_legacy_keys( array $array, array $key_mapping ) {
+		foreach ( $key_mapping as $legacy_key => $current_key ) {
 			if ( ! isset( $array[ $current_key ] ) && isset( $array[ $legacy_key ] ) ) {
 				$array[ $current_key ] = $array[ $legacy_key ];
 			}

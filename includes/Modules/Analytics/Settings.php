@@ -60,7 +60,7 @@ class Settings extends Setting {
 				if ( ! is_array( $option ) ) {
 					$option = $this->get_default();
 				} else {
-					$option = $this->migrate_legacy_keys( $option );
+					$option = $this->migrate_legacy_keys( $option, $this->legacy_key_map );
 				}
 
 				/**
