@@ -77,6 +77,9 @@ class Settings extends Setting {
 	 * @return array
 	 */
 	public function get_default() {
-		return array();
+		return array(
+			'ampExperimentJSON' => '',
+			'optimizeID'        => '',
+		);
 	}
 }
