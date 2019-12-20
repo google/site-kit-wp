@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Core\Storage${FILE_NAME}
+ * Class Google\Site_Kit\Tests\Core\Storage\FakeSetting
  *
  * @package   Google\Site_Kit\Tests\Core\Storage
  * @copyright 2019 Google LLC
