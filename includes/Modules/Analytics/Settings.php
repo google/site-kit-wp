@@ -109,7 +109,14 @@ class Settings extends Setting {
 	 */
 	public function get_default() {
 		return array(
-			'trackingDisabled' => array( 'loggedinUsers' ),
+			'accountID'             => '',
+			'ampClientIDOptIn'      => true,
+			'anonymizeIP'           => true,
+			'internalWebPropertyID' => '',
+			'profileID'             => '',
+			'propertyID'            => '',
+			'trackingDisabled'      => array( 'loggedinUsers' ),
+			'useSnippet'            => true,
 		);
 	}
 }

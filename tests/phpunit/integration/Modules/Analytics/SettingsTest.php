@@ -88,11 +88,14 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'setupComplete' => false,
-				'accountID'     => '',
-				'accountStatus' => '',
-				'clientID'      => '',
-				'useSnippet'    => true,
+				'accountID'             => '',
+				'propertyID'            => '',
+				'profileID'             => '',
+				'internalWebPropertyID' => '',
+				'useSnippet'            => true,
+				'anonymizeIP'           => true,
+				'ampClientIDOptIn'      => true,
+				'trackingDisabled'      => array( 'loggedinUsers' ),
 			),
 			$settings->get_default()
 		);
