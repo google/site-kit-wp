@@ -21,15 +21,6 @@ use Google\Site_Kit\Tests\Modules\SettingsTestCase;
  */
 class SettingsTest extends SettingsTestCase {
 
-	public function test_register() {
-		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$this->assertSettingNotRegistered( Settings::OPTION );
-
-		$settings->register();
-
-		$this->assertSettingRegistered( Settings::OPTION );
-	}
-
 	public function test_register_filters() {
 		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 		$settings->register();

@@ -25,13 +25,25 @@ trait Module_With_Settings_ContractTests {
 	public function test_get_setting() {
 		$testcase = $this->get_testcase();
 		$module   = $this->get_module_with_settings();
-		$setting  = $module->get_settings();
+		$settings = $module->get_settings();
 
-		$testcase->assertInstanceOf( 'Google\\Site_Kit\\Core\\Storage\\Setting', $setting );
+		$testcase->assertInstanceOf( 'Google\\Site_Kit\\Core\\Storage\\Setting', $settings );
 
 		$testcase->assertEquals(
 			"googlesitekit_{$module->slug}_settings",
-			constant( get_class( $setting ) . '::OPTION' )
+			constant( get_class( $settings ) . '::OPTION' )
 		);
+	}
+
+	public function test_setting_registration() {
+		$testcase    = $this->get_testcase();
+		$settings    = $this->get_module_with_settings()->get_settings();
+		$option_name = constant( get_class( $settings ) . '::OPTION' );
+
+		$testcase->assertSettingNotRegistered( $option_name );
+
+		$settings->register();
+
+		$testcase->assertSettingRegistered( $option_name );
 	}
 }
