@@ -13,11 +13,13 @@ namespace Google\Site_Kit\Tests\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -26,6 +28,7 @@ use Google\Site_Kit\Tests\TestCase;
 class AnalyticsTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
 	use Module_With_Screen_ContractTests;
+	use Module_With_Settings_ContractTests;
 
 	public function test_register() {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -115,14 +118,12 @@ class AnalyticsTest extends TestCase {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options   = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options->set( Settings::OPTION, 'test-value' );
-		$this->assertEquals( 'test-value', $options->get( Settings::OPTION ) );
 		$options->set( 'googlesitekit_analytics_adsense_linked', 'test-linked-value' );
-		$this->assertEquals( 'test-linked-value', $options->get( 'googlesitekit_analytics_adsense_linked' ) );
 
 		$analytics->on_deactivation();
 
-		$this->assertFalse( $options->get( Settings::OPTION ) );
-		$this->assertFalse( $options->get( 'googlesitekit_analytics_adsense_linked' ) );
+		$this->assertOptionNotExists( Settings::OPTION );
+		$this->assertOptionNotExists( 'googlesitekit_analytics_adsense_linked' );
 	}
 
 	public function test_get_datapoints() {
@@ -256,6 +257,13 @@ class AnalyticsTest extends TestCase {
 	 * @return Module_With_Screen
 	 */
 	protected function get_module_with_screen() {
+		return new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	/**
+	 * @return Module_With_Settings
+	 */
+	protected function get_module_with_setting() {
 		return new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 }
