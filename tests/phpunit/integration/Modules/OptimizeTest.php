@@ -11,15 +11,18 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\Optimize\Settings;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
  * @group Modules
  */
 class OptimizeTest extends TestCase {
+	use Module_With_Settings_ContractTests;
 
 	public function test_register() {
 		$this->markTestSkipped( 'All register method implementation currently depends on get_data.' );
@@ -90,5 +93,12 @@ class OptimizeTest extends TestCase {
 			),
 			$optimize->get_datapoints()
 		);
+	}
+
+	/**
+	 * @return Module_With_Settings
+	 */
+	protected function get_module_with_setting() {
+		return new Optimize( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 }

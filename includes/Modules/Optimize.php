@@ -11,7 +11,9 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Modules\Optimize\Settings;
 use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -23,9 +25,17 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Optimize extends Module {
+final class Optimize extends Module implements Module_With_Settings {
 
 	const OPTION = 'googlesitekit_optimize_settings';
+
+	/**
+	 * Settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Settings
+	 */
+	protected $settings;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -378,5 +388,20 @@ final class Optimize extends Module {
 	 */
 	protected function setup_services( Google_Client $client ) {
 		return array();
+	}
+
+	/**
+	 * Gets the module's Settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Settings AdSense module settings instance.
+	 */
+	public function get_settings() {
+		if ( ! $this->settings instanceof Settings ) {
+			$this->settings = new Settings( $this->options );
+		}
+
+		return $this->settings;
 	}
 }
