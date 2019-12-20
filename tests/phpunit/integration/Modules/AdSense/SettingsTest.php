@@ -15,6 +15,10 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Tests\TestCase;
 
+/**
+ * @group Modules
+ * @group AdSense
+ */
 class SettingsTest extends TestCase {
 
 	public function test_register() {
