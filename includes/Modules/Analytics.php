@@ -498,13 +498,13 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				};
 			case 'GET:anonymize-ip':
 				return function() {
-					$default = true;
-					$option  = $this->get_settings()->get();
-					return isset( $option['anonymizeIP'] ) ? (bool) $option['anonymizeIP'] : $default;
+					$option = $this->get_settings()->get();
+
+					return (bool) $option['anonymizeIP'];
 				};
 			case 'GET:connection':
 				return function() {
-					$defaults = array(
+					$connection = array(
 						'accountID'             => '',
 						'propertyID'            => '',
 						'profileID'             => '',
@@ -513,7 +513,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 					$option = $this->get_settings()->get();
 
-					return array_intersect_key( array_merge( $defaults, $option ), $defaults );
+					return array_intersect_key( $option, $connection );
 				};
 			case 'POST:connection':
 				return function() use ( $data ) {
@@ -882,11 +882,9 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				};
 			case 'GET:tracking-disabled':
 				return function() {
-					$option     = $this->get_settings()->get();
-					$default    = array( 'loggedinUsers' );
-					$exclusions = isset( $option['trackingDisabled'] ) ? $option['trackingDisabled'] : $default;
+					$option = $this->get_settings()->get();
 
-					return is_array( $exclusions ) ? $exclusions : $default;
+					return $option['trackingDisabled'];
 				};
 			case 'GET:use-snippet':
 				return function() {
