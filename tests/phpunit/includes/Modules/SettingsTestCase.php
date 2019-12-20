@@ -22,13 +22,10 @@ abstract class SettingsTestCase extends TestCase {
 	public function setUp() {
 		parent::setUp();
 
-		// Unregister setup that occurred during bootstrap.
 		$option_name = $this->get_option_name();
 
-		unregister_setting(
-			$option_name,
-			$option_name
-		);
+		// Unregister setup that occurred during bootstrap.
+		unregister_setting( $option_name, $option_name );
 
 		remove_all_filters( "option_$option_name" );
 		remove_all_filters( "site_option_$option_name" );
