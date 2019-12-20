@@ -125,20 +125,22 @@ final class Modules {
 			}
 		);
 
-		array_map(
+		$available_modules = $this->get_available_modules();
+		array_walk(
+			$available_modules,
 			function( Module $module ) {
 				if ( $module instanceof Module_With_Settings ) {
 					$module->get_settings()->register();
 				}
-			},
-			$this->get_available_modules()
+			}
 		);
 
-		array_map(
+		$active_modules = $this->get_active_modules();
+		array_walk(
+			$active_modules,
 			function( Module $module ) {
 				$module->register();
-			},
-			$this->get_active_modules()
+			}
 		);
 	}
 
