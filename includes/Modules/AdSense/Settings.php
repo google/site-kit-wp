@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\AdSense;
 
 use Google\Site_Kit\Core\Storage\Setting;
+use Google\Site_Kit\Core\Util\Migrate_Legacy_Keys;
 
 /**
  * Class for AdSense settings.
@@ -20,8 +21,21 @@ use Google\Site_Kit\Core\Storage\Setting;
  * @ignore
  */
 class Settings extends Setting {
+	use Migrate_Legacy_Keys;
 
 	const OPTION = 'googlesitekit_adsense_settings';
+
+	/**
+	 * Mapping of legacy keys to current key.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	protected $legacy_key_map = array(
+		'account_id'        => 'accountID',
+		'adsenseTagEnabled' => 'useSnippet',
+		'setup_complete'    => 'setupComplete',
+	);
 
 	/**
 	 * Registers the setting in WordPress.
@@ -65,37 +79,6 @@ class Settings extends Setting {
 				return $option + $this->get_default();
 			}
 		);
-	}
-
-	/**
-	 * Migrates legacy option keys to the current key.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $option The current saved option.
-	 * @return array Migrated option.
-	 */
-	protected function migrate_legacy_keys( array $option ) {
-
-		// Migrate 'account_id' to 'accountID'.
-		if ( ! isset( $option['accountID'] ) && isset( $option['account_id'] ) ) {
-			$option['accountID'] = $option['account_id'];
-		}
-		unset( $option['account_id'] );
-
-		// Migrate 'adsenseTagEnabled' to 'useSnippet'.
-		if ( ! isset( $option['useSnippet'] ) && isset( $option['adsenseTagEnabled'] ) ) {
-			$option['useSnippet'] = (bool) $option['adsenseTagEnabled'];
-		}
-		unset( $option['adsenseTagEnabled'] );
-
-		// Migrate 'setup_complete' to 'setupComplete'.
-		if ( ! isset( $option['setupComplete'] ) && isset( $settings['setup_complete'] ) ) {
-			$option['setupComplete'] = $option['setup_complete'];
-		}
-		unset( $option['setup_complete'] );
-
-		return $option;
 	}
 
 	/**

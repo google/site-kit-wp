@@ -465,14 +465,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				return function() {
 					$option = $this->get_settings()->get();
 
-					// TODO: Remove this at some point (migration of old 'accountId' option).
-					if ( isset( $option['accountId'] ) ) {
-						if ( ! isset( $option['accountID'] ) ) {
-							$option['accountID'] = $option['accountId'];
-						}
-						unset( $option['accountId'] );
-					}
-
 					if ( empty( $option['accountID'] ) ) {
 						return new WP_Error( 'account_id_not_set', __( 'Analytics account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}
@@ -536,38 +528,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					);
 
 					$option = $this->get_settings()->get();
-
-					// TODO: Remove this at some point (migration of old 'accountId' option).
-					if ( isset( $option['accountId'] ) ) {
-						if ( ! isset( $option['accountID'] ) ) {
-							$option['accountID'] = $option['accountId'];
-						}
-						unset( $option['accountId'] );
-					}
-
-					// TODO: Remove this at some point (migration of old 'propertyId' option).
-					if ( isset( $option['propertyId'] ) ) {
-						if ( ! isset( $option['propertyID'] ) ) {
-							$option['propertyID'] = $option['propertyId'];
-						}
-						unset( $option['propertyId'] );
-					}
-
-					// TODO: Remove this at some point (migration of old 'profileId' option).
-					if ( isset( $option['profileId'] ) ) {
-						if ( ! isset( $option['profileID'] ) ) {
-							$option['profileID'] = $option['profileId'];
-						}
-						unset( $option['profileId'] );
-					}
-
-					// TODO: Remove this at some point (migration of old 'internalWebPropertyId' option).
-					if ( isset( $option['internalWebPropertyId'] ) ) {
-						if ( ! isset( $option['internalWebPropertyID'] ) ) {
-							$option['internalWebPropertyID'] = $option['internalWebPropertyId'];
-						}
-						unset( $option['internalWebPropertyId'] );
-					}
 
 					return array_intersect_key( array_merge( $defaults, $option ), $defaults );
 				};
