@@ -77,6 +77,10 @@ class Settings extends Setting {
 	 * @return array
 	 */
 	public function get_default() {
-		return array();
+		return array(
+			'accountID'      => '',
+			'ampContainerID' => '',
+			'containerID'    => '',
+		);
 	}
 }
