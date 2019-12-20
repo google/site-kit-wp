@@ -163,4 +163,24 @@ class TestCase extends \WP_UnitTestCase {
 			ARRAY_A
 		);
 	}
+
+	protected function assertSettingRegistered( $name ) {
+		global $wp_registered_settings;
+
+		$this->assertArrayHasKey(
+			$name,
+			$wp_registered_settings,
+			"Failed to assert that a setting '$name' is registered."
+		);
+	}
+
+	protected function assertSettingNotRegistered( $name ) {
+		global $wp_registered_settings;
+
+		$this->assertArrayNotHasKey(
+			$name,
+			$wp_registered_settings,
+			"Failed to assert that a setting '$name' is not registered."
+		);
+	}
 }
