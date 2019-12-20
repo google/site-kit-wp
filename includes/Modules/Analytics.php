@@ -163,12 +163,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			__( 'Top acquisition sources', 'google-site-kit' ),
 		);
 
-		$info['settings']                     = $this->get_data( 'connection' );
-		$info['settings']['useSnippet']       = $this->get_data( 'use-snippet' );
-		$info['settings']['anonymizeIP']      = $this->get_data( 'anonymize-ip' );
-		$info['settings']['ampClientIDOptIn'] = $this->get_data( 'amp-client-id-opt-in' );
-		$info['settings']['trackingDisabled'] = $this->get_data( 'tracking-disabled' );
-
+		$info['settings']      = $this->get_settings()->get();
 		$info['adsenseLinked'] = (bool) $this->options->get( 'googlesitekit_analytics_adsense_linked' );
 
 		return $info;
