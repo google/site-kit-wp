@@ -27,6 +27,7 @@ trait OptionsTestTrait {
 		return array(
 			'googlesitekit-active-modules',
 			'googlesitekit_analytics_adsense_linked',
+			'googlesitekit_pagespeed_insights_settings',
 			Activation::OPTION_NEW_SITE_POSTS,
 			Activation::OPTION_SHOW_ACTIVATION_NOTICE,
 			AdSense\Settings::OPTION,
@@ -34,7 +35,6 @@ trait OptionsTestTrait {
 			Credentials::OPTION,
 			First_Admin::OPTION,
 			Optimize\Settings::OPTION,
-			PageSpeed_Insights::OPTION,
 			Search_Console::PROPERTY_OPTION,
 			Tag_Manager\Settings::OPTION,
 			Beta_Migration::OPTION_IS_PRE_PROXY_INSTALL,
