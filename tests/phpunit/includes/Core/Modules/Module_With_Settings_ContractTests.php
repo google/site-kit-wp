@@ -20,11 +20,11 @@ trait Module_With_Settings_ContractTests {
 	/**
 	 * @return Module_With_Settings
 	 */
-	abstract protected function get_module_with_setting();
+	abstract protected function get_module_with_settings();
 
 	public function test_get_setting() {
 		$testcase = $this->get_testcase();
-		$module   = $this->get_module_with_setting();
+		$module   = $this->get_module_with_settings();
 		$setting  = $module->get_settings();
 
 		$testcase->assertInstanceOf( 'Google\\Site_Kit\\Core\\Storage\\Setting', $setting );

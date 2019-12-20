@@ -263,7 +263,7 @@ class AnalyticsTest extends TestCase {
 	/**
 	 * @return Module_With_Settings
 	 */
-	protected function get_module_with_setting() {
+	protected function get_module_with_settings() {
 		return new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 }

@@ -156,7 +156,7 @@ class AdSenseTest extends TestCase {
 	/**
 	 * @return Module|Module_With_Settings
 	 */
-	protected function get_module_with_setting() {
+	protected function get_module_with_settings() {
 		return new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 }
