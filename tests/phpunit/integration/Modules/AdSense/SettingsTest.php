@@ -71,6 +71,40 @@ class SettingsTest extends SettingsTestCase {
 		);
 	}
 
+	public function test_legacy_options() {
+		$legacy_option = array(
+			'account_id'        => 'test-account-id',
+			'adsenseTagEnabled' => 'test-adsense-tag-enabled',
+			'setup_complete'    => 'test-setup-complete',
+		);
+		update_option( Settings::OPTION, $legacy_option );
+		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$settings->register();
+
+		$option = $settings->get();
+		$this->assertArraySubset(
+			array(
+				'accountID'     => 'test-account-id',
+				'useSnippet'    => 'test-adsense-tag-enabled',
+				'setupComplete' => 'test-setup-complete',
+			),
+			$option
+		);
+
+		foreach ( array_keys( $legacy_option ) as $legacy_key ) {
+			$this->assertArrayNotHasKey( $legacy_key, $option );
+		}
+
+		// Ensure valid/current keys are not overridden by legacy.
+		update_option( Settings::OPTION, array(
+			'account_id' => 'test-legacy-account-id',
+			'accountID'  => 'test-current-account-id',
+		) );
+		$option = $settings->get();
+		$this->assertEquals( 'test-current-account-id', $option['accountID'] );
+		$this->assertArrayNotHasKey( 'account_id', $option );
+	}
+
 	/**
 	 * @inheritDoc
 	 */
