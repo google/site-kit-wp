@@ -488,17 +488,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				return function() {
 					$option = $this->get_settings()->get();
 
-					// TODO: Remove this at some point (migration of old 'ampClientIdOptIn' option).
-					if ( isset( $option['ampClientIdOptIn'] ) ) {
-						if ( ! isset( $option['ampClientIDOptIn'] ) ) {
-							$option['ampClientIDOptIn'] = $option['ampClientIdOptIn'];
-						}
-						unset( $option['ampClientIdOptIn'] );
-					}
-
-					if ( ! isset( $option['ampClientIDOptIn'] ) ) {
-						return true; // Default to true.
-					}
 					return ! empty( $option['ampClientIDOptIn'] );
 				};
 			case 'POST:amp-client-id-opt-in':
@@ -568,14 +557,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				return function() {
 					$option = $this->get_settings()->get();
 
-					// TODO: Remove this at some point (migration of old 'internalWebPropertyId' option).
-					if ( isset( $option['internalWebPropertyId'] ) ) {
-						if ( ! isset( $option['internalWebPropertyID'] ) ) {
-							$option['internalWebPropertyID'] = $option['internalWebPropertyId'];
-						}
-						unset( $option['internalWebPropertyId'] );
-					}
-
 					if ( empty( $option['internalWebPropertyID'] ) ) {
 						return new WP_Error( 'internal_web_property_id_not_set', __( 'Analytics internal web property ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}
@@ -596,14 +577,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			case 'GET:profile-id':
 				return function() {
 					$option = $this->get_settings()->get();
-
-					// TODO: Remove this at some point (migration of old 'profileId' option).
-					if ( isset( $option['profileId'] ) ) {
-						if ( ! isset( $option['profileID'] ) ) {
-							$option['profileID'] = $option['profileId'];
-						}
-						unset( $option['profileId'] );
-					}
 
 					if ( empty( $option['profileID'] ) ) {
 						return new WP_Error( 'profile_id_not_set', __( 'Analytics profile ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
@@ -655,14 +628,6 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			case 'GET:property-id':
 				return function() {
 					$option = $this->get_settings()->get();
-
-					// TODO: Remove this at some point (migration of old 'propertyId' option).
-					if ( isset( $option['propertyId'] ) ) {
-						if ( ! isset( $option['propertyID'] ) ) {
-							$option['propertyID'] = $option['propertyId'];
-						}
-						unset( $option['propertyId'] );
-					}
 
 					if ( empty( $option['propertyID'] ) ) {
 						return new WP_Error( 'property_id_not_set', __( 'Analytics property ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
