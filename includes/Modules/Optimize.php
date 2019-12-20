@@ -219,22 +219,12 @@ final class Optimize extends Module implements Module_With_Settings {
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:amp-client-id-opt-in': // Get this from Analytics, read-only from here.
+			case 'GET:amp-client-id-opt-in':
 				return function() {
-					$option = $this->options->get( Analytics\Settings::OPTION );
+					// Get this from Analytics, read-only from here.
+					$analytics = ( new Analytics\Settings( $this->options ) )->get();
 
-					// TODO: Remove this at some point (migration of old 'ampClientIdOptIn' option).
-					if ( isset( $option['ampClientIdOptIn'] ) ) {
-						if ( ! isset( $option['ampClientIDOptIn'] ) ) {
-							$option['ampClientIDOptIn'] = $option['ampClientIdOptIn'];
-						}
-						unset( $option['ampClientIdOptIn'] );
-					}
-
-					if ( ! isset( $option['ampClientIDOptIn'] ) ) {
-						return true; // Default to true.
-					}
-					return ! empty( $option['ampClientIDOptIn'] );
+					return ! empty( $analytics['ampClientIDOptIn'] );
 				};
 			case 'GET:amp-experiment-json':
 				return function() {
