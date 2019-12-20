@@ -807,7 +807,7 @@ tag_partner: "site_kit"
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return Settings AdSense module settings instance.
+	 * @return Settings AdSense\Settings instance.
 	 */
 	public function get_settings() {
 		if ( ! $this->settings instanceof Settings ) {

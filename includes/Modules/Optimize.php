@@ -353,7 +353,7 @@ final class Optimize extends Module implements Module_With_Settings {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return Settings AdSense module settings instance.
+	 * @return Settings Optimize\Settings instance.
 	 */
 	public function get_settings() {
 		if ( ! $this->settings instanceof Settings ) {
