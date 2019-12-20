@@ -380,16 +380,13 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				return function() {
 					$option = (array) $this->options->get( self::OPTION );
 
-					$defaults = array(
+					$connection = array(
 						'accountID'      => '',
 						'containerID'    => '',
 						'ampContainerID' => '',
 					);
 
-					return array_intersect_key(
-						array_merge( $defaults, $option ),
-						$defaults
-					);
+					return array_intersect_key( $option, $connection );
 				};
 			case 'POST:connection':
 				return function() use ( $data ) {
