@@ -7,7 +7,7 @@ import { isEqual } from 'lodash';
  * Internal dependencies
  */
 import {
-	StorageKeyPrefix,
+	STORAGE_KEY_PREFIX,
 	getStorage,
 } from './cache.private';
 
@@ -21,11 +21,11 @@ import {
  *
  * @return {Promise} A promise returned, containing an object with the cached value (if found) and whether or not there was a cache hit.
  */
-export const get = async ( key, cacheTimeToLive = null ) => {
+export const getItem = async ( key, cacheTimeToLive = null ) => {
 	const storage = await getStorage();
 
 	if ( storage ) {
-		const cachedData = storage.getItem( `${ StorageKeyPrefix }${ key }` );
+		const cachedData = storage.getItem( `${ STORAGE_KEY_PREFIX }${ key }` );
 
 		if ( cachedData ) {
 			const parsedData = JSON.parse( cachedData );
@@ -62,7 +62,7 @@ export const get = async ( key, cacheTimeToLive = null ) => {
  *
  * @return {Promise} A promise: resolves to `true` if the value was saved; `false` if not (usually because no storage method was available).
  */
-export const set = async ( key, value, _timestamp = undefined ) => {
+export const setItem = async ( key, value, _timestamp = undefined ) => {
 	const storage = await getStorage();
 
 	if ( storage ) {
@@ -77,7 +77,7 @@ export const set = async ( key, value, _timestamp = undefined ) => {
 				return false;
 			}
 
-			storage.setItem( `${ StorageKeyPrefix }${ key }`, JSON.stringify( {
+			storage.setItem( `${ STORAGE_KEY_PREFIX }${ key }`, JSON.stringify( {
 				timestamp: _timestamp || Math.round( Date.now() / 1000 ),
 				value,
 			} ) );
@@ -106,7 +106,7 @@ export const deleteItem = async ( key ) => {
 
 	if ( storage ) {
 		try {
-			storage.removeItem( `${ StorageKeyPrefix }${ key }` );
+			storage.removeItem( `${ STORAGE_KEY_PREFIX }${ key }` );
 
 			return true;
 		} catch ( error ) {
@@ -131,8 +131,8 @@ export const getKeys = async () => {
 			const keys = [];
 			for ( let i = 0; i < storage.length; i++ ) {
 				const itemKey = storage.key( i );
-				if ( itemKey.indexOf( StorageKeyPrefix ) === 0 ) {
-					keys.push( itemKey.substring( StorageKeyPrefix.length ) );
+				if ( itemKey.indexOf( STORAGE_KEY_PREFIX ) === 0 ) {
+					keys.push( itemKey.substring( STORAGE_KEY_PREFIX.length ) );
 				}
 			}
 

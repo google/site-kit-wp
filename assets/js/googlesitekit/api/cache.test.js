@@ -5,12 +5,12 @@
 import {
 	clearCache,
 	deleteItem,
-	get,
+	getItem,
 	getKeys,
-	set,
+	setItem,
 } from './cache';
 import {
-	StorageKeyPrefix,
+	STORAGE_KEY_PREFIX,
 	getStorage,
 	resetDefaultStorageOrder,
 	setSelectedStorageBackend,
@@ -77,97 +77,97 @@ describe( 'googlesitekit.api.cache', () => {
 
 			describe( 'get', () => {
 				it( 'should return undefined when the key is not found', async () => {
-					const result = await get( 'not-a-key' );
+					const result = await getItem( 'not-a-key' );
 
-					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }not-a-key` );
+					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }not-a-key` );
 					expect( result.cacheHit ).toEqual( false );
 					expect( result.value ).toEqual( undefined );
 				} );
 
 				it( 'should return undefined when the key is found but the cached value is too old', async () => {
 					// Save with a timestamp ten seconds in the past.
-					const didSave = await set( 'old-key', 'something', Math.round( Date.now() / 1000 ) - 10 );
+					const didSave = await setItem( 'old-key', 'something', Math.round( Date.now() / 1000 ) - 10 );
 					expect( didSave ).toEqual( true );
 
 					// Only return if the cache hit is less than five seconds old.
-					const result = await get( 'old-key', 5 );
+					const result = await getItem( 'old-key', 5 );
 
-					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }old-key` );
+					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }old-key` );
 					expect( result.cacheHit ).toEqual( false );
 					expect( result.value ).toEqual( undefined );
 				} );
 
 				it( 'should return the value when the key is found and the data is not stale', async () => {
-					const didSave = await set( 'modern-key', 'something' );
+					const didSave = await setItem( 'modern-key', 'something' );
 					expect( didSave ).toEqual( true );
 
-					const result = await get( 'modern-key', 100 );
+					const result = await getItem( 'modern-key', 100 );
 
-					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }modern-key` );
+					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }modern-key` );
 					expect( result.cacheHit ).toEqual( true );
 					expect( result.value ).toEqual( 'something' );
 				} );
 
 				it( 'should return an undefined saved value but set cacheHit to true', async () => {
-					const didSave = await set( 'undefined', undefined );
+					const didSave = await setItem( 'undefined', undefined );
 					expect( didSave ).toEqual( true );
 
-					const result = await get( 'undefined' );
+					const result = await getItem( 'undefined' );
 
-					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }undefined` );
+					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }undefined` );
 					expect( result.cacheHit ).toEqual( true );
 					expect( result.value ).toEqual( undefined );
 				} );
 
 				it( 'should return a number value', async () => {
-					const didSave = await set( 'number', 500 );
+					const didSave = await setItem( 'number', 500 );
 					expect( didSave ).toEqual( true );
 
-					const result = await get( 'number' );
+					const result = await getItem( 'number' );
 
-					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }number` );
+					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }number` );
 					expect( result.cacheHit ).toEqual( true );
 					expect( result.value ).toEqual( 500 );
 				} );
 
 				it( 'should return an array value', async () => {
-					const didSave = await set( 'array', [ 1, '2', 3 ] );
+					const didSave = await setItem( 'array', [ 1, '2', 3 ] );
 					expect( didSave ).toEqual( true );
 
-					const result = await get( 'array' );
+					const result = await getItem( 'array' );
 
-					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }array` );
+					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }array` );
 					expect( result.cacheHit ).toEqual( true );
 					expect( result.value ).toEqual( [ 1, '2', 3 ] );
 				} );
 
 				it( 'should return an object value', async () => {
-					const didSave = await set( 'object', { foo: 'barr' } );
+					const didSave = await setItem( 'object', { foo: 'barr' } );
 					expect( didSave ).toEqual( true );
 
-					const result = await get( 'object' );
+					const result = await getItem( 'object' );
 
-					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }object` );
+					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }object` );
 					expect( result.cacheHit ).toEqual( true );
 					expect( result.value ).toEqual( { foo: 'barr' } );
 				} );
 
 				it( 'should return a complex value', async () => {
-					const didSave = await set( 'complex', [ 1, '2', { cool: 'times', other: [ { time: { to: 'see' } } ] } ] );
+					const didSave = await setItem( 'complex', [ 1, '2', { cool: 'times', other: [ { time: { to: 'see' } } ] } ] );
 					expect( didSave ).toEqual( true );
 
-					const result = await get( 'complex' );
+					const result = await getItem( 'complex' );
 
-					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }complex` );
+					expect( storageMechanism.getItem ).toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }complex` );
 					expect( result.cacheHit ).toEqual( true );
 					expect( result.value ).toEqual( [ 1, '2', { cool: 'times', other: [ { time: { to: 'see' } } ] } ] );
 				} );
 
 				it( 'should not mutate a value', async () => {
-					await set( 'value', 'hello' );
+					await setItem( 'value', 'hello' );
 
-					const result1 = await get( 'value' );
-					const result2 = await get( 'value' );
+					const result1 = await getItem( 'value' );
+					const result2 = await getItem( 'value' );
 
 					result1.value = 'mutate';
 
@@ -175,10 +175,10 @@ describe( 'googlesitekit.api.cache', () => {
 				} );
 
 				it( 'should not mutate an object value', async () => {
-					await set( 'object', { foo: 'barr' } );
+					await setItem( 'object', { foo: 'barr' } );
 
-					const result1 = await get( 'object' );
-					const result2 = await get( 'object' );
+					const result1 = await getItem( 'object' );
+					const result2 = await getItem( 'object' );
 
 					result1.value.foo = 'mutate';
 
@@ -186,10 +186,10 @@ describe( 'googlesitekit.api.cache', () => {
 				} );
 
 				it( 'should not mutate an array value', async () => {
-					await set( 'array', [ 1, 2, 3 ] );
+					await setItem( 'array', [ 1, 2, 3 ] );
 
-					const result1 = await get( 'array' );
-					const result2 = await get( 'array' );
+					const result1 = await getItem( 'array' );
+					const result2 = await getItem( 'array' );
 
 					result1.value[ 2 ] = 4;
 
@@ -200,14 +200,14 @@ describe( 'googlesitekit.api.cache', () => {
 			describe( 'set', () => {
 				it( 'should not save when a hard-to-serialize data is set', async () => {
 					const arrayBuffer = new ArrayBuffer( 8 );
-					const didSave = await set( 'arrayBuffer', arrayBuffer, 500 );
+					const didSave = await setItem( 'arrayBuffer', arrayBuffer, 500 );
 					const storedData = JSON.stringify( {
 						timestamp: 500,
 						value: arrayBuffer,
 					} );
 
 					expect( didSave ).toEqual( false );
-					expect( storageMechanism.setItem ).not.toHaveBeenCalledWith( `${ StorageKeyPrefix }arrayBuffer`, storedData );
+					expect( storageMechanism.setItem ).not.toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }arrayBuffer`, storedData );
 					expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 0 );
 				} );
 
@@ -215,33 +215,33 @@ describe( 'googlesitekit.api.cache', () => {
 					// We specify a manual timestamp here to ensure the entire call to
 					// `setItem` can be verified. If we don't set a timestamp manually,
 					// it's obnoxious to test this :-)
-					const didSave = await set( 'array', [ 1, 2, 3 ], 500 );
+					const didSave = await setItem( 'array', [ 1, 2, 3 ], 500 );
 					const storedData = JSON.stringify( {
 						timestamp: 500,
 						value: [ 1, 2, 3 ],
 					} );
 
 					expect( didSave ).toEqual( true );
-					expect( storageMechanism.setItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }array`, storedData );
+					expect( storageMechanism.setItem ).toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }array`, storedData );
 					expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 1 );
 				} );
 			} );
 
 			describe( 'deleteItem', () => {
 				it( 'should delete data', async () => {
-					const didSave = await set( 'array', [ 1, 2, 3 ] );
+					const didSave = await setItem( 'array', [ 1, 2, 3 ] );
 					expect( didSave ).toEqual( true );
 
 					const didDelete = await deleteItem( 'array' );
 					expect( didDelete ).toEqual( true );
-					expect( storageMechanism.removeItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }array` );
+					expect( storageMechanism.removeItem ).toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }array` );
 					expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 0 );
 				} );
 
 				it( "should not error when trying to delete data that doesn't exist", async () => {
 					const didDelete = await deleteItem( 'array' );
 					expect( didDelete ).toEqual( true );
-					expect( storageMechanism.removeItem ).toHaveBeenCalledWith( `${ StorageKeyPrefix }array` );
+					expect( storageMechanism.removeItem ).toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }array` );
 				} );
 			} );
 
@@ -262,41 +262,41 @@ describe( 'googlesitekit.api.cache', () => {
 				} );
 
 				it( 'should return all Site Kit keys', async () => {
-					await set( 'key1', 'data' );
-					await set( 'key2', 'data' );
+					await setItem( 'key1', 'data' );
+					await setItem( 'key2', 'data' );
 
 					const keys = await getKeys();
 					// The returned keys should not include the Site Kit prefix.
-					expect( keys ).not.toEqual( [ `${ StorageKeyPrefix }key1`, `${ StorageKeyPrefix }key2` ] );
+					expect( keys ).not.toEqual( [ `${ STORAGE_KEY_PREFIX }key1`, `${ STORAGE_KEY_PREFIX }key2` ] );
 					expect( keys ).toEqual( [ 'key1', 'key2' ] );
 				} );
 
 				it( 'should not return non-Site Kit keys', async () => {
 					// Set a non-Site Kit key to ensure we don't return it.
 					storageMechanism.setItem( 'whatever', 'cool' );
-					await set( 'key1', 'data' );
-					await set( 'key2', 'data' );
+					await setItem( 'key1', 'data' );
+					await setItem( 'key2', 'data' );
 					expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 3 );
 
 					const keys = await getKeys();
 					// The returned keys should not include the Site Kit prefix.
-					expect( keys ).not.toEqual( [ `${ StorageKeyPrefix }key1`, `${ StorageKeyPrefix }key2` ] );
+					expect( keys ).not.toEqual( [ `${ STORAGE_KEY_PREFIX }key1`, `${ STORAGE_KEY_PREFIX }key2` ] );
 					expect( keys ).toEqual( [ 'key1', 'key2' ] );
 				} );
 			} );
 
 			describe( 'clearCache', () => {
 				it( 'should return true when storage is cleared', async () => {
-					await set( 'key1', 'data' );
-					await set( 'key2', 'data' );
+					await setItem( 'key1', 'data' );
+					await setItem( 'key2', 'data' );
 
 					const didClearCache = await clearCache();
 					expect( didClearCache ).toEqual( true );
 				} );
 
 				it( 'should clear all storage', async () => {
-					await set( 'key1', 'data' );
-					await set( 'key2', 'data' );
+					await setItem( 'key1', 'data' );
+					await setItem( 'key2', 'data' );
 
 					await clearCache();
 					expect( storageMechanism.removeItem ).toHaveBeenCalled();
@@ -310,8 +310,8 @@ describe( 'googlesitekit.api.cache', () => {
 				it( 'should clear only Site Kit keys', async () => {
 					// Set a non-Site Kit key to ensure we don't return it.
 					storageMechanism.setItem( 'whatever', 'cool' );
-					await set( 'key1', 'data' );
-					await set( 'key2', 'data' );
+					await setItem( 'key1', 'data' );
+					await setItem( 'key2', 'data' );
 
 					await clearCache();
 
@@ -352,9 +352,9 @@ describe( 'googlesitekit.api.cache', () => {
 
 			describe( 'get', () => {
 				it( 'should return nothing when no storage is available', async () => {
-					await set( 'key1', 'data' );
+					await setItem( 'key1', 'data' );
 
-					const cacheData = await get( 'key1' );
+					const cacheData = await getItem( 'key1' );
 					expect( cacheData ).toEqual( {
 						cacheHit: false,
 						value: undefined,
@@ -366,7 +366,7 @@ describe( 'googlesitekit.api.cache', () => {
 
 			describe( 'set', () => {
 				it( 'should not save when no storage is available', async () => {
-					const didSave = await set( 'key1', 'data' );
+					const didSave = await setItem( 'key1', 'data' );
 					expect( didSave ).toEqual( false );
 					expect( localStorage.setItem ).not.toHaveBeenCalled();
 					expect( sessionStorage.setItem ).not.toHaveBeenCalled();
@@ -375,7 +375,7 @@ describe( 'googlesitekit.api.cache', () => {
 
 			describe( 'deleteItem', () => {
 				it( 'should not call delete when no storage is available', async () => {
-					await set( 'key1', 'data' );
+					await setItem( 'key1', 'data' );
 
 					const didDelete = await deleteItem( 'key1' );
 					expect( didDelete ).toEqual( false );
@@ -386,8 +386,8 @@ describe( 'googlesitekit.api.cache', () => {
 
 			describe( 'getKeys', () => {
 				it( 'should return nothing when no storage is available', async () => {
-					await set( 'key1', 'data' );
-					await set( 'key2', 'data' );
+					await setItem( 'key1', 'data' );
+					await setItem( 'key2', 'data' );
 
 					const keys = await getKeys();
 					expect( keys ).toEqual( [] );
@@ -398,8 +398,8 @@ describe( 'googlesitekit.api.cache', () => {
 
 			describe( 'clearCache', () => {
 				it( 'should return false when no storage is available', async () => {
-					await set( 'key1', 'data' );
-					await set( 'key2', 'data' );
+					await setItem( 'key1', 'data' );
+					await setItem( 'key2', 'data' );
 
 					const didClearCache = await clearCache();
 					expect( didClearCache ).toEqual( false );

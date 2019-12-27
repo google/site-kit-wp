@@ -10,7 +10,7 @@ export const setSelectedStorageBackend = ( backend ) => {
 	storageBackend = backend;
 };
 
-export const StorageKeyPrefix = 'googlesitekit_';
+export const STORAGE_KEY_PREFIX = 'googlesitekit_';
 
 const defaultOrder = [ 'localStorage', 'sessionStorage' ];
 let storageOrder = [ ...defaultOrder	];
