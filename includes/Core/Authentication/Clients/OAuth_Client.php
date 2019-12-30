@@ -22,7 +22,6 @@ use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Search_Console;
-use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service_PeopleService;
 
 /**
@@ -103,7 +102,8 @@ final class OAuth_Client {
 	 * Google Client object.
 	 *
 	 * @since 1.0.0
-	 * @var Google_Client
+	 * @since n.e.x.t Now always a Google_Site_Kit_Client.
+	 * @var Google_Site_Kit_Client
 	 */
 	private $google_client;
 
@@ -173,11 +173,12 @@ final class OAuth_Client {
 	 * Gets the Google client object.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Now always returns a Google_Site_Kit_Client.
 	 *
-	 * @return Google_Client Google client object.
+	 * @return Google_Site_Kit_Client Google client object.
 	 */
 	public function get_client() {
-		if ( $this->google_client instanceof Google_Client ) {
+		if ( $this->google_client instanceof Google_Site_Kit_Client ) {
 			return $this->google_client;
 		}
 
@@ -262,7 +263,7 @@ final class OAuth_Client {
 	 * Refreshes the access token.
 	 *
 	 * While this method can be used to explicitly refresh the current access token, the preferred way
-	 * should be to rely on the Google_Client to do that automatically whenever the current access token
+	 * should be to rely on the Google_Site_Kit_Client to do that automatically whenever the current access token
 	 * has expired.
 	 *
 	 * @since 1.0.0
@@ -276,7 +277,7 @@ final class OAuth_Client {
 		}
 
 		// Stop if google_client not initialized yet.
-		if ( ! $this->google_client instanceof Google_Client ) {
+		if ( ! $this->google_client instanceof Google_Site_Kit_Client ) {
 			return;
 		}
 
