@@ -815,63 +815,71 @@ final class Assets {
 			new Script(
 				'wp-escape-html',
 				array(
-					'src'      => $base_url . 'js/externals/escapeHtml.js',
-					'version'  => '1.5.1',
-					'fallback' => true,
+					'src'          => $base_url . 'js/externals/escapeHtml.js',
+					'dependencies' => array( 'wp-polyfill' ),
+					'version'      => '1.5.1',
+					'fallback'     => true,
 				)
 			),
 			new Script(
 				'wp-is-shallow-equal',
 				array(
-					'src'      => $base_url . 'js/externals/isShallowEqual.js',
-					'version'  => '1.6.1',
-					'fallback' => true,
+					'src'          => $base_url . 'js/externals/isShallowEqual.js',
+					'dependencies' => array( 'wp-polyfill' ),
+					'version'      => '1.6.1',
+					'fallback'     => true,
 				)
 			),
 			new Script(
 				'wp-hooks',
 				array(
-					'src'      => $base_url . 'js/externals/hooks.js',
-					'version'  => '2.6.0',
-					'fallback' => true,
+					'src'          => $base_url . 'js/externals/hooks.js',
+					'dependencies' => array( 'wp-polyfill' ),
+					'version'      => '2.6.0',
+					'fallback'     => true,
 				)
 			),
 			new Script(
 				'wp-element',
 				array(
-					'src'      => $base_url . 'js/externals/element.js',
-					'version'  => '2.8.2',
-					'fallback' => true,
+					'src'          => $base_url . 'js/externals/element.js',
+					'dependencies' => array( 'lodash', 'react', 'react-dom', 'wp-escape-html', 'wp-polyfill' ),
+					'version'      => '2.8.2',
+					'fallback'     => true,
 				)
 			),
 			new Script(
 				'wp-dom-ready',
 				array(
-					'src'      => $base_url . 'js/externals/domReady.js',
-					'version'  => '2.5.1',
-					'fallback' => true,
+					'src'          => $base_url . 'js/externals/domReady.js',
+					'dependencies' => array( 'wp-polyfill' ),
+					'version'      => '2.5.1',
+					'fallback'     => true,
 				)
 			),
 			new Script(
 				'wp-i18n',
 				array(
-					'src'      => $base_url . 'js/externals/i18n.js',
-					'version'  => '3.6.1',
-					'fallback' => true,
+					'src'          => $base_url . 'js/externals/i18n.js',
+					'dependencies' => array( 'wp-polyfill' ),
+					'version'      => '3.6.1',
+					'fallback'     => true,
 				)
 			),
 			new Script(
 				'wp-url',
 				array(
-					'src'      => $base_url . 'js/externals/url.js',
-					'version'  => '2.8.2',
-					'fallback' => true,
+					'src'          => $base_url . 'js/externals/url.js',
+					'dependencies' => array( 'wp-polyfill' ),
+					'version'      => '2.8.2',
+					'fallback'     => true,
 				)
 			),
 			new Script(
 				'wp-api-fetch',
 				array(
 					'src'          => $base_url . 'js/externals/apiFetch.js',
+					'dependencies' => array( 'wp-i18n', 'wp-polyfill', 'wp-url' ),
 					'version'      => '3.6.4',
 					'fallback'     => true,
 					'before_print' => function( $handle ) {
@@ -897,9 +905,10 @@ final class Assets {
 			new Script(
 				'wp-compose',
 				array(
-					'src'      => $base_url . 'js/externals/compose.js',
-					'version'  => '3.7.2',
-					'fallback' => true,
+					'src'          => $base_url . 'js/externals/compose.js',
+					'dependencies' => array( 'lodash', 'wp-element', 'wp-is-shallow-equal', 'wp-polyfill' ),
+					'version'      => '3.7.2',
+					'fallback'     => true,
 				)
 			),
 			new Script(
