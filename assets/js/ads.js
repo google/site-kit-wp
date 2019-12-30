@@ -6,4 +6,9 @@
  */
 
 window.googlesitekit = window.googlesitekit || {};
-googlesitekit.canAdsRun = true;
+window.googlesitekit.canAdsRun = true;
+
+// Ensure that this flag does not get wiped at a later stage during pageload.
+document.addEventListener( 'DOMContentLoaded', function() {
+	window.googlesitekit.canAdsRun = true;
+} );
