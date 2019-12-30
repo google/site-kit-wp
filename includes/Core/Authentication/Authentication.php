@@ -184,6 +184,13 @@ final class Authentication {
 		);
 
 		add_filter(
+			'googlesitekit_inline_base_data',
+			function ( $data ) {
+				return $this->inline_js_base_data( $data );
+			}
+		);
+
+		add_filter(
 			'googlesitekit_admin_data',
 			function ( $data ) {
 				return $this->inline_js_admin_data( $data );
@@ -454,6 +461,34 @@ final class Authentication {
 			);
 			exit();
 		}
+	}
+
+	/**
+	 * Modifies the base data to pass to JS.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $data Inline JS data.
+	 * @return array Filtered $data.
+	 */
+	private function inline_js_base_data( $data ) {
+		$first_admin_id  = (int) $this->first_admin->get();
+		$current_user_id = get_current_user_id();
+
+		// If no first admin is stored yet and the current user is one, consider them the first.
+		if ( ! $first_admin_id && current_user_can( Permissions::MANAGE_OPTIONS ) ) {
+			$first_admin_id = $current_user_id;
+		}
+		$data['isFirstAdmin'] = ( $current_user_id === $first_admin_id );
+
+		$auth_client = $this->get_oauth_client();
+		if ( $auth_client->using_proxy() ) {
+			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+			$data['proxySetupURL']       = esc_url_raw( $auth_client->get_proxy_setup_url( $access_code ) );
+			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
+		}
+
+		return $data;
 	}
 
 	/**

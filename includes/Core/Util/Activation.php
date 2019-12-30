@@ -128,7 +128,7 @@ final class Activation {
 				}
 
 				$this->assets->enqueue_fonts();
-				$this->assets->enqueue_asset( 'sitekit-commons' );
+				$this->assets->enqueue_asset( 'wp-api-fetch' );
 				$this->assets->enqueue_asset( 'googlesitekit_admin_css' );
 			}
 		);
@@ -179,13 +179,13 @@ final class Activation {
 							if ( window.googlesitekitTrackingEnabled ) {
 								optInCheckbox.checked = !! window.googlesitekitTrackingEnabled;
 							}
-							if ( googlesitekit.admin.proxySetupURL ) {
-								startSetupLink.href = googlesitekit.admin.proxySetupURL;
+							if ( window._googlesitekitBase.proxySetupURL ) {
+								startSetupLink.href = window._googlesitekitBase.proxySetupURL;
 							}
 
 							startSetupLink.addEventListener( 'click' , function() {
 								if ( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
-									sendAnalyticsTrackingEvent( 'plugin_setup', googlesitekit.admin.proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
+									sendAnalyticsTrackingEvent( 'plugin_setup', window._googlesitekitBase.proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
 								}
 							} );
 
@@ -216,12 +216,12 @@ final class Activation {
 										event.target.disabled = null;
 										window.googlesitekitTrackingEnabled = !! checked;
 
-										var trackingId = googlesitekit.admin.trackingID;
-										var trackingScriptPresent = document.querySelector( 'script[src="https://www.googletagmanager.com/gtag/js?id=' + trackingId + '"]' );
+										var trackingID = window._googlesitekitBase.trackingID;
+										var trackingScriptPresent = document.querySelector( 'script[src="https://www.googletagmanager.com/gtag/js?id=' + trackingID + '"]' );
 
-										if ( ! trackingScriptPresent ) {
-											document.body.insertAdjacentHTML( 'beforeend', '\<script async src="https://www.googletagmanager.com/gtag/js?id=' + trackingId + '"\>\</script\>' );<?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-											document.body.insertAdjacentHTML( 'beforeend', "\<script\>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '" + trackingId + "');\</script\>" );
+										if ( trackingID && ! trackingScriptPresent ) {
+											document.body.insertAdjacentHTML( 'beforeend', '\<script async src="https://www.googletagmanager.com/gtag/js?id=' + trackingID + '"\>\</script\>' );<?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+											document.body.insertAdjacentHTML( 'beforeend', "\<script\>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '" + trackingID + "');\</script\>" );
 										}
 									} )
 									.catch( function( err ) {
