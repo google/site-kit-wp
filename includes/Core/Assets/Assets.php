@@ -342,6 +342,7 @@ final class Assets {
 		}
 		$dependencies[] = 'sitekit-vendor';
 		$dependencies[] = 'sitekit-commons';
+		$dependencies[] = 'googlesitekit_admin';
 
 		// Register plugin scripts.
 		$assets = array(
@@ -386,12 +387,20 @@ final class Assets {
 				)
 			),
 			// Admin assets.
-			new Script(
+			new Script( // TODO: Rename this to 'googlesitekit-base'.
 				'googlesitekit_admin',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-admin.js',
 					'dependencies' => array( 'wp-i18n' ),
 					'execution'    => 'defer',
+					'before_print' => function( $handle ) {
+						$inline_data = $this->get_inline_base_data();
+						wp_add_inline_script(
+							$handle,
+							'window._googlesitekitBase = ' . wp_json_encode( $inline_data ),
+							'before'
+						);
+					},
 				)
 			),
 			new Script(
@@ -464,14 +473,7 @@ final class Assets {
 					'dependencies' => $dependencies,
 					'execution'    => 'defer',
 					'before_print' => function( $handle ) use ( $base_url ) {
-						$inline_data = array(
-							'publicPath' => $base_url . 'js/',
-							'properties' => array(
-								'isAdmin' => (bool) is_admin(),
-							),
-							/** This filter is documented in includes/classes/assets.php */
-							'modules'    => apply_filters( 'googlesitekit_modules_data', array() ),
-						);
+						$inline_data = array( 'publicPath' => $base_url . 'js/' );
 						wp_add_inline_script(
 							$handle,
 							'window.googlesitekitAdminbar = ' . wp_json_encode( $inline_data ),
@@ -497,6 +499,38 @@ final class Assets {
 		}
 
 		return $this->assets;
+	}
+
+	/**
+	 * Gets the most basic inline data needed for JS files.
+	 *
+	 * This should not include anything remotely expensive to compute.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array The base inline data to be output.
+	 */
+	private function get_inline_base_data() {
+		$current_user = wp_get_current_user();
+
+		$inline_data = array(
+			'homeURL'          => home_url(),
+			'referenceSiteURL' => esc_url_raw( $this->context->get_reference_site_url() ),
+			'userIDHash'       => md5( $site_url . $current_user->ID ),
+			'adminRoot'        => esc_url_raw( get_admin_url() . 'admin.php' ),
+			'assetsRoot'       => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
+		);
+
+		/**
+		 * Filters the most basic inline data to pass to JS.
+		 *
+		 * This should not include anything remotely expensive to compute.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param array $data Base data.
+		 */
+		return apply_filters( 'googlesitekit_inline_base_data', $inline_data );
 	}
 
 	/**
@@ -526,7 +560,6 @@ final class Assets {
 			'siteName'         => get_bloginfo( 'name' ),
 			'siteUserID'       => md5( $site_url . $current_user->ID ),
 			'adminRoot'        => esc_url_raw( get_admin_url() . 'admin.php' ),
-			'pluginURI'        => esc_url_raw( $this->context->url( '/' ) ),
 			'assetsRoot'       => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
 			'nojscache'        => current_user_can( 'manage_options' ) && null !== $input->filter( INPUT_GET, 'nojscache' ),
 			'datacache'        => ( current_user_can( 'manage_options' ) && null !== $input->filter( INPUT_GET, 'datacache' ) )
