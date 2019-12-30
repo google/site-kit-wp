@@ -33,7 +33,7 @@ class OAuth_ClientTest extends TestCase {
 	public function test_get_client() {
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertInstanceOf( 'Google\Site_Kit_Dependencies\Google_Client', $client->get_client() );
+		$this->assertInstanceOf( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client', $client->get_client() );
 	}
 
 	public function test_refresh_token() {
@@ -203,7 +203,7 @@ class OAuth_ClientTest extends TestCase {
 
 	public function test_get_authentication_url() {
 		/**
-		 * Requires credentials for redirect_uri to be set on the Google_Client.
+		 * Requires credentials for redirect_uri to be set on the Google_Site_Kit_Client.
 		 * @see \Google\Site_Kit\Core\Authentication\Clients\OAuth_Client::get_client
 		 */
 		$this->fake_authentication();
@@ -259,8 +259,8 @@ class OAuth_ClientTest extends TestCase {
 		// If all goes smooth, we expect to be redirected to $success_redirect
 		$success_redirect = admin_url( 'success-redirect' );
 		$client->get_authentication_url( $success_redirect );
-		// No other way around this but to mock the Google_Client
-		$google_client_mock = $this->getMock( 'Google\Site_Kit_Dependencies\Google_Client', array( 'fetchAccessTokenWithAuthCode' ) );
+		// No other way around this but to mock the Google_Site_Kit_Client
+		$google_client_mock = $this->getMock( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client', array( 'fetchAccessTokenWithAuthCode' ) );
 		$http_client = new FakeHttpClient();
 		$http_client->set_request_handler( function ( Request $request ) {
 			$url = parse_url( $request->getUrl() );
