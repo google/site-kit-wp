@@ -19,13 +19,13 @@
 /* eslint camelcase:[0] */
 
 /**
- * External dependencies
+ * Internal dependencies
  */
 import {
 	appendNotificationsCount,
 	sendAnalyticsTrackingEvent,
 	getQueryParameter,
-} from 'GoogleUtil';
+} from './util/standalone';
 
 // Set webpackPublicPath on-the-fly.
 if ( window.googlesitekitAdminbar && window.googlesitekitAdminbar.publicPath ) {
@@ -92,6 +92,11 @@ window.addEventListener( 'load', function() {
 			return;
 		}
 
+		const { trackingID } = window._googlesitekitBase;
+		if ( ! trackingID ) {
+			return;
+		}
+
 		// Track the menu hover event.
 		if ( window.googlesitekitTrackingEnabled ) {
 			// Dynamically load the gtag script if not loaded.
@@ -106,7 +111,7 @@ window.addEventListener( 'load', function() {
 					};
 					sendAnalyticsTrackingEvent( 'admin_bar', 'page_stats_view' );
 				};
-				gtagScript.setAttribute( 'src', `https://www.googletagmanager.com/gtag/js?id=${ googlesitekit.admin.trackingID }` );
+				gtagScript.setAttribute( 'src', `https://www.googletagmanager.com/gtag/js?id=${ trackingID }` );
 				document.head.appendChild( gtagScript );
 			} else {
 				sendAnalyticsTrackingEvent( 'admin_bar', 'page_stats_view' );
