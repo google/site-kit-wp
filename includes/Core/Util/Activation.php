@@ -122,12 +122,13 @@ final class Activation {
 		);
 		add_action(
 			'admin_enqueue_scripts',
-			function() {
-				if ( ! $this->get_activation_flag( is_network_admin() ) ) {
+			function( $hook_suffix ) {
+				if ( 'plugins.php' !== $hook_suffix || ! $this->get_activation_flag( is_network_admin() ) ) {
 					return;
 				}
 
 				$this->assets->enqueue_fonts();
+				$this->assets->enqueue_asset( 'sitekit-commons' );
 				$this->assets->enqueue_asset( 'googlesitekit_admin_css' );
 			}
 		);
