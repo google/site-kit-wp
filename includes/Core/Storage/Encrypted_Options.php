@@ -71,8 +71,8 @@ final class Encrypted_Options implements Options_Interface {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $option    Option name.
-	 * @param mixed  $value     Option value. Must be serializable if non-scalar.
+	 * @param string $option Option name.
+	 * @param mixed  $value  Option value. Must be serializable if non-scalar.
 	 * @return bool True on success, false on failure.
 	 */
 	public function set( $option, $value ) {
