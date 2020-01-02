@@ -10,8 +10,6 @@
 
 namespace Google\Site_Kit\Core\Modules;
 
-use Google\Site_Kit\Core\Storage\Setting;
-
 interface Module_With_Settings {
 
 	/**
@@ -19,7 +17,7 @@ interface Module_With_Settings {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return Setting The Setting instance for the current module.
+	 * @return Module_Settings The Setting instance for the current module.
 	 */
 	public function get_settings();
 }
