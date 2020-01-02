@@ -40,13 +40,25 @@ abstract class Module_Settings extends Setting {
 		add_filter(
 			'option_' . static::OPTION,
 			function ( $option ) {
-				if ( is_array( $option ) ) {
-					// Fill in any missing keys with defaults.
-					return $option + $this->get_default();
-				} else {
+				if ( ! is_array( $option ) ) {
 					return $this->get_default();
 				}
-			}
+				return $option;
+			},
+			0
+		);
+
+		// Fill in any missing keys with defaults.
+		// Must run later to not conflict with legacy key migration.
+		add_filter(
+			'option_' . static::OPTION,
+			function ( $option ) {
+				if ( is_array( $option ) ) {
+					return $option + $this->get_default();
+				}
+				return $option;
+			},
+			99
 		);
 	}
 
