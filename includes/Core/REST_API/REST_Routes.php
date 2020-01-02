@@ -420,7 +420,6 @@ final class REST_Routes {
 									$responses = array_merge( $responses, $additional_responses );
 								}
 							}
-							$responses = $this->parse_google_response_data( $responses );
 							$responses = array_map(
 								function ( $response ) {
 									if ( is_wp_error( $response ) ) {
@@ -430,6 +429,8 @@ final class REST_Routes {
 								},
 								$responses
 							);
+							$responses = $this->parse_google_response_data( $responses );
+
 							return new WP_REST_Response( $responses );
 						},
 						'permission_callback' => $can_view_insights_cron,
