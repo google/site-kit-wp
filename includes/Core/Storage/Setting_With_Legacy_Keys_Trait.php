@@ -44,7 +44,8 @@ trait Setting_With_Legacy_Keys_Trait {
 					return $this->migrate_legacy_keys( $option, $this->get_legacy_key_map() );
 				}
 				return $option;
-			}
+			},
+			0
 		);
 	}
 }
