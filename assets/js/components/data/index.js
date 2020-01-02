@@ -28,7 +28,7 @@ import {
 	getQueryParameter,
 	sortObjectProperties,
 } from 'SiteKitCore/util';
-import { cloneDeep, each, sortBy } from 'lodash';
+import { cloneDeep, each, intersection, isEqual, sortBy } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -231,14 +231,19 @@ const dataAPI = {
 	},
 
 	handleWPError( error ) {
-		const { code, data } = error;
-
-		if ( ! code || ! data ) {
+		const wpErrorKeys = [ 'code', 'data', 'message' ];
+		const commonKeys = intersection( wpErrorKeys, Object.keys( error ) );
+		if ( ! isEqual( wpErrorKeys, commonKeys ) ) {
 			return;
 		}
 
 		// eslint-disable-next-line no-console
 		console.warn( 'WP Error in data response', error );
+		const { data } = error;
+
+		if ( ! data.reason ) {
+			return;
+		}
 
 		let addedNoticeCount = 0;
 
