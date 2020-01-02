@@ -208,7 +208,7 @@ const dataAPI = {
 					return;
 				}
 
-				this.handleWpError( result );
+				this.handleWPError( result );
 
 				each( keyIndexesMap[ key ], ( index ) => {
 					const request = dataRequest[ index ];
@@ -230,7 +230,7 @@ const dataAPI = {
 		} );
 	},
 
-	handleWpError( error ) {
+	handleWPError( error ) {
 		const { code, data } = error;
 
 		if ( ! code || ! data ) {
@@ -439,7 +439,7 @@ const dataAPI = {
 
 			return Promise.resolve( results );
 		} ).catch( ( err ) => {
-			this.handleWpError( err );
+			this.handleWPError( err );
 
 			return Promise.reject( err );
 		} );
