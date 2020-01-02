@@ -45,11 +45,11 @@ before_install:
     fi
   - |
     if [[ "$PHP" == "1" ]] || [[ "$E2E" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
-      docker run --rm -v "$PWD:/app" composer install
+      docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer install
     fi
   - |
     if [[ "$JS" == "1" ]]; then
-      docker run --rm -v "$PWD:/app" composer install --no-scripts
+      docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer install --no-scripts
     fi
   - |
     if [[ "$WP_VERSION" == "latest" ]]; then
