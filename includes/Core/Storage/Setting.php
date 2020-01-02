@@ -108,7 +108,7 @@ abstract class Setting {
 	 *
 	 * @return mixed The default value.
 	 */
-	public function get_default() {
+	protected function get_default() {
 		return false;
 	}
 
