@@ -34,7 +34,8 @@
   "config": {
     "platform": {
       "php": "5.4"
-    }
+    },
+    "sort-packages": true
   },
   "scripts": {
     "post-install-cmd": [
