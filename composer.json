@@ -48,13 +48,11 @@
       "@prefix-dependencies"
     ],
     "prefix-dependencies": [
-      "rm -rf php-scoper",
-      "@install-php-scoper",
+      "@composer --working-dir=php-scoper update",
       "php-scoper/vendor/bin/php-scoper add --output-dir=./third-party --force --quiet",
       "@autoload-includes",
       "@autoload-third-party",
-      "cp vendor/composer/autoload_files.php third-party/vendor/",
-      "rm -rf php-scoper"
+      "cp vendor/composer/autoload_files.php third-party/vendor/"
     ],
     "autoload-includes": [
       "echo '{ \"autoload\": { \"classmap\": [\"\"] } }' > includes/composer.json",
@@ -69,13 +67,6 @@
       "cp third-party/vendor/composer/autoload_classmap.php third-party/",
       "rm -rf third-party/vendor && rm third-party/composer.json",
       "mkdir -p third-party/vendor/composer && mv third-party/autoload_classmap.php third-party/vendor/composer/"
-    ],
-    "install-php-scoper": [
-      "mkdir php-scoper",
-      "@composer --working-dir=php-scoper init -q",
-      "@composer --working-dir=php-scoper config minimum-stability dev",
-      "@composer --working-dir=php-scoper config prefer-stable true",
-      "@composer --working-dir=php-scoper require humbug/php-scoper"
     ],
     "lint": "phpcs",
     "lint-fix": "phpcbf",
