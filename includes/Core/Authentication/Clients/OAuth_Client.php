@@ -190,7 +190,14 @@ final class OAuth_Client {
 			$this->google_client = new Google_Client();
 		}
 
-		$this->google_client->setApplicationName( 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION );
+		$application_name = 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION;
+		// The application name is included in the Google client's user-agent for requests to Google APIs.
+		$this->google_client->setApplicationName( $application_name );
+		// Override the default user-agent for the Guzzle client. This is used for oauth/token requests.
+		// By default this header uses the generic Guzzle client's user-agent and includes
+		// Guzzle, cURL, and PHP versions as it is normally shared.
+		// In our case however, the client is namespaced to be used by Site Kit only.
+		$this->google_client->getHttpClient()->setDefaultOption( 'headers/User-Agent', $application_name );
 
 		// Return unconfigured client if credentials not yet set.
 		$client_credentials = $this->get_client_credentials();
