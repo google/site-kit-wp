@@ -11,11 +11,13 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Analytics\Settings;
 use Google\Site_Kit_Dependencies\Google_Client;
@@ -47,15 +49,7 @@ use Exception;
  * @ignore
  */
 final class Analytics extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Settings {
-	use Module_With_Screen_Trait, Module_With_Scopes_Trait;
-
-	/**
-	 * Settings instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Settings
-	 */
-	protected $settings;
+	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -1229,17 +1223,13 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	}
 
 	/**
-	 * Gets the module's Settings instance.
+	 * Gets the module-specific settings instance.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return Settings Analytics\Settings instance.
+	 * @return Module_Settings
 	 */
-	public function get_settings() {
-		if ( ! $this->settings instanceof Settings ) {
-			$this->settings = new Settings( $this->options );
-		}
-
-		return $this->settings;
+	protected function get_settings_instance() {
+		return new Settings( $this->options );
 	}
 }
