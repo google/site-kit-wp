@@ -70,6 +70,17 @@ class Settings extends Setting {
 	}
 
 	/**
+	 * Gets the expected value type.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The type name.
+	 */
+	protected function get_type() {
+		return 'object';
+	}
+
+	/**
 	 * Gets the default value.
 	 *
 	 * @since n.e.x.t

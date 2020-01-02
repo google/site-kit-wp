@@ -98,6 +98,20 @@ abstract class Setting {
 	}
 
 	/**
+	 * Gets the expected value type.
+	 *
+	 * Returns 'string' by default for consistency with register_setting.
+	 * Override in a sub-class if different.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The type name.
+	 */
+	protected function get_type() {
+		return 'string';
+	}
+
+	/**
 	 * Gets the default value.
 	 *
 	 * For use with register_setting and fetching the default directly.
