@@ -27,24 +27,6 @@ final class Credentials extends Setting {
 	const OPTION = 'googlesitekit_credentials';
 
 	/**
-	 * Registers the setting in WordPress.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function register() {
-		register_setting(
-			self::OPTION,
-			self::OPTION,
-			array(
-				// Credentials are stored as a serialized encrypted string.
-				'type'              => 'string',
-				'sanitize_callback' => $this->get_sanitize_callback(),
-				'default'           => '',
-			)
-		);
-	}
-
-	/**
 	 * Retrieves Site Kit credentials.
 	 *
 	 * @since 1.0.0

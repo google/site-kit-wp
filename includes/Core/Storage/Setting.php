@@ -49,7 +49,17 @@ abstract class Setting {
 	 *
 	 * @since n.e.x.t
 	 */
-	abstract public function register();
+	public function register() {
+		register_setting(
+			self::OPTION,
+			self::OPTION,
+			array(
+				'type'              => $this->get_type(),
+				'sanitize_callback' => $this->get_sanitize_callback(),
+				'default'           => $this->get_default(),
+			)
+		);
+	}
 
 	/**
 	 * Checks whether or not the option is set with a valid value.

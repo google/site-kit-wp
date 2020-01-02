@@ -43,15 +43,7 @@ class Settings extends Setting {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		register_setting(
-			self::OPTION,
-			self::OPTION,
-			array(
-				'type'              => 'object',
-				'sanitize_callback' => $this->get_sanitize_callback(),
-				'default'           => $this->get_default(),
-			)
-		);
+		parent::register();
 
 		add_filter(
 			'option_' . self::OPTION,
