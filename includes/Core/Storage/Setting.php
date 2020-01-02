@@ -51,8 +51,8 @@ abstract class Setting {
 	 */
 	public function register() {
 		register_setting(
-			self::OPTION,
-			self::OPTION,
+			static::OPTION,
+			static::OPTION,
 			array(
 				'type'              => $this->get_type(),
 				'sanitize_callback' => $this->get_sanitize_callback(),
