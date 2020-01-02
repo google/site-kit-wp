@@ -190,6 +190,8 @@ final class OAuth_Client {
 			$this->google_client = new Google_Client();
 		}
 
+		$this->google_client->setApplicationName( 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION );
+
 		// Return unconfigured client if credentials not yet set.
 		$client_credentials = $this->get_client_credentials();
 		if ( ! $client_credentials ) {
