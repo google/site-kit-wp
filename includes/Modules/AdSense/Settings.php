@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Modules\AdSense;
 
-use Google\Site_Kit\Core\Storage\Setting;
+use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Storage\Setting_With_Legacy_Keys_Trait;
 
 /**
@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Storage\Setting_With_Legacy_Keys_Trait;
  * @access private
  * @ignore
  */
-class Settings extends Setting {
+class Settings extends Module_Settings {
 	use Setting_With_Legacy_Keys_Trait;
 
 	const OPTION = 'googlesitekit_adsense_settings';
@@ -38,10 +38,6 @@ class Settings extends Setting {
 		add_filter(
 			'option_' . self::OPTION,
 			function ( $option ) {
-				if ( ! is_array( $option ) ) {
-					$option = $this->get_default();
-				}
-
 				/**
 				 * Filters the AdSense account ID to use.
 				 *
@@ -55,21 +51,9 @@ class Settings extends Setting {
 					$option['accountID'] = $account_id;
 				}
 
-				// Fill in any missing keys with defaults.
-				return $option + $this->get_default();
+				return $option;
 			}
 		);
-	}
-
-	/**
-	 * Gets the expected value type.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string The type name.
-	 */
-	protected function get_type() {
-		return 'object';
 	}
 
 	/**
