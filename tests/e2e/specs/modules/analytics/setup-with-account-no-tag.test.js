@@ -110,9 +110,10 @@ describe( 'setting up the Analytics module with an existing account and no exist
 
 		await Promise.all( [
 			expect( page ).toClick( 'button', { text: /configure analytics/i } ),
-			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
+			page.waitForNavigation(),
 		] );
 
+		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
 	} );
 
@@ -145,9 +146,10 @@ describe( 'setting up the Analytics module with an existing account and no exist
 
 		await Promise.all( [
 			expect( page ).toClick( 'button', { text: /configure analytics/i } ),
-			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
+			page.waitForNavigation(),
 		] );
 
+		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
 	} );
 } );

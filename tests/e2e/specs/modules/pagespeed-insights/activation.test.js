@@ -41,8 +41,8 @@ describe( 'PageSpeed Insights Activation', () => {
 	it( 'leads you to the Site Kit dashboard after activation via CTA', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 		await Promise.all( [
-			page.waitForNavigation(),
 			expect( page ).toClick( '.googlesitekit-cta-link', { text: /Activate PageSpeed Insights/i } ),
+			page.waitForNavigation(),
 		] );
 
 		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
@@ -57,8 +57,8 @@ describe( 'PageSpeed Insights Activation', () => {
 		await page.waitForSelector( '.googlesitekit-settings-connect-module--pagespeed-insights' );
 
 		await Promise.all( [
-			page.waitForNavigation(),
 			expect( page ).toClick( '.googlesitekit-cta-link', { text: /Set up PageSpeed Insights/i } ),
+			page.waitForNavigation(),
 		] );
 
 		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
