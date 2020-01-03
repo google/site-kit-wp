@@ -159,6 +159,18 @@ function observeConsoleLogging() {
 }
 
 /**
+ * Observe the given navigation request.
+ *
+ * @param {Object} req HTTP request object.
+ */
+function observeNavigationRequest( req ) {
+	if ( req.isNavigationRequest() ) {
+		// eslint-disable-next-line no-console
+		console.log( 'NAV', req.method(), req.url(), req.postData() );
+	}
+}
+
+/**
  * Observe the given REST request.
  *
  * @param {Object} req HTTP request object from the REST API request.
@@ -211,6 +223,9 @@ beforeAll( async () => {
 	// eslint-disable-next-line no-console
 	page.on( 'pageerror', console.error );
 
+	if ( '1' === process.env.DEBUG_NAV ) {
+		page.on( 'request', observeNavigationRequest );
+	}
 	if ( '1' === process.env.DEBUG_REST ) {
 		page.on( 'request', observeRestRequest );
 		page.on( 'response', observeRestResponse );
