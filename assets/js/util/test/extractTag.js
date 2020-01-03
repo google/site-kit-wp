@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { findTagInHtmlContent } from '../';
+import { extractTag } from '../';
 
 const valuesToTest = [
 	[
@@ -85,8 +85,8 @@ const valuesToTest = [
 	],
 ];
 
-describe( 'findTagInHtmlContent', () => {
+describe( 'extractTag', () => {
 	it.each( valuesToTest )( 'for HTML %s and module %s should find tag %s', ( html, module, expected ) => {
-		expect( findTagInHtmlContent( html, module ) ).toStrictEqual( expected );
+		expect( extractTag( html, module ) ).toStrictEqual( expected );
 	} );
 } );

@@ -434,18 +434,6 @@ export const validateOptimizeID = ( stringToValidate ) => {
 	return ( stringToValidate.match( /^GTM-[a-zA-Z\d]{7}$/ ) );
 };
 
-export const findTagInHtmlContent = ( html, module ) => {
-	let existingTag = false;
-
-	if ( ! html ) {
-		return false;
-	}
-
-	existingTag = extractTag( html, module );
-
-	return existingTag;
-};
-
 /**
  * Looks for existing tag requesting front end html, if no existing tag was found on server side
  * while requesting list of accounts.
