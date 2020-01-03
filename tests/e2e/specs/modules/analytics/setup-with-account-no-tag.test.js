@@ -109,8 +109,8 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test profile z/i } );
 
 		await Promise.all( [
-			expect( page ).toClick( 'button', { text: /configure analytics/i } ),
 			page.waitForNavigation(),
+			expect( page ).toClick( 'button', { text: /configure analytics/i } ),
 		] );
 
 		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
@@ -145,8 +145,8 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /setup a new profile/i } );
 
 		await Promise.all( [
-			expect( page ).toClick( 'button', { text: /configure analytics/i } ),
 			page.waitForNavigation(),
+			expect( page ).toClick( 'button', { text: /configure analytics/i } ),
 		] );
 
 		await page.waitForSelector( '.googlesitekit-publisher-win__title' );

@@ -89,8 +89,8 @@ describe( 'setting up the TagManager module with no existing account', () => {
 		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test container x/i } );
 
 		await Promise.all( [
-			expect( page ).toClick( 'button', { text: /confirm \& continue/i } ),
 			page.waitForNavigation(),
+			expect( page ).toClick( 'button', { text: /confirm \& continue/i } ),
 		] );
 
 		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
@@ -124,8 +124,8 @@ describe( 'setting up the TagManager module with no existing account', () => {
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test container y/i } );
 
 		await Promise.all( [
-			expect( page ).toClick( 'button', { text: /confirm \& continue/i } ),
 			page.waitForNavigation(),
+			expect( page ).toClick( 'button', { text: /confirm \& continue/i } ),
 		] );
 
 		await page.waitForSelector( '.googlesitekit-publisher-win__title' );

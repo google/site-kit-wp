@@ -97,8 +97,8 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test profile x/i } );
 
 		await Promise.all( [
-			expect( page ).toClick( 'button', { text: /configure analytics/i } ),
 			page.waitForNavigation(),
+			expect( page ).toClick( 'button', { text: /configure analytics/i } ),
 		] );
 
 		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
