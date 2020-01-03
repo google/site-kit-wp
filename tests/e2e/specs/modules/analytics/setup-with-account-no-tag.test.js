@@ -108,10 +108,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test property z/i } );
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test profile z/i } );
 
-		await Promise.all( [
-			page.waitForNavigation(),
-			expect( page ).toClick( 'button', { text: /configure analytics/i } ),
-		] );
+		await expect( page ).toClick( 'button', { text: /configure analytics/i } );
 
 		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
@@ -144,10 +141,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /setup a new property/i } );
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /setup a new profile/i } );
 
-		await Promise.all( [
-			page.waitForNavigation(),
-			expect( page ).toClick( 'button', { text: /configure analytics/i } ),
-		] );
+		await expect( page ).toClick( 'button', { text: /configure analytics/i } );
 
 		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
