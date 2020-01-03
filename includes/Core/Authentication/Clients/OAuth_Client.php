@@ -669,7 +669,6 @@ final class OAuth_Client {
 	 */
 	public function get_proxy_setup_url( $access_code = '', $error_code = '' ) {
 		$query_params = array(
-			'version'  => GOOGLESITEKIT_VERSION,
 			'scope'    => rawurlencode( implode( ' ', $this->get_required_scopes() ) ),
 			'supports' => rawurlencode( implode( ' ', $this->get_proxy_setup_supports() ) ),
 			'nonce'    => rawurlencode( wp_create_nonce( Google_Proxy::ACTION_SETUP ) ),
