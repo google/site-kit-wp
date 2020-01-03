@@ -73,6 +73,8 @@ describe( 'setting up the Analytics module with no existing account and no exist
 			};
 		} );
 
+		await page.waitFor( 1000 );
+
 		// Clicking Create Account button will switch API mock plugins on the server to the one that has accounts.
 		await Promise.all( [
 			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/e2e/setup/analytics/account-created' ) ),
