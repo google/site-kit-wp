@@ -21,6 +21,7 @@
  */
 import { clearAppLocalStorage } from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
+import 'GoogleComponents/notifications';
 
 /**
  * WordPress dependencies

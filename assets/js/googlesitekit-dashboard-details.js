@@ -21,6 +21,7 @@
  * External dependencies
  */
 import Notification from 'GoogleComponents/notifications/notification';
+import 'GoogleComponents/notifications';
 
 /**
  * WordPress dependencies
