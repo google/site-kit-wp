@@ -89,7 +89,6 @@ script:
       npm run build || exit 1 # Build for tests.
       npm run env:start || exit 1
       npm run test:e2e:ci || exit 1 # E2E tests.
-      npm run env:stop || exit 1
     fi
 
 jobs:
