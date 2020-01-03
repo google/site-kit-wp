@@ -24,6 +24,7 @@ import Notification from 'GoogleComponents/notifications/notification';
 import Setup from 'GoogleComponents/setup/setup-wrapper';
 import DashboardApp from 'GoogleComponents/dashboard/dashboard-app';
 import NotificationCounter from 'GoogleComponents/notifications/notification-counter';
+import 'GoogleComponents/notifications';
 
 /**
  * WordPress dependencies

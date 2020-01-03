@@ -35,7 +35,6 @@ import ProgressBar from 'GoogleComponents/progress-bar';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 import { Suspense, lazy } from 'GoogleUtil/react-features';
 import 'GoogleComponents/publisher-wins';
-import 'GoogleComponents/notifications';
 
 const AUTHENTICATION = 1;
 const SETUP = 2;

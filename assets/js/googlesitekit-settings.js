@@ -22,6 +22,7 @@
  */
 import SettingsApp from 'GoogleComponents/settings/settings-app';
 import Notification from 'GoogleComponents/notifications/notification';
+import 'GoogleComponents/notifications';
 
 /**
  * WordPress dependencies
