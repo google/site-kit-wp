@@ -177,7 +177,7 @@
     "promise-polyfill": "^8.0.0",
     "prop-types": "^15.7.2",
     "psl": "^1.4.0",
-    "puppeteer": "^1.13.0",
+    "puppeteer": "^1.20.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "require-dir": "^1.2.0",
