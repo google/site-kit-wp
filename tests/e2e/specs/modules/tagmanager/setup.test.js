@@ -121,6 +121,7 @@ describe( 'setting up the TagManager module with no existing account', () => {
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account b/i } );
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test container y/i } );
 
+		await page.waitFor( 1000 );
 		await expect( page ).toClick( 'button', { text: /confirm \& continue/i } );
 
 		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
