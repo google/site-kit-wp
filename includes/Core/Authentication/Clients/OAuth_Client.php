@@ -713,12 +713,14 @@ final class OAuth_Client {
 	 *
 	 * @since 1.1.0
 	 * @since 1.1.2 Added 'credentials_retrieval'
+	 * @since n.e.x.t Added 'short_verification_token' (Supported as of 1.0.1)
 	 * @return array Array of supported features.
 	 */
 	private function get_proxy_setup_supports() {
 		return array_filter(
 			array(
 				'credentials_retrieval',
+				'short_verification_token',
 				$this->supports_file_verification() ? 'file_verification' : false,
 			)
 		);
