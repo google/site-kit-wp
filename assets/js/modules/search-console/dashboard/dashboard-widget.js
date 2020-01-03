@@ -126,14 +126,22 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 		const { selectedStats } = this.state;
 
 		const vAxesMap = {
-			0: 'Clicks',
-			1: 'Impressions',
-			2: 'Average CTR',
-			3: 'Average Position',
+			0: __( 'Clicks', 'google-site-kit' ),
+			1: __( 'Impressions', 'google-site-kit' ),
+			2: __( 'Average CTR', 'google-site-kit' ),
+			3: __( 'Average Position', 'google-site-kit' ),
 		};
 
 		return selectedStats.map( function( stat ) {
-			return { title: vAxesMap[ stat ] };
+			const otherSettings = {};
+			// The third index refers to the "Average Position" stat.
+			// We need to reverse the y-axis for this stat, see:
+			// https://github.com/google/site-kit-wp/issues/874
+			if ( stat === 3 ) {
+				otherSettings.direction = -1;
+			}
+
+			return { title: vAxesMap[ stat ], ...otherSettings };
 		} );
 	}
 
