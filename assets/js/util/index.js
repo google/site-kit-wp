@@ -47,10 +47,11 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
+import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
+import { default as tagmanagerTagMatchers } from '../modules/tagmanager/util/tagMatchers';
 import { sendAnalyticsTrackingEvent } from './standalone';
 export * from './standalone';
-import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
-import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
 export * from './storage';
 
 /**
@@ -504,8 +505,9 @@ export const scrapeTag = async ( url, module ) => {
  */
 export const extractTag = ( string, module ) => {
 	const matchers = {
-		analytics: analyticsTagMatchers,
 		adsense: adsenseTagMatchers,
+		analytics: analyticsTagMatchers,
+		tagmanager: tagmanagerTagMatchers,
 	}[ module ] || [];
 
 	const matchingPattern = matchers.find( ( pattern ) => pattern.test( string ) );
