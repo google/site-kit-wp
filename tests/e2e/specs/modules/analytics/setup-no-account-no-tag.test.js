@@ -90,6 +90,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test property x/i } );
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test profile x/i } );
 
+		await page.waitFor( 1000 );
 		await expect( page ).toClick( 'button', { text: /configure analytics/i } );
 
 		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
