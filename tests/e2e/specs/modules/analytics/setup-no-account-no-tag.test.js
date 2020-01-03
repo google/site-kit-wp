@@ -93,7 +93,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		await page.waitFor( 1000 );
 		await expect( page ).toClick( 'button', { text: /configure analytics/i } );
 
-		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
+		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
 	} );
 } );
