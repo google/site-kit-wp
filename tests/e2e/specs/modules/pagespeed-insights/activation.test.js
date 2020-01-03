@@ -54,7 +54,7 @@ describe( 'PageSpeed Insights Activation', () => {
 		await expect( page ).toClick( '.mdc-tab', { text: /connect more services/i } );
 		await page.waitForSelector( '.googlesitekit-settings-connect-module--pagespeed-insights' );
 
-		await expect( page ).toClick( '.googlesitekit-cta-link', { text: /Set up PageSpeed Insights/i } ),;
+		await expect( page ).toClick( '.googlesitekit-cta-link', { text: /Set up PageSpeed Insights/i } );
 
 		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for PageSpeed Insights!/i } );
