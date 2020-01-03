@@ -7,17 +7,12 @@ import { createURL, isCurrentURL } from '@wordpress/e2e-test-utils';
  * Log out the current user.
  */
 export async function logoutUser() {
+	const cookies = ( await page.cookies() ).filter( ( cookie ) => cookie.name.match( /^wordpress_/ ) );
+	await page.deleteCookie( ...cookies );
+
 	if ( ! isCurrentURL( 'wp-login.php' ) ) {
 		await page.goto(
-			createURL( 'wp-login.php', 'action=logout' )
+			createURL( 'wp-login.php' )
 		);
 	}
-
-	// Since we're directly navigating to the logout URL,
-	// WP will ask for confirmation due to the missing nonce.
-
-	await Promise.all( [
-		page.waitForNavigation(),
-		expect( page ).toClick( 'a', { text: /log out/i } ),
-	] );
 }
