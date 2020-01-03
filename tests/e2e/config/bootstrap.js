@@ -1,6 +1,7 @@
 /**
  * External dependencies
  */
+import { setDefaultOptions } from 'expect-puppeteer';
 import { get } from 'lodash';
 
 /**
@@ -52,6 +53,8 @@ const pageEvents = [];
 
 // The Jest timeout is increased because these tests are a bit slow
 jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
+// Set default timeout for individual expect-puppeteer assertions. (Default: 500)
+setDefaultOptions( { timeout: 2000 } );
 
 // Add custom matchers specific to Site Kit.
 expect.extend( {
