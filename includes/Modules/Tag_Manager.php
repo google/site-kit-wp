@@ -374,8 +374,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 					return true;
 				};
 			case 'GET:accounts-containers':
-				$service = $this->get_service( 'tagmanager' );
-				return $service->accounts->listAccounts();
+				return $this->get_tagmanager_service()->accounts->listAccounts();
 			case 'GET:connection':
 				return function() {
 					$option = $this->get_settings()->get();
@@ -448,8 +447,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 					/* translators: %s: Missing parameter name */
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
-				$service = $this->get_service( 'tagmanager' );
-				return $service->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
+				return $this->get_tagmanager_service()->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
 			case 'POST:settings':
 				if ( ! isset( $data['accountID'] ) ) {
 					/* translators: %s: Missing parameter name */
@@ -516,7 +514,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 		$container->setUsageContext( (array) $usage_context );
 
 		try {
-			$container = $this->get_service( 'tagmanager' )->accounts_containers->create( "accounts/{$account_id}", $container );
+			$container = $this->get_tagmanager_service()->accounts_containers->create( "accounts/{$account_id}", $container );
 		} catch ( Google_Service_Exception $e ) {
 			$restore_defer();
 			$message = $e->getErrors();
@@ -600,6 +598,18 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Gets the configured TagManager service instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Google_Service_TagManager instance.
+	 * @throws Exception Thrown if the module did not correctly set up the service.
+	 */
+	private function get_tagmanager_service() {
+		return $this->get_service( 'tagmanager' );
 	}
 
 	/**
