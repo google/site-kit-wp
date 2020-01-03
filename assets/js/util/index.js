@@ -49,6 +49,8 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
  */
 import { sendAnalyticsTrackingEvent } from './standalone';
 export * from './standalone';
+import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
+import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
 export * from './storage';
 
 /**
@@ -493,81 +495,26 @@ export const scrapeTag = async ( url, module ) => {
 };
 
 /**
- * Extracts the tag related to a module from the given string by detecting Analytics and AdSense tag variations.
+ * Extracts a tag related to a module from the given string.
  *
  * @param {string} string The string from where to find the tag.
- * @param {string} tag    The tag to search for, one of 'adsense' or 'analytics'
+ * @param {string} module The tag to search for, one of 'adsense' or 'analytics'
  *
- * @return string|bool The tag id if found, otherwise false.
+ * @return {string|boolean} The tag id if found, otherwise false.
  */
-export const extractTag = ( string, tag ) => {
-	let result = false;
-	let reg = null;
-	switch ( tag ) {
-		case 'analytics':
+export const extractTag = ( string, module ) => {
+	const matchers = {
+		analytics: analyticsTagMatchers,
+		adsense: adsenseTagMatchers,
+	}[ module ] || [];
 
-			// Detect gtag script calls.
-			reg = new RegExp( /<script [^>]*src=['|"]https:\/\/www.googletagmanager.com\/gtag\/js\?id=(UA-.*?)['|"][^>]*><\/script>/gm );
-			result = reg.exec( string );
-			result = result ? result[ 1 ] : false;
+	const matchingPattern = matchers.find( ( pattern ) => pattern.test( string ) );
 
-			// Detect common analytics code usage.
-			if ( ! result ) {
-				reg = new RegExp( /<script[^>]*>[^<]+google-analytics\.com\/analytics\.js[^<]+(UA-\d+-\d+)/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			if ( ! result ) {
-				reg = new RegExp( /__gaTracker\( ?['|"]create['|"], ?['|"](UA-.*?)['|"], ?['|"]auto['|"] ?\)/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			// Detect ga create calls.
-			if ( ! result ) {
-				reg = new RegExp( /ga\( ?['|"]create['|"], ?['|"](UA-.*?)['|"], ?['|"]auto['|"] ?\)/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-			if ( ! result ) {
-				reg = new RegExp( /_gaq.push\( ?\[ ?['|"]_setAccount['|"], ?['|"](UA-.*?)['|"] ?] ?\)/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			// Detect amp-analytics gtag.
-			if ( ! result ) {
-				reg = new RegExp( /<amp-analytics [^>]*type="gtag"[^>]*>[^<]*<script type="application\/json">[^<]*"gtag_id":\s*"(UA-[^"]+)"/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			// Detect amp-analytics googleanalytics.
-			if ( ! result ) {
-				reg = new RegExp( /<amp-analytics [^>]*type="googleanalytics"[^>]*>[^<]*<script type="application\/json">[^<]*"account":\s*"(UA-[^"]+)"/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			break;
-
-		case 'adsense':
-			// Detect google_ad_client.
-			reg = new RegExp( /google_ad_client: ?["|'](.*?)["|']/gm );
-			result = reg.exec( string );
-			result = result ? result[ 1 ] : false;
-
-			// Detect auto-ads tags.
-			if ( ! result ) {
-				reg = new RegExp( /<(?:script|amp-auto-ads) [^>]*data-ad-client="([^"]+)"/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-			break;
+	if ( matchingPattern ) {
+		return matchingPattern.exec( string )[ 1 ];
 	}
 
-	return result;
+	return false;
 };
 
 /**
