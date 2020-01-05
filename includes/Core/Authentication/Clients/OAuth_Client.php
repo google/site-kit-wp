@@ -190,6 +190,15 @@ final class OAuth_Client {
 			$this->google_client = new Google_Client();
 		}
 
+		$application_name = 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION;
+		// The application name is included in the Google client's user-agent for requests to Google APIs.
+		$this->google_client->setApplicationName( $application_name );
+		// Override the default user-agent for the Guzzle client. This is used for oauth/token requests.
+		// By default this header uses the generic Guzzle client's user-agent and includes
+		// Guzzle, cURL, and PHP versions as it is normally shared.
+		// In our case however, the client is namespaced to be used by Site Kit only.
+		$this->google_client->getHttpClient()->setDefaultOption( 'headers/User-Agent', $application_name );
+
 		// Return unconfigured client if credentials not yet set.
 		$client_credentials = $this->get_client_credentials();
 		if ( ! $client_credentials ) {
@@ -660,7 +669,6 @@ final class OAuth_Client {
 	 */
 	public function get_proxy_setup_url( $access_code = '', $error_code = '' ) {
 		$query_params = array(
-			'version'  => GOOGLESITEKIT_VERSION,
 			'scope'    => rawurlencode( implode( ' ', $this->get_required_scopes() ) ),
 			'supports' => rawurlencode( implode( ' ', $this->get_proxy_setup_supports() ) ),
 			'nonce'    => rawurlencode( wp_create_nonce( Google_Proxy::ACTION_SETUP ) ),
@@ -705,12 +713,14 @@ final class OAuth_Client {
 	 *
 	 * @since 1.1.0
 	 * @since 1.1.2 Added 'credentials_retrieval'
+	 * @since n.e.x.t Added 'short_verification_token' (Supported as of 1.0.1)
 	 * @return array Array of supported features.
 	 */
 	private function get_proxy_setup_supports() {
 		return array_filter(
 			array(
 				'credentials_retrieval',
+				'short_verification_token',
 				$this->supports_file_verification() ? 'file_verification' : false,
 			)
 		);
