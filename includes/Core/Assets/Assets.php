@@ -387,7 +387,7 @@ final class Assets {
 				)
 			),
 			// Admin assets.
-			new Script( // TODO: Rename this to 'googlesitekit-base'.
+			new Script( // TODO: Rename this to 'googlesitekit_base'.
 				'googlesitekit_admin',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-admin.js',
