@@ -137,4 +137,50 @@ class TestCase extends \WP_UnitTestCase {
 			}
 		);
 	}
+
+	protected function assertOptionNotExists( $option ) {
+		$this->assertNull(
+			$this->queryOption( $option ),
+			"Failed to assert that option '$option' does not exist."
+		);
+	}
+
+	protected function assertOptionExists( $option ) {
+		$this->assertNotNull(
+			$this->queryOption( $option ),
+			"Failed to assert that option '$option' exists."
+		);
+	}
+
+	protected function queryOption( $option ) {
+		global $wpdb;
+
+		return $wpdb->get_row(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->options} WHERE `option_name` = %s",
+				$option
+			),
+			ARRAY_A
+		);
+	}
+
+	protected function assertSettingRegistered( $name ) {
+		global $wp_registered_settings;
+
+		$this->assertArrayHasKey(
+			$name,
+			$wp_registered_settings,
+			"Failed to assert that a setting '$name' is registered."
+		);
+	}
+
+	protected function assertSettingNotRegistered( $name ) {
+		global $wp_registered_settings;
+
+		$this->assertArrayNotHasKey(
+			$name,
+			$wp_registered_settings,
+			"Failed to assert that a setting '$name' is not registered."
+		);
+	}
 }

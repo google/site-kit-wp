@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Authentication;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
@@ -162,11 +163,11 @@ final class Authentication {
 		$this->transients = $transients;
 
 		$this->google_proxy      = new Google_Proxy( $this->context );
-		$this->credentials       = new Credentials( $this->options );
+		$this->credentials       = new Credentials( new Encrypted_Options( $this->options ) );
 		$this->verification      = new Verification( $this->user_options );
 		$this->verification_meta = new Verification_Meta( $this->user_options, $this->transients );
 		$this->verification_file = new Verification_File( $this->user_options );
-		$this->profile           = new Profile( $user_options, $this->get_oauth_client() );
+		$this->profile           = new Profile( $user_options );
 		$this->first_admin       = new First_Admin( $this->options );
 	}
 
@@ -792,7 +793,7 @@ final class Authentication {
 	 */
 	private function redirect_to_proxy( $code ) {
 		wp_safe_redirect(
-			$this->auth_client->get_proxy_setup_url( $code )
+			$this->get_oauth_client()->get_proxy_setup_url( $code )
 		);
 		exit;
 	}

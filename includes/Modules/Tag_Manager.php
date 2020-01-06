@@ -12,9 +12,13 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager;
@@ -31,10 +35,8 @@ use Exception;
  * @access private
  * @ignore
  */
-final class Tag_Manager extends Module implements Module_With_Scopes {
-	use Module_With_Scopes_Trait;
-
-	const OPTION = 'googlesitekit_tagmanager_settings';
+final class Tag_Manager extends Module implements Module_With_Scopes, Module_With_Settings {
+	use Module_With_Scopes_Trait, Module_With_Settings_Trait;
 
 	/**
 	 * Container usage context for web.
@@ -45,6 +47,14 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * Container usage context for AMP.
 	 */
 	const USAGE_CONTEXT_AMP = 'amp';
+
+	/**
+	 * Settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Settings
+	 */
+	protected $settings;
 
 	/**
 	 * Map of container usageContext to option key for containerID.
@@ -75,27 +85,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 			'wp_footer',
 			function() {
 				$this->print_gtm_no_js();
-			}
-		);
-
-		add_filter(
-			'option_' . self::OPTION,
-			function ( $option ) {
-				if ( ! is_array( $option ) ) {
-					$option = array();
-				}
-
-				// TODO: Remove this at some point (migration of old option).
-				if ( isset( $option['container_id'] ) && ! isset( $option['containerID'] ) ) {
-					$option['containerID'] = $option['container_id'];
-				}
-				if ( isset( $option['containerId'] ) && ! isset( $option['containerID'] ) ) {
-					$option['containerID'] = $option['containerId'];
-				}
-				// Ensure old keys are removed regardless. No-op if not set.
-				unset( $option['container_id'], $option['containerId'] );
-
-				return $option;
 			}
 		);
 
@@ -185,7 +174,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * @since 1.0.0
 	 */
 	public function on_deactivation() {
-		$this->options->delete( self::OPTION );
+		$this->get_settings()->delete();
 	}
 
 	/**
@@ -366,23 +355,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:account-id':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
-					// TODO: Remove this at some point (migration of old option).
-					if ( isset( $option['account_id'] ) ) {
-						if ( ! isset( $option['accountID'] ) ) {
-							$option['accountID'] = $option['account_id'];
-						}
-						unset( $option['account_id'] );
-						$this->options->set( self::OPTION, $option );
-					}
-
-					// TODO: Remove this at some point (migration of old 'accountId' option).
-					if ( isset( $option['accountId'] ) ) {
-						if ( ! isset( $option['accountID'] ) ) {
-							$option['accountID'] = $option['accountId'];
-						}
-						unset( $option['accountId'] );
-					}
+					$option = $this->get_settings()->get();
 
 					if ( empty( $option['accountID'] ) ) {
 						return new WP_Error( 'account_id_not_set', __( 'Tag Manager account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
@@ -395,9 +368,9 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option              = (array) $this->options->get( self::OPTION );
+					$option              = $this->get_settings()->get();
 					$option['accountID'] = $data['accountID'];
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return true;
 				};
 			case 'GET:accounts-containers':
@@ -405,66 +378,31 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 				return $service->accounts->listAccounts();
 			case 'GET:connection':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
-					// TODO: Remove this at some point (migration of old options).
-					if ( isset( $option['account_id'] ) || isset( $option['container_id'] ) ) {
-						if ( isset( $option['account_id'] ) ) {
-							if ( ! isset( $option['accountID'] ) ) {
-								$option['accountID'] = $option['account_id'];
-							}
-							unset( $option['account_id'] );
-						}
-						if ( isset( $option['container_id'] ) ) {
-							if ( ! isset( $option['containerID'] ) ) {
-								$option['containerID'] = $option['container_id'];
-							}
-							unset( $option['container_id'] );
-						}
-						$this->options->set( self::OPTION, $option );
-					}
+					$option = $this->get_settings()->get();
 
-					// TODO: Remove this at some point (migration of old 'accountId' option).
-					if ( isset( $option['accountId'] ) ) {
-						if ( ! isset( $option['accountID'] ) ) {
-							$option['accountID'] = $option['accountId'];
-						}
-						unset( $option['accountId'] );
-					}
-
-					// TODO: Remove this at some point (migration of old 'containerId' option).
-					if ( isset( $option['containerId'] ) ) {
-						if ( ! isset( $option['containerID'] ) ) {
-							$option['containerID'] = $option['containerId'];
-						}
-						unset( $option['containerId'] );
-					}
-
-					$defaults = array(
+					$connection = array(
 						'accountID'      => '',
 						'containerID'    => '',
 						'ampContainerID' => '',
 					);
 
-					return array_intersect_key(
-						array_merge( $defaults, $option ),
-						$defaults
-					);
+					return array_intersect_key( $option, $connection );
 				};
 			case 'POST:connection':
 				return function() use ( $data ) {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 					$keys   = array( 'accountID', 'containerID' );
 					foreach ( $keys as $key ) {
 						if ( isset( $data[ $key ] ) ) {
 							$option[ $key ] = $data[ $key ];
 						}
 					}
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return true;
 				};
 			case 'GET:container-id':
 				return function() use ( $data ) {
-					$option = $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 
 					$usage_context        = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
 					$valid_usage_contexts = array_keys( $this->context_map );
@@ -500,9 +438,9 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option                = (array) $this->options->get( self::OPTION );
+					$option                = $this->get_settings()->get();
 					$option['containerID'] = $data['containerID'];
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return true;
 				};
 			case 'GET:containers':
@@ -530,10 +468,8 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 				}
 
 				return function() use ( $data, $usage_context ) {
-					$option = array_merge(
-						$this->options->get( self::OPTION ) ?: array(),
-						array( 'accountID' => $data['accountID'] )
-					);
+					$option              = $this->get_settings()->get();
+					$option['accountID'] = $data['accountID'];
 
 					$container_key = $this->context_map[ $usage_context ];
 					$container_id  = $data[ $container_key ];
@@ -550,7 +486,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						$option[ $container_key ] = $create_container_response;
 					}
 
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 
 					return $option;
 				};
@@ -706,5 +642,16 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 		return array(
 			'tagmanager' => new Google_Service_TagManager( $client ),
 		);
+	}
+
+	/**
+	 * Sets up the module's settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Module_Settings
+	 */
+	protected function setup_settings() {
+		return new Settings( $this->options );
 	}
 }
