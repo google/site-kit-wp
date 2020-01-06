@@ -91,7 +91,7 @@ describe( 'setting up the TagManager module with no existing account', () => {
 		await page.waitFor( 1000 );
 		await expect( page ).toClick( 'button', { text: /confirm \& continue/i } );
 
-		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
+		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Tag Manager!/i } );
 
 		// Ensure expected tag is placed.
@@ -124,7 +124,7 @@ describe( 'setting up the TagManager module with no existing account', () => {
 		await page.waitFor( 1000 );
 		await expect( page ).toClick( 'button', { text: /confirm \& continue/i } );
 
-		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
+		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Tag Manager!/i } );
 
 		// Ensure expected tag is placed.

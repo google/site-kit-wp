@@ -43,7 +43,7 @@ describe( 'PageSpeed Insights Activation', () => {
 
 		await expect( page ).toClick( '.googlesitekit-cta-link', { text: /Activate PageSpeed Insights/i } );
 
-		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
+		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for PageSpeed Insights!/i } );
 	} );
 
@@ -56,7 +56,7 @@ describe( 'PageSpeed Insights Activation', () => {
 
 		await expect( page ).toClick( '.googlesitekit-cta-link', { text: /Set up PageSpeed Insights/i } );
 
-		await page.waitForSelector( '.googlesitekit-publisher-win__title' );
+		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for PageSpeed Insights!/i } );
 	} );
 } );
