@@ -22,6 +22,7 @@
 import ProgressBar from 'GoogleComponents/progress-bar';
 import Notification from 'GoogleComponents/notifications/notification';
 import 'GoogleComponents/data';
+import 'GoogleComponents/notifications';
 
 /**
  * WordPress dependencies

@@ -103,7 +103,6 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 			options.vAxis.textPosition = 'none';
 			options.vAxis.gridlines.color = '#fff';
 			options.vAxis.minorGridlines.color = '#fff';
-			options.vAxes = {};
 			options.chartArea.width = '98%';
 		}
 
