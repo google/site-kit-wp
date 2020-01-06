@@ -365,7 +365,7 @@ final class Assets {
 							'"></scr\' + \'ipt>\' );'
 						);
 						wp_add_inline_script(
-							'sitekit-commons',
+							$handle,
 							$url_polyfill,
 							'before'
 						);
