@@ -23,25 +23,18 @@ trait Setting_With_Legacy_Keys_Trait {
 	use Migrate_Legacy_Keys;
 
 	/**
-	 * Mapping of legacy keys to current key.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return array
-	 */
-	abstract protected function get_legacy_key_map();
-
-	/**
 	 * Registers an option filter for the setting to migrate legacy keys.
 	 *
+	 * @param array $legacy_key_map Mapping of legacy keys to current key.
+	 *
 	 * @since n.e.x.t
 	 */
-	protected function add_legacy_key_migration_filters() {
+	protected function register_legacy_keys_migration( array $legacy_key_map ) {
 		add_filter(
 			'option_' . static::OPTION,
-			function ( $option ) {
+			function ( $option ) use ( $legacy_key_map ) {
 				if ( is_array( $option ) ) {
-					return $this->migrate_legacy_keys( $option, $this->get_legacy_key_map() );
+					return $this->migrate_legacy_keys( $option, $legacy_key_map );
 				}
 				return $option;
 			},

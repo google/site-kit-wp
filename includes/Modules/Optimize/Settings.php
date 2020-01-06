@@ -33,7 +33,14 @@ class Settings extends Module_Settings {
 	public function register() {
 		parent::register();
 
-		$this->add_legacy_key_migration_filters();
+		$this->register_legacy_keys_migration(
+			array(
+				'AMPExperimentJson' => 'ampExperimentJSON',
+				'ampExperimentJson' => 'ampExperimentJSON',
+				'optimize_id'       => 'optimizeID',
+				'optimizeId'        => 'optimizeID',
+			)
+		);
 	}
 
 	/**
@@ -47,22 +54,6 @@ class Settings extends Module_Settings {
 		return array(
 			'ampExperimentJSON' => '',
 			'optimizeID'        => '',
-		);
-	}
-
-	/**
-	 * Mapping of legacy keys to current key.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return array
-	 */
-	protected function get_legacy_key_map() {
-		return array(
-			'AMPExperimentJson' => 'ampExperimentJSON',
-			'ampExperimentJson' => 'ampExperimentJSON',
-			'optimize_id'       => 'optimizeID',
-			'optimizeId'        => 'optimizeID',
 		);
 	}
 }
