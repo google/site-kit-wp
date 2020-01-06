@@ -13,8 +13,8 @@ namespace Google\Site_Kit\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service_Pagespeedonline;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -29,8 +29,6 @@ use WP_Error;
 final class PageSpeed_Insights extends Module implements Module_With_Scopes {
 	use Module_With_Scopes_Trait;
 
-	const OPTION = 'googlesitekit_pagespeed_insights_settings';
-
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
@@ -44,7 +42,8 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes {
 	 * @since 1.0.0
 	 */
 	public function on_deactivation() {
-		$this->options->delete( self::OPTION );
+		// TODO: Remove in a future release.
+		$this->options->delete( 'googlesitekit_pagespeed_insights_settings' );
 	}
 
 	/**
@@ -167,12 +166,13 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes {
 	 * for the first time.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Now requires Google_Site_Kit_Client instance.
 	 *
-	 * @param Google_Client $client Google client instance.
+	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
 	 *               instance of Google_Service.
 	 */
-	protected function setup_services( Google_Client $client ) {
+	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
 			'pagespeedonline' => new Google_Service_Pagespeedonline( $client ),
 		);

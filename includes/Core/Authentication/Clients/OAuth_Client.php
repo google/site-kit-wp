@@ -16,12 +16,12 @@ use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
+use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Search_Console;
-use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service_PeopleService;
 
 /**
@@ -102,7 +102,8 @@ final class OAuth_Client {
 	 * Google Client object.
 	 *
 	 * @since 1.0.0
-	 * @var Google_Client
+	 * @since n.e.x.t Now always a Google_Site_Kit_Client.
+	 * @var Google_Site_Kit_Client
 	 */
 	private $google_client;
 
@@ -163,7 +164,7 @@ final class OAuth_Client {
 		$this->user_options           = $user_options ?: new User_Options( $this->context );
 		$this->encrypted_options      = new Encrypted_Options( $this->options );
 		$this->encrypted_user_options = new Encrypted_User_Options( $this->user_options );
-		$this->credentials            = $credentials ?: new Credentials( $this->options );
+		$this->credentials            = $credentials ?: new Credentials( $this->encrypted_options );
 		$this->google_proxy           = $google_proxy ?: new Google_Proxy( $this->context );
 		$this->profile                = $profile ?: new Profile( $this->user_options );
 	}
@@ -172,23 +173,31 @@ final class OAuth_Client {
 	 * Gets the Google client object.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Now always returns a Google_Site_Kit_Client.
 	 *
-	 * @return Google_Client Google client object.
+	 * @return Google_Site_Kit_Client Google client object.
 	 */
 	public function get_client() {
-		if ( $this->google_client instanceof Google_Client ) {
+		if ( $this->google_client instanceof Google_Site_Kit_Client ) {
 			return $this->google_client;
 		}
 
 		if ( $this->using_proxy() ) {
-			$this->google_client = new Google_Proxy_Client(
-				array(
-					'proxy_base_path' => $this->google_proxy->url(),
-				)
+			$this->google_client = new Google_Site_Kit_Proxy_Client(
+				array( 'proxy_base_path' => $this->google_proxy->url() )
 			);
 		} else {
-			$this->google_client = new Google_Client();
+			$this->google_client = new Google_Site_Kit_Client();
 		}
+
+		$application_name = 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION;
+		// The application name is included in the Google client's user-agent for requests to Google APIs.
+		$this->google_client->setApplicationName( $application_name );
+		// Override the default user-agent for the Guzzle client. This is used for oauth/token requests.
+		// By default this header uses the generic Guzzle client's user-agent and includes
+		// Guzzle, cURL, and PHP versions as it is normally shared.
+		// In our case however, the client is namespaced to be used by Site Kit only.
+		$this->google_client->getHttpClient()->setDefaultOption( 'headers/User-Agent', $application_name );
 
 		// Return unconfigured client if credentials not yet set.
 		$client_credentials = $this->get_client_credentials();
@@ -209,6 +218,32 @@ final class OAuth_Client {
 		$this->google_client->setScopes( $this->get_required_scopes() );
 		$this->google_client->prepareScopes();
 
+		// This is called when the client refreshes the access token on-the-fly.
+		$this->google_client->setTokenCallback(
+			function( $cache_key, $access_token ) {
+				$expires_in = HOUR_IN_SECONDS; // Sane default, Google OAuth tokens are typically valid for an hour.
+				$created    = 0; // This will be replaced with the current timestamp when saving.
+
+				// Try looking up the real values if possible.
+				if ( isset( $this->google_client ) ) {
+					$token = $this->google_client->getAccessToken();
+					if ( isset( $token['access_token'], $token['expires_in'], $token['created'] ) && $access_token === $token['access_token'] ) {
+						$expires_in = $token['expires_in'];
+						$created    = $token['created'];
+					}
+				}
+
+				$this->set_access_token( $access_token, $expires_in, $created );
+			}
+		);
+
+		// This is called when refreshing the access token on-the-fly fails.
+		$this->google_client->setTokenExceptionCallback(
+			function( Exception $e ) {
+				$this->handle_fetch_token_exception( $e );
+			}
+		);
+
 		$profile = $this->profile->get();
 		if ( ! empty( $profile['email'] ) ) {
 			$this->google_client->setLoginHint( $profile['email'] );
@@ -221,33 +256,24 @@ final class OAuth_Client {
 			return $this->google_client;
 		}
 
-		$token = array(
-			'access_token'  => $access_token,
-			'expires_in'    => $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
-			'created'       => $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
-			'refresh_token' => $this->get_refresh_token(),
+		$this->google_client->setAccessToken(
+			array(
+				'access_token'  => $access_token,
+				'expires_in'    => $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
+				'created'       => $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
+				'refresh_token' => $this->get_refresh_token(),
+			)
 		);
-
-		$this->google_client->setAccessToken( $token );
-
-		// This is called when the client refreshes the access token on-the-fly.
-		$this->google_client->setTokenCallback(
-			function( $cache_key, $access_token ) {
-				// All we can do here is assume an hour as it usually is.
-				$this->set_access_token( $access_token, HOUR_IN_SECONDS );
-			}
-		);
-
-		// If the token expired or is going to expire in the next 30 seconds.
-		if ( $this->google_client->isAccessTokenExpired() ) {
-			$this->refresh_token();
-		}
 
 		return $this->google_client;
 	}
 
 	/**
 	 * Refreshes the access token.
+	 *
+	 * While this method can be used to explicitly refresh the current access token, the preferred way
+	 * should be to rely on the Google_Site_Kit_Client to do that automatically whenever the current access token
+	 * has expired.
 	 *
 	 * @since 1.0.0
 	 */
@@ -260,26 +286,14 @@ final class OAuth_Client {
 		}
 
 		// Stop if google_client not initialized yet.
-		if ( ! $this->google_client instanceof Google_Client ) {
+		if ( ! $this->google_client instanceof Google_Site_Kit_Client ) {
 			return;
 		}
 
 		try {
 			$authentication_token = $this->google_client->fetchAccessTokenWithRefreshToken( $refresh_token );
-		} catch ( Google_Proxy_Exception $e ) {
-			$this->user_options->set( self::OPTION_ERROR_CODE, $e->getMessage() );
-			$this->user_options->set( self::OPTION_PROXY_ACCESS_CODE, $e->getAccessCode() );
-			return;
 		} catch ( \Exception $e ) {
-			$error_code = 'invalid_grant';
-			if ( $this->using_proxy() ) { // Only the Google_Proxy_Client exposes the real error response.
-				$error_code = $e->getMessage();
-			}
-			// Revoke and delete user connection data if the refresh token is invalid or expired.
-			if ( 'invalid_grant' === $error_code ) {
-				$this->revoke_token();
-			}
-			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
+			$this->handle_fetch_token_exception( $e );
 			return;
 		}
 
@@ -293,9 +307,6 @@ final class OAuth_Client {
 			isset( $authentication_token['expires_in'] ) ? $authentication_token['expires_in'] : '',
 			isset( $authentication_token['created'] ) ? $authentication_token['created'] : 0
 		);
-
-		$refresh_token = $this->get_client()->getRefreshToken();
-		$this->set_refresh_token( $refresh_token );
 	}
 
 	/**
@@ -516,15 +527,12 @@ final class OAuth_Client {
 
 		try {
 			$authentication_token = $this->get_client()->fetchAccessTokenWithAuthCode( $code );
-		} catch ( Google_Proxy_Exception $e ) {
+		} catch ( Google_Proxy_Code_Exception $e ) {
+			// Redirect back to proxy immediately with the access code.
 			wp_safe_redirect( $this->get_proxy_setup_url( $e->getAccessCode(), $e->getMessage() ) );
 			exit();
 		} catch ( Exception $e ) {
-			$error_code = 'invalid_code';
-			if ( $this->using_proxy() ) { // Only the Google_Proxy_Client exposes the real error response.
-				$error_code = $e->getMessage();
-			}
-			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
+			$this->handle_fetch_token_exception( $e );
 			wp_safe_redirect( admin_url() );
 			exit();
 		}
@@ -660,7 +668,6 @@ final class OAuth_Client {
 	 */
 	public function get_proxy_setup_url( $access_code = '', $error_code = '' ) {
 		$query_params = array(
-			'version'  => GOOGLESITEKIT_VERSION,
 			'scope'    => rawurlencode( implode( ' ', $this->get_required_scopes() ) ),
 			'supports' => rawurlencode( implode( ' ', $this->get_proxy_setup_supports() ) ),
 			'nonce'    => rawurlencode( wp_create_nonce( Google_Proxy::ACTION_SETUP ) ),
@@ -705,12 +712,14 @@ final class OAuth_Client {
 	 *
 	 * @since 1.1.0
 	 * @since 1.1.2 Added 'credentials_retrieval'
+	 * @since n.e.x.t Added 'short_verification_token' (Supported as of 1.0.1)
 	 * @return array Array of supported features.
 	 */
 	private function get_proxy_setup_supports() {
 		return array_filter(
 			array(
 				'credentials_retrieval',
+				'short_verification_token',
 				$this->supports_file_verification() ? 'file_verification' : false,
 			)
 		);
@@ -793,6 +802,28 @@ final class OAuth_Client {
 			default:
 				/* translators: %s: error code from API */
 				return sprintf( __( 'Unknown Error (code: %s).', 'google-site-kit' ), $error_code );
+		}
+	}
+
+	/**
+	 * Handles an exception thrown when fetching an access token.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Exception $e Exception thrown.
+	 */
+	private function handle_fetch_token_exception( Exception $e ) {
+		$error_code = $e->getMessage();
+
+		// Revoke and delete user connection data on 'invalid_grant'.
+		// This typically happens during refresh if the refresh token is invalid or expired.
+		if ( 'invalid_grant' === $error_code ) {
+			$this->revoke_token();
+		}
+
+		$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
+		if ( $e instanceof Google_Proxy_Code_Exception ) {
+			$this->user_options->set( self::OPTION_PROXY_ACCESS_CODE, $e->getAccessCode() );
 		}
 	}
 

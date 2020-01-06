@@ -96,11 +96,9 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await expect( page ).toClick( '.mdc-select', { text: /test profile x/i } );
 		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test profile x/i } );
 
-		await Promise.all( [
-			expect( page ).toClick( 'button', { text: /configure analytics/i } ),
-			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
-		] );
+		await expect( page ).toClick( 'button', { text: /configure analytics/i } );
 
+		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
 	} );
 

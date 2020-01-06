@@ -27,16 +27,16 @@ trait OptionsTestTrait {
 		return array(
 			'googlesitekit-active-modules',
 			'googlesitekit_analytics_adsense_linked',
+			'googlesitekit_pagespeed_insights_settings',
 			Activation::OPTION_NEW_SITE_POSTS,
 			Activation::OPTION_SHOW_ACTIVATION_NOTICE,
-			AdSense::OPTION,
-			Analytics::OPTION,
+			AdSense\Settings::OPTION,
+			Analytics\Settings::OPTION,
 			Credentials::OPTION,
 			First_Admin::OPTION,
-			Optimize::OPTION,
-			PageSpeed_Insights::OPTION,
+			Optimize\Settings::OPTION,
 			Search_Console::PROPERTY_OPTION,
-			Tag_Manager::OPTION,
+			Tag_Manager\Settings::OPTION,
 			Beta_Migration::OPTION_IS_PRE_PROXY_INSTALL,
 		);
 	}
@@ -54,8 +54,10 @@ trait OptionsTestTrait {
 	protected function assertOptionsDeleted( $is_network_mode ) {
 		foreach ( $this->get_option_keys() as $option_name ) {
 			if ( $is_network_mode ) {
+				remove_all_filters( "default_site_option_$option_name" );
 				$this->assertFalse( get_network_option( null, $option_name ) );
 			} else {
+				remove_all_filters( "default_option_$option_name" );
 				$this->assertFalse( get_option( $option_name ) );
 			}
 		}

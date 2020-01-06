@@ -39,7 +39,7 @@ const addWinsNotifications = createAddToFilter( <DashboardWinsAlerts /> );
 const addAuthNotification = createAddToFilter( <DashboardAuthAlert /> );
 
 if ( setup.needReauthenticate ) {
-	addFilter( 'googlesitekit.DashboardNotifications',
+	addFilter( 'googlesitekit.ErrorNotification',
 		'googlesitekit.AuthNotification',
 		addAuthNotification, 1 );
 }

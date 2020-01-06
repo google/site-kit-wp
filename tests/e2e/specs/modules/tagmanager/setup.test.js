@@ -88,11 +88,10 @@ describe( 'setting up the TagManager module with no existing account', () => {
 		await expect( page ).toMatchElement( '.mdc-menu-surface--open .mdc-list-item', { text: /set up a new container/i } );
 		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test container x/i } );
 
-		await Promise.all( [
-			expect( page ).toClick( 'button', { text: /confirm \& continue/i } ),
-			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
-		] );
+		await page.waitFor( 1000 );
+		await expect( page ).toClick( 'button', { text: /confirm \& continue/i } );
 
+		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Tag Manager!/i } );
 
 		// Ensure expected tag is placed.
@@ -122,11 +121,10 @@ describe( 'setting up the TagManager module with no existing account', () => {
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account b/i } );
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test container y/i } );
 
-		await Promise.all( [
-			expect( page ).toClick( 'button', { text: /confirm \& continue/i } ),
-			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
-		] );
+		await page.waitFor( 1000 );
+		await expect( page ).toClick( 'button', { text: /confirm \& continue/i } );
 
+		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Tag Manager!/i } );
 
 		// Ensure expected tag is placed.

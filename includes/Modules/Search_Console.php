@@ -15,8 +15,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SitesListResponse;
@@ -185,8 +185,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 				$site_url = trailingslashit( $data['siteURL'] );
 
 				return function () use ( $site_url ) {
-					$orig_defer = $this->get_client()->shouldDefer();
-					$this->get_client()->setDefer( false );
+					$restore_defer = $this->with_client_defer( false );
 
 					try {
 						// If the site does not exist in the account, an exception will be thrown.
@@ -208,7 +207,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						$site = $this->get_webmasters_service()->sites->get( $site_url );
 					}
 
-					$this->get_client()->setDefer( $orig_defer );
+					$restore_defer();
 					$this->options->set( self::PROPERTY_OPTION, $site_url );
 
 					return array(
@@ -449,12 +448,13 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 * for the first time.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Now requires Google_Site_Kit_Client instance.
 	 *
-	 * @param Google_Client $client Google client instance.
+	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
 	 *               instance of Google_Service.
 	 */
-	protected function setup_services( Google_Client $client ) {
+	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
 			'webmasters' => new Google_Service_Webmasters( $client ),
 		);

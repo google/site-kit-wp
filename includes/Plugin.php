@@ -141,16 +141,6 @@ final class Plugin {
 		( new Core\Util\Activation( $this->context, $options, $assets ) )->register();
 		( new Core\Util\Beta_Migration( $this->context ) )->register();
 		( new Core\Util\Migration_1_0_0( $this->context ) )->register();
-
-		if ( defined( 'WP_DEBUG' ) && true === WP_DEBUG ) {
-			add_filter(
-				'debug_bar_panels',
-				function( $panels ) {
-					$panels[] = new Core\Util\Debug_Bar();
-					return $panels;
-				}
-			);
-		}
 	}
 
 	/**
