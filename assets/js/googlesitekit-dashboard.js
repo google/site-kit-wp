@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { clearAppLocalStorage } from 'GoogleUtil';
+import { clearWebStorage } from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
 import Setup from 'GoogleComponents/setup/setup-wrapper';
 import DashboardApp from 'GoogleComponents/dashboard/dashboard-app';
@@ -95,7 +95,7 @@ class GoogleSitekitDashboard extends Component {
 // Initialize the app once the DOM is ready.
 domReady( function() {
 	if ( googlesitekit.admin.resetSession ) {
-		clearAppLocalStorage();
+		clearWebStorage();
 	}
 
 	const dashboard = document.getElementById( 'js-googlesitekit-dashboard' );

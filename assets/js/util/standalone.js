@@ -88,7 +88,7 @@ export const appendNotificationsCount = ( count = 0 ) => {
  * Both of these should be cleared to make sure no Site Kit data is left in the
  * browser's cache regardless of which storage implementation is used.
  */
-export const clearAppLocalStorage = () => {
+export const clearWebStorage = () => {
 	if ( window.localStorage ) {
 		window.localStorage.clear();
 	}

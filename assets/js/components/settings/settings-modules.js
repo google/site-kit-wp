@@ -21,7 +21,7 @@
  */
 import Layout from 'GoogleComponents/layout/layout';
 import Notification from 'GoogleComponents/notifications/notification';
-import { clearAppLocalStorage } from 'GoogleUtil/index';
+import { clearWebStorage } from 'GoogleUtil/index';
 import { map, filter, sortBy } from 'lodash';
 
 /**
@@ -104,13 +104,13 @@ class SettingsModules extends Component {
 			this.setState( { isSaving: module } );
 			if ( ! modulePromise ) {
 				// Clears session and local storage on successful setting.
-				clearAppLocalStorage();
+				clearWebStorage();
 
 				return;
 			}
 			modulePromise.then( () => {
 				// Clears session and local storage on every successful setting.
-				clearAppLocalStorage();
+				clearWebStorage();
 
 				this.setState( ( prevState ) => {
 					return {

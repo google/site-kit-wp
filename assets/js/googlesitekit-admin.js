@@ -23,7 +23,7 @@
  */
 import {
 	appendNotificationsCount,
-	clearAppLocalStorage,
+	clearWebStorage,
 } from './util/standalone';
 
 if ( 'toplevel_page_googlesitekit-dashboard' !== window.pagenow && 'site-kit_page_googlesitekit-splash' !== window.pagenow && 'admin_page_googlesitekit-splash' !== window.pagenow && window.localStorage ) {
@@ -42,6 +42,6 @@ if ( ! wpLogout ) {
 
 if ( wpLogout ) {
 	wpLogout.addEventListener( 'click', () => {
-		clearAppLocalStorage();
+		clearWebStorage();
 	} );
 }
