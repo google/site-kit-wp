@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { createAddToFilter } from 'GoogleUtil/helpers';
-import { fillFilterWithComponent } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -33,7 +32,6 @@ import { addFilter } from '@wordpress/hooks';
 import DashboardSpeed from './dashboard/dashboard-widget-speed';
 import PageSpeedInsightsDashboardWidgetHomepageSpeed from './dashboard/dashboard-widget-homepage-speed';
 import PageSpeedInsightsCTA from './dashboard/dashboard-cta';
-import PageSpeedSetup from './setup';
 
 const slug = 'pagespeed-insights';
 
@@ -45,15 +43,6 @@ const {
 if ( active && setupComplete ) {
 	const addDashboardSpeed = createAddToFilter( <DashboardSpeed /> );
 	const addPageSpeedInsightsDashboardWidgetHomepageSpeed = createAddToFilter( <PageSpeedInsightsDashboardWidgetHomepageSpeed /> );
-
-	/**
-	 * Add components to the settings page.
-	 */
-	addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
-		'googlesitekit.OptimizeModuleSettingsDetails',
-		fillFilterWithComponent( PageSpeedSetup, {
-			onSettingsPage: true,
-		} ) );
 
 	/**
 	* Add components to the Site Kit Dashboard.
