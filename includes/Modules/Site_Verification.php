@@ -189,7 +189,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 							}
 						}
 
-						call_user_func( $restore_defer );
+						$restore_defer();
 
 						if ( empty( $sites ) ) {
 							return $errors;

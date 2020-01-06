@@ -907,17 +907,17 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						try {
 							$property = $this->get_service( 'analytics' )->management_webproperties->insert( $data['accountID'], $property );
 						} catch ( Google_Service_Exception $e ) {
-							call_user_func( $restore_defer );
+							$restore_defer();
 							$message = $e->getErrors();
 							if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
 								$message = $message[0]['message'];
 							}
 							return new WP_Error( $e->getCode(), $message );
 						} catch ( Exception $e ) {
-							call_user_func( $restore_defer );
+							$restore_defer();
 							return new WP_Error( $e->getCode(), $e->getMessage() );
 						}
-						call_user_func( $restore_defer );
+						$restore_defer();
 						/* @var Google_Service_Analytics_Webproperty $property Property instance. */
 						$property_id              = $property->getId();
 						$internal_web_property_id = $property->getInternalWebPropertyId();
@@ -934,17 +934,17 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						try {
 							$profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $property_id, $profile );
 						} catch ( Google_Service_Exception $e ) {
-							call_user_func( $restore_defer );
+							$restore_defer();
 							$message = $e->getErrors();
 							if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
 								$message = $message[0]['message'];
 							}
 							return new WP_Error( $e->getCode(), $message );
 						} catch ( Exception $e ) {
-							call_user_func( $restore_defer );
+							$restore_defer();
 							return new WP_Error( $e->getCode(), $e->getMessage() );
 						}
-						call_user_func( $restore_defer );
+						$restore_defer();
 						$profile_id = $profile->id;
 					} else {
 						$profile_id = $data['profileID'];
@@ -957,17 +957,17 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						try {
 							$property = $this->get_service( 'analytics' )->management_webproperties->patch( $data['accountID'], $property_id, $property );
 						} catch ( Google_Service_Exception $e ) {
-							call_user_func( $restore_defer );
+							$restore_defer();
 							$message = $e->getErrors();
 							if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
 								$message = $message[0]['message'];
 							}
 							return new WP_Error( $e->getCode(), $message );
 						} catch ( Exception $e ) {
-							call_user_func( $restore_defer );
+							$restore_defer();
 							return new WP_Error( $e->getCode(), $e->getMessage() );
 						}
-						call_user_func( $restore_defer );
+						$restore_defer();
 					}
 					$option = array(
 						'accountID'             => $data['accountID'],

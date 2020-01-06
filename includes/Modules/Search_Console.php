@@ -207,7 +207,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 						$site = $this->get_webmasters_service()->sites->get( $site_url );
 					}
 
-					call_user_func( $restore_defer );
+					$restore_defer();
 					$this->options->set( self::PROPERTY_OPTION, $site_url );
 
 					return array(

@@ -367,7 +367,7 @@ abstract class Module {
 			}
 		}
 
-		call_user_func( $restore_defer );
+		$restore_defer();
 
 		// Cache the results for storybook.
 		if (
@@ -448,7 +448,7 @@ abstract class Module {
 		$request = $this->create_data_request( $data );
 
 		if ( isset( $restore_defer ) ) {
-			call_user_func( $restore_defer );
+			$restore_defer();
 		}
 
 		if ( is_wp_error( $request ) ) {
