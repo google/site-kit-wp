@@ -46,22 +46,16 @@ class ScriptTest extends TestCase {
 		$this->assertEquals( 1, wp_scripts()->get_data( 'test-handle', 'group' ) );
 	}
 
-	public function test_register_with_post_register_callback() {
+	public function test_register_with_before_print_callback() {
 		$invocations = array();
 		$callback    = function () use ( &$invocations ) {
 			$invocations[] = func_get_args();
 		};
 		$script      = new Script( 'test-handle', array(
-			'post_register' => $callback,
+			'before_print' => $callback,
 		) );
 
-		$script->register();
-
-		$this->assertCount( 1, $invocations );
-		// Callback is only invoked once when script is registered.
-		$script->register();
-		$script->register();
-
+		$script->before_print();
 		$this->assertCount( 1, $invocations );
 	}
 
@@ -120,27 +114,5 @@ class ScriptTest extends TestCase {
 		$script->enqueue();
 
 		$this->assertTrue( wp_script_is( 'test-handle', 'enqueued' ) );
-	}
-
-	public function test_register_with_post_enqueue_callback() {
-		$invocations = array();
-		$callback    = function () use ( &$invocations ) {
-			$invocations[] = func_get_args();
-		};
-		$script      = new Script( 'test-handle', array(
-			'post_enqueue' => $callback,
-		) );
-
-		$script->register();
-		$this->assertCount( 0, $invocations );
-
-		$script->enqueue();
-
-		$this->assertCount( 1, $invocations );
-		// Callback is only invoked once when script is enqueued.
-		$script->enqueue();
-		$script->enqueue();
-
-		$this->assertCount( 1, $invocations );
 	}
 }

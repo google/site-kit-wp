@@ -18,9 +18,9 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\AdSense\Settings;
-use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service_AdSense;
 use Google\Site_Kit_Dependencies\Google_Service_AdSense_Alert;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
@@ -785,12 +785,13 @@ tag_partner: "site_kit"
 	 * for the first time.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Now requires Google_Site_Kit_Client instance.
 	 *
-	 * @param Google_Client $client Google client instance.
+	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
 	 *               instance of Google_Service.
 	 */
-	protected function setup_services( Google_Client $client ) {
+	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
 			'adsense' => new Google_Service_AdSense( $client ),
 		);

@@ -31,6 +31,10 @@ describe( 'the set up flow for the second administrator', () => {
 						location: createURL( '/', 'oauth2callback=1&code=valid-test-code' ),
 					},
 				} );
+			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
+				request.respond( {
+					status: 200,
+				} );
 			} else {
 				request.continue();
 			}

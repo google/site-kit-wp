@@ -17,9 +17,9 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
-use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
@@ -505,9 +505,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * @return mixed Container ID on success, or WP_Error on failure.
 	 */
 	protected function create_container( $account_id, $usage_context = self::USAGE_CONTEXT_WEB ) {
-		$client     = $this->get_client();
-		$orig_defer = $client->shouldDefer();
-		$client->setDefer( false );
+		$restore_defer = $this->with_client_defer( false );
 
 		// Use site name for container, fallback to domain of reference URL.
 		$container_name = get_bloginfo( 'name' ) ?: wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
@@ -520,18 +518,18 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 		try {
 			$container = $this->get_service( 'tagmanager' )->accounts_containers->create( "accounts/{$account_id}", $container );
 		} catch ( Google_Service_Exception $e ) {
-			$client->setDefer( $orig_defer );
+			$restore_defer();
 			$message = $e->getErrors();
 			if ( isset( $message[0]['message'] ) ) {
 				$message = $message[0]['message'];
 			}
 			return new WP_Error( $e->getCode(), $message );
 		} catch ( Exception $e ) {
-			$client->setDefer( $orig_defer );
+			$restore_defer();
 			return new WP_Error( $e->getCode(), $e->getMessage() );
 		}
 
-		$client->setDefer( $orig_defer );
+		$restore_defer();
 		return $container->getPublicId();
 	}
 
@@ -633,12 +631,13 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * for the first time.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Now requires Google_Site_Kit_Client instance.
 	 *
-	 * @param Google_Client $client Google client instance.
+	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
 	 *               instance of Google_Service.
 	 */
-	protected function setup_services( Google_Client $client ) {
+	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
 			'tagmanager' => new Google_Service_TagManager( $client ),
 		);

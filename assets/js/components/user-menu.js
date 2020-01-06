@@ -22,7 +22,7 @@ import Dialog from 'GoogleComponents/dialog';
 import Button from 'GoogleComponents/button';
 import Menu from 'GoogleComponents/menu';
 import Modal from 'GoogleComponents/modal';
-import { clearAppLocalStorage } from 'GoogleUtil';
+import { clearWebStorage } from 'GoogleUtil';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
 
 /**
@@ -129,7 +129,7 @@ class UserMenu extends Component {
 		} );
 
 		// Clear caches.
-		clearAppLocalStorage();
+		clearWebStorage();
 
 		// Navigate back to the splash screen to reconnect.
 		document.location = getSiteKitAdminURL(

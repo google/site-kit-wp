@@ -201,7 +201,7 @@ final class REST_Routes {
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function( WP_REST_Request $request ) {
 							$oauth_client = $this->authentication->get_oauth_client();
-							$access_token = $oauth_client->get_client()->getAccessToken();
+							$access_token = $oauth_client->get_access_token();
 
 							$data = array(
 								'isAuthenticated' => ! empty( $access_token ),
