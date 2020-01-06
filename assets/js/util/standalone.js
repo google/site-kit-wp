@@ -35,8 +35,8 @@ export const appendNotificationsCount = ( count = 0 ) => {
 	let menuSelector = null;
 	let adminbarSelector = null;
 
-	const counterMenu = document.querySelector( '#toplevel_page_googlesitekit-dashboard #googlesitekit-notifications-counter' );
-	const counterAdminbar = document.querySelector( '#wp-admin-bar-google-site-kit #googlesitekit-notifications-counter' );
+	const counterMenu = document.querySelector( '#toplevel_page_googlesitekit-dashboard .googlesitekit-notifications-counter' );
+	const counterAdminbar = document.querySelector( '#wp-admin-bar-google-site-kit .googlesitekit-notifications-counter' );
 
 	if ( counterMenu && counterAdminbar ) {
 		return false;
@@ -51,7 +51,6 @@ export const appendNotificationsCount = ( count = 0 ) => {
 
 	const wrapper = document.createElement( 'span' );
 	wrapper.setAttribute( 'class', `googlesitekit-notifications-counter update-plugins count-${ count }` );
-	wrapper.setAttribute( 'id', 'googlesitekit-notifications-counter' );
 
 	const pluginCount = document.createElement( 'span' );
 	pluginCount.setAttribute( 'class', 'plugin-count' );
