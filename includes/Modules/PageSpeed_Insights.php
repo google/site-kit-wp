@@ -29,8 +29,6 @@ use WP_Error;
 final class PageSpeed_Insights extends Module implements Module_With_Scopes {
 	use Module_With_Scopes_Trait;
 
-	const OPTION = 'googlesitekit_pagespeed_insights_settings';
-
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
@@ -44,7 +42,8 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes {
 	 * @since 1.0.0
 	 */
 	public function on_deactivation() {
-		$this->options->delete( self::OPTION );
+		// TODO: Remove in a future release.
+		$this->options->delete( 'googlesitekit_pagespeed_insights_settings' );
 	}
 
 	/**

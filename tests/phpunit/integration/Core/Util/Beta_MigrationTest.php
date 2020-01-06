@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Credentials;
+use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Beta_Migration;
 use Google\Site_Kit\Tests\TestCase;
@@ -34,7 +35,7 @@ class Beta_MigrationTest extends TestCase {
 	public function test_maybe_run_upgrade() {
 		$context     = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options     = new Options( $context );
-		$credentials = new Credentials( $options );
+		$credentials = new Credentials( new Encrypted_Options( $options ) );
 		$migration   = new Beta_Migration( $context );
 
 		// Upgrade will update the DB version if run.
@@ -66,14 +67,14 @@ class Beta_MigrationTest extends TestCase {
 	}
 
 	private function set_gcp_credentials() {
-		( new Credentials( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) ) )->set( array(
+		( new Credentials( new Encrypted_Options( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) ) ) )->set( array(
 			'oauth2_client_id'     => 'test-client-id.apps.googleusercontent.com',
 			'oauth2_client_secret' => 'test-client-secret',
 		) );
 	}
 
 	private function set_proxy_credentials() {
-		( new Credentials( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) ) )->set( array(
+		( new Credentials( new Encrypted_Options( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) ) ) )->set( array(
 			'oauth2_client_id'     => 'test-site-id.apps.sitekit.withgoogle.com',
 			'oauth2_client_secret' => 'test-site-secret',
 		) );
