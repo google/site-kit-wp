@@ -127,6 +127,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			'https://www.googleapis.com/auth/tagmanager.readonly',
 			'https://www.googleapis.com/auth/tagmanager.edit.containers',
 			'https://www.googleapis.com/auth/tagmanager.manage.accounts',
+			'https://www.googleapis.com/auth/tagmanager.manage.users',
 		);
 	}
 

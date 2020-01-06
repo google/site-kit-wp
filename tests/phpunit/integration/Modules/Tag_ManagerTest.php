@@ -61,6 +61,7 @@ class Tag_ManagerTest extends TestCase {
 				'https://www.googleapis.com/auth/tagmanager.readonly',
 				'https://www.googleapis.com/auth/tagmanager.edit.containers',
 				'https://www.googleapis.com/auth/tagmanager.manage.accounts',
+				'https://www.googleapis.com/auth/tagmanager.manage.users',
 			),
 			$tagmanager->get_scopes()
 		);
