@@ -797,13 +797,13 @@ tag_partner: "site_kit"
 	}
 
 	/**
-	 * Gets the module-specific settings instance.
+	 * Sets up the module's settings instance.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @return Module_Settings
 	 */
-	protected function get_settings_instance() {
+	protected function setup_settings() {
 		return new Settings( $this->options );
 	}
 }

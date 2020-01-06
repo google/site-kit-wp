@@ -29,13 +29,13 @@ trait Module_With_Settings_Trait {
 	protected $settings;
 
 	/**
-	 * Gets the module-specific settings instance.
+	 * Sets up the module's settings instance.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @return Module_Settings
 	 */
-	abstract protected function get_settings_instance();
+	abstract protected function setup_settings();
 
 	/**
 	 * Gets the module's Settings instance.
@@ -46,7 +46,7 @@ trait Module_With_Settings_Trait {
 	 */
 	public function get_settings() {
 		if ( ! $this->settings instanceof Module_Settings ) {
-			$this->settings = $this->get_settings_instance();
+			$this->settings = $this->setup_settings();
 		}
 
 		return $this->settings;
