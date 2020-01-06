@@ -29,7 +29,7 @@ import {
 /**
  * Environment variables
  */
-const { PUPPETEER_TIMEOUT } = process.env;
+const { PUPPETEER_TIMEOUT, EXPECT_PUPPETEER_TIMEOUT } = process.env;
 
 /**
  * Set of console logging types observed to protect against unexpected yet
@@ -54,7 +54,7 @@ const pageEvents = [];
 // The Jest timeout is increased because these tests are a bit slow
 jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
 // Set default timeout for individual expect-puppeteer assertions. (Default: 500)
-setDefaultOptions( { timeout: 2000 } );
+setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 500 } );
 
 // Add custom matchers specific to Site Kit.
 expect.extend( {
