@@ -26,7 +26,7 @@ import ProgressBar from 'GoogleComponents/progress-bar';
 import { Select, Option } from 'SiteKitCore/material-components';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
-import { toggleConfirmModuleSettings } from 'GoogleUtil';
+import { getExistingTag, toggleConfirmModuleSettings } from 'GoogleUtil';
 import { get } from 'lodash';
 
 /**
@@ -56,6 +56,8 @@ class TagmanagerSetup extends Component {
 			containersLoading: false,
 			usageContext,
 			containerKey,
+			existingAccount: false,
+			existingContainer: false,
 		};
 
 		this.handleSubmit = this.handleSubmit.bind( this );
@@ -65,7 +67,7 @@ class TagmanagerSetup extends Component {
 		this.refetchAccount = this.refetchAccount.bind( this );
 	}
 
-	componentDidMount() {
+	async componentDidMount() {
 		const {
 			isOpen,
 			onSettingsPage,
@@ -77,7 +79,7 @@ class TagmanagerSetup extends Component {
 			return;
 		}
 
-		this.requestTagManagerAccounts();
+		await this.loadAccountsContainers();
 
 		// Handle save hook from the settings page.
 		addFilter( 'googlekit.SettingsConfirmed',
@@ -125,6 +127,54 @@ class TagmanagerSetup extends Component {
 		};
 
 		toggleConfirmModuleSettings( 'tagmanager', settingsMapping, this.state );
+	}
+
+	async loadAccountsContainers() {
+		const existingContainerID = await getExistingTag( 'tagmanager' );
+
+		if ( existingContainerID ) {
+			// Verify the user has access to existing tag if found.
+			try {
+				const { account, container, containerPermission } = await data.get( TYPE_MODULES, 'tagmanager', 'tag-permission', { tag: existingContainerID } );
+				// User has permission if they have Admin status on the container's account, or "Publish" capability on the container itself (admins have this capability implicitly).
+				if ( 'publish' !== containerPermission ) {
+					throw {
+						code: 'tag_manager_existing_tag_permission',
+						message: sprintf(
+							__(
+								'We\'ve detected there\'s already an existing Tag Manager tag on your site (%s), but your account doesn\'t seem to have the necessary access to this container. You can either remove the existing tag and connect to a different account, or request access to this container from your team.',
+								'google-site-kit'
+							),
+							existingContainerID
+						),
+					};
+				}
+				// If the user has the necessary permission, they may continue but must use the found account+container.
+				this.setState(
+					{
+						isLoading: false,
+						existingAccount: account,
+						existingContainer: container,
+						selectedAccount: account.accountId, // Capitalization rule exception: `accountId` is a property of an API returned value.
+						selectedContainer: container.publicId, // Capitalization rule exception: `publicId` is a property of an API returned value.
+						accounts: [ account ],
+						containers: [ container ],
+					}
+				);
+			} catch ( err ) {
+				this.setState(
+					{
+						isLoading: false,
+						errorCode: err.code,
+						errorMsg: err.message,
+						errorReason: err.data && err.data.reason ? err.data.reason : false,
+					}
+				);
+			}
+		} else {
+			// Only load accounts if there is no existing tag.
+			await this.requestTagManagerAccounts();
+		}
 	}
 
 	/**
@@ -357,10 +407,13 @@ class TagmanagerSetup extends Component {
 		const {
 			accounts,
 			selectedAccount,
+			existingAccount,
 			containers,
 			selectedContainer,
+			existingContainer,
 			isLoading,
 			containersLoading,
+			errorCode,
 		} = this.state;
 
 		const {
@@ -371,7 +424,14 @@ class TagmanagerSetup extends Component {
 			return <ProgressBar />;
 		}
 
-		if ( 0 >= accounts.length ) {
+		// If the user doesn't have the necessary permissions for an existing tag
+		// don't render the form as we may not have enough data to properly display dropdowns.
+		// The user is blocked from completing setup.
+		if ( 'tag_manager_existing_tag_permission' === errorCode ) {
+			return null;
+		}
+
+		if ( 'accountEmpty' === errorCode ) {
 			return (
 				<Fragment>
 					<div className="googlesitekit-setup-module__action">
@@ -387,13 +447,26 @@ class TagmanagerSetup extends Component {
 
 		return (
 			<Fragment>
-				<p>{ __( 'Please select your Tag Manager account and container below, the snippet will be inserted automatically into your site.', 'google-site-kit' ) }</p>
+				{ !! existingContainer && (
+					<p>
+						{ sprintf(
+							// translators: %s: the existing container ID.
+							__( 'An existing tag was found on your site with the ID "%s". If you later decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.', 'google-site-kit' ),
+							selectedContainer
+						) }
+					</p>
+				) }
+				{ ! existingContainer && (
+					<p>{ __( 'Please select your Tag Manager account and container below, the snippet will be inserted automatically into your site.', 'google-site-kit' ) }</p>
+				) }
+
 				<div className="googlesitekit-setup-module__inputs">
 					<Select
 						enhanced
 						name="accounts"
 						label={ __( 'Account', 'google-site-kit' ) }
 						value={ selectedAccount }
+						disabled={ !! existingAccount }
 						onEnhancedChange={ this.handleAccountChange }
 						outlined
 					>
@@ -414,6 +487,7 @@ class TagmanagerSetup extends Component {
 							name="containers"
 							label={ __( 'Container', 'google-site-kit' ) }
 							value={ selectedContainer }
+							disabled={ !! existingContainer }
 							onEnhancedChange={ this.handleContainerChange }
 							outlined
 						>
