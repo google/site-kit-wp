@@ -85,6 +85,7 @@ script:
     fi
   - |
     if [[ "$E2E" == "1" ]]; then
+      export DEBUG_NAV=1
       npm run build || exit 1 # Build for tests.
       npm run env:start || exit 1
       npm run test:e2e:ci || exit 1 # E2E tests.
