@@ -472,7 +472,7 @@ class TagmanagerSetup extends Component {
 					<p>
 						{ sprintf(
 							// translators: %s: the existing container ID.
-							__( 'An existing tag was found on your site with the ID "%s". If you later decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.', 'google-site-kit' ),
+							__( 'An existing tag was found on your site (%s). If you later decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.', 'google-site-kit' ),
 							selectedContainer
 						) }
 					</p>
