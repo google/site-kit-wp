@@ -762,7 +762,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				}
 			}
 		}
-		throw new Exception( 'No account found for given container' );
+		throw new Exception( __( 'No account found for given container', 'google-site-kit' ) );
 	}
 
 	/**
