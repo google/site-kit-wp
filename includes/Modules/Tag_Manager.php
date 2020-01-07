@@ -184,6 +184,11 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * @since 1.0.0
 	 */
 	protected function print_gtm_js() {
+		// Bail early if we are checking for the tag presence from the back end.
+		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
+			return;
+		}
+
 		// On AMP, do not print the script tag, falling back to 'amp_analytics_entries' below.
 		if ( $this->context->is_amp() ) {
 			return;
@@ -217,6 +222,11 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * @since 1.0.0
 	 */
 	protected function print_gtm_no_js() {
+		// Bail early if we are checking for the tag presence from the back end.
+		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
+			return;
+		}
+
 		// On AMP, do not print the script tag.
 		if ( $this->context->is_amp() ) {
 			return;
@@ -243,6 +253,11 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * @since 1.0.0
 	 */
 	protected function print_amp_gtm() {
+		// Bail early if we are checking for the tag presence from the back end.
+		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
+			return;
+		}
+
 		if ( ! $this->context->is_amp() ) {
 			return;
 		}
