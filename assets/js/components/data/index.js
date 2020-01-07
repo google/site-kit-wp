@@ -37,6 +37,15 @@ import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
 import { addAction, applyFilters, doAction, addFilter, removeFilter } from '@wordpress/hooks';
 
+global._apiFetch = apiFetch;
+
+apiFetch.use( apiFetch.createRootURLMiddleware( global._apiFetchRootURL ) );
+
+apiFetch.nonceMiddleware = apiFetch.createNonceMiddleware( global._apiFetchNonceMiddleware );
+apiFetch.use( apiFetch.createNonceMiddleware( global._apiFetchNonceMiddleware ) );
+apiFetch.use( apiFetch.mediaUploadMiddleware );
+apiFetch.nonceEndpoint = global._apiFetchNonceEndpoint;
+
 export const TYPE_CORE = 'core';
 export const TYPE_MODULES = 'modules';
 

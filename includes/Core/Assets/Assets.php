@@ -306,6 +306,33 @@ final class Assets {
 				'sitekit-vendor',
 				array(
 					'src' => $base_url . 'js/vendor.js',
+					'post_register' => function( $handle ) {
+						wp_add_inline_script(
+							$handle,
+							sprintf(
+								'window._apiFetchRootURL = "%s";',
+								esc_url_raw( get_rest_url() )
+							),
+							'before'
+						);
+						wp_add_inline_script(
+							$handle,
+							implode(
+								"\n",
+								array(
+									sprintf(
+										'window._apiFetchNonceMiddleware = "%s";',
+										( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' )
+									),
+									sprintf(
+										'window._apiFetchNonceEndpoint = "%s";',
+										admin_url( 'admin-ajax.php?action=rest-nonce' )
+									),
+								)
+							),
+							'before'
+						);
+					}
 				)
 			),
 			new Script(
@@ -652,41 +679,41 @@ final class Assets {
 		$react_suffix = ( $script_debug ? '.development' : '.production' ) . $suffix;
 
 		return array(
-			new Script(
-				'lodash',
-				array(
-					'src'           => $base_url . 'vendor/lodash' . $suffix . '.js',
-					'version'       => '4.17.15',
-					'fallback'      => true,
-					'post_register' => function( $handle ) {
-						wp_add_inline_script( $handle, '/*googlesitekit*/ window.lodash = window.lodash || _.noConflict(); window.lodash_load = true;' );
-					},
-				)
-			),
-			new Script(
-				'moment',
-				array(
-					'src'      => $base_url . 'vendor/moment' . $suffix . '.js',
-					'version'  => '2.22.2',
-					'fallback' => true,
-				)
-			),
-			new Script(
-				'react',
-				array(
-					'src'      => $base_url . 'vendor/react' . $react_suffix . '.js',
-					'version'  => '16.11.0',
-					'fallback' => true,
-				)
-			),
-			new Script(
-				'react-dom',
-				array(
-					'src'      => $base_url . 'vendor/react-dom' . $react_suffix . '.js',
-					'version'  => '16.11.0',
-					'fallback' => true,
-				)
-			),
+			// new Script(
+			// 	'lodash',
+			// 	array(
+			// 		'src'           => $base_url . 'vendor/lodash' . $suffix . '.js',
+			// 		'version'       => '4.17.15',
+			// 		'fallback'      => true,
+			// 		'post_register' => function( $handle ) {
+			// 			wp_add_inline_script( $handle, '/*googlesitekit*/ window.lodash = window.lodash || _.noConflict(); window.lodash_load = true;' );
+			// 		},
+			// 	)
+			// ),
+			// new Script(
+			// 	'moment',
+			// 	array(
+			// 		'src'      => $base_url . 'vendor/moment' . $suffix . '.js',
+			// 		'version'  => '2.22.2',
+			// 		'fallback' => true,
+			// 	)
+			// ),
+			// new Script(
+			// 	'react',
+			// 	array(
+			// 		'src'      => $base_url . 'vendor/react' . $react_suffix . '.js',
+			// 		'version'  => '16.11.0',
+			// 		'fallback' => true,
+			// 	)
+			// ),
+			// new Script(
+			// 	'react-dom',
+			// 	array(
+			// 		'src'      => $base_url . 'vendor/react-dom' . $react_suffix . '.js',
+			// 		'version'  => '16.11.0',
+			// 		'fallback' => true,
+			// 	)
+			// ),
 			new Script(
 				'wp-polyfill',
 				array(
@@ -730,80 +757,80 @@ final class Assets {
 					'fallback' => true,
 				)
 			),
-			new Script(
-				'wp-hooks',
-				array(
-					'src'      => $base_url . 'js/externals/hooks.js',
-					'version'  => '2.6.0',
-					'fallback' => true,
-				)
-			),
-			new Script(
-				'wp-element',
-				array(
-					'src'      => $base_url . 'js/externals/element.js',
-					'version'  => '2.8.2',
-					'fallback' => true,
-				)
-			),
-			new Script(
-				'wp-dom-ready',
-				array(
-					'src'      => $base_url . 'js/externals/domReady.js',
-					'version'  => '2.5.1',
-					'fallback' => true,
-				)
-			),
-			new Script(
-				'wp-i18n',
-				array(
-					'src'      => $base_url . 'js/externals/i18n.js',
-					'version'  => '3.6.1',
-					'fallback' => true,
-				)
-			),
-			new Script(
-				'wp-url',
-				array(
-					'src'      => $base_url . 'js/externals/url.js',
-					'version'  => '2.8.2',
-					'fallback' => true,
-				)
-			),
-			new Script(
-				'wp-api-fetch',
-				array(
-					'src'           => $base_url . 'js/externals/apiFetch.js',
-					'version'       => '3.6.4',
-					'fallback'      => true,
-					'post_register' => function( $handle ) {
-						wp_add_inline_script(
-							$handle,
-							sprintf(
-								'/*googlesitekit*/ wp.apiFetch.use( wp.apiFetch.createNonceMiddleware( "%s" ) );',
-								( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' )
-							),
-							'after'
-						);
-						wp_add_inline_script(
-							$handle,
-							sprintf(
-								'/*googlesitekit*/ wp.apiFetch.use( wp.apiFetch.createRootURLMiddleware( "%s" ) );',
-								esc_url_raw( get_rest_url() )
-							),
-							'after'
-						);
-					},
-				)
-			),
-			new Script(
-				'wp-compose',
-				array(
-					'src'      => $base_url . 'js/externals/compose.js',
-					'version'  => '3.7.2',
-					'fallback' => true,
-				)
-			),
+			// new Script(
+			// 	'wp-hooks',
+			// 	array(
+			// 		'src'      => $base_url . 'js/externals/hooks.js',
+			// 		'version'  => '2.6.0',
+			// 		'fallback' => true,
+			// 	)
+			// ),
+			// new Script(
+			// 	'wp-element',
+			// 	array(
+			// 		'src'      => $base_url . 'js/externals/element.js',
+			// 		'version'  => '2.8.2',
+			// 		'fallback' => true,
+			// 	)
+			// ),
+			// new Script(
+			// 	'wp-dom-ready',
+			// 	array(
+			// 		'src'      => $base_url . 'js/externals/domReady.js',
+			// 		'version'  => '2.5.1',
+			// 		'fallback' => true,
+			// 	)
+			// ),
+			// new Script(
+			// 	'wp-i18n',
+			// 	array(
+			// 		'src'      => $base_url . 'js/externals/i18n.js',
+			// 		'version'  => '3.6.1',
+			// 		'fallback' => true,
+			// 	)
+			// ),
+			// new Script(
+			// 	'wp-url',
+			// 	array(
+			// 		'src'      => $base_url . 'js/externals/url.js',
+			// 		'version'  => '2.8.2',
+			// 		'fallback' => true,
+			// 	)
+			// ),
+			// new Script(
+			// 	'wp-api-fetch',
+			// 	array(
+			// 		'src'           => $base_url . 'js/externals/apiFetch.js',
+			// 		'version'       => '3.6.4',
+			// 		'fallback'      => true,
+			// 		'post_register' => function( $handle ) {
+			// 			wp_add_inline_script(
+			// 				$handle,
+			// 				sprintf(
+			// 					'/*googlesitekit*/ apiFetch.use( apiFetch.createNonceMiddleware( "%s" ) );',
+			// 					( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' )
+			// 				),
+			// 				'after'
+			// 			);
+			// 			wp_add_inline_script(
+			// 				$handle,
+			// 				sprintf(
+			// 					'/*googlesitekit*/ apiFetch.use( apiFetch.createRootURLMiddleware( "%s" ) );',
+			// 					esc_url_raw( get_rest_url() )
+			// 				),
+			// 				'after'
+			// 			);
+			// 		},
+			// 	)
+			// ),
+			// new Script(
+			// 	'wp-compose',
+			// 	array(
+			// 		'src'      => $base_url . 'js/externals/compose.js',
+			// 		'version'  => '3.7.2',
+			// 		'fallback' => true,
+			// 	)
+			// ),
 			new Script(
 				'svgxuse',
 				array(

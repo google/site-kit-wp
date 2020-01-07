@@ -7,18 +7,12 @@
     "browser": true,
     "es6": true
   },
-  "settings": {
-    "react": {
-      "version": "16.2.0"
-    }
-  },
   "globals": {
     "React": "readonly",
     "googlesitekit": "readonly",
     "googlesitekitAdminbar": "readonly",
     "googlesitekitDashboard": "readonly",
     "googlesitekitSettings": "readonly",
-    "lodash": "readonly",
     "googlesitekitCurrentModule": "readonly",
     "gtag": "readonly",
     "process": "readonly"

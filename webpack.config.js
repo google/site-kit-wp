@@ -22,62 +22,6 @@ const path = require( 'path' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 
-/**
- * WordPress dependencies
- */
-const LibraryExportDefaultPlugin = require( '@wordpress/library-export-default-webpack-plugin' );
-
-/**
- * Given a string, returns a new string with dash separators converted to
- * camel-case equivalent. This is not as aggressive as `_.camelCase` in
- * converting to uppercase, where Lodash will convert letters following
- * numbers.
- *
- * @param {string} string Input dash-delimited string.
- *
- * @return {string} Camel-cased string.
- */
-function camelCaseDash( string ) {
-	return string.replace(
-		/-([a-z])/g,
-		( match, letter ) => letter.toUpperCase()
-	);
-}
-
-const externalPackages = [
-	'api-fetch',
-	'compose',
-	'dom-ready',
-	'element',
-	'escape-html',
-	'hooks',
-	'i18n',
-	'is-shallow-equal',
-	'url',
-];
-
-const externals = {
-	react: 'React',
-	'react-dom': 'ReactDOM',
-	tinymce: 'tinymce',
-	moment: 'moment',
-	jquery: 'jQuery',
-	lodash: 'lodash',
-	'lodash-es': 'lodash',
-};
-
-[
-	...externalPackages,
-].forEach( ( name ) => {
-	externals[ `@wordpress/${ name }` ] = [ 'wp', camelCaseDash( name ) ];
-} );
-
-const externalEntry = {};
-externalPackages.forEach( ( packageName ) => {
-	const name = camelCaseDash( packageName );
-	externalEntry[ name ] = `./node_modules/@wordpress/${ packageName }`;
-} );
-
 // This External Libraries will not part of wp object. Most of this is for Polyfill.
 const externalLibrary = {
 	'wp-polyfill': './node_modules/@babel/polyfill/dist/polyfill.js',
@@ -195,7 +139,7 @@ module.exports = ( env, argv ) => {
 					},
 				},
 			},
-			externals,
+			// externals,
 			resolve,
 		},
 
@@ -243,31 +187,31 @@ module.exports = ( env, argv ) => {
 		},
 
 		// Build the external wp libraries
-		{
-			entry: externalEntry,
-			output: {
-				filename: '[name].js',
-				path: __dirname + '/dist/assets/js/externals',
-				library: [ 'wp', '[name]' ],
-				libraryTarget: 'this',
-			},
-			plugins: ( env && env.analyze ) ? [
-				new LibraryExportDefaultPlugin( [
-					'api-fetch',
-					'dom-ready',
-				].map( camelCaseDash ) ),
-			] : [
-				new LibraryExportDefaultPlugin( [
-					'api-fetch',
-					'dom-ready',
-				].map( camelCaseDash ) ),
-				new WebpackBar( {
-					name: 'External WP Libraries',
-					color: '#d53e36',
-				} ),
-			],
-			externals,
-		},
+		// {
+		// 	entry: externalEntry,
+		// 	output: {
+		// 		filename: '[name].js',
+		// 		path: __dirname + '/dist/assets/js/externals',
+		// 		library: [ 'wp', '[name]' ],
+		// 		libraryTarget: 'this',
+		// 	},
+		// 	plugins: ( env && env.analyze ) ? [
+		// 		new LibraryExportDefaultPlugin( [
+		// 			'api-fetch',
+		// 			'dom-ready',
+		// 		].map( camelCaseDash ) ),
+		// 	] : [
+		// 		new LibraryExportDefaultPlugin( [
+		// 			'api-fetch',
+		// 			'dom-ready',
+		// 		].map( camelCaseDash ) ),
+		// 		new WebpackBar( {
+		// 			name: 'External WP Libraries',
+		// 			color: '#d53e36',
+		// 		} ),
+		// 	],
+		// 	externals,
+		// },
 
 		// Build the external libraries
 		{
@@ -281,7 +225,7 @@ module.exports = ( env, argv ) => {
 					name: 'External Libraries',
 					color: '#4185f4',
 				} ) ],
-			externals,
+			// externals,
 		},
 
 		// Build the main plugin admin css.
