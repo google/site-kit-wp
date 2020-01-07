@@ -21,6 +21,7 @@ const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const path = require( 'path' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
+const { ProvidePlugin } = require( 'webpack' );
 
 // This External Libraries will not part of wp object. Most of this is for Polyfill.
 const externalLibrary = {
@@ -94,6 +95,9 @@ module.exports = ( env, argv ) => {
 				],
 			},
 			plugins: ( env && env.analyze ) ? [] : [
+				new ProvidePlugin( {
+					React: 'react',
+				} ),
 				new WebpackBar( {
 					name: 'Module Entry Points',
 					color: '#fbbc05',
