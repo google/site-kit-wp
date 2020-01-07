@@ -165,8 +165,29 @@ function observeConsoleLogging() {
  */
 function observeNavigationRequest( req ) {
 	if ( req.isNavigationRequest() ) {
+		const data = [ req.method(), req.url() ];
+		if ( 'POST' === req.method() ) {
+			data.push( req.postData() );
+		}
 		// eslint-disable-next-line no-console
-		console.log( 'NAV', req.method(), req.url(), req.postData() );
+		console.log( 'NAV', ...data );
+	}
+}
+
+/**
+ * Observe the given navigation response.
+ *
+ * @param {Object} req HTTP response object.
+ */
+function observeNavigationResponse( res ) {
+	if ( res.request().isNavigationRequest() ) {
+		const data = [ res.status(), res.request().method(), res.url() ];
+		const redirect = res.headers().location;
+		if ( redirect ) {
+			data.push( { redirect } );
+		}
+		// eslint-disable-next-line no-console
+		console.log( ...data );
 	}
 }
 
@@ -225,6 +246,7 @@ beforeAll( async () => {
 
 	if ( '1' === process.env.DEBUG_NAV ) {
 		page.on( 'request', observeNavigationRequest );
+		page.on( 'response', observeNavigationResponse );
 	}
 	if ( '1' === process.env.DEBUG_REST ) {
 		page.on( 'request', observeRestRequest );
