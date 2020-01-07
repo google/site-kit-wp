@@ -606,7 +606,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 					'accounts'   => $response->getAccount(),
 					'containers' => array(),
 				);
-				if ( 0 === count( $response['accounts'] ) ) {
+				if ( $data['accountsOnly'] || 0 === count( $response['accounts'] ) ) {
 					return $response;
 				}
 				if ( $data['accountID'] ) {
@@ -684,7 +684,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			return $response;
 		}
 
-		$accounts_containers = $this->get_data( 'accounts-containers' );
+		$accounts_containers = $this->get_data( 'accounts-containers', array( 'accountsOnly' => true ) );
 
 		if ( is_wp_error( $accounts_containers ) ) {
 			return $accounts_containers;
