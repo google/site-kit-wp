@@ -26,7 +26,7 @@ async function proceedToTagManagerSetup() {
 	] );
 }
 
-describe( 'setting up the TagManager module with no existing account', () => {
+describe( 'Tag Manager module setup', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
