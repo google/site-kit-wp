@@ -668,10 +668,10 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			'containerPermission' => false,
 		);
 
-		$accounts = $this->get_data( 'accounts-containers' );
+		$accounts_containers = $this->get_data( 'accounts-containers' );
 
-		if ( is_wp_error( $accounts ) ) {
-			return $accounts;
+		if ( is_wp_error( $accounts_containers ) ) {
+			return $accounts_containers;
 		}
 
 		if ( empty( $container_id ) || empty( $accounts ) ) {
@@ -679,7 +679,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 		}
 
 		try {
-			list ( $account, $container ) = $this->get_account_for_container( $container_id, $accounts );
+			list ( $account, $container ) = $this->get_account_for_container( $container_id, $accounts_containers['accounts'] );
 			/* @var Google_Service_TagManager_Account $account Account instance. */
 			$response['account'] = $account;
 			/* @var Google_Service_TagManager_Container $container Container instance. */
