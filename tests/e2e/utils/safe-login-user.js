@@ -15,7 +15,7 @@ const MAX_LOGIN_ATTEMPTS = 3;
  */
 export async function safeLoginUser( username = WP_USERNAME, password = WP_PASSWORD, attempt = 1 ) {
 	if ( attempt > MAX_LOGIN_ATTEMPTS ) {
-		throw new Error( `Failed to login as ${ username } after ${ attempt } attempts` );
+		throw new Error( `Failed to login as ${ username } after ${ MAX_LOGIN_ATTEMPTS } attempts` );
 	}
 
 	await loginUser( username, password );
