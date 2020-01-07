@@ -680,14 +680,14 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			'containerPermission' => false,
 		);
 
+		if ( ! $container_id ) {
+			return $response;
+		}
+
 		$accounts_containers = $this->get_data( 'accounts-containers' );
 
 		if ( is_wp_error( $accounts_containers ) ) {
 			return $accounts_containers;
-		}
-
-		if ( empty( $container_id ) || empty( $accounts ) ) {
-			return $response;
 		}
 
 		try {
