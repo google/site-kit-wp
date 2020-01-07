@@ -20,6 +20,21 @@ import {
 	wpApiFetch,
 } from '../utils';
 
+let loginAttempts;
+const MAX_LOGIN_RETRIES = 3;
+async function safeLoginUser( username, password ) {
+	loginAttempts = 0;
+
+	do {
+		await loginUser( username, password );
+		loginAttempts++;
+	} while ( page.url().includes( 'wp-login.php' ) && loginAttempts < MAX_LOGIN_RETRIES );
+
+	if ( page.url().includes( 'wp-login.php' ) && loginAttempts >= MAX_LOGIN_RETRIES ) {
+		throw new Error( `Failed to login as ${ username } after ${ loginAttempts } attempts` );
+	}
+}
+
 describe( 'the set up flow for the second administrator', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
@@ -60,7 +75,7 @@ describe( 'the set up flow for the second administrator', () => {
 	} );
 
 	it( 'admin 2', async () => {
-		await loginUser( 'admin-2', 'password' );
+		await safeLoginUser( 'admin-2', 'password' );
 		// Ensure we're logged in with the correct user.
 		await expect( page ).toMatchElement( '#wp-admin-bar-user-info .display-name', { text: 'admin-2' } );
 
