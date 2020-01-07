@@ -21,6 +21,7 @@
  */
 import Button from 'GoogleComponents/button';
 import Link from 'GoogleComponents/link';
+import Switch from 'GoogleComponents/switch';
 import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import { Select, Option } from 'SiteKitCore/material-components';
@@ -58,6 +59,7 @@ class TagmanagerSetup extends Component {
 			containerKey,
 			existingAccount: false,
 			existingContainer: false,
+			useSnippet: settings.useSnippet,
 		};
 
 		this.handleSubmit = this.handleSubmit.bind( this );
@@ -124,6 +126,7 @@ class TagmanagerSetup extends Component {
 		const settingsMapping = {
 			selectedContainer: this.state.containerKey,
 			selectedAccount: 'selectedAccount',
+			useSnippet: 'useSnippet',
 		};
 
 		toggleConfirmModuleSettings( 'tagmanager', settingsMapping, this.state );
@@ -159,6 +162,7 @@ class TagmanagerSetup extends Component {
 						selectedContainer: container.publicId, // Capitalization rule exception: `publicId` is a property of an API returned value.
 						accounts: [ account ],
 						containers: [ container ],
+						useSnippet: false,
 					}
 				);
 			} catch ( err ) {
@@ -168,6 +172,7 @@ class TagmanagerSetup extends Component {
 						errorCode: err.code,
 						errorMsg: err.message,
 						errorReason: err.data && err.data.reason ? err.data.reason : false,
+						useSnippet: false,
 					}
 				);
 			}
@@ -275,10 +280,12 @@ class TagmanagerSetup extends Component {
 
 	async handleSubmit() {
 		const {
+			containerKey,
+			existingContainer,
 			selectedAccount,
 			selectedContainer,
 			usageContext,
-			containerKey,
+			useSnippet,
 		} = this.state;
 
 		const { finishSetup } = this.props;
@@ -288,6 +295,7 @@ class TagmanagerSetup extends Component {
 				accountID: selectedAccount,
 				[ containerKey ]: selectedContainer,
 				usageContext,
+				useSnippet: existingContainer ? false : useSnippet,
 			};
 
 			const savedSettings = await data.set( TYPE_MODULES, 'tagmanager', 'settings', dataParams );
@@ -313,9 +321,7 @@ class TagmanagerSetup extends Component {
 			}
 
 			// Catches error in handleButtonAction from <SettingsModules> component.
-			return new Promise( ( resolve, reject ) => {
-				reject( err );
-			} );
+			return new Promise.reject( err );
 		}
 	}
 
@@ -373,6 +379,8 @@ class TagmanagerSetup extends Component {
 			isLoading,
 			selectedAccount,
 			selectedContainer,
+			existingContainer,
+			useSnippet,
 		} = this.state;
 
 		if ( isLoading ) {
@@ -399,6 +407,18 @@ class TagmanagerSetup extends Component {
 						</h5>
 					</div>
 				</div>
+				<div className="googlesitekit-settings-module__meta-items">
+					<div className="googlesitekit-settings-module__meta-item">
+						<p className="googlesitekit-settings-module__meta-item-type">
+							{ __( 'Tag Manager Code Snippet', 'google-site-kit' ) }
+						</p>
+						<h5 className="googlesitekit-settings-module__meta-item-data">
+							{ existingContainer && __( 'Inserted by another plugin or theme', 'google-site-kit' ) }
+							{ ! existingContainer && useSnippet && __( 'Snippet is inserted', 'google-site-kit' ) }
+							{ ! existingContainer && ! useSnippet && __( 'Snippet is not inserted', 'google-site-kit' ) }
+						</h5>
+					</div>
+				</div>
 			</Fragment>
 		);
 	}
@@ -414,6 +434,7 @@ class TagmanagerSetup extends Component {
 			isLoading,
 			containersLoading,
 			errorCode,
+			useSnippet,
 		} = this.state;
 
 		const {
@@ -504,6 +525,28 @@ class TagmanagerSetup extends Component {
 						</Select>
 					) }
 				</div>
+
+				{ onSettingsPage &&
+					<Fragment>
+						{ existingContainer &&
+							<p>{ __( 'Placing two tags at the same time is not recommended.', 'google-site-kit' ) }</p>
+						}
+						<Switch
+							id="tagmanagerUseSnippet"
+							onClick={ () => this.setState( { useSnippet: ! useSnippet } ) }
+							name="useSnippet"
+							checked={ useSnippet }
+							label={ __( 'Let Site Kit place code on your site', 'google-site-kit' ) }
+							hideLabel={ false }
+						/>
+						<p>
+							{ useSnippet ?
+								__( 'Site Kit will add the code automatically', 'google-site-kit' ) :
+								__( 'Site Kit will not add the code to your site', 'google-site-kit' )
+							}
+						</p>
+					</Fragment>
+				}
 
 				{ /*Render the continue and skip button.*/ }
 				{
