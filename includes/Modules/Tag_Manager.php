@@ -188,8 +188,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * @since 1.0.0
 	 */
 	protected function print_gtm_js() {
-		// Bail early if we are checking for the tag presence from the back end.
-		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
+		if ( ! $this->should_output_snippet() ) {
 			return;
 		}
 
@@ -226,8 +225,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * @since 1.0.0
 	 */
 	protected function print_gtm_no_js() {
-		// Bail early if we are checking for the tag presence from the back end.
-		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
+		if ( ! $this->should_output_snippet() ) {
 			return;
 		}
 
@@ -257,8 +255,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * @since 1.0.0
 	 */
 	protected function print_amp_gtm() {
-		// Bail early if we are checking for the tag presence from the back end.
-		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
+		if ( ! $this->should_output_snippet() ) {
 			return;
 		}
 
@@ -277,6 +274,22 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 		<amp-analytics config="<?php echo esc_url( "https://www.googletagmanager.com/amp.json?id=$container_id" ); ?>" data-credentials="include"></amp-analytics>
 		<!-- End Google Tag Manager -->
 		<?php
+	}
+
+	/**
+	 * Checks whether or not the code snippet should be output.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool
+	 */
+	protected function should_output_snippet() {
+		// Don't output snippets for Site Kit existing tag checks.
+		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
+			return false;
+		}
+
+		return $this->get_settings()->get()['useSnippet'];
 	}
 
 	/**
