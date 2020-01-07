@@ -500,13 +500,12 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				}
 
 				return function() use ( $data, $usage_context ) {
-					$option              = $this->get_settings()->get();
-					$option['accountID'] = $data['accountID'];
+					$old_option  = $this->get_settings()->get();
+					$data_option = array_intersect_key( $data->data, $old_option );
+					$option      = array_merge( $old_option, $data_option );
 
 					$container_key = $this->context_map[ $usage_context ];
 					$container_id  = $data[ $container_key ];
-
-					$option[ $container_key ] = $container_id;
 
 					if ( '0' === $container_id ) {
 						$create_container_response = $this->create_container( $data['accountID'], $usage_context );
