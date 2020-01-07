@@ -61,6 +61,8 @@ describe( 'the set up flow for the second administrator', () => {
 
 	it( 'admin 2', async () => {
 		await loginUser( 'admin-2', 'password' );
+		// Ensure we're logged in with the correct user.
+		await expect( page ).toMatchElement( '#wp-admin-bar-user-info .display-name', { text: 'admin-2' } );
 
 		// Simulate that the user is already verified.
 		await wpApiFetch( {
