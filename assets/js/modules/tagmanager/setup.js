@@ -57,8 +57,7 @@ class TagmanagerSetup extends Component {
 			containersLoading: false,
 			usageContext,
 			containerKey,
-			existingAccount: false,
-			existingContainer: false,
+			hasExistingTag: false,
 			useSnippet: settings.useSnippet,
 		};
 
@@ -156,13 +155,11 @@ class TagmanagerSetup extends Component {
 				this.setState(
 					{
 						isLoading: false,
-						existingAccount: account,
-						existingContainer: container,
 						selectedAccount: account.accountId, // Capitalization rule exception: `accountId` is a property of an API returned value.
 						selectedContainer: container.publicId, // Capitalization rule exception: `publicId` is a property of an API returned value.
 						accounts: [ account ],
 						containers: [ container ],
-						useSnippet: false,
+						hasExistingTag: true,
 					}
 				);
 			} catch ( err ) {
@@ -172,7 +169,7 @@ class TagmanagerSetup extends Component {
 						errorCode: err.code,
 						errorMsg: err.message,
 						errorReason: err.data && err.data.reason ? err.data.reason : false,
-						useSnippet: false,
+						hasExistingTag: !! existingContainerID,
 					}
 				);
 			}
@@ -281,7 +278,7 @@ class TagmanagerSetup extends Component {
 	async handleSubmit() {
 		const {
 			containerKey,
-			existingContainer,
+			hasExistingTag,
 			selectedAccount,
 			selectedContainer,
 			usageContext,
@@ -295,7 +292,7 @@ class TagmanagerSetup extends Component {
 				accountID: selectedAccount,
 				[ containerKey ]: selectedContainer,
 				usageContext,
-				useSnippet: existingContainer ? false : useSnippet,
+				useSnippet: hasExistingTag ? false : useSnippet,
 			};
 
 			const savedSettings = await data.set( TYPE_MODULES, 'tagmanager', 'settings', dataParams );
@@ -377,8 +374,7 @@ class TagmanagerSetup extends Component {
 	renderSettingsInfo() {
 		const { settings } = googlesitekit.modules.tagmanager;
 		const {
-			errorCode,
-			existingContainer,
+			hasExistingTag,
 			containerKey,
 			isLoading,
 		} = this.state;
@@ -420,7 +416,7 @@ class TagmanagerSetup extends Component {
 							{ useSnippet && __( 'Snippet is inserted', 'google-site-kit' ) }
 							{ ! useSnippet && __( 'Snippet is not inserted', 'google-site-kit' ) }
 						</h5>
-						{ ( existingContainer || 'tag_manager_existing_tag_permission' === errorCode ) &&
+						{ hasExistingTag &&
 							<p>{ __( 'Placing two tags at the same time is not recommended.', 'google-site-kit' ) }</p>
 						}
 					</div>
@@ -433,10 +429,9 @@ class TagmanagerSetup extends Component {
 		const {
 			accounts,
 			selectedAccount,
-			existingAccount,
 			containers,
 			selectedContainer,
-			existingContainer,
+			hasExistingTag,
 			isLoading,
 			containersLoading,
 			errorCode,
@@ -474,7 +469,7 @@ class TagmanagerSetup extends Component {
 
 		return (
 			<Fragment>
-				{ !! existingContainer && (
+				{ hasExistingTag && (
 					<p>
 						{ sprintf(
 							// translators: %s: the existing container ID.
@@ -483,7 +478,7 @@ class TagmanagerSetup extends Component {
 						) }
 					</p>
 				) }
-				{ ! existingContainer && (
+				{ ! hasExistingTag && (
 					<p>{ __( 'Please select your Tag Manager account and container below, the snippet will be inserted automatically into your site.', 'google-site-kit' ) }</p>
 				) }
 
@@ -493,7 +488,7 @@ class TagmanagerSetup extends Component {
 						name="accounts"
 						label={ __( 'Account', 'google-site-kit' ) }
 						value={ selectedAccount }
-						disabled={ !! existingAccount }
+						disabled={ hasExistingTag }
 						onEnhancedChange={ this.handleAccountChange }
 						outlined
 					>
@@ -514,7 +509,7 @@ class TagmanagerSetup extends Component {
 							name="containers"
 							label={ __( 'Container', 'google-site-kit' ) }
 							value={ selectedContainer }
-							disabled={ !! existingContainer }
+							disabled={ hasExistingTag }
 							onEnhancedChange={ this.handleContainerChange }
 							outlined
 						>
@@ -534,7 +529,7 @@ class TagmanagerSetup extends Component {
 
 				{ onSettingsPage &&
 					<Fragment>
-						{ existingContainer &&
+						{ hasExistingTag &&
 							<p>{ __( 'Placing two tags at the same time is not recommended.', 'google-site-kit' ) }</p>
 						}
 						<Switch
