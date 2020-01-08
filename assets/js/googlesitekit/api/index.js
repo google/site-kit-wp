@@ -1,3 +1,15 @@
+/**
+ * WordPress dependencies
+ */
+// import apiFetch from '@wordpress/api-fetch';
+
+/**
+ * Internal dependencies
+ */
+import { getKeys, deleteItem } from './cache';
+import { createCacheKey } from './index.private';
+
+// Caching is enabled by default.
 let cachingEnabled = true;
 
 /**
@@ -100,7 +112,14 @@ export const usingCache = () => {
  *
  * @return {void}
  */
-// eslint-disable-next-line no-unused-vars
-export const invalidateCache = ( type, identifier, datapoint ) => {
-	throw new Error( 'Not yet implemented.' );
+export const invalidateCache = async ( type, identifier, datapoint ) => {
+	const groupPrefix = createCacheKey( type, identifier, datapoint );
+
+	const allKeys = await getKeys();
+
+	allKeys.forEach( ( key ) => {
+		if ( key.indexOf( groupPrefix ) === 0 ) {
+			deleteItem( key );
+		}
+	} );
 };
