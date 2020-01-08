@@ -20,6 +20,7 @@
  */
 import {
 	map,
+	isEqual,
 	isNull,
 	isUndefined,
 	unescape,
@@ -553,39 +554,17 @@ export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settin
 		return;
 	}
 
-	const currentSettings = [];
-	Object.keys( settingsState ).forEach( ( key ) => {
-		if ( -1 < Object.keys( settingsMapping ).indexOf( key ) ) {
-			currentSettings[ settingsMapping[ key ] ] = settingsState[ key ];
-		}
+	// Check if any of the mapped settings differ from the current/saved settings.
+	const changed = !! Object.keys( settingsMapping ).find( ( stateKey ) => {
+		const settingsKey = settingsMapping[ stateKey ];
+		return ! isEqual( settingsState[ stateKey ], settings[ settingsKey ] );
 	} );
 
-	const savedSettings = [];
-	Object.keys( settings ).forEach( ( key ) => {
-		if ( -1 < Object.values( settingsMapping ).indexOf( key ) ) {
-			savedSettings[ key ] = settings[ key ];
-		}
-	} );
-
-	const changed = Object.keys( savedSettings ).filter( ( key ) => {
-		if ( savedSettings[ key ] !== currentSettings[ key ] ) {
-			return true;
-		}
-
-		return false;
-	} );
-
-	if ( 0 < changed.length ) {
-		if ( skipDOM ) {
-			return true;
-		}
-		confirm.removeAttribute( 'disabled' );
-	} else {
-		if ( skipDOM ) {
-			return false;
-		}
-		confirm.setAttribute( 'disabled', 'disabled' );
+	if ( ! skipDOM ) {
+		confirm.disabled = ! changed;
 	}
+
+	return changed;
 };
 
 /**
