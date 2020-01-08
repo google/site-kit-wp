@@ -14,7 +14,7 @@ const PLUGIN_SLUG = 'e2e-tests-reset-plugin';
  */
 export async function resetSiteKit() {
 	await activatePlugin( PLUGIN_SLUG );
-	clearLocalStorage();
-	clearSessionStorage();
+	await clearLocalStorage();
+	await clearSessionStorage();
 	await deactivatePlugin( PLUGIN_SLUG );
 }
