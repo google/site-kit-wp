@@ -1012,7 +1012,7 @@ class AnalyticsSetup extends Component {
 
 		switch ( true ) {
 			case 'google_analytics_existing_tag_permission' === errorCode:
-				showErrorFormat = false;
+				showErrorFormat = true;
 				break;
 			case onSettingsPage && errorCode && 'insufficientPermissions' === errorReason:
 				showErrorFormat = false;
