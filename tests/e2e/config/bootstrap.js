@@ -197,8 +197,12 @@ function observeNavigationResponse( res ) {
  */
 function observeRestRequest( req ) {
 	if ( req.url().match( 'wp-json' ) ) {
+		const data = [ req.method(), req.url() ];
+		if ( 'POST' === req.method() ) {
+			data.push( req.postData() );
+		}
 		// eslint-disable-next-line no-console
-		console.log( '>>>', req.method(), req.url(), req.postData() );
+		console.log( '>>>', ...data );
 	}
 }
 
