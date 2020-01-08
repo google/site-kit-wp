@@ -4,17 +4,26 @@
 /**
  * WordPress dependencies
  */
-import { activatePlugin, deactivatePlugin, clearLocalStorage } from '@wordpress/e2e-test-utils';
+import { clearLocalStorage } from '@wordpress/e2e-test-utils';
 import { clearSessionStorage } from './clear-session-storage';
-
-const PLUGIN_SLUG = 'e2e-tests-reset-plugin';
+import { visitAdminPage } from '@wordpress/e2e-test-utils/build/visit-admin-page';
+import { wpApiFetch } from './wp-api-fetch';
 
 /**
  * Reset Site Kit using utility plugin.
  */
 export async function resetSiteKit() {
-	await activatePlugin( PLUGIN_SLUG );
-	await clearLocalStorage();
-	await clearSessionStorage();
-	await deactivatePlugin( PLUGIN_SLUG );
+	if ( ! page.url().includes( '/wp-admin' ) ) {
+		await visitAdminPage( '/' );
+	}
+
+	await Promise.all( [
+		wpApiFetch( {
+			path: 'google-site-kit/v1/core/site/data/reset',
+			method: 'post',
+		} ),
+		clearLocalStorage(),
+		clearSessionStorage(),
+		page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/core/site/data/reset' ) ),
+	] );
 }
