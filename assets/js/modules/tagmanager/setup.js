@@ -375,13 +375,17 @@ class TagmanagerSetup extends Component {
 	}
 
 	renderSettingsInfo() {
+		const { settings } = googlesitekit.modules.tagmanager;
 		const {
-			isLoading,
-			selectedAccount,
-			selectedContainer,
+			errorCode,
 			existingContainer,
-			useSnippet,
+			containerKey,
+			isLoading,
 		} = this.state;
+		const {
+			accountID,
+			useSnippet,
+		} = settings;
 
 		if ( isLoading ) {
 			return <ProgressBar />;
@@ -395,7 +399,7 @@ class TagmanagerSetup extends Component {
 							{ __( 'Account', 'google-site-kit' ) }
 						</p>
 						<h5 className="googlesitekit-settings-module__meta-item-data">
-							{ selectedAccount || false }
+							{ accountID || false }
 						</h5>
 					</div>
 					<div className="googlesitekit-settings-module__meta-item">
@@ -403,7 +407,7 @@ class TagmanagerSetup extends Component {
 							{ __( 'Container ID', 'google-site-kit' ) }
 						</p>
 						<h5 className="googlesitekit-settings-module__meta-item-data">
-							{ selectedContainer || false }
+							{ settings[ containerKey ] || false }
 						</h5>
 					</div>
 				</div>
@@ -413,10 +417,12 @@ class TagmanagerSetup extends Component {
 							{ __( 'Tag Manager Code Snippet', 'google-site-kit' ) }
 						</p>
 						<h5 className="googlesitekit-settings-module__meta-item-data">
-							{ existingContainer && __( 'Inserted by another plugin or theme', 'google-site-kit' ) }
-							{ ! existingContainer && useSnippet && __( 'Snippet is inserted', 'google-site-kit' ) }
-							{ ! existingContainer && ! useSnippet && __( 'Snippet is not inserted', 'google-site-kit' ) }
+							{ useSnippet && __( 'Snippet is inserted', 'google-site-kit' ) }
+							{ ! useSnippet && __( 'Snippet is not inserted', 'google-site-kit' ) }
 						</h5>
+						{ ( existingContainer || 'tag_manager_existing_tag_permission' === errorCode ) &&
+							<p>{ __( 'Placing two tags at the same time is not recommended.', 'google-site-kit' ) }</p>
+						}
 					</div>
 				</div>
 			</Fragment>
