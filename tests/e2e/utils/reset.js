@@ -26,4 +26,9 @@ export async function resetSiteKit() {
 		clearSessionStorage(),
 		page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/core/site/data/reset' ) ),
 	] );
+
+	// Prevent "Cannot log after tests are done." errors.
+	if ( '1' === process.env.DEBUG_REST ) {
+		await page.waitFor( 250 );
+	}
 }
