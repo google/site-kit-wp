@@ -180,7 +180,7 @@ function observeNavigationRequest( req ) {
  */
 function observeNavigationResponse( res ) {
 	if ( res.request().isNavigationRequest() ) {
-		const data = responseObservables( res );
+		const data = [ res.status(), res.request().method(), res.url() ];
 		const redirect = res.headers().location;
 		if ( redirect ) {
 			data.push( { redirect } );
@@ -209,7 +209,7 @@ function observeRestRequest( req ) {
  */
 async function observeRestResponse( res ) {
 	if ( res.url().match( 'wp-json' ) ) {
-		const data = responseObservables( res );
+		const data = [ res.status(), res.request().method(), res.url() ];
 
 		// The response may fail to resolve if the test ends before it completes.
 		try {
@@ -217,23 +217,6 @@ async function observeRestResponse( res ) {
 			console.log( ...data ); // eslint-disable-line no-console
 		} catch ( err ) {} // eslint-disable-line no-empty
 	}
-}
-
-/**
- * Normalizes common data from response objects for logging.
- *
- * When accessing via a Response, data from the request is quoted.
- * This cleans the extra quotes as well.
- *
- * @param {Array} res List of response data to log.
- */
-function responseObservables( res ) {
-	const req = res.request();
-	const method = req.method().slice( 1, -1 );
-	// res.url() references the request internally.
-	const url = req.url().slice( 1, -1 );
-
-	return [ res.status(), method, url ];
 }
 
 // Before every test suite run, delete all content created by the test. This ensures
