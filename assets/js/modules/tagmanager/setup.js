@@ -121,12 +121,18 @@ class TagmanagerSetup extends Component {
 		if ( ! this.props.isEditing ) {
 			return;
 		}
+		const { containerKey, errorCode } = this.state;
 
-		const settingsMapping = {
-			selectedContainer: this.state.containerKey,
+		let settingsMapping = {
+			selectedContainer: containerKey,
 			selectedAccount: 'selectedAccount',
 			useSnippet: 'useSnippet',
 		};
+
+		// Disable the confirmation button if user lacks necessary permission on the existing tag.
+		if ( 'tag_manager_existing_tag_permission' === errorCode ) {
+			settingsMapping = {};
+		}
 
 		toggleConfirmModuleSettings( 'tagmanager', settingsMapping, this.state );
 	}
