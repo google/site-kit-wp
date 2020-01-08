@@ -129,14 +129,14 @@ class GoogleChart extends Component {
 	}
 
 	prepareChart() {
-		if ( ! window.google ) {
+		const element = this.chartRef.current;
+
+		if ( ! window.google || ! element ) {
 			this.waitForChart( this.prepareChart );
 			return;
 		}
 
-		const element = this.chartRef.current;
 		const { chartType } = this.props;
-
 		const googleChart = 'pie' === chartType ? new window.google.visualization.PieChart( element ) : new window.google.visualization.LineChart( element );
 
 		this.setState( { chart: googleChart } );
