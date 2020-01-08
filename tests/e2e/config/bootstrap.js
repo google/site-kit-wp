@@ -201,18 +201,6 @@ function observeRestRequest( req ) {
 		// eslint-disable-next-line no-console
 		console.log( '>>>', req.method(), req.url(), req.postData() );
 	}
-	if ( req.url().match( 'google-site-kit/v1/data/' ) ) {
-		const rawBatchRequest = getQueryArg( req.url(), 'request' );
-		try {
-			const batchRequests = JSON.parse( rawBatchRequest );
-			if ( Array.isArray( batchRequests ) ) {
-				batchRequests.forEach( ( r ) => {
-					// eslint-disable-next-line no-console
-					console.log( '>>>', r.key, r.data );
-				} );
-			}
-		} catch {}
-	}
 }
 
 /**
