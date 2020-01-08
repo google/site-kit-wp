@@ -26,6 +26,7 @@ use Google\Site_Kit_Dependencies\Google_Service_TagManager;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Account;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ContainerAccess;
+use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListAccountsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListContainersResponse;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_UserPermission;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
@@ -368,6 +369,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			'account-id'          => '',
 			'container-id'        => '',
 			// GET.
+			'accounts'            => 'tagmanager',
 			'accounts-containers' => 'tagmanager',
 			'containers'          => 'tagmanager',
 			'tag-permission'      => 'tagmanager',
@@ -407,6 +409,8 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 					$this->get_settings()->set( $option );
 					return true;
 				};
+			// Intentional fallthrough.
+			case 'GET:accounts':
 			case 'GET:accounts-containers':
 				return $this->get_tagmanager_service()->accounts->listAccounts();
 			case 'GET:connection':
@@ -600,13 +604,17 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:accounts':
+				/* @var Google_Service_TagManager_ListAccountsResponse $response List accounts response. */
+				return $response->getAccount();
 			case 'GET:accounts-containers':
+				/* @var Google_Service_TagManager_ListAccountsResponse $response List accounts response. */
 				$response = array(
 					// TODO: Parse this response to a regular array.
 					'accounts'   => $response->getAccount(),
 					'containers' => array(),
 				);
-				if ( $data['accountsOnly'] || 0 === count( $response['accounts'] ) ) {
+				if ( 0 === count( $response['accounts'] ) ) {
 					return $response;
 				}
 				if ( $data['accountID'] ) {
@@ -684,14 +692,14 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			return $response;
 		}
 
-		$accounts_containers = $this->get_data( 'accounts-containers', array( 'accountsOnly' => true ) );
+		$accounts = $this->get_data( 'accounts' );
 
-		if ( is_wp_error( $accounts_containers ) ) {
-			return $accounts_containers;
+		if ( is_wp_error( $accounts ) ) {
+			return $accounts;
 		}
 
 		try {
-			list ( $account, $container ) = $this->get_account_for_container( $container_id, $accounts_containers['accounts'] );
+			list ( $account, $container ) = $this->get_account_for_container( $container_id, $accounts );
 			/* @var Google_Service_TagManager_Account $account Account instance. */
 			$response['account'] = $account;
 			/* @var Google_Service_TagManager_Container $container Container instance. */
