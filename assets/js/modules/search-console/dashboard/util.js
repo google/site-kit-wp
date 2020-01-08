@@ -22,8 +22,6 @@
 import { changeToPercent, readableLargeNumber } from 'GoogleUtil';
 import { each } from 'lodash';
 
-let searchConsoleData = false;
-
 function reduceSearchConsoleData( rows ) {
 	const dataMap = [
 		[
@@ -80,29 +78,21 @@ function reduceSearchConsoleData( rows ) {
 export const extractSearchConsoleDashboardData = ( rows ) => {
 	// Split the results in two chunks.
 	const half = Math.floor( rows.length / 2 );
-	const lastMonthRows = rows.slice( rows.length - half, rows.length );
-	const previousMonthRows = rows.slice( 0, rows.length - half );
+	// Rows are from oldest to newest.
+	const latestData = reduceSearchConsoleData( rows.slice( half ) );
+	const olderData = reduceSearchConsoleData( rows.slice( 0, half ) );
 
-	const lastMonth = reduceSearchConsoleData( lastMonthRows );
-	const previousMonth = reduceSearchConsoleData( previousMonthRows );
-
-	const totalClicksChange = changeToPercent( previousMonth.totalClicksRaw, lastMonth.totalClicksRaw );
-	const totalImpressionsChange = changeToPercent( previousMonth.totalImpressionsRaw, lastMonth.totalImpressionsRaw );
-	const averageCTRChange = changeToPercent( previousMonth.averageCTRRaw, lastMonth.averageCTRRaw );
-	const averagePositionChange = changeToPercent( previousMonth.averagePosition, lastMonth.averagePosition );
-
-	searchConsoleData = {
-		dataMap: lastMonth.dataMap,
-		totalClicks: lastMonth.totalClicks,
-		totalImpressions: lastMonth.totalImpressions,
-		averageCTR: lastMonth.averageCTR,
-		averagePosition: lastMonth.averagePosition,
-		totalClicksChange,
-		totalImpressionsChange,
-		averageCTRChange,
-		averagePositionChange,
+	return {
+		dataMap: latestData.dataMap,
+		totalClicks: latestData.totalClicks,
+		totalImpressions: latestData.totalImpressions,
+		averageCTR: latestData.averageCTR,
+		averagePosition: latestData.averagePosition,
+		totalClicksChange: changeToPercent( olderData.totalClicksRaw, latestData.totalClicksRaw ),
+		totalImpressionsChange: changeToPercent( olderData.totalImpressionsRaw, latestData.totalImpressionsRaw ),
+		averageCTRChange: changeToPercent( olderData.averageCTRRaw, latestData.averageCTRRaw ),
+		averagePositionChange: changeToPercent( olderData.averagePosition, latestData.averagePosition ),
 	};
-	return searchConsoleData;
 };
 
 /**

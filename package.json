@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "npm run remove-dist && npm run build:production && npm run build:svg && npm run build:images && gulp copy-vendor",
-    "build:production": "npm run lint:js && webpack -p --mode=production",
+    "build:production": "webpack -p --mode=production",
     "build:dev": "npm run build:svg && npm run build:images && webpack --mode=development --debug --devtool cheap-source-map --output-pathinfo",
     "build:svg": "gulp svg",
     "build:images": "gulp imagemin",
@@ -178,7 +178,7 @@
     "promise-polyfill": "^8.0.0",
     "prop-types": "^15.7.2",
     "psl": "^1.4.0",
-    "puppeteer": "^1.13.0",
+    "puppeteer": "^1.20.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "require-dir": "^1.2.0",

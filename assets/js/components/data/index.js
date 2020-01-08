@@ -28,7 +28,7 @@ import {
 	getQueryParameter,
 	sortObjectProperties,
 } from 'SiteKitCore/util';
-import { cloneDeep, each, sortBy } from 'lodash';
+import { cloneDeep, each, intersection, isEqual, sortBy } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -203,48 +203,19 @@ const dataAPI = {
 			method: 'POST',
 		} ).then( ( results ) => {
 			each( results, ( result, key ) => {
-				if ( result.xdebug_message ) {
-					console.log( 'data_error', result.xdebug_message ); // eslint-disable-line no-console
-				} else {
-					if ( ! keyIndexesMap[ key ] ) {
-						console.log( 'data_error', 'unknown response key ' + key ); // eslint-disable-line no-console
-						return;
-					}
-
-					// Handle insufficient scope warnings by informing the user.
-					if (
-						result.error_data &&
-						result.error_data[ 403 ] &&
-						result.error_data[ 403 ].reason
-					) {
-						if ( 'insufficientPermissions' === result.error_data[ 403 ].reason ) {
-							// Insufficient scopes - add a notice.
-							addFilter( 'googlesitekit.DashboardNotifications',
-								'googlesitekit.AuthNotification',
-								fillFilterWithComponent( DashboardAuthAlert ), 1 );
-						} else if ( 'forbidden' === result.error_data[ 403 ].reason ) {
-							// Insufficient access permissions - add a notice.
-							addFilter( 'googlesitekit.DashboardNotifications',
-								'googlesitekit.AuthNotification',
-								fillFilterWithComponent( DashboardPermissionAlert ), 1 );
-						}
-
-						// Increase the notice count.
-						addFilter( 'googlesitekit.TotalNotifications',
-							'googlesitekit.AuthCountIncrease', ( count ) => {
-								// Only run once.
-								removeFilter( 'googlesitekit.TotalNotifications', 'googlesitekit.AuthCountIncrease' );
-								return count + 1;
-							} );
-					}
-
-					each( keyIndexesMap[ key ], ( index ) => {
-						const request = dataRequest[ index ];
-
-						this.setCache( request.key, result );
-						this.resolve( request, result );
-					} );
+				if ( ! keyIndexesMap[ key ] ) {
+					console.error( 'data_error', 'unknown response key ' + key ); // eslint-disable-line no-console
+					return;
 				}
+
+				this.handleWPError( result );
+
+				each( keyIndexesMap[ key ], ( index ) => {
+					const request = dataRequest[ index ];
+
+					this.setCache( request.key, result );
+					this.resolve( request, result );
+				} );
 
 				// Trigger an action indicating this data load completed from the API.
 				if ( 0 === remainingDatapoints.length ) {
@@ -255,8 +226,51 @@ const dataAPI = {
 			// Resolve any returned data requests, then re-request the remainder after a pause.
 		} ).catch( ( err ) => {
 			// Handle the error and give up trying.
-			console.log( 'error', err ); // eslint-disable-line no-console
+			console.warn( 'Error caught during combinedGet', err ); // eslint-disable-line no-console
 		} );
+	},
+
+	handleWPError( error ) {
+		const wpErrorKeys = [ 'code', 'data', 'message' ];
+		const commonKeys = intersection( wpErrorKeys, Object.keys( error ) );
+		if ( ! isEqual( wpErrorKeys, commonKeys ) ) {
+			return;
+		}
+
+		// eslint-disable-next-line no-console
+		console.warn( 'WP Error in data response', error );
+		const { data } = error;
+
+		if ( ! data.reason ) {
+			return;
+		}
+
+		let addedNoticeCount = 0;
+
+		// Add insufficient scopes warning.
+		if ( [ 'authError', 'insufficientPermissions' ].includes( data.reason ) ) {
+			addFilter( 'googlesitekit.ErrorNotification',
+				'googlesitekit.AuthNotification',
+				fillFilterWithComponent( DashboardAuthAlert ), 1 );
+			addedNoticeCount++;
+		}
+
+		// Insufficient access permissions.
+		if ( 'forbidden' === data.reason ) {
+			addFilter( 'googlesitekit.ErrorNotification',
+				'googlesitekit.AuthNotification',
+				fillFilterWithComponent( DashboardPermissionAlert ), 1 );
+			addedNoticeCount++;
+		}
+
+		if ( addedNoticeCount ) {
+			addFilter( 'googlesitekit.TotalNotifications',
+				'googlesitekit.AuthCountIncrease', ( count ) => {
+					// Only run once.
+					removeFilter( 'googlesitekit.TotalNotifications', 'googlesitekit.AuthCountIncrease' );
+					return count + addedNoticeCount;
+				} );
+		}
 	},
 
 	/**
@@ -428,10 +442,10 @@ const dataAPI = {
 				this.setCache( cacheKey, results );
 			}
 
-			return new Promise( ( resolve ) => {
-				resolve( results );
-			} );
+			return Promise.resolve( results );
 		} ).catch( ( err ) => {
+			this.handleWPError( err );
+
 			return Promise.reject( err );
 		} );
 	},

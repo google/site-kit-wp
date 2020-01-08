@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <ruleset name="Site Kit by Google Project Rules">
 
+	<rule ref="WordPress-VIP-Go" />
+
 	<rule ref="WordPress-Core" />
 
 	<rule ref="WordPress-Docs" />

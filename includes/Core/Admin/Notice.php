@@ -125,7 +125,7 @@ final class Notice {
 
 		?>
 		<div id="<?php echo esc_attr( 'googlesitekit-notice-' . $this->slug ); ?>" class="<?php echo esc_attr( $class ); ?>">
-			<?php echo $content; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped */ ?>
+			<?php echo $content; /* phpcs:ignore WordPress.Security.EscapeOutput */ ?>
 		</div>
 		<?php
 	}

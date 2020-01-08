@@ -25,6 +25,8 @@ use Exception;
  */
 final class Modules {
 
+	const OPTION_ACTIVE_MODULES = 'googlesitekit_active_modules';
+
 	/**
 	 * Plugin context.
 	 *
@@ -97,22 +99,10 @@ final class Modules {
 		User_Options $user_options = null,
 		Authentication $authentication = null
 	) {
-		$this->context = $context;
-
-		if ( ! $options ) {
-			$options = new Options( $this->context );
-		}
-		$this->options = $options;
-
-		if ( ! $user_options ) {
-			$user_options = new User_Options( $this->context );
-		}
-		$this->user_options = $user_options;
-
-		if ( ! $authentication ) {
-			$authentication = new Authentication( $this->context, $this->options, $this->user_options );
-		}
-		$this->authentication = $authentication;
+		$this->context        = $context;
+		$this->options        = $options ?: new Options( $this->context );
+		$this->user_options   = $user_options ?: new User_Options( $this->context );
+		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
 	}
 
 	/**
@@ -124,8 +114,7 @@ final class Modules {
 		add_filter(
 			'googlesitekit_modules_data',
 			function( $data ) {
-				$modules = $this->get_available_modules();
-				foreach ( $modules as $module ) {
+				foreach ( $this->get_available_modules() as $module ) {
 					$data[ $module->slug ]                  = $module->prepare_info_for_js();
 					$data[ $module->slug ]['active']        = $this->is_module_active( $module->slug );
 					$data[ $module->slug ]['setupComplete'] = $data[ $module->slug ]['active'] && $this->is_module_connected( $module->slug );
@@ -136,8 +125,17 @@ final class Modules {
 			}
 		);
 
-		$active_modules = $this->get_active_modules();
+		$available_modules = $this->get_available_modules();
+		array_walk(
+			$available_modules,
+			function( Module $module ) {
+				if ( $module instanceof Module_With_Settings ) {
+					$module->get_settings()->register();
+				}
+			}
+		);
 
+		$active_modules = $this->get_active_modules();
 		array_walk(
 			$active_modules,
 			function( Module $module ) {
@@ -395,11 +393,19 @@ final class Modules {
 	 * @return array List of active module slugs.
 	 */
 	private function get_active_modules_option() {
-		$option = $this->options->get( 'googlesitekit-active-modules' );
-		if ( empty( $option ) ) {
-			return array();
+		$option = $this->options->get( self::OPTION_ACTIVE_MODULES );
+
+		if ( is_array( $option ) ) {
+			return $option;
 		}
-		return (array) $option;
+
+		$legacy_option = $this->options->get( 'googlesitekit-active-modules' );
+
+		if ( is_array( $legacy_option ) ) {
+			return $legacy_option;
+		}
+
+		return array();
 	}
 
 	/**
@@ -410,6 +416,6 @@ final class Modules {
 	 * @param array $option List of active module slugs.
 	 */
 	private function set_active_modules_option( array $option ) {
-		$this->options->set( 'googlesitekit-active-modules', $option );
+		$this->options->set( self::OPTION_ACTIVE_MODULES, $option );
 	}
 }

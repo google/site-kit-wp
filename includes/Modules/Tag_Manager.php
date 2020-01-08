@@ -12,10 +12,14 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
@@ -31,10 +35,8 @@ use Exception;
  * @access private
  * @ignore
  */
-final class Tag_Manager extends Module implements Module_With_Scopes {
-	use Module_With_Scopes_Trait;
-
-	const OPTION = 'googlesitekit_tagmanager_settings';
+final class Tag_Manager extends Module implements Module_With_Scopes, Module_With_Settings {
+	use Module_With_Scopes_Trait, Module_With_Settings_Trait;
 
 	/**
 	 * Container usage context for web.
@@ -45,6 +47,14 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * Container usage context for AMP.
 	 */
 	const USAGE_CONTEXT_AMP = 'amp';
+
+	/**
+	 * Settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Settings
+	 */
+	protected $settings;
 
 	/**
 	 * Map of container usageContext to option key for containerID.
@@ -75,27 +85,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 			'wp_footer',
 			function() {
 				$this->print_gtm_no_js();
-			}
-		);
-
-		add_filter(
-			'option_' . self::OPTION,
-			function ( $option ) {
-				if ( ! is_array( $option ) ) {
-					$option = array();
-				}
-
-				// TODO: Remove this at some point (migration of old option).
-				if ( isset( $option['container_id'] ) && ! isset( $option['containerID'] ) ) {
-					$option['containerID'] = $option['container_id'];
-				}
-				if ( isset( $option['containerId'] ) && ! isset( $option['containerID'] ) ) {
-					$option['containerID'] = $option['containerId'];
-				}
-				// Ensure old keys are removed regardless. No-op if not set.
-				unset( $option['container_id'], $option['containerId'] );
-
-				return $option;
 			}
 		);
 
@@ -185,7 +174,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * @since 1.0.0
 	 */
 	public function on_deactivation() {
-		$this->options->delete( self::OPTION );
+		$this->get_settings()->delete();
 	}
 
 	/**
@@ -363,205 +352,144 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
 	protected function create_data_request( Data_Request $data ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
+		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:account-id':
+				return function() {
+					$option = $this->get_settings()->get();
 
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
-				case 'connection':
-					return function() {
-						$option = (array) $this->options->get( self::OPTION );
-						// TODO: Remove this at some point (migration of old options).
-						if ( isset( $option['account_id'] ) || isset( $option['container_id'] ) ) {
-							if ( isset( $option['account_id'] ) ) {
-								if ( ! isset( $option['accountID'] ) ) {
-									$option['accountID'] = $option['account_id'];
-								}
-								unset( $option['account_id'] );
-							}
-							if ( isset( $option['container_id'] ) ) {
-								if ( ! isset( $option['containerID'] ) ) {
-									$option['containerID'] = $option['container_id'];
-								}
-								unset( $option['container_id'] );
-							}
-							$this->options->set( self::OPTION, $option );
+					if ( empty( $option['accountID'] ) ) {
+						return new WP_Error( 'account_id_not_set', __( 'Tag Manager account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
+					}
+					return $option['accountID'];
+				};
+			case 'POST:account-id':
+				if ( ! isset( $data['accountID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$option              = $this->get_settings()->get();
+					$option['accountID'] = $data['accountID'];
+					$this->get_settings()->set( $option );
+					return true;
+				};
+			case 'GET:accounts-containers':
+				$service = $this->get_service( 'tagmanager' );
+				return $service->accounts->listAccounts();
+			case 'GET:connection':
+				return function() {
+					$option = $this->get_settings()->get();
+
+					$connection = array(
+						'accountID'      => '',
+						'containerID'    => '',
+						'ampContainerID' => '',
+					);
+
+					return array_intersect_key( $option, $connection );
+				};
+			case 'POST:connection':
+				return function() use ( $data ) {
+					$option = $this->get_settings()->get();
+					$keys   = array( 'accountID', 'containerID' );
+					foreach ( $keys as $key ) {
+						if ( isset( $data[ $key ] ) ) {
+							$option[ $key ] = $data[ $key ];
 						}
+					}
+					$this->get_settings()->set( $option );
+					return true;
+				};
+			case 'GET:container-id':
+				return function() use ( $data ) {
+					$option = $this->get_settings()->get();
 
-						// TODO: Remove this at some point (migration of old 'accountId' option).
-						if ( isset( $option['accountId'] ) ) {
-							if ( ! isset( $option['accountID'] ) ) {
-								$option['accountID'] = $option['accountId'];
-							}
-							unset( $option['accountId'] );
-						}
+					$usage_context        = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
+					$valid_usage_contexts = array_keys( $this->context_map );
 
-						// TODO: Remove this at some point (migration of old 'containerId' option).
-						if ( isset( $option['containerId'] ) ) {
-							if ( ! isset( $option['containerID'] ) ) {
-								$option['containerID'] = $option['containerId'];
-							}
-							unset( $option['containerId'] );
-						}
-
-						$defaults = array(
-							'accountID'      => '',
-							'containerID'    => '',
-							'ampContainerID' => '',
+					if ( ! in_array( $usage_context, $valid_usage_contexts, true ) ) {
+						return new WP_Error(
+							'invalid_param',
+							sprintf(
+								/* translators: 1: Invalid parameter name, 2: list of valid values */
+								__( 'Request parameter %1$s is not one of %2$s', 'google-site-kit' ),
+								'usageContext',
+								implode( ', ', $valid_usage_contexts )
+							),
+							array( 'status' => 400 )
 						);
+					}
 
-						return array_intersect_key(
-							array_merge( $defaults, $option ),
-							$defaults
+					$option_key = $this->context_map[ $usage_context ];
+
+					if ( empty( $option[ $option_key ] ) ) {
+						return new WP_Error(
+							'container_id_not_set',
+							__( 'Tag Manager container ID not set.', 'google-site-kit' ),
+							array( 'status' => 404 )
 						);
-					};
-				case 'account-id':
-					return function() {
-						$option = (array) $this->options->get( self::OPTION );
-						// TODO: Remove this at some point (migration of old option).
-						if ( isset( $option['account_id'] ) ) {
-							if ( ! isset( $option['accountID'] ) ) {
-								$option['accountID'] = $option['account_id'];
-							}
-							unset( $option['account_id'] );
-							$this->options->set( self::OPTION, $option );
-						}
-
-						// TODO: Remove this at some point (migration of old 'accountId' option).
-						if ( isset( $option['accountId'] ) ) {
-							if ( ! isset( $option['accountID'] ) ) {
-								$option['accountID'] = $option['accountId'];
-							}
-							unset( $option['accountId'] );
-						}
-
-						if ( empty( $option['accountID'] ) ) {
-							return new WP_Error( 'account_id_not_set', __( 'Tag Manager account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-						}
-						return $option['accountID'];
-					};
-				case 'container-id':
-					return function() use ( $data ) {
-						$option = $this->options->get( self::OPTION );
-
-						$usage_context        = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
-						$valid_usage_contexts = array_keys( $this->context_map );
-
-						if ( ! in_array( $usage_context, $valid_usage_contexts, true ) ) {
-							return new WP_Error(
-								'invalid_param',
-								sprintf(
-									/* translators: 1: Invalid parameter name, 2: list of valid values */
-									__( 'Request parameter %1$s is not one of %2$s', 'google-site-kit' ),
-									'usageContext',
-									implode( ', ', $valid_usage_contexts )
-								),
-								array( 'status' => 400 )
-							);
-						}
-
-						$option_key = $this->context_map[ $usage_context ];
-
-						if ( empty( $option[ $option_key ] ) ) {
-							return new WP_Error(
-								'container_id_not_set',
-								__( 'Tag Manager container ID not set.', 'google-site-kit' ),
-								array( 'status' => 404 )
-							);
-						}
-
-						return $option[ $option_key ];
-					};
-				case 'accounts-containers':
-					$service = $this->get_service( 'tagmanager' );
-					return $service->accounts->listAccounts();
-				case 'containers':
-					if ( ! isset( $data['accountID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
-					}
-					$service = $this->get_service( 'tagmanager' );
-					return $service->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
-			}
-		} elseif ( 'POST' === $method ) {
-			switch ( $datapoint ) {
-				case 'connection':
-					return function() use ( $data ) {
-						$option = (array) $this->options->get( self::OPTION );
-						$keys   = array( 'accountID', 'containerID' );
-						foreach ( $keys as $key ) {
-							if ( isset( $data[ $key ] ) ) {
-								$option[ $key ] = $data[ $key ];
-							}
-						}
-						$this->options->set( self::OPTION, $option );
-						return true;
-					};
-				case 'account-id':
-					if ( ! isset( $data['accountID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
-					}
-					return function() use ( $data ) {
-						$option              = (array) $this->options->get( self::OPTION );
-						$option['accountID'] = $data['accountID'];
-						$this->options->set( self::OPTION, $option );
-						return true;
-					};
-				case 'container-id':
-					if ( ! isset( $data['containerID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ), array( 'status' => 400 ) );
-					}
-					return function() use ( $data ) {
-						$option                = (array) $this->options->get( self::OPTION );
-						$option['containerID'] = $data['containerID'];
-						$this->options->set( self::OPTION, $option );
-						return true;
-					};
-				case 'settings':
-					if ( ! isset( $data['accountID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 					}
 
-					$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
+					return $option[ $option_key ];
+				};
+			case 'POST:container-id':
+				if ( ! isset( $data['containerID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$option                = $this->get_settings()->get();
+					$option['containerID'] = $data['containerID'];
+					$this->get_settings()->set( $option );
+					return true;
+				};
+			case 'GET:containers':
+				if ( ! isset( $data['accountID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
+				}
+				$service = $this->get_service( 'tagmanager' );
+				return $service->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
+			case 'POST:settings':
+				if ( ! isset( $data['accountID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
+				}
 
-					if ( self::USAGE_CONTEXT_WEB === $usage_context && ! isset( $data['containerID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ), array( 'status' => 400 ) );
-					}
-					if ( self::USAGE_CONTEXT_AMP === $usage_context && ! isset( $data['ampContainerID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampContainerID' ), array( 'status' => 400 ) );
-					}
+				$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
 
-					return function() use ( $data, $usage_context ) {
-						$option = array_merge(
-							$this->options->get( self::OPTION ) ?: array(),
-							array( 'accountID' => $data['accountID'] )
-						);
+				if ( self::USAGE_CONTEXT_WEB === $usage_context && ! isset( $data['containerID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ), array( 'status' => 400 ) );
+				}
+				if ( self::USAGE_CONTEXT_AMP === $usage_context && ! isset( $data['ampContainerID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampContainerID' ), array( 'status' => 400 ) );
+				}
 
-						$container_key = $this->context_map[ $usage_context ];
-						$container_id  = $data[ $container_key ];
+				return function() use ( $data, $usage_context ) {
+					$option              = $this->get_settings()->get();
+					$option['accountID'] = $data['accountID'];
 
-						$option[ $container_key ] = $container_id;
+					$container_key = $this->context_map[ $usage_context ];
+					$container_id  = $data[ $container_key ];
 
-						if ( '0' === $container_id ) {
-							$create_container_response = $this->create_container( $data['accountID'], $usage_context );
+					$option[ $container_key ] = $container_id;
 
-							if ( is_wp_error( $create_container_response ) ) {
-								return $create_container_response;
-							}
+					if ( '0' === $container_id ) {
+						$create_container_response = $this->create_container( $data['accountID'], $usage_context );
 
-							$option[ $container_key ] = $create_container_response;
+						if ( is_wp_error( $create_container_response ) ) {
+							return $create_container_response;
 						}
 
-						$this->options->set( self::OPTION, $option );
+						$option[ $container_key ] = $create_container_response;
+					}
 
-						return $option;
-					};
-			}
+					$this->get_settings()->set( $option );
+
+					return $option;
+				};
 		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
@@ -577,9 +505,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * @return mixed Container ID on success, or WP_Error on failure.
 	 */
 	protected function create_container( $account_id, $usage_context = self::USAGE_CONTEXT_WEB ) {
-		$client     = $this->get_client();
-		$orig_defer = $client->shouldDefer();
-		$client->setDefer( false );
+		$restore_defer = $this->with_client_defer( false );
 
 		// Use site name for container, fallback to domain of reference URL.
 		$container_name = get_bloginfo( 'name' ) ?: wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
@@ -592,18 +518,18 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 		try {
 			$container = $this->get_service( 'tagmanager' )->accounts_containers->create( "accounts/{$account_id}", $container );
 		} catch ( Google_Service_Exception $e ) {
-			$client->setDefer( $orig_defer );
+			$restore_defer();
 			$message = $e->getErrors();
 			if ( isset( $message[0]['message'] ) ) {
 				$message = $message[0]['message'];
 			}
 			return new WP_Error( $e->getCode(), $message );
 		} catch ( Exception $e ) {
-			$client->setDefer( $orig_defer );
+			$restore_defer();
 			return new WP_Error( $e->getCode(), $e->getMessage() );
 		}
 
-		$client->setDefer( $orig_defer );
+		$restore_defer();
 		return $container->getPublicId();
 	}
 
@@ -618,64 +544,59 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
+		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:accounts-containers':
+				$response = array(
+					// TODO: Parse this response to a regular array.
+					'accounts'   => $response->getAccount(),
+					'containers' => array(),
+				);
+				if ( 0 === count( $response['accounts'] ) ) {
+					return $response;
+				}
+				if ( $data['accountID'] ) {
+					$account_id = $data['accountID'];
+				} else {
+					$account_id = $response['accounts'][0]->getAccountId();
+				}
 
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
-				case 'accounts-containers':
-					$response = array(
-						// TODO: Parse this response to a regular array.
-						'accounts'   => $response->getAccount(),
-						'containers' => array(),
-					);
-					if ( 0 === count( $response['accounts'] ) ) {
-						return $response;
+				$containers = $this->get_data(
+					'containers',
+					array(
+						'accountID'    => $account_id,
+						'usageContext' => $data['usageContext'] ?: self::USAGE_CONTEXT_WEB,
+					)
+				);
+
+				if ( is_wp_error( $containers ) ) {
+					return $response;
+				}
+
+				return array_merge( $response, compact( 'containers' ) );
+			case 'GET:containers':
+				/* @var Google_Service_TagManager_ListContainersResponse $response Response object. */
+				$account_id    = $data['accountID'];
+				$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
+				/* @var Google_Service_TagManager_Container[] $containers Filtered containers. */
+				$containers = array_filter(
+					(array) $response->getContainer(),
+					function ( Google_Service_TagManager_Container $container ) use ( $usage_context ) {
+						return in_array( $usage_context, $container->getUsageContext(), true );
 					}
-					if ( $data['accountID'] ) {
-						$account_id = $data['accountID'];
-					} else {
-						$account_id = $response['accounts'][0]->getAccountId();
-					}
+				);
 
-					$containers = $this->get_data(
-						'containers',
-						array(
-							'accountID'    => $account_id,
-							'usageContext' => $data['usageContext'] ?: self::USAGE_CONTEXT_WEB,
-						)
-					);
+				if ( ! $containers && $account_id ) {
+					// If no containers, attempt to create a new container.
+					$new_container = $this->create_container( $account_id, $usage_context );
 
-					if ( is_wp_error( $containers ) ) {
-						return $response;
-					}
-
-					return array_merge( $response, compact( 'containers' ) );
-				case 'containers':
-					/* @var Google_Service_TagManager_ListContainersResponse $response Response object. */
-					$account_id    = $data['accountID'];
-					$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
-					/* @var Google_Service_TagManager_Container[] $containers Filtered containers. */
-					$containers = array_filter(
-						(array) $response->getContainer(),
-						function ( Google_Service_TagManager_Container $container ) use ( $usage_context ) {
-							return in_array( $usage_context, $container->getUsageContext(), true );
-						}
-					);
-
-					if ( ! $containers && $account_id ) {
-						// If no containers, attempt to create a new container.
-						$new_container = $this->create_container( $account_id, $usage_context );
-
-						if ( is_wp_error( $new_container ) ) {
-							return $new_container;
-						}
-
-						return $this->get_data( 'containers', array( 'accountID' => $account_id ) );
+					if ( is_wp_error( $new_container ) ) {
+						return $new_container;
 					}
 
-					return array_values( $containers );
-			}
+					return $this->get_data( 'containers', array( 'accountID' => $account_id ) );
+				}
+
+				return array_values( $containers );
 		}
 
 		return $response;
@@ -710,14 +631,26 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * for the first time.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Now requires Google_Site_Kit_Client instance.
 	 *
-	 * @param Google_Client $client Google client instance.
+	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
 	 *               instance of Google_Service.
 	 */
-	protected function setup_services( Google_Client $client ) {
+	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
 			'tagmanager' => new Google_Service_TagManager( $client ),
 		);
+	}
+
+	/**
+	 * Sets up the module's settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Module_Settings
+	 */
+	protected function setup_settings() {
+		return new Settings( $this->options );
 	}
 }

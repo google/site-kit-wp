@@ -58,7 +58,7 @@ final class Context {
 	/**
 	 * Input access abstraction.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.2
 	 * @var Input
 	 */
 	private $input;
@@ -67,7 +67,7 @@ final class Context {
 	 * Constructor.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Added optional $input instance.
+	 * @since 1.1.2 Added optional $input instance.
 	 *
 	 * @param string $main_file Absolute path to the plugin main file.
 	 * @param Input  $input Input instance.
@@ -103,7 +103,7 @@ final class Context {
 	/**
 	 * Gets the Input instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.2
 	 *
 	 * @return Input
 	 */
@@ -266,13 +266,28 @@ final class Context {
 			return false;
 		}
 
-		$mode = AMP_Theme_Support::get_support_mode();
+		$exposes_support_mode = method_exists( 'AMP_Theme_Support', 'get_support_mode' )
+			&& defined( 'AMP_Theme_Support::STANDARD_MODE_SLUG' )
+			&& defined( 'AMP_Theme_Support::TRANSITIONAL_MODE_SLUG' )
+			&& defined( 'AMP_Theme_Support::READER_MODE_SLUG' );
 
-		if ( AMP_Theme_Support::STANDARD_MODE_SLUG === $mode ) {
-			return self::AMP_MODE_PRIMARY;
-		}
+		if ( $exposes_support_mode ) {
+			// If recent version, we can properly detect the mode.
+			$mode = AMP_Theme_Support::get_support_mode();
 
-		if ( in_array( $mode, array( AMP_Theme_Support::TRANSITIONAL_MODE_SLUG, AMP_Theme_Support::READER_MODE_SLUG ), true ) ) {
+			if ( AMP_Theme_Support::STANDARD_MODE_SLUG === $mode ) {
+				return self::AMP_MODE_PRIMARY;
+			}
+
+			if ( in_array( $mode, array( AMP_Theme_Support::TRANSITIONAL_MODE_SLUG, AMP_Theme_Support::READER_MODE_SLUG ), true ) ) {
+				return self::AMP_MODE_SECONDARY;
+			}
+		} elseif ( function_exists( 'amp_is_canonical' ) ) {
+			// On older versions, if it is not primary AMP, it is definitely secondary AMP (transitional or reader mode).
+			if ( amp_is_canonical() ) {
+				return self::AMP_MODE_PRIMARY;
+			}
+
 			return self::AMP_MODE_SECONDARY;
 		}
 

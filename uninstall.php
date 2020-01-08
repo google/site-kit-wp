@@ -17,10 +17,10 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) && empty( $googlesitekit_reset_context )
 
 global $wpdb;
 
-$prefix = 'googlesitekit_%';
+$prefix = 'googlesitekit\_%';
 
 // Delete options and transients.
-$wpdb->query(
+$wpdb->query( // phpcs:ignore WordPress.VIP.DirectDatabaseQuery
 	$wpdb->prepare(
 		"DELETE FROM $wpdb->options WHERE option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s OR option_name = %s",
 		$prefix,
@@ -31,7 +31,7 @@ $wpdb->query(
 );
 
 // Delete user meta.
-$wpdb->query(
+$wpdb->query( // phpcs:ignore WordPress.VIP.DirectDatabaseQuery
 	$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE meta_key LIKE %s", $wpdb->get_blog_prefix() . $prefix )
 );
 
@@ -47,7 +47,7 @@ $conditions = (
 );
 
 if ( $conditions ) {
-	$wpdb->query(
+	$wpdb->query( // phpcs:ignore WordPress.VIP.DirectDatabaseQuery
 		$wpdb->prepare(
 			"DELETE FROM $wpdb->sitemeta WHERE meta_key LIKE %s OR meta_key LIKE %s OR meta_key LIKE %s OR meta_key = %s",
 			$prefix,
@@ -58,7 +58,7 @@ if ( $conditions ) {
 	);
 
 	// Delete user meta.
-	$wpdb->query(
+	$wpdb->query( // phpcs:ignore WordPress.VIP.DirectDatabaseQuery
 		$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE meta_key LIKE %s", $prefix )
 	);
 }

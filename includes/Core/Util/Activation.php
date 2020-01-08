@@ -122,12 +122,13 @@ final class Activation {
 		);
 		add_action(
 			'admin_enqueue_scripts',
-			function() {
-				if ( ! $this->get_activation_flag( is_network_admin() ) ) {
+			function( $hook_suffix ) {
+				if ( 'plugins.php' !== $hook_suffix || ! $this->get_activation_flag( is_network_admin() ) ) {
 					return;
 				}
 
 				$this->assets->enqueue_fonts();
+				$this->assets->enqueue_asset( 'wp-api-fetch' );
 				$this->assets->enqueue_asset( 'googlesitekit_admin_css' );
 			}
 		);
@@ -145,10 +146,12 @@ final class Activation {
 			'activated',
 			array(
 				'content'         => function() {
-					// Remove the default WordPress "Plugin Activated" notice.
-					if ( isset( $_GET['activate'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-						unset( $_GET['activate'] ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-					}
+					/**
+					 * Prevent the default WordPress "Plugin Activated" notice from rendering.
+					 *
+					 * @link https://github.com/WordPress/WordPress/blob/e1996633228749cdc2d92bc04cc535d45367bfa4/wp-admin/plugins.php#L569-L570
+					 */
+					unset( $_GET['activate'] ); // phpcs:ignore WordPress.Security.NonceVerification, WordPress.VIP.SuperGlobalInputUsage
 
 					$sitekit_splash_url = $this->context->admin_url( 'splash' );
 
@@ -176,13 +179,13 @@ final class Activation {
 							if ( window.googlesitekitTrackingEnabled ) {
 								optInCheckbox.checked = !! window.googlesitekitTrackingEnabled;
 							}
-							if ( googlesitekit.admin.proxySetupURL ) {
-								startSetupLink.href = googlesitekit.admin.proxySetupURL;
+							if ( window._googlesitekitBase.proxySetupURL ) {
+								startSetupLink.href = window._googlesitekitBase.proxySetupURL;
 							}
 
 							startSetupLink.addEventListener( 'click' , function() {
 								if ( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
-									sendAnalyticsTrackingEvent( 'plugin_setup', googlesitekit.admin.proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
+									sendAnalyticsTrackingEvent( 'plugin_setup', window._googlesitekitBase.proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
 								}
 							} );
 
@@ -213,12 +216,12 @@ final class Activation {
 										event.target.disabled = null;
 										window.googlesitekitTrackingEnabled = !! checked;
 
-										var trackingId = googlesitekit.admin.trackingID;
-										var trackingScriptPresent = document.querySelector( 'script[src="https://www.googletagmanager.com/gtag/js?id=' + trackingId + '"]' );
+										var trackingID = window._googlesitekitBase.trackingID;
+										var trackingScriptPresent = document.querySelector( 'script[src="https://www.googletagmanager.com/gtag/js?id=' + trackingID + '"]' );
 
-										if ( ! trackingScriptPresent ) {
-											document.body.insertAdjacentHTML( 'beforeend', '\<script async src="https://www.googletagmanager.com/gtag/js?id=' + trackingId + '"\>\</script\>' );<?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-											document.body.insertAdjacentHTML( 'beforeend', "\<script\>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '" + trackingId + "');\</script\>" );
+										if ( trackingID && ! trackingScriptPresent ) {
+											document.body.insertAdjacentHTML( 'beforeend', '\<script async src="https://www.googletagmanager.com/gtag/js?id=' + trackingID + '"\>\</script\>' );<?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
+											document.body.insertAdjacentHTML( 'beforeend', "\<script\>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '" + trackingID + "');\</script\>" );
 										}
 									} )
 									.catch( function( err ) {

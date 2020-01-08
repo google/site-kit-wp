@@ -13,16 +13,38 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Class for input superglobal access.
  *
- * @since n.e.x.t
+ * @since 1.1.2
  * @access private
  * @ignore
  */
 class Input {
+	/**
+	 * Map of input type to superglobal array.
+	 *
+	 * For use as fallback only.
+	 *
+	 * @since 1.1.4
+	 * @var array
+	 */
+	protected $fallback_map;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since 1.1.4
+	 */
+	public function __construct() {
+		// Fallback map for environments where filter_input may not work with ENV or SERVER types.
+		$this->fallback_map = array(
+			INPUT_ENV    => $_ENV,
+			INPUT_SERVER => $_SERVER, // phpcs:ignore WordPress.VIP.SuperGlobalInputUsage
+		);
+	}
 
 	/**
 	 * Gets a specific external variable by name and optionally filters it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.1.2
 	 *
 	 * @link https://php.net/manual/en/function.filter-input.php
 	 *
@@ -39,6 +61,20 @@ class Input {
 	 *                                      and NULL if the filter fails.
 	 */
 	public function filter( $type, $variable_name, $filter = FILTER_DEFAULT, $options = null ) {
-		return filter_input( $type, $variable_name, $filter, $options );
+		$value = filter_input( $type, $variable_name, $filter, $options );
+
+		// Fallback for environments where filter_input may not work with specific types.
+		if (
+			// Only use this fallback for affected input types.
+			isset( $this->fallback_map[ $type ] )
+			// Only use the fallback if the value is not-set (could be either depending on FILTER_NULL_ON_FAILURE).
+			&& in_array( $value, array( null, false ), true )
+			// Only use the fallback if the key exists in the input map.
+			&& array_key_exists( $variable_name, $this->fallback_map[ $type ] )
+		) {
+			return filter_var( $this->fallback_map[ $type ][ $variable_name ], $filter, $options );
+		}
+
+		return $value;
 	}
 }

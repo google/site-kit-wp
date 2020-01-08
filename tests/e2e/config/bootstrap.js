@@ -1,6 +1,7 @@
 /**
  * External dependencies
  */
+import { setDefaultOptions } from 'expect-puppeteer';
 import { get } from 'lodash';
 
 /**
@@ -28,7 +29,7 @@ import {
 /**
  * Environment variables
  */
-const { PUPPETEER_TIMEOUT } = process.env;
+const { PUPPETEER_TIMEOUT, EXPECT_PUPPETEER_TIMEOUT } = process.env;
 
 /**
  * Set of console logging types observed to protect against unexpected yet
@@ -52,6 +53,8 @@ const pageEvents = [];
 
 // The Jest timeout is increased because these tests are a bit slow
 jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
+// Set default timeout for individual expect-puppeteer assertions. (Default: 500)
+setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 500 } );
 
 // Add custom matchers specific to Site Kit.
 expect.extend( {
@@ -156,6 +159,18 @@ function observeConsoleLogging() {
 }
 
 /**
+ * Observe the given navigation request.
+ *
+ * @param {Object} req HTTP request object.
+ */
+function observeNavigationRequest( req ) {
+	if ( req.isNavigationRequest() ) {
+		// eslint-disable-next-line no-console
+		console.log( 'NAV', req.method(), req.url(), req.postData() );
+	}
+}
+
+/**
  * Observe the given REST request.
  *
  * @param {Object} req HTTP request object from the REST API request.
@@ -208,6 +223,9 @@ beforeAll( async () => {
 	// eslint-disable-next-line no-console
 	page.on( 'pageerror', console.error );
 
+	if ( '1' === process.env.DEBUG_NAV ) {
+		page.on( 'request', observeNavigationRequest );
+	}
 	if ( '1' === process.env.DEBUG_REST ) {
 		page.on( 'request', observeRestRequest );
 		page.on( 'response', observeRestResponse );

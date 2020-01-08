@@ -11,8 +11,12 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit\Modules\Optimize\Settings;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
@@ -23,9 +27,8 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Optimize extends Module {
-
-	const OPTION = 'googlesitekit_optimize_settings';
+final class Optimize extends Module implements Module_With_Settings {
+	use Module_With_Settings_Trait;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -107,7 +110,7 @@ final class Optimize extends Module {
 	 * @since 1.0.0
 	 */
 	public function on_deactivation() {
-		$this->options->delete( self::OPTION );
+		$this->get_settings()->delete();
 	}
 
 	/**
@@ -152,7 +155,7 @@ final class Optimize extends Module {
 		?>
 		<amp-experiment>
 			<script type="application/json">
-				<?php echo wp_json_encode( $optimize_option['ampExperimentJSON'] ); ?>
+				<?php echo $amp_experiment_json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			</script>
 		</amp-experiment>
 		<?php
@@ -210,127 +213,79 @@ final class Optimize extends Module {
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
 	protected function create_data_request( Data_Request $data ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
+		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:amp-client-id-opt-in':
+				return function() {
+					// Get this from Analytics, read-only from here.
+					$analytics = ( new Analytics\Settings( $this->options ) )->get();
 
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
-				case 'optimize-id':
-					return function() {
-						$option = (array) $this->options->get( self::OPTION );
-						// TODO: Remove this at some point (migration of old option).
-						if ( isset( $option['optimize_id'] ) ) {
-							if ( ! isset( $option['optimizeID'] ) ) {
-								$option['optimizeID'] = $option['optimize_id'];
-							}
-							unset( $option['optimize_id'] );
-							$this->options->set( self::OPTION, $option );
-						}
+					return ! empty( $analytics['ampClientIDOptIn'] );
+				};
+			case 'GET:amp-experiment-json':
+				return function() {
+					$option = $this->get_settings()->get();
 
-						// TODO: Remove this at some point (migration of old 'optimizeId' option).
-						if ( isset( $option['optimizeId'] ) ) {
-							if ( ! isset( $option['optimizeID'] ) ) {
-								$option['optimizeID'] = $option['optimizeId'];
-							}
-							unset( $option['optimizeId'] );
-						}
-
-						if ( empty( $option['optimizeID'] ) ) {
-							return new WP_Error( 'optimize_id_not_set', __( 'Optimize ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-						}
-						return $option['optimizeID'];
-					};
-				case 'amp-client-id-opt-in': // Get this from Analytics, read-only from here.
-					return function() {
-						$option = (array) $this->options->get( Analytics::OPTION );
-
-						// TODO: Remove this at some point (migration of old 'ampClientIdOptIn' option).
-						if ( isset( $option['ampClientIdOptIn'] ) ) {
-							if ( ! isset( $option['ampClientIDOptIn'] ) ) {
-								$option['ampClientIDOptIn'] = $option['ampClientIdOptIn'];
-							}
-							unset( $option['ampClientIdOptIn'] );
-						}
-
-						if ( ! isset( $option['ampClientIDOptIn'] ) ) {
-							return true; // Default to true.
-						}
-						return ! empty( $option['ampClientIDOptIn'] );
-					};
-				case 'amp-experiment-json':
-					return function() {
-						$option = (array) $this->options->get( self::OPTION );
-						// TODO: Remove this at some point (migration of old option).
-						if ( isset( $option['AMPExperimentJson'] ) ) {
-							if ( ! isset( $option['ampExperimentJSON'] ) ) {
-								$option['ampExperimentJSON'] = $option['AMPExperimentJson'];
-							}
-							unset( $option['AMPExperimentJson'] );
-							$this->options->set( self::OPTION, $option );
-						}
-
-						// TODO: Remove this at some point (migration of old 'ampExperimentJson' option).
-						if ( isset( $option['ampExperimentJson'] ) ) {
-							if ( ! isset( $option['ampExperimentJSON'] ) ) {
-								$option['ampExperimentJSON'] = $option['ampExperimentJson'];
-							}
-							unset( $option['ampExperimentJson'] );
-						}
-
-						if ( empty( $option['ampExperimentJSON'] ) ) {
-							return new WP_Error( 'amp_experiment_json_not_set', __( 'AMP experiment JSON not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-						}
-						return wp_json_encode( $option['ampExperimentJSON'] );
-					};
-			}
-		} elseif ( 'POST' === $method ) {
-			switch ( $datapoint ) {
-				case 'optimize-id':
-					if ( ! isset( $data['optimizeID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'optimizeID' ), array( 'status' => 400 ) );
+					if ( empty( $option['ampExperimentJSON'] ) ) {
+						return new WP_Error( 'amp_experiment_json_not_set', __( 'AMP experiment JSON not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}
-					return function() use ( $data ) {
-						$option               = (array) $this->options->get( self::OPTION );
-						$option['optimizeID'] = $data['optimizeID'];
-						$this->options->set( self::OPTION, $option );
-						return true;
-					};
-				case 'amp-experiment-json':
-					if ( ! isset( $data['ampExperimentJSON'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampExperimentJSON' ), array( 'status' => 400 ) );
+
+					return wp_json_encode( $option['ampExperimentJSON'] );
+				};
+			case 'POST:amp-experiment-json':
+				if ( ! isset( $data['ampExperimentJSON'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampExperimentJSON' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$option                      = $this->get_settings()->get();
+					$option['ampExperimentJSON'] = $data['ampExperimentJSON'];
+					if ( is_string( $option['ampExperimentJSON'] ) ) {
+						$option['ampExperimentJSON'] = json_decode( $option['ampExperimentJSON'] );
 					}
-					return function() use ( $data ) {
-						$option                      = (array) $this->options->get( self::OPTION );
-						$option['ampExperimentJSON'] = $data['ampExperimentJSON'];
-						if ( is_string( $option['ampExperimentJSON'] ) ) {
-							$option['ampExperimentJSON'] = json_decode( $option['ampExperimentJSON'] );
-						}
-						$this->options->set( self::OPTION, $option );
-						return true;
-					};
-				case 'settings':
-					if ( ! isset( $data['optimizeID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'optimizeID' ), array( 'status' => 400 ) );
+					$this->get_settings()->set( $option );
+					return true;
+				};
+			case 'GET:optimize-id':
+				return function() {
+					$option = $this->get_settings()->get();
+
+					if ( empty( $option['optimizeID'] ) ) {
+						return new WP_Error( 'optimize_id_not_set', __( 'Optimize ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}
-					if ( ! isset( $data['ampExperimentJSON'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampExperimentJSON' ), array( 'status' => 400 ) );
+
+					return $option['optimizeID'];
+				};
+			case 'POST:optimize-id':
+				if ( ! isset( $data['optimizeID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'optimizeID' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$option               = $this->get_settings()->get();
+					$option['optimizeID'] = $data['optimizeID'];
+					$this->get_settings()->set( $option );
+					return true;
+				};
+			case 'POST:settings':
+				if ( ! isset( $data['optimizeID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'optimizeID' ), array( 'status' => 400 ) );
+				}
+				if ( ! isset( $data['ampExperimentJSON'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampExperimentJSON' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$option = array(
+						'optimizeID'        => $data['optimizeID'],
+						'ampExperimentJSON' => $data['ampExperimentJSON'],
+					);
+					if ( is_string( $option['ampExperimentJSON'] ) ) {
+						$option['ampExperimentJSON'] = json_decode( $option['ampExperimentJSON'] );
 					}
-					return function() use ( $data ) {
-						$option = array(
-							'optimizeID'        => $data['optimizeID'],
-							'ampExperimentJSON' => $data['ampExperimentJSON'],
-						);
-						if ( is_string( $option['ampExperimentJSON'] ) ) {
-							$option['ampExperimentJSON'] = json_decode( $option['ampExperimentJSON'] );
-						}
-						$this->options->set( self::OPTION, $option );
-						return $option;
-					};
-			}
+					$this->get_settings()->set( $option );
+					return $option;
+				};
 		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
@@ -379,12 +334,24 @@ final class Optimize extends Module {
 	 * for the first time.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Now requires Google_Site_Kit_Client instance.
 	 *
-	 * @param Google_Client $client Google client instance.
+	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
 	 *               instance of Google_Service.
 	 */
-	protected function setup_services( Google_Client $client ) {
+	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array();
+	}
+
+	/**
+	 * Sets up the module's settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Module_Settings
+	 */
+	protected function setup_settings() {
+		return new Settings( $this->options );
 	}
 }

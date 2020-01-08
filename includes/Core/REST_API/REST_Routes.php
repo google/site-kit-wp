@@ -14,11 +14,8 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Util\Reset;
-use Google\Site_Kit_Dependencies\Google_Collection;
 use WP_Post;
 use WP_REST_Server;
 use WP_REST_Request;
@@ -204,7 +201,7 @@ final class REST_Routes {
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function( WP_REST_Request $request ) {
 							$oauth_client = $this->authentication->get_oauth_client();
-							$access_token = $oauth_client->get_client()->getAccessToken();
+							$access_token = $oauth_client->get_access_token();
 
 							$data = array(
 								'isAuthenticated' => ! empty( $access_token ),
@@ -423,7 +420,18 @@ final class REST_Routes {
 									$responses = array_merge( $responses, $additional_responses );
 								}
 							}
-							return new WP_REST_Response( $this->parse_google_response_data( $responses ) );
+							$responses = array_map(
+								function ( $response ) {
+									if ( is_wp_error( $response ) ) {
+										return $this->error_to_response( $response );
+									}
+									return $response;
+								},
+								$responses
+							);
+							$responses = $this->parse_google_response_data( $responses );
+
+							return new WP_REST_Response( $responses );
 						},
 						'permission_callback' => $can_view_insights_cron,
 						'args'                => array(
@@ -492,7 +500,12 @@ final class REST_Routes {
 									home_url(),
 									$query
 								);
-								$post_id = url_to_postid( $query_url );
+								if ( function_exists( 'wpcom_vip_url_to_postid' ) ) {
+									$post_id = wpcom_vip_url_to_postid( $query_url );
+								} else {
+									// phpcs:ignore WordPressVIPMinimum.VIP.RestrictedFunctions
+									$post_id = url_to_postid( $query_url );
+								}
 								$posts   = array_filter( array( WP_Post::get_instance( $post_id ) ) );
 							} else {
 								$args = array(
@@ -645,6 +658,40 @@ final class REST_Routes {
 		// These lines will encode/decode to deep convert objects, ensuring all data is returned.
 		if ( version_compare( PHP_VERSION, '5.5.0', '<' ) ) {
 			$data = json_decode( json_encode( $data ) );  // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Converts a WP_Error to its response representation.
+	 *
+	 * Adapted from \WP_REST_Server::error_to_response
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Error $error Error to transform.
+	 *
+	 * @return array
+	 */
+	protected function error_to_response( WP_Error $error ) {
+		$errors = array();
+
+		foreach ( (array) $error->errors as $code => $messages ) {
+			foreach ( (array) $messages as $message ) {
+				$errors[] = array(
+					'code'    => $code,
+					'message' => $message,
+					'data'    => $error->get_error_data( $code ),
+				);
+			}
+		}
+
+		$data = $errors[0];
+		if ( count( $errors ) > 1 ) {
+			// Remove the primary error.
+			array_shift( $errors );
+			$data['additional_errors'] = $errors;
 		}
 
 		return $data;

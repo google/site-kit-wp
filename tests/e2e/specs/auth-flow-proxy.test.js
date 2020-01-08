@@ -9,7 +9,7 @@ describe( 'Site Kit set up flow for the first time', () => {
 
 		await page.waitForSelector( '.googlesitekit-start-setup' );
 
-		await expect( page ).toMatchElement( '.googlesitekit-setup__title', { text: 'The Site Kit plugin is active but requires setup' } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup__title', { text: 'Sign in with Google to set up Site Kit' } );
 		await expect( page ).toMatchElement( '.googlesitekit-start-setup', { text: 'Start setup' } );
 		await expect( page ).toMatchElement( '.googlesitekit-start-setup', { href: /^https:\/\/sitekit.withgoogle.com\/site-management\/setup\/\?/i } );
 	} );

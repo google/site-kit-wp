@@ -110,39 +110,16 @@ class Migration_1_0_0 {
 	private function disconnect_users() {
 		global $wpdb;
 
-		$user_options   = new User_Options( $this->context );
-		$authentication = new Authentication( $this->context, $this->options, $user_options );
-
-		// User option keys are prefixed in single site and multisite when not in network mode.
-		$key_prefix = $this->context->is_network_mode() ? '' : $wpdb->get_blog_prefix();
-		$user_ids   = ( new \WP_User_Query(
-			array(
-				'fields'     => 'id',
-				'meta_query' => array(
-					'relation' => 'OR',
-					array(
-						'key'     => $key_prefix . Verification_Meta::OPTION,
-						'compare' => 'EXISTS',
-					),
-					array(
-						'key'     => $key_prefix . OAuth_Client::OPTION_ACCESS_TOKEN,
-						'compare' => 'EXISTS',
-					),
-					array(
-						'key'     => $key_prefix . OAuth_Client::OPTION_PROXY_ACCESS_CODE,
-						'compare' => 'EXISTS',
-					),
-					array(
-						'key'     => $key_prefix . OAuth_Client::OPTION_ERROR_CODE,
-						'compare' => 'EXISTS',
-					),
-				),
-			)
-		) )->get_results();
-
-		foreach ( $user_ids as $user_id ) {
-			$user_options->switch_user( (int) $user_id );
-			$authentication->disconnect();
+		// Delete all user data. Tokens will not actually be revoked because
+		// of external API requests causing overhead.
+		$prefix = 'googlesitekit\_%';
+		if ( ! $this->context->is_network_mode() ) {
+			$prefix = $wpdb->get_blog_prefix() . $prefix;
 		}
+
+		$wpdb->query( // phpcs:ignore WordPress.VIP.DirectDatabaseQuery
+			$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE meta_key LIKE %s", $prefix )
+		);
+		wp_cache_flush();
 	}
 }

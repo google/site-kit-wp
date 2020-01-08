@@ -19,13 +19,13 @@
 /* eslint camelcase:[0] */
 
 /**
- * External dependencies
+ * Internal dependencies
  */
 import {
 	appendNotificationsCount,
 	sendAnalyticsTrackingEvent,
 	getQueryParameter,
-} from 'GoogleUtil';
+} from './util/standalone';
 
 // Set webpackPublicPath on-the-fly.
 if ( window.googlesitekitAdminbar && window.googlesitekitAdminbar.publicPath ) {
@@ -92,6 +92,11 @@ window.addEventListener( 'load', function() {
 			return;
 		}
 
+		const { trackingID } = window._googlesitekitBase;
+		if ( ! trackingID ) {
+			return;
+		}
+
 		// Track the menu hover event.
 		if ( window.googlesitekitTrackingEnabled ) {
 			// Dynamically load the gtag script if not loaded.
@@ -106,44 +111,15 @@ window.addEventListener( 'load', function() {
 					};
 					sendAnalyticsTrackingEvent( 'admin_bar', 'page_stats_view' );
 				};
-				gtagScript.setAttribute( 'src', `https://www.googletagmanager.com/gtag/js?id=${ googlesitekit.admin.trackingID }` );
+				gtagScript.setAttribute( 'src', `https://www.googletagmanager.com/gtag/js?id=${ trackingID }` );
 				document.head.appendChild( gtagScript );
 			} else {
 				sendAnalyticsTrackingEvent( 'admin_bar', 'page_stats_view' );
 			}
 		}
 
-		const { isAdmin } = window.googlesitekitAdminbar.properties;
-		const isPostScreen = isAdmin && window.googlesitekit.admin.currentScreen && 'post' === window.googlesitekit.admin.currentScreen.id;
-		const scriptPath = `${ window.googlesitekitAdminbar.publicPath }allmodules.js`;
-		const isScriptLoaded = document.querySelector( `script[src="${ scriptPath }"]` );
-
-		// Dynamically load the script if not loaded yet.
-		if ( ! isAdmin || ( isAdmin && isPostScreen && ! isScriptLoaded ) ) {
-			// Load all modules.
-			const script = document.createElement( 'script' );
-			script.type = 'text/javascript';
-			script.onload = () => {
-				// Cleanup onload handler
-				script.onload = null;
-
-				initAdminbar();
-			};
-
-			// Add the script to the DOM
-			( document.getElementsByTagName( 'head' )[ 0 ] ).appendChild( script );
-
-			// Set the `src` to begin transport
-			script.src = scriptPath;
-
-			// Set adminbar as loaded.
-			isAdminbarLoaded = true;
-		} else {
-			initAdminbar();
-
-			// Set adminbar as loaded.
-			isAdminbarLoaded = true;
-		}
+		initAdminbar();
+		isAdminbarLoaded = true;
 	};
 
 	if ( 'true' === getQueryParameter( 'googlesitekit_adminbar_open' ) ) {
