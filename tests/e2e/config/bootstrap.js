@@ -12,7 +12,6 @@ import {
 	enablePageDialogAccept,
 	setBrowserViewport,
 } from '@wordpress/e2e-test-utils';
-import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
