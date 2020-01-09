@@ -745,7 +745,13 @@ class AnalyticsSetup extends Component {
 						value={ account.id }
 					>
 						{ account.name }
-					</Option> ) }
+					</Option>
+				) }
+				{ ! existingTag && (
+					<Option value="-1">
+						{ __( 'Set up a new account', 'google-site-kit' ) }
+					</Option>
+				) }
 			</Select>
 		);
 	}
