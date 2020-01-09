@@ -200,6 +200,8 @@ final class OAuth_Client {
 	/**
 	 * Sets up a fresh Google client instance.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @return Google_Site_Kit_Client|Google_Site_Kit_Proxy_Client
 	 */
 	private function setup_client() {
