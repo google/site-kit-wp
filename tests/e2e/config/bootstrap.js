@@ -12,7 +12,6 @@ import {
 	enablePageDialogAccept,
 	setBrowserViewport,
 } from '@wordpress/e2e-test-utils';
-import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -165,8 +164,29 @@ function observeConsoleLogging() {
  */
 function observeNavigationRequest( req ) {
 	if ( req.isNavigationRequest() ) {
+		const data = [ req.method(), req.url() ];
+		if ( 'POST' === req.method() ) {
+			data.push( req.postData() );
+		}
 		// eslint-disable-next-line no-console
-		console.log( 'NAV', req.method(), req.url(), req.postData() );
+		console.log( 'NAV', ...data );
+	}
+}
+
+/**
+ * Observe the given navigation response.
+ *
+ * @param {Object} req HTTP response object.
+ */
+function observeNavigationResponse( res ) {
+	if ( res.request().isNavigationRequest() ) {
+		const data = [ res.status(), res.request().method(), res.url() ];
+		const redirect = res.headers().location;
+		if ( redirect ) {
+			data.push( { redirect } );
+		}
+		// eslint-disable-next-line no-console
+		console.log( ...data );
 	}
 }
 
@@ -177,20 +197,12 @@ function observeNavigationRequest( req ) {
  */
 function observeRestRequest( req ) {
 	if ( req.url().match( 'wp-json' ) ) {
+		const data = [ req.method(), req.url() ];
+		if ( 'POST' === req.method() ) {
+			data.push( req.postData() );
+		}
 		// eslint-disable-next-line no-console
-		console.log( '>>>', req.method(), req.url(), req.postData() );
-	}
-	if ( req.url().match( 'google-site-kit/v1/data/' ) ) {
-		const rawBatchRequest = getQueryArg( req.url(), 'request' );
-		try {
-			const batchRequests = JSON.parse( rawBatchRequest );
-			if ( Array.isArray( batchRequests ) ) {
-				batchRequests.forEach( ( r ) => {
-					// eslint-disable-next-line no-console
-					console.log( '>>>', r.key, r.data );
-				} );
-			}
-		} catch {}
+		console.log( '>>>', ...data );
 	}
 }
 
@@ -201,12 +213,12 @@ function observeRestRequest( req ) {
  */
 async function observeRestResponse( res ) {
 	if ( res.url().match( 'wp-json' ) ) {
-		const args = [ res.status(), res.request().method(), res.url() ];
+		const data = [ res.status(), res.request().method(), res.url() ];
 
 		// The response may fail to resolve if the test ends before it completes.
 		try {
-			args.push( await res.text() );
-			console.log( ...args ); // eslint-disable-line no-console
+			data.push( await res.text() );
+			console.log( ...data ); // eslint-disable-line no-console
 		} catch ( err ) {} // eslint-disable-line no-empty
 	}
 }
@@ -225,6 +237,7 @@ beforeAll( async () => {
 
 	if ( '1' === process.env.DEBUG_NAV ) {
 		page.on( 'request', observeNavigationRequest );
+		page.on( 'response', observeNavigationResponse );
 	}
 	if ( '1' === process.env.DEBUG_REST ) {
 		page.on( 'request', observeRestRequest );

@@ -21,10 +21,9 @@ add_action( 'rest_api_init', function () {
 		'modules/tagmanager/data/accounts-containers',
 		array(
 			'callback' => function () {
-				return new WP_Error(
-					'google_tagmanager_account_empty',
-					'We didn’t find an associated Google Tag Manager account, would you like to set it up now? If you’ve just set up an account please re-fetch your account to sync it with Site Kit.',
-					array( 'status' => 500 )
+				return array(
+					'accounts'   => array(),
+					'containers' => array(),
 				);
 			}
 		),

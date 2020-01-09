@@ -55,6 +55,7 @@ class Settings extends Module_Settings {
 			'accountID'      => '',
 			'ampContainerID' => '',
 			'containerID'    => '',
+			'useSnippet'     => true,
 		);
 	}
 }

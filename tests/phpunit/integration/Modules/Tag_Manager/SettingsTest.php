@@ -33,6 +33,7 @@ class SettingsTest extends SettingsTestCase {
 				'accountID'      => '',
 				'containerID'    => '',
 				'ampContainerID' => '',
+				'useSnippet'     => true,
 			),
 			$settings->get_default()
 		);

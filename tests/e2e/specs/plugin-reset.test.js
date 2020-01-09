@@ -15,11 +15,11 @@ import {
 
 describe( 'Plugin Reset', () => {
 	beforeAll( async () => {
+		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 		await setClientConfig();
 		await setAuthToken();
 		await setSiteVerification();
 		await setSearchConsoleProperty();
-		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
 	} );
 
 	beforeEach( async () => {
