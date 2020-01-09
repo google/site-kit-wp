@@ -317,6 +317,12 @@ class AnalyticsSetup extends Component {
 						name: __( 'Select one...', 'google-site-kit' ),
 					} );
 				}
+			} else if ( '0' === selectedAccount ) {
+				// Accounts were just refreshed.
+				responseData.accounts.unshift( {
+					id: 0,
+					name: __( 'Select one...', 'google-site-kit' ),
+				} );
 			} else if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.id === selectedAccount ) ) {
 				data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 
