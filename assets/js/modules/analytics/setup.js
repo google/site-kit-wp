@@ -809,13 +809,19 @@ class AnalyticsSetup extends Component {
 			return null;
 		}
 
-		if ( 0 >= accounts.length ) {
+		if ( ! accounts.length || '-1' === selectedAccount ) {
 			if ( ! isEditing ) {
 				return __( 'No account found.', 'google-site-kit' );
 			}
 			if ( ! setupComplete || isEditing ) {
 				return (
 					<Fragment>
+						{ '-1' === selectedAccount &&
+							<Fragment>
+								<p>{ __( 'To create a new account, click the button below which will open the Google Analytics account creation screen in a new window.', 'google-site-kit' ) }</p>
+								<p>{ __( 'Once completed, click the link below to re-fetch your accounts to continue.', 'google-site-kit' ) }</p>
+							</Fragment>
+						}
 						<div className="googlesitekit-setup-module__action">
 							<Button onClick={ AnalyticsSetup.createNewAccount }>{ __( 'Create an account', 'google-site-kit' ) }</Button>
 
