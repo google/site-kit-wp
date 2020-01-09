@@ -40,10 +40,11 @@ import Modal from './modal';
 export default class ResetButton extends Component {
 	constructor( props ) {
 		super( props );
+		const { splashURL } = window._googlesitekitBase;
 
 		this.state = {
 			dialogActive: false,
-			postResetURL: googlesitekit.admin.splashURL,
+			postResetURL: splashURL,
 		};
 
 		this.handleDialog = this.handleDialog.bind( this );
