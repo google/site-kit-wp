@@ -45,6 +45,8 @@ domReady( () => {
 
 		render( <ActivationApp />, renderTarget );
 
+		renderTarget.classList.remove( 'googlesitekit-activation--loading' );
+
 		/**
 		 * Action triggered when the ActivationApp is loaded.
 		 */
