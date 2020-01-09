@@ -286,9 +286,8 @@ final class OAuth_Client {
 			}
 		);
 
-		$profile = $this->profile->get();
-		if ( ! empty( $profile['email'] ) ) {
-			$client->setLoginHint( $profile['email'] );
+		if ( $this->profile->has() ) {
+			$client->setLoginHint( $this->profile->get()['email'] );
 		}
 
 		$access_token = $this->get_access_token();
