@@ -176,7 +176,7 @@ class AnalyticsSetup extends Component {
 
 	handleAccountChange( index, item ) {
 		const { selectedAccount } = this.state;
-		const selectValue = item.getAttribute( 'data-value' );
+		const selectValue = item.dataset.value;
 
 		if ( selectValue === selectedAccount ) {
 			return;
@@ -214,7 +214,7 @@ class AnalyticsSetup extends Component {
 
 	handlePropertyChange( index, item ) {
 		const { selectedProperty } = this.state;
-		const selectValue = item.getAttribute( 'data-value' );
+		const selectValue = item.dataset.value;
 
 		if ( selectValue === selectedProperty ) {
 			return;
@@ -245,7 +245,7 @@ class AnalyticsSetup extends Component {
 	}
 
 	handleProfileChange( index, item ) {
-		const selectValue = item.getAttribute( 'data-value' );
+		const selectValue = item.dataset.value;
 
 		this.setState( {
 			selectedProfile: selectValue,
