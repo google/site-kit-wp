@@ -22,7 +22,6 @@
 import data, { TYPE_CORE } from 'GoogleComponents/data';
 import {
 	clearWebStorage,
-	getSiteKitAdminURL,
 } from 'GoogleUtil';
 import Dialog from 'GoogleComponents/dialog';
 
@@ -44,6 +43,7 @@ export default class ResetButton extends Component {
 
 		this.state = {
 			dialogActive: false,
+			postResetURL: googlesitekit.admin.splashURL,
 		};
 
 		this.handleDialog = this.handleDialog.bind( this );
@@ -63,7 +63,7 @@ export default class ResetButton extends Component {
 		await data.set( TYPE_CORE, 'site', 'reset' );
 		clearWebStorage();
 		this.handleDialog();
-		document.location = getSiteKitAdminURL( 'googlesitekit-splash', { notification: 'reset_success' } );
+		document.location = this.state.postResetURL;
 	}
 
 	handleCloseModal( e ) {
