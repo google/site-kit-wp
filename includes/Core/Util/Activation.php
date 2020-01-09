@@ -146,6 +146,8 @@ final class Activation {
 			'activated',
 			array(
 				'content'         => function() {
+					$this->assets->enqueue_asset( 'googlesitekit_activation' );
+
 					/**
 					 * Prevent the default WordPress "Plugin Activated" notice from rendering.
 					 *
