@@ -209,7 +209,10 @@ class AnalyticsSetup extends Component {
 		// Track selection.
 		sendAnalyticsTrackingEvent( 'analytics_setup', 'account_change', selectValue );
 
-		this.processAccountChange( selectValue );
+		// Don't query accounts if "setup a new account" was chosen.
+		if ( '-1' !== selectValue ) {
+			this.processAccountChange( selectValue );
+		}
 	}
 
 	handlePropertyChange( index, item ) {
