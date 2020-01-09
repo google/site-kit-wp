@@ -578,18 +578,19 @@ class AnalyticsSetup extends Component {
 	}
 
 	handleRefetchAccount() {
-		this.setState( {
-			isLoading: true,
-			errorCode: false,
-			errorMsg: '',
-			selectedAccount: '',
-			selectedProperty: '-1',
-			selectedProfile: '-1',
-			propertiesLoading: false,
-			profilesLoading: false,
-		} );
-
-		this.getAccounts();
+		this.setState(
+			{
+				isLoading: true,
+				errorCode: false,
+				errorMsg: '',
+				selectedAccount: '0',
+				selectedProperty: '-1',
+				selectedProfile: '-1',
+				propertiesLoading: false,
+				profilesLoading: false,
+			},
+			this.getAccounts
+		);
 	}
 
 	handleExclusionsChange( e ) {
