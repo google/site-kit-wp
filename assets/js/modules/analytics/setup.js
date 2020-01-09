@@ -583,6 +583,10 @@ class AnalyticsSetup extends Component {
 			errorCode: false,
 			errorMsg: '',
 			selectedAccount: '',
+			selectedProperty: '-1',
+			selectedProfile: '-1',
+			propertiesLoading: false,
+			profilesLoading: false,
 		} );
 
 		this.getAccounts();
