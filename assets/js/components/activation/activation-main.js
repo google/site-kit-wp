@@ -19,10 +19,53 @@
 /**
  * WordPress dependencies
  */
-import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
-export class ActivationMain extends Component {
-	render() {
-		return 'Hello from ActivationMain';
-	}
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
+import Button from '../button';
+import Logo from '../logo';
+import Optin from '../optin';
+
+export function ActivationMain( { setupURL, onStartSetup } ) {
+	return (
+		<div className="mdc-layout-grid">
+			<div className="mdc-layout-grid__inner">
+				<div className="
+						mdc-layout-grid__cell
+						mdc-layout-grid__cell--span-12
+					">
+					<Logo />
+
+					<h3 className="googlesitekit-heading-3 googlesitekit-activation__title">
+						{ __( 'Congratulations, the Site Kit plugin is now activated.', 'google-site-kit' ) }
+					</h3>
+
+					<div className="googlesitekit-opt-in googlesitekit-activation__opt-in">
+						<Optin />
+					</div>
+
+					<Button
+						id="start-setup-link"
+						className="googlesitekit-start-setup googlesitekit-activation__button"
+						href={ setupURL }
+						onClick={ onStartSetup }
+					>
+						{ __( 'Start setup', 'google-site-kit' ) }
+					</Button>
+				</div>
+			</div>
+		</div>
+	);
 }
+
+ActivationMain.PropTypes = {
+	setupURL: PropTypes.string.isRequired,
+	onStartSetup: PropTypes.func,
+};

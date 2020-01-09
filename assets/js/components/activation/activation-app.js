@@ -22,6 +22,11 @@
 import { Component, Fragment } from '@wordpress/element';
 
 /**
+ * External dependencies
+ */
+import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
+
+/**
  * Internal dependencies
  */
 import { ActivationMain } from './activation-main';
@@ -63,11 +68,17 @@ export class ActivationApp extends Component {
 				type="win-error"
 			/>;
 		}
+		const { proxySetupURL, splashURL } = window._googlesitekitBase;
 
 		return (
 			<Fragment>
 				<NotificationCounter />
-				<ActivationMain />
+				<ActivationMain
+					setupURL={ proxySetupURL || splashURL }
+					onStartSetup={ () => {
+						sendAnalyticsTrackingEvent( 'plugin_setup', proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
+					} }
+				/>
 			</Fragment>
 		);
 	}
