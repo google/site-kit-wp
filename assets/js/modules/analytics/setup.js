@@ -582,6 +582,7 @@ class AnalyticsSetup extends Component {
 			isLoading: true,
 			errorCode: false,
 			errorMsg: '',
+			selectedAccount: '',
 		} );
 
 		this.getAccounts();
