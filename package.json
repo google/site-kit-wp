@@ -164,6 +164,7 @@
     "husky": "^1.3.1",
     "intl": "^1.2.5",
     "intl-locales-supported": "^1.6.0",
+    "jest-fetch-mock": "^3.0.1",
     "jest-localstorage-mock": "^2.4.0",
     "lint-staged": "^8.1.5",
     "lodash": "^4.17.11",
@@ -201,5 +202,8 @@
     "webpack-stream": "^5.2.1",
     "webpackbar": "^3.1.5",
     "whatwg-fetch": "^3.0.0"
+  },
+  "dependencies": {
+    "invariant": "^2.2.4"
   }
 }

@@ -1,12 +1,18 @@
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * WordPress dependencies
  */
-// import apiFetch from '@wordpress/api-fetch';
+import apiFetch from '@wordpress/api-fetch';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
-import { getKeys, deleteItem } from './cache';
+import { deleteItem, getItem, getKeys, setItem } from './cache';
 import { createCacheKey } from './index.private';
 
 // Caching is enabled by default.
@@ -34,10 +40,43 @@ export const get = async (
 	identifier,
 	datapoint,
 	queryParams,
-	// eslint-disable-next-line no-unused-vars
-	{ disableCache = false } = {}
+	{ cacheTTL = 3600, useCache = undefined } = {}
 ) => {
-	throw new Error( 'Not yet implemented.' );
+	invariant( type, '`type` argument for GET requests is required.' );
+	invariant( identifier, '`identifier` argument for GET requests is required.' );
+	invariant( datapoint, '`datapoint` argument for GET requests is required.' );
+
+	const useCacheForRequest = useCache !== undefined ? useCache : usingCache();
+	const cacheKey = createCacheKey( type, identifier, datapoint, queryParams );
+
+	if ( useCacheForRequest ) {
+		const { cacheHit, value } = await getItem( cacheKey, cacheTTL );
+
+		if ( cacheHit ) {
+			return value;
+		}
+	}
+
+	// Make an API request to retrieve the results.
+	try {
+		const response = await apiFetch( {
+			method: 'GET',
+			path: addQueryArgs(
+				`/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
+				queryParams
+			),
+		} );
+
+		if ( useCacheForRequest ) {
+			await setItem( cacheKey, response );
+		}
+
+		return response;
+	} catch ( error ) {
+		// global.console.error( 'Google Site Kit API Error', error );
+
+		throw error;
+	}
 };
 
 /**
@@ -64,7 +103,7 @@ export const set = async (
 	datapoint,
 	data,
 	// eslint-disable-next-line no-unused-vars
-	{ disableCache = false, queryParams = {} } = {}
+	{ useCache = true, queryParams = {} } = {}
 ) => {
 	throw new Error( 'Not yet implemented.' );
 };
