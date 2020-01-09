@@ -127,6 +127,13 @@ final class Activation {
 					return;
 				}
 
+				/**
+				 * Prevent the default WordPress "Plugin Activated" notice from rendering.
+				 *
+				 * @link https://github.com/WordPress/WordPress/blob/e1996633228749cdc2d92bc04cc535d45367bfa4/wp-admin/plugins.php#L569-L570
+				 */
+				unset( $_GET['activate'] ); // phpcs:ignore WordPress.Security.NonceVerification, WordPress.VIP.SuperGlobalInputUsage
+
 				$this->assets->enqueue_fonts();
 				$this->assets->enqueue_asset( 'googlesitekit_admin_css' );
 				$this->assets->enqueue_asset( 'googlesitekit_activation' );
@@ -146,13 +153,6 @@ final class Activation {
 			'activated',
 			array(
 				'content'         => function() {
-					/**
-					 * Prevent the default WordPress "Plugin Activated" notice from rendering.
-					 *
-					 * @link https://github.com/WordPress/WordPress/blob/e1996633228749cdc2d92bc04cc535d45367bfa4/wp-admin/plugins.php#L569-L570
-					 */
-					unset( $_GET['activate'] ); // phpcs:ignore WordPress.Security.NonceVerification, WordPress.VIP.SuperGlobalInputUsage
-
 					ob_start();
 					?>
 					<div class="googlesitekit-plugin">
