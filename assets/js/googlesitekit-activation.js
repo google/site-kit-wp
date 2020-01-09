@@ -17,3 +17,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * WordPress dependencies
+ */
+import domReady from '@wordpress/dom-ready';
+import { render } from '@wordpress/element';
+import { doAction } from '@wordpress/hooks';
+
+/**
+ * External dependencies
+ */
+import { loadTranslations } from 'GoogleUtil';
+import 'GoogleComponents/notifications';
+
+/**
+ * Internal dependencies
+ */
+import { ActivationApp } from './components/activation/activation-app';
+
+domReady( () => {
+	const renderTarget = document.getElementById( 'js-googlesitekit-activation' );
+
+	if ( renderTarget ) {
+		loadTranslations();
+
+		render( <ActivationApp />, renderTarget );
+
+		/**
+		 * Action triggered when the ActivationApp is loaded.
+		 */
+		doAction( 'googlesitekit.moduleLoaded', 'Activation' );
+	}
+} );
