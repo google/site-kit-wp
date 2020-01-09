@@ -14,15 +14,28 @@ describe( 'googlesitekit.api', () => {
 	const { getItem, setItem } = CacheModule;
 	let storageMechanism;
 
+	let getItemSpy;
+	let setItemSpy;
+	beforeEach( () => {
+		getItemSpy = jest.spyOn( CacheModule, 'getItem' );
+		setItemSpy = jest.spyOn( CacheModule, 'setItem' );
+	} );
+
 	beforeAll( () => {
 		const backend = 'localStorage';
 		storageMechanism = global[ backend ];
 		setSelectedStorageBackend( storageMechanism );
 	} );
 
-	afterEach( () => {
+	afterEach( async () => {
+		getItemSpy.mockRestore();
+		setItemSpy.mockRestore();
+
 		// Re-enable the default caching setting after each test.
 		setUsingCache( true );
+
+		// Clear the cache after every test.
+		await invalidateCache();
 	} );
 
 	afterAll( () => {
@@ -41,7 +54,7 @@ describe( 'googlesitekit.api', () => {
 
 				return unexpectedSuccess();
 			} catch ( error ) {
-				expect( error.message ).toEqual( '`type` argument for GET requests is required.' );
+				expect( error.message ).toEqual( '`type` argument for requests is required.' );
 			}
 
 			try {
@@ -49,7 +62,7 @@ describe( 'googlesitekit.api', () => {
 
 				return unexpectedSuccess();
 			} catch ( error ) {
-				expect( error.message ).toEqual( '`identifier` argument for GET requests is required.' );
+				expect( error.message ).toEqual( '`identifier` argument for requests is required.' );
 			}
 
 			try {
@@ -57,7 +70,7 @@ describe( 'googlesitekit.api', () => {
 
 				return unexpectedSuccess();
 			} catch ( error ) {
-				expect( error.message ).toEqual( '`datapoint` argument for GET requests is required.' );
+				expect( error.message ).toEqual( '`datapoint` argument for requests is required.' );
 			}
 		} );
 
@@ -117,8 +130,6 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should cache requests by default', async () => {
-			const getItemSpy = jest.spyOn( CacheModule, 'getItem' );
-			const setItemSpy = jest.spyOn( CacheModule, 'setItem' );
 			expect( fetch ).toHaveBeenCalledTimes( 0 );
 
 			fetch
@@ -150,9 +161,6 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should not use cache if caching is disabled globally', async () => {
-			const getItemSpy = jest.spyOn( CacheModule, 'getItem' );
-			const setItemSpy = jest.spyOn( CacheModule, 'setItem' );
-
 			setUsingCache( false );
 
 			fetch
@@ -180,9 +188,6 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should not use cache if caching is disabled with arguments', async () => {
-			const getItemSpy = jest.spyOn( CacheModule, 'getItem' );
-			const setItemSpy = jest.spyOn( CacheModule, 'setItem' );
-
 			fetch
 				.doMockIf(
 					/^\/google-site-kit\/v1\/core\/search-console\/data\/other/
@@ -208,9 +213,6 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should not use cache even if cached values exist', async () => {
-			const getItemSpy = jest.spyOn( CacheModule, 'getItem' );
-			const setItemSpy = jest.spyOn( CacheModule, 'setItem' );
-
 			fetch
 				.doMockIf(
 					/^\/google-site-kit\/v1\/core\/search-console\/data\/cached/
@@ -238,12 +240,49 @@ describe( 'googlesitekit.api', () => {
 	} );
 
 	describe( 'set', () => {
-		it( 'should throw an error while not implemented', async () => {
+		it( 'should throw an error when required arguments are missing', async () => {
 			try {
 				await set();
+
+				return unexpectedSuccess();
 			} catch ( error ) {
-				expect( error.message ).toEqual( 'Not yet implemented.' );
+				expect( error.message ).toEqual( '`type` argument for requests is required.' );
 			}
+
+			try {
+				await set( 'core' );
+
+				return unexpectedSuccess();
+			} catch ( error ) {
+				expect( error.message ).toEqual( '`identifier` argument for requests is required.' );
+			}
+
+			try {
+				await set( 'core', 'search-console' );
+
+				return unexpectedSuccess();
+			} catch ( error ) {
+				expect( error.message ).toEqual( '`datapoint` argument for requests is required.' );
+			}
+		} );
+
+		it( 'should never use the cache for set requests', async () => {
+			fetch
+				.doMockIf(
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/
+				)
+				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+
+			await set( 'core', 'search-console', 'settings', { somethingElse: 'to-set' } );
+			expect( fetch ).toHaveBeenCalledTimes( 1 );
+
+			// Ensure `fetch()` is called a second time; the cache is disabled.
+			await set( 'core', 'search-console', 'settings', { something: 'to-set' } );
+			expect( fetch ).toHaveBeenCalledTimes( 2 );
+
+			// Ensure the cache was not set used.
+			expect( getItemSpy ).not.toHaveBeenCalled();
+			expect( setItemSpy ).not.toHaveBeenCalled();
 		} );
 	} );
 

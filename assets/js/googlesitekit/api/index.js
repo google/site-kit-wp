@@ -19,32 +19,26 @@ import { createCacheKey } from './index.private';
 let cachingEnabled = true;
 
 /**
- * Get Google Site Kit data.
- *
- * Makes a request to this site's WordPress REST API, which will in
- * turn make GET requests to the relevant Google services' APIs.
- *
- * This method automatically handles authentication, so no credentials
- * are required to use this method.
  *
  * @param {string} type        The data to access. One of 'core' or 'modules'.
  * @param {string} identifier  The data identifier, eg. a module slug like `'search-console'`.
  * @param {string} datapoint   The endpoint to request data from.
  * @param {Object} queryParams Query params to send with the request.
- *
- * @return {Promise} A promise for the `fetch` request.
+ * @param {Object} data        Request data to send.
  */
-// eslint-disable-next-line no-unused-vars
-export const get = async (
-	type,
-	identifier,
+const siteKitRequest = async ( {
+	cacheTTL = 3600,
+	data,
 	datapoint,
+	identifier,
+	method = 'GET',
 	queryParams,
-	{ cacheTTL = 3600, useCache = undefined } = {}
-) => {
-	invariant( type, '`type` argument for GET requests is required.' );
-	invariant( identifier, '`identifier` argument for GET requests is required.' );
-	invariant( datapoint, '`datapoint` argument for GET requests is required.' );
+	type,
+	useCache = undefined,
+} = {} ) => {
+	invariant( type, '`type` argument for requests is required.' );
+	invariant( identifier, '`identifier` argument for requests is required.' );
+	invariant( datapoint, '`datapoint` argument for requests is required.' );
 
 	const useCacheForRequest = useCache !== undefined ? useCache : usingCache();
 	const cacheKey = createCacheKey( type, identifier, datapoint, queryParams );
@@ -60,7 +54,8 @@ export const get = async (
 	// Make an API request to retrieve the results.
 	try {
 		const response = await apiFetch( {
-			method: 'GET',
+			data,
+			method,
 			path: addQueryArgs(
 				`/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
 				queryParams
@@ -80,6 +75,39 @@ export const get = async (
 };
 
 /**
+ * Get Google Site Kit data.
+ *
+ * Makes a request to this site's WordPress REST API, which will in
+ * turn make GET requests to the relevant Google services' APIs.
+ *
+ * This method automatically handles authentication, so no credentials
+ * are required to use this method.
+ *
+ * @param {string} type        The data to access. One of 'core' or 'modules'.
+ * @param {string} identifier  The data identifier, eg. a module slug like `'search-console'`.
+ * @param {string} datapoint   The endpoint to request data from.
+ * @param {Object} queryParams Query params to send with the request.
+ *
+ * @return {Promise} A promise for the `fetch` request.
+ */
+export const get = async (
+	type,
+	identifier,
+	datapoint,
+	queryParams,
+	{ cacheTTL = 3600, useCache = undefined } = {}
+) => {
+	return siteKitRequest( {
+		cacheTTL,
+		datapoint,
+		identifier,
+		queryParams,
+		type,
+		useCache,
+	} );
+};
+
+/**
  * Set Google Site Kit data.
  *
  * Makes a request to this site's WordPress REST API, which will in
@@ -96,16 +124,22 @@ export const get = async (
  *
  * @return {Promise} A promise for the `fetch` request.
  */
-// eslint-disable-next-line no-unused-vars
 export const set = async (
 	type,
 	identifier,
 	datapoint,
 	data,
-	// eslint-disable-next-line no-unused-vars
-	{ useCache = true, queryParams = {} } = {}
+	{ method = 'POST', queryParams = {} } = {}
 ) => {
-	throw new Error( 'Not yet implemented.' );
+	return siteKitRequest( {
+		data,
+		datapoint,
+		identifier,
+		method,
+		queryParams,
+		type,
+		useCache: false,
+	} );
 };
 
 /**
