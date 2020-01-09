@@ -218,7 +218,28 @@ final class OAuth_Client {
 		// By default this header uses the generic Guzzle client's user-agent and includes
 		// Guzzle, cURL, and PHP versions as it is normally shared.
 		// In our case however, the client is namespaced to be used by Site Kit only.
-		$client->getHttpClient()->setDefaultOption( 'headers/User-Agent', $application_name );
+		$http_client = $client->getHttpClient();
+		$http_client->setDefaultOption( 'headers/User-Agent', $application_name );
+
+		// Configure the Google_Client's HTTP client to use to use the same HTTP proxy as WordPress HTTP, if set.
+		if ( $this->http_proxy->is_enabled() ) {
+			if ( $this->http_proxy->use_authentication() ) {
+				// The "Authorization" header is used to authenticate the end request; use the dedicated proxy header.
+				$http_client->setDefaultOption(
+					'headers/Proxy-Authorization',
+					'Basic ' . base64_encode( $this->http_proxy->authentication() )
+				);
+			}
+
+			$http_client->setDefaultOption( 'proxy', $this->http_proxy->host() . ':' . $this->http_proxy->port() );
+			$ssl_verify = $http_client->getDefaultOption( 'verify' );
+			// Allow SSL verification to be filtered, as is often necessary with HTTP proxies.
+			$http_client->setDefaultOption(
+				'verify',
+				/** This filter is documented in wp-includes/class-http.php */
+				apply_filters( 'https_ssl_verify', $ssl_verify, null )
+			);
+		}
 
 		// Return unconfigured client if credentials not yet set.
 		$client_credentials = $this->get_client_credentials();
