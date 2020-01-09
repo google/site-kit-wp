@@ -190,55 +190,64 @@ final class OAuth_Client {
 	 * @return Google_Site_Kit_Client Google client object.
 	 */
 	public function get_client() {
-		if ( $this->google_client instanceof Google_Site_Kit_Client ) {
-			return $this->google_client;
+		if ( ! $this->google_client instanceof Google_Site_Kit_Client ) {
+			$this->google_client = $this->setup_client();
 		}
 
+		return $this->google_client;
+	}
+
+	/**
+	 * Sets up a fresh Google client instance.
+	 *
+	 * @return Google_Site_Kit_Client|Google_Site_Kit_Proxy_Client
+	 */
+	private function setup_client() {
 		if ( $this->using_proxy() ) {
-			$this->google_client = new Google_Site_Kit_Proxy_Client(
+			$client = new Google_Site_Kit_Proxy_Client(
 				array( 'proxy_base_path' => $this->google_proxy->url() )
 			);
 		} else {
-			$this->google_client = new Google_Site_Kit_Client();
+			$client = new Google_Site_Kit_Client();
 		}
 
 		$application_name = 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION;
 		// The application name is included in the Google client's user-agent for requests to Google APIs.
-		$this->google_client->setApplicationName( $application_name );
+		$client->setApplicationName( $application_name );
 		// Override the default user-agent for the Guzzle client. This is used for oauth/token requests.
 		// By default this header uses the generic Guzzle client's user-agent and includes
 		// Guzzle, cURL, and PHP versions as it is normally shared.
 		// In our case however, the client is namespaced to be used by Site Kit only.
-		$this->google_client->getHttpClient()->setDefaultOption( 'headers/User-Agent', $application_name );
+		$client->getHttpClient()->setDefaultOption( 'headers/User-Agent', $application_name );
 
 		// Return unconfigured client if credentials not yet set.
 		$client_credentials = $this->get_client_credentials();
 		if ( ! $client_credentials ) {
-			return $this->google_client;
+			return $client;
 		}
 
 		try {
-			$this->google_client->setAuthConfig( (array) $client_credentials->web );
+			$client->setAuthConfig( (array) $client_credentials->web );
 		} catch ( Exception $e ) {
-			return $this->google_client;
+			return $client;
 		}
 
 		// Offline access so we can access the refresh token even when the user is logged out.
-		$this->google_client->setAccessType( 'offline' );
-		$this->google_client->setPrompt( 'consent' );
-		$this->google_client->setRedirectUri( $this->get_redirect_uri() );
-		$this->google_client->setScopes( $this->get_required_scopes() );
-		$this->google_client->prepareScopes();
+		$client->setAccessType( 'offline' );
+		$client->setPrompt( 'consent' );
+		$client->setRedirectUri( $this->get_redirect_uri() );
+		$client->setScopes( $this->get_required_scopes() );
+		$client->prepareScopes();
 
 		// This is called when the client refreshes the access token on-the-fly.
-		$this->google_client->setTokenCallback(
+		$client->setTokenCallback(
 			function( $cache_key, $access_token ) {
 				$expires_in = HOUR_IN_SECONDS; // Sane default, Google OAuth tokens are typically valid for an hour.
 				$created    = 0; // This will be replaced with the current timestamp when saving.
 
 				// Try looking up the real values if possible.
-				if ( isset( $this->google_client ) ) {
-					$token = $this->google_client->getAccessToken();
+				if ( isset( $client ) ) {
+					$token = $client->getAccessToken();
 					if ( isset( $token['access_token'], $token['expires_in'], $token['created'] ) && $access_token === $token['access_token'] ) {
 						$expires_in = $token['expires_in'];
 						$created    = $token['created'];
@@ -250,7 +259,7 @@ final class OAuth_Client {
 		);
 
 		// This is called when refreshing the access token on-the-fly fails.
-		$this->google_client->setTokenExceptionCallback(
+		$client->setTokenExceptionCallback(
 			function( Exception $e ) {
 				$this->handle_fetch_token_exception( $e );
 			}
@@ -258,17 +267,17 @@ final class OAuth_Client {
 
 		$profile = $this->profile->get();
 		if ( ! empty( $profile['email'] ) ) {
-			$this->google_client->setLoginHint( $profile['email'] );
+			$client->setLoginHint( $profile['email'] );
 		}
 
 		$access_token = $this->get_access_token();
 
 		// Return unconfigured client if access token not yet set.
 		if ( empty( $access_token ) ) {
-			return $this->google_client;
+			return $client;
 		}
 
-		$this->google_client->setAccessToken(
+		$client->setAccessToken(
 			array(
 				'access_token'  => $access_token,
 				'expires_in'    => $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
@@ -277,7 +286,7 @@ final class OAuth_Client {
 			)
 		);
 
-		return $this->google_client;
+		return $client;
 	}
 
 	/**
