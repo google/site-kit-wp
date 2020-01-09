@@ -20,6 +20,7 @@
  */
 import {
 	map,
+	isEqual,
 	isNull,
 	isUndefined,
 	unescape,
@@ -47,6 +48,9 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
+import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
+import { default as tagmanagerTagMatchers } from '../modules/tagmanager/util/tagMatchers';
 import { sendAnalyticsTrackingEvent } from './standalone';
 export * from './standalone';
 export * from './storage';
@@ -432,18 +436,6 @@ export const validateOptimizeID = ( stringToValidate ) => {
 	return ( stringToValidate.match( /^GTM-[a-zA-Z\d]{7}$/ ) );
 };
 
-export const findTagInHtmlContent = ( html, module ) => {
-	let existingTag = false;
-
-	if ( ! html ) {
-		return false;
-	}
-
-	existingTag = extractTag( html, module );
-
-	return existingTag;
-};
-
 /**
  * Looks for existing tag requesting front end html, if no existing tag was found on server side
  * while requesting list of accounts.
@@ -494,81 +486,27 @@ export const scrapeTag = async ( url, module ) => {
 };
 
 /**
- * Extracts the tag related to a module from the given string by detecting Analytics and AdSense tag variations.
+ * Extracts a tag related to a module from the given string.
  *
  * @param {string} string The string from where to find the tag.
- * @param {string} tag    The tag to search for, one of 'adsense' or 'analytics'
+ * @param {string} module The tag to search for, one of 'adsense' or 'analytics'
  *
- * @return string|bool The tag id if found, otherwise false.
+ * @return {string|boolean} The tag id if found, otherwise false.
  */
-export const extractTag = ( string, tag ) => {
-	let result = false;
-	let reg = null;
-	switch ( tag ) {
-		case 'analytics':
+export const extractTag = ( string, module ) => {
+	const matchers = {
+		adsense: adsenseTagMatchers,
+		analytics: analyticsTagMatchers,
+		tagmanager: tagmanagerTagMatchers,
+	}[ module ] || [];
 
-			// Detect gtag script calls.
-			reg = new RegExp( /<script [^>]*src=['|"]https:\/\/www.googletagmanager.com\/gtag\/js\?id=(UA-.*?)['|"][^>]*><\/script>/gm );
-			result = reg.exec( string );
-			result = result ? result[ 1 ] : false;
+	const matchingPattern = matchers.find( ( pattern ) => pattern.test( string ) );
 
-			// Detect common analytics code usage.
-			if ( ! result ) {
-				reg = new RegExp( /<script[^>]*>[^<]+google-analytics\.com\/analytics\.js[^<]+(UA-\d+-\d+)/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			if ( ! result ) {
-				reg = new RegExp( /__gaTracker\( ?['|"]create['|"], ?['|"](UA-.*?)['|"], ?['|"]auto['|"] ?\)/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			// Detect ga create calls.
-			if ( ! result ) {
-				reg = new RegExp( /ga\( ?['|"]create['|"], ?['|"](UA-.*?)['|"], ?['|"]auto['|"] ?\)/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-			if ( ! result ) {
-				reg = new RegExp( /_gaq.push\( ?\[ ?['|"]_setAccount['|"], ?['|"](UA-.*?)['|"] ?] ?\)/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			// Detect amp-analytics gtag.
-			if ( ! result ) {
-				reg = new RegExp( /<amp-analytics [^>]*type="gtag"[^>]*>[^<]*<script type="application\/json">[^<]*"gtag_id":\s*"(UA-[^"]+)"/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			// Detect amp-analytics googleanalytics.
-			if ( ! result ) {
-				reg = new RegExp( /<amp-analytics [^>]*type="googleanalytics"[^>]*>[^<]*<script type="application\/json">[^<]*"account":\s*"(UA-[^"]+)"/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			break;
-
-		case 'adsense':
-			// Detect google_ad_client.
-			reg = new RegExp( /google_ad_client: ?["|'](.*?)["|']/gm );
-			result = reg.exec( string );
-			result = result ? result[ 1 ] : false;
-
-			// Detect auto-ads tags.
-			if ( ! result ) {
-				reg = new RegExp( /<(?:script|amp-auto-ads) [^>]*data-ad-client="([^"]+)"/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-			break;
+	if ( matchingPattern ) {
+		return matchingPattern.exec( string )[ 1 ];
 	}
 
-	return result;
+	return false;
 };
 
 /**
@@ -617,39 +555,17 @@ export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settin
 		return;
 	}
 
-	const currentSettings = [];
-	Object.keys( settingsState ).forEach( ( key ) => {
-		if ( -1 < Object.keys( settingsMapping ).indexOf( key ) ) {
-			currentSettings[ settingsMapping[ key ] ] = settingsState[ key ];
-		}
+	// Check if any of the mapped settings differ from the current/saved settings.
+	const changed = !! Object.keys( settingsMapping ).find( ( stateKey ) => {
+		const settingsKey = settingsMapping[ stateKey ];
+		return ! isEqual( settingsState[ stateKey ], settings[ settingsKey ] );
 	} );
 
-	const savedSettings = [];
-	Object.keys( settings ).forEach( ( key ) => {
-		if ( -1 < Object.values( settingsMapping ).indexOf( key ) ) {
-			savedSettings[ key ] = settings[ key ];
-		}
-	} );
-
-	const changed = Object.keys( savedSettings ).filter( ( key ) => {
-		if ( savedSettings[ key ] !== currentSettings[ key ] ) {
-			return true;
-		}
-
-		return false;
-	} );
-
-	if ( 0 < changed.length ) {
-		if ( skipDOM ) {
-			return true;
-		}
-		confirm.removeAttribute( 'disabled' );
-	} else {
-		if ( skipDOM ) {
-			return false;
-		}
-		confirm.setAttribute( 'disabled', 'disabled' );
+	if ( ! skipDOM ) {
+		confirm.disabled = ! changed;
 	}
+
+	return changed;
 };
 
 /**

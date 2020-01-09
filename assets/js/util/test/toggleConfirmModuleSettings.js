@@ -4,7 +4,7 @@
 import { toggleConfirmModuleSettings } from '../';
 
 describe( 'toggleConfirmModuleSettings', () => {
-	it( 'should toggle settings for analytics module', ( ) => {
+	it( 'should toggle settings and return true when module state changes', () => {
 		const googlesitekit = {
 			modules: {
 				analytics: {
@@ -15,7 +15,33 @@ describe( 'toggleConfirmModuleSettings', () => {
 			},
 		};
 
-		const settings = {
+		const moduleState = {
+			selectedAccount: '9999999',
+		};
+
+		expect(
+			toggleConfirmModuleSettings(
+				'analytics',
+				{ selectedAccount: 'accountID' },
+				moduleState,
+				true,
+				googlesitekit
+			)
+		).toStrictEqual( true );
+	} );
+
+	it( 'should not toggle and return false when modules settings have not changed', () => {
+		const googlesitekit = {
+			modules: {
+				analytics: {
+					settings: { accountID: '12345678' },
+					setupComplete: true,
+					confirm: true,
+				},
+			},
+		};
+
+		const moduleState = {
 			selectedAccount: '12345678',
 		};
 
@@ -23,7 +49,7 @@ describe( 'toggleConfirmModuleSettings', () => {
 			toggleConfirmModuleSettings(
 				'analytics',
 				{ selectedAccount: 'accountID' },
-				settings,
+				moduleState,
 				true,
 				googlesitekit
 			)
