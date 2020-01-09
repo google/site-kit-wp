@@ -160,7 +160,7 @@ class AnalyticsSetup extends Component {
 			return;
 		}
 
-		const settingsMapping = {
+		let settingsMapping = {
 			anonymizeIP: 'anonymizeIP',
 			selectedAccount: 'accountID',
 			selectedProperty: 'propertyID',
@@ -170,6 +170,11 @@ class AnalyticsSetup extends Component {
 			ampClientIDOptIn: 'ampClientIDOptIn',
 			trackingDisabled: 'trackingDisabled',
 		};
+
+		// Prevent saving if "setup account" is chosen.
+		if ( '-1' === this.state.selectedAccount ) {
+			settingsMapping = {};
+		}
 
 		toggleConfirmModuleSettings( 'analytics', settingsMapping, this.state );
 	}
