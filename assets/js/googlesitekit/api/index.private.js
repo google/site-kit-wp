@@ -27,8 +27,8 @@ export const createCacheKey = ( type, identifier, datapoint, queryParams = {} ) 
 
 	if (
 		keySections.length === 3 &&
-    ( !! queryParams ) && ( queryParams.constructor === Object ) &&
-    Object.keys( queryParams ).length
+		( !! queryParams ) && ( queryParams.constructor === Object ) &&
+		Object.keys( queryParams ).length
 	) {
 		keySections.push(
 			md5( JSON.stringify( sortObjectProperties( queryParams ) ) )
