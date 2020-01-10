@@ -65,7 +65,7 @@ export function ActivationMain( { setupURL, onStartSetup, startSetupButtonText }
 	);
 }
 
-ActivationMain.PropTypes = {
+ActivationMain.propTypes = {
 	setupURL: PropTypes.string.isRequired,
 	onStartSetup: PropTypes.func,
 };
