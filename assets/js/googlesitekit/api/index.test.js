@@ -354,6 +354,23 @@ describe( 'googlesitekit.api', () => {
 
 			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 0 );
 		} );
+
+		it( 'should remove everything in the cache when called without arguments', async () => {
+			await setItem(
+				createCacheKey( 'core', 'search-console', 'accounts' ),
+				'data'
+			);
+			await setItem(
+				createCacheKey( 'modules', 'analytics', 'something' ),
+				'other-data'
+			);
+
+			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 2 );
+
+			await invalidateCache();
+
+			expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 0 );
+		} );
 	} );
 
 	describe( 'setUsingCache', () => {
