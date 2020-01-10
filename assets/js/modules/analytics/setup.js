@@ -751,6 +751,7 @@ class AnalyticsSetup extends Component {
 
 		return (
 			<Select
+				className="googlesitekit-analytics__select-account"
 				enhanced
 				name="accounts"
 				value={ selectedAccount || '0' }
@@ -938,6 +939,7 @@ class AnalyticsSetup extends Component {
 					{ this.accountsDropdown() }
 					{ propertiesLoading ? ( <ProgressBar small /> ) : (
 						<Select
+							className="googlesitekit-analytics__select-property"
 							enhanced
 							name="properties"
 							value={ selectedProperty || selectedProperty === 0 ? selectedProperty.toString() : '-1' }
@@ -957,6 +959,7 @@ class AnalyticsSetup extends Component {
 					) }
 					{ profilesLoading ? ( <ProgressBar small /> ) : (
 						<Select
+							className="googlesitekit-analytics__select-profile"
 							enhanced
 							name="profiles"
 							value={ selectedProfile || selectedProfile === 0 ? selectedProfile.toString() : '-1' }
