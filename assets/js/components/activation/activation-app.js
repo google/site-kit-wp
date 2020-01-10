@@ -32,6 +32,7 @@ import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 import { ActivationMain } from './activation-main';
 import Notification from '../notifications/notification';
 import NotificationCounter from '../notifications/notification-counter';
+import { __ } from '@wordpress/i18n';
 
 export class ActivationApp extends Component {
 	constructor( props ) {
@@ -69,12 +70,23 @@ export class ActivationApp extends Component {
 			/>;
 		}
 		const { proxySetupURL, splashURL } = window._googlesitekitBase;
+		const { canViewDashboard } = googlesitekit.permissions;
+		const { dashboardPermalink } = googlesitekit;
+
+		let setupURL = proxySetupURL || splashURL;
+		let startSetupButtonText = __( 'Start setup', 'google-site-kit' );
+
+		if ( canViewDashboard ) {
+			setupURL = dashboardPermalink;
+			startSetupButtonText = __( 'Go to Dashboard', 'google-site-kit' );
+		}
 
 		return (
 			<Fragment>
 				<NotificationCounter />
 				<ActivationMain
-					setupURL={ proxySetupURL || splashURL }
+					setupURL={ setupURL }
+					startSetupButtonText={ startSetupButtonText }
 					onStartSetup={ () => {
 						sendAnalyticsTrackingEvent( 'plugin_setup', proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
 					} }
