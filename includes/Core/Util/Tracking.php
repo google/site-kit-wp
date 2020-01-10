@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Storage\User_Options;
 
 /**
  * Class managing admin tracking.
@@ -48,20 +49,30 @@ final class Tracking {
 	protected $authentication;
 
 	/**
+	 * User_Options instance.
+	 *
+	 * @var User_Options
+	 */
+	protected $user_options;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Added User_Options.
 	 *
 	 * @param Context        $context        Plugin context.
 	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param User_Options   $user_options   Optional. User_Options instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, Authentication $authentication = null ) {
-		$this->context = $context;
-
-		if ( ! $authentication ) {
-			$authentication = new Authentication( $this->context );
-		}
-		$this->authentication = $authentication;
+	public function __construct(
+		Context $context,
+		Authentication $authentication = null,
+		User_Options $user_options = null
+	) {
+		$this->context        = $context;
+		$this->authentication = $authentication ?: new Authentication( $this->context );
+		$this->user_options   = $user_options ?: new User_Options( $this->context );
 	}
 
 	/**
