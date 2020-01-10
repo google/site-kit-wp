@@ -126,14 +126,15 @@ final class Tracking {
 	}
 
 	/**
-	 * Is tracking active for this plugin install?
+	 * Is tracking active for the current user?
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Tracking is now user-specific.
 	 *
 	 * @return bool True if tracking enabled, and False if not.
 	 */
 	public function is_active() {
-		return (bool) get_option( self::TRACKING_OPTIN_KEY, false );
+		return (bool) $this->user_options->get( self::TRACKING_OPTIN_KEY );
 	}
 
 	/**
