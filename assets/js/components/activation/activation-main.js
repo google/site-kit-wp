@@ -33,7 +33,7 @@ import Button from '../button';
 import Logo from '../logo';
 import Optin from '../optin';
 
-export function ActivationMain( { setupURL, onStartSetup } ) {
+export function ActivationMain( { setupURL, onStartSetup, startSetupButtonText } ) {
 	return (
 		<div className="mdc-layout-grid">
 			<div className="mdc-layout-grid__inner">
@@ -57,7 +57,7 @@ export function ActivationMain( { setupURL, onStartSetup } ) {
 						href={ setupURL }
 						onClick={ onStartSetup }
 					>
-						{ __( 'Start setup', 'google-site-kit' ) }
+						{ startSetupButtonText }
 					</Button>
 				</div>
 			</div>
