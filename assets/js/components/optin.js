@@ -45,16 +45,14 @@ class Optin extends Component {
 	handleOptIn( e ) {
 		const checked = e.target.checked;
 
-		const body = {
-			googlesitekit_tracking_optin: checked,
-		};
-
-		apiFetch( { path: '/wp/v2/settings',
-			headers: {
-				'Content-Type': 'application/json; charset=UTF-8',
-			},
-			body: JSON.stringify( body ),
+		apiFetch( {
+			path: '/wp/v2/users/me',
 			method: 'POST',
+			data: {
+				meta: {
+					googlesitekit_tracking_optin: checked,
+				},
+			},
 		} )
 			.then( () => {
 				window.googlesitekitTrackingEnabled = !! checked;
