@@ -760,8 +760,9 @@ class AnalyticsSetup extends Component {
 				disabled={ disabled }
 				outlined
 			>
-				<Fragment>
-					{ accounts.map( ( account, id ) =>
+				{ accounts
+					.concat( ! existingTag ? [ { id: '-1', name: __( 'Set up a new account', 'google-site-kit' ) } ] : [] )
+					.map( ( account, id ) =>
 						<Option
 							key={ id }
 							value={ account.id }
@@ -769,12 +770,6 @@ class AnalyticsSetup extends Component {
 							{ account.name }
 						</Option>
 					) }
-					{ ! existingTag && (
-						<Option value="-1">
-							{ __( 'Set up a new account', 'google-site-kit' ) }
-						</Option>
-					) }
-				</Fragment>
 			</Select>
 		);
 	}
