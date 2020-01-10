@@ -196,3 +196,5 @@ export const invalidateCache = async ( type, identifier, datapoint ) => {
 		}
 	} );
 };
+
+export * from './cache';
