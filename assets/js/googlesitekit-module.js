@@ -23,12 +23,12 @@ import ProgressBar from 'GoogleComponents/progress-bar';
 import Notification from 'GoogleComponents/notifications/notification';
 import 'GoogleComponents/data';
 import 'GoogleComponents/notifications';
+import { loadTranslations } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { setLocaleData } from '@wordpress/i18n';
 import { doAction, applyFilters } from '@wordpress/hooks';
 import { Component, render, Fragment } from '@wordpress/element';
 
@@ -41,10 +41,10 @@ import ModuleApp from './components/module-app';
 class GoogleSitekitModule extends Component {
 	constructor( props ) {
 		super( props );
-		this.state = { hasError: false };
 
-		// Set up translations.
-		setLocaleData( googlesitekit.locale, 'google-site-kit' );
+		this.state = {
+			hasError: false,
+		};
 
 		const {
 			showModuleSetupWizard,
@@ -142,11 +142,13 @@ class GoogleSitekitModule extends Component {
 }
 
 // Initialize the app once the DOM is ready.
-domReady( function() {
-	const siteKitModule = document.getElementById( 'js-googlesitekit-module' );
-	if ( null !== siteKitModule ) {
-		// Render the Dashboard App.
-		render( <GoogleSitekitModule />, siteKitModule );
+domReady( () => {
+	const renderTarget = document.getElementById( 'js-googlesitekit-module' );
+
+	if ( renderTarget ) {
+		loadTranslations();
+
+		render( <GoogleSitekitModule />, renderTarget );
 
 		/**
 		 * Action triggered when the dashboard App is loaded.
