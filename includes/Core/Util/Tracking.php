@@ -206,14 +206,16 @@ final class Tracking {
 	 * Register tracking settings and allow access from Rest API.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Registers a meta field instead of setting.
 	 */
 	private function register_settings() {
 		$args = array(
 			'type'         => 'boolean',
 			'description'  => __( 'Allowing tracking of anonymous usage stats.', 'google-site-kit' ),
 			'default'      => false,
+			'single'       => true,
 			'show_in_rest' => true,
 		);
-		register_setting( 'google-site-kit', self::TRACKING_OPTIN_KEY, $args );
+		register_meta( 'user', self::TRACKING_OPTIN_KEY, $args );
 	}
 }
