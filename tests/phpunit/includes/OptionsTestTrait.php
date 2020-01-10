@@ -17,7 +17,6 @@ use Google\Site_Kit\Core\Util\Beta_Migration;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Optimize;
-use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Tag_Manager;
 
@@ -27,6 +26,7 @@ trait OptionsTestTrait {
 		return array(
 			'googlesitekit-active-modules',
 			'googlesitekit_analytics_adsense_linked',
+			'googlesitekit_tracking_optin',
 			'googlesitekit_pagespeed_insights_settings',
 			Activation::OPTION_NEW_SITE_POSTS,
 			Activation::OPTION_SHOW_ACTIVATION_NOTICE,

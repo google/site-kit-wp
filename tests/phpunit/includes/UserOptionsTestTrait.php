@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_File;
 use Google\Site_Kit\Core\Authentication\Verification_Meta;
+use Google\Site_Kit\Core\Util\Tracking;
 
 trait UserOptionsTestTrait {
 
@@ -28,6 +29,7 @@ trait UserOptionsTestTrait {
 			OAuth_Client::OPTION_REDIRECT_URL,
 			OAuth_Client::OPTION_REFRESH_TOKEN,
 			Profile::OPTION,
+			Tracking::TRACKING_OPTIN_KEY,
 			Verification::OPTION,
 			Verification_Meta::OPTION,
 			Verification_File::OPTION,
