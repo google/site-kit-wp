@@ -760,19 +760,21 @@ class AnalyticsSetup extends Component {
 				disabled={ disabled }
 				outlined
 			>
-				{ accounts.map( ( account, id ) =>
-					<Option
-						key={ id }
-						value={ account.id }
-					>
-						{ account.name }
-					</Option>
-				) }
-				{ ! existingTag && (
-					<Option value="-1">
-						{ __( 'Set up a new account', 'google-site-kit' ) }
-					</Option>
-				) }
+				<Fragment>
+					{ accounts.map( ( account, id ) =>
+						<Option
+							key={ id }
+							value={ account.id }
+						>
+							{ account.name }
+						</Option>
+					) }
+					{ ! existingTag && (
+						<Option value="-1">
+							{ __( 'Set up a new account', 'google-site-kit' ) }
+						</Option>
+					) }
+				</Fragment>
 			</Select>
 		);
 	}
