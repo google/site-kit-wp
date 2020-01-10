@@ -47,7 +47,7 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 
 		// Opt-in to tracking to ensure the checkbox is selected.
 		await Promise.all( [
-			page.waitForResponse( ( res ) => res.url().match( 'wp/v2/settings' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'wp/v2/users/me' ) ),
 			expect( page ).toClick( '#googlesitekit-opt-in' ),
 		] );
 
@@ -64,7 +64,7 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 
 		// Opt-out again.
 		await Promise.all( [
-			page.waitForResponse( ( res ) => res.url().match( 'wp/v2/settings' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'wp/v2/users/me' ) ),
 			expect( page ).toClick( '#googlesitekit-opt-in' ),
 		] );
 	} );
@@ -73,7 +73,7 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 		await page.waitForSelector( '#googlesitekit-opt-in' );
 
 		await Promise.all( [
-			page.waitForResponse( ( res ) => res.url().match( 'wp/v2/settings' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'wp/v2/users/me' ) ),
 			expect( page ).toClick( '#googlesitekit-opt-in' ),
 		] );
 
@@ -88,13 +88,13 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 
 		// Opt-in to tracking to ensure the checkbox is selected.
 		await Promise.all( [
-			page.waitForResponse( ( res ) => res.url().match( 'wp/v2/settings' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'wp/v2/users/me' ) ),
 			expect( page ).toClick( '#googlesitekit-opt-in' ),
 		] );
 
 		// Uncheck the checkbox.
 		await Promise.all( [
-			page.waitForResponse( ( res ) => res.url().match( 'wp/v2/settings' ) ),
+			page.waitForResponse( ( res ) => res.url().match( 'wp/v2/users/me' ) ),
 			expect( page ).toClick( '#googlesitekit-opt-in' ),
 		] );
 
