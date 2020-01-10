@@ -30,6 +30,7 @@ import Dialog from 'GoogleComponents/dialog';
  */
 import { __ } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -44,7 +45,7 @@ export default class ResetButton extends Component {
 
 		this.state = {
 			dialogActive: false,
-			postResetURL: splashURL,
+			postResetURL: addQueryArgs( splashURL, { notification: 'reset_success' } ),
 		};
 
 		this.handleDialog = this.handleDialog.bind( this );
