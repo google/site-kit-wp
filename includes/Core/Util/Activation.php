@@ -197,20 +197,18 @@ final class Activation {
 
 								var checked = event.target.checked;
 
-								var body = {
-									googlesitekit_tracking_optin: checked,
-								};
 								var self = this;
 
 								event.target.disabled = true;
 
 								wp.apiFetch( {
-									path: '/wp/v2/settings',
-									headers: {
-										'Content-Type': 'application/json; charset=UTF-8',
-									},
-									body: JSON.stringify( body ),
+									path: '/wp/v2/users/me',
 									method: 'POST',
+									data: {
+										meta: {
+											googlesitekit_tracking_optin: checked,
+										}
+									}
 								} )
 									.then( function() {
 										event.target.disabled = null;
