@@ -306,5 +306,5 @@ final class Permissions {
 			self::PUBLISH_POSTS,
 			self::VIEW_POST_INSIGHTS,
 		);
-	}	
+	}
 }
