@@ -197,8 +197,6 @@ final class Activation {
 
 								var checked = event.target.checked;
 
-								var self = this;
-
 								event.target.disabled = true;
 
 								wp.apiFetch( {
