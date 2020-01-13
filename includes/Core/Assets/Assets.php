@@ -511,6 +511,7 @@ final class Assets {
 	 * @return array The base inline data to be output.
 	 */
 	private function get_inline_base_data() {
+		global $wpdb;
 		$site_url     = $this->context->get_reference_site_url();
 		$current_user = wp_get_current_user();
 
@@ -520,6 +521,7 @@ final class Assets {
 			'userIDHash'       => md5( $site_url . $current_user->ID ),
 			'adminRoot'        => esc_url_raw( get_admin_url() . 'admin.php' ),
 			'assetsRoot'       => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
+			'blogPrefix'       => $wpdb->get_blog_prefix(),
 		);
 
 		/**
