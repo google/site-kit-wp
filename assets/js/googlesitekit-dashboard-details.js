@@ -22,12 +22,12 @@
  */
 import Notification from 'GoogleComponents/notifications/notification';
 import 'GoogleComponents/notifications';
+import { loadTranslations } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { setLocaleData } from '@wordpress/i18n';
 import { doAction } from '@wordpress/hooks';
 import { Component, render } from '@wordpress/element';
 
@@ -39,10 +39,10 @@ import DashboardDetailsApp from 'GoogleComponents/dashboard-details/dashboard-de
 class GoogleSitekitDashboardDetails extends Component {
 	constructor( props ) {
 		super( props );
-		this.state = { hasError: false };
 
-		// Set up translations.
-		setLocaleData( googlesitekit.locale, 'google-site-kit' );
+		this.state = {
+			hasError: false,
+		};
 	}
 
 	componentDidCatch( error, info ) {
@@ -64,7 +64,7 @@ class GoogleSitekitDashboardDetails extends Component {
 			return <Notification
 				id={ 'googlesitekit-error' }
 				key={ 'googlesitekit-error' }
-				title={ error }
+				title={ error.message }
 				description={ info.componentStack }
 				dismiss={ '' }
 				isDismissable={ false }
@@ -78,11 +78,13 @@ class GoogleSitekitDashboardDetails extends Component {
 }
 
 // Initialize the app once the DOM is ready.
-domReady( function() {
-	const dashboardDetails = document.getElementById( 'js-googlesitekit-dashboard-details' );
-	if ( null !== dashboardDetails ) {
-		// Render the Dashboard App.
-		render( <GoogleSitekitDashboardDetails />, dashboardDetails );
+domReady( () => {
+	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard-details' );
+
+	if ( renderTarget ) {
+		loadTranslations();
+
+		render( <GoogleSitekitDashboardDetails />, renderTarget );
 
 		/**
 		 * Action triggered when the dashboard details App is loaded.

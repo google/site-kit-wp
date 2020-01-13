@@ -81,6 +81,9 @@ window.googlesitekit.admin = window.googlesitekit.admin || googlesitekit.admin;
 window.googlesitekit.modules = window.googlesitekit.modules || googlesitekit.modules;
 window.googlesitekit.admin.assetsRoot = '/assets/';
 window.googlesitekit.isStorybook = true;
+window._googlesitekitBase = {
+	splashURL: 'http://localhost/wp-admin/admin.php?page=googlesitekit-splash',
+};
 window.wp.apiFetch = ( vars ) => {
 	const matches = vars.path.match( '/google-site-kit/v1/modules/(.*)/data/(.*[^/])' );
 

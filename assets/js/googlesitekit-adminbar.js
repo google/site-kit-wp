@@ -25,6 +25,7 @@ import Link from 'GoogleComponents/link';
 import {
 	decodeHtmlEntity,
 	getSiteKitAdminURL,
+	loadTranslations,
 	sendAnalyticsTrackingEvent,
 } from 'GoogleUtil';
 
@@ -33,7 +34,7 @@ import {
  */
 import { doAction } from '@wordpress/hooks';
 import { Component, Fragment, render } from '@wordpress/element';
-import { setLocaleData, __ } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies.
@@ -43,9 +44,6 @@ import AdminbarModules from 'GoogleComponents/adminbar/adminbar-modules';
 export class GoogleSitekitAdminbar extends Component {
 	constructor( props ) {
 		super( props );
-
-		// Set up translations.
-		setLocaleData( googlesitekit.locale, 'google-site-kit' );
 
 		this.handleMoreDetailsLink = this.handleMoreDetailsLink.bind( this );
 	}
@@ -133,10 +131,12 @@ export class GoogleSitekitAdminbar extends Component {
 
 // Initialize the whole adminbar app.
 export function init() {
-	const adminbarModules = document.getElementById( 'js-googlesitekit-adminbar-modules' );
-	if ( null !== adminbarModules ) {
-		// Render the Adminbar App.
-		render( <GoogleSitekitAdminbar />, document.getElementById( 'js-googlesitekit-adminbar-modules' ) );
+	const renderTarget = document.getElementById( 'js-googlesitekit-adminbar-modules' );
+
+	if ( renderTarget ) {
+		loadTranslations();
+
+		render( <GoogleSitekitAdminbar />, renderTarget );
 
 		/**
 		 * Action triggered when the dashboard App is loaded.
