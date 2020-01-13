@@ -218,7 +218,8 @@ final class Tracking {
 			'single'       => true,
 			'show_in_rest' => current_user_can( Permissions::SETUP ),
 		);
-		// Need to include the blog prefix as this is a user option.
-		register_meta( 'user', $wpdb->get_blog_prefix() . self::TRACKING_OPTIN_KEY, $args );
+		// Need to conditionally include the blog prefix as this is a user option.
+		$prefix = ! $this->context->is_network_active() ? $wpdb->get_blog_prefix() : '';
+		register_meta( 'user', $prefix . self::TRACKING_OPTIN_KEY, $args );
 	}
 }
