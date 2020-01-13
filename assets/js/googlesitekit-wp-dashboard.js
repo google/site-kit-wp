@@ -69,7 +69,7 @@ class GoogleSitekitWPDashboard extends Component {
 			return <Notification
 				id={ 'googlesitekit-error' }
 				key={ 'googlesitekit-error' }
-				title={ error }
+				title={ error.message }
 				description={ info.componentStack }
 				dismiss={ '' }
 				isDismissable={ false }
