@@ -21,21 +21,21 @@ let cachingEnabled = true;
 /**
  * Make a request to a WP REST API Site Kit endpoint.
  *
- * @param {string} type        The data to access. One of 'core' or 'modules'.
- * @param {string} identifier  The data identifier, eg. a module slug like `'search-console'`.
- * @param {string} datapoint   The endpoint to request data from.
- * @param {Object} queryParams Query params to send with the request.
- * @param {Object} data        Request data to send.
- * @param {Object} useCache    Set to `true` to use the caching. Caching is only used for `GET` requests.
+ * @param {string}  type                The data to access. One of 'core' or 'modules'.
+ * @param {string}  identifier          The data identifier, eg. a module slug like `'search-console'`.
+ * @param {string}  datapoint           The endpoint to request data from.
+ * @param {Object}  options             Options to pass to the request
+ * @param {number}  options.cacheTTL    The oldest cache data to use, in seconds.
+ * @param {Object}  options.data        Request data to send.
+ * @param {number}  options.method      HTTP method to use for this request.
+ * @param {Object}  options.queryParams Query params to send with the request.
+ * @param {boolean} options.useCache    Set to `true` to use the caching. Caching is only used for `GET` requests.
  */
-const siteKitRequest = async ( {
+const siteKitRequest = async ( type, identifier, datapoint, {
 	cacheTTL = 3600,
 	data,
-	datapoint,
-	identifier,
 	method = 'GET',
 	queryParams,
-	type,
 	useCache = undefined,
 } = {} ) => {
 	invariant( type, '`type` argument for requests is required.' );
@@ -88,10 +88,13 @@ const siteKitRequest = async ( {
  * This method automatically handles authentication, so no credentials
  * are required to use this method.
  *
- * @param {string} type        The data to access. One of 'core' or 'modules'.
- * @param {string} identifier  The data identifier, eg. a module slug like `'search-console'`.
- * @param {string} datapoint   The endpoint to request data from.
- * @param {Object} queryParams Query params to send with the request.
+ * @param {string}  type             The data to access. One of 'core' or 'modules'.
+ * @param {string}  identifier       The data identifier, eg. a module slug like `'search-console'`.
+ * @param {string}  datapoint        The endpoint to request data from.
+ * @param {Object}  queryParams      Query params to send with the request.
+ * @param {Object}  options          Extra options for this request.
+ * @param {number}  options.cacheTTL The oldest cache data to use, in seconds.
+ * @param {boolean} options.useCache Enable or disable caching for this request only.
  *
  * @return {Promise} A promise for the `fetch` request.
  */
@@ -102,12 +105,9 @@ export const get = async (
 	queryParams,
 	{ cacheTTL = 3600, useCache = undefined } = {}
 ) => {
-	return siteKitRequest( {
+	return siteKitRequest( type, identifier, datapoint, {
 		cacheTTL,
-		datapoint,
-		identifier,
 		queryParams,
-		type,
 		useCache,
 	} );
 };
@@ -122,10 +122,13 @@ export const get = async (
  * This method automatically handles authentication, so no credentials
  * are required to use this method.
  *
- * @param {string} type       The data to access. One of 'core' or 'modules'.
- * @param {string} identifier The data identifier, eg. a module slug like `'adsense'`.
- * @param {string} datapoint  The endpoint to send data to.
- * @param {Object} data       Request data (eg. post data) to send with the request.
+ * @param {string} type                 The data to access. One of 'core' or 'modules'.
+ * @param {string} identifier           The data identifier, eg. a module slug like `'adsense'`.
+ * @param {string} datapoint            The endpoint to send data to.
+ * @param {Object} data                 Request data (eg. post data) to send with the request.
+ * @param {Object}  options             Extra options for this request.
+ * @param {number}  options.method      HTTP method to use for this request.
+ * @param {boolean} options.queryParams Query params to send with the request.
  *
  * @return {Promise} A promise for the `fetch` request.
  */
@@ -136,13 +139,10 @@ export const set = async (
 	data,
 	{ method = 'POST', queryParams = {} } = {}
 ) => {
-	return siteKitRequest( {
+	return siteKitRequest( type, identifier, datapoint, {
 		data,
-		datapoint,
-		identifier,
 		method,
 		queryParams,
-		type,
 		useCache: false,
 	} );
 };
