@@ -21,6 +21,7 @@
  */
 import Checkbox from 'GoogleComponents/checkbox';
 import PropTypes from 'prop-types';
+import { getMetaKeyForUserOption } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -32,13 +33,12 @@ import { __ } from '@wordpress/i18n';
 class Optin extends Component {
 	constructor( props ) {
 		super( props );
-		const { trackingUserOptInKey } = window._googlesitekitBase;
 
 		this.state = {
 			scriptOnPage: !! window.googlesitekitTrackingEnabled,
 			optIn: !! window.googlesitekitTrackingEnabled,
 			error: false,
-			trackingUserOptInKey,
+			trackingUserOptInKey: getMetaKeyForUserOption( 'googlesitekit_tracking_optin' ),
 		};
 
 		this.handleOptIn = this.handleOptIn.bind( this );
