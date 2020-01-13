@@ -198,9 +198,7 @@ final class Tracking {
 	 * @return array Filtered $data.
 	 */
 	private function inline_js_admin_data( $data ) {
-		global $wpdb;
-		$data['trackingID']           = self::TRACKING_ID;
-		$data['trackingUserOptInKey'] = $wpdb->get_blog_prefix() . self::TRACKING_OPTIN_KEY;
+		$data['trackingID'] = self::TRACKING_ID;
 
 		return $data;
 	}
