@@ -107,7 +107,7 @@ final class Credentials extends Setting {
 	 *
 	 * @return array
 	 */
-	public function get_default() {
+	protected function get_default() {
 		return array(
 			'oauth2_client_id'     => '',
 			'oauth2_client_secret' => '',
