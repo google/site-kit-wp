@@ -23,6 +23,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit_Dependencies\Google_Service_PeopleService;
+use WP_HTTP_Proxy;
 
 /**
  * Class for connecting to Google APIs via OAuth.
@@ -116,6 +117,14 @@ final class OAuth_Client {
 	private $profile;
 
 	/**
+	 * WP_HTTP_Proxy instance.
+	 *
+	 * @since n.e.x.t
+	 * @var WP_HTTP_Proxy
+	 */
+	private $http_proxy;
+
+	/**
 	 * Access token for communication with Google APIs, for temporary storage.
 	 *
 	 * @since 1.0.0
@@ -144,12 +153,13 @@ final class OAuth_Client {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param Context      $context      Plugin context.
-	 * @param Options      $options      Optional. Option API instance. Default is a new instance.
-	 * @param User_Options $user_options Optional. User Option API instance. Default is a new instance.
-	 * @param Credentials  $credentials  Optional. Credentials instance. Default is a new instance from $options.
-	 * @param Google_Proxy $google_proxy Optional. Google proxy instance. Default is a new instance.
-	 * @param Profile      $profile Optional. Profile instance. Default is a new instance.
+	 * @param Context       $context      Plugin context.
+	 * @param Options       $options      Optional. Option API instance. Default is a new instance.
+	 * @param User_Options  $user_options Optional. User Option API instance. Default is a new instance.
+	 * @param Credentials   $credentials  Optional. Credentials instance. Default is a new instance from $options.
+	 * @param Google_Proxy  $google_proxy Optional. Google proxy instance. Default is a new instance.
+	 * @param Profile       $profile      Optional. Profile instance. Default is a new instance.
+	 * @param WP_HTTP_Proxy $http_proxy   Optional. WP_HTTP_Proxy instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
@@ -157,7 +167,8 @@ final class OAuth_Client {
 		User_Options $user_options = null,
 		Credentials $credentials = null,
 		Google_Proxy $google_proxy = null,
-		Profile $profile = null
+		Profile $profile = null,
+		WP_HTTP_Proxy $http_proxy = null
 	) {
 		$this->context                = $context;
 		$this->options                = $options ?: new Options( $this->context );
@@ -167,6 +178,7 @@ final class OAuth_Client {
 		$this->credentials            = $credentials ?: new Credentials( $this->encrypted_options );
 		$this->google_proxy           = $google_proxy ?: new Google_Proxy( $this->context );
 		$this->profile                = $profile ?: new Profile( $this->user_options );
+		$this->http_proxy             = $http_proxy ?: new WP_HTTP_Proxy();
 	}
 
 	/**
@@ -178,55 +190,87 @@ final class OAuth_Client {
 	 * @return Google_Site_Kit_Client Google client object.
 	 */
 	public function get_client() {
-		if ( $this->google_client instanceof Google_Site_Kit_Client ) {
-			return $this->google_client;
+		if ( ! $this->google_client instanceof Google_Site_Kit_Client ) {
+			$this->google_client = $this->setup_client();
 		}
 
+		return $this->google_client;
+	}
+
+	/**
+	 * Sets up a fresh Google client instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Google_Site_Kit_Client|Google_Site_Kit_Proxy_Client
+	 */
+	private function setup_client() {
 		if ( $this->using_proxy() ) {
-			$this->google_client = new Google_Site_Kit_Proxy_Client(
+			$client = new Google_Site_Kit_Proxy_Client(
 				array( 'proxy_base_path' => $this->google_proxy->url() )
 			);
 		} else {
-			$this->google_client = new Google_Site_Kit_Client();
+			$client = new Google_Site_Kit_Client();
 		}
 
 		$application_name = 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION;
 		// The application name is included in the Google client's user-agent for requests to Google APIs.
-		$this->google_client->setApplicationName( $application_name );
+		$client->setApplicationName( $application_name );
 		// Override the default user-agent for the Guzzle client. This is used for oauth/token requests.
 		// By default this header uses the generic Guzzle client's user-agent and includes
 		// Guzzle, cURL, and PHP versions as it is normally shared.
 		// In our case however, the client is namespaced to be used by Site Kit only.
-		$this->google_client->getHttpClient()->setDefaultOption( 'headers/User-Agent', $application_name );
+		$http_client = $client->getHttpClient();
+		$http_client->setDefaultOption( 'headers/User-Agent', $application_name );
+
+		// Configure the Google_Client's HTTP client to use to use the same HTTP proxy as WordPress HTTP, if set.
+		if ( $this->http_proxy->is_enabled() ) {
+			if ( $this->http_proxy->use_authentication() ) {
+				// The "Authorization" header is used to authenticate the end request; use the dedicated proxy header.
+				$http_client->setDefaultOption(
+					'headers/Proxy-Authorization',
+					'Basic ' . base64_encode( $this->http_proxy->authentication() )
+				);
+			}
+
+			$http_client->setDefaultOption( 'proxy', $this->http_proxy->host() . ':' . $this->http_proxy->port() );
+			$ssl_verify = $http_client->getDefaultOption( 'verify' );
+			// Allow SSL verification to be filtered, as is often necessary with HTTP proxies.
+			$http_client->setDefaultOption(
+				'verify',
+				/** This filter is documented in wp-includes/class-http.php */
+				apply_filters( 'https_ssl_verify', $ssl_verify, null )
+			);
+		}
 
 		// Return unconfigured client if credentials not yet set.
 		$client_credentials = $this->get_client_credentials();
 		if ( ! $client_credentials ) {
-			return $this->google_client;
+			return $client;
 		}
 
 		try {
-			$this->google_client->setAuthConfig( (array) $client_credentials->web );
+			$client->setAuthConfig( (array) $client_credentials->web );
 		} catch ( Exception $e ) {
-			return $this->google_client;
+			return $client;
 		}
 
 		// Offline access so we can access the refresh token even when the user is logged out.
-		$this->google_client->setAccessType( 'offline' );
-		$this->google_client->setPrompt( 'consent' );
-		$this->google_client->setRedirectUri( $this->get_redirect_uri() );
-		$this->google_client->setScopes( $this->get_required_scopes() );
-		$this->google_client->prepareScopes();
+		$client->setAccessType( 'offline' );
+		$client->setPrompt( 'consent' );
+		$client->setRedirectUri( $this->get_redirect_uri() );
+		$client->setScopes( $this->get_required_scopes() );
+		$client->prepareScopes();
 
 		// This is called when the client refreshes the access token on-the-fly.
-		$this->google_client->setTokenCallback(
+		$client->setTokenCallback(
 			function( $cache_key, $access_token ) {
 				$expires_in = HOUR_IN_SECONDS; // Sane default, Google OAuth tokens are typically valid for an hour.
 				$created    = 0; // This will be replaced with the current timestamp when saving.
 
 				// Try looking up the real values if possible.
-				if ( isset( $this->google_client ) ) {
-					$token = $this->google_client->getAccessToken();
+				if ( isset( $client ) ) {
+					$token = $client->getAccessToken();
 					if ( isset( $token['access_token'], $token['expires_in'], $token['created'] ) && $access_token === $token['access_token'] ) {
 						$expires_in = $token['expires_in'];
 						$created    = $token['created'];
@@ -238,25 +282,24 @@ final class OAuth_Client {
 		);
 
 		// This is called when refreshing the access token on-the-fly fails.
-		$this->google_client->setTokenExceptionCallback(
+		$client->setTokenExceptionCallback(
 			function( Exception $e ) {
 				$this->handle_fetch_token_exception( $e );
 			}
 		);
 
-		$profile = $this->profile->get();
-		if ( ! empty( $profile['email'] ) ) {
-			$this->google_client->setLoginHint( $profile['email'] );
+		if ( $this->profile->has() ) {
+			$client->setLoginHint( $this->profile->get()['email'] );
 		}
 
 		$access_token = $this->get_access_token();
 
 		// Return unconfigured client if access token not yet set.
 		if ( empty( $access_token ) ) {
-			return $this->google_client;
+			return $client;
 		}
 
-		$this->google_client->setAccessToken(
+		$client->setAccessToken(
 			array(
 				'access_token'  => $access_token,
 				'expires_in'    => $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
@@ -265,7 +308,7 @@ final class OAuth_Client {
 			)
 		);
 
-		return $this->google_client;
+		return $client;
 	}
 
 	/**

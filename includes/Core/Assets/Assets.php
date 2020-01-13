@@ -387,6 +387,13 @@ final class Assets {
 				)
 			),
 			// Admin assets.
+			new Script(
+				'googlesitekit_activation',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-activation.js',
+					'dependencies' => $dependencies,
+				)
+			),
 			new Script( // TODO: Rename this to 'googlesitekit_base'.
 				'googlesitekit_admin',
 				array(

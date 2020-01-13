@@ -481,6 +481,7 @@ final class Authentication {
 			$first_admin_id = $current_user_id;
 		}
 		$data['isFirstAdmin'] = ( $current_user_id === $first_admin_id );
+		$data['splashURL']    = esc_url_raw( $this->context->admin_url( 'splash' ) );
 
 		$auth_client = $this->get_oauth_client();
 		if ( $auth_client->using_proxy() ) {
