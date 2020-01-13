@@ -69,7 +69,7 @@ class Settings extends Module_Settings {
 	 *
 	 * @return array
 	 */
-	public function get_default() {
+	protected function get_default() {
 		return array(
 			'accountID'     => '',
 			'accountStatus' => '',
