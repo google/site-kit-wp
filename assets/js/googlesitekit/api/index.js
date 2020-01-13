@@ -26,14 +26,14 @@ let cachingEnabled = true;
  * @param {string}  datapoint           The endpoint to request data from.
  * @param {Object}  options             Options to pass to the request
  * @param {number}  options.cacheTTL    The oldest cache data to use, in seconds.
- * @param {Object}  options.data        Request data to send.
+ * @param {Object}  options.bodyParams  Request body data to send. (Eg. used for `POST`/`PUT` request variables.)
  * @param {number}  options.method      HTTP method to use for this request.
  * @param {Object}  options.queryParams Query params to send with the request.
- * @param {boolean} options.useCache    Set to `true` to use the caching. Caching is only used for `GET` requests.
+ * @param {boolean} options.useCache    Enable or disable caching for this request only. (Caching is only used for `GET` requests.)
  */
 const siteKitRequest = async ( type, identifier, datapoint, {
+	bodyParams,
 	cacheTTL = 3600,
-	data,
 	method = 'GET',
 	queryParams,
 	useCache = undefined,
@@ -59,7 +59,7 @@ const siteKitRequest = async ( type, identifier, datapoint, {
 	// Make an API request to retrieve the results.
 	try {
 		const response = await apiFetch( {
-			data,
+			data: bodyParams,
 			method,
 			path: addQueryArgs(
 				`/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
@@ -91,7 +91,7 @@ const siteKitRequest = async ( type, identifier, datapoint, {
  * @param {string}  type             The data to access. One of 'core' or 'modules'.
  * @param {string}  identifier       The data identifier, eg. a module slug like `'search-console'`.
  * @param {string}  datapoint        The endpoint to request data from.
- * @param {Object}  queryParams      Query params to send with the request.
+ * @param {Object}  data             Data (query params) to send with the request.
  * @param {Object}  options          Extra options for this request.
  * @param {number}  options.cacheTTL The oldest cache data to use, in seconds.
  * @param {boolean} options.useCache Enable or disable caching for this request only.
@@ -102,12 +102,12 @@ export const get = async (
 	type,
 	identifier,
 	datapoint,
-	queryParams,
+	data,
 	{ cacheTTL = 3600, useCache = undefined } = {}
 ) => {
 	return siteKitRequest( type, identifier, datapoint, {
 		cacheTTL,
-		queryParams,
+		queryParams: data,
 		useCache,
 	} );
 };
@@ -125,7 +125,7 @@ export const get = async (
  * @param {string} type                 The data to access. One of 'core' or 'modules'.
  * @param {string} identifier           The data identifier, eg. a module slug like `'adsense'`.
  * @param {string} datapoint            The endpoint to send data to.
- * @param {Object} data                 Request data (eg. post data) to send with the request.
+ * @param {Object} data                 Request body data (eg. post data) to send with the request.
  * @param {Object}  options             Extra options for this request.
  * @param {number}  options.method      HTTP method to use for this request.
  * @param {boolean} options.queryParams Query params to send with the request.
