@@ -139,12 +139,16 @@ export const set = async (
 	data,
 	{ method = 'POST', queryParams = {} } = {}
 ) => {
-	return siteKitRequest( type, identifier, datapoint, {
+	const response = await siteKitRequest( type, identifier, datapoint, {
 		data,
 		method,
 		queryParams,
 		useCache: false,
 	} );
+
+	await invalidateCache( type, identifier, datapoint );
+
+	return response;
 };
 
 /**

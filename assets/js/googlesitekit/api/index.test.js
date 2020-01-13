@@ -287,6 +287,72 @@ describe( 'googlesitekit.api', () => {
 			expect( getItemSpy ).not.toHaveBeenCalled();
 			expect( setItemSpy ).not.toHaveBeenCalled();
 		} );
+
+		it( 'should invalidate the cache for matching type+identifier+datapoint combo', async () => {
+			// Mock all requests for this URL.
+			fetch
+				.doMockIf(
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/will-cache/
+				)
+				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+
+			// Contents should not be found in the cache on first request.
+			let cacheData = await getItem(
+				createCacheKey( 'core', 'search-console', 'will-cache' )
+			);
+			expect( cacheData.cacheHit ).toEqual( false );
+
+			// Make the request to prime the cache
+			await get( 'core', 'search-console', 'will-cache' );
+
+			// Now cached data will appear.
+			cacheData = await getItem(
+				createCacheKey( 'core', 'search-console', 'will-cache' )
+			);
+			expect( cacheData.cacheHit ).toEqual( true );
+			expect( cacheData.value ).toEqual( { foo: 'bar' } );
+
+			await set( 'core', 'search-console', 'will-cache', { somethingElse: 'to-set' } );
+
+			cacheData = await getItem(
+				createCacheKey( 'core', 'search-console', 'will-cache' )
+			);
+			expect( cacheData.cacheHit ).toEqual( false );
+		} );
+
+		it( 'should invalidate the cache for matching type+identifier+datapoint with query params', async () => {
+			// Mock all requests for this URL.
+			fetch
+				.doMockIf(
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/will-cache/
+				)
+				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+
+			const queryParams = { surf: 'board' };
+
+			// Contents should not be found in the cache on first request.
+			let cacheData = await getItem(
+				createCacheKey( 'core', 'search-console', 'will-cache', queryParams )
+			);
+			expect( cacheData.cacheHit ).toEqual( false );
+
+			// Make the request to prime the cache
+			await get( 'core', 'search-console', 'will-cache', queryParams );
+
+			// Now cached data will appear.
+			cacheData = await getItem(
+				createCacheKey( 'core', 'search-console', 'will-cache', queryParams )
+			);
+			expect( cacheData.cacheHit ).toEqual( true );
+			expect( cacheData.value ).toEqual( { foo: 'bar' } );
+
+			await set( 'core', 'search-console', 'will-cache', { somethingElse: 'to-set' } );
+
+			cacheData = await getItem(
+				createCacheKey( 'core', 'search-console', 'will-cache', queryParams )
+			);
+			expect( cacheData.cacheHit ).toEqual( false );
+		} );
 	} );
 
 	describe( 'invalidateCache', () => {
