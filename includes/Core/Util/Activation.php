@@ -204,7 +204,7 @@ final class Activation {
 									method: 'POST',
 									data: {
 										meta: {
-											googlesitekit_tracking_optin: checked,
+											[ _googlesitekitBase.trackingUserOptInKey ]: checked,
 										}
 									}
 								} )

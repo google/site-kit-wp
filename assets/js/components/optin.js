@@ -32,11 +32,13 @@ import { __ } from '@wordpress/i18n';
 class Optin extends Component {
 	constructor( props ) {
 		super( props );
+		const { trackingUserOptInKey } = window._googlesitekitBase;
 
 		this.state = {
 			scriptOnPage: !! window.googlesitekitTrackingEnabled,
 			optIn: !! window.googlesitekitTrackingEnabled,
 			error: false,
+			trackingUserOptInKey,
 		};
 
 		this.handleOptIn = this.handleOptIn.bind( this );
@@ -44,13 +46,14 @@ class Optin extends Component {
 
 	handleOptIn( e ) {
 		const checked = e.target.checked;
+		const { trackingUserOptInKey } = this.state;
 
 		apiFetch( {
 			path: '/wp/v2/users/me',
 			method: 'POST',
 			data: {
 				meta: {
-					googlesitekit_tracking_optin: checked,
+					[ trackingUserOptInKey ]: checked,
 				},
 			},
 		} )
