@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Options;
 
 /**
@@ -217,7 +218,7 @@ final class Tracking {
 			'description'  => __( 'Allowing tracking of anonymous usage stats.', 'google-site-kit' ),
 			'default'      => false,
 			'single'       => true,
-			'show_in_rest' => true,
+			'show_in_rest' => current_user_can( Permissions::SETUP ),
 		);
 		// Need to include the blog prefix as this is a user option.
 		register_meta( 'user', $wpdb->get_blog_prefix() . self::TRACKING_OPTIN_KEY, $args );
