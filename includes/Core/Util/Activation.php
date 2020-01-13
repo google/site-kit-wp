@@ -127,9 +127,16 @@ final class Activation {
 					return;
 				}
 
+				/**
+				 * Prevent the default WordPress "Plugin Activated" notice from rendering.
+				 *
+				 * @link https://github.com/WordPress/WordPress/blob/e1996633228749cdc2d92bc04cc535d45367bfa4/wp-admin/plugins.php#L569-L570
+				 */
+				unset( $_GET['activate'] ); // phpcs:ignore WordPress.Security.NonceVerification, WordPress.VIP.SuperGlobalInputUsage
+
 				$this->assets->enqueue_fonts();
-				$this->assets->enqueue_asset( 'wp-api-fetch' );
 				$this->assets->enqueue_asset( 'googlesitekit_admin_css' );
+				$this->assets->enqueue_asset( 'googlesitekit_activation' );
 			}
 		);
 	}
@@ -146,161 +153,19 @@ final class Activation {
 			'activated',
 			array(
 				'content'         => function() {
-					/**
-					 * Prevent the default WordPress "Plugin Activated" notice from rendering.
-					 *
-					 * @link https://github.com/WordPress/WordPress/blob/e1996633228749cdc2d92bc04cc535d45367bfa4/wp-admin/plugins.php#L569-L570
-					 */
-					unset( $_GET['activate'] ); // phpcs:ignore WordPress.Security.NonceVerification, WordPress.VIP.SuperGlobalInputUsage
-
-					$sitekit_splash_url = $this->context->admin_url( 'splash' );
-
 					ob_start();
 					?>
-					<script type="text/javascript">
-						document.addEventListener( 'DOMContentLoaded' , function() {
-							if ( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
-								sendAnalyticsTrackingEvent( 'plugin_setup', 'plugin_activated' );
-							}
-
-							var optInCheckbox = document.getElementById( 'googlesitekit-opt-in' );
-							var startSetupLink = document.getElementById( 'start-setup-link' );
-
-							if ( ! optInCheckbox ) {
-								console.error( "Expected element #googlesitekit-opt-in to be found on page, but it wasn't. Tracking may not work." );
-								return;
-							}
-
-							if ( ! startSetupLink ) {
-								console.error( "Expected element #start-setup-link to be found on page, but it wasn't. Tracking may not work." );
-								return;
-							}
-
-							if ( window.googlesitekitTrackingEnabled ) {
-								optInCheckbox.checked = !! window.googlesitekitTrackingEnabled;
-							}
-							if ( window._googlesitekitBase.proxySetupURL ) {
-								startSetupLink.href = window._googlesitekitBase.proxySetupURL;
-							}
-
-							startSetupLink.addEventListener( 'click' , function() {
-								if ( 'undefined' !== typeof sendAnalyticsTrackingEvent ) {
-									sendAnalyticsTrackingEvent( 'plugin_setup', window._googlesitekitBase.proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
-								}
-							} );
-
-							optInCheckbox.addEventListener( 'change' , function( event ) {
-								if ( event.target.disabled ) {
-									event.preventDefault();
-									return;
-								}
-
-								var checked = event.target.checked;
-
-								var body = {
-									googlesitekit_tracking_optin: checked,
-								};
-								var self = this;
-
-								event.target.disabled = true;
-
-								wp.apiFetch( {
-									path: '/wp/v2/settings',
-									headers: {
-										'Content-Type': 'application/json; charset=UTF-8',
-									},
-									body: JSON.stringify( body ),
-									method: 'POST',
-								} )
-									.then( function() {
-										event.target.disabled = null;
-										window.googlesitekitTrackingEnabled = !! checked;
-
-										var trackingID = window._googlesitekitBase.trackingID;
-										var trackingScriptPresent = document.querySelector( 'script[src="https://www.googletagmanager.com/gtag/js?id=' + trackingID + '"]' );
-
-										if ( trackingID && ! trackingScriptPresent ) {
-											document.body.insertAdjacentHTML( 'beforeend', '\<script async src="https://www.googletagmanager.com/gtag/js?id=' + trackingID + '"\>\</script\>' );<?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-											document.body.insertAdjacentHTML( 'beforeend', "\<script\>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', '" + trackingID + "');\</script\>" );
-										}
-									} )
-									.catch( function( err ) {
-										event.target.checked = ! checked;
-										event.target.disabled = false;
-									} );
-							} );
-						} );
-					</script>
 					<div class="googlesitekit-plugin">
-						<div class="googlesitekit-activation">
-							<div class="mdc-layout-grid">
-								<div class="mdc-layout-grid__inner">
-									<div class="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-12
-									">
-										<div class="googlesitekit-logo">
-											<?php
-											echo $this->assets->svg_sprite(
-												'logo-g',
-												array(
-													'height' => '34',
-													'width'  => '32',
-												)
-											); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
-
-											echo $this->assets->svg_sprite(
-												'logo-sitekit',
-												array(
-													'height' => '26',
-													'width'  => '99',
-												)
-											); // phpcs:ignore WordPress.XSS.EscapeOutput.OutputNotEscaped
-											?>
-										</div>
-										<h3 class="googlesitekit-heading-3 googlesitekit-activation__title">
-											<?php esc_html_e( 'Congratulations, the Site Kit plugin is now activated.', 'google-site-kit' ); ?>
-										</h3>
-
-										<div class="googlesitekit-opt-in googlesitekit-activation__opt-in">
-											<div class="mdc-form-field">
-												<div class="mdc-checkbox mdc-checkbox--upgraded mdc-ripple-upgraded mdc-ripple-upgraded--unbounded">
-													<input class="mdc-checkbox__native-control" type="checkbox" id="googlesitekit-opt-in" value="1" />
-													<div class="mdc-checkbox__background">
-														<svg class="mdc-checkbox__checkmark" viewBox="0 0 24 24">
-															<path class="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59"></path>
-														</svg>
-														<div class="mdc-checkbox__mixedmark">
-														</div>
-													</div>
-												</div>
-												<label for="googlesitekit-opt-in">
-													<?php
-														$locale = str_replace( '_', '-', get_locale() );
-														echo wp_kses(
-															sprintf(
-																// translators: %s: https://policies.google.com/privacy?hl=LOCALE (where LOCALE is the current WordPress locale, translating the privacy policy if a translation exists).
-																__(
-																	'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with <a href="%s" rel="noopener noreferrer">Google Privacy Policy</a>.',
-																	'google-site-kit'
-																),
-																"https://policies.google.com/privacy?hl=${locale}"
-															),
-															array(
-																'a' => array(
-																	'href' => array(),
-																	'rel' => array(),
-																),
-															)
-														)
-													?>
-												</label>
-											</div>
-										</div>
-
-										<a id="start-setup-link" href="<?php echo esc_url( $sitekit_splash_url ); ?>" class="googlesitekit-activation__button googlesitekit-activation__start-setup mdc-button mdc-button--raised">
-											<?php esc_html_e( 'Start setup', 'google-site-kit' ); ?>
-										</a>
+						<div id="js-googlesitekit-activation" class="googlesitekit-activation googlesitekit-activation--loading">
+							<div class="googlesitekit-activation__loading">
+								<div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
+									<div class="mdc-linear-progress__buffering-dots"></div>
+									<div class="mdc-linear-progress__buffer"></div>
+									<div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+										<span class="mdc-linear-progress__bar-inner"></span>
+									</div>
+									<div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+										<span class="mdc-linear-progress__bar-inner"></span>
 									</div>
 								</div>
 							</div>
