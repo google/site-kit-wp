@@ -104,6 +104,7 @@ module.exports = ( env, argv ) => {
 		// Build the settings js..
 		{
 			entry: {
+				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
 				'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
 				'googlesitekit-dashboard': './assets/js/googlesitekit-dashboard.js',
 				'googlesitekit-dashboard-details': './assets/js/googlesitekit-dashboard-details.js',

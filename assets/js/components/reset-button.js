@@ -22,7 +22,6 @@
 import data, { TYPE_CORE } from 'GoogleComponents/data';
 import {
 	clearWebStorage,
-	getSiteKitAdminURL,
 } from 'GoogleUtil';
 import Dialog from 'GoogleComponents/dialog';
 
@@ -31,6 +30,7 @@ import Dialog from 'GoogleComponents/dialog';
  */
 import { __ } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -41,9 +41,11 @@ import Modal from './modal';
 export default class ResetButton extends Component {
 	constructor( props ) {
 		super( props );
+		const { splashURL } = window._googlesitekitBase;
 
 		this.state = {
 			dialogActive: false,
+			postResetURL: addQueryArgs( splashURL, { notification: 'reset_success' } ),
 		};
 
 		this.handleDialog = this.handleDialog.bind( this );
@@ -63,7 +65,7 @@ export default class ResetButton extends Component {
 		await data.set( TYPE_CORE, 'site', 'reset' );
 		clearWebStorage();
 		this.handleDialog();
-		document.location = getSiteKitAdminURL( 'googlesitekit-splash', { notification: 'reset_success' } );
+		document.location = this.state.postResetURL;
 	}
 
 	handleCloseModal( e ) {
