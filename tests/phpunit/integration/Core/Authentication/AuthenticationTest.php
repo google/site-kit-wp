@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_Meta;
+use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Exception\RedirectException;
@@ -121,7 +122,6 @@ class AuthenticationTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$credentials = new Credentials( new Options( $context ) );
 		$auth = new Authentication( $context );
 		$auth->register();
 
@@ -143,7 +143,7 @@ class AuthenticationTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$credentials = new Credentials( new Options( $context ) );
+		$credentials = new Credentials( new Encrypted_Options( new Options( $context ) ) );
 		$auth = new Authentication( $context );
 		$auth->register();
 		$google_proxy = new Google_Proxy( $context );
@@ -290,7 +290,7 @@ class AuthenticationTest extends TestCase {
 			$user_options->set( $key, "test-$key-value" );
 		}
 
-		$mock_google_client = $this->getMock( 'Google\Site_Kit_Dependencies\Google_Client', array( 'revokeToken' ) );
+		$mock_google_client = $this->getMock( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client', array( 'revokeToken' ) );
 		$mock_google_client->expects( $this->once() )->method( 'revokeToken' );
 		$this->force_set_property( $auth->get_oauth_client(), 'google_client', $mock_google_client );
 

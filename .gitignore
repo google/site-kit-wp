@@ -1,6 +1,9 @@
 node_modules
 bower_components
 vendor
+/php-scoper/*
+!/php-scoper/composer.*
+!/php-scoper/README.md
 /third-party
 release
 phpunit.xml

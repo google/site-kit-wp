@@ -17,7 +17,7 @@ namespace Google\Site_Kit\Core\Storage;
  * @access private
  * @ignore
  */
-final class Encrypted_Options {
+final class Encrypted_Options implements Options_Interface {
 
 	/**
 	 * Data Encryption API instance.

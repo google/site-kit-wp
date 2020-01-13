@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Core\Authentication${FILE_NAME}
+ * Class Google\Site_Kit\Tests\Core\Authentication\Google_ProxyTest
  *
  * @package   Google\Site_Kit\Tests\Core\Authentication
  * @copyright 2019 Google LLC

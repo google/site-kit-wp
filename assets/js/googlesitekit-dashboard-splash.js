@@ -19,14 +19,14 @@
 /**
  * External dependencies
  */
-import { clearAppLocalStorage } from 'GoogleUtil';
+import { clearWebStorage, loadTranslations } from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
+import 'GoogleComponents/notifications';
 
 /**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { setLocaleData } from '@wordpress/i18n';
 import { Component, render, Fragment } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
 
@@ -39,12 +39,10 @@ import NotificationCounter from './components/notifications/notification-counter
 class GoogleSitekitDashboardSplash extends Component {
 	constructor( props ) {
 		super( props );
+
 		this.state = {
 			hasError: false,
 		};
-
-		// Set up translations.
-		setLocaleData( googlesitekit.locale, 'google-site-kit' );
 	}
 
 	componentDidCatch( error, info ) {
@@ -66,7 +64,7 @@ class GoogleSitekitDashboardSplash extends Component {
 			return <Notification
 				id={ 'googlesitekit-error' }
 				key={ 'googlesitekit-error' }
-				title={ error }
+				title={ error.message }
 				description={ info.componentStack }
 				dismiss={ '' }
 				isDismissable={ false }
@@ -85,15 +83,17 @@ class GoogleSitekitDashboardSplash extends Component {
 }
 
 // Initialize the app once the DOM is ready.
-domReady( function() {
+domReady( () => {
 	if ( googlesitekit.admin.resetSession ) {
-		clearAppLocalStorage();
+		clearWebStorage();
 	}
 
-	const dashboardSplash = document.getElementById( 'js-googlesitekit-dashboard-splash' );
-	if ( null !== dashboardSplash ) {
-		// Render the Dashboard Splash App.
-		render( <GoogleSitekitDashboardSplash />, dashboardSplash );
+	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard-splash' );
+
+	if ( renderTarget ) {
+		loadTranslations();
+
+		render( <GoogleSitekitDashboardSplash />, renderTarget );
 
 		/**
 		 * Action triggered when the Dashboard Splash App is loaded.

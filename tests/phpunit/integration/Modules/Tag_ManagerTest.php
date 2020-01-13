@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Tag_Manager;
+use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -45,12 +46,11 @@ class Tag_ManagerTest extends TestCase {
 	public function test_on_deactivation() {
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options    = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$options->set( Tag_Manager::OPTION, 'test-value' );
-		$this->assertEquals( 'test-value', $options->get( Tag_Manager::OPTION ) );
+		$options->set( Settings::OPTION, 'test-value' );
 
 		$tagmanager->on_deactivation();
 
-		$this->assertFalse( $options->get( Tag_Manager::OPTION ) );
+		$this->assertOptionNotExists( Settings::OPTION );
 	}
 
 	public function test_scopes() {
@@ -61,6 +61,7 @@ class Tag_ManagerTest extends TestCase {
 				'https://www.googleapis.com/auth/tagmanager.readonly',
 				'https://www.googleapis.com/auth/tagmanager.edit.containers',
 				'https://www.googleapis.com/auth/tagmanager.manage.accounts',
+				'https://www.googleapis.com/auth/tagmanager.manage.users',
 			),
 			$tagmanager->get_scopes()
 		);
@@ -110,6 +111,8 @@ class Tag_ManagerTest extends TestCase {
 				'accounts-containers',
 				'containers',
 				'settings',
+				'tag-permission',
+				'accounts',
 			),
 			$tagmanager->get_datapoints()
 		);

@@ -3,4 +3,5 @@
 /assets/vendor/*
 /dist/*
 /tests/backstop/html_report/*
+/php-scoper/*
 /vendor/*

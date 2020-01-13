@@ -19,29 +19,27 @@
 /**
  * External dependencies
  */
-import { clearAppLocalStorage } from 'GoogleUtil';
+import { clearWebStorage, loadTranslations } from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
 import Setup from 'GoogleComponents/setup/setup-wrapper';
 import DashboardApp from 'GoogleComponents/dashboard/dashboard-app';
 import NotificationCounter from 'GoogleComponents/notifications/notification-counter';
+import 'GoogleComponents/notifications';
 
 /**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { setLocaleData } from '@wordpress/i18n';
 import { Component, render, Fragment } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
 
 class GoogleSitekitDashboard extends Component {
 	constructor( props ) {
 		super( props );
+
 		this.state = {
 			hasError: false,
 		};
-
-		// Set up translations.
-		setLocaleData( googlesitekit.locale, 'google-site-kit' );
 	}
 
 	componentDidCatch( error, info ) {
@@ -73,7 +71,7 @@ class GoogleSitekitDashboard extends Component {
 			return <Notification
 				id={ 'googlesitekit-error' }
 				key={ 'googlesitekit-error' }
-				title={ error }
+				title={ error.message }
 				description={ info.componentStack }
 				dismiss={ '' }
 				isDismissable={ false }
@@ -92,15 +90,17 @@ class GoogleSitekitDashboard extends Component {
 }
 
 // Initialize the app once the DOM is ready.
-domReady( function() {
+domReady( () => {
 	if ( googlesitekit.admin.resetSession ) {
-		clearAppLocalStorage();
+		clearWebStorage();
 	}
 
-	const dashboard = document.getElementById( 'js-googlesitekit-dashboard' );
-	if ( null !== dashboard ) {
-		// Render the Dashboard App.
-		render( <GoogleSitekitDashboard />, dashboard );
+	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard' );
+
+	if ( renderTarget ) {
+		loadTranslations();
+
+		render( <GoogleSitekitDashboard />, renderTarget );
 
 		/**
 		 * Action triggered when the dashboard App is loaded.

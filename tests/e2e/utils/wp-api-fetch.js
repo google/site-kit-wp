@@ -6,9 +6,15 @@
  * @return {*} resolved value from apiFetch promise.
  */
 export async function wpApiFetch( options ) {
-	// Wait until apiFetch is available on the client.
-	await page.waitForFunction( () => window.wp !== undefined );
-	await page.waitForFunction( () => window.wp.apiFetch !== undefined );
+	try {
+		// Wait until apiFetch is available on the client.
+		await page.waitForFunction( () => window.wp !== undefined );
+		await page.waitForFunction( () => window.wp.apiFetch !== undefined );
+	} catch ( e ) {
+		// eslint-disable-next-line no-console
+		console.warn( 'wpApiFetch failure', page.url(), JSON.stringify( options ) );
+		throw e;
+	}
 
 	return await page.evaluate( ( pageFetchOptions ) => {
 		return window.wp.apiFetch( pageFetchOptions );

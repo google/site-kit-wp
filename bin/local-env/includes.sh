@@ -6,6 +6,8 @@ DOCKER_COMPOSE_FILE_OPTIONS="-f $(dirname "$0")/docker-compose.yml"
 CLI='cli'
 CONTAINER='wordpress'
 SITE_TITLE='Google Site Kit Dev'
+# Set the name of the Docker Compose project.
+export COMPOSE_PROJECT_NAME='googlesitekit-e2e'
 
 ##
 # Ask a Yes/No question, and way for a reply.

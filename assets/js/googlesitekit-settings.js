@@ -22,22 +22,23 @@
  */
 import SettingsApp from 'GoogleComponents/settings/settings-app';
 import Notification from 'GoogleComponents/notifications/notification';
+import 'GoogleComponents/notifications';
+import { loadTranslations } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { setLocaleData } from '@wordpress/i18n';
 import { doAction } from '@wordpress/hooks';
 import { Component, render } from '@wordpress/element';
 
 class GoogleSitekitSettings extends Component {
 	constructor( props ) {
 		super( props );
-		this.state = { hasError: false };
 
-		// Set up translations.
-		setLocaleData( googlesitekit.locale, 'google-site-kit' );
+		this.state = {
+			hasError: false,
+		};
 	}
 
 	componentDidCatch( error, info ) {
@@ -59,7 +60,7 @@ class GoogleSitekitSettings extends Component {
 			return <Notification
 				id={ 'googlesitekit-error' }
 				key={ 'googlesitekit-error' }
-				title={ error }
+				title={ error.message }
 				description={ info.componentStack }
 				dismiss={ '' }
 				isDismissable={ false }
@@ -73,11 +74,13 @@ class GoogleSitekitSettings extends Component {
 }
 
 // Initialize the app once the DOM is ready.
-domReady( function() {
-	const settingsWrapper = document.getElementById( 'googlesitekit-settings-wrapper' );
-	if ( null !== settingsWrapper ) {
-		// Render the Settings App.
-		render( <GoogleSitekitSettings />, settingsWrapper );
+domReady( () => {
+	const renderTarget = document.getElementById( 'googlesitekit-settings-wrapper' );
+
+	if ( renderTarget ) {
+		loadTranslations();
+
+		render( <GoogleSitekitSettings />, renderTarget );
 
 		/**
 		 * Action triggered when the settings App is loaded.

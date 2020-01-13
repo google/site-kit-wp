@@ -160,7 +160,7 @@ class AnalyticsSetup extends Component {
 			return;
 		}
 
-		const settingsMapping = {
+		let settingsMapping = {
 			anonymizeIP: 'anonymizeIP',
 			selectedAccount: 'accountID',
 			selectedProperty: 'propertyID',
@@ -171,12 +171,17 @@ class AnalyticsSetup extends Component {
 			trackingDisabled: 'trackingDisabled',
 		};
 
+		// Prevent saving if "setup account" is chosen.
+		if ( '-1' === this.state.selectedAccount ) {
+			settingsMapping = {};
+		}
+
 		toggleConfirmModuleSettings( 'analytics', settingsMapping, this.state );
 	}
 
 	handleAccountChange( index, item ) {
 		const { selectedAccount } = this.state;
-		const selectValue = item.getAttribute( 'data-value' );
+		const selectValue = item.dataset.value;
 
 		if ( selectValue === selectedAccount ) {
 			return;
@@ -209,12 +214,15 @@ class AnalyticsSetup extends Component {
 		// Track selection.
 		sendAnalyticsTrackingEvent( 'analytics_setup', 'account_change', selectValue );
 
-		this.processAccountChange( selectValue );
+		// Don't query accounts if "setup a new account" was chosen.
+		if ( '-1' !== selectValue ) {
+			this.processAccountChange( selectValue );
+		}
 	}
 
 	handlePropertyChange( index, item ) {
 		const { selectedProperty } = this.state;
-		const selectValue = item.getAttribute( 'data-value' );
+		const selectValue = item.dataset.value;
 
 		if ( selectValue === selectedProperty ) {
 			return;
@@ -245,7 +253,7 @@ class AnalyticsSetup extends Component {
 	}
 
 	handleProfileChange( index, item ) {
-		const selectValue = item.getAttribute( 'data-value' );
+		const selectValue = item.dataset.value;
 
 		this.setState( {
 			selectedProfile: selectValue,
@@ -309,6 +317,12 @@ class AnalyticsSetup extends Component {
 						name: __( 'Select one...', 'google-site-kit' ),
 					} );
 				}
+			} else if ( '0' === selectedAccount ) {
+				// Accounts were just refreshed.
+				responseData.accounts.unshift( {
+					id: 0,
+					name: __( 'Select one...', 'google-site-kit' ),
+				} );
 			} else if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.id === selectedAccount ) ) {
 				data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 
@@ -570,13 +584,19 @@ class AnalyticsSetup extends Component {
 	}
 
 	handleRefetchAccount() {
-		this.setState( {
-			isLoading: true,
-			errorCode: false,
-			errorMsg: '',
-		} );
-
-		this.getAccounts();
+		this.setState(
+			{
+				isLoading: true,
+				errorCode: false,
+				errorMsg: '',
+				selectedAccount: '0',
+				selectedProperty: '-1',
+				selectedProfile: '-1',
+				propertiesLoading: false,
+				profilesLoading: false,
+			},
+			this.getAccounts
+		);
 	}
 
 	handleExclusionsChange( e ) {
@@ -731,6 +751,7 @@ class AnalyticsSetup extends Component {
 
 		return (
 			<Select
+				className="googlesitekit-analytics__select-account"
 				enhanced
 				name="accounts"
 				value={ selectedAccount || '0' }
@@ -739,13 +760,16 @@ class AnalyticsSetup extends Component {
 				disabled={ disabled }
 				outlined
 			>
-				{ accounts.map( ( account, id ) =>
-					<Option
-						key={ id }
-						value={ account.id }
-					>
-						{ account.name }
-					</Option> ) }
+				{ accounts
+					.concat( ! existingTag ? [ { id: '-1', name: __( 'Set up a new account', 'google-site-kit' ) } ] : [] )
+					.map( ( account, id ) =>
+						<Option
+							key={ id }
+							value={ account.id }
+						>
+							{ account.name }
+						</Option>
+					) }
 			</Select>
 		);
 	}
@@ -790,13 +814,19 @@ class AnalyticsSetup extends Component {
 			return null;
 		}
 
-		if ( 0 >= accounts.length ) {
+		if ( ! accounts.length || '-1' === selectedAccount ) {
 			if ( ! isEditing ) {
 				return __( 'No account found.', 'google-site-kit' );
 			}
 			if ( ! setupComplete || isEditing ) {
 				return (
 					<Fragment>
+						{ '-1' === selectedAccount &&
+							<Fragment>
+								<p>{ __( 'To create a new account, click the button below which will open the Google Analytics account creation screen in a new window.', 'google-site-kit' ) }</p>
+								<p>{ __( 'Once completed, click the link below to re-fetch your accounts to continue.', 'google-site-kit' ) }</p>
+							</Fragment>
+						}
 						<div className="googlesitekit-setup-module__action">
 							<Button onClick={ AnalyticsSetup.createNewAccount }>{ __( 'Create an account', 'google-site-kit' ) }</Button>
 
@@ -906,6 +936,7 @@ class AnalyticsSetup extends Component {
 					{ this.accountsDropdown() }
 					{ propertiesLoading ? ( <ProgressBar small /> ) : (
 						<Select
+							className="googlesitekit-analytics__select-property"
 							enhanced
 							name="properties"
 							value={ selectedProperty || selectedProperty === 0 ? selectedProperty.toString() : '-1' }
@@ -925,6 +956,7 @@ class AnalyticsSetup extends Component {
 					) }
 					{ profilesLoading ? ( <ProgressBar small /> ) : (
 						<Select
+							className="googlesitekit-analytics__select-profile"
 							enhanced
 							name="profiles"
 							value={ selectedProfile || selectedProfile === 0 ? selectedProfile.toString() : '-1' }
@@ -1012,7 +1044,7 @@ class AnalyticsSetup extends Component {
 
 		switch ( true ) {
 			case 'google_analytics_existing_tag_permission' === errorCode:
-				showErrorFormat = false;
+				showErrorFormat = true;
 				break;
 			case onSettingsPage && errorCode && 'insufficientPermissions' === errorReason:
 				showErrorFormat = false;

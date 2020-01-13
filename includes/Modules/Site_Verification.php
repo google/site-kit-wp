@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Verification_File;
 use Google\Site_Kit\Core\Modules\Module;
@@ -18,7 +19,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Exit_Handler;
-use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_SiteVerification;
 use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequest;
@@ -167,10 +167,8 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 						$this->authentication->verification_meta()->set( $token['token'] );
 
-						$client     = $this->get_client();
-						$orig_defer = $client->shouldDefer();
-						$client->setDefer( false );
-						$errors = new WP_Error();
+						$restore_defer = $this->with_client_defer( false );
+						$errors        = new WP_Error();
 
 						foreach ( $this->permute_site_url( $data['siteURL'] ) as $url ) {
 							$site = new Google_Service_SiteVerification_SiteVerificationWebResourceResourceSite();
@@ -191,7 +189,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 							}
 						}
 
-						$client->setDefer( $orig_defer );
+						$restore_defer();
 
 						if ( empty( $sites ) ) {
 							return $errors;
@@ -357,12 +355,13 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * for the first time.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Now requires Google_Site_Kit_Client instance.
 	 *
-	 * @param Google_Client $client Google client instance.
+	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
 	 *               instance of Google_Service.
 	 */
-	protected function setup_services( Google_Client $client ) {
+	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
 			'siteverification' => new Google_Service_SiteVerification( $client ),
 		);

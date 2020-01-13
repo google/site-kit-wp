@@ -11,15 +11,24 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager;
+use Google\Site_Kit_Dependencies\Google_Service_TagManager_Account;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
+use Google\Site_Kit_Dependencies\Google_Service_TagManager_ContainerAccess;
+use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListAccountsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListContainersResponse;
+use Google\Site_Kit_Dependencies\Google_Service_TagManager_UserPermission;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
@@ -31,10 +40,8 @@ use Exception;
  * @access private
  * @ignore
  */
-final class Tag_Manager extends Module implements Module_With_Scopes {
-	use Module_With_Scopes_Trait;
-
-	const OPTION = 'googlesitekit_tagmanager_settings';
+final class Tag_Manager extends Module implements Module_With_Scopes, Module_With_Settings {
+	use Module_With_Scopes_Trait, Module_With_Settings_Trait;
 
 	/**
 	 * Container usage context for web.
@@ -45,6 +52,14 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * Container usage context for AMP.
 	 */
 	const USAGE_CONTEXT_AMP = 'amp';
+
+	/**
+	 * Settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Settings
+	 */
+	protected $settings;
 
 	/**
 	 * Map of container usageContext to option key for containerID.
@@ -75,27 +90,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 			'wp_footer',
 			function() {
 				$this->print_gtm_no_js();
-			}
-		);
-
-		add_filter(
-			'option_' . self::OPTION,
-			function ( $option ) {
-				if ( ! is_array( $option ) ) {
-					$option = array();
-				}
-
-				// TODO: Remove this at some point (migration of old option).
-				if ( isset( $option['container_id'] ) && ! isset( $option['containerID'] ) ) {
-					$option['containerID'] = $option['container_id'];
-				}
-				if ( isset( $option['containerId'] ) && ! isset( $option['containerID'] ) ) {
-					$option['containerID'] = $option['containerId'];
-				}
-				// Ensure old keys are removed regardless. No-op if not set.
-				unset( $option['container_id'], $option['containerId'] );
-
-				return $option;
 			}
 		);
 
@@ -138,6 +132,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 			'https://www.googleapis.com/auth/tagmanager.readonly',
 			'https://www.googleapis.com/auth/tagmanager.edit.containers',
 			'https://www.googleapis.com/auth/tagmanager.manage.accounts',
+			'https://www.googleapis.com/auth/tagmanager.manage.users',
 		);
 	}
 
@@ -155,7 +150,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 			__( 'Create tags without updating code', 'google-site-kit' ),
 		);
 
-		$info['settings'] = $this->get_data( 'connection' );
+		$info['settings'] = $this->get_settings()->get();
 
 		return $info;
 	}
@@ -185,7 +180,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * @since 1.0.0
 	 */
 	public function on_deactivation() {
-		$this->options->delete( self::OPTION );
+		$this->get_settings()->delete();
 	}
 
 	/**
@@ -194,6 +189,10 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * @since 1.0.0
 	 */
 	protected function print_gtm_js() {
+		if ( ! $this->should_output_snippet() ) {
+			return;
+		}
+
 		// On AMP, do not print the script tag, falling back to 'amp_analytics_entries' below.
 		if ( $this->context->is_amp() ) {
 			return;
@@ -227,6 +226,10 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * @since 1.0.0
 	 */
 	protected function print_gtm_no_js() {
+		if ( ! $this->should_output_snippet() ) {
+			return;
+		}
+
 		// On AMP, do not print the script tag.
 		if ( $this->context->is_amp() ) {
 			return;
@@ -253,6 +256,10 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * @since 1.0.0
 	 */
 	protected function print_amp_gtm() {
+		if ( ! $this->should_output_snippet() ) {
+			return;
+		}
+
 		if ( ! $this->context->is_amp() ) {
 			return;
 		}
@@ -268,6 +275,22 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 		<amp-analytics config="<?php echo esc_url( "https://www.googletagmanager.com/amp.json?id=$container_id" ); ?>" data-credentials="include"></amp-analytics>
 		<!-- End Google Tag Manager -->
 		<?php
+	}
+
+	/**
+	 * Checks whether or not the code snippet should be output.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool
+	 */
+	protected function should_output_snippet() {
+		// Don't output snippets for Site Kit existing tag checks.
+		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
+			return false;
+		}
+
+		return $this->get_settings()->get()['useSnippet'];
 	}
 
 	/**
@@ -346,8 +369,10 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 			'account-id'          => '',
 			'container-id'        => '',
 			// GET.
+			'accounts'            => 'tagmanager',
 			'accounts-containers' => 'tagmanager',
 			'containers'          => 'tagmanager',
+			'tag-permission'      => 'tagmanager',
 			// POST.
 			'settings'            => '',
 		);
@@ -366,23 +391,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:account-id':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
-					// TODO: Remove this at some point (migration of old option).
-					if ( isset( $option['account_id'] ) ) {
-						if ( ! isset( $option['accountID'] ) ) {
-							$option['accountID'] = $option['account_id'];
-						}
-						unset( $option['account_id'] );
-						$this->options->set( self::OPTION, $option );
-					}
-
-					// TODO: Remove this at some point (migration of old 'accountId' option).
-					if ( isset( $option['accountId'] ) ) {
-						if ( ! isset( $option['accountID'] ) ) {
-							$option['accountID'] = $option['accountId'];
-						}
-						unset( $option['accountId'] );
-					}
+					$option = $this->get_settings()->get();
 
 					if ( empty( $option['accountID'] ) ) {
 						return new WP_Error( 'account_id_not_set', __( 'Tag Manager account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
@@ -395,76 +404,42 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option              = (array) $this->options->get( self::OPTION );
+					$option              = $this->get_settings()->get();
 					$option['accountID'] = $data['accountID'];
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return true;
 				};
+			// Intentional fallthrough.
+			case 'GET:accounts':
 			case 'GET:accounts-containers':
-				$service = $this->get_service( 'tagmanager' );
-				return $service->accounts->listAccounts();
+				return $this->get_tagmanager_service()->accounts->listAccounts();
 			case 'GET:connection':
 				return function() {
-					$option = (array) $this->options->get( self::OPTION );
-					// TODO: Remove this at some point (migration of old options).
-					if ( isset( $option['account_id'] ) || isset( $option['container_id'] ) ) {
-						if ( isset( $option['account_id'] ) ) {
-							if ( ! isset( $option['accountID'] ) ) {
-								$option['accountID'] = $option['account_id'];
-							}
-							unset( $option['account_id'] );
-						}
-						if ( isset( $option['container_id'] ) ) {
-							if ( ! isset( $option['containerID'] ) ) {
-								$option['containerID'] = $option['container_id'];
-							}
-							unset( $option['container_id'] );
-						}
-						$this->options->set( self::OPTION, $option );
-					}
+					$option = $this->get_settings()->get();
 
-					// TODO: Remove this at some point (migration of old 'accountId' option).
-					if ( isset( $option['accountId'] ) ) {
-						if ( ! isset( $option['accountID'] ) ) {
-							$option['accountID'] = $option['accountId'];
-						}
-						unset( $option['accountId'] );
-					}
-
-					// TODO: Remove this at some point (migration of old 'containerId' option).
-					if ( isset( $option['containerId'] ) ) {
-						if ( ! isset( $option['containerID'] ) ) {
-							$option['containerID'] = $option['containerId'];
-						}
-						unset( $option['containerId'] );
-					}
-
-					$defaults = array(
+					$connection = array(
 						'accountID'      => '',
 						'containerID'    => '',
 						'ampContainerID' => '',
 					);
 
-					return array_intersect_key(
-						array_merge( $defaults, $option ),
-						$defaults
-					);
+					return array_intersect_key( $option, $connection );
 				};
 			case 'POST:connection':
 				return function() use ( $data ) {
-					$option = (array) $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 					$keys   = array( 'accountID', 'containerID' );
 					foreach ( $keys as $key ) {
 						if ( isset( $data[ $key ] ) ) {
 							$option[ $key ] = $data[ $key ];
 						}
 					}
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return true;
 				};
 			case 'GET:container-id':
 				return function() use ( $data ) {
-					$option = $this->options->get( self::OPTION );
+					$option = $this->get_settings()->get();
 
 					$usage_context        = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
 					$valid_usage_contexts = array_keys( $this->context_map );
@@ -500,9 +475,9 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option                = (array) $this->options->get( self::OPTION );
+					$option                = $this->get_settings()->get();
 					$option['containerID'] = $data['containerID'];
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 					return true;
 				};
 			case 'GET:containers':
@@ -510,8 +485,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 					/* translators: %s: Missing parameter name */
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
-				$service = $this->get_service( 'tagmanager' );
-				return $service->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
+				return $this->get_tagmanager_service()->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
 			case 'POST:settings':
 				if ( ! isset( $data['accountID'] ) ) {
 					/* translators: %s: Missing parameter name */
@@ -530,15 +504,12 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 				}
 
 				return function() use ( $data, $usage_context ) {
-					$option = array_merge(
-						$this->options->get( self::OPTION ) ?: array(),
-						array( 'accountID' => $data['accountID'] )
-					);
+					$old_option  = $this->get_settings()->get();
+					$data_option = array_intersect_key( $data->data, $old_option );
+					$option      = array_merge( $old_option, $data_option );
 
 					$container_key = $this->context_map[ $usage_context ];
 					$container_id  = $data[ $container_key ];
-
-					$option[ $container_key ] = $container_id;
 
 					if ( '0' === $container_id ) {
 						$create_container_response = $this->create_container( $data['accountID'], $usage_context );
@@ -550,10 +521,34 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 						$option[ $container_key ] = $create_container_response;
 					}
 
-					$this->options->set( self::OPTION, $option );
+					$this->get_settings()->set( $option );
 
 					return $option;
 				};
+			case 'GET:tag-permission':
+				return function () use ( $data ) {
+					if ( ! isset( $data['tag'] ) ) {
+						return new WP_Error(
+							'missing_required_param',
+							/* translators: %s: Missing parameter name */
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'tag' ),
+							array( 'status' => 400 )
+						);
+					}
+
+					$profile = new Profile( $this->user_options );
+
+					if ( ! $profile->has() ) {
+						return new WP_Error(
+							'missing_google_account',
+							__( 'Missing information about the authenticated Google account.', 'google-site-kit' ),
+							array( 'status' => 500 )
+						);
+					}
+
+					return $this->get_container_access( $data['tag'], $profile->get()['email'] );
+				};
+
 		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
@@ -569,9 +564,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * @return mixed Container ID on success, or WP_Error on failure.
 	 */
 	protected function create_container( $account_id, $usage_context = self::USAGE_CONTEXT_WEB ) {
-		$client     = $this->get_client();
-		$orig_defer = $client->shouldDefer();
-		$client->setDefer( false );
+		$restore_defer = $this->with_client_defer( false );
 
 		// Use site name for container, fallback to domain of reference URL.
 		$container_name = get_bloginfo( 'name' ) ?: wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
@@ -582,20 +575,20 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 		$container->setUsageContext( (array) $usage_context );
 
 		try {
-			$container = $this->get_service( 'tagmanager' )->accounts_containers->create( "accounts/{$account_id}", $container );
+			$container = $this->get_tagmanager_service()->accounts_containers->create( "accounts/{$account_id}", $container );
 		} catch ( Google_Service_Exception $e ) {
-			$client->setDefer( $orig_defer );
+			$restore_defer();
 			$message = $e->getErrors();
 			if ( isset( $message[0]['message'] ) ) {
 				$message = $message[0]['message'];
 			}
 			return new WP_Error( $e->getCode(), $message );
 		} catch ( Exception $e ) {
-			$client->setDefer( $orig_defer );
+			$restore_defer();
 			return new WP_Error( $e->getCode(), $e->getMessage() );
 		}
 
-		$client->setDefer( $orig_defer );
+		$restore_defer();
 		return $container->getPublicId();
 	}
 
@@ -611,7 +604,11 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:accounts':
+				/* @var Google_Service_TagManager_ListAccountsResponse $response List accounts response. */
+				return $response->getAccount();
 			case 'GET:accounts-containers':
+				/* @var Google_Service_TagManager_ListAccountsResponse $response List accounts response. */
 				$response = array(
 					// TODO: Parse this response to a regular array.
 					'accounts'   => $response->getAccount(),
@@ -669,6 +666,126 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	}
 
 	/**
+	 * Gets the access levels for the given container and its account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $container_id Property found in the existing tag.
+	 * @param string $user_email   User email address to get access for.
+	 *
+	 * @return WP_Error|array {
+	 *     @type Google_Service_TagManager_Account   $account             Account model instance.
+	 *     @type string                              $accountPermission   Permission identifier for account.
+	 *     @type Google_Service_TagManager_Container $container           Container model instance.
+	 *     @type string                              $containerPermission Permission identifier for container.
+	 * }
+	 */
+	protected function get_container_access( $container_id, $user_email ) {
+		$response = array(
+			'account'             => false,
+			'accountPermission'   => false,
+			'container'           => false,
+			'containerPermission' => false,
+		);
+
+		if ( ! $container_id ) {
+			return $response;
+		}
+
+		$accounts = $this->get_data( 'accounts' );
+
+		if ( is_wp_error( $accounts ) ) {
+			return $accounts;
+		}
+
+		try {
+			list ( $account, $container ) = $this->get_account_for_container( $container_id, $accounts );
+			/* @var Google_Service_TagManager_Account $account Account instance. */
+			$response['account'] = $account;
+			/* @var Google_Service_TagManager_Container $container Container instance. */
+			$response['container'] = $container;
+		} catch ( Exception $e ) {
+			return $response;
+		}
+
+		/* @var Google_Service_TagManager_UserPermission[] $user_permissions User Permission instances. */
+		$user_permissions = $this->get_tagmanager_service()->accounts_user_permissions
+			->listAccountsUserPermissions( 'accounts/' . $account->getAccountId() )
+			->getUserPermission();
+
+		// Filter the permissions down to only those for the given user by email.
+		$user_permissions = array_filter(
+			$user_permissions,
+			function ( Google_Service_TagManager_UserPermission $user_permission ) use ( $user_email ) {
+				return $user_email === $user_permission->getEmailAddress();
+			}
+		);
+
+		/* @var Google_Service_TagManager_UserPermission $user_permission User Permission instance. */
+		$user_permission = array_shift( $user_permissions );
+		if ( ! $user_permission ) {
+			return $response;
+		}
+
+		$response['accountPermission'] = $user_permission->getAccountAccess()->getPermission();
+
+		foreach ( (array) $user_permission->getContainerAccess() as $container_access ) {
+			/* @var Google_Service_TagManager_ContainerAccess $container_access Container access instance. */
+			if ( $container->getContainerId() === $container_access->getContainerId() ) {
+				$response['containerPermission'] = $container_access->getPermission();
+				return $response;
+			}
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Finds the account for the given container *public ID* from the given list of accounts.
+	 *
+	 * There is no way to query a container by its public ID (the ID that identifies the container on the client)
+	 * so we must find it by listing the containers of the available accounts and matching on the public ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string                              $container_id Container public ID (e.g. GTM-ABCDEFG).
+	 * @param Google_Service_TagManager_Account[] $accounts All accounts available to the current user.
+	 *
+	 * @return array [ Google_Service_TagManager_Account, Google_Service_TagManager_Container ]
+	 * @throws Exception Thrown if the given container ID does not belong to any of the given accounts.
+	 */
+	private function get_account_for_container( $container_id, $accounts ) {
+		foreach ( (array) $accounts as $account ) {
+			/* @var Google_Service_TagManager_Account $account Tag manager account */
+			$containers = $this->get_data( 'containers', array( 'accountID' => $account->getAccountId() ) );
+
+			if ( is_wp_error( $containers ) ) {
+				break;
+			}
+
+			foreach ( (array) $containers as $container ) {
+				/* @var Google_Service_TagManager_Container $container Container instance */
+				if ( $container_id === $container->getPublicId() ) {
+					return [ $account, $container ];
+				}
+			}
+		}
+		throw new Exception( __( 'No account found for given container', 'google-site-kit' ) );
+	}
+
+	/**
+	 * Gets the configured TagManager service instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Google_Service_TagManager instance.
+	 * @throws Exception Thrown if the module did not correctly set up the service.
+	 */
+	private function get_tagmanager_service() {
+		return $this->get_service( 'tagmanager' );
+	}
+
+	/**
 	 * Sets up information about the module.
 	 *
 	 * @since 1.0.0
@@ -697,14 +814,26 @@ final class Tag_Manager extends Module implements Module_With_Scopes {
 	 * for the first time.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Now requires Google_Site_Kit_Client instance.
 	 *
-	 * @param Google_Client $client Google client instance.
+	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
 	 *               instance of Google_Service.
 	 */
-	protected function setup_services( Google_Client $client ) {
+	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
 			'tagmanager' => new Google_Service_TagManager( $client ),
 		);
+	}
+
+	/**
+	 * Sets up the module's settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Module_Settings
+	 */
+	protected function setup_settings() {
+		return new Settings( $this->options );
 	}
 }

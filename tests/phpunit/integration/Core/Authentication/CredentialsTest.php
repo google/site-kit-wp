@@ -24,7 +24,7 @@ class CredentialsTest extends TestCase {
 	public function test_get() {
 		$options           = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$encrypted_options = new Encrypted_Options( $options );
-		$credentials       = new Credentials( $options );
+		$credentials       = new Credentials( $encrypted_options );
 
 		$this->assertFalse( $encrypted_options->get( Credentials::OPTION ) );
 		$this->assertEqualSets(
@@ -63,7 +63,7 @@ class CredentialsTest extends TestCase {
 	public function test_set() {
 		$options           = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$encrypted_options = new Encrypted_Options( $options );
-		$credentials       = new Credentials( $options );
+		$credentials       = new Credentials( $encrypted_options );
 
 		$this->assertFalse( $encrypted_options->get( Credentials::OPTION ) );
 		$this->assertTrue( $credentials->set( array( 'test-credentials' ) ) );
@@ -73,7 +73,7 @@ class CredentialsTest extends TestCase {
 	public function test_has() {
 		$options           = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$encrypted_options = new Encrypted_Options( $options );
-		$credentials       = new Credentials( $options );
+		$credentials       = new Credentials( $encrypted_options );
 
 		$this->assertFalse( $options->get( Credentials::OPTION ) );
 		$this->assertFalse( $credentials->has() );

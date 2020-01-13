@@ -32,7 +32,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { analyticsAdsenseReportDataDefaults } from '../analytics/util';
+import { analyticsAdsenseReportDataDefaults } from '../../analytics/util';
 
 export function reduceAdSenseData( rows ) {
 	const dataMap = [

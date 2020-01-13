@@ -13,6 +13,7 @@ import {
  */
 import {
 	logoutUser,
+	safeLoginUser,
 	setAuthToken,
 	setSearchConsoleProperty,
 	setSiteVerification,
@@ -30,6 +31,10 @@ describe( 'the set up flow for the second administrator', () => {
 					headers: {
 						location: createURL( '/', 'oauth2callback=1&code=valid-test-code' ),
 					},
+				} );
+			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
+				request.respond( {
+					status: 200,
 				} );
 			} else {
 				request.continue();
@@ -55,8 +60,10 @@ describe( 'the set up flow for the second administrator', () => {
 		await loginUser();
 	} );
 
-	it( 'admin 2', async () => {
-		await loginUser( 'admin-2', 'password' );
+	it( 'connects a secondary admin after the initial set up', async () => {
+		await safeLoginUser( 'admin-2', 'password' );
+		// Ensure we're logged in with the correct user.
+		await expect( page ).toMatchElement( '#wp-admin-bar-user-info .display-name', { text: 'admin-2' } );
 
 		// Simulate that the user is already verified.
 		await wpApiFetch( {
