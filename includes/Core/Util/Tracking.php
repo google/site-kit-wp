@@ -209,6 +209,7 @@ final class Tracking {
 	 * @since n.e.x.t Registers a meta field instead of setting.
 	 */
 	private function register_settings() {
+		global $wpdb;
 		$args = array(
 			'type'         => 'boolean',
 			'description'  => __( 'Allowing tracking of anonymous usage stats.', 'google-site-kit' ),
@@ -216,6 +217,7 @@ final class Tracking {
 			'single'       => true,
 			'show_in_rest' => true,
 		);
-		register_meta( 'user', self::TRACKING_OPTIN_KEY, $args );
+		// Need to include the blog prefix as this is a user option.
+		register_meta( 'user', $wpdb->get_blog_prefix() . self::TRACKING_OPTIN_KEY, $args );
 	}
 }
