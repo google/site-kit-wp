@@ -81,6 +81,9 @@ window.googlesitekit.admin = window.googlesitekit.admin || googlesitekit.admin;
 window.googlesitekit.modules = window.googlesitekit.modules || googlesitekit.modules;
 window.googlesitekit.admin.assetsRoot = '/assets/';
 window.googlesitekit.isStorybook = true;
+window._googlesitekitBase = {
+	trackingUserOptInKey: 'wp_googlesitekit_tracking_optin',
+};
 window.wp.apiFetch = ( vars ) => {
 	const matches = vars.path.match( '/google-site-kit/v1/modules/(.*)/data/(.*[^/])' );
 
