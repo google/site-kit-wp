@@ -38,7 +38,6 @@ class Optin extends Component {
 			scriptOnPage: !! window.googlesitekitTrackingEnabled,
 			optIn: !! window.googlesitekitTrackingEnabled,
 			error: false,
-			trackingUserOptInKey: getMetaKeyForUserOption( 'googlesitekit_tracking_optin' ),
 		};
 
 		this.handleOptIn = this.handleOptIn.bind( this );
@@ -46,7 +45,7 @@ class Optin extends Component {
 
 	handleOptIn( e ) {
 		const checked = !! e.target.checked;
-		const { trackingUserOptInKey } = this.state;
+		const trackingUserOptInKey = getMetaKeyForUserOption( 'googlesitekit_tracking_optin' );
 
 		apiFetch( {
 			path: '/wp/v2/users/me',
