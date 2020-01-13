@@ -8,6 +8,7 @@ module.exports = {
 	},
 	setupFiles: [
 		'<rootDir>/tests/js/setup-globals',
+		'<rootDir>/tests/js/setup-mocks',
 		'jest-localstorage-mock',
 	],
 	setupFilesAfterEnv: [

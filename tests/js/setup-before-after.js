@@ -7,4 +7,6 @@ beforeEach( () => {
 		localStorage[ method ].mockClear();
 		sessionStorage[ method ].mockClear();
 	} );
+
+	fetch.resetMocks();
 } );
