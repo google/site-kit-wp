@@ -529,6 +529,7 @@ final class Assets {
 			'adminRoot'        => esc_url_raw( get_admin_url() . 'admin.php' ),
 			'assetsRoot'       => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
 			'blogPrefix'       => $wpdb->get_blog_prefix(),
+			'isNetworkMode'    => $this->context->is_network_mode(),
 		);
 
 		/**
