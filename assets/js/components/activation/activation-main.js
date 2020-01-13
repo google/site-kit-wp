@@ -33,7 +33,7 @@ import Button from '../button';
 import Logo from '../logo';
 import Optin from '../optin';
 
-export function ActivationMain( { setupURL, onStartSetup, startSetupButtonText } ) {
+export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
 	return (
 		<div className="mdc-layout-grid">
 			<div className="mdc-layout-grid__inner">
@@ -54,10 +54,10 @@ export function ActivationMain( { setupURL, onStartSetup, startSetupButtonText }
 					<Button
 						id="start-setup-link"
 						className="googlesitekit-start-setup googlesitekit-activation__button"
-						href={ setupURL }
-						onClick={ onStartSetup }
+						href={ buttonURL }
+						onClick={ onButtonClick }
 					>
-						{ startSetupButtonText }
+						{ buttonLabel }
 					</Button>
 				</div>
 			</div>
@@ -66,7 +66,7 @@ export function ActivationMain( { setupURL, onStartSetup, startSetupButtonText }
 }
 
 ActivationMain.propTypes = {
-	setupURL: PropTypes.string.isRequired,
-	onStartSetup: PropTypes.func,
-	startSetupButtonText: PropTypes.string.isRequired,
+	buttonURL: PropTypes.string.isRequired,
+	onButtonClick: PropTypes.func,
+	buttonLabel: PropTypes.string.isRequired,
 };

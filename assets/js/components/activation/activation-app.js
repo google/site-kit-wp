@@ -73,21 +73,21 @@ export class ActivationApp extends Component {
 		const { canViewDashboard } = googlesitekit.permissions;
 		const { dashboardPermalink } = googlesitekit;
 
-		let setupURL = proxySetupURL || splashURL;
-		let startSetupButtonText = __( 'Start setup', 'google-site-kit' );
+		let buttonURL = proxySetupURL || splashURL;
+		let buttonLabel = __( 'Start setup', 'google-site-kit' );
 
 		if ( canViewDashboard ) {
-			setupURL = dashboardPermalink;
-			startSetupButtonText = __( 'Go to Dashboard', 'google-site-kit' );
+			buttonURL = dashboardPermalink;
+			buttonLabel = __( 'Go to Dashboard', 'google-site-kit' );
 		}
 
 		return (
 			<Fragment>
 				<NotificationCounter />
 				<ActivationMain
-					setupURL={ setupURL }
-					startSetupButtonText={ startSetupButtonText }
-					onStartSetup={ () => {
+					buttonURL={ buttonURL }
+					buttonLabel={ buttonLabel }
+					onButtonClick={ () => {
 						sendAnalyticsTrackingEvent( 'plugin_setup', proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
 					} }
 				/>
