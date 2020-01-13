@@ -89,6 +89,26 @@ describe( 'googlesitekit.api', () => {
 			expect( response ).toEqual( { foo: 'bar' } );
 		} );
 
+		it( 'should send query string params from data params', async () => {
+			fetch
+				.doMockIf(
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/search/
+				)
+				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+
+			const dataBody = { somethingElse: 'to-set', foo: 1, arrayValue: [ 1, 2 ] };
+			await get( 'core', 'search-console', 'search', dataBody );
+			expect( fetch ).toHaveBeenCalledWith(
+				'/google-site-kit/v1/core/search-console/data/search?somethingElse=to-set&foo=1&arrayValue%5B0%5D=1&arrayValue%5B1%5D=2&_locale=user',
+				{
+					body: undefined,
+					credentials: 'include',
+					headers: { Accept: 'application/json, */*;q=0.1' },
+					method: 'GET',
+				}
+			);
+		} );
+
 		it( 'should throw an error if the fetch request encounters a 404 error code', async () => {
 			const errorResponse = {
 				code: 'rest_no_route',
@@ -267,6 +287,55 @@ describe( 'googlesitekit.api', () => {
 			} catch ( error ) {
 				expect( error.message ).toEqual( '`datapoint` argument for requests is required.' );
 			}
+		} );
+
+		it( 'should send request body data from data params', async () => {
+			fetch
+				.doMockIf(
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/
+				)
+				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+
+			const dataBody = { somethingElse: 'to-set', foo: 1, arrayValue: [ 1, 2 ] };
+			await set( 'core', 'search-console', 'settings', dataBody );
+			expect( fetch ).toHaveBeenCalledWith(
+				'/google-site-kit/v1/core/search-console/data/settings?_locale=user',
+				{
+					body: JSON.stringify( dataBody ),
+					credentials: 'include',
+					headers: {
+						Accept: 'application/json, */*;q=0.1',
+						'Content-Type': 'application/json',
+					},
+					method: 'POST',
+				}
+			);
+		} );
+
+		it( 'should send request body data from data params and query params if set', async () => {
+			fetch
+				.doMockIf(
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/
+				)
+				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+
+			const dataBody = { somethingElse: 'to-set', foo: 1, arrayValue: [ 1, 2 ] };
+			await set( 'core', 'search-console', 'settings', dataBody, {
+				queryParams: { foo: 'bar' },
+			} );
+
+			expect( fetch ).toHaveBeenCalledWith(
+				'/google-site-kit/v1/core/search-console/data/settings?foo=bar&_locale=user',
+				{
+					body: JSON.stringify( dataBody ),
+					credentials: 'include',
+					headers: {
+						Accept: 'application/json, */*;q=0.1',
+						'Content-Type': 'application/json',
+					},
+					method: 'POST',
+				}
+			);
 		} );
 
 		it( 'should never use the cache for set requests', async () => {

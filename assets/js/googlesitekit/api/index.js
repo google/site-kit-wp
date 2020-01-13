@@ -140,7 +140,7 @@ export const set = async (
 	{ method = 'POST', queryParams = {} } = {}
 ) => {
 	const response = await siteKitRequest( type, identifier, datapoint, {
-		data,
+		bodyParams: data,
 		method,
 		queryParams,
 		useCache: false,
