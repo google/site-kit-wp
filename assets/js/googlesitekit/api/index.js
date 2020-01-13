@@ -19,12 +19,14 @@ import { createCacheKey } from './index.private';
 let cachingEnabled = true;
 
 /**
+ * Make a request to a WP REST API Site Kit endpoint.
  *
  * @param {string} type        The data to access. One of 'core' or 'modules'.
  * @param {string} identifier  The data identifier, eg. a module slug like `'search-console'`.
  * @param {string} datapoint   The endpoint to request data from.
  * @param {Object} queryParams Query params to send with the request.
  * @param {Object} data        Request data to send.
+ * @param {Object} useCache    Set to `true` to use the caching. Caching is only used for `GET` requests.
  */
 const siteKitRequest = async ( {
 	cacheTTL = 3600,
@@ -40,7 +42,10 @@ const siteKitRequest = async ( {
 	invariant( identifier, '`identifier` argument for requests is required.' );
 	invariant( datapoint, '`datapoint` argument for requests is required.' );
 
-	const useCacheForRequest = useCache !== undefined ? useCache : usingCache();
+	// Don't check for a `false`-y `useCache` value to ensure we don't fallback
+	// to the `usingCache()` behaviour when caching is manually disabled on a
+	// per-request basis.
+	const useCacheForRequest = method === 'GET' && ( useCache !== undefined ? useCache : usingCache() );
 	const cacheKey = createCacheKey( type, identifier, datapoint, queryParams );
 
 	if ( useCacheForRequest ) {

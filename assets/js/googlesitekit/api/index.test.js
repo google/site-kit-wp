@@ -188,6 +188,9 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should not use cache if caching is disabled with arguments', async () => {
+			// Ensure global caching is enabled when we disable caching on a per-request basis.
+			setUsingCache( true );
+
 			fetch
 				.doMockIf(
 					/^\/google-site-kit\/v1\/core\/search-console\/data\/other/
