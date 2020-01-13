@@ -54,6 +54,7 @@ import { default as tagmanagerTagMatchers } from '../modules/tagmanager/util/tag
 import { sendAnalyticsTrackingEvent } from './standalone';
 export * from './standalone';
 export * from './storage';
+export * from './i18n';
 
 /**
  * Remove a parameter from a URL string.

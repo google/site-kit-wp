@@ -21,12 +21,12 @@
  * External dependencies
  */
 import Notification from 'GoogleComponents/notifications/notification';
+import { loadTranslations } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { setLocaleData } from '@wordpress/i18n';
 import { doAction } from '@wordpress/hooks';
 import { Component, render } from '@wordpress/element';
 
@@ -44,10 +44,10 @@ import WPDashboardMain from './components/wp-dashboard/wp-dashboard-main';
 class GoogleSitekitWPDashboard extends Component {
 	constructor( props ) {
 		super( props );
-		this.state = { hasError: false };
 
-		// Set up translations.
-		setLocaleData( googlesitekit.locale, 'google-site-kit' );
+		this.state = {
+			hasError: false,
+		};
 	}
 
 	componentDidCatch( error, info ) {
@@ -69,7 +69,7 @@ class GoogleSitekitWPDashboard extends Component {
 			return <Notification
 				id={ 'googlesitekit-error' }
 				key={ 'googlesitekit-error' }
-				title={ error }
+				title={ error.message }
 				description={ info.componentStack }
 				dismiss={ '' }
 				isDismissable={ false }
@@ -82,11 +82,13 @@ class GoogleSitekitWPDashboard extends Component {
 }
 
 // Initialize the app once the DOM is ready.
-domReady( function() {
-	const wpDashboard = document.getElementById( 'js-googlesitekit-wp-dashboard' );
-	if ( null !== wpDashboard ) {
-		// Render the Dashboard App.
-		render( <GoogleSitekitWPDashboard />, wpDashboard );
+domReady( () => {
+	const renderTarget = document.getElementById( 'js-googlesitekit-wp-dashboard' );
+
+	if ( renderTarget ) {
+		loadTranslations();
+
+		render( <GoogleSitekitWPDashboard />, renderTarget );
 
 		/**
 		 * Action triggered when the WP Dashboard App is loaded.
