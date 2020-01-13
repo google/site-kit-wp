@@ -45,7 +45,7 @@ class Optin extends Component {
 	}
 
 	handleOptIn( e ) {
-		const checked = e.target.checked;
+		const checked = !! e.target.checked;
 		const { trackingUserOptInKey } = this.state;
 
 		apiFetch( {
@@ -58,9 +58,9 @@ class Optin extends Component {
 			},
 		} )
 			.then( () => {
-				window.googlesitekitTrackingEnabled = !! checked;
+				window.googlesitekitTrackingEnabled = checked;
 
-				if ( !! checked && ! this.state.scriptOnPage ) {
+				if ( checked && ! this.state.scriptOnPage ) {
 					const { document } = window;
 
 					if ( ! document ) {
@@ -81,7 +81,7 @@ class Optin extends Component {
 				}
 
 				this.setState( {
-					optIn: !! checked,
+					optIn: checked,
 					error: false,
 					scriptOnPage: true,
 				} );
