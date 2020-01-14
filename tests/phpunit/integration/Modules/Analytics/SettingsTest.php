@@ -117,6 +117,27 @@ class SettingsTest extends SettingsTestCase {
 		}
 	}
 
+	public function test_legacy_adsense_linked() {
+		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$settings->register();
+		$legacy_adsense_linked_option = 'googlesitekit_analytics_adsense_linked';
+		remove_all_filters( 'googlesitekit_analytics_adsense_linked' );
+		// By default the Analytics module registers a filter to force linked to false until AdSense is active.
+		// Simulated here, as the Analytics module isn't registered.
+		add_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
+		update_option( $legacy_adsense_linked_option, '1' );
+
+		$this->assertFalse( $settings->get()['adsenseLinked'] );
+		// Simulate AdSense activated.
+		remove_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
+		// The legacy option is used as a fallback in the default value if the setting is not set yet.
+		$this->assertTrue( $settings->get()['adsenseLinked'] );
+
+		// Any saved value in Settings will supersede the default inherited from the legacy setting.
+		$settings->set( array( 'adsenseLinked' => false ) );
+		$this->assertFalse( $settings->get()['adsenseLinked'] );
+	}
+
 	/**
 	 * @inheritDoc
 	 */
