@@ -69,7 +69,7 @@ class Search_ConsoleTest extends TestCase {
 		// Test sitekit setup complete requires property set.
 		$this->assertFalse( apply_filters( 'googlesitekit_setup_complete', true ) );
 		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$options->set( Search_Console::PROPERTY_OPTION, $property_url );
+		$options->set( 'googlesitekit_search_console_property', $property_url );
 		$this->assertTrue( apply_filters( 'googlesitekit_setup_complete', true ) );
 
 		// Site url uses property URL by default.

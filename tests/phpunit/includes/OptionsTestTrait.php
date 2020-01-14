@@ -35,7 +35,7 @@ trait OptionsTestTrait {
 			Credentials::OPTION,
 			First_Admin::OPTION,
 			Optimize\Settings::OPTION,
-			Search_Console::PROPERTY_OPTION,
+			Search_Console\Settings::OPTION,
 			Tag_Manager\Settings::OPTION,
 			Beta_Migration::OPTION_IS_PRE_PROXY_INSTALL,
 		);
