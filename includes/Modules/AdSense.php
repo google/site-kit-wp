@@ -76,7 +76,12 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 		);
 
 		if ( $this->is_connected() ) {
-			remove_filter( 'option_googlesitekit_analytics_adsense_linked', '__return_false' );
+			/**
+			 * Release filter forcing unlinked state.
+			 *
+			 * @see \Google\Site_Kit\Modules\Analytics\Settings::register
+			 */
+			remove_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
 		}
 	}
 

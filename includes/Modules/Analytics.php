@@ -61,8 +61,12 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 		$this->register_screen_hook();
 
-		// This filter only exists to be unhooked by the AdSense module if active.
-		add_filter( 'option_googlesitekit_analytics_adsense_linked', '__return_false' );
+		/**
+		 * This filter only exists to be unhooked by the AdSense module if active.
+		 *
+		 * @see \Google\Site_Kit\Modules\Analytics\Settings::register
+		 */
+		add_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
 
 		add_action( // For non-AMP.
 			'wp_enqueue_scripts',

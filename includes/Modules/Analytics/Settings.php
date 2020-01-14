@@ -103,6 +103,21 @@ class Settings extends Module_Settings {
 					$option['profileID'] = $profile_id;
 				}
 
+				/**
+				 * Filters the linked state of AdSense with Analytics.
+				 *
+				 * This filter exists so that adsenseLinked can only be truthy if the AdSense module is active,
+				 * regardless of the saved setting.
+				 *
+				 * @since n.e.x.t
+				 * @param bool $adsense_linked Null by default, will fallback to the option value if not set.
+				 */
+				$adsense_linked = apply_filters( 'googlesitekit_analytics_adsense_linked', null );
+
+				if ( is_bool( $adsense_linked ) ) {
+					$option['adsenseLinked'] = $adsense_linked;
+				}
+
 				return $option;
 			}
 		);
