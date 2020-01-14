@@ -32,7 +32,6 @@
     "screenshot": "storybook-chrome-screenshot -p 9001 -c .storybook",
     "lint": "npm run lint:js && npm run lint:php && npm run lint:css",
     "lint:js": "wp-scripts lint-js",
-    "lint:php": "gulp phpcs",
     "lint:css": "stylelint ./assets/sass --syntax scss",
     "env:start": "./bin/local-env/start.sh",
     "env:stop": "./bin/local-env/stop.sh",
