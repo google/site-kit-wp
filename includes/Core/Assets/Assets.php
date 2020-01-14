@@ -43,7 +43,7 @@ final class Assets {
 	/**
 	 * Internal flag for whether assets have been registered yet.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 * @var bool
 	 */
 	private $assets_registered = false;
@@ -51,7 +51,7 @@ final class Assets {
 	/**
 	 * Internal flag for whether fonts have been enqueued yet.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 * @var bool
 	 */
 	private $fonts_enqueued = false;
@@ -59,7 +59,7 @@ final class Assets {
 	/**
 	 * Internal list of print callbacks already done.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 * @var array
 	 */
 	private $print_callbacks_done = array();
@@ -522,7 +522,7 @@ final class Assets {
 	 *
 	 * This should not include anything remotely expensive to compute.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return array The base inline data to be output.
 	 */
@@ -543,7 +543,7 @@ final class Assets {
 		 *
 		 * This should not include anything remotely expensive to compute.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.2.0
 		 *
 		 * @param array $data Base data.
 		 */
@@ -728,7 +728,7 @@ final class Assets {
 	 *
 	 * This method works recursively, also looking at dependencies, and supports both scripts and stylesheets.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param WP_Dependencies $dependencies WordPress dependencies class instance.
 	 * @param array           $handles      List of handles to run before print callbacks for.

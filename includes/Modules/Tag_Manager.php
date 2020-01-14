@@ -56,7 +56,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	/**
 	 * Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 * @var Settings
 	 */
 	protected $settings;
@@ -280,7 +280,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	/**
 	 * Checks whether or not the code snippet should be output.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return bool
 	 */
@@ -668,7 +668,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	/**
 	 * Gets the access levels for the given container and its account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param string $container_id Property found in the existing tag.
 	 * @param string $user_email   User email address to get access for.
@@ -746,7 +746,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * There is no way to query a container by its public ID (the ID that identifies the container on the client)
 	 * so we must find it by listing the containers of the available accounts and matching on the public ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param string                              $container_id Container public ID (e.g. GTM-ABCDEFG).
 	 * @param Google_Service_TagManager_Account[] $accounts All accounts available to the current user.
@@ -776,7 +776,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	/**
 	 * Gets the configured TagManager service instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return Google_Service_TagManager instance.
 	 * @throws Exception Thrown if the module did not correctly set up the service.
@@ -814,7 +814,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * for the first time.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Now requires Google_Site_Kit_Client instance.
+	 * @since 1.2.0 Now requires Google_Site_Kit_Client instance.
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
@@ -829,7 +829,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return Module_Settings
 	 */

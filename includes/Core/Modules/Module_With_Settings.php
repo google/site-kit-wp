@@ -15,7 +15,7 @@ interface Module_With_Settings {
 	/**
 	 * Gets the module's Setting instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return Module_Settings The Setting instance for the current module.
 	 */

@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Setting_With_Legacy_Keys_Trait;
 /**
  * Class for Analytics settings.
  *
- * @since n.e.x.t
+ * @since 1.2.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class Settings extends Module_Settings {
 	/**
 	 * Registers the setting in WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 */
 	public function register() {
 		parent::register();
@@ -101,7 +101,7 @@ class Settings extends Module_Settings {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return array
 	 */

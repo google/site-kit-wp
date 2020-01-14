@@ -16,7 +16,7 @@ use Exception;
  * Exception thrown when Google proxy returns an error accompanied with a temporary access code.
  *
  * @since 1.0.0
- * @since n.e.x.t Renamed to Google_Proxy_Code_Exception.
+ * @since 1.2.0 Renamed to Google_Proxy_Code_Exception.
  * @access private
  * @ignore
  */
