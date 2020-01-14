@@ -410,6 +410,15 @@ final class Assets {
 					},
 				)
 			),
+			// Begin JSR Assets.
+			new Script(
+				'googlesitekit-api',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-api.js',
+					'dependencies' => $dependencies,
+				)
+			),
+			// End JSR Assets.
 			new Script(
 				'googlesitekit_ads_detect',
 				array(
