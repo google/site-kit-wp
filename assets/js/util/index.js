@@ -699,5 +699,11 @@ export function sortObjectProperties( obj ) {
  * @return {string} meta key name.
  */
 export function getMetaKeyForUserOption( userOptionName, _googlesitekitBase = window._googlesitekitBase ) {
-	return _googlesitekitBase.blogPrefix + userOptionName;
+	const { blogPrefix, isNetworkMode } = _googlesitekitBase;
+
+	if ( ! isNetworkMode ) {
+		return blogPrefix + userOptionName;
+	}
+
+	return userOptionName;
 }
