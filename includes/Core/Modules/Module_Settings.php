@@ -44,6 +44,12 @@ abstract class Module_Settings extends Setting {
 	 */
 	public function merge( array $partial ) {
 		$settings = $this->get();
+		$partial  = array_filter(
+			$partial,
+			function ( $value ) {
+				return null !== $value;
+			}
+		);
 		$updated  = array_intersect_key( $partial, $settings );
 
 		return $this->set( array_merge( $settings, $updated ) );

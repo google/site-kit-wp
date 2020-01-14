@@ -48,6 +48,10 @@ class Module_SettingsTest extends SettingsTestCase {
 			),
 			get_option( $this->get_option_name() )
 		);
+
+		// Null values are ignored.
+		$settings->merge( array( 'defaultKey' => null ) );
+		$this->assertEquals( 'default-value', get_option( $this->get_option_name() )['defaultKey'] );
 	}
 
 	/**
