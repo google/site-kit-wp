@@ -69,7 +69,7 @@
         "stylelint --syntax scss"
       ],
       "*.php": [
-        "./vendor/bin/phpcs"
+        "./phpcs/vendor/bin/phpcs"
       ]
     },
     "ignore": [

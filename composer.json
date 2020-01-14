@@ -5,14 +5,9 @@
   "type": "wordpress-plugin",
   "homepage": "https://sitekit.withgoogle.com",
   "require-dev": {
-    "automattic/vipwpcs": "^0.3.0",
-    "dealerdirect/phpcodesniffer-composer-installer": "0.4.4",
     "johnpbloch/wordpress-core": "^5.2",
-    "phpcompatibility/phpcompatibility-wp": "^2.1",
     "phpunit/phpunit": "^4",
-    "roave/security-advisories": "dev-master",
-    "squizlabs/php_codesniffer": "^3.3",
-    "wp-coding-standards/wpcs": "^1"
+    "roave/security-advisories": "dev-master"
   },
   "require": {
     "php": ">=5.4",
@@ -42,6 +37,7 @@
   },
   "scripts": {
     "post-install-cmd": [
+      "@composer --working-dir=phpcs install",
       "@prefix-dependencies"
     ],
     "post-update-cmd": [
@@ -68,8 +64,8 @@
       "rm -rf third-party/vendor && rm third-party/composer.json",
       "mkdir -p third-party/vendor/composer && mv third-party/autoload_classmap.php third-party/vendor/composer/"
     ],
-    "lint": "phpcs",
-    "lint-fix": "phpcbf",
+    "lint": "phpcs/vendor/bin/phpcs",
+    "lint-fix": "phpcs/vendor/bin/phpcbf",
     "test":  "phpunit"
   }
 }
