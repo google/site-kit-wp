@@ -24,6 +24,25 @@ class Settings extends Module_Settings {
 	const OPTION = 'googlesitekit_search-console_settings';
 
 	/**
+	 * Registers the setting in WordPress.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function register() {
+		parent::register();
+
+		// Backwards compatibility with previous dedicated option.
+		add_filter(
+			'default_option_' . self::OPTION,
+			function ( $default ) {
+				$default['propertyID'] = $this->options->get( 'googlesitekit_search_console_property' ) ?: '';
+
+				return $default;
+			}
+		);
+	}
+
+	/**
 	 * Gets the default value.
 	 *
 	 * @since n.e.x.t
@@ -32,8 +51,7 @@ class Settings extends Module_Settings {
 	 */
 	protected function get_default() {
 		return array(
-			// Backwards compatibility with previous dedicated option.
-			'propertyID' => $this->options->get( 'googlesitekit_search_console_property' ) ?: '',
+			'propertyID' => '',
 		);
 	}
 }
