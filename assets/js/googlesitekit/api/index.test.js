@@ -1,4 +1,9 @@
 /**
+ * WordPress dependencies
+ */
+import apiFetch from '@wordpress/api-fetch';
+
+/**
  * Internal dependencies
  */
 // eslint-disable-next-line @wordpress/dependency-group
@@ -6,7 +11,7 @@ import { unexpectedSuccess } from 'tests/js/utils';
 import * as CacheModule from './cache';
 import { setSelectedStorageBackend } from './cache.private';
 import { invalidateCache, usingCache, get, set, setUsingCache } from './index';
-import { createCacheKey } from './index.private';
+import { createCacheKey, siteKitRequest } from './index.private';
 
 describe( 'googlesitekit.api', () => {
 	// We import the entire caching module so we can use
@@ -14,9 +19,11 @@ describe( 'googlesitekit.api', () => {
 	const { getItem, setItem } = CacheModule;
 	let storageMechanism;
 
+	let apiFetchSpy;
 	let getItemSpy;
 	let setItemSpy;
 	beforeEach( () => {
+		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 		getItemSpy = jest.spyOn( CacheModule, 'getItem' );
 		setItemSpy = jest.spyOn( CacheModule, 'setItem' );
 	} );
@@ -28,6 +35,7 @@ describe( 'googlesitekit.api', () => {
 	} );
 
 	afterEach( async () => {
+		apiFetchSpy.mockRestore();
 		getItemSpy.mockRestore();
 		setItemSpy.mockRestore();
 
@@ -573,6 +581,30 @@ describe( 'googlesitekit.api', () => {
 			expect(
 				createCacheKey( 'core', 'search-console', 'users', new Date() )
 			).toEqual( 'core::search-console::users' );
+		} );
+	} );
+
+	describe( 'siteKitRequest', () => {
+		it( 'should send a request using fetch', async () => {
+			fetch
+				.doMockIf(
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/
+				)
+				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+
+			await siteKitRequest( 'core', 'search-console', 'settings' );
+
+			expect( fetch ).toHaveBeenCalledWith(
+				'/google-site-kit/v1/core/search-console/data/settings?_locale=user',
+				{
+					body: undefined,
+					credentials: 'include',
+					headers: {
+						Accept: 'application/json, */*;q=0.1',
+					},
+					method: 'GET',
+				}
+			);
 		} );
 	} );
 } );
