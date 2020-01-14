@@ -219,9 +219,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					}
 
 					$restore_defer();
-					$option               = $this->get_settings()->get();
-					$option['propertyID'] = $site_url;
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge( array( 'propertyID' => $site_url ) );
 
 					return array(
 						'siteURL'         => $site->getSiteUrl(),
