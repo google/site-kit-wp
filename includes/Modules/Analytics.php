@@ -157,8 +157,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			__( 'Top acquisition sources', 'google-site-kit' ),
 		);
 
-		$info['settings']      = $this->get_settings()->get();
-		$info['adsenseLinked'] = (bool) $this->options->get( 'googlesitekit_analytics_adsense_linked' );
+		$info['settings'] = $this->get_settings()->get();
 
 		return $info;
 	}
@@ -1030,11 +1029,12 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				return $response;
 			case 'GET:report':
 				if ( $this->is_adsense_request( $data ) ) {
-					if ( isset( $response->error ) ) {
-						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
-					} else {
-						$this->options->set( 'googlesitekit_analytics_adsense_linked', '1' );
-					}
+					$this->get_settings()->set(
+						array_merge(
+							$this->get_settings()->get(),
+							array( 'adsenseLinked' => empty( $response->error ) )
+						)
+					);
 				}
 
 				return $response->getReports();
