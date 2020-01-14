@@ -46,7 +46,11 @@ class Settings extends Module_Settings {
 		add_filter(
 			'default_option_' . self::OPTION,
 			function ( $default ) {
-				$default['adsenseLinked'] = (bool) $this->options->get( 'googlesitekit_analytics_adsense_linked' );
+				// Only fallback to the legacy option if the linked state is not filtered.
+				// This filter is documented below.
+				if ( is_null( apply_filters( 'googlesitekit_analytics_adsense_linked', null ) ) ) {
+					$default['adsenseLinked'] = (bool) $this->options->get( 'googlesitekit_analytics_adsense_linked' );
+				}
 
 				return $default;
 			}
