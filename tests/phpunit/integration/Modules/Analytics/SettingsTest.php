@@ -74,9 +74,6 @@ class SettingsTest extends SettingsTestCase {
 		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 		$settings->register();
 
-		$default_value = get_option( Settings::OPTION );
-		$this->assertEquals( $default_value, $settings->get_default() );
-
 		$this->assertEqualSetsWithIndex(
 			array(
 				'accountID'             => '',
@@ -88,7 +85,7 @@ class SettingsTest extends SettingsTestCase {
 				'ampClientIDOptIn'      => true,
 				'trackingDisabled'      => array( 'loggedinUsers' ),
 			),
-			$settings->get_default()
+			get_option( Settings::OPTION )
 		);
 	}
 
