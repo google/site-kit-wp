@@ -1,10 +1,10 @@
 {
-    "require": {
-        "automattic/vipwpcs": "^2.0",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
-        "phpcompatibility/phpcompatibility-wp": "^2.1"
-    },
-  "scripts": {
-    "lint": "phpcs"
+  "require": {
+    "automattic/vipwpcs": "^2.0",
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
+    "phpcompatibility/phpcompatibility-wp": "^2.1"
+  },
+  "config": {
+    "bin-dir": "../vendor/bin"
   }
 }

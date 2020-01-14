@@ -45,7 +45,7 @@
     ],
     "prefix-dependencies": [
       "@composer --working-dir=php-scoper install",
-      "php-scoper/vendor/bin/php-scoper add --output-dir=./third-party --force --quiet",
+      "php-scoper add --output-dir=./third-party --force --quiet",
       "@autoload-includes",
       "@autoload-third-party",
       "cp vendor/composer/autoload_files.php third-party/vendor/"
@@ -64,8 +64,8 @@
       "rm -rf third-party/vendor && rm third-party/composer.json",
       "mkdir -p third-party/vendor/composer && mv third-party/autoload_classmap.php third-party/vendor/composer/"
     ],
-    "lint": "phpcs/vendor/bin/phpcs",
-    "lint-fix": "phpcs/vendor/bin/phpcbf",
+    "lint": "phpcs",
+    "lint-fix": "phpcbf",
     "test":  "phpunit"
   }
 }

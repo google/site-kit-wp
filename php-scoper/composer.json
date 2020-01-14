@@ -1,7 +1,10 @@
 {
-    "require": {
-        "humbug/php-scoper": "^0.13.0"
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+  "require": {
+    "humbug/php-scoper": "^0.13.0"
+  },
+  "config": {
+    "bin-dir": "../vendor/bin"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
