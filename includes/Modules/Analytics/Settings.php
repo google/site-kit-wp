@@ -42,6 +42,16 @@ class Settings extends Module_Settings {
 			)
 		);
 
+		// Backwards compatibility with previous dedicated option.
+		add_filter(
+			'default_option_' . self::OPTION,
+			function ( $default ) {
+				$default['adsenseLinked'] = (bool) $this->options->get( 'googlesitekit_analytics_adsense_linked' );
+
+				return $default;
+			}
+		);
+
 		add_filter(
 			'option_' . self::OPTION,
 			function ( $option ) {
@@ -108,6 +118,7 @@ class Settings extends Module_Settings {
 	protected function get_default() {
 		return array(
 			'accountID'             => '',
+			'adsenseLinked'         => false,
 			'ampClientIDOptIn'      => true,
 			'anonymizeIP'           => true,
 			'internalWebPropertyID' => '',

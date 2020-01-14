@@ -84,6 +84,7 @@ class SettingsTest extends SettingsTestCase {
 				'anonymizeIP'           => true,
 				'ampClientIDOptIn'      => true,
 				'trackingDisabled'      => array( 'loggedinUsers' ),
+				'adsenseLinked'         => false,
 			),
 			get_option( Settings::OPTION )
 		);
