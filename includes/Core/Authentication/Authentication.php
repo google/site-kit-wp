@@ -467,7 +467,7 @@ final class Authentication {
 	/**
 	 * Modifies the base data to pass to JS.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param array $data Inline JS data.
 	 * @return array Filtered $data.

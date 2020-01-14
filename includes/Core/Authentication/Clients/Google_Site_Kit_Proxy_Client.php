@@ -22,7 +22,7 @@ use Exception;
  * Modified Google Site Kit API client relying on the authentication proxy.
  *
  * @since 1.0.0
- * @since n.e.x.t Renamed to Google_Site_Kit_Proxy_Client.
+ * @since 1.2.0 Renamed to Google_Site_Kit_Proxy_Client.
  * @access private
  * @ignore
  */
@@ -56,7 +56,7 @@ class Google_Site_Kit_Proxy_Client extends Google_Site_Kit_Client {
 	/**
 	 * Sets the base URL to the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param string $base_path Proxy base URL.
 	 */
@@ -130,7 +130,7 @@ class Google_Site_Kit_Proxy_Client extends Google_Site_Kit_Client {
 	/**
 	 * Handles an erroneous response from a request to fetch an auth token.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param string $error Error code / error message.
 	 * @param array  $data  Associative array of full response data.

@@ -668,7 +668,7 @@ final class REST_Routes {
 	 *
 	 * Adapted from \WP_REST_Server::error_to_response
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param WP_Error $error Error to transform.
 	 *
