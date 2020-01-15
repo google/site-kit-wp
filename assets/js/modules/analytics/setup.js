@@ -800,7 +800,8 @@ class AnalyticsSetup extends Component {
 		const accountNumber = parseInt( selectedAccount ) || 0;
 		// -1 is used for "create an account", which is truthy as well, so ensure accountNumber is a positive integer.
 		const enablePropertySelect = ! existingTag && accountNumber > 0;
-		const enableProfileSelect = enablePropertySelect && /^UA-/.test( selectedProperty.toString() );
+		// Profiles may still be selected even in the case of an existing tag.
+		const enableProfileSelect = !! /^UA-/.test( selectedProperty.toString() );
 
 		const { ampMode } = window.googlesitekit.admin;
 		const { setupComplete } = googlesitekit.modules.analytics;
