@@ -801,7 +801,10 @@ class AnalyticsSetup extends Component {
 			selectedAccount ||
 			( existingTag && selectedProperty ) === false
 		);
-		const disabledProfile = ! isEditing || ! enablePropertySelect;
+		const enableProfileSelect = isEditing && (
+			( parseInt( selectedProperty ) && parseInt( selectedProperty ) > 1 ) ||
+			selectedProperty
+		);
 
 		const { ampMode } = window.googlesitekit.admin;
 		const { setupComplete } = googlesitekit.modules.analytics;
@@ -942,7 +945,7 @@ class AnalyticsSetup extends Component {
 							value={ selectedProperty || selectedProperty === 0 ? selectedProperty.toString() : '-1' }
 							onEnhancedChange={ this.handlePropertyChange }
 							label={ __( 'Property', 'google-site-kit' ) }
-							disabled={ enablePropertySelect ? undefined : true }
+							disabled={ ! enablePropertySelect }
 							outlined
 						>
 							{ properties.map( ( property, id ) =>
@@ -962,7 +965,7 @@ class AnalyticsSetup extends Component {
 							value={ selectedProfile || selectedProfile === 0 ? selectedProfile.toString() : '-1' }
 							onEnhancedChange={ this.handleProfileChange }
 							label={ __( 'View', 'google-site-kit' ) }
-							disabled={ disabledProfile }
+							disabled={ ! enableProfileSelect }
 							outlined
 						>
 							{ profiles.map( ( profile, id ) =>
