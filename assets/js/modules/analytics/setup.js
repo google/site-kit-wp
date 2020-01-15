@@ -796,8 +796,8 @@ class AnalyticsSetup extends Component {
 			onSettingsPage,
 			isEditing,
 		} = this.props;
-		const disabledProperty = ! isEditing || ( parseInt( selectedAccount ) && parseInt( selectedAccount ) < 1 ) || selectedAccount || ( existingTag && selectedProperty );
-		const disabledProfile = ! isEditing || ( parseInt( selectedProperty ) && parseInt( selectedProperty ) < 1 ) || selectedProperty;
+		const disabledProperty = ! isEditing || ( parseInt( selectedAccount ) && parseInt( selectedAccount ) < 1 ) || ! selectedAccount || ( existingTag && selectedProperty );
+		const disabledProfile = ! isEditing || disabledProperty;
 
 		const { ampMode } = window.googlesitekit.admin;
 		const { setupComplete } = googlesitekit.modules.analytics;
