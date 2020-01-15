@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
@@ -25,10 +24,8 @@ use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Account;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
-use Google\Site_Kit_Dependencies\Google_Service_TagManager_ContainerAccess;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListAccountsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListContainersResponse;
-use Google\Site_Kit_Dependencies\Google_Service_TagManager_UserPermission;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
