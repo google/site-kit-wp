@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
@@ -25,10 +24,8 @@ use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Account;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
-use Google\Site_Kit_Dependencies\Google_Service_TagManager_ContainerAccess;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListAccountsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListContainersResponse;
-use Google\Site_Kit_Dependencies\Google_Service_TagManager_UserPermission;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
@@ -132,7 +129,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			'https://www.googleapis.com/auth/tagmanager.readonly',
 			'https://www.googleapis.com/auth/tagmanager.edit.containers',
 			'https://www.googleapis.com/auth/tagmanager.manage.accounts',
-			'https://www.googleapis.com/auth/tagmanager.manage.users',
 		);
 	}
 
@@ -536,17 +532,22 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 						);
 					}
 
-					$profile = new Profile( $this->user_options );
+					$accounts = $this->get_data( 'accounts' );
 
-					if ( ! $profile->has() ) {
-						return new WP_Error(
-							'missing_google_account',
-							__( 'Missing information about the authenticated Google account.', 'google-site-kit' ),
-							array( 'status' => 500 )
-						);
+					if ( is_wp_error( $accounts ) ) {
+						return $accounts;
 					}
 
-					return $this->get_container_access( $data['tag'], $profile->get()['email'] );
+					try {
+						return $this->get_account_for_container( $data['tag'], $accounts );
+					} catch ( Exception $exception ) {
+						return new WP_Error(
+							'tag_manager_existing_tag_permission',
+							/* translators: %s: Container ID */
+							sprintf( __( 'We’ve detected there’s already an existing Tag Manager tag on your site (%s), but your account doesn’t seem to have the necessary access to this container. You can either remove the existing tag and connect to a different account, or request access to this container from your team.', 'google-site-kit' ), $data['tag'] ),
+							array( 'status' => 403 )
+						);
+					}
 				};
 
 		}
@@ -666,81 +667,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	}
 
 	/**
-	 * Gets the access levels for the given container and its account.
-	 *
-	 * @since 1.2.0
-	 *
-	 * @param string $container_id Property found in the existing tag.
-	 * @param string $user_email   User email address to get access for.
-	 *
-	 * @return WP_Error|array {
-	 *     @type Google_Service_TagManager_Account   $account             Account model instance.
-	 *     @type string                              $accountPermission   Permission identifier for account.
-	 *     @type Google_Service_TagManager_Container $container           Container model instance.
-	 *     @type string                              $containerPermission Permission identifier for container.
-	 * }
-	 */
-	protected function get_container_access( $container_id, $user_email ) {
-		$response = array(
-			'account'             => false,
-			'accountPermission'   => false,
-			'container'           => false,
-			'containerPermission' => false,
-		);
-
-		if ( ! $container_id ) {
-			return $response;
-		}
-
-		$accounts = $this->get_data( 'accounts' );
-
-		if ( is_wp_error( $accounts ) ) {
-			return $accounts;
-		}
-
-		try {
-			list ( $account, $container ) = $this->get_account_for_container( $container_id, $accounts );
-			/* @var Google_Service_TagManager_Account $account Account instance. */
-			$response['account'] = $account;
-			/* @var Google_Service_TagManager_Container $container Container instance. */
-			$response['container'] = $container;
-		} catch ( Exception $e ) {
-			return $response;
-		}
-
-		/* @var Google_Service_TagManager_UserPermission[] $user_permissions User Permission instances. */
-		$user_permissions = $this->get_tagmanager_service()->accounts_user_permissions
-			->listAccountsUserPermissions( 'accounts/' . $account->getAccountId() )
-			->getUserPermission();
-
-		// Filter the permissions down to only those for the given user by email.
-		$user_permissions = array_filter(
-			$user_permissions,
-			function ( Google_Service_TagManager_UserPermission $user_permission ) use ( $user_email ) {
-				return $user_email === $user_permission->getEmailAddress();
-			}
-		);
-
-		/* @var Google_Service_TagManager_UserPermission $user_permission User Permission instance. */
-		$user_permission = array_shift( $user_permissions );
-		if ( ! $user_permission ) {
-			return $response;
-		}
-
-		$response['accountPermission'] = $user_permission->getAccountAccess()->getPermission();
-
-		foreach ( (array) $user_permission->getContainerAccess() as $container_access ) {
-			/* @var Google_Service_TagManager_ContainerAccess $container_access Container access instance. */
-			if ( $container->getContainerId() === $container_access->getContainerId() ) {
-				$response['containerPermission'] = $container_access->getPermission();
-				return $response;
-			}
-		}
-
-		return $response;
-	}
-
-	/**
 	 * Finds the account for the given container *public ID* from the given list of accounts.
 	 *
 	 * There is no way to query a container by its public ID (the ID that identifies the container on the client)
@@ -749,9 +675,12 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * @since 1.2.0
 	 *
 	 * @param string                              $container_id Container public ID (e.g. GTM-ABCDEFG).
-	 * @param Google_Service_TagManager_Account[] $accounts All accounts available to the current user.
+	 * @param Google_Service_TagManager_Account[] $accounts     All accounts available to the current user.
 	 *
-	 * @return array [ Google_Service_TagManager_Account, Google_Service_TagManager_Container ]
+	 * @return array {
+	 *     @type Google_Service_TagManager_Account   $account   Account model instance.
+	 *     @type Google_Service_TagManager_Container $container Container model instance.
+	 * }
 	 * @throws Exception Thrown if the given container ID does not belong to any of the given accounts.
 	 */
 	private function get_account_for_container( $container_id, $accounts ) {
@@ -766,7 +695,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			foreach ( (array) $containers as $container ) {
 				/* @var Google_Service_TagManager_Container $container Container instance */
 				if ( $container_id === $container->getPublicId() ) {
-					return [ $account, $container ];
+					return compact( 'account', 'container' );
 				}
 			}
 		}
