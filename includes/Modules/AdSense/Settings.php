@@ -36,7 +36,11 @@ class Settings extends Module_Settings {
 		$this->register_legacy_keys_migration(
 			array(
 				'account_id'        => 'accountID',
+				'accountId'         => 'accountID',
+				'account_status'    => 'accountStatus',
 				'adsenseTagEnabled' => 'useSnippet',
+				'client_id'         => 'clientID',
+				'clientId'          => 'clientID',
 				'setup_complete'    => 'setupComplete',
 			)
 		);
