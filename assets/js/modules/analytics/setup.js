@@ -796,8 +796,12 @@ class AnalyticsSetup extends Component {
 			onSettingsPage,
 			isEditing,
 		} = this.props;
-		const disabledProperty = ! isEditing || ( parseInt( selectedAccount ) && parseInt( selectedAccount ) < 1 ) || ! selectedAccount || ( existingTag && selectedProperty );
-		const disabledProfile = ! isEditing || disabledProperty;
+		const enablePropertySelect = isEditing && (
+			( parseInt( selectedAccount ) && parseInt( selectedAccount ) > 1 ) ||
+			selectedAccount ||
+			( existingTag && selectedProperty ) === false
+		);
+		const disabledProfile = ! isEditing || ! enablePropertySelect;
 
 		const { ampMode } = window.googlesitekit.admin;
 		const { setupComplete } = googlesitekit.modules.analytics;
@@ -938,7 +942,7 @@ class AnalyticsSetup extends Component {
 							value={ selectedProperty || selectedProperty === 0 ? selectedProperty.toString() : '-1' }
 							onEnhancedChange={ this.handlePropertyChange }
 							label={ __( 'Property', 'google-site-kit' ) }
-							disabled={ disabledProperty }
+							disabled={ enablePropertySelect ? undefined : true }
 							outlined
 						>
 							{ properties.map( ( property, id ) =>
