@@ -535,17 +535,22 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 						);
 					}
 
-					$profile = new Profile( $this->user_options );
+					$accounts = $this->get_data( 'accounts' );
 
-					if ( ! $profile->has() ) {
-						return new WP_Error(
-							'missing_google_account',
-							__( 'Missing information about the authenticated Google account.', 'google-site-kit' ),
-							array( 'status' => 500 )
-						);
+					if ( is_wp_error( $accounts ) ) {
+						return $accounts;
 					}
 
-					return $this->get_container_access( $data['tag'], $profile->get()['email'] );
+					try {
+						return $this->get_account_for_container( $data['tag'], $accounts );
+					} catch ( Exception $exception ) {
+						return new WP_Error(
+							'tag_manager_existing_tag_permission',
+							/* translators: %s: Container ID */
+							sprintf( __( 'We’ve detected there’s already an existing Tag Manager tag on your site (%s), but your account doesn’t seem to have the necessary access to this container. You can either remove the existing tag and connect to a different account, or request access to this container from your team.', 'google-site-kit' ), $data['tag'] ),
+							array( 'status' => 403 )
+						);
+					}
 				};
 
 		}
@@ -748,9 +753,12 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * @since 1.2.0
 	 *
 	 * @param string                              $container_id Container public ID (e.g. GTM-ABCDEFG).
-	 * @param Google_Service_TagManager_Account[] $accounts All accounts available to the current user.
+	 * @param Google_Service_TagManager_Account[] $accounts     All accounts available to the current user.
 	 *
-	 * @return array [ Google_Service_TagManager_Account, Google_Service_TagManager_Container ]
+	 * @return array {
+	 *     @type Google_Service_TagManager_Account   $account   Account model instance.
+	 *     @type Google_Service_TagManager_Container $container Container model instance.
+	 * }
 	 * @throws Exception Thrown if the given container ID does not belong to any of the given accounts.
 	 */
 	private function get_account_for_container( $container_id, $accounts ) {
@@ -765,7 +773,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			foreach ( (array) $containers as $container ) {
 				/* @var Google_Service_TagManager_Container $container Container instance */
 				if ( $container_id === $container->getPublicId() ) {
-					return [ $account, $container ];
+					return compact( 'account', 'container' );
 				}
 			}
 		}
