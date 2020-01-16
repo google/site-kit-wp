@@ -188,7 +188,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 			add_action(
 				'wp_body_open',
 				function() use ( $client_id ) {
-					if ( $this->adsense_tag_printed ) {
+					if ( $this->adsense_tag_printed || ! is_singular( 'amp_story' ) ) {
 						return;
 					}
 
@@ -232,7 +232,7 @@ tag_partner: "site_kit"
 	 * @return array Filtered $data.
 	 */
 	protected function amp_data_load_auto_ads_component( $data ) {
-		if ( ! $this->is_connected() ) {
+		if ( ! $this->is_connected() || ! is_singular( 'amp_story' ) ) {
 			return $data;
 		}
 
