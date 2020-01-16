@@ -86,9 +86,9 @@ window._googlesitekitBase = {
 };
 window.wp.apiFetch = ( vars ) => {
 	const { modules } = window.googlesitekit;
-	const match = vars.path.match( '/google-site-kit/v1/modules/(\w+)/data/(\w+)' );
+	const match = vars.path.match( /google-site-kit\/v1\/modules\/([\w-]+)\/data\/([\w-]+)/ );
 
-	if ( match && match.length && match.length > 2 ) {
+	if ( match && match[ 1 ] && match[ 2 ] ) {
 		const [ , identifier, datapoint ] = match;
 
 		if ( identifier && datapoint && modules[ identifier ] && modules[ identifier ][ datapoint ] ) {
