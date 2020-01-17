@@ -78,7 +78,7 @@ function optOutOfEventTracking() {
 	page.on( 'load', async () => {
 		try {
 			await page.evaluate( () => {
-				window._gaUserPrefs = { ioo: () => true };
+				global._gaUserPrefs = { ioo: () => true };
 			} );
 		} catch ( err ) {}
 	} );

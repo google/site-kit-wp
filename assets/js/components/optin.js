@@ -34,8 +34,8 @@ class Optin extends Component {
 		super( props );
 
 		this.state = {
-			scriptOnPage: !! window.googlesitekitTrackingEnabled,
-			optIn: !! window.googlesitekitTrackingEnabled,
+			scriptOnPage: !! global.googlesitekitTrackingEnabled,
+			optIn: !! global.googlesitekitTrackingEnabled,
 			error: false,
 		};
 
@@ -57,10 +57,10 @@ class Optin extends Component {
 			method: 'POST',
 		} )
 			.then( () => {
-				window.googlesitekitTrackingEnabled = !! checked;
+				global.googlesitekitTrackingEnabled = !! checked;
 
 				if ( !! checked && ! this.state.scriptOnPage ) {
-					const { document } = window;
+					const { document } = global;
 
 					if ( ! document ) {
 						return;

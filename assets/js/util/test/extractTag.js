@@ -5,7 +5,7 @@ import { extractTag } from '../';
 
 const valuesToTest = [
 	[
-		'<script> window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date; ga(\'create\', \'UA-XXXXX-Y\', \'auto\'); ga(\'send\', \'pageview\'); </script><script async src=\'https://www.google-analytics.com/analytics.js\'></script>',
+		'<script> global.ga=global.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date; ga(\'create\', \'UA-XXXXX-Y\', \'auto\'); ga(\'send\', \'pageview\'); </script><script async src=\'https://www.google-analytics.com/analytics.js\'></script>',
 		'analytics',
 		'UA-XXXXX-Y',
 	],
@@ -35,7 +35,7 @@ const valuesToTest = [
 		'ca-pub-1234567890',
 	],
 	[
-		'<script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> <script> (adsbygoogle = window.adsbygoogle || []).push({ google_ad_client: "ca-pub-123456789", enable_page_level_ads: true }); </script>',
+		'<script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> <script> (adsbygoogle = global.adsbygoogle || []).push({ google_ad_client: "ca-pub-123456789", enable_page_level_ads: true }); </script>',
 		'adsense',
 		'ca-pub-123456789',
 	],

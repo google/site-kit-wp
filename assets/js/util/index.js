@@ -303,11 +303,11 @@ export const refreshAuthentication = async () => {
 		} );
 
 		// We should really be using state management. This is terrible.
-		window.googlesitekit.setup = window.googlesitekit.setup || {};
-		window.googlesitekit.setup.isAuthenticated = response.isAuthenticated;
-		window.googlesitekit.setup.requiredScopes = response.requiredScopes;
-		window.googlesitekit.setup.grantedScopes = response.grantedScopes;
-		window.googlesitekit.setup.needReauthenticate = requiredAndGrantedScopes.length < response.requiredScopes.length;
+		global.googlesitekit.setup = global.googlesitekit.setup || {};
+		global.googlesitekit.setup.isAuthenticated = response.isAuthenticated;
+		global.googlesitekit.setup.requiredScopes = response.requiredScopes;
+		global.googlesitekit.setup.grantedScopes = response.grantedScopes;
+		global.googlesitekit.setup.needReauthenticate = requiredAndGrantedScopes.length < response.requiredScopes.length;
 	} catch ( e ) { // eslint-disable-line no-empty
 	}
 };
@@ -520,8 +520,8 @@ export const extractTag = ( string, module ) => {
 export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) => {
 	return restApiClient.setModuleActive( moduleSlug, status ).then( ( responseData ) => {
 		// We should really be using state management. This is terrible.
-		if ( window.googlesitekit.modules && window.googlesitekit.modules[ moduleSlug ] ) {
-			window.googlesitekit.modules[ moduleSlug ].active = responseData.active;
+		if ( global.googlesitekit.modules && global.googlesitekit.modules[ moduleSlug ] ) {
+			global.googlesitekit.modules[ moduleSlug ].active = responseData.active;
 		}
 
 		sendAnalyticsTrackingEvent(

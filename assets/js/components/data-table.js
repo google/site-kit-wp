@@ -156,11 +156,11 @@ export class TableOverflowContainer extends Component {
 			self.updateFadeOnScroll();
 		}, 100 );
 
-		window.addEventListener( 'resize', this.resize );
+		global.addEventListener( 'resize', this.resize );
 	}
 
 	componentWillUnmount() {
-		window.removeEventListener( 'resize', this.resize );
+		global.removeEventListener( 'resize', this.resize );
 	}
 
 	updateFadeOnScroll() {

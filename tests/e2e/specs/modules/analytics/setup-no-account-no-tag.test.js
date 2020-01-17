@@ -63,10 +63,10 @@ describe( 'setting up the Analytics module with no existing account and no exist
 			expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } ),
 		] );
 
-		// Intercept the call to window.open and call our API to simulate a created account.
+		// Intercept the call to global.open and call our API to simulate a created account.
 		await page.evaluate( () => {
-			window.open = () => {
-				window.wp.apiFetch( {
+			global.open = () => {
+				global.wp.apiFetch( {
 					path: 'google-site-kit/v1/e2e/setup/analytics/account-created',
 					method: 'post',
 				} );

@@ -23,7 +23,7 @@
  * @return {boolean} True if the given storage is available, false otherwise.
  */
 export const storageAvailable = ( type ) => {
-	const storage = window[ type ];
+	const storage = global[ type ];
 	if ( ! storage ) {
 		return false;
 	}
@@ -54,7 +54,7 @@ export const storageAvailable = ( type ) => {
 	}
 };
 
-// Custom no-op implementation of window.Storage.
+// Custom no-op implementation of global.Storage.
 class NullStorage {
 	get length() {
 		return 0;
@@ -86,16 +86,16 @@ let storageObj;
 /**
  * Gets the storage object to use.
  *
- * @return {Storage} Either window.sessionStorage, window.localStorage', or a
+ * @return {Storage} Either global.sessionStorage, global.localStorage', or a
  *                   no-op implementation if neither is available.
  */
 export const getStorage = () => {
 	// Only run the logic to determine the storage object once.
 	if ( ! storageObj ) {
 		if ( storageAvailable( 'sessionStorage' ) ) {
-			storageObj = window.sessionStorage;
+			storageObj = global.sessionStorage;
 		} else if ( storageAvailable( 'localStorage' ) ) {
-			storageObj = window.localStorage;
+			storageObj = global.localStorage;
 		} else {
 			storageObj = new NullStorage();
 		}

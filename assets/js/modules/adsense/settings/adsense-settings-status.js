@@ -54,7 +54,7 @@ class AdSenseSettingsStatus extends Component {
 						onClick={ () => {
 							const page = screenID ? screenID : 'googlesitekit-dashboard';
 
-							window.location = getSiteKitAdminURL( page, { reAuth: true, slug } );
+							global.location = getSiteKitAdminURL( page, { reAuth: true, slug } );
 						} }
 						inherit
 					>

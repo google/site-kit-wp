@@ -26,10 +26,10 @@ import {
 	clearWebStorage,
 } from './util/standalone';
 
-if ( 'toplevel_page_googlesitekit-dashboard' !== window.pagenow && 'site-kit_page_googlesitekit-splash' !== window.pagenow && 'admin_page_googlesitekit-splash' !== window.pagenow && window.localStorage ) {
+if ( 'toplevel_page_googlesitekit-dashboard' !== global.pagenow && 'site-kit_page_googlesitekit-splash' !== global.pagenow && 'admin_page_googlesitekit-splash' !== global.pagenow && global.localStorage ) {
 	// The total notifications count should always rely on local storage
 	// directly for external availability.
-	const count = window.localStorage.getItem( 'googlesitekit::total-notifications' ) || 0;
+	const count = global.localStorage.getItem( 'googlesitekit::total-notifications' ) || 0;
 	appendNotificationsCount( count );
 }
 

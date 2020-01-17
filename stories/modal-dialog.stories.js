@@ -10,7 +10,7 @@ import { __ } from '@wordpress/i18n';
 
 storiesOf( 'Global', module )
 	.add( 'Modal Dialog', () => {
-		const { provides } = window.googlesitekit.modules.analytics;
+		const { provides } = global.googlesitekit.modules.analytics;
 		return (
 			<Dialog
 				dialogActive

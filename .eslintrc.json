@@ -24,6 +24,13 @@
     "process": "readonly"
   },
   "rules": {
+    "no-restricted-globals": [
+      "error",
+      {
+        "name": "window",
+        "message": "Use 'global' instead."
+      }
+    ],
     "valid-jsdoc": "warn"
   },
   "overrides": [

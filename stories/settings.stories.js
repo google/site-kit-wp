@@ -26,7 +26,7 @@ import TabBar from '@material/react-tab-bar';
 import { __ } from '@wordpress/i18n';
 
 const setupSettings = () => {
-	window.googlesitekit.modules.analytics[ 'accounts-properties-profiles' ] = {
+	global.googlesitekit.modules.analytics[ 'accounts-properties-profiles' ] = {
 		accounts: [
 			{
 				created: '2011-03-25T21:41:26.980Z',
@@ -183,8 +183,8 @@ storiesOf( 'Settings', module )
 		},
 	} )
 	.add( 'Connected Services', () => {
-		window.googlesitekit = settingsData;
-		window.googlesitekit.setupComplete = true;
+		global.googlesitekit = settingsData;
+		global.googlesitekit.setupComplete = true;
 		googlesitekit.modules.analytics.setupComplete = true;
 		googlesitekit.modules[ 'search-console' ].setupComplete = true;
 		// Load the datacache with data.
@@ -213,8 +213,8 @@ storiesOf( 'Settings', module )
 		},
 	} )
 	.add( 'VRT: Editing Settings Module', () => {
-		window.googlesitekit = settingsData;
-		window.googlesitekit.setupComplete = true;
+		global.googlesitekit = settingsData;
+		global.googlesitekit.setupComplete = true;
 		googlesitekit.modules.analytics.setupComplete = true;
 		// Load the datacache with data.
 		setTimeout( () => {
@@ -246,18 +246,18 @@ storiesOf( 'Settings', module )
 		},
 	} )
 	.add( 'Connect More Services', () => {
-		window.googlesitekit = settingsData;
-		window.googlesitekit.modules.analytics.setupComplete = false;
+		global.googlesitekit = settingsData;
+		global.googlesitekit.modules.analytics.setupComplete = false;
 		return (
 			<SettingsModules activeTab={ 1 } />
 		);
 	} )
 	.add( 'Admin Settings', () => {
-		window.googlesitekit = settingsData;
-		window.googlesitekit.modules.analytics.setupComplete = false;
-		window.googlesitekit.admin.clientID = '26521001426-xxx1234ffghrrro6hofusq2b8.apps..com';
-		window.googlesitekit.admin.clientSecret = '••••••••••••••••••••••••••••';
-		window.googlesitekit.admin.apikey = 'AIzaSyAi7c63e21001ESQsrtIfdIY3IcyQVyiw4o';
+		global.googlesitekit = settingsData;
+		global.googlesitekit.modules.analytics.setupComplete = false;
+		global.googlesitekit.admin.clientID = '26521001426-xxx1234ffghrrro6hofusq2b8.apps..com';
+		global.googlesitekit.admin.clientSecret = '••••••••••••••••••••••••••••';
+		global.googlesitekit.admin.apikey = 'AIzaSyAi7c63e21001ESQsrtIfdIY3IcyQVyiw4o';
 
 		return (
 			<div className="mdc-layout-grid">

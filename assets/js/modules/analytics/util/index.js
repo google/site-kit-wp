@@ -468,7 +468,7 @@ export const getTopPagesReportDataDefaults = () => {
 		},
 	];
 
-	if ( window.googlesitekit.modules.analytics.adsenseLinked ) {
+	if ( global.googlesitekit.modules.analytics.adsenseLinked ) {
 		metrics.push(
 			{
 				expression: 'ga:adsenseRevenue',

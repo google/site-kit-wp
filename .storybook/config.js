@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 /* global __STORYBOOK_CLIENT_API__ */
 /**
  * External dependencies

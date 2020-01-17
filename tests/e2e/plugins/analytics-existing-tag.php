@@ -31,7 +31,7 @@ add_action( 'wp_print_scripts', function () {
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=$UA_CODE"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
+  global.dataLayer = global.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', '$UA_CODE');
