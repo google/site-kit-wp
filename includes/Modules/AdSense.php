@@ -495,12 +495,13 @@ tag_partner: "site_kit"
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option = array_merge(
-						$data->data,
-						array( 'setupComplete' => true )
+					$this->get_settings()->merge(
+						array(
+							'setupComplete' => true,
+							'clientID'      => $data['clientID'],
+							'useSnippet'    => $data['useSnippet'],
+						)
 					);
-
-					$this->get_settings()->merge( $option );
 
 					return true;
 				};
