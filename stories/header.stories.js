@@ -10,8 +10,8 @@ import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admi
 
 storiesOf( 'Global', module )
 	.add( 'Plugin Header', () => {
-		global.googlesitekit = dashboardData;
-		global.googlesitekit.admin.userData.picture = 'http://gravatar.com/avatar/?s=96&d=mm';
+		window.googlesitekit = dashboardData;
+		window.googlesitekit.admin.userData.picture = 'http://gravatar.com/avatar/?s=96&d=mm';
 		return (
 			<Header />
 		);

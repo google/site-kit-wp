@@ -18,7 +18,7 @@ import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-a
 
 storiesOf( 'Global', module )
 	.add( 'Data Table', () => {
-		global.googlesitekit = analyticsDashboardData;
+		window.googlesitekit = analyticsDashboardData;
 
 		// Load the datacache with data.
 		setTimeout( () => {

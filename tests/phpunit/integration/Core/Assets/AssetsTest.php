@@ -110,6 +110,6 @@ class AssetsTest extends TestCase {
 		// Ensure that before_print callback for 'sitekit-commons' was run (its inline scripts should be there).
 		$commons_inline_scripts = array_values( array_filter( wp_scripts()->get_data( 'sitekit-commons', 'before' ) ) );
 		$this->assertCount( 2, $commons_inline_scripts );
-		$this->assertContains( 'global.googlesitekit = ', $commons_inline_scripts[1] );
+		$this->assertContains( 'window.googlesitekit = ', $commons_inline_scripts[1] );
 	}
 }
