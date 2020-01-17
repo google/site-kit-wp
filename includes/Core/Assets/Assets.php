@@ -375,18 +375,7 @@ final class Assets {
 					'src'          => $base_url . 'js/googlesitekit-admin.js',
 					'dependencies' => array( 'wp-i18n' ),
 					'execution'    => 'defer',
-					'before_print' => function( $handle ) use ( $base_url ) {
-						$url_polyfill = (
-							'/*googlesitekit*/ ( typeof URL === \'function\') || ' .
-							'document.write( \'<script src="' . // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-							$base_url . 'js/externals/wp-polyfill-url.js' .
-							'"></scr\' + \'ipt>\' );'
-						);
-						wp_add_inline_script(
-							$handle,
-							$url_polyfill,
-							'before'
-						);
+					'before_print' => function( $handle ) {
 						wp_localize_script( $handle, '_googlesitekitBase', $this->get_inline_base_data() );
 					},
 				)
@@ -795,6 +784,7 @@ final class Assets {
 							'document.contains'                                      => $base_url . 'js/externals/wp-polyfill-node-contains.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
 							'window.FormData && window.FormData.prototype.keys'      => $base_url . 'js/externals/wp-polyfill-formdata.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
 							'Element.prototype.matches && Element.prototype.closest' => $base_url . 'js/externals/wp-polyfill-element-closest.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
+							'typeof URL === \'function\''                            => $base_url . 'js/externals/wp-polyfill-url.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
 						);
 						$polyfill_scripts = '/*googlesitekit*/';
 						foreach ( $inline_polyfill_tests as $test => $script ) { // phpcs:ignore Generic.WhiteSpace.ScopeIndent.IncorrectExact
