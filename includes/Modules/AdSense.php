@@ -211,7 +211,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 		?>
 <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> <?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
 <script>
-(adsbygoogle = global.adsbygoogle || []).push({
+(adsbygoogle = window.adsbygoogle || []).push({
 google_ad_client: "<?php echo esc_attr( $client_id ); ?>",
 enable_page_level_ads: true,
 tag_partner: "site_kit"

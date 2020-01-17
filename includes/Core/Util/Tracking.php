@@ -141,11 +141,11 @@ final class Tracking {
 		<!-- Global site tag (gtag.js) - Google Analytics -->
 		<script async src="<?php echo esc_url( 'https://www.googletagmanager.com/gtag/js?id=' . self::TRACKING_ID ); ?>"></script><?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
 		<script>
-			global.dataLayer = global.dataLayer || [];
+			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}
 			gtag('js', new Date());
 			gtag('config', '<?php echo esc_attr( self::TRACKING_ID ); ?>');
-			global.googlesitekitTrackingEnabled = true;
+			window.googlesitekitTrackingEnabled = true;
 		</script>
 		<?php
 	}
@@ -165,7 +165,7 @@ final class Tracking {
 				return;
 			}
 
-			if ( global.googlesitekitTrackingEnabled ) {
+			if ( window.googlesitekitTrackingEnabled ) {
 				gtag( 'event', eventName, {
 					send_to: '<?php echo esc_attr( self::TRACKING_ID ); ?>', /*eslint camelcase: 0*/
 					event_category: eventCategory, /*eslint camelcase: 0*/

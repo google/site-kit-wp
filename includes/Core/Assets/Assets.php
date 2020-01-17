@@ -373,7 +373,7 @@ final class Assets {
 						$inline_data = $this->get_inline_data();
 						wp_add_inline_script(
 							$handle,
-							'global.googlesitekit = ' . wp_json_encode( $inline_data ),
+							'window.googlesitekit = ' . wp_json_encode( $inline_data ),
 							'before'
 						);
 					},
@@ -404,7 +404,7 @@ final class Assets {
 						$inline_data = $this->get_inline_base_data();
 						wp_add_inline_script(
 							$handle,
-							'global._googlesitekitBase = ' . wp_json_encode( $inline_data ),
+							'window._googlesitekitBase = ' . wp_json_encode( $inline_data ),
 							'before'
 						);
 					},
@@ -492,7 +492,7 @@ final class Assets {
 						$inline_data = array( 'publicPath' => $base_url . 'js/' );
 						wp_add_inline_script(
 							$handle,
-							'global.googlesitekitAdminbar = ' . wp_json_encode( $inline_data ),
+							'window.googlesitekitAdminbar = ' . wp_json_encode( $inline_data ),
 							'after'
 						);
 					},
@@ -774,7 +774,7 @@ final class Assets {
 					'version'      => '4.17.15',
 					'fallback'     => true,
 					'before_print' => function( $handle ) {
-						wp_add_inline_script( $handle, '/*googlesitekit*/ global.lodash = global.lodash || _.noConflict(); global.lodash_load = true;' );
+						wp_add_inline_script( $handle, '/*googlesitekit*/ window.lodash = window.lodash || _.noConflict(); window.lodash_load = true;' );
 					},
 				)
 			),
@@ -812,7 +812,7 @@ final class Assets {
 						$inline_polyfill_tests = array(
 							'\'fetch\' in window'                                    => $base_url . 'js/externals/wp-polyfill-fetch.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
 							'document.contains'                                      => $base_url . 'js/externals/wp-polyfill-node-contains.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
-							'global.FormData && global.FormData.prototype.keys'      => $base_url . 'js/externals/wp-polyfill-formdata.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
+							'window.FormData && window.FormData.prototype.keys'      => $base_url . 'js/externals/wp-polyfill-formdata.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
 							'Element.prototype.matches && Element.prototype.closest' => $base_url . 'js/externals/wp-polyfill-element-closest.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
 						);
 						$polyfill_scripts = '/*googlesitekit*/';

@@ -238,7 +238,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 		wp_add_inline_script(
 			'google_gtagjs',
-			'global.dataLayer = global.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag(\'js\', new Date());'
+			'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag(\'js\', new Date());'
 		);
 
 		$gtag_opt = array();
