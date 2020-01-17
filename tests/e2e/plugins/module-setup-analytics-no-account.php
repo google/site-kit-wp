@@ -23,6 +23,7 @@ add_action( 'rest_api_init', function () {
 		REST_Routes::REST_ROOT,
 		'modules/analytics/data/accounts-properties-profiles',
 		array(
+			'methods'  => 'GET',
 			'callback' => function () {
 				/**
 				 * Returned by \Google\Site_Kit\Core\Modules\Module::exception_to_error

@@ -67,6 +67,7 @@ add_action( 'rest_api_init', function () {
 		REST_Routes::REST_ROOT,
 		'modules/tagmanager/data/accounts-containers',
 		array(
+			'methods'  => 'GET',
 			'callback' => function ( $request ) use ( $accounts, $containers ) {
 				$account_id = $request['accountID'] ?: $accounts[0]['accountId'];
 
@@ -83,6 +84,7 @@ add_action( 'rest_api_init', function () {
 		REST_Routes::REST_ROOT,
 		'modules/tagmanager/data/containers',
 		array(
+			'methods'  => 'GET',
 			'callback' => function ( $request ) use ( $containers ) {
 				return filter_by_account_id( $containers, $request['accountID'] );
 			}
