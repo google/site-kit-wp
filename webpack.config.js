@@ -135,7 +135,7 @@ module.exports = ( env, argv ) => {
 			output: {
 				filename: '[name].js',
 				path: __dirname + '/dist/assets/js',
-				chunkFilename: '[name].js',
+				chunkFilename: '[name]-[chunkhash].js',
 				publicPath: '',
 			},
 			performance: {
