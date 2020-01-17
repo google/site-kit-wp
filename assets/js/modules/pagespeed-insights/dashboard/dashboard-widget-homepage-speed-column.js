@@ -135,6 +135,7 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedMobile = withData(
 			data: {
 				url: googlesitekit.permaLink,
 				strategy: 'mobile',
+				dateRange: null,
 			},
 			priority: 10,
 			maxAge: getTimeInSeconds( 'day' ),
@@ -157,6 +158,7 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedDesktop = withData(
 			data: {
 				url: googlesitekit.permaLink,
 				strategy: 'desktop',
+				dateRange: null,
 			},
 			priority: 10,
 			maxAge: getTimeInSeconds( 'day' ),

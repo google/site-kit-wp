@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Trait for a class that migrates array keys from old to new.
  *
- * @since n.e.x.t
+ * @since 1.2.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ trait Migrate_Legacy_Keys {
 	/**
 	 * Migrates legacy array keys to the current key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param array $array          Input associative array to migrate keys for.
 	 * @param array $key_mapping    Map of legacy key to current key.

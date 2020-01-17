@@ -15,7 +15,7 @@ use \Google\Site_Kit\Core\Util\Migrate_Legacy_Keys;
 /**
  * Trait for a Setting that has legacy option keys to migrate.
  *
- * @since n.e.x.t
+ * @since 1.2.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ trait Setting_With_Legacy_Keys_Trait {
 	 *
 	 * @param array $legacy_key_map Mapping of legacy keys to current key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 */
 	protected function register_legacy_keys_migration( array $legacy_key_map ) {
 		add_filter(

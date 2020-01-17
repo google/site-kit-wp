@@ -103,7 +103,7 @@ final class Credentials extends Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return array
 	 */

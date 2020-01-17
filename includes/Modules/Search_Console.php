@@ -459,7 +459,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 * for the first time.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Now requires Google_Site_Kit_Client instance.
+	 * @since 1.2.0 Now requires Google_Site_Kit_Client instance.
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
