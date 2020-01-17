@@ -340,23 +340,15 @@ final class Assets {
 		foreach ( $external_assets as $asset ) {
 			$dependencies[] = $asset->get_handle();
 		}
-		$dependencies[] = 'sitekit-vendor';
 		$dependencies[] = 'sitekit-commons';
 		$dependencies[] = 'googlesitekit_admin';
 
 		// Register plugin scripts.
 		$assets = array(
 			new Script(
-				'sitekit-vendor',
-				array(
-					'src' => $base_url . 'js/vendor.js',
-				)
-			),
-			new Script(
 				'sitekit-commons',
 				array(
 					'src'          => $base_url . 'js/commons.js',
-					'dependencies' => array( 'sitekit-vendor' ),
 					'before_print' => function( $handle ) use ( $base_url ) {
 						$url_polyfill = (
 							'/*googlesitekit*/ ( typeof URL === \'function\') || ' .
