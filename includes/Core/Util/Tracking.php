@@ -12,6 +12,8 @@ namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\User_Options;
 
 /**
  * Class managing admin tracking.
@@ -48,20 +50,30 @@ final class Tracking {
 	protected $authentication;
 
 	/**
+	 * User_Options instance.
+	 *
+	 * @var User_Options
+	 */
+	protected $user_options;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Added User_Options.
 	 *
 	 * @param Context        $context        Plugin context.
 	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param User_Options   $user_options   Optional. User_Options instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, Authentication $authentication = null ) {
-		$this->context = $context;
-
-		if ( ! $authentication ) {
-			$authentication = new Authentication( $this->context );
-		}
-		$this->authentication = $authentication;
+	public function __construct(
+		Context $context,
+		Authentication $authentication = null,
+		User_Options $user_options = null
+	) {
+		$this->context        = $context;
+		$this->authentication = $authentication ?: new Authentication( $this->context );
+		$this->user_options   = $user_options ?: new User_Options( $this->context );
 	}
 
 	/**
@@ -115,14 +127,15 @@ final class Tracking {
 	}
 
 	/**
-	 * Is tracking active for this plugin install?
+	 * Is tracking active for the current user?
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Tracking is now user-specific.
 	 *
 	 * @return bool True if tracking enabled, and False if not.
 	 */
 	public function is_active() {
-		return (bool) get_option( self::TRACKING_OPTIN_KEY, false );
+		return (bool) $this->user_options->get( self::TRACKING_OPTIN_KEY );
 	}
 
 	/**
@@ -194,14 +207,19 @@ final class Tracking {
 	 * Register tracking settings and allow access from Rest API.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Registers a meta field instead of setting.
 	 */
 	private function register_settings() {
+		global $wpdb;
 		$args = array(
 			'type'         => 'boolean',
 			'description'  => __( 'Allowing tracking of anonymous usage stats.', 'google-site-kit' ),
 			'default'      => false,
-			'show_in_rest' => true,
+			'single'       => true,
+			'show_in_rest' => current_user_can( Permissions::SETUP ),
 		);
-		register_setting( 'google-site-kit', self::TRACKING_OPTIN_KEY, $args );
+		// Need to conditionally include the blog prefix as this is a user option.
+		$prefix = ! $this->context->is_network_mode() ? $wpdb->get_blog_prefix() : '';
+		register_meta( 'user', $prefix . self::TRACKING_OPTIN_KEY, $args );
 	}
 }
