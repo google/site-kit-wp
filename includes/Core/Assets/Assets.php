@@ -786,13 +786,13 @@ final class Assets {
 							'Element.prototype.matches && Element.prototype.closest' => $base_url . 'js/externals/wp-polyfill-element-closest.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
 							'typeof URL === \'function\''                            => $base_url . 'js/externals/wp-polyfill-url.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
 						);
-						$polyfill_scripts = '/*googlesitekit*/';
+						$polyfill_scripts = '/*googlesitekit*/' . "\n";
 						foreach ( $inline_polyfill_tests as $test => $script ) { // phpcs:ignore Generic.WhiteSpace.ScopeIndent.IncorrectExact
 							$polyfill_scripts .= (
 								'( ' . $test . ' ) || ' .
 								'document.write( \'<script src="' . // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-								$script .
-								'"></scr\' + \'ipt>\' );'
+								$script . '?ver=' . GOOGLESITEKIT_VERSION .
+								'"></scr\' + \'ipt>\' );' . "\n"
 							);
 						} // phpcs:ignore Generic.WhiteSpace.ScopeIndent.IncorrectExact
 						wp_add_inline_script( $handle, $polyfill_scripts, 'after' );
