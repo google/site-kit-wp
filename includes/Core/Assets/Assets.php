@@ -349,19 +349,7 @@ final class Assets {
 				'sitekit-commons',
 				array(
 					'src'          => false,
-					'before_print' => function( $handle ) use ( $base_url ) {
-						$url_polyfill = (
-							'/*googlesitekit*/ ( typeof URL === \'function\') || ' .
-							'document.write( \'<script src="' . // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-							$base_url . 'js/externals/wp-polyfill-url.js' .
-							'"></scr\' + \'ipt>\' );'
-						);
-						wp_add_inline_script(
-							$handle,
-							$url_polyfill,
-							'before'
-						);
-
+					'before_print' => function( $handle ) {
 						wp_localize_script( $handle, 'googlesitekit', $this->get_inline_data() );
 					},
 				)
@@ -387,7 +375,18 @@ final class Assets {
 					'src'          => $base_url . 'js/googlesitekit-admin.js',
 					'dependencies' => array( 'wp-i18n' ),
 					'execution'    => 'defer',
-					'before_print' => function( $handle ) {
+					'before_print' => function( $handle ) use ( $base_url ) {
+						$url_polyfill = (
+							'/*googlesitekit*/ ( typeof URL === \'function\') || ' .
+							'document.write( \'<script src="' . // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+							$base_url . 'js/externals/wp-polyfill-url.js' .
+							'"></scr\' + \'ipt>\' );'
+						);
+						wp_add_inline_script(
+							$handle,
+							$url_polyfill,
+							'before'
+						);
 						wp_localize_script( $handle, '_googlesitekitBase', $this->get_inline_base_data() );
 					},
 				)
