@@ -185,10 +185,13 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 
 		// On AMP, preferably use the new 'wp_body_open' hook, falling back to 'the_content' below.
 		if ( $this->context->is_amp() ) {
+			if ( is_singular( 'amp_story' ) ) {
+				return;
+			}
 			add_action(
 				'wp_body_open',
 				function() use ( $client_id ) {
-					if ( $this->adsense_tag_printed || ! is_singular( 'amp_story' ) ) {
+					if ( $this->adsense_tag_printed ) {
 						return;
 					}
 
@@ -232,7 +235,7 @@ tag_partner: "site_kit"
 	 * @return array Filtered $data.
 	 */
 	protected function amp_data_load_auto_ads_component( $data ) {
-		if ( ! $this->is_connected() || ! is_singular( 'amp_story' ) ) {
+		if ( ! $this->is_connected() ) {
 			return $data;
 		}
 
@@ -259,7 +262,7 @@ tag_partner: "site_kit"
 	 * @return string Filtered $content.
 	 */
 	protected function amp_content_add_auto_ads( $content ) {
-		if ( ! $this->context->is_amp() ) {
+		if ( ! $this->context->is_amp() || is_singular( 'amp_story' ) ) {
 			return $content;
 		}
 
