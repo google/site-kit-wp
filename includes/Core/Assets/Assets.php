@@ -362,12 +362,7 @@ final class Assets {
 							'before'
 						);
 
-						$inline_data = $this->get_inline_data();
-						wp_add_inline_script(
-							$handle,
-							'window.googlesitekit = ' . wp_json_encode( $inline_data ),
-							'before'
-						);
+						wp_localize_script( $handle, 'googlesitekit', $this->get_inline_data() );
 					},
 				)
 			),
@@ -393,12 +388,7 @@ final class Assets {
 					'dependencies' => array( 'wp-i18n' ),
 					'execution'    => 'defer',
 					'before_print' => function( $handle ) {
-						$inline_data = $this->get_inline_base_data();
-						wp_add_inline_script(
-							$handle,
-							'window._googlesitekitBase = ' . wp_json_encode( $inline_data ),
-							'before'
-						);
+						wp_localize_script( $handle, '_googlesitekitBase', $this->get_inline_base_data() );
 					},
 				)
 			),
