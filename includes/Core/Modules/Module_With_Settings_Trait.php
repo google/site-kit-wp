@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Modules;
 /**
  * Trait for a module that includes a screen.
  *
- * @since n.e.x.t
+ * @since 1.2.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ trait Module_With_Settings_Trait {
 	/**
 	 * Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @var Module_Settings
 	 */
@@ -31,7 +31,7 @@ trait Module_With_Settings_Trait {
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return Module_Settings
 	 */
@@ -40,7 +40,7 @@ trait Module_With_Settings_Trait {
 	/**
 	 * Gets the module's Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return Module_Settings Module_Settings instance.
 	 */

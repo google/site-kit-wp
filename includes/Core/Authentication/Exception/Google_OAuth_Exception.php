@@ -15,7 +15,7 @@ use Exception;
 /**
  * Exception thrown when a Google OAuth response contains an OAuth error.
  *
- * @since n.e.x.t
+ * @since 1.2.0
  * @access private
  * @ignore
  */

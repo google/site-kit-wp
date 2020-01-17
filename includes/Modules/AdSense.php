@@ -347,14 +347,6 @@ tag_partner: "site_kit"
 			case 'GET:account-status':
 				return function() {
 					$option = $this->get_settings()->get();
-					// TODO: Remove this at some point (migration of old option).
-					if ( isset( $option['account_status'] ) ) {
-						if ( ! isset( $option['accountStatus'] ) ) {
-							$option['accountStatus'] = $option['account_status'];
-						}
-						unset( $option['account_status'] );
-						$this->get_settings()->set( $option );
-					}
 					if ( empty( $option['accountStatus'] ) ) {
 						return new WP_Error( 'account_status_not_set', __( 'AdSense account status not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}
@@ -395,14 +387,6 @@ tag_partner: "site_kit"
 			case 'GET:client-id':
 				return function() {
 					$option = $this->get_settings()->get();
-					// TODO: Remove this at some point (migration of old option).
-					if ( isset( $option['client_id'] ) ) {
-						if ( ! isset( $option['clientID'] ) ) {
-							$option['clientID'] = $option['client_id'];
-						}
-						unset( $option['client_id'] );
-						$this->get_settings()->set( $option );
-					}
 					if ( empty( $option['clientID'] ) ) {
 						return new WP_Error( 'client_id_not_set', __( 'AdSense client ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}
@@ -424,45 +408,7 @@ tag_partner: "site_kit"
 				return $service->adclients->listAdclients();
 			case 'GET:connection':
 				return function() {
-					$option = $this->get_settings()->get();
-					// TODO: Remove this at some point (migration of old options).
-					if ( isset( $option['account_id'] ) || isset( $option['client_id'] ) || isset( $option['account_status'] ) ) {
-						if ( isset( $option['account_id'] ) ) {
-							if ( ! isset( $option['accountID'] ) ) {
-								$option['accountID'] = $option['account_id'];
-							}
-							unset( $option['account_id'] );
-						}
-						if ( isset( $option['client_id'] ) ) {
-							if ( ! isset( $option['clientID'] ) ) {
-								$option['clientID'] = $option['client_id'];
-							}
-							unset( $option['client_id'] );
-						}
-						if ( isset( $option['account_status'] ) ) {
-							if ( ! isset( $option['accountStatus'] ) ) {
-								$option['accountStatus'] = $option['account_status'];
-							}
-							unset( $option['account_status'] );
-						}
-						$this->get_settings()->set( $option );
-					}
-					// TODO: Remove this at some point (migration of old 'accountId' option).
-					if ( isset( $option['accountId'] ) ) {
-						if ( ! isset( $option['accountID'] ) ) {
-							$option['accountID'] = $option['accountId'];
-						}
-						unset( $option['accountId'] );
-					}
-
-					// TODO: Remove this at some point (migration of old 'clientId' option).
-					if ( isset( $option['clientId'] ) ) {
-						if ( ! isset( $option['clientID'] ) ) {
-							$option['clientID'] = $option['clientId'];
-						}
-						unset( $option['clientId'] );
-					}
-
+					$option   = $this->get_settings()->get();
 					$defaults = array(
 						'accountID'     => '',
 						'clientID'      => '',
@@ -785,7 +731,7 @@ tag_partner: "site_kit"
 	 * for the first time.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Now requires Google_Site_Kit_Client instance.
+	 * @since 1.2.0 Now requires Google_Site_Kit_Client instance.
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
@@ -800,7 +746,7 @@ tag_partner: "site_kit"
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return Module_Settings
 	 */

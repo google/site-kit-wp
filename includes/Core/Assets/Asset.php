@@ -93,7 +93,7 @@ abstract class Asset {
 	/**
 	 * Executes the extra callback if defined before printing the asset.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 */
 	final public function before_print() {
 		if ( ! is_callable( $this->args['before_print'] ) ) {

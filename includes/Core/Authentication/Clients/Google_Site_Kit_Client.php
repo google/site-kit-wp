@@ -23,7 +23,7 @@ use LogicException;
 /**
  * Extended Google API client with custom functionality for Site Kit.
  *
- * @since n.e.x.t
+ * @since 1.2.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ class Google_Site_Kit_Client extends Google_Client {
 	/**
 	 * Callback to pass a potential exception to while refreshing an access token.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 * @var callable|null
 	 */
 	protected $token_exception_callback;
@@ -40,7 +40,7 @@ class Google_Site_Kit_Client extends Google_Client {
 	/**
 	 * Construct the Google client.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param array $config Client configuration.
 	 */
@@ -57,7 +57,7 @@ class Google_Site_Kit_Client extends Google_Client {
 	/**
 	 * Sets the function to be called when fetching an access token results in an exception.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param callable $exception_callback Function accepting an exception as single parameter.
 	 */
@@ -68,7 +68,7 @@ class Google_Site_Kit_Client extends Google_Client {
 	/**
 	 * Sets whether or not to return raw requests and returns a callback to reset to the previous value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param bool $defer Whether or not to return raw requests.
 	 * @return callable Callback function that resets to the original $defer value.
@@ -86,7 +86,7 @@ class Google_Site_Kit_Client extends Google_Client {
 	/**
 	 * Adds auth listeners to the HTTP client based on the credentials set in the Google API Client object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param ClientInterface $http The HTTP client object.
 	 * @return ClientInterface The HTTP client object.
@@ -124,7 +124,7 @@ class Google_Site_Kit_Client extends Google_Client {
 	 * Fetches an OAuth 2.0 access token by using a temporary code.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Ported from Google_Site_Kit_Proxy_Client.
+	 * @since 1.2.0 Ported from Google_Site_Kit_Proxy_Client.
 	 *
 	 * @param string $code Temporary authorization code, or undelegated token code.
 	 * @return array Access token.
@@ -155,7 +155,7 @@ class Google_Site_Kit_Client extends Google_Client {
 	 * Fetches a fresh OAuth 2.0 access token by using a refresh token.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Ported from Google_Site_Kit_Proxy_Client.
+	 * @since 1.2.0 Ported from Google_Site_Kit_Proxy_Client.
 	 *
 	 * @param string $refresh_token Optional. Refresh token. Unused here.
 	 * @return array Access token.
@@ -194,7 +194,7 @@ class Google_Site_Kit_Client extends Google_Client {
 	 * This method is used in place of {@see OAuth2::fetchAuthToken()}.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Ported from Google_Site_Kit_Proxy_Client.
+	 * @since 1.2.0 Ported from Google_Site_Kit_Proxy_Client.
 	 *
 	 * @param OAuth2        $auth         OAuth2 instance.
 	 * @param callable|null $http_handler Optional. HTTP handler callback. Default null.
@@ -220,7 +220,7 @@ class Google_Site_Kit_Client extends Google_Client {
 	/**
 	 * Handles an erroneous response from a request to fetch an auth token.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param string $error Error code / error message.
 	 * @param array  $data  Associative array of full response data.

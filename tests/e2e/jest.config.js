@@ -7,6 +7,7 @@ module.exports = {
 		'expect-puppeteer',
 	],
 	testMatch: [
+		'<rootDir>/**/*.test.js',
 		'<rootDir>/specs/**/__tests__/**/*.js',
 		'<rootDir>/specs/**/?(*.)(spec|test).js',
 		'<rootDir>/specs/**/test/*.js',

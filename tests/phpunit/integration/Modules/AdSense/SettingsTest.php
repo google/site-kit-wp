@@ -62,6 +62,8 @@ class SettingsTest extends SettingsTestCase {
 	public function test_legacy_options() {
 		$legacy_option = array(
 			'account_id'        => 'test-account-id',
+			'account_status'    => 'test-account-status',
+			'client_id'         => 'test-client-id',
 			'adsenseTagEnabled' => 'test-adsense-tag-enabled',
 			'setup_complete'    => 'test-setup-complete',
 		);
@@ -73,6 +75,8 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertArraySubset(
 			array(
 				'accountID'     => 'test-account-id',
+				'accountStatus' => 'test-account-status',
+				'clientID'      => 'test-client-id',
 				'useSnippet'    => 'test-adsense-tag-enabled',
 				'setupComplete' => 'test-setup-complete',
 			),

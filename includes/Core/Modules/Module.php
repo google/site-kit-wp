@@ -565,7 +565,7 @@ abstract class Module {
 	 * This method should be used to access the client.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Now returns Google_Site_Kit_Client instance.
+	 * @since 1.2.0 Now returns Google_Site_Kit_Client instance.
 	 *
 	 * @return Google_Site_Kit_Client Google client instance.
 	 *
@@ -633,7 +633,7 @@ abstract class Module {
 	 * for the first time.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Now returns Google_Site_Kit_Client instance.
+	 * @since 1.2.0 Now returns Google_Site_Kit_Client instance.
 	 *
 	 * @return Google_Site_Kit_Client Google client instance.
 	 */
@@ -648,7 +648,7 @@ abstract class Module {
 	 * for the first time.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Now requires Google_Site_Kit_Client instance.
+	 * @since 1.2.0 Now requires Google_Site_Kit_Client instance.
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
@@ -659,7 +659,7 @@ abstract class Module {
 	/**
 	 * Sets whether or not to return raw requests and returns a callback to reset to the previous value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param bool $defer Whether or not to return raw requests.
 	 * @return callable Callback function that resets to the original $defer value.
