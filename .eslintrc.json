@@ -46,6 +46,19 @@
         "page": true,
         "wp": true
       }
+    },
+    {
+      "files": [
+        "stories/**/*.js"
+      ],
+      "globals": {
+        "window": false
+      },
+      "rules": {
+        "no-restricted-globals": [
+          "off"
+        ]
+      }
     }
   ]
 }
