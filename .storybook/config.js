@@ -82,6 +82,7 @@ window.googlesitekit.modules = window.googlesitekit.modules || googlesitekit.mod
 window.googlesitekit.admin.assetsRoot = '/assets/';
 window.googlesitekit.isStorybook = true;
 window._googlesitekitBase = {
+	basePrefix: 'wp_',
 	splashURL: 'http://localhost/wp-admin/admin.php?page=googlesitekit-splash',
 };
 window.wp.apiFetch = ( vars ) => {
