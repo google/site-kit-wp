@@ -348,7 +348,7 @@ final class Assets {
 			new Script(
 				'sitekit-commons',
 				array(
-					'src'          => $base_url . 'js/commons.js',
+					'src'          => false,
 					'before_print' => function( $handle ) use ( $base_url ) {
 						$url_polyfill = (
 							'/*googlesitekit*/ ( typeof URL === \'function\') || ' .
