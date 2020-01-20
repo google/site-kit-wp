@@ -400,9 +400,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option              = $this->get_settings()->get();
-					$option['accountID'] = $data['accountID'];
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge( array( 'accountID' => $data['accountID'] ) );
 					return true;
 				};
 			// Intentional fallthrough.
@@ -423,14 +421,12 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				};
 			case 'POST:connection':
 				return function() use ( $data ) {
-					$option = $this->get_settings()->get();
-					$keys   = array( 'accountID', 'containerID' );
-					foreach ( $keys as $key ) {
-						if ( isset( $data[ $key ] ) ) {
-							$option[ $key ] = $data[ $key ];
-						}
-					}
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge(
+						array(
+							'accountID'   => $data['accountID'],
+							'containerID' => $data['containerID'],
+						)
+					);
 					return true;
 				};
 			case 'GET:container-id':
@@ -471,9 +467,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option                = $this->get_settings()->get();
-					$option['containerID'] = $data['containerID'];
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge( array( 'containerID' => $data['containerID'] ) );
 					return true;
 				};
 			case 'GET:containers':
@@ -500,10 +494,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				}
 
 				return function() use ( $data, $usage_context ) {
-					$old_option  = $this->get_settings()->get();
-					$data_option = array_intersect_key( $data->data, $old_option );
-					$option      = array_merge( $old_option, $data_option );
-
+					$option        = $data->data;
 					$container_key = $this->context_map[ $usage_context ];
 					$container_id  = $data[ $container_key ];
 
@@ -517,7 +508,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 						$option[ $container_key ] = $create_container_response;
 					}
 
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge( $option );
 
 					return $option;
 				};
