@@ -153,7 +153,6 @@
     "gulp-filter": "^5.1.0",
     "gulp-imagemin": "^4.1.0",
     "gulp-livereload": "^3.8.1",
-    "gulp-phpunit": "^0.26.0",
     "gulp-replace": "^1.0.0",
     "gulp-svgmin": "^2.1.0",
     "gulp-svgstore": "^7.0.1",
