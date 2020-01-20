@@ -55,7 +55,7 @@ class ScriptTest extends TestCase {
 			'test-handle',
 			array(
 				'before_print' => $callback,
-			) 
+			)
 		);
 
 		$script->before_print();
@@ -67,7 +67,7 @@ class ScriptTest extends TestCase {
 			'test-handle',
 			array(
 				'execution' => 'async',
-			) 
+			)
 		);
 		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'script_execution' ) );
 
@@ -81,7 +81,7 @@ class ScriptTest extends TestCase {
 			'test-handle',
 			array(
 				'in_footer' => false, // true by default
-			) 
+			)
 		);
 		// Scripts are registered in footer by default; footer scripts are added to group 1
 		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'group' ) );
@@ -97,16 +97,14 @@ class ScriptTest extends TestCase {
 			'test-handle',
 			array(
 				'src' => $src,
-			) 
+			)
 		);
 
 		$script->register();
 
 		$expected_src = add_query_arg( 'ver', GOOGLESITEKIT_VERSION, $src );
 		$mock         = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'callback' ) )->getMock();
-		$mock->expects( $this->once() )
-			 ->method( 'callback' )
-			 ->with( $expected_src, 'test-handle' );
+		$mock->expects( $this->once() )->method( 'callback' )->with( $expected_src, 'test-handle' );
 
 		add_filter( 'script_loader_src', array( $mock, 'callback' ), 10, 2 );
 
