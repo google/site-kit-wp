@@ -27,6 +27,7 @@ import {
 	getDataTableFromData,
 	TableOverflowContainer,
 } from 'GoogleComponents/data-table';
+import { get } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -44,7 +45,7 @@ import {
 } from './util';
 
 const isZeroData = ( data ) => {
-	return 0 === data.categories.performance.score;
+	return 0 === get( data, 'categories.performance.score' );
 };
 
 class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
