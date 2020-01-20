@@ -19,7 +19,7 @@
     "ext-json": "*",
     "ext-openssl": "*",
     "google/apiclient": "^2.0",
-    "guzzlehttp/guzzle": "~5.3.3"
+    "guzzlehttp/guzzle": "^5.3.3"
   },
   "replace": {
     "phpseclib/phpseclib": "*"
