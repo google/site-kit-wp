@@ -57,7 +57,7 @@ class PluginTest extends TestCase {
 		$this->assertActionRendersGeneratorTag( 'login_head' );
 
 		// Ensure the googlesitekit_init action is fired.
-		$mock_callback = $this->getMock( 'MockClass', array( 'callback' ) );
+		$mock_callback = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'callback' ) )->getMock();
 		$mock_callback->expects( $this->once() )->method( 'callback' );
 		add_action( 'googlesitekit_init', array( $mock_callback, 'callback' ) );
 

@@ -63,7 +63,7 @@ class StylesheetTest extends TestCase {
 		$style->register();
 
 		$expected_src = add_query_arg( 'ver', GOOGLESITEKIT_VERSION, $src );
-		$mock         = $this->getMock( 'MockClass', array( 'callback' ) );
+		$mock         = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'callback' ) )->getMock();
 		$mock->expects( $this->once() )
 		     ->method( 'callback' )
 		     ->with( $expected_src, 'test-handle' );
@@ -81,7 +81,7 @@ class StylesheetTest extends TestCase {
 
 		$style->register();
 
-		$mock = $this->getMock( 'MockClass', array( 'callback' ) );
+		$mock = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'callback' ) )->getMock();
 		$mock->expects( $this->once() )
 		     ->method( 'callback' )
 		     ->with( $this->isType( 'string' ), 'test-handle', $this->isType( 'string' ), 'test-media' );

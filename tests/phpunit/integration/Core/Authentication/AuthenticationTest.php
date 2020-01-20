@@ -290,7 +290,8 @@ class AuthenticationTest extends TestCase {
 			$user_options->set( $key, "test-$key-value" );
 		}
 
-		$mock_google_client = $this->getMock( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client', array( 'revokeToken' ) );
+		$mock_google_client = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
+			->setMethods( array( 'revokeToken' ) )->getMock();
 		$mock_google_client->expects( $this->once() )->method( 'revokeToken' );
 		$this->force_set_property( $auth->get_oauth_client(), 'google_client', $mock_google_client );
 

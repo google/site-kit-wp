@@ -260,7 +260,8 @@ class OAuth_ClientTest extends TestCase {
 		$success_redirect = admin_url( 'success-redirect' );
 		$client->get_authentication_url( $success_redirect );
 		// No other way around this but to mock the Google_Site_Kit_Client
-		$google_client_mock = $this->getMock( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client', array( 'fetchAccessTokenWithAuthCode' ) );
+		$google_client_mock = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
+			->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
 		$http_client = new FakeHttpClient();
 		$http_client->set_request_handler( function ( Request $request ) {
 			$url = parse_url( $request->getUrl() );

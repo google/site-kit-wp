@@ -91,7 +91,7 @@ class ScriptTest extends TestCase {
 		$script->register();
 
 		$expected_src = add_query_arg( 'ver', GOOGLESITEKIT_VERSION, $src );
-		$mock         = $this->getMock( 'MockClass', array( 'callback' ) );
+		$mock         = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'callback' ) )->getMock();
 		$mock->expects( $this->once() )
 		     ->method( 'callback' )
 		     ->with( $expected_src, 'test-handle' );

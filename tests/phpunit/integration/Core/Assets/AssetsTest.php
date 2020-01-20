@@ -75,7 +75,7 @@ class AssetsTest extends TestCase {
 	public function test_enqueue_fonts() {
 		remove_all_actions( 'login_enqueue_scripts' );
 
-		$mock_context = $this->getMock( 'MockClass', array( 'is_amp' ) );
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp' ) )->getMock();
 		$mock_context->expects( $this->once() )
 		     ->method( 'is_amp' )
 		     ->will( $this->returnValue( false ) );
