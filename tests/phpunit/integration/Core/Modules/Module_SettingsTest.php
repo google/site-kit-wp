@@ -40,11 +40,11 @@ class Module_SettingsTest extends SettingsTestCase {
 		);
 
 		// Anything returned by get() will be updated, not just defaults.
-		$settings->set(	array( 'newKey' => 'new-value' ) );
+		$settings->set( array( 'newKey' => 'new-value' ) );
 		$this->assertEqualSetsWithIndex(
 			array(
 				'defaultKey' => 'default-value',
-				'newKey'     => 'new-value'
+				'newKey'     => 'new-value',
 			),
 			get_option( $this->get_option_name() )
 		);

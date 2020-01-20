@@ -125,16 +125,20 @@ class Migration_1_0_0Test extends TestCase {
 	}
 
 	private function set_gcp_credentials() {
-		( new Credentials( new Encrypted_Options( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) ) ) )->set( array(
-			'oauth2_client_id'     => 'test-client-id.apps.googleusercontent.com',
-			'oauth2_client_secret' => 'test-client-secret',
-		) );
+		( new Credentials( new Encrypted_Options( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) ) ) )->set(
+			array(
+				'oauth2_client_id'     => 'test-client-id.apps.googleusercontent.com',
+				'oauth2_client_secret' => 'test-client-secret',
+			) 
+		);
 	}
 
 	private function set_proxy_credentials() {
-		( new Credentials( new Encrypted_Options( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) ) ) )->set( array(
-			'oauth2_client_id'     => 'test-site-id.apps.sitekit.withgoogle.com',
-			'oauth2_client_secret' => 'test-site-secret',
-		) );
+		( new Credentials( new Encrypted_Options( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) ) ) )->set(
+			array(
+				'oauth2_client_id'     => 'test-site-id.apps.sitekit.withgoogle.com',
+				'oauth2_client_secret' => 'test-site-secret',
+			) 
+		);
 	}
 }

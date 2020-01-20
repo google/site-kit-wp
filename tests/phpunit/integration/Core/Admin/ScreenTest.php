@@ -34,10 +34,13 @@ class ScreenTest extends TestCase {
 		$screen = new Screen( 'test-slug', array() );
 		$this->assertEquals( '', $screen->add( $context ) );
 		// With callback, no user
-		$screen = new Screen( 'test-slug', array(
-			'render_callback' => function () {
-			},
-		) );
+		$screen = new Screen(
+			'test-slug',
+			array(
+				'render_callback' => function () {
+				},
+			) 
+		);
 		$this->assertEquals( '', $screen->add( $context ) );
 
 		// Login basic user
@@ -59,17 +62,23 @@ class ScreenTest extends TestCase {
 		$this->assertEquals( '', $screen->add( $context ) );
 
 		// With callback, with user, with permission
-		$screen = new Screen( 'test-slug', array(
-			'render_callback' => function () {
-			},
-		) );
+		$screen = new Screen(
+			'test-slug',
+			array(
+				'render_callback' => function () {
+				},
+			) 
+		);
 		$this->assertEquals( 'toplevel_page_test-slug', $screen->add( $context ) );
 
-		$screen = new Screen( 'test-slug', array(
-			'render_callback' => function () {
-			},
-			'parent_slug'     => 'test-parent-slug',
-		) );
+		$screen = new Screen(
+			'test-slug',
+			array(
+				'render_callback' => function () {
+				},
+				'parent_slug'     => 'test-parent-slug',
+			) 
+		);
 		$this->assertEquals( 'toplevel_page_test-slug', $screen->add( $context ) );
 	}
 
@@ -78,9 +87,12 @@ class ScreenTest extends TestCase {
 		$callback    = function () use ( &$invocations ) {
 			$invocations[] = func_get_args();
 		};
-		$screen      = new Screen( 'test-slug', array(
-			'initialize_callback' => $callback,
-		) );
+		$screen      = new Screen(
+			'test-slug',
+			array(
+				'initialize_callback' => $callback,
+			) 
+		);
 		$context     = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
 		$screen->initialize( $context );
@@ -97,9 +109,12 @@ class ScreenTest extends TestCase {
 		$callback    = function () use ( &$invocations ) {
 			$invocations[] = func_get_args();
 		};
-		$screen      = new Screen( 'test-slug', array(
-			'enqueue_callback' => $callback,
-		) );
+		$screen      = new Screen(
+			'test-slug',
+			array(
+				'enqueue_callback' => $callback,
+			) 
+		);
 
 		$this->assertFalse( wp_style_is( 'googlesitekit_admin_css', 'enqueued' ) );
 		$this->assertFalse( wp_script_is( 'googlesitekit_modules', 'enqueued' ) );

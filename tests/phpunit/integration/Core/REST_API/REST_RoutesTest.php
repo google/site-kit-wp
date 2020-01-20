@@ -37,7 +37,7 @@ class REST_RoutesTest extends TestCase {
 		// Assert that routes with the site-kit namespace were registered.
 		$this->assertEquals( array( REST_Routes::REST_ROOT ), $server->get_namespaces() );
 
-		$routes = array (
+		$routes = array(
 			'/',
 			'/' . REST_Routes::REST_ROOT,
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/reset',

@@ -17,6 +17,8 @@ use Google\Site_Kit\Core\Util\Migration_n_e_x_t;
 use Google\Site_Kit\Core\Util\Tracking;
 use Google\Site_Kit\Tests\TestCase;
 
+// phpcs:disable PEAR.NamingConventions.ValidClassName.Invalid
+
 class Migration_n_e_x_tTest extends TestCase {
 	/**
 	 * @var Context
@@ -39,7 +41,7 @@ class Migration_n_e_x_tTest extends TestCase {
 	}
 
 	public function test_migrate_without_tracking_enabled() {
-		$migration   = new Migration_n_e_x_t( $this->context );
+		$migration = new Migration_n_e_x_t( $this->context );
 		remove_all_actions( 'admin_init' );
 		$migration->register();
 
@@ -54,7 +56,7 @@ class Migration_n_e_x_tTest extends TestCase {
 	}
 
 	public function test_migrate_with_tracking_enabled_and_no_authenticated_users() {
-		$migration   = new Migration_n_e_x_t( $this->context );
+		$migration = new Migration_n_e_x_t( $this->context );
 		remove_all_actions( 'admin_init' );
 		$migration->register();
 
@@ -69,7 +71,7 @@ class Migration_n_e_x_tTest extends TestCase {
 	}
 
 	public function test_migrate_with_tracking_enabled_and_one_authenticated_user() {
-		$migration   = new Migration_n_e_x_t( $this->context );
+		$migration = new Migration_n_e_x_t( $this->context );
 		remove_all_actions( 'admin_init' );
 		$migration->register();
 
@@ -86,7 +88,7 @@ class Migration_n_e_x_tTest extends TestCase {
 	}
 
 	public function test_migrate_with_tracking_enabled_and_multiple_authenticated_users() {
-		$migration   = new Migration_n_e_x_t( $this->context );
+		$migration = new Migration_n_e_x_t( $this->context );
 		remove_all_actions( 'admin_init' );
 		$migration->register();
 

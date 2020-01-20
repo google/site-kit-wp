@@ -14,37 +14,44 @@
 
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 
-add_action( 'rest_api_init', function () {
+add_action(
+	'rest_api_init',
+	function () {
 
-	register_rest_route(
-		REST_Routes::REST_ROOT,
-		'modules/tagmanager/data/accounts-containers',
-		array(
-			'methods'  => 'GET',
-			'callback' => function () {
-				return array(
-					'accounts'   => array(),
-					'containers' => array(),
-				);
-			}
-		),
-		true
-	);
+		register_rest_route(
+			REST_Routes::REST_ROOT,
+			'modules/tagmanager/data/accounts-containers',
+			array(
+				'methods'  => 'GET',
+				'callback' => function () {
+					return array(
+						'accounts'   => array(),
+						'containers' => array(),
+					);
+				},
+			),
+			true
+		);
 
-	register_rest_route(
-		REST_Routes::REST_ROOT,
-		'e2e/setup/tagmanager/account-created',
-		array(
-			'methods'  => 'POST',
-			'callback' => function () {
-				require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+		register_rest_route(
+			REST_Routes::REST_ROOT,
+			'e2e/setup/tagmanager/account-created',
+			array(
+				'methods'  => 'POST',
+				'callback' => function () {
+					require_once ABSPATH . 'wp-admin/includes/plugin.php';
 
-				deactivate_plugins( plugin_basename( __FILE__ ), true );
-				activate_plugin( plugin_basename( __DIR__ . '/module-setup-tagmanager.php' ), '', false, true );
+					deactivate_plugins( plugin_basename( __FILE__ ), true );
+					activate_plugin( plugin_basename( __DIR__ . '/module-setup-tagmanager.php' ), '', false, true );
 
-				return array( 'success' => true, 'result' => 'account-created' );
-			}
-		)
-	);
+					return array(
+						'success' => true,
+						'result'  => 'account-created',
+					);
+				},
+			)
+		);
 
-}, 0 );
+	},
+	0 
+);

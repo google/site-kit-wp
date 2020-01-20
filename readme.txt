@@ -3,7 +3,7 @@
 Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.3
-Requires PHP:      5.4
+Requires PHP:      5.6
 Stable tag:        1.2.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0

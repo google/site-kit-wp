@@ -34,9 +34,12 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertEquals( 'saved-account-id', get_option( Settings::OPTION )['accountID'] );
 		add_filter( 'googlesitekit_analytics_account_id', '__return_empty_string' );
 		$this->assertEquals( 'saved-account-id', get_option( Settings::OPTION )['accountID'] );
-		add_filter( 'googlesitekit_analytics_account_id', function () {
-			return 'filtered-account-id';
-		} );
+		add_filter(
+			'googlesitekit_analytics_account_id',
+			function () {
+				return 'filtered-account-id';
+			} 
+		);
 		$this->assertEquals( 'filtered-account-id', get_option( Settings::OPTION )['accountID'] );
 
 		// Test propertyID can be overridden by non-empty value via filter
@@ -44,9 +47,12 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertEquals( 'saved-property-id', get_option( Settings::OPTION )['propertyID'] );
 		add_filter( 'googlesitekit_analytics_property_id', '__return_empty_string' );
 		$this->assertEquals( 'saved-property-id', get_option( Settings::OPTION )['propertyID'] );
-		add_filter( 'googlesitekit_analytics_property_id', function () {
-			return 'filtered-property-id';
-		} );
+		add_filter(
+			'googlesitekit_analytics_property_id',
+			function () {
+				return 'filtered-property-id';
+			} 
+		);
 		$this->assertEquals( 'filtered-property-id', get_option( Settings::OPTION )['propertyID'] );
 
 		// Test internalWebPropertyID can be overridden by non-empty value via filter
@@ -54,9 +60,12 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertEquals( 'saved-internal-web-property-id', get_option( Settings::OPTION )['internalWebPropertyID'] );
 		add_filter( 'googlesitekit_analytics_internal_web_property_id', '__return_empty_string' );
 		$this->assertEquals( 'saved-internal-web-property-id', get_option( Settings::OPTION )['internalWebPropertyID'] );
-		add_filter( 'googlesitekit_analytics_internal_web_property_id', function () {
-			return 'filtered-internal-web-property-id';
-		} );
+		add_filter(
+			'googlesitekit_analytics_internal_web_property_id',
+			function () {
+				return 'filtered-internal-web-property-id';
+			} 
+		);
 		$this->assertEquals( 'filtered-internal-web-property-id', get_option( Settings::OPTION )['internalWebPropertyID'] );
 
 		// Test profileID can be overridden by non-empty value via filter
@@ -64,9 +73,12 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertEquals( 'saved-profile-id', get_option( Settings::OPTION )['profileID'] );
 		add_filter( 'googlesitekit_analytics_view_id', '__return_empty_string' );
 		$this->assertEquals( 'saved-profile-id', get_option( Settings::OPTION )['profileID'] );
-		add_filter( 'googlesitekit_analytics_view_id', function () {
-			return 'filtered-profile-id';
-		} );
+		add_filter(
+			'googlesitekit_analytics_view_id',
+			function () {
+				return 'filtered-profile-id';
+			} 
+		);
 		$this->assertEquals( 'filtered-profile-id', get_option( Settings::OPTION )['profileID'] );
 	}
 

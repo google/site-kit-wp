@@ -17,7 +17,7 @@ use Google\Site_Kit\Tests\TestCase;
 
 class Google_ProxyTest extends TestCase {
 	public function test_exchange_site_code() {
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$google_proxy = new Google_Proxy( $context );
 
 		$expected_credentials = array(
