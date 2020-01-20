@@ -34,7 +34,7 @@ class AnalyticsTest extends TestCase {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 		remove_all_filters( 'googlesitekit_module_screens' );
-		remove_all_filters( 'option_googlesitekit_analytics_adsense_linked' );
+		remove_all_filters( 'googlesitekit_analytics_adsense_linked' );
 
 		$analytics->register();
 
@@ -78,7 +78,6 @@ class AnalyticsTest extends TestCase {
 				'hasSettings',
 				'provides',
 				'settings',
-				'adsenseLinked',
 			),
 			array_keys( $info )
 		);

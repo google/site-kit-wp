@@ -627,7 +627,9 @@ final class OAuth_Client {
 		// another way.
 		if ( $this->using_proxy() ) {
 			$this->user_options->set( Verification::OPTION, 'verified' );
-			$this->options->set( Search_Console::PROPERTY_OPTION, trailingslashit( $this->context->get_reference_site_url() ) );
+			( new Search_Console\Settings( $this->options ) )->merge(
+				array( 'propertyID' => trailingslashit( $this->context->get_reference_site_url() ) )
+			);
 		}
 
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );

@@ -76,7 +76,12 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 		);
 
 		if ( $this->is_connected() ) {
-			remove_filter( 'option_googlesitekit_analytics_adsense_linked', '__return_false' );
+			/**
+			 * Release filter forcing unlinked state.
+			 *
+			 * @see \Google\Site_Kit\Modules\Analytics\Settings::register
+			 */
+			remove_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
 		}
 	}
 
@@ -342,9 +347,7 @@ tag_partner: "site_kit"
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option              = $this->get_settings()->get();
-					$option['accountID'] = $data['accountID'];
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge( array( 'accountID' => $data['accountID'] ) );
 					return true;
 				};
 			case 'GET:account-status':
@@ -361,9 +364,7 @@ tag_partner: "site_kit"
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountStatus' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option                  = $this->get_settings()->get();
-					$option['accountStatus'] = $data['accountStatus'];
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge( array( 'accountStatus' => $data['accountStatus'] ) );
 					return true;
 				};
 			case 'GET:account-url':
@@ -401,9 +402,7 @@ tag_partner: "site_kit"
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option             = $this->get_settings()->get();
-					$option['clientID'] = $data['clientID'];
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge( array( 'clientID' => $data['clientID'] ) );
 					return true;
 				};
 			case 'GET:clients':
@@ -421,14 +420,13 @@ tag_partner: "site_kit"
 				};
 			case 'POST:connection':
 				return function() use ( $data ) {
-					$option = $this->get_settings()->get();
-					$keys   = array( 'accountID', 'clientID', 'accountStatus' );
-					foreach ( $keys as $key ) {
-						if ( isset( $data[ $key ] ) ) {
-							$option[ $key ] = $data[ $key ];
-						}
-					}
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge(
+						array(
+							'accountID'     => $data['accountID'],
+							'clientID'      => $data['clientID'],
+							'accountStatus' => $data['accountStatus'],
+						)
+					);
 					return true;
 				};
 			case 'GET:earnings':
@@ -500,17 +498,13 @@ tag_partner: "site_kit"
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option                  = $this->get_settings()->get();
-					$option['setupComplete'] = true;
-					$option['clientID']      = $data['clientID'];
-					$option['useSnippet']    = isset( $option['useSnippet'] ) ? true : $data['useSnippet'];
-
-					// Set useSnippet explicitly using $data param, otherwise default to true if not set in option.
-					if ( isset( $data['useSnippet'] ) ) {
-						$option['useSnippet'] = $data['useSnippet'];
-					}
-
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge(
+						array(
+							'setupComplete' => true,
+							'clientID'      => $data['clientID'],
+							'useSnippet'    => $data['useSnippet'],
+						)
+					);
 
 					return true;
 				};
@@ -541,10 +535,7 @@ tag_partner: "site_kit"
 				}
 
 				return function() use ( $data ) {
-					$option               = $this->get_settings()->get();
-					$option['useSnippet'] = (bool) $data['useSnippet'];
-
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge( array( 'useSnippet' => $data['useSnippet'] ) );
 
 					return true;
 				};

@@ -61,8 +61,12 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 		$this->register_screen_hook();
 
-		// This filter only exists to be unhooked by the AdSense module if active.
-		add_filter( 'option_googlesitekit_analytics_adsense_linked', '__return_false' );
+		/**
+		 * This filter only exists to be unhooked by the AdSense module if active.
+		 *
+		 * @see \Google\Site_Kit\Modules\Analytics\Settings::register
+		 */
+		add_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
 
 		add_action( // For non-AMP.
 			'wp_enqueue_scripts',
@@ -157,8 +161,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			__( 'Top acquisition sources', 'google-site-kit' ),
 		);
 
-		$info['settings']      = $this->get_settings()->get();
-		$info['adsenseLinked'] = (bool) $this->options->get( 'googlesitekit_analytics_adsense_linked' );
+		$info['settings'] = $this->get_settings()->get();
 
 		return $info;
 	}
@@ -465,10 +468,12 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option              = $this->get_settings()->get();
-					$option['accountID'] = $data['accountID'];
-					$this->get_settings()->set( $option );
-					$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
+					$this->get_settings()->merge(
+						array(
+							'accountID'     => $data['accountID'],
+							'adsenseLinked' => false,
+						)
+					);
 					return true;
 				};
 			case 'GET:accounts-properties-profiles':
@@ -485,9 +490,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampClientIDOptIn' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option                     = $this->get_settings()->get();
-					$option['ampClientIDOptIn'] = (bool) $data['ampClientIDOptIn'];
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge( array( 'ampClientIDOptIn' => $data['ampClientIDOptIn'] ) );
 					return true;
 				};
 			case 'GET:anonymize-ip':
@@ -511,15 +514,15 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				};
 			case 'POST:connection':
 				return function() use ( $data ) {
-					$option = $this->get_settings()->get();
-					$keys   = array( 'accountID', 'propertyID', 'profileID', 'internalWebPropertyID' );
-					foreach ( $keys as $key ) {
-						if ( isset( $data[ $key ] ) ) {
-							$option[ $key ] = $data[ $key ];
-						}
-					}
-					$this->get_settings()->set( $option );
-					$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
+					$this->get_settings()->merge(
+						array(
+							'accountID'             => $data['accountID'],
+							'propertyID'            => $data['propertyID'],
+							'profileID'             => $data['profileID'],
+							'internalWebPropertyID' => $data['internalWebPropertyID'],
+							'adsenseLinked'         => false,
+						)
+					);
 					return true;
 				};
 			case 'GET:goals':
@@ -557,10 +560,12 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalWebPropertyID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option                          = $this->get_settings()->get();
-					$option['internalWebPropertyID'] = $data['internalWebPropertyID'];
-					$this->get_settings()->set( $option );
-					$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
+					$this->get_settings()->merge(
+						array(
+							'internalWebPropertyID' => $data['internalWebPropertyID'],
+							'adsenseLinked'         => false,
+						)
+					);
 					return true;
 				};
 			case 'GET:profile-id':
@@ -578,10 +583,12 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option              = $this->get_settings()->get();
-					$option['profileID'] = $data['profileID'];
-					$this->get_settings()->set( $option );
-					$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
+					$this->get_settings()->merge(
+						array(
+							'profileID'     => $data['profileID'],
+							'adsenseLinked' => false,
+						)
+					);
 					return true;
 				};
 			case 'GET:profiles':
@@ -629,10 +636,12 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option               = $this->get_settings()->get();
-					$option['propertyID'] = $data['propertyID'];
-					$this->get_settings()->set( $option );
-					$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
+					$this->get_settings()->merge(
+						array(
+							'propertyID'    => $data['propertyID'],
+							'adsenseLinked' => false,
+						)
+					);
 					return true;
 				};
 			case 'GET:report':
@@ -827,19 +836,20 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 						}
 						$restore_defer();
 					}
-					$option = array(
-						'accountID'             => $data['accountID'],
-						'propertyID'            => $property_id,
-						'internalWebPropertyID' => $internal_web_property_id,
-						'profileID'             => $profile_id,
-						'useSnippet'            => ! empty( $data['useSnippet'] ),
-						'anonymizeIP'           => (bool) $data['anonymizeIP'],
-						'ampClientIDOptIn'      => ! empty( $data['ampClientIDOptIn'] ),
-						'trackingDisabled'      => (array) $data['trackingDisabled'],
+					$this->get_settings()->merge(
+						array(
+							'accountID'             => $data['accountID'],
+							'propertyID'            => $property_id,
+							'internalWebPropertyID' => $internal_web_property_id,
+							'profileID'             => $profile_id,
+							'useSnippet'            => ! empty( $data['useSnippet'] ),
+							'anonymizeIP'           => (bool) $data['anonymizeIP'],
+							'ampClientIDOptIn'      => ! empty( $data['ampClientIDOptIn'] ),
+							'trackingDisabled'      => (array) $data['trackingDisabled'],
+							'adsenseLinked'         => false,
+						)
 					);
-					$this->get_settings()->set( $option );
-					$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
-					return $option;
+					return $this->get_settings()->get();
 				};
 			case 'GET:tag-permission':
 				return function() use ( $data ) {
@@ -885,9 +895,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'useSnippet' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option               = $this->get_settings()->get();
-					$option['useSnippet'] = (bool) $data['useSnippet'];
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge( array( 'useSnippet' => $data['useSnippet'] ) );
 					return true;
 				};
 		}
@@ -1030,11 +1038,8 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 				return $response;
 			case 'GET:report':
 				if ( $this->is_adsense_request( $data ) ) {
-					if ( isset( $response->error ) ) {
-						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
-					} else {
-						$this->options->set( 'googlesitekit_analytics_adsense_linked', '1' );
-					}
+					$is_linked = empty( $response->error );
+					$this->get_settings()->merge( array( 'adsenseLinked' => $is_linked ) );
 				}
 
 				return $response->getReports();
