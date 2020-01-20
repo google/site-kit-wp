@@ -64,11 +64,7 @@
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
-	<exclude-pattern>*/phpunit.xml*</exclude-pattern>
-	<exclude-pattern>*/languages/*</exclude-pattern>
-
 	<!-- Third-party code -->
-	<exclude-pattern>*/bower-components/*</exclude-pattern>
 	<exclude-pattern>*/node_modules/*</exclude-pattern>
 	<exclude-pattern>*/third-party/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
