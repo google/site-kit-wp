@@ -33,6 +33,9 @@
 	<file>.</file>
 
 	<!-- Rule specific exclusions -->
+	<rule ref="WordPress.DB.SlowDBQuery">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
 	<rule ref="WordPress.NamingConventions">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
