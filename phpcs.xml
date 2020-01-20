@@ -3,7 +3,9 @@
 
 	<rule ref="WordPress-VIP-Go" />
 
-	<rule ref="WordPress-Core" />
+	<rule ref="WordPress-Core">
+		<exclude name="WordPress.PHP.DisallowShortTernary" />
+	</rule>
 
 	<rule ref="WordPress-Docs" />
 
