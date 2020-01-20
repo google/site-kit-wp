@@ -503,7 +503,7 @@ final class REST_Routes {
 								if ( function_exists( 'wpcom_vip_url_to_postid' ) ) {
 									$post_id = wpcom_vip_url_to_postid( $query_url );
 								} else {
-									// phpcs:ignore WordPressVIPMinimum.VIP.RestrictedFunctions
+									// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions
 									$post_id = url_to_postid( $query_url );
 								}
 								$posts   = array_filter( array( WP_Post::get_instance( $post_id ) ) );
