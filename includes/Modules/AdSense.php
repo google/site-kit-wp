@@ -592,41 +592,41 @@ tag_partner: "site_kit"
 		switch ( $date_range ) {
 			case 'today':
 				return array(
-					date( 'Y-m-d', strtotime( 'today' ) ),
-					date( 'Y-m-d', strtotime( 'today' ) ),
+					gmdate( 'Y-m-d', strtotime( 'today' ) ),
+					gmdate( 'Y-m-d', strtotime( 'today' ) ),
 				);
 			case 'yesterday':
 				return array(
-					date( 'Y-m-d', strtotime( 'yesterday' ) ),
-					date( 'Y-m-d', strtotime( 'yesterday' ) ),
+					gmdate( 'Y-m-d', strtotime( 'yesterday' ) ),
+					gmdate( 'Y-m-d', strtotime( 'yesterday' ) ),
 				);
 			case 'same-day-last-week':
 				return array(
-					date( 'Y-m-d', strtotime( '7 days ago' ) ),
-					date( 'Y-m-d', strtotime( '7 days ago' ) ),
+					gmdate( 'Y-m-d', strtotime( '7 days ago' ) ),
+					gmdate( 'Y-m-d', strtotime( '7 days ago' ) ),
 				);
 			case 'this-month':
 				return array(
-					date( 'Y-m-01' ),
-					date( 'Y-m-d', strtotime( 'today' ) ),
+					gmdate( 'Y-m-01' ),
+					gmdate( 'Y-m-d', strtotime( 'today' ) ),
 				);
 			case 'this-month-last-year':
-				$last_year          = intval( date( 'Y' ) ) - 1;
-				$last_date_of_month = date( 't', strtotime( $last_year . '-' . date( 'm' ) . '-01' ) );
+				$last_year          = intval( gmdate( 'Y' ) ) - 1;
+				$last_date_of_month = gmdate( 't', strtotime( $last_year . '-' . gmdate( 'm' ) . '-01' ) );
 
 				return array(
-					date( $last_year . '-m-01' ),
-					date( $last_year . '-m-' . $last_date_of_month ),
+					gmdate( $last_year . '-m-01' ),
+					gmdate( $last_year . '-m-' . $last_date_of_month ),
 				);
 			case 'prev-7-days':
 				return array(
-					date( 'Y-m-d', strtotime( '14 days ago' ) ),
-					date( 'Y-m-d', strtotime( '8 days ago' ) ),
+					gmdate( 'Y-m-d', strtotime( '14 days ago' ) ),
+					gmdate( 'Y-m-d', strtotime( '8 days ago' ) ),
 				);
 			case 'prev-28-days':
 				return array(
-					date( 'Y-m-d', strtotime( '56 days ago' ) ),
-					date( 'Y-m-d', strtotime( '29 days ago' ) ),
+					gmdate( 'Y-m-d', strtotime( '56 days ago' ) ),
+					gmdate( 'Y-m-d', strtotime( '29 days ago' ) ),
 				);
 			// Intentional fallthrough.
 			case 'last-7-days':
