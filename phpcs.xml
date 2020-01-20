@@ -5,6 +5,8 @@
 
 	<rule ref="WordPress-Core">
 		<exclude name="WordPress.PHP.DisallowShortTernary" />
+		<!-- Prevent this from showing up as a warning on every run. See WordPress/WordPress-Coding-Standards#1425 -->
+		<exclude name="WordPress.WP.TimezoneChange.DeprecatedSniff"/>
 	</rule>
 
 	<rule ref="WordPress-Docs" />
