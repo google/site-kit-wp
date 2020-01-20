@@ -96,8 +96,8 @@ jobs:
   include:
     - stage: test
       name: Lint
-      php: 7.3
-      env: WP_VERSION=4.7 PHPCS_PHP_VERSION='5.4' SNIFF=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      php: 7.4
+      env: WP_VERSION=4.7 SNIFF=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
     - name: PHP Tests (PHP 5.6, WordPress latest)
       php: 5.6
       env: WP_VERSION=latest PHP=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
