@@ -46,10 +46,13 @@ class CredentialsTest extends TestCase {
 			$credentials->get()
 		);
 
-		$encrypted_options->set( Credentials::OPTION, array(
-			'oauth2_client_id'     => 'test-client-id',
-			'oauth2_client_secret' => 'test-client-secret',
-		) );
+		$encrypted_options->set(
+			Credentials::OPTION,
+			array(
+				'oauth2_client_id'     => 'test-client-id',
+				'oauth2_client_secret' => 'test-client-secret',
+			) 
+		);
 
 		$this->assertEqualSets(
 			array(
@@ -88,22 +91,31 @@ class CredentialsTest extends TestCase {
 		$encrypted_options->set( Credentials::OPTION, array( 'oauth2_client_secret' => 'test-client-secret' ) );
 		$this->assertFalse( $credentials->has() );
 		// Test client id and empty secret
-		$encrypted_options->set( Credentials::OPTION, array(
-			'oauth2_client_id'     => 'test-client-id',
-			'oauth2_client_secret' => ''
-		) );
+		$encrypted_options->set(
+			Credentials::OPTION,
+			array(
+				'oauth2_client_id'     => 'test-client-id',
+				'oauth2_client_secret' => '',
+			) 
+		);
 		$this->assertFalse( $credentials->has() );
 		// Test empty client id with a secret
-		$encrypted_options->set( Credentials::OPTION, array(
-			'oauth2_client_id'     => '',
-			'oauth2_client_secret' => 'test-client-secret'
-		) );
+		$encrypted_options->set(
+			Credentials::OPTION,
+			array(
+				'oauth2_client_id'     => '',
+				'oauth2_client_secret' => 'test-client-secret',
+			) 
+		);
 		$this->assertFalse( $credentials->has() );
 		// Test with provided client id and secret
-		$encrypted_options->set( Credentials::OPTION, array(
-			'oauth2_client_id'     => 'test-client-id',
-			'oauth2_client_secret' => 'test-client-secret'
-		) );
+		$encrypted_options->set(
+			Credentials::OPTION,
+			array(
+				'oauth2_client_id'     => 'test-client-id',
+				'oauth2_client_secret' => 'test-client-secret',
+			) 
+		);
 		$this->assertTrue( $credentials->has() );
 	}
 }

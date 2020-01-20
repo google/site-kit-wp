@@ -49,8 +49,8 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertArraySubset(
 			array(
 				// The first legacy key for the same new key wins.
-				'ampExperimentJSON'     => 'test-amp-experiment-json-1',
-				'optimizeID'            => 'test-optimize-id-snake',
+				'ampExperimentJSON' => 'test-amp-experiment-json-1',
+				'optimizeID'        => 'test-optimize-id-snake',
 			),
 			$option
 		);

@@ -91,7 +91,15 @@ class ActivationTest extends TestCase {
 	protected function assertActivationActions( $network_wide ) {
 		$this->assertFalse( $this->options->get( Activation::OPTION_SHOW_ACTIVATION_NOTICE ) );
 		$this->assertFalse( $this->options->get( Activation::OPTION_NEW_SITE_POSTS ) );
-		$this->assertCount( 0, get_posts( array( 'post_type' => 'post', 'post_status' => 'publish' ) ) );
+		$this->assertCount(
+			0,
+			get_posts(
+				array(
+					'post_type'   => 'post',
+					'post_status' => 'publish',
+				) 
+			) 
+		);
 		$this->factory()->post->create( array( 'post_status' => 'publish' ) ); // first post
 
 		do_action( 'googlesitekit_activation', $network_wide );

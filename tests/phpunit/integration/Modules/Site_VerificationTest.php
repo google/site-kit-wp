@@ -94,8 +94,8 @@ class Site_VerificationTest extends TestCase {
 	public function test_receive_verification_token() {
 		remove_all_actions( 'admin_action_googlesitekit_proxy_setup' );
 		remove_all_actions( 'googlesitekit_proxy_setup_url_params' );
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_id      = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$user_options = new User_Options( $context, $user_id );
 		wp_set_current_user( $user_id );
 		$site_verification = new Site_Verification( $context );

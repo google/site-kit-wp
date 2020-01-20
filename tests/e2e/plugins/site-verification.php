@@ -15,6 +15,9 @@
 /**
  * Fake a verified site state.
  */
-add_filter( 'get_user_option_googlesitekit_site_verified_meta', function () {
-	return 'verified';
-} );
+add_filter(
+	'get_user_option_googlesitekit_site_verified_meta',
+	function () {
+		return 'verified';
+	} 
+);

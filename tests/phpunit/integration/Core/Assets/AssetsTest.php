@@ -24,8 +24,8 @@ class AssetsTest extends TestCase {
 
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
-		wp_styles()->registered = array();
-		wp_styles()->queue      = array();
+		wp_styles()->registered  = array();
+		wp_styles()->queue       = array();
 	}
 
 	public function test_register() {
@@ -77,8 +77,8 @@ class AssetsTest extends TestCase {
 
 		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp' ) )->getMock();
 		$mock_context->expects( $this->once() )
-		     ->method( 'is_amp' )
-		     ->will( $this->returnValue( false ) );
+			 ->method( 'is_amp' )
+			 ->will( $this->returnValue( false ) );
 
 		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$this->force_set_property( $assets, 'context', $mock_context );

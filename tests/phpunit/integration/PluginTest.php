@@ -49,7 +49,7 @@ class PluginTest extends TestCase {
 		remove_all_actions( 'googlesitekit_init' );
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'login_head' );
-		$GLOBALS['wp_actions'] = [];
+		$GLOBALS['wp_actions'] = array();
 		
 		$plugin->register();
 
