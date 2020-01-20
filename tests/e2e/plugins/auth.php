@@ -28,9 +28,9 @@ add_filter(
 	'get_user_option_googlesitekit_access_token',
 	function () {
 		return ( new Data_Encryption() )->encrypt(
-			serialize( array( 'access_token' => 'test-access-token' ) )
+			serialize( array( 'access_token' => 'test-access-token' ) ) // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 		);
-	} 
+	}
 );
 
 /**
@@ -40,5 +40,5 @@ add_filter(
 	'get_user_option_googlesitekit_auth_scopes',
 	function () {
 		return ( new OAuth_Client( Plugin::instance()->context() ) )->get_required_scopes();
-	} 
+	}
 );

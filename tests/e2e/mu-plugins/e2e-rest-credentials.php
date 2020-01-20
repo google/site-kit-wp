@@ -32,7 +32,7 @@ add_action(
 
 					update_option(
 						'googlesitekit_credentials',
-						( new Data_Encryption() )->encrypt( serialize( $credentials ) )
+						( new Data_Encryption() )->encrypt( serialize( $credentials ) ) // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 					);
 
 					return array( 'success' => true );
@@ -40,5 +40,5 @@ add_action(
 			)
 		);
 	},
-	0 
+	0
 );
