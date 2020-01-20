@@ -267,7 +267,7 @@ class OAuth_ClientTest extends TestCase {
 			function ( Request $request ) {
 				$url = parse_url( $request->getUrl() );
 				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
-					  return new Response( 200 );
+					return new Response( 200 );
 				}
 
 				return new Response(
@@ -276,16 +276,14 @@ class OAuth_ClientTest extends TestCase {
 					Stream::factory(
 						json_encode(
 							array(
-								// ['emailAddresses'][0]['value']
 								'emailAddresses' => array(
 									array( 'value' => 'fresh@foo.com' ),
 								),
-								// ['photos'][0]['url']
 								'photos'         => array(
 									array( 'url' => 'https://example.com/fresh.jpg' ),
 								),
-							) 
-						) 
+							)
+						)
 					)
 				);
 			}
@@ -418,9 +416,9 @@ class OAuth_ClientTest extends TestCase {
 							'client_id'     => self::CLIENT_ID,
 							'client_secret' => 'test-client-secret',
 						),
-					) 
+					)
 				);
-			} 
+			}
 		);
 	}
 
@@ -434,9 +432,9 @@ class OAuth_ClientTest extends TestCase {
 							'client_id'     => self::SITE_ID,
 							'client_secret' => 'test-client-secret',
 						),
-					) 
+					)
 				);
-			} 
+			}
 		);
 	}
 
