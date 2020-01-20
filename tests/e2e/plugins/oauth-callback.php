@@ -29,10 +29,10 @@ add_action(
 		$context      = Plugin::instance()->context();
 		$user_options = new User_Options( $context );
 
-		if ( filter_input( INPUT_GET, 'googlesitekit_connect' ) ) {
+		if ( filter_input( INPUT_GET, 'googlesitekit_connect', FILTER_VALIDATE_BOOLEAN ) ) {
 			$redirect_url = '';
-			if ( ! empty( $_GET['redirect'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
-				$redirect_url = esc_url_raw( wp_unslash( $_GET['redirect'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification
+			if ( ! empty( $_GET['redirect'] ) ) {
+				$redirect_url = esc_url_raw( wp_unslash( $_GET['redirect'] ) );
 			}
 
 			$auth_client = new OAuth_Client( $context );
@@ -75,8 +75,8 @@ add_action(
 			true
 		);
 
-		wp_redirect( esc_url_raw( $success_redirect ) );
+		wp_safe_redirect( esc_url_raw( $success_redirect ) );
 		exit;
 	},
-	0 
+	0
 );
