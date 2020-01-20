@@ -48,6 +48,9 @@
 	<rule ref="WordPress.Security.NonceVerification">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
+	<rule ref="WordPress.Security.ValidatedSanitizedInput">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
 	<rule ref="WordPress.WP.AlternativeFunctions">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
