@@ -20,6 +20,7 @@ add_action( 'rest_api_init', function () {
 		REST_Routes::REST_ROOT,
 		'modules/tagmanager/data/accounts-containers',
 		array(
+			'methods'  => 'GET',
 			'callback' => function () {
 				return array(
 					'accounts'   => array(),

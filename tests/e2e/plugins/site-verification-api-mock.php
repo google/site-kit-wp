@@ -65,6 +65,7 @@ add_action( 'rest_api_init', function () {
 		REST_Routes::REST_ROOT,
 		'modules/search-console/data/matched-sites',
 		array(
+			'methods'  => 'GET',
 			'callback' => function () {
 				return array(
 					'exactMatch' => array(

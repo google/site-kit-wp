@@ -135,7 +135,7 @@ module.exports = ( env, argv ) => {
 			output: {
 				filename: '[name].js',
 				path: __dirname + '/dist/assets/js',
-				chunkFilename: '[name].js',
+				chunkFilename: '[name]-[chunkhash].js',
 				publicPath: '',
 			},
 			performance: {
@@ -187,30 +187,6 @@ module.exports = ( env, argv ) => {
 						extractComments: false,
 					} ),
 				],
-				splitChunks: {
-					cacheGroups: {
-						default: false,
-						vendors: false,
-
-						// vendor chunk
-						vendor: {
-							name: 'vendor',
-							chunks: 'all',
-							test: /node_modules/,
-							priority: 20,
-						},
-
-						// commons chunk
-						commons: {
-							name: 'commons',
-							minChunks: 2,
-							chunks: 'initial',
-							priority: 10,
-							reuseExistingChunk: true,
-							enforce: true,
-						},
-					},
-				},
 			},
 			externals,
 			resolve,

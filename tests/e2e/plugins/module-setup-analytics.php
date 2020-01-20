@@ -178,6 +178,7 @@ add_action( 'rest_api_init', function () {
 		REST_Routes::REST_ROOT,
 		'modules/analytics/data/accounts-properties-profiles',
 		array(
+			'methods'  => 'GET',
 			'callback' => function () use ( $accounts, $properties, $profiles ) {
 				$response = compact( 'accounts', 'properties', 'profiles' );
 
@@ -203,6 +204,7 @@ add_action( 'rest_api_init', function () {
 		REST_Routes::REST_ROOT,
 		'modules/analytics/data/properties-profiles',
 		array(
+			'methods'  => 'GET',
 			'callback' => function ( \WP_REST_Request $request ) use ( $properties, $profiles ) {
 				return array(
 					'properties' => filter_by_account_id( $properties, $request->get_param( 'accountID' ) ),
@@ -218,6 +220,7 @@ add_action( 'rest_api_init', function () {
 		REST_Routes::REST_ROOT,
 		'modules/analytics/data/profiles',
 		array(
+			'methods'  => 'GET',
 			'callback' => function ( \WP_REST_Request $request ) use ( $profiles ) {
 				$profiles = filter_by_account_id( $profiles, $request->get_param( 'accountID' ) );
 				$profiles = filter_by_property_id( $profiles, $request->get_param( 'propertyID' ) );
