@@ -6,7 +6,7 @@
   "homepage": "https://sitekit.withgoogle.com",
   "require-dev": {
     "automattic/vipwpcs": "^2",
-    "dealerdirect/phpcodesniffer-composer-installer": "0.4.4",
+    "dealerdirect/phpcodesniffer-composer-installer": "0.6.*",
     "johnpbloch/wordpress-core": "^5.2",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
     "phpunit/phpunit": "^5",
