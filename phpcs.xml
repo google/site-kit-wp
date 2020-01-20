@@ -33,6 +33,9 @@
 	<file>.</file>
 
 	<!-- Rule specific exclusions -->
+	<rule ref="WordPress.DB.DirectDatabaseQuery">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
 	<rule ref="WordPress.DB.SlowDBQuery">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
@@ -49,6 +52,9 @@
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 	<rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPressVIPMinimum.Variables.RestrictedVariables">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
