@@ -45,7 +45,7 @@ class ActivationTest extends TestCase {
 
 		$this->assertAdminActivationNoticeRegistered();
 		$this->assertAdminDataExtended();
-		$this->assertActivationActions( $network_wide = false );
+		$this->assertActivationActions( $context->is_network_mode() );
 		$this->assertAssetsEnqueued();
 	}
 
@@ -70,7 +70,7 @@ class ActivationTest extends TestCase {
 
 		$this->assertAdminActivationNoticeRegistered();
 		$this->assertAdminDataExtended();
-		$this->assertActivationActions( $network_wide = true );
+		$this->assertActivationActions( $context->is_network_mode() );
 		$this->assertAssetsEnqueued();
 	}
 
@@ -97,8 +97,8 @@ class ActivationTest extends TestCase {
 				array(
 					'post_type'   => 'post',
 					'post_status' => 'publish',
-				) 
-			) 
+				)
+			)
 		);
 		$this->factory()->post->create( array( 'post_status' => 'publish' ) ); // first post
 
