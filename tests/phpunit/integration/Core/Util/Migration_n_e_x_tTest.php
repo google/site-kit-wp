@@ -17,6 +17,8 @@ use Google\Site_Kit\Core\Util\Migration_n_e_x_t;
 use Google\Site_Kit\Core\Util\Tracking;
 use Google\Site_Kit\Tests\TestCase;
 
+// phpcs:disable PEAR.NamingConventions.ValidClassName.Invalid
+
 class Migration_n_e_x_tTest extends TestCase {
 	/**
 	 * @var Context
