@@ -85,7 +85,6 @@ gulp.task( 'release', () => {
 gulp.task( 'default', () => {
 	runSequence(
 		'webpack',
-		'phpcs',
 		'copy-vendor'
 	);
 } );
