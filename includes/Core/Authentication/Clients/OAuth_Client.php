@@ -470,7 +470,7 @@ final class OAuth_Client {
 
 		// If not provided, assume current GMT time.
 		if ( empty( $created ) ) {
-			$created = current_time( 'timestamp', 1 );
+			$created = time();
 		}
 
 		$this->user_options->set( self::OPTION_ACCESS_TOKEN_EXPIRES_IN, $expires_in );
