@@ -31,14 +31,14 @@ class TestCase extends \WP_UnitTestCase {
 		 */
 		add_filter(
 			'wp_redirect_status',
-			function ( $status, $location ) {
+			function ( $status, $location ) { // phpcs:ignore WordPressVIPMinimum.Hooks.AlwaysReturnInFilter.MissingReturnStatement
 				$e = new RedirectException( "Intercepted attempt to redirect to $location" );
 				$e->set_location( $location );
 				$e->set_status( $status );
 				throw $e;
 			},
 			10,
-			2 
+			2
 		);
 	}
 
