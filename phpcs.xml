@@ -42,6 +42,9 @@
 	<rule ref="WordPress.NamingConventions">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
+	<rule ref="WordPress.Security.EscapeOutput">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
 	<rule ref="WordPress.Security.NonceVerification">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
