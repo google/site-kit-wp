@@ -10,7 +10,7 @@
 	</rule>
 
 	<rule ref="WordPress-Docs">
-		<exclude-pattern>*/tests/*</exclude-pattern>
+		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 
 	<rule ref="WordPress-Extra">
@@ -31,6 +31,23 @@
 	<!-- Iterate over all PHP files by default -->
 	<arg name="extensions" value="php"/>
 	<file>.</file>
+
+	<!-- Rule specific exclusions -->
+	<rule ref="WordPress.NamingConventions">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.Security.NonceVerification">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.AlternativeFunctions">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.GlobalVariablesOverride">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
 
 	<exclude-pattern>*/phpunit.xml*</exclude-pattern>
 	<exclude-pattern>*/languages/*</exclude-pattern>
