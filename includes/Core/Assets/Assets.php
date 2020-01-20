@@ -376,7 +376,11 @@ final class Assets {
 					'dependencies' => array( 'wp-i18n' ),
 					'execution'    => 'defer',
 					'before_print' => function( $handle ) {
-						wp_localize_script( $handle, '_googlesitekitBase', $this->get_inline_base_data() );
+						wp_add_inline_script(
+							$handle,
+							'window._googlesitekitBase = ' . wp_json_encode( $this->get_inline_base_data() ),
+							'before'
+						);
 					},
 				)
 			),
