@@ -431,19 +431,17 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				};
 			case 'GET:container-id':
 				return function() use ( $data ) {
-					$option = $this->get_settings()->get();
+					$option        = $this->get_settings()->get();
+					$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
 
-					$usage_context        = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
-					$valid_usage_contexts = array_keys( $this->context_map );
-
-					if ( ! in_array( $usage_context, $valid_usage_contexts, true ) ) {
+					if ( empty( $this->context_map[ $usage_context ] ) ) {
 						return new WP_Error(
 							'invalid_param',
 							sprintf(
 								/* translators: 1: Invalid parameter name, 2: list of valid values */
 								__( 'Request parameter %1$s is not one of %2$s', 'google-site-kit' ),
 								'usageContext',
-								implode( ', ', $valid_usage_contexts )
+								implode( ', ', array_keys( $this->context_map ) )
 							),
 							array( 'status' => 400 )
 						);
@@ -467,17 +465,16 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ), array( 'status' => 400 ) );
 				}
 
-				$usage_context        = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
-				$valid_usage_contexts = array_keys( $this->context_map );
+				$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
 
-				if ( ! in_array( $usage_context, $valid_usage_contexts, true ) ) {
+				if ( empty( $this->context_map[ $usage_context ] ) ) {
 					return new WP_Error(
 						'invalid_param',
 						sprintf(
 							/* translators: 1: Invalid parameter name, 2: list of valid values */
 							__( 'Request parameter %1$s is not one of %2$s', 'google-site-kit' ),
 							'usageContext',
-							implode( ', ', $valid_usage_contexts )
+							implode( ', ', array_keys( $this->context_map ) )
 						),
 						array( 'status' => 400 )
 					);
