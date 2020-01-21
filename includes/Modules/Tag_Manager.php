@@ -194,7 +194,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			return;
 		}
 
-		$container_id = $this->get_data( 'container-id', array( 'usageContext' => $this->get_usage_context() ) );
+		$container_id = $this->get_data( 'container-id', array( 'usageContext' => self::USAGE_CONTEXT_WEB ) );
 
 		if ( is_wp_error( $container_id ) || ! $container_id ) {
 			return;
@@ -231,7 +231,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			return;
 		}
 
-		$container_id = $this->get_data( 'container-id', array( 'usageContext' => $this->get_usage_context() ) );
+		$container_id = $this->get_data( 'container-id', array( 'usageContext' => self::USAGE_CONTEXT_WEB ) );
 
 		if ( is_wp_error( $container_id ) || ! $container_id ) {
 			return;
@@ -260,7 +260,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			return;
 		}
 
-		$container_id = $this->get_data( 'container-id', array( 'usageContext' => $this->get_usage_context() ) );
+		$container_id = $this->get_data( 'container-id', array( 'usageContext' => self::USAGE_CONTEXT_AMP ) );
 
 		if ( is_wp_error( $container_id ) || ! $container_id ) {
 			return;
@@ -304,7 +304,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			return $data;
 		}
 
-		$container_id = $this->get_data( 'container-id', array( 'usageContext' => $this->get_usage_context() ) );
+		$container_id = $this->get_data( 'container-id', array( 'usageContext' => self::USAGE_CONTEXT_AMP ) );
 
 		if ( is_wp_error( $container_id ) || ! $container_id ) {
 			return $data;
