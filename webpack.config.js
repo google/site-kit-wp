@@ -42,6 +42,10 @@ const externalLibrary = {
 	svgxuse: './node_modules/svgxuse/svgxuse.js',
 };
 
+const projectPath = ( relativePath ) => {
+	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
+};
+
 const resolve = {
 	alias: {
 		SiteKitCore: path.resolve( 'assets/js/' ),
