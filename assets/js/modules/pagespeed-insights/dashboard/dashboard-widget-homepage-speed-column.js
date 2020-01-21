@@ -44,8 +44,8 @@ import {
 	PageSpeedReportScoreGauge,
 } from './util';
 
-const isZeroData = ( data ) => {
-	return 0 === get( data, 'categories.performance.score' );
+const hasData = ( data ) => {
+	return !! get( data, 'categories.performance.score' );
 };
 
 class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
@@ -68,7 +68,7 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
 			return null;
 		}
 
-		if ( isZeroData( data ) ) {
+		if ( ! hasData( data ) ) {
 			return getDataErrorComponent(
 				_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ),
 				__( 'An unknown error occurred while trying to fetch PageSpeed Insights data. Please try again later.', 'google-site-kit' ),
