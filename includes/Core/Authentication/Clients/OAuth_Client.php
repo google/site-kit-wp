@@ -103,7 +103,7 @@ final class OAuth_Client {
 	 * Google Client object.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Now always a Google_Site_Kit_Client.
+	 * @since 1.2.0 Now always a Google_Site_Kit_Client.
 	 * @var Google_Site_Kit_Client
 	 */
 	private $google_client;
@@ -119,7 +119,7 @@ final class OAuth_Client {
 	/**
 	 * WP_HTTP_Proxy instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 * @var WP_HTTP_Proxy
 	 */
 	private $http_proxy;
@@ -185,7 +185,7 @@ final class OAuth_Client {
 	 * Gets the Google client object.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Now always returns a Google_Site_Kit_Client.
+	 * @since 1.2.0 Now always returns a Google_Site_Kit_Client.
 	 *
 	 * @return Google_Site_Kit_Client Google client object.
 	 */
@@ -200,7 +200,7 @@ final class OAuth_Client {
 	/**
 	 * Sets up a fresh Google client instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return Google_Site_Kit_Client|Google_Site_Kit_Proxy_Client
 	 */
@@ -470,7 +470,7 @@ final class OAuth_Client {
 
 		// If not provided, assume current GMT time.
 		if ( empty( $created ) ) {
-			$created = current_time( 'timestamp', 1 );
+			$created = time();
 		}
 
 		$this->user_options->set( self::OPTION_ACCESS_TOKEN_EXPIRES_IN, $expires_in );
@@ -627,7 +627,9 @@ final class OAuth_Client {
 		// another way.
 		if ( $this->using_proxy() ) {
 			$this->user_options->set( Verification::OPTION, 'verified' );
-			$this->options->set( Search_Console::PROPERTY_OPTION, trailingslashit( $this->context->get_reference_site_url() ) );
+			( new Search_Console\Settings( $this->options ) )->merge(
+				array( 'propertyID' => trailingslashit( $this->context->get_reference_site_url() ) )
+			);
 		}
 
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
@@ -755,7 +757,7 @@ final class OAuth_Client {
 	 *
 	 * @since 1.1.0
 	 * @since 1.1.2 Added 'credentials_retrieval'
-	 * @since n.e.x.t Added 'short_verification_token' (Supported as of 1.0.1)
+	 * @since 1.2.0 Added 'short_verification_token' (Supported as of 1.0.1)
 	 * @return array Array of supported features.
 	 */
 	private function get_proxy_setup_supports() {
@@ -851,7 +853,7 @@ final class OAuth_Client {
 	/**
 	 * Handles an exception thrown when fetching an access token.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param Exception $e Exception thrown.
 	 */

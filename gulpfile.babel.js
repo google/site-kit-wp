@@ -23,7 +23,6 @@ import gulp from 'gulp';
 import requireDir from 'require-dir';
 import runSequence from 'run-sequence';
 import livereload from 'gulp-livereload';
-import phpunit from 'gulp-phpunit';
 
 requireDir( './gulp-tasks' );
 
@@ -85,12 +84,6 @@ gulp.task( 'release', () => {
 gulp.task( 'default', () => {
 	runSequence(
 		'webpack',
-		'phpcs',
 		'copy-vendor'
 	);
-} );
-
-gulp.task( 'phpunit', function() {
-	gulp.src( '' )
-		.pipe( phpunit( './vendor/bin/phpunit' ) );
 } );

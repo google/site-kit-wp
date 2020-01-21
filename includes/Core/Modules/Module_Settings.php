@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Setting;
 /**
  * Base class for module settings.
  *
- * @since n.e.x.t
+ * @since 1.2.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ abstract class Module_Settings extends Setting {
 	/**
 	 * Registers the setting in WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 */
 	public function register() {
 		parent::register();
@@ -32,9 +32,33 @@ abstract class Module_Settings extends Setting {
 	}
 
 	/**
-	 * Registers a filter to ensure default values are present in the saved option.
+	 * Merges an array of settings to update.
+	 *
+	 * Only existing keys will be updated.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @param array $partial Partial settings array to save.
+	 *
+	 * @return bool True on success, false on failure.
+	 */
+	public function merge( array $partial ) {
+		$settings = $this->get();
+		$partial  = array_filter(
+			$partial,
+			function ( $value ) {
+				return null !== $value;
+			}
+		);
+		$updated  = array_intersect_key( $partial, $settings );
+
+		return $this->set( array_merge( $settings, $updated ) );
+	}
+
+	/**
+	 * Registers a filter to ensure default values are present in the saved option.
+	 *
+	 * @since 1.2.0
 	 */
 	protected function add_option_default_filters() {
 		add_filter(
@@ -65,7 +89,7 @@ abstract class Module_Settings extends Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return string The type name.
 	 */

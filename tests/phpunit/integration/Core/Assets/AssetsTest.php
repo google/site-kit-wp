@@ -24,8 +24,8 @@ class AssetsTest extends TestCase {
 
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
-		wp_styles()->registered = array();
-		wp_styles()->queue      = array();
+		wp_styles()->registered  = array();
+		wp_styles()->queue       = array();
 	}
 
 	public function test_register() {
@@ -75,10 +75,10 @@ class AssetsTest extends TestCase {
 	public function test_enqueue_fonts() {
 		remove_all_actions( 'login_enqueue_scripts' );
 
-		$mock_context = $this->getMock( 'MockClass', array( 'is_amp' ) );
+		$mock_context = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'is_amp' ) )->getMock();
 		$mock_context->expects( $this->once() )
-		     ->method( 'is_amp' )
-		     ->will( $this->returnValue( false ) );
+			->method( 'is_amp' )
+			->will( $this->returnValue( false ) );
 
 		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$this->force_set_property( $assets, 'context', $mock_context );
@@ -107,9 +107,8 @@ class AssetsTest extends TestCase {
 
 		do_action( 'wp_print_scripts' );
 
-		// Ensure that before_print callback for 'sitekit-commons' was run (its inline scripts should be there).
-		$commons_inline_scripts = array_values( array_filter( wp_scripts()->get_data( 'sitekit-commons', 'before' ) ) );
-		$this->assertCount( 2, $commons_inline_scripts );
-		$this->assertContains( 'window.googlesitekit = ', $commons_inline_scripts[1] );
+		// Ensure that before_print callback for 'sitekit-commons' was run (its localized script should be there).
+		$localized_script = wp_scripts()->get_data( 'sitekit-commons', 'data' );
+		$this->assertContains( 'var googlesitekit = ', $localized_script );
 	}
 }

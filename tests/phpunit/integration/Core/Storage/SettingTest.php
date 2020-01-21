@@ -41,15 +41,17 @@ class SettingTest extends TestCase {
 
 	public function test_register() {
 		$setting = new FakeSetting( new Options( $this->context ) );
-		$setting->set_register_callback( function () {
-			register_setting(
-				FakeSetting::OPTION,
-				FakeSetting::OPTION,
-				array(
-					'default' => 'test-default-value',
-				)
-			);
-		} );
+		$setting->set_register_callback(
+			function () {
+				register_setting(
+					FakeSetting::OPTION,
+					FakeSetting::OPTION,
+					array(
+						'default' => 'test-default-value',
+					)
+				);
+			} 
+		);
 		delete_option( FakeSetting::OPTION );
 		$this->assertFalse( $setting->get() );
 

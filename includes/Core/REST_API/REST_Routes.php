@@ -337,7 +337,7 @@ final class REST_Routes {
 							if ( is_wp_error( $data ) ) {
 								return $data;
 							}
-							return new WP_REST_Response( $this->parse_google_response_data( $data ) );
+							return new WP_REST_Response( $data );
 						},
 						'permission_callback' => $can_view_insights_cron,
 					),
@@ -355,7 +355,7 @@ final class REST_Routes {
 							if ( is_wp_error( $data ) ) {
 								return $data;
 							}
-							return new WP_REST_Response( $this->parse_google_response_data( $data ) );
+							return new WP_REST_Response( $data );
 						},
 						'permission_callback' => $can_manage_options,
 						'args'                => array(
@@ -429,7 +429,6 @@ final class REST_Routes {
 								},
 								$responses
 							);
-							$responses = $this->parse_google_response_data( $responses );
 
 							return new WP_REST_Response( $responses );
 						},
@@ -503,7 +502,7 @@ final class REST_Routes {
 								if ( function_exists( 'wpcom_vip_url_to_postid' ) ) {
 									$post_id = wpcom_vip_url_to_postid( $query_url );
 								} else {
-									// phpcs:ignore WordPressVIPMinimum.VIP.RestrictedFunctions
+									// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions
 									$post_id = url_to_postid( $query_url );
 								}
 								$posts   = array_filter( array( WP_Post::get_instance( $post_id ) ) );
@@ -640,35 +639,11 @@ final class REST_Routes {
 	}
 
 	/**
-	 * Parses Google API response data.
-	 *
-	 * This is necessary since the Google client returns specific data class instances instead of raw arrays.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param mixed $data Google response data.
-	 * @return object|array Parsed response data.
-	 */
-	private function parse_google_response_data( $data ) {
-		if ( is_scalar( $data ) ) {
-			return $data;
-		}
-
-		// There is an compatibility issue with Google_Collection object and wp_json_encode in PHP 5.4 only.
-		// These lines will encode/decode to deep convert objects, ensuring all data is returned.
-		if ( version_compare( PHP_VERSION, '5.5.0', '<' ) ) {
-			$data = json_decode( json_encode( $data ) );  // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
-		}
-
-		return $data;
-	}
-
-	/**
 	 * Converts a WP_Error to its response representation.
 	 *
 	 * Adapted from \WP_REST_Server::error_to_response
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param WP_Error $error Error to transform.
 	 *

@@ -690,3 +690,20 @@ export function sortObjectProperties( obj ) {
 	} );
 	return orderedData;
 }
+
+/**
+ * Gets the meta key for the given user option.
+ *
+ * @param {string} userOptionName User option name.
+ * @param {Object} _googlesitekitBase Site Kit base data (used for testing).
+ * @return {string} meta key name.
+ */
+export function getMetaKeyForUserOption( userOptionName, _googlesitekitBase = window._googlesitekitBase ) {
+	const { blogPrefix, isNetworkMode } = _googlesitekitBase;
+
+	if ( ! isNetworkMode ) {
+		return blogPrefix + userOptionName;
+	}
+
+	return userOptionName;
+}

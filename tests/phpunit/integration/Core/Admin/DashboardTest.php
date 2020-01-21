@@ -39,9 +39,12 @@ class DashboardTest extends TestCase {
 			'map_meta_cap',
 			function ( $caps, $cap ) {
 				if ( Permissions::VIEW_DASHBOARD === $cap ) {
-					$caps = array_filter( $caps, function ( $cap ) {
-						return 'do_not_allow' !== $cap;
-					} );
+					$caps = array_filter(
+						$caps,
+						function ( $cap ) {
+							return 'do_not_allow' !== $cap;
+						} 
+					);
 				}
 
 				return $caps;

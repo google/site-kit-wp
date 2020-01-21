@@ -54,9 +54,12 @@ class ScreensTest extends TestCase {
 		$GLOBALS['hook_suffix'] = 'fake_sitekit_admin_page';
 		$reflection_property    = new \ReflectionProperty( 'Google\Site_Kit\Core\Admin\Screens', 'screens' );
 		$reflection_property->setAccessible( true );
-		$reflection_property->setValue( $this->screens, array(
-			$GLOBALS['hook_suffix'] => true,
-		) );
+		$reflection_property->setValue(
+			$this->screens,
+			array(
+				$GLOBALS['hook_suffix'] => true,
+			) 
+		);
 
 		$output_notice = function() {
 			echo '<div class="notice notice-error">Error!</div>';

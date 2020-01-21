@@ -796,12 +796,12 @@ class AnalyticsSetup extends Component {
 			onSettingsPage,
 			isEditing,
 		} = this.props;
-		const disabledProfile = ! isEditing;
-
-		let disabledProperty = ! isEditing;
-		if ( existingTag && selectedProperty ) {
-			disabledProperty = true;
-		}
+		// The account number will be an integer if valid, otherwise zero.
+		const accountNumber = parseInt( selectedAccount ) || 0;
+		// -1 is used for "create an account", so ensure accountNumber is a positive integer.
+		const enablePropertySelect = ! existingTag && accountNumber > 0;
+		// Profiles may still be selected even in the case of an existing tag.
+		const enableProfileSelect = !! /^UA-/.test( selectedProperty.toString() );
 
 		const { ampMode } = window.googlesitekit.admin;
 		const { setupComplete } = googlesitekit.modules.analytics;
@@ -942,7 +942,7 @@ class AnalyticsSetup extends Component {
 							value={ selectedProperty || selectedProperty === 0 ? selectedProperty.toString() : '-1' }
 							onEnhancedChange={ this.handlePropertyChange }
 							label={ __( 'Property', 'google-site-kit' ) }
-							disabled={ disabledProperty }
+							disabled={ ! enablePropertySelect }
 							outlined
 						>
 							{ properties.map( ( property, id ) =>
@@ -962,7 +962,7 @@ class AnalyticsSetup extends Component {
 							value={ selectedProfile || selectedProfile === 0 ? selectedProfile.toString() : '-1' }
 							onEnhancedChange={ this.handleProfileChange }
 							label={ __( 'View', 'google-site-kit' ) }
-							disabled={ disabledProfile }
+							disabled={ ! enableProfileSelect }
 							outlined
 						>
 							{ profiles.map( ( profile, id ) =>
@@ -1056,7 +1056,7 @@ class AnalyticsSetup extends Component {
 				break;
 		}
 
-		if ( 0 === message.length ) {
+		if ( ! message || 0 === message.length ) {
 			return null;
 		}
 

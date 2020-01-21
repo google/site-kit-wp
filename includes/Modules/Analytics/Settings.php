@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Setting_With_Legacy_Keys_Trait;
 /**
  * Class for Analytics settings.
  *
- * @since n.e.x.t
+ * @since 1.2.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class Settings extends Module_Settings {
 	/**
 	 * Registers the setting in WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 */
 	public function register() {
 		parent::register();
@@ -40,6 +40,20 @@ class Settings extends Module_Settings {
 				'propertyId'            => 'propertyID',
 				'internalWebPropertyId' => 'internalWebPropertyID',
 			)
+		);
+
+		// Backwards compatibility with previous dedicated option.
+		add_filter(
+			'default_option_' . self::OPTION,
+			function ( $default ) {
+				// Only fallback to the legacy option if the linked state is not filtered.
+				// This filter is documented below.
+				if ( is_null( apply_filters( 'googlesitekit_analytics_adsense_linked', null ) ) ) {
+					$default['adsenseLinked'] = (bool) $this->options->get( 'googlesitekit_analytics_adsense_linked' );
+				}
+
+				return $default;
+			}
 		);
 
 		add_filter(
@@ -93,6 +107,21 @@ class Settings extends Module_Settings {
 					$option['profileID'] = $profile_id;
 				}
 
+				/**
+				 * Filters the linked state of AdSense with Analytics.
+				 *
+				 * This filter exists so that adsenseLinked can only be truthy if the AdSense module is active,
+				 * regardless of the saved setting.
+				 *
+				 * @since n.e.x.t
+				 * @param bool $adsense_linked Null by default, will fallback to the option value if not set.
+				 */
+				$adsense_linked = apply_filters( 'googlesitekit_analytics_adsense_linked', null );
+
+				if ( is_bool( $adsense_linked ) ) {
+					$option['adsenseLinked'] = $adsense_linked;
+				}
+
 				return $option;
 			}
 		);
@@ -101,13 +130,14 @@ class Settings extends Module_Settings {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return array
 	 */
 	protected function get_default() {
 		return array(
 			'accountID'             => '',
+			'adsenseLinked'         => false,
 			'ampClientIDOptIn'      => true,
 			'anonymizeIP'           => true,
 			'internalWebPropertyID' => '',

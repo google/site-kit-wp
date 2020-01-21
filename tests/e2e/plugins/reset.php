@@ -15,10 +15,13 @@
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Reset;
 
-register_activation_hook( __FILE__, static function () {
-	if ( ! defined( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE' ) ) {
-		wp_die( 'Site Kit must be active to reset! Check the error log.' );
-	}
+register_activation_hook(
+	__FILE__,
+	static function () {
+		if ( ! defined( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE' ) ) {
+			wp_die( 'Site Kit must be active to reset! Check the error log.' );
+		}
 
-	( new Reset( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )->all();
-} );
+		( new Reset( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )->all();
+	} 
+);

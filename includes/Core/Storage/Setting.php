@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Storage;
 /**
  * Base class for a single setting.
  *
- * @since n.e.x.t
+ * @since 1.2.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ abstract class Setting {
 	/**
 	 * Options instance implementing Options_Interface.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 * @var Options_Interface
 	 */
 	protected $options;
@@ -36,7 +36,7 @@ abstract class Setting {
 	/**
 	 * Setting constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param Options_Interface $options Options_Interface instance.
 	 */
@@ -47,7 +47,7 @@ abstract class Setting {
 	/**
 	 * Registers the setting in WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 */
 	public function register() {
 		register_setting(
@@ -64,7 +64,7 @@ abstract class Setting {
 	/**
 	 * Checks whether or not the option is set with a valid value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return bool True on success, false on failure.
 	 */
@@ -75,7 +75,7 @@ abstract class Setting {
 	/**
 	 * Gets the value of the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return mixed Value set for the option, or registered default if not set.
 	 */
@@ -86,7 +86,7 @@ abstract class Setting {
 	/**
 	 * Sets the value of the setting with the given value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @param mixed $value Setting value. Must be serializable if non-scalar.
 	 *
@@ -99,7 +99,7 @@ abstract class Setting {
 	/**
 	 * Deletes the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return bool True on success, false on failure.
 	 */
@@ -113,7 +113,7 @@ abstract class Setting {
 	 * Returns 'string' by default for consistency with register_setting.
 	 * Override in a sub-class if different.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return string The type name.
 	 */
@@ -128,7 +128,7 @@ abstract class Setting {
 	 * Returns false by default for consistency with get_option.
 	 * Override in a sub-class if different.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return mixed The default value.
 	 */
@@ -143,7 +143,7 @@ abstract class Setting {
 	 * Returns `null` for consistency with the default in register_setting.
 	 * Override in a sub-class.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return callable|null
 	 */

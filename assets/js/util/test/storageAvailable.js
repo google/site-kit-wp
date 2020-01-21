@@ -31,19 +31,15 @@ const valuesToTest = [
 	],
 ];
 
-const setItem = Storage.prototype.setItem;
-
 describe( 'storageAvailable', () => {
 	it.each( valuesToTest )( 'for case %s should return %p', ( type, expected, disableStorage ) => {
 		if ( disableStorage ) {
-			Storage.prototype.setItem = function() {
+			window[ type ].setItem.mockImplementationOnce( () => {
 				throw new Error( 'error' );
-			};
+			} );
 		}
 
 		const actual = storageAvailable( type );
-
-		Storage.prototype.setItem = setItem;
 
 		expect( actual ).toStrictEqual( expected );
 	} );

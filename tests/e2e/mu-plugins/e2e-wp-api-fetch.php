@@ -9,10 +9,14 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-add_action( 'admin_enqueue_scripts', function () {
-	if ( ! defined( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE' ) ) {
-		return;
-	}
+add_action(
+	'admin_enqueue_scripts',
+	function () {
+		if ( ! defined( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE' ) ) {
+			return;
+		}
 
-	wp_enqueue_script( 'wp-api-fetch' );
-}, 11 ); // Needs to be after registration in Site Kit's Assets class.
+		wp_enqueue_script( 'wp-api-fetch' );
+	},
+	11 
+); // Needs to be after registration in Site Kit's Assets class.

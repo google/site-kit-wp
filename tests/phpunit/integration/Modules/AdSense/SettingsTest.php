@@ -31,9 +31,12 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertArraySubset( array( 'accountID' => 'saved-account-id' ), get_option( Settings::OPTION ) );
 		remove_filter( 'googlesitekit_adsense_account_id', '__return_empty_string' );
 
-		add_filter( 'googlesitekit_adsense_account_id', function () {
-			return 'filtered-adsense-account-id';
-		} );
+		add_filter(
+			'googlesitekit_adsense_account_id',
+			function () {
+				return 'filtered-adsense-account-id';
+			} 
+		);
 		$this->assertArraySubset( array( 'accountID' => 'filtered-adsense-account-id' ), get_option( Settings::OPTION ) );
 
 		// Default value filtered into saved value.
@@ -62,6 +65,8 @@ class SettingsTest extends SettingsTestCase {
 	public function test_legacy_options() {
 		$legacy_option = array(
 			'account_id'        => 'test-account-id',
+			'account_status'    => 'test-account-status',
+			'client_id'         => 'test-client-id',
 			'adsenseTagEnabled' => 'test-adsense-tag-enabled',
 			'setup_complete'    => 'test-setup-complete',
 		);
@@ -73,6 +78,8 @@ class SettingsTest extends SettingsTestCase {
 		$this->assertArraySubset(
 			array(
 				'accountID'     => 'test-account-id',
+				'accountStatus' => 'test-account-status',
+				'clientID'      => 'test-client-id',
 				'useSnippet'    => 'test-adsense-tag-enabled',
 				'setupComplete' => 'test-setup-complete',
 			),
@@ -84,10 +91,13 @@ class SettingsTest extends SettingsTestCase {
 		}
 
 		// Ensure valid/current keys are not overridden by legacy.
-		update_option( Settings::OPTION, array(
-			'account_id' => 'test-legacy-account-id',
-			'accountID'  => 'test-current-account-id',
-		) );
+		update_option(
+			Settings::OPTION,
+			array(
+				'account_id' => 'test-legacy-account-id',
+				'accountID'  => 'test-current-account-id',
+			) 
+		);
 		$option = $settings->get();
 		$this->assertEquals( 'test-current-account-id', $option['accountID'] );
 		$this->assertArrayNotHasKey( 'account_id', $option );

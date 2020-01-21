@@ -11,7 +11,7 @@
  * Plugin Name: Site Kit by Google
  * Plugin URI:  https://sitekit.withgoogle.com
  * Description: Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
- * Version:     1.1.4
+ * Version:     1.2.0
  * Author:      Google
  * Author URI:  https://opensource.google.com
  * License:     Apache License 2.0
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define most essential constants.
-define( 'GOOGLESITEKIT_VERSION', '1.1.4' );
+define( 'GOOGLESITEKIT_VERSION', '1.2.0' );
 define( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE', __FILE__ );
 
 /**
@@ -33,13 +33,14 @@ define( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE', __FILE__ );
  * Throws an error if the plugin is activated on an older version than PHP 5.4.
  *
  * @access private
+ * @since n.e.x.t Minimum required version of PHP raised to 5.6
  *
  * @param bool $network_wide Whether to activate network-wide.
  */
 function googlesitekit_activate_plugin( $network_wide ) {
-	if ( version_compare( PHP_VERSION, '5.4.0', '<' ) ) {
+	if ( version_compare( PHP_VERSION, '5.6.0', '<' ) ) {
 		wp_die(
-			esc_html__( 'Site Kit requires PHP version 5.4.', 'google-site-kit' ),
+			esc_html__( 'Site Kit requires PHP version 5.6.', 'google-site-kit' ),
 			esc_html__( 'Error Activating', 'google-site-kit' )
 		);
 	}

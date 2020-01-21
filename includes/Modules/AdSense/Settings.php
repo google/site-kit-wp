@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Setting_With_Legacy_Keys_Trait;
 /**
  * Class for AdSense settings.
  *
- * @since n.e.x.t
+ * @since 1.2.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class Settings extends Module_Settings {
 	/**
 	 * Registers the setting in WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 */
 	public function register() {
 		parent::register();
@@ -36,7 +36,11 @@ class Settings extends Module_Settings {
 		$this->register_legacy_keys_migration(
 			array(
 				'account_id'        => 'accountID',
+				'accountId'         => 'accountID',
+				'account_status'    => 'accountStatus',
 				'adsenseTagEnabled' => 'useSnippet',
+				'client_id'         => 'clientID',
+				'clientId'          => 'clientID',
 				'setup_complete'    => 'setupComplete',
 			)
 		);
@@ -65,7 +69,7 @@ class Settings extends Module_Settings {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return array
 	 */

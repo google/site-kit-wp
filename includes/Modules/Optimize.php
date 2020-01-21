@@ -237,12 +237,11 @@ final class Optimize extends Module implements Module_With_Settings {
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampExperimentJSON' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option                      = $this->get_settings()->get();
-					$option['ampExperimentJSON'] = $data['ampExperimentJSON'];
-					if ( is_string( $option['ampExperimentJSON'] ) ) {
-						$option['ampExperimentJSON'] = json_decode( $option['ampExperimentJSON'] );
+					$json = $data['ampExperimentJSON'];
+					if ( is_string( $json ) ) {
+						$json = json_decode( $json );
 					}
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge( array( 'ampExperimentJSON' => $json ) );
 					return true;
 				};
 			case 'GET:optimize-id':
@@ -261,9 +260,7 @@ final class Optimize extends Module implements Module_With_Settings {
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'optimizeID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option               = $this->get_settings()->get();
-					$option['optimizeID'] = $data['optimizeID'];
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge( array( 'optimizeID' => $data['optimizeID'] ) );
 					return true;
 				};
 			case 'POST:settings':
@@ -283,8 +280,9 @@ final class Optimize extends Module implements Module_With_Settings {
 					if ( is_string( $option['ampExperimentJSON'] ) ) {
 						$option['ampExperimentJSON'] = json_decode( $option['ampExperimentJSON'] );
 					}
-					$this->get_settings()->set( $option );
-					return $option;
+					$this->get_settings()->merge( $option );
+
+					return $this->get_settings()->get();
 				};
 		}
 
@@ -334,7 +332,7 @@ final class Optimize extends Module implements Module_With_Settings {
 	 * for the first time.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Now requires Google_Site_Kit_Client instance.
+	 * @since 1.2.0 Now requires Google_Site_Kit_Client instance.
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
@@ -347,7 +345,7 @@ final class Optimize extends Module implements Module_With_Settings {
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.2.0
 	 *
 	 * @return Module_Settings
 	 */

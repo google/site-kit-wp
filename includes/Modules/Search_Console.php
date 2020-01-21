@@ -11,12 +11,16 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Modules\Search_Console\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SitesListResponse;
@@ -35,10 +39,8 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Search_Console extends Module implements Module_With_Screen, Module_With_Scopes {
-	use Module_With_Screen_Trait, Module_With_Scopes_Trait;
-
-	const PROPERTY_OPTION = 'googlesitekit_search_console_property';
+final class Search_Console extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Settings {
+	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -58,8 +60,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					return $complete;
 				}
 
-				$sc_property = $this->options->get( self::PROPERTY_OPTION );
-				return ! empty( $sc_property );
+				return (bool) $this->get_property_id();
 			}
 		);
 
@@ -67,9 +68,9 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		add_filter(
 			'googlesitekit_site_url',
 			function( $url ) {
-				$sc_property = $this->options->get( self::PROPERTY_OPTION );
-				if ( ! empty( $sc_property ) ) {
-					return $sc_property;
+				$property_id = $this->get_property_id();
+				if ( $property_id ) {
+					return $property_id;
 				}
 				return $url;
 			},
@@ -80,9 +81,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		add_filter(
 			'googlesitekit_setup_data',
 			function ( $data ) {
-				$sc_property = $this->options->get( self::PROPERTY_OPTION );
-
-				$data['hasSearchConsoleProperty'] = ! empty( $sc_property );
+				$data['hasSearchConsoleProperty'] = (bool) $this->get_property_id();
 
 				return $data;
 			},
@@ -92,8 +91,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		add_filter(
 			'googlesitekit_show_admin_bar_menu',
 			function( $display, $current_url ) {
-				$sc_property = $this->options->get( self::PROPERTY_OPTION );
-				if ( empty( $sc_property ) ) {
+				if ( ! $this->get_property_id() ) {
 					return false;
 				}
 
@@ -106,6 +104,19 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			10,
 			2
 		);
+	}
+
+	/**
+	 * Gets the property ID and ensures it is a valid URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string|bool Property ID URL if set and valid, otherwise false.
+	 */
+	protected function get_property_id() {
+		$option = $this->get_settings()->get();
+
+		return filter_var( $option['propertyID'], FILTER_VALIDATE_URL );
 	}
 
 	/**
@@ -208,7 +219,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					}
 
 					$restore_defer();
-					$this->options->set( self::PROPERTY_OPTION, $site_url );
+					$this->get_settings()->merge( array( 'propertyID' => $site_url ) );
 
 					return array(
 						'siteURL'         => $site->getSiteUrl(),
@@ -448,7 +459,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 * for the first time.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Now requires Google_Site_Kit_Client instance.
+	 * @since 1.2.0 Now requires Google_Site_Kit_Client instance.
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
@@ -458,5 +469,16 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		return array(
 			'webmasters' => new Google_Service_Webmasters( $client ),
 		);
+	}
+
+	/**
+	 * Sets up the module's settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Module_Settings
+	 */
+	protected function setup_settings() {
+		return new Settings( $this->options );
 	}
 }

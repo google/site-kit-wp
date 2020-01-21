@@ -16,9 +16,17 @@
  * limitations under the License.
  */
 
+/**
+ * Node dependencies
+ */
+const fs = require( 'fs' );
+const path = require( 'path' );
+
+/**
+ * External dependencies
+ */
 const glob = require( 'glob' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
-const path = require( 'path' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 const { ProvidePlugin } = require( 'webpack' );
@@ -41,14 +49,17 @@ const resolve = {
 		GoogleUtil: path.resolve( 'assets/js/util/' ),
 		GoogleModules: path.resolve( './assets/js/modules/' ),
 	},
+	modules: [ projectPath( '.' ), 'node_modules' ],
 };
 
 module.exports = ( env, argv ) => {
 	return [
-
 		// Build the settings js..
 		{
 			entry: {
+				// New Modules (Post-JSR).
+				'googlesitekit-api': './assets/js/googlesitekit-api.js',
+				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
 				'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
 				'googlesitekit-dashboard': './assets/js/googlesitekit-dashboard.js',
@@ -64,7 +75,7 @@ module.exports = ( env, argv ) => {
 			output: {
 				filename: '[name].js',
 				path: __dirname + '/dist/assets/js',
-				chunkFilename: '[name].js',
+				chunkFilename: '[name]-[chunkhash].js',
 				publicPath: '',
 			},
 			performance: {
@@ -119,30 +130,6 @@ module.exports = ( env, argv ) => {
 						extractComments: false,
 					} ),
 				],
-				splitChunks: {
-					cacheGroups: {
-						default: false,
-						vendors: false,
-
-						// vendor chunk
-						vendor: {
-							name: 'vendor',
-							chunks: 'all',
-							test: /node_modules/,
-							priority: 20,
-						},
-
-						// commons chunk
-						commons: {
-							name: 'commons',
-							minChunks: 2,
-							chunks: 'initial',
-							priority: 10,
-							reuseExistingChunk: true,
-							enforce: true,
-						},
-					},
-				},
 			},
 			// externals,
 			resolve,
