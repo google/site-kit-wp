@@ -48,6 +48,8 @@ const projectPath = ( relativePath ) => {
 
 const resolve = {
 	alias: {
+		'@wordpress/hooks__non-shim': require.resolve( '@wordpress/hooks' ),
+		'@wordpress/hooks$': path.resolve( 'assets/js/hooks-shim.js' ),
 		SiteKitCore: path.resolve( 'assets/js/' ),
 		GoogleComponents: path.resolve( 'assets/js/components/' ),
 		GoogleUtil: path.resolve( 'assets/js/util/' ),
