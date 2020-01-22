@@ -118,6 +118,7 @@ class Tag_ManagerTest extends TestCase {
 	}
 
 	public function test_amp_data_load_analytics_component() {
+		remove_all_filters( 'amp_post_template_data' );
 		$tagmanager = new Tag_Manager( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$tagmanager->register();
 
@@ -126,8 +127,20 @@ class Tag_ManagerTest extends TestCase {
 		$result = apply_filters( 'amp_post_template_data', $data );
 		$this->assertSame( $data, $result );
 
-		$tagmanager->set_data( 'container-id', array( 'containerID' => '12345678' ) );
+		$set_data_response = $tagmanager->set_data( 'container-id', array( 'containerID' => '12345678' ) );
+		$this->assertNotWPError( $set_data_response );
 
+		$result = apply_filters( 'amp_post_template_data', $data );
+		$this->assertArrayNotHasKey( 'amp-analytics', $result['amp_component_scripts'] );
+
+		$set_data_response = $tagmanager->set_data(
+			'container-id',
+			array(
+				'containerID'  => '99999999',
+				'usageContext' => Tag_Manager::USAGE_CONTEXT_AMP,
+			)
+		);
+		$this->assertNotWPError( $set_data_response );
 		$result = apply_filters( 'amp_post_template_data', $data );
 		$this->assertArrayHasKey( 'amp-analytics', $result['amp_component_scripts'] );
 	}
