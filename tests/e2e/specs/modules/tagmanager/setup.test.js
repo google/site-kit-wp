@@ -57,10 +57,10 @@ describe( 'Tag Manager module setup', () => {
 		await activatePlugin( 'e2e-tests-module-setup-tagmanager-api-mock-no-account' );
 		await proceedToTagManagerSetup();
 
-		// Intercept the call to global.open and call our API to simulate a created account.
+		// Intercept the call to window.open and call our API to simulate a created account.
 		await page.evaluate( () => {
-			global.open = () => {
-				global.wp.apiFetch( {
+			window.open = () => {
+				window.wp.apiFetch( {
 					path: 'google-site-kit/v1/e2e/setup/tagmanager/account-created',
 					method: 'post',
 				} );

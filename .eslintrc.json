@@ -45,6 +45,11 @@
         "browser": true,
         "page": true,
         "wp": true
+      },
+      "rules": {
+        "no-restricted-globals": [
+          "off"
+        ],
       }
     },
     {

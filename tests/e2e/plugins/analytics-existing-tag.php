@@ -16,14 +16,14 @@ register_activation_hook(
 	__FILE__,
 	function () {
 		delete_option( 'googlesitekit_e2e_analytics_existing_property_id' );
-	} 
+	}
 );
 
 register_deactivation_hook(
 	__FILE__,
 	function () {
 		delete_option( 'googlesitekit_e2e_analytics_existing_property_id' );
-	} 
+	}
 );
 
 add_action(
@@ -39,11 +39,11 @@ add_action(
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=$UA_CODE"></script>
 <script>
-  global.dataLayer = global.dataLayer || [];
+  window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', '$UA_CODE');
 </script>
 HTML;
-	} 
+	}
 );

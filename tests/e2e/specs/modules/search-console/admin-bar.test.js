@@ -82,7 +82,7 @@ describe( 'Site Kit admin bar component display', () => {
 		await page.evaluate( () => {
 			// Temporarily replace XMLHttpRequest.send with a no-op to prevent a DOMException on navigation.
 			// https://github.com/WordPress/gutenberg/blob/d635ca96f8c5dbdc993f30b1f3a3a0b4359e3e2e/packages/editor/src/components/post-locked-modal/index.js#L114
-			global.XMLHttpRequest.prototype.send = function() {};
+			window.XMLHttpRequest.prototype.send = function() {};
 		} );
 
 		const adminBarApp = await page.$( '#js-googlesitekit-adminbar' );
