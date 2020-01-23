@@ -221,6 +221,9 @@ final class REST_Routes {
 							$plugin    = "$slug/$slug.php";
 
 							if ( ! $is_active ) {
+								if ( ! function_exists( 'get_plugins' ) ) {
+									require_once ABSPATH . 'wp-admin/includes/plugin.php';
+								}
 								foreach ( array_keys( get_plugins() ) as $installed_plugin ) {
 									if ( $installed_plugin === $plugin ) {
 										$installed = true;
