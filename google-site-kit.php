@@ -39,9 +39,10 @@ define( 'GOOGLESITEKIT_PHP_MINIMUM', '5.6.0' );
  * @param bool $network_wide Whether to activate network-wide.
  */
 function googlesitekit_activate_plugin( $network_wide ) {
-	if ( version_compare( PHP_VERSION, '5.6.0', '<' ) ) {
+	if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '<' ) ) {
 		wp_die(
-			esc_html__( 'Site Kit requires PHP version 5.6.', 'google-site-kit' ),
+			/* translators: %s: version number */
+			esc_html( sprintf( __( 'Site Kit requires PHP version %s', 'google-site-kit' ), GOOGLESITEKIT_PHP_MINIMUM ) ),
 			esc_html__( 'Error Activating', 'google-site-kit' )
 		);
 	}
