@@ -193,6 +193,21 @@ final class REST_Routes {
 					),
 				)
 			),
+			new REST_Route(
+				'core/site/data/setup-tag',
+				array(
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$token = wp_generate_uuid4();
+							set_transient( 'googlesitekit_setup_test', $token, 5 * MINUTE_IN_SECONDS );
+
+							return new WP_REST_Response( array( 'token' => $token ) );
+						},
+						'permission_callback' => $can_setup,
+					),
+				)
+			),
 			// This route is forward-compatible with a potential 'core/(?P<slug>[a-z\-]+)/data/(?P<datapoint>[a-z\-]+)'.
 			new REST_Route(
 				'core/user/data/authentication',
