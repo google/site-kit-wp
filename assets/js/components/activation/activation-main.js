@@ -32,6 +32,7 @@ import PropTypes from 'prop-types';
 import Button from '../button';
 import Logo from '../logo';
 import Optin from '../optin';
+import CompatibilityChecks from '../setup/compatibility-checks';
 
 export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
 	return (
@@ -47,18 +48,31 @@ export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
 						{ __( 'Congratulations, the Site Kit plugin is now activated.', 'google-site-kit' ) }
 					</h3>
 
-					<div className="googlesitekit-opt-in googlesitekit-activation__opt-in">
-						<Optin />
-					</div>
+					<CompatibilityChecks>
+						{ ( { complete, inProgressFeedback, CTAFeedback } ) => (
+							<>
+								{ CTAFeedback }
 
-					<Button
-						id="start-setup-link"
-						className="googlesitekit-start-setup googlesitekit-activation__button"
-						href={ buttonURL }
-						onClick={ onButtonClick }
-					>
-						{ buttonLabel }
-					</Button>
+								<div className="googlesitekit-opt-in googlesitekit-activation__opt-in">
+									<Optin />
+								</div>
+
+								<div style={ { display: 'flex' } }>
+									<Button
+										id="start-setup-link"
+										className="googlesitekit-start-setup googlesitekit-activation__button"
+										/* href must only be passed if not disabled to work and display correctly. */
+										href={ complete ? buttonURL : undefined }
+										onClick={ onButtonClick }
+										disabled={ ! complete }
+									>
+										{ buttonLabel }
+									</Button>
+									{ inProgressFeedback }
+								</div>
+							</>
+						) }
+					</CompatibilityChecks>
 				</div>
 			</div>
 		</div>
