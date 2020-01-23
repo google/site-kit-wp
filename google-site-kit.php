@@ -63,7 +63,7 @@ register_activation_hook( __FILE__, 'googlesitekit_activate_plugin' );
  * @param bool $network_wide Whether to deactivate network-wide.
  */
 function googlesitekit_deactivate_plugin( $network_wide ) {
-	if ( version_compare( PHP_VERSION, '5.4.0', '<' ) ) {
+	if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '<' ) ) {
 		return;
 	}
 
@@ -76,6 +76,6 @@ function googlesitekit_deactivate_plugin( $network_wide ) {
 
 register_deactivation_hook( __FILE__, 'googlesitekit_deactivate_plugin' );
 
-if ( version_compare( PHP_VERSION, '5.4.0', '>=' ) ) {
+if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '>=' ) ) {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/loader.php';
 }
