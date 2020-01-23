@@ -53,7 +53,8 @@
       "@autoload-includes",
       "@autoload-third-party",
       "@composer dump-autoload --no-dev",
-      "cp vendor/composer/autoload_files.php third-party/vendor/"
+      "cp vendor/composer/autoload_files.php third-party/vendor/",
+      "@composer dump-autoload"
     ],
     "autoload-includes": [
       "echo '{ \"autoload\": { \"classmap\": [\"\"] } }' > includes/composer.json",
