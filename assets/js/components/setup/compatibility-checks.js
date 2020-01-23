@@ -63,7 +63,6 @@ export default class CompatibilityChecks extends Component {
 			return;
 		}
 		try {
-			this.onStart();
 			for ( const testCallback of checks ) {
 				await testCallback();
 			}
@@ -72,23 +71,7 @@ export default class CompatibilityChecks extends Component {
 			this.setState( { error, helperPlugin } );
 		}
 
-		this.setState( { complete: true }, this.onComplete );
-	}
-
-	onStart() {
-		const { onStart } = this.props;
-
-		if ( typeof onStart === 'function' ) {
-			onStart();
-		}
-	}
-
-	onComplete() {
-		const { onComplete } = this.props;
-
-		if ( typeof onComplete === 'function' ) {
-			onComplete();
-		}
+		this.setState( { complete: true } );
 	}
 
 	helperCTA() {
@@ -185,6 +168,4 @@ export default class CompatibilityChecks extends Component {
 
 CompatibilityChecks.propTypes = {
 	children: PropTypes.func.isRequired,
-	onStart: PropTypes.func,
-	onComplete: PropTypes.func,
 };
