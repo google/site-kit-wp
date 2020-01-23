@@ -29,12 +29,17 @@ class TestCase extends \WP_UnitTestCase {
 		 * Catch redirections with an exception.
 		 * This prevents subsequent calls to exit/die and allows us to make assertions about the redirect.
 		 */
-		add_filter( 'wp_redirect_status', function ( $status, $location ) {
-			$e = new RedirectException( "Intercepted attempt to redirect to $location" );
-			$e->set_location( $location );
-			$e->set_status( $status );
-			throw $e;
-		}, 10, 2 );
+		add_filter(
+			'wp_redirect_status',
+			function ( $status, $location ) { // phpcs:ignore WordPressVIPMinimum.Hooks.AlwaysReturnInFilter.MissingReturnStatement
+				$e = new RedirectException( "Intercepted attempt to redirect to $location" );
+				$e->set_location( $location );
+				$e->set_status( $status );
+				throw $e;
+			},
+			10,
+			2
+		);
 	}
 
 	/**

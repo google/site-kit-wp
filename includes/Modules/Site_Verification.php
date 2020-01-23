@@ -446,7 +446,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			array(
 				// phpcs:ignore WordPress.VIP.SlowDBQuery
 				'meta_key'   => $key_prefix . Verification_File::OPTION,
-				// phpcs:ignore WordPress.VIP.SlowDBQuery
+				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 				'meta_value' => $verification_token,
 				'fields'     => 'id',
 				'number'     => 1,

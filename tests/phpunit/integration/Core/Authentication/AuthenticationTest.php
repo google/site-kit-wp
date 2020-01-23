@@ -122,7 +122,7 @@ class AuthenticationTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$auth = new Authentication( $context );
+		$auth    = new Authentication( $context );
 		$auth->register();
 
 		// Ensure that wp_die is called if nonce verification fails.
@@ -142,9 +142,9 @@ class AuthenticationTest extends TestCase {
 		remove_all_actions( 'admin_action_googlesitekit_proxy_setup' );
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$context     = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$credentials = new Credentials( new Encrypted_Options( new Options( $context ) ) );
-		$auth = new Authentication( $context );
+		$auth        = new Authentication( $context );
 		$auth->register();
 		$google_proxy = new Google_Proxy( $context );
 
@@ -290,7 +290,8 @@ class AuthenticationTest extends TestCase {
 			$user_options->set( $key, "test-$key-value" );
 		}
 
-		$mock_google_client = $this->getMock( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client', array( 'revokeToken' ) );
+		$mock_google_client = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
+			->setMethods( array( 'revokeToken' ) )->getMock();
 		$mock_google_client->expects( $this->once() )->method( 'revokeToken' );
 		$this->force_set_property( $auth->get_oauth_client(), 'google_client', $mock_google_client );
 
@@ -312,7 +313,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertArraySubset(
 			array(
 				'googlesitekit_connect' => 1,
-				'page'                  => 'googlesitekit-splash'
+				'page'                  => 'googlesitekit-splash',
 			),
 			$params
 		);
@@ -329,7 +330,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertArraySubset(
 			array(
 				'googlesitekit_disconnect' => 1,
-				'page'                     => 'googlesitekit-splash'
+				'page'                     => 'googlesitekit-splash',
 			),
 			$params
 		);

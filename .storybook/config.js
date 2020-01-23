@@ -83,14 +83,24 @@ window.googlesitekit.modules = window.googlesitekit.modules || googlesitekit.mod
 window.googlesitekit.admin.assetsRoot = '/assets/';
 window.googlesitekit.isStorybook = true;
 window._googlesitekitBase = {
+	basePrefix: 'wp_',
 	splashURL: 'http://localhost/wp-admin/admin.php?page=googlesitekit-splash',
 };
 window.wp.apiFetch = ( vars ) => {
-	const matches = vars.path.match( '/google-site-kit/v1/modules/(.*)/data/(.*[^/])' );
+	const { modules } = window.googlesitekit;
+	const match = vars.path.match( /google-site-kit\/v1\/modules\/([\w-]+)\/data\/([\w-]+)/ );
 
-	if ( window.googlesitekit.modules[ matches[ 1 ] ][ matches[ 2 ] ] ) {
-		return Promise.resolve( window.googlesitekit.modules[ matches[ 1 ] ][ matches[ 2 ] ] );
+	if ( match && match[ 1 ] && match[ 2 ] ) {
+		const [ , identifier, datapoint ] = match;
+
+		if ( identifier && datapoint && modules[ identifier ] && modules[ identifier ][ datapoint ] ) {
+			return Promise.resolve( modules[ identifier ][ datapoint ] );
+		}
 	}
+
+	// eslint-disable-next-line no-console
+	console.warn( 'apiFetch', vars );
+
 	return {
 		then: () => {
 			return {

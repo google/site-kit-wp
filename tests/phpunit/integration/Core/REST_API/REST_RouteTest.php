@@ -46,9 +46,12 @@ class REST_RouteTest extends TestCase {
 		$this->assertEquals( array(), $route->get_args() );
 
 		// Test default args
-		$route = new REST_Route( 'test-uri', array(
-			'args' => array(),
-		) );
+		$route = new REST_Route(
+			'test-uri',
+			array(
+				'args' => array(),
+			) 
+		);
 		$this->assertCount( 1, $route->get_args() );
 		$single_route_args = $route->get_args()[0];
 		$this->assertEquals( WP_REST_Server::READABLE, $single_route_args['methods'] );
@@ -56,11 +59,14 @@ class REST_RouteTest extends TestCase {
 		$this->assertEquals( array(), $single_route_args['args'] );
 
 		// Test arg defaults
-		$route = new REST_Route( 'test-uri', array(
-			'args' => array(
-				'args' => array()
-			),
-		) );
+		$route = new REST_Route(
+			'test-uri',
+			array(
+				'args' => array(
+					'args' => array(),
+				),
+			) 
+		);
 		$this->assertEqualSetsWithIndex(
 			array(
 				'type'              => 'string',
@@ -74,16 +80,19 @@ class REST_RouteTest extends TestCase {
 		);
 
 		// Test args take precedence over defaults
-		$route = new REST_Route( 'test-uri', array(
-			'args' => array(
+		$route = new REST_Route(
+			'test-uri',
+			array(
 				'args' => array(
-					'type'              => 'boolean',
-					'description'       => 'test description',
-					'validate_callback' => 'test_validate_callback',
-					'default'           => true,
-				)
-			),
-		) );
+					'args' => array(
+						'type'              => 'boolean',
+						'description'       => 'test description',
+						'validate_callback' => 'test_validate_callback',
+						'default'           => true,
+					),
+				),
+			) 
+		);
 		$this->assertEqualSetsWithIndex(
 			array(
 				'type'              => 'boolean',

@@ -11,7 +11,7 @@ Addresses issue #
 
 - [ ] My code is tested and passes existing unit tests.
 - [ ] My code has an appropriate set of unit tests which all pass.
-- [ ] My code is backward-compatible with WordPress 4.7 and PHP 5.4.
+- [ ] My code is backward-compatible with WordPress 4.7 and PHP 5.6.
 - [ ] My code follows the [WordPress](https://make.wordpress.org/core/handbook/best-practices/coding-standards/) coding standards.
 - [ ] My code has proper inline documentation.
 - [ ] I have signed the Contributor License Agreement (see <https://cla.developers.google.com/>).

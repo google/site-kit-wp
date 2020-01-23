@@ -194,7 +194,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			return;
 		}
 
-		$container_id = $this->get_data( 'container-id', array( 'usageContext' => $this->get_usage_context() ) );
+		$container_id = $this->get_data( 'container-id', array( 'usageContext' => self::USAGE_CONTEXT_WEB ) );
 
 		if ( is_wp_error( $container_id ) || ! $container_id ) {
 			return;
@@ -231,7 +231,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			return;
 		}
 
-		$container_id = $this->get_data( 'container-id', array( 'usageContext' => $this->get_usage_context() ) );
+		$container_id = $this->get_data( 'container-id', array( 'usageContext' => self::USAGE_CONTEXT_WEB ) );
 
 		if ( is_wp_error( $container_id ) || ! $container_id ) {
 			return;
@@ -260,7 +260,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			return;
 		}
 
-		$container_id = $this->get_data( 'container-id', array( 'usageContext' => $this->get_usage_context() ) );
+		$container_id = $this->get_data( 'container-id', array( 'usageContext' => self::USAGE_CONTEXT_AMP ) );
 
 		if ( is_wp_error( $container_id ) || ! $container_id ) {
 			return;
@@ -304,7 +304,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			return $data;
 		}
 
-		$container_id = $this->get_data( 'container-id', array( 'usageContext' => $this->get_usage_context() ) );
+		$container_id = $this->get_data( 'container-id', array( 'usageContext' => self::USAGE_CONTEXT_AMP ) );
 
 		if ( is_wp_error( $container_id ) || ! $container_id ) {
 			return $data;
@@ -400,9 +400,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
 				return function() use ( $data ) {
-					$option              = $this->get_settings()->get();
-					$option['accountID'] = $data['accountID'];
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge( array( 'accountID' => $data['accountID'] ) );
 					return true;
 				};
 			// Intentional fallthrough.
@@ -423,31 +421,27 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				};
 			case 'POST:connection':
 				return function() use ( $data ) {
-					$option = $this->get_settings()->get();
-					$keys   = array( 'accountID', 'containerID' );
-					foreach ( $keys as $key ) {
-						if ( isset( $data[ $key ] ) ) {
-							$option[ $key ] = $data[ $key ];
-						}
-					}
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge(
+						array(
+							'accountID'   => $data['accountID'],
+							'containerID' => $data['containerID'],
+						)
+					);
 					return true;
 				};
 			case 'GET:container-id':
 				return function() use ( $data ) {
-					$option = $this->get_settings()->get();
+					$option        = $this->get_settings()->get();
+					$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
 
-					$usage_context        = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
-					$valid_usage_contexts = array_keys( $this->context_map );
-
-					if ( ! in_array( $usage_context, $valid_usage_contexts, true ) ) {
+					if ( empty( $this->context_map[ $usage_context ] ) ) {
 						return new WP_Error(
 							'invalid_param',
 							sprintf(
 								/* translators: 1: Invalid parameter name, 2: list of valid values */
 								__( 'Request parameter %1$s is not one of %2$s', 'google-site-kit' ),
 								'usageContext',
-								implode( ', ', $valid_usage_contexts )
+								implode( ', ', array_keys( $this->context_map ) )
 							),
 							array( 'status' => 400 )
 						);
@@ -470,10 +464,26 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 					/* translators: %s: Missing parameter name */
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ), array( 'status' => 400 ) );
 				}
-				return function() use ( $data ) {
-					$option                = $this->get_settings()->get();
-					$option['containerID'] = $data['containerID'];
-					$this->get_settings()->set( $option );
+
+				$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
+
+				if ( empty( $this->context_map[ $usage_context ] ) ) {
+					return new WP_Error(
+						'invalid_param',
+						sprintf(
+							/* translators: 1: Invalid parameter name, 2: list of valid values */
+							__( 'Request parameter %1$s is not one of %2$s', 'google-site-kit' ),
+							'usageContext',
+							implode( ', ', array_keys( $this->context_map ) )
+						),
+						array( 'status' => 400 )
+					);
+				}
+
+				$option_key = $this->context_map[ $usage_context ];
+
+				return function() use ( $data, $option_key ) {
+					$this->get_settings()->merge( array( $option_key => $data['containerID'] ) );
 					return true;
 				};
 			case 'GET:containers':
@@ -500,10 +510,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				}
 
 				return function() use ( $data, $usage_context ) {
-					$old_option  = $this->get_settings()->get();
-					$data_option = array_intersect_key( $data->data, $old_option );
-					$option      = array_merge( $old_option, $data_option );
-
+					$option        = $data->data;
 					$container_key = $this->context_map[ $usage_context ];
 					$container_id  = $data[ $container_key ];
 
@@ -517,7 +524,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 						$option[ $container_key ] = $create_container_response;
 					}
 
-					$this->get_settings()->set( $option );
+					$this->get_settings()->merge( $option );
 
 					return $option;
 				};

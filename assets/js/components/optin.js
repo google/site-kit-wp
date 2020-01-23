@@ -21,6 +21,7 @@
  */
 import Checkbox from 'GoogleComponents/checkbox';
 import PropTypes from 'prop-types';
+import { getMetaKeyForUserOption } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -43,23 +44,22 @@ class Optin extends Component {
 	}
 
 	handleOptIn( e ) {
-		const checked = e.target.checked;
+		const checked = !! e.target.checked;
+		const trackingUserOptInKey = getMetaKeyForUserOption( 'googlesitekit_tracking_optin' );
 
-		const body = {
-			googlesitekit_tracking_optin: checked,
-		};
-
-		apiFetch( { path: '/wp/v2/settings',
-			headers: {
-				'Content-Type': 'application/json; charset=UTF-8',
-			},
-			body: JSON.stringify( body ),
+		apiFetch( {
+			path: '/wp/v2/users/me',
 			method: 'POST',
+			data: {
+				meta: {
+					[ trackingUserOptInKey ]: checked,
+				},
+			},
 		} )
 			.then( () => {
-				global.googlesitekitTrackingEnabled = !! checked;
+				global.googlesitekitTrackingEnabled = checked;
 
-				if ( !! checked && ! this.state.scriptOnPage ) {
+				if ( checked && ! this.state.scriptOnPage ) {
 					const { document } = global;
 
 					if ( ! document ) {
@@ -80,7 +80,7 @@ class Optin extends Component {
 				}
 
 				this.setState( {
-					optIn: !! checked,
+					optIn: checked,
 					error: false,
 					scriptOnPage: true,
 				} );

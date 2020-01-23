@@ -339,7 +339,8 @@ final class Authentication {
 			$prefix = $wpdb->get_blog_prefix() . $prefix;
 		}
 
-		$wpdb->query( // phpcs:ignore WordPress.VIP.DirectDatabaseQuery
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->query(
 			$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE user_id = %d AND meta_key LIKE %s", $user_id, $prefix )
 		);
 		wp_cache_delete( $user_id, 'user_meta' );

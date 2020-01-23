@@ -470,7 +470,7 @@ final class OAuth_Client {
 
 		// If not provided, assume current GMT time.
 		if ( empty( $created ) ) {
-			$created = current_time( 'timestamp', 1 );
+			$created = time();
 		}
 
 		$this->user_options->set( self::OPTION_ACCESS_TOKEN_EXPIRES_IN, $expires_in );
@@ -627,7 +627,9 @@ final class OAuth_Client {
 		// another way.
 		if ( $this->using_proxy() ) {
 			$this->user_options->set( Verification::OPTION, 'verified' );
-			$this->options->set( Search_Console::PROPERTY_OPTION, trailingslashit( $this->context->get_reference_site_url() ) );
+			( new Search_Console\Settings( $this->options ) )->merge(
+				array( 'propertyID' => trailingslashit( $this->context->get_reference_site_url() ) )
+			);
 		}
 
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );

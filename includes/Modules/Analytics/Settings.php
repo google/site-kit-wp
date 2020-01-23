@@ -42,6 +42,20 @@ class Settings extends Module_Settings {
 			)
 		);
 
+		// Backwards compatibility with previous dedicated option.
+		add_filter(
+			'default_option_' . self::OPTION,
+			function ( $default ) {
+				// Only fallback to the legacy option if the linked state is not filtered.
+				// This filter is documented below.
+				if ( is_null( apply_filters( 'googlesitekit_analytics_adsense_linked', null ) ) ) {
+					$default['adsenseLinked'] = (bool) $this->options->get( 'googlesitekit_analytics_adsense_linked' );
+				}
+
+				return $default;
+			}
+		);
+
 		add_filter(
 			'option_' . self::OPTION,
 			function ( $option ) {
@@ -93,6 +107,21 @@ class Settings extends Module_Settings {
 					$option['profileID'] = $profile_id;
 				}
 
+				/**
+				 * Filters the linked state of AdSense with Analytics.
+				 *
+				 * This filter exists so that adsenseLinked can only be truthy if the AdSense module is active,
+				 * regardless of the saved setting.
+				 *
+				 * @since n.e.x.t
+				 * @param bool $adsense_linked Null by default, will fallback to the option value if not set.
+				 */
+				$adsense_linked = apply_filters( 'googlesitekit_analytics_adsense_linked', null );
+
+				if ( is_bool( $adsense_linked ) ) {
+					$option['adsenseLinked'] = $adsense_linked;
+				}
+
 				return $option;
 			}
 		);
@@ -108,6 +137,7 @@ class Settings extends Module_Settings {
 	protected function get_default() {
 		return array(
 			'accountID'             => '',
+			'adsenseLinked'         => false,
 			'ampClientIDOptIn'      => true,
 			'anonymizeIP'           => true,
 			'internalWebPropertyID' => '',

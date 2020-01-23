@@ -32,6 +32,30 @@ abstract class Module_Settings extends Setting {
 	}
 
 	/**
+	 * Merges an array of settings to update.
+	 *
+	 * Only existing keys will be updated.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $partial Partial settings array to save.
+	 *
+	 * @return bool True on success, false on failure.
+	 */
+	public function merge( array $partial ) {
+		$settings = $this->get();
+		$partial  = array_filter(
+			$partial,
+			function ( $value ) {
+				return null !== $value;
+			}
+		);
+		$updated  = array_intersect_key( $partial, $settings );
+
+		return $this->set( array_merge( $settings, $updated ) );
+	}
+
+	/**
 	 * Registers a filter to ensure default values are present in the saved option.
 	 *
 	 * @since 1.2.0

@@ -497,11 +497,11 @@ abstract class Module {
 
 		// Calculate the end date. For previous period requests, offset period by the number of days in the request.
 		$offset   = $previous ? $offset + $number_of_days : $offset;
-		$date_end = date( 'Y-m-d', strtotime( '' . $offset . 'daysago' ) );
+		$date_end = gmdate( 'Y-m-d', strtotime( $offset . ' days ago' ) );
 
 		// Set the start date.
 		$start_date_offset = $offset + $number_of_days - 1;
-		$date_start        = date( 'Y-m-d', strtotime( '' . $start_date_offset . 'daysAgo' ) );
+		$date_start        = gmdate( 'Y-m-d', strtotime( $start_date_offset . ' days ago' ) );
 
 		return array( $date_start, $date_end );
 	}

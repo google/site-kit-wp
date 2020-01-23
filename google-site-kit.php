@@ -33,13 +33,14 @@ define( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE', __FILE__ );
  * Throws an error if the plugin is activated on an older version than PHP 5.4.
  *
  * @access private
+ * @since n.e.x.t Minimum required version of PHP raised to 5.6
  *
  * @param bool $network_wide Whether to activate network-wide.
  */
 function googlesitekit_activate_plugin( $network_wide ) {
-	if ( version_compare( PHP_VERSION, '5.4.0', '<' ) ) {
+	if ( version_compare( PHP_VERSION, '5.6.0', '<' ) ) {
 		wp_die(
-			esc_html__( 'Site Kit requires PHP version 5.4.', 'google-site-kit' ),
+			esc_html__( 'Site Kit requires PHP version 5.6.', 'google-site-kit' ),
 			esc_html__( 'Error Activating', 'google-site-kit' )
 		);
 	}
