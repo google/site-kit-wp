@@ -35,6 +35,10 @@ import { delay } from 'lodash';
 import { Component, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { getQueryArg } from '@wordpress/url';
+/**
+ * Internal dependencies
+ */
+import CompatibilityChecks from './compatibility-checks';
 
 class SetupUsingProxy extends Component {
 	constructor( props ) {
@@ -154,17 +158,30 @@ class SetupUsingProxy extends Component {
 														<p className="googlesitekit-setup__description">
 															{ description }
 														</p>
-														<Optin />
-														<Button
-															className="googlesitekit-start-setup"
-															href={ proxySetupURL }
-															onClick={ () => {
-																sendAnalyticsTrackingEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
-															} }
-														>
-															{ startSetupText }
-														</Button>
-														{ isResettable && <ResetButton /> }
+
+														<CompatibilityChecks>
+															{ ( { complete, inProgressFeedback, CTAFeedback } ) => (
+																<>
+																	{ CTAFeedback }
+
+																	<Optin />
+
+																	<div style={ { display: 'flex' } }>
+																		<Button
+																			className="googlesitekit-start-setup"
+																			href={ complete ? proxySetupURL : undefined }
+																			onClick={ () => {
+																				sendAnalyticsTrackingEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
+																			} }
+																		>
+																			{ startSetupText }
+																		</Button>
+																		{ inProgressFeedback }
+																		{ isResettable && <ResetButton /> }
+																	</div>
+																</>
+															) }
+														</CompatibilityChecks>
 													</div>
 												</div>
 											</div>
