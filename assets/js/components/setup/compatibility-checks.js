@@ -49,15 +49,19 @@ const checks = [
 
 export default class CompatibilityChecks extends Component {
 	constructor( props ) {
+		const { isSiteKitConnected } = window.googlesitekit.setup;
 		super( props );
 		this.state = {
-			complete: false,
+			complete: isSiteKitConnected,
 			error: null,
 			helperPlugin: {},
 		};
 	}
 
 	async componentDidMount() {
+		if ( this.state.complete ) {
+			return;
+		}
 		try {
 			this.onStart();
 			for ( const testCallback of checks ) {
