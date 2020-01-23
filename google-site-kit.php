@@ -87,7 +87,7 @@ function googlesitekit_opcache_reset() {
 	}
 
 	// `opcache_reset` is prohibited on the WordPress VIP platform due to memory corruption.
-	if ( function_exists( 'is_wpcom_vip' ) || defined( 'VIP_GO_APP_ENVIRONMENT' ) ) {
+	if ( defined( 'WPCOM_IS_VIP_ENV' ) && WPCOM_IS_VIP_ENV ) {
 		return;
 	}
 
