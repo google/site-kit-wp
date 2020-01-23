@@ -140,6 +140,10 @@ final class Plugin {
 
 		( new Core\Util\Activation( $this->context, $options, $assets ) )->register();
 		( new Core\Util\Migration_n_e_x_t( $this->context, $options ) )->register();
+
+		if ( ! defined( 'GOOGLESITEKITDEVSETTINGS_VERSION' ) ) {
+			( new Core\Util\HelperUpdater() )->register();
+		}
 	}
 
 	/**
