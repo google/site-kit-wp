@@ -105,10 +105,11 @@ class Optin extends Component {
 		const {
 			id,
 			name,
+			className,
 		} = this.props;
 
 		return (
-			<div className="googlesitekit-opt-in">
+			<div className={ `googlesitekit-opt-in ${ className }` }>
 				<Checkbox
 					id={ id }
 					name={ name }
@@ -132,6 +133,7 @@ class Optin extends Component {
 Optin.propTypes = {
 	id: PropTypes.string,
 	name: PropTypes.string,
+	className: PropTypes.string,
 };
 
 Optin.defaultProps = {
