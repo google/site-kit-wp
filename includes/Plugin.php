@@ -87,6 +87,17 @@ final class Plugin {
 			return;
 		}
 
+		add_action(
+			'wp_head',
+			function () {
+				$token = get_transient( 'googlesitekit_setup_token' );
+
+				if ( $token ) {
+					printf( '<meta name="googlesitekit-setup" content="%s" />', esc_attr( $token ) );
+				}
+			}
+		);
+
 		$display_site_kit_meta = function() {
 			printf( '<meta name="generator" content="Site Kit by Google %s" />', esc_attr( GOOGLESITEKIT_VERSION ) );
 		};

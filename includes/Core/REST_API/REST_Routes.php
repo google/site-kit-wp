@@ -201,7 +201,7 @@ final class REST_Routes {
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function( WP_REST_Request $request ) {
 							$token = wp_generate_uuid4();
-							set_transient( 'googlesitekit_setup_test', $token, 5 * MINUTE_IN_SECONDS );
+							set_transient( 'googlesitekit_setup_token', $token, 5 * MINUTE_IN_SECONDS );
 
 							return new WP_REST_Response( array( 'token' => $token ) );
 						},
