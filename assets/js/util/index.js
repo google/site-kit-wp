@@ -698,7 +698,7 @@ export function sortObjectProperties( obj ) {
  * @param {Object} _googlesitekitBase Site Kit base data (used for testing).
  * @return {string} meta key name.
  */
-export function getMetaKeyForUserOption( userOptionName, _googlesitekitBase = window._googlesitekitBase ) {
+export function getMetaKeyForUserOption( userOptionName, _googlesitekitBase = global._googlesitekitBase ) {
 	const { blogPrefix, isNetworkMode } = _googlesitekitBase;
 
 	if ( ! isNetworkMode ) {
