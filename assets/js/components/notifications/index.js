@@ -30,7 +30,7 @@ import { getQueryParameter } from 'GoogleUtil';
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
-const { setup } = window.googlesitekit;
+const { setup } = global.googlesitekit;
 const notification = getQueryParameter( 'notification' );
 
 const addSetupNotifications = createAddToFilter( <DashboardSetupAlerts /> );

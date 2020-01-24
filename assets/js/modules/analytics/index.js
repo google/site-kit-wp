@@ -60,7 +60,7 @@ if ( ! googlesitekit.modules[ slug ].setupComplete ) {
 	const id = currentScreen ? currentScreen.id : null;
 	if ( ! reAuth && 'site-kit_page_googlesitekit-module-analytics' === id ) {
 		// Setup incomplete: redirect to the setup flow.
-		window.location = getSiteKitAdminURL(
+		global.location = getSiteKitAdminURL(
 			`googlesitekit-module-${ slug }`,
 			{
 				reAuth: true,

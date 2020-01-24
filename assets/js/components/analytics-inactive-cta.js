@@ -44,7 +44,7 @@ class AnalyticsInactiveCTA extends Component {
 			await refreshAuthentication();
 
 			// Redirect to ReAuthentication URL
-			window.location = getReAuthURL( 'analytics', true );
+			global.location = getReAuthURL( 'analytics', true );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'analytics-setup-error',
