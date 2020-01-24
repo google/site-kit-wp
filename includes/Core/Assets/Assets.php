@@ -347,7 +347,10 @@ final class Assets {
 				array(
 					'src'          => false,
 					'before_print' => function( $handle ) {
-						wp_localize_script( $handle, 'googlesitekit', $this->get_inline_data() );
+						$data   = wp_scripts()->get_data( $handle, 'data' ) ?: '';
+						$script = 'var googlesitekit = ' . wp_json_encode( $this->get_inline_data() ) . ';';
+
+						wp_scripts()->add_data( $handle, 'data', $script . $data );
 					},
 				)
 			),
