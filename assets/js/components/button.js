@@ -69,7 +69,7 @@ class Button extends Component {
 				onClick={ onClick }
 				href={ disabled ? undefined : href }
 				ref={ this.buttonRef }
-				disabled={ disabled ? 'disabled' : '' }
+				disabled={ !! disabled }
 				target={ target || '_self' }
 				id={ id }
 				aria-haspopup={ ariaHaspopup }
