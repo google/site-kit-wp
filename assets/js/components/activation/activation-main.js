@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -50,7 +51,7 @@ export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
 
 					<CompatibilityChecks>
 						{ ( { complete, inProgressFeedback, CTAFeedback } ) => (
-							<>
+							<Fragment>
 								{ CTAFeedback }
 
 								<Optin className="googlesitekit-activation__opt-in" />
@@ -68,7 +69,7 @@ export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
 									</Button>
 									{ inProgressFeedback }
 								</div>
-							</>
+							</Fragment>
 						) }
 					</CompatibilityChecks>
 				</div>

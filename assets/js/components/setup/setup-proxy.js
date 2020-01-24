@@ -161,7 +161,7 @@ class SetupUsingProxy extends Component {
 
 														<CompatibilityChecks>
 															{ ( { complete, inProgressFeedback, CTAFeedback } ) => (
-																<>
+																<Fragment>
 																	{ CTAFeedback }
 
 																	<Optin />
@@ -179,7 +179,7 @@ class SetupUsingProxy extends Component {
 																		{ inProgressFeedback }
 																		{ isResettable && <ResetButton /> }
 																	</div>
-																</>
+																</Fragment>
 															) }
 														</CompatibilityChecks>
 													</div>
