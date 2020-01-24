@@ -77,7 +77,7 @@ if ( googlesitekit.modules.adsense.active ) {
 
 		if ( ! reAuth && 'site-kit_page_googlesitekit-module-adsense' === id ) {
 			// Setup incomplete: redirect to the setup flow.
-			window.location = getSiteKitAdminURL(
+			global.location = getSiteKitAdminURL(
 				`googlesitekit-module-${ slug }`,
 				{
 					reAuth: true,

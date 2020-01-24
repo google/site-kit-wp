@@ -3,8 +3,8 @@
  */
 import * as API from 'assets/js/googlesitekit/api';
 
-if ( typeof window.googlesitekit === 'undefined' ) {
-	window.googlesitekit = {};
+if ( typeof global.googlesitekit === 'undefined' ) {
+	global.googlesitekit = {};
 }
 
-window.googlesitekit.api = API;
+global.googlesitekit.api = API;

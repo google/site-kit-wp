@@ -562,7 +562,7 @@ class AnalyticsSetup extends Component {
 		e.preventDefault();
 		sendAnalyticsTrackingEvent( 'analytics_setup', 'new_analytics_account' );
 
-		window.open( 'https://analytics.google.com/analytics/web/?#/provision/SignUp', '_blank' );
+		global.open( 'https://analytics.google.com/analytics/web/?#/provision/SignUp', '_blank' );
 	}
 
 	handleRadioClick( e ) {
@@ -632,8 +632,8 @@ class AnalyticsSetup extends Component {
 			onSettingsPage,
 		} = this.props;
 		const disabled = ! isEditing;
-		const { ampEnabled, ampMode } = window.googlesitekit.admin;
-		const useSnippetSettings = window.googlesitekit.modules.analytics.settings.useSnippet;
+		const { ampEnabled, ampMode } = global.googlesitekit.admin;
+		const useSnippetSettings = global.googlesitekit.modules.analytics.settings.useSnippet;
 
 		return (
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
@@ -803,7 +803,7 @@ class AnalyticsSetup extends Component {
 		// Profiles may still be selected even in the case of an existing tag.
 		const enableProfileSelect = !! /^UA-/.test( selectedProperty.toString() );
 
-		const { ampMode } = window.googlesitekit.admin;
+		const { ampMode } = global.googlesitekit.admin;
 		const { setupComplete } = googlesitekit.modules.analytics;
 
 		if ( isLoading ) {

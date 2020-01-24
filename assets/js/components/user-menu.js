@@ -52,15 +52,15 @@ class UserMenu extends Component {
 	}
 
 	componentDidMount() {
-		window.addEventListener( 'mouseup', this.handleMenuClose );
-		window.addEventListener( 'keyup', this.handleMenuClose );
-		window.addEventListener( 'keyup', this.handleDialogClose );
+		global.addEventListener( 'mouseup', this.handleMenuClose );
+		global.addEventListener( 'keyup', this.handleMenuClose );
+		global.addEventListener( 'keyup', this.handleDialogClose );
 	}
 
 	componentWillUnmount() {
-		window.removeEventListener( 'mouseup', this.handleMenuClose );
-		window.removeEventListener( 'keyup', this.handleMenuClose );
-		window.removeEventListener( 'keyup', this.handleDialogClose );
+		global.removeEventListener( 'mouseup', this.handleMenuClose );
+		global.removeEventListener( 'keyup', this.handleMenuClose );
+		global.removeEventListener( 'keyup', this.handleDialogClose );
 	}
 
 	handleMenu() {
@@ -95,7 +95,7 @@ class UserMenu extends Component {
 					this.handleDialog();
 					break;
 				case 1:
-					window.location.assign( proxyPermissionsURL );
+					global.location.assign( proxyPermissionsURL );
 					break;
 				default:
 					this.handleMenu();

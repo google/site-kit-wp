@@ -18,6 +18,13 @@
     "process": "readonly"
   },
   "rules": {
+    "no-restricted-globals": [
+      "error",
+      {
+        "name": "window",
+        "message": "Use 'global' instead."
+      }
+    ],
     "valid-jsdoc": "off"
   },
   "overrides": [
@@ -32,6 +39,24 @@
         "browser": true,
         "page": true,
         "wp": true
+      },
+      "rules": {
+        "no-restricted-globals": [
+          "off"
+        ]
+      }
+    },
+    {
+      "files": [
+        "stories/**/*.js"
+      ],
+      "globals": {
+        "window": false
+      },
+      "rules": {
+        "no-restricted-globals": [
+          "off"
+        ]
       }
     }
   ]

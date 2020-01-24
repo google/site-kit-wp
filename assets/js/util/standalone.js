@@ -89,11 +89,11 @@ export const appendNotificationsCount = ( count = 0 ) => {
  * browser's cache regardless of which storage implementation is used.
  */
 export const clearWebStorage = () => {
-	if ( window.localStorage ) {
-		window.localStorage.clear();
+	if ( global.localStorage ) {
+		global.localStorage.clear();
 	}
-	if ( window.sessionStorage ) {
-		window.sessionStorage.clear();
+	if ( global.sessionStorage ) {
+		global.sessionStorage.clear();
 	}
 };
 
@@ -153,7 +153,7 @@ export const getQueryParameter = ( name, _location = location ) => {
  *
  */
 export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel = '', eventValue = '' ) => {
-	if ( 'undefined' === typeof gtag || ! window.googlesitekitTrackingEnabled ) {
+	if ( 'undefined' === typeof gtag || ! global.googlesitekitTrackingEnabled ) {
 		return;
 	}
 
@@ -162,7 +162,7 @@ export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel
 		userIDHash,
 		trackingID,
 		isFirstAdmin,
-	} = window._googlesitekitBase;
+	} = global._googlesitekitBase;
 
 	if ( ! trackingID ) {
 		return;

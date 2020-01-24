@@ -26,6 +26,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 // Define most essential constants.
 define( 'GOOGLESITEKIT_VERSION', '1.2.0' );
 define( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE', __FILE__ );
+define( 'GOOGLESITEKIT_PHP_MINIMUM', '5.6.0' );
 
 /**
  * Handles plugin activation.
@@ -38,9 +39,10 @@ define( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE', __FILE__ );
  * @param bool $network_wide Whether to activate network-wide.
  */
 function googlesitekit_activate_plugin( $network_wide ) {
-	if ( version_compare( PHP_VERSION, '5.6.0', '<' ) ) {
+	if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '<' ) ) {
 		wp_die(
-			esc_html__( 'Site Kit requires PHP version 5.6.', 'google-site-kit' ),
+			/* translators: %s: version number */
+			esc_html( sprintf( __( 'Site Kit requires PHP version %s', 'google-site-kit' ), GOOGLESITEKIT_PHP_MINIMUM ) ),
 			esc_html__( 'Error Activating', 'google-site-kit' )
 		);
 	}
@@ -62,7 +64,7 @@ register_activation_hook( __FILE__, 'googlesitekit_activate_plugin' );
  * @param bool $network_wide Whether to deactivate network-wide.
  */
 function googlesitekit_deactivate_plugin( $network_wide ) {
-	if ( version_compare( PHP_VERSION, '5.4.0', '<' ) ) {
+	if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '<' ) ) {
 		return;
 	}
 
@@ -75,6 +77,30 @@ function googlesitekit_deactivate_plugin( $network_wide ) {
 
 register_deactivation_hook( __FILE__, 'googlesitekit_deactivate_plugin' );
 
-if ( version_compare( PHP_VERSION, '5.4.0', '>=' ) ) {
+/**
+ * Resets opcache if possible.
+ *
+ * @access private
+ * @since n.e.x.t
+ */
+function googlesitekit_opcache_reset() {
+	if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '<' ) ) {
+		return;
+	}
+
+	if ( ! empty( ini_get( 'opcache.restrict_api' ) ) && strpos( __FILE__, ini_get( 'opcache.restrict_api' ) ) !== 0 ) {
+		return;
+	}
+
+	// `opcache_reset` is prohibited on the WordPress VIP platform due to memory corruption.
+	if ( defined( 'WPCOM_IS_VIP_ENV' ) && WPCOM_IS_VIP_ENV ) {
+		return;
+	}
+
+	opcache_reset(); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.opcache_opcache_reset
+}
+add_action( 'upgrader_process_complete', 'googlesitekit_opcache_reset' );
+
+if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '>=' ) ) {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/loader.php';
 }
