@@ -336,10 +336,10 @@ final class Assets {
 		$base_url = $this->context->url( 'dist/assets/' );
 
 		$dependencies    = array();
-		$external_assets = $this->get_external_assets();
-		foreach ( $external_assets as $asset ) {
-			$dependencies[] = $asset->get_handle();
-		}
+//		$external_assets = $this->get_external_assets();
+//		foreach ( $external_assets as $asset ) {
+//			$dependencies[] = $asset->get_handle();
+//		}
 		$dependencies[] = 'sitekit-commons';
 		$dependencies[] = 'googlesitekit_admin';
 
@@ -506,9 +506,9 @@ final class Assets {
 		);
 
 		$this->assets = array();
-		foreach ( $external_assets as $asset ) {
-			$this->assets[ $asset->get_handle() ] = $asset;
-		}
+//		foreach ( $external_assets as $asset ) {
+//			$this->assets[ $asset->get_handle() ] = $asset;
+//		}
 		foreach ( $assets as $asset ) {
 			$this->assets[ $asset->get_handle() ] = $asset;
 		}
