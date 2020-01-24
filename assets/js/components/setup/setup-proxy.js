@@ -24,7 +24,7 @@ import Button from 'GoogleComponents/button';
 import ResetButton from 'GoogleComponents/reset-button';
 import Layout from 'GoogleComponents/layout/layout';
 import Notification from 'GoogleComponents/notifications/notification';
-import Optin from 'GoogleComponents/optin';
+import OptIn from 'GoogleComponents/optin';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
 import { delay } from 'lodash';
@@ -164,7 +164,7 @@ class SetupUsingProxy extends Component {
 																<Fragment>
 																	{ CTAFeedback }
 
-																	<Optin />
+																	<OptIn />
 
 																	<div style={ { display: 'flex' } }>
 																		<Button

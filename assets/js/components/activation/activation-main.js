@@ -32,7 +32,7 @@ import PropTypes from 'prop-types';
  */
 import Button from '../button';
 import Logo from '../logo';
-import Optin from '../optin';
+import OptIn from '../optin';
 import CompatibilityChecks from '../setup/compatibility-checks';
 
 export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
@@ -54,7 +54,7 @@ export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
 							<Fragment>
 								{ CTAFeedback }
 
-								<Optin className="googlesitekit-activation__opt-in" />
+								<OptIn className="googlesitekit-activation__opt-in" />
 
 								<div style={ { display: 'flex' } }>
 									<Button
