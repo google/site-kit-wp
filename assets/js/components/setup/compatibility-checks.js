@@ -26,23 +26,27 @@ export const tagMatchers = [
 	/<meta name="googlesitekit-setup" content="([a-z0-9-]+)"/,
 ];
 
+const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
+const ERROR_FETCH_FAIL = 'tag_fetch_failed';
+const ERROR_TOKEN_MISMATCH = 'setup_token_mismatch';
+
 const checks = [
 	async () => {
 		const { hostname } = window.location;
 
 		if ( [ 'localhost', '127.0.0.1' ].includes( hostname ) || hostname.match( /\.(example|invalid|localhost|test)$/ ) ) {
-			throw 'invalid_hostname';
+			throw ERROR_INVALID_HOSTNAME;
 		}
 	},
 	async () => {
 		const { token } = await data.set( TYPE_CORE, 'site', 'setup-tag' );
 
 		const scrapedTag = await getExistingTag( 'setup' ).catch( () => {
-			throw 'tag_fetch_failed';
+			throw ERROR_FETCH_FAIL;
 		} );
 
 		if ( token !== scrapedTag ) {
-			throw 'setup_token_mismatch';
+			throw ERROR_TOKEN_MISMATCH;
 		}
 	},
 ];
@@ -110,8 +114,8 @@ export default class CompatibilityChecks extends Component {
 		const { labelHTML, href, external } = this.helperCTA();
 
 		switch ( error ) {
-			case 'invalid_hostname':
-			case 'tag_fetch_failed':
+			case ERROR_INVALID_HOSTNAME:
+			case ERROR_FETCH_FAIL:
 				return <Fragment>
 					{ ! installed && __( 'Looks like this may be a staging environment. If so, you’ll need to install a helper plugin and verify your production site in Search Console.', 'google-site-kit' ) }
 					{ installed && __( 'Looks like this may be a staging environment and you already have the helper plugin. Before you can use Site Kit, please make sure you’ve provided the necessary credentials in the Authentication section and verified your production site in Search Console.', 'google-site-kit' ) }
@@ -123,7 +127,7 @@ export default class CompatibilityChecks extends Component {
 						inherit
 					/>
 				</Fragment>;
-			case 'setup_token_mismatch':
+			case ERROR_TOKEN_MISMATCH:
 				return __( 'Looks like you may be using a caching plugin which could interfere with setup. Please deactivate any caching plugins before setting up Site Kit. You may reactivate them once setup has been completed.', 'google-site-kit' );
 		}
 	}
