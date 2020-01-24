@@ -161,7 +161,7 @@ export default class CompatibilityChecks extends Component {
 
 		if ( error ) {
 			CTAFeedback = <Fragment>
-				<div className="mdc-layout-grid mdc-layout-grid--align-left" style={ { maxWidth: '60rem' } }>
+				<div className="googlesitekit-setup-compat mdc-layout-grid mdc-layout-grid--align-left">
 					<div className="mdc-layout-grid__inner">
 						<Warning />
 						<div className="googlesitekit-heading-4 mdc-layout-grid__cell--span-11">
