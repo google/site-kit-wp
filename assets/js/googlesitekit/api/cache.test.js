@@ -19,12 +19,12 @@ import {
 
 let previousCacheValue;
 const disableCache = () => {
-	previousCacheValue = window.googlesitekit.admin.nojscache;
-	window.googlesitekit.admin.nojscache = true;
+	previousCacheValue = global.googlesitekit.admin.nojscache;
+	global.googlesitekit.admin.nojscache = true;
 };
 
 const restoreCache = () => {
-	window.googlesitekit.admin.nojscache = previousCacheValue;
+	global.googlesitekit.admin.nojscache = previousCacheValue;
 };
 
 const DISABLE_CACHE = 'Cache disabled';

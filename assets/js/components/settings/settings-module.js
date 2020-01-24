@@ -71,11 +71,11 @@ class SettingsModule extends Component {
 	}
 
 	componentDidMount() {
-		window.addEventListener( 'keyup', this.handleCloseModal, false );
+		global.addEventListener( 'keyup', this.handleCloseModal, false );
 	}
 
 	componentWillUnmount() {
-		window.removeEventListener( 'keyup', this.handleCloseModal );
+		global.removeEventListener( 'keyup', this.handleCloseModal );
 	}
 
 	async activateOrDeactivate() {
@@ -102,7 +102,7 @@ class SettingsModule extends Component {
 				active: newActiveState,
 			} );
 
-			window.location = getReAuthURL( this.props.slug, false );
+			global.location = getReAuthURL( this.props.slug, false );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'activate-module-error',

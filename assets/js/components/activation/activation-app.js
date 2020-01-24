@@ -69,7 +69,7 @@ export class ActivationApp extends Component {
 				type="win-error"
 			/>;
 		}
-		const { proxySetupURL, splashURL } = window._googlesitekitBase;
+		const { proxySetupURL, splashURL } = global._googlesitekitBase;
 		const { canViewDashboard } = googlesitekit.permissions;
 		const { dashboardPermalink } = googlesitekit;
 

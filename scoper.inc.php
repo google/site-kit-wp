@@ -76,7 +76,8 @@ return array(
 		Finder::create()
 			->files()
 			->ignoreVCS( true )
-			->name( "#($google_services)\.php#" )
+			->name( "#^($google_services)\.php$#" )
+			->depth( '== 0' )
 			->in( 'vendor/google/apiclient-services/src/Google/Service' ),
 	),
 	'files-whitelist'            => array(

@@ -45,7 +45,7 @@ class ModuleSetupIncomplete extends Component {
 				<Link
 					className="googlesitekit-settings-module__edit-button"
 					onClick={ () => {
-						window.location = getReAuthURL( slug, true );
+						global.location = getReAuthURL( slug, true );
 					} }
 					inherit
 				>
