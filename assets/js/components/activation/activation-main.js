@@ -56,7 +56,7 @@ export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
 
 								<OptIn className="googlesitekit-activation__opt-in" />
 
-								<div style={ { display: 'flex' } }>
+								<div className="googlesitekit-start-setup-wrap">
 									<Button
 										id="start-setup-link"
 										className="googlesitekit-start-setup googlesitekit-activation__button"

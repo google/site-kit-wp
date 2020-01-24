@@ -166,7 +166,7 @@ class SetupUsingProxy extends Component {
 
 																	<OptIn />
 
-																	<div style={ { display: 'flex' } }>
+																	<div className="googlesitekit-start-setup-wrap">
 																		<Button
 																			className="googlesitekit-start-setup"
 																			href={ complete ? proxySetupURL : undefined }
