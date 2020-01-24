@@ -30,7 +30,7 @@ const checks = [
 	async () => {
 		const { hostname } = window.location;
 
-		if ( hostname === 'localhost' || hostname.match( /\.(example|invalid|localhost|test)$/ ) ) {
+		if ( [ 'localhost', '127.0.0.1' ].includes( hostname ) || hostname.match( /\.(example|invalid|localhost|test)$/ ) ) {
 			throw 'invalid_hostname';
 		}
 	},
