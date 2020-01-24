@@ -373,7 +373,7 @@ final class Assets {
 				'googlesitekit_admin',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-admin.js',
-					'dependencies' => array( 'wp-i18n' ),
+					'dependencies' => array(),
 					'execution'    => 'defer',
 					'before_print' => function( $handle ) {
 						wp_add_inline_script(
