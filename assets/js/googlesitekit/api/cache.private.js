@@ -88,7 +88,7 @@ export const isStorageAvailable = async ( type ) => {
 export const getStorage = async () => {
 	// If `googlesitekit.admin.nojscache` is `true`, we should never use
 	// the cache.
-	if ( window.googlesitekit && window.googlesitekit.admin && window.googlesitekit.admin.nojscache ) {
+	if ( global.googlesitekit && global.googlesitekit.admin && global.googlesitekit.admin.nojscache ) {
 		return null;
 	}
 

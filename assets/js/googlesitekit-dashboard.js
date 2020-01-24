@@ -53,7 +53,7 @@ class GoogleSitekitDashboard extends Component {
 	render() {
 		const {
 			showModuleSetupWizard,
-		} = window.googlesitekit.setup;
+		} = global.googlesitekit.setup;
 
 		if ( showModuleSetupWizard ) {
 			return (

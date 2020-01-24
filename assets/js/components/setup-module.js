@@ -66,7 +66,7 @@ class SetupModule extends Component {
 			await refreshAuthentication();
 
 			// Redirect to ReAuthentication URL.
-			window.location = getReAuthURL( slug, true );
+			global.location = getReAuthURL( slug, true );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'activate-module-error',

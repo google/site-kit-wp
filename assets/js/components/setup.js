@@ -195,7 +195,7 @@ class Setup extends Component {
 			);
 
 			delay( function() {
-				window.location.replace( redirectURL );
+				global.location.replace( redirectURL );
 			}, 500, 'later' );
 		}
 

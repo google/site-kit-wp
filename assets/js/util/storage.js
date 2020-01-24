@@ -23,7 +23,7 @@
  * @return {boolean} True if the given storage is available, false otherwise.
  */
 export const storageAvailable = ( type ) => {
-	const storage = window[ type ];
+	const storage = global[ type ];
 	if ( ! storage ) {
 		return false;
 	}
@@ -93,9 +93,9 @@ export const getStorage = () => {
 	// Only run the logic to determine the storage object once.
 	if ( ! storageObj ) {
 		if ( storageAvailable( 'sessionStorage' ) ) {
-			storageObj = window.sessionStorage;
+			storageObj = global.sessionStorage;
 		} else if ( storageAvailable( 'localStorage' ) ) {
-			storageObj = window.localStorage;
+			storageObj = global.localStorage;
 		} else {
 			storageObj = new NullStorage();
 		}

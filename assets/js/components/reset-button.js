@@ -41,7 +41,7 @@ import Modal from './modal';
 export default class ResetButton extends Component {
 	constructor( props ) {
 		super( props );
-		const { splashURL } = window._googlesitekitBase;
+		const { splashURL } = global._googlesitekitBase;
 
 		this.state = {
 			dialogActive: false,
@@ -54,11 +54,11 @@ export default class ResetButton extends Component {
 	}
 
 	componentDidMount() {
-		window.addEventListener( 'keyup', this.handleCloseModal, false );
+		global.addEventListener( 'keyup', this.handleCloseModal, false );
 	}
 
 	componentWillUnmount() {
-		window.removeEventListener( 'keyup', this.handleCloseModal );
+		global.removeEventListener( 'keyup', this.handleCloseModal );
 	}
 
 	async handleUnlinkConfirm() {

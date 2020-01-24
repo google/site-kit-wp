@@ -34,7 +34,7 @@ const valuesToTest = [
 describe( 'storageAvailable', () => {
 	it.each( valuesToTest )( 'for case %s should return %p', ( type, expected, disableStorage ) => {
 		if ( disableStorage ) {
-			window[ type ].setItem.mockImplementationOnce( () => {
+			global[ type ].setItem.mockImplementationOnce( () => {
 				throw new Error( 'error' );
 			} );
 		}
