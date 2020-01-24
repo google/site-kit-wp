@@ -210,7 +210,7 @@ final class REST_Routes {
 				)
 			),
 			new REST_Route(
-				'core/site/data/helper-plugin',
+				'core/site/data/developer-plugin',
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
