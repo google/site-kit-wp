@@ -107,7 +107,7 @@ rl.question( 'Username: ', ( username ) => {
 				];
 				for ( const scriptName of scriptsToMatch ) {
 					// A regex that looks for the localized variable.
-					const matchStringRegex = '[global.|var ]' + scriptName + ' = (.*)';
+					const matchStringRegex = '[window.|var ]' + scriptName + ' = (.*)';
 					const matches = html.match( matchStringRegex );
 					if ( matches ) {
 						// Clean up the file name to make it a loadable file.
