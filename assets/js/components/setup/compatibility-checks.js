@@ -31,6 +31,7 @@ const ERROR_FETCH_FAIL = 'tag_fetch_failed';
 const ERROR_TOKEN_MISMATCH = 'setup_token_mismatch';
 
 const checks = [
+	// Check for a known non-public/reserved domain.
 	async () => {
 		const { hostname } = window.location;
 
@@ -38,6 +39,7 @@ const checks = [
 			throw ERROR_INVALID_HOSTNAME;
 		}
 	},
+	// Generate and check for a Site Kit specific meta tag on the page to test for agressive caching.
 	async () => {
 		const { token } = await data.set( TYPE_CORE, 'site', 'setup-tag' );
 
