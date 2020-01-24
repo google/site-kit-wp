@@ -59,7 +59,7 @@ export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
 								<div className="googlesitekit-start-setup-wrap">
 									<Button
 										id="start-setup-link"
-										className="googlesitekit-start-setup googlesitekit-activation__button"
+										className="googlesitekit-start-setup"
 										/* href must only be passed if not disabled to work and display correctly. */
 										href={ complete ? buttonURL : undefined }
 										onClick={ onButtonClick }
