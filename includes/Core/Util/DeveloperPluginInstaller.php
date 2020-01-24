@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Util\HelperUpdater
+ * Class Google\Site_Kit\Core\Util\DeveloperPluginInstaller
  *
  * @package   Google\Site_Kit
  * @copyright 2020 Google LLC
@@ -15,7 +15,7 @@ namespace Google\Site_Kit\Core\Util;
  *
  * @since n.e.x.t
  */
-class HelperUpdater {
+class DeveloperPluginInstaller {
 
 	const SLUG      = 'google-site-kit-dev-settings';
 	const TRANSIENT = 'googlesitekit_helper_updater';
