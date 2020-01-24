@@ -54,7 +54,7 @@ export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
 							<Fragment>
 								{ CTAFeedback }
 
-								<OptIn className="googlesitekit-activation__opt-in" />
+								<OptIn />
 
 								<div className="googlesitekit-start-setup-wrap">
 									<Button
