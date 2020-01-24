@@ -8,7 +8,7 @@
 export async function wpApiFetch( options ) {
 	try {
 		// Wait until apiFetch is available on the client.
-		await page.waitForFunction( () => window._apiFetch !== undefined );
+		await page.waitForFunction( () => window._e2eApiFetch !== undefined );
 	} catch ( e ) {
 		// eslint-disable-next-line no-console
 		console.warn( 'wpApiFetch failure', page.url(), JSON.stringify( options ) );
@@ -16,6 +16,6 @@ export async function wpApiFetch( options ) {
 	}
 
 	return await page.evaluate( ( pageFetchOptions ) => {
-		return window._apiFetch( pageFetchOptions );
+		return window._e2eApiFetch( pageFetchOptions );
 	}, options );
 }
