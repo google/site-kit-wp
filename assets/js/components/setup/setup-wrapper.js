@@ -65,13 +65,13 @@ class SetupWrapper extends Component {
 	}
 
 	componentDidMount() {
-		window.addEventListener( 'focus', this.refreshStatus );
-		window.addEventListener( 'blur', this.startUnfocusedTimer );
+		global.addEventListener( 'focus', this.refreshStatus );
+		global.addEventListener( 'blur', this.startUnfocusedTimer );
 	}
 
 	componentWillUnmount() {
-		window.removeEventListener( 'focus', this.refreshStatus );
-		window.removeEventListener( 'blur', this.startUnfocusedTimer );
+		global.removeEventListener( 'focus', this.refreshStatus );
+		global.removeEventListener( 'blur', this.startUnfocusedTimer );
 	}
 
 	/**
@@ -85,7 +85,7 @@ class SetupWrapper extends Component {
 			}
 
 			if ( toRefresh ) {
-				this.timeoutID = window.setInterval( () => {
+				this.timeoutID = global.setInterval( () => {
 					this.unfocusedTime++;
 				}, 1000 );
 			}
@@ -111,7 +111,7 @@ class SetupWrapper extends Component {
 					this.setState( { refresh: this.timeoutID } );
 				}
 
-				window.clearTimeout( this.timeoutID );
+				global.clearTimeout( this.timeoutID );
 				this.unfocusedTime = 0;
 				this.timeoutID = null;
 			}
@@ -151,7 +151,7 @@ class SetupWrapper extends Component {
 		);
 
 		delay( function() {
-			window.location.replace( redirectURL );
+			global.location.replace( redirectURL );
 		}, 500, 'later' );
 	}
 

@@ -100,9 +100,9 @@ class DashboardSplashApp extends Component {
 
 	render() {
 		// Set webpackPublicPath on-the-fly.
-		if ( window.googlesitekit && window.googlesitekit.publicPath ) {
+		if ( global.googlesitekit && global.googlesitekit.publicPath ) {
 			// eslint-disable-next-line no-undef
-			__webpack_public_path__ = window.googlesitekit.publicPath;
+			__webpack_public_path__ = global.googlesitekit.publicPath;
 		}
 
 		const { proxySetupURL } = googlesitekit.admin;

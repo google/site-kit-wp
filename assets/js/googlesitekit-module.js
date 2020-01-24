@@ -95,9 +95,9 @@ class GoogleSitekitModule extends Component {
 
 		if ( showModuleSetupWizard && moduleHasSetupWizard ) {
 			// Set webpackPublicPath on-the-fly.
-			if ( window.googlesitekit && window.googlesitekit.publicPath ) {
+			if ( global.googlesitekit && global.googlesitekit.publicPath ) {
 				// eslint-disable-next-line no-undef
-				__webpack_public_path__ = window.googlesitekit.publicPath; /*eslint camelcase: 0*/
+				__webpack_public_path__ = global.googlesitekit.publicPath; /*eslint camelcase: 0*/
 			}
 
 			const Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wrapper" */'./components/setup/setup-wrapper' ) );

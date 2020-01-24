@@ -48,7 +48,7 @@ import md5 from 'md5';
 
 const { setCache, getCache, deleteCache, invalidateCacheGroup, getCacheKey } = data;
 
-window.googlesitekit = window.googlesitekit || {};
+global.googlesitekit = global.googlesitekit || {};
 
 googlesitekit.testFunctions = {
 	getTimeInSeconds,

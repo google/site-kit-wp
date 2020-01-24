@@ -40,7 +40,7 @@ import { __ } from '@wordpress/i18n';
 class SettingsApp extends Component {
 	constructor( props ) {
 		super( props );
-		const hashedTab = window.location.hash.replace( '#', '' );
+		const hashedTab = global.location.hash.replace( '#', '' );
 
 		this.state = {
 			activeTab: hashedTab ? Number( hashedTab ) : 0,
@@ -51,7 +51,7 @@ class SettingsApp extends Component {
 
 	handleTabUpdate( tabIndex ) {
 		const activeTab = -1 === tabIndex ? 0 : tabIndex; // Check for invalid index.
-		window.location.hash = activeTab;
+		global.location.hash = activeTab;
 		this.setState( {
 			activeTab,
 		} );

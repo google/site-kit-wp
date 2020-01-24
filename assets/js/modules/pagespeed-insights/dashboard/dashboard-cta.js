@@ -30,7 +30,7 @@ const PageSpeedInsightsCTA = () => {
 	const handleSetUpClick = async () => {
 		try {
 			await activateOrDeactivateModule( data, 'pagespeed-insights', true );
-			window.location = getReAuthURL( 'pagespeed-insights' );
+			global.location = getReAuthURL( 'pagespeed-insights' );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'pagespeed-insights-setup-error',

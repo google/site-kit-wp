@@ -16,14 +16,14 @@ register_activation_hook(
 	__FILE__,
 	function () {
 		delete_option( 'googlesitekit_e2e_analytics_existing_property_id' );
-	} 
+	}
 );
 
 register_deactivation_hook(
 	__FILE__,
 	function () {
 		delete_option( 'googlesitekit_e2e_analytics_existing_property_id' );
-	} 
+	}
 );
 
 add_action(
@@ -45,5 +45,5 @@ add_action(
   gtag('config', '$UA_CODE');
 </script>
 HTML;
-	} 
+	}
 );

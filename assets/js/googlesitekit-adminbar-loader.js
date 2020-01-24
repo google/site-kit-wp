@@ -28,9 +28,9 @@ import {
 } from './util/standalone';
 
 // Set webpackPublicPath on-the-fly.
-if ( window.googlesitekitAdminbar && window.googlesitekitAdminbar.publicPath ) {
+if ( global.googlesitekitAdminbar && global.googlesitekitAdminbar.publicPath ) {
 	// eslint-disable-next-line no-undef
-	__webpack_public_path__ = window.googlesitekitAdminbar.publicPath;
+	__webpack_public_path__ = global.googlesitekitAdminbar.publicPath;
 }
 
 // Is adminbar scripts loaded?
@@ -68,7 +68,7 @@ function initAdminbar() {
 }
 
 // Initialize the loader once the DOM is ready.
-window.addEventListener( 'load', function() {
+global.addEventListener( 'load', function() {
 	// Add event to Site Kit adminbar icon.
 	const adminbarIconTrigger = document.getElementById( 'wp-admin-bar-google-site-kit' );
 	let loadingGtag = false;
@@ -80,11 +80,11 @@ window.addEventListener( 'load', function() {
 
 	// The total notifications count should always rely on local storage
 	// directly for external availability.
-	if ( ! window.localStorage ) {
+	if ( ! global.localStorage ) {
 		return;
 	}
 
-	const count = window.localStorage.getItem( 'googlesitekit::total-notifications' ) || 0;
+	const count = global.localStorage.getItem( 'googlesitekit::total-notifications' ) || 0;
 	appendNotificationsCount( count );
 
 	const onViewAdminBarMenu = function() {
@@ -92,13 +92,13 @@ window.addEventListener( 'load', function() {
 			return;
 		}
 
-		const { trackingID } = window._googlesitekitBase;
+		const { trackingID } = global._googlesitekitBase;
 		if ( ! trackingID ) {
 			return;
 		}
 
 		// Track the menu hover event.
-		if ( window.googlesitekitTrackingEnabled ) {
+		if ( global.googlesitekitTrackingEnabled ) {
 			// Dynamically load the gtag script if not loaded.
 			if ( 'undefined' === typeof gtag && ! loadingGtag ) {
 				loadingGtag = true;
@@ -106,8 +106,8 @@ window.addEventListener( 'load', function() {
 				gtagScript.type = 'text/javascript';
 				gtagScript.setAttribute( 'async', 'true' );
 				gtagScript.onload = function() {
-					window.gtag = function() {
-						window.dataLayer.push( arguments );
+					global.gtag = function() {
+						global.dataLayer.push( arguments );
 					};
 					sendAnalyticsTrackingEvent( 'admin_bar', 'page_stats_view' );
 				};
