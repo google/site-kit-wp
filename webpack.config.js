@@ -111,6 +111,7 @@ module.exports = ( env, argv ) => {
 								},
 							},
 						],
+						parser: { amd: false },
 					},
 				],
 			},
