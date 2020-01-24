@@ -894,22 +894,49 @@ final class Assets {
 			// 'fallback'     => true,
 			// )
 			// ),
-			// new Script(
-			// 'wp-api-fetch',
-			// array(
-			// 'src'          => $base_url . 'js/externals/apiFetch.js',
-			// 'dependencies' => array( 'wp-i18n', 'wp-polyfill', 'wp-url' ),
-			// 'version'      => '3.6.4',
-			// 'fallback'     => true,
+			new Script('e2e-utilities', array(
+				'src'          => $base_url . 'js/e2e-utilities.js',
+				'before_print' => function( $handle ) {
+					wp_add_inline_script(
+						$handle,
+						'window._googlesitekitBase = ' . wp_json_encode( $this->get_inline_base_data() ),
+						'before'
+					);
+					wp_add_inline_script(
+						$handle,
+						sprintf(
+							'window._apiFetchRootURL = "%s";',
+							esc_url_raw( get_rest_url() )
+						),
+						'before'
+					);
+					wp_add_inline_script(
+						$handle,
+						implode(
+							"\n",
+							array(
+								sprintf(
+									'window._apiFetchNonceMiddleware = "%s";',
+									( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' )
+								),
+								sprintf(
+									'window._apiFetchNonceEndpoint = "%s";',
+									admin_url( 'admin-ajax.php?action=rest-nonce' )
+								),
+							)
+						),
+						'before'
+					);
+				},
 			// 'before_print' => function( $handle ) {
 			// wp_add_inline_script(
 			// $handle,
 			// sprintf(
 			// '/*googlesitekit*/ wp.apiFetch.use( wp.apiFetch.createNonceMiddleware( "%s" ) );',
 			// ( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' )
-			// ),
-			// 'after'
-			// );
+				),
+				'after'
+			),
 			// wp_add_inline_script(
 			// $handle,
 			// sprintf(

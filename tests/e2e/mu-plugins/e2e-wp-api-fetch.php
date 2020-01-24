@@ -16,7 +16,7 @@ add_action(
 			return;
 		}
 
-		wp_enqueue_script( 'wp-api-fetch' );
+		wp_enqueue_script( 'e2e-utilities' );
 	},
-	11 
+	11
 ); // Needs to be after registration in Site Kit's Assets class.

@@ -48,6 +48,8 @@ const projectPath = ( relativePath ) => {
 
 const resolve = {
 	alias: {
+		'@wordpress/api-fetch__non-shim': require.resolve( '@wordpress/api-fetch' ),
+		'@wordpress/api-fetch$': path.resolve( 'assets/js/api-fetch-shim.js' ),
 		'@wordpress/hooks__non-shim': require.resolve( '@wordpress/hooks' ),
 		'@wordpress/hooks$': path.resolve( 'assets/js/hooks-shim.js' ),
 		SiteKitCore: path.resolve( 'assets/js/' ),
@@ -143,7 +145,10 @@ module.exports = ( env, argv ) => {
 
 		// Build the test files.
 		{
-			entry: { 'googlesitekit-tests': './assets/js/googlesitekit-tests.js' },
+			entry: {
+				'googlesitekit-tests': './assets/js/googlesitekit-tests.js',
+				'e2e-utilities': './tests/e2e/e2e-utilities.js',
+			},
 			output: {
 				filename: '[name].js',
 				path: __dirname + '/dist/assets/js',

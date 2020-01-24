@@ -60,7 +60,7 @@ describe( 'Tag Manager module setup', () => {
 		// Intercept the call to window.open and call our API to simulate a created account.
 		await page.evaluate( () => {
 			window.open = () => {
-				window.wp.apiFetch( {
+				window._apiFetch( {
 					path: 'google-site-kit/v1/e2e/setup/tagmanager/account-created',
 					method: 'post',
 				} );
