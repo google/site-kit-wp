@@ -30,7 +30,7 @@ function autoload_classes() {
 
 	spl_autoload_register(
 		function ( $class ) use ( $class_map ) {
-			if ( isset( $class_map[ $class ] ) && file_exists( $class_map[ $class ] ) ) {
+			if ( isset( $class_map[ $class ] ) ) {
 				require_once $class_map[ $class ];
 
 				return true;
@@ -52,9 +52,7 @@ function autoload_vendor_files() {
 	// Third-party files.
 	$files = require GOOGLESITEKIT_PLUGIN_DIR_PATH . 'third-party/vendor/autoload_files.php';
 	foreach ( $files as $file_identifier => $file ) {
-		if ( file_exists( $file ) ) {
-			require_once $file;
-		}
+		require_once $file;
 	}
 }
 autoload_vendor_files();

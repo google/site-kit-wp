@@ -52,7 +52,9 @@
       "php-scoper/vendor/bin/php-scoper add --output-dir=./third-party --force --quiet",
       "@autoload-includes",
       "@autoload-third-party",
-      "cp vendor/composer/autoload_files.php third-party/vendor/"
+      "@composer dump-autoload --no-dev",
+      "cp vendor/composer/autoload_files.php third-party/vendor/",
+      "@composer dump-autoload"
     ],
     "autoload-includes": [
       "echo '{ \"autoload\": { \"classmap\": [\"\"] } }' > includes/composer.json",

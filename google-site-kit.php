@@ -77,6 +77,30 @@ function googlesitekit_deactivate_plugin( $network_wide ) {
 
 register_deactivation_hook( __FILE__, 'googlesitekit_deactivate_plugin' );
 
+/**
+ * Resets opcache if possible.
+ *
+ * @access private
+ * @since n.e.x.t
+ */
+function googlesitekit_opcache_reset() {
+	if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '<' ) ) {
+		return;
+	}
+
+	if ( ! empty( ini_get( 'opcache.restrict_api' ) ) && strpos( __FILE__, ini_get( 'opcache.restrict_api' ) ) !== 0 ) {
+		return;
+	}
+
+	// `opcache_reset` is prohibited on the WordPress VIP platform due to memory corruption.
+	if ( defined( 'WPCOM_IS_VIP_ENV' ) && WPCOM_IS_VIP_ENV ) {
+		return;
+	}
+
+	opcache_reset(); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.opcache_opcache_reset
+}
+add_action( 'upgrader_process_complete', 'googlesitekit_opcache_reset' );
+
 if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '>=' ) ) {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/loader.php';
 }
