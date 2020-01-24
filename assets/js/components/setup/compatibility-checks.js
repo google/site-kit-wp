@@ -78,7 +78,7 @@ export default class CompatibilityChecks extends Component {
 		this.state = {
 			complete: isSiteKitConnected,
 			error: null,
-			helperPlugin: {},
+			developerPlugin: {},
 		};
 	}
 
@@ -91,15 +91,15 @@ export default class CompatibilityChecks extends Component {
 				await testCallback();
 			}
 		} catch ( error ) {
-			const helperPlugin = await data.get( TYPE_CORE, 'site', 'helper-plugin' );
-			this.setState( { error, helperPlugin } );
+			const developerPlugin = await data.get( TYPE_CORE, 'site', 'developer-plugin' );
+			this.setState( { error, developerPlugin } );
 		}
 
 		this.setState( { complete: true } );
 	}
 
 	helperCTA() {
-		const { installed, active, installURL, activateURL, configureURL } = this.state.helperPlugin;
+		const { installed, active, installURL, activateURL, configureURL } = this.state.developerPlugin;
 
 		if ( ! installed && installURL ) {
 			return {
@@ -130,7 +130,7 @@ export default class CompatibilityChecks extends Component {
 	}
 
 	renderError( error ) {
-		const { installed } = this.state.helperPlugin;
+		const { installed } = this.state.developerPlugin;
 		const { labelHTML, href, external } = this.helperCTA();
 
 		switch ( error ) {
