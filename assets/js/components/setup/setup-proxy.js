@@ -169,10 +169,11 @@ class SetupUsingProxy extends Component {
 																	<div className="googlesitekit-start-setup-wrap">
 																		<Button
 																			className="googlesitekit-start-setup"
-																			href={ complete ? proxySetupURL : undefined }
+																			href={ proxySetupURL }
 																			onClick={ () => {
 																				sendAnalyticsTrackingEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
 																			} }
+																			disabled={ ! complete }
 																		>
 																			{ startSetupText }
 																		</Button>
