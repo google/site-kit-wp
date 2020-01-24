@@ -37,15 +37,6 @@ import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
 import { addAction, applyFilters, doAction, addFilter, removeFilter } from '@wordpress/hooks';
 
-global._apiFetch = apiFetch;
-
-apiFetch.use( apiFetch.createRootURLMiddleware( global._apiFetchRootURL ) );
-
-apiFetch.nonceMiddleware = apiFetch.createNonceMiddleware( global._apiFetchNonceMiddleware );
-apiFetch.use( apiFetch.createNonceMiddleware( global._apiFetchNonceMiddleware ) );
-apiFetch.use( apiFetch.mediaUploadMiddleware );
-apiFetch.nonceEndpoint = global._apiFetchNonceEndpoint;
-
 export const TYPE_CORE = 'core';
 export const TYPE_MODULES = 'modules';
 
@@ -213,7 +204,7 @@ const dataAPI = {
 		} ).then( ( results ) => {
 			each( results, ( result, key ) => {
 				if ( ! keyIndexesMap[ key ] ) {
-					console.error( 'data_error', 'unknown response key ' + key ); // eslint-disable-line no-console
+					console.error( 'data_error', 'unknown response key ' + key, addQueryArgs( '/google-site-kit/v1/data/', { datacache: datacache || undefined } ) ); // eslint-disable-line no-console
 					return;
 				}
 

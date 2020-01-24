@@ -48,3 +48,7 @@ window.gtag = function( type, name, sendto, category, label, value ) {
 		value,
 	};
 };
+
+global._apiFetchRootURL = 'http://sitekit.test/';
+global._apiFetchNonceMiddleware = '6af976d56d';
+global._apiFetchNonceEndpoint = 'http://sitekit.test/wp-admin/admin-ajax.php?action=rest-nonce';
