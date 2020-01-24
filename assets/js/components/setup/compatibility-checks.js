@@ -51,7 +51,7 @@ const ERROR_TOKEN_MISMATCH = 'setup_token_mismatch';
 const checks = [
 	// Check for a known non-public/reserved domain.
 	async () => {
-		const { hostname } = window.location;
+		const { hostname } = global.location;
 
 		if ( [ 'localhost', '127.0.0.1' ].includes( hostname ) || hostname.match( /\.(example|invalid|localhost|test)$/ ) ) {
 			throw ERROR_INVALID_HOSTNAME;
@@ -73,7 +73,7 @@ const checks = [
 
 export default class CompatibilityChecks extends Component {
 	constructor( props ) {
-		const { isSiteKitConnected } = window.googlesitekit.setup;
+		const { isSiteKitConnected } = global.googlesitekit.setup;
 		super( props );
 		this.state = {
 			complete: isSiteKitConnected,
