@@ -54,7 +54,7 @@ export const storageAvailable = ( type ) => {
 	}
 };
 
-// Custom no-op implementation of global.Storage.
+// Custom no-op implementation of window.Storage.
 class NullStorage {
 	get length() {
 		return 0;
@@ -86,7 +86,7 @@ let storageObj;
 /**
  * Gets the storage object to use.
  *
- * @return {Storage} Either global.sessionStorage, global.localStorage', or a
+ * @return {Storage} Either window.sessionStorage, window.localStorage', or a
  *                   no-op implementation if neither is available.
  */
 export const getStorage = () => {
