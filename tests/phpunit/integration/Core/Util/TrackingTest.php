@@ -20,48 +20,16 @@ use Google\Site_Kit\Tests\TestCase;
 class TrackingTest extends TestCase {
 
 	public function test_register() {
-		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-		remove_all_actions( 'googlesitekit_enqueue_screen_assets' );
-		remove_all_actions( 'admin_enqueue_scripts' );
+		remove_all_filters( 'googlesitekit_inline_base_data' );
+		remove_all_filters( 'googlesitekit_admin_data' );
+		remove_all_actions( 'init' );
 		$tracking = new Tracking( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$tracking->register();
 
-		$this->assertGtagScriptPrinted( 'googlesitekit_enqueue_screen_assets' );
-		$this->assertAdditionalScreensPrintGtag();
-	}
-
-	protected function assertGtagScriptPrinted( $action ) {
-		$this->opt_out_from_tracking();
-
-		$this->assertNotContains(
-			'https://www.googletagmanager.com/gtag/js?id=' . Tracking::TRACKING_ID,
-			$this->capture_action( $action )
-		);
-
-		$this->opt_in_to_tracking();
-
-		$this->assertContains(
-			'https://www.googletagmanager.com/gtag/js?id=' . Tracking::TRACKING_ID,
-			$this->capture_action( $action )
-		);
-	}
-
-	protected function assertAdditionalScreensPrintGtag() {
-		$tracking_id = Tracking::TRACKING_ID;
-		set_current_screen( 'test-screen' );
-		$this->assertEmpty( $this->capture_action( 'admin_enqueue_scripts' ) );
-
-		set_current_screen( 'dashboard' );
-		$this->assertGtagScriptPrinted( 'admin_enqueue_scripts' );
-		$this->assertContains( "send_to: '$tracking_id'", $this->capture_action( 'admin_enqueue_scripts' ) );
-
-		set_current_screen( 'plugins' );
-		$this->assertGtagScriptPrinted( 'admin_enqueue_scripts' );
-		$this->assertContains( "send_to: '$tracking_id'", $this->capture_action( 'admin_enqueue_scripts' ) );
-
-		set_current_screen( 'test-screen' );
+		$this->assertTrue( has_filter( 'googlesitekit_inline_base_data' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_admin_data' ) );
+		$this->assertTrue( has_action( 'init' ) );
 	}
 
 	public function test_is_active() {
