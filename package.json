@@ -48,6 +48,10 @@
     {
       "path": "./dist/assets/js/googlesitekit-*.js",
       "maxSize": "270 kB"
+    },
+    {
+      "path": "./dist/assets/js/vendors-*.js",
+      "maxSize": "2000 kB"
     }
   ],
   "repository": {
