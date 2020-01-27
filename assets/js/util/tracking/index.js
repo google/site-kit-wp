@@ -163,23 +163,16 @@ export function trackEvent( eventCategory, eventName, eventLabel = '', eventValu
 		return;
 	}
 
-	if ( ! _global.dataLayer || 'function' !== typeof _global.dataLayer.push ) {
-		_global.dataLayer = [];
-	}
+	_global.dataLayer = _global.dataLayer || [];
+	const gtag = () => _global.dataLayer.push( arguments );
 
-	_global.dataLayer.push(
-		[
-			'event',
-			eventName,
-			{
-				send_to: trackingID,
-				event_category: eventCategory,
-				event_label: eventLabel,
-				event_value: eventValue,
-				dimension1: referenceSiteURL,
-				dimension2: isFirstAdmin ? 'true' : 'false',
-				dimension3: userIDHash,
-			},
-		]
-	);
+	gtag( 'event', eventName, {
+		send_to: trackingID,
+		event_category: eventCategory,
+		event_label: eventLabel,
+		event_value: eventValue,
+		dimension1: referenceSiteURL,
+		dimension2: isFirstAdmin ? 'true' : 'false',
+		dimension3: userIDHash,
+	} );
 }
