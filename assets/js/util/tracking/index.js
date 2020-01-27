@@ -73,13 +73,6 @@ export async function bootstrapTracking( _baseData = global._googlesitekitBase, 
  * @return {Promise} A promise that resolves with an object { trackingEnabled: (bool) }.
  */
 export async function toggleTracking( activeStatus ) {
-	const { trackingEnabled } = config;
-
-	// Return early if there is no change to the active state.
-	if ( trackingEnabled === !! activeStatus ) {
-		return Promise.resolve( { trackingEnabled } );
-	}
-
 	if ( !! activeStatus ) {
 		return enableTracking();
 	}
@@ -96,10 +89,6 @@ export async function enableTracking() {
 	// Return the existing promise if already called.
 	if ( enableTrackingPromise ) {
 		return enableTrackingPromise;
-	}
-	// Return early if tracking is already enabled.
-	if ( config.trackingEnabled ) {
-		return Promise.resolve( { trackingEnabled: true } );
 	}
 
 	config.trackingEnabled = true;
