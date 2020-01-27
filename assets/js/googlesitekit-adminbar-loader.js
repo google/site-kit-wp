@@ -23,9 +23,12 @@
  */
 import {
 	appendNotificationsCount,
-	sendAnalyticsTrackingEvent,
 	getQueryParameter,
 } from './util/standalone';
+import {
+	bootstrapTracking,
+	trackEvent,
+} from './util/tracking';
 
 // Set webpackPublicPath on-the-fly.
 if ( global.googlesitekitAdminbar && global.googlesitekitAdminbar.publicPath ) {
@@ -71,7 +74,6 @@ function initAdminbar() {
 global.addEventListener( 'load', function() {
 	// Add event to Site Kit adminbar icon.
 	const adminbarIconTrigger = document.getElementById( 'wp-admin-bar-google-site-kit' );
-	let loadingGtag = false;
 
 	// Check if adminbarIconTrigger is an element.
 	if ( ! adminbarIconTrigger ) {
@@ -92,31 +94,10 @@ global.addEventListener( 'load', function() {
 			return;
 		}
 
-		const { trackingID } = global._googlesitekitBase;
-		if ( ! trackingID ) {
-			return;
-		}
+		bootstrapTracking();
 
 		// Track the menu hover event.
-		if ( global.googlesitekitTrackingEnabled ) {
-			// Dynamically load the gtag script if not loaded.
-			if ( 'undefined' === typeof gtag && ! loadingGtag ) {
-				loadingGtag = true;
-				const gtagScript = document.createElement( 'script' );
-				gtagScript.type = 'text/javascript';
-				gtagScript.setAttribute( 'async', 'true' );
-				gtagScript.onload = function() {
-					global.gtag = function() {
-						global.dataLayer.push( arguments );
-					};
-					sendAnalyticsTrackingEvent( 'admin_bar', 'page_stats_view' );
-				};
-				gtagScript.setAttribute( 'src', `https://www.googletagmanager.com/gtag/js?id=${ trackingID }` );
-				document.head.appendChild( gtagScript );
-			} else {
-				sendAnalyticsTrackingEvent( 'admin_bar', 'page_stats_view' );
-			}
-		}
+		trackEvent( 'admin_bar', 'page_stats_view' );
 
 		initAdminbar();
 		isAdminbarLoaded = true;
