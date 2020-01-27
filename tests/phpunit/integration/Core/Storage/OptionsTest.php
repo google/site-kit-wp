@@ -19,6 +19,20 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class OptionsTest extends TestCase {
 
+	public function test_has() {
+		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		// Ensure default is a truthy value.
+		add_filter( 'default_option_test_option', '__return_true' );
+		delete_option( 'test_option' );
+		$this->assertFalse( $options->has( 'test_option' ) );
+
+		// Ensure default is a truthy value.
+		add_filter( 'default_option_test_option', '__return_false' );
+		update_option( 'test_option', '1' );
+		$this->assertTrue( $options->has( 'test_option' ) );
+	}
+
 	public function test_get() {
 		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		delete_option( 'test_option' );
