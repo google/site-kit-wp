@@ -651,7 +651,8 @@ final class Authentication {
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function( WP_REST_Request $request ) {
-							return new WP_REST_Response( $this->disconnect() );
+							$this->disconnect();
+							return new WP_REST_Response( true );
 						},
 						'permission_callback' => $can_authenticate,
 					),
