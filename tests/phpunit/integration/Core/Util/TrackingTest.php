@@ -21,14 +21,12 @@ class TrackingTest extends TestCase {
 
 	public function test_register() {
 		remove_all_filters( 'googlesitekit_inline_base_data' );
-		remove_all_filters( 'googlesitekit_admin_data' );
 		remove_all_actions( 'init' );
 		$tracking = new Tracking( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$tracking->register();
 
 		$this->assertTrue( has_filter( 'googlesitekit_inline_base_data' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_admin_data' ) );
 		$this->assertTrue( has_action( 'init' ) );
 	}
 

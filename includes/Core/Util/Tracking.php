@@ -88,12 +88,6 @@ final class Tracking {
 				return $this->inline_js_admin_data( $data );
 			}
 		);
-		add_filter(
-			'googlesitekit_admin_data',
-			function ( $data ) {
-				return $this->inline_js_admin_data( $data );
-			}
-		);
 
 		add_action(
 			'init',
