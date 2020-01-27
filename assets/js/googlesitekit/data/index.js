@@ -1,6 +1,8 @@
 /**
  * WordPress dependencies
  */
-import { createRegistry as wpCreateRegistry } from '@wordpress/data';
+import { createRegistry } from '@wordpress/data';
 
-export const createRegistry = wpCreateRegistry;
+const DataStoreRegistry = createRegistry();
+
+export default DataStoreRegistry;
