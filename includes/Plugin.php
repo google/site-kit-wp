@@ -179,10 +179,7 @@ final class Plugin {
 		( new Core\Util\Activation( $this->context, $options, $assets ) )->register();
 		( new Core\Util\Migration_n_e_x_t( $this->context, $options ) )->register();
 		( new Core\Util\Reset( $this->context ) )->register();
-
-		if ( ! defined( 'GOOGLESITEKITDEVSETTINGS_VERSION' ) ) {
-			( new Core\Util\Developer_Plugin_Installer() )->register();
-		}
+		( new Core\Util\Developer_Plugin_Installer( $this->context ) )->register();
 	}
 
 	/**

@@ -131,9 +131,8 @@ final class REST_Routes {
 	/**
 	 * Gets available REST routes.
 	 *
-	 * TODO: All these routes should be moved to more appropriate classes actually responsible.
-	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Moved most routes into individual classes and introduced {@see 'googlesitekit_rest_routes'} filter.
 	 *
 	 * @return array List of REST_Route instances.
 	 */
@@ -147,55 +146,7 @@ final class REST_Routes {
 			return current_user_can( Permissions::VIEW_POSTS_INSIGHTS );
 		};
 
-		$can_setup = function() {
-			return current_user_can( Permissions::SETUP );
-		};
-
 		$routes = array(
-			new REST_Route(
-				'core/site/data/developer-plugin',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$is_active = defined( 'GOOGLESITEKITDEVSETTINGS_VERSION' );
-							$installed = $is_active;
-							$slug      = Developer_Plugin_Installer::SLUG; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.IncorrectWarning
-							$plugin    = "$slug/$slug.php";
-
-							if ( ! $is_active ) {
-								if ( ! function_exists( 'get_plugins' ) ) {
-									require_once ABSPATH . 'wp-admin/includes/plugin.php';
-								}
-								foreach ( array_keys( get_plugins() ) as $installed_plugin ) {
-									if ( $installed_plugin === $plugin ) {
-										$installed = true;
-										break;
-									}
-								}
-							}
-
-							// Alternate wp_nonce_url without esc_html breaking query parameters.
-							$nonce_url = function ( $action_url, $action ) {
-								return add_query_arg( '_wpnonce', wp_create_nonce( $action ), $action_url );
-							};
-							$activate_url = $nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=' . $plugin ), 'activate-plugin_' . $plugin );
-							$install_url = $nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . $slug ), 'install-plugin_' . $slug );
-
-							return new WP_REST_Response(
-								array(
-									'active'       => $is_active,
-									'installed'    => $installed,
-									'activateURL'  => current_user_can( 'activate_plugin', $plugin ) ? esc_url_raw( $activate_url ) : false,
-									'installURL'   => current_user_can( 'install_plugins' ) ? esc_url_raw( $install_url ) : false,
-									'configureURL' => $is_active ? esc_url_raw( $this->context->admin_url( 'dev-settings' ) ) : false,
-								)
-							);
-						},
-						'permission_callback' => $can_setup,
-					),
-				)
-			),
 			// TODO: This route is super-complex to use and needs to be simplified.
 			new REST_Route(
 				'data',
@@ -215,7 +166,8 @@ final class REST_Routes {
 								$request['request']
 							);
 
-							$modules   = $this->modules->get_active_modules();
+							$modules = $this->modules->get_active_modules();
+
 							$responses = array();
 							foreach ( $modules as $module ) {
 								$filtered_datasets = array_filter(
