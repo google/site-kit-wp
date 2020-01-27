@@ -20,7 +20,7 @@
  * External dependencies
  */
 import Layout from 'GoogleComponents/layout/layout';
-import Optin from 'GoogleComponents/optin';
+import OptIn from 'GoogleComponents/optin';
 
 /**
  * Internal dependencies
@@ -146,7 +146,7 @@ class SettingsAdmin extends Component {
 												googlesitekit-settings-module__meta-item
 												googlesitekit-settings-module__meta-item--nomargin
 											">
-												<Optin />
+												<OptIn />
 											</div>
 										</div>
 									</div>

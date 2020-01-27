@@ -25,7 +25,11 @@
         "message": "Use 'global' instead."
       }
     ],
-    "valid-jsdoc": "off"
+    "react/jsx-fragments": [
+      "error",
+      "element"
+    ],
+    "valid-jsdoc": "warn"
   },
   "overrides": [
     {

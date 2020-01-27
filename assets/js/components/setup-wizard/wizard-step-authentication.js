@@ -25,7 +25,7 @@ import Link from 'GoogleComponents/link';
 import {
 	sendAnalyticsTrackingEvent,
 } from 'GoogleUtil';
-import Optin from 'GoogleComponents/optin';
+import OptIn from 'GoogleComponents/optin';
 import HelpLink from 'GoogleComponents/help-link';
 
 /**
@@ -84,7 +84,7 @@ class WizardStepAuthentication extends Component {
 								}
 							</p>
 							<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
-								<Optin />
+								<OptIn />
 								<HelpLink />
 							</div>
 						</div>

@@ -49,6 +49,8 @@ class REST_RoutesTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/data',
 			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z\\-]+)/notifications',
 			'/' . REST_Routes::REST_ROOT . '/core/search/data/post-search',
+			'/' . REST_Routes::REST_ROOT . '/core/site/data/developer-plugin',
+			'/' . REST_Routes::REST_ROOT . '/core/site/data/setup-tag',
 		);
 
 		$this->assertEqualSets( $routes, array_keys( $server->get_routes() ) );

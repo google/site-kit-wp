@@ -55,7 +55,8 @@ class Button extends Component {
 			ariaControls,
 		} = this.props;
 
-		const SemanticButton = href ? 'a' : 'button';
+		// Use a button if disabled, even if a href is provided to ensure expected behavior.
+		const SemanticButton = ( href && ! disabled ) ? 'a' : 'button';
 
 		return (
 			<SemanticButton
@@ -66,9 +67,9 @@ class Button extends Component {
 					${ danger ? 'mdc-button--danger' : '' }
 				` }
 				onClick={ onClick }
-				href={ href }
+				href={ disabled ? undefined : href }
 				ref={ this.buttonRef }
-				disabled={ disabled ? 'disabled' : '' }
+				disabled={ !! disabled }
 				target={ target || '_self' }
 				id={ id }
 				aria-haspopup={ ariaHaspopup }
