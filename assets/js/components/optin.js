@@ -30,13 +30,22 @@ import apiFetch from '@wordpress/api-fetch';
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import {
+	bootstrapTracking,
+	isTrackingEnabled,
+	toggleTracking,
+} from '../util/tracking';
+
 class OptIn extends Component {
 	constructor( props ) {
 		super( props );
+		bootstrapTracking();
 
 		this.state = {
-			scriptOnPage: !! global.googlesitekitTrackingEnabled,
-			optIn: !! global.googlesitekitTrackingEnabled,
+			optIn: isTrackingEnabled(),
 			error: false,
 		};
 
@@ -46,6 +55,8 @@ class OptIn extends Component {
 	handleOptIn( e ) {
 		const checked = !! e.target.checked;
 		const trackingUserOptInKey = getMetaKeyForUserOption( 'googlesitekit_tracking_optin' );
+
+		toggleTracking( checked );
 
 		apiFetch( {
 			path: '/wp/v2/users/me',
@@ -57,37 +68,14 @@ class OptIn extends Component {
 			},
 		} )
 			.then( () => {
-				global.googlesitekitTrackingEnabled = checked;
-
-				if ( checked && ! this.state.scriptOnPage ) {
-					const { document } = global;
-
-					if ( ! document ) {
-						return;
-					}
-
-					document.body.insertAdjacentHTML( 'beforeend', `
-						<script async src="https://www.googletagmanager.com/gtag/js?id=${ googlesitekit.admin.trackingID }"></script>
-					` );
-					document.body.insertAdjacentHTML( 'beforeend', `
-						<script>
-							window.dataLayer = window.dataLayer || [];
-							function gtag(){dataLayer.push(arguments);}
-							gtag('js', new Date());
-							gtag('config', '${ googlesitekit.admin.trackingID }');
-						</script>
-					` );
-				}
-
 				this.setState( {
 					optIn: checked,
 					error: false,
-					scriptOnPage: true,
 				} );
 			} )
 			.catch( ( err ) => {
 				this.setState( {
-					optIn: ! e.target.checked,
+					optIn: ! checked,
 					error: {
 						errorCode: err.code,
 						errorMsg: err.message,
