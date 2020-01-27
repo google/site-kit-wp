@@ -82,29 +82,6 @@ final class Tracking {
 	 * @since 1.0.0
 	 */
 	public function register() {
-		// Enqueue gtag script for Site Kit admin screens.
-		add_action(
-			'googlesitekit_enqueue_screen_assets',
-			function () {
-				$this->print_gtag_script();
-			}
-		);
-
-		// Enqueue gtag script for additional areas.
-		add_action(
-			'admin_enqueue_scripts',
-			function () {
-				$current_screen = get_current_screen();
-				if ( ! in_array( $current_screen->id, array( 'dashboard', 'plugins' ), true ) ) {
-					return;
-				}
-				$this->print_gtag_script();
-				if ( ! $this->authentication->is_authenticated() ) {
-					$this->print_standalone_event_tracking_script();
-				}
-			}
-		);
-
 		add_filter(
 			'googlesitekit_inline_base_data',
 			function ( $data ) {
@@ -136,57 +113,6 @@ final class Tracking {
 	 */
 	public function is_active() {
 		return (bool) $this->user_options->get( self::TRACKING_OPTIN_KEY );
-	}
-
-	/**
-	 * Output Tag Manager gtag.js if tracking is enabled.
-	 *
-	 * @since 1.0.0
-	 */
-	private function print_gtag_script() {
-		// Only load if tracking is active.
-		$tracking_active = $this->is_active();
-
-		if ( ! $tracking_active ) {
-			return;
-		}
-		?>
-		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="<?php echo esc_url( 'https://www.googletagmanager.com/gtag/js?id=' . self::TRACKING_ID ); ?>"></script><?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-		<script>
-			window.dataLayer = window.dataLayer || [];
-			function gtag(){dataLayer.push(arguments);}
-			gtag('js', new Date());
-			gtag('config', '<?php echo esc_attr( self::TRACKING_ID ); ?>');
-			window.googlesitekitTrackingEnabled = true;
-		</script>
-		<?php
-	}
-
-	/**
-	 * Prints standalone tracking event function.
-	 *
-	 * This is used for when not on a screen owned by Site Kit.
-	 *
-	 * @since 1.0.0
-	 */
-	private function print_standalone_event_tracking_script() {
-		?>
-		<script type="text/javascript">
-		var sendAnalyticsTrackingEvent = function( eventCategory, eventName, eventLabel, eventValue ) {
-			if ( 'undefined' === typeof gtag ) {
-				return;
-			}
-
-			if ( window.googlesitekitTrackingEnabled ) {
-				gtag( 'event', eventName, {
-					send_to: '<?php echo esc_attr( self::TRACKING_ID ); ?>', /*eslint camelcase: 0*/
-					event_category: eventCategory, /*eslint camelcase: 0*/
-				} );
-			}
-		};
-		</script>
-		<?php
 	}
 
 	/**
