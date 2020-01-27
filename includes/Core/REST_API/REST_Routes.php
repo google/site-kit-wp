@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Util\Developer_Plugin_Installer;
 use Google\Site_Kit\Core\Util\Reset;
 use WP_Post;
 use WP_REST_Server;
@@ -188,6 +189,65 @@ final class REST_Routes {
 							$reset = new Reset( $this->context );
 							$reset->all();
 							return new WP_REST_Response( true );
+						},
+						'permission_callback' => $can_setup,
+					),
+				)
+			),
+			new REST_Route(
+				'core/site/data/setup-tag',
+				array(
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$token = wp_generate_uuid4();
+							set_transient( 'googlesitekit_setup_token', $token, 5 * MINUTE_IN_SECONDS );
+
+							return new WP_REST_Response( array( 'token' => $token ) );
+						},
+						'permission_callback' => $can_setup,
+					),
+				)
+			),
+			new REST_Route(
+				'core/site/data/developer-plugin',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$is_active = defined( 'GOOGLESITEKITDEVSETTINGS_VERSION' );
+							$installed = $is_active;
+							$slug      = Developer_Plugin_Installer::SLUG; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.IncorrectWarning
+							$plugin    = "$slug/$slug.php";
+
+							if ( ! $is_active ) {
+								if ( ! function_exists( 'get_plugins' ) ) {
+									require_once ABSPATH . 'wp-admin/includes/plugin.php';
+								}
+								foreach ( array_keys( get_plugins() ) as $installed_plugin ) {
+									if ( $installed_plugin === $plugin ) {
+										$installed = true;
+										break;
+									}
+								}
+							}
+
+							// Alternate wp_nonce_url without esc_html breaking query parameters.
+							$nonce_url = function ( $action_url, $action ) {
+								return add_query_arg( '_wpnonce', wp_create_nonce( $action ), $action_url );
+							};
+							$activate_url = $nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=' . $plugin ), 'activate-plugin_' . $plugin );
+							$install_url = $nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . $slug ), 'install-plugin_' . $slug );
+
+							return new WP_REST_Response(
+								array(
+									'active'       => $is_active,
+									'installed'    => $installed,
+									'activateURL'  => current_user_can( 'activate_plugin', $plugin ) ? esc_url_raw( $activate_url ) : false,
+									'installURL'   => current_user_can( 'install_plugins' ) ? esc_url_raw( $install_url ) : false,
+									'configureURL' => $is_active ? esc_url_raw( $this->context->admin_url( 'dev-settings' ) ) : false,
+								)
+							);
 						},
 						'permission_callback' => $can_setup,
 					),

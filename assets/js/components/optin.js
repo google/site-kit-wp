@@ -1,5 +1,5 @@
 /**
- * Optin component.
+ * OptIn component.
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -30,7 +30,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
-class Optin extends Component {
+class OptIn extends Component {
 	constructor( props ) {
 		super( props );
 
@@ -105,10 +105,11 @@ class Optin extends Component {
 		const {
 			id,
 			name,
+			className,
 		} = this.props;
 
 		return (
-			<div className="googlesitekit-opt-in">
+			<div className={ `googlesitekit-opt-in ${ className }` }>
 				<Checkbox
 					id={ id }
 					name={ name }
@@ -129,14 +130,15 @@ class Optin extends Component {
 	}
 }
 
-Optin.propTypes = {
+OptIn.propTypes = {
 	id: PropTypes.string,
 	name: PropTypes.string,
+	className: PropTypes.string,
 };
 
-Optin.defaultProps = {
+OptIn.defaultProps = {
 	id: 'googlesitekit-opt-in',
 	name: 'optIn',
 };
 
-export default Optin;
+export default OptIn;

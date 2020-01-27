@@ -48,6 +48,7 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { tagMatchers as setupTagMatchers } from '../components/setup/compatibility-checks';
 import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
 import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
 import { default as tagmanagerTagMatchers } from '../modules/tagmanager/util/tagMatchers';
@@ -498,6 +499,7 @@ export const extractTag = ( string, module ) => {
 		adsense: adsenseTagMatchers,
 		analytics: analyticsTagMatchers,
 		tagmanager: tagmanagerTagMatchers,
+		setup: setupTagMatchers,
 	}[ module ] || [];
 
 	const matchingPattern = matchers.find( ( pattern ) => pattern.test( string ) );

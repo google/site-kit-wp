@@ -24,7 +24,7 @@ import Button from 'GoogleComponents/button';
 import ResetButton from 'GoogleComponents/reset-button';
 import Layout from 'GoogleComponents/layout/layout';
 import Notification from 'GoogleComponents/notifications/notification';
-import Optin from 'GoogleComponents/optin';
+import OptIn from 'GoogleComponents/optin';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
 import { delay } from 'lodash';
@@ -35,6 +35,10 @@ import { delay } from 'lodash';
 import { Component, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { getQueryArg } from '@wordpress/url';
+/**
+ * Internal dependencies
+ */
+import CompatibilityChecks from './compatibility-checks';
 
 class SetupUsingProxy extends Component {
 	constructor( props ) {
@@ -154,17 +158,31 @@ class SetupUsingProxy extends Component {
 														<p className="googlesitekit-setup__description">
 															{ description }
 														</p>
-														<Optin />
-														<Button
-															className="googlesitekit-start-setup"
-															href={ proxySetupURL }
-															onClick={ () => {
-																sendAnalyticsTrackingEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
-															} }
-														>
-															{ startSetupText }
-														</Button>
-														{ isResettable && <ResetButton /> }
+
+														<CompatibilityChecks>
+															{ ( { complete, inProgressFeedback, CTAFeedback } ) => (
+																<Fragment>
+																	{ CTAFeedback }
+
+																	<OptIn />
+
+																	<div className="googlesitekit-start-setup-wrap">
+																		<Button
+																			className="googlesitekit-start-setup"
+																			href={ proxySetupURL }
+																			onClick={ () => {
+																				sendAnalyticsTrackingEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
+																			} }
+																			disabled={ ! complete }
+																		>
+																			{ startSetupText }
+																		</Button>
+																		{ inProgressFeedback }
+																		{ isResettable && <ResetButton /> }
+																	</div>
+																</Fragment>
+															) }
+														</CompatibilityChecks>
 													</div>
 												</div>
 											</div>
