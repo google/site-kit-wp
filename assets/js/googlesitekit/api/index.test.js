@@ -107,13 +107,12 @@ describe( 'googlesitekit.api', () => {
 			const dataBody = { somethingElse: 'to-set', foo: 1, arrayValue: [ 1, 2 ] };
 			await get( 'core', 'search-console', 'search', dataBody );
 			expect( fetch ).toHaveBeenCalledWith(
-				'http://sitekit.test/google-site-kit/v1/core/search-console/data/search?somethingElse=to-set&foo=1&arrayValue%5B0%5D=1&arrayValue%5B1%5D=2&_locale=user',
+				'/google-site-kit/v1/core/search-console/data/search?somethingElse=to-set&foo=1&arrayValue%5B0%5D=1&arrayValue%5B1%5D=2&_locale=user',
 				{
 					body: undefined,
 					credentials: 'include',
 					headers: {
 						Accept: 'application/json, */*;q=0.1',
-						'X-WP-Nonce': '6af976d56d',
 					},
 					method: 'GET',
 				}
@@ -310,14 +309,13 @@ describe( 'googlesitekit.api', () => {
 			const dataBody = { somethingElse: 'to-set', foo: 1, arrayValue: [ 1, 2 ] };
 			await set( 'core', 'search-console', 'settings', dataBody );
 			expect( fetch ).toHaveBeenCalledWith(
-				'http://sitekit.test/google-site-kit/v1/core/search-console/data/settings?_locale=user',
+				'/google-site-kit/v1/core/search-console/data/settings?_locale=user',
 				{
 					body: JSON.stringify( dataBody ),
 					credentials: 'include',
 					headers: {
 						Accept: 'application/json, */*;q=0.1',
 						'Content-Type': 'application/json',
-						'X-WP-Nonce': '6af976d56d',
 					},
 					method: 'POST',
 				}
@@ -337,14 +335,13 @@ describe( 'googlesitekit.api', () => {
 			} );
 
 			expect( fetch ).toHaveBeenCalledWith(
-				'http://sitekit.test/google-site-kit/v1/core/search-console/data/settings?foo=bar&_locale=user',
+				'/google-site-kit/v1/core/search-console/data/settings?foo=bar&_locale=user',
 				{
 					body: JSON.stringify( dataBody ),
 					credentials: 'include',
 					headers: {
 						Accept: 'application/json, */*;q=0.1',
 						'Content-Type': 'application/json',
-						'X-WP-Nonce': '6af976d56d',
 					},
 					method: 'POST',
 				}
@@ -600,13 +597,12 @@ describe( 'googlesitekit.api', () => {
 			await siteKitRequest( 'core', 'search-console', 'settings' );
 
 			expect( fetch ).toHaveBeenCalledWith(
-				'http://sitekit.test/google-site-kit/v1/core/search-console/data/settings?_locale=user',
+				'/google-site-kit/v1/core/search-console/data/settings?_locale=user',
 				{
 					body: undefined,
 					credentials: 'include',
 					headers: {
 						Accept: 'application/json, */*;q=0.1',
-						'X-WP-Nonce': '6af976d56d',
 					},
 					method: 'GET',
 				}
