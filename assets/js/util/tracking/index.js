@@ -164,7 +164,7 @@ export function trackEvent( eventCategory, eventName, eventLabel = '', eventValu
 	}
 
 	_global.dataLayer = _global.dataLayer || [];
-	const gtag = () => _global.dataLayer.push( arguments );
+	const gtag = ( ...args ) => _global.dataLayer.push( args );
 
 	gtag( 'event', eventName, {
 		send_to: trackingID,
