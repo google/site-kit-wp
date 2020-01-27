@@ -30,12 +30,11 @@ import { loadTranslations } from 'GoogleUtil';
  */
 import domReady from '@wordpress/dom-ready';
 import { doAction, applyFilters } from '@wordpress/hooks';
-import { Component, render, Fragment } from '@wordpress/element';
+import { Component, render, Fragment, Suspense, lazy } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { Suspense, lazy } from 'GoogleUtil/react-features';
 import ModuleApp from './components/module-app';
 
 class GoogleSitekitModule extends Component {

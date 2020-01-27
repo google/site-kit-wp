@@ -24,7 +24,7 @@ import DashboardSplashMain from 'GoogleComponents/dashboard-splash/dashboard-spl
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Component, Fragment, Suspense, lazy } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,7 +33,6 @@ import { __ } from '@wordpress/i18n';
 import DashboardSplashNotifications from './dashboard-splash-notifications';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
-import { Suspense, lazy } from 'GoogleUtil/react-features';
 import 'GoogleComponents/publisher-wins';
 
 const AUTHENTICATION = 1;
