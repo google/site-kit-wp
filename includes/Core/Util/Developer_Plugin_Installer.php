@@ -15,7 +15,7 @@ namespace Google\Site_Kit\Core\Util;
  *
  * @since n.e.x.t
  */
-class DeveloperPluginInstaller {
+class Developer_Plugin_Installer {
 
 	const SLUG = 'google-site-kit-dev-settings';
 

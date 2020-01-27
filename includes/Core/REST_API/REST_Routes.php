@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Util\DeveloperPluginInstaller;
+use Google\Site_Kit\Core\Util\Developer_Plugin_Installer;
 use Google\Site_Kit\Core\Util\Reset;
 use WP_Post;
 use WP_REST_Server;
@@ -217,7 +217,7 @@ final class REST_Routes {
 						'callback'            => function( WP_REST_Request $request ) {
 							$is_active = defined( 'GOOGLESITEKITDEVSETTINGS_VERSION' );
 							$installed = $is_active;
-							$slug      = DeveloperPluginInstaller::SLUG; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.IncorrectWarning
+							$slug      = Developer_Plugin_Installer::SLUG; // phpcs:ignore Generic.Formatting.MultipleStatementAlignment.IncorrectWarning
 							$plugin    = "$slug/$slug.php";
 
 							if ( ! $is_active ) {

@@ -153,7 +153,7 @@ final class Plugin {
 		( new Core\Util\Migration_n_e_x_t( $this->context, $options ) )->register();
 
 		if ( ! defined( 'GOOGLESITEKITDEVSETTINGS_VERSION' ) ) {
-			( new Core\Util\DeveloperPluginInstaller() )->register();
+			( new Core\Util\Developer_Plugin_Installer() )->register();
 		}
 	}
 
