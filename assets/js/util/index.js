@@ -52,7 +52,8 @@ import { tagMatchers as setupTagMatchers } from '../components/setup/compatibili
 import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
 import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
 import { default as tagmanagerTagMatchers } from '../modules/tagmanager/util/tagMatchers';
-import { sendAnalyticsTrackingEvent } from './standalone';
+import { trackEvent } from './tracking';
+export { trackEvent };
 export * from './standalone';
 export * from './storage';
 export * from './i18n';
@@ -526,7 +527,7 @@ export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) 
 			global.googlesitekit.modules[ moduleSlug ].active = responseData.active;
 		}
 
-		sendAnalyticsTrackingEvent(
+		trackEvent(
 			`${ moduleSlug }_setup`,
 			! responseData.active ? 'module_deactivate' : 'module_activate',
 			moduleSlug,

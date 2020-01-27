@@ -26,7 +26,7 @@ import {
 	decodeHtmlEntity,
 	getSiteKitAdminURL,
 	loadTranslations,
-	sendAnalyticsTrackingEvent,
+	trackEvent,
 } from 'GoogleUtil';
 
 /**
@@ -65,7 +65,7 @@ export class GoogleSitekitAdminbar extends Component {
 			}
 		);
 
-		sendAnalyticsTrackingEvent( 'admin_bar', 'post_details_click' );
+		trackEvent( 'admin_bar', 'post_details_click' );
 		document.location = href;
 	}
 

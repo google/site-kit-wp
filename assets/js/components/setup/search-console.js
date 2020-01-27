@@ -25,7 +25,7 @@ import { Select, TextField, Input } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
 import Button from 'SiteKitCore/components/button';
 import HelpLink from 'GoogleComponents/help-link';
-import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
+import { trackEvent } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -135,7 +135,7 @@ class SearchConsole extends Component {
 	 */
 	async insertPropertyToSearchConsole( siteURL ) {
 		await data.set( TYPE_MODULES, 'search-console', 'site', { siteURL } );
-		sendAnalyticsTrackingEvent( 'search_console_setup', 'add_new_sc_property' );
+		trackEvent( 'search_console_setup', 'add_new_sc_property' );
 
 		this.setState( {
 			loading: false,

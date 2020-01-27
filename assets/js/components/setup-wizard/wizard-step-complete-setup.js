@@ -21,7 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import Button from 'GoogleComponents/button';
-import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
+import { trackEvent } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -36,9 +36,9 @@ class WizardStepCompleteSetup extends Component {
 
 		// Search console property is set for all but the first user.
 		if ( hasSearchConsoleProperty ) {
-			sendAnalyticsTrackingEvent( 'plugin_setup', 'user_verified' );
+			trackEvent( 'plugin_setup', 'user_verified' );
 		} else {
-			sendAnalyticsTrackingEvent( 'plugin_setup', 'site_verified' );
+			trackEvent( 'plugin_setup', 'site_verified' );
 		}
 	}
 

@@ -23,7 +23,7 @@ import Switch from 'GoogleComponents/switch';
 import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import PropTypes from 'prop-types';
 import {
-	sendAnalyticsTrackingEvent,
+	trackEvent,
 	toggleConfirmModuleSettings,
 } from 'GoogleUtil';
 
@@ -106,8 +106,7 @@ class AdSenseSettings extends Component {
 			} );
 		}
 
-		// Track the event.
-		sendAnalyticsTrackingEvent( 'adsense_setup', useSnippet ? 'adsense_tag_enabled' : 'adsense_tag_disabled' );
+		trackEvent( 'adsense_setup', useSnippet ? 'adsense_tag_enabled' : 'adsense_tag_disabled' );
 
 		if ( saveOnChange ) {
 			data.set( TYPE_MODULES, 'adsense', 'use-snippet', { useSnippet } ).then( ( res ) => res ).catch( ( e ) => e );

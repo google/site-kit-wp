@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import DashboardSplashNotifications from './dashboard-splash-notifications';
 import ProgressBar from 'GoogleComponents/progress-bar';
-import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
+import { trackEvent } from 'GoogleUtil';
 import { Suspense, lazy } from 'GoogleUtil/react-features';
 import 'GoogleComponents/publisher-wins';
 
@@ -80,7 +80,7 @@ class DashboardSplashApp extends Component {
 	}
 
 	openAuthenticationSetupWizard() {
-		sendAnalyticsTrackingEvent( 'plugin_setup', 'setup_sitekit' );
+		trackEvent( 'plugin_setup', 'setup_sitekit' );
 
 		this.setState( {
 			showAuthenticationSetupWizard: true,
@@ -93,7 +93,7 @@ class DashboardSplashApp extends Component {
 			showAuthenticationSetupWizard: false,
 		} );
 
-		sendAnalyticsTrackingEvent( 'plugin_setup', 'connect_account' );
+		trackEvent( 'plugin_setup', 'connect_account' );
 
 		document.location = this.state.connectURL;
 	}
