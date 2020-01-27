@@ -13,11 +13,15 @@ namespace Google\Site_Kit\Core\Authentication;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Admin\Notice;
+use WP_REST_Server;
+use WP_REST_Request;
+use WP_REST_Response;
 use Exception;
 
 /**
@@ -181,6 +185,13 @@ final class Authentication {
 			'init',
 			function() {
 				$this->handle_oauth();
+			}
+		);
+
+		add_filter(
+			'googlesitekit_rest_routes',
+			function( $routes ) {
+				return array_merge( $routes, $this->get_rest_routes() );
 			}
 		);
 
@@ -598,6 +609,56 @@ final class Authentication {
 		$hosts[] = wp_parse_url( $this->google_proxy->url(), PHP_URL_HOST );
 
 		return $hosts;
+	}
+
+	/**
+	 * Gets related REST routes.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of REST_Route objects.
+	 */
+	private function get_rest_routes() {
+		$can_authenticate = function() {
+			return current_user_can( Permissions::AUTHENTICATE );
+		};
+
+		return array(
+			new REST_Route(
+				'core/user/data/authentication',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$oauth_client = $this->get_oauth_client();
+							$access_token = $oauth_client->get_access_token();
+
+							$data = array(
+								'isAuthenticated' => ! empty( $access_token ),
+								'requiredScopes'  => $oauth_client->get_required_scopes(),
+								'grantedScopes'   => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
+							);
+
+							return new WP_REST_Response( $data );
+						},
+						'permission_callback' => $can_authenticate,
+					),
+				)
+			),
+			new REST_Route(
+				'core/user/data/disconnect',
+				array(
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$this->disconnect();
+							return new WP_REST_Response( true );
+						},
+						'permission_callback' => $can_authenticate,
+					),
+				)
+			),
+		);
 	}
 
 	/**
