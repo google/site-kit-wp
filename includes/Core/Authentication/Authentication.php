@@ -177,6 +177,8 @@ final class Authentication {
 	 * @since 1.0.0
 	 */
 	public function register() {
+		$this->credentials->register();
+
 		add_action(
 			'init',
 			function() {
