@@ -10,6 +10,13 @@
 
 namespace Google\Site_Kit\Core\Util;
 
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\REST_Route;
+use WP_REST_Server;
+use WP_REST_Request;
+use WP_REST_Response;
+
 /**
  * Class responsible for providing the helper plugin via the automatic updater.
  *
@@ -20,18 +27,107 @@ class Developer_Plugin_Installer {
 	const SLUG = 'google-site-kit-dev-settings';
 
 	/**
+	 * Plugin context.
+	 *
+	 * @since n.e.x.t
+	 * @var Context
+	 */
+	private $context;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Context $context Plugin context.
+	 */
+	public function __construct( Context $context ) {
+		$this->context = $context;
+	}
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since n.e.x.t
 	 */
 	public function register() {
+		// Only filter plugins API response if the developer plugin is not already active.
+		if ( ! defined( 'GOOGLESITEKITDEVSETTINGS_VERSION' ) ) {
+			add_filter(
+				'plugins_api',
+				function( $value, $action, $args ) {
+					return $this->plugin_info( $value, $action, $args );
+				},
+				10,
+				3
+			);
+		}
+
 		add_filter(
-			'plugins_api',
-			function( $value, $action, $args ) {
-				return $this->plugin_info( $value, $action, $args );
-			},
-			10,
-			3
+			'googlesitekit_rest_routes',
+			function( $routes ) {
+				return array_merge( $routes, $this->get_rest_routes() );
+			}
+		);
+	}
+
+	/**
+	 * Gets related REST routes.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of REST_Route objects.
+	 */
+	private function get_rest_routes() {
+		$can_setup = function() {
+			return current_user_can( Permissions::SETUP );
+		};
+
+		return array(
+			new REST_Route(
+				'core/site/data/developer-plugin',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$is_active = defined( 'GOOGLESITEKITDEVSETTINGS_VERSION' );
+							$installed = $is_active;
+							$slug      = self::SLUG;
+							$plugin    = "$slug/$slug.php";
+
+							if ( ! $is_active ) {
+								if ( ! function_exists( 'get_plugins' ) ) {
+									require_once ABSPATH . 'wp-admin/includes/plugin.php';
+								}
+								foreach ( array_keys( get_plugins() ) as $installed_plugin ) {
+									if ( $installed_plugin === $plugin ) {
+										$installed = true;
+										break;
+									}
+								}
+							}
+
+							// Alternate wp_nonce_url without esc_html breaking query parameters.
+							$nonce_url = function ( $action_url, $action ) {
+								return add_query_arg( '_wpnonce', wp_create_nonce( $action ), $action_url );
+							};
+							$activate_url = $nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=' . $plugin ), 'activate-plugin_' . $plugin );
+							$install_url = $nonce_url( self_admin_url( 'update.php?action=install-plugin&plugin=' . $slug ), 'install-plugin_' . $slug );
+
+							return new WP_REST_Response(
+								array(
+									'active'       => $is_active,
+									'installed'    => $installed,
+									'activateURL'  => current_user_can( 'activate_plugin', $plugin ) ? esc_url_raw( $activate_url ) : false,
+									'installURL'   => current_user_can( 'install_plugins' ) ? esc_url_raw( $install_url ) : false,
+									'configureURL' => $is_active ? esc_url_raw( $this->context->admin_url( 'dev-settings' ) ) : false,
+								)
+							);
+						},
+						'permission_callback' => $can_setup,
+					),
+				)
+			),
 		);
 	}
 
