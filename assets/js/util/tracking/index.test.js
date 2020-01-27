@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { bootstrap, trackEvent } from './';
+import { bootstrapTracking, trackEvent } from './';
 
 describe( 'trackEvent', () => {
 	it( 'sends a tracking event', () => {
@@ -13,7 +13,7 @@ describe( 'trackEvent', () => {
 			trackingEnabled: true,
 		};
 
-		bootstrap( _googlesitekitBase );
+		bootstrapTracking( _googlesitekitBase );
 
 		const _global = {
 			dataLayer: {

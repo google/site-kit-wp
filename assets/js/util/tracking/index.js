@@ -41,7 +41,7 @@ let enableTrackingPromise;
  * @param {Object} _baseData Site Kit base data. (Optional - for testing only)
  * @param {boolean} _resetPromise Clears the internal reference to the enableTrackingPromise (Optional - for testing only)
  */
-export async function bootstrap( _baseData = global._googlesitekitBase, _resetPromise = false ) {
+export async function bootstrapTracking( _baseData = global._googlesitekitBase, _resetPromise = false ) {
 	const {
 		isFirstAdmin,
 		trackingID,
