@@ -87,6 +87,33 @@ final class Plugin {
 			return;
 		}
 
+		// REST route to set up a temporary tag to verify meta tag output works reliably.
+		add_filter(
+			'googlesitekit_rest_routes',
+			function( $routes ) {
+				$can_setup = function() {
+					return current_user_can( Core\Permissions\Permissions::SETUP );
+				};
+				$routes[]  = new Core\REST_API\REST_Route(
+					'core/site/data/setup-tag',
+					array(
+						array(
+							'methods'             => \WP_REST_Server::EDITABLE,
+							'callback'            => function( \WP_REST_Request $request ) {
+								$token = wp_generate_uuid4();
+								set_transient( 'googlesitekit_setup_token', $token, 5 * MINUTE_IN_SECONDS );
+
+								return new \WP_REST_Response( array( 'token' => $token ) );
+							},
+							'permission_callback' => $can_setup,
+						),
+					)
+				);
+				return $routes;
+			}
+		);
+
+		// Output temporary tag if set.
 		add_action(
 			'wp_head',
 			function () {

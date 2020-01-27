@@ -153,21 +153,6 @@ final class REST_Routes {
 
 		$routes = array(
 			new REST_Route(
-				'core/site/data/setup-tag',
-				array(
-					array(
-						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$token = wp_generate_uuid4();
-							set_transient( 'googlesitekit_setup_token', $token, 5 * MINUTE_IN_SECONDS );
-
-							return new WP_REST_Response( array( 'token' => $token ) );
-						},
-						'permission_callback' => $can_setup,
-					),
-				)
-			),
-			new REST_Route(
 				'core/site/data/developer-plugin',
 				array(
 					array(
