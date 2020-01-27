@@ -48,7 +48,7 @@ export async function bootstrapTracking( _baseData = global._googlesitekitBase, 
 		trackingEnabled,
 		referenceSiteURL,
 		userIDHash,
-	} = _baseData;
+	} = _baseData || DEFAULT_CONFIG;
 
 	Object.assign( config, DEFAULT_CONFIG, {
 		isFirstAdmin,
