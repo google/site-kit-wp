@@ -165,3 +165,6 @@ export function trackEvent( eventCategory, eventName, eventLabel = '', eventValu
 		dimension3: userIDHash,
 	} );
 }
+
+// Set the initial state on import.
+bootstrapTracking();

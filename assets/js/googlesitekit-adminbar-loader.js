@@ -25,10 +25,7 @@ import {
 	appendNotificationsCount,
 	getQueryParameter,
 } from './util/standalone';
-import {
-	bootstrapTracking,
-	trackEvent,
-} from './util/tracking';
+import { trackEvent } from './util/tracking';
 
 // Set webpackPublicPath on-the-fly.
 if ( global.googlesitekitAdminbar && global.googlesitekitAdminbar.publicPath ) {
@@ -93,8 +90,6 @@ global.addEventListener( 'load', function() {
 		if ( isAdminbarLoaded ) {
 			return;
 		}
-
-		bootstrapTracking();
 
 		// Track the menu hover event.
 		trackEvent( 'admin_bar', 'page_stats_view' );

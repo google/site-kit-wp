@@ -34,7 +34,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
-	bootstrapTracking,
 	isTrackingEnabled,
 	toggleTracking,
 } from '../util/tracking';
@@ -42,7 +41,6 @@ import {
 class OptIn extends Component {
 	constructor( props ) {
 		super( props );
-		bootstrapTracking();
 
 		this.state = {
 			optIn: isTrackingEnabled(),
