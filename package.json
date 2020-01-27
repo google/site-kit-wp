@@ -43,11 +43,11 @@
   "bundlesize": [
     {
       "path": "./dist/*.js",
-      "maxSize": "170 kB"
+      "maxSize": "270 kB"
     },
     {
-      "path": "./dist/assets/js/*.js",
-      "maxSize": "170 kB"
+      "path": "./dist/assets/js/googlesitekit-*.js",
+      "maxSize": "270 kB"
     }
   ],
   "repository": {
