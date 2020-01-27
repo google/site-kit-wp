@@ -190,33 +190,6 @@ module.exports = ( env, argv ) => {
 			resolve,
 		},
 
-		// Build the external wp libraries
-		// {
-		// 	entry: externalEntry,
-		// 	output: {
-		// 		filename: '[name].js',
-		// 		path: __dirname + '/dist/assets/js/externals',
-		// 		library: [ 'wp', '[name]' ],
-		// 		libraryTarget: 'this',
-		// 	},
-		// 	plugins: ( env && env.analyze ) ? [
-		// 		new LibraryExportDefaultPlugin( [
-		// 			'api-fetch',
-		// 			'dom-ready',
-		// 		].map( camelCaseDash ) ),
-		// 	] : [
-		// 		new LibraryExportDefaultPlugin( [
-		// 			'api-fetch',
-		// 			'dom-ready',
-		// 		].map( camelCaseDash ) ),
-		// 		new WebpackBar( {
-		// 			name: 'External WP Libraries',
-		// 			color: '#d53e36',
-		// 		} ),
-		// 	],
-		// 	externals,
-		// },
-
 		// Build the external libraries
 		{
 			entry: externalLibrary,
@@ -229,7 +202,6 @@ module.exports = ( env, argv ) => {
 					name: 'External Libraries',
 					color: '#4185f4',
 				} ) ],
-			// externals,
 		},
 
 		// Build the main plugin admin css.
