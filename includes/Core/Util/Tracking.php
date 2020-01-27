@@ -124,7 +124,8 @@ final class Tracking {
 	 * @return array Filtered $data.
 	 */
 	private function inline_js_admin_data( $data ) {
-		$data['trackingID'] = self::TRACKING_ID;
+		$data['trackingEnabled'] = $this->is_active();
+		$data['trackingID']      = self::TRACKING_ID;
 
 		return $data;
 	}
