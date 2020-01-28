@@ -211,12 +211,12 @@ class SettingsModules extends Component {
 		const { activeTab } = this.props;
 		const modulesBeingEdited = filter( isEditing, ( module ) => module );
 		const editActive = 0 < modulesBeingEdited.length;
-		if ( ! global.global.googlesitekit || ! global.global.googlesitekit.modules ) {
+		if ( ! global.googlesitekit || ! global.googlesitekit.modules ) {
 			return null;
 		}
 
 		// Filter out internal modules.
-		const modules = filter( global.global.googlesitekit.modules, ( module ) => ! module.internal );
+		const modules = filter( global.googlesitekit.modules, ( module ) => ! module.internal );
 
 		const activeModules = this.mapToModule(
 			sortBy(
