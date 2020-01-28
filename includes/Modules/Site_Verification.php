@@ -93,6 +93,12 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			}
 		);
 
+		add_action(
+			'googlesitekit_invalidate_verification_meta_cache',
+			function () {
+				$this->options->delete( self::OPTION_VERIFICATION_META_TAGS );
+			}
+		);
 	}
 
 	/**
@@ -444,7 +450,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 *
 	 * @return array List of verification meta tags.
 	 */
-	public function get_all_verification_tags() {
+	private function get_all_verification_tags() {
 		global $wpdb;
 
 		$meta_tags = $this->options->get( self::OPTION_VERIFICATION_META_TAGS );
