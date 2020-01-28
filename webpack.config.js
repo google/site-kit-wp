@@ -67,6 +67,7 @@ module.exports = ( env, argv ) => {
 			entry: {
 				// New Modules (Post-JSR).
 				'googlesitekit-api': './assets/js/googlesitekit-api.js',
+				'googlesitekit-data': './assets/js/googlesitekit-data.js',
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
 				'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
