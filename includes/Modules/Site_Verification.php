@@ -50,6 +50,11 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	const VERIFICATION_TYPE_FILE = 'FILE';
 
 	/**
+	 * Verification meta tag cache option.
+	 */
+	const OPTION_VERIFICATION_META_TAGS = 'googlesitekit_verification_meta_tags';
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -411,7 +416,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 */
 	private function print_site_verification_meta() {
 		// Get verification meta tags for all users.
-		$verification_tags = $this->authentication->verification_meta()->get_all();
+		$verification_tags = $this->get_all_verification_tags();
 		$allowed_html      = array(
 			'meta' => array(
 				'name'    => array(),
@@ -428,6 +433,32 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 			echo wp_kses( $verification_tag, $allowed_html );
 		}
+	}
+
+	/**
+	 * Gets all available verification tags for all users.
+	 *
+	 * This is a special method needed for printing all meta tags in the frontend.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return array List of verification meta tags.
+	 */
+	public function get_all_verification_tags() {
+		global $wpdb;
+
+		$meta_tags = $this->options->get( self::OPTION_VERIFICATION_META_TAGS );
+
+		if ( false === $meta_tags ) {
+			$meta_key = $this->authentication->verification_meta()->get_meta_key();
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$meta_tags = $wpdb->get_col(
+				$wpdb->prepare( "SELECT DISTINCT meta_value FROM {$wpdb->usermeta} WHERE meta_key = %s", $meta_key )
+			);
+			$this->options->set( self::OPTION_VERIFICATION_META_TAGS, $meta_tags );
+		}
+
+		return (array) $meta_tags;
 	}
 
 	/**
