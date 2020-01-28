@@ -74,8 +74,8 @@ class Dialog extends Component {
 				className={ `mdc-dialog ${ dialogActive ? 'mdc-dialog--open' : '' }` }
 				role="alertdialog"
 				aria-modal="true"
-				aria-labelledby={ labelledByID }
-				aria-describedby={ describedByID }
+				aria-labelledby={ title ? labelledByID : undefined }
+				aria-describedby={ ( provides && provides.length ) ? describedByID : undefined }
 				aria-hidden={ dialogActive ? 'false' : 'true' }
 				tabIndex="-1"
 			>
