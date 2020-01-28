@@ -378,22 +378,14 @@ final class Assets {
 					'before_print' => function( $handle ) {
 						wp_add_inline_script(
 							$handle,
-							'window._googlesitekitBase = ' . wp_json_encode( $this->get_inline_base_data() ),
-							'before'
-						);
-						wp_add_inline_script(
-							$handle,
-							sprintf(
-								'window._apiFetchRootURL = "%s";',
-								esc_url_raw( get_rest_url() )
-							),
-							'before'
-						);
-						wp_add_inline_script(
-							$handle,
 							implode(
 								"\n",
 								array(
+									'window._googlesitekitBase = ' . wp_json_encode( $this->get_inline_base_data() ),
+									sprintf(
+										'window._apiFetchRootURL = "%s";',
+										esc_url_raw( get_rest_url() )
+									),
 									sprintf(
 										'window._apiFetchNonceMiddleware = "%s";',
 										( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' )

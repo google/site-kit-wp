@@ -10,25 +10,16 @@ import { __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 import {
 	addAction,
+	applyFilters,
 	removeAction,
 	removeFilter,
 	addFilter,
 	doAction,
 } from '@wordpress/hooks';
 
-/**
- * Internal dependencies
- */
-import { getCurrentDateRange } from 'SiteKitCore/util';
-
 class DateRangeSelector extends Component {
 	constructor( props ) {
 		super( props );
-
-		this.state = {
-			context: 'Dashboard',
-			dateValue: getCurrentDateRange(),
-		};
 
 		// The date range is a filtered value.
 		this.dateRangeHook = 'googlesitekit.dateRange';
@@ -38,6 +29,11 @@ class DateRangeSelector extends Component {
 
 		// This hook is used to capture filter changes, forcing a component re-render.
 		this.dateRangeHookAddedHook = 'googlesitekit.dateRageHookAddedHandler';
+
+		this.state = {
+			context: 'Dashboard',
+			dateValue: applyFilters( this.dateRangeHook, __( 'Last 28 days', 'google-site-kit' ) ),
+		};
 
 		// Store the current context when the screen loads, so we can reuse it later.
 		addAction(
@@ -92,7 +88,9 @@ class DateRangeSelector extends Component {
 		doAction( 'googlesitekit.moduleLoaded', context );
 
 		// Update this component.
-		this.setState( { dateValue: getCurrentDateRange() } );
+		this.setState( {
+			dateValue: applyFilters( this.dateRangeHook, __( 'Last 28 days', 'google-site-kit' ) ),
+		} );
 
 		return false;
 	}
@@ -109,7 +107,6 @@ class DateRangeSelector extends Component {
 		return (
 			<Select
 				enhanced
-				se
 				className="mdc-select--minimal"
 				name="time_period"
 				label=""

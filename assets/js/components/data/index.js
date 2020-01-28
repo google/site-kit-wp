@@ -204,7 +204,7 @@ const dataAPI = {
 		} ).then( ( results ) => {
 			each( results, ( result, key ) => {
 				if ( ! keyIndexesMap[ key ] ) {
-					console.error( 'data_error', 'unknown response key ' + key, addQueryArgs( '/google-site-kit/v1/data/', { datacache: datacache || undefined } ) ); // eslint-disable-line no-console
+					console.error( 'data_error', 'unknown response key ' + key ); // eslint-disable-line no-console
 					return;
 				}
 
