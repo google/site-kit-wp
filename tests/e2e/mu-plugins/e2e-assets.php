@@ -17,7 +17,7 @@ add_action(
 		}
 
 		wp_enqueue_script(
-			'googlesitekit-e2e',
+			'googlesitekit-e2e-utilities',
 			plugins_url( 'dist/assets/js/e2e-utilities.js', GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
 			array(),
 			md5_file( plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . 'dist/assets/js/e2e-utilities.js' ),
@@ -25,7 +25,7 @@ add_action(
 		);
 
 		wp_add_inline_script(
-			'googlesitekit-e2e',
+			'googlesitekit-e2e-utilities',
 			implode(
 				"\n",
 				array(
