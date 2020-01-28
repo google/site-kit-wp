@@ -103,6 +103,7 @@ export async function enableTracking( _global = global ) {
 	dataLayerPush( _global, 'js', new Date() );
 	dataLayerPush( _global, 'config', config.trackingID );
 
+	const { document } = _global;
 	// If the script is already in the DOM then we shouldn't get here as the promise should already be returned.
 	if ( document.querySelector( 'script[data-googlesitekit-gtag]' ) ) {
 		enableTrackingPromise = Promise.resolve( { trackingEnabled: true } );
