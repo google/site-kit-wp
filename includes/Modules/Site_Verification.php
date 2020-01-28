@@ -455,7 +455,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 		$meta_tags = $this->options->get( self::OPTION_VERIFICATION_META_TAGS );
 
-		if ( false === $meta_tags ) {
+		if ( ! is_array( $meta_tags ) ) {
 			$meta_key = $this->authentication->verification_meta()->get_meta_key();
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$meta_tags = $wpdb->get_col(
@@ -464,7 +464,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			$this->options->set( self::OPTION_VERIFICATION_META_TAGS, $meta_tags );
 		}
 
-		return (array) $meta_tags;
+		return array_filter( $meta_tags );
 	}
 
 	/**
