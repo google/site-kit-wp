@@ -43,17 +43,17 @@ export const DATA_LAYER = '_googlesitekitDataLayer';
 /**
  * Initializes tracking.
  *
- * @param {Object} _baseData Site Kit base data. (Optional - for testing only)
+ * @param {Object} _global The global object. Optional. (Used for testing only)
  * @param {boolean} _resetPromise Clears the internal reference to the enableTrackingPromise (Optional - for testing only)
  */
-export async function bootstrapTracking( _baseData = global._googlesitekitBase, _resetPromise = false ) {
+export async function bootstrapTracking( _global = global, _resetPromise = false ) {
 	const {
 		isFirstAdmin,
 		trackingID,
 		trackingEnabled,
 		referenceSiteURL,
 		userIDHash,
-	} = _baseData || DEFAULT_CONFIG;
+	} = _global._googlesitekitBase || DEFAULT_CONFIG;
 
 	Object.assign( config, DEFAULT_CONFIG, {
 		isFirstAdmin,
@@ -68,18 +68,19 @@ export async function bootstrapTracking( _baseData = global._googlesitekitBase, 
 		enableTrackingPromise = null;
 	}
 
-	return toggleTracking( trackingEnabled );
+	return toggleTracking( trackingEnabled, _global );
 }
 
 /**
  * Change the active state of tracking.
  *
  * @param {boolean} activeStatus The new state to set.
+ * @param {Object} _global The global object. Optional. (Used for testing only)
  * @return {Promise} A promise that resolves with an object { trackingEnabled: (bool) }.
  */
-export async function toggleTracking( activeStatus ) {
+export async function toggleTracking( activeStatus, _global = global ) {
 	if ( !! activeStatus ) {
-		return enableTracking();
+		return enableTracking( _global );
 	}
 
 	return disableTracking();
@@ -89,14 +90,18 @@ export async function toggleTracking( activeStatus ) {
  * Enables tracking by injecting the necessary script tag if not present.
  *
  * @return {Promise} A promise that resolves when the script is loaded and ready.
+ * @param {Object} _global The global object. Optional. (Used for testing only)
  */
-export async function enableTracking() {
+export async function enableTracking( _global = global ) {
 	// Return the existing promise if already called.
 	if ( enableTrackingPromise ) {
 		return enableTrackingPromise;
 	}
 
 	config.trackingEnabled = true;
+
+	dataLayerPush( _global, 'js', new Date() );
+	dataLayerPush( _global, 'config', config.trackingID );
 
 	// If the script is already in the DOM then we shouldn't get here as the promise should already be returned.
 	if ( document.querySelector( 'script[data-googlesitekit-gtag]' ) ) {

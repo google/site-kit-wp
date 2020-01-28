@@ -13,9 +13,10 @@ describe( 'trackEvent', () => {
 			trackingEnabled: true,
 		};
 
-		bootstrapTracking( _googlesitekitBase );
+		bootstrapTracking( { _googlesitekitBase } );
 
 		const _global = {
+			_googlesitekitBase,
 			[ DATA_LAYER ]: {
 				push: jest.fn(),
 			},
