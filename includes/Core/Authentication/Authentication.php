@@ -149,23 +149,10 @@ final class Authentication {
 		User_Options $user_options = null,
 		Transients $transients = null
 	) {
-		$this->context = $context;
-
-		if ( ! $options ) {
-			$options = new Options( $this->context );
-		}
-		$this->options = $options;
-
-		if ( ! $user_options ) {
-			$user_options = new User_Options( $this->context );
-		}
-		$this->user_options = $user_options;
-
-		if ( ! $transients ) {
-			$transients = new Transients( $this->context );
-		}
-		$this->transients = $transients;
-
+		$this->context           = $context;
+		$this->options           = $options ?: new Options( $this->context );
+		$this->user_options      = $user_options ?: new User_Options( $this->context );
+		$this->transients        = $transients ?: new Transients( $this->context );
 		$this->google_proxy      = new Google_Proxy( $this->context );
 		$this->credentials       = new Credentials( new Encrypted_Options( $this->options ) );
 		$this->verification      = new Verification( $this->user_options );
