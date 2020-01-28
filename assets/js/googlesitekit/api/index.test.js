@@ -87,7 +87,7 @@ describe( 'googlesitekit.api', () => {
 			// mock requests.
 			fetch
 				.doMockOnceIf(
-					/\/google-site-kit\/v1\/core\/search-console\/data\/users/
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/users/
 				)
 				.mockResponseOnce( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
 
@@ -100,7 +100,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should send query string params from data params', async () => {
 			fetch
 				.doMockIf(
-					/\/google-site-kit\/v1\/core\/search-console\/data\/search/
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/search/
 				)
 				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
 
@@ -128,7 +128,7 @@ describe( 'googlesitekit.api', () => {
 
 			fetch
 				.doMockOnceIf(
-					/\/google-site-kit\/v1\/core\/search-console\/data\/other/
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/other/
 				)
 				.mockResponseOnce( JSON.stringify( errorResponse ), { status: 404 } );
 
@@ -148,7 +148,7 @@ describe( 'googlesitekit.api', () => {
 
 			fetch
 				.doMockOnceIf(
-					/\/google-site-kit\/v1\/core\/search-console\/data\/users/
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/users/
 				)
 				.mockResponseOnce( JSON.stringify( errorResponse ), { status: 500 } );
 
@@ -164,7 +164,7 @@ describe( 'googlesitekit.api', () => {
 
 			fetch
 				.doMockIf(
-					/\/google-site-kit\/v1\/core\/search-console\/data\/users/
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/users/
 				)
 				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
 
@@ -195,7 +195,7 @@ describe( 'googlesitekit.api', () => {
 
 			fetch
 				.doMockIf(
-					/\/google-site-kit\/v1\/core\/search-console\/data\/notifications/
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/notifications/
 				)
 				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
 
@@ -223,7 +223,7 @@ describe( 'googlesitekit.api', () => {
 
 			fetch
 				.doMockIf(
-					/\/google-site-kit\/v1\/core\/search-console\/data\/other/
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/other/
 				)
 				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
 
@@ -248,7 +248,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should not use cache even if cached values exist', async () => {
 			fetch
 				.doMockIf(
-					/\/google-site-kit\/v1\/core\/search-console\/data\/cached/
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/cached/
 				)
 				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
 
@@ -302,7 +302,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should send request body data from data params', async () => {
 			fetch
 				.doMockIf(
-					/\/google-site-kit\/v1\/core\/search-console\/data\/settings/
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/
 				)
 				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
 
@@ -325,7 +325,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should send request body data from data params and query params if set', async () => {
 			fetch
 				.doMockIf(
-					/\/google-site-kit\/v1\/core\/search-console\/data\/settings/
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/
 				)
 				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
 
@@ -351,7 +351,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should never use the cache for set requests', async () => {
 			fetch
 				.doMockIf(
-					/\/google-site-kit\/v1\/core\/search-console\/data\/settings/
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/
 				)
 				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
 
@@ -371,7 +371,7 @@ describe( 'googlesitekit.api', () => {
 			// Mock all requests for this URL.
 			fetch
 				.doMockIf(
-					/\/google-site-kit\/v1\/core\/search-console\/data\/will-cache/
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/will-cache/
 				)
 				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
 
@@ -403,7 +403,7 @@ describe( 'googlesitekit.api', () => {
 			// Mock all requests for this URL.
 			fetch
 				.doMockIf(
-					/\/google-site-kit\/v1\/core\/search-console\/data\/will-cache/
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/will-cache/
 				)
 				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
 
@@ -590,7 +590,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should send a request using fetch', async () => {
 			fetch
 				.doMockIf(
-					/\/google-site-kit\/v1\/core\/search-console\/data\/settings/
+					/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/
 				)
 				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
 
