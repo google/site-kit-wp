@@ -157,10 +157,7 @@ export function trackEvent( eventCategory, eventName, eventLabel = '', eventValu
 		return;
 	}
 
-	_global[ DATA_LAYER ] = _global[ DATA_LAYER ] || [];
-	const gtag = ( ...args ) => _global[ DATA_LAYER ].push( args );
-
-	gtag( 'event', eventName, {
+	dataLayerPush( _global, 'event', eventName, {
 		send_to: trackingID,
 		event_category: eventCategory,
 		event_label: eventLabel,
@@ -169,6 +166,17 @@ export function trackEvent( eventCategory, eventName, eventLabel = '', eventValu
 		dimension2: isFirstAdmin ? 'true' : 'false',
 		dimension3: userIDHash,
 	} );
+}
+
+/**
+ * Pushes data onto the data layer.
+ *
+ * @param {Object} _global The global object. Optional. (Used for testing only)
+ * @param {...any} args Arguments to push onto the data layer.
+ */
+function dataLayerPush( _global = global, ...args ) {
+	_global[ DATA_LAYER ] = _global[ DATA_LAYER ] || [];
+	_global[ DATA_LAYER ].push( args );
 }
 
 // Set the initial state on import.
