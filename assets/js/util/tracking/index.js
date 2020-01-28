@@ -36,6 +36,11 @@ const config = { ...DEFAULT_CONFIG };
 let enableTrackingPromise;
 
 /**
+ * gtag script identifier.
+ */
+const SCRIPT_IDENTIFIER = 'data-googlesitekit-gtag';
+
+/**
  * Data layer global used for internal/private Site Kit data.
  */
 export const DATA_LAYER = '_googlesitekitDataLayer';
@@ -105,7 +110,7 @@ export async function enableTracking( _global = global ) {
 
 	const { document } = _global;
 	// If the script is already in the DOM then we shouldn't get here as the promise should already be returned.
-	if ( document.querySelector( 'script[data-googlesitekit-gtag]' ) ) {
+	if ( document.querySelector( `script[${ SCRIPT_IDENTIFIER }]` ) ) {
 		enableTrackingPromise = Promise.resolve( { trackingEnabled: true } );
 	} else { // If not present, inject it and resolve promise on load
 		const scriptTag = document.createElement( 'script' );
@@ -113,7 +118,7 @@ export async function enableTracking( _global = global ) {
 			scriptTag.onload = () => resolve( { trackingEnabled: true } );
 			scriptTag.onerror = reject;
 		} );
-		scriptTag.setAttribute( 'data-googlesitekit-gtag', '' );
+		scriptTag.setAttribute( SCRIPT_IDENTIFIER, '' );
 		scriptTag.async = true;
 		scriptTag.src = `https://www.googletagmanager.com/gtag/js?id=${ config.trackingID }&l=${ DATA_LAYER }`;
 		document.head.appendChild( scriptTag );
