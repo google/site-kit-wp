@@ -36,6 +36,11 @@ const config = { ...DEFAULT_CONFIG };
 let enableTrackingPromise;
 
 /**
+ * Data layer global used for internal/private Site Kit data.
+ */
+export const DATA_LAYER = '_googlesitekitDataLayer';
+
+/**
  * Initializes tracking.
  *
  * @param {Object} _baseData Site Kit base data. (Optional - for testing only)
@@ -104,7 +109,7 @@ export async function enableTracking() {
 		} );
 		scriptTag.setAttribute( 'data-googlesitekit-gtag', '' );
 		scriptTag.async = true;
-		scriptTag.src = `https://www.googletagmanager.com/gtag/js?id=${ config.trackingID }`;
+		scriptTag.src = `https://www.googletagmanager.com/gtag/js?id=${ config.trackingID }&l=${ DATA_LAYER }`;
 		document.head.appendChild( scriptTag );
 	}
 
@@ -152,8 +157,8 @@ export function trackEvent( eventCategory, eventName, eventLabel = '', eventValu
 		return;
 	}
 
-	_global.dataLayer = _global.dataLayer || [];
-	const gtag = ( ...args ) => _global.dataLayer.push( args );
+	_global[ DATA_LAYER ] = _global[ DATA_LAYER ] || [];
+	const gtag = ( ...args ) => _global[ DATA_LAYER ].push( args );
 
 	gtag( 'event', eventName, {
 		send_to: trackingID,

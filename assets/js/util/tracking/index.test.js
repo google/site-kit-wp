@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { bootstrapTracking, trackEvent } from './';
+import { bootstrapTracking, DATA_LAYER, trackEvent } from './';
 
 describe( 'trackEvent', () => {
 	it( 'sends a tracking event', () => {
@@ -16,14 +16,14 @@ describe( 'trackEvent', () => {
 		bootstrapTracking( _googlesitekitBase );
 
 		const _global = {
-			dataLayer: {
+			[ DATA_LAYER ]: {
 				push: jest.fn(),
 			},
 		};
 
 		trackEvent( 'category', 'name', 'label', 'value', _global );
 
-		expect( _global.dataLayer.push ).toHaveBeenCalledWith( [
+		expect( _global[ DATA_LAYER ].push ).toHaveBeenCalledWith( [
 			'event',
 			'name',
 			{
