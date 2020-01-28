@@ -91,7 +91,7 @@ class GoogleSitekitDashboard extends Component {
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
-	if ( googlesitekit.admin.resetSession ) {
+	if ( global.googlesitekit.admin.resetSession ) {
 		clearWebStorage();
 	}
 

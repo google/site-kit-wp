@@ -153,7 +153,8 @@ export const getQueryParameter = ( name, _location = location ) => {
  *
  */
 export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel = '', eventValue = '' ) => {
-	if ( 'undefined' === typeof gtag || ! global.googlesitekitTrackingEnabled ) {
+	const { googlesitekitTrackingEnabled, gtag } = global;
+	if ( 'undefined' === typeof gtag || ! googlesitekitTrackingEnabled ) {
 		return;
 	}
 

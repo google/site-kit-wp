@@ -26,7 +26,7 @@ import TabBar from '@material/react-tab-bar';
 import { __ } from '@wordpress/i18n';
 
 const setupSettings = () => {
-	window.googlesitekit.modules.analytics[ 'accounts-properties-profiles' ] = {
+	global.googlesitekit.modules.analytics[ 'accounts-properties-profiles' ] = {
 		accounts: [
 			{
 				created: '2011-03-25T21:41:26.980Z',
@@ -183,10 +183,10 @@ storiesOf( 'Settings', module )
 		},
 	} )
 	.add( 'Connected Services', () => {
-		window.googlesitekit = settingsData;
-		window.googlesitekit.setupComplete = true;
-		googlesitekit.modules.analytics.setupComplete = true;
-		googlesitekit.modules[ 'search-console' ].setupComplete = true;
+		global.googlesitekit = settingsData;
+		global.googlesitekit.setupComplete = true;
+		global.googlesitekit.modules.analytics.setupComplete = true;
+		global.googlesitekit.modules[ 'search-console' ].setupComplete = true;
 		// Load the datacache with data.
 		setTimeout( () => {
 			setupSettings();
@@ -213,9 +213,9 @@ storiesOf( 'Settings', module )
 		},
 	} )
 	.add( 'VRT: Editing Settings Module', () => {
-		window.googlesitekit = settingsData;
-		window.googlesitekit.setupComplete = true;
-		googlesitekit.modules.analytics.setupComplete = true;
+		global.googlesitekit = settingsData;
+		global.googlesitekit.setupComplete = true;
+		global.googlesitekit.modules.analytics.setupComplete = true;
 		// Load the datacache with data.
 		setTimeout( () => {
 			setupSettings();

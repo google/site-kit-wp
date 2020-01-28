@@ -34,4 +34,4 @@ class ModuleApp extends Component {
 		return null;
 	}
 }
-export default withFilters( 'googlesitekit.ModuleApp-' + googlesitekitCurrentModule.slug )( ModuleApp );
+export default withFilters( `googlesitekit.ModuleApp-${ global.googlesitekitCurrentModule.slug }` )( ModuleApp );

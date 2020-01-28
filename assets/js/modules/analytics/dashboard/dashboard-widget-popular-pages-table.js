@@ -50,7 +50,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 					className="googlesitekit-popular-content"
 					footer
 					footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					footerCtaLink={ googlesitekit.modules.analytics.homepage }
+					footerCtaLink={ global.googlesitekit.modules.analytics.homepage }
 					fill
 				>
 					{ component }
@@ -61,7 +61,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 
 	render() {
 		const { data } = this.props;
-		const { siteURL: siteURL } = googlesitekit.admin;
+		const { siteURL: siteURL } = global.googlesitekit.admin;
 
 		if ( ! data || ! data.length ) {
 			return null;

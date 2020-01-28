@@ -55,7 +55,7 @@ class SettingsModule extends Component {
 	constructor( props ) {
 		super( props );
 		const { slug } = props;
-		const { setupComplete } = googlesitekit.modules[ slug ];
+		const { setupComplete } = global.googlesitekit.modules[ slug ];
 		this.state = {
 			isSaving: false,
 			active: props.active,
@@ -146,7 +146,7 @@ class SettingsModule extends Component {
 	// Find modules that depend on a module.
 	getDependentModules() {
 		const { slug } = this.props;
-		const { modules } = googlesitekit;
+		const { modules } = global.googlesitekit;
 		const dependants = {};
 
 		if ( modules[ slug ].dependants ) {

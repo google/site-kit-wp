@@ -41,8 +41,8 @@ class TagmanagerSetup extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { settings } = googlesitekit.modules.tagmanager;
-		const usageContext = googlesitekit.admin.ampMode === 'primary' ? 'amp' : 'web';
+		const { settings } = global.googlesitekit.modules.tagmanager;
+		const usageContext = global.googlesitekit.admin.ampMode === 'primary' ? 'amp' : 'web';
 		const containerKey = usageContext === 'amp' ? 'ampContainerID' : 'containerID';
 
 		this.state = {
@@ -295,7 +295,7 @@ class TagmanagerSetup extends Component {
 				finishSetup();
 			}
 
-			googlesitekit.modules.tagmanager.settings = savedSettings;
+			global.googlesitekit.modules.tagmanager.settings = savedSettings;
 
 			if ( this._isMounted ) {
 				this.setState( {
@@ -366,7 +366,7 @@ class TagmanagerSetup extends Component {
 	}
 
 	renderSettingsInfo() {
-		const { settings } = googlesitekit.modules.tagmanager;
+		const { settings } = global.googlesitekit.modules.tagmanager;
 		const {
 			hasExistingTag,
 			containerKey,

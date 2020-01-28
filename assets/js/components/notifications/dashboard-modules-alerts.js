@@ -68,7 +68,7 @@ class DashboardModulesAlerts extends Component {
 						title={ notification.title || '' }
 						description={ notification.description || '' }
 						blockData={ notification.blockData || [] }
-						winImage={ notification.winImage ? `${ googlesitekit.admin.assetsRoot }images/${ notification.winImage }` : '' }
+						winImage={ notification.winImage ? `${ global.googlesitekit.admin.assetsRoot }images/${ notification.winImage }` : '' }
 						format={ notification.format || 'small' }
 						learnMoreURL={ notification.learnMoreURL || '' }
 						learnMoreDescription={ notification.learnMoreDescription || '' }
@@ -81,7 +81,7 @@ class DashboardModulesAlerts extends Component {
 						isDismissable={ notification.isDismissable || true }
 						logo={ notification.logo || true }
 						module={ key }
-						moduleName={ googlesitekit.modules[ key ].name }
+						moduleName={ global.googlesitekit.modules[ key ].name }
 						pageIndex={ notification.pageIndex || '' }
 						dismissExpires={ notification.dismissExpires || 0 }
 						showOnce={ notification.showOnce || false }

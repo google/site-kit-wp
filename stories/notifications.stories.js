@@ -15,7 +15,7 @@ storiesOf( 'Global/Notifications', module )
 			id="notification-id"
 			title={ __( 'Congrats on completing the setup for Analytics!', 'google-site-kit' ) }
 			handleDismiss={ () => {} }
-			winImage={ `${ googlesitekit.admin.assetsRoot }images/rocket.png` }
+			winImage={ `${ global.googlesitekit.admin.assetsRoot }images/rocket.png` }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="large"
 			type="win-success"
@@ -31,7 +31,7 @@ storiesOf( 'Global/Notifications', module )
 			learnMore={ __( 'Learn more', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="small"
-			smallImage={ `${ googlesitekit.admin.assetsRoot }images/thumbs-up.png` }
+			smallImage={ `${ global.googlesitekit.admin.assetsRoot }images/thumbs-up.png` }
 			type="win-success"
 		/>
 	) )
@@ -84,7 +84,7 @@ storiesOf( 'Global/Notifications', module )
 			description={ __( 'You had a record-high amount of visitors to your website yesterday.', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="large"
-			winImage={ `${ googlesitekit.admin.assetsRoot }images/sun.png` }
+			winImage={ `${ global.googlesitekit.admin.assetsRoot }images/sun.png` }
 			logo
 			module="analytics"
 			moduleName="Analytics"
@@ -113,7 +113,7 @@ storiesOf( 'Global/Notifications', module )
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="large"
 			logo={ true }
-			winImage={ `${ googlesitekit.admin.assetsRoot }images/sun-small.png` }
+			winImage={ `${ global.googlesitekit.admin.assetsRoot }images/sun-small.png` }
 			blockData={
 				[
 					{
@@ -138,7 +138,7 @@ storiesOf( 'Global/Notifications', module )
 			description={ __( 'That’s out of this world. Here are the combined stats for your posts', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="large"
-			winImage={ `${ googlesitekit.admin.assetsRoot }images/rocket.png` }
+			winImage={ `${ global.googlesitekit.admin.assetsRoot }images/rocket.png` }
 			blockData={
 				[
 					{
@@ -168,7 +168,7 @@ storiesOf( 'Global/Notifications', module )
 			description={ __( 'Last month was great! Here are some high level stats', 'google-site-kit' ) }
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			format="large"
-			winImage={ `${ googlesitekit.admin.assetsRoot }images/g-win.png` }
+			winImage={ `${ global.googlesitekit.admin.assetsRoot }images/g-win.png` }
 			blockData={
 				[
 					{

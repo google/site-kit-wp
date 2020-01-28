@@ -19,9 +19,9 @@ const PageSpeedInsightsCTA = () => {
 	const {
 		active,
 		setupComplete,
-	} = googlesitekit.modules[ 'pagespeed-insights' ];
+	} = global.googlesitekit.modules[ 'pagespeed-insights' ];
 
-	const { canManageOptions } = googlesitekit.permissions;
+	const { canManageOptions } = global.googlesitekit.permissions;
 
 	if ( ! canManageOptions && ! setupComplete ) {
 		return null;

@@ -58,7 +58,7 @@ class DashboardDetailsApp extends Component {
 									mdc-layout-grid__cell--span-4-tablet
 									mdc-layout-grid__cell--span-8-desktop
 								">
-									<Link href={ googlesitekit.dashboardPermalink } inherit back small>
+									<Link href={ global.googlesitekit.dashboardPermalink } inherit back small>
 										{ __( 'Back to the Site Kit Dashboard', 'google-site-kit' ) }
 									</Link>
 									<PageHeader
@@ -95,10 +95,10 @@ class DashboardDetailsApp extends Component {
 															googlesitekit-heading-3
 															googlesitekit-dashboard-single-url__title
 														">
-														{ decodeHtmlEntity( googlesitekit.pageTitle ) }
+														{ decodeHtmlEntity( global.googlesitekit.pageTitle ) }
 													</h3>
-													<Link href={ googlesitekit.permaLink } inherit external>
-														{ googlesitekit.permaLink }
+													<Link href={ global.googlesitekit.permaLink } inherit external>
+														{ global.googlesitekit.permaLink }
 													</Link>
 												</div>
 											</div>

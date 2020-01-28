@@ -7,16 +7,6 @@
     "browser": true,
     "es6": true
   },
-  "globals": {
-    "React": "readonly",
-    "googlesitekit": "readonly",
-    "googlesitekitAdminbar": "readonly",
-    "googlesitekitDashboard": "readonly",
-    "googlesitekitSettings": "readonly",
-    "googlesitekitCurrentModule": "readonly",
-    "gtag": "readonly",
-    "process": "readonly"
-  },
   "rules": {
     "no-restricted-globals": [
       "error",

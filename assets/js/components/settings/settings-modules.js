@@ -55,8 +55,8 @@ class SettingsModules extends Component {
 	}
 
 	componentDidMount() {
-		if ( googlesitekit.editmodule && googlesitekit.modules[ googlesitekit.editmodule ].active ) {
-			this.handleButtonAction( `${ googlesitekit.editmodule }-module`, 'edit' );
+		if ( global.googlesitekit.editmodule && global.googlesitekit.modules[ global.googlesitekit.editmodule ].active ) {
+			this.handleButtonAction( `${ global.googlesitekit.editmodule }-module`, 'edit' );
 		}
 	}
 
@@ -145,7 +145,7 @@ class SettingsModules extends Component {
 	}
 
 	settingsModuleComponent( module, isSaving ) {
-		const { provides } = googlesitekit.modules[ module.slug ];
+		const { provides } = global.googlesitekit.modules[ module.slug ];
 		const { isEditing, openModules, error } = this.state;
 		const isOpen = openModules[ module.slug ] || false;
 
@@ -211,12 +211,12 @@ class SettingsModules extends Component {
 		const { activeTab } = this.props;
 		const modulesBeingEdited = filter( isEditing, ( module ) => module );
 		const editActive = 0 < modulesBeingEdited.length;
-		if ( ! global.googlesitekit || ! global.googlesitekit.modules ) {
+		if ( ! global.global.googlesitekit || ! global.global.googlesitekit.modules ) {
 			return null;
 		}
 
 		// Filter out internal modules.
-		const modules = filter( global.googlesitekit.modules, ( module ) => ! module.internal );
+		const modules = filter( global.global.googlesitekit.modules, ( module ) => ! module.internal );
 
 		const activeModules = this.mapToModule(
 			sortBy(
@@ -295,7 +295,7 @@ class SettingsModules extends Component {
 							title={ __( 'Congrats, you’ve connected all services!', 'google-site-kit' ) }
 							description={ __( 'We’re working on adding new services to Site Kit by Google all the time, so please check back in the future.', 'google-site-kit' ) }
 							format="small"
-							smallImage={ `${ googlesitekit.admin.assetsRoot }images/thumbs-up.png` }
+							smallImage={ `${ global.googlesitekit.admin.assetsRoot }images/thumbs-up.png` }
 							type="win-success"
 						/>
 					</div>
