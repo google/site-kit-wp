@@ -50,8 +50,6 @@ const resolve = {
 	alias: {
 		'@wordpress/api-fetch__non-shim': require.resolve( '@wordpress/api-fetch' ),
 		'@wordpress/api-fetch$': path.resolve( 'assets/js/api-fetch-shim.js' ),
-		'@wordpress/hooks__non-shim': require.resolve( '@wordpress/hooks' ),
-		'@wordpress/hooks$': path.resolve( 'assets/js/hooks-shim.js' ),
 		SiteKitCore: path.resolve( 'assets/js/' ),
 		GoogleComponents: path.resolve( 'assets/js/components/' ),
 		GoogleUtil: path.resolve( 'assets/js/util/' ),
