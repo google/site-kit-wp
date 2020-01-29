@@ -25,7 +25,6 @@ const path = require( 'path' );
 /**
  * External dependencies
  */
-const glob = require( 'glob' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
@@ -65,8 +64,6 @@ module.exports = ( env, argv ) => {
 				'googlesitekit-adminbar-loader': './assets/js/googlesitekit-adminbar-loader.js',
 				'googlesitekit-admin': './assets/js/googlesitekit-admin.js',
 				'googlesitekit-module': './assets/js/googlesitekit-module.js',
-				ads: './assets/js/ads.js',
-				allmodules: glob.sync( './assets/js/modules/**/*.js' ),
 			},
 			output: {
 				filename: '[name].js',
