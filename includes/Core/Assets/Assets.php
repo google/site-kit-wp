@@ -411,6 +411,12 @@ final class Assets {
 			),
 			// End JSR Assets.
 			new Script(
+				'googlesitekit_ads_detect',
+				array(
+					'src' => $base_url . 'js/ads.js',
+				)
+			),
+			new Script(
 				'googlesitekit_dashboard_splash',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-dashboard-splash.js',
