@@ -31,17 +31,6 @@ const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 const { ProvidePlugin } = require( 'webpack' );
 
-// This External Libraries will not part of wp object. Most of this is for Polyfill.
-const externalLibrary = {
-	'wp-polyfill': './node_modules/@babel/polyfill/dist/polyfill.js',
-	'wp-polyfill-fetch': './node_modules/whatwg-fetch/dist/fetch.umd.js',
-	'wp-polyfill-element-closest': './node_modules/element-closest/element-closest.js',
-	'wp-polyfill-node-contains': './node_modules/polyfill-library/polyfills/Node/prototype/contains/polyfill.js',
-	'wp-polyfill-formdata': './node_modules/formdata-polyfill/FormData.js',
-	'wp-polyfill-url': './node_modules/url-polyfill/url-polyfill.js',
-	svgxuse: './node_modules/svgxuse/svgxuse.js',
-};
-
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
 };
@@ -187,20 +176,6 @@ module.exports = ( env, argv ) => {
 				} ),
 			],
 			resolve,
-		},
-
-		// Build the external libraries
-		{
-			entry: externalLibrary,
-			output: {
-				filename: '[name].js',
-				path: __dirname + '/dist/assets/js/externals',
-			},
-			plugins: ( env && env.analyze ) ? [] : [
-				new WebpackBar( {
-					name: 'External Libraries',
-					color: '#4185f4',
-				} ) ],
 		},
 
 		// Build the main plugin admin css.
