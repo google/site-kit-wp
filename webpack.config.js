@@ -92,6 +92,7 @@ module.exports = ( env, argv ) => {
 							{
 								loader: 'eslint-loader',
 								options: {
+									quiet: true,
 									formatter: require( 'eslint' ).CLIEngine.getFormatter( 'stylish' ),
 								},
 							},
@@ -159,6 +160,7 @@ module.exports = ( env, argv ) => {
 							{
 								loader: 'eslint-loader',
 								options: {
+									quiet: true,
 									formatter: require( 'eslint' ).CLIEngine.getFormatter( 'stylish' ),
 								},
 							},
