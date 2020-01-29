@@ -21,17 +21,22 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class CredentialsTest extends TestCase {
 
+	private $registered_default = array(
+		'oauth2_client_id'     => '',
+		'oauth2_client_secret' => '',
+	);
+
 	public function test_get() {
 		$options           = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$encrypted_options = new Encrypted_Options( $options );
 		$credentials       = new Credentials( $encrypted_options );
 
-		$this->assertFalse( $encrypted_options->get( Credentials::OPTION ) );
 		$this->assertEqualSets(
-			array(
-				'oauth2_client_id'     => '',
-				'oauth2_client_secret' => '',
-			),
+			$this->registered_default,
+			$encrypted_options->get( Credentials::OPTION )
+		);
+		$this->assertEqualSets(
+			$this->registered_default,
 			$credentials->get()
 		);
 
@@ -51,7 +56,7 @@ class CredentialsTest extends TestCase {
 			array(
 				'oauth2_client_id'     => 'test-client-id',
 				'oauth2_client_secret' => 'test-client-secret',
-			) 
+			)
 		);
 
 		$this->assertEqualSets(
@@ -68,7 +73,7 @@ class CredentialsTest extends TestCase {
 		$encrypted_options = new Encrypted_Options( $options );
 		$credentials       = new Credentials( $encrypted_options );
 
-		$this->assertFalse( $encrypted_options->get( Credentials::OPTION ) );
+		$this->assertEqualSets( $this->registered_default, $encrypted_options->get( Credentials::OPTION ) );
 		$this->assertTrue( $credentials->set( array( 'test-credentials' ) ) );
 		$this->assertEquals( array( 'test-credentials' ), $encrypted_options->get( Credentials::OPTION ) );
 	}
@@ -78,7 +83,8 @@ class CredentialsTest extends TestCase {
 		$encrypted_options = new Encrypted_Options( $options );
 		$credentials       = new Credentials( $encrypted_options );
 
-		$this->assertFalse( $options->get( Credentials::OPTION ) );
+		$this->assertFalse( $options->has( Credentials::OPTION ) );
+		$this->assertFalse( $encrypted_options->has( Credentials::OPTION ) );
 		$this->assertFalse( $credentials->has() );
 		// Credentials missing all required keys are considered missing
 		// Test dummy credentials
@@ -96,7 +102,7 @@ class CredentialsTest extends TestCase {
 			array(
 				'oauth2_client_id'     => 'test-client-id',
 				'oauth2_client_secret' => '',
-			) 
+			)
 		);
 		$this->assertFalse( $credentials->has() );
 		// Test empty client id with a secret
@@ -105,7 +111,7 @@ class CredentialsTest extends TestCase {
 			array(
 				'oauth2_client_id'     => '',
 				'oauth2_client_secret' => 'test-client-secret',
-			) 
+			)
 		);
 		$this->assertFalse( $credentials->has() );
 		// Test with provided client id and secret
@@ -114,7 +120,7 @@ class CredentialsTest extends TestCase {
 			array(
 				'oauth2_client_id'     => 'test-client-id',
 				'oauth2_client_secret' => 'test-client-secret',
-			) 
+			)
 		);
 		$this->assertTrue( $credentials->has() );
 	}

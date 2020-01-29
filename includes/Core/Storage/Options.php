@@ -43,6 +43,28 @@ final class Options implements Options_Interface {
 	}
 
 	/**
+	 * Checks whether or not a value is set for the given option.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $option Option name.
+	 * @return bool True if value set, false otherwise.
+	 */
+	public function has( $option ) {
+		// Call without getting the value to ensure 'notoptions' cache is fresh for the option.
+		$this->get( $option );
+
+		if ( $this->context->is_network_mode() ) {
+			$network_id = get_current_network_id();
+			$notoptions = wp_cache_get( "$network_id:notoptions", 'site-options' );
+		} else {
+			$notoptions = wp_cache_get( 'notoptions', 'options' );
+		}
+
+		return ! isset( $notoptions[ $option ] );
+	}
+
+	/**
 	 * Gets the value of the given option.
 	 *
 	 * @since 1.0.0
