@@ -24,6 +24,7 @@ import Notification from 'GoogleComponents/notifications/notification';
 import 'GoogleComponents/data';
 import 'GoogleComponents/notifications';
 import { loadTranslations } from 'GoogleUtil';
+import 'GoogleModules';
 
 /**
  * WordPress dependencies

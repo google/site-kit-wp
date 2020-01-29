@@ -28,6 +28,7 @@ import {
 	loadTranslations,
 	sendAnalyticsTrackingEvent,
 } from 'GoogleUtil';
+import 'GoogleModules';
 
 /**
  * WordPress dependencies
