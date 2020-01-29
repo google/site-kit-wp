@@ -38,12 +38,12 @@ import {
 import Spinner from 'GoogleComponents/spinner';
 import SettingsOverlay from 'GoogleComponents/settings/settings-overlay';
 import GenericError from 'GoogleComponents/notifications/generic-error';
-import withFilters from 'GoogleComponents/higherorder/with-filters';
 import { filter, map } from 'lodash';
 
 /**
  * WordPress dependencies
  */
+import { withFilters } from '@wordpress/components';
 import { Component, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { applyFilters } from '@wordpress/hooks';
