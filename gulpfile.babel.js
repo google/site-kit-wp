@@ -62,8 +62,10 @@ gulp.task( 'local', () => {
  * Gulp task to minify and combine svg's.
  */
 gulp.task( 'svg', () => {
-	runSequence( 'svgstore' );
-	runSequence( 'svgmin' );
+	runSequence(
+		'svgstore',
+		'svgmin'
+	);
 } );
 
 /**
@@ -76,7 +78,3 @@ gulp.task( 'release', () => {
 	);
 } );
 
-/**
- * Gulp task to run the default build processes in a sequential order.
- */
-gulp.task( 'default', 'webpack' );
