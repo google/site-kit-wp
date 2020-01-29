@@ -25,6 +25,7 @@ class OptionsTest extends TestCase {
 		// Ensure default is a truthy value.
 		add_filter( 'default_option_test_option', '__return_true' );
 		delete_option( 'test_option' );
+		$this->assertTrue( get_option( 'test_option' ) );
 		$this->assertFalse( $options->has( 'test_option' ) );
 
 		// Ensure default is a truthy value.
