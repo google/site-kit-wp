@@ -31,21 +31,7 @@
       },
       "globals": {
         "browser": true,
-        "page": true,
-        "wp": true
-      },
-      "rules": {
-        "no-restricted-globals": [
-          "off"
-        ]
-      }
-    },
-    {
-      "files": [
-        "stories/**/*.js"
-      ],
-      "globals": {
-        "window": false
+        "page": true
       },
       "rules": {
         "no-restricted-globals": [

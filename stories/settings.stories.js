@@ -246,18 +246,19 @@ storiesOf( 'Settings', module )
 		},
 	} )
 	.add( 'Connect More Services', () => {
-		window.googlesitekit = settingsData;
-		window.googlesitekit.modules.analytics.setupComplete = false;
+		global.googlesitekit = settingsData;
+		global.googlesitekit.canAdsRun = true;
+		global.googlesitekit.modules.analytics.setupComplete = false;
 		return (
 			<SettingsModules activeTab={ 1 } />
 		);
 	} )
 	.add( 'Admin Settings', () => {
-		window.googlesitekit = settingsData;
-		window.googlesitekit.modules.analytics.setupComplete = false;
-		window.googlesitekit.admin.clientID = '26521001426-xxx1234ffghrrro6hofusq2b8.apps..com';
-		window.googlesitekit.admin.clientSecret = '••••••••••••••••••••••••••••';
-		window.googlesitekit.admin.apikey = 'AIzaSyAi7c63e21001ESQsrtIfdIY3IcyQVyiw4o';
+		global.googlesitekit = settingsData;
+		global.googlesitekit.modules.analytics.setupComplete = false;
+		global.googlesitekit.admin.clientID = '26521001426-xxx1234ffghrrro6hofusq2b8.apps..com';
+		global.googlesitekit.admin.clientSecret = '••••••••••••••••••••••••••••';
+		global.googlesitekit.admin.apikey = 'AIzaSyAi7c63e21001ESQsrtIfdIY3IcyQVyiw4o';
 
 		return (
 			<div className="mdc-layout-grid">

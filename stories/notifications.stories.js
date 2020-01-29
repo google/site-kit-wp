@@ -9,6 +9,8 @@ import { __ } from '@wordpress/i18n';
 import Notification from 'GoogleComponents/notifications/notification';
 import ModulesList from 'GoogleComponents/modules-list';
 
+global.googlesitekit.canAdsRun = true;
+
 storiesOf( 'Global/Notifications', module )
 	.add( 'Module Setup Complete', () => (
 		<Notification

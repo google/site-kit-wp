@@ -21,8 +21,9 @@ import WPAnalyticsDashboardWidgetTopPagesTable from 'GoogleModules/analytics/wp-
 
 storiesOf( 'WordPress', module )
 	.add( 'WordPress Dashboard', () => {
-		window.googlesitekit = wpDashboardData;
-		window.googlesitekit.admin.assetsRoot = '/assets/';
+		global.googlesitekit = wpDashboardData;
+		global.googlesitekit.admin.assetsRoot = '/assets/';
+		global.googlesitekit.canAdsRun = true;
 		const addWPSearchConsoleDashboardWidget = createAddToFilter( <WPSearchConsoleDashboardWidget /> );
 		const addWPAnalyticsDashboardWidgetOverview = createAddToFilter( <WPAnalyticsDashboardWidgetOverview /> );
 		const addWPAnalyticsDashboardWidgetTopPagesTable = createAddToFilter( <WPAnalyticsDashboardWidgetTopPagesTable /> );
@@ -34,7 +35,7 @@ storiesOf( 'WordPress', module )
 
 		addFilter( 'googlesitekit.WPDashboardHeader',
 			'googlesitekit.Analytics',
-			addWPAnalyticsDashboardWidgetOverview );
+			addWPAnalyticsDashboardWidgetOverview, 1 );
 		addFilter( 'googlesitekit.WPDashboardModule',
 			'googlesitekit.Analytics',
 			addWPAnalyticsDashboardWidgetTopPagesTable );

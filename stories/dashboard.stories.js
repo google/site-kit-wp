@@ -34,7 +34,7 @@ storiesOf( 'Dashboard', module )
 		/>
 	) )
 	.add( 'All Traffic', () => {
-		window.googlesitekit = analyticsDashboardData;
+		global.googlesitekit = analyticsDashboardData;
 
 		// Load the datacache with data.
 		setTimeout( () => {
@@ -70,7 +70,7 @@ storiesOf( 'Dashboard', module )
 	},
 	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )
 	.add( 'PageSpeed Insights', () => {
-		window.googlesitekit = dashboardData;
+		global.googlesitekit = dashboardData;
 
 		// Load the datacache with data.
 		setTimeout( () => {
@@ -98,7 +98,7 @@ storiesOf( 'Dashboard', module )
 		<PostSearcher />
 	) )
 	.add( 'Search Funnel Analytics Inactive', () => {
-		window.googlesitekit = analyticsDashboardData;
+		global.googlesitekit = analyticsDashboardData;
 
 		const addSearchConsoleDashboardWidgetTopLevel = createAddToFilter( <SearchConsoleDashboardWidgetTopLevel /> );
 
@@ -141,7 +141,7 @@ storiesOf( 'Dashboard', module )
 	},
 	{ options: { readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]' } } )
 	.add( 'Search Funnel', () => {
-		window.googlesitekit = analyticsDashboardData;
+		global.googlesitekit = analyticsDashboardData;
 
 		const addAnalyticsDashboardWidgetTopLevel = createAddToFilter( <AnalyticsDashboardWidgetTopLevel /> );
 		const addSearchConsoleDashboardWidgetTopLevel = createAddToFilter( <SearchConsoleDashboardWidgetTopLevel /> );
