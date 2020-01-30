@@ -77,7 +77,7 @@ script:
       npm run test:js || exit 1 # JS unit tests
       npm run test || exit 1 # Bundle size test
     fi
-  - /
+  - |
     if [[ "$VRT" == "1" ]]; then
       travis_retry npm run travis:visualtest || exit 1
     fi
