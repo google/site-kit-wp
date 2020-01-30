@@ -375,18 +375,6 @@ final class Assets {
 								"\n",
 								array(
 									'window._googlesitekitBase = ' . wp_json_encode( $this->get_inline_base_data() ),
-									sprintf(
-										'window._apiFetchRootURL = "%s";',
-										esc_url_raw( get_rest_url() )
-									),
-									sprintf(
-										'window._apiFetchNonceMiddleware = "%s";',
-										( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' )
-									),
-									sprintf(
-										'window._apiFetchNonceEndpoint = "%s";',
-										admin_url( 'admin-ajax.php?action=rest-nonce' )
-									),
 								)
 							),
 							'before'
@@ -520,13 +508,16 @@ final class Assets {
 		$current_user = wp_get_current_user();
 
 		$inline_data = array(
-			'homeURL'          => home_url(),
-			'referenceSiteURL' => esc_url_raw( $site_url ),
-			'userIDHash'       => md5( $site_url . $current_user->ID ),
-			'adminRoot'        => esc_url_raw( get_admin_url() . 'admin.php' ),
-			'assetsRoot'       => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
-			'blogPrefix'       => $wpdb->get_blog_prefix(),
-			'isNetworkMode'    => $this->context->is_network_mode(),
+			'apiFetchNonceEndpoint'   => admin_url( 'admin-ajax.php?action=rest-nonce' ),
+			'apiFetchNonceMiddleware' => ( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' ),
+			'apiFetchRootURL'         => esc_url_raw( get_rest_url() ),
+			'homeURL'                 => home_url(),
+			'referenceSiteURL'        => esc_url_raw( $site_url ),
+			'userIDHash'              => md5( $site_url . $current_user->ID ),
+			'adminRoot'               => esc_url_raw( get_admin_url() . 'admin.php' ),
+			'assetsRoot'              => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
+			'blogPrefix'              => $wpdb->get_blog_prefix(),
+			'isNetworkMode'           => $this->context->is_network_mode(),
 		);
 
 		/**

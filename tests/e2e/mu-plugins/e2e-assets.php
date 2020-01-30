@@ -29,12 +29,13 @@ add_action(
 			implode(
 				"\n",
 				array(
-					sprintf( 'window._apiFetchRootURL = "%s";', esc_url_raw( get_rest_url() ) ),
+					'window._googlesitekitBase = window._googlesitekitBase || {};',
+					sprintf( 'window._googlesitekitBase.apiFetchRootURL = "%s";', esc_url_raw( get_rest_url() ) ),
 					sprintf(
-						'window._apiFetchNonceMiddleware = "%s";',
+						'window._googlesitekitBase.apiFetchNonceMiddleware = "%s";',
 						( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' )
 					),
-					sprintf( 'window._apiFetchNonceEndpoint = "%s";', admin_url( 'admin-ajax.php?action=rest-nonce' ) ),
+					sprintf( 'window._googlesitekitBase.apiFetchNonceEndpoint = "%s";', admin_url( 'admin-ajax.php?action=rest-nonce' ) ),
 				)
 			),
 			'before'
