@@ -46,7 +46,7 @@ const resolve = {
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
 
-module.exports = ( env, argv ) => {
+const webpackConfig = ( mode ) => {
 	return [
 		// Build the settings js..
 		{
@@ -103,7 +103,7 @@ module.exports = ( env, argv ) => {
 					},
 				],
 			},
-			plugins: ( env && env.analyze ) ? [] : [
+			plugins: [
 				new ProvidePlugin( {
 					React: 'react',
 				} ),
@@ -128,54 +128,6 @@ module.exports = ( env, argv ) => {
 					} ),
 				],
 			},
-			// externals,
-			resolve,
-		},
-
-		// Build the test files.
-		{
-			entry: {
-				'googlesitekit-tests': './assets/js/googlesitekit-tests.js',
-				'e2e-utilities': './tests/e2e/e2e-utilities.js',
-			},
-			output: {
-				filename: '[name].js',
-				path: __dirname + '/dist/assets/js',
-				chunkFilename: '[name].js',
-				publicPath: '',
-			},
-			module: {
-				rules: [
-					{
-						test: /\.js$/,
-						exclude: /node_modules/,
-						use: [
-							{
-								loader: 'babel-loader',
-								query: {
-									presets: [ [ '@babel/env', {
-										useBuiltIns: 'entry',
-										corejs: 2,
-									} ], '@babel/preset-react' ],
-								},
-							},
-							{
-								loader: 'eslint-loader',
-								options: {
-									quiet: true,
-									formatter: require( 'eslint' ).CLIEngine.getFormatter( 'stylish' ),
-								},
-							},
-						],
-					},
-				],
-			},
-			plugins: ( env && env.analyze ) ? [] : [
-				new WebpackBar( {
-					name: 'Test files',
-					color: '#34a853',
-				} ),
-			],
 			resolve,
 		},
 
@@ -195,7 +147,7 @@ module.exports = ( env, argv ) => {
 							{
 								loader: 'css-loader',
 								options: {
-									minimize: ( 'undefined' === typeof argv || 'production' === argv.mode ),
+									minimize: ( 'production' === mode ),
 								},
 							},
 							'postcss-loader',
@@ -213,11 +165,7 @@ module.exports = ( env, argv ) => {
 					},
 				],
 			},
-			plugins: ( env && env.analyze ) ? [
-				new MiniCssExtractPlugin( {
-					filename: '/assets/css/[name].css',
-				} ),
-			] : [
+			plugins: [
 				new MiniCssExtractPlugin( {
 					filename: '/assets/css/[name].css',
 				} ),
@@ -228,4 +176,64 @@ module.exports = ( env, argv ) => {
 			],
 		},
 	];
+};
+
+const testBundle = () => {
+	return {
+		entry: {
+			'googlesitekit-tests': './assets/js/googlesitekit-tests.js',
+			'e2e-utilities': './tests/e2e/e2e-utilities.js',
+		},
+		output: {
+			filename: '[name].js',
+			path: __dirname + '/dist/assets/js',
+			chunkFilename: '[name].js',
+			publicPath: '',
+		},
+		module: {
+			rules: [
+				{
+					test: /\.js$/,
+					exclude: /node_modules/,
+					use: [
+						{
+							loader: 'babel-loader',
+							query: {
+								presets: [ [ '@babel/env', {
+									useBuiltIns: 'entry',
+									corejs: 2,
+								} ], '@babel/preset-react' ],
+							},
+						},
+						{
+							loader: 'eslint-loader',
+							options: {
+								quiet: true,
+								formatter: require( 'eslint' ).CLIEngine.getFormatter( 'stylish' ),
+							},
+						},
+					],
+				},
+			],
+		},
+		plugins: [
+			new WebpackBar( {
+				name: 'Test files',
+				color: '#34a853',
+			} ),
+		],
+		resolve,
+	};
+};
+
+module.exports = ( ...args ) => {
+	const { mode } = args[ 1 ];
+	const config = webpackConfig( mode );
+
+	if ( mode !== 'production' ) {
+		// Build the test files if we aren't doing a production build.
+		config.push( testBundle() );
+	}
+
+	return config;
 };
