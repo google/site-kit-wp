@@ -48,7 +48,7 @@ before_install:
       docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer install
     fi
   - |
-    if [[ "$JS" == "1" ]]; then
+    if [[ "$VRT" == "1" ]]; then
       docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer install --no-scripts
     fi
   - |
