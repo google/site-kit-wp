@@ -16,7 +16,7 @@
     "release": "rm -rf release && git worktree prune && git worktree add -B stable release origin/stable && npm run build && gulp release && gulp copy",
     "remove-dist": "rm -rf dist/*",
     "test": "webpack --mode=production && bundlesize",
-    "test:visualtest": "npm run build && start-server-and-test storybook http-get://localhost:9001 backstopjs",
+    "test:visualtest": "start-server-and-test storybook http-get://localhost:9001 backstopjs",
     "test:visualapprove": "backstop approve --config=backstop.js",
     "test:analyze": "webpack -p --mode=production --env.analyze=true --json --progress --profile > /tmp/stats.json && cp ./dist/assets/js/*.js /tmp && webpack-bundle-analyzer /tmp/stats.json",
     "test:js": "wp-scripts test-unit-js --config=tests/js/jest.config.js",

@@ -1,4 +1,5 @@
 const path = require( 'path' );
+const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 
 module.exports = async ( { config } ) => {
 	config.resolve = {
@@ -11,6 +12,28 @@ module.exports = async ( { config } ) => {
 			GoogleModules: path.resolve( __dirname, '../assets/js/modules/' ),
 		},
 	};
+
+	config.plugins = [
+		...config.plugins,
+		new MiniCssExtractPlugin(),
+	];
+
+	config.module.rules.push(
+		{
+			test: /\.scss$/,
+			use: [
+				MiniCssExtractPlugin.loader,
+				'css-loader',
+				'postcss-loader',
+				{
+					loader: 'sass-loader',
+					options: {
+						includePaths: [ path.resolve( __dirname, '../node_modules/' ) ],
+					},
+				},
+			],
+		},
+	);
 
 	config.module.rules.push(
 		{
