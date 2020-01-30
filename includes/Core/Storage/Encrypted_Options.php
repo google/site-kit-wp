@@ -48,6 +48,18 @@ final class Encrypted_Options implements Options_Interface {
 	}
 
 	/**
+	 * Checks whether or not a value is set for the given option.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $option Option name.
+	 * @return bool True if value set, false otherwise.
+	 */
+	public function has( $option ) {
+		return $this->options->has( $option );
+	}
+
+	/**
 	 * Gets the value of the given option.
 	 *
 	 * @since 1.0.0
@@ -57,8 +69,10 @@ final class Encrypted_Options implements Options_Interface {
 	 */
 	public function get( $option ) {
 		$raw_value = $this->options->get( $option );
-		if ( ! $raw_value ) {
-			return false;
+
+		// If there is no value stored, return the default which will not be encrypted.
+		if ( ! $this->options->has( $option ) ) {
+			return $raw_value;
 		}
 
 		$data = $this->encryption->decrypt( $raw_value );

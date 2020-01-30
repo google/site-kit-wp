@@ -20,6 +20,16 @@ namespace Google\Site_Kit\Core\Storage;
 interface Options_Interface {
 
 	/**
+	 * Checks whether or not a value is set for the given option.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $option Option name.
+	 * @return bool True if value set, false otherwise.
+	 */
+	public function has( $option );
+
+	/**
 	 * Gets the value of the given option.
 	 *
 	 * @since 1.2.0
