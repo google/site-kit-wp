@@ -11,7 +11,6 @@
     "dev": "npm run build:dev && npm run build:static",
     "watch": "npm run remove-dist && npm run build:static && webpack --watch --mode=development --debug --devtool cheap-module-eval-source-map --output-pathinfo",
     "release-zip": "npm run build && gulp release && gulp copy && gulp pre-zip && gulp zip && rm -rf release",
-    "release-zip-wp50": "npm run build && gulp release && gulp copy && gulp pre-zip-wp50 && gulp zip-wp50 && rm -rf release",
     "release": "rm -rf release && git worktree prune && git worktree add -B stable release origin/stable && npm run build && gulp release && gulp copy",
     "remove-dist": "rm -rf dist/*",
     "test": "webpack --mode=production --display=none && bundlesize",
