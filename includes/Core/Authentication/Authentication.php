@@ -181,6 +181,8 @@ final class Authentication {
 	 * @since 1.0.0
 	 */
 	public function register() {
+		$this->credentials->register();
+
 		add_action(
 			'init',
 			function() {
@@ -554,7 +556,7 @@ final class Authentication {
 		$access_token = $auth_client->get_access_token();
 
 		$data['isSiteKitConnected'] = $this->credentials->has();
-		$data['isResettable']       = (bool) $this->options->get( Credentials::OPTION );
+		$data['isResettable']       = $this->options->has( Credentials::OPTION );
 		$data['isAuthenticated']    = ! empty( $access_token );
 		$data['requiredScopes']     = $auth_client->get_required_scopes();
 		$data['grantedScopes']      = ! empty( $access_token ) ? $auth_client->get_granted_scopes() : array();
@@ -619,11 +621,32 @@ final class Authentication {
 	 * @return array List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
+		$can_setup = function() {
+			return current_user_can( Permissions::SETUP );
+		};
+
 		$can_authenticate = function() {
 			return current_user_can( Permissions::AUTHENTICATE );
 		};
 
 		return array(
+			new REST_Route(
+				'core/site/data/connection',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$data = array(
+								'connected'  => $this->credentials->has(),
+								'resettable' => $this->options->has( Credentials::OPTION ),
+							);
+
+							return new WP_REST_Response( $data );
+						},
+						'permission_callback' => $can_setup,
+					),
+				)
+			),
 			new REST_Route(
 				'core/user/data/authentication',
 				array(

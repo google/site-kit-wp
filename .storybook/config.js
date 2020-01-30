@@ -35,9 +35,9 @@ import {
 /**
  * Internal dependencies
  */
-import '../dist/assets/css/wpdashboard.css';
-import '../dist/assets/css/adminbar.css';
-import '../dist/assets/css/admin.css';
+import '../assets/sass/wpdashboard.scss';
+import '../assets/sass/adminbar.scss';
+import '../assets/sass/admin.scss';
 import '../vendor/johnpbloch/wordpress-core/wp-admin/css/common.css';
 import '../vendor/johnpbloch/wordpress-core/wp-admin/css/dashboard.css';
 import '../vendor/johnpbloch/wordpress-core/wp-admin/css/edit.css';

@@ -29,6 +29,8 @@ storiesOf( 'WordPress', module )
 		const addWPAnalyticsDashboardWidgetTopPagesTable = createAddToFilter( <WPAnalyticsDashboardWidgetTopPagesTable /> );
 
 		removeAllFilters( 'googlesitekit.WPDashboardHeader' );
+		removeAllFilters( 'googlesitekit.WPDashboardModule' );
+
 		addFilter( 'googlesitekit.WPDashboardHeader',
 			'googlesitekit.SearchConsole',
 			addWPSearchConsoleDashboardWidget, 11 );

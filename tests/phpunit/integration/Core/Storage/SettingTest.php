@@ -29,6 +29,16 @@ class SettingTest extends TestCase {
 		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 	}
 
+	public function test_has() {
+		$setting = new FakeSetting( new Options( $this->context ) );
+		delete_option( FakeSetting::OPTION );
+
+		$this->assertFalse( $setting->has() );
+		update_option( FakeSetting::OPTION, 'test-value' );
+
+		$this->assertTrue( $setting->has() );
+	}
+
 	public function test_get() {
 		$setting = new FakeSetting( new Options( $this->context ) );
 		delete_option( FakeSetting::OPTION );
@@ -50,7 +60,7 @@ class SettingTest extends TestCase {
 						'default' => 'test-default-value',
 					)
 				);
-			} 
+			}
 		);
 		delete_option( FakeSetting::OPTION );
 		$this->assertFalse( $setting->get() );
