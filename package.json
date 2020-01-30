@@ -15,7 +15,7 @@
     "release-zip-wp50": "npm run build && gulp release && gulp copy && gulp pre-zip-wp50 && gulp zip-wp50 && rm -rf release",
     "release": "rm -rf release && git worktree prune && git worktree add -B stable release origin/stable && npm run build && gulp release && gulp copy",
     "remove-dist": "rm -rf dist/*",
-    "test": "webpack --mode=production && bundlesize",
+    "test": "webpack --mode=production --display=none && bundlesize",
     "test:visualtest": "start-server-and-test storybook http-get://localhost:9001 backstopjs",
     "test:visualapprove": "backstop approve --config=backstop.js",
     "test:analyze": "webpack -p --mode=production --env.analyze=true --json --progress --profile > /tmp/stats.json && cp ./dist/assets/js/*.js /tmp && webpack-bundle-analyzer /tmp/stats.json",
