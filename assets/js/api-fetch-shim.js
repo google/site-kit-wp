@@ -3,9 +3,7 @@
  */
 import apiFetch from '@wordpress/api-fetch__non-shim';
 
-if ( global._apiFetch === undefined ) {
-	global._apiFetch = apiFetch;
-
+if ( global._apiFetchRootURL || global._apiFetchNonceMiddleware ) {
 	if ( global._apiFetchRootURL ) {
 		apiFetch.use( apiFetch.createRootURLMiddleware( global._apiFetchRootURL ) );
 	}
@@ -20,4 +18,4 @@ if ( global._apiFetch === undefined ) {
 
 export * from '@wordpress/api-fetch__non-shim';
 
-export default global._apiFetch;
+export default apiFetch;
