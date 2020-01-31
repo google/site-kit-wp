@@ -1,7 +1,7 @@
 /**
- * DashboardSearchFunnelInner component.
+ * All modules.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,11 @@
  */
 
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
-import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
-
-class DashboardSearchFunnelInner extends Component {
-	render() {
-		return null;
-	}
-}
-
-export default withFilters( 'googlesitekit.DashboardSearchFunnel' )( DashboardSearchFunnelInner );
+import './adsense';
+import './analytics';
+import './optimize';
+import './pagespeed-insights';
+import './search-console';
+import './tagmanager';

@@ -84,12 +84,12 @@ export const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 	let switchOnMessage;
 	let tracking = false;
 
-	const { accountURL, signupURL } = googlesitekit.modules.adsense;
+	const { accountURL, signupURL } = global.googlesitekit.modules.adsense;
 	const moduleURL = getSiteKitAdminURL(
 		'googlesitekit-module-adsense',
 		{}
 	);
-	const siteURL = new URL( googlesitekit.admin.siteURL );
+	const siteURL = new URL( global.googlesitekit.admin.siteURL );
 
 	switch ( accountStatus ) {
 		case 'account-connected':
@@ -276,7 +276,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 			for ( const account of accountData ) {
 				const accountID = account.id;
 				const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { clientID: accountID } ).then( ( res ) => res ).catch( ( e ) => e );
-				const parsedURL = new URL( googlesitekit.admin.siteURL );
+				const parsedURL = new URL( global.googlesitekit.admin.siteURL );
 				const matches = urlchannels && urlchannels.length ? filter( urlchannels, { urlPattern: parsedURL.hostname } ) : [];
 
 				if ( ! matches || 0 === matches.length ) {
@@ -321,7 +321,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 			}
 		} else {
 			// Set AdSense account link with account found.
-			googlesitekit.modules.adsense.accountURL = sprintf( 'https://www.google.com/adsense/new/%s/home', id );
+			global.googlesitekit.modules.adsense.accountURL = sprintf( 'https://www.google.com/adsense/new/%s/home', id );
 
 			statusUpdateCallback( __( 'Account found, checking account status…', 'google-site-kit' ) );
 
@@ -384,7 +384,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 
 						// Find a URL channel with a matching domain
 						const matches = urlchannels && urlchannels.length && filter( urlchannels, ( channel ) => {
-							return 0 < googlesitekit.admin.siteURL.indexOf( channel.urlPattern );
+							return 0 < global.googlesitekit.admin.siteURL.indexOf( channel.urlPattern );
 						} );
 
 						// No domains found in the account, it is newly set up and domain
@@ -462,8 +462,8 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
  * @return {Promise} Resolves to a boolean, whether or not AdSense is connected.
  */
 export const isAdsenseConnectedAnalytics = async () => {
-	const { active: adsenseActive } = googlesitekit.modules.adsense;
-	const { active: analyticsActive } = googlesitekit.modules.analytics;
+	const { active: adsenseActive } = global.googlesitekit.modules.adsense;
+	const { active: analyticsActive } = global.googlesitekit.modules.analytics;
 
 	let adsenseConnect = true;
 

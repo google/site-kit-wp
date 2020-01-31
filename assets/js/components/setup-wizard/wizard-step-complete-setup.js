@@ -32,7 +32,7 @@ import { Component } from '@wordpress/element';
 class WizardStepCompleteSetup extends Component {
 	constructor( props ) {
 		super( props );
-		const { hasSearchConsoleProperty } = googlesitekit.setup;
+		const { hasSearchConsoleProperty } = global.googlesitekit.setup;
 
 		// Search console property is set for all but the first user.
 		if ( hasSearchConsoleProperty ) {
@@ -73,9 +73,9 @@ class WizardStepCompleteSetup extends Component {
 							mdc-layout-grid__cell--span-3-desktop
 						">
 							<div className="googlesitekit-rocket">
-								<img className="googlesitekit-rocket__body" alt="" src={ googlesitekit.admin.assetsRoot + 'images/rocket-body.png' } />
-								<img className="googlesitekit-rocket__clouds" alt="" src={ googlesitekit.admin.assetsRoot + 'images/rocket-clouds.png' } />
-								<img className="googlesitekit-rocket__dust" alt="" src={ googlesitekit.admin.assetsRoot + 'images/rocket-dust.png' } />
+								<img className="googlesitekit-rocket__body" alt="" src={ global.googlesitekit.admin.assetsRoot + 'images/rocket-body.png' } />
+								<img className="googlesitekit-rocket__clouds" alt="" src={ global.googlesitekit.admin.assetsRoot + 'images/rocket-clouds.png' } />
+								<img className="googlesitekit-rocket__dust" alt="" src={ global.googlesitekit.admin.assetsRoot + 'images/rocket-dust.png' } />
 							</div>
 						</div>
 					</div>

@@ -70,8 +70,8 @@ export class ActivationApp extends Component {
 			/>;
 		}
 		const { proxySetupURL, splashURL } = global._googlesitekitBase;
-		const { canViewDashboard } = googlesitekit.permissions;
-		const { dashboardPermalink } = googlesitekit;
+		const { canViewDashboard } = global.googlesitekit.permissions;
+		const { dashboardPermalink } = global.googlesitekit;
 
 		let buttonURL = proxySetupURL || splashURL;
 		let buttonLabel = __( 'Start setup', 'google-site-kit' );

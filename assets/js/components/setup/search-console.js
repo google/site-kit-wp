@@ -37,7 +37,7 @@ class SearchConsole extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { siteURL } = googlesitekit.admin;
+		const { siteURL } = global.googlesitekit.admin;
 
 		this.state = {
 			loading: true,

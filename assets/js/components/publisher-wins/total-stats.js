@@ -28,7 +28,7 @@ import { getTimeInSeconds, getDaysBetweenDates } from 'GoogleUtil';
 import { __ } from '@wordpress/i18n';
 
 const totalStats = ( data, id ) => {
-	if ( 5 >= parseInt( googlesitekit.admin.newSitePosts, 10 ) ) {
+	if ( 5 >= parseInt( global.googlesitekit.admin.newSitePosts, 10 ) ) {
 		return false;
 	}
 
@@ -93,7 +93,7 @@ const totalStats = ( data, id ) => {
 		title: __( 'Welcome Back!', 'google-site-kit' ),
 		description,
 		format: 'large',
-		winImage: `${ googlesitekit.admin.assetsRoot }images/g-win.png`,
+		winImage: `${ global.googlesitekit.admin.assetsRoot }images/g-win.png`,
 		blockData: dataBlocks,
 		type: 'win-stats',
 		dismissExpires: getTimeInSeconds( 'day' ) * days,

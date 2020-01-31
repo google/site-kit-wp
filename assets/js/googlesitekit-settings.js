@@ -24,6 +24,7 @@ import SettingsApp from 'GoogleComponents/settings/settings-app';
 import Notification from 'GoogleComponents/notifications/notification';
 import 'GoogleComponents/notifications';
 import { loadTranslations } from 'GoogleUtil';
+import 'GoogleModules';
 
 /**
  * WordPress dependencies

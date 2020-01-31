@@ -66,7 +66,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		// Intercept the call to window.open and call our API to simulate a created account.
 		await page.evaluate( () => {
 			window.open = () => {
-				window.wp.apiFetch( {
+				window._e2eApiFetch( {
 					path: 'google-site-kit/v1/e2e/setup/analytics/account-created',
 					method: 'post',
 				} );
