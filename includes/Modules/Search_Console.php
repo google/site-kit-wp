@@ -115,19 +115,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	}
 
 	/**
-	 * Gets the property ID and ensures it is a valid URL.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string Property ID URL if set, or empty string.
-	 */
-	protected function get_property_id() {
-		$option = $this->get_settings()->get();
-
-		return $option['propertyID'];
-	}
-
-	/**
 	 * Gets required Google OAuth scopes for the module.
 	 *
 	 * @since 1.0.0
@@ -427,6 +414,19 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		}
 
 		return (bool) $has_data;
+	}
+
+	/**
+	 * Gets the property ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Property ID URL if set, or empty string.
+	 */
+	protected function get_property_id() {
+		$option = $this->get_settings()->get();
+
+		return $option['propertyID'];
 	}
 
 	/**
