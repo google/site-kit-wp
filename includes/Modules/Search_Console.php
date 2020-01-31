@@ -193,7 +193,10 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					);
 				}
 
-				$site_url = trailingslashit( $data['siteURL'] );
+				$site_url = $data['siteURL'];
+				if ( 0 !== strpos( $site_url, 'sc-domain:' ) ) {
+					$site_url = trailingslashit( $site_url );
+				}
 
 				return function () use ( $site_url ) {
 					$restore_defer = $this->with_client_defer( false );
