@@ -28,7 +28,7 @@ import { readableLargeNumber } from 'GoogleUtil';
 import { __ } from '@wordpress/i18n';
 
 const publishingWin = ( data, id ) => {
-	const showNotification = 5 === parseInt( googlesitekit.admin.newSitePosts, 10 );
+	const showNotification = 5 === parseInt( global.googlesitekit.admin.newSitePosts, 10 );
 
 	if ( ! showNotification ) {
 		return false;
@@ -37,7 +37,7 @@ const publishingWin = ( data, id ) => {
 	let message = __( 'That’s out of this world.', 'google-site-kit' );
 	let dataBlocks = [];
 
-	if ( googlesitekit.modules[ 'search-console' ] && googlesitekit.modules[ 'search-console' ].active && data ) {
+	if ( global.googlesitekit.modules[ 'search-console' ] && global.googlesitekit.modules[ 'search-console' ].active && data ) {
 		const processedData = extractSearchConsoleDashboardData( data );
 
 		const {
@@ -72,7 +72,7 @@ const publishingWin = ( data, id ) => {
 		title: __( 'Congrats on five published posts', 'google-site-kit' ),
 		description: message,
 		format: 'large',
-		winImage: `${ googlesitekit.admin.assetsRoot }images/rocket.png`,
+		winImage: `${ global.googlesitekit.admin.assetsRoot }images/rocket.png`,
 		blockData: dataBlocks,
 		type: 'win-stats',
 		showOnce: true,

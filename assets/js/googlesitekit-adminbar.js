@@ -28,6 +28,7 @@ import {
 	loadTranslations,
 	sendAnalyticsTrackingEvent,
 } from 'GoogleUtil';
+import 'GoogleModules';
 
 /**
  * WordPress dependencies
@@ -54,7 +55,7 @@ export class GoogleSitekitAdminbar extends Component {
 			postID,
 			postType,
 			pageTitle,
-		} = googlesitekit;
+		} = global.googlesitekit;
 		const href = getSiteKitAdminURL(
 			'googlesitekit-dashboard',
 			{
@@ -73,7 +74,7 @@ export class GoogleSitekitAdminbar extends Component {
 		const {
 			pageTitle,
 			permaLink,
-		} = googlesitekit;
+		} = global.googlesitekit;
 
 		return (
 			<Fragment>

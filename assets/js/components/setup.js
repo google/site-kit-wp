@@ -43,7 +43,7 @@ class Setup extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { connectURL } = googlesitekit.admin;
+		const { connectURL } = global.googlesitekit.admin;
 
 		const {
 			isAuthenticated,
@@ -51,9 +51,9 @@ class Setup extends Component {
 			isSiteKitConnected,
 			isVerified,
 			needReauthenticate,
-		} = googlesitekit.setup; /*eslint camelcase: 0*/
+		} = global.googlesitekit.setup; /*eslint camelcase: 0*/
 
-		const { canSetup } = googlesitekit.permissions;
+		const { canSetup } = global.googlesitekit.permissions;
 
 		this.state = {
 			canSetup,

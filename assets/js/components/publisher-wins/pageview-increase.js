@@ -28,7 +28,7 @@ import { calculateOverviewData } from 'GoogleModules/analytics/util';
 import { __ } from '@wordpress/i18n';
 
 const pageviewIncrease = ( data, id ) => {
-	if ( ! googlesitekit.modules.analytics || ! googlesitekit.modules.analytics.active ) {
+	if ( ! global.googlesitekit.modules.analytics || ! global.googlesitekit.modules.analytics.active ) {
 		return false;
 	}
 
@@ -54,7 +54,7 @@ const pageviewIncrease = ( data, id ) => {
 		description: __( 'Over the past 4 weeks', 'google-site-kit' ),
 		format: 'large',
 		logo: false,
-		winImage: `${ googlesitekit.admin.assetsRoot }images/sun-small.png`,
+		winImage: `${ global.googlesitekit.admin.assetsRoot }images/sun-small.png`,
 		blockData: [
 			{
 				title: __( 'Total Page Views', 'google-site-kit' ),

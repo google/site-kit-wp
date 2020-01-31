@@ -25,85 +25,19 @@ const path = require( 'path' );
 /**
  * External dependencies
  */
-const glob = require( 'glob' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
-
-/**
- * WordPress dependencies
- */
-const LibraryExportDefaultPlugin = require( '@wordpress/library-export-default-webpack-plugin' );
-
-/**
- * Given a string, returns a new string with dash separators converted to
- * camel-case equivalent. This is not as aggressive as `_.camelCase` in
- * converting to uppercase, where Lodash will convert letters following
- * numbers.
- *
- * @param {string} string Input dash-delimited string.
- *
- * @return {string} Camel-cased string.
- */
-function camelCaseDash( string ) {
-	return string.replace(
-		/-([a-z])/g,
-		( match, letter ) => letter.toUpperCase()
-	);
-}
+const { ProvidePlugin } = require( 'webpack' );
 
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
 };
 
-const externalPackages = [
-	'api-fetch',
-	'compose',
-	'dom-ready',
-	'element',
-	'escape-html',
-	'hooks',
-	'i18n',
-	'is-shallow-equal',
-	'url',
-];
-
-const externals = {
-	react: 'React',
-	'react-dom': 'ReactDOM',
-	tinymce: 'tinymce',
-	moment: 'moment',
-	jquery: 'jQuery',
-	lodash: 'lodash',
-	'lodash-es': 'lodash',
-	'js/googlesitekit/api': [ 'googlesitekit', 'api' ],
-};
-
-[
-	...externalPackages,
-].forEach( ( name ) => {
-	externals[ `@wordpress/${ name }` ] = [ 'wp', camelCaseDash( name ) ];
-} );
-
-const externalEntry = {};
-externalPackages.forEach( ( packageName ) => {
-	const name = camelCaseDash( packageName );
-	externalEntry[ name ] = `./node_modules/@wordpress/${ packageName }`;
-} );
-
-// This External Libraries will not part of wp object. Most of this is for Polyfill.
-const externalLibrary = {
-	'wp-polyfill': './node_modules/@babel/polyfill/dist/polyfill.js',
-	'wp-polyfill-fetch': './node_modules/whatwg-fetch/dist/fetch.umd.js',
-	'wp-polyfill-element-closest': './node_modules/element-closest/element-closest.js',
-	'wp-polyfill-node-contains': './node_modules/polyfill-library/polyfills/Node/prototype/contains/polyfill.js',
-	'wp-polyfill-formdata': './node_modules/formdata-polyfill/FormData.js',
-	'wp-polyfill-url': './node_modules/url-polyfill/url-polyfill.js',
-	svgxuse: './node_modules/svgxuse/svgxuse.js',
-};
-
 const resolve = {
 	alias: {
+		'@wordpress/api-fetch__non-shim': require.resolve( '@wordpress/api-fetch' ),
+		'@wordpress/api-fetch$': path.resolve( 'assets/js/api-fetch-shim.js' ),
 		SiteKitCore: path.resolve( 'assets/js/' ),
 		GoogleComponents: path.resolve( 'assets/js/components/' ),
 		GoogleUtil: path.resolve( 'assets/js/util/' ),
@@ -112,7 +46,7 @@ const resolve = {
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
 
-module.exports = ( env, argv ) => {
+const webpackConfig = ( mode ) => {
 	return [
 		// Build the settings js..
 		{
@@ -130,8 +64,8 @@ module.exports = ( env, argv ) => {
 				'googlesitekit-adminbar-loader': './assets/js/googlesitekit-adminbar-loader.js',
 				'googlesitekit-admin': './assets/js/googlesitekit-admin.js',
 				'googlesitekit-module': './assets/js/googlesitekit-module.js',
+				// Needed to test if a browser extension blocks this by naming convention.
 				ads: './assets/js/ads.js',
-				allmodules: glob.sync( './assets/js/modules/**/*.js' ),
 			},
 			output: {
 				filename: '[name].js',
@@ -146,7 +80,7 @@ module.exports = ( env, argv ) => {
 				rules: [
 					{
 						test: /\.js$/,
-
+						exclude: /node_modules/,
 						use: [
 							{
 								loader: 'babel-loader',
@@ -160,14 +94,19 @@ module.exports = ( env, argv ) => {
 							{
 								loader: 'eslint-loader',
 								options: {
+									quiet: true,
 									formatter: require( 'eslint' ).CLIEngine.getFormatter( 'stylish' ),
 								},
 							},
 						],
+						parser: { amd: false },
 					},
 				],
 			},
-			plugins: ( env && env.analyze ) ? [] : [
+			plugins: [
+				new ProvidePlugin( {
+					React: 'react',
+				} ),
 				new WebpackBar( {
 					name: 'Module Entry Points',
 					color: '#fbbc05',
@@ -189,93 +128,7 @@ module.exports = ( env, argv ) => {
 					} ),
 				],
 			},
-			externals,
 			resolve,
-		},
-
-		// Build the test files.
-		{
-			entry: { 'googlesitekit-tests': './assets/js/googlesitekit-tests.js' },
-			output: {
-				filename: '[name].js',
-				path: __dirname + '/dist/assets/js',
-				chunkFilename: '[name].js',
-				publicPath: '',
-			},
-			module: {
-				rules: [
-					{
-						test: /\.js$/,
-
-						use: [
-							{
-								loader: 'babel-loader',
-								query: {
-									presets: [ [ '@babel/env', {
-										useBuiltIns: 'entry',
-										corejs: 2,
-									} ], '@babel/preset-react' ],
-								},
-							},
-							{
-								loader: 'eslint-loader',
-								options: {
-									formatter: require( 'eslint' ).CLIEngine.getFormatter( 'stylish' ),
-								},
-							},
-						],
-					},
-				],
-			},
-			plugins: ( env && env.analyze ) ? [] : [
-				new WebpackBar( {
-					name: 'Test files',
-					color: '#34a853',
-				} ),
-			],
-			resolve,
-		},
-
-		// Build the external wp libraries
-		{
-			entry: externalEntry,
-			output: {
-				filename: '[name].js',
-				path: __dirname + '/dist/assets/js/externals',
-				library: [ 'wp', '[name]' ],
-				libraryTarget: 'this',
-			},
-			plugins: ( env && env.analyze ) ? [
-				new LibraryExportDefaultPlugin( [
-					'api-fetch',
-					'dom-ready',
-				].map( camelCaseDash ) ),
-			] : [
-				new LibraryExportDefaultPlugin( [
-					'api-fetch',
-					'dom-ready',
-				].map( camelCaseDash ) ),
-				new WebpackBar( {
-					name: 'External WP Libraries',
-					color: '#d53e36',
-				} ),
-			],
-			externals,
-		},
-
-		// Build the external libraries
-		{
-			entry: externalLibrary,
-			output: {
-				filename: '[name].js',
-				path: __dirname + '/dist/assets/js/externals',
-			},
-			plugins: ( env && env.analyze ) ? [] : [
-				new WebpackBar( {
-					name: 'External Libraries',
-					color: '#4185f4',
-				} ) ],
-			externals,
 		},
 
 		// Build the main plugin admin css.
@@ -294,7 +147,7 @@ module.exports = ( env, argv ) => {
 							{
 								loader: 'css-loader',
 								options: {
-									minimize: ( 'undefined' === typeof argv || 'production' === argv.mode ),
+									minimize: ( 'production' === mode ),
 								},
 							},
 							'postcss-loader',
@@ -312,11 +165,7 @@ module.exports = ( env, argv ) => {
 					},
 				],
 			},
-			plugins: ( env && env.analyze ) ? [
-				new MiniCssExtractPlugin( {
-					filename: '/assets/css/[name].css',
-				} ),
-			] : [
+			plugins: [
 				new MiniCssExtractPlugin( {
 					filename: '/assets/css/[name].css',
 				} ),
@@ -327,4 +176,64 @@ module.exports = ( env, argv ) => {
 			],
 		},
 	];
+};
+
+const testBundle = () => {
+	return {
+		entry: {
+			'googlesitekit-tests': './assets/js/googlesitekit-tests.js',
+			'e2e-utilities': './tests/e2e/e2e-utilities.js',
+		},
+		output: {
+			filename: '[name].js',
+			path: __dirname + '/dist/assets/js',
+			chunkFilename: '[name].js',
+			publicPath: '',
+		},
+		module: {
+			rules: [
+				{
+					test: /\.js$/,
+					exclude: /node_modules/,
+					use: [
+						{
+							loader: 'babel-loader',
+							query: {
+								presets: [ [ '@babel/env', {
+									useBuiltIns: 'entry',
+									corejs: 2,
+								} ], '@babel/preset-react' ],
+							},
+						},
+						{
+							loader: 'eslint-loader',
+							options: {
+								quiet: true,
+								formatter: require( 'eslint' ).CLIEngine.getFormatter( 'stylish' ),
+							},
+						},
+					],
+				},
+			],
+		},
+		plugins: [
+			new WebpackBar( {
+				name: 'Test files',
+				color: '#34a853',
+			} ),
+		],
+		resolve,
+	};
+};
+
+module.exports = ( ...args ) => {
+	const { includeTests, mode } = args[ 1 ];
+	const config = webpackConfig( mode );
+
+	if ( mode !== 'production' || includeTests ) {
+		// Build the test files if we aren't doing a production build.
+		config.push( testBundle() );
+	}
+
+	return config;
 };

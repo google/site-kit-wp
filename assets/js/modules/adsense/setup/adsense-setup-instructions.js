@@ -75,7 +75,7 @@ class AdSenseSetupInstructions extends Component {
 		} = this.props;
 
 		const { isSaving } = this.state;
-		const { userData: { email = '', picture = '' } } = googlesitekit.admin;
+		const { userData: { email = '', picture = '' } } = global.googlesitekit.admin;
 
 		return (
 			<div className="googlesitekit-setup-module googlesitekit-setup-module--adsense">

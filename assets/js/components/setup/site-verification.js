@@ -103,7 +103,7 @@ class SiteVerification extends Component {
 					loading: false,
 					errorCode: err.code,
 					errorMsg: message,
-					siteURL: googlesitekit.admin.siteURL, // Fallback to site URL from the settings.
+					siteURL: global.googlesitekit.admin.siteURL, // Fallback to site URL from the settings.
 				} );
 			}
 		} )();
@@ -117,7 +117,7 @@ class SiteVerification extends Component {
 		const { setErrorMessage } = this.props;
 
 		// Try to get siteURL from state, and if blank get from the settings.
-		const siteURL = this.state.siteURL ? this.state.siteURL : googlesitekit.admin.siteURL;
+		const siteURL = this.state.siteURL ? this.state.siteURL : global.googlesitekit.admin.siteURL;
 
 		setErrorMessage( '' );
 

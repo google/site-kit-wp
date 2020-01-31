@@ -52,11 +52,11 @@ addFilter( 'googlesitekit.AdminbarModules',
 	addAnalyticsAdminbarWidget, 11 );
 
 // If setup is not complete, show the signup flow.
-if ( ! googlesitekit.modules[ slug ].setupComplete ) {
+if ( ! global.googlesitekit.modules[ slug ].setupComplete ) {
 	const {
 		reAuth,
 		currentScreen,
-	} = googlesitekit.admin;
+	} = global.googlesitekit.admin;
 	const id = currentScreen ? currentScreen.id : null;
 	if ( ! reAuth && 'site-kit_page_googlesitekit-module-analytics' === id ) {
 		// Setup incomplete: redirect to the setup flow.
@@ -70,7 +70,7 @@ if ( ! googlesitekit.modules[ slug ].setupComplete ) {
 	}
 }
 
-if ( googlesitekit.modules.analytics.active ) {
+if ( global.googlesitekit.modules.analytics.active ) {
 	const addAnalyticsDashboardWidget = createAddToFilter( <AnalyticsDashboardWidget /> );
 	const addAnalyticsAllTraffic = createAddToFilter( <AnalyticsAllTraffic /> );
 	const addWPAnalyticsDashboardWidgetOverview = createAddToFilter( <WPAnalyticsDashboardWidgetOverview /> );
