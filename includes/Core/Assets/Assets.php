@@ -378,6 +378,10 @@ final class Assets {
 									'rootURL'         => esc_url_raw( get_rest_url() ),
 								) 
 							),
+							'before'
+						);
+						wp_add_inline_script(
+							$handle,
 							'window._googlesitekitBase = ' . wp_json_encode( $this->get_inline_base_data() ),
 							'before'
 						);
