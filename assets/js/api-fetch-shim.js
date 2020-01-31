@@ -3,16 +3,16 @@
  */
 import apiFetch from '@wordpress/api-fetch__non-shim';
 
-if ( global._googlesitekitBase ) {
-	if ( global._googlesitekitBase.apiFetchRootURL ) {
-		apiFetch.use( apiFetch.createRootURLMiddleware( global._googlesitekitBase.apiFetchRootURL ) );
+if ( global._googlesitekitAPIFetchData ) {
+	if ( global._googlesitekitAPIFetchData.rootURL ) {
+		apiFetch.use( apiFetch.createRootURLMiddleware( global._googlesitekitAPIFetchData.rootURL ) );
 	}
 
-	if ( global._googlesitekitBase.apiFetchNonceMiddleware ) {
-		apiFetch.nonceMiddleware = apiFetch.createNonceMiddleware( );
-		apiFetch.use( apiFetch.createNonceMiddleware( global._googlesitekitBase.apiFetchNonceMiddleware ) );
+	if ( global._googlesitekitAPIFetchData.nonceMiddleware ) {
+		apiFetch.nonceMiddleware = apiFetch.createNonceMiddleware();
+		apiFetch.use( apiFetch.createNonceMiddleware( global._googlesitekitAPIFetchData.nonceMiddleware ) );
 		apiFetch.use( apiFetch.mediaUploadMiddleware );
-		apiFetch.nonceEndpoint = global._googlesitekitBase.apiFetchNonceEndpoint;
+		apiFetch.nonceEndpoint = global._googlesitekitAPIFetchData.nonceEndpoint;
 	}
 }
 

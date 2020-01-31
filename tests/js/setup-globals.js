@@ -50,7 +50,8 @@ global.gtag = function( type, name, sendto, category, label, value ) {
 };
 
 global._googlesitekitBase = global._googlesitekitBase || {};
+global._googlesitekitAPIFetchData = global._googlesitekitAPIFetchData || {};
 
-global._googlesitekitBase.apiFetchRootURL = 'http://sitekit.test/';
-global._googlesitekitBase.apiFetchNonceMiddleware = '6af976d56d';
-global._googlesitekitBase.apiFetchNonceEndpoint = 'http://sitekit.test/wp-admin/admin-ajax.php?action=rest-nonce';
+global._googlesitekitAPIFetchData.rootURL = 'http://sitekit.test/';
+global._googlesitekitAPIFetchData.nonceMiddleware = '6af976d56d';
+global._googlesitekitAPIFetchData.nonceEndpoint = 'http://sitekit.test/wp-admin/admin-ajax.php?action=rest-nonce';
