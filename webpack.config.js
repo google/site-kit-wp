@@ -227,10 +227,10 @@ const testBundle = () => {
 };
 
 module.exports = ( ...args ) => {
-	const { mode } = args[ 1 ];
+	const { includeTests, mode } = args[ 1 ];
 	const config = webpackConfig( mode );
 
-	if ( mode !== 'production' ) {
+	if ( mode !== 'production' || includeTests ) {
 		// Build the test files if we aren't doing a production build.
 		config.push( testBundle() );
 	}

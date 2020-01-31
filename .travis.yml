@@ -87,7 +87,7 @@ script:
     fi
   - |
     if [[ "$E2E" == "1" ]]; then
-      npm run build || exit 1 # Build for tests.
+      npm run build:test || exit 1 # Build for tests.
       npm run env:start || exit 1
       npm run test:e2e:ci || exit 1 # E2E tests.
     fi
