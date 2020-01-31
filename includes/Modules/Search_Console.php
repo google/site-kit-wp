@@ -341,7 +341,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 
 		return $this->get_webmasters_service()
 			->searchanalytics
-			->query( $this->context->get_reference_site_url(), $request );
+			->query( $this->get_property_id(), $request );
 	}
 
 	/**
