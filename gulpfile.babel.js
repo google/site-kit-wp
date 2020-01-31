@@ -33,8 +33,7 @@ gulp.task( 'build', () => {
 	runSequence(
 		'webpack',
 		'svg',
-		'imagemin',
-		'copy-vendor'
+		'imagemin'
 	);
 } );
 
@@ -63,8 +62,10 @@ gulp.task( 'local', () => {
  * Gulp task to minify and combine svg's.
  */
 gulp.task( 'svg', () => {
-	runSequence( 'svgstore' );
-	runSequence( 'svgmin' );
+	runSequence(
+		'svgstore',
+		'svgmin'
+	);
 } );
 
 /**
@@ -73,17 +74,7 @@ gulp.task( 'svg', () => {
 gulp.task( 'release', () => {
 	runSequence(
 		'svg',
-		'imagemin',
-		'copy-vendor'
+		'imagemin'
 	);
 } );
 
-/**
- * Gulp task to run the default build processes in a sequential order.
- */
-gulp.task( 'default', () => {
-	runSequence(
-		'webpack',
-		'copy-vendor'
-	);
-} );

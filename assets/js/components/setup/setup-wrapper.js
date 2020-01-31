@@ -24,11 +24,11 @@ import Header from 'GoogleComponents/header';
 import Link from 'GoogleComponents/link';
 import HelpLink from 'GoogleComponents/help-link';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
-import withFilters from 'GoogleComponents/higherorder/with-filters';
 
 /**
  * WordPress dependencies
  */
+import { withFilters } from '@wordpress/components';
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { applyFilters } from '@wordpress/hooks';
@@ -48,7 +48,7 @@ class SetupWrapper extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { moduleToSetup } = googlesitekit.setup;
+		const { moduleToSetup } = global.googlesitekit.setup;
 		this.state = {
 			currentModule: moduleToSetup,
 			refresh: false,
@@ -141,8 +141,8 @@ class SetupWrapper extends Component {
 			notification: 'authentication_success',
 		};
 
-		if ( googlesitekit.setup && googlesitekit.setup.moduleToSetup ) {
-			args.slug = googlesitekit.setup.moduleToSetup;
+		if ( global.googlesitekit.setup && global.googlesitekit.setup.moduleToSetup ) {
+			args.slug = global.googlesitekit.setup.moduleToSetup;
 		}
 
 		const redirectURL = getSiteKitAdminURL(

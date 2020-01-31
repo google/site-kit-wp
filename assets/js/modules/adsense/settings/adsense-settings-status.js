@@ -38,7 +38,7 @@ class AdSenseSettingsStatus extends Component {
 			OriginalComponent,
 		} = this.props;
 
-		const { accountStatus } = googlesitekit.modules.adsense.settings;
+		const { accountStatus } = global.googlesitekit.modules.adsense.settings;
 
 		if ( ! accountStatus || 'adsense' !== slug ) {
 			return <OriginalComponent { ...this.props } />;

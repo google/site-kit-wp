@@ -35,10 +35,10 @@ import { __ } from '@wordpress/i18n';
 
 class DashboardSearchFunnel extends Component {
 	render() {
-		const { canManageOptions } = googlesitekit.permissions;
+		const { canManageOptions } = global.googlesitekit.permissions;
 
 		// Users without manage options capability will not see Setup CTA.
-		const wrapperCols = ! googlesitekit.modules.analytics.active && ! canManageOptions ? 6 : 12;
+		const wrapperCols = ! global.googlesitekit.modules.analytics.active && ! canManageOptions ? 6 : 12;
 
 		return (
 			<Fragment>
@@ -61,7 +61,7 @@ class DashboardSearchFunnel extends Component {
 							<div className="mdc-layout-grid__inner">
 								<DashboardSearchFunnelInner />
 								{ // Show the Analytics CTA if analytics is not enabled.
-									( ! googlesitekit.modules.analytics.active ) &&
+									( ! global.googlesitekit.modules.analytics.active ) &&
 									<div className="
 										mdc-layout-grid__cell
 										mdc-layout-grid__cell--span-4-phone

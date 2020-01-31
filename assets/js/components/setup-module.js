@@ -92,7 +92,7 @@ class SetupModule extends Component {
 
 		let blockedByParentModule = false;
 
-		const { modules } = googlesitekit;
+		const { modules } = global.googlesitekit;
 
 		// Check if required module is active.
 		if ( modules[ slug ].required.length ) {

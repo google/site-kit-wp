@@ -54,7 +54,7 @@ class DashboardDetailsWidgetKeywordsTable extends Component {
 						footer
 						footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 						footerCtaLink={
-							sprintf( 'https://search.google.com/u/1/search-console?resource_id=%s', googlesitekit.admin.siteURL )
+							sprintf( 'https://search.google.com/u/1/search-console?resource_id=%s', global.googlesitekit.admin.siteURL )
 						}
 					>
 						<SearchConsoleDashboardWidgetKeywordTable />
