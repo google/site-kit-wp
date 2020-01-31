@@ -247,33 +247,28 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:matched-sites':
 				/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
-				$sites            = $this->map_sites( (array) $response->getSiteEntry() );
-				$current_url      = $this->context->get_reference_site_url();
-				$current_host     = wp_parse_url( $current_url, PHP_URL_HOST );
-				$property_matches = array_filter(
-					$sites,
-					function ( array $site ) use ( $current_host ) {
-						$site_host = wp_parse_url( str_replace( 'sc-domain:', 'https://', $site['siteURL'] ), PHP_URL_HOST );
+				$sites = $this->map_sites( (array) $response->getSiteEntry() );
 
-						// Ensure host names overlap, from right to left.
-						return 0 === strpos( strrev( $current_host ), strrev( $site_host ) );
-					}
+				$current_url                  = trailingslashit( $this->context->get_reference_site_url() );
+				$sufficient_permission_levels = array(
+					'siteRestrictedUser' => true,
+					'siteOwner'          => true,
+					'siteFullUser'       => true,
 				);
 
-				$exact_match = array_reduce(
-					$property_matches,
-					function ( $match, array $site ) use ( $current_url ) {
-						if ( ! $match && trailingslashit( $current_url ) === trailingslashit( $site['siteURL'] ) ) {
-							return $site;
+				return array_values(
+					array_filter(
+						$sites,
+						function ( array $site ) use ( $current_url, $sufficient_permission_levels ) {
+							$site_url = trailingslashit( $site['siteURL'] );
+							if ( 0 === strpos( $site_url, 'sc-domain:' ) ) {
+								$url_match = str_replace( array( 'http://', 'https://' ), 'sc-domain:', $current_url ) === $site_url;
+							} else {
+								$url_match = $current_url === $site_url;
+							}
+							return $url_match && isset( $sufficient_permission_levels[ $site['permissionLevel'] ] );
 						}
-						return $match;
-					},
-					null
-				);
-
-				return array(
-					'exactMatch'      => $exact_match, // (array) single site object, or null if no match.
-					'propertyMatches' => $property_matches, // (array) of site objects, or empty array if none.
+					)
 				);
 			case 'GET:searchanalytics':
 				return $response->getRows();
