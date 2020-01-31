@@ -108,10 +108,10 @@ jobs:
       env: WP_VERSION=latest PHP=1
     - name: PHP Tests (PHP 7.4, WordPress Multisite latest)
       php: 7.4
-      env: WP_VERSION=latest WP_MULTISITE=1 PHP=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      env: WP_VERSION=latest WP_MULTISITE=1 PHP=1
     - name: JS Tests
       php: 7.4
-      env: WP_VERSION=latest JS=1
+      env: WP_VERSION=latest JS=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
     - name: Visual Regression
       env: VRT=1
     - name: PHP Tests (PHP nightly, WordPress trunk)
