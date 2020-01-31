@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_File;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
@@ -71,6 +72,13 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 		add_action( 'wp_head', $print_site_verification_meta );
 		add_action( 'login_head', $print_site_verification_meta );
+
+		add_action(
+			'googlesitekit_authorize_user',
+			function() {
+				$this->user_options->set( Verification::OPTION, 'verified' );
+			}
+		);
 
 		add_action(
 			'init',

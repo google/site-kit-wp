@@ -52,6 +52,27 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 
 		$this->register_screen_hook();
 
+		// Detect and store Search Console property when receiving token for the first time.
+		add_action(
+			'googlesitekit_authorize_user',
+			function() {
+				// Bail if there is one set already.
+				$property_id = $this->get_property_id();
+				if ( $property_id ) {
+					return;
+				}
+
+				$property_id = $this->detect_property_id();
+				if ( ! $property_id ) {
+					return;
+				}
+
+				$this->get_settings()->merge(
+					array( 'propertyID' => $property_id )
+				);
+			}
+		);
+
 		// Ensure that a Search Console property must be set at all times.
 		add_filter(
 			'googlesitekit_setup_complete',
@@ -406,6 +427,39 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		}
 
 		return (bool) $has_data;
+	}
+
+	/**
+	 * Detects the property ID to use for this site.
+	 *
+	 * This method runs a Search Console API request. The determined ID should therefore be stored and accessed through
+	 * {@see Search_Console::get_property_id()} instead.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Property ID, or empty string if none found.
+	 */
+	protected function detect_property_id() {
+		$properties = $this->get_data( 'matched-sites' );
+		if ( is_wp_error( $properties ) || ! $properties ) {
+			return '';
+		}
+
+		// If there are multiple, prefer URL property over domain property.
+		if ( count( $properties ) > 1 ) {
+			$url_properties = array_filter(
+				$properties,
+				function( $property ) {
+					return 0 !== strpos( $property['siteURL'], 'sc-domain:' );
+				}
+			);
+			if ( count( $url_properties ) > 0 ) {
+				$properties = $url_properties;
+			}
+		}
+
+		$property = array_shift( $properties );
+		return $property['siteURL'];
 	}
 
 	/**
