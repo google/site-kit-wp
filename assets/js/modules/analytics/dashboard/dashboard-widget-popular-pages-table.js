@@ -61,7 +61,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 
 	render() {
 		const { data } = this.props;
-		const { siteURL: siteURL } = global.googlesitekit.admin;
+		const { siteURL } = global.googlesitekit.admin;
 
 		if ( ! data || ! data.length ) {
 			return null;
