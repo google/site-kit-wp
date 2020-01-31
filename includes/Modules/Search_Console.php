@@ -64,19 +64,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			}
 		);
 
-		// Filter the reference site URL to use Search Console property if available.
-		add_filter(
-			'googlesitekit_site_url',
-			function( $url ) {
-				$property_id = $this->get_property_id();
-				if ( $property_id ) {
-					return $property_id;
-				}
-				return $url;
-			},
-			-9999
-		);
-
 		// Provide Search Console property information to JavaScript.
 		add_filter(
 			'googlesitekit_setup_data',
