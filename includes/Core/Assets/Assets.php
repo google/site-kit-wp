@@ -371,12 +371,7 @@ final class Assets {
 					'before_print' => function( $handle ) {
 						wp_add_inline_script(
 							$handle,
-							implode(
-								"\n",
-								array(
-									'window._googlesitekitBase = ' . wp_json_encode( $this->get_inline_base_data() ),
-								)
-							),
+							'window._googlesitekitBase = ' . wp_json_encode( $this->get_inline_base_data() ),
 							'before'
 						);
 					},
