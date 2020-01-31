@@ -6,6 +6,7 @@ module.exports = async ( { config } ) => {
 		...config.resolve,
 		alias: {
 			...config.resolve.alias,
+			'@wordpress/api-fetch$': path.resolve( __dirname, 'wp-api-fetch-mock.js' ),
 			SiteKitCore: path.resolve( __dirname, '../assets/js/' ),
 			GoogleComponents: path.resolve( __dirname, '../assets/js/components/' ),
 			GoogleUtil: path.resolve( __dirname, '../assets/js/util/' ),
@@ -41,10 +42,6 @@ module.exports = async ( { config } ) => {
 			use: { loader: 'url-loader?limit=100000' },
 		}
 	);
-
-	config.externals = {
-		'@wordpress/api-fetch': [ 'wp', 'apiFetch' ],
-	};
 
 	return config;
 };
