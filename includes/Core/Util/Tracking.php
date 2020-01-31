@@ -85,7 +85,7 @@ final class Tracking {
 		add_filter(
 			'googlesitekit_inline_base_data',
 			function ( $data ) {
-				return $this->inline_js_admin_data( $data );
+				return $this->inline_js_base_data( $data );
 			}
 		);
 
@@ -110,14 +110,14 @@ final class Tracking {
 	}
 
 	/**
-	 * Modifies the admin data to pass to JS.
+	 * Modifies the base data to pass to JS.
 	 *
-	 * @since 1.0.0
+	 * @since n.e.x.t
 	 *
 	 * @param array $data Inline JS data.
 	 * @return array Filtered $data.
 	 */
-	private function inline_js_admin_data( $data ) {
+	private function inline_js_base_data( $data ) {
 		$data['trackingEnabled'] = $this->is_active();
 		$data['trackingID']      = self::TRACKING_ID;
 
