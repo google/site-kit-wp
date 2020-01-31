@@ -111,12 +111,12 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string|bool Property ID URL if set and valid, otherwise false.
+	 * @return string Property ID URL if set, or empty string.
 	 */
 	protected function get_property_id() {
 		$option = $this->get_settings()->get();
 
-		return filter_var( $option['propertyID'], FILTER_VALIDATE_URL );
+		return $option['propertyID'];
 	}
 
 	/**
