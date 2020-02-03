@@ -440,6 +440,14 @@ class TagmanagerSetup extends Component {
 			return this.renderCreateAccount();
 		}
 
+		if ( '-1' === selectedAccount ) {
+			return <Fragment>
+				<p>{ __( 'To create a new account, click the button below which will open the Google Tag Manager account creation screen in a new window.', 'google-site-kit' ) }</p>
+				<p>{ __( 'Once completed, click the link below to re-fetch your accounts to continue.', 'google-site-kit' ) }</p>
+				{ this.renderCreateAccount() }
+			</Fragment>;
+		}
+
 		return (
 			<Fragment>
 				{ hasExistingTag && (
