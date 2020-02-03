@@ -312,7 +312,7 @@ class TagmanagerSetup extends Component {
 
 	static createNewAccount( e ) {
 		e.preventDefault();
-		global.open( 'https://marketingplatform.google.com/about/tag-manager/', '_blank' );
+		global.open( 'https://tagmanager.google.com/#/admin/accounts/create', '_blank' );
 	}
 
 	handleAccountChange( index, item ) {
