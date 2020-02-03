@@ -437,17 +437,7 @@ class TagmanagerSetup extends Component {
 		}
 
 		if ( 'accountEmpty' === errorCode ) {
-			return (
-				<Fragment>
-					<div className="googlesitekit-setup-module__action">
-						<Button onClick={ TagmanagerSetup.createNewAccount }>{ __( 'Create an account', 'google-site-kit' ) }</Button>
-
-						<div className="googlesitekit-setup-module__sub-action">
-							<Link onClick={ this.refetchAccount }>{ __( 'Re-fetch My Account', 'google-site-kit' ) }</Link>
-						</div>
-					</div>
-				</Fragment>
-			);
+			return this.renderCreateAccount();
 		}
 
 		return (
@@ -464,7 +454,6 @@ class TagmanagerSetup extends Component {
 				{ ! hasExistingTag && (
 					<p>{ __( 'Please select your Tag Manager account and container below, the snippet will be inserted automatically into your site.', 'google-site-kit' ) }</p>
 				) }
-
 				<div className="googlesitekit-setup-module__inputs">
 					<Select
 						enhanced
@@ -544,6 +533,16 @@ class TagmanagerSetup extends Component {
 
 			</Fragment>
 		);
+	}
+
+	renderCreateAccount() {
+		return <div className="googlesitekit-setup-module__action">
+			<Button onClick={ TagmanagerSetup.createNewAccount }>{ __( 'Create an account', 'google-site-kit' ) }</Button>
+
+			<div className="googlesitekit-setup-module__sub-action">
+				<Link onClick={ this.refetchAccount }>{ __( 'Re-fetch My Account', 'google-site-kit' ) }</Link>
+			</div>
+		</div>;
 	}
 
 	/**
