@@ -486,15 +486,17 @@ class TagmanagerSetup extends Component {
 						onEnhancedChange={ this.handleAccountChange }
 						outlined
 					>
-						{ accounts.map( ( account ) => {
-							return (
-								<Option
-									key={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }
-									value={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }>
-									{ account.name }
-								</Option>
-							);
-						} ) }
+						{ accounts
+							.concat( ! hasExistingTag ? [ { id: '-1', name: __( 'Set up a new account', 'google-site-kit' ) } ] : [] )
+							.map( ( account ) => {
+								return (
+									<Option
+										key={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }
+										value={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }>
+										{ account.name }
+									</Option>
+								);
+							} ) }
 					</Select>
 
 					{ containersLoading ? ( <ProgressBar small /> ) : (
