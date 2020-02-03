@@ -68,6 +68,12 @@ class TagmanagerSetup extends Component {
 		this.refetchAccount = this.refetchAccount.bind( this );
 	}
 
+	setState() {
+		if ( this._isMounted ) {
+			Component.prototype.setState.apply( this, arguments );
+		}
+	}
+
 	async componentDidMount() {
 		const {
 			isOpen,
@@ -213,27 +219,23 @@ class TagmanagerSetup extends Component {
 				selectedContainer = null;
 			}
 
-			if ( this._isMounted ) {
-				this.setState( {
-					isLoading: false,
-					accounts,
-					selectedAccount: selectedAccount || get( containers, [ 0, 'accountId' ] ), // Capitalization rule exception: `accountId` is a property of an API returned value.
-					containers,
-					selectedContainer: selectedContainer || get( containers, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
-					refetch: false,
-					errorCode,
-					errorMsg,
-				} );
-			}
+			this.setState( {
+				isLoading: false,
+				accounts,
+				selectedAccount: selectedAccount || get( containers, [ 0, 'accountId' ] ), // Capitalization rule exception: `accountId` is a property of an API returned value.
+				containers,
+				selectedContainer: selectedContainer || get( containers, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
+				refetch: false,
+				errorCode,
+				errorMsg,
+			} );
 		} catch ( err ) {
-			if ( this._isMounted ) {
-				this.setState( {
-					isLoading: false,
-					errorCode: err.code,
-					errorMsg: err.message,
-					refetch: false,
-				} );
-			}
+			this.setState( {
+				isLoading: false,
+				errorCode: err.code,
+				errorMsg: err.message,
+				refetch: false,
+			} );
 		}
 	}
 
@@ -251,21 +253,17 @@ class TagmanagerSetup extends Component {
 
 			const containers = await data.get( TYPE_MODULES, 'tagmanager', 'containers', queryArgs );
 
-			if ( this._isMounted ) {
-				this.setState( {
-					containersLoading: false,
-					containers,
-					selectedContainer: get( containers, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
-					errorCode: false,
-				} );
-			}
+			this.setState( {
+				containersLoading: false,
+				containers,
+				selectedContainer: get( containers, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
+				errorCode: false,
+			} );
 		} catch ( err ) {
-			if ( this._isMounted ) {
-				this.setState( {
-					errorCode: err.code,
-					errorMsg: err.message,
-				} );
-			}
+			this.setState( {
+				errorCode: err.code,
+				errorMsg: err.message,
+			} );
 		}
 	}
 
@@ -297,19 +295,15 @@ class TagmanagerSetup extends Component {
 
 			global.googlesitekit.modules.tagmanager.settings = savedSettings;
 
-			if ( this._isMounted ) {
-				this.setState( {
-					isSaving: false,
-				} );
-			}
+			this.setState( {
+				isSaving: false,
+			} );
 		} catch ( err ) {
-			if ( this._isMounted ) {
-				this.setState( {
-					isLoading: false,
-					errorCode: err.code,
-					errorMsg: err.message,
-				} );
-			}
+			this.setState( {
+				isLoading: false,
+				errorCode: err.code,
+				errorMsg: err.message,
+			} );
 
 			// Catches error in handleButtonAction from <SettingsModules> component.
 			return new Promise.reject( err );
@@ -329,12 +323,10 @@ class TagmanagerSetup extends Component {
 			return;
 		}
 
-		if ( this._isMounted ) {
-			this.setState( {
-				containersLoading: true,
-				selectedAccount: selectValue,
-			} );
-		}
+		this.setState( {
+			containersLoading: true,
+			selectedAccount: selectValue,
+		} );
 
 		this.requestTagManagerContainers( selectValue );
 	}
@@ -347,22 +339,19 @@ class TagmanagerSetup extends Component {
 			return;
 		}
 
-		if ( this._isMounted ) {
-			this.setState( {
-				selectedContainer: selectValue,
-			} );
-		}
+		this.setState( {
+			selectedContainer: selectValue,
+		} );
 	}
 
 	refetchAccount( e ) {
 		e.preventDefault();
-		if ( this._isMounted ) {
-			this.setState( {
-				isLoading: true,
-				refetch: true,
-				errorCode: false,
-			} );
-		}
+
+		this.setState( {
+			isLoading: true,
+			refetch: true,
+			errorCode: false,
+		} );
 	}
 
 	renderSettingsInfo() {
