@@ -323,7 +323,7 @@ class TagmanagerSetup extends Component {
 
 	handleAccountChange( index, item ) {
 		const { selectedAccount } = this.state;
-		const selectValue = item.getAttribute( 'data-value' );
+		const selectValue = item.dataset.value;
 
 		if ( selectValue === selectedAccount ) {
 			return;
@@ -341,7 +341,7 @@ class TagmanagerSetup extends Component {
 
 	handleContainerChange( index, item ) {
 		const { selectedContainer } = this.state;
-		const selectValue = item.getAttribute( 'data-value' );
+		const selectValue = item.dataset.value;
 
 		if ( selectValue === selectedContainer ) {
 			return;
