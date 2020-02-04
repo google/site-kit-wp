@@ -259,6 +259,8 @@ class TagmanagerSetup extends Component {
 	 * @param {string} selectedAccount The account ID to get containers from.
 	 */
 	async requestTagManagerContainers( selectedAccount ) {
+		this.setState( { containersLoading: true } );
+
 		try {
 			const queryArgs = {
 				accountID: selectedAccount,
@@ -275,6 +277,7 @@ class TagmanagerSetup extends Component {
 			} );
 		} catch ( err ) {
 			this.setState( {
+				containersLoading: false,
 				errorCode: err.code,
 				errorMsg: err.message,
 			} );
@@ -354,10 +357,6 @@ class TagmanagerSetup extends Component {
 		if ( ! isValidAccountID( selectValue ) ) {
 			return;
 		}
-
-		this.setState( {
-			containersLoading: true,
-		} );
 
 		this.requestTagManagerContainers( selectValue );
 	}
