@@ -197,23 +197,28 @@ class TagmanagerSetup extends Component {
 				usageContext,
 			};
 
-			let errorCode = false;
-			let errorMsg = '';
-			const { accounts, containers } = await data.get( TYPE_MODULES, 'tagmanager', 'accounts-containers', queryArgs );
+			// eslint-disable-next-line prefer-const
+			let { accounts, containers } = await data.get( TYPE_MODULES, 'tagmanager', 'accounts-containers', queryArgs );
 
 			if ( ! selectedAccount && 0 === accounts.length ) {
-				errorCode = 'accountEmpty';
-				errorMsg = __(
-					'We didn’t find an associated Google Tag Manager account, would you like to set it up now? If you’ve just set up an account please re-fetch your account to sync it with Site Kit.',
-					'google-site-kit'
-				);
+				throw {
+					code: 'accountEmpty',
+					message: __(
+						'We didn’t find an associated Google Tag Manager account, would you like to set it up now? If you’ve just set up an account please re-fetch your account to sync it with Site Kit.',
+						'google-site-kit'
+					),
+				};
 			}
 
 			// Verify if user has access to the selected account.
-			if ( selectedAccount && ! accounts.find( ( account ) => account.accountId === selectedAccount ) ) { // Capitalization rule exception: `accountId` is a property of an API returned value.
-				data.invalidateCacheGroup( TYPE_MODULES, 'tagmanager', 'accounts-containers' );
-				errorCode = 'insufficientPermissions';
-				errorMsg = __( 'You currently don\'t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.', 'google-site-kit' );
+			if ( isValidAccountID( selectedAccount ) && ! accounts.find( ( account ) => account.accountId === selectedAccount ) ) { // Capitalization rule exception: `accountId` is a property of an API returned value.
+				throw {
+					code: 'insufficientPermissions',
+					message: __(
+						'You currently don’t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.',
+						'google-site-kit'
+					),
+				};
 			}
 
 			// If the selectedContainer is not in the list of containers, clear it.
@@ -227,8 +232,8 @@ class TagmanagerSetup extends Component {
 				selectedAccount: selectedAccount || get( containers, [ 0, 'accountId' ] ), // Capitalization rule exception: `accountId` is a property of an API returned value.
 				containers,
 				selectedContainer: selectedContainer || get( containers, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
-				errorCode,
-				errorMsg,
+				errorCode: false,
+				errorMsg: '',
 			} );
 		} catch ( err ) {
 			this.setState( {
