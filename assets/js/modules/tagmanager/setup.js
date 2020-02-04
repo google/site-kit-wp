@@ -177,7 +177,7 @@ class TagmanagerSetup extends Component {
 			}
 		} else {
 			// Only load accounts if there is no existing tag.
-			await this.requestTagManagerAccounts();
+			await this.requestTagManagerAccountsContainers();
 		}
 	}
 
@@ -185,6 +185,42 @@ class TagmanagerSetup extends Component {
 	 * Request Tag Manager accounts.
 	 */
 	async requestTagManagerAccounts() {
+		try {
+			const {
+				containers,
+				selectedAccount,
+				usageContext,
+			} = this.state;
+
+			const accounts = await data.get( TYPE_MODULES, 'tagmanager', 'accounts', { usageContext } );
+
+			this.validateAccounts( accounts, selectedAccount );
+
+			this.setState( {
+				isLoading: false,
+				accounts,
+				containers: ACCOUNT_CHOOSE === selectedAccount ? [
+					{
+						publicId: ACCOUNT_CHOOSE,
+						name: __( 'Select an account', 'google-site-kit' ),
+					},
+				] : containers,
+				errorCode: false,
+				errorMsg: '',
+			} );
+		} catch ( err ) {
+			this.setState( {
+				isLoading: false,
+				errorCode: err.code,
+				errorMsg: err.message,
+			} );
+		}
+	}
+
+	/**
+	 * Request Tag Manager accounts and containers.
+	 */
+	async requestTagManagerAccountsContainers() {
 		try {
 			const {
 				selectedAccount,
@@ -197,38 +233,9 @@ class TagmanagerSetup extends Component {
 				usageContext,
 			};
 
-			// eslint-disable-next-line prefer-const
-			let { accounts, containers } = await data.get( TYPE_MODULES, 'tagmanager', 'accounts-containers', queryArgs );
+			const { accounts, containers } = await data.get( TYPE_MODULES, 'tagmanager', 'accounts-containers', queryArgs );
 
-			if ( ! selectedAccount && 0 === accounts.length ) {
-				throw {
-					code: 'accountEmpty',
-					message: __(
-						'We didn’t find an associated Google Tag Manager account, would you like to set it up now? If you’ve just set up an account please re-fetch your account to sync it with Site Kit.',
-						'google-site-kit'
-					),
-				};
-			}
-
-			// Verify if user has access to the selected account.
-			if ( isValidAccountID( selectedAccount ) && ! accounts.find( ( account ) => account.accountId === selectedAccount ) ) { // Capitalization rule exception: `accountId` is a property of an API returned value.
-				throw {
-					code: 'insufficientPermissions',
-					message: __(
-						'You currently don’t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.',
-						'google-site-kit'
-					),
-				};
-			}
-
-			if ( ACCOUNT_CHOOSE === selectedAccount ) {
-				containers = [
-					{
-						publicId: ACCOUNT_CHOOSE,
-						name: __( 'Select an account', 'google-site-kit' ),
-					},
-				];
-			}
+			this.validateAccounts( accounts, selectedAccount );
 
 			// If the selectedContainer is not in the list of containers, clear it.
 			if ( isValidContainerID( selectedContainer ) && ! containers.find( ( container ) => container.publicId === selectedContainer ) ) {
@@ -250,6 +257,37 @@ class TagmanagerSetup extends Component {
 				errorCode: err.code,
 				errorMsg: err.message,
 			} );
+		}
+	}
+
+	/**
+	 * Validates the given accounts with the given selected account.
+	 *
+	 * @param {Array} accounts List of account objects to validate.
+	 * @param {string} selectedAccount Currently chosen account.
+	 * @throws {Object} If there is no selected account and user has no accounts.
+	 * @throws {Object} If the user does not have access to the selected account.
+	 */
+	validateAccounts( accounts, selectedAccount ) {
+		if ( ! selectedAccount && 0 === accounts.length ) {
+			throw {
+				code: 'accountEmpty',
+				message: __(
+					'We didn’t find an associated Google Tag Manager account, would you like to set it up now? If you’ve just set up an account please re-fetch your account to sync it with Site Kit.',
+					'google-site-kit'
+				),
+			};
+		}
+
+		// Verify if user has access to the selected account.
+		if ( isValidAccountID( selectedAccount ) && ! accounts.find( ( account ) => account.accountId === selectedAccount ) ) { // Capitalization rule exception: `accountId` is a property of an API returned value.
+			throw {
+				code: 'insufficientPermissions',
+				message: __(
+					'You currently don’t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.',
+					'google-site-kit'
+				),
+			};
 		}
 	}
 
