@@ -301,12 +301,13 @@ class TagmanagerSetup extends Component {
 		} catch ( err ) {
 			this.setState( {
 				isLoading: false,
+				isSaving: false,
 				errorCode: err.code,
 				errorMsg: err.message,
 			} );
 
-			// Catches error in handleButtonAction from <SettingsModules> component.
-			return new Promise.reject( err );
+			// Re-throw the error to return a rejected promise.
+			throw err;
 		}
 	}
 
