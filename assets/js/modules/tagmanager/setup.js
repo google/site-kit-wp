@@ -501,7 +501,7 @@ class TagmanagerSetup extends Component {
 							name="containers"
 							label={ __( 'Container', 'google-site-kit' ) }
 							value={ selectedContainer }
-							disabled={ hasExistingTag }
+							disabled={ hasExistingTag || [ ACCOUNT_CREATE, ACCOUNT_CHOOSE ].includes( selectedAccount ) }
 							onEnhancedChange={ this.handleContainerChange }
 							outlined
 						>
