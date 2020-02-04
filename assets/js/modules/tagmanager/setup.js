@@ -507,8 +507,10 @@ class TagmanagerSetup extends Component {
 						onEnhancedChange={ this.handleAccountChange }
 						outlined
 					>
-						{ accounts
-							.concat( ! hasExistingTag ? [ { accountId: '-1', name: __( 'Set up a new account', 'google-site-kit' ) } ] : [] )
+						{ []
+							.concat( ACCOUNT_CHOOSE === selectedAccount ? { accountId: ACCOUNT_CHOOSE, name: __( 'Select one...', 'google-site-kit' ) } : [] )
+							.concat( accounts )
+							.concat( ! hasExistingTag ? { accountId: ACCOUNT_CREATE, name: __( 'Set up a new account', 'google-site-kit' ) } : [] )
 							.map( ( account ) => {
 								return (
 									<Option
@@ -517,7 +519,8 @@ class TagmanagerSetup extends Component {
 										{ account.name }
 									</Option>
 								);
-							} ) }
+							} )
+						}
 					</Select>
 
 					{ containersLoading ? ( <ProgressBar small /> ) : (
