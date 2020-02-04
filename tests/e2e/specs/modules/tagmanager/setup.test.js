@@ -74,14 +74,18 @@ describe( 'Tag Manager module setup', () => {
 		] );
 
 		await Promise.all( [
-			page.waitForResponse( ( req ) => req.url().match( 'tagmanager/data/accounts-containers' ) ),
+			page.waitForResponse( ( req ) => req.url().match( 'tagmanager/data/accounts' ) ),
 			expect( page ).toClick( '.googlesitekit-cta-link', { text: /Re-fetch My Account/i } ),
 		] );
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
-		// Ensure account and container are selected by default.
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account a/i } );
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test container x/i } );
+		// Ensure account and container selections are cleared.
+		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /select one\.\.\./i } );
+		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /select an account/i } );
+
+		// Choose an account.
+		await expect( page ).toClick( '.mdc-select', { text: /select one\.\.\./i } );
+		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test account a/i } );
 
 		// Ensure "Set up a new container" option is present in container select.
 		await expect( page ).toClick( '.mdc-select', { text: /test container x/i } );
