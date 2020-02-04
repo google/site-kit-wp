@@ -37,6 +37,10 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 import { addFilter, removeFilter } from '@wordpress/hooks';
 
+const ACCOUNT_CREATE = 'account_create';
+const ACCOUNT_CHOOSE = 'account_choose';
+const CONTAINER_CREATE = 'container_create';
+
 class TagmanagerSetup extends Component {
 	constructor( props ) {
 		super( props );
