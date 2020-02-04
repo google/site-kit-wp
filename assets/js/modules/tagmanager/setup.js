@@ -60,7 +60,6 @@ class TagmanagerSetup extends Component {
 			containers: [],
 			errorCode: false,
 			errorMsg: '',
-			refetch: false,
 			selectedAccount: settings.accountID,
 			selectedContainer: settings[ containerKey ],
 			containersLoading: false,
@@ -114,12 +113,6 @@ class TagmanagerSetup extends Component {
 	}
 
 	componentDidUpdate() {
-		const { refetch } = this.state;
-
-		if ( refetch ) {
-			this.requestTagManagerAccounts();
-		}
-
 		this.toggleConfirmChangesButton();
 	}
 
@@ -234,7 +227,6 @@ class TagmanagerSetup extends Component {
 				selectedAccount: selectedAccount || get( containers, [ 0, 'accountId' ] ), // Capitalization rule exception: `accountId` is a property of an API returned value.
 				containers,
 				selectedContainer: selectedContainer || get( containers, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
-				refetch: false,
 				errorCode,
 				errorMsg,
 			} );
@@ -243,7 +235,6 @@ class TagmanagerSetup extends Component {
 				isLoading: false,
 				errorCode: err.code,
 				errorMsg: err.message,
-				refetch: false,
 			} );
 		}
 	}
@@ -357,11 +348,15 @@ class TagmanagerSetup extends Component {
 	refetchAccount( e ) {
 		e.preventDefault();
 
-		this.setState( {
-			isLoading: true,
-			refetch: true,
-			errorCode: false,
-		} );
+		this.setState(
+			{
+				isLoading: true,
+				errorCode: false,
+				selectedAccount: ACCOUNT_CHOOSE,
+				selectedContainer: ACCOUNT_CHOOSE,
+			},
+			this.requestTagManagerAccounts
+		);
 	}
 
 	renderSettingsInfo() {
