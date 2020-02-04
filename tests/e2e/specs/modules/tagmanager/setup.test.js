@@ -138,4 +138,23 @@ describe( 'Tag Manager module setup', () => {
 		] );
 		await expect( page ).toMatchElement( 'script[src^="https://www.googletagmanager.com/gtm.js?id=GTM-BCDWXY"]' );
 	} );
+
+	it( 'displays instructions for account creation when "Set up a new account" option is selected', async () => {
+		await activatePlugin( 'e2e-tests-module-setup-tagmanager-api-mock' );
+		await proceedToTagManagerSetup();
+
+		// Ensure "setup a new account" is an available choice.
+		await expect( page ).toClick( '.mdc-select', { text: /test account a/i } );
+		await expect( page ).toMatchElement( '.mdc-menu-surface--open .mdc-list-item', { text: /set up a new account/i } );
+
+		// Choose set up a new account.
+		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /set up a new account/i } );
+
+		// Ensure instructions are present.
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module--tag-manager p', { text: /to create a new account/i } );
+
+		// Ensure buttons are present.
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module--tag-manager .mdc-button', { text: /create an account/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module--tag-manager .googlesitekit-cta-link', { text: /re-fetch my account/i } );
+	} );
 } );
