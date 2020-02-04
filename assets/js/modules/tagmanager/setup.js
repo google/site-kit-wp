@@ -540,7 +540,10 @@ class TagmanagerSetup extends Component {
 				{
 					! onSettingsPage &&
 					<div className="googlesitekit-setup-module__action">
-						<Button onClick={ this.handleSubmit }>{ __( 'Confirm & Continue', 'google-site-kit' ) }</Button>
+						<Button
+							onClick={ this.handleSubmit }
+							disabled={ ! this.canSaveSettings() }
+						>{ __( 'Confirm & Continue', 'google-site-kit' ) }</Button>
 					</div>
 				}
 
