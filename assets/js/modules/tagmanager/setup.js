@@ -222,7 +222,7 @@ class TagmanagerSetup extends Component {
 			}
 
 			// If the selectedContainer is not in the list of containers, clear it.
-			if ( selectedContainer && ! containers.find( ( container ) => container.publicId === selectedContainer ) ) {
+			if ( isValidContainerID( selectedContainer ) && ! containers.find( ( container ) => container.publicId === selectedContainer ) ) {
 				selectedContainer = null;
 			}
 
