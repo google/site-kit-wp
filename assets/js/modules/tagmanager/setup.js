@@ -221,6 +221,15 @@ class TagmanagerSetup extends Component {
 				};
 			}
 
+			if ( ACCOUNT_CHOOSE === selectedAccount ) {
+				containers = [
+					{
+						publicId: ACCOUNT_CHOOSE,
+						name: __( 'Select an account', 'google-site-kit' ),
+					},
+				];
+			}
+
 			// If the selectedContainer is not in the list of containers, clear it.
 			if ( isValidContainerID( selectedContainer ) && ! containers.find( ( container ) => container.publicId === selectedContainer ) ) {
 				selectedContainer = null;
