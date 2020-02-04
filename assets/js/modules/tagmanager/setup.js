@@ -37,6 +37,11 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 import { addFilter, removeFilter } from '@wordpress/hooks';
 
+/**
+ * Internal dependencies
+ */
+import { isValidAccountID, isValidContainerID } from './util';
+
 const ACCOUNT_CREATE = 'account_create';
 const ACCOUNT_CHOOSE = 'account_choose';
 const CONTAINER_CREATE = 'container_create';
@@ -131,7 +136,7 @@ class TagmanagerSetup extends Component {
 		if ( ! this.props.isEditing ) {
 			return;
 		}
-		const { containerKey, errorCode } = this.state;
+		const { containerKey } = this.state;
 
 		let settingsMapping = {
 			selectedContainer: containerKey,
@@ -139,8 +144,8 @@ class TagmanagerSetup extends Component {
 			useSnippet: 'useSnippet',
 		};
 
-		// Disable the confirmation button if user lacks necessary permission on the existing tag.
-		if ( 'tag_manager_existing_tag_permission' === errorCode ) {
+		// Disable the confirmation button if necessary conditions are not met.
+		if ( ! this.canSaveSettings() ) {
 			settingsMapping = {};
 		}
 
@@ -546,6 +551,26 @@ class TagmanagerSetup extends Component {
 
 			</Fragment>
 		);
+	}
+
+	canSaveSettings() {
+		const {
+			errorCode,
+			isLoading,
+			selectedAccount,
+			selectedContainer,
+		} = this.state;
+
+		if (
+			isLoading ||
+			'tag_manager_existing_tag_permission' === errorCode ||
+			! isValidAccountID( selectedAccount ) ||
+			( ! isValidContainerID( selectedContainer ) && CONTAINER_CREATE !== selectedContainer )
+		) {
+			return false;
+		}
+
+		return true;
 	}
 
 	renderCreateAccount() {
