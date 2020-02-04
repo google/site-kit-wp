@@ -324,9 +324,25 @@ class TagmanagerSetup extends Component {
 			return;
 		}
 
+		this.setState( { selectedAccount: selectValue } );
+
+		if ( ACCOUNT_CHOOSE === selectValue ) {
+			this.setState( {
+				selectedContainer: ACCOUNT_CHOOSE,
+				containers: [ {
+					publicId: ACCOUNT_CHOOSE,
+					name: __( 'Select an account', 'google-site-kit' ),
+				} ],
+			} );
+			return;
+		}
+
+		if ( ! isValidAccountID( selectValue ) ) {
+			return;
+		}
+
 		this.setState( {
 			containersLoading: true,
-			selectedAccount: selectValue,
 		} );
 
 		this.requestTagManagerContainers( selectValue );
