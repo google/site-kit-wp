@@ -230,7 +230,7 @@ class TagmanagerSetup extends Component {
 			this.validateAccounts( accounts, selectedAccount );
 
 			// If the selectedContainer is not in the list of containers, clear it.
-			if ( isValidContainerID( selectedContainer ) && ! containers.find( ( container ) => container.publicId === selectedContainer ) ) {
+			if ( isValidContainerID( selectedContainer ) && ! containers.find( ( container ) => container.publicId === selectedContainer ) ) { /* Capitalization rule exception: `publicId` is a property of an API returned value. */
 				selectedContainer = null;
 			}
 
@@ -536,7 +536,7 @@ class TagmanagerSetup extends Component {
 							.concat( accounts )
 							.concat( ! hasExistingTag ? {
 								name: __( 'Set up a new account', 'google-site-kit' ),
-								accountId: ACCOUNT_CREATE,
+								accountId: ACCOUNT_CREATE, /* Capitalization rule exception: `accountId` is a property of an API returned value. */
 							} : [] )
 							.map( ( account ) => {
 								return (
@@ -565,7 +565,7 @@ class TagmanagerSetup extends Component {
 								.concat( containers )
 								.concat( {
 									name: __( 'Set up a new container', 'google-site-kit' ),
-									publicId: CONTAINER_CREATE,
+									publicId: CONTAINER_CREATE, /* Capitalization rule exception: `publicId` is a property of an API returned value. */
 								} )
 								.map( ( { name, publicId }, i ) =>
 									<Option
