@@ -545,7 +545,10 @@ class TagmanagerSetup extends Component {
 						outlined
 					>
 						{ []
-							.concat( UNSELECTED === selectedAccount ? { accountId: UNSELECTED, name: __( 'Select one...', 'google-site-kit' ) } : [] )
+							.concat( {
+								name: __( 'Select one...', 'google-site-kit' ),
+								accountId: UNSELECTED,
+							} )
 							.concat( accounts )
 							.concat( ! hasExistingTag ? { accountId: ACCOUNT_CREATE, name: __( 'Set up a new account', 'google-site-kit' ) } : [] )
 							.map( ( account ) => {
