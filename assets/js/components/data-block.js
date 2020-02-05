@@ -107,13 +107,13 @@ class DataBlock extends Component {
 					<div className="googlesitekit-data-block__change">
 						{ '' === change && <Fragment>&nbsp;</Fragment> }
 						{ change && <Fragment>
-							<div className="googlesitekit-data-block__arrow">
+							<span className="googlesitekit-data-block__arrow">
 								<ChangeArrow
 									direction={ change ? 'up' : 'down' }
 									invertColor={ invertChangeColor }
 								/>
-							</div>
-							<span key="values" className="googlesitekit-data-block__value">
+							</span>
+							<span className="googlesitekit-data-block__value">
 								{ `${ Math.abs( change ) }${ changeDataUnit } ${ period }` }
 							</span>
 						</Fragment> }
