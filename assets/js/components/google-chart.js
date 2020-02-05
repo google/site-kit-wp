@@ -44,6 +44,7 @@ class GoogleChart extends Component {
 			chart: null,
 		};
 
+		this.onChartsLoad = this.onChartsLoad.bind( this );
 		this.waitForChart = this.waitForChart.bind( this );
 		this.getData = this.getData.bind( this );
 		this.prepareChart = this.prepareChart.bind( this );
@@ -65,12 +66,7 @@ class GoogleChart extends Component {
 					packages: [ 'corechart' ],
 				} );
 
-				global.google.charts.setOnLoadCallback( () => {
-					this.getData();
-					this.prepareChart();
-					this.drawChart();
-					this.setState( { loading: false } );
-				} );
+				global.google.charts.setOnLoadCallback( this.onChartsLoad );
 
 				doAction( 'googlesitekit.ChartLoaderLoaded' );
 			};
@@ -83,20 +79,19 @@ class GoogleChart extends Component {
 		} else if ( ! global.google || ! global.google.charts ) {
 			// When the google chart object not loaded, load draw chart later.
 			addAction( 'googlesitekit.ChartLoaderLoaded', 'googlesitekit.HandleChartLoaderLoaded', () => {
-				global.google.charts.setOnLoadCallback( () => {
-					this.getData();
-					this.prepareChart();
-					this.drawChart();
-				} );
+				global.google.charts.setOnLoadCallback( this.onChartsLoad );
 			} );
 		} else {
 			// When the google chart object loaded, draw chart now.
-			global.google.charts.setOnLoadCallback( () => {
-				this.getData();
-				this.prepareChart();
-				this.drawChart();
-			} );
+			global.google.charts.setOnLoadCallback( this.onChartsLoad );
 		}
+	}
+
+	onChartsLoad() {
+		this.getData();
+		this.prepareChart();
+		this.drawChart();
+		this.setState( { loading: false } );
 	}
 
 	componentDidMount() {
