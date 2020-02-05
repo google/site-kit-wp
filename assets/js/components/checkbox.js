@@ -21,6 +21,7 @@
  */
 import { MDCFormField, MDCCheckbox } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -53,10 +54,7 @@ class Checkbox extends Component {
 		return (
 			<div className="mdc-form-field" ref={ this.formFieldRef }>
 				<div
-					className={ `
-						mdc-checkbox
-						${ disabled ? 'mdc-checkbox--disabled' : '' }
-					` }
+					className={ classnames( 'mdc-checkbox', { 'mdc-checkbox--disabled': true } ) }
 					ref={ this.checkboxRef }
 				>
 					<input
