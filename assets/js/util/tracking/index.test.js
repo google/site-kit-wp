@@ -22,7 +22,8 @@ describe( 'trackEvent', () => {
 			},
 		};
 
-		trackEvent( 'category', 'name', 'label', 'value', _global );
+		bootstrapTracking( _global );
+		trackEvent( 'category', 'name', 'label', 'value' );
 
 		expect( _global[ DATA_LAYER ].push ).toHaveBeenCalledWith( [
 			'event',

@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+/**
+ * Global object reference.
+ */
+let _global = {};
+
 const DEFAULT_CONFIG = {
 	isFirstAdmin: false,
 	trackingEnabled: false,
@@ -48,10 +53,12 @@ export const DATA_LAYER = '_googlesitekitDataLayer';
 /**
  * Initializes tracking.
  *
- * @param {Object} _global The global object. Optional. (Used for testing only)
+ * @param {Object} _window The global object. Optional. (Used for testing only)
  * @param {boolean} _resetPromise Clears the internal reference to the enableTrackingPromise (Optional - for testing only)
  */
-export async function bootstrapTracking( _global = global, _resetPromise = false ) {
+export async function bootstrapTracking( _window = global, _resetPromise = false ) {
+	_global = _window;
+
 	const {
 		isFirstAdmin,
 		trackingID,
@@ -73,19 +80,18 @@ export async function bootstrapTracking( _global = global, _resetPromise = false
 		enableTrackingPromise = null;
 	}
 
-	return toggleTracking( trackingEnabled, _global );
+	return toggleTracking( trackingEnabled );
 }
 
 /**
  * Change the active state of tracking.
  *
  * @param {boolean} activeStatus The new state to set.
- * @param {Object} _global The global object. Optional. (Used for testing only)
  * @return {Promise} A promise that resolves with an object { trackingEnabled: (bool) }.
  */
-export async function toggleTracking( activeStatus, _global = global ) {
+export async function toggleTracking( activeStatus ) {
 	if ( !! activeStatus ) {
-		return enableTracking( _global );
+		return enableTracking();
 	}
 
 	return disableTracking();
@@ -95,9 +101,8 @@ export async function toggleTracking( activeStatus, _global = global ) {
  * Enables tracking by injecting the necessary script tag if not present.
  *
  * @return {Promise} A promise that resolves when the script is loaded and ready.
- * @param {Object} _global The global object. Optional. (Used for testing only)
  */
-export async function enableTracking( _global = global ) {
+export async function enableTracking() {
 	// Return the existing promise if already called.
 	if ( enableTrackingPromise ) {
 		return enableTrackingPromise;
@@ -105,8 +110,8 @@ export async function enableTracking( _global = global ) {
 
 	config.trackingEnabled = true;
 
-	dataLayerPush( _global, 'js', new Date() );
-	dataLayerPush( _global, 'config', config.trackingID );
+	dataLayerPush( 'js', new Date() );
+	dataLayerPush( 'config', config.trackingID );
 
 	const { document } = _global;
 	// If the script is already in the DOM then we shouldn't get here as the promise should already be returned.
@@ -154,9 +159,8 @@ export function isTrackingEnabled() {
  * @param {string} eventName The event category. Required.
  * @param {string} eventLabel The event category. Optional.
  * @param {string} eventValue The event category. Optional.
- * @param {Object} _global The global object. Optional. (Used for testing only)
  */
-export function trackEvent( eventCategory, eventName, eventLabel = '', eventValue = '', _global = global ) {
+export function trackEvent( eventCategory, eventName, eventLabel = '', eventValue = '' ) {
 	const {
 		isFirstAdmin,
 		referenceSiteURL,
@@ -168,7 +172,7 @@ export function trackEvent( eventCategory, eventName, eventLabel = '', eventValu
 		return;
 	}
 
-	dataLayerPush( _global, 'event', eventName, {
+	dataLayerPush( 'event', eventName, {
 		send_to: trackingID,
 		event_category: eventCategory,
 		event_label: eventLabel,
@@ -182,10 +186,9 @@ export function trackEvent( eventCategory, eventName, eventLabel = '', eventValu
 /**
  * Pushes data onto the data layer.
  *
- * @param {Object} _global The global object. Optional. (Used for testing only)
  * @param {...any} args Arguments to push onto the data layer.
  */
-function dataLayerPush( _global = global, ...args ) {
+function dataLayerPush( ...args ) {
 	_global[ DATA_LAYER ] = _global[ DATA_LAYER ] || [];
 	_global[ DATA_LAYER ].push( args );
 }
