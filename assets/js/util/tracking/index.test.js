@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { bootstrapTracking, DATA_LAYER, trackEvent } from './';
+import { bootstrapTracking, DATA_LAYER, trackEvent } from './index.private';
 
 describe( 'trackEvent', () => {
 	it( 'sends a tracking event', () => {
