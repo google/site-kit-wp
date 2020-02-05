@@ -135,12 +135,12 @@ export async function enableTracking() {
 /**
  * Disables subsequent event tracking.
  *
- * @return {Promise} A promise that resolves with an object { trackingEnabled: (bool) }.
+ * @return {Object} { trackingEnabled: (bool) }.
  */
-export async function disableTracking() {
+export function disableTracking() {
 	config.trackingEnabled = false;
 
-	return Promise.resolve( { trackingEnabled: false } );
+	return { trackingEnabled: false };
 }
 
 /**
