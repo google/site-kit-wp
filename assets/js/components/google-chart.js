@@ -30,6 +30,11 @@ import { Component, createRef } from '@wordpress/element';
 import { doAction, addAction } from '@wordpress/hooks';
 import { debounce } from 'lodash';
 
+/**
+ * Flag for tracking loaded state of Google Charts library.
+ */
+let googleChartsLoaded = global.google && global.google.charts;
+
 class GoogleChart extends Component {
 	constructor( props ) {
 		super( props );
@@ -47,8 +52,8 @@ class GoogleChart extends Component {
 		this.chartRef = createRef();
 
 		// Inject the script if not already loaded.
-		if ( ! global.google && ! global.googleChartLoaded ) {
-			global.googleChartLoaded = true;
+		if ( ! googleChartsLoaded ) {
+			googleChartsLoaded = true;
 			const script = document.createElement( 'script' );
 			script.type = 'text/javascript';
 			script.onload = () => {
