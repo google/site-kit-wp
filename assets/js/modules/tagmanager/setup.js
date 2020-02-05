@@ -43,8 +43,8 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
 import { isValidAccountID, isValidContainerID } from './util';
 
 const ACCOUNT_CREATE = 'account_create';
-const ACCOUNT_CHOOSE = 'account_choose';
 const CONTAINER_CREATE = 'container_create';
+const UNSELECTED = '';
 
 class TagmanagerSetup extends Component {
 	constructor( props ) {
@@ -199,9 +199,9 @@ class TagmanagerSetup extends Component {
 			this.setState( {
 				isLoading: false,
 				accounts,
-				containers: ACCOUNT_CHOOSE === selectedAccount ? [
+				containers: UNSELECTED === selectedAccount ? [
 					{
-						publicId: ACCOUNT_CHOOSE,
+						publicId: UNSELECTED,
 						name: __( 'Select an account', 'google-site-kit' ),
 					},
 				] : containers,
@@ -381,11 +381,11 @@ class TagmanagerSetup extends Component {
 
 		this.setState( { selectedAccount: selectValue } );
 
-		if ( ACCOUNT_CHOOSE === selectValue ) {
+		if ( UNSELECTED === selectValue ) {
 			this.setState( {
-				selectedContainer: ACCOUNT_CHOOSE,
+				selectedContainer: UNSELECTED,
 				containers: [ {
-					publicId: ACCOUNT_CHOOSE,
+					publicId: UNSELECTED,
 					name: __( 'Select an account', 'google-site-kit' ),
 				} ],
 			} );
@@ -419,8 +419,8 @@ class TagmanagerSetup extends Component {
 			{
 				isLoading: true,
 				errorCode: false,
-				selectedAccount: ACCOUNT_CHOOSE,
-				selectedContainer: ACCOUNT_CHOOSE,
+				selectedAccount: UNSELECTED,
+				selectedContainer: UNSELECTED,
 			},
 			this.requestTagManagerAccounts
 		);
@@ -545,7 +545,7 @@ class TagmanagerSetup extends Component {
 						outlined
 					>
 						{ []
-							.concat( ACCOUNT_CHOOSE === selectedAccount ? { accountId: ACCOUNT_CHOOSE, name: __( 'Select one...', 'google-site-kit' ) } : [] )
+							.concat( UNSELECTED === selectedAccount ? { accountId: UNSELECTED, name: __( 'Select one...', 'google-site-kit' ) } : [] )
 							.concat( accounts )
 							.concat( ! hasExistingTag ? { accountId: ACCOUNT_CREATE, name: __( 'Set up a new account', 'google-site-kit' ) } : [] )
 							.map( ( account ) => {
@@ -566,7 +566,7 @@ class TagmanagerSetup extends Component {
 							name="containers"
 							label={ __( 'Container', 'google-site-kit' ) }
 							value={ selectedContainer }
-							disabled={ hasExistingTag || [ ACCOUNT_CREATE, ACCOUNT_CHOOSE ].includes( selectedAccount ) }
+							disabled={ hasExistingTag || [ ACCOUNT_CREATE, UNSELECTED ].includes( selectedAccount ) }
 							onEnhancedChange={ this.handleContainerChange }
 							outlined
 						>
