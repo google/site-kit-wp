@@ -149,6 +149,7 @@
     "eslint-scope": "^5.0.0",
     "focus-trap-react": "^5.0.1",
     "formdata-polyfill": "^3.0.17",
+    "git-repo-info": "^2.1.1",
     "gulp": "^3.9.1",
     "gulp-filter": "^5.1.0",
     "gulp-imagemin": "^4.1.0",
