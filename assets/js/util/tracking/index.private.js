@@ -189,6 +189,3 @@ function dataLayerPush( _global = global, ...args ) {
 	_global[ DATA_LAYER ] = _global[ DATA_LAYER ] || [];
 	_global[ DATA_LAYER ].push( args );
 }
-
-// Set the initial state on import.
-bootstrapTracking();
