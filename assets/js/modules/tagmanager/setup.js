@@ -187,7 +187,6 @@ class TagmanagerSetup extends Component {
 	async requestTagManagerAccounts() {
 		try {
 			const {
-				containers,
 				selectedAccount,
 				usageContext,
 			} = this.state;
@@ -199,14 +198,7 @@ class TagmanagerSetup extends Component {
 			this.setState( {
 				isLoading: false,
 				accounts,
-				containers: UNSELECTED === selectedAccount ? [
-					{
-						publicId: UNSELECTED,
-						name: __( 'Select an account', 'google-site-kit' ),
-					},
-				] : containers,
-				errorCode: false,
-				errorMsg: '',
+				containers: [],
 			} );
 		} catch ( err ) {
 			this.setState( {
@@ -382,13 +374,7 @@ class TagmanagerSetup extends Component {
 		this.setState( { selectedAccount: selectValue } );
 
 		if ( UNSELECTED === selectValue ) {
-			this.setState( {
-				selectedContainer: UNSELECTED,
-				containers: [ {
-					publicId: UNSELECTED,
-					name: __( 'Select an account', 'google-site-kit' ),
-				} ],
-			} );
+			this.setState( { selectedContainer: UNSELECTED } );
 			return;
 		}
 
@@ -419,6 +405,7 @@ class TagmanagerSetup extends Component {
 			{
 				isLoading: true,
 				errorCode: false,
+				errorMsg: '',
 				selectedAccount: UNSELECTED,
 				selectedContainer: UNSELECTED,
 			},
