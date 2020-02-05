@@ -25,6 +25,7 @@ export {
 	enableTracking,
 	isTrackingEnabled,
 	toggleTracking,
+	trackEvent,
 } from './index.private';
 
 // Set the initial state on import.
