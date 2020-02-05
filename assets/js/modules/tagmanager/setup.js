@@ -523,6 +523,7 @@ class TagmanagerSetup extends Component {
 				) }
 				<div className="googlesitekit-setup-module__inputs">
 					<Select
+						className="googlesitekit-tagmanager__select-account"
 						enhanced
 						name="accounts"
 						label={ __( 'Account', 'google-site-kit' ) }
@@ -548,6 +549,7 @@ class TagmanagerSetup extends Component {
 
 					{ containersLoading ? ( <ProgressBar small /> ) : (
 						<Select
+							className="googlesitekit-tagmanager__select-container"
 							enhanced
 							name="containers"
 							label={ __( 'Container', 'google-site-kit' ) }
