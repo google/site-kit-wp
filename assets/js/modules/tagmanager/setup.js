@@ -573,7 +573,12 @@ class TagmanagerSetup extends Component {
 							onEnhancedChange={ this.handleContainerChange }
 							outlined
 						>
-							{ containers
+							{ []
+								.concat( {
+									name: __( 'Select a container', 'google-site-kit' ),
+									publicId: UNSELECTED,
+								} )
+								.concat( containers )
 								.concat( {
 									name: __( 'Set up a new container', 'google-site-kit' ),
 									publicId: CONTAINER_CREATE,
