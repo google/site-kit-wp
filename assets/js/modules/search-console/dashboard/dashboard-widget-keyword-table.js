@@ -36,10 +36,6 @@ class SearchConsoleDashboardWidgetKeywordTable extends Component {
 	render() {
 		const { data } = this.props;
 
-		if ( ! data || ! data.length ) {
-			return null;
-		}
-
 		const headers = [
 			{
 				title: __( 'Keyword', 'google-site-kit' ),
@@ -105,5 +101,6 @@ export default withData(
 		},
 	],
 	<PreviewTable padding />,
-	{ createGrid: true }
+	{ createGrid: true },
+	( returnedData ) => ! returnedData.length
 );
