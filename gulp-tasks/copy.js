@@ -2,11 +2,8 @@
  * External dependencies
  */
 import gulp from 'gulp';
-import del from 'del';
 
 gulp.task( 'copy', () => {
-	del.sync( [ './release/**/*' ] );
-
 	gulp.src(
 		[
 			'readme.txt',
