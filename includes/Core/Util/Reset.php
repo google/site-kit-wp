@@ -67,10 +67,49 @@ final class Reset {
 	 * @since 1.0.0
 	 */
 	public function all() {
-		$googlesitekit_reset_context = $this->context;
+		global $wpdb;
 
-		// Call uninstaller.
-		require $this->context->path( 'uninstall.php' );
+		$sitekit_key_pattern = 'googlesitekit\_%';
+
+		// Delete options and transients.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->query(
+			$wpdb->prepare(
+				"DELETE FROM $wpdb->options WHERE option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s OR option_name = %s",
+				$sitekit_key_pattern,
+				'_transient_' . $sitekit_key_pattern,
+				'_transient_timeout_' . $sitekit_key_pattern,
+				'googlesitekit-active-modules'
+			)
+		);
+
+		// Delete user meta.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$wpdb->query(
+			$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE meta_key LIKE %s", $wpdb->get_blog_prefix() . $sitekit_key_pattern )
+		);
+
+		// Clear network data if resetting network-wide.
+		if ( $this->context->is_network_mode() ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM $wpdb->sitemeta WHERE meta_key LIKE %s OR meta_key LIKE %s OR meta_key LIKE %s OR meta_key = %s",
+					$sitekit_key_pattern,
+					'_site_transient_' . $sitekit_key_pattern,
+					'_site_transient_timeout_' . $sitekit_key_pattern,
+					'googlesitekit-active-modules'
+				)
+			);
+
+			// Delete user meta.
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query(
+				$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE meta_key LIKE %s", $sitekit_key_pattern )
+			);
+		}
+
+		wp_cache_flush();
 	}
 
 	/**
