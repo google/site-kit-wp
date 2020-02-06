@@ -47,7 +47,7 @@ function generateFilename() {
 	const { branch, date, shortSha } = getGit();
 
 	return sanitizeFilename(
-		`google-site-kit.v${ version }#${ branch }@${ shortSha }.${ date }.zip`
+		`google-site-kit.v${ version }.${ branch }@${ shortSha }.${ date }.zip`
 	);
 }
 
