@@ -25,5 +25,5 @@ gulp.task( 'copy', () => {
 		],
 		{ base: '.' }
 	)
-		.pipe( gulp.dest( 'release' ) );
+		.pipe( gulp.dest( 'release/google-site-kit' ) );
 } );
