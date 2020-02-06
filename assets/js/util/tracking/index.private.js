@@ -35,12 +35,6 @@ const DEFAULT_CONFIG = {
 const config = { ...DEFAULT_CONFIG };
 
 /**
- * The promise created when tracking is enabled.
- * This reference is kept and returned for subsequent calls.
- */
-let enableTrackingPromise;
-
-/**
  * gtag script identifier.
  */
 const SCRIPT_IDENTIFIER = 'data-googlesitekit-gtag';
@@ -54,9 +48,8 @@ export const DATA_LAYER = '_googlesitekitDataLayer';
  * Initializes tracking.
  *
  * @param {Object} _window The global object. Optional. (Used for testing only)
- * @param {boolean} _resetPromise Clears the internal reference to the enableTrackingPromise (Optional - for testing only)
  */
-export async function bootstrapTracking( _window = global, _resetPromise = false ) {
+export function bootstrapTracking( _window = global ) {
 	_global = _window;
 
 	const {
@@ -76,71 +69,50 @@ export async function bootstrapTracking( _window = global, _resetPromise = false
 		referenceSiteURL: referenceSiteURL.toString().replace( /\/+$/, '' ),
 	} );
 
-	if ( _resetPromise ) {
-		enableTrackingPromise = null;
-	}
-
-	return toggleTracking( trackingEnabled );
+	toggleTracking( trackingEnabled );
 }
 
 /**
  * Change the active state of tracking.
  *
  * @param {boolean} activeStatus The new state to set.
- * @return {Promise} A promise that resolves with an object { trackingEnabled: (bool) }.
  */
-export async function toggleTracking( activeStatus ) {
+export function toggleTracking( activeStatus ) {
 	if ( !! activeStatus ) {
-		return enableTracking();
+		enableTracking();
+	} else {
+		disableTracking();
 	}
-
-	return disableTracking();
 }
 
 /**
  * Enables tracking by injecting the necessary script tag if not present.
- *
- * @return {Promise} A promise that resolves when the script is loaded and ready.
  */
-export async function enableTracking() {
-	// Return the existing promise if already called.
-	if ( enableTrackingPromise ) {
-		return enableTrackingPromise;
+export function enableTracking() {
+	config.trackingEnabled = true;
+
+	const { document } = _global;
+
+	if ( document.querySelector( `script[${ SCRIPT_IDENTIFIER }]` ) ) {
+		return;
 	}
 
-	config.trackingEnabled = true;
+	// If not present, inject it and initialize dataLayer.
+	const scriptTag = document.createElement( 'script' );
+	scriptTag.setAttribute( SCRIPT_IDENTIFIER, '' );
+	scriptTag.async = true;
+	scriptTag.src = `https://www.googletagmanager.com/gtag/js?id=${ config.trackingID }&l=${ DATA_LAYER }`;
+	document.head.appendChild( scriptTag );
 
 	dataLayerPush( 'js', new Date() );
 	dataLayerPush( 'config', config.trackingID );
-
-	const { document } = _global;
-	// If the script is already in the DOM then we shouldn't get here as the promise should already be returned.
-	if ( document.querySelector( `script[${ SCRIPT_IDENTIFIER }]` ) ) {
-		enableTrackingPromise = Promise.resolve( { trackingEnabled: true } );
-	} else { // If not present, inject it and resolve promise on load
-		const scriptTag = document.createElement( 'script' );
-		enableTrackingPromise = new Promise( ( resolve, reject ) => {
-			scriptTag.onload = () => resolve( { trackingEnabled: true } );
-			scriptTag.onerror = reject;
-		} );
-		scriptTag.setAttribute( SCRIPT_IDENTIFIER, '' );
-		scriptTag.async = true;
-		scriptTag.src = `https://www.googletagmanager.com/gtag/js?id=${ config.trackingID }&l=${ DATA_LAYER }`;
-		document.head.appendChild( scriptTag );
-	}
-
-	return enableTrackingPromise;
 }
 
 /**
  * Disables subsequent event tracking.
- *
- * @return {Object} { trackingEnabled: (bool) }.
  */
 export function disableTracking() {
 	config.trackingEnabled = false;
-
-	return { trackingEnabled: false };
 }
 
 /**
