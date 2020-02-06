@@ -34,9 +34,12 @@ class DashboardSplashModule extends Component {
 		return (
 			<div className="googlesitekit-splash-module">
 				<div className="googlesitekit-splash-module__logo">
-					{ 'pagespeed' === icon ?
-						<img alt="PageSpeed Icon" src={ googlesitekit.admin.assetsRoot + 'images/icon-pagespeed.png' } /> :
-						<SvgIcon id={ icon } width="33" height="33" /> }
+					{ 'pagespeed' === icon ? (
+						<img
+							alt="PageSpeed Icon"
+							src={ `${ global.googlesitekit.admin.assetsRoot }images/icon-pagespeed.png` }
+						/>
+					) : <SvgIcon id={ icon } width="33" height="33" /> }
 				</div>
 				<h3 className="
 					googlesitekit-subheading-1

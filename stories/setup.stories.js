@@ -6,10 +6,10 @@ import Setup from 'GoogleComponents/setup';
 
 storiesOf( 'Setup', module )
 	.add( 'Step one', () => {
-		googlesitekit.setup.isSiteKitConnected = false;
-		googlesitekit.setup.isAuthenticated = false;
-		googlesitekit.setup.isVerified = false;
-		googlesitekit.setup.hasSearchConsoleProperty = false;
-		googlesitekit.permissions.canSetup = true;
+		global.googlesitekit.setup.isSiteKitConnected = false;
+		global.googlesitekit.setup.isAuthenticated = false;
+		global.googlesitekit.setup.isVerified = false;
+		global.googlesitekit.setup.hasSearchConsoleProperty = false;
+		global.googlesitekit.permissions.canSetup = true;
 		return ( <Setup /> );
 	} );

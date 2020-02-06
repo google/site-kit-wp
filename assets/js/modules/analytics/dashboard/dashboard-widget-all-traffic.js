@@ -75,7 +75,7 @@ class AnalyticsAllTraffic extends Component {
 		const {
 			active,
 			setupComplete,
-		} = googlesitekit.modules.analytics;
+		} = global.googlesitekit.modules.analytics;
 
 		const {
 			error,

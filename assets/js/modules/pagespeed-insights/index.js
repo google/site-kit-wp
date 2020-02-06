@@ -38,7 +38,7 @@ const slug = 'pagespeed-insights';
 const {
 	active,
 	setupComplete,
-} = googlesitekit.modules[ slug ];
+} = global.googlesitekit.modules[ slug ];
 
 if ( active && setupComplete ) {
 	const addDashboardSpeed = createAddToFilter( <DashboardSpeed /> );
