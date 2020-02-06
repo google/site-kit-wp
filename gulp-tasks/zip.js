@@ -30,12 +30,6 @@ function generateFilename() {
 }
 
 
-gulp.task( 'pre-zip', () => {
-	del.sync( [ './release/google-site-kit/**' ] );
-
-	return gulp.src( 'release/**' )
-		.pipe( gulp.dest( 'release/google-site-kit/' ) );
-} );
 
 gulp.task( 'zip', () => {
 	const filename = generateFilename();
