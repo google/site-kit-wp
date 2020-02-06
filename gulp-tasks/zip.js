@@ -29,12 +29,6 @@ function generateFilename() {
 	return `google-site-kit.v${ version }:${ branch }@${ shortSha }_${ date }.zip`;
 }
 
-// eslint-disable-next-line no-console
-gulp.task( 'plugin-version', () => console.log( getPluginVersion() ) );
-// eslint-disable-next-line no-console
-gulp.task( 'release-filename', () => console.log( generateFilename() ) );
-// eslint-disable-next-line no-console
-gulp.task( 'git-data', () => console.log( getRepoInfo() ) );
 
 gulp.task( 'pre-zip', () => {
 	del.sync( [ './release/google-site-kit/**' ] );
