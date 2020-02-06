@@ -72,14 +72,14 @@ final class Reset {
 		$sitekit_key_pattern = 'googlesitekit\_%';
 
 		if ( $this->context->is_network_mode() ) {
+			$meta_key_pattern = $sitekit_key_pattern;
 			$options_table    = $wpdb->sitemeta;
 			$options_column   = 'meta_key';
-			$meta_key_pattern = $sitekit_key_pattern;
 			$transient_prefix = '_site_transient_';
 		} else {
+			$meta_key_pattern = $wpdb->get_blog_prefix() . $sitekit_key_pattern;
 			$options_table    = $wpdb->options;
 			$options_column   = 'option_name';
-			$meta_key_pattern = $wpdb->get_blog_prefix() . $sitekit_key_pattern;
 			$transient_prefix = '_transient_';
 		}
 
