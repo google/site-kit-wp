@@ -11,7 +11,7 @@
     "build:static": "gulp svg imagemin",
     "dev": "npm run build:dev && npm run build:static",
     "watch": "npm run remove-dist && npm run build:static && webpack --watch --mode=development --debug --devtool cheap-module-eval-source-map --output-pathinfo",
-    "release-zip": "npm run build && gulp release && gulp copy && gulp pre-zip && gulp zip && rm -rf release",
+    "release-zip": "npm run build && gulp release",
     "remove-dist": "rm -rf dist/*",
     "test": "webpack --mode=production --display=none && bundlesize",
     "test:visualtest": "npm run build:static && start-server-and-test storybook http-get://localhost:9001 backstopjs",

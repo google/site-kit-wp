@@ -79,10 +79,13 @@ gulp.task( 'clean-release', () => {
 /**
  * Gulp task to run the default release processes in a sequential order.
  */
-gulp.task( 'release', () => {
+gulp.task( 'release', ( cb ) => {
 	runSequence(
-		'svg',
-		'imagemin'
+		'clean-release',
+		'copy',
+		'zip',
+		'clean-release',
+		cb
 	);
 } );
 
