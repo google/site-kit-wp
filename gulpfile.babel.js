@@ -23,6 +23,7 @@ import gulp from 'gulp';
 import requireDir from 'require-dir';
 import runSequence from 'run-sequence';
 import livereload from 'gulp-livereload';
+import del from 'del';
 
 requireDir( './gulp-tasks' );
 
@@ -66,6 +67,13 @@ gulp.task( 'svg', () => {
 		'svgstore',
 		'svgmin'
 	);
+} );
+
+/**
+ * Gulp task to delete the temporary release directory.
+ */
+gulp.task( 'clean-release', () => {
+	del.sync( './release/**' );
 } );
 
 /**
