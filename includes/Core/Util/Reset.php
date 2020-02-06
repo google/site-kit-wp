@@ -71,14 +71,33 @@ final class Reset {
 
 		$sitekit_key_pattern = 'googlesitekit\_%';
 
+		if ( $this->context->is_network_mode() ) {
+			$options_table    = $wpdb->sitemeta;
+			$options_column   = 'meta_key';
+			$meta_key_pattern = $sitekit_key_pattern;
+			$transient_prefix = '_site_transient_';
+		} else {
+			$options_table    = $wpdb->options;
+			$options_column   = 'option_name';
+			$meta_key_pattern = $wpdb->get_blog_prefix() . $sitekit_key_pattern;
+			$transient_prefix = '_transient_';
+		}
+
 		// Delete options and transients.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->query(
 			$wpdb->prepare(
-				"DELETE FROM $wpdb->options WHERE option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s OR option_name = %s",
+				/* phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared */
+				"
+				DELETE FROM $options_table
+				WHERE  $options_column LIKE %s
+					OR $options_column LIKE %s
+					OR $options_column LIKE %s
+					OR $options_column = %s
+				", /* phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared */
 				$sitekit_key_pattern,
-				'_transient_' . $sitekit_key_pattern,
-				'_transient_timeout_' . $sitekit_key_pattern,
+				$transient_prefix . $sitekit_key_pattern,
+				$transient_prefix . 'timeout_' . $sitekit_key_pattern,
 				'googlesitekit-active-modules'
 			)
 		);
@@ -86,28 +105,8 @@ final class Reset {
 		// Delete user meta.
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->query(
-			$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE meta_key LIKE %s", $wpdb->get_blog_prefix() . $sitekit_key_pattern )
+			$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE meta_key LIKE %s", $meta_key_pattern )
 		);
-
-		// Clear network data if resetting network-wide.
-		if ( $this->context->is_network_mode() ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->query(
-				$wpdb->prepare(
-					"DELETE FROM $wpdb->sitemeta WHERE meta_key LIKE %s OR meta_key LIKE %s OR meta_key LIKE %s OR meta_key = %s",
-					$sitekit_key_pattern,
-					'_site_transient_' . $sitekit_key_pattern,
-					'_site_transient_timeout_' . $sitekit_key_pattern,
-					'googlesitekit-active-modules'
-				)
-			);
-
-			// Delete user meta.
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->query(
-				$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE meta_key LIKE %s", $sitekit_key_pattern )
-			);
-		}
 
 		wp_cache_flush();
 	}
