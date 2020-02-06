@@ -4,7 +4,7 @@
 import gulp from 'gulp';
 
 gulp.task( 'copy', () => {
-	gulp.src(
+	return gulp.src(
 		[
 			'readme.txt',
 			'google-site-kit.php',
