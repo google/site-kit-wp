@@ -185,6 +185,7 @@
     "react-dom": "^16.12.0",
     "require-dir": "^1.2.0",
     "run-sequence": "^2.2.1",
+    "sanitize-filename": "^1.6.3",
     "sass-loader": "^7.0.3",
     "start-server-and-test": "^1.7.13",
     "storybook-chrome-screenshot": "^1.4.0",
