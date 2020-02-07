@@ -347,21 +347,21 @@ final class Search_Console extends Module
 	}
 
 	/**
-	 * Checks whether Search Console data exists for the given post.
+	 * Checks whether Search Console data exists for the given URL.
 	 *
 	 * The result of this query is stored in a transient.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $current_url The current url.
+	 * @param string $url The url to check data for.
 	 * @return bool True if Search Console data exists, false otherwise.
 	 */
-	protected function has_data_for_url( $current_url ) {
-		if ( ! $current_url ) {
+	protected function has_data_for_url( $url ) {
+		if ( ! $url ) {
 			return false;
 		}
 
-		$transient_key = 'googlesitekit_sc_data_' . md5( $current_url );
+		$transient_key = 'googlesitekit_sc_data_' . md5( $url );
 		$has_data      = get_transient( $transient_key );
 
 		if ( false === $has_data ) {
@@ -369,7 +369,7 @@ final class Search_Console extends Module
 			$response_rows = $this->get_data(
 				'searchanalytics',
 				array(
-					'url'               => $current_url,
+					'url'               => $url,
 					'dateRange'         => 'last-90-days',
 					'dimensions'        => 'date',
 					'compareDateRanges' => true,
