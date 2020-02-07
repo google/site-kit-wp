@@ -1280,10 +1280,8 @@ final class Analytics extends Module
 					'url'       => $url,
 					'dateRange' => 'last-90-days',
 					'metrics'   => array(
-						array(
-							'expression' => 'ga:sessions',
-							'alias'      => 'Sessions',
-						),
+						array( 'expression' => 'ga:users' ),
+						array( 'expression' => 'ga:sessions' ),
 					),
 				)
 			);
@@ -1298,8 +1296,12 @@ final class Analytics extends Module
 				/* @var Google_Service_AnalyticsReporting_ReportData $report_data Report data instance. */
 				foreach ( $report_data->getTotals() as $date_range_values ) {
 					/* @var Google_Service_AnalyticsReporting_DateRangeValues $date_range_values Values instance. */
-					if ( ! empty( $date_range_values[0] ) && 0 < $date_range_values[0] ) {
+					if (
+						isset( $date_range_values[0], $date_range_values[1] )
+						&& ( 0 < $date_range_values[0] || 0 < $date_range_values[1] )
+					) {
 						$has_data = true;
+						break 2;
 					}
 				}
 			}
