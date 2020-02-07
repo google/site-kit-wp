@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Admin_Bar;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
@@ -39,7 +40,8 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Search_Console extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Settings {
+final class Search_Console extends Module
+	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Admin_Bar {
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait;
 
 	/**
@@ -86,23 +88,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 				return $data;
 			},
 			11
-		);
-
-		add_filter(
-			'googlesitekit_show_admin_bar_menu',
-			function( $display, $current_url ) {
-				if ( ! $this->get_property_id() ) {
-					return false;
-				}
-
-				if ( ! $this->has_data_for_url( $current_url ) ) {
-					return false;
-				}
-
-				return $display;
-			},
-			10,
-			2
 		);
 	}
 
@@ -480,5 +465,21 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 */
 	protected function setup_settings() {
 		return new Settings( $this->options );
+	}
+
+	/**
+	 * Checks if the module is active in the admin bar for the given URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $url URL to determine active state for.
+	 * @return bool
+	 */
+	public function is_active_in_admin_bar( $url ) {
+		if ( ! $this->get_property_id() ) {
+			return false;
+		}
+
+		return $this->has_data_for_url( $url );
 	}
 }
