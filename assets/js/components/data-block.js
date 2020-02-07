@@ -22,6 +22,7 @@
 import PropTypes from 'prop-types';
 import SourceLink from 'GoogleComponents/source-link';
 import SvgIcon from 'GoogleUtil/svg-icon';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -71,12 +72,11 @@ class DataBlock extends Component {
 
 		return (
 			<div
-				className={ `
-					googlesitekit-data-block
-					googlesitekit-data-block--${ context }
-					${ selected ? 'googlesitekit-data-block--selected' : '' }
-					${ className }
-				` }
+				className={ classnames(
+					`googlesitekit-data-block googlesitekit-data-block--${ context }`,
+					{ 'googlesitekit-data-block--selected': selected },
+					className
+				) }
 				tabIndex={ 'button' === context ? '0' : '-1' }
 				role={ handleStatSelection && role }
 				onClick={ handleStatSelection && this.handleClick }
@@ -107,7 +107,14 @@ class DataBlock extends Component {
 					` }>
 						{ '' === change && <Fragment>&nbsp;</Fragment> }
 						{ change && [
-							<span key="arrow" className={ `googlesitekit-data-block__arrow ${ reverseArrowDirection ? 'googlesitekit-data-block__arrow--reverse' : '' }` }><SvgIcon id={ `arrow${ changeType }` } height="9" width="9" /></span>,
+							<span key="arrow"
+								className={ classnames(
+									'googlesitekit-data-block__arrow',
+									{ 'googlesitekit-data-block__arrow--reverse': reverseArrowDirection }
+								) }
+							>
+								<SvgIcon id={ `arrow${ changeType }` } height="9" width="9" />
+							</span>,
 							<span key="values" className="googlesitekit-data-block__value">{ `${ Math.abs( change ) }${ changeDataUnit } ${ period }` }</span>,
 						] }
 					</div>

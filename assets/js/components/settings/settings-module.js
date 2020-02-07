@@ -40,6 +40,7 @@ import SettingsOverlay from 'GoogleComponents/settings/settings-overlay';
 import GenericError from 'GoogleComponents/notifications/generic-error';
 import withFilters from 'GoogleComponents/higherorder/with-filters';
 import { filter, map } from 'lodash';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -220,20 +221,20 @@ class SettingsModule extends Component {
 			<Fragment>
 				{ active ? (
 					<div
-						className={ `
+						className={ classnames( `
 							googlesitekit-settings-module
 							googlesitekit-settings-module--${ slug }
-							googlesitekit-settings-module--active
-							${ error && editActive && isEditing[ moduleKey ] ? 'googlesitekit-settings-module--error' : '' }
-						` }
+							googlesitekit-settings-module--active`,
+						{ 'googlesitekit-settings-module--error': error && editActive && isEditing[ moduleKey ] }
+						) }
 						key={ moduleKey }
 					>
 						{ editActive && ! isEditing[ moduleKey ] && <SettingsOverlay compress={ ! isOpen } /> }
 						<button
-							className={ `
-								googlesitekit-settings-module__header
-								${ isOpen ? 'googlesitekit-settings-module__header--open' : '' }
-							`	}
+							className={ classnames(
+								'googlesitekit-settings-module__header',
+								{ 'googlesitekit-settings-module__header--open': isOpen }
+							) }
 							id={ `googlesitekit-settings-module__header--${ slug }` }
 							type="button"
 							role="tab"
@@ -286,7 +287,10 @@ class SettingsModule extends Component {
 													sprintf( __( '%s is connected', 'google-site-kit' ), name ) :
 													sprintf( __( '%s is not connected', 'google-site-kit' ), name )
 											}
-											<span className={ `googlesitekit-settings-module__status-icon ${ connectedClassName } ` }>
+											<span className={ classnames(
+												'googlesitekit-settings-module__status-icon',
+												connectedClassName
+											) }>
 												<span className="screen-reader-text">
 													{ isConnected ?
 														__( 'Connected', 'google-site-kit' ) :
@@ -300,10 +304,10 @@ class SettingsModule extends Component {
 							</div>
 						</button>
 						<div
-							className={ `
-								googlesitekit-settings-module__content
-								${ isOpen ? 'googlesitekit-settings-module__content--open' : '' }
-							`	}
+							className={ classnames(
+								'googlesitekit-settings-module__content',
+								{ 'settings-settings-module__header--open': isOpen }
+							) }
 							id={ `googlesitekit-settings-module__content--${ slug }` }
 							role="tabpanel"
 							aria-hidden={ ! isOpen }

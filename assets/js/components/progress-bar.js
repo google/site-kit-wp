@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -40,14 +41,14 @@ class ProgressBar extends Component {
 		return (
 			<div
 				role="progressbar"
-				className={ `
-					mdc-linear-progress
-					mdc-linear-progress--indeterminate
-					${ className ? className : '' }
-					${ small ? 'mdc-linear-progress--small' : '' }
-					${ compress ? 'mdc-linear-progress--compress' : '' }
-				` }
 				style={ { marginTop: margin, marginBottom: margin } }
+				className={ classnames(
+					'mdc-linear-progress',
+					'mdc-linear-progress--indeterminate',
+					className,
+					{ 'mdc-linear-progress--small': small },
+					{ 'mdc-linear-progress--compress': compress }
+				) }
 			>
 				<div className="mdc-linear-progress__buffering-dots"></div>
 				<div className="mdc-linear-progress__buffer"></div>

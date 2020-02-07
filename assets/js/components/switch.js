@@ -21,6 +21,7 @@
  */
 import { MDCSwitch } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -50,7 +51,7 @@ class Switch extends Component {
 			<Fragment>
 				<div
 					aria-checked={ checked ? 'true' : 'false' }
-					className={ `mdc-switch ${ checked ? 'mdc-switch--checked' : '' }` }
+					className={ classnames( 'mdc-switch', { 'mdc-switch--checked': checked } ) }
 					onClick={ onClick }
 					onKeyPress={ onKeyPress }
 					role="switch"
@@ -72,7 +73,7 @@ class Switch extends Component {
 					</div>
 				</div>
 				<label
-					className={ hideLabel ? 'screen-reader-only' : '' }
+					className={ classnames( { 'screen-reader-only': hideLabel } ) }
 					htmlFor={ id }>
 					{ label }
 				</label>

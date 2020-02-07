@@ -22,6 +22,7 @@
 import PropTypes from 'prop-types';
 import LayoutHeader from 'GoogleComponents/layout/layout-header';
 import LayoutFooter from 'GoogleComponents/layout/layout-footer';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -46,12 +47,12 @@ class Layout extends Component {
 		} = this.props;
 
 		return (
-			<div className={ `
-				googlesitekit-layout
-				${ className && className }
-				${ fill ? 'googlesitekit-layout--fill' : '' }
-				${ relative ? 'googlesitekit-layout--relative' : '' }
-			` }>
+			<div className={ classnames(
+				'googlesitekit-layout',
+				className,
+				{ 'googlesitekit-layout--fill': fill },
+				{ 'googlesitekit-layout--relative': relative }
+			) }>
 				{ header &&
 					<LayoutHeader
 						title={ title }

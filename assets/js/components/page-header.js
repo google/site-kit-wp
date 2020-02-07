@@ -19,7 +19,7 @@
  * External dependencies
  */
 import DateRangeSelector from 'GoogleComponents/date-range-selector';
-
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import SvgIcon from 'GoogleUtil/svg-icon';
 
@@ -63,7 +63,7 @@ class PageHeader extends Component {
 							{ icon &&
 								<SvgIcon id={ iconID } height={ iconHeight } width={ iconWidth } className="googlesitekit-page-header__icon" />
 							}
-							<h1 className={ `googlesitekit-page-header__title ${ className }` }>
+							<h1 className={ classnames( 'googlesitekit-page-header__title', className ) }>
 								{ title }
 							</h1>
 						</div>

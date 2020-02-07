@@ -20,6 +20,7 @@
  * External dependencies
  */
 import Header from 'GoogleComponents/header';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -174,11 +175,10 @@ class AnalyticsDashboardWidget extends Component {
 							{ ! receivingData && (
 								error ? getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
-							<div className={ `
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								${ wrapperClass }
-							` }>
+							<div className={ classnames(
+								'mdc-layout-grid__cell mdc-layout-grid__cell--span-12',
+								wrapperClass
+							) }>
 								<Layout
 									header
 									title={ sprintf( __( 'Audience overview for the last %s', 'google-site-kit' ), dateRangeFrom ) }
@@ -199,11 +199,7 @@ class AnalyticsDashboardWidget extends Component {
 									/>
 								</Layout>
 							</div>
-							<div className={ `
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								${ wrapperClass }
-							` }>
+							<div className={ classnames( 'mdc-layout-grid__cell mdc-layout-grid__cell--span-12', wrapperClass ) }>
 								<Layout
 									header
 									footer
@@ -216,11 +212,7 @@ class AnalyticsDashboardWidget extends Component {
 									<AnalyticsDashboardWidgetTopPagesTable />
 								</Layout>
 							</div>
-							<div className={ `
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								${ wrapperClass }
-							` }>
+							<div className={ classnames( 'mdc-layout-grid__cell mdc-layout-grid__cell--span-12', wrapperClass ) }>
 								<Layout
 									header
 									footer

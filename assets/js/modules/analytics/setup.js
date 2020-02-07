@@ -33,6 +33,7 @@ import {
 	getExistingTag,
 	toggleConfirmModuleSettings,
 } from 'GoogleUtil';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -1061,7 +1062,7 @@ class AnalyticsSetup extends Component {
 		}
 
 		return (
-			<div className={ showErrorFormat ? 'googlesitekit-error-text' : '' }>
+			<div className={ classnames( { 'googlesitekit-error-text': showErrorFormat } ) }>
 				<p>{
 					showErrorFormat ?
 

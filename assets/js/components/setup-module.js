@@ -32,6 +32,7 @@ import {
 	moduleIcon,
 } from 'GoogleUtil';
 import GenericError from 'GoogleComponents/notifications/generic-error';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -106,11 +107,13 @@ class SetupModule extends Component {
 		}
 
 		return (
-			<div className={ `
-				googlesitekit-settings-connect-module
-				googlesitekit-settings-connect-module--${ slug }
-				${ blockedByParentModule ? 'googlesitekit-settings-connect-module--disabled' : '' }
-			` } key={ slug }>
+			<div
+				className={ classnames(
+					'googlesitekit-settings-connect-module googlesitekit-settings-connect-module--${ slug }',
+					{ 'googlesitekit-settings-connect-module--disabled': blockedByParentModule }
+				) }
+				key={ slug }
+			>
 				<div className="googlesitekit-settings-connect-module__switch">
 					<Spinner isSaving={ isSaving } />
 				</div>

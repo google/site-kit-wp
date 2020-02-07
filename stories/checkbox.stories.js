@@ -14,30 +14,30 @@ storiesOf( 'Global', module )
 					</Checkbox>
 				</div>
 				<div>
-					<Checkbox 
+					<Checkbox
 						className="googlesitekit-checkbox"
-						checked={true}
+						checked={ true }
 					>
 						Checked
 					</Checkbox>
 				</div>
 				<div>
-					<Checkbox 
+					<Checkbox
 						className="googlesitekit-checkbox--hover"
-						disabled={true}
+						disabled={ true }
 					>
 						Disabled checkbox
 					</Checkbox>
 				</div>
 				<div>
-					<Checkbox 
+					<Checkbox
 						className="googlesitekit-checkbox"
-						disabled={true}
-						checked={true}
+						disabled={ true }
+						checked={ true }
 					>
 						Checked disabled
 					</Checkbox>
-					
+
 				</div>
 			</div>
 		);

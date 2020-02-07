@@ -36,9 +36,7 @@ const Logo = () => {
 			/>
 			<SvgIcon
 				id="logo-sitekit"
-				className={ `
-				 googlesitekit-logo__logo-sitekit
-				` }
+				className="googlesitekit-logo__logo-sitekit"
 				height="26"
 				width="99"
 			/>
