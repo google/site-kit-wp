@@ -24,6 +24,8 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Search_Console\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters;
+use Google\Site_Kit_Dependencies\Google_Service_Webmasters_ApiDataRow;
+use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SearchAnalyticsQueryResponse;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SitesListResponse;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters_WmxSite;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SearchAnalyticsQueryRequest;
@@ -361,41 +363,26 @@ final class Search_Console extends Module
 
 		$transient_key = 'googlesitekit_sc_data_' . md5( $current_url );
 		$has_data      = get_transient( $transient_key );
+
 		if ( false === $has_data ) {
-
-			// Check search console for data.
-			$datasets = array(
+			/* @var Google_Service_Webmasters_ApiDataRow[]|WP_Error $response_rows Array of data rows. */
+			$response_rows = $this->get_data(
+				'searchanalytics',
 				array(
-					'identifier' => $this->slug,
-					'key'        => 'sc-site-analytics',
-					'datapoint'  => 'searchanalytics',
-					'data'       => array(
-						'url'               => $current_url,
-						'dateRange'         => 'last-90-days',
-						'dimensions'        => 'date',
-						'compareDateRanges' => true,
-					),
-				),
-			);
-
-			$responses = $this->get_batch_data(
-				array_map(
-					function( $dataset ) {
-						return (object) $dataset;
-					},
-					$datasets
+					'url'               => $current_url,
+					'dateRange'         => 'last-90-days',
+					'dimensions'        => 'date',
+					'compareDateRanges' => true,
 				)
 			);
 
-			$has_data = false;
+			if ( is_wp_error( $response_rows ) ) {
+				return false;
+			}
 
-			// Go thru results, any impressions means the URL has data.
-			foreach ( $responses['sc-site-analytics'] as $key => $response ) {
-				if ( is_wp_error( $response ) || empty( $response ) || ! isset( $response ) ) {
-					continue;
-				}
-
-				if ( $response->impressions > 0 ) {
+			foreach ( $response_rows as $data_row ) {
+				/* @var Google_Service_Webmasters_ApiDataRow $data_row Data row instance. */
+				if ( 0 < $data_row->getImpressions() ) {
 					$has_data = true;
 					break;
 				}
