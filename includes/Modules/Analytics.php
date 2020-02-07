@@ -1277,9 +1277,8 @@ final class Analytics extends Module
 			$reports = $this->get_data(
 				'report',
 				array(
-					'url'       => $url,
-					'dateRange' => 'last-90-days',
-					'metrics'   => array(
+					'url'     => $url,
+					'metrics' => array(
 						array( 'expression' => 'ga:users' ),
 						array( 'expression' => 'ga:sessions' ),
 					),

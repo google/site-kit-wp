@@ -370,7 +370,6 @@ final class Search_Console extends Module
 				'searchanalytics',
 				array(
 					'url'               => $url,
-					'dateRange'         => 'last-90-days',
 					'dimensions'        => 'date',
 					'compareDateRanges' => true,
 				)
