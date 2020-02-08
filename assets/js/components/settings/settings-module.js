@@ -306,7 +306,7 @@ class SettingsModule extends Component {
 						<div
 							className={ classnames(
 								'googlesitekit-settings-module__content',
-								{ 'settings-settings-module__header--open': isOpen }
+								{ 'googlesitekit-settings-module__content--open': isOpen }
 							) }
 							id={ `googlesitekit-settings-module__content--${ slug }` }
 							role="tabpanel"
