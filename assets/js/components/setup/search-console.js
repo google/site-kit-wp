@@ -165,21 +165,20 @@ class SearchConsole extends Component {
 	matchedForm() {
 		const { sites, selectedURL } = this.state;
 
-		const sitesList = [];
-
 		if ( ! sites ) {
 			return null;
 		}
 
-		sites.forEach( function( site ) {
+		const sitesList = sites.map( ( site ) => {
 			let label = site.siteURL;
-			if ( label.indexOf( 'sc-domain:' ) === 0 ) {
-				label = `${ label.substring( 10 ) } ${ __( '(domain property)', 'google-site-kit' ) }`;
+			if ( label.startsWith( 'sc-domain:' ) ) {
+				label = sprintf( __( '%s (domain property)', 'google-site-kit' ), label.replace( /^sc-domain:/, '' ) );
 			}
-			sitesList.push( {
+
+			return {
 				label,
 				value: site.siteURL,
-			} );
+			};
 		} );
 
 		return (

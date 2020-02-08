@@ -249,9 +249,9 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 
 				$current_url                  = trailingslashit( $this->context->get_reference_site_url() );
 				$sufficient_permission_levels = array(
-					'siteRestrictedUser' => true,
-					'siteOwner'          => true,
-					'siteFullUser'       => true,
+					'siteRestrictedUser',
+					'siteOwner',
+					'siteFullUser',
 				);
 
 				return array_values(
@@ -264,7 +264,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 							} else {
 								$url_match = $current_url === $site_url;
 							}
-							return $url_match && isset( $sufficient_permission_levels[ $site['permissionLevel'] ] );
+							return $url_match && in_array( $site['permissionLevel'], $sufficient_permission_levels, true );
 						}
 					)
 				);
