@@ -64,9 +64,9 @@ class WizardProgressStep extends Component {
 
 		return (
 			<div className={ classnames(
-				'googlesitekit-wizard-progress-step'
+				'googlesitekit-wizard-progress-step',
 				`googlesitekit-wizard-progress-step--${ step }`,
-				{ 'googlesitekit-wizard-progress-step--current': currentStep }
+				{ 'googlesitekit-wizard-progress-step--current': currentStep },
 				`googlesitekit-wizard-progress-step--${ stepKey }`
 			) }>
 				<div className="googlesitekit-wizard-progress-step__number-wrapper">
