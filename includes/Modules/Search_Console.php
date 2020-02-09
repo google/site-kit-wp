@@ -399,7 +399,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 
 			// Go thru results, any impressions means the URL has data.
 			foreach ( $responses['sc-site-analytics'] as $key => $response ) {
-				if ( is_wp_error( $response ) || empty( $response ) || ! isset( $response ) ) {
+				if ( is_wp_error( $response ) || empty( $response ) || ! isset( $response->impressions ) ) {
 					continue;
 				}
 
