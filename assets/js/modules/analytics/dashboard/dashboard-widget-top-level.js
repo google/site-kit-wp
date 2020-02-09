@@ -161,7 +161,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 								datapointUnit={ __( '%', 'google-site-kit' ) }
 								change={ averageBounceRateChange }
 								changeDataUnit="%"
-								reverseArrowDirection
+								invertChangeColor
 								source={ {
 									name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
 									link: href,
