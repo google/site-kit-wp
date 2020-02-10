@@ -534,7 +534,7 @@ class TagmanagerSetup extends Component {
 					>
 						{ []
 							.concat( {
-								name: __( 'Select one...', 'google-site-kit' ),
+								name: __( 'Select an account...', 'google-site-kit' ),
 								accountId: UNSELECTED,
 							} )
 							.concat( accounts )
