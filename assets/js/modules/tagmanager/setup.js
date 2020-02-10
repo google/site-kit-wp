@@ -44,7 +44,7 @@ import { isValidAccountID, isValidContainerID } from './util';
 
 const ACCOUNT_CREATE = 'account_create';
 const CONTAINER_CREATE = 'container_create';
-const UNSELECTED = '';
+const UNSELECTED = 'unselected';
 
 class TagmanagerSetup extends Component {
 	constructor( props ) {
