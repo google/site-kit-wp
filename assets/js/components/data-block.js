@@ -21,7 +21,6 @@
  */
 import PropTypes from 'prop-types';
 import SourceLink from 'GoogleComponents/source-link';
-import SvgIcon from 'GoogleUtil/svg-icon';
 import classnames from 'classnames';
 
 /**
