@@ -571,10 +571,10 @@ class TagmanagerSetup extends Component {
 									publicId: UNSELECTED,
 								} )
 								.concat( containers )
-								.concat( {
+								.concat( ! hasExistingTag ? {
 									name: __( 'Set up a new container', 'google-site-kit' ),
 									publicId: CONTAINER_CREATE, /* Capitalization rule exception: `publicId` is a property of an API returned value. */
-								} )
+								} : [] )
 								.map( ( { name, publicId }, i ) =>
 									<Option
 										key={ i }
