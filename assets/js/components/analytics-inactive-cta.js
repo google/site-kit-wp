@@ -63,7 +63,7 @@ class AnalyticsInactiveCTA extends Component {
 			ctaLabel,
 		} = this.props;
 
-		const { canManageOptions } = googlesitekit.permissions;
+		const { canManageOptions } = global.googlesitekit.permissions;
 
 		if ( ! canManageOptions ) {
 			return null;

@@ -111,7 +111,9 @@ describe( 'googlesitekit.api', () => {
 				{
 					body: undefined,
 					credentials: 'include',
-					headers: { Accept: 'application/json, */*;q=0.1' },
+					headers: {
+						Accept: 'application/json, */*;q=0.1',
+					},
 					method: 'GET',
 				}
 			);

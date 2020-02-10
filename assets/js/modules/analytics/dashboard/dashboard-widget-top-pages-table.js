@@ -51,7 +51,7 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 			accountID,
 			internalWebPropertyID,
 			profileID,
-		} = googlesitekit.modules.analytics.settings;
+		} = global.googlesitekit.modules.analytics.settings;
 
 		if ( ! accountID ) {
 			return 'https://analytics.google.com/analytics/web/';

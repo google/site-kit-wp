@@ -60,7 +60,7 @@ class AnalyticsSetup extends Component {
 			useSnippet,
 			ampClientIDOptIn,
 			trackingDisabled,
-		} = googlesitekit.modules.analytics.settings;
+		} = global.googlesitekit.modules.analytics.settings;
 
 		this.state = {
 			anonymizeIP,
@@ -532,7 +532,7 @@ class AnalyticsSetup extends Component {
 			data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 			await this.getAccounts();
 
-			googlesitekit.modules.analytics.settings = savedSettings;
+			global.googlesitekit.modules.analytics.settings = savedSettings;
 
 			// Track event.
 			sendAnalyticsTrackingEvent( 'analytics_setup', 'analytics_configured' );
@@ -805,7 +805,7 @@ class AnalyticsSetup extends Component {
 		const enableProfileSelect = !! /^UA-/.test( selectedProperty.toString() );
 
 		const { ampMode } = global.googlesitekit.admin;
-		const { setupComplete } = googlesitekit.modules.analytics;
+		const { setupComplete } = global.googlesitekit.modules.analytics;
 
 		if ( isLoading ) {
 			return <ProgressBar />;

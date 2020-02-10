@@ -335,13 +335,10 @@ final class Assets {
 
 		$base_url = $this->context->url( 'dist/assets/' );
 
-		$dependencies    = array();
-		$external_assets = $this->get_external_assets();
-		foreach ( $external_assets as $asset ) {
-			$dependencies[] = $asset->get_handle();
-		}
-		$dependencies[] = 'sitekit-commons';
-		$dependencies[] = 'googlesitekit_admin';
+		$dependencies = array(
+			'sitekit-commons',
+			'googlesitekit_admin',
+		);
 
 		// Register plugin scripts.
 		$assets = array(
@@ -350,15 +347,11 @@ final class Assets {
 				array(
 					'src'          => false,
 					'before_print' => function( $handle ) {
-						wp_localize_script( $handle, 'googlesitekit', $this->get_inline_data() );
+						$data = wp_scripts()->get_data( $handle, 'data' ) ?: '';
+						$script = 'var googlesitekit = ' . wp_json_encode( $this->get_inline_data() ) . ';';
+
+						wp_scripts()->add_data( $handle, 'data', $script . $data );
 					},
-				)
-			),
-			new Script(
-				'googlesitekit_modules',
-				array(
-					'src'          => $base_url . 'js/allmodules.js',
-					'dependencies' => $dependencies,
 				)
 			),
 			// Admin assets.
@@ -373,9 +366,20 @@ final class Assets {
 				'googlesitekit_admin',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-admin.js',
-					'dependencies' => array( 'wp-i18n' ),
+					'dependencies' => array(),
 					'execution'    => 'defer',
 					'before_print' => function( $handle ) {
+						wp_add_inline_script(
+							$handle,
+							'window._googlesitekitAPIFetchData = ' . wp_json_encode(
+								array(
+									'nonceEndpoint'   => admin_url( 'admin-ajax.php?action=rest-nonce' ),
+									'nonceMiddleware' => ( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' ),
+									'rootURL'         => esc_url_raw( get_rest_url() ),
+								) 
+							),
+							'before'
+						);
 						wp_add_inline_script(
 							$handle,
 							'window._googlesitekitBase = ' . wp_json_encode( $this->get_inline_base_data() ),
@@ -488,9 +492,6 @@ final class Assets {
 		);
 
 		$this->assets = array();
-		foreach ( $external_assets as $asset ) {
-			$this->assets[ $asset->get_handle() ] = $asset;
-		}
 		foreach ( $assets as $asset ) {
 			$this->assets[ $asset->get_handle() ] = $asset;
 		}
@@ -733,194 +734,5 @@ final class Assets {
 				$this->run_before_print_callbacks( $dependencies, $dependencies->registered[ $handle ]->deps );
 			}
 		}
-	}
-
-	/**
-	 * Gets all external assets.
-	 *
-	 * This method should only be called once as it will create a new instance for each asset.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array List of Asset instances.
-	 */
-	private function get_external_assets() {
-		$base_url     = $this->context->url( 'dist/assets/' );
-		$script_debug = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG;
-		$suffix       = $script_debug ? '' : '.min';
-		$react_suffix = ( $script_debug ? '.development' : '.production' ) . $suffix;
-
-		return array(
-			new Script(
-				'lodash',
-				array(
-					'src'          => $base_url . 'vendor/lodash' . $suffix . '.js',
-					'version'      => '4.17.15',
-					'fallback'     => true,
-					'before_print' => function( $handle ) {
-						wp_add_inline_script( $handle, '/*googlesitekit*/ window.lodash = window.lodash || _.noConflict(); window.lodash_load = true;' );
-					},
-				)
-			),
-			new Script(
-				'moment',
-				array(
-					'src'      => $base_url . 'vendor/moment' . $suffix . '.js',
-					'version'  => '2.22.2',
-					'fallback' => true,
-				)
-			),
-			new Script(
-				'react',
-				array(
-					'src'      => $base_url . 'vendor/react' . $react_suffix . '.js',
-					'version'  => '16.11.0',
-					'fallback' => true,
-				)
-			),
-			new Script(
-				'react-dom',
-				array(
-					'src'      => $base_url . 'vendor/react-dom' . $react_suffix . '.js',
-					'version'  => '16.11.0',
-					'fallback' => true,
-				)
-			),
-			new Script(
-				'wp-polyfill',
-				array(
-					'src'          => $base_url . 'js/externals/wp-polyfill.js',
-					'version'      => '7.4.0',
-					'fallback'     => true,
-					'before_print' => function( $handle ) use ( $base_url ) {
-						$inline_polyfill_tests = array(
-							'\'fetch\' in window'                                    => $base_url . 'js/externals/wp-polyfill-fetch.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
-							'document.contains'                                      => $base_url . 'js/externals/wp-polyfill-node-contains.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
-							'window.FormData && window.FormData.prototype.keys'      => $base_url . 'js/externals/wp-polyfill-formdata.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
-							'Element.prototype.matches && Element.prototype.closest' => $base_url . 'js/externals/wp-polyfill-element-closest.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
-							'typeof URL === \'function\''                            => $base_url . 'js/externals/wp-polyfill-url.js', // phpcs:ignore WordPress.Arrays.MultipleStatementAlignment
-						);
-						$polyfill_scripts = '/*googlesitekit*/' . "\n";
-						foreach ( $inline_polyfill_tests as $test => $script ) { // phpcs:ignore Generic.WhiteSpace.ScopeIndent.IncorrectExact
-							$polyfill_scripts .= (
-								'( ' . $test . ' ) || ' .
-								'document.write( \'<script src="' . // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-								$script . '?ver=' . GOOGLESITEKIT_VERSION .
-								'"></scr\' + \'ipt>\' );' . "\n"
-							);
-						} // phpcs:ignore Generic.WhiteSpace.ScopeIndent.IncorrectExact
-						wp_add_inline_script( $handle, $polyfill_scripts, 'after' );
-					},
-				)
-			),
-			new Script(
-				'wp-escape-html',
-				array(
-					'src'          => $base_url . 'js/externals/escapeHtml.js',
-					'dependencies' => array( 'wp-polyfill' ),
-					'version'      => '1.5.1',
-					'fallback'     => true,
-				)
-			),
-			new Script(
-				'wp-is-shallow-equal',
-				array(
-					'src'          => $base_url . 'js/externals/isShallowEqual.js',
-					'dependencies' => array( 'wp-polyfill' ),
-					'version'      => '1.6.1',
-					'fallback'     => true,
-				)
-			),
-			new Script(
-				'wp-hooks',
-				array(
-					'src'          => $base_url . 'js/externals/hooks.js',
-					'dependencies' => array( 'wp-polyfill' ),
-					'version'      => '2.6.0',
-					'fallback'     => true,
-				)
-			),
-			new Script(
-				'wp-element',
-				array(
-					'src'          => $base_url . 'js/externals/element.js',
-					'dependencies' => array( 'lodash', 'react', 'react-dom', 'wp-escape-html', 'wp-polyfill' ),
-					'version'      => '2.8.2',
-					'fallback'     => true,
-				)
-			),
-			new Script(
-				'wp-dom-ready',
-				array(
-					'src'          => $base_url . 'js/externals/domReady.js',
-					'dependencies' => array( 'wp-polyfill' ),
-					'version'      => '2.5.1',
-					'fallback'     => true,
-				)
-			),
-			new Script(
-				'wp-i18n',
-				array(
-					'src'          => $base_url . 'js/externals/i18n.js',
-					'dependencies' => array( 'wp-polyfill' ),
-					'version'      => '3.6.1',
-					'fallback'     => true,
-				)
-			),
-			new Script(
-				'wp-url',
-				array(
-					'src'          => $base_url . 'js/externals/url.js',
-					'dependencies' => array( 'wp-polyfill' ),
-					'version'      => '2.8.2',
-					'fallback'     => true,
-				)
-			),
-			new Script(
-				'wp-api-fetch',
-				array(
-					'src'          => $base_url . 'js/externals/apiFetch.js',
-					'dependencies' => array( 'wp-i18n', 'wp-polyfill', 'wp-url' ),
-					'version'      => '3.6.4',
-					'fallback'     => true,
-					'before_print' => function( $handle ) {
-						wp_add_inline_script(
-							$handle,
-							sprintf(
-								'/*googlesitekit*/ wp.apiFetch.use( wp.apiFetch.createNonceMiddleware( "%s" ) );',
-								( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' )
-							),
-							'after'
-						);
-						wp_add_inline_script(
-							$handle,
-							sprintf(
-								'/*googlesitekit*/ wp.apiFetch.use( wp.apiFetch.createRootURLMiddleware( "%s" ) );',
-								esc_url_raw( get_rest_url() )
-							),
-							'after'
-						);
-					},
-				)
-			),
-			new Script(
-				'wp-compose',
-				array(
-					'src'          => $base_url . 'js/externals/compose.js',
-					'dependencies' => array( 'lodash', 'wp-element', 'wp-is-shallow-equal', 'wp-polyfill' ),
-					'version'      => '3.7.2',
-					'fallback'     => true,
-				)
-			),
-			new Script(
-				'svgxuse',
-				array(
-					'src'       => $base_url . 'js/externals/svgxuse.js',
-					'version'   => '1.2.6',
-					'fallback'  => true,
-					'execution' => 'defer',
-				)
-			),
-		);
 	}
 }

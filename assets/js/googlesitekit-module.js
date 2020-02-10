@@ -24,18 +24,18 @@ import Notification from 'GoogleComponents/notifications/notification';
 import 'GoogleComponents/data';
 import 'GoogleComponents/notifications';
 import { loadTranslations } from 'GoogleUtil';
+import 'GoogleModules';
 
 /**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
 import { doAction, applyFilters } from '@wordpress/hooks';
-import { Component, render, Fragment } from '@wordpress/element';
+import { Component, render, Fragment, Suspense, lazy } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { Suspense, lazy } from 'GoogleUtil/react-features';
 import ModuleApp from './components/module-app';
 
 class GoogleSitekitModule extends Component {
@@ -48,7 +48,7 @@ class GoogleSitekitModule extends Component {
 
 		const {
 			showModuleSetupWizard,
-		} = googlesitekit.setup;
+		} = global.googlesitekit.setup;
 
 		this.state = {
 			showModuleSetupWizard,
@@ -84,7 +84,7 @@ class GoogleSitekitModule extends Component {
 			/>;
 		}
 
-		const { currentAdminPage } = googlesitekit.admin;
+		const { currentAdminPage } = global.googlesitekit.admin;
 
 		/**
 		 * Filters whether to show the Module setup wizard when showModuleSetupWizard is true.
@@ -153,7 +153,7 @@ domReady( () => {
 		/**
 		 * Action triggered when the dashboard App is loaded.
 		 */
-		doAction( 'googlesitekit.moduleLoaded', 'Single', googlesitekitCurrentModule );
+		doAction( 'googlesitekit.moduleLoaded', 'Single', global.googlesitekitCurrentModule );
 	}
 } );
 

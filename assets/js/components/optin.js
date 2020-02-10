@@ -67,14 +67,14 @@ class OptIn extends Component {
 					}
 
 					document.body.insertAdjacentHTML( 'beforeend', `
-						<script async src="https://www.googletagmanager.com/gtag/js?id=${ googlesitekit.admin.trackingID }"></script>
+						<script async src="https://www.googletagmanager.com/gtag/js?id=${ global.googlesitekit.admin.trackingID }"></script>
 					` );
 					document.body.insertAdjacentHTML( 'beforeend', `
 						<script>
 							window.dataLayer = window.dataLayer || [];
 							function gtag(){dataLayer.push(arguments);}
 							gtag('js', new Date());
-							gtag('config', '${ googlesitekit.admin.trackingID }');
+							gtag('config', '${ global.googlesitekit.admin.trackingID }');
 						</script>
 					` );
 				}

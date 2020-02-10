@@ -28,7 +28,7 @@ import { calculateOverviewData } from 'GoogleModules/analytics/util';
 import { __ } from '@wordpress/i18n';
 
 const trafficIncrease = ( data, id ) => {
-	if ( ! googlesitekit.modules.analytics || ! googlesitekit.modules.analytics.active ) {
+	if ( ! global.googlesitekit.modules.analytics || ! global.googlesitekit.modules.analytics.active ) {
 		return false;
 	}
 
@@ -55,7 +55,7 @@ const trafficIncrease = ( data, id ) => {
 		description: __( 'You had a record-high amount of visitors to your website yesterday.', 'google-site-kit' ),
 		dismiss: __( 'OK, Got it!', 'google-site-kit' ),
 		format: 'large',
-		winImage: `${ googlesitekit.admin.assetsRoot }images/sun.png`,
+		winImage: `${ global.googlesitekit.admin.assetsRoot }images/sun.png`,
 		blockData:
 			[
 				{

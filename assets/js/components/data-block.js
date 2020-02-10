@@ -29,6 +29,11 @@ import classnames from 'classnames';
  */
 import { Component, Fragment } from '@wordpress/element';
 
+/**
+ * Internal dependencies
+ */
+import ChangeArrow from './change-arrow';
+
 class DataBlock extends Component {
 	constructor( props ) {
 		super( props );
@@ -64,11 +69,10 @@ class DataBlock extends Component {
 			handleStatSelection,
 			source,
 			sparkline,
-			reverseArrowDirection,
+			invertChangeColor,
 		} = this.props;
 
 		const role = ( 'button' === context ) ? 'button' : '';
-		const changeType = 0 <= change ? '-positive' : '-negative';
 
 		return (
 			<div
@@ -101,22 +105,19 @@ class DataBlock extends Component {
 					</div>
 				}
 				<div className="googlesitekit-data-block__change-source-wrapper">
-					<div className={ `
-						googlesitekit-data-block__change
-						googlesitekit-data-block__change--${ 0 <= change ? 'positive' : 'negative' }
-					` }>
+					<div className="googlesitekit-data-block__change">
 						{ '' === change && <Fragment>&nbsp;</Fragment> }
-						{ change && [
-							<span key="arrow"
-								className={ classnames(
-									'googlesitekit-data-block__arrow',
-									{ 'googlesitekit-data-block__arrow--reverse': reverseArrowDirection }
-								) }
-							>
-								<SvgIcon id={ `arrow${ changeType }` } height="9" width="9" />
-							</span>,
-							<span key="values" className="googlesitekit-data-block__value">{ `${ Math.abs( change ) }${ changeDataUnit } ${ period }` }</span>,
-						] }
+						{ change && <Fragment>
+							<span className="googlesitekit-data-block__arrow">
+								<ChangeArrow
+									direction={ change ? 'up' : 'down' }
+									invertColor={ invertChangeColor }
+								/>
+							</span>
+							<span className="googlesitekit-data-block__value">
+								{ `${ Math.abs( change ) }${ changeDataUnit } ${ period }` }
+							</span>
+						</Fragment> }
 					</div>
 					{ source && (
 						<SourceLink
@@ -150,7 +151,7 @@ DataBlock.propTypes = {
 	period: PropTypes.string,
 	selected: PropTypes.bool,
 	handleStatSelection: PropTypes.func,
-	reverseArrowDirection: PropTypes.bool,
+	invertChangeColor: PropTypes.bool,
 };
 
 DataBlock.defaultProps = {
@@ -166,7 +167,7 @@ DataBlock.defaultProps = {
 	period: '',
 	selected: false,
 	handleStatSelection: null,
-	reverseArrowDirection: false,
+	invertChangeColor: false,
 };
 
 export default DataBlock;

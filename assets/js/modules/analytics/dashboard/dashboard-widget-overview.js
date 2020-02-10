@@ -101,7 +101,7 @@ class AnalyticsDashboardWidgetOverview extends Component {
 				selected: selectedStats.includes( 2 ),
 				handleStatSelection,
 				datapointUnit: '%',
-				reverseArrowDirection: true,
+				invertChangeColor: true,
 			},
 			{
 				className: 'googlesitekit-data-block--duration googlesitekit-data-block--button-4',
@@ -141,7 +141,7 @@ class AnalyticsDashboardWidgetOverview extends Component {
 									selected={ block.selected }
 									handleStatSelection={ block.handleStatSelection }
 									datapointUnit={ block.datapointUnit }
-									reverseArrowDirection={ block.reverseArrowDirection }
+									invertChangeColor={ block.invertChangeColor }
 								/>
 							</div>
 						);

@@ -134,7 +134,7 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedMobile = withData(
 			identifier: 'pagespeed-insights',
 			datapoint: 'pagespeed',
 			data: {
-				url: googlesitekit.permaLink,
+				url: global.googlesitekit.permaLink,
 				strategy: 'mobile',
 				dateRange: null,
 			},
@@ -157,7 +157,7 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedDesktop = withData(
 			identifier: 'pagespeed-insights',
 			datapoint: 'pagespeed',
 			data: {
-				url: googlesitekit.permaLink,
+				url: global.googlesitekit.permaLink,
 				strategy: 'desktop',
 				dateRange: null,
 			},
