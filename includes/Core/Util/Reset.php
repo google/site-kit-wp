@@ -28,6 +28,11 @@ use WP_REST_Response;
 final class Reset {
 
 	/**
+	 * MySQL key pattern for all Site Kit keys.
+	 */
+	const KEY_PATTERN = 'googlesitekit\_%';
+
+	/**
 	 * Plugin context.
 	 *
 	 * @since 1.0.0
@@ -67,48 +72,74 @@ final class Reset {
 	 * @since 1.0.0
 	 */
 	public function all() {
-		global $wpdb;
-
-		$sitekit_key_pattern = 'googlesitekit\_%';
+		$this->delete_options( 'site' );
+		$this->delete_user_options( 'site' );
 
 		if ( $this->context->is_network_mode() ) {
-			$meta_key_pattern = $sitekit_key_pattern;
-			$options_table    = $wpdb->sitemeta;
-			$options_column   = 'meta_key';
-			$transient_prefix = '_site_transient_';
-		} else {
-			$meta_key_pattern = $wpdb->get_blog_prefix() . $sitekit_key_pattern;
-			$options_table    = $wpdb->options;
-			$options_column   = 'option_name';
-			$transient_prefix = '_transient_';
+			$this->delete_options( 'network' );
+			$this->delete_user_options( 'network' );
 		}
 
-		// Delete options and transients.
+		wp_cache_flush();
+	}
+
+	/**
+	 * Deletes all Site Kit options and transients.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $scope Scope of the deletion ('site' or 'network').
+	 */
+	private function delete_options( $scope ) {
+		global $wpdb;
+
+		if ( 'site' === $scope ) {
+			list ( $table_name, $column_name, $transient_prefix ) = array( $wpdb->options, 'option_name', '_transient_' );
+		} elseif ( 'network' === $scope ) {
+			list ( $table_name, $column_name, $transient_prefix ) = array( $wpdb->sitemeta, 'meta_key', '_site_transient_' );
+		} else {
+			return;
+		}
+
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->query(
 			$wpdb->prepare(
 				/* phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared */
 				"
-				DELETE FROM $options_table
-				WHERE  $options_column LIKE %s
-					OR $options_column LIKE %s
-					OR $options_column LIKE %s
-					OR $options_column = %s
+				DELETE FROM $table_name
+				WHERE  $column_name LIKE %s
+					OR $column_name LIKE %s
+					OR $column_name LIKE %s
+					OR $column_name = %s
 				", /* phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared */
-				$sitekit_key_pattern,
-				$transient_prefix . $sitekit_key_pattern,
-				$transient_prefix . 'timeout_' . $sitekit_key_pattern,
+				self::KEY_PATTERN,
+				$transient_prefix . self::KEY_PATTERN,
+				$transient_prefix . 'timeout_' . self::KEY_PATTERN,
 				'googlesitekit-active-modules'
 			)
 		);
+	}
 
-		// Delete user meta.
+	/**
+	 * Deletes all Site Kit user options.
+	 *
+	 * @param string $scope Scope of the deletion ('site' or 'network').
+	 */
+	private function delete_user_options( $scope ) {
+		global $wpdb;
+
+		if ( 'site' === $scope ) {
+			$meta_prefix = $wpdb->get_blog_prefix();
+		} elseif ( 'network' === $scope ) {
+			$meta_prefix = '';
+		} else {
+			return;
+		}
+
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->query(
-			$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE meta_key LIKE %s", $meta_key_pattern )
+			$wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE meta_key LIKE %s", $meta_prefix . self::KEY_PATTERN )
 		);
-
-		wp_cache_flush();
 	}
 
 	/**
