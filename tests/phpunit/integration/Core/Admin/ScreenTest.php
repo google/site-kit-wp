@@ -102,8 +102,8 @@ class ScreenTest extends TestCase {
 	}
 
 	public function test_enqueue_assets() {
-		wp_dequeue_style( 'googlesitekit_admin_css' );
-		wp_dequeue_script( 'googlesitekit_modules' );
+		wp_dequeue_style( 'googlesitekit-admin-css' );
+		wp_dequeue_script( 'googlesitekit-modules' );
 
 		$invocations = array();
 		$callback    = function () use ( &$invocations ) {
@@ -116,14 +116,14 @@ class ScreenTest extends TestCase {
 			) 
 		);
 
-		$this->assertFalse( wp_style_is( 'googlesitekit_admin_css', 'enqueued' ) );
-		$this->assertFalse( wp_script_is( 'googlesitekit_modules', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'googlesitekit-admin-css', 'enqueued' ) );
+		$this->assertFalse( wp_script_is( 'googlesitekit-modules', 'enqueued' ) );
 
 		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$screen->enqueue_assets( $assets );
 
-		$this->assertTrue( wp_style_is( 'googlesitekit_admin_css', 'enqueued' ) );
-		$this->assertTrue( wp_script_is( 'googlesitekit_modules', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'googlesitekit-admin-css', 'enqueued' ) );
+		$this->assertTrue( wp_script_is( 'googlesitekit-modules', 'enqueued' ) );
 		$this->assertCount( 1, $invocations );
 		$this->assertEquals( array( $assets ), $invocations[0] );
 	}

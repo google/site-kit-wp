@@ -75,11 +75,11 @@ final class Dashboard {
 				$this->assets->enqueue_fonts();
 
 				// Enqueue styles.
-				$this->assets->enqueue_asset( 'googlesitekit_wp_dashboard_css' );
+				$this->assets->enqueue_asset( 'googlesitekit-wp-dashboard-css' );
 
 				// Enqueue scripts.
-				$this->assets->enqueue_asset( 'googlesitekit_wp_dashboard' );
-				$this->assets->enqueue_asset( 'googlesitekit_modules' );
+				$this->assets->enqueue_asset( 'googlesitekit-wp-dashboard' );
+				$this->assets->enqueue_asset( 'googlesitekit-modules' );
 			}
 		};
 

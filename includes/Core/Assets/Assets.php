@@ -316,7 +316,7 @@ final class Assets {
 	 * @since 1.0.0
 	 */
 	private function enqueue_minimal_admin_script() {
-		$this->enqueue_asset( 'googlesitekit_admin' );
+		$this->enqueue_asset( 'googlesitekit-admin' );
 	}
 
 	/**
@@ -340,13 +340,13 @@ final class Assets {
 		foreach ( $external_assets as $asset ) {
 			$dependencies[] = $asset->get_handle();
 		}
-		$dependencies[] = 'sitekit-commons';
-		$dependencies[] = 'googlesitekit_admin';
+		$dependencies[] = 'googlesitekit-commons';
+		$dependencies[] = 'googlesitekit-admin';
 
 		// Register plugin scripts.
 		$assets = array(
 			new Script(
-				'sitekit-commons',
+				'googlesitekit-commons',
 				array(
 					'src'          => false,
 					'before_print' => function( $handle ) {
@@ -355,7 +355,7 @@ final class Assets {
 				)
 			),
 			new Script(
-				'googlesitekit_modules',
+				'googlesitekit-modules',
 				array(
 					'src'          => $base_url . 'js/allmodules.js',
 					'dependencies' => $dependencies,
@@ -363,14 +363,14 @@ final class Assets {
 			),
 			// Admin assets.
 			new Script(
-				'googlesitekit_activation',
+				'googlesitekit-activation',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-activation.js',
 					'dependencies' => $dependencies,
 				)
 			),
 			new Script( // TODO: Rename this to 'googlesitekit_base'.
-				'googlesitekit_admin',
+				'googlesitekit-admin',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-admin.js',
 					'dependencies' => array( 'wp-i18n' ),
@@ -401,55 +401,55 @@ final class Assets {
 			),
 			// End JSR Assets.
 			new Script(
-				'googlesitekit_ads_detect',
+				'googlesitekit-ads-detect',
 				array(
 					'src' => $base_url . 'js/ads.js',
 				)
 			),
 			new Script(
-				'googlesitekit_dashboard_splash',
+				'googlesitekit-dashboard-splash',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-dashboard-splash.js',
 					'dependencies' => $dependencies,
 				)
 			),
 			new Script(
-				'googlesitekit_dashboard_details',
+				'googlesitekit-dashboard-details',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-dashboard-details.js',
 					'dependencies' => $dependencies,
 				)
 			),
 			new Script(
-				'googlesitekit_dashboard',
+				'googlesitekit-dashboard',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-dashboard.js',
 					'dependencies' => $dependencies,
 				)
 			),
 			new Script(
-				'googlesitekit_module_page',
+				'googlesitekit-module-page',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-module.js',
 					'dependencies' => $dependencies,
 				)
 			),
 			new Script(
-				'googlesitekit_settings',
+				'googlesitekit-settings',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-settings.js',
 					'dependencies' => $dependencies,
 				)
 			),
 			new Stylesheet(
-				'googlesitekit_admin_css',
+				'googlesitekit-admin-css',
 				array(
 					'src' => $base_url . 'css/admin.css',
 				)
 			),
 			// WP Dashboard assets.
 			new Script(
-				'googlesitekit_wp_dashboard',
+				'googlesitekit-wp-dashboard',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-wp-dashboard.js',
 					'dependencies' => $dependencies,
@@ -457,14 +457,14 @@ final class Assets {
 				)
 			),
 			new Stylesheet(
-				'googlesitekit_wp_dashboard_css',
+				'googlesitekit-wp-dashboard-css',
 				array(
 					'src' => $base_url . 'css/wpdashboard.css',
 				)
 			),
 			// Admin bar assets.
 			new Script(
-				'googlesitekit_adminbar_loader',
+				'googlesitekit-adminbar-loader',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-adminbar-loader.js',
 					'dependencies' => $dependencies,
@@ -480,7 +480,7 @@ final class Assets {
 				)
 			),
 			new Stylesheet(
-				'googlesitekit_adminbar_css',
+				'googlesitekit-adminbar-css',
 				array(
 					'src' => $base_url . 'css/adminbar.css',
 				)

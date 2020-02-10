@@ -51,7 +51,7 @@ function googlesitekit_activate_plugin( $network_wide ) {
 		return;
 	}
 
-	do_action( 'googlesitekit_activation', $network_wide );
+	do_action( 'googlesitekit-activation', $network_wide );
 }
 
 register_activation_hook( __FILE__, 'googlesitekit_activate_plugin' );

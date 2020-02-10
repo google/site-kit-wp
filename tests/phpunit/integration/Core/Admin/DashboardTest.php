@@ -63,10 +63,10 @@ class DashboardTest extends TestCase {
 		// Check that the dashboard widget was registered
 		$this->assertArrayHasKey( 'google_dashboard_widget', $wp_meta_boxes['dashboard']['normal']['core'] );
 		// Check that expected assets are enqueued
-		$this->assertFalse( wp_style_is( 'googlesitekit_wp_dashboard_css', 'enqueued' ) );
-		$this->assertFalse( wp_script_is( 'googlesitekit_wp_dashboard', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'googlesitekit-wp-dashboard-css', 'enqueued' ) );
+		$this->assertFalse( wp_script_is( 'googlesitekit-wp-dashboard', 'enqueued' ) );
 		do_action( 'admin_enqueue_scripts' );
-		$this->assertTrue( wp_script_is( 'googlesitekit_wp_dashboard', 'enqueued' ) );
-		$this->assertTrue( wp_style_is( 'googlesitekit_wp_dashboard_css', 'enqueued' ) );
+		$this->assertTrue( wp_script_is( 'googlesitekit-wp-dashboard', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'googlesitekit-wp-dashboard-css', 'enqueued' ) );
 	}
 }
