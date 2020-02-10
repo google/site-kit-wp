@@ -63,8 +63,8 @@ class Button extends Component {
 
 				className={ classnames(
 					'mdc-button',
-					className,
 					{ 'mdc-button-raised': ! text },
+					className,
 					{ 'mdc-button--danger': danger }
 				) }
 				onClick={ onClick }
