@@ -61,7 +61,12 @@ class Button extends Component {
 		return (
 			<SemanticButton
 
-				className={ classnames( 'mdc-button', className, { 'mdc-button-raised': ! text }, { 'mdc-button--danger': danger } ) }
+				className={ classnames(
+					'mdc-button',
+					className,
+					{ 'mdc-button-raised': ! text },
+					{ 'mdc-button--danger': danger }
+				) }
 				onClick={ onClick }
 				href={ disabled ? undefined : href }
 				ref={ this.buttonRef }
