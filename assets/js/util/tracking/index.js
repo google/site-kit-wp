@@ -19,14 +19,34 @@
 /**
  * Internal dependencies
  */
-import { bootstrapTracking } from './index.private';
-export {
-	disableTracking,
+import createTracking from './createTracking';
+import { initialConfig } from './index.private';
+
+const {
 	enableTracking,
+	disableTracking,
+	isTrackingEnabled,
+} = createTracking( initialConfig );
+
+/**
+ * Change the active state of tracking.
+ *
+ * @param {boolean} activeStatus The new state to set.
+ */
+function toggleTracking( activeStatus ) {
+	if ( !! activeStatus ) {
+		enableTracking();
+	} else {
+		disableTracking();
+	}
+}
+
+// Bootstrap on import.
+toggleTracking( isTrackingEnabled() );
+
+export {
+	enableTracking,
+	disableTracking,
 	isTrackingEnabled,
 	toggleTracking,
-	trackEvent,
-} from './index.private';
-
-// Set the initial state on import.
-bootstrapTracking();
+};

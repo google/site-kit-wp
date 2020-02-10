@@ -1,13 +1,15 @@
+
 /**
  * Internal dependencies
  */
+import createTracking from './createTracking';
 import {
-	bootstrapTracking,
-	DATA_LAYER,
 	disableTracking,
 	enableTracking,
 	isTrackingEnabled,
-	trackEvent,
+} from '.';
+import {
+	DATA_LAYER,
 } from './index.private';
 
 /**
@@ -15,90 +17,69 @@ import {
  * This is necessary for `querySelector` and `createElement` calls to not raise errors.
  */
 
-describe( 'bootstrapTracking', () => {
-	it( 'initializes tracking based on user preference', () => {
-		const _global = {
-			_googlesitekitBase: { trackingEnabled: false },
-			document: global.document,
-			[ DATA_LAYER ]: {
-				push: jest.fn(),
-			},
-		};
-		bootstrapTracking( _global );
+describe( 'createTracking', () => {
+	it( 'initializes disabled tracking based on user preference', () => {
+		const { isTrackingEnabled: isEnabled } = createTracking( { trackingEnabled: false } );
 
-		expect( isTrackingEnabled() ).toStrictEqual( false );
+		expect( isEnabled() ).toStrictEqual( false );
+	} );
+
+	it( 'initializes enabled tracking based on user preference', () => {
+		const { isTrackingEnabled: isEnabled } = createTracking( { trackingEnabled: true } );
+
+		expect( isEnabled() ).toStrictEqual( true );
 	} );
 } );
 
 describe( 'disableTracking and isTrackingEnabled', () => {
 	it( 'does not mutate global tracking settings when toggling active state', () => {
-		const _global = {
-			_googlesitekitBase: { trackingEnabled: true },
-			document: global.document,
-			[ DATA_LAYER ]: {
-				push: jest.fn(),
-			},
-		};
-		bootstrapTracking( _global );
-
-		expect( isTrackingEnabled() ).toStrictEqual( true );
+		global._googlesitekitBase = { trackingEnabled: true };
 
 		disableTracking();
 
 		expect( isTrackingEnabled() ).toStrictEqual( false );
+		expect( global._googlesitekitBase.trackingEnabled ).toStrictEqual( true );
 	} );
 } );
 
 describe( 'enableTracking and isTrackingEnabled', () => {
 	it( 'does not mutate global tracking settings when toggling active state', () => {
-		const _global = {
-			_googlesitekitBase: { trackingEnabled: false },
-			document: global.document,
-			[ DATA_LAYER ]: {
-				push: jest.fn(),
-			},
-		};
-		bootstrapTracking( _global );
-
-		expect( isTrackingEnabled() ).toStrictEqual( false );
+		global._googlesitekitBase = { trackingEnabled: false };
 
 		enableTracking();
 
 		expect( isTrackingEnabled() ).toStrictEqual( true );
+		expect( global._googlesitekitBase.trackingEnabled ).toStrictEqual( false );
 	} );
 } );
 
 describe( 'trackEvent', () => {
 	it( 'adds a tracking event to the dataLayer', () => {
-		const _googlesitekitBase = {
+		const config = {
 			referenceSiteURL: 'https://www.example.com/',
 			userIDHash: 'a1b2c3',
 			trackingID: 'UA-12345678-1',
 			isFirstAdmin: true,
 			trackingEnabled: true,
 		};
-		const _global = {
-			_googlesitekitBase,
-			[ DATA_LAYER ]: {
-				push: jest.fn(),
-			},
-			document: global.document,
-		};
-		bootstrapTracking( _global );
+
+		const push = jest.fn();
+		global[ DATA_LAYER ] = { push };
+		const { trackEvent } = createTracking( config );
 
 		trackEvent( 'category', 'name', 'label', 'value' );
 
-		expect( _global[ DATA_LAYER ].push ).toHaveBeenCalledWith( [
+		expect( push ).toHaveBeenCalledWith( [
 			'event',
 			'name',
 			{
-				send_to: _googlesitekitBase.trackingID,
+				send_to: config.trackingID,
 				event_category: 'category',
 				event_label: 'label',
 				event_value: 'value',
 				dimension1: 'https://www.example.com',
 				dimension2: 'true',
-				dimension3: _googlesitekitBase.userIDHash,
+				dimension3: config.userIDHash,
 			},
 		] );
 	} );
