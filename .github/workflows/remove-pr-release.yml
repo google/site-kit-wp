@@ -1,0 +1,16 @@
+name: remove-pr
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  remove-pr:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Delete working release
+      uses: author/action-rollback@stable
+      with:
+        tag: pr-${{ github.ref }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
