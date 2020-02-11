@@ -23,6 +23,7 @@ import gulp from 'gulp';
 import requireDir from 'require-dir';
 import runSequence from 'run-sequence';
 import livereload from 'gulp-livereload';
+import del from 'del';
 
 requireDir( './gulp-tasks' );
 
@@ -69,12 +70,22 @@ gulp.task( 'svg', () => {
 } );
 
 /**
+ * Gulp task to delete the temporary release directory.
+ */
+gulp.task( 'clean-release', () => {
+	del.sync( './release/**' );
+} );
+
+/**
  * Gulp task to run the default release processes in a sequential order.
  */
-gulp.task( 'release', () => {
+gulp.task( 'release', ( cb ) => {
 	runSequence(
-		'svg',
-		'imagemin'
+		'clean-release',
+		'copy',
+		'zip',
+		'clean-release',
+		cb
 	);
 } );
 

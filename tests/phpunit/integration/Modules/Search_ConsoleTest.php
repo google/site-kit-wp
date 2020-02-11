@@ -44,12 +44,10 @@ class Search_ConsoleTest extends TestCase {
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 		remove_all_filters( 'googlesitekit_module_screens' );
 		remove_all_filters( 'googlesitekit_setup_complete' );
-		remove_all_filters( 'googlesitekit_site_url' );
 
 		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
 		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
 		$this->assertTrue( apply_filters( 'googlesitekit_setup_complete', true ) );
-		$this->assertEmpty( apply_filters( 'googlesitekit_site_url', '' ) );
 
 		// Register search console.
 		$search_console->register();
@@ -66,27 +64,11 @@ class Search_ConsoleTest extends TestCase {
 			apply_filters( 'googlesitekit_module_screens', array() )
 		);
 
-		// Site url is unaffected if property is not set.
-		$this->assertEquals( '', apply_filters( 'googlesitekit_site_url', '' ) );
-
 		// Test sitekit setup complete requires property set.
 		$this->assertFalse( apply_filters( 'googlesitekit_setup_complete', true ) );
 		$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$options->set( 'googlesitekit_search_console_property', $property_url );
 		$this->assertTrue( apply_filters( 'googlesitekit_setup_complete', true ) );
-
-		// Site url uses property URL by default.
-		$this->assertEquals( $property_url, apply_filters( 'googlesitekit_site_url', '' ) );
-
-		add_filter(
-			'googlesitekit_site_url',
-			function () {
-				return 'https://other.example.com';
-			} 
-		);
-
-		// Property URL filters googlesitekit_site_url on a very low priority
-		$this->assertEquals( 'https://other.example.com', apply_filters( 'googlesitekit_site_url', '' ) );
 	}
 
 	public function test_get_datapoints() {
