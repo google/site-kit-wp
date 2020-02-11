@@ -44,7 +44,7 @@ import { isValidAccountID, isValidContainerID } from './util';
 
 const ACCOUNT_CREATE = 'account_create';
 const CONTAINER_CREATE = 'container_create';
-const UNSELECTED = 'unselected';
+const UNSELECTED = '';
 
 class TagmanagerSetup extends Component {
 	constructor( props ) {
@@ -533,10 +533,6 @@ class TagmanagerSetup extends Component {
 						outlined
 					>
 						{ []
-							.concat( {
-								name: __( 'Select an account...', 'google-site-kit' ),
-								accountId: UNSELECTED,
-							} )
 							.concat( accounts )
 							.concat( ! hasExistingTag ? {
 								name: __( 'Set up a new account', 'google-site-kit' ),
@@ -566,10 +562,6 @@ class TagmanagerSetup extends Component {
 							outlined
 						>
 							{ []
-								.concat( {
-									name: __( 'Select a container', 'google-site-kit' ),
-									publicId: UNSELECTED,
-								} )
 								.concat( containers )
 								.concat( ! hasExistingTag ? {
 									name: __( 'Set up a new container', 'google-site-kit' ),
