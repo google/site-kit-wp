@@ -39,13 +39,13 @@ class WPDashboardModules extends Component {
 			<Fragment>
 				<div className={ classnames(
 					'googlesitekit-wp-dashboard-stats',
-					{ 'googlesitekit-wp-dashboard-stats--fourup': googlesitekit.modules.analytics && googlesitekit.modules.analytics.active }
+					{ 'googlesitekit-wp-dashboard-stats--fourup': global.googlesitekit.modules.analytics && global.googlesitekit.modules.analytics.active }
 				) }>
 					<WPDashboardHeader
 						key={ 'googlesitekit-wp-dashboard-header' }
 					/>
 					{ // Show the Analytics CTA if analytics is not enabled.
-						( ! googlesitekit.modules.analytics.active ) &&
+						( ! global.googlesitekit.modules.analytics.active ) &&
 						<div className="googlesitekit-wp-dashboard-stats__cta">
 							<AnalyticsInactiveCTA
 								title={ __( 'See unique vistors, goal completions, top pages and more.', 'google-site-kit' ) }

@@ -30,6 +30,11 @@ import { Component, createRef } from '@wordpress/element';
 import { doAction, addAction } from '@wordpress/hooks';
 import { debounce } from 'lodash';
 
+/**
+ * Flag for tracking loaded state of Google Charts library.
+ */
+let googleChartsLoaded = global.google && global.google.charts;
+
 class GoogleChart extends Component {
 	constructor( props ) {
 		super( props );
@@ -39,6 +44,7 @@ class GoogleChart extends Component {
 			chart: null,
 		};
 
+		this.onChartsLoad = this.onChartsLoad.bind( this );
 		this.waitForChart = this.waitForChart.bind( this );
 		this.getData = this.getData.bind( this );
 		this.prepareChart = this.prepareChart.bind( this );
@@ -47,8 +53,8 @@ class GoogleChart extends Component {
 		this.chartRef = createRef();
 
 		// Inject the script if not already loaded.
-		if ( ! global.google && ! global.googleChartLoaded ) {
-			global.googleChartLoaded = true;
+		if ( ! googleChartsLoaded ) {
+			googleChartsLoaded = true;
 			const script = document.createElement( 'script' );
 			script.type = 'text/javascript';
 			script.onload = () => {
@@ -60,12 +66,7 @@ class GoogleChart extends Component {
 					packages: [ 'corechart' ],
 				} );
 
-				global.google.charts.setOnLoadCallback( () => {
-					this.getData();
-					this.prepareChart();
-					this.drawChart();
-					this.setState( { loading: false } );
-				} );
+				global.google.charts.setOnLoadCallback( this.onChartsLoad );
 
 				doAction( 'googlesitekit.ChartLoaderLoaded' );
 			};
@@ -78,20 +79,19 @@ class GoogleChart extends Component {
 		} else if ( ! global.google || ! global.google.charts ) {
 			// When the google chart object not loaded, load draw chart later.
 			addAction( 'googlesitekit.ChartLoaderLoaded', 'googlesitekit.HandleChartLoaderLoaded', () => {
-				global.google.charts.setOnLoadCallback( () => {
-					this.getData();
-					this.prepareChart();
-					this.drawChart();
-				} );
+				global.google.charts.setOnLoadCallback( this.onChartsLoad );
 			} );
 		} else {
 			// When the google chart object loaded, draw chart now.
-			global.google.charts.setOnLoadCallback( () => {
-				this.getData();
-				this.prepareChart();
-				this.drawChart();
-			} );
+			global.google.charts.setOnLoadCallback( this.onChartsLoad );
 		}
+	}
+
+	onChartsLoad() {
+		this.getData();
+		this.prepareChart();
+		this.drawChart();
+		this.setState( { loading: false } );
 	}
 
 	componentDidMount() {

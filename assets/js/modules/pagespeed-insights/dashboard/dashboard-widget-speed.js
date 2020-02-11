@@ -34,7 +34,7 @@ import { __ } from '@wordpress/i18n';
 
 class DashboardSpeed extends Component {
 	render() {
-		const description = googlesitekit.permaLink ? __( 'How fast this page is.', 'google-site-kit' ) : __( 'How fast your home page is.', 'google-site-kit' );
+		const description = global.googlesitekit.permaLink ? __( 'How fast this page is.', 'google-site-kit' ) : __( 'How fast your home page is.', 'google-site-kit' );
 
 		return (
 			<Fragment>

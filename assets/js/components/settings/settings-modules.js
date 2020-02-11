@@ -55,8 +55,8 @@ class SettingsModules extends Component {
 	}
 
 	componentDidMount() {
-		if ( googlesitekit.editmodule && googlesitekit.modules[ googlesitekit.editmodule ].active ) {
-			this.handleButtonAction( `${ googlesitekit.editmodule }-module`, 'edit' );
+		if ( global.googlesitekit.editmodule && global.googlesitekit.modules[ global.googlesitekit.editmodule ].active ) {
+			this.handleButtonAction( `${ global.googlesitekit.editmodule }-module`, 'edit' );
 		}
 	}
 
@@ -145,7 +145,7 @@ class SettingsModules extends Component {
 	}
 
 	settingsModuleComponent( module, isSaving ) {
-		const { provides } = googlesitekit.modules[ module.slug ];
+		const { provides } = global.googlesitekit.modules[ module.slug ];
 		const { isEditing, openModules, error } = this.state;
 		const isOpen = openModules[ module.slug ] || false;
 
@@ -295,7 +295,7 @@ class SettingsModules extends Component {
 							title={ __( 'Congrats, you’ve connected all services!', 'google-site-kit' ) }
 							description={ __( 'We’re working on adding new services to Site Kit by Google all the time, so please check back in the future.', 'google-site-kit' ) }
 							format="small"
-							smallImage={ `${ googlesitekit.admin.assetsRoot }images/thumbs-up.png` }
+							smallImage={ `${ global.googlesitekit.admin.assetsRoot }images/thumbs-up.png` }
 							type="win-success"
 						/>
 					</div>

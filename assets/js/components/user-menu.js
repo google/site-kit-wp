@@ -81,7 +81,7 @@ class UserMenu extends Component {
 	}
 
 	handleMenuItemSelect( index, e ) {
-		const { proxyPermissionsURL } = googlesitekit.admin;
+		const { proxyPermissionsURL } = global.googlesitekit.admin;
 
 		if (
 			( ( 'keydown' === e.type && (
@@ -144,7 +144,7 @@ class UserMenu extends Component {
 		const {
 			userData: { email = '', picture = '' },
 			proxyPermissionsURL,
-		} = googlesitekit.admin;
+		} = global.googlesitekit.admin;
 		const { dialogActive, menuOpen } = this.state;
 
 		return (

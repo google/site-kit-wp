@@ -79,7 +79,6 @@ final class Dashboard {
 
 				// Enqueue scripts.
 				$this->assets->enqueue_asset( 'googlesitekit_wp_dashboard' );
-				$this->assets->enqueue_asset( 'googlesitekit_modules' );
 			}
 		};
 

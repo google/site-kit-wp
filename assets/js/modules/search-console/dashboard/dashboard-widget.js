@@ -161,7 +161,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 		const wrapperClass = ! loading && receivingData ? '' : 'googlesitekit-nodata';
 		const dateRangeFrom = getDateRangeFrom();
 
-		const searchConsoleDeepLink = sprintf( 'https://search.google.com/u/1/search-console?resource_id=%s', googlesitekit.admin.siteURL );
+		const searchConsoleDeepLink = sprintf( 'https://search.google.com/u/1/search-console?resource_id=%s', global.googlesitekit.admin.siteURL );
 
 		return (
 			<Fragment>

@@ -40,7 +40,7 @@ class AdSenseInProcessStatus extends Component {
 			subHeader,
 			required,
 		} = this.props;
-		const siteURL = new URL( googlesitekit.admin.siteURL );
+		const siteURL = new URL( global.googlesitekit.admin.siteURL );
 		const adsenseURL = `https://www.google.com/adsense/new/sites?url=${ siteURL.hostname }&source=site-kit`;
 		const actionableItems = [
 			{

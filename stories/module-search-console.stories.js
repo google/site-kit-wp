@@ -19,7 +19,7 @@ import SearchConsoleDashboardWidgetSiteStats from 'GoogleModules/search-console/
 
 storiesOf( 'Search Console Module', module )
 	.add( 'Overview Chart', () => {
-		window.googlesitekit = analyticsData;
+		global.googlesitekit = analyticsData;
 
 		const selectedStats = [
 			0,

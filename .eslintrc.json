@@ -7,22 +7,6 @@
     "browser": true,
     "es6": true
   },
-  "settings": {
-    "react": {
-      "version": "16.2.0"
-    }
-  },
-  "globals": {
-    "React": "readonly",
-    "googlesitekit": "readonly",
-    "googlesitekitAdminbar": "readonly",
-    "googlesitekitDashboard": "readonly",
-    "googlesitekitSettings": "readonly",
-    "lodash": "readonly",
-    "googlesitekitCurrentModule": "readonly",
-    "gtag": "readonly",
-    "process": "readonly"
-  },
   "rules": {
     "no-restricted-globals": [
       "error",
@@ -31,7 +15,10 @@
         "message": "Use 'global' instead."
       }
     ],
-    "react/jsx-fragments": ["error", "element"],
+    "react/jsx-fragments": [
+      "error",
+      "element"
+    ],
     "valid-jsdoc": "warn"
   },
   "overrides": [
@@ -44,21 +31,7 @@
       },
       "globals": {
         "browser": true,
-        "page": true,
-        "wp": true
-      },
-      "rules": {
-        "no-restricted-globals": [
-          "off"
-        ]
-      }
-    },
-    {
-      "files": [
-        "stories/**/*.js"
-      ],
-      "globals": {
-        "window": false
+        "page": true
       },
       "rules": {
         "no-restricted-globals": [

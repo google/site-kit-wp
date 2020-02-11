@@ -33,7 +33,7 @@ import { Component } from '@wordpress/element';
 
 class DashboardSplashService extends Component {
 	render() {
-		const imagePath = googlesitekit.admin.assetsRoot + 'images/';
+		const imagePath = global.googlesitekit.admin.assetsRoot + 'images/';
 		const { image, title, content, link, linkText, opposite } = this.props;
 
 		return (

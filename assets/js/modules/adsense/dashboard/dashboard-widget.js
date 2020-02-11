@@ -132,7 +132,7 @@ class AdSenseDashboardWidget extends Component {
 			zeroData,
 			instructionProps,
 		} = this.state;
-		const { homepage } = googlesitekit.modules.adsense;
+		const { homepage } = global.googlesitekit.modules.adsense;
 
 		// Hide AdSense data display when we don't have data.
 		const wrapperClass = ( loading || ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
@@ -152,7 +152,7 @@ class AdSenseDashboardWidget extends Component {
 								mdc-layout-grid__cell--span-12
 							">
 								{
-									( ! error && googlesitekit.modules.adsense.setupComplete ) ?
+									( ! error && global.googlesitekit.modules.adsense.setupComplete ) ?
 										<PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="connected" statusText={ __( 'AdSense is connected', 'google-site-kit' ) } /> :
 										<PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="not-connected" statusText={ __( 'AdSense is not connected', 'google-site-kit' ) } />
 								}

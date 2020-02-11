@@ -3,10 +3,15 @@
  */
 import { storiesOf } from '@storybook/react';
 import PageHeader from 'GoogleComponents/page-header';
+/**
+ * WordPress dependencies
+ */
+import { removeAllFilters } from '@wordpress/hooks';
 
 storiesOf( 'Global', module )
-	.add( 'Page Headers', () => (
-		<div>
+	.add( 'Page Headers', () => {
+		removeAllFilters( 'googlesitekit.showDateRangeSelector-analytics' );
+		return <div>
 			<p>
 				<PageHeader
 					title="Module Page Title"
@@ -25,5 +30,5 @@ storiesOf( 'Global', module )
 					statusText="Analytics is not connected"
 				/>
 			</p>
-		</div>
-	) );
+		</div>;
+	} );

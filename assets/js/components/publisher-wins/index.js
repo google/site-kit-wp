@@ -97,7 +97,7 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 			return wins;
 		}, 2 );
 
-	if ( googlesitekit.modules.analytics.active ) {
+	if ( global.googlesitekit.modules.analytics.active ) {
 		addFilter( 'googlesitekit.WinsNotificationsRequest',
 			'googlesitekit.PublisherWinsNotification',
 			( wins ) => {

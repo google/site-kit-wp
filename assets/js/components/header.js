@@ -32,7 +32,7 @@ import { Component, Fragment } from '@wordpress/element';
 
 class Header extends Component {
 	render() {
-		const { isAuthenticated } = googlesitekit.setup;
+		const { isAuthenticated } = global.googlesitekit.setup;
 
 		return (
 			<Fragment>
