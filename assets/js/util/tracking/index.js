@@ -26,6 +26,7 @@ const {
 	enableTracking,
 	disableTracking,
 	isTrackingEnabled,
+	trackEvent,
 } = createTracking( initialConfig );
 
 /**
@@ -49,4 +50,5 @@ export {
 	disableTracking,
 	isTrackingEnabled,
 	toggleTracking,
+	trackEvent,
 };
