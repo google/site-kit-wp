@@ -164,8 +164,10 @@ class Notification extends Component {
 										key={ i }
 										className={ classnames(
 											'mdc-layout-grid__cell',
-											{ 'mdc-layout-grid__cell--span-5-desktop': inlineLayout },
-											{ 'mdc-layout-grid__cell--span-4-desktop': ! inlineLayout }
+											{
+												'mdc-layout-grid__cell--span-5-desktop': inlineLayout,
+												'mdc-layout-grid__cell--span-4-desktop': ! inlineLayout,
+											}
 										) }
 									>
 										<div className="googlesitekit-publisher-win__stats">
@@ -216,9 +218,11 @@ class Notification extends Component {
 				ref={ this.cardRef }
 				className={ classnames(
 					'googlesitekit-publisher-win',
-					{ [ `googlesitekit-publisher-win--${ format }` ]: format },
-					{ [ `googlesitekit-publisher-win--${ type }` ]: type },
-					{ [ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass }
+					{
+						[ `googlesitekit-publisher-win--${ format }` ]: format,
+						[ `googlesitekit-publisher-win--${ type }` ]: type,
+						[ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass,
+					}
 				) }
 			>
 				<div className="mdc-layout-grid">

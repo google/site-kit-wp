@@ -113,9 +113,10 @@ class AnalyticsAllTraffic extends Component {
 
 				</div>
 				{ this.getErrorDataComponent() }
-				<div className={ classnames(
-					'mdc-layout-grid__cell mdc-layout-grid__cell--span-12',
-					wrapperClass
+				<div className={ classnames( `
+					mdc-layout-grid__cell
+					mdc-layout-grid__cell--span-12`,
+				wrapperClass
 				) }>
 					<Layout className="googlesitekit-dashboard-all-traffic">
 						<div className="mdc-layout-grid">

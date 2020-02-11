@@ -185,9 +185,10 @@ class AdSenseDashboardWidget extends Component {
 							{ ! receivingData && (
 								error ? getDataErrorComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
-							<div className={ classnames(
-								'mdc-layout-grid__cell mdc-layout-grid__cell--span-12',
-								wrapperClass
+							<div className={ classnames( `
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-12`,
+							wrapperClass
 							) }>
 								<ModuleSettingsWarning slug="adsense" context="module-dashboard" />
 								<Layout
@@ -202,9 +203,10 @@ class AdSenseDashboardWidget extends Component {
 									/>
 								</Layout>
 							</div>
-							<div className={ classnames(
-								'mdc-layout-grid__cell mdc-layout-grid__cell--span-12',
-								wrapperClass
+							<div className={ classnames( `
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-12`,
+							wrapperClass
 							) }>
 								<Layout
 									header
@@ -222,9 +224,10 @@ class AdSenseDashboardWidget extends Component {
 									/>
 								</Layout>
 							</div>
-							<div className={ classnames(
-								'mdc-layout-grid__cell mdc-layout-grid__cell--span-12',
-								wrapperClass
+							<div className={ classnames( `
+								mdc-layout-grid__cell
+								mdc-layout-grid__cell--span-12`,
+							wrapperClass
 							) }>
 								<DashboardAdSenseTopPages />
 							</div>

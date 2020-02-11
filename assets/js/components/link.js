@@ -56,15 +56,17 @@ class Link extends Component {
 				className={ classnames(
 					'googlesitekit-cta-link',
 					className,
-					{ 'googlesitekit-cta-link--arrow': arrow },
-					{ 'googlesitekit-cta-link--external': external },
-					{ 'googlesitekit-cta-link--inverse': inverse },
-					{ 'googlesitekit-cta-link--back': back },
-					{ 'googlesitekit-cta-link--small': small },
-					{ 'googlesitekit-cta-link--inherit': inherit },
-					{ 'googlesitekit-cta-link--caps': caps },
-					{ 'googlesitekit-cta-link--danger': danger },
-					{ 'googlesitekit-cta-link--disabled': disabled }
+					{
+						'googlesitekit-cta-link--arrow': arrow,
+						'googlesitekit-cta-link--external': external,
+						'googlesitekit-cta-link--inverse': inverse,
+						'googlesitekit-cta-link--back': back,
+						'googlesitekit-cta-link--small': small,
+						'googlesitekit-cta-link--inherit': inherit,
+						'googlesitekit-cta-link--caps': caps,
+						'googlesitekit-cta-link--danger': danger,
+						'googlesitekit-cta-link--disabled': disabled,
+					}
 				) }
 				onClick={ onClick }
 				id={ id }

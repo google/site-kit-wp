@@ -109,7 +109,10 @@ class OptIn extends Component {
 		} = this.props;
 
 		return (
-			<div className={ classnames( 'googlesitekit-opt-in', className ) }>
+			<div className={ classnames(
+				'googlesitekit-opt-in',
+				className
+			) }>
 				<Checkbox
 					id={ id }
 					name={ name }

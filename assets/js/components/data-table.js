@@ -94,7 +94,7 @@ export const getDataTableFromData = ( data, headers, options ) => {
 	return (
 		<div className={ classnames(
 			'googlesitekit-table',
-			{ ' googlesitekit-table--with-list': options && ! options.disableListMode }
+			{ 'googlesitekit-table--with-list': options && ! options.disableListMode }
 		) }>
 			<table
 				className={ `

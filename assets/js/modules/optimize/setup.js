@@ -254,7 +254,7 @@ class OptimizeSetup extends Component {
 						<TextField
 							className={ classnames(
 								'mdc-text-field',
-								{ 'mdc-text-field--error': ampExperimentJSONValidated }
+								{ 'mdc-text-field--error': ! ampExperimentJSONValidated }
 							) }
 							name="amp-experiment"
 							onChange={ this.handleAMPOptimizeEntry }
@@ -298,8 +298,7 @@ class OptimizeSetup extends Component {
 					<TextField
 						className={ classnames(
 							'mdc-text-field',
-							{ 'mdc-text-field--error': errorCode },
-							{ 'mdc-text-field--error': OptimizeIDValidated }
+							{ 'mdc-text-field--error': errorCode || OptimizeIDValidated }
 						) }
 						label={ __( 'Optimize Container ID', 'google-site-kit' ) }
 						name="optimizeID"

@@ -67,7 +67,10 @@ class Dialog extends Component {
 		return (
 			<div
 				ref={ this.dialogRef }
-				className={ classnames( 'mdc-dialog', { 'mdc-dialog--open': dialogActive } ) }
+				className={ classnames(
+					'mdc-dialog',
+					{ 'mdc-dialog--open': dialogActive } )
+				}
 				role="alertdialog"
 				aria-modal="true"
 				aria-labelledby="remove-module-dialog"

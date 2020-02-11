@@ -34,7 +34,10 @@ class SourceLink extends Component {
 		const { name, href, className, external } = this.props;
 
 		return (
-			<div className={ classnames( 'googlesitekit-source-link', className ) }>
+			<div className={ classnames(
+				'googlesitekit-source-link',
+				className
+			) }>
 				{ [
 					__( 'Source:', 'google-site-kit' ),
 					' ',

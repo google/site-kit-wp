@@ -50,8 +50,10 @@ class Layout extends Component {
 			<div className={ classnames(
 				'googlesitekit-layout',
 				className,
-				{ 'googlesitekit-layout--fill': fill },
-				{ 'googlesitekit-layout--relative': relative }
+				{
+					'googlesitekit-layout--fill': fill,
+					'googlesitekit-layout--relative': relative,
+				}
 			) }>
 				{ header &&
 					<LayoutHeader
