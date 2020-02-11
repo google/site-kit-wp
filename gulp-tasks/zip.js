@@ -27,12 +27,10 @@ function getPluginVersion() {
  * @return {Object} Data related to the latest commit.
  */
 function getGit() {
-	const { abbreviatedSha, branch, committerDate } = getRepoInfo();
-	const [ date, time ] = committerDate.split( /[T\.]/ );
+	const { abbreviatedSha, branch } = getRepoInfo();
 
 	return {
 		branch: sanitizeFilename( branch, { replacement: '-' } ),
-		date: `${ date }.${ time.replace( ':', '' ) }`,
 		shortSha: abbreviatedSha,
 	};
 }
