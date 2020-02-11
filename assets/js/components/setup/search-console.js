@@ -61,63 +61,48 @@ class SearchConsole extends Component {
 			return;
 		}
 
-		try {
-			const sufficientPermissionLevels = [ 'siteRestrictedUser', 'siteOwner', 'siteFullUser' ];
-			const { exactMatch } = await data.get( TYPE_MODULES, 'search-console', 'matched-sites' );
-
-			if ( exactMatch && sufficientPermissionLevels.includes( exactMatch.permissionLevel ) ) {
-				await data.set( TYPE_MODULES, 'search-console', 'site', { siteURL: exactMatch.siteURL } );
-
-				return this.props.searchConsoleSetup( exactMatch.siteURL );
-			}
-		} catch {}
-
-		// Fallback to request match sites and exact match site.
 		this.requestSearchConsoleSiteList();
 	}
 
 	/**
-	 * Request match sites and exact match site to search console API services
+	 * Request list of matching sites for search console API services.
 	 */
 	requestSearchConsoleSiteList() {
-		const { errorCode } = this.state;
-		if ( errorCode ) {
-			return;
-		}
 		const { setErrorMessage } = this.props;
 		( async () => {
 			try {
-				const { exactMatch, propertyMatches } = await data.get( TYPE_MODULES, 'search-console', 'matched-sites' );
+				const properties = await data.get( TYPE_MODULES, 'search-console', 'matched-sites' );
 
 				// We found exact match, continue the process in the background.
-				if ( exactMatch ) {
-					await this.insertPropertyToSearchConsole( exactMatch.siteURL );
+				if ( properties.length === 1 ) {
+					await this.insertPropertyToSearchConsole( properties[ 0 ].siteURL );
 
 					// We have everything we need here. go to next step.
-					this.props.searchConsoleSetup( exactMatch.siteURL );
-
+					this.props.searchConsoleSetup( properties[ 0 ].siteURL );
 					return;
 				}
 
-				let errorMessage = '';
-				if ( 1 < propertyMatches.length ) {
-					errorMessage = sprintf(
-						/* translators: %d: the number of matching properties. %s: URL of recommended site. */
-						__( 'We found %d existing accounts. We recommend using the account “%s”. Please confirm or change below to use.', 'google-site-kit' ),
-						propertyMatches.length,
-						propertyMatches[ 0 ].siteURL
-					);
-				} else {
-					errorMessage = __( 'Your site has not been added to Search Console yet. Would you like to add it now?', 'google-site-kit' );
+				if ( ! properties.length ) {
+					throw {
+						code: 'no_property_matched',
+						message: __( 'Your site has not been added to Search Console yet. Would you like to add it now?', 'google-site-kit' ),
+					};
 				}
 
-				setErrorMessage( errorMessage );
+				setErrorMessage( '' );
 				this.setState( {
 					loading: false,
-					sites: propertyMatches,
-					errorCode: 'no_property_matched',
-					errorMsg: errorMessage,
+					selectedURL: properties[ 0 ].siteURL,
+					sites: properties,
 				} );
+				throw {
+					code: 'multiple_properties_matched',
+					message: sprintf(
+						/* translators: %d: the number of matching properties */
+						__( 'We found %d existing accounts. Please choose which one to use below.', 'google-site-kit' ),
+						properties.length
+					),
+				};
 			} catch ( err ) {
 				setErrorMessage( err.message );
 				this.setState( {
@@ -130,12 +115,16 @@ class SearchConsole extends Component {
 	}
 
 	/**
-	 * Insert siteURL to the option through the API
-	 * @param { string } siteURL
+	 * Sets the Search Console property and adds it if necessary through the API.
+	 *
+	 * @param { string }  siteURL The siteURL for the property.
+	 * @param { boolean } isNew   Whether siteURL is for a new property.
 	 */
-	async insertPropertyToSearchConsole( siteURL ) {
+	async insertPropertyToSearchConsole( siteURL, isNew = false ) {
 		await data.set( TYPE_MODULES, 'search-console', 'site', { siteURL } );
-		sendAnalyticsTrackingEvent( 'search_console_setup', 'add_new_sc_property' );
+		if ( isNew ) {
+			sendAnalyticsTrackingEvent( 'search_console_setup', 'add_new_sc_property' );
+		}
 
 		this.setState( {
 			loading: false,
@@ -147,15 +136,15 @@ class SearchConsole extends Component {
 	 * Event handler to set site url to option.
 	 */
 	submitPropertyEventHandler() {
-		const siteURL = this.state.selectedURL;
+		const { selectedURL, errorCode } = this.state;
 		const { setErrorMessage } = this.props;
 
 		( async () => {
 			try {
-				await this.insertPropertyToSearchConsole( siteURL );
+				await this.insertPropertyToSearchConsole( selectedURL, errorCode === 'no_property_matched' );
 
 				setErrorMessage( '' );
-				this.props.searchConsoleSetup( siteURL );
+				this.props.searchConsoleSetup( selectedURL );
 			} catch ( err ) {
 				setErrorMessage( err.message[ 0 ].message );
 				this.setState( {
@@ -176,23 +165,21 @@ class SearchConsole extends Component {
 	matchedForm() {
 		const { sites, selectedURL } = this.state;
 
-		const sitesList = [
-			{ /* Required for initial placeholder. */
-				label: '',
-				value: '',
-				disabled: true,
-			},
-		];
-
 		if ( ! sites ) {
 			return null;
 		}
 
-		sites.forEach( function( site ) {
-			sitesList.push( {
-				label: site,
-				value: site,
-			} );
+		const sitesList = sites.map( ( site ) => {
+			let label = site.siteURL;
+			if ( label.startsWith( 'sc-domain:' ) ) {
+				/* translators: %s: Search Console property domain name */
+				label = sprintf( __( '%s (domain property)', 'google-site-kit' ), label.replace( /^sc-domain:/, '' ) );
+			}
+
+			return {
+				label,
+				value: site.siteURL,
+			};
 		} );
 
 		return (
