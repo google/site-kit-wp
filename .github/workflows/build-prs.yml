@@ -1,0 +1,61 @@
+name: build-prs
+
+on:
+  pull_request:
+
+jobs:
+  build-pr:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Get Composer Cache Directory
+      id: composer-cache
+      run: |
+        echo "::set-output name=dir::$(composer config cache-files-dir)"
+    - uses: actions/cache@v1
+      with:
+        path: ${{ steps.composer-cache.outputs.dir }}
+        key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-composer-
+    - name: Composer Install
+      uses: php-actions/composer@v1
+      with:
+        args: install
+    - name: Setup Node.js 10
+      uses: actions/setup-node@v1
+      with:
+        node-version: '10.x'
+    - name: Cache Node - npm
+      uses: actions/cache@v1
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-cache-
+    - name: npm/Gulp Install
+      run: |
+        npm install
+        npm install gulp-cli -g
+    - name: Build develop version
+      run: |
+        npm run build:dev
+        gulp release
+        gulp copy
+        gulp pre-zip
+        gulp zip
+        mv google-site-kit.zip google-site-kit-dev.zip
+    - name: Build release version
+      run: |
+        npm run build
+        gulp release
+        gulp copy
+        gulp pre-zip
+        gulp zip
+    - name: Update release
+      uses: johnwbyrd/update-release@v1.0.0
+      with:
+        release: pr-${{ github.ref }}
+        tag: pr-${{ github.ref }}
+        token: ${{ secrets.GITHUB_TOKEN }}
+        files: google-site-kit.zip google-site-kit-dev.zip
