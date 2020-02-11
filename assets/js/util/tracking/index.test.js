@@ -12,12 +12,13 @@ import {
 	DATA_LAYER,
 } from './index.private';
 
-/**
- * Note: The global document object is provided by Jest using JSDOM.
- * This is necessary for `querySelector` and `createElement` calls to not raise errors.
- */
+const resetGlobals = () => {
+	delete global._googlesitekitBase;
+	delete global[ DATA_LAYER ];
+};
 
 describe( 'createTracking', () => {
+	afterEach( resetGlobals );
 	it( 'initializes disabled tracking based on user preference', () => {
 		const { isTrackingEnabled: isEnabled } = createTracking( { trackingEnabled: false } );
 
@@ -32,6 +33,8 @@ describe( 'createTracking', () => {
 } );
 
 describe( 'disableTracking and isTrackingEnabled', () => {
+	afterEach( resetGlobals );
+
 	it( 'does not mutate global tracking settings when toggling active state', () => {
 		global._googlesitekitBase = { trackingEnabled: true };
 
@@ -43,6 +46,8 @@ describe( 'disableTracking and isTrackingEnabled', () => {
 } );
 
 describe( 'enableTracking and isTrackingEnabled', () => {
+	afterEach( resetGlobals );
+
 	it( 'does not mutate global tracking settings when toggling active state', () => {
 		global._googlesitekitBase = { trackingEnabled: false };
 
@@ -54,6 +59,8 @@ describe( 'enableTracking and isTrackingEnabled', () => {
 } );
 
 describe( 'trackEvent', () => {
+	afterEach( resetGlobals );
+
 	it( 'adds a tracking event to the dataLayer', () => {
 		const config = {
 			referenceSiteURL: 'https://www.example.com/',
