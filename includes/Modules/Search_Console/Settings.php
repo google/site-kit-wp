@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Modules\Module_Settings;
 /**
  * Class for Search Console settings.
  *
- * @since n.e.x.t
+ * @since 1.3.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Settings extends Module_Settings {
 	/**
 	 * Registers the setting in WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 */
 	public function register() {
 		parent::register();
@@ -45,7 +45,7 @@ class Settings extends Module_Settings {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @return array
 	 */

@@ -631,7 +631,7 @@ final class OAuth_Client {
 			 * refresh token for the current user, which may happen to set up the initial connection or to request
 			 * access to further scopes.
 			 *
-			 * @since n.e.x.t
+			 * @since 1.3.0
 			 */
 			do_action( 'googlesitekit_authorize_user' );
 		}

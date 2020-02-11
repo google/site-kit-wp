@@ -414,7 +414,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	/**
 	 * Gets the property ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @return string Property ID URL if set, or empty string.
 	 */
@@ -430,7 +430,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 * This method runs a Search Console API request. The determined ID should therefore be stored and accessed through
 	 * {@see Search_Console::get_property_id()} instead.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @return string Property ID, or empty string if none found.
 	 */
@@ -508,7 +508,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @return Module_Settings
 	 */

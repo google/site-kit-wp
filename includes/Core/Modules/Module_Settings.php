@@ -36,7 +36,7 @@ abstract class Module_Settings extends Setting {
 	 *
 	 * Only existing keys will be updated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @param array $partial Partial settings array to save.
 	 *

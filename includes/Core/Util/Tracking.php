@@ -60,7 +60,7 @@ final class Tracking {
 	 * Constructor.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Added User_Options.
+	 * @since 1.3.0 Added User_Options.
 	 *
 	 * @param Context        $context        Plugin context.
 	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
@@ -101,7 +101,7 @@ final class Tracking {
 	 * Is tracking active for the current user?
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Tracking is now user-specific.
+	 * @since 1.3.0 Tracking is now user-specific.
 	 *
 	 * @return bool True if tracking enabled, and False if not.
 	 */
@@ -112,7 +112,7 @@ final class Tracking {
 	/**
 	 * Modifies the base data to pass to JS.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @param array $data Inline JS data.
 	 * @return array Filtered $data.
@@ -128,7 +128,7 @@ final class Tracking {
 	 * Register tracking settings and allow access from Rest API.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Registers a meta field instead of setting.
+	 * @since 1.3.0 Registers a meta field instead of setting.
 	 */
 	private function register_settings() {
 		global $wpdb;
