@@ -1,5 +1,5 @@
 // Linux machines should use Docker's default gateway IP address to connect to.
-let hostname = '172.17.0.2';
+let hostname = '172.17.0.1';
 
 // On MacOS and Windows, `host.docker.internal` is available to point to the
 // host and run backstopjs against.
