@@ -109,7 +109,7 @@ class DataBlock extends Component {
 						{ change && <Fragment>
 							<span className="googlesitekit-data-block__arrow">
 								<ChangeArrow
-									direction={ change ? 'up' : 'down' }
+									direction={ 0 < parseFloat( change ) ? 'up' : 'down' }
 									invertColor={ invertChangeColor }
 								/>
 							</span>
