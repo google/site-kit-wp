@@ -109,7 +109,7 @@ class SetupModule extends Component {
 		return (
 			<div
 				className={ classnames(
-					'googlesitekit-settings-connect-module googlesitekit-settings-connect-module--${ slug }',
+					`googlesitekit-settings-connect-module googlesitekit-settings-connect-module--${ slug }`,
 					{ 'googlesitekit-settings-connect-module--disabled': blockedByParentModule }
 				) }
 				key={ slug }
