@@ -2,6 +2,7 @@ name: build-pr-release
 
 on:
   pull_request:
+    types: [created, edited]
 
 jobs:
   build-pr-release:
