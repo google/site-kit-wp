@@ -39,7 +39,7 @@ class WPDashboardModules extends Component {
 			<Fragment>
 				<div className={ classnames(
 					'googlesitekit-wp-dashboard-stats',
-					{ 'googlesitekit-wp-dashboard-stats--fourup': global.googlesitekit.modules.analytics && global.googlesitekit.modules.analytics.active }
+					{ 'googlesitekit-wp-dashboard-stats--fourup': global.googlesitekit.modules.analytics.active }
 				) }>
 					<WPDashboardHeader
 						key={ 'googlesitekit-wp-dashboard-header' }
