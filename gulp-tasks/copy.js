@@ -2,12 +2,9 @@
  * External dependencies
  */
 import gulp from 'gulp';
-import del from 'del';
 
 gulp.task( 'copy', () => {
-	del.sync( [ './release/**/*' ] );
-
-	gulp.src(
+	return gulp.src(
 		[
 			'readme.txt',
 			'google-site-kit.php',
@@ -27,5 +24,5 @@ gulp.task( 'copy', () => {
 		],
 		{ base: '.' }
 	)
-		.pipe( gulp.dest( 'release' ) );
+		.pipe( gulp.dest( 'release/google-site-kit' ) );
 } );
