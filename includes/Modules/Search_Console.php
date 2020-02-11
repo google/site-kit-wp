@@ -56,13 +56,8 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		add_action(
 			'googlesitekit_authorize_user',
 			function() {
-				// Bail if there is one set already.
-				$property_id = $this->get_property_id();
-				if ( $property_id ) {
-					return;
-				}
-
-				$property_id = $this->detect_property_id();
+				// Only detect if there isn't one set already.
+				$property_id = $this->get_property_id() ?: $this->detect_property_id();
 				if ( ! $property_id ) {
 					return;
 				}

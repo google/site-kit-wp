@@ -82,27 +82,27 @@ class SearchConsole extends Component {
 					return;
 				}
 
-				let errorCode, errorMsg;
-				if ( properties.length ) {
-					errorCode = 'multiple_properties_matched';
-					errorMsg = sprintf(
-						/* translators: %d: the number of matching properties */
-						__( 'We found %d existing accounts. Please choose which one to use below.', 'google-site-kit' ),
-						properties.length
-					);
-				} else {
-					errorCode = 'no_property_matched';
-					errorMsg = __( 'Your site has not been added to Search Console yet. Would you like to add it now?', 'google-site-kit' );
+				if ( ! properties.length ) {
+					throw {
+						code: 'no_property_matched',
+						message: __( 'Your site has not been added to Search Console yet. Would you like to add it now?', 'google-site-kit' ),
+					};
 				}
 
-				setErrorMessage( errorMsg );
+				setErrorMessage( '' );
 				this.setState( {
 					loading: false,
 					selectedURL: properties[ 0 ].siteURL,
 					sites: properties,
-					errorCode,
-					errorMsg,
 				} );
+				throw {
+					code: 'multiple_properties_matched',
+					message: sprintf(
+						/* translators: %d: the number of matching properties */
+						__( 'We found %d existing accounts. Please choose which one to use below.', 'google-site-kit' ),
+						properties.length
+					),
+				};
 			} catch ( err ) {
 				setErrorMessage( err.message );
 				this.setState( {
@@ -172,6 +172,7 @@ class SearchConsole extends Component {
 		const sitesList = sites.map( ( site ) => {
 			let label = site.siteURL;
 			if ( label.startsWith( 'sc-domain:' ) ) {
+				/* translators: %s: Search Console property domain name */
 				label = sprintf( __( '%s (domain property)', 'google-site-kit' ), label.replace( /^sc-domain:/, '' ) );
 			}
 
