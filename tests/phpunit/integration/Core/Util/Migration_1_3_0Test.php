@@ -1,6 +1,6 @@
 <?php
 /**
- * \Google\Site_Kit\Tests\Core\Util\Migration_n_e_x_tTest
+ * \Google\Site_Kit\Tests\Core\Util\Migration_1_3_0Test
  *
  * @package   Google\Site_Kit\Tests\Core\Util
  * @copyright 2020 Google LLC
@@ -13,13 +13,11 @@ namespace Google\Site_Kit\Tests\Core\Util;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Util\Migration_n_e_x_t;
+use Google\Site_Kit\Core\Util\Migration_1_3_0;
 use Google\Site_Kit\Core\Util\Tracking;
 use Google\Site_Kit\Tests\TestCase;
 
-// phpcs:disable PEAR.NamingConventions.ValidClassName.Invalid
-
-class Migration_n_e_x_tTest extends TestCase {
+class Migration_1_3_0Test extends TestCase {
 	/**
 	 * @var Context
 	 */
@@ -32,7 +30,7 @@ class Migration_n_e_x_tTest extends TestCase {
 	}
 
 	public function test_register() {
-		$migration = new Migration_n_e_x_t( $this->context );
+		$migration = new Migration_1_3_0( $this->context );
 		remove_all_actions( 'admin_init' );
 
 		$migration->register();
@@ -41,7 +39,7 @@ class Migration_n_e_x_tTest extends TestCase {
 	}
 
 	public function test_migrate_without_tracking_enabled() {
-		$migration = new Migration_n_e_x_t( $this->context );
+		$migration = new Migration_1_3_0( $this->context );
 		remove_all_actions( 'admin_init' );
 		$migration->register();
 
@@ -52,11 +50,11 @@ class Migration_n_e_x_tTest extends TestCase {
 		$migration->migrate();
 
 		$this->assertEmpty( $this->get_opted_in_users() );
-		$this->assertEquals( Migration_n_e_x_t::DB_VERSION, $this->get_db_version() );
+		$this->assertEquals( Migration_1_3_0::DB_VERSION, $this->get_db_version() );
 	}
 
 	public function test_migrate_with_tracking_enabled_and_no_authenticated_users() {
-		$migration = new Migration_n_e_x_t( $this->context );
+		$migration = new Migration_1_3_0( $this->context );
 		remove_all_actions( 'admin_init' );
 		$migration->register();
 
@@ -67,11 +65,11 @@ class Migration_n_e_x_tTest extends TestCase {
 		$migration->migrate();
 
 		$this->assertEmpty( $this->get_opted_in_users() );
-		$this->assertEquals( Migration_n_e_x_t::DB_VERSION, $this->get_db_version() );
+		$this->assertEquals( Migration_1_3_0::DB_VERSION, $this->get_db_version() );
 	}
 
 	public function test_migrate_with_tracking_enabled_and_one_authenticated_user() {
-		$migration = new Migration_n_e_x_t( $this->context );
+		$migration = new Migration_1_3_0( $this->context );
 		remove_all_actions( 'admin_init' );
 		$migration->register();
 
@@ -84,11 +82,11 @@ class Migration_n_e_x_tTest extends TestCase {
 		$opted_in_users = $this->get_opted_in_users();
 		$this->assertCount( 1, $opted_in_users );
 		$this->assertEquals( $user_id, $opted_in_users[0]->ID );
-		$this->assertEquals( Migration_n_e_x_t::DB_VERSION, $this->get_db_version() );
+		$this->assertEquals( Migration_1_3_0::DB_VERSION, $this->get_db_version() );
 	}
 
 	public function test_migrate_with_tracking_enabled_and_multiple_authenticated_users() {
-		$migration = new Migration_n_e_x_t( $this->context );
+		$migration = new Migration_1_3_0( $this->context );
 		remove_all_actions( 'admin_init' );
 		$migration->register();
 
@@ -100,7 +98,7 @@ class Migration_n_e_x_tTest extends TestCase {
 		$migration->migrate();
 
 		$this->assertEmpty( $this->get_opted_in_users() );
-		$this->assertEquals( Migration_n_e_x_t::DB_VERSION, $this->get_db_version() );
+		$this->assertEquals( Migration_1_3_0::DB_VERSION, $this->get_db_version() );
 	}
 
 	private function get_opted_in_users() {

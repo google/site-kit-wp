@@ -616,7 +616,7 @@ final class Authentication {
 	/**
 	 * Gets related REST routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @return array List of REST_Route objects.
 	 */

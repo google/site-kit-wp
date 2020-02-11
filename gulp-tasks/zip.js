@@ -27,12 +27,10 @@ function getPluginVersion() {
  * @return {Object} Data related to the latest commit.
  */
 function getGit() {
-	const { abbreviatedSha, branch, committerDate } = getRepoInfo();
-	const [ date, time ] = committerDate.split( /[T\.]/ );
+	const { abbreviatedSha, branch } = getRepoInfo();
 
 	return {
 		branch: sanitizeFilename( branch, { replacement: '-' } ),
-		date: `${ date }.${ time.replace( ':', '' ) }`,
 		shortSha: abbreviatedSha,
 	};
 }
@@ -44,10 +42,15 @@ function getGit() {
  */
 function generateFilename() {
 	const version = getPluginVersion();
-	const { branch, date, shortSha } = getGit();
+
+	let gitSuffix = '';
+	try {
+		const { branch, shortSha } = getGit();
+		gitSuffix = `.${ branch }@${ shortSha }`;
+	} catch {}
 
 	return sanitizeFilename(
-		`google-site-kit.v${ version }.${ branch }@${ shortSha }.${ date }.zip`
+		`google-site-kit.v${ version }${ gitSuffix }.zip`
 	);
 }
 

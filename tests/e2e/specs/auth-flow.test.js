@@ -27,11 +27,12 @@ function stubGoogleSignIn( request ) {
 		request.respond( {
 			status: 200,
 			contentType: 'application/json',
-			body: JSON.stringify( {
-				exactMatch: {
+			body: JSON.stringify( [
+				{
 					siteURL: process.env.WP_BASE_URL,
+					permissionLevel: 'siteOwner',
 				},
-			} ),
+			] ),
 		} );
 	} else {
 		request.continue();

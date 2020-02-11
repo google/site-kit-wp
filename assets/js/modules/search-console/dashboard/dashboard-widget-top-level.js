@@ -42,7 +42,7 @@ import {
 	getTimeInSeconds,
 	extractForSparkline,
 	getSiteKitAdminURL,
-	sendAnalyticsTrackingEvent,
+	trackEvent,
 } from 'GoogleUtil';
 import CTA from 'GoogleComponents/notifications/cta';
 
@@ -52,7 +52,7 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 
 		const { error } = data;
 		if ( error ) {
-			sendAnalyticsTrackingEvent( 'plugin_setup', 'search_console_error', error.message );
+			trackEvent( 'plugin_setup', 'search_console_error', error.message );
 
 			return (
 				<div className="

@@ -45,7 +45,7 @@ final class Options implements Options_Interface {
 	/**
 	 * Checks whether or not a value is set for the given option.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @param string $option Option name.
 	 * @return bool True if value set, false otherwise.

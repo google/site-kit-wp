@@ -28,7 +28,7 @@ import { doAction } from '@wordpress/hooks';
 /**
  * External dependencies
  */
-import { loadTranslations, sendAnalyticsTrackingEvent } from 'GoogleUtil';
+import { loadTranslations, trackEvent } from 'GoogleUtil';
 import 'GoogleComponents/notifications';
 
 /**
@@ -41,7 +41,7 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		loadTranslations();
-		sendAnalyticsTrackingEvent( 'plugin_setup', 'plugin_activated' );
+		trackEvent( 'plugin_setup', 'plugin_activated' );
 
 		render( <ActivationApp />, renderTarget );
 

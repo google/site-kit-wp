@@ -55,7 +55,7 @@ final class Reset {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 */
 	public function register() {
 		add_filter(
@@ -86,7 +86,7 @@ final class Reset {
 	/**
 	 * Deletes all Site Kit options and transients.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @param string $scope Scope of the deletion ('site' or 'network').
 	 */
@@ -145,7 +145,7 @@ final class Reset {
 	/**
 	 * Gets related REST routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @return array List of REST_Route objects.
 	 */

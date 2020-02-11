@@ -24,7 +24,7 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * External dependencies
  */
-import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
+import { trackEvent } from 'GoogleUtil';
 
 /**
  * Internal dependencies
@@ -88,7 +88,7 @@ export class ActivationApp extends Component {
 					buttonURL={ buttonURL }
 					buttonLabel={ buttonLabel }
 					onButtonClick={ () => {
-						sendAnalyticsTrackingEvent( 'plugin_setup', proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
+						trackEvent( 'plugin_setup', proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
 					} }
 				/>
 			</Fragment>

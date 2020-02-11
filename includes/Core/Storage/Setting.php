@@ -65,7 +65,7 @@ abstract class Setting {
 	 * Checks whether or not the option is set with a valid value.
 	 *
 	 * @since 1.2.0
-	 * @since n.e.x.t Now relies on {@see Options_Interface::has()}.
+	 * @since 1.3.0 Now relies on {@see Options_Interface::has()}.
 	 *
 	 * @return bool True on success, false on failure.
 	 */
