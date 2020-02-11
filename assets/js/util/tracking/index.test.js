@@ -64,8 +64,10 @@ describe( 'trackEvent', () => {
 		};
 
 		const push = jest.fn();
-		global[ DATA_LAYER ] = { push };
-		const { trackEvent } = createTracking( config );
+		const dataLayer = {
+			[ DATA_LAYER ]: { push },
+		};
+		const { trackEvent } = createTracking( config, dataLayer );
 
 		trackEvent( 'category', 'name', 'label', 'value' );
 

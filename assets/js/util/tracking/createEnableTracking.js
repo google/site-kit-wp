@@ -7,8 +7,15 @@ import {
 	SCRIPT_IDENTIFIER,
 } from './index.private';
 
-export default function createEnableTracking( config ) {
-	const dataLayerPush = createDataLayerPush( global );
+/**
+ * Returns a function which, when invoked enables tracking and injects the gtag script if necessary.
+ *
+ * @param {Object} config Tracking configuration.
+ * @param {Object} dataLayerTarget Data layer parent object.
+ * @return {Function} Function that tracks an event.
+ */
+export default function createEnableTracking( config, dataLayerTarget ) {
+	const dataLayerPush = createDataLayerPush( dataLayerTarget );
 
 	/**
 	 * Enables tracking by injecting the necessary script tag if not present.

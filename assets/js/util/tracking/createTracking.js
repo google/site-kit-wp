@@ -17,9 +17,10 @@ const DEFAULT_CONFIG = {
  * Initializes tracking.
  *
  * @param {Object} newConfig New configuration.
+ * @param {Object} dataLayerTarget Data layer parent object.
  * @return {Object} Tracking config.
  */
-export default function createTracking( newConfig ) {
+export default function createTracking( newConfig, dataLayerTarget = global ) {
 	const config = {
 		...DEFAULT_CONFIG,
 		...newConfig,
@@ -30,13 +31,13 @@ export default function createTracking( newConfig ) {
 	}
 
 	return {
-		enableTracking: createEnableTracking( config ),
+		enableTracking: createEnableTracking( config, dataLayerTarget ),
 		disableTracking: function disableTracking() {
 			config.trackingEnabled = false;
 		},
 		isTrackingEnabled: function isTrackingEnabled() {
 			return !! config.trackingEnabled;
 		},
-		trackEvent: createTrackEvent( config ),
+		trackEvent: createTrackEvent( config, dataLayerTarget ),
 	};
 }

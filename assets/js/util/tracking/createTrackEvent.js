@@ -8,10 +8,11 @@ import createDataLayerPush from './createDataLayerPush';
  * Returns a function which, when invoked tracks a single event.
  *
  * @param {Object} config Tracking configuration.
+ * @param {Object} dataLayerTarget Data layer parent object.
  * @return {Function} Function that tracks an event.
  */
-export default function createTrackEvent( config ) {
-	const dataLayerPush = createDataLayerPush( global );
+export default function createTrackEvent( config, dataLayerTarget ) {
+	const dataLayerPush = createDataLayerPush( dataLayerTarget );
 
 	/**
 	 * Send an Analytics tracking event.
