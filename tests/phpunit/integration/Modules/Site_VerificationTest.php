@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Verification_File;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
@@ -61,10 +62,11 @@ class Site_VerificationTest extends TestCase {
 	public function test_register_head_verification_tags( $saved_tag, $expected_output ) {
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'login_head' );
+		$options           = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$site_verification = new Site_Verification( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$site_verification->register();
 
-		set_transient( 'googlesitekit_verification_meta_tags', array( $saved_tag ) );
+		$options->set( Site_Verification::OPTION_VERIFICATION_META_TAGS, array( $saved_tag ) );
 
 		$this->assertContains(
 			$expected_output,
