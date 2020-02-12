@@ -100,18 +100,18 @@ class Migration_1_3_0 {
 	 */
 	private function migrate_tracking_opt_in() {
 		// Only migrate if tracking was opted-in.
-		if ( $this->options->get( Tracking::TRACKING_OPTIN_KEY ) ) {
+		if ( $this->options->get( Tracking::OPTION ) ) {
 			$user = $this->get_only_authenticated_user();
 
 			if ( $user ) {
 				$backup_user_id = $this->user_options->get_user_id();
 				$this->user_options->switch_user( $user->ID );
-				$this->user_options->set( Tracking::TRACKING_OPTIN_KEY, 1 );
+				$this->user_options->set( Tracking::OPTION, 1 );
 				$this->user_options->switch_user( $backup_user_id );
 			}
 		}
 
-		$this->options->delete( Tracking::TRACKING_OPTIN_KEY );
+		$this->options->delete( Tracking::OPTION );
 	}
 
 	/**

@@ -10,10 +10,8 @@
 
 namespace Google\Site_Kit\Core\Util;
 
-use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Storage\User_Setting;
 
 /**
  * Class managing admin tracking.
@@ -22,59 +20,16 @@ use Google\Site_Kit\Core\Storage\User_Options;
  * @access private
  * @ignore
  */
-final class Tracking {
+final class Tracking extends User_Setting {
 
 	/**
-	 * Tracking Optin Key
+	 * The user option name for this setting.
 	 *
-	 * @var string tracking optin key for options table.
+	 * @var string
 	 */
-	const TRACKING_OPTIN_KEY = 'googlesitekit_tracking_optin';
+	const OPTION = 'googlesitekit_tracking_optin';
 
 	const TRACKING_ID = 'UA-130569087-3';
-
-	/**
-	 * Plugin context.
-	 *
-	 * @since 1.0.0
-	 * @var Context
-	 */
-	private $context;
-
-	/**
-	 * Authentication instance.
-	 *
-	 * @since 1.0.0
-	 * @var Authentication
-	 */
-	protected $authentication;
-
-	/**
-	 * User_Options instance.
-	 *
-	 * @var User_Options
-	 */
-	protected $user_options;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since 1.0.0
-	 * @since 1.3.0 Added User_Options.
-	 *
-	 * @param Context        $context        Plugin context.
-	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
-	 * @param User_Options   $user_options   Optional. User_Options instance. Default is a new instance.
-	 */
-	public function __construct(
-		Context $context,
-		Authentication $authentication = null,
-		User_Options $user_options = null
-	) {
-		$this->context        = $context;
-		$this->authentication = $authentication ?: new Authentication( $this->context );
-		$this->user_options   = $user_options ?: new User_Options( $this->context );
-	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -82,17 +37,12 @@ final class Tracking {
 	 * @since 1.0.0
 	 */
 	public function register() {
+		parent::register();
+
 		add_filter(
 			'googlesitekit_inline_base_data',
 			function ( $data ) {
 				return $this->inline_js_base_data( $data );
-			}
-		);
-
-		add_action(
-			'init',
-			function () {
-				$this->register_settings();
 			}
 		);
 	}
@@ -106,7 +56,7 @@ final class Tracking {
 	 * @return bool True if tracking enabled, and False if not.
 	 */
 	public function is_active() {
-		return (bool) $this->user_options->get( self::TRACKING_OPTIN_KEY );
+		return (bool) $this->user_options->get( self::OPTION );
 	}
 
 	/**
@@ -125,22 +75,16 @@ final class Tracking {
 	}
 
 	/**
-	 * Register tracking settings and allow access from Rest API.
+	 * Gets the visibility of this setting for REST responses.
 	 *
-	 * @since 1.0.0
-	 * @since 1.3.0 Registers a meta field instead of setting.
+	 * Whether data associated with this meta key can be considered public and
+	 * should be accessible via the REST API.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool
 	 */
-	private function register_settings() {
-		global $wpdb;
-		$args = array(
-			'type'         => 'boolean',
-			'description'  => __( 'Allowing tracking of anonymous usage stats.', 'google-site-kit' ),
-			'default'      => false,
-			'single'       => true,
-			'show_in_rest' => current_user_can( Permissions::SETUP ),
-		);
-		// Need to conditionally include the blog prefix as this is a user option.
-		$prefix = ! $this->context->is_network_mode() ? $wpdb->get_blog_prefix() : '';
-		register_meta( 'user', $prefix . self::TRACKING_OPTIN_KEY, $args );
+	protected function get_show_in_rest() {
+		return current_user_can( Permissions::SETUP );
 	}
 }

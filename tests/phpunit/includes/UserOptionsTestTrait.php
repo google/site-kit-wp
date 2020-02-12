@@ -29,7 +29,7 @@ trait UserOptionsTestTrait {
 			OAuth_Client::OPTION_REDIRECT_URL,
 			OAuth_Client::OPTION_REFRESH_TOKEN,
 			Profile::OPTION,
-			Tracking::TRACKING_OPTIN_KEY,
+			Tracking::OPTION,
 			Verification::OPTION,
 			Verification_Meta::OPTION,
 			Verification_File::OPTION,

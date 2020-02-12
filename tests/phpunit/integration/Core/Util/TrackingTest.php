@@ -44,10 +44,10 @@ class TrackingTest extends TestCase {
 	}
 
 	protected function opt_in_to_tracking( $network_wide = false ) {
-		update_user_option( get_current_user_id(), Tracking::TRACKING_OPTIN_KEY, 1, $network_wide );
+		update_user_option( get_current_user_id(), Tracking::OPTION, 1, $network_wide );
 	}
 
 	protected function opt_out_from_tracking( $network_wide = false ) {
-		update_user_option( get_current_user_id(), Tracking::TRACKING_OPTIN_KEY, 0, $network_wide );
+		update_user_option( get_current_user_id(), Tracking::OPTION, 0, $network_wide );
 	}
 }
