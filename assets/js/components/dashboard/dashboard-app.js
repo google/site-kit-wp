@@ -35,7 +35,7 @@ import { __ } from '@wordpress/i18n';
  */
 import DashboardMain from './dashboard-main';
 import DashboardNotifications from './dashboard-notifications';
-import ErrorHandler from '../ErrorHandler';
+import ErrorHandler from 'GoogleComponents/ErrorHandler';
 
 class DashboardApp extends Component {
 	render() {
