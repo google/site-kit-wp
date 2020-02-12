@@ -27,6 +27,17 @@ final class Verification extends User_Setting {
 	const OPTION = 'googlesitekit_site_verified_meta';
 
 	/**
+	 * Gets the value of the setting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return mixed Value set for the option, or default if not set.
+	 */
+	public function get() {
+		return (bool) parent::get();
+	}
+
+	/**
 	 * Flags the user as verified or unverified.
 	 *
 	 * @since 1.0.0
@@ -39,6 +50,30 @@ final class Verification extends User_Setting {
 			return $this->delete();
 		}
 
-		return parent::set( 'verified' );
+		return parent::set( '1' );
+	}
+
+	/**
+	 * Gets the expected value type.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The type name.
+	 */
+	protected function get_type() {
+		return 'boolean';
+	}
+
+	/**
+	 * Gets the default value.
+	 *
+	 * Returns an empty string by default for consistency with get_user_meta.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return mixed The default value.
+	 */
+	protected function get_default() {
+		return false;
 	}
 }
