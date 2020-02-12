@@ -75,6 +75,17 @@ final class Tracking extends User_Setting {
 	}
 
 	/**
+	 * Gets the expected value type.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The type name.
+	 */
+	protected function get_type() {
+		return 'boolean';
+	}
+
+	/**
 	 * Gets the visibility of this setting for REST responses.
 	 *
 	 * Whether data associated with this meta key can be considered public and
