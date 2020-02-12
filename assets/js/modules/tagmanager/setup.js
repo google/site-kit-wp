@@ -44,7 +44,6 @@ import { isValidAccountID, isValidContainerID } from './util';
 
 const ACCOUNT_CREATE = 'account_create';
 const CONTAINER_CREATE = 'container_create';
-const UNSELECTED = '';
 
 class TagmanagerSetup extends Component {
 	constructor( props ) {
@@ -373,8 +372,8 @@ class TagmanagerSetup extends Component {
 
 		this.setState( { selectedAccount: selectValue } );
 
-		if ( UNSELECTED === selectValue ) {
-			this.setState( { selectedContainer: UNSELECTED } );
+		if ( ! selectValue ) {
+			this.setState( { selectedContainer: '' } );
 			return;
 		}
 
@@ -406,8 +405,8 @@ class TagmanagerSetup extends Component {
 				isLoading: true,
 				errorCode: false,
 				errorMsg: '',
-				selectedAccount: UNSELECTED,
-				selectedContainer: UNSELECTED,
+				selectedAccount: '',
+				selectedContainer: '',
 			},
 			this.requestTagManagerAccounts
 		);
@@ -557,7 +556,7 @@ class TagmanagerSetup extends Component {
 							name="containers"
 							label={ __( 'Container', 'google-site-kit' ) }
 							value={ selectedContainer }
-							disabled={ hasExistingTag || [ ACCOUNT_CREATE, UNSELECTED ].includes( selectedAccount ) }
+							disabled={ hasExistingTag || ! isValidAccountID( selectedAccount ) }
 							onEnhancedChange={ this.handleContainerChange }
 							outlined
 						>
