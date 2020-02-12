@@ -19,14 +19,14 @@ register_activation_hook(
 	function () {
 		delete_transient( 'gsk_e2e_site_verified' );
 		delete_transient( 'gsk_e2e_sc_site_exists' );
-	} 
+	}
 );
 register_deactivation_hook(
 	__FILE__,
 	function () {
 		delete_transient( 'gsk_e2e_site_verified' );
 		delete_transient( 'gsk_e2e_sc_site_exists' );
-	} 
+	}
 );
 
 add_action(
@@ -76,7 +76,7 @@ add_action(
 				'methods'  => 'GET',
 				'callback' => function () {
 					return array(
-						'exactMatch' => array(
+						array(
 							'siteURL'         => home_url( '/' ),
 							'permissionLevel' => 'siteOwner',
 						),
@@ -132,5 +132,5 @@ add_action(
 		);
 
 	},
-	0 
+	0
 );

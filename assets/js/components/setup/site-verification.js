@@ -26,7 +26,7 @@ import { TextField, Input } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
 import {
 	validateJSON,
-	sendAnalyticsTrackingEvent,
+	trackEvent,
 } from 'GoogleUtil';
 import HelpLink from 'GoogleComponents/help-link';
 
@@ -73,7 +73,7 @@ class SiteVerification extends Component {
 
 				// Our current siteURL has been verified. Proceed to next step.
 				if ( verified ) {
-					sendAnalyticsTrackingEvent( 'verification_setup', 'verification_check_true' );
+					trackEvent( 'verification_setup', 'verification_check_true' );
 
 					const response = await this.insertSiteVerification( identifier );
 
@@ -82,7 +82,7 @@ class SiteVerification extends Component {
 						return true;
 					}
 				} else {
-					sendAnalyticsTrackingEvent( 'verification_setup', 'verification_check_false' );
+					trackEvent( 'verification_setup', 'verification_check_false' );
 				}
 
 				this.setState( {
@@ -132,7 +132,7 @@ class SiteVerification extends Component {
 			const response = await this.insertSiteVerification( siteURL );
 
 			if ( true === response.verified ) {
-				sendAnalyticsTrackingEvent( 'verification_setup', 'verification_insert_tag' );
+				trackEvent( 'verification_setup', 'verification_insert_tag' );
 
 				// We have everything we need here. go to next step.
 				this.props.siteVerificationSetup( true );
