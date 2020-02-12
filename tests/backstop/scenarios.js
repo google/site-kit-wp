@@ -1,5 +1,5 @@
-const hostname = require( './detect-target-host' );
-const rootURL = `http://${ hostname }:9001/iframe.html?id=`;
+const storybookHost = require( './detect-storybook-host' );
+const rootURL = `http://${ storybookHost }:9001/iframe.html?id=`;
 const storybookStories = require( '../../.storybook/storybook-data' );
 
 module.exports = storybookStories.map( ( story ) => {

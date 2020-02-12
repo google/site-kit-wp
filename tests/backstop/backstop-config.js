@@ -22,8 +22,8 @@ const viewports = require( './viewports' );
 // If run from the host, detect the proper target host and set the hostname arg.
 // This will be passed through with the `backstop` command run with docker.
 if ( process.argv.includes( '--docker' ) ) {
-	const hostname = require( './detect-target-host' );
-	process.argv.push( `--hostname=${ hostname }` );
+	const hostname = require( './detect-storybook-host' );
+	process.argv.push( `--storybook-host=${ hostname }` );
 }
 
 module.exports = {
