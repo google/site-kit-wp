@@ -18,10 +18,16 @@
 /* eslint camelcase:[0] */
 
 /**
+ * External dependencies
+ */
+import 'GoogleComponents/notifications';
+import { loadTranslations } from 'GoogleUtil';
+import 'GoogleModules';
+
+/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { setLocaleData } from '@wordpress/i18n';
 import { doAction } from '@wordpress/hooks';
 import { Component, render } from '@wordpress/element';
 
@@ -33,13 +39,6 @@ import DashboardDetailsApp from 'GoogleComponents/dashboard-details/dashboard-de
 import ErrorHandler from 'GoogleComponents/ErrorHandler';
 
 class GoogleSitekitDashboardDetails extends Component {
-	constructor( props ) {
-		super( props );
-
-		// Set up translations.
-		setLocaleData( googlesitekit.locale, 'google-site-kit' );
-	}
-
 	render() {
 		return (
 			<ErrorHandler>
@@ -50,11 +49,13 @@ class GoogleSitekitDashboardDetails extends Component {
 }
 
 // Initialize the app once the DOM is ready.
-domReady( function() {
-	const dashboardDetails = document.getElementById( 'js-googlesitekit-dashboard-details' );
-	if ( null !== dashboardDetails ) {
-		// Render the Dashboard App.
-		render( <GoogleSitekitDashboardDetails />, dashboardDetails );
+domReady( () => {
+	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard-details' );
+
+	if ( renderTarget ) {
+		loadTranslations();
+
+		render( <GoogleSitekitDashboardDetails />, renderTarget );
 
 		/**
 		 * Action triggered when the dashboard details App is loaded.

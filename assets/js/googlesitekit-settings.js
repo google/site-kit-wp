@@ -18,10 +18,16 @@
 /* eslint camelcase:[0] */
 
 /**
+ * External dependencies
+ */
+import 'GoogleComponents/notifications';
+import { loadTranslations } from 'GoogleUtil';
+import 'GoogleModules';
+
+/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { setLocaleData } from '@wordpress/i18n';
 import { doAction } from '@wordpress/hooks';
 import { Component, render } from '@wordpress/element';
 
@@ -33,13 +39,6 @@ import ErrorHandler from 'GoogleComponents/ErrorHandler';
 import SettingsApp from 'GoogleComponents/settings/settings-app';
 
 class GoogleSitekitSettings extends Component {
-	constructor( props ) {
-		super( props );
-
-		// Set up translations.
-		setLocaleData( googlesitekit.locale, 'google-site-kit' );
-	}
-
 	render() {
 		return (
 			<ErrorHandler>
@@ -50,11 +49,13 @@ class GoogleSitekitSettings extends Component {
 }
 
 // Initialize the app once the DOM is ready.
-domReady( function() {
-	const settingsWrapper = document.getElementById( 'googlesitekit-settings-wrapper' );
-	if ( null !== settingsWrapper ) {
-		// Render the Settings App.
-		render( <GoogleSitekitSettings />, settingsWrapper );
+domReady( () => {
+	const renderTarget = document.getElementById( 'googlesitekit-settings-wrapper' );
+
+	if ( renderTarget ) {
+		loadTranslations();
+
+		render( <GoogleSitekitSettings />, renderTarget );
 
 		/**
 		 * Action triggered when the settings App is loaded.

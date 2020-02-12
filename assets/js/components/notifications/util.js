@@ -47,7 +47,7 @@ export const modulesNotificationsToRequest = () => {
  * otherwise make the requests to get modules and page wins notifications.
  */
 export async function getTotalNotifications() {
-	const { setup } = window.googlesitekit;
+	const { setup } = global.googlesitekit;
 
 	if (
 		! setup.isSiteKitConnected ||
@@ -73,8 +73,8 @@ export async function getTotalNotifications() {
 
 	// The total notifications count should always rely on local storage
 	// directly for external availability.
-	if ( window.localStorage ) {
-		window.localStorage.setItem( 'googlesitekit::total-notifications', total );
+	if ( global.localStorage ) {
+		global.localStorage.setItem( 'googlesitekit::total-notifications', total );
 	}
 
 	return total;
@@ -250,8 +250,8 @@ export const incrementCount = ( state ) => {
 	const value = Math.abs( state.count ) + 1;
 	// The total notifications count should always rely on local storage
 	// directly for external availability.
-	if ( window.localStorage ) {
-		window.localStorage.setItem( 'googlesitekit::total-notifications', value );
+	if ( global.localStorage ) {
+		global.localStorage.setItem( 'googlesitekit::total-notifications', value );
 	}
 	return {
 		count: value,
@@ -262,8 +262,8 @@ export const decrementCount = ( state ) => {
 	const value = Math.max( 0, Math.abs( state.count ) - 1 );
 	// The total notifications count should always rely on local storage
 	// directly for external availability.
-	if ( window.localStorage ) {
-		window.localStorage.setItem( 'googlesitekit::total-notifications', value );
+	if ( global.localStorage ) {
+		global.localStorage.setItem( 'googlesitekit::total-notifications', value );
 	}
 	return {
 		count: value,

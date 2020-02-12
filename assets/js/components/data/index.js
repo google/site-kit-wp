@@ -28,7 +28,7 @@ import {
 	getQueryParameter,
 	sortObjectProperties,
 } from 'SiteKitCore/util';
-import { cloneDeep, each, sortBy } from 'lodash';
+import { cloneDeep, each, intersection, isEqual, sortBy } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -44,14 +44,14 @@ export const TYPE_MODULES = 'modules';
  * Ensures that the local datacache object is properly set up.
  */
 const lazilySetupLocalCache = () => {
-	googlesitekit.admin = googlesitekit.admin || {};
+	global.googlesitekit.admin = global.googlesitekit.admin || {};
 
-	if ( 'string' === typeof googlesitekit.admin.datacache ) {
-		googlesitekit.admin.datacache = JSON.parse( googlesitekit.admin.datacache );
+	if ( 'string' === typeof global.googlesitekit.admin.datacache ) {
+		global.googlesitekit.admin.datacache = JSON.parse( global.googlesitekit.admin.datacache );
 	}
 
-	if ( 'object' !== typeof googlesitekit.admin.datacache ) {
-		googlesitekit.admin.datacache = {};
+	if ( 'object' !== typeof global.googlesitekit.admin.datacache ) {
+		global.googlesitekit.admin.datacache = {};
 	}
 };
 
@@ -77,12 +77,12 @@ const dataAPI = {
 	maxRequests: 10,
 
 	init() {
-		if ( googlesitekit.initialized ) {
+		if ( global.googlesitekit.initialized ) {
 			return;
 		}
-		googlesitekit.initialized = true;
+		global.googlesitekit.initialized = true;
 		this.collectModuleData = this.collectModuleData.bind( this );
-		googlesitekit.cache = [];
+		global.googlesitekit.cache = [];
 
 		addAction(
 			'googlesitekit.moduleLoaded',
@@ -203,48 +203,19 @@ const dataAPI = {
 			method: 'POST',
 		} ).then( ( results ) => {
 			each( results, ( result, key ) => {
-				if ( result.xdebug_message ) {
-					console.log( 'data_error', result.xdebug_message ); // eslint-disable-line no-console
-				} else {
-					if ( ! keyIndexesMap[ key ] ) {
-						console.log( 'data_error', 'unknown response key ' + key ); // eslint-disable-line no-console
-						return;
-					}
-
-					// Handle insufficient scope warnings by informing the user.
-					if (
-						result.error_data &&
-						result.error_data[ 403 ] &&
-						result.error_data[ 403 ].reason
-					) {
-						if ( 'insufficientPermissions' === result.error_data[ 403 ].reason ) {
-							// Insufficient scopes - add a notice.
-							addFilter( 'googlesitekit.DashboardNotifications',
-								'googlesitekit.AuthNotification',
-								fillFilterWithComponent( DashboardAuthAlert ), 1 );
-						} else if ( 'forbidden' === result.error_data[ 403 ].reason ) {
-							// Insufficient access permissions - add a notice.
-							addFilter( 'googlesitekit.DashboardNotifications',
-								'googlesitekit.AuthNotification',
-								fillFilterWithComponent( DashboardPermissionAlert ), 1 );
-						}
-
-						// Increase the notice count.
-						addFilter( 'googlesitekit.TotalNotifications',
-							'googlesitekit.AuthCountIncrease', ( count ) => {
-								// Only run once.
-								removeFilter( 'googlesitekit.TotalNotifications', 'googlesitekit.AuthCountIncrease' );
-								return count + 1;
-							} );
-					}
-
-					each( keyIndexesMap[ key ], ( index ) => {
-						const request = dataRequest[ index ];
-
-						this.setCache( request.key, result );
-						this.resolve( request, result );
-					} );
+				if ( ! keyIndexesMap[ key ] ) {
+					console.error( 'data_error', 'unknown response key ' + key ); // eslint-disable-line no-console
+					return;
 				}
+
+				this.handleWPError( result );
+
+				each( keyIndexesMap[ key ], ( index ) => {
+					const request = dataRequest[ index ];
+
+					this.setCache( request.key, result );
+					this.resolve( request, result );
+				} );
 
 				// Trigger an action indicating this data load completed from the API.
 				if ( 0 === remainingDatapoints.length ) {
@@ -255,8 +226,51 @@ const dataAPI = {
 			// Resolve any returned data requests, then re-request the remainder after a pause.
 		} ).catch( ( err ) => {
 			// Handle the error and give up trying.
-			console.log( 'error', err ); // eslint-disable-line no-console
+			console.warn( 'Error caught during combinedGet', err ); // eslint-disable-line no-console
 		} );
+	},
+
+	handleWPError( error ) {
+		const wpErrorKeys = [ 'code', 'data', 'message' ];
+		const commonKeys = intersection( wpErrorKeys, Object.keys( error ) );
+		if ( ! isEqual( wpErrorKeys, commonKeys ) ) {
+			return;
+		}
+
+		// eslint-disable-next-line no-console
+		console.warn( 'WP Error in data response', error );
+		const { data } = error;
+
+		if ( ! data.reason ) {
+			return;
+		}
+
+		let addedNoticeCount = 0;
+
+		// Add insufficient scopes warning.
+		if ( [ 'authError', 'insufficientPermissions' ].includes( data.reason ) ) {
+			addFilter( 'googlesitekit.ErrorNotification',
+				'googlesitekit.AuthNotification',
+				fillFilterWithComponent( DashboardAuthAlert ), 1 );
+			addedNoticeCount++;
+		}
+
+		// Insufficient access permissions.
+		if ( 'forbidden' === data.reason ) {
+			addFilter( 'googlesitekit.ErrorNotification',
+				'googlesitekit.AuthNotification',
+				fillFilterWithComponent( DashboardPermissionAlert ), 1 );
+			addedNoticeCount++;
+		}
+
+		if ( addedNoticeCount ) {
+			addFilter( 'googlesitekit.TotalNotifications',
+				'googlesitekit.AuthCountIncrease', ( count ) => {
+					// Only run once.
+					removeFilter( 'googlesitekit.TotalNotifications', 'googlesitekit.AuthCountIncrease' );
+					return count + addedNoticeCount;
+				} );
+		}
 	},
 
 	/**
@@ -290,7 +304,7 @@ const dataAPI = {
 
 		lazilySetupLocalCache();
 
-		googlesitekit.admin.datacache[ key ] = cloneDeep( data );
+		global.googlesitekit.admin.datacache[ key ] = cloneDeep( data );
 
 		const toStore = {
 			value: data,
@@ -309,15 +323,15 @@ const dataAPI = {
 	 */
 	getCache( key, maxAge ) {
 		// Skip if js caching is disabled.
-		if ( googlesitekit.admin.nojscache ) {
+		if ( global.googlesitekit.admin.nojscache ) {
 			return undefined;
 		}
 
 		lazilySetupLocalCache();
 
 		// Check variable cache first.
-		if ( 'undefined' !== typeof googlesitekit.admin.datacache[ key ] ) {
-			return googlesitekit.admin.datacache[ key ];
+		if ( 'undefined' !== typeof global.googlesitekit.admin.datacache[ key ] ) {
+			return global.googlesitekit.admin.datacache[ key ];
 		}
 
 		// Check persistent cache.
@@ -326,9 +340,9 @@ const dataAPI = {
 			// Only return value if no maximum age given or if cache age is less than the maximum.
 			if ( ! maxAge || ( Date.now() / 1000 ) - cache.date < maxAge ) {
 				// Set variable cache.
-				googlesitekit.admin.datacache[ key ] = cloneDeep( cache.value );
+				global.googlesitekit.admin.datacache[ key ] = cloneDeep( cache.value );
 
-				return cloneDeep( googlesitekit.admin.datacache[ key ] );
+				return cloneDeep( global.googlesitekit.admin.datacache[ key ] );
 			}
 		}
 
@@ -343,7 +357,7 @@ const dataAPI = {
 	deleteCache( key ) {
 		lazilySetupLocalCache();
 
-		delete googlesitekit.admin.datacache[ key ];
+		delete global.googlesitekit.admin.datacache[ key ];
 
 		getStorage().removeItem( 'googlesitekit_' + key );
 	},
@@ -360,14 +374,14 @@ const dataAPI = {
 
 		lazilySetupLocalCache();
 
-		Object.keys( googlesitekit.admin.datacache ).forEach( ( key ) => {
+		Object.keys( global.googlesitekit.admin.datacache ).forEach( ( key ) => {
 			if ( 0 === key.indexOf( groupPrefix + '::' ) || key === groupPrefix ) {
-				delete googlesitekit.admin.datacache[ key ];
+				delete global.googlesitekit.admin.datacache[ key ];
 			}
 		} );
 
 		Object.keys( getStorage() ).forEach( ( key ) => {
-			if ( 0 === key.indexOf( 'googlesitekit_' + groupPrefix + '::' ) || key === 'googlesitekit_' + groupPrefix ) {
+			if ( 0 === key.indexOf( `googlesitekit_${ groupPrefix }::` ) || key === `googlesitekit_${ groupPrefix }` ) {
 				getStorage().removeItem( key );
 			}
 		} );
@@ -428,10 +442,10 @@ const dataAPI = {
 				this.setCache( cacheKey, results );
 			}
 
-			return new Promise( ( resolve ) => {
-				resolve( results );
-			} );
+			return Promise.resolve( results );
 		} ).catch( ( err ) => {
+			this.handleWPError( err );
+
 			return Promise.reject( err );
 		} );
 	},

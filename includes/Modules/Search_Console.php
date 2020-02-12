@@ -11,12 +11,16 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit\Modules\Search_Console\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SitesListResponse;
@@ -35,10 +39,8 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Search_Console extends Module implements Module_With_Screen, Module_With_Scopes {
-	use Module_With_Screen_Trait, Module_With_Scopes_Trait;
-
-	const PROPERTY_OPTION = 'googlesitekit_search_console_property';
+final class Search_Console extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Settings {
+	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -50,6 +52,22 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 
 		$this->register_screen_hook();
 
+		// Detect and store Search Console property when receiving token for the first time.
+		add_action(
+			'googlesitekit_authorize_user',
+			function() {
+				// Only detect if there isn't one set already.
+				$property_id = $this->get_property_id() ?: $this->detect_property_id();
+				if ( ! $property_id ) {
+					return;
+				}
+
+				$this->get_settings()->merge(
+					array( 'propertyID' => $property_id )
+				);
+			}
+		);
+
 		// Ensure that a Search Console property must be set at all times.
 		add_filter(
 			'googlesitekit_setup_complete',
@@ -58,31 +76,15 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 					return $complete;
 				}
 
-				$sc_property = $this->options->get( self::PROPERTY_OPTION );
-				return ! empty( $sc_property );
+				return (bool) $this->get_property_id();
 			}
-		);
-
-		// Filter the reference site URL to use Search Console property if available.
-		add_filter(
-			'googlesitekit_site_url',
-			function( $url ) {
-				$sc_property = $this->options->get( self::PROPERTY_OPTION );
-				if ( ! empty( $sc_property ) ) {
-					return $sc_property;
-				}
-				return $url;
-			},
-			-9999
 		);
 
 		// Provide Search Console property information to JavaScript.
 		add_filter(
 			'googlesitekit_setup_data',
 			function ( $data ) {
-				$sc_property = $this->options->get( self::PROPERTY_OPTION );
-
-				$data['hasSearchConsoleProperty'] = ! empty( $sc_property );
+				$data['hasSearchConsoleProperty'] = (bool) $this->get_property_id();
 
 				return $data;
 			},
@@ -92,8 +94,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		add_filter(
 			'googlesitekit_show_admin_bar_menu',
 			function( $display, $current_url ) {
-				$sc_property = $this->options->get( self::PROPERTY_OPTION );
-				if ( empty( $sc_property ) ) {
+				if ( ! $this->get_property_id() ) {
 					return false;
 				}
 
@@ -136,7 +137,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			'searchanalytics' => 'webmasters',
 
 			// POST.
-			'site'            => '',
+			'site'            => 'webmasters',
 		);
 	}
 
@@ -150,81 +151,76 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
 	protected function create_data_request( Data_Request $data ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
+		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:matched-sites':
+				return $this->get_webmasters_service()->sites->listSites();
+			case 'GET:searchanalytics':
+				list ( $start_date, $end_date ) = $this->parse_date_range(
+					$data['dateRange'] ?: 'last-28-days',
+					$data['compareDateRanges'] ? 2 : 1,
+					3
+				);
 
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
-				case 'sites':
-				case 'matched-sites':
-					return $this->get_webmasters_service()->sites->listSites();
-				case 'searchanalytics':
-					list ( $start_date, $end_date ) = $this->parse_date_range(
-						$data['dateRange'] ?: 'last-28-days',
-						$data['compareDateRanges'] ? 2 : 1,
-						3
+				$data_request = array(
+					'page'       => $data['url'],
+					'start_date' => $start_date,
+					'end_date'   => $end_date,
+					'dimensions' => array_filter( explode( ',', $data['dimensions'] ) ),
+				);
+
+				if ( isset( $data['limit'] ) ) {
+					$data_request['row_limit'] = $data['limit'];
+				}
+
+				return $this->create_search_analytics_data_request( $data_request );
+			case 'POST:site':
+				if ( empty( $data['siteURL'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'siteURL' ),
+						array( 'status' => 400 )
 					);
+				}
 
-					$data_request = array(
-						'page'       => $data['url'],
-						'start_date' => $start_date,
-						'end_date'   => $end_date,
-						'dimensions' => array_filter( explode( ',', $data['dimensions'] ) ),
-					);
+				$site_url = $data['siteURL'];
+				if ( 0 !== strpos( $site_url, 'sc-domain:' ) ) {
+					$site_url = trailingslashit( $site_url );
+				}
 
-					if ( isset( $data['limit'] ) ) {
-						$data_request['row_limit'] = $data['limit'];
-					}
+				return function () use ( $site_url ) {
+					$restore_defer = $this->with_client_defer( false );
 
-					return $this->create_search_analytics_data_request( $data_request );
-			}
-		} elseif ( 'POST' === $method ) {
-			switch ( $datapoint ) {
-				case 'site':
-					if ( empty( $data['siteURL'] ) ) {
-						return new WP_Error(
-							'missing_required_param',
-							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'siteURL' ),
-							array( 'status' => 400 )
-						);
-					}
+					try {
+						// If the site does not exist in the account, an exception will be thrown.
+						$site = $this->get_webmasters_service()->sites->get( $site_url );
+					} catch ( Google_Service_Exception $exception ) {
+						// If we got here, the site does not exist in the account, so we will add it.
+						/* @var ResponseInterface $response Response object. */
+						$response = $this->get_webmasters_service()->sites->add( $site_url );
 
-					$site_url = trailingslashit( $data['siteURL'] );
-
-					return function () use ( $site_url ) {
-						$orig_defer = $this->get_client()->shouldDefer();
-						$this->get_client()->setDefer( false );
-
-						try {
-							// If the site does not exist in the account, an exception will be thrown.
-							$site = $this->get_webmasters_service()->sites->get( $site_url );
-						} catch ( Google_Service_Exception $exception ) {
-							// If we got here, the site does not exist in the account, so we will add it.
-							/* @var ResponseInterface $response Response object. */
-							$response = $this->get_webmasters_service()->sites->add( $site_url );
-
-							if ( 204 !== $response->getStatusCode() ) {
-								return new WP_Error(
-									'failed_to_add_site_to_search_console',
-									__( 'Error adding the site to Search Console.', 'google-site-kit' ),
-									array( 'status' => 500 )
-								);
-							}
-
-							// Fetch the site again now that it exists.
-							$site = $this->get_webmasters_service()->sites->get( $site_url );
+						if ( 204 !== $response->getStatusCode() ) {
+							return new WP_Error(
+								'failed_to_add_site_to_search_console',
+								__( 'Error adding the site to Search Console.', 'google-site-kit' ),
+								array( 'status' => 500 )
+							);
 						}
 
-						$this->get_client()->setDefer( $orig_defer );
-						$this->options->set( self::PROPERTY_OPTION, $site_url );
+						// Fetch the site again now that it exists.
+						$site = $this->get_webmasters_service()->sites->get( $site_url );
+					}
 
-						return array(
-							'siteURL'         => $site->getSiteUrl(),
-							'permissionLevel' => $site->getPermissionLevel(),
-						);
-					};
-			}
+					$restore_defer();
+					$this->get_settings()->merge( array( 'propertyID' => $site_url ) );
+
+					return array(
+						'siteURL'         => $site->getSiteUrl(),
+						'permissionLevel' => $site->getPermissionLevel(),
+					);
+				};
+			case 'GET:sites':
+				return $this->get_webmasters_service()->sites->listSites();
 		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
@@ -241,47 +237,37 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
+		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:matched-sites':
+				/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
+				$sites = $this->map_sites( (array) $response->getSiteEntry() );
 
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
-				case 'sites':
-					/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
-					return $this->map_sites( (array) $response->getSiteEntry() );
-				case 'matched-sites':
-					/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
-					$sites            = $this->map_sites( (array) $response->getSiteEntry() );
-					$current_url      = $this->context->get_reference_site_url();
-					$current_host     = wp_parse_url( $current_url, PHP_URL_HOST );
-					$property_matches = array_filter(
+				$current_url                  = trailingslashit( $this->context->get_reference_site_url() );
+				$sufficient_permission_levels = array(
+					'siteRestrictedUser',
+					'siteOwner',
+					'siteFullUser',
+				);
+
+				return array_values(
+					array_filter(
 						$sites,
-						function ( array $site ) use ( $current_host ) {
-							$site_host = wp_parse_url( str_replace( 'sc-domain:', 'https://', $site['siteURL'] ), PHP_URL_HOST );
-
-							// Ensure host names overlap, from right to left.
-							return 0 === strpos( strrev( $current_host ), strrev( $site_host ) );
-						}
-					);
-
-					$exact_match = array_reduce(
-						$property_matches,
-						function ( $match, array $site ) use ( $current_url ) {
-							if ( ! $match && trailingslashit( $current_url ) === trailingslashit( $site['siteURL'] ) ) {
-								return $site;
+						function ( array $site ) use ( $current_url, $sufficient_permission_levels ) {
+							$site_url = trailingslashit( $site['siteURL'] );
+							if ( 0 === strpos( $site_url, 'sc-domain:' ) ) {
+								$url_match = str_replace( array( 'http://', 'https://' ), 'sc-domain:', $current_url ) === $site_url;
+							} else {
+								$url_match = $current_url === $site_url;
 							}
-							return $match;
-						},
-						null
-					);
-
-					return array(
-						'exactMatch'      => $exact_match, // (array) single site object, or null if no match.
-						'propertyMatches' => $property_matches, // (array) of site objects, or empty array if none.
-					);
-				case 'searchanalytics':
-					return $response->getRows();
-			}
+							return $url_match && in_array( $site['permissionLevel'], $sufficient_permission_levels, true );
+						}
+					)
+				);
+			case 'GET:searchanalytics':
+				return $response->getRows();
+			case 'GET:sites':
+				/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
+				return $this->map_sites( (array) $response->getSiteEntry() );
 		}
 
 		return $response;
@@ -358,7 +344,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 
 		return $this->get_webmasters_service()
 			->searchanalytics
-			->query( $this->context->get_reference_site_url(), $request );
+			->query( $this->get_property_id(), $request );
 	}
 
 	/**
@@ -408,7 +394,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 
 			// Go thru results, any impressions means the URL has data.
 			foreach ( $responses['sc-site-analytics'] as $key => $response ) {
-				if ( is_wp_error( $response ) || empty( $response ) || ! isset( $response ) ) {
+				if ( is_wp_error( $response ) || empty( $response ) || ! isset( $response->impressions ) ) {
 					continue;
 				}
 
@@ -423,6 +409,52 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		}
 
 		return (bool) $has_data;
+	}
+
+	/**
+	 * Gets the property ID.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @return string Property ID URL if set, or empty string.
+	 */
+	protected function get_property_id() {
+		$option = $this->get_settings()->get();
+
+		return $option['propertyID'];
+	}
+
+	/**
+	 * Detects the property ID to use for this site.
+	 *
+	 * This method runs a Search Console API request. The determined ID should therefore be stored and accessed through
+	 * {@see Search_Console::get_property_id()} instead.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @return string Property ID, or empty string if none found.
+	 */
+	protected function detect_property_id() {
+		$properties = $this->get_data( 'matched-sites' );
+		if ( is_wp_error( $properties ) || ! $properties ) {
+			return '';
+		}
+
+		// If there are multiple, prefer URL property over domain property.
+		if ( count( $properties ) > 1 ) {
+			$url_properties = array_filter(
+				$properties,
+				function( $property ) {
+					return 0 !== strpos( $property['siteURL'], 'sc-domain:' );
+				}
+			);
+			if ( count( $url_properties ) > 0 ) {
+				$properties = $url_properties;
+			}
+		}
+
+		$property = array_shift( $properties );
+		return $property['siteURL'];
 	}
 
 	/**
@@ -461,14 +493,26 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 * for the first time.
 	 *
 	 * @since 1.0.0
+	 * @since 1.2.0 Now requires Google_Site_Kit_Client instance.
 	 *
-	 * @param Google_Client $client Google client instance.
+	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
 	 *               instance of Google_Service.
 	 */
-	protected function setup_services( Google_Client $client ) {
+	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
 			'webmasters' => new Google_Service_Webmasters( $client ),
 		);
+	}
+
+	/**
+	 * Sets up the module's settings instance.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @return Module_Settings
+	 */
+	protected function setup_settings() {
+		return new Settings( $this->options );
 	}
 }

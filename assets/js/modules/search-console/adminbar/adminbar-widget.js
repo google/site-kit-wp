@@ -28,7 +28,7 @@ import { Component } from '@wordpress/element';
 
 class GoogleSitekitSearchConsoleAdminbarWidget extends Component {
 	render() {
-		if ( typeof googlesitekit.permaLink !== typeof undefined && '' === googlesitekit.permaLink ) {
+		if ( typeof global.googlesitekit.permaLink !== typeof undefined && '' === global.googlesitekit.permaLink ) {
 			return null;
 		}
 

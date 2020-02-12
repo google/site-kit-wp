@@ -3,9 +3,15 @@
 
 	<rule ref="WordPress-VIP-Go" />
 
-	<rule ref="WordPress-Core" />
+	<rule ref="WordPress-Core">
+		<exclude name="WordPress.PHP.DisallowShortTernary" />
+		<!-- Prevent this from showing up as a warning on every run. See WordPress/WordPress-Coding-Standards#1425 -->
+		<exclude name="WordPress.WP.TimezoneChange.DeprecatedSniff"/>
+	</rule>
 
-	<rule ref="WordPress-Docs" />
+	<rule ref="WordPress-Docs">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
 
 	<rule ref="WordPress-Extra">
 		<!-- Forget about file names -->
@@ -26,18 +32,46 @@
 	<arg name="extensions" value="php"/>
 	<file>.</file>
 
-	<exclude-pattern>*/phpunit.xml*</exclude-pattern>
-	<exclude-pattern>*/languages/*</exclude-pattern>
-	<exclude-pattern>*/tests/*</exclude-pattern>
+	<!-- Rule specific exclusions -->
+	<rule ref="WordPress.DB.DirectDatabaseQuery">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.DB.SlowDBQuery">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.NamingConventions">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.Security.EscapeOutput">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.Security.NonceVerification">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.Security.ValidatedSanitizedInput">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.AlternativeFunctions">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.GlobalVariablesOverride">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPressVIPMinimum.Variables.RestrictedVariables">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
 
 	<!-- Third-party code -->
-	<exclude-pattern>*/bower-components/*</exclude-pattern>
-	<exclude-pattern>*/node_modules/*</exclude-pattern>
-	<exclude-pattern>*/third-party/*</exclude-pattern>
+	<exclude-pattern>node_modules/*</exclude-pattern>
+	<exclude-pattern>third-party/*</exclude-pattern>
 	<exclude-pattern>*/vendor/*</exclude-pattern>
 
-	<!-- Check for cross-version support for PHP 5.4 and higher. -->
-	<config name="testVersion" value="5.4-"/>
-	<rule ref="PHPCompatibility" />
+	<!-- Check for cross-version support for PHP 5.6 and higher. -->
+	<config name="testVersion" value="5.6-"/>
+	<config name="minimum_supported_wp_version" value="4.7"/>
+	<rule ref="PHPCompatibilityWP" />
 
 </ruleset>

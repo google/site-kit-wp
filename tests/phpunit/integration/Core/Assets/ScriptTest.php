@@ -46,29 +46,29 @@ class ScriptTest extends TestCase {
 		$this->assertEquals( 1, wp_scripts()->get_data( 'test-handle', 'group' ) );
 	}
 
-	public function test_register_with_post_register_callback() {
+	public function test_register_with_before_print_callback() {
 		$invocations = array();
 		$callback    = function () use ( &$invocations ) {
 			$invocations[] = func_get_args();
 		};
-		$script      = new Script( 'test-handle', array(
-			'post_register' => $callback,
-		) );
+		$script      = new Script(
+			'test-handle',
+			array(
+				'before_print' => $callback,
+			)
+		);
 
-		$script->register();
-
-		$this->assertCount( 1, $invocations );
-		// Callback is only invoked once when script is registered.
-		$script->register();
-		$script->register();
-
+		$script->before_print();
 		$this->assertCount( 1, $invocations );
 	}
 
 	public function test_register_with_execution() {
-		$script = new Script( 'test-handle', array(
-			'execution' => 'async',
-		) );
+		$script = new Script(
+			'test-handle',
+			array(
+				'execution' => 'async',
+			)
+		);
 		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'script_execution' ) );
 
 		$script->register();
@@ -77,9 +77,12 @@ class ScriptTest extends TestCase {
 	}
 
 	public function test_register_with_in_footer() {
-		$script = new Script( 'test-handle', array(
-			'in_footer' => false, // true by default
-		) );
+		$script = new Script(
+			'test-handle',
+			array(
+				'in_footer' => false, // true by default
+			)
+		);
 		// Scripts are registered in footer by default; footer scripts are added to group 1
 		$this->assertFalse( wp_scripts()->get_data( 'test-handle', 'group' ) );
 
@@ -90,17 +93,18 @@ class ScriptTest extends TestCase {
 
 	public function test_registered_src() {
 		$src    = home_url( 'test.js' );
-		$script = new Script( 'test-handle', array(
-			'src' => $src,
-		) );
+		$script = new Script(
+			'test-handle',
+			array(
+				'src' => $src,
+			)
+		);
 
 		$script->register();
 
 		$expected_src = add_query_arg( 'ver', GOOGLESITEKIT_VERSION, $src );
-		$mock         = $this->getMock( 'MockClass', array( 'callback' ) );
-		$mock->expects( $this->once() )
-		     ->method( 'callback' )
-		     ->with( $expected_src, 'test-handle' );
+		$mock         = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'callback' ) )->getMock();
+		$mock->expects( $this->once() )->method( 'callback' )->with( $expected_src, 'test-handle' );
 
 		add_filter( 'script_loader_src', array( $mock, 'callback' ), 10, 2 );
 
@@ -120,27 +124,5 @@ class ScriptTest extends TestCase {
 		$script->enqueue();
 
 		$this->assertTrue( wp_script_is( 'test-handle', 'enqueued' ) );
-	}
-
-	public function test_register_with_post_enqueue_callback() {
-		$invocations = array();
-		$callback    = function () use ( &$invocations ) {
-			$invocations[] = func_get_args();
-		};
-		$script      = new Script( 'test-handle', array(
-			'post_enqueue' => $callback,
-		) );
-
-		$script->register();
-		$this->assertCount( 0, $invocations );
-
-		$script->enqueue();
-
-		$this->assertCount( 1, $invocations );
-		// Callback is only invoked once when script is enqueued.
-		$script->enqueue();
-		$script->enqueue();
-
-		$this->assertCount( 1, $invocations );
 	}
 }

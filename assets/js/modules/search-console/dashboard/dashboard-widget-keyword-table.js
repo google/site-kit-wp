@@ -55,7 +55,7 @@ class SearchConsoleDashboardWidgetKeywordTable extends Component {
 				tooltip: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
 			},
 		];
-		const domain = googlesitekit.admin.siteURL;
+		const domain = global.googlesitekit.admin.siteURL;
 		const links = [];
 		const dataMapped = map( data, ( row, i ) => {
 			const query = row.keys[ 0 ];
@@ -95,7 +95,7 @@ export default withData(
 			identifier: 'search-console',
 			datapoint: 'searchanalytics',
 			data: {
-				url: googlesitekit.permaLink,
+				url: global.googlesitekit.permaLink,
 				dimensions: 'query',
 				limit: 10,
 			},

@@ -44,7 +44,7 @@ class AnalyticsInactiveCTA extends Component {
 			await refreshAuthentication();
 
 			// Redirect to ReAuthentication URL
-			window.location = getReAuthURL( 'analytics', true );
+			global.location = getReAuthURL( 'analytics', true );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'analytics-setup-error',
@@ -63,7 +63,7 @@ class AnalyticsInactiveCTA extends Component {
 			ctaLabel,
 		} = this.props;
 
-		const { canManageOptions } = googlesitekit.permissions;
+		const { canManageOptions } = global.googlesitekit.permissions;
 
 		if ( ! canManageOptions ) {
 			return null;

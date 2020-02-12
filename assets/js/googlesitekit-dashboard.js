@@ -19,16 +19,16 @@
 /**
  * External dependencies
  */
-import { clearAppLocalStorage } from 'GoogleUtil';
+import { clearWebStorage, loadTranslations } from 'GoogleUtil';
 import Setup from 'GoogleComponents/setup/setup-wrapper';
 import DashboardApp from 'GoogleComponents/dashboard/dashboard-app';
 import NotificationCounter from 'GoogleComponents/notifications/notification-counter';
+import 'GoogleComponents/notifications';
 
 /**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { setLocaleData } from '@wordpress/i18n';
 import { Component, render } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
 
@@ -36,30 +36,13 @@ import { doAction } from '@wordpress/hooks';
  * Internal dependencies
  */
 import ErrorHandler from 'GoogleComponents/ErrorHandler';
-import ErrorComponent from 'GoogleComponents/ErrorHandler/ErrorComponent';
+import 'GoogleModules';
 
 class GoogleSitekitDashboard extends Component {
-	constructor( props ) {
-		super( props );
-
-		// Set up translations.
-		setLocaleData( googlesitekit.locale, 'google-site-kit' );
-	}
-
-	// static getDerivedStateFromError() {
-	// 	// eslint-disable-next-line no-console
-	// 	console.log( 'getDerivedStateFromError', arguments );
-	// 	// Update state so the next render will show the fallback UI.
-	// 	// return {
-	// 	// 	hasError: true,
-	// 	// 	error,
-	// 	// };
-	// }
-
 	render() {
 		const {
 			showModuleSetupWizard,
-		} = window.googlesitekit.setup;
+		} = global.googlesitekit.setup;
 
 		if ( showModuleSetupWizard ) {
 			return (
@@ -73,22 +56,23 @@ class GoogleSitekitDashboard extends Component {
 			<ErrorHandler>
 				<NotificationCounter />
 				<DashboardApp />
-				<ErrorComponent />
 			</ErrorHandler>
 		);
 	}
 }
 
 // Initialize the app once the DOM is ready.
-domReady( function() {
-	if ( googlesitekit.admin.resetSession ) {
-		clearAppLocalStorage();
+domReady( () => {
+	if ( global.googlesitekit.admin.resetSession ) {
+		clearWebStorage();
 	}
 
-	const dashboard = document.getElementById( 'js-googlesitekit-dashboard' );
-	if ( null !== dashboard ) {
-		// Render the Dashboard App.
-		render( <GoogleSitekitDashboard />, dashboard );
+	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard' );
+
+	if ( renderTarget ) {
+		loadTranslations();
+
+		render( <GoogleSitekitDashboard />, renderTarget );
 
 		/**
 		 * Action triggered when the dashboard App is loaded.

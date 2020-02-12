@@ -14,11 +14,9 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Util\Developer_Plugin_Installer;
 use Google\Site_Kit\Core\Util\Reset;
-use Google\Site_Kit_Dependencies\Google_Collection;
 use WP_Post;
 use WP_REST_Server;
 use WP_REST_Request;
@@ -133,31 +131,12 @@ final class REST_Routes {
 	/**
 	 * Gets available REST routes.
 	 *
-	 * TODO: All these routes should be moved to more appropriate classes actually responsible.
-	 *
 	 * @since 1.0.0
+	 * @since 1.3.0 Moved most routes into individual classes and introduced {@see 'googlesitekit_rest_routes'} filter.
 	 *
 	 * @return array List of REST_Route instances.
 	 */
 	private function get_routes() {
-		$can_authenticate = function() {
-			return current_user_can( Permissions::AUTHENTICATE );
-		};
-
-		$can_view_insights_cron = function() {
-			// If an internal cron request, simply grant access.
-			if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
-				return true;
-			}
-
-			// This accounts for routes that need to be called before user has completed setup flow.
-			if ( current_user_can( Permissions::SETUP ) ) {
-				return true;
-			}
-
-			return current_user_can( Permissions::VIEW_POSTS_INSIGHTS );
-		};
-
 		$can_view_insights = function() {
 			// This accounts for routes that need to be called before user has completed setup flow.
 			if ( current_user_can( Permissions::SETUP ) ) {
@@ -167,226 +146,7 @@ final class REST_Routes {
 			return current_user_can( Permissions::VIEW_POSTS_INSIGHTS );
 		};
 
-		$can_manage_options = function() {
-			// This accounts for routes that need to be called before user has completed setup flow.
-			if ( current_user_can( Permissions::SETUP ) ) {
-				return true;
-			}
-
-			return current_user_can( Permissions::MANAGE_OPTIONS );
-		};
-
-		$can_setup = function() {
-			return current_user_can( Permissions::SETUP );
-		};
-
 		$routes = array(
-			// This route is forward-compatible with a potential 'core/(?P<slug>[a-z\-]+)/data/(?P<datapoint>[a-z\-]+)'.
-			new REST_Route(
-				'core/site/data/reset',
-				array(
-					array(
-						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$reset = new Reset( $this->context );
-							$reset->all();
-							return new WP_REST_Response( true );
-						},
-						'permission_callback' => $can_setup,
-					),
-				)
-			),
-			// This route is forward-compatible with a potential 'core/(?P<slug>[a-z\-]+)/data/(?P<datapoint>[a-z\-]+)'.
-			new REST_Route(
-				'core/user/data/authentication',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$oauth_client = $this->authentication->get_oauth_client();
-							$access_token = $oauth_client->get_client()->getAccessToken();
-
-							$data = array(
-								'isAuthenticated' => ! empty( $access_token ),
-								'requiredScopes'  => $oauth_client->get_required_scopes(),
-								'grantedScopes'   => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
-							);
-
-							return new WP_REST_Response( $data );
-						},
-						'permission_callback' => $can_authenticate,
-					),
-				)
-			),
-			// This route is forward-compatible with a potential 'core/(?P<slug>[a-z\-]+)/data/(?P<datapoint>[a-z\-]+)'.
-			new REST_Route(
-				'core/user/data/disconnect',
-				array(
-					array(
-						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							return new WP_REST_Response( $this->authentication->disconnect() );
-						},
-						'permission_callback' => $can_authenticate,
-					),
-				)
-			),
-			new REST_Route(
-				'modules',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$modules = array_map(
-								array( $this, 'prepare_module_data_for_response' ),
-								$this->modules->get_available_modules()
-							);
-							return new WP_REST_Response( array_values( $modules ) );
-						},
-						'permission_callback' => $can_authenticate,
-					),
-				),
-				array(
-					'schema' => $this->get_module_schema(),
-				)
-			),
-			new REST_Route(
-				'modules/(?P<slug>[a-z\-]+)',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$slug = $request['slug'];
-							try {
-								$module = $this->modules->get_module( $slug );
-							} catch ( \Exception $e ) {
-								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
-							}
-							return new WP_REST_Response( $this->prepare_module_data_for_response( $module ) );
-						},
-						'permission_callback' => $can_authenticate,
-					),
-					array(
-						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$slug = $request['slug'];
-							$modules = $this->modules->get_available_modules();
-							if ( ! isset( $modules[ $slug ] ) ) {
-								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
-							}
-							if ( $request['active'] ) {
-								// Prevent activation if one of the dependencies is not active.
-								$dependency_slugs = $this->modules->get_module_dependencies( $slug );
-								foreach ( $dependency_slugs as $dependency_slug ) {
-									if ( ! $this->modules->is_module_active( $dependency_slug ) ) {
-										/* translators: %s: module name */
-										return new WP_Error( 'inactive_dependencies', sprintf( __( 'Module cannot be activated because of inactive dependency %s.', 'google-site-kit' ), $modules[ $dependency_slug ]->name ), array( 'status' => 500 ) );
-									}
-								}
-								if ( ! $this->modules->activate_module( $slug ) ) {
-									return new WP_Error( 'cannot_activate_module', __( 'An internal error occurred while trying to activate the module.', 'google-site-kit' ), array( 'status' => 500 ) );
-								}
-							} else {
-								// Automatically deactivate dependants.
-								$dependant_slugs = $this->modules->get_module_dependants( $slug );
-								foreach ( $dependant_slugs as $dependant_slug ) {
-									if ( $this->modules->is_module_active( $dependant_slug ) ) {
-										if ( ! $this->modules->deactivate_module( $dependant_slug ) ) {
-											/* translators: %s: module name */
-											return new WP_Error( 'cannot_deactivate_dependant', sprintf( __( 'Module cannot be deactivated because deactivation of dependant %s failed.', 'google-site-kit' ), $modules[ $dependant_slug ]->name ), array( 'status' => 500 ) );
-										}
-									}
-								}
-								if ( ! $this->modules->deactivate_module( $slug ) ) {
-									return new WP_Error( 'cannot_deactivate_module', __( 'An internal error occurred while trying to deactivate the module.', 'google-site-kit' ), array( 'status' => 500 ) );
-								}
-							}
-							return new WP_REST_Response( $this->prepare_module_data_for_response( $modules[ $slug ] ) );
-						},
-						'permission_callback' => $can_manage_options,
-						'args'                => array(
-							'active' => array(
-								'type'        => 'boolean',
-								'description' => __( 'Whether to activate or deactivate the module.', 'google-site-kit' ),
-								'required'    => true,
-							),
-						),
-					),
-				),
-				array(
-					'args'   => array(
-						'slug' => array(
-							'type'              => 'string',
-							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
-							'sanitize_callback' => 'sanitize_key',
-						),
-					),
-					'schema' => $this->get_module_schema(),
-				)
-			),
-			new REST_Route(
-				'modules/(?P<slug>[a-z\-]+)/data/(?P<datapoint>[a-z\-]+)',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$slug = $request['slug'];
-							try {
-								$module = $this->modules->get_module( $slug );
-							} catch ( \Exception $e ) {
-								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
-							}
-							$data = $module->get_data( $request['datapoint'], $request->get_params() );
-							if ( is_wp_error( $data ) ) {
-								return $data;
-							}
-							return new WP_REST_Response( $this->parse_google_response_data( $data ) );
-						},
-						'permission_callback' => $can_view_insights_cron,
-					),
-					array(
-						'methods'             => WP_REST_Server::EDITABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$slug = $request['slug'];
-							try {
-								$module = $this->modules->get_module( $slug );
-							} catch ( \Exception $e ) {
-								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
-							}
-							$data = isset( $request['data'] ) ? (array) $request['data'] : array();
-							$data = $module->set_data( $request['datapoint'], $data );
-							if ( is_wp_error( $data ) ) {
-								return $data;
-							}
-							return new WP_REST_Response( $this->parse_google_response_data( $data ) );
-						},
-						'permission_callback' => $can_manage_options,
-						'args'                => array(
-							'data' => array(
-								'type'              => 'object',
-								'description'       => __( 'Data to set.', 'google-site-kit' ),
-								'validate_callback' => function( $value ) {
-									return is_array( $value );
-								},
-							),
-						),
-					),
-				),
-				array(
-					'args' => array(
-						'slug'      => array(
-							'type'              => 'string',
-							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
-							'sanitize_callback' => 'sanitize_key',
-						),
-						'datapoint' => array(
-							'type'              => 'string',
-							'description'       => __( 'Module data point to address.', 'google-site-kit' ),
-							'sanitize_callback' => 'sanitize_key',
-						),
-					),
-				)
-			),
 			// TODO: This route is super-complex to use and needs to be simplified.
 			new REST_Route(
 				'data',
@@ -406,7 +166,8 @@ final class REST_Routes {
 								$request['request']
 							);
 
-							$modules   = $this->modules->get_active_modules();
+							$modules = $this->modules->get_active_modules();
+
 							$responses = array();
 							foreach ( $modules as $module ) {
 								$filtered_datasets = array_filter(
@@ -423,9 +184,19 @@ final class REST_Routes {
 									$responses = array_merge( $responses, $additional_responses );
 								}
 							}
-							return new WP_REST_Response( $this->parse_google_response_data( $responses ) );
+							$responses = array_map(
+								function ( $response ) {
+									if ( is_wp_error( $response ) ) {
+										return $this->error_to_response( $response );
+									}
+									return $response;
+								},
+								$responses
+							);
+
+							return new WP_REST_Response( $responses );
 						},
-						'permission_callback' => $can_view_insights_cron,
+						'permission_callback' => $can_view_insights,
 						'args'                => array(
 							'request' => array(
 								'type'        => 'array',
@@ -435,43 +206,6 @@ final class REST_Routes {
 									'type' => 'object',
 								),
 							),
-						),
-					),
-				)
-			),
-			new REST_Route(
-				'modules/(?P<slug>[a-z\-]+)/notifications',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$slug = $request['slug'];
-							$modules = $this->modules->get_available_modules();
-							if ( ! isset( $modules[ $slug ] ) ) {
-								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
-							}
-							$notifications = array();
-							if ( $this->modules->is_module_active( $slug ) ) {
-								$notifications = $modules[ $slug ]->get_data( 'notifications' );
-								if ( is_wp_error( $notifications ) ) {
-									// Don't consider it an error if the module does not have a 'notifications' datapoint.
-									if ( 'invalid_datapoint' !== $notifications->get_error_code() ) {
-										return $notifications;
-									}
-									$notifications = array();
-								}
-							}
-							return new WP_REST_Response( $notifications );
-						},
-						'permission_callback' => $can_authenticate,
-					),
-				),
-				array(
-					'args' => array(
-						'slug' => array(
-							'type'              => 'string',
-							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
-							'sanitize_callback' => 'sanitize_key',
 						),
 					),
 				)
@@ -495,7 +229,7 @@ final class REST_Routes {
 								if ( function_exists( 'wpcom_vip_url_to_postid' ) ) {
 									$post_id = wpcom_vip_url_to_postid( $query_url );
 								} else {
-									// phpcs:ignore WordPressVIPMinimum.VIP.RestrictedFunctions
+									// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions
 									$post_id = url_to_postid( $query_url );
 								}
 								$posts   = array_filter( array( WP_Post::get_instance( $post_id ) ) );
@@ -536,120 +270,45 @@ final class REST_Routes {
 			),
 		);
 
-		return $routes;
+		/**
+		 * Filters the list of available REST routes.
+		 *
+		 * @since 1.3.0
+		 *
+		 * @param array $routes List of REST_Route objects.
+		 */
+		return apply_filters( 'googlesitekit_rest_routes', $routes );
 	}
 
 	/**
-	 * Prepares module data for a REST response according to the schema.
+	 * Converts a WP_Error to its response representation.
 	 *
-	 * @since 1.0.0
+	 * Adapted from \WP_REST_Server::error_to_response
 	 *
-	 * @param Module $module Module instance.
-	 * @return array Module REST response data.
+	 * @since 1.2.0
+	 *
+	 * @param WP_Error $error Error to transform.
+	 *
+	 * @return array
 	 */
-	private function prepare_module_data_for_response( Module $module ) {
-		$manager = $this->modules;
+	protected function error_to_response( WP_Error $error ) {
+		$errors = array();
 
-		return array(
-			'slug'         => $module->slug,
-			'name'         => $module->name,
-			'description'  => $module->description,
-			'homepage'     => $module->homepage,
-			'internal'     => $module->internal,
-			'active'       => $manager->is_module_active( $module->slug ),
-			'connected'    => $manager->is_module_connected( $module->slug ),
-			'dependencies' => $manager->get_module_dependencies( $module->slug ),
-			'dependants'   => $manager->get_module_dependants( $module->slug ),
-		);
-	}
-
-	/**
-	 * Gets the REST schema for a module.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array Module REST schema.
-	 */
-	private function get_module_schema() {
-		return array(
-			'$schema'    => 'http://json-schema.org/draft-04/schema#',
-			'title'      => 'module',
-			'type'       => 'object',
-			'properties' => array(
-				'slug'         => array(
-					'type'        => 'string',
-					'description' => __( 'Identifier for the module.', 'google-site-kit' ),
-					'readonly'    => true,
-				),
-				'name'         => array(
-					'type'        => 'string',
-					'description' => __( 'Name of the module.', 'google-site-kit' ),
-					'readonly'    => true,
-				),
-				'description'  => array(
-					'type'        => 'string',
-					'description' => __( 'Description of the module.', 'google-site-kit' ),
-					'readonly'    => true,
-				),
-				'homepage'     => array(
-					'type'        => 'string',
-					'description' => __( 'The module homepage.', 'google-site-kit' ),
-					'format'      => 'uri',
-					'readonly'    => true,
-				),
-				'internal'     => array(
-					'type'        => 'boolean',
-					'description' => __( 'Whether the module is internal, thus without any UI.', 'google-site-kit' ),
-					'readonly'    => true,
-				),
-				'active'       => array(
-					'type'        => 'boolean',
-					'description' => __( 'Whether the module is active.', 'google-site-kit' ),
-				),
-				'connected'    => array(
-					'type'        => 'boolean',
-					'description' => __( 'Whether the module setup has been completed.', 'google-site-kit' ),
-					'readonly'    => true,
-				),
-				'dependencies' => array(
-					'type'        => 'array',
-					'description' => __( 'List of slugs of other modules that the module depends on.', 'google-site-kit' ),
-					'items'       => array(
-						'type' => 'string',
-					),
-					'readonly'    => true,
-				),
-				'dependants'   => array(
-					'type'        => 'array',
-					'description' => __( 'List of slugs of other modules depending on the module.', 'google-site-kit' ),
-					'items'       => array(
-						'type' => 'string',
-					),
-					'readonly'    => true,
-				),
-			),
-		);
-	}
-
-	/**
-	 * Parses Google API response data.
-	 *
-	 * This is necessary since the Google client returns specific data class instances instead of raw arrays.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param mixed $data Google response data.
-	 * @return object|array Parsed response data.
-	 */
-	private function parse_google_response_data( $data ) {
-		if ( is_scalar( $data ) ) {
-			return $data;
+		foreach ( (array) $error->errors as $code => $messages ) {
+			foreach ( (array) $messages as $message ) {
+				$errors[] = array(
+					'code'    => $code,
+					'message' => $message,
+					'data'    => $error->get_error_data( $code ),
+				);
+			}
 		}
 
-		// There is an compatibility issue with Google_Collection object and wp_json_encode in PHP 5.4 only.
-		// These lines will encode/decode to deep convert objects, ensuring all data is returned.
-		if ( version_compare( PHP_VERSION, '5.5.0', '<' ) ) {
-			$data = json_decode( json_encode( $data ) );  // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
+		$data = $errors[0];
+		if ( count( $errors ) > 1 ) {
+			// Remove the primary error.
+			array_shift( $errors );
+			$data['additional_errors'] = $errors;
 		}
 
 		return $data;

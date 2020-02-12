@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Core\Authentication${FILE_NAME}
+ * Class Google\Site_Kit\Tests\Core\Authentication\Google_ProxyTest
  *
  * @package   Google\Site_Kit\Tests\Core\Authentication
  * @copyright 2019 Google LLC
@@ -17,7 +17,7 @@ use Google\Site_Kit\Tests\TestCase;
 
 class Google_ProxyTest extends TestCase {
 	public function test_exchange_site_code() {
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$google_proxy = new Google_Proxy( $context );
 
 		$expected_credentials = array(

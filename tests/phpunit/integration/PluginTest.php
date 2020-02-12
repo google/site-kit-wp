@@ -49,7 +49,7 @@ class PluginTest extends TestCase {
 		remove_all_actions( 'googlesitekit_init' );
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'login_head' );
-		$GLOBALS['wp_actions'] = [];
+		$GLOBALS['wp_actions'] = array();
 		
 		$plugin->register();
 
@@ -57,7 +57,7 @@ class PluginTest extends TestCase {
 		$this->assertActionRendersGeneratorTag( 'login_head' );
 
 		// Ensure the googlesitekit_init action is fired.
-		$mock_callback = $this->getMock( 'MockClass', array( 'callback' ) );
+		$mock_callback = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'callback' ) )->getMock();
 		$mock_callback->expects( $this->once() )->method( 'callback' );
 		add_action( 'googlesitekit_init', array( $mock_callback, 'callback' ) );
 

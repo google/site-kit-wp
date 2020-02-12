@@ -20,13 +20,13 @@
  */
 import {
 	map,
+	isEqual,
 	isNull,
 	isUndefined,
 	unescape,
 	deburr,
 	toLower,
 	trim,
-	trimEnd,
 } from 'lodash';
 import data, { TYPE_CORE } from 'GoogleComponents/data';
 import SvgIcon from 'GoogleUtil/svg-icon';
@@ -42,12 +42,21 @@ import {
 } from '@wordpress/hooks';
 import {
 	__,
-	_n,
-	sprintf,
 } from '@wordpress/i18n';
 import { addQueryArgs, getQueryString } from '@wordpress/url';
 
+/**
+ * Internal dependencies
+ */
+import { tagMatchers as setupTagMatchers } from '../components/setup/compatibility-checks';
+import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
+import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
+import { default as tagmanagerTagMatchers } from '../modules/tagmanager/util/tagMatchers';
+import { trackEvent } from './tracking';
+export { trackEvent };
+export * from './standalone';
 export * from './storage';
+export * from './i18n';
 
 /**
  * Remove a parameter from a URL string.
@@ -273,52 +282,6 @@ export const changeToPercent = ( previous, current ) => {
 };
 
 /**
- * Fallback helper to get a query parameter from the current URL.
- *
- * Used when URL.searchParams is unavailable.
- *
- * @param {string} name Query param to search for.
- * @return {string}
- */
-const fallbackGetQueryParamater = ( name ) => {
-	const queries = location.search.substr( 1 ).split( '&' );
-	const queryDict = {};
-
-	for ( let i = 0; i < queries.length; i++ ) {
-		queryDict[ queries[ i ].split( '=' )[ 0 ] ] = decodeURIComponent( queries[ i ].split( '=' )[ 1 ] );
-	}
-
-	// If the name is specified, return that specific get parameter
-	if ( name ) {
-		return queryDict.hasOwnProperty( name ) ? decodeURIComponent( queryDict[ name ].replace( /\+/g, ' ' ) ) : '';
-	}
-
-	return queryDict;
-};
-
-/**
- * Get query parameter from the current URL.
- *
- * @param  {string} name      Query param to search for.
- * @param  {Object} _location Global `location` variable; used for DI-testing.
- * @return {string}           Value of the query param.
- */
-export const getQueryParameter = ( name, _location = location ) => {
-	const url = new URL( _location.href );
-	if ( name ) {
-		if ( ! url.searchParams || ! url.searchParams.get ) {
-			return fallbackGetQueryParamater( name );
-		}
-		return url.searchParams.get( name );
-	}
-	const query = {};
-	for ( const [ key, value ] of url.searchParams.entries() ) {
-		query[ key ] = value;
-	}
-	return query;
-};
-
-/**
  * Extract a single column of data for a sparkline from a dataset prepared for google charts.
  *
  * @param {Array}  rowData   An array of google charts row data.
@@ -342,11 +305,11 @@ export const refreshAuthentication = async () => {
 		} );
 
 		// We should really be using state management. This is terrible.
-		window.googlesitekit.setup = window.googlesitekit.setup || {};
-		window.googlesitekit.setup.isAuthenticated = response.isAuthenticated;
-		window.googlesitekit.setup.requiredScopes = response.requiredScopes;
-		window.googlesitekit.setup.grantedScopes = response.grantedScopes;
-		window.googlesitekit.setup.needReauthenticate = requiredAndGrantedScopes.length < response.requiredScopes.length;
+		global.googlesitekit.setup = global.googlesitekit.setup || {};
+		global.googlesitekit.setup.isAuthenticated = response.isAuthenticated;
+		global.googlesitekit.setup.requiredScopes = response.requiredScopes;
+		global.googlesitekit.setup.grantedScopes = response.grantedScopes;
+		global.googlesitekit.setup.needReauthenticate = requiredAndGrantedScopes.length < response.requiredScopes.length;
 	} catch ( e ) { // eslint-disable-line no-empty
 	}
 };
@@ -359,7 +322,7 @@ export const refreshAuthentication = async () => {
  * @param {Object}  _googlesitekit googlesitekit global; can be replaced for testing.
  * @return {string} Authentication URL
  */
-export const getReAuthURL = ( slug, status, _googlesitekit = googlesitekit ) => {
+export const getReAuthURL = ( slug, status, _googlesitekit = global.googlesitekit ) => {
 	const {
 		connectURL,
 		adminRoot,
@@ -439,7 +402,7 @@ export const fillFilterWithComponent = ( NewComponent, newProps ) => {
  * @return string
  */
 export const getSiteKitAdminURL = ( page, args ) => {
-	const { adminRoot } = googlesitekit.admin;
+	const { adminRoot } = global.googlesitekit.admin;
 
 	if ( ! page ) {
 		page = 'googlesitekit-dashboard';
@@ -476,109 +439,6 @@ export const validateOptimizeID = ( stringToValidate ) => {
 };
 
 /**
- * Appends a notification count icon to the Site Kit dashboard menu/admin bar when
- * user is outside the Site Kit app.
- *
- * Retrieves the number from local storage previously stored by NotificationCounter
- * used in googlesitekit-admin.js
- */
-export const appendNotificationsCount = ( count = 0 ) => {
-	let menuSelector = null;
-	let adminbarSelector = null;
-
-	const counterMenu = document.querySelector( '#toplevel_page_googlesitekit-dashboard #googlesitekit-notifications-counter' );
-	const counterAdminbar = document.querySelector( '#wp-admin-bar-google-site-kit #googlesitekit-notifications-counter' );
-
-	if ( counterMenu && counterAdminbar ) {
-		return false;
-	}
-
-	menuSelector = document.querySelector( '#toplevel_page_googlesitekit-dashboard .wp-menu-name' );
-	adminbarSelector = document.querySelector( '#wp-admin-bar-google-site-kit .ab-item' );
-
-	if ( null === menuSelector && null === adminbarSelector ) {
-		return false;
-	}
-
-	const wrapper = document.createElement( 'span' );
-	wrapper.setAttribute( 'class', `googlesitekit-notifications-counter update-plugins count-${ count }` );
-	wrapper.setAttribute( 'id', 'googlesitekit-notifications-counter' );
-
-	const pluginCount = document.createElement( 'span' );
-	pluginCount.setAttribute( 'class', 'plugin-count' );
-	pluginCount.setAttribute( 'aria-hidden', 'true' );
-	pluginCount.textContent = count;
-
-	const screenReader = document.createElement( 'span' );
-	screenReader.setAttribute( 'class', 'screen-reader-text' );
-	screenReader.textContent = sprintf(
-		_n(
-			'%d notification',
-			'%d notifications',
-			count,
-			'google-site-kit'
-		),
-		count
-	);
-
-	wrapper.appendChild( pluginCount );
-	wrapper.appendChild( screenReader );
-
-	if ( menuSelector && null === counterMenu ) {
-		menuSelector.appendChild( wrapper );
-	}
-
-	if ( adminbarSelector && null === counterAdminbar ) {
-		adminbarSelector.appendChild( wrapper );
-	}
-	return wrapper;
-};
-
-/**
- * Send an analytics tracking event.
- *
- * @param {string} eventCategory The event category. Required.
- * @param {string} eventName The event category. Required.
- * @param {string} eventLabel The event category. Optional.
- * @param {string} eventValue The event category. Optional.
- *
- */
-export const sendAnalyticsTrackingEvent = ( eventCategory, eventName, eventLabel = '', eventValue = '' ) => {
-	if ( 'undefined' === typeof gtag || ! window.googlesitekitTrackingEnabled ) {
-		return;
-	}
-
-	const {
-		siteURL,
-		siteUserID,
-	} = googlesitekit.admin;
-
-	const { isFirstAdmin } = googlesitekit.setup;
-
-	return gtag( 'event', eventName, {
-		send_to: googlesitekit.admin.trackingID, /*eslint camelcase: 0*/
-		event_category: eventCategory, /*eslint camelcase: 0*/
-		event_label: eventLabel, /*eslint camelcase: 0*/
-		event_value: eventValue, /*eslint camelcase: 0*/
-		dimension1: trimEnd( siteURL, '/' ), // Domain.
-		dimension2: isFirstAdmin ? 'true' : 'false', // First Admin?
-		dimension3: siteUserID, // Identifier.
-	} );
-};
-
-export const findTagInHtmlContent = ( html, module ) => {
-	let existingTag = false;
-
-	if ( ! html ) {
-		return false;
-	}
-
-	existingTag = extractTag( html, module );
-
-	return existingTag;
-};
-
-/**
  * Looks for existing tag requesting front end html, if no existing tag was found on server side
  * while requesting list of accounts.
  *
@@ -587,7 +447,7 @@ export const findTagInHtmlContent = ( html, module ) => {
  * @param {string|null} The tag id if found, otherwise null.
  */
 export const getExistingTag = async ( module ) => {
-	const { homeURL, ampMode } = googlesitekit.admin;
+	const { homeURL, ampMode } = global.googlesitekit.admin;
 	const tagFetchQueryArgs = {
 		// Indicates a tag checking request. This lets Site Kit know not to output its own tags.
 		tagverify: 1,
@@ -628,81 +488,28 @@ export const scrapeTag = async ( url, module ) => {
 };
 
 /**
- * Extracts the tag related to a module from the given string by detecting Analytics and AdSense tag variations.
+ * Extracts a tag related to a module from the given string.
  *
  * @param {string} string The string from where to find the tag.
- * @param {string} tag    The tag to search for, one of 'adsense' or 'analytics'
+ * @param {string} module The tag to search for, one of 'adsense' or 'analytics'
  *
- * @return string|bool The tag id if found, otherwise false.
+ * @return {string|boolean} The tag id if found, otherwise false.
  */
-export const extractTag = ( string, tag ) => {
-	let result = false;
-	let reg = null;
-	switch ( tag ) {
-		case 'analytics':
+export const extractTag = ( string, module ) => {
+	const matchers = {
+		adsense: adsenseTagMatchers,
+		analytics: analyticsTagMatchers,
+		tagmanager: tagmanagerTagMatchers,
+		setup: setupTagMatchers,
+	}[ module ] || [];
 
-			// Detect gtag script calls.
-			reg = new RegExp( /<script [^>]*src=['|"]https:\/\/www.googletagmanager.com\/gtag\/js\?id=(UA-.*?)['|"][^>]*><\/script>/gm );
-			result = reg.exec( string );
-			result = result ? result[ 1 ] : false;
+	const matchingPattern = matchers.find( ( pattern ) => pattern.test( string ) );
 
-			// Detect common analytics code usage.
-			if ( ! result ) {
-				reg = new RegExp( /<script[^>]*>[^<]+google-analytics\.com\/analytics\.js[^<]+(UA-\d+-\d+)/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			if ( ! result ) {
-				reg = new RegExp( /__gaTracker\( ?['|"]create['|"], ?['|"](UA-.*?)['|"], ?['|"]auto['|"] ?\)/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			// Detect ga create calls.
-			if ( ! result ) {
-				reg = new RegExp( /ga\( ?['|"]create['|"], ?['|"](UA-.*?)['|"], ?['|"]auto['|"] ?\)/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-			if ( ! result ) {
-				reg = new RegExp( /_gaq.push\( ?\[ ?['|"]_setAccount['|"], ?['|"](UA-.*?)['|"] ?] ?\)/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			// Detect amp-analytics gtag.
-			if ( ! result ) {
-				reg = new RegExp( /<amp-analytics [^>]*type="gtag"[^>]*>[^<]*<script type="application\/json">[^<]*"gtag_id":\s*"(UA-[^"]+)"/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			// Detect amp-analytics googleanalytics.
-			if ( ! result ) {
-				reg = new RegExp( /<amp-analytics [^>]*type="googleanalytics"[^>]*>[^<]*<script type="application\/json">[^<]*"account":\s*"(UA-[^"]+)"/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-
-			break;
-
-		case 'adsense':
-			// Detect google_ad_client.
-			reg = new RegExp( /google_ad_client: ?["|'](.*?)["|']/gm );
-			result = reg.exec( string );
-			result = result ? result[ 1 ] : false;
-
-			// Detect auto-ads tags.
-			if ( ! result ) {
-				reg = new RegExp( /<(?:script|amp-auto-ads) [^>]*data-ad-client="([^"]+)"/gm );
-				result = reg.exec( string );
-				result = result ? result[ 1 ] : false;
-			}
-			break;
+	if ( matchingPattern ) {
+		return matchingPattern.exec( string )[ 1 ];
 	}
 
-	return result;
+	return false;
 };
 
 /**
@@ -716,11 +523,11 @@ export const extractTag = ( string, tag ) => {
 export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) => {
 	return restApiClient.setModuleActive( moduleSlug, status ).then( ( responseData ) => {
 		// We should really be using state management. This is terrible.
-		if ( window.googlesitekit.modules && window.googlesitekit.modules[ moduleSlug ] ) {
-			window.googlesitekit.modules[ moduleSlug ].active = responseData.active;
+		if ( global.googlesitekit.modules && global.googlesitekit.modules[ moduleSlug ] ) {
+			global.googlesitekit.modules[ moduleSlug ].active = responseData.active;
 		}
 
-		sendAnalyticsTrackingEvent(
+		trackEvent(
 			`${ moduleSlug }_setup`,
 			! responseData.active ? 'module_deactivate' : 'module_activate',
 			moduleSlug,
@@ -743,7 +550,7 @@ export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) 
  * @param {Object}  _googlesitekit googlesitekit global; can be replaced for testing.
  * @return {void|boolean} True if a module has been toggled.
  */
-export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, _googlesitekit = googlesitekit ) => {
+export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, _googlesitekit = global.googlesitekit ) => {
 	const { settings, setupComplete } = _googlesitekit.modules[ moduleSlug ];
 	const confirm = skipDOM || document.getElementById( `confirm-changes-${ moduleSlug }` );
 
@@ -751,39 +558,17 @@ export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settin
 		return;
 	}
 
-	const currentSettings = [];
-	Object.keys( settingsState ).forEach( ( key ) => {
-		if ( -1 < Object.keys( settingsMapping ).indexOf( key ) ) {
-			currentSettings[ settingsMapping[ key ] ] = settingsState[ key ];
-		}
+	// Check if any of the mapped settings differ from the current/saved settings.
+	const changed = !! Object.keys( settingsMapping ).find( ( stateKey ) => {
+		const settingsKey = settingsMapping[ stateKey ];
+		return ! isEqual( settingsState[ stateKey ], settings[ settingsKey ] );
 	} );
 
-	const savedSettings = [];
-	Object.keys( settings ).forEach( ( key ) => {
-		if ( -1 < Object.values( settingsMapping ).indexOf( key ) ) {
-			savedSettings[ key ] = settings[ key ];
-		}
-	} );
-
-	const changed = Object.keys( savedSettings ).filter( ( key ) => {
-		if ( savedSettings[ key ] !== currentSettings[ key ] ) {
-			return true;
-		}
-
-		return false;
-	} );
-
-	if ( 0 < changed.length ) {
-		if ( skipDOM ) {
-			return true;
-		}
-		confirm.removeAttribute( 'disabled' );
-	} else {
-		if ( skipDOM ) {
-			return false;
-		}
-		confirm.setAttribute( 'disabled', 'disabled' );
+	if ( ! skipDOM ) {
+		confirm.disabled = ! changed;
 	}
+
+	return changed;
 };
 
 /**
@@ -872,7 +657,7 @@ export function getCurrentDateRangeSlug() {
  * @param {string}  class                 Class string to use for icon.
  */
 export function moduleIcon( module, blockedByParentModule, width = '33', height = '33', useClass = '' ) {
-	if ( ! googlesitekit ) {
+	if ( ! global.googlesitekit ) {
 		return;
 	}
 
@@ -882,25 +667,10 @@ export function moduleIcon( module, blockedByParentModule, width = '33', height 
 	if ( blockedByParentModule ) {
 		iconComponent = <SvgIcon id={ `${ module }-disabled` } width={ width } height={ height } className={ useClass } />;
 	} else if ( 'pagespeed-insights' === module ) {
-		iconComponent = <img src={ googlesitekit.admin.assetsRoot + 'images/icon-pagespeed.png' } width={ width } alt="" className={ useClass } />;
+		iconComponent = <img src={ global.googlesitekit.admin.assetsRoot + 'images/icon-pagespeed.png' } width={ width } alt="" className={ useClass } />;
 	}
 
 	return iconComponent;
-}
-
-/**
- * Clears session storage and local storage.
- *
- * Both of these should be cleared to make sure no Site Kit data is left in the
- * browser's cache regardless of which storage implementation is used.
- */
-export function clearAppLocalStorage() {
-	if ( window.localStorage ) {
-		window.localStorage.clear();
-	}
-	if ( window.sessionStorage ) {
-		window.sessionStorage.clear();
-	}
 }
 
 /**
@@ -922,4 +692,21 @@ export function sortObjectProperties( obj ) {
 		orderedData[ key ] = val;
 	} );
 	return orderedData;
+}
+
+/**
+ * Gets the meta key for the given user option.
+ *
+ * @param {string} userOptionName User option name.
+ * @param {Object} _googlesitekitBase Site Kit base data (used for testing).
+ * @return {string} meta key name.
+ */
+export function getMetaKeyForUserOption( userOptionName, _googlesitekitBase = global._googlesitekitBase ) {
+	const { blogPrefix, isNetworkMode } = _googlesitekitBase;
+
+	if ( ! isNetworkMode ) {
+		return blogPrefix + userOptionName;
+	}
+
+	return userOptionName;
 }

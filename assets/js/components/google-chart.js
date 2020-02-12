@@ -30,6 +30,11 @@ import { Component, createRef } from '@wordpress/element';
 import { doAction, addAction } from '@wordpress/hooks';
 import { debounce } from 'lodash';
 
+/**
+ * Flag for tracking loaded state of Google Charts library.
+ */
+let googleChartsLoaded = global.google && global.google.charts;
+
 class GoogleChart extends Component {
 	constructor( props ) {
 		super( props );
@@ -39,6 +44,7 @@ class GoogleChart extends Component {
 			chart: null,
 		};
 
+		this.onChartsLoad = this.onChartsLoad.bind( this );
 		this.waitForChart = this.waitForChart.bind( this );
 		this.getData = this.getData.bind( this );
 		this.prepareChart = this.prepareChart.bind( this );
@@ -47,8 +53,8 @@ class GoogleChart extends Component {
 		this.chartRef = createRef();
 
 		// Inject the script if not already loaded.
-		if ( ! window.google && ! window.googleChartLoaded ) {
-			window.googleChartLoaded = true;
+		if ( ! googleChartsLoaded ) {
+			googleChartsLoaded = true;
 			const script = document.createElement( 'script' );
 			script.type = 'text/javascript';
 			script.onload = () => {
@@ -56,16 +62,11 @@ class GoogleChart extends Component {
 				script.onload = null;
 
 				// Initialize charts.
-				window.google.charts.load( 'visualization', '1', {
+				global.google.charts.load( 'visualization', '1', {
 					packages: [ 'corechart' ],
 				} );
 
-				window.google.charts.setOnLoadCallback( () => {
-					this.getData();
-					this.prepareChart();
-					this.drawChart();
-					this.setState( { loading: false } );
-				} );
+				global.google.charts.setOnLoadCallback( this.onChartsLoad );
 
 				doAction( 'googlesitekit.ChartLoaderLoaded' );
 			};
@@ -75,23 +76,22 @@ class GoogleChart extends Component {
 
 			// Set the `src` to begin transport
 			script.src = 'https://www.gstatic.com/charts/loader.js';
-		} else if ( ! window.google || ! window.google.charts ) {
+		} else if ( ! global.google || ! global.google.charts ) {
 			// When the google chart object not loaded, load draw chart later.
 			addAction( 'googlesitekit.ChartLoaderLoaded', 'googlesitekit.HandleChartLoaderLoaded', () => {
-				window.google.charts.setOnLoadCallback( () => {
-					this.getData();
-					this.prepareChart();
-					this.drawChart();
-				} );
+				global.google.charts.setOnLoadCallback( this.onChartsLoad );
 			} );
 		} else {
 			// When the google chart object loaded, draw chart now.
-			window.google.charts.setOnLoadCallback( () => {
-				this.getData();
-				this.prepareChart();
-				this.drawChart();
-			} );
+			global.google.charts.setOnLoadCallback( this.onChartsLoad );
 		}
+	}
+
+	onChartsLoad() {
+		this.getData();
+		this.prepareChart();
+		this.drawChart();
+		this.setState( { loading: false } );
 	}
 
 	componentDidMount() {
@@ -101,7 +101,7 @@ class GoogleChart extends Component {
 			self.drawChart();
 		}, 100 );
 
-		window.addEventListener( 'resize', this.resize );
+		global.addEventListener( 'resize', this.resize );
 	}
 
 	componentDidUpdate( prevProps ) {
@@ -113,7 +113,7 @@ class GoogleChart extends Component {
 	}
 
 	componentWillUnmount() {
-		window.removeEventListener( 'resize', this.resize );
+		global.removeEventListener( 'resize', this.resize );
 	}
 
 	waitForChart( callback ) {
@@ -123,21 +123,21 @@ class GoogleChart extends Component {
 	}
 
 	getData() {
-		return window.google && window.google.visualization && window.google.visualization.arrayToDataTable(
+		return global.google && global.google.visualization && global.google.visualization.arrayToDataTable(
 			this.props.data
 		);
 	}
 
 	prepareChart() {
-		if ( ! window.google ) {
+		const element = this.chartRef.current;
+
+		if ( ! global.google || ! element ) {
 			this.waitForChart( this.prepareChart );
 			return;
 		}
 
-		const element = this.chartRef.current;
 		const { chartType } = this.props;
-
-		const googleChart = 'pie' === chartType ? new window.google.visualization.PieChart( element ) : new window.google.visualization.LineChart( element );
+		const googleChart = 'pie' === chartType ? new global.google.visualization.PieChart( element ) : new global.google.visualization.LineChart( element );
 
 		this.setState( { chart: googleChart } );
 	}
@@ -169,7 +169,7 @@ class GoogleChart extends Component {
 			return;
 		}
 
-		const view = new window.google.visualization.DataView( data );
+		const view = new global.google.visualization.DataView( data );
 
 		if ( ! singleStat ) {
 			let setStats = [ 0 ]; // Default date data, required.

@@ -11,12 +11,16 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit_Dependencies\Google_Client;
+use Google\Site_Kit\Modules\Analytics\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting;
@@ -44,10 +48,8 @@ use Exception;
  * @access private
  * @ignore
  */
-final class Analytics extends Module implements Module_With_Screen, Module_With_Scopes {
-	use Module_With_Screen_Trait, Module_With_Scopes_Trait;
-
-	const OPTION = 'googlesitekit_analytics_settings';
+final class Analytics extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Settings {
+	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -59,72 +61,12 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 		$this->register_screen_hook();
 
-		add_filter(
-			'option_' . self::OPTION,
-			function( $option ) {
-				if ( ! is_array( $option ) ) {
-					$option = array();
-				}
-
-				/**
-				 * Filters the Google Analytics account ID to use.
-				 *
-				 * @since 1.0.0
-				 *
-				 * @param string $account_id Empty by default, will fall back to the option value if not set.
-				 */
-				$account_id = apply_filters( 'googlesitekit_analytics_account_id', '' );
-				if ( ! empty( $account_id ) ) {
-					$option['accountID'] = $account_id;
-				}
-
-				/**
-				 * Filters the Google Analytics property ID to use.
-				 *
-				 * @since 1.0.0
-				 *
-				 * @param string $property_id Empty by default, will fall back to the option value if not set.
-				 */
-				$property_id = apply_filters( 'googlesitekit_analytics_property_id', '' );
-				if ( ! empty( $property_id ) ) {
-					$option['propertyID'] = $property_id;
-				}
-
-				/**
-				 * Filters the Google Analytics internal web property ID to use.
-				 *
-				 * @since 1.0.0
-				 *
-				 * @param string $internal_web_property_id Empty by default, will fall back to the option value if not set.
-				 */
-				$internal_web_property_id = apply_filters( 'googlesitekit_analytics_internal_web_property_id', '' );
-				if ( ! empty( $internal_web_property_id ) ) {
-					$option['internalWebPropertyID'] = $internal_web_property_id;
-				}
-
-				/**
-				 * Filters the Google Analytics profile / view ID to use.
-				 *
-				 * @since 1.0.0
-				 *
-				 * @param string $profile_id Empty by default, will fall back to the option value if not set.
-				 */
-				$profile_id = apply_filters( 'googlesitekit_analytics_view_id', '' );
-				if ( ! empty( $profile_id ) ) {
-					$option['profileID'] = $profile_id;
-				}
-
-				// Disable tracking for logged-in users unless enabled via settings.
-				if ( ! isset( $option['trackingDisabled'] ) ) {
-					$option['trackingDisabled'] = array( 'loggedinUsers' );
-				}
-
-				return $option;
-			}
-		);
-
-		// This filter only exists to be unhooked by the AdSense module if active.
-		add_filter( 'option_googlesitekit_analytics_adsense_linked', '__return_false' );
+		/**
+		 * This filter only exists to be unhooked by the AdSense module if active.
+		 *
+		 * @see \Google\Site_Kit\Modules\Analytics\Settings::register
+		 */
+		add_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
 
 		add_action( // For non-AMP.
 			'wp_enqueue_scripts',
@@ -219,13 +161,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 			__( 'Top acquisition sources', 'google-site-kit' ),
 		);
 
-		$info['settings']                     = $this->get_data( 'connection' );
-		$info['settings']['useSnippet']       = $this->get_data( 'use-snippet' );
-		$info['settings']['anonymizeIP']      = $this->get_data( 'anonymize-ip' );
-		$info['settings']['ampClientIDOptIn'] = $this->get_data( 'amp-client-id-opt-in' );
-		$info['settings']['trackingDisabled'] = $this->get_data( 'tracking-disabled' );
-
-		$info['adsenseLinked'] = (bool) $this->options->get( 'googlesitekit_analytics_adsense_linked' );
+		$info['settings'] = $this->get_settings()->get();
 
 		return $info;
 	}
@@ -260,7 +196,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 * @since 1.0.0
 	 */
 	public function on_deactivation() {
-		$this->options->delete( self::OPTION );
+		$this->get_settings()->delete();
 		$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
 	}
 
@@ -516,524 +452,392 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
 	protected function create_data_request( Data_Request $data ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
+		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:account-id':
+				return function() {
+					$option = $this->get_settings()->get();
 
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
-				case 'connection':
+					if ( empty( $option['accountID'] ) ) {
+						return new WP_Error( 'account_id_not_set', __( 'Analytics account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
+					}
+					return $option['accountID'];
+				};
+			case 'POST:account-id':
+				if ( ! isset( $data['accountID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$this->get_settings()->merge(
+						array(
+							'accountID'     => $data['accountID'],
+							'adsenseLinked' => false,
+						)
+					);
+					return true;
+				};
+			case 'GET:accounts-properties-profiles':
+				return $this->get_service( 'analytics' )->management_accounts->listManagementAccounts();
+			case 'GET:amp-client-id-opt-in':
+				return function() {
+					$option = $this->get_settings()->get();
+
+					return ! empty( $option['ampClientIDOptIn'] );
+				};
+			case 'POST:amp-client-id-opt-in':
+				if ( ! isset( $data['ampClientIDOptIn'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampClientIDOptIn' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$this->get_settings()->merge( array( 'ampClientIDOptIn' => $data['ampClientIDOptIn'] ) );
+					return true;
+				};
+			case 'GET:anonymize-ip':
+				return function() {
+					$option = $this->get_settings()->get();
+
+					return (bool) $option['anonymizeIP'];
+				};
+			case 'GET:connection':
+				return function() {
+					$connection = array(
+						'accountID'             => '',
+						'propertyID'            => '',
+						'profileID'             => '',
+						'internalWebPropertyID' => '',
+					);
+
+					$option = $this->get_settings()->get();
+
+					return array_intersect_key( $option, $connection );
+				};
+			case 'POST:connection':
+				return function() use ( $data ) {
+					$this->get_settings()->merge(
+						array(
+							'accountID'             => $data['accountID'],
+							'propertyID'            => $data['propertyID'],
+							'profileID'             => $data['profileID'],
+							'internalWebPropertyID' => $data['internalWebPropertyID'],
+							'adsenseLinked'         => false,
+						)
+					);
+					return true;
+				};
+			case 'GET:goals':
+				$connection = $this->get_data( 'connection' );
+				if (
+					empty( $connection['accountID'] ) ||
+					empty( $connection['internalWebPropertyID'] ) ||
+					empty( $connection['profileID'] )
+				) {
+					// This is needed to return and emulate the same error format from Analytics API.
 					return function() {
-						$defaults = array(
-							'accountID'             => '',
-							'propertyID'            => '',
-							'profileID'             => '',
-							'internalWebPropertyID' => '',
+						return array(
+							'error' => array(
+								'code'    => 400,
+								'message' => __( 'Analytics module needs to be configured.', 'google-site-kit' ),
+								'status'  => 'INVALID_ARGUMENT',
+							),
 						);
-
-						$options = (array) $this->options->get( self::OPTION );
-
-						// TODO: Remove this at some point (migration of old 'accountId' option).
-						if ( isset( $option['accountId'] ) ) {
-							if ( ! isset( $option['accountID'] ) ) {
-								$option['accountID'] = $option['accountId'];
-							}
-							unset( $option['accountId'] );
-						}
-
-						// TODO: Remove this at some point (migration of old 'propertyId' option).
-						if ( isset( $option['propertyId'] ) ) {
-							if ( ! isset( $option['propertyID'] ) ) {
-								$option['propertyID'] = $option['propertyId'];
-							}
-							unset( $option['propertyId'] );
-						}
-
-						// TODO: Remove this at some point (migration of old 'profileId' option).
-						if ( isset( $option['profileId'] ) ) {
-							if ( ! isset( $option['profileID'] ) ) {
-								$option['profileID'] = $option['profileId'];
-							}
-							unset( $option['profileId'] );
-						}
-
-						// TODO: Remove this at some point (migration of old 'internalWebPropertyId' option).
-						if ( isset( $option['internalWebPropertyId'] ) ) {
-							if ( ! isset( $option['internalWebPropertyID'] ) ) {
-								$option['internalWebPropertyID'] = $option['internalWebPropertyId'];
-							}
-							unset( $option['internalWebPropertyId'] );
-						}
-
-						return array_intersect_key( array_merge( $defaults, $options ), $defaults );
 					};
-				case 'account-id':
-					return function() {
-						$option = (array) $this->options->get( self::OPTION );
+				}
+				$service = $this->get_service( 'analytics' );
+				return $service->management_goals->listManagementGoals( $connection['accountID'], $connection['propertyID'], $connection['profileID'] );
+			case 'GET:internal-web-property-id':
+				return function() {
+					$option = $this->get_settings()->get();
 
-						// TODO: Remove this at some point (migration of old 'accountId' option).
-						if ( isset( $option['accountId'] ) ) {
-							if ( ! isset( $option['accountID'] ) ) {
-								$option['accountID'] = $option['accountId'];
-							}
-							unset( $option['accountId'] );
-						}
-
-						if ( empty( $option['accountID'] ) ) {
-							return new WP_Error( 'account_id_not_set', __( 'Analytics account ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-						}
-						return $option['accountID'];
-					};
-				case 'property-id':
-					return function() {
-						$option = (array) $this->options->get( self::OPTION );
-
-						// TODO: Remove this at some point (migration of old 'propertyId' option).
-						if ( isset( $option['propertyId'] ) ) {
-							if ( ! isset( $option['propertyID'] ) ) {
-								$option['propertyID'] = $option['propertyId'];
-							}
-							unset( $option['propertyId'] );
-						}
-
-						if ( empty( $option['propertyID'] ) ) {
-							return new WP_Error( 'property_id_not_set', __( 'Analytics property ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-						}
-						return $option['propertyID'];
-					};
-				case 'profile-id':
-					return function() {
-						$option = (array) $this->options->get( self::OPTION );
-
-						// TODO: Remove this at some point (migration of old 'profileId' option).
-						if ( isset( $option['profileId'] ) ) {
-							if ( ! isset( $option['profileID'] ) ) {
-								$option['profileID'] = $option['profileId'];
-							}
-							unset( $option['profileId'] );
-						}
-
-						if ( empty( $option['profileID'] ) ) {
-							return new WP_Error( 'profile_id_not_set', __( 'Analytics profile ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-						}
-						return $option['profileID'];
-					};
-				case 'internal-web-property-id':
-					return function() {
-						$option = (array) $this->options->get( self::OPTION );
-
-						// TODO: Remove this at some point (migration of old 'internalWebPropertyId' option).
-						if ( isset( $option['internalWebPropertyId'] ) ) {
-							if ( ! isset( $option['internalWebPropertyID'] ) ) {
-								$option['internalWebPropertyID'] = $option['internalWebPropertyId'];
-							}
-							unset( $option['internalWebPropertyId'] );
-						}
-
-						if ( empty( $option['internalWebPropertyID'] ) ) {
-							return new WP_Error( 'internal_web_property_id_not_set', __( 'Analytics internal web property ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
-						}
-						return $option['internalWebPropertyID'];
-					};
-				case 'anonymize-ip':
-					return function() {
-						$default = true;
-						$option  = (array) $this->options->get( self::OPTION );
-						return isset( $option['anonymizeIP'] ) ? (bool) $option['anonymizeIP'] : $default;
-					};
-				case 'use-snippet':
-					return function() {
-						$option = (array) $this->options->get( self::OPTION );
-						return ! empty( $option['useSnippet'] );
-					};
-				case 'amp-client-id-opt-in':
-					return function() {
-						$option = (array) $this->options->get( self::OPTION );
-
-						// TODO: Remove this at some point (migration of old 'ampClientIdOptIn' option).
-						if ( isset( $option['ampClientIdOptIn'] ) ) {
-							if ( ! isset( $option['ampClientIDOptIn'] ) ) {
-								$option['ampClientIDOptIn'] = $option['ampClientIdOptIn'];
-							}
-							unset( $option['ampClientIdOptIn'] );
-						}
-
-						if ( ! isset( $option['ampClientIDOptIn'] ) ) {
-							return true; // Default to true.
-						}
-						return ! empty( $option['ampClientIDOptIn'] );
-					};
-				case 'tracking-disabled':
-					return function() {
-						$option     = $this->options->get( self::OPTION );
-						$default    = array( 'loggedinUsers' );
-						$exclusions = isset( $option['trackingDisabled'] ) ? $option['trackingDisabled'] : $default;
-
-						return is_array( $exclusions ) ? $exclusions : $default;
-					};
-				case 'goals':
-					$connection = $this->get_data( 'connection' );
-					if (
-						empty( $connection['accountID'] ) ||
-						empty( $connection['internalWebPropertyID'] ) ||
-						empty( $connection['profileID'] )
-					) {
-						// This is needed to return and emulate the same error format from Analytics API.
-						return function() {
-							return array(
-								'error' => array(
-									'code'    => 400,
-									'message' => __( 'Analytics module needs to be configured.', 'google-site-kit' ),
-									'status'  => 'INVALID_ARGUMENT',
-								),
-							);
-						};
+					if ( empty( $option['internalWebPropertyID'] ) ) {
+						return new WP_Error( 'internal_web_property_id_not_set', __( 'Analytics internal web property ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}
-					$service = $this->get_service( 'analytics' );
-					return $service->management_goals->listManagementGoals( $connection['accountID'], $connection['propertyID'], $connection['profileID'] );
-				case 'accounts-properties-profiles':
-					return $this->get_service( 'analytics' )->management_accounts->listManagementAccounts();
-				case 'properties-profiles':
-					if ( ! isset( $data['accountID'] ) ) {
-						return new WP_Error(
-							'missing_required_param',
-							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
-							array( 'status' => 400 )
+					return $option['internalWebPropertyID'];
+				};
+			case 'POST:internal-web-property-id':
+				if ( ! isset( $data['internalWebPropertyID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalWebPropertyID' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$this->get_settings()->merge(
+						array(
+							'internalWebPropertyID' => $data['internalWebPropertyID'],
+							'adsenseLinked'         => false,
+						)
+					);
+					return true;
+				};
+			case 'GET:profile-id':
+				return function() {
+					$option = $this->get_settings()->get();
+
+					if ( empty( $option['profileID'] ) ) {
+						return new WP_Error( 'profile_id_not_set', __( 'Analytics profile ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
+					}
+					return $option['profileID'];
+				};
+			case 'POST:profile-id':
+				if ( ! isset( $data['profileID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileID' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$this->get_settings()->merge(
+						array(
+							'profileID'     => $data['profileID'],
+							'adsenseLinked' => false,
+						)
+					);
+					return true;
+				};
+			case 'GET:profiles':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				return $this->get_service( 'analytics' )->management_profiles->listManagementProfiles( $data['accountID'], $data['propertyID'] );
+			case 'GET:properties-profiles':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				return $this->get_service( 'analytics' )->management_webproperties->listManagementWebproperties( $data['accountID'] );
+			case 'GET:property-id':
+				return function() {
+					$option = $this->get_settings()->get();
+
+					if ( empty( $option['propertyID'] ) ) {
+						return new WP_Error( 'property_id_not_set', __( 'Analytics property ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
+					}
+					return $option['propertyID'];
+				};
+			case 'POST:property-id':
+				if ( ! isset( $data['propertyID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$this->get_settings()->merge(
+						array(
+							'propertyID'    => $data['propertyID'],
+							'adsenseLinked' => false,
+						)
+					);
+					return true;
+				};
+			case 'GET:report':
+				$date_range = $data['dateRange'] ?: 'last-28-days';
+
+				$dimensions = array_map(
+					function ( $name ) {
+						$dimension = new Google_Service_AnalyticsReporting_Dimension();
+						$dimension->setName( $name );
+
+						return $dimension;
+					},
+					array_filter( explode( ',', $data['dimensions'] ) )
+				);
+
+				$request_args         = compact( 'dimensions' );
+				$request_args['page'] = $data['url'];
+
+				if ( ! empty( $data['limit'] ) ) {
+					$request_args['row_limit'] = $data['limit'];
+				}
+
+				$request = $this->create_analytics_site_data_request( $request_args );
+
+				if ( is_wp_error( $request ) ) {
+					return $request;
+				}
+
+				$date_ranges = array(
+					$this->parse_date_range(
+						$date_range,
+						$data['compareDateRanges'] ? 2 : 1
+					),
+				);
+
+				// When using multiple date ranges, it changes the structure of the response,
+				// where each date range becomes an item in a list.
+				if ( ! empty( $data['multiDateRange'] ) ) {
+					$date_ranges[] = $this->parse_date_range( $date_range, 1, 1, true );
+				}
+
+				$date_ranges = array_map(
+					function ( $date_range ) {
+						list ( $start_date, $end_date ) = $date_range;
+						$date_range                     = new Google_Service_AnalyticsReporting_DateRange();
+						$date_range->setStartDate( $start_date );
+						$date_range->setEndDate( $end_date );
+
+						return $date_range;
+					},
+					$date_ranges
+				);
+				$request->setDateRanges( $date_ranges );
+
+				$metrics = array_map(
+					function ( $metric_def ) {
+						$metric_def = array_merge(
+							array(
+								'alias'      => '',
+								'expression' => '',
+							),
+							(array) $metric_def
 						);
-					}
+						$metric     = new Google_Service_AnalyticsReporting_Metric();
+						$metric->setAlias( $metric_def['alias'] );
+						$metric->setExpression( $metric_def['expression'] );
 
-					return $this->get_service( 'analytics' )->management_webproperties->listManagementWebproperties( $data['accountID'] );
-				case 'profiles':
-					if ( ! isset( $data['accountID'] ) ) {
-						return new WP_Error(
-							'missing_required_param',
-							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
-							array( 'status' => 400 )
+						return $metric;
+					},
+					(array) $data['metrics']
+				);
+				$request->setMetrics( $metrics );
+
+				// Order by.
+				$orderby = array_map(
+					function ( $order_def ) {
+						$order_def = array_merge(
+							array(
+								'fieldName' => '',
+								'sortOrder' => '',
+							),
+							(array) $order_def
 						);
-					}
-					if ( ! isset( $data['propertyID'] ) ) {
-						return new WP_Error(
-							'missing_required_param',
-							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
-							array( 'status' => 400 )
-						);
-					}
+						$order_by  = new Google_Service_AnalyticsReporting_OrderBy();
+						$order_by->setFieldName( $order_def['fieldName'] );
+						$order_by->setSortOrder( $order_def['sortOrder'] );
 
-					return $this->get_service( 'analytics' )->management_profiles->listManagementProfiles( $data['accountID'], $data['propertyID'] );
-				case 'tag-permission':
-					return function() use ( $data ) {
-						if ( ! isset( $data['tag'] ) ) {
-							return new WP_Error(
-								'missing_required_param',
-								/* translators: %s: Missing parameter name */
-								sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'tag' ),
-								array( 'status' => 400 )
-							);
-						}
-						$accounts               = $this->get_data( 'accounts-properties-profiles' );
-						$has_access_to_property = $this->has_access_to_property( $data['tag'], $accounts['accounts'] );
+						return $order_by;
+					},
+					(array) $data['orderby']
+				);
+				$request->setOrderBys( $orderby );
 
-						if ( empty( $has_access_to_property ) ) {
-							return new WP_Error(
-								'google_analytics_existing_tag_permission',
-								sprintf(
-									/* translators: %s: Property id of the existing tag */
-									__( 'We\'ve detected there\'s already an existing Analytics tag on your site (ID %s), but your account doesn\'t seem to have access to this Analytics property. You can either remove the existing tag and connect to a different account, or request access to this property from your team.', 'google-site-kit' ),
-									$data['tag']
-								),
-								array( 'status' => 403 )
-							);
-						}
+				// Batch reports requests.
+				$body = new Google_Service_AnalyticsReporting_GetReportsRequest();
+				$body->setReportRequests( array( $request ) );
 
-						return $has_access_to_property;
-					};
-				case 'report':
-					$date_range = $data['dateRange'] ?: 'last-28-days';
+				return $this->get_analyticsreporting_service()->reports->batchGet( $body );
+			case 'POST:settings':
+				if ( ! isset( $data['accountID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
+				}
+				if ( ! isset( $data['propertyID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ), array( 'status' => 400 ) );
+				}
+				if ( ! isset( $data['internalWebPropertyID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalWebPropertyID' ), array( 'status' => 400 ) );
+				}
+				if ( ! isset( $data['profileID'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileID' ), array( 'status' => 400 ) );
+				}
+				if ( ! isset( $data['useSnippet'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'useSnippet' ), array( 'status' => 400 ) );
+				}
 
-					$dimensions = array_map(
-						function ( $name ) {
-							$dimension = new Google_Service_AnalyticsReporting_Dimension();
-							$dimension->setName( $name );
+				return function() use ( $data ) {
+					$property_id              = null;
+					$internal_web_property_id = null;
 
-							return $dimension;
-						},
-						array_filter( explode( ',', $data['dimensions'] ) )
-					);
-
-					$request_args         = compact( 'dimensions' );
-					$request_args['page'] = $data['url'];
-
-					if ( ! empty( $data['limit'] ) ) {
-						$request_args['row_limit'] = $data['limit'];
-					}
-
-					$request = $this->create_analytics_site_data_request( $request_args );
-
-					if ( is_wp_error( $request ) ) {
-						return $request;
-					}
-
-					$date_ranges = array(
-						$this->parse_date_range(
-							$date_range,
-							$data['compareDateRanges'] ? 2 : 1
-						),
-					);
-
-					// When using multiple date ranges, it changes the structure of the response,
-					// where each date range becomes an item in a list.
-					if ( ! empty( $data['multiDateRange'] ) ) {
-						$date_ranges[] = $this->parse_date_range( $date_range, 1, 1, true );
-					}
-
-					$date_ranges = array_map(
-						function ( $date_range ) {
-							list ( $start_date, $end_date ) = $date_range;
-							$date_range                     = new Google_Service_AnalyticsReporting_DateRange();
-							$date_range->setStartDate( $start_date );
-							$date_range->setEndDate( $end_date );
-
-							return $date_range;
-						},
-						$date_ranges
-					);
-					$request->setDateRanges( $date_ranges );
-
-					$metrics = array_map(
-						function ( $metric_def ) {
-							$metric_def = array_merge(
-								array(
-									'alias'      => '',
-									'expression' => '',
-								),
-								(array) $metric_def
-							);
-							$metric     = new Google_Service_AnalyticsReporting_Metric();
-							$metric->setAlias( $metric_def['alias'] );
-							$metric->setExpression( $metric_def['expression'] );
-
-							return $metric;
-						},
-						(array) $data['metrics']
-					);
-					$request->setMetrics( $metrics );
-
-					// Order by.
-					$orderby = array_map(
-						function ( $order_def ) {
-							$order_def = array_merge(
-								array(
-									'fieldName' => '',
-									'sortOrder' => '',
-								),
-								(array) $order_def
-							);
-							$order_by  = new Google_Service_AnalyticsReporting_OrderBy();
-							$order_by->setFieldName( $order_def['fieldName'] );
-							$order_by->setSortOrder( $order_def['sortOrder'] );
-
-							return $order_by;
-						},
-						(array) $data['orderby']
-					);
-					$request->setOrderBys( $orderby );
-
-					// Batch reports requests.
-					$body = new Google_Service_AnalyticsReporting_GetReportsRequest();
-					$body->setReportRequests( array( $request ) );
-
-					return $this->get_analyticsreporting_service()->reports->batchGet( $body );
-			}
-		} elseif ( 'POST' === $method ) {
-			switch ( $datapoint ) {
-				case 'connection':
-					return function() use ( $data ) {
-						$option = (array) $this->options->get( self::OPTION );
-						$keys   = array( 'accountID', 'propertyID', 'profileID', 'internalWebPropertyID' );
-						foreach ( $keys as $key ) {
-							if ( isset( $data[ $key ] ) ) {
-								$option[ $key ] = $data[ $key ];
+					if ( '0' === $data['propertyID'] ) {
+						$is_new_property = true;
+						$restore_defer   = $this->with_client_defer( false );
+						$property        = new Google_Service_Analytics_Webproperty();
+						$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+						try {
+							$property = $this->get_service( 'analytics' )->management_webproperties->insert( $data['accountID'], $property );
+						} catch ( Google_Service_Exception $e ) {
+							$restore_defer();
+							$message = $e->getErrors();
+							if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
+								$message = $message[0]['message'];
 							}
+							return new WP_Error( $e->getCode(), $message );
+						} catch ( Exception $e ) {
+							$restore_defer();
+							return new WP_Error( $e->getCode(), $e->getMessage() );
 						}
-						$this->options->set( self::OPTION, $option );
-						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
-						return true;
-					};
-				case 'account-id':
-					if ( ! isset( $data['accountID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
+						$restore_defer();
+						/* @var Google_Service_Analytics_Webproperty $property Property instance. */
+						$property_id              = $property->getId();
+						$internal_web_property_id = $property->getInternalWebPropertyId();
+					} else {
+						$is_new_property          = false;
+						$property_id              = $data['propertyID'];
+						$internal_web_property_id = $data['internalWebPropertyID'];
 					}
-					return function() use ( $data ) {
-						$option              = (array) $this->options->get( self::OPTION );
-						$option['accountID'] = $data['accountID'];
-						$this->options->set( self::OPTION, $option );
-						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
-						return true;
-					};
-				case 'property-id':
-					if ( ! isset( $data['propertyID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ), array( 'status' => 400 ) );
-					}
-					return function() use ( $data ) {
-						$option               = (array) $this->options->get( self::OPTION );
-						$option['propertyID'] = $data['propertyID'];
-						$this->options->set( self::OPTION, $option );
-						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
-						return true;
-					};
-				case 'profile-id':
-					if ( ! isset( $data['profileID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileID' ), array( 'status' => 400 ) );
-					}
-					return function() use ( $data ) {
-						$option              = (array) $this->options->get( self::OPTION );
-						$option['profileID'] = $data['profileID'];
-						$this->options->set( self::OPTION, $option );
-						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
-						return true;
-					};
-				case 'internal-web-property-id':
-					if ( ! isset( $data['internalWebPropertyID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalWebPropertyID' ), array( 'status' => 400 ) );
-					}
-					return function() use ( $data ) {
-						$option                          = (array) $this->options->get( self::OPTION );
-						$option['internalWebPropertyID'] = $data['internalWebPropertyID'];
-						$this->options->set( self::OPTION, $option );
-						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
-						return true;
-					};
-				case 'use-snippet':
-					if ( ! isset( $data['useSnippet'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'useSnippet' ), array( 'status' => 400 ) );
-					}
-					return function() use ( $data ) {
-						$option               = (array) $this->options->get( self::OPTION );
-						$option['useSnippet'] = (bool) $data['useSnippet'];
-						$this->options->set( self::OPTION, $option );
-						return true;
-					};
-				case 'amp-client-id-opt-in':
-					if ( ! isset( $data['ampClientIDOptIn'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampClientIDOptIn' ), array( 'status' => 400 ) );
-					}
-					return function() use ( $data ) {
-						$option                     = (array) $this->options->get( self::OPTION );
-						$option['ampClientIDOptIn'] = (bool) $data['ampClientIDOptIn'];
-						$this->options->set( self::OPTION, $option );
-						return true;
-					};
-				case 'settings':
-					if ( ! isset( $data['accountID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
-					}
-					if ( ! isset( $data['propertyID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ), array( 'status' => 400 ) );
-					}
-					if ( ! isset( $data['internalWebPropertyID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalWebPropertyID' ), array( 'status' => 400 ) );
-					}
-					if ( ! isset( $data['profileID'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileID' ), array( 'status' => 400 ) );
-					}
-					if ( ! isset( $data['useSnippet'] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'useSnippet' ), array( 'status' => 400 ) );
-					}
-
-					return function() use ( $data ) {
-						$property_id              = null;
-						$internal_web_property_id = null;
-
-						if ( '0' === $data['propertyID'] ) {
-							$is_new_property = true;
-							$client          = $this->get_client();
-							$orig_defer      = $client->shouldDefer();
-							$client->setDefer( false );
-							$property = new Google_Service_Analytics_Webproperty();
-							$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
-							try {
-								$property = $this->get_service( 'analytics' )->management_webproperties->insert( $data['accountID'], $property );
-							} catch ( Google_Service_Exception $e ) {
-								$client->setDefer( $orig_defer );
-								$message = $e->getErrors();
-								if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-									$message = $message[0]['message'];
-								}
-								return new WP_Error( $e->getCode(), $message );
-							} catch ( Exception $e ) {
-								$client->setDefer( $orig_defer );
-								return new WP_Error( $e->getCode(), $e->getMessage() );
+					$profile_id = null;
+					if ( '0' === $data['profileID'] ) {
+						$restore_defer = $this->with_client_defer( false );
+						$profile       = new Google_Service_Analytics_Profile();
+						$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
+						try {
+							$profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $property_id, $profile );
+						} catch ( Google_Service_Exception $e ) {
+							$restore_defer();
+							$message = $e->getErrors();
+							if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
+								$message = $message[0]['message'];
 							}
-							$client->setDefer( $orig_defer );
-							/* @var Google_Service_Analytics_Webproperty $property Property instance. */
-							$property_id              = $property->getId();
-							$internal_web_property_id = $property->getInternalWebPropertyId();
-						} else {
-							$is_new_property          = false;
-							$property_id              = $data['propertyID'];
-							$internal_web_property_id = $data['internalWebPropertyID'];
+							return new WP_Error( $e->getCode(), $message );
+						} catch ( Exception $e ) {
+							$restore_defer();
+							return new WP_Error( $e->getCode(), $e->getMessage() );
 						}
-						$profile_id = null;
-						if ( '0' === $data['profileID'] ) {
-							$client     = $this->get_client();
-							$orig_defer = $client->shouldDefer();
-							$client->setDefer( false );
-							$profile = new Google_Service_Analytics_Profile();
-							$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
-							try {
-								$profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $property_id, $profile );
-							} catch ( Google_Service_Exception $e ) {
-								$client->setDefer( $orig_defer );
-								$message = $e->getErrors();
-								if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-									$message = $message[0]['message'];
-								}
-								return new WP_Error( $e->getCode(), $message );
-							} catch ( Exception $e ) {
-								$client->setDefer( $orig_defer );
-								return new WP_Error( $e->getCode(), $e->getMessage() );
+						$restore_defer();
+						$profile_id = $profile->id;
+					} else {
+						$profile_id = $data['profileID'];
+					}
+					// Set default profile for new property.
+					if ( $is_new_property ) {
+						$restore_defer = $this->with_client_defer( false );
+						$property      = new Google_Service_Analytics_Webproperty();
+						$property->setDefaultProfileId( $profile_id );
+						try {
+							$property = $this->get_service( 'analytics' )->management_webproperties->patch( $data['accountID'], $property_id, $property );
+						} catch ( Google_Service_Exception $e ) {
+							$restore_defer();
+							$message = $e->getErrors();
+							if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
+								$message = $message[0]['message'];
 							}
-							$client->setDefer( $orig_defer );
-							$profile_id = $profile->id;
-						} else {
-							$profile_id = $data['profileID'];
+							return new WP_Error( $e->getCode(), $message );
+						} catch ( Exception $e ) {
+							$restore_defer();
+							return new WP_Error( $e->getCode(), $e->getMessage() );
 						}
-						// Set default profile for new property.
-						if ( $is_new_property ) {
-							$client     = $this->get_client();
-							$orig_defer = $client->shouldDefer();
-							$client->setDefer( false );
-							$property = new Google_Service_Analytics_Webproperty();
-							$property->setDefaultProfileId( $profile_id );
-							try {
-								$property = $this->get_service( 'analytics' )->management_webproperties->patch( $data['accountID'], $property_id, $property );
-							} catch ( Google_Service_Exception $e ) {
-								$client->setDefer( $orig_defer );
-								$message = $e->getErrors();
-								if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-									$message = $message[0]['message'];
-								}
-								return new WP_Error( $e->getCode(), $message );
-							} catch ( Exception $e ) {
-								$client->setDefer( $orig_defer );
-								return new WP_Error( $e->getCode(), $e->getMessage() );
-							}
-							$client->setDefer( $orig_defer );
-						}
-						$option = array(
+						$restore_defer();
+					}
+					$this->get_settings()->merge(
+						array(
 							'accountID'             => $data['accountID'],
 							'propertyID'            => $property_id,
 							'internalWebPropertyID' => $internal_web_property_id,
@@ -1042,12 +846,58 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 							'anonymizeIP'           => (bool) $data['anonymizeIP'],
 							'ampClientIDOptIn'      => ! empty( $data['ampClientIDOptIn'] ),
 							'trackingDisabled'      => (array) $data['trackingDisabled'],
+							'adsenseLinked'         => false,
+						)
+					);
+					return $this->get_settings()->get();
+				};
+			case 'GET:tag-permission':
+				return function() use ( $data ) {
+					if ( ! isset( $data['tag'] ) ) {
+						return new WP_Error(
+							'missing_required_param',
+							/* translators: %s: Missing parameter name */
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'tag' ),
+							array( 'status' => 400 )
 						);
-						$this->options->set( self::OPTION, $option );
-						$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
-						return $option;
-					};
-			}
+					}
+					$accounts               = $this->get_data( 'accounts-properties-profiles' );
+					$has_access_to_property = $this->has_access_to_property( $data['tag'], $accounts['accounts'] );
+
+					if ( empty( $has_access_to_property ) ) {
+						return new WP_Error(
+							'google_analytics_existing_tag_permission',
+							sprintf(
+							/* translators: %s: Property id of the existing tag */
+								__( 'We\'ve detected there\'s already an existing Analytics tag on your site (ID %s), but your account doesn\'t seem to have access to this Analytics property. You can either remove the existing tag and connect to a different account, or request access to this property from your team.', 'google-site-kit' ),
+								$data['tag']
+							),
+							array( 'status' => 403 )
+						);
+					}
+
+					return $has_access_to_property;
+				};
+			case 'GET:tracking-disabled':
+				return function() {
+					$option = $this->get_settings()->get();
+
+					return $option['trackingDisabled'];
+				};
+			case 'GET:use-snippet':
+				return function() {
+					$option = $this->get_settings()->get();
+					return ! empty( $option['useSnippet'] );
+				};
+			case 'POST:use-snippet':
+				if ( ! isset( $data['useSnippet'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'useSnippet' ), array( 'status' => 400 ) );
+				}
+				return function() use ( $data ) {
+					$this->get_settings()->merge( array( 'useSnippet' => $data['useSnippet'] ) );
+					return true;
+				};
 		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
@@ -1064,143 +914,135 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
+		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:accounts-properties-profiles':
+				/* @var Google_Service_Analytics_Accounts $response listManagementAccounts response. */
+				$accounts            = (array) $response->getItems();
+				$account_ids         = array_map(
+					function ( Google_Service_Analytics_Account $account ) {
+						return $account->getId();
+					},
+					$accounts
+				);
+				$properties_profiles = array(
+					'properties' => array(),
+					'profiles'   => array(),
+				);
 
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
-				case 'goals':
-					if ( is_array( $response ) ) {
-						return $response;
-					}
-					// TODO: Parse this response to a regular array.
-					break;
-				case 'accounts-properties-profiles':
-					/* @var Google_Service_Analytics_Accounts $response listManagementAccounts response. */
-					$accounts            = (array) $response->getItems();
-					$account_ids         = array_map(
-						function ( Google_Service_Analytics_Account $account ) {
-							return $account->getId();
-						},
-						$accounts
+				if ( ! empty( $data['existingAccountID'] ) && ! empty( $data['existingPropertyID'] ) ) {
+					// If there is an existing tag, pass it through to ensure only the existing tag is matched.
+					$properties_profiles = $this->get_data(
+						'properties-profiles',
+						array(
+							'accountID'          => $data['existingAccountID'],
+							'existingPropertyID' => $data['existingPropertyID'],
+						)
 					);
-					$properties_profiles = array(
-						'properties' => array(),
-						'profiles'   => array(),
-					);
-
-					if ( ! empty( $data['existingAccountID'] ) && ! empty( $data['existingPropertyID'] ) ) {
-						// If there is an existing tag, pass it through to ensure only the existing tag is matched.
-						$properties_profiles = $this->get_data(
-							'properties-profiles',
-							array(
-								'accountID'          => $data['existingAccountID'],
-								'existingPropertyID' => $data['existingPropertyID'],
-							)
-						);
+				} else {
+					// Get the account ID from the saved settings - returns WP_Error if not set.
+					$account_id = $this->get_data( 'account-id' );
+					// If the saved account ID is in the list of accounts the user has access to, it's a match.
+					if ( in_array( $account_id, $account_ids, true ) ) {
+						$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
 					} else {
-						// Get the account ID from the saved settings - returns WP_Error if not set.
-						$account_id = $this->get_data( 'account-id' );
-						// If the saved account ID is in the list of accounts the user has access to, it's a match.
-						if ( in_array( $account_id, $account_ids, true ) ) {
-							$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
-						} else {
-							// Iterate over each account in reverse so if there is no match,
-							// the last $properties_profiles will be from the first account (selected by default).
-							foreach ( array_reverse( $accounts ) as $account ) {
-								/* @var Google_Service_Analytics_Account $account Analytics account object. */
-								$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account->getId() ) );
+						// Iterate over each account in reverse so if there is no match,
+						// the last $properties_profiles will be from the first account (selected by default).
+						foreach ( array_reverse( $accounts ) as $account ) {
+							/* @var Google_Service_Analytics_Account $account Analytics account object. */
+							$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account->getId() ) );
 
-								if ( ! is_wp_error( $properties_profiles ) && isset( $properties_profiles['matchedProperty'] ) ) {
-									break;
-								}
+							if ( ! is_wp_error( $properties_profiles ) && isset( $properties_profiles['matchedProperty'] ) ) {
+								break;
 							}
 						}
 					}
+				}
 
-					if ( is_wp_error( $properties_profiles ) ) {
-						return $properties_profiles;
-					}
+				if ( is_wp_error( $properties_profiles ) ) {
+					return $properties_profiles;
+				}
 
-					return array_merge( compact( 'accounts' ), $properties_profiles );
-				case 'properties-profiles':
-					/* @var Google_Service_Analytics_Webproperties $response listManagementWebproperties response. */
-					$properties = (array) $response->getItems();
-					$response   = array(
-						'properties' => $properties,
-						'profiles'   => array(),
-					);
-
-					if ( 0 === count( $properties ) ) {
-						return $response;
-					}
-
-					$found_property = new Google_Service_Analytics_Webproperty();
-					$current_url    = $this->context->get_reference_site_url();
-
-					// If requested for a specific property, only match by property ID.
-					if ( ! empty( $data['existingPropertyID'] ) ) {
-						$property_id  = $data['existingPropertyID'];
-						$current_urls = array();
-					} else {
-						$property_id  = $this->get_data( 'property-id' );
-						$current_urls = $this->permute_site_url( $current_url );
-					}
-
-					// If there's no match for the saved account ID, try to find a match using the properties of each account.
-					foreach ( $properties as $property ) {
-						/* @var Google_Service_Analytics_Webproperty $property Property instance. */
-						if (
-							// Attempt to match by property ID.
-							$property->getId() === $property_id ||
-							// Attempt to match by site URL, with and without http/https and 'www' subdomain.
-							in_array( untrailingslashit( $property->getWebsiteUrl() ), $current_urls, true )
-						) {
-							$found_property              = $property;
-							$response['matchedProperty'] = $property;
-							break;
-						}
-					}
-
-					// If no match is found, fetch profiles for the first property if available.
-					if ( ! $found_property->getAccountId() && $properties ) {
-						$found_property = array_shift( $properties );
-					} elseif ( ! $found_property->getAccountId() ) {
-						// If no found property, skip the call to 'profiles' as it would be empty/fail.
-						return $response;
-					}
-
-					$profiles = $this->get_data(
-						'profiles',
-						array(
-							'accountID'  => $found_property->getAccountId(),
-							'propertyID' => $found_property->getId(),
-						)
-					);
-
-					if ( is_wp_error( $profiles ) ) {
-						return $profiles;
-					}
-
-					$response['profiles'] = $profiles;
-
+				return array_merge( compact( 'accounts' ), $properties_profiles );
+			case 'GET:goals':
+				if ( is_array( $response ) ) {
 					return $response;
-				case 'profiles':
-					// TODO: Parse this response to a regular array.
-					$response = $response->getItems();
+				}
+				// TODO: Parse this response to a regular array.
+				break;
+			case 'GET:profiles':
+				// TODO: Parse this response to a regular array.
+				$response = $response->getItems();
 
+				return $response;
+			case 'GET:properties-profiles':
+				/* @var Google_Service_Analytics_Webproperties $response listManagementWebproperties response. */
+				$properties = (array) $response->getItems();
+				$response   = array(
+					'properties' => $properties,
+					'profiles'   => array(),
+				);
+
+				if ( 0 === count( $properties ) ) {
 					return $response;
-				case 'report':
-					if ( $this->is_adsense_request( $data ) ) {
-						if ( isset( $response->error ) ) {
-							$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
-						} else {
-							$this->options->set( 'googlesitekit_analytics_adsense_linked', '1' );
-						}
-					}
+				}
 
-					return $response->getReports();
-			}
+				$found_property = new Google_Service_Analytics_Webproperty();
+				$current_url    = $this->context->get_reference_site_url();
+
+				// If requested for a specific property, only match by property ID.
+				if ( ! empty( $data['existingPropertyID'] ) ) {
+					$property_id  = $data['existingPropertyID'];
+					$current_urls = array();
+				} else {
+					$property_id  = $this->get_data( 'property-id' );
+					$current_urls = $this->permute_site_url( $current_url );
+				}
+
+				// If there's no match for the saved account ID, try to find a match using the properties of each account.
+				foreach ( $properties as $property ) {
+					/* @var Google_Service_Analytics_Webproperty $property Property instance. */
+					if (
+						// Attempt to match by property ID.
+						$property->getId() === $property_id ||
+						// Attempt to match by site URL, with and without http/https and 'www' subdomain.
+						in_array( untrailingslashit( $property->getWebsiteUrl() ), $current_urls, true )
+					) {
+						$found_property              = $property;
+						$response['matchedProperty'] = $property;
+						break;
+					}
+				}
+
+				// If no match is found, fetch profiles for the first property if available.
+				if ( ! $found_property->getAccountId() && $properties ) {
+					$found_property = array_shift( $properties );
+				} elseif ( ! $found_property->getAccountId() ) {
+					// If no found property, skip the call to 'profiles' as it would be empty/fail.
+					return $response;
+				}
+
+				$profiles = $this->get_data(
+					'profiles',
+					array(
+						'accountID'  => $found_property->getAccountId(),
+						'propertyID' => $found_property->getId(),
+					)
+				);
+
+				if ( is_wp_error( $profiles ) ) {
+					return $profiles;
+				}
+
+				$response['profiles'] = $profiles;
+
+				return $response;
+			case 'GET:report':
+				if ( $this->is_adsense_request( $data ) ) {
+					$is_linked = empty( $response->error );
+					$this->get_settings()->merge( array( 'adsenseLinked' => $is_linked ) );
+				}
+
+				return $response->getReports();
 		}
 
 		return $response;
@@ -1307,12 +1149,13 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 * for the first time.
 	 *
 	 * @since 1.0.0
+	 * @since 1.2.0 Now requires Google_Site_Kit_Client instance.
 	 *
-	 * @param Google_Client $client Google client instance.
+	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
 	 *               instance of Google_Service.
 	 */
-	protected function setup_services( Google_Client $client ) {
+	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
 			'analytics'          => new Google_Service_Analytics( $client ),
 			'analyticsreporting' => new Google_Service_AnalyticsReporting( $client ),
@@ -1377,5 +1220,16 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 		}
 
 		return false;
+	}
+
+	/**
+	 * Sets up the module's settings instance.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @return Module_Settings
+	 */
+	protected function setup_settings() {
+		return new Settings( $this->options );
 	}
 }

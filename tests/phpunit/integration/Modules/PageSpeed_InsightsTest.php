@@ -30,17 +30,6 @@ class PageSpeed_InsightsTest extends TestCase {
 		$this->assertTrue( $pagespeed->is_connected() );
 	}
 
-	public function test_on_deactivation() {
-		$pagespeed = new PageSpeed_Insights( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$options   = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$options->set( PageSpeed_Insights::OPTION, 'test-value' );
-		$this->assertEquals( 'test-value', $options->get( PageSpeed_Insights::OPTION ) );
-
-		$pagespeed->on_deactivation();
-
-		$this->assertFalse( $options->get( PageSpeed_Insights::OPTION ) );
-	}
-
 	public function test_prepare_info_for_js() {
 		$pagespeed = new PageSpeed_Insights( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 

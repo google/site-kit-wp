@@ -36,9 +36,8 @@ import {
 	validateJSON,
 	validateOptimizeID,
 	appendNotificationsCount,
-	sendAnalyticsTrackingEvent,
 	storageAvailable,
-	findTagInHtmlContent,
+	extractTag,
 	activateOrDeactivateModule,
 	toggleConfirmModuleSettings,
 	showErrorNotification,
@@ -48,9 +47,9 @@ import md5 from 'md5';
 
 const { setCache, getCache, deleteCache, invalidateCacheGroup, getCacheKey } = data;
 
-window.googlesitekit = window.googlesitekit || {};
+global.googlesitekit = global.googlesitekit || {};
 
-googlesitekit.testFunctions = {
+global.googlesitekit.testFunctions = {
 	getTimeInSeconds,
 	changeToPercent,
 	prepareSecondsForDisplay,
@@ -67,9 +66,8 @@ googlesitekit.testFunctions = {
 	validateJSON,
 	validateOptimizeID,
 	appendNotificationsCount,
-	sendAnalyticsTrackingEvent,
 	storageAvailable,
-	findTagInHtmlContent,
+	extractTag,
 	activateOrDeactivateModule,
 	toggleConfirmModuleSettings,
 	showErrorNotification,
@@ -82,6 +80,6 @@ googlesitekit.testFunctions = {
 	getCacheKey,
 };
 
-googlesitekit.testUtilities = {
+global.googlesitekit.testUtilities = {
 	md5,
 };

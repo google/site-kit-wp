@@ -37,7 +37,8 @@ class REST_RoutesTest extends TestCase {
 		// Assert that routes with the site-kit namespace were registered.
 		$this->assertEquals( array( REST_Routes::REST_ROOT ), $server->get_namespaces() );
 
-		$routes = array (
+		// While most of these routes are added via filter, they should all be in this list.
+		$routes = array(
 			'/',
 			'/' . REST_Routes::REST_ROOT,
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/reset',
@@ -49,6 +50,9 @@ class REST_RoutesTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/data',
 			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z\\-]+)/notifications',
 			'/' . REST_Routes::REST_ROOT . '/core/search/data/post-search',
+			'/' . REST_Routes::REST_ROOT . '/core/site/data/developer-plugin',
+			'/' . REST_Routes::REST_ROOT . '/core/site/data/setup-tag',
+			'/' . REST_Routes::REST_ROOT . '/core/site/data/connection',
 		);
 
 		$this->assertEqualSets( $routes, array_keys( $server->get_routes() ) );

@@ -46,16 +46,16 @@ class OptimizeSetup extends Component {
 			optimizeID,
 			ampClientIDOptIn,
 			ampExperimentJSON,
-		} = googlesitekit.modules.optimize.settings;
+		} = global.googlesitekit.modules.optimize.settings;
 
 		const {
 			settings: analyticsSettings,
-		} = googlesitekit.modules.analytics || {};
+		} = global.googlesitekit.modules.analytics || {};
 
 		const {
 			active: gtmActive,
 			settings: gtmSettings,
-		} = googlesitekit.modules.tagmanager || {};
+		} = global.googlesitekit.modules.tagmanager || {};
 
 		const analyticsUseSnippet = analyticsSettings ? analyticsSettings.useSnippet : false;
 		const gtmUseSnippet = gtmActive && gtmSettings ? gtmSettings.useSnippet : false;
@@ -145,7 +145,7 @@ class OptimizeSetup extends Component {
 				finishSetup();
 			}
 
-			googlesitekit.modules.optimize.settings.optimizeID = optimizeID;
+			global.googlesitekit.modules.optimize.settings.optimizeID = optimizeID;
 
 			if ( this._isMounted ) {
 				this.setState( {
@@ -239,7 +239,7 @@ class OptimizeSetup extends Component {
 			ampExperimentJSONValidated,
 		} = this.state;
 
-		const { ampEnabled } = window.googlesitekit.admin;
+		const { ampEnabled } = global.googlesitekit.admin;
 
 		if ( ! analyticsUseSnippet || ! ampEnabled ) {
 			return null;

@@ -13,8 +13,8 @@ namespace Google\Site_Kit\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit_Dependencies\Google_Client;
 use Google\Site_Kit_Dependencies\Google_Service_Pagespeedonline;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -29,8 +29,6 @@ use WP_Error;
 final class PageSpeed_Insights extends Module implements Module_With_Scopes {
 	use Module_With_Scopes_Trait;
 
-	const OPTION = 'googlesitekit_pagespeed_insights_settings';
-
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
@@ -44,7 +42,8 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes {
 	 * @since 1.0.0
 	 */
 	public function on_deactivation() {
-		$this->options->delete( self::OPTION );
+		// TODO: Remove in a future release.
+		$this->options->delete( 'googlesitekit_pagespeed_insights_settings' );
 	}
 
 	/**
@@ -71,55 +70,50 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes {
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
 	 */
 	protected function create_data_request( Data_Request $data ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
-
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
-				case 'pagespeed':
-					if ( empty( $data['strategy'] ) ) {
-						return new WP_Error(
-							'missing_required_param',
-							sprintf(
-								/* translators: %s: Missing parameter name */
-								__( 'Request parameter is empty: %s.', 'google-site-kit' ),
-								'strategy'
-							),
-							array( 'status' => 400 )
-						);
-					}
-
-					$valid_strategies = array( 'mobile', 'desktop' );
-
-					if ( ! in_array( $data['strategy'], $valid_strategies, true ) ) {
-						return new WP_Error(
-							'invalid_param',
-							sprintf(
-								/* translators: 1: Invalid parameter name, 2: list of valid values */
-								__( 'Request parameter %1$s is not one of %2$s', 'google-site-kit' ),
-								'strategy',
-								implode( ', ', $valid_strategies )
-							),
-							array( 'status' => 400 )
-						);
-					}
-
-					if ( ! empty( $data['url'] ) ) {
-						$page_url = $data['url'];
-					} else {
-						$page_url = $this->context->get_reference_site_url();
-					}
-
-					$service = $this->get_service( 'pagespeedonline' );
-
-					return $service->pagespeedapi->runpagespeed(
-						$page_url,
-						array(
-							'locale'   => substr( get_locale(), 0, 2 ),
-							'strategy' => $data['strategy'],
-						)
+		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:pagespeed':
+				if ( empty( $data['strategy'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						sprintf(
+							/* translators: %s: Missing parameter name */
+							__( 'Request parameter is empty: %s.', 'google-site-kit' ),
+							'strategy'
+						),
+						array( 'status' => 400 )
 					);
-			}
+				}
+
+				$valid_strategies = array( 'mobile', 'desktop' );
+
+				if ( ! in_array( $data['strategy'], $valid_strategies, true ) ) {
+					return new WP_Error(
+						'invalid_param',
+						sprintf(
+							/* translators: 1: Invalid parameter name, 2: list of valid values */
+							__( 'Request parameter %1$s is not one of %2$s', 'google-site-kit' ),
+							'strategy',
+							implode( ', ', $valid_strategies )
+						),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! empty( $data['url'] ) ) {
+					$page_url = $data['url'];
+				} else {
+					$page_url = $this->context->get_reference_site_url();
+				}
+
+				$service = $this->get_service( 'pagespeedonline' );
+
+				return $service->pagespeedapi->runpagespeed(
+					$page_url,
+					array(
+						'locale'   => substr( get_locale(), 0, 2 ),
+						'strategy' => $data['strategy'],
+					)
+				);
 		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
@@ -136,15 +130,10 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes {
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	protected function parse_data_response( Data_Request $data, $response ) {
-		$method    = $data->method;
-		$datapoint = $data->datapoint;
-
-		if ( 'GET' === $method ) {
-			switch ( $datapoint ) {
-				case 'pagespeed':
-					// TODO: Parse this response to a regular array.
-					return $response->getLighthouseResult();
-			}
+		switch ( "{$data->method}:{$data->datapoint}" ) {
+			case 'GET:pagespeed':
+				// TODO: Parse this response to a regular array.
+				return $response->getLighthouseResult();
 		}
 
 		return $response;
@@ -177,12 +166,13 @@ final class PageSpeed_Insights extends Module implements Module_With_Scopes {
 	 * for the first time.
 	 *
 	 * @since 1.0.0
+	 * @since 1.2.0 Now requires Google_Site_Kit_Client instance.
 	 *
-	 * @param Google_Client $client Google client instance.
+	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs. Every $service_instance must be an
 	 *               instance of Google_Service.
 	 */
-	protected function setup_services( Google_Client $client ) {
+	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
 			'pagespeedonline' => new Google_Service_Pagespeedonline( $client ),
 		);

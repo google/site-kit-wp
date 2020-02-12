@@ -15,6 +15,8 @@ use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\TestCase;
 
+// phpcs:disable WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+
 /**
  * @group Storage
  */

@@ -19,18 +19,18 @@
 /* eslint camelcase:[0] */
 
 /**
- * External dependencies
+ * Internal dependencies
  */
 import {
 	appendNotificationsCount,
-	sendAnalyticsTrackingEvent,
 	getQueryParameter,
-} from 'GoogleUtil';
+} from './util/standalone';
+import { trackEvent } from './util/tracking';
 
 // Set webpackPublicPath on-the-fly.
-if ( window.googlesitekitAdminbar && window.googlesitekitAdminbar.publicPath ) {
+if ( global.googlesitekitAdminbar && global.googlesitekitAdminbar.publicPath ) {
 	// eslint-disable-next-line no-undef
-	__webpack_public_path__ = window.googlesitekitAdminbar.publicPath;
+	__webpack_public_path__ = global.googlesitekitAdminbar.publicPath;
 }
 
 // Is adminbar scripts loaded?
@@ -68,10 +68,9 @@ function initAdminbar() {
 }
 
 // Initialize the loader once the DOM is ready.
-window.addEventListener( 'load', function() {
+global.addEventListener( 'load', function() {
 	// Add event to Site Kit adminbar icon.
 	const adminbarIconTrigger = document.getElementById( 'wp-admin-bar-google-site-kit' );
-	let loadingGtag = false;
 
 	// Check if adminbarIconTrigger is an element.
 	if ( ! adminbarIconTrigger ) {
@@ -80,11 +79,11 @@ window.addEventListener( 'load', function() {
 
 	// The total notifications count should always rely on local storage
 	// directly for external availability.
-	if ( ! window.localStorage ) {
+	if ( ! global.localStorage ) {
 		return;
 	}
 
-	const count = window.localStorage.getItem( 'googlesitekit::total-notifications' ) || 0;
+	const count = global.localStorage.getItem( 'googlesitekit::total-notifications' ) || 0;
 	appendNotificationsCount( count );
 
 	const onViewAdminBarMenu = function() {
@@ -93,25 +92,7 @@ window.addEventListener( 'load', function() {
 		}
 
 		// Track the menu hover event.
-		if ( window.googlesitekitTrackingEnabled ) {
-			// Dynamically load the gtag script if not loaded.
-			if ( 'undefined' === typeof gtag && ! loadingGtag ) {
-				loadingGtag = true;
-				const gtagScript = document.createElement( 'script' );
-				gtagScript.type = 'text/javascript';
-				gtagScript.setAttribute( 'async', 'true' );
-				gtagScript.onload = function() {
-					window.gtag = function() {
-						window.dataLayer.push( arguments );
-					};
-					sendAnalyticsTrackingEvent( 'admin_bar', 'page_stats_view' );
-				};
-				gtagScript.setAttribute( 'src', `https://www.googletagmanager.com/gtag/js?id=${ googlesitekit.admin.trackingID }` );
-				document.head.appendChild( gtagScript );
-			} else {
-				sendAnalyticsTrackingEvent( 'admin_bar', 'page_stats_view' );
-			}
-		}
+		trackEvent( 'admin_bar', 'page_stats_view' );
 
 		initAdminbar();
 		isAdminbarLoaded = true;

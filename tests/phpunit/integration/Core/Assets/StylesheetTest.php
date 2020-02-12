@@ -41,38 +41,38 @@ class StylesheetTest extends TestCase {
 		$this->assertTrue( wp_style_is( 'test-handle', 'registered' ) );
 	}
 
-	public function test_register_with_post_register_callback() {
+	public function test_register_with_before_print_callback() {
 		$invocations = array();
 		$callback    = function () use ( &$invocations ) {
 			$invocations[] = func_get_args();
 		};
-		$style       = new Stylesheet( 'test-handle', array(
-			'post_register' => $callback,
-		) );
+		$style       = new Stylesheet(
+			'test-handle',
+			array(
+				'before_print' => $callback,
+			)
+		);
 
-		$style->register();
-
-		$this->assertCount( 1, $invocations );
-		// Callback is only invoked once when style is registered.
-		$style->register();
-		$style->register();
-
+		$style->before_print();
 		$this->assertCount( 1, $invocations );
 	}
 
 	public function test_registered_src() {
 		$src   = home_url( 'test.css' );
-		$style = new Stylesheet( 'test-handle', array(
-			'src' => $src,
-		) );
+		$style = new Stylesheet(
+			'test-handle',
+			array(
+				'src' => $src,
+			)
+		);
 
 		$style->register();
 
 		$expected_src = add_query_arg( 'ver', GOOGLESITEKIT_VERSION, $src );
-		$mock         = $this->getMock( 'MockClass', array( 'callback' ) );
+		$mock         = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'callback' ) )->getMock();
 		$mock->expects( $this->once() )
-		     ->method( 'callback' )
-		     ->with( $expected_src, 'test-handle' );
+			->method( 'callback' )
+			->with( $expected_src, 'test-handle' );
 
 		add_filter( 'style_loader_src', array( $mock, 'callback' ), 10, 2 );
 
@@ -80,17 +80,20 @@ class StylesheetTest extends TestCase {
 	}
 
 	public function test_registered_media() {
-		$style = new Stylesheet( 'test-handle', array(
-			'src'   => home_url( 'test.css' ),
-			'media' => 'test-media',
-		) );
+		$style = new Stylesheet(
+			'test-handle',
+			array(
+				'src'   => home_url( 'test.css' ),
+				'media' => 'test-media',
+			)
+		);
 
 		$style->register();
 
-		$mock = $this->getMock( 'MockClass', array( 'callback' ) );
+		$mock = $this->getMockBuilder( 'MockClass' )->setMethods( array( 'callback' ) )->getMock();
 		$mock->expects( $this->once() )
-		     ->method( 'callback' )
-		     ->with( $this->isType( 'string' ), 'test-handle', $this->isType( 'string' ), 'test-media' );
+			->method( 'callback' )
+			->with( $this->isType( 'string' ), 'test-handle', $this->isType( 'string' ), 'test-media' );
 
 		add_filter( 'style_loader_tag', array( $mock, 'callback' ), 10, 4 );
 
@@ -110,27 +113,5 @@ class StylesheetTest extends TestCase {
 		$style->enqueue();
 
 		$this->assertTrue( wp_style_is( 'test-handle', 'enqueued' ) );
-	}
-
-	public function test_register_with_post_enqueue_callback() {
-		$invocations = array();
-		$callback    = function () use ( &$invocations ) {
-			$invocations[] = func_get_args();
-		};
-		$style       = new Stylesheet( 'test-handle', array(
-			'post_enqueue' => $callback,
-		) );
-
-		$style->register();
-		$this->assertCount( 0, $invocations );
-
-		$style->enqueue();
-
-		$this->assertCount( 1, $invocations );
-		// Callback is only invoked once when style is enqueued.
-		$style->enqueue();
-		$style->enqueue();
-
-		$this->assertCount( 1, $invocations );
 	}
 }

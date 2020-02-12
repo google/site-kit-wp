@@ -24,11 +24,11 @@ import Header from 'GoogleComponents/header';
 import Link from 'GoogleComponents/link';
 import HelpLink from 'GoogleComponents/help-link';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
-import withFilters from 'GoogleComponents/higherorder/with-filters';
 
 /**
  * WordPress dependencies
  */
+import { withFilters } from '@wordpress/components';
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { applyFilters } from '@wordpress/hooks';
@@ -48,7 +48,7 @@ class SetupWrapper extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { moduleToSetup } = googlesitekit.setup;
+		const { moduleToSetup } = global.googlesitekit.setup;
 		this.state = {
 			currentModule: moduleToSetup,
 			refresh: false,
@@ -65,13 +65,13 @@ class SetupWrapper extends Component {
 	}
 
 	componentDidMount() {
-		window.addEventListener( 'focus', this.refreshStatus );
-		window.addEventListener( 'blur', this.startUnfocusedTimer );
+		global.addEventListener( 'focus', this.refreshStatus );
+		global.addEventListener( 'blur', this.startUnfocusedTimer );
 	}
 
 	componentWillUnmount() {
-		window.removeEventListener( 'focus', this.refreshStatus );
-		window.removeEventListener( 'blur', this.startUnfocusedTimer );
+		global.removeEventListener( 'focus', this.refreshStatus );
+		global.removeEventListener( 'blur', this.startUnfocusedTimer );
 	}
 
 	/**
@@ -85,7 +85,7 @@ class SetupWrapper extends Component {
 			}
 
 			if ( toRefresh ) {
-				this.timeoutID = window.setInterval( () => {
+				this.timeoutID = global.setInterval( () => {
 					this.unfocusedTime++;
 				}, 1000 );
 			}
@@ -111,7 +111,7 @@ class SetupWrapper extends Component {
 					this.setState( { refresh: this.timeoutID } );
 				}
 
-				window.clearTimeout( this.timeoutID );
+				global.clearTimeout( this.timeoutID );
 				this.unfocusedTime = 0;
 				this.timeoutID = null;
 			}
@@ -141,8 +141,8 @@ class SetupWrapper extends Component {
 			notification: 'authentication_success',
 		};
 
-		if ( googlesitekit.setup && googlesitekit.setup.moduleToSetup ) {
-			args.slug = googlesitekit.setup.moduleToSetup;
+		if ( global.googlesitekit.setup && global.googlesitekit.setup.moduleToSetup ) {
+			args.slug = global.googlesitekit.setup.moduleToSetup;
 		}
 
 		const redirectURL = getSiteKitAdminURL(
@@ -151,7 +151,7 @@ class SetupWrapper extends Component {
 		);
 
 		delay( function() {
-			window.location.replace( redirectURL );
+			global.location.replace( redirectURL );
 		}, 500, 'later' );
 	}
 

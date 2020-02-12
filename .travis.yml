@@ -15,7 +15,7 @@
 
 sudo: required
 
-dist: trusty
+dist: xenial
 
 language: php
 
@@ -26,7 +26,7 @@ notifications:
 
 cache:
   directories:
-    - $HOME/.composer/cache
+    - $HOME/.cache/composer
     - $HOME/.phpbrew
     - $HOME/.npm
 
@@ -39,17 +39,17 @@ branches:
 # Before install, failures in this section will result in build status 'errored'
 before_install:
   - |
-    if [[ "$JS" == "1" ]] || [[ "$E2E" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
+    if [[ "$JS" == "1" ]] || [[ "$VRT" == "1" ]] || [[ "$E2E" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
       nvm install
       npm ci
     fi
   - |
     if [[ "$PHP" == "1" ]] || [[ "$E2E" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
-      docker run --rm -v "$PWD:/app" composer install
+      docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer install
     fi
   - |
-    if [[ "$JS" == "1" ]]; then
-      docker run --rm -v "$PWD:/app" composer install --no-scripts
+    if [[ "$VRT" == "1" ]]; then
+      docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer install --no-scripts
     fi
   - |
     if [[ "$WP_VERSION" == "latest" ]]; then
@@ -74,10 +74,12 @@ script:
     fi
   - |
     if [[ "$JS" == "1" ]]; then
-      npm run build || exit 1 # Build for tests.
       npm run test:js || exit 1 # JS unit tests
       npm run test || exit 1 # Bundle size test
-      travis_retry npm run travis:visualtest || exit 1 # Visual regression tests
+    fi
+  - |
+    if [[ "$VRT" == "1" ]]; then
+      travis_retry npm run travis:visualtest || exit 1
     fi
   - |
     if [[ "$PHP" == "1" ]]; then
@@ -85,10 +87,9 @@ script:
     fi
   - |
     if [[ "$E2E" == "1" ]]; then
-      npm run build || exit 1 # Build for tests.
+      npm run build:test || exit 1 # Build for tests.
       npm run env:start || exit 1
       npm run test:e2e:ci || exit 1 # E2E tests.
-      npm run env:stop || exit 1
     fi
 
 jobs:
@@ -97,24 +98,26 @@ jobs:
   include:
     - stage: test
       name: Lint
-      php: 7.3
-      env: WP_VERSION=4.7 PHPCS_PHP_VERSION='5.4' SNIFF=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      php: 7.4
+      env: WP_VERSION=4.7 SNIFF=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
     - name: PHP Tests (PHP 5.6, WordPress latest)
       php: 5.6
-      env: WP_VERSION=latest PHP=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      env: WP_VERSION=latest PHP=1
     - name: PHP Tests (PHP 7.4, WordPress latest)
       php: 7.4
-      env: WP_VERSION=latest PHP=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      env: WP_VERSION=latest PHP=1
     - name: PHP Tests (PHP 7.4, WordPress Multisite latest)
       php: 7.4
-      env: WP_VERSION=latest WP_MULTISITE=1 PHP=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      env: WP_VERSION=latest WP_MULTISITE=1 PHP=1
     - name: JS Tests
       php: 7.4
-      env: WP_VERSION=latest JS=1
+      env: WP_VERSION=latest JS=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+    - name: Visual Regression
+      env: VRT=1
     - name: PHP Tests (PHP nightly, WordPress trunk)
       stage: test
       php: nightly
-      env: WP_VERSION=master PHP=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+      env: WP_VERSION=master PHP=1
     - stage: test
       name: E2E Tests (WordPress latest)
       env: E2E=1
@@ -127,3 +130,4 @@ jobs:
 
 services:
   - docker
+  - mysql

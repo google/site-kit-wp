@@ -26,11 +26,14 @@ class Exit_HandlerTest extends TestCase {
 		$spy     = new MethodSpy();
 		$handler = new Exit_Handler();
 
-		add_filter( 'googlesitekit_exit_handler', function () use ( $spy ) {
-			return function () use ( $spy ) {
-				$spy->invoke();
-			};
-		} );
+		add_filter(
+			'googlesitekit_exit_handler',
+			function () use ( $spy ) {
+				return function () use ( $spy ) {
+					$spy->invoke();
+				};
+			} 
+		);
 		$this->assertArrayNotHasKey( 'invoke', $spy->invocations );
 
 		$handler->invoke();

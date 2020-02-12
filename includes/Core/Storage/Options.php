@@ -21,7 +21,7 @@ use Google\Site_Kit\Context;
  * @access private
  * @ignore
  */
-final class Options {
+final class Options implements Options_Interface {
 
 	/**
 	 * Plugin context.
@@ -40,6 +40,28 @@ final class Options {
 	 */
 	public function __construct( Context $context ) {
 		$this->context = $context;
+	}
+
+	/**
+	 * Checks whether or not a value is set for the given option.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param string $option Option name.
+	 * @return bool True if value set, false otherwise.
+	 */
+	public function has( $option ) {
+		// Call without getting the value to ensure 'notoptions' cache is fresh for the option.
+		$this->get( $option );
+
+		if ( $this->context->is_network_mode() ) {
+			$network_id = get_current_network_id();
+			$notoptions = wp_cache_get( "$network_id:notoptions", 'site-options' );
+		} else {
+			$notoptions = wp_cache_get( 'notoptions', 'options' );
+		}
+
+		return ! isset( $notoptions[ $option ] );
 	}
 
 	/**
@@ -65,15 +87,14 @@ final class Options {
 	 *
 	 * @param string $option    Option name.
 	 * @param mixed  $value     Option value. Must be serializable if non-scalar.
-	 * @param mixed  $autoload  Autoload. False or 'no' to prevent autoloading on page load.
 	 * @return bool True on success, false on failure.
 	 */
-	public function set( $option, $value, $autoload = true ) {
+	public function set( $option, $value ) {
 		if ( $this->context->is_network_mode() ) {
 			return update_network_option( null, $option, $value );
 		}
 
-		return update_option( $option, $value, $autoload );
+		return update_option( $option, $value );
 	}
 
 	/**

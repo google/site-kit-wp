@@ -36,58 +36,64 @@ function filter_by_account_id( $items, $account_id ) {
 	);
 }
 
-add_action( 'rest_api_init', function () {
+add_action(
+	'rest_api_init',
+	function () {
 
-	$accounts   = array(
-		array(
-			'accountId' => ACCOUNT_ID_A,
-			'name'      => 'Test Account A',
-		),
-		array(
-			'accountId' => ACCOUNT_ID_B,
-			'name'      => 'Test Account B',
-		),
-	);
-	$containers = array(
-		array(
-			'accountId'   => ACCOUNT_ID_A,
-			'publicId'    => PUBLIC_ID_X,
-			'containerId' => CONTAINER_ID_X,
-			'name'        => 'Test Container X',
-		),
-		array(
-			'accountId'   => ACCOUNT_ID_B,
-			'publicId'    => PUBLIC_ID_Y,
-			'containerId' => CONTAINER_ID_Y,
-			'name'        => 'Test Container Y',
-		),
-	);
+		$accounts   = array(
+			array(
+				'accountId' => ACCOUNT_ID_A,
+				'name'      => 'Test Account A',
+			),
+			array(
+				'accountId' => ACCOUNT_ID_B,
+				'name'      => 'Test Account B',
+			),
+		);
+		$containers = array(
+			array(
+				'accountId'   => ACCOUNT_ID_A,
+				'publicId'    => PUBLIC_ID_X,
+				'containerId' => CONTAINER_ID_X,
+				'name'        => 'Test Container X',
+			),
+			array(
+				'accountId'   => ACCOUNT_ID_B,
+				'publicId'    => PUBLIC_ID_Y,
+				'containerId' => CONTAINER_ID_Y,
+				'name'        => 'Test Container Y',
+			),
+		);
 
-	register_rest_route(
-		REST_Routes::REST_ROOT,
-		'modules/tagmanager/data/accounts-containers',
-		array(
-			'callback' => function ( $request ) use ( $accounts, $containers ) {
-				$account_id = $request['accountID'] ?: $accounts[0]['accountId'];
+		register_rest_route(
+			REST_Routes::REST_ROOT,
+			'modules/tagmanager/data/accounts-containers',
+			array(
+				'methods'  => 'GET',
+				'callback' => function ( $request ) use ( $accounts, $containers ) {
+					$account_id = $request['accountID'] ?: $accounts[0]['accountId'];
 
-				return array(
-					'accounts'   => $accounts,
-					'containers' => filter_by_account_id( $containers, $account_id ),
-				);
-			}
-		),
-		true
-	);
+					return array(
+						'accounts'   => $accounts,
+						'containers' => filter_by_account_id( $containers, $account_id ),
+					);
+				},
+			),
+			true
+		);
 
-	register_rest_route(
-		REST_Routes::REST_ROOT,
-		'modules/tagmanager/data/containers',
-		array(
-			'callback' => function ( $request ) use ( $containers ) {
-				return filter_by_account_id( $containers, $request['accountID'] );
-			}
-		),
-		true
-	);
+		register_rest_route(
+			REST_Routes::REST_ROOT,
+			'modules/tagmanager/data/containers',
+			array(
+				'methods'  => 'GET',
+				'callback' => function ( $request ) use ( $containers ) {
+					return filter_by_account_id( $containers, $request['accountID'] );
+				},
+			),
+			true
+		);
 
-}, 0 );
+	},
+	0 
+);

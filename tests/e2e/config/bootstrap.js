@@ -1,6 +1,7 @@
 /**
  * External dependencies
  */
+import { setDefaultOptions } from 'expect-puppeteer';
 import { get } from 'lodash';
 
 /**
@@ -11,7 +12,6 @@ import {
 	enablePageDialogAccept,
 	setBrowserViewport,
 } from '@wordpress/e2e-test-utils';
-import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -28,7 +28,7 @@ import {
 /**
  * Environment variables
  */
-const { PUPPETEER_TIMEOUT } = process.env;
+const { PUPPETEER_TIMEOUT, EXPECT_PUPPETEER_TIMEOUT } = process.env;
 
 /**
  * Set of console logging types observed to protect against unexpected yet
@@ -52,6 +52,8 @@ const pageEvents = [];
 
 // The Jest timeout is increased because these tests are a bit slow
 jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
+// Set default timeout for individual expect-puppeteer assertions. (Default: 500)
+setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 500 } );
 
 // Add custom matchers specific to Site Kit.
 expect.extend( {
@@ -156,26 +158,51 @@ function observeConsoleLogging() {
 }
 
 /**
+ * Observe the given navigation request.
+ *
+ * @param {Object} req HTTP request object.
+ */
+function observeNavigationRequest( req ) {
+	if ( req.isNavigationRequest() ) {
+		const data = [ req.method(), req.url() ];
+		if ( 'POST' === req.method() ) {
+			data.push( req.postData() );
+		}
+		// eslint-disable-next-line no-console
+		console.log( 'NAV', ...data );
+	}
+}
+
+/**
+ * Observe the given navigation response.
+ *
+ * @param {Object} req HTTP response object.
+ */
+function observeNavigationResponse( res ) {
+	if ( res.request().isNavigationRequest() ) {
+		const data = [ res.status(), res.request().method(), res.url() ];
+		const redirect = res.headers().location;
+		if ( redirect ) {
+			data.push( { redirect } );
+		}
+		// eslint-disable-next-line no-console
+		console.log( ...data );
+	}
+}
+
+/**
  * Observe the given REST request.
  *
  * @param {Object} req HTTP request object from the REST API request.
  */
 function observeRestRequest( req ) {
 	if ( req.url().match( 'wp-json' ) ) {
+		const data = [ req.method(), req.url() ];
+		if ( 'POST' === req.method() ) {
+			data.push( req.postData() );
+		}
 		// eslint-disable-next-line no-console
-		console.log( '>>>', req.method(), req.url(), req.postData() );
-	}
-	if ( req.url().match( 'google-site-kit/v1/data/' ) ) {
-		const rawBatchRequest = getQueryArg( req.url(), 'request' );
-		try {
-			const batchRequests = JSON.parse( rawBatchRequest );
-			if ( Array.isArray( batchRequests ) ) {
-				batchRequests.forEach( ( r ) => {
-					// eslint-disable-next-line no-console
-					console.log( '>>>', r.key, r.data );
-				} );
-			}
-		} catch {}
+		console.log( '>>>', ...data );
 	}
 }
 
@@ -186,12 +213,12 @@ function observeRestRequest( req ) {
  */
 async function observeRestResponse( res ) {
 	if ( res.url().match( 'wp-json' ) ) {
-		const args = [ res.status(), res.request().method(), res.url() ];
+		const data = [ res.status(), res.request().method(), res.url() ];
 
 		// The response may fail to resolve if the test ends before it completes.
 		try {
-			args.push( await res.text() );
-			console.log( ...args ); // eslint-disable-line no-console
+			data.push( await res.text() );
+			console.log( ...data ); // eslint-disable-line no-console
 		} catch ( err ) {} // eslint-disable-line no-empty
 	}
 }
@@ -208,6 +235,10 @@ beforeAll( async () => {
 	// eslint-disable-next-line no-console
 	page.on( 'pageerror', console.error );
 
+	if ( '1' === process.env.DEBUG_NAV ) {
+		page.on( 'request', observeNavigationRequest );
+		page.on( 'response', observeNavigationResponse );
+	}
 	if ( '1' === process.env.DEBUG_REST ) {
 		page.on( 'request', observeRestRequest );
 		page.on( 'response', observeRestResponse );

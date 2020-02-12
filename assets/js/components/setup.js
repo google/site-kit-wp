@@ -34,7 +34,7 @@ import Header from 'GoogleComponents/header';
 import Button from 'GoogleComponents/button';
 import Layout from 'GoogleComponents/layout/layout';
 import data, { TYPE_CORE } from 'GoogleComponents/data';
-import { sendAnalyticsTrackingEvent, clearAppLocalStorage } from 'GoogleUtil';
+import { trackEvent, clearWebStorage } from 'GoogleUtil';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
 import STEPS from 'GoogleComponents/setup-wizard/wizard-steps';
 import WizardProgressStep from 'GoogleComponents/setup-wizard/wizard-progress-step';
@@ -43,7 +43,7 @@ class Setup extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { connectURL } = googlesitekit.admin;
+		const { connectURL } = global.googlesitekit.admin;
 
 		const {
 			isAuthenticated,
@@ -51,9 +51,9 @@ class Setup extends Component {
 			isSiteKitConnected,
 			isVerified,
 			needReauthenticate,
-		} = googlesitekit.setup; /*eslint camelcase: 0*/
+		} = global.googlesitekit.setup; /*eslint camelcase: 0*/
 
-		const { canSetup } = googlesitekit.permissions;
+		const { canSetup } = global.googlesitekit.permissions;
 
 		this.state = {
 			canSetup,
@@ -78,7 +78,7 @@ class Setup extends Component {
 
 	async resetAndRestart() {
 		await data.set( TYPE_CORE, 'site', 'reset' );
-		clearAppLocalStorage();
+		clearWebStorage();
 
 		this.setState( {
 			isSiteKitConnected: false,
@@ -195,7 +195,7 @@ class Setup extends Component {
 			);
 
 			delay( function() {
-				window.location.replace( redirectURL );
+				global.location.replace( redirectURL );
 			}, 500, 'later' );
 		}
 
@@ -277,7 +277,7 @@ class Setup extends Component {
 															<Button
 																href="#"
 																onClick={ () => {
-																	sendAnalyticsTrackingEvent( 'plugin_setup', 'signin_with_google' );
+																	trackEvent( 'plugin_setup', 'signin_with_google' );
 																	document.location = connectURL;
 																} }
 															>{ __( 'Sign in with Google', 'google-site-kit' ) }</Button>

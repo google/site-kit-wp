@@ -120,7 +120,7 @@ class CacheTest extends TestCase {
 			),
 			array(
 				'response-test-key-a' => 'test-value-a',
-				'response-test-key-b' => new \Exception,
+				'response-test-key-b' => new \Exception(),
 				'response-test-key-c' => 'test-value-c',
 			)
 		);

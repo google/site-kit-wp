@@ -5,8 +5,8 @@ import data from '../';
 
 const { setCache, getCache, deleteCache } = data;
 
-const nativeSessionStorage = window.sessionStorage;
-const nativeLocalStorage = window.localStorage;
+const nativeSessionStorage = global.sessionStorage;
+const nativeLocalStorage = global.localStorage;
 
 const valuesToTest = [
 	[
@@ -39,8 +39,8 @@ describe( 'setCache/getCache/deleteCache', () => {
 	it.each( valuesToTest )( 'variableStorage', ( key, value ) => {
 		let result;
 
-		window.sessionStorage = undefined;
-		window.localStorage = undefined;
+		global.sessionStorage = undefined;
+		global.localStorage = undefined;
 
 		result = getCache( key );
 		expect( result ).toBeUndefined();
@@ -55,18 +55,18 @@ describe( 'setCache/getCache/deleteCache', () => {
 
 		expect( result ).toBeUndefined();
 
-		window.googlesitekit.admin.datacache = {};
+		global.googlesitekit.admin.datacache = {};
 
-		window.sessionStorage = nativeSessionStorage;
-		window.localStorage = nativeLocalStorage;
+		global.sessionStorage = nativeSessionStorage;
+		global.localStorage = nativeLocalStorage;
 	} );
 
 	if ( nativeSessionStorage ) {
 		it.each( valuesToTest )( 'sessionStorage', ( key, value ) => {
 			let result;
 
-			window.sessionStorage = nativeSessionStorage;
-			window.localStorage = undefined;
+			global.sessionStorage = nativeSessionStorage;
+			global.localStorage = undefined;
 
 			result = getCache( key );
 			expect( result ).toBeUndefined();
@@ -81,10 +81,10 @@ describe( 'setCache/getCache/deleteCache', () => {
 
 			expect( result ).toBeUndefined();
 
-			window.googlesitekit.admin.datacache = {};
-			window.sessionStorage.clear();
+			global.googlesitekit.admin.datacache = {};
+			global.sessionStorage.clear();
 
-			window.localStorage = nativeLocalStorage;
+			global.localStorage = nativeLocalStorage;
 		} );
 	}
 
@@ -92,8 +92,8 @@ describe( 'setCache/getCache/deleteCache', () => {
 		it.each( valuesToTest )( 'localStorage', ( key, value ) => {
 			let result;
 
-			window.sessionStorage = undefined;
-			window.localStorage = nativeLocalStorage;
+			global.sessionStorage = undefined;
+			global.localStorage = nativeLocalStorage;
 
 			result = getCache( key );
 			expect( result ).toBeUndefined();
@@ -108,10 +108,10 @@ describe( 'setCache/getCache/deleteCache', () => {
 
 			expect( result ).toBeUndefined();
 
-			window.googlesitekit.admin.datacache = {};
-			window.localStorage.clear();
+			global.googlesitekit.admin.datacache = {};
+			global.localStorage.clear();
 
-			window.sessionStorage = nativeSessionStorage;
+			global.sessionStorage = nativeSessionStorage;
 		} );
 	}
 } );

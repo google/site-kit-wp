@@ -45,7 +45,7 @@ class ActivationTest extends TestCase {
 
 		$this->assertAdminActivationNoticeRegistered();
 		$this->assertAdminDataExtended();
-		$this->assertActivationActions( $network_wide = false );
+		$this->assertActivationActions( $context->is_network_mode() );
 		$this->assertAssetsEnqueued();
 	}
 
@@ -70,7 +70,7 @@ class ActivationTest extends TestCase {
 
 		$this->assertAdminActivationNoticeRegistered();
 		$this->assertAdminDataExtended();
-		$this->assertActivationActions( $network_wide = true );
+		$this->assertActivationActions( $context->is_network_mode() );
 		$this->assertAssetsEnqueued();
 	}
 
@@ -91,7 +91,15 @@ class ActivationTest extends TestCase {
 	protected function assertActivationActions( $network_wide ) {
 		$this->assertFalse( $this->options->get( Activation::OPTION_SHOW_ACTIVATION_NOTICE ) );
 		$this->assertFalse( $this->options->get( Activation::OPTION_NEW_SITE_POSTS ) );
-		$this->assertCount( 0, get_posts( array( 'post_type' => 'post', 'post_status' => 'publish' ) ) );
+		$this->assertCount(
+			0,
+			get_posts(
+				array(
+					'post_type'   => 'post',
+					'post_status' => 'publish',
+				)
+			)
+		);
 		$this->factory()->post->create( array( 'post_status' => 'publish' ) ); // first post
 
 		do_action( 'googlesitekit_activation', $network_wide );
@@ -112,7 +120,7 @@ class ActivationTest extends TestCase {
 		// googlesitekit-fonts is only enqueued in AMP context, only need to check admin css.
 		$this->assertFalse( wp_style_is( 'googlesitekit_admin_css', 'enqueued' ) );
 
-		do_action( 'admin_enqueue_scripts', 'test-hook-suffix' );
+		do_action( 'admin_enqueue_scripts', 'plugins.php' );
 
 		$this->assertTrue( wp_style_is( 'googlesitekit_admin_css', 'enqueued' ) );
 	}

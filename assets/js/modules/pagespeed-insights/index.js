@@ -22,20 +22,23 @@
 import { createAddToFilter } from 'GoogleUtil/helpers';
 
 /**
+ * WordPress dependencies
+ */
+import { addFilter } from '@wordpress/hooks';
+
+/**
  * Internal dependencies
  */
 import DashboardSpeed from './dashboard/dashboard-widget-speed';
 import PageSpeedInsightsDashboardWidgetHomepageSpeed from './dashboard/dashboard-widget-homepage-speed';
 import PageSpeedInsightsCTA from './dashboard/dashboard-cta';
 
-/**
- * WordPress dependencies
- */
-import { addFilter } from '@wordpress/hooks';
+const slug = 'pagespeed-insights';
+
 const {
 	active,
 	setupComplete,
-} = googlesitekit.modules[ 'pagespeed-insights' ];
+} = global.googlesitekit.modules[ slug ];
 
 if ( active && setupComplete ) {
 	const addDashboardSpeed = createAddToFilter( <DashboardSpeed /> );

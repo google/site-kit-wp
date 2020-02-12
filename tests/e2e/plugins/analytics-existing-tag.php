@@ -12,22 +12,30 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-register_activation_hook( __FILE__, function () {
-	delete_option( 'googlesitekit_e2e_analytics_existing_property_id' );
-} );
-
-register_deactivation_hook( __FILE__, function () {
-	delete_option( 'googlesitekit_e2e_analytics_existing_property_id' );
-} );
-
-add_action( 'wp_print_scripts', function () {
-	$UA_CODE = get_option( 'googlesitekit_e2e_analytics_existing_property_id' );
-
-	if ( ! $UA_CODE ) {
-		return;
+register_activation_hook(
+	__FILE__,
+	function () {
+		delete_option( 'googlesitekit_e2e_analytics_existing_property_id' );
 	}
+);
 
-	echo <<<HTML
+register_deactivation_hook(
+	__FILE__,
+	function () {
+		delete_option( 'googlesitekit_e2e_analytics_existing_property_id' );
+	}
+);
+
+add_action(
+	'wp_print_scripts',
+	function () {
+		$UA_CODE = get_option( 'googlesitekit_e2e_analytics_existing_property_id' );
+
+		if ( ! $UA_CODE ) {
+			return;
+		}
+
+		echo <<<HTML
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=$UA_CODE"></script>
 <script>
@@ -37,4 +45,5 @@ add_action( 'wp_print_scripts', function () {
   gtag('config', '$UA_CODE');
 </script>
 HTML;
-} );
+	}
+);

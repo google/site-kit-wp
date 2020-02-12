@@ -28,7 +28,7 @@ import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 const slug = 'optimize';
 
-if ( googlesitekit.modules.optimize.active ) {
+if ( global.googlesitekit.modules.optimize.active ) {
 	/**
 	 * Add components to the settings page.
 	 */

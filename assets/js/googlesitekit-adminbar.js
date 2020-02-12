@@ -25,15 +25,17 @@ import Link from 'GoogleComponents/link';
 import {
 	decodeHtmlEntity,
 	getSiteKitAdminURL,
-	sendAnalyticsTrackingEvent,
+	loadTranslations,
+	trackEvent,
 } from 'GoogleUtil';
+import 'GoogleModules';
 
 /**
  * WordPress dependencies
  */
 import { doAction } from '@wordpress/hooks';
 import { Component, Fragment, render } from '@wordpress/element';
-import { setLocaleData, __ } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies.
@@ -44,9 +46,6 @@ export class GoogleSitekitAdminbar extends Component {
 	constructor( props ) {
 		super( props );
 
-		// Set up translations.
-		setLocaleData( googlesitekit.locale, 'google-site-kit' );
-
 		this.handleMoreDetailsLink = this.handleMoreDetailsLink.bind( this );
 	}
 
@@ -56,7 +55,7 @@ export class GoogleSitekitAdminbar extends Component {
 			postID,
 			postType,
 			pageTitle,
-		} = googlesitekit;
+		} = global.googlesitekit;
 		const href = getSiteKitAdminURL(
 			'googlesitekit-dashboard',
 			{
@@ -67,7 +66,7 @@ export class GoogleSitekitAdminbar extends Component {
 			}
 		);
 
-		sendAnalyticsTrackingEvent( 'admin_bar', 'post_details_click' );
+		trackEvent( 'admin_bar', 'post_details_click' );
 		document.location = href;
 	}
 
@@ -75,7 +74,7 @@ export class GoogleSitekitAdminbar extends Component {
 		const {
 			pageTitle,
 			permaLink,
-		} = googlesitekit;
+		} = global.googlesitekit;
 
 		return (
 			<Fragment>
@@ -133,10 +132,12 @@ export class GoogleSitekitAdminbar extends Component {
 
 // Initialize the whole adminbar app.
 export function init() {
-	const adminbarModules = document.getElementById( 'js-googlesitekit-adminbar-modules' );
-	if ( null !== adminbarModules ) {
-		// Render the Adminbar App.
-		render( <GoogleSitekitAdminbar />, document.getElementById( 'js-googlesitekit-adminbar-modules' ) );
+	const renderTarget = document.getElementById( 'js-googlesitekit-adminbar-modules' );
+
+	if ( renderTarget ) {
+		loadTranslations();
+
+		render( <GoogleSitekitAdminbar />, renderTarget );
 
 		/**
 		 * Action triggered when the dashboard App is loaded.

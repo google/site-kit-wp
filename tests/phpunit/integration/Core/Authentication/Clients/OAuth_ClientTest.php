@@ -33,7 +33,7 @@ class OAuth_ClientTest extends TestCase {
 	public function test_get_client() {
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$this->assertInstanceOf( 'Google\Site_Kit_Dependencies\Google_Client', $client->get_client() );
+		$this->assertInstanceOf( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client', $client->get_client() );
 	}
 
 	public function test_refresh_token() {
@@ -54,14 +54,17 @@ class OAuth_ClientTest extends TestCase {
 
 		$client->refresh_token();
 
-		$this->assertEquals( 'access_token_not_received', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+		// If the request completely fails (cURL error), ignore that.
+		$http_error = (string) get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id );
+		if ( 0 !== strpos( $http_error, 'cURL error' ) ) {
+			$this->assertEquals( 'invalid_client', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+		}
 
 		$client->get_client()->setHttpClient( new FakeHttpClient() );
 		$client->refresh_token();
 
-		// At this point an error is triggered internally due to undefined indexes on $authentication_token
-		// and the saved error code is 'invalid_grant' by default.
-		$this->assertEquals( 'invalid_grant', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+		// There is no actual response, so attempting to decode JSON fails.
+		$this->assertEquals( 'Invalid JSON response', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
 	}
 
 	public function test_revoke_token() {
@@ -149,9 +152,9 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertEquals( false, get_user_option( OAuth_Client::OPTION_ACCESS_TOKEN_CREATED, $user_id ) );
 		$this->assertEquals( false, get_user_option( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN, $user_id ) );
 
-		$current_time_before = current_time( 'timestamp', true );
+		$current_time_before = time();
 		$this->assertTrue( $client->set_access_token( 'test-access-token', 123 ) );
-		$current_time_after = current_time( 'timestamp', true );
+		$current_time_after = time();
 		$created_at         = get_user_option( OAuth_Client::OPTION_ACCESS_TOKEN_CREATED, $user_id );
 		// Uses current GMT timestamp if not provided
 		$this->assertGreaterThanOrEqual( $current_time_before, $created_at );
@@ -200,7 +203,7 @@ class OAuth_ClientTest extends TestCase {
 
 	public function test_get_authentication_url() {
 		/**
-		 * Requires credentials for redirect_uri to be set on the Google_Client.
+		 * Requires credentials for redirect_uri to be set on the Google_Site_Kit_Client.
 		 * @see \Google\Site_Kit\Core\Authentication\Clients\OAuth_Client::get_client
 		 */
 		$this->fake_authentication();
@@ -223,11 +226,11 @@ class OAuth_ClientTest extends TestCase {
 	public function test_authorize_user() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$user_options = new User_Options( $context );
 
 		// If GET[error] is set, it redirects to admin URL.
-		$client = new OAuth_Client( $context, null, $user_options );
+		$client        = new OAuth_Client( $context, null, $user_options );
 		$_GET['error'] = 'callback_error';
 		$this->fake_authentication(); // required by get_authentication_url
 
@@ -256,30 +259,35 @@ class OAuth_ClientTest extends TestCase {
 		// If all goes smooth, we expect to be redirected to $success_redirect
 		$success_redirect = admin_url( 'success-redirect' );
 		$client->get_authentication_url( $success_redirect );
-		// No other way around this but to mock the Google_Client
-		$google_client_mock = $this->getMock( 'Google\Site_Kit_Dependencies\Google_Client', array( 'fetchAccessTokenWithAuthCode' ) );
-		$http_client = new FakeHttpClient();
-		$http_client->set_request_handler( function ( Request $request ) {
-			$url = parse_url( $request->getUrl() );
-			if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
-				return new Response( 200 );
-			}
+		// No other way around this but to mock the Google_Site_Kit_Client
+		$google_client_mock = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
+			->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
+		$http_client        = new FakeHttpClient();
+		$http_client->set_request_handler(
+			function ( Request $request ) {
+				$url = parse_url( $request->getUrl() );
+				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
+					return new Response( 200 );
+				}
 
-			return new Response(
-				200,
-				array(),
-				Stream::factory( json_encode( array(
-					// ['emailAddresses'][0]['value']
-					'emailAddresses' => array(
-						array( 'value' => 'fresh@foo.com' ),
-					),
-					// ['photos'][0]['url']
-					'photos'         => array(
-						array( 'url' => 'https://example.com/fresh.jpg' ),
-					),
-				) ) )
-			);
-		});
+				return new Response(
+					200,
+					array(),
+					Stream::factory(
+						json_encode(
+							array(
+								'emailAddresses' => array(
+									array( 'value' => 'fresh@foo.com' ),
+								),
+								'photos'         => array(
+									array( 'url' => 'https://example.com/fresh.jpg' ),
+								),
+							)
+						)
+					)
+				);
+			}
+		);
 		$google_client_mock->setHttpClient( $http_client );
 		$google_client_mock->method( 'fetchAccessTokenWithAuthCode' )->willReturn( array( 'access_token' => 'test-access-token' ) );
 		$this->force_set_property( $client, 'google_client', $google_client_mock );
@@ -321,10 +329,9 @@ class OAuth_ClientTest extends TestCase {
 
 		// If no site ID, pass site registration args.
 		$client = new OAuth_Client( $context );
-		$url = $client->get_proxy_setup_url();
+		$url    = $client->get_proxy_setup_url();
 		$this->assertContains( 'name=', $url );
 		$this->assertContains( 'url=', $url );
-		$this->assertContains( 'version=', $url );
 		$this->assertContains( 'rest_root=', $url );
 		$this->assertContains( 'admin_root=', $url );
 		$this->assertContains( 'scope=', $url );
@@ -334,10 +341,9 @@ class OAuth_ClientTest extends TestCase {
 		// Otherwise, pass site ID and given temporary access code.
 		$this->fake_proxy_authentication();
 		$client = new OAuth_Client( $context );
-		$url = $client->get_proxy_setup_url( 'temp-code' );
+		$url    = $client->get_proxy_setup_url( 'temp-code' );
 		$this->assertContains( 'site_id=' . self::SITE_ID, $url );
 		$this->assertContains( 'code=temp-code', $url );
-		$this->assertContains( 'version=', $url );
 		$this->assertContains( 'scope=', $url );
 		$this->assertContains( 'nonce=', $url );
 		$this->assertNotContains( 'name=', $url );
@@ -351,11 +357,11 @@ class OAuth_ClientTest extends TestCase {
 
 		// If no access token, this does not work.
 		$client = new OAuth_Client( $context );
-		$url = $client->get_proxy_permissions_url();
+		$url    = $client->get_proxy_permissions_url();
 		$this->assertEmpty( $url );
 
 		// The URL has to include the access token.
-		$client                 = new OAuth_Client( $context );
+		$client = new OAuth_Client( $context );
 		$client->set_access_token( 'test-access-token', 3600 );
 		$url = $client->get_proxy_permissions_url();
 		$this->assertContains( 'token=test-access-token', $url );
@@ -401,25 +407,35 @@ class OAuth_ClientTest extends TestCase {
 	}
 
 	protected function fake_authentication() {
-		add_filter( 'googlesitekit_oauth_secret', function () {
-			return json_encode( array(
-				'web' => array(
-					'client_id'     => self::CLIENT_ID,
-					'client_secret' => 'test-client-secret',
-				),
-			) );
-		} );
+		add_filter(
+			'googlesitekit_oauth_secret',
+			function () {
+				return json_encode(
+					array(
+						'web' => array(
+							'client_id'     => self::CLIENT_ID,
+							'client_secret' => 'test-client-secret',
+						),
+					)
+				);
+			}
+		);
 	}
 
 	protected function fake_proxy_authentication() {
-		add_filter( 'googlesitekit_oauth_secret', function () {
-			return json_encode( array(
-				'web' => array(
-					'client_id'     => self::SITE_ID,
-					'client_secret' => 'test-client-secret',
-				),
-			) );
-		} );
+		add_filter(
+			'googlesitekit_oauth_secret',
+			function () {
+				return json_encode(
+					array(
+						'web' => array(
+							'client_id'     => self::SITE_ID,
+							'client_secret' => 'test-client-secret',
+						),
+					)
+				);
+			}
+		);
 	}
 
 	protected function get_user_credential_keys() {

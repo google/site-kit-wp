@@ -38,7 +38,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * @param {boolean} createGrid Adds a full grid layout with padding. Default: false.
  */
 const getSetupIncompleteComponent = ( module, inGrid = false, fullWidth = false, createGrid = false ) => {
-	const { name } = googlesitekit.modules[ module ];
+	const { name } = global.googlesitekit.modules[ module ];
 	const cta = <CTA
 
 		/* translators: %s: Module name */
@@ -48,7 +48,7 @@ const getSetupIncompleteComponent = ( module, inGrid = false, fullWidth = false,
 		description={ sprintf( __( '%s module needs to be configured', 'google-site-kit' ), name ) }
 		ctaLabel={ __( 'Complete activation', 'google-site-kit' ) }
 		onClick={ () => {
-			window.location = getReAuthURL( module, true );
+			global.location = getReAuthURL( module, true );
 		} }
 	/>;
 

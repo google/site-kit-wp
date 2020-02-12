@@ -37,9 +37,9 @@ class AdSenseSetupAuthFlowWidget extends Component {
 	static createNewAccount( e ) {
 		e.preventDefault();
 
-		const { signupURL } = googlesitekit.modules.adsense;
+		const { signupURL } = global.googlesitekit.modules.adsense;
 
-		window.open( signupURL, '_blank' );
+		global.open( signupURL, '_blank' );
 	}
 
 	renderAccountSetup() {
