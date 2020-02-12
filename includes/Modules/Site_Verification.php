@@ -483,14 +483,10 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * @since 1.1.0
 	 */
 	private function serve_verification_file( $verification_token ) {
-		global $wpdb;
-
-		// User option keys are prefixed in single site and multisite when not in network mode.
-		$key_prefix = $this->context->is_network_mode() ? '' : $wpdb->get_blog_prefix();
-		$user_ids   = ( new \WP_User_Query(
+		$user_ids = ( new \WP_User_Query(
 			array(
 				// phpcs:ignore WordPress.VIP.SlowDBQuery
-				'meta_key'   => $key_prefix . Verification_File::OPTION,
+				'meta_key'   => $this->user_options->get_meta_key( Verification_File::OPTION ),
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 				'meta_value' => $verification_token,
 				'fields'     => 'id',
