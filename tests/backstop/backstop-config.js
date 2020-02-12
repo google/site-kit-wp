@@ -16,9 +16,8 @@
  * limitations under the License.
  */
 
-const scenariosData = require( './scenarios-data' );
-const hostname = require( './detect-target-host' );
-const scenarios = scenariosData( `http://${ hostname }:9001/iframe.html?id=` );
+const scenarios = require( './scenarios' );
+const viewports = require( './viewports' );
 
 // If this is run from the host, set the hostname arg.
 if ( process.argv.find( ( arg ) => arg.match( /^--docker$/ ) ) ) {
@@ -45,7 +44,7 @@ module.exports = {
 	},
 	report: [ 'browser' ],
 	scenarios,
-	viewports: require( './viewports' ),
+	viewports,
 	readyEvent: 'backstopjs_ready',
 	misMatchThreshold: 0.05, // @todo change to 0, resolve SVG issue.
 	delay: 1000, // Default delay to ensure components render in Travis.

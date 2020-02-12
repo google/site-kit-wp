@@ -1,7 +1,18 @@
-const scenariosData = require( '../../tests/backstop/scenarios-data' );
+const hostname = require( './detect-target-host' );
+const rootURL = `http://${ hostname }:9001/iframe.html?id=`;
+const storybookStories = require( '../../.storybook/storybook-data' );
 
-const rootURL = 'http://host.docker.internal:9001/iframe.html?id=';
-
-const scenarios = scenariosData( rootURL );
-
-module.exports = scenarios;
+module.exports = storybookStories.map( ( story ) => {
+	return {
+		label: `${ story.kind }/${ story.name }`,
+		url: `${ rootURL }${ story.id }`,
+		readySelector: story.parameters.options.readySelector,
+		hoverSelector: story.parameters.options.hoverSelector,
+		clickSelector: story.parameters.options.clickSelector,
+		clickSelectors: story.parameters.options.clickSelectors,
+		postInteractionWait: story.parameters.options.postInteractionWait,
+		delay: story.parameters.options.delay,
+		onReadyScript: story.parameters.options.onReadyScript,
+		misMatchThreshold: story.parameters.options.misMatchThreshold,
+	};
+} );
