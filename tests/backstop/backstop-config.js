@@ -19,8 +19,10 @@
 const scenarios = require( './scenarios' );
 const viewports = require( './viewports' );
 
-// If this is run from the host, set the hostname arg.
-if ( process.argv.find( ( arg ) => arg.match( /^--docker$/ ) ) ) {
+// If run from the host, detect the proper target host and set the hostname arg.
+// This will be passed through with the `backstop` command run with docker.
+if ( process.argv.includes( '--docker' ) ) {
+	const hostname = require( './detect-target-host' );
 	process.argv.push( `--hostname=${ hostname }` );
 }
 
