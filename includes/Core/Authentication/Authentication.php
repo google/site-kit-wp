@@ -171,7 +171,7 @@ final class Authentication {
 		$this->verification      = new Verification( $this->user_options );
 		$this->verification_meta = new Verification_Meta( $this->user_options, $this->transients );
 		$this->verification_file = new Verification_File( $this->user_options );
-		$this->profile           = new Profile( $user_options );
+		$this->profile           = new Profile( $this->user_options );
 		$this->first_admin       = new First_Admin( $this->options );
 	}
 
