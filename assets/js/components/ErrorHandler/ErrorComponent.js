@@ -25,16 +25,14 @@ const ErrorComponent = () => {
 	}
 
 	return (
-		<div>
-			<Button
-				danger
-				onClick={ () => {
-					setShouldThrow( true );
-				} }
-			>
+		<Button
+			danger
+			onClick={ () => {
+				setShouldThrow( true );
+			} }
+		>
 				Simulate an error
-			</Button>
-		</div>
+		</Button>
 	);
 };
 
