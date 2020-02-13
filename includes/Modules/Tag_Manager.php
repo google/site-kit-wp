@@ -514,7 +514,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 					$container_key = $this->context_map[ $usage_context ];
 					$container_id  = $data[ $container_key ];
 
-					if ( '0' === $container_id ) {
+					if ( 'container_create' === $container_id ) {
 						$create_container_response = $this->create_container( $data['accountID'], $usage_context );
 
 						if ( is_wp_error( $create_container_response ) ) {
