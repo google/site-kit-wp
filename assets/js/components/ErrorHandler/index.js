@@ -41,11 +41,9 @@ class ErrorHandler extends Component {
 
 		return (
 			<Notification
-				id={ 'googlesitekit-error' }
-				key={ 'googlesitekit-error' }
+				id="googlesitekit-error"
 				title={ __( 'Site Kit encountered an error', 'google-site-kit' ) }
 				description={ <code>{ error.message }</code> }
-				dismiss={ '' }
 				isDismissable={ false }
 				format="small"
 				type="win-error"
