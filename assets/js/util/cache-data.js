@@ -122,10 +122,10 @@ rl.question( 'Username: ', ( username ) => {
 						fs.writeFile(
 							filename,
 							toWrite,
-							function( /*err*/ ) {
-								// if ( err ) {
-								// 	console.error( err ); // eslint-disable-line no-console
-								// }
+							function( err ) {
+								if ( err ) {
+									console.error( err ); // eslint-disable-line no-console
+								}
 							}
 						);
 						console.log( '%s data saved for %s', scriptName, endpoint ); // eslint-disable-line no-console
