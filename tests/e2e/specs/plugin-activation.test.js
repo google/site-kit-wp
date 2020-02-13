@@ -48,6 +48,7 @@ describe( 'Plugin Activation Notice', () => {
 		await activateSiteKit();
 
 		await page.waitForSelector( '.googlesitekit-activation' );
+		await page.waitForSelector( 'h3.googlesitekit-activation__title' );
 
 		await expect( page ).toMatchElement( 'h3.googlesitekit-activation__title', { text: 'Congratulations, the Site Kit plugin is now activated.' } );
 
@@ -58,6 +59,7 @@ describe( 'Plugin Activation Notice', () => {
 		await activateSiteKit();
 
 		await page.waitForSelector( '.googlesitekit-activation' );
+		await page.waitForSelector( '.googlesitekit-start-setup' );
 
 		await expect( page ).toMatchElement( '.googlesitekit-start-setup', { text: 'Start setup' } );
 
