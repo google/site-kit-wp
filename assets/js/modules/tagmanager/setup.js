@@ -240,7 +240,10 @@ class TagmanagerSetup extends Component {
 				selectedAccount,
 				usageContext,
 			} = this.state;
-			let { selectedContainer } = this.state;
+			let {
+				selectedContainerWeb,
+				selectedContainerAMP,
+			} = this.state;
 
 			const queryArgs = {
 				accountID: selectedAccount,
@@ -251,20 +254,25 @@ class TagmanagerSetup extends Component {
 
 			this.validateAccounts( accounts, selectedAccount );
 
-			// If the selectedContainer is not in the list of containers, clear it.
-			if ( isValidContainerID( selectedContainer ) && ! containers.find( ( container ) => container.publicId === selectedContainer ) ) { /* Capitalization rule exception: `publicId` is a property of an API returned value. */
-				selectedContainer = null;
+			// If the selected container is not in the list of containers, clear it.
+			const containerIDs = containers.map( ( container ) => container.publicId ); /* Capitalization rule exception: `publicId` is a property of an API returned value. */
+			if ( isValidContainerID( selectedContainerWeb ) && ! containerIDs.includes( selectedContainerWeb ) ) {
+				selectedContainerWeb = '';
+			}
+			if ( isValidContainerID( selectedContainerAMP ) && ! containerIDs.includes( selectedContainerAMP ) ) {
+				selectedContainerAMP = '';
 			}
 
 			this.setState( {
 				isLoading: false,
 				accounts,
 				selectedAccount: selectedAccount || get( containers, [ 0, 'accountId' ] ), // Capitalization rule exception: `accountId` is a property of an API returned value.
-				containers,
-				selectedContainer: selectedContainer || get( containers, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
+				selectedContainerWeb,
+				selectedContainerAMP,
 				errorCode: false,
 				errorMsg: '',
 			} );
+			this.setContainers( containers );
 		} catch ( err ) {
 			this.setState( {
 				isLoading: false,
