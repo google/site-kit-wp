@@ -33,8 +33,9 @@ define( 'GOOGLESITEKIT_PHP_MINIMUM', '5.6.0' );
  *
  * Throws an error if the plugin is activated on an older version than PHP 5.4.
  *
+ * @since 1.0.0
+ * @since 1.3.0 Minimum required version of PHP raised to 5.6
  * @access private
- * @since n.e.x.t Minimum required version of PHP raised to 5.6
  *
  * @param bool $network_wide Whether to activate network-wide.
  */
@@ -59,6 +60,7 @@ register_activation_hook( __FILE__, 'googlesitekit_activate_plugin' );
 /**
  * Handles plugin deactivation.
  *
+ * @since 1.0.0
  * @access private
  *
  * @param bool $network_wide Whether to deactivate network-wide.
@@ -80,8 +82,8 @@ register_deactivation_hook( __FILE__, 'googlesitekit_deactivate_plugin' );
 /**
  * Resets opcache if possible.
  *
+ * @since 1.3.0
  * @access private
- * @since n.e.x.t
  */
 function googlesitekit_opcache_reset() {
 	if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '<' ) ) {
