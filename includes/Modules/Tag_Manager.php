@@ -646,7 +646,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				return array_merge( $response, compact( 'containers' ) );
 			case 'GET:containers':
 				/* @var Google_Service_TagManager_ListContainersResponse $response Response object. */
-				$account_id    = $data['accountID'];
 				$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
 				/* @var Google_Service_TagManager_Container[] $containers Filtered containers. */
 				$containers = array_filter(
@@ -655,17 +654,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 						return array_intersect( (array) $usage_context, $container->getUsageContext() );
 					}
 				);
-
-				if ( ! $containers && $account_id ) {
-					// If no containers, attempt to create a new container.
-					$new_container = $this->create_container( $account_id, $usage_context );
-
-					if ( is_wp_error( $new_container ) ) {
-						return $new_container;
-					}
-
-					return $this->get_data( 'containers', array( 'accountID' => $account_id ) );
-				}
 
 				return array_values( $containers );
 		}
