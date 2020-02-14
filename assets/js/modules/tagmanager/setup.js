@@ -151,11 +151,11 @@ class TagmanagerSetup extends Component {
 		if ( ! this.props.isEditing ) {
 			return;
 		}
-		const { containerKey } = this.state;
 
 		let settingsMapping = {
-			selectedContainer: containerKey,
-			selectedAccount: 'selectedAccount',
+			selectedContainerWeb: 'containerID',
+			selectedContainerAMP: 'ampContainerID',
+			selectedAccount: 'accountID',
 			useSnippet: 'useSnippet',
 		};
 
@@ -220,7 +220,8 @@ class TagmanagerSetup extends Component {
 			this.setState( {
 				isLoading: false,
 				accounts,
-				containers: [],
+				containersWeb: [],
+				containersAMP: [],
 			} );
 		} catch ( err ) {
 			this.setState( {
@@ -328,11 +329,10 @@ class TagmanagerSetup extends Component {
 			};
 
 			const containers = await data.get( TYPE_MODULES, 'tagmanager', 'containers', queryArgs );
+			this.setContainers( containers );
 
 			this.setState( {
 				containersLoading: false,
-				containers,
-				selectedContainer: get( containers, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
 				errorCode: false,
 			} );
 		} catch ( err ) {
@@ -404,7 +404,10 @@ class TagmanagerSetup extends Component {
 		this.setState( { selectedAccount: selectValue } );
 
 		if ( ! selectValue ) {
-			this.setState( { selectedContainer: '' } );
+			this.setState( {
+				selectedContainerWeb: '',
+				selectedContainerAMP: '',
+			} );
 			return;
 		}
 
