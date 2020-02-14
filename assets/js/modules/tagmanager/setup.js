@@ -587,6 +587,7 @@ class TagmanagerSetup extends Component {
 						this.renderContainerSelect( {
 							selectedStateKey: 'selectedContainerWeb',
 							containers: containersWeb,
+							label: showAMPContainerSelect ? __( 'Web Container', 'google-site-kit' ) : null,
 						} )
 					}
 
@@ -595,7 +596,7 @@ class TagmanagerSetup extends Component {
 							selectedStateKey: 'selectedContainerAMP',
 							containers: containersAMP,
 							// Use the default label if it is the only select shown.
-							label: 'primary' === ampMode ? null : __( 'AMP Container', 'google-site-kit' ),
+							label: ! showWebContainerSelect ? __( 'AMP Container', 'google-site-kit' ) : null,
 						} )
 					}
 				</div>
