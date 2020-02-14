@@ -725,21 +725,6 @@ abstract class Module {
 			$code = 'unknown';
 		}
 
-		// This is not great to have here, but is completely internal so it can be improved/removed at any time.
-		if ( $this instanceof \Google\Site_Kit\Modules\AdSense ) {
-			switch ( $datapoint ) {
-				case 'accounts':
-				case 'alerts':
-				case 'clients':
-				case 'urlchannels':
-					$errors = json_decode( $e->getMessage() );
-					if ( $errors ) {
-						return new \WP_Error( $e->getCode(), $errors, array( 'status' => 500 ) );
-					}
-					break;
-			}
-		}
-
 		$reason = '';
 
 		if ( $e instanceof Google_Service_Exception ) {
