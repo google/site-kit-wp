@@ -56,6 +56,7 @@ class TagmanagerSetup extends Component {
 		const ampUsageContext = ampMode === 'primary' ? USAGE_CONTEXT_AMP : [ USAGE_CONTEXT_WEB, USAGE_CONTEXT_AMP ];
 
 		this.state = {
+			ampEnabled,
 			ampMode,
 			isLoading: true,
 			accounts: [],
