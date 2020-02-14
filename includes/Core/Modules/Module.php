@@ -719,7 +719,7 @@ abstract class Module {
 	 * @param string    $datapoint Datapoint originally requested.
 	 * @return WP_Error WordPress error object.
 	 */
-	private function exception_to_error( Exception $e, $datapoint ) {
+	protected function exception_to_error( Exception $e, $datapoint ) {
 		$code = $e->getCode();
 		if ( empty( $code ) ) {
 			$code = 'unknown';
