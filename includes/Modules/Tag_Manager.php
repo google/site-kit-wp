@@ -652,7 +652,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				$containers = array_filter(
 					(array) $response->getContainer(),
 					function ( Google_Service_TagManager_Container $container ) use ( $usage_context ) {
-						return in_array( $usage_context, $container->getUsageContext(), true );
+						return array_intersect( (array) $usage_context, $container->getUsageContext() );
 					}
 				);
 
