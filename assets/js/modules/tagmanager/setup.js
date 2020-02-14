@@ -44,26 +44,30 @@ import { isValidAccountID, isValidContainerID } from './util';
 
 const ACCOUNT_CREATE = 'account_create';
 const CONTAINER_CREATE = 'container_create';
+const USAGE_CONTEXT_WEB = 'web';
+const USAGE_CONTEXT_AMP = 'amp';
 
 class TagmanagerSetup extends Component {
 	constructor( props ) {
 		super( props );
 
+		const { ampEnabled, ampMode } = global.googlesitekit.admin;
 		const { settings } = global.googlesitekit.modules.tagmanager;
-		const usageContext = global.googlesitekit.admin.ampMode === 'primary' ? 'amp' : 'web';
-		const containerKey = usageContext === 'amp' ? 'ampContainerID' : 'containerID';
+		const ampUsageContext = ampMode === 'primary' ? USAGE_CONTEXT_AMP : [ USAGE_CONTEXT_WEB, USAGE_CONTEXT_AMP ];
 
 		this.state = {
+			ampMode,
 			isLoading: true,
 			accounts: [],
-			containers: [],
+			containersWeb: [],
+			containersAMP: [],
 			errorCode: false,
 			errorMsg: '',
 			selectedAccount: settings.accountID,
-			selectedContainer: settings[ containerKey ],
+			selectedContainerWeb: settings.containerID,
+			selectedContainerAMP: settings.ampContainerID,
 			containersLoading: false,
-			usageContext,
-			containerKey,
+			usageContext: ampEnabled ? ampUsageContext : USAGE_CONTEXT_WEB,
 			hasExistingTag: false,
 			useSnippet: settings.useSnippet,
 		};
