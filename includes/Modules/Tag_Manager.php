@@ -498,35 +498,23 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
 
-				$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
+				return function() use ( $data ) {
+					$option = $data->data;
 
-				if ( self::USAGE_CONTEXT_WEB === $usage_context && ! isset( $data['containerID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ), array( 'status' => 400 ) );
-				}
-				if ( self::USAGE_CONTEXT_AMP === $usage_context && ! isset( $data['ampContainerID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampContainerID' ), array( 'status' => 400 ) );
-				}
-
-				return function() use ( $data, $usage_context ) {
-					$option        = $data->data;
-					$container_key = $this->context_map[ $usage_context ];
-					$container_id  = $data[ $container_key ];
-
-					if ( 'container_create' === $container_id ) {
-						$create_container_response = $this->create_container( $data['accountID'], $usage_context );
-
-						if ( is_wp_error( $create_container_response ) ) {
-							return $create_container_response;
+					try {
+						if ( 'container_create' === $data['containerID'] ) {
+							$option['containerID'] = $this->create_container( $data['accountID'], self::USAGE_CONTEXT_WEB );
 						}
-
-						$option[ $container_key ] = $create_container_response;
+						if ( 'container_create' === $data['ampContainerID'] ) {
+							$option['ampContainerID'] = $this->create_container( $data['accountID'], self::USAGE_CONTEXT_AMP );
+						}
+					} catch ( Exception $e ) {
+						return $this->exception_to_error( $e, $data->datapoint );
 					}
 
 					$this->get_settings()->merge( $option );
 
-					return $option;
+					return $this->get_settings()->get();
 				};
 			case 'GET:tag-permission':
 				return function () use ( $data ) {
