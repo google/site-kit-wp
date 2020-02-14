@@ -693,7 +693,13 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	private function get_account_for_container( $container_id, $accounts ) {
 		foreach ( (array) $accounts as $account ) {
 			/* @var Google_Service_TagManager_Account $account Tag manager account */
-			$containers = $this->get_data( 'containers', array( 'accountID' => $account->getAccountId() ) );
+			$containers = $this->get_data(
+				'containers',
+				array(
+					'accountID'    => $account->getAccountId(),
+					'usageContext' => array_keys( $this->context_map ),
+				)
+			);
 
 			if ( is_wp_error( $containers ) ) {
 				break;
