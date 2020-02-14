@@ -85,6 +85,25 @@ class TagmanagerSetup extends Component {
 		}
 	}
 
+	/**
+	 * Separates and sets a list of containers into their state keys by usage context.
+	 *
+	 * @param {Array} containers List of containers to set.
+	 */
+	setContainers( containers ) {
+		const { ampEnabled } = this.state;
+		const containersWeb = containers.filter(
+			( container ) => container.usageContext.includes( USAGE_CONTEXT_WEB )
+		);
+		let containersAMP = [];
+		if ( ampEnabled ) {
+			containersAMP = containers.filter(
+				( container ) => container.usageContext.includes( USAGE_CONTEXT_AMP )
+			);
+		}
+		this.setState( { containersWeb, containersAMP } );
+	}
+
 	async componentDidMount() {
 		const {
 			isOpen,
