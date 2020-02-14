@@ -675,18 +675,32 @@ class TagmanagerSetup extends Component {
 
 	canSaveSettings() {
 		const {
+			ampEnabled,
+			ampMode,
 			errorCode,
 			isLoading,
 			selectedAccount,
-			selectedContainer,
+			selectedContainerWeb,
+			selectedContainerAMP,
 		} = this.state;
 
 		if (
 			isLoading ||
 			'tag_manager_existing_tag_permission' === errorCode ||
-			! isValidAccountID( selectedAccount ) ||
-			( ! isValidContainerID( selectedContainer ) && CONTAINER_CREATE !== selectedContainer )
+			! isValidAccountID( selectedAccount )
 		) {
+			return false;
+		}
+
+		if (
+			( ! ampEnabled || 'secondary' === ampMode ) &&
+			! isValidContainerID( selectedContainerWeb ) &&
+			CONTAINER_CREATE !== selectedContainerWeb
+		) {
+			return false;
+		}
+
+		if ( ampEnabled && ! isValidContainerID( selectedContainerAMP ) && CONTAINER_CREATE !== selectedContainerAMP ) {
 			return false;
 		}
 
