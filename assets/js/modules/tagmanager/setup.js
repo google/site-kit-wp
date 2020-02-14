@@ -434,7 +434,6 @@ class TagmanagerSetup extends Component {
 		const { settings } = global.googlesitekit.modules.tagmanager;
 		const {
 			hasExistingTag,
-			containerKey,
 			isLoading,
 		} = this.state;
 		const {
@@ -454,15 +453,25 @@ class TagmanagerSetup extends Component {
 							{ __( 'Account', 'google-site-kit' ) }
 						</p>
 						<h5 className="googlesitekit-settings-module__meta-item-data">
-							{ accountID || false }
+							{ accountID || __( 'Not set', 'google-site-kit' ) }
 						</h5>
 					</div>
+
 					<div className="googlesitekit-settings-module__meta-item">
 						<p className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Container ID', 'google-site-kit' ) }
+							{ __( 'Web Container ID', 'google-site-kit' ) }
 						</p>
 						<h5 className="googlesitekit-settings-module__meta-item-data">
-							{ settings[ containerKey ] || false }
+							{ settings.containerID || __( 'Not set', 'google-site-kit' ) }
+						</h5>
+					</div>
+
+					<div className="googlesitekit-settings-module__meta-item">
+						<p className="googlesitekit-settings-module__meta-item-type">
+							{ __( 'AMP Container ID', 'google-site-kit' ) }
+						</p>
+						<h5 className="googlesitekit-settings-module__meta-item-data">
+							{ settings.ampContainerID || __( 'Not set', 'google-site-kit' ) }
 						</h5>
 					</div>
 				</div>
