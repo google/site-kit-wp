@@ -211,10 +211,9 @@ class TagmanagerSetup extends Component {
 		try {
 			const {
 				selectedAccount,
-				usageContext,
 			} = this.state;
 
-			const accounts = await data.get( TYPE_MODULES, 'tagmanager', 'accounts', { usageContext } );
+			const accounts = await data.get( TYPE_MODULES, 'tagmanager', 'accounts' );
 
 			this.validateAccounts( accounts, selectedAccount );
 
