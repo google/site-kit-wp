@@ -342,10 +342,10 @@ class TagmanagerSetup extends Component {
 
 	async handleSubmit() {
 		const {
-			containerKey,
 			hasExistingTag,
 			selectedAccount,
-			selectedContainer,
+			selectedContainerWeb,
+			selectedContainerAMP,
 			usageContext,
 			useSnippet,
 		} = this.state;
@@ -355,7 +355,8 @@ class TagmanagerSetup extends Component {
 		try {
 			const dataParams = {
 				accountID: selectedAccount,
-				[ containerKey ]: selectedContainer,
+				containerID: selectedContainerWeb,
+				ampContainerID: selectedContainerAMP,
 				usageContext,
 				useSnippet: hasExistingTag ? false : useSnippet,
 			};
