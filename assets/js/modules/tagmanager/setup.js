@@ -594,7 +594,8 @@ class TagmanagerSetup extends Component {
 						this.renderContainerSelect( {
 							selectedStateKey: 'selectedContainerAMP',
 							containers: containersAMP,
-							label: __( 'AMP Container', 'google-site-kit' ),
+							// Use the default label if it is the only select shown.
+							label: 'primary' === ampMode ? null : __( 'AMP Container', 'google-site-kit' ),
 						} )
 					}
 				</div>
