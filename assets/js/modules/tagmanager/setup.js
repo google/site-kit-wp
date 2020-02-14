@@ -172,6 +172,7 @@ class TagmanagerSetup extends Component {
 				const { account, container } = await data.get( TYPE_MODULES, 'tagmanager', 'tag-permission', { tag: existingContainerID } );
 				const selectedContainerKey = container.usageContext.includes( USAGE_CONTEXT_AMP ) ? 'selectedContainerAMP' : 'selectedContainerWeb';
 
+				this.setContainers( [ container ] );
 				// If the user has access, they may continue but must use the found account+container.
 				this.setState(
 					{
@@ -182,7 +183,6 @@ class TagmanagerSetup extends Component {
 						hasExistingTag: true,
 					}
 				);
-				this.setContainers( [ container ] );
 			} catch ( err ) {
 				this.setState(
 					{
@@ -250,9 +250,10 @@ class TagmanagerSetup extends Component {
 			const { accounts, containers } = await data.get( TYPE_MODULES, 'tagmanager', 'accounts-containers', queryArgs );
 
 			this.validateAccounts( accounts, selectedAccount );
+			this.setContainers( containers );
 
 			// If the selected container is not in the list of containers, clear it.
-			const containerIDs = containers.map( ( container ) => container.publicId ); /* Capitalization rule exception: `publicId` is a property of an API returned value. */
+			const containerIDs = containers.map( ( { publicId } ) => publicId ); /* Capitalization rule exception: `publicId` is a property of an API returned value. */
 			if ( isValidContainerID( selectedContainerWeb ) && ! containerIDs.includes( selectedContainerWeb ) ) {
 				selectedContainerWeb = '';
 			}
@@ -269,7 +270,6 @@ class TagmanagerSetup extends Component {
 				errorCode: false,
 				errorMsg: '',
 			} );
-			this.setContainers( containers );
 		} catch ( err ) {
 			this.setState( {
 				isLoading: false,
