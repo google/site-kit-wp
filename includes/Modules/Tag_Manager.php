@@ -566,10 +566,10 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * Creates GTM Container.
 	 *
 	 * @since 1.0.0
-	 * @param string       $account_id The account ID.
+	 * @param string       $account_id    The account ID.
 	 * @param string|array $usage_context The container usage context(s).
 	 *
-	 * @return mixed Container ID on success, or WP_Error on failure.
+	 * @return string Container public ID.
 	 */
 	protected function create_container( $account_id, $usage_context = self::USAGE_CONTEXT_WEB ) {
 		$restore_defer = $this->with_client_defer( false );
@@ -582,22 +582,11 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 		$container->setName( $container_name );
 		$container->setUsageContext( (array) $usage_context );
 
-		try {
-			$container = $this->get_tagmanager_service()->accounts_containers->create( "accounts/{$account_id}", $container );
-		} catch ( Google_Service_Exception $e ) {
-			$restore_defer();
-			$message = $e->getErrors();
-			if ( isset( $message[0]['message'] ) ) {
-				$message = $message[0]['message'];
-			}
-			return new WP_Error( $e->getCode(), $message );
-		} catch ( Exception $e ) {
-			$restore_defer();
-			return new WP_Error( $e->getCode(), $e->getMessage() );
-		}
+		$new_container = $this->get_tagmanager_service()->accounts_containers->create( "accounts/{$account_id}", $container );
 
 		$restore_defer();
-		return $container->getPublicId();
+
+		return $new_container->getPublicId();
 	}
 
 	/**
