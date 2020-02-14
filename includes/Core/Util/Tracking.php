@@ -60,7 +60,7 @@ final class Tracking {
 	 * Constructor.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Added User_Options.
+	 * @since 1.3.0 Added User_Options.
 	 *
 	 * @param Context        $context        Plugin context.
 	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
@@ -82,39 +82,10 @@ final class Tracking {
 	 * @since 1.0.0
 	 */
 	public function register() {
-		// Enqueue gtag script for Site Kit admin screens.
-		add_action(
-			'googlesitekit_enqueue_screen_assets',
-			function () {
-				$this->print_gtag_script();
-			}
-		);
-
-		// Enqueue gtag script for additional areas.
-		add_action(
-			'admin_enqueue_scripts',
-			function () {
-				$current_screen = get_current_screen();
-				if ( ! in_array( $current_screen->id, array( 'dashboard', 'plugins' ), true ) ) {
-					return;
-				}
-				$this->print_gtag_script();
-				if ( ! $this->authentication->is_authenticated() ) {
-					$this->print_standalone_event_tracking_script();
-				}
-			}
-		);
-
 		add_filter(
 			'googlesitekit_inline_base_data',
 			function ( $data ) {
-				return $this->inline_js_admin_data( $data );
-			}
-		);
-		add_filter(
-			'googlesitekit_admin_data',
-			function ( $data ) {
-				return $this->inline_js_admin_data( $data );
+				return $this->inline_js_base_data( $data );
 			}
 		);
 
@@ -130,7 +101,7 @@ final class Tracking {
 	 * Is tracking active for the current user?
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Tracking is now user-specific.
+	 * @since 1.3.0 Tracking is now user-specific.
 	 *
 	 * @return bool True if tracking enabled, and False if not.
 	 */
@@ -139,66 +110,16 @@ final class Tracking {
 	}
 
 	/**
-	 * Output Tag Manager gtag.js if tracking is enabled.
+	 * Modifies the base data to pass to JS.
 	 *
-	 * @since 1.0.0
-	 */
-	private function print_gtag_script() {
-		// Only load if tracking is active.
-		$tracking_active = $this->is_active();
-
-		if ( ! $tracking_active ) {
-			return;
-		}
-		?>
-		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="<?php echo esc_url( 'https://www.googletagmanager.com/gtag/js?id=' . self::TRACKING_ID ); ?>"></script><?php // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript ?>
-		<script>
-			window.dataLayer = window.dataLayer || [];
-			function gtag(){dataLayer.push(arguments);}
-			gtag('js', new Date());
-			gtag('config', '<?php echo esc_attr( self::TRACKING_ID ); ?>');
-			window.googlesitekitTrackingEnabled = true;
-		</script>
-		<?php
-	}
-
-	/**
-	 * Prints standalone tracking event function.
-	 *
-	 * This is used for when not on a screen owned by Site Kit.
-	 *
-	 * @since 1.0.0
-	 */
-	private function print_standalone_event_tracking_script() {
-		?>
-		<script type="text/javascript">
-		var sendAnalyticsTrackingEvent = function( eventCategory, eventName, eventLabel, eventValue ) {
-			if ( 'undefined' === typeof gtag ) {
-				return;
-			}
-
-			if ( window.googlesitekitTrackingEnabled ) {
-				gtag( 'event', eventName, {
-					send_to: '<?php echo esc_attr( self::TRACKING_ID ); ?>', /*eslint camelcase: 0*/
-					event_category: eventCategory, /*eslint camelcase: 0*/
-				} );
-			}
-		};
-		</script>
-		<?php
-	}
-
-	/**
-	 * Modifies the admin data to pass to JS.
-	 *
-	 * @since 1.0.0
+	 * @since 1.3.0
 	 *
 	 * @param array $data Inline JS data.
 	 * @return array Filtered $data.
 	 */
-	private function inline_js_admin_data( $data ) {
-		$data['trackingID'] = self::TRACKING_ID;
+	private function inline_js_base_data( $data ) {
+		$data['trackingEnabled'] = $this->is_active();
+		$data['trackingID']      = self::TRACKING_ID;
 
 		return $data;
 	}
@@ -207,7 +128,7 @@ final class Tracking {
 	 * Register tracking settings and allow access from Rest API.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Registers a meta field instead of setting.
+	 * @since 1.3.0 Registers a meta field instead of setting.
 	 */
 	private function register_settings() {
 		global $wpdb;

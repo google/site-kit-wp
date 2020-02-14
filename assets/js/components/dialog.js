@@ -24,6 +24,7 @@ import Button from 'GoogleComponents/button';
 import Link from 'GoogleComponents/link';
 import { MDCDialog } from 'SiteKitCore/material-components';
 import FocusTrap from 'focus-trap-react';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -66,7 +67,10 @@ class Dialog extends Component {
 		return (
 			<div
 				ref={ this.dialogRef }
-				className={ `mdc-dialog ${ dialogActive ? 'mdc-dialog--open' : '' }` }
+				className={ classnames(
+					'mdc-dialog',
+					{ 'mdc-dialog--open': dialogActive } )
+				}
 				role="alertdialog"
 				aria-modal="true"
 				aria-labelledby="remove-module-dialog"

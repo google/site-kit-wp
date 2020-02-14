@@ -25,7 +25,7 @@ import ResetButton from 'GoogleComponents/reset-button';
 import Layout from 'GoogleComponents/layout/layout';
 import Notification from 'GoogleComponents/notifications/notification';
 import OptIn from 'GoogleComponents/optin';
-import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
+import { trackEvent } from 'GoogleUtil';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
 import { delay } from 'lodash';
 
@@ -44,9 +44,9 @@ class SetupUsingProxy extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { proxySetupURL, siteURL } = googlesitekit.admin;
-		const { isSiteKitConnected, isResettable, errorMessage } = googlesitekit.setup;
-		const { canSetup } = googlesitekit.permissions;
+		const { proxySetupURL, siteURL } = global.googlesitekit.admin;
+		const { isSiteKitConnected, isResettable, errorMessage } = global.googlesitekit.setup;
+		const { canSetup } = global.googlesitekit.permissions;
 
 		this.state = {
 			canSetup,
@@ -171,7 +171,7 @@ class SetupUsingProxy extends Component {
 																			className="googlesitekit-start-setup"
 																			href={ proxySetupURL }
 																			onClick={ () => {
-																				sendAnalyticsTrackingEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
+																				trackEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
 																			} }
 																			disabled={ ! complete }
 																		>

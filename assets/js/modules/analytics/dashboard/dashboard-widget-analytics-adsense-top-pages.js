@@ -40,7 +40,7 @@ import { analyticsAdsenseReportDataDefaults } from '../util';
 
 class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
 	static renderLayout( component ) {
-		const { accountURL } = googlesitekit.modules.adsense;
+		const { accountURL } = global.googlesitekit.modules.adsense;
 		return (
 			<Layout
 				header
@@ -101,7 +101,7 @@ class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
 			accountID,
 			internalWebPropertyID,
 			profileID,
-		} = googlesitekit.modules.analytics.settings;
+		} = global.googlesitekit.modules.analytics.settings;
 
 		// Construct a deep link.
 		const adsenseDeepLink = `https://analytics.google.com/analytics/web/?pli=1#/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath:~2F`;
@@ -146,7 +146,7 @@ const getDataError = ( data ) => {
 	}
 
 	// We don't want to show error as AdsenseDashboardOutro will be rendered for this case.
-	if ( 400 === data.error.code && 'INVALID_ARGUMENT' === data.error.status && googlesitekit.modules.analytics.active ) {
+	if ( 400 === data.error.code && 'INVALID_ARGUMENT' === data.error.status && global.googlesitekit.modules.analytics.active ) {
 		return null;
 	}
 

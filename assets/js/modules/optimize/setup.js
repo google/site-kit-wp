@@ -30,6 +30,7 @@ import {
 	validateOptimizeID,
 	toggleConfirmModuleSettings,
 } from 'GoogleUtil';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -46,16 +47,16 @@ class OptimizeSetup extends Component {
 			optimizeID,
 			ampClientIDOptIn,
 			ampExperimentJSON,
-		} = googlesitekit.modules.optimize.settings;
+		} = global.googlesitekit.modules.optimize.settings;
 
 		const {
 			settings: analyticsSettings,
-		} = googlesitekit.modules.analytics || {};
+		} = global.googlesitekit.modules.analytics || {};
 
 		const {
 			active: gtmActive,
 			settings: gtmSettings,
-		} = googlesitekit.modules.tagmanager || {};
+		} = global.googlesitekit.modules.tagmanager || {};
 
 		const analyticsUseSnippet = analyticsSettings ? analyticsSettings.useSnippet : false;
 		const gtmUseSnippet = gtmActive && gtmSettings ? gtmSettings.useSnippet : false;
@@ -145,7 +146,7 @@ class OptimizeSetup extends Component {
 				finishSetup();
 			}
 
-			googlesitekit.modules.optimize.settings.optimizeID = optimizeID;
+			global.googlesitekit.modules.optimize.settings.optimizeID = optimizeID;
 
 			if ( this._isMounted ) {
 				this.setState( {
@@ -251,10 +252,10 @@ class OptimizeSetup extends Component {
 					<Fragment>
 						<p>{ __( 'Please input your AMP experiment settings in JSON format below.', 'google-site-kit' ) } <Link href="https://developers.google.com/optimize/devguides/amp-experiments" external inherit>{ __( 'Learn More.', 'google-site-kit' ) }</Link></p>
 						<TextField
-							className={ `
-								mdc-text-field
-								${ ampExperimentJSONValidated ? '' : 'mdc-text-field--error' }
-							` }
+							className={ classnames(
+								'mdc-text-field',
+								{ 'mdc-text-field--error': ! ampExperimentJSONValidated }
+							) }
 							name="amp-experiment"
 							onChange={ this.handleAMPOptimizeEntry }
 							textarea
@@ -295,11 +296,10 @@ class OptimizeSetup extends Component {
 
 				<div className="googlesitekit-setup-module__inputs">
 					<TextField
-						className={ `
-							mdc-text-field
-							${ errorCode ? 'mdc-text-field--error' : '' }
-							${ OptimizeIDValidated ? '' : 'mdc-text-field--error' }
-						` }
+						className={ classnames(
+							'mdc-text-field',
+							{ 'mdc-text-field--error': errorCode || ! OptimizeIDValidated }
+						) }
 						label={ __( 'Optimize Container ID', 'google-site-kit' ) }
 						name="optimizeID"
 						onChange={ this.handleOptimizeIDEntry }

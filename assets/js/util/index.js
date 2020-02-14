@@ -52,7 +52,8 @@ import { tagMatchers as setupTagMatchers } from '../components/setup/compatibili
 import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
 import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
 import { default as tagmanagerTagMatchers } from '../modules/tagmanager/util/tagMatchers';
-import { sendAnalyticsTrackingEvent } from './standalone';
+import { trackEvent } from './tracking';
+export { trackEvent };
 export * from './standalone';
 export * from './storage';
 export * from './i18n';
@@ -321,7 +322,7 @@ export const refreshAuthentication = async () => {
  * @param {Object}  _googlesitekit googlesitekit global; can be replaced for testing.
  * @return {string} Authentication URL
  */
-export const getReAuthURL = ( slug, status, _googlesitekit = googlesitekit ) => {
+export const getReAuthURL = ( slug, status, _googlesitekit = global.googlesitekit ) => {
 	const {
 		connectURL,
 		adminRoot,
@@ -401,7 +402,7 @@ export const fillFilterWithComponent = ( NewComponent, newProps ) => {
  * @return string
  */
 export const getSiteKitAdminURL = ( page, args ) => {
-	const { adminRoot } = googlesitekit.admin;
+	const { adminRoot } = global.googlesitekit.admin;
 
 	if ( ! page ) {
 		page = 'googlesitekit-dashboard';
@@ -446,7 +447,7 @@ export const validateOptimizeID = ( stringToValidate ) => {
  * @param {string|null} The tag id if found, otherwise null.
  */
 export const getExistingTag = async ( module ) => {
-	const { homeURL, ampMode } = googlesitekit.admin;
+	const { homeURL, ampMode } = global.googlesitekit.admin;
 	const tagFetchQueryArgs = {
 		// Indicates a tag checking request. This lets Site Kit know not to output its own tags.
 		tagverify: 1,
@@ -526,7 +527,7 @@ export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) 
 			global.googlesitekit.modules[ moduleSlug ].active = responseData.active;
 		}
 
-		sendAnalyticsTrackingEvent(
+		trackEvent(
 			`${ moduleSlug }_setup`,
 			! responseData.active ? 'module_deactivate' : 'module_activate',
 			moduleSlug,
@@ -549,7 +550,7 @@ export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) 
  * @param {Object}  _googlesitekit googlesitekit global; can be replaced for testing.
  * @return {void|boolean} True if a module has been toggled.
  */
-export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, _googlesitekit = googlesitekit ) => {
+export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, _googlesitekit = global.googlesitekit ) => {
 	const { settings, setupComplete } = _googlesitekit.modules[ moduleSlug ];
 	const confirm = skipDOM || document.getElementById( `confirm-changes-${ moduleSlug }` );
 
@@ -656,7 +657,7 @@ export function getCurrentDateRangeSlug() {
  * @param {string}  class                 Class string to use for icon.
  */
 export function moduleIcon( module, blockedByParentModule, width = '33', height = '33', useClass = '' ) {
-	if ( ! googlesitekit ) {
+	if ( ! global.googlesitekit ) {
 		return;
 	}
 
@@ -666,7 +667,7 @@ export function moduleIcon( module, blockedByParentModule, width = '33', height 
 	if ( blockedByParentModule ) {
 		iconComponent = <SvgIcon id={ `${ module }-disabled` } width={ width } height={ height } className={ useClass } />;
 	} else if ( 'pagespeed-insights' === module ) {
-		iconComponent = <img src={ googlesitekit.admin.assetsRoot + 'images/icon-pagespeed.png' } width={ width } alt="" className={ useClass } />;
+		iconComponent = <img src={ global.googlesitekit.admin.assetsRoot + 'images/icon-pagespeed.png' } width={ width } alt="" className={ useClass } />;
 	}
 
 	return iconComponent;

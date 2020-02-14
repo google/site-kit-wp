@@ -29,10 +29,11 @@ import Switch from 'GoogleComponents/switch';
 import { Select, Option } from 'SiteKitCore/material-components';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import {
-	sendAnalyticsTrackingEvent,
+	trackEvent,
 	getExistingTag,
 	toggleConfirmModuleSettings,
 } from 'GoogleUtil';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -59,7 +60,7 @@ class AnalyticsSetup extends Component {
 			useSnippet,
 			ampClientIDOptIn,
 			trackingDisabled,
-		} = googlesitekit.modules.analytics.settings;
+		} = global.googlesitekit.modules.analytics.settings;
 
 		this.state = {
 			anonymizeIP,
@@ -212,7 +213,7 @@ class AnalyticsSetup extends Component {
 		} );
 
 		// Track selection.
-		sendAnalyticsTrackingEvent( 'analytics_setup', 'account_change', selectValue );
+		trackEvent( 'analytics_setup', 'account_change', selectValue );
 
 		// Don't query accounts if "setup a new account" was chosen.
 		if ( '-1' !== selectValue ) {
@@ -247,7 +248,7 @@ class AnalyticsSetup extends Component {
 		} );
 
 		// Track selection.
-		sendAnalyticsTrackingEvent( 'analytics_setup', 'property_change', selectValue );
+		trackEvent( 'analytics_setup', 'property_change', selectValue );
 
 		this.processPropertyChange( selectValue );
 	}
@@ -260,7 +261,7 @@ class AnalyticsSetup extends Component {
 		} );
 
 		// Track selection.
-		sendAnalyticsTrackingEvent( 'analytics_setup', 'profile_change', selectValue );
+		trackEvent( 'analytics_setup', 'profile_change', selectValue );
 	}
 
 	async getAccounts( existingTagData = false ) {
@@ -531,10 +532,9 @@ class AnalyticsSetup extends Component {
 			data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 			await this.getAccounts();
 
-			googlesitekit.modules.analytics.settings = savedSettings;
+			global.googlesitekit.modules.analytics.settings = savedSettings;
 
-			// Track event.
-			sendAnalyticsTrackingEvent( 'analytics_setup', 'analytics_configured' );
+			trackEvent( 'analytics_setup', 'analytics_configured' );
 
 			if ( finishSetup ) {
 				finishSetup();
@@ -560,7 +560,7 @@ class AnalyticsSetup extends Component {
 
 	static createNewAccount( e ) {
 		e.preventDefault();
-		sendAnalyticsTrackingEvent( 'analytics_setup', 'new_analytics_account' );
+		trackEvent( 'analytics_setup', 'new_analytics_account' );
 
 		global.open( 'https://analytics.google.com/analytics/web/?#/provision/SignUp', '_blank' );
 	}
@@ -572,7 +572,7 @@ class AnalyticsSetup extends Component {
 			useSnippet,
 		} );
 
-		sendAnalyticsTrackingEvent( 'analytics_setup', useSnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled' );
+		trackEvent( 'analytics_setup', useSnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled' );
 	}
 
 	switchStatus( stateVariable ) {
@@ -804,7 +804,7 @@ class AnalyticsSetup extends Component {
 		const enableProfileSelect = !! /^UA-/.test( selectedProperty.toString() );
 
 		const { ampMode } = global.googlesitekit.admin;
-		const { setupComplete } = googlesitekit.modules.analytics;
+		const { setupComplete } = global.googlesitekit.modules.analytics;
 
 		if ( isLoading ) {
 			return <ProgressBar />;
@@ -1061,7 +1061,7 @@ class AnalyticsSetup extends Component {
 		}
 
 		return (
-			<div className={ showErrorFormat ? 'googlesitekit-error-text' : '' }>
+			<div className={ classnames( { 'googlesitekit-error-text': showErrorFormat } ) }>
 				<p>{
 					showErrorFormat ?
 
@@ -1081,7 +1081,7 @@ class AnalyticsSetup extends Component {
 		} = this.state;
 
 		if ( ! onSettingsPage ) {
-			sendAnalyticsTrackingEvent( 'analytics_setup', 'configure_analytics_screen' );
+			trackEvent( 'analytics_setup', 'configure_analytics_screen' );
 		}
 
 		return (

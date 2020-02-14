@@ -18,7 +18,11 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 ## Implementation Brief
 
-* <!-- One or more bullet points for how to technically resolve the issue. -->
+* <!-- One or more bullet points for how to technically implement the feature. -->
+
+## QA Brief
+
+* <!-- One or more bullet points for how to test that the feature works as expected. -->
 
 ## Changelog entry
 

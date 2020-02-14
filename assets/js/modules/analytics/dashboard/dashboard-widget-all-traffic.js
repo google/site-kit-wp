@@ -36,6 +36,7 @@ import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-h
 import getNoDataComponent from 'GoogleComponents/notifications/nodata';
 import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
 import getSetupIncompleteComponent from 'GoogleComponents/notifications/setup-incomplete';
+import classnames from 'classnames';
 
 class AnalyticsAllTraffic extends Component {
 	constructor( props ) {
@@ -75,7 +76,7 @@ class AnalyticsAllTraffic extends Component {
 		const {
 			active,
 			setupComplete,
-		} = googlesitekit.modules.analytics;
+		} = global.googlesitekit.modules.analytics;
 
 		const {
 			error,
@@ -112,11 +113,11 @@ class AnalyticsAllTraffic extends Component {
 
 				</div>
 				{ this.getErrorDataComponent() }
-				<div className={ `
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-12
-					${ wrapperClass }
-				` }>
+				<div className={ classnames(
+					'mdc-layout-grid__cell',
+					'mdc-layout-grid__cell--span-12',
+					wrapperClass
+				) }>
 					<Layout className="googlesitekit-dashboard-all-traffic">
 						<div className="mdc-layout-grid">
 							<div className="mdc-layout-grid__inner">

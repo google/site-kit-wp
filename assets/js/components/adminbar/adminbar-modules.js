@@ -17,13 +17,9 @@
  */
 
 /**
- * External dependencies
- */
-import withFilters from 'GoogleComponents/higherorder/with-filters';
-
-/**
  * WordPress dependencies
  */
+import { withFilters } from '@wordpress/components';
 import { Component, Fragment } from '@wordpress/element';
 
 class AdminbarModules extends Component {

@@ -27,7 +27,7 @@ import Notification from 'GoogleComponents/notifications/notification';
 import { __ } from '@wordpress/i18n';
 
 const DashboardAuthAlert = () => {
-	const { admin: { connectURL } } = googlesitekit;
+	const { admin: { connectURL } } = global.googlesitekit;
 	return (
 		<Notification
 			id="authentication error"

@@ -33,6 +33,11 @@ import domReady from '@wordpress/dom-ready';
 import { Component, render, Fragment } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
 
+/**
+ * Internal dependencies
+ */
+import 'GoogleModules';
+
 class GoogleSitekitDashboard extends Component {
 	constructor( props ) {
 		super( props );
@@ -91,7 +96,7 @@ class GoogleSitekitDashboard extends Component {
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
-	if ( googlesitekit.admin.resetSession ) {
+	if ( global.googlesitekit.admin.resetSession ) {
 		clearWebStorage();
 	}
 

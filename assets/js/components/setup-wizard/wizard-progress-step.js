@@ -22,6 +22,7 @@
 import PropTypes from 'prop-types';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import React from 'react';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -62,12 +63,12 @@ class WizardProgressStep extends Component {
 		}
 
 		return (
-			<div className={ `
-				googlesitekit-wizard-progress-step
-				googlesitekit-wizard-progress-step--${ step }
-				${ currentStep ? 'googlesitekit-wizard-progress-step--current' : '' }
-				googlesitekit-wizard-progress-step--${ stepKey }
-			` }>
+			<div className={ classnames(
+				'googlesitekit-wizard-progress-step',
+				`googlesitekit-wizard-progress-step--${ step }`,
+				`googlesitekit-wizard-progress-step--${ stepKey }`,
+				{ 'googlesitekit-wizard-progress-step--current': currentStep }
+			) }>
 				<div className="googlesitekit-wizard-progress-step__number-wrapper">
 					<div className={ `
 						googlesitekit-wizard-progress-step__number

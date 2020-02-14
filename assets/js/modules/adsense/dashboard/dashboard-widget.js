@@ -22,6 +22,7 @@
 import Header from 'GoogleComponents/header';
 import PageHeader from 'GoogleComponents/page-header';
 import Layout from 'GoogleComponents/layout/layout';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -131,7 +132,7 @@ class AdSenseDashboardWidget extends Component {
 			zeroData,
 			instructionProps,
 		} = this.state;
-		const { homepage } = googlesitekit.modules.adsense;
+		const { homepage } = global.googlesitekit.modules.adsense;
 
 		// Hide AdSense data display when we don't have data.
 		const wrapperClass = ( loading || ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
@@ -139,7 +140,7 @@ class AdSenseDashboardWidget extends Component {
 		return (
 			<Fragment>
 				<Header />
-				<div className={ `${ wrapperClass }` }>
+				<div className={ wrapperClass }>
 					<Alert module="adsense" />
 				</div>
 
@@ -151,7 +152,7 @@ class AdSenseDashboardWidget extends Component {
 								mdc-layout-grid__cell--span-12
 							">
 								{
-									( ! error && googlesitekit.modules.adsense.setupComplete ) ?
+									( ! error && global.googlesitekit.modules.adsense.setupComplete ) ?
 										<PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="connected" statusText={ __( 'AdSense is connected', 'google-site-kit' ) } /> :
 										<PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="not-connected" statusText={ __( 'AdSense is not connected', 'google-site-kit' ) } />
 								}
@@ -184,11 +185,11 @@ class AdSenseDashboardWidget extends Component {
 							{ ! receivingData && (
 								error ? getDataErrorComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
-							<div className={ `
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								${ wrapperClass }
-							` } >
+							<div className={ classnames(
+								'mdc-layout-grid__cell',
+								'mdc-layout-grid__cell--span-12',
+								wrapperClass
+							) }>
 								<ModuleSettingsWarning slug="adsense" context="module-dashboard" />
 								<Layout
 									header
@@ -202,11 +203,11 @@ class AdSenseDashboardWidget extends Component {
 									/>
 								</Layout>
 							</div>
-							<div className={ `
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								${ wrapperClass }
-							` } >
+							<div className={ classnames(
+								'mdc-layout-grid__cell',
+								'mdc-layout-grid__cell--span-12',
+								wrapperClass
+							) }>
 								<Layout
 									header
 									title={ __( 'Performance over previous 28 days', 'google-site-kit' ) }
@@ -223,11 +224,11 @@ class AdSenseDashboardWidget extends Component {
 									/>
 								</Layout>
 							</div>
-							<div className={ `
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								${ wrapperClass }
-							` } >
+							<div className={ classnames(
+								'mdc-layout-grid__cell',
+								'mdc-layout-grid__cell--span-12',
+								wrapperClass
+							) }>
 								<DashboardAdSenseTopPages />
 							</div>
 							<div className="

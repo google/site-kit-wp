@@ -1,5 +1,5 @@
 export const last28Days = {
-	'modules::search-console::searchanalytics::12c60de492ed1a6f0ceca98103ada382': [
+	'modules::search-console::searchanalytics::6892af84f7b8398712c112e420a28141': [
 		{
 			clicks: 36,
 			ctr: 0.04780876494023904,
@@ -600,7 +600,7 @@ export const last28Days = {
 };
 
 export const last14Days = {
-	'modules::search-console::searchanalytics::640c418fe4aafa64391e6e04f2090d7c': [
+	'modules::search-console::searchanalytics::f309fe1dfe4a24b7e2ee06e6e59d4759': [
 		{
 			clicks: 30,
 			ctr: 0.045871559633027525,

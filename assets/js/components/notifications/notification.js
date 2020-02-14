@@ -27,7 +27,7 @@ import Warning from 'GoogleComponents/notifications/warning';
 import Error from 'GoogleComponents/notifications/error';
 import Link from 'GoogleComponents/link';
 import SvgIcon from 'GoogleUtil/svg-icon';
-
+import classnames from 'classnames';
 import { map } from 'lodash';
 /**
  * WordPress dependencies
@@ -160,7 +160,16 @@ class Notification extends Component {
 						{
 							map( blockData, ( block, i ) => {
 								return (
-									<div key={ i } className={ `mdc-layout-grid__cell ${ inlineLayout ? 'mdc-layout-grid__cell--span-5-desktop' : 'mdc-layout-grid__cell--span-4-desktop' }` }>
+									<div
+										key={ i }
+										className={ classnames(
+											'mdc-layout-grid__cell',
+											{
+												'mdc-layout-grid__cell--span-5-desktop': inlineLayout,
+												'mdc-layout-grid__cell--span-4-desktop': ! inlineLayout,
+											}
+										) }
+									>
 										<div className="googlesitekit-publisher-win__stats">
 											<DataBlock { ...block } />
 										</div>
@@ -205,12 +214,17 @@ class Notification extends Component {
 		const logoSVG = module ? <SvgIcon id={ module } height="19" width="19" /> : <SvgIcon id={ 'logo-g' } height="34" width="32" />;
 
 		return (
-			<section ref={ this.cardRef } className={ `
-				googlesitekit-publisher-win
-				${ format ? `googlesitekit-publisher-win--${ format }` : '' }
-				${ type ? `googlesitekit-publisher-win--${ type }` : '' }
-				${ closedClass ? `googlesitekit-publisher-win--${ closedClass }` : '' }
-			` }>
+			<section
+				ref={ this.cardRef }
+				className={ classnames(
+					'googlesitekit-publisher-win',
+					{
+						[ `googlesitekit-publisher-win--${ format }` ]: format,
+						[ `googlesitekit-publisher-win--${ type }` ]: type,
+						[ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass,
+					}
+				) }
+			>
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
 

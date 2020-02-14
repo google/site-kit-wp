@@ -43,6 +43,10 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 * <!-- One or more bullet points for how to technically resolve the issue. -->
 
+## QA Brief
+
+* <!-- One or more bullet points for how to test that the issue has been resolved. -->
+
 ## Changelog entry
 
 * <!-- One sentence summarizing the PR, to be used in the changelog. -->

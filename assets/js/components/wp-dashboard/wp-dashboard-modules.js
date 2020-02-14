@@ -25,6 +25,7 @@ import WPDashboardHeader from './wp-dashboard-header';
  * External dependencies
  */
 import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -36,15 +37,15 @@ class WPDashboardModules extends Component {
 	render() {
 		return (
 			<Fragment>
-				<div className={ `
-					googlesitekit-wp-dashboard-stats
-					${ googlesitekit.modules.analytics && googlesitekit.modules.analytics.active ? 'googlesitekit-wp-dashboard-stats--fourup' : '' }
-				` }>
+				<div className={ classnames(
+					'googlesitekit-wp-dashboard-stats',
+					{ 'googlesitekit-wp-dashboard-stats--fourup': global.googlesitekit.modules.analytics.active }
+				) }>
 					<WPDashboardHeader
 						key={ 'googlesitekit-wp-dashboard-header' }
 					/>
 					{ // Show the Analytics CTA if analytics is not enabled.
-						( ! googlesitekit.modules.analytics.active ) &&
+						( ! global.googlesitekit.modules.analytics.active ) &&
 						<div className="googlesitekit-wp-dashboard-stats__cta">
 							<AnalyticsInactiveCTA
 								title={ __( 'See unique vistors, goal completions, top pages and more.', 'google-site-kit' ) }

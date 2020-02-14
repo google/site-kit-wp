@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 
 class AdSenseDashboardOutro extends Component {
 	render() {
-		const { accountURL } = googlesitekit.modules.adsense;
+		const { accountURL } = global.googlesitekit.modules.adsense;
 
 		return (
 			<section className="googlesitekit-module-outro">

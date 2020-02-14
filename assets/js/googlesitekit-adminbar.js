@@ -26,8 +26,9 @@ import {
 	decodeHtmlEntity,
 	getSiteKitAdminURL,
 	loadTranslations,
-	sendAnalyticsTrackingEvent,
+	trackEvent,
 } from 'GoogleUtil';
+import 'GoogleModules';
 
 /**
  * WordPress dependencies
@@ -54,7 +55,7 @@ export class GoogleSitekitAdminbar extends Component {
 			postID,
 			postType,
 			pageTitle,
-		} = googlesitekit;
+		} = global.googlesitekit;
 		const href = getSiteKitAdminURL(
 			'googlesitekit-dashboard',
 			{
@@ -65,7 +66,7 @@ export class GoogleSitekitAdminbar extends Component {
 			}
 		);
 
-		sendAnalyticsTrackingEvent( 'admin_bar', 'post_details_click' );
+		trackEvent( 'admin_bar', 'post_details_click' );
 		document.location = href;
 	}
 
@@ -73,7 +74,7 @@ export class GoogleSitekitAdminbar extends Component {
 		const {
 			pageTitle,
 			permaLink,
-		} = googlesitekit;
+		} = global.googlesitekit;
 
 		return (
 			<Fragment>

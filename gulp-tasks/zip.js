@@ -4,41 +4,66 @@
 import gulp from 'gulp';
 import zip from 'gulp-zip';
 import del from 'del';
+import fs from 'fs';
+import path from 'path';
+import getRepoInfo from 'git-repo-info';
+import sanitizeFilename from 'sanitize-filename';
 
-gulp.task( 'pre-zip', () => {
-	del.sync( [ './release/google-site-kit/**' ] );
+/**
+ * Retrieves the plugin version from the plugin's file header.
+ *
+ * @return {string} Plugin version.
+ */
+function getPluginVersion() {
+	return fs.readFileSync( path.resolve( __dirname, '../google-site-kit.php' ), 'utf8' )
+		.match( /Version:\s+([0-9\.\w-]+)/ )
+		[ 1 ];
+}
 
-	return gulp.src( 'release/**' )
-		.pipe( gulp.dest( 'release/google-site-kit/' ) );
-} );
+/**
+ * Retrieves and prepares information from the current git state
+ * for use as components of the generated file name.
+ *
+ * @return {Object} Data related to the latest commit.
+ */
+function getGit() {
+	const { abbreviatedSha, branch } = getRepoInfo();
+
+	return {
+		branch: sanitizeFilename( branch, { replacement: '-' } ),
+		shortSha: abbreviatedSha,
+	};
+}
+
+/**
+ * Generates the filename to use for the resulting release zip file.
+ *
+ * @return {string} Sanitized release zip file name.
+ */
+function generateFilename() {
+	const version = getPluginVersion();
+
+	let gitSuffix = '';
+	try {
+		const { branch, shortSha } = getGit();
+		gitSuffix = `.${ branch }@${ shortSha }`;
+	} catch {}
+
+	return sanitizeFilename(
+		`google-site-kit.v${ version }${ gitSuffix }.zip`
+	);
+}
 
 gulp.task( 'zip', () => {
-	gulp.src(
-		[ 'release/google-site-kit/**' ],
-		{ base: 'release/' }
-	)
-		.pipe( zip( 'google-site-kit.zip' ) )
-		.pipe( gulp.dest( './' ) );
+	const filename = generateFilename();
+
+	// Remove any existing file by the same name.
+	del.sync( path.resolve( __dirname, `../${ filename }` ) );
+
+	// eslint-disable-next-line no-console
+	console.log( `Creating ${ filename }` );
+
+	return gulp.src( 'release/google-site-kit/**', { base: 'release/' } )
+		.pipe( zip( filename ) )
+		.pipe( gulp.dest( '.' ) );
 } );
-
-gulp.task( 'pre-zip-wp50', () => {
-	del.sync( [ './release/google-site-kit-wp50/**' ] );
-
-	return gulp.src( [
-		'release/**',
-		'!release/dist/assets/vendor',
-		'!release/dist/assets/vendor/**',
-		'!release/dist/assets/js/externals/!(svgxuse.js)',
-	] )
-		.pipe( gulp.dest( 'release/google-site-kit-wp50/' ) );
-} );
-
-gulp.task( 'zip-wp50', () => {
-	gulp.src(
-		[ 'release/google-site-kit-wp50/**' ],
-		{ base: 'release/' }
-	)
-		.pipe( zip( 'google-site-kit-wp50.zip' ) )
-		.pipe( gulp.dest( './' ) );
-} );
-

@@ -40,7 +40,7 @@ import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../util';
 class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 	render() {
 		const { data } = this.props;
-		const { siteURL } = googlesitekit.admin;
+		const { siteURL } = global.googlesitekit.admin;
 
 		if ( isDataZeroForReporting( data ) ) {
 			return null;

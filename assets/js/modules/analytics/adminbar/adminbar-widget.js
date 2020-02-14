@@ -32,11 +32,11 @@ import { Component, Fragment } from '@wordpress/element';
 
 class AnalyticsAdminbarWidget extends Component {
 	render() {
-		if ( typeof googlesitekit.permaLink !== typeof undefined && '' === googlesitekit.permaLink ) {
+		if ( typeof global.googlesitekit.permaLink !== typeof undefined && '' === global.googlesitekit.permaLink ) {
 			return null;
 		}
 
-		if ( ! googlesitekit.modules.analytics.active ) {
+		if ( ! global.googlesitekit.modules.analytics.active ) {
 			return (
 				<Fragment>
 					<div className="
