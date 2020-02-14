@@ -3,14 +3,14 @@ name: remove-pr-release
 on:
   pull_request:
     types: [closed]
-
 jobs:
-  remove-pr-release:
+  trigger-pr-release:
     runs-on: ubuntu-latest
     steps:
-    - name: Delete working release
-      uses: author/action-rollback@stable
+    - name: Repository Dispatch
+      uses: peter-evans/repository-dispatch@v1
       with:
-        tag: pr-${{ github.ref }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
+        event-type: removepr
+        repository: adamsilverstein/site-kit-wp-builds
+        client-payload: '{"ref": "${{ github.ref }}"}'
