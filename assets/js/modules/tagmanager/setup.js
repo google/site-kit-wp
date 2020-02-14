@@ -75,7 +75,6 @@ class TagmanagerSetup extends Component {
 		this.handleSubmit = this.handleSubmit.bind( this );
 		this.renderAccountDropdownForm = this.renderAccountDropdownForm.bind( this );
 		this.handleAccountChange = this.handleAccountChange.bind( this );
-		this.handleContainerChange = this.handleContainerChange.bind( this );
 		this.refetchAccount = this.refetchAccount.bind( this );
 	}
 
@@ -418,19 +417,6 @@ class TagmanagerSetup extends Component {
 		this.requestTagManagerContainers( selectValue );
 	}
 
-	handleContainerChange( index, item ) {
-		const { selectedContainer } = this.state;
-		const selectValue = item.dataset.value;
-
-		if ( selectValue === selectedContainer ) {
-			return;
-		}
-
-		this.setState( {
-			selectedContainer: selectValue,
-		} );
-	}
-
 	refetchAccount( e ) {
 		e.preventDefault();
 
@@ -502,13 +488,15 @@ class TagmanagerSetup extends Component {
 
 	renderAccountDropdownForm() {
 		const {
+			ampEnabled,
+			ampMode,
 			accounts,
 			selectedAccount,
-			containers,
+			containersWeb,
+			containersAMP,
 			selectedContainer,
 			hasExistingTag,
 			isLoading,
-			containersLoading,
 			errorCode,
 			useSnippet,
 		} = this.state;
@@ -539,6 +527,11 @@ class TagmanagerSetup extends Component {
 				{ this.renderCreateAccount() }
 			</Fragment>;
 		}
+
+		// Only show the web container select if AMP is not used, or AMP is in secondary mode.
+		const showWebContainerSelect = ( ! ampEnabled || 'secondary' === ampMode );
+		// Show the AMP select if AMP is in primary or secondary mode (implies enabled).
+		const showAMPContainerSelect = [ 'primary', 'secondary' ].includes( ampMode );
 
 		return (
 			<Fragment>
@@ -583,32 +576,20 @@ class TagmanagerSetup extends Component {
 						}
 					</Select>
 
-					{ containersLoading ? ( <ProgressBar small /> ) : (
-						<Select
-							className="googlesitekit-tagmanager__select-container"
-							enhanced
-							name="containers"
-							label={ __( 'Container', 'google-site-kit' ) }
-							value={ selectedContainer }
-							disabled={ hasExistingTag || ! isValidAccountID( selectedAccount ) }
-							onEnhancedChange={ this.handleContainerChange }
-							outlined
-						>
-							{ []
-								.concat( containers )
-								.concat( ! hasExistingTag ? {
-									name: __( 'Set up a new container', 'google-site-kit' ),
-									publicId: CONTAINER_CREATE, /* Capitalization rule exception: `publicId` is a property of an API returned value. */
-								} : [] )
-								.map( ( { name, publicId }, i ) =>
-									<Option
-										key={ i }
-										value={ publicId /* Capitalization rule exception: `publicId` is a property of an API returned value. */ }>
-										{ name }
-									</Option>
-								) }
-						</Select>
-					) }
+					{ showWebContainerSelect &&
+						this.renderContainerSelect( {
+							selectedStateKey: 'selectedContainerWeb',
+							containers: containersWeb,
+						} )
+					}
+
+					{ showAMPContainerSelect &&
+						this.renderContainerSelect( {
+							selectedStateKey: 'selectedContainerAMP',
+							containers: containersAMP,
+							label: __( 'AMP Container', 'google-site-kit' ),
+						} )
+					}
 				</div>
 
 				{ onSettingsPage &&
@@ -645,6 +626,50 @@ class TagmanagerSetup extends Component {
 				}
 
 			</Fragment>
+		);
+	}
+
+	renderContainerSelect( args ) {
+		const {
+			label,
+			selectedStateKey,
+			containers,
+		} = args;
+		const {
+			containersLoading,
+			selectedAccount,
+			hasExistingTag,
+		} = this.state;
+
+		if ( containersLoading ) {
+			return <ProgressBar small />;
+		}
+
+		return (
+			<Select
+				className="googlesitekit-tagmanager__select-container"
+				label={ label || __( 'Container', 'google-site-kit' ) }
+				value={ this.state[ selectedStateKey ] }
+				onEnhancedChange={ ( idx, item ) => this.setState( { [ selectedStateKey ]: item.dataset.value } ) }
+				disabled={ hasExistingTag || ! isValidAccountID( selectedAccount ) }
+				enhanced
+				outlined
+			>
+				{ []
+					.concat( containers )
+					.concat( ! hasExistingTag ? {
+						name: __( 'Set up a new container', 'google-site-kit' ),
+						publicId: CONTAINER_CREATE, /* Capitalization rule exception: `publicId` is a property of an API returned value. */
+					} : [] )
+					.map( ( { name, publicId }, i ) =>
+						<Option
+							key={ i }
+							value={ publicId /* Capitalization rule exception: `publicId` is a property of an API returned value. */ }
+						>
+							{ name }
+						</Option>
+					) }
+			</Select>
 		);
 	}
 
