@@ -174,18 +174,19 @@ class TagmanagerSetup extends Component {
 			// Verify the user has access to existing tag if found.
 			try {
 				const { account, container } = await data.get( TYPE_MODULES, 'tagmanager', 'tag-permission', { tag: existingContainerID } );
+				const selectedContainerKey = container.usageContext.includes( USAGE_CONTEXT_AMP ) ? 'selectedContainerAMP' : 'selectedContainerWeb';
 
 				// If the user has access, they may continue but must use the found account+container.
 				this.setState(
 					{
 						isLoading: false,
 						selectedAccount: account.accountId, // Capitalization rule exception: `accountId` is a property of an API returned value.
-						selectedContainer: container.publicId, // Capitalization rule exception: `publicId` is a property of an API returned value.
+						[ selectedContainerKey ]: container.publicId, // Capitalization rule exception: `publicId` is a property of an API returned value.
 						accounts: [ account ],
-						containers: [ container ],
 						hasExistingTag: true,
 					}
 				);
+				this.setContainers( [ container ] );
 			} catch ( err ) {
 				this.setState(
 					{
