@@ -90,6 +90,10 @@ function googlesitekit_opcache_reset() {
 		return;
 	}
 
+	if ( ! function_exists( 'opcache_reset' ) ) {
+		return;
+	}
+
 	if ( ! empty( ini_get( 'opcache.restrict_api' ) ) && strpos( __FILE__, ini_get( 'opcache.restrict_api' ) ) !== 0 ) {
 		return;
 	}
