@@ -91,13 +91,12 @@ class TagmanagerSetup extends Component {
 	 * @param {Array} containers List of containers to set.
 	 */
 	setContainers( containers ) {
-		const containersWeb = containers.filter(
-			( container ) => container.usageContext.includes( USAGE_CONTEXT_WEB )
-		);
-		const containersAMP = containers.filter(
-			( container ) => container.usageContext.includes( USAGE_CONTEXT_AMP )
-		);
-		this.setState( { containersWeb, containersAMP } );
+		const containersByContext = ( context ) => containers.filter( ( c ) => c.usageContext.includes( context ) );
+
+		this.setState( {
+			containersWeb: containersByContext( USAGE_CONTEXT_WEB ),
+			containersAMP: containersByContext( USAGE_CONTEXT_AMP ),
+		} );
 	}
 
 	async componentDidMount() {
