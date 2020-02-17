@@ -206,8 +206,6 @@ class TagmanagerSetup extends Component {
 			this.setState( {
 				isLoading: false,
 				accounts,
-				containersWeb: [],
-				containersAMP: [],
 			} );
 		} catch ( err ) {
 			this.setState( {
@@ -393,15 +391,11 @@ class TagmanagerSetup extends Component {
 			return;
 		}
 
-		this.setState( { selectedAccount: selectValue } );
-
-		if ( ! selectValue ) {
-			this.setState( {
-				selectedContainerWeb: '',
-				selectedContainerAMP: '',
-			} );
-			return;
-		}
+		this.setState( {
+			selectedAccount: selectValue,
+			selectedContainerWeb: '',
+			selectedContainerAMP: '',
+		} );
 
 		if ( ! isValidAccountID( selectValue ) ) {
 			return;
@@ -419,7 +413,8 @@ class TagmanagerSetup extends Component {
 				errorCode: false,
 				errorMsg: '',
 				selectedAccount: '',
-				selectedContainer: '',
+				selectedContainerWeb: '',
+				selectedContainerAMP: '',
 			},
 			this.requestTagManagerAccounts
 		);
