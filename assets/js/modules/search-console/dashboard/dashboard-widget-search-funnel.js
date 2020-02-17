@@ -26,6 +26,7 @@ import DashboardSearchFunnelInner from './dashboard-widget-search-funnel-inner';
 import Layout from 'GoogleComponents/layout/layout';
 import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
 import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -52,10 +53,10 @@ class DashboardSearchFunnel extends Component {
 						timePeriod={ __( 'Last 28 days', 'google-site-kit' ) }
 					/>
 				</div>
-				<div className={ `
-					mdc-layout-grid__cell
-					mdc-layout-grid__cell--span-${ wrapperCols }
-				` } >
+				<div className={ classnames(
+					'mdc-layout-grid__cell',
+					`mdc-layout-grid__cell--span-${ wrapperCols }`
+				) }>
 					<Layout className="googlesitekit-analytics-search-funnel">
 						<div className="mdc-layout-grid">
 							<div className="mdc-layout-grid__inner">

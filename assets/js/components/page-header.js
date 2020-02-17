@@ -82,10 +82,10 @@ class PageHeader extends Component {
 						` }>
 							<div className="googlesitekit-page-header__details">
 								{ status &&
-									<span className={ `
-										googlesitekit-page-header__status
-										googlesitekit-page-header__status--${ status }
-									` }>
+									<span className={ classnames(
+										'googlesitekit-page-header__status'
+										`googlesitekit-page-header__status--${ status }`
+									) }>
 										{ statusText }
 									</span>
 								}

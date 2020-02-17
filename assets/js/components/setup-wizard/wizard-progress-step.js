@@ -70,21 +70,21 @@ class WizardProgressStep extends Component {
 				{ 'googlesitekit-wizard-progress-step--current': currentStep }
 			) }>
 				<div className="googlesitekit-wizard-progress-step__number-wrapper">
-					<div className={ `
-						googlesitekit-wizard-progress-step__number
-						googlesitekit-wizard-progress-step__number--${ statusClass }
-					` }>
-						<span className={ `
-							googlesitekit-wizard-progress-step__number-text
-							googlesitekit-wizard-progress-step__number-text--${ statusClass }
-						` }>
+					<div className={ classnames(
+						'googlesitekit-wizard-progress-step__number',
+						`googlesitekit-wizard-progress-step__number--${ statusClass }`
+					) }>
+						<span className={ classnames(
+							'googlesitekit-wizard-progress-step__number-text',
+							`googlesitekit-wizard-progress-step__number-text--${ statusClass }`
+						) }>
 							{ step }
 						</span>
 						{ statusIcon && (
-							<span className={ `
-								googlesitekit-wizard-progress-step__number-icon
-								googlesitekit-wizard-progress-step__number-icon--${ statusClass }
-							` }>
+							<span className={ classnames(
+								'googlesitekit-wizard-progress-step__number-icon',
+								`googlesitekit-wizard-progress-step__number-icon--${ statusClass }`
+							) }>
 								{ statusIcon }
 							</span>
 						) }
