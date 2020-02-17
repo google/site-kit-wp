@@ -72,14 +72,14 @@ class PageHeader extends Component {
 						</div>
 					}
 					{ hasDetails &&
-						<div className={ `
+						<div className="
 							mdc-layout-grid__cell
 							mdc-layout-grid__cell--align-bottom
 							mdc-layout-grid__cell--align-right-tablet
 							mdc-layout-grid__cell--span-4-phone
 							mdc-layout-grid__cell--span-4-tablet
 							mdc-layout-grid__cell--span-6-desktop
-						` }>
+						">
 							<div className="googlesitekit-page-header__details">
 								{ status &&
 									<span className={ classnames(

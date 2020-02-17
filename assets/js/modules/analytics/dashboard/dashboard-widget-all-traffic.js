@@ -105,10 +105,10 @@ class AnalyticsAllTraffic extends Component {
 
 		return (
 			<Fragment>
-				<div className={ `
+				<div className="
 					mdc-layout-grid__cell
 					mdc-layout-grid__cell--span-12
-				` }>
+				">
 					<DashboardModuleHeader timePeriod={ __( 'Last 28 days', 'google-site-kit' ) } description={ __( 'How people found your site.', 'google-site-kit' ) } title={ __( 'All Traffic', 'google-site-kit' ) } />
 
 				</div>
