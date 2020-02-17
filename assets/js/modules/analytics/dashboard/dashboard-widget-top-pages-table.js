@@ -109,7 +109,10 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 		const dataTable = getDataTableFromData( dataMapped, headers, options );
 
 		return (
-			<div className={ `mdc-layout-grid__cell mdc-layout-grid__cell--span-${ colspan }` }>
+			<div className={ `
+				mdc-layout-grid__cell
+				mdc-layout-grid__cell--span-${ colspan }
+			` }>
 				<TableOverflowContainer>
 					{ dataTable }
 				</TableOverflowContainer>

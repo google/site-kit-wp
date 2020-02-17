@@ -72,6 +72,7 @@ class DataBlock extends Component {
 		} = this.props;
 
 		const role = ( 'button' === context ) ? 'button' : '';
+
 		return (
 			<div
 				className={ classnames(

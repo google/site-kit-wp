@@ -60,7 +60,6 @@ class Button extends Component {
 
 		return (
 			<SemanticButton
-
 				className={ classnames(
 					'mdc-button',
 					className,

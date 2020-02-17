@@ -50,7 +50,11 @@ class DashboardSplashService extends Component {
 							'mdc-layout-grid__cell',
 							'mdc-layout-grid__cell--span-5-tablet',
 							'mdc-layout-grid__cell--span-7-desktop',
-							{ 'mdc-layout-grid__cell--start-3-tablet mdc-layout-grid__cell--start-5-desktop mdc-layout-grid__cell--offset-5-tablet': opposite }
+							{
+								'mdc-layout-grid__cell--start-3-tablet': opposite,
+								'mdc-layout-grid__cell--start-5-desktop': opposite,
+								'mdc-layout-grid__cell--offset-5-tablet': opposite,
+							}
 						) }>
 							<div className="googlesitekit-splash-service__content">
 								<h3 className="

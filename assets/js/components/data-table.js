@@ -96,12 +96,13 @@ export const getDataTableFromData = ( data, headers, options ) => {
 			'googlesitekit-table',
 			{ 'googlesitekit-table--with-list': ! options || ! options.disableListMode }
 		) }>
-			<table
-				className={ `
-					googlesitekit-table__wrapper
-					googlesitekit-table__wrapper--${ data && data[ 0 ] ? data[ 0 ].length : 1 }-col
-				` }
-			>
+			<table className={ classnames(
+				'googlesitekit-table__wrapper',
+				{
+					'googlesitekit-table__wrapper-1': ! data && ! data[ 0 ].length,
+					[ `googlesitekit-table__wrapper--${ data[ 0 ].length }-col` ]: data && data[ 0 ].length,
+				}
+			) }>
 				<thead className="googlesitekit-table__head">
 					<tr
 						key="gksc_data_row_header-wrap"

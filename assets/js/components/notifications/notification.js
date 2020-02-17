@@ -229,7 +229,14 @@ class Notification extends Component {
 					<div className="mdc-layout-grid__inner">
 
 						{ logo &&
-							<div className={ `mdc-layout-grid__cell mdc-layout-grid__cell--span-12 ${ inlineLayout ? 'mdc-layout-grid__cell--order-2-phone mdc-layout-grid__cell--order-1-tablet' : '' }` }>
+							<div className={ classnames(
+								'mdc-layout-grid__cell',
+								'mdc-layout-grid__cell--span-12',
+								{
+									'mdc-layout-grid__cell--order-2-phone': inlineLayout,
+									'mdc-layout-grid__cell--order-1-tablet': inlineLayout,
+								}
+							) }>
 								<div className="googlesitekit-publisher-win__logo">
 									{ logoSVG }
 								</div>
@@ -250,7 +257,10 @@ class Notification extends Component {
 							</div>
 						}
 
-						<div className={ `mdc-layout-grid__cell ${ layout }` }>
+						<div className={ classnames(
+							'mdc-layout-grid__cell',
+							layout
+						) } >
 
 							{ inlineLayout ? (
 								<div className="mdc-layout-grid__inner">

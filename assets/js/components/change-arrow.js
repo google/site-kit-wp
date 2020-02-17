@@ -2,17 +2,16 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 function ChangeArrow( { direction, invertColor } ) {
 	return (
 		<svg
-			className={
-				`
-				googlesitekit-change-arrow
-				googlesitekit-change-arrow--${ direction }
-				${ invertColor ? 'googlesitekit-change-arrow--inverted-color' : '' }
-				`
-			}
+			className={ classnames(
+				'googlesitekit-change-arrow',
+				`googlesitekit-change-arrow--${ direction }`,
+				{ 'googlesitekit-change-arrow--inverted-color': invertColor }
+			) }
 			width="9"
 			height="9"
 			viewBox="0 0 10 10"
