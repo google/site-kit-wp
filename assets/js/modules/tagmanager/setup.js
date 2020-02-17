@@ -525,8 +525,9 @@ class TagmanagerSetup extends Component {
 			</Fragment>;
 		}
 
+		const isSecondaryAMP = 'secondary' === ampMode;
 		// Only show the web container select if AMP is not used, or AMP is in secondary mode.
-		const showWebContainerSelect = ( ! ampEnabled || 'secondary' === ampMode );
+		const showWebContainerSelect = ( ! ampEnabled || isSecondaryAMP );
 		// Show the AMP select if AMP is in primary or secondary mode (implies enabled).
 		const showAMPContainerSelect = [ 'primary', 'secondary' ].includes( ampMode );
 
@@ -541,9 +542,19 @@ class TagmanagerSetup extends Component {
 						) }
 					</p>
 				) }
-				{ ! hasExistingTag && (
-					<p>{ __( 'Please select your Tag Manager account and container below, the snippet will be inserted automatically into your site.', 'google-site-kit' ) }</p>
+
+				{ ( ! hasExistingTag && ! isSecondaryAMP ) && (
+					<p>
+						{ __( 'Please select your Tag Manager account and container below, the snippet will be inserted automatically on your site.', 'google-site-kit' ) }
+					</p>
 				) }
+
+				{ ( ! hasExistingTag && isSecondaryAMP ) && (
+					<p>
+						{ __( 'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below, the snippets will be inserted automatically on your site.', 'google-site-kit' ) }
+					</p>
+				) }
+
 				<div className="googlesitekit-setup-module__inputs">
 					<Select
 						className="googlesitekit-tagmanager__select-account"
