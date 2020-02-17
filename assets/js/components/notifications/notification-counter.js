@@ -86,7 +86,8 @@ class NotificationCounter extends Component {
 		const markup = (
 			<span className={ `
 				googlesitekit-notifications-counter
-				update-plugins count-${ this.state.count }
+				update-plugins
+				count-${ this.state.count }
 			` }>
 				<span className="plugin-count" aria-hidden="true">{ this.state.count }</span>
 				<span className="screen-reader-text">{ screenReader }</span>
