@@ -642,6 +642,7 @@ class TagmanagerSetup extends Component {
 			selectedAccount,
 			hasExistingTag,
 		} = this.state;
+		const hasContainers = !! containers.length;
 
 		if ( containersLoading ) {
 			return <ProgressBar small />;
@@ -654,7 +655,7 @@ class TagmanagerSetup extends Component {
 					googlesitekit-tagmanager__select-container--${ type }
 				` }
 				label={ label || __( 'Container', 'google-site-kit' ) }
-				value={ this.state[ selectedStateKey ] }
+				value={ hasContainers ? this.state[ selectedStateKey ] : CONTAINER_CREATE }
 				onEnhancedChange={ ( idx, item ) => this.setState( { [ selectedStateKey ]: item.dataset.value } ) }
 				disabled={ hasExistingTag || ! isValidAccountID( selectedAccount ) }
 				enhanced
