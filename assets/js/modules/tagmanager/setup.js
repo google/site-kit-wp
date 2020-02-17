@@ -583,6 +583,7 @@ class TagmanagerSetup extends Component {
 							selectedStateKey: 'selectedContainerWeb',
 							containers: containersWeb,
 							label: showAMPContainerSelect ? __( 'Web Container', 'google-site-kit' ) : null,
+							type: USAGE_CONTEXT_WEB,
 						} )
 					}
 
@@ -592,6 +593,7 @@ class TagmanagerSetup extends Component {
 							containers: containersAMP,
 							// Use the default label if it is the only select shown.
 							label: ! showWebContainerSelect ? __( 'AMP Container', 'google-site-kit' ) : null,
+							type: USAGE_CONTEXT_AMP,
 						} )
 					}
 				</div>
@@ -638,6 +640,7 @@ class TagmanagerSetup extends Component {
 			label,
 			selectedStateKey,
 			containers,
+			type,
 		} = args;
 		const {
 			containersLoading,
@@ -651,7 +654,10 @@ class TagmanagerSetup extends Component {
 
 		return (
 			<Select
-				className="googlesitekit-tagmanager__select-container"
+				className={ `
+					googlesitekit-tagmanager__select-container
+					googlesitekit-tagmanager__select-container--${ type }
+				` }
 				label={ label || __( 'Container', 'google-site-kit' ) }
 				value={ this.state[ selectedStateKey ] }
 				onEnhancedChange={ ( idx, item ) => this.setState( { [ selectedStateKey ]: item.dataset.value } ) }
