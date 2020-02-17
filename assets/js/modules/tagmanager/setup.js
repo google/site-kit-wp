@@ -40,7 +40,11 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import { isValidAccountID, isValidContainerID } from './util';
+import {
+	getContainers,
+	isValidAccountID,
+	isValidContainerID,
+} from './util';
 
 const ACCOUNT_CREATE = 'account_create';
 const CONTAINER_CREATE = 'container_create';
@@ -83,20 +87,6 @@ class TagmanagerSetup extends Component {
 		if ( this._isMounted ) {
 			Component.prototype.setState.apply( this, arguments );
 		}
-	}
-
-	/**
-	 * Separates and sets a list of containers into their state keys by usage context.
-	 *
-	 * @param {Array} containers List of containers to set.
-	 */
-	setContainers( containers ) {
-		const containersByContext = ( context ) => containers.filter( ( c ) => c.usageContext.includes( context ) );
-
-		this.setState( {
-			containersWeb: containersByContext( USAGE_CONTEXT_WEB ),
-			containersAMP: containersByContext( USAGE_CONTEXT_AMP ),
-		} );
 	}
 
 	async componentDidMount() {
@@ -169,15 +159,16 @@ class TagmanagerSetup extends Component {
 			// Verify the user has access to existing tag if found.
 			try {
 				const { account, container } = await data.get( TYPE_MODULES, 'tagmanager', 'tag-permission', { tag: existingContainerID } );
-				const selectedContainerKey = container.usageContext.includes( USAGE_CONTEXT_AMP ) ? 'selectedContainerAMP' : 'selectedContainerWeb';
+				const containersWeb = getContainers( [ container ] ).byContext( USAGE_CONTEXT_WEB );
+				const containersAMP = getContainers( [ container ] ).byContext( USAGE_CONTEXT_AMP );
 
-				this.setContainers( [ container ] );
 				// If the user has access, they may continue but must use the found account+container.
 				this.setState(
 					{
 						isLoading: false,
 						selectedAccount: account.accountId, // Capitalization rule exception: `accountId` is a property of an API returned value.
-						[ selectedContainerKey ]: container.publicId, // Capitalization rule exception: `publicId` is a property of an API returned value.
+						selectedContainerWeb: get( containersWeb, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
+						selectedContainerAMP: get( containersAMP, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
 						accounts: [ account ],
 						hasExistingTag: true,
 					}
@@ -249,7 +240,6 @@ class TagmanagerSetup extends Component {
 			const { accounts, containers } = await data.get( TYPE_MODULES, 'tagmanager', 'accounts-containers', queryArgs );
 
 			this.validateAccounts( accounts, selectedAccount );
-			this.setContainers( containers );
 
 			// If the selected container is not in the list of containers, clear it.
 			const containerIDs = containers.map( ( { publicId } ) => publicId ); /* Capitalization rule exception: `publicId` is a property of an API returned value. */
@@ -260,12 +250,17 @@ class TagmanagerSetup extends Component {
 				selectedContainerAMP = '';
 			}
 
+			const containersWeb = getContainers( containers ).byContext( USAGE_CONTEXT_WEB );
+			const containersAMP = getContainers( containers ).byContext( USAGE_CONTEXT_AMP );
+
 			this.setState( {
 				isLoading: false,
 				accounts,
+				containersWeb,
+				containersAMP,
 				selectedAccount: selectedAccount || get( containers, [ 0, 'accountId' ] ), // Capitalization rule exception: `accountId` is a property of an API returned value.
-				selectedContainerWeb,
-				selectedContainerAMP,
+				selectedContainerWeb: selectedContainerWeb || get( containersWeb, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
+				selectedContainerAMP: selectedContainerAMP || get( containersAMP, [ 0, 'publicId' ] ), // Capitalization rule exception: `accountId` is a property of an API returned value.
 				errorCode: false,
 				errorMsg: '',
 			} );
@@ -324,10 +319,11 @@ class TagmanagerSetup extends Component {
 			};
 
 			const containers = await data.get( TYPE_MODULES, 'tagmanager', 'containers', queryArgs );
-			this.setContainers( containers );
 
 			this.setState( {
 				containersLoading: false,
+				containersWeb: getContainers( containers ).byContext( USAGE_CONTEXT_WEB ),
+				containersAMP: getContainers( containers ).byContext( USAGE_CONTEXT_AMP ),
 				errorCode: false,
 			} );
 		} catch ( err ) {
