@@ -592,7 +592,7 @@ class TagmanagerSetup extends Component {
 							selectedStateKey: 'selectedContainerAMP',
 							containers: containersAMP,
 							// Use the default label if it is the only select shown.
-							label: ! showWebContainerSelect ? __( 'AMP Container', 'google-site-kit' ) : null,
+							label: showWebContainerSelect ? __( 'AMP Container', 'google-site-kit' ) : null,
 							type: USAGE_CONTEXT_AMP,
 						} )
 					}
