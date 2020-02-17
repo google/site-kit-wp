@@ -564,6 +564,10 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 
 		// Use site name for container, fallback to domain of reference URL.
 		$container_name = get_bloginfo( 'name' ) ?: wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
+		// Prevent naming conflict (Tag Manager does not allow more than one with same name).
+		if ( self::USAGE_CONTEXT_AMP === $usage_context ) {
+			$container_name .= ' AMP';
+		}
 		$container_name = self::sanitize_container_name( $container_name );
 
 		$container = new Google_Service_TagManager_Container();
