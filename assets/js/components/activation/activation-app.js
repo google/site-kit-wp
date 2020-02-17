@@ -19,56 +19,20 @@
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
-
-/**
- * External dependencies
- */
-import { trackEvent } from 'GoogleUtil';
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+// eslint-disable-next-line @wordpress/dependency-group
+import ErrorHandler from 'GoogleComponents/ErrorHandler';
+import { trackEvent } from 'GoogleUtil';
 import { ActivationMain } from './activation-main';
-import Notification from '../notifications/notification';
 import NotificationCounter from '../notifications/notification-counter';
-import { __ } from '@wordpress/i18n';
 
 export class ActivationApp extends Component {
-	constructor( props ) {
-		super( props );
-		this.state = {
-			hasError: false,
-		};
-	}
-
-	componentDidCatch( error, info ) {
-		this.setState( {
-			hasError: true,
-			error,
-			info,
-		} );
-	}
-
 	render() {
-		const {
-			hasError,
-			error,
-			info,
-		} = this.state;
-
-		if ( hasError ) {
-			return <Notification
-				id="googlesitekit-error"
-				key="googlesitekit-error"
-				title={ error.message }
-				description={ info.componentStack }
-				dismiss={ '' }
-				isDismissable={ false }
-				format="small"
-				type="win-error"
-			/>;
-		}
 		const { proxySetupURL, splashURL } = global._googlesitekitBase;
 		const { canViewDashboard } = global.googlesitekit.permissions;
 		const { dashboardPermalink } = global.googlesitekit;
@@ -82,7 +46,7 @@ export class ActivationApp extends Component {
 		}
 
 		return (
-			<Fragment>
+			<ErrorHandler>
 				<NotificationCounter />
 				<ActivationMain
 					buttonURL={ buttonURL }
@@ -91,7 +55,7 @@ export class ActivationApp extends Component {
 						trackEvent( 'plugin_setup', proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
 					} }
 				/>
-			</Fragment>
+			</ErrorHandler>
 		);
 	}
 }
