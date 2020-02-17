@@ -121,9 +121,12 @@ describe( 'Tag Manager module setup', () => {
 			expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test account b/i } ),
 		] );
 
-		// Ensure proper account and container are now selected.
+		// Ensure account is selected.
 		await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-account .mdc-select__selected-text', { text: /test account b/i } );
-		await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container .mdc-select__selected-text', { text: /test container y/i } );
+
+		// Select a container.
+		await expect( page ).toClick( '.googlesitekit-tagmanager__select-container' );
+		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test container y/i } );
 
 		await page.waitFor( 1000 );
 		await expect( page ).toClick( 'button', { text: /confirm \& continue/i } );
