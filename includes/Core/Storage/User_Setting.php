@@ -149,7 +149,7 @@ abstract class User_Setting {
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * For use internally with register_setting.
-	 * Returns `null` for consistency with the default in register_setting.
+	 * Returns `null` for consistency with the default in register_meta.
 	 * Override in a sub-class.
 	 *
 	 * @since n.e.x.t
