@@ -23,7 +23,7 @@ import PropTypes from 'prop-types';
 import Button from 'GoogleComponents/button';
 import Link from 'GoogleComponents/link';
 import {
-	sendAnalyticsTrackingEvent,
+	trackEvent,
 } from 'GoogleUtil';
 import OptIn from 'GoogleComponents/optin';
 import HelpLink from 'GoogleComponents/help-link';
@@ -68,7 +68,7 @@ class WizardStepAuthentication extends Component {
 							<p>
 								<Button
 									onClick={ () => {
-										sendAnalyticsTrackingEvent( 'plugin_setup', 'signin_with_google' );
+										trackEvent( 'plugin_setup', 'signin_with_google' );
 										document.location = connectURL;
 									} }
 								>

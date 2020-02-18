@@ -11,7 +11,7 @@
  * Plugin Name: Site Kit by Google
  * Plugin URI:  https://sitekit.withgoogle.com
  * Description: Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
- * Version:     1.2.0
+ * Version:     1.3.1
  * Author:      Google
  * Author URI:  https://opensource.google.com
  * License:     Apache License 2.0
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Define most essential constants.
-define( 'GOOGLESITEKIT_VERSION', '1.2.0' );
+define( 'GOOGLESITEKIT_VERSION', '1.3.1' );
 define( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE', __FILE__ );
 define( 'GOOGLESITEKIT_PHP_MINIMUM', '5.6.0' );
 
@@ -33,8 +33,9 @@ define( 'GOOGLESITEKIT_PHP_MINIMUM', '5.6.0' );
  *
  * Throws an error if the plugin is activated on an older version than PHP 5.4.
  *
+ * @since 1.0.0
+ * @since 1.3.0 Minimum required version of PHP raised to 5.6
  * @access private
- * @since n.e.x.t Minimum required version of PHP raised to 5.6
  *
  * @param bool $network_wide Whether to activate network-wide.
  */
@@ -59,6 +60,7 @@ register_activation_hook( __FILE__, 'googlesitekit_activate_plugin' );
 /**
  * Handles plugin deactivation.
  *
+ * @since 1.0.0
  * @access private
  *
  * @param bool $network_wide Whether to deactivate network-wide.
@@ -80,11 +82,15 @@ register_deactivation_hook( __FILE__, 'googlesitekit_deactivate_plugin' );
 /**
  * Resets opcache if possible.
  *
+ * @since 1.3.0
  * @access private
- * @since n.e.x.t
  */
 function googlesitekit_opcache_reset() {
 	if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '<' ) ) {
+		return;
+	}
+
+	if ( ! function_exists( 'opcache_reset' ) ) {
 		return;
 	}
 

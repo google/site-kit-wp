@@ -401,7 +401,7 @@ final class Modules {
 	/**
 	 * Gets related REST routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @return array List of REST_Route objects.
 	 */
@@ -628,7 +628,7 @@ final class Modules {
 	/**
 	 * Prepares module data for a REST response according to the schema.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @param Module $module Module instance.
 	 * @return array Module REST response data.
@@ -650,7 +650,7 @@ final class Modules {
 	/**
 	 * Gets the REST schema for a module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @return array Module REST schema.
 	 */

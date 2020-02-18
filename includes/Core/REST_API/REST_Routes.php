@@ -132,7 +132,7 @@ final class REST_Routes {
 	 * Gets available REST routes.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Moved most routes into individual classes and introduced {@see 'googlesitekit_rest_routes'} filter.
+	 * @since 1.3.0 Moved most routes into individual classes and introduced {@see 'googlesitekit_rest_routes'} filter.
 	 *
 	 * @return array List of REST_Route instances.
 	 */
@@ -273,7 +273,7 @@ final class REST_Routes {
 		/**
 		 * Filters the list of available REST routes.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.3.0
 		 *
 		 * @param array $routes List of REST_Route objects.
 		 */

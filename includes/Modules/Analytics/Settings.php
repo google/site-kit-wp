@@ -113,7 +113,7 @@ class Settings extends Module_Settings {
 				 * This filter exists so that adsenseLinked can only be truthy if the AdSense module is active,
 				 * regardless of the saved setting.
 				 *
-				 * @since n.e.x.t
+				 * @since 1.3.0
 				 * @param bool $adsense_linked Null by default, will fallback to the option value if not set.
 				 */
 				$adsense_linked = apply_filters( 'googlesitekit_analytics_adsense_linked', null );

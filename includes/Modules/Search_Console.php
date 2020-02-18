@@ -56,6 +56,22 @@ final class Search_Console extends Module
 
 		$this->register_screen_hook();
 
+		// Detect and store Search Console property when receiving token for the first time.
+		add_action(
+			'googlesitekit_authorize_user',
+			function() {
+				// Only detect if there isn't one set already.
+				$property_id = $this->get_property_id() ?: $this->detect_property_id();
+				if ( ! $property_id ) {
+					return;
+				}
+
+				$this->get_settings()->merge(
+					array( 'propertyID' => $property_id )
+				);
+			}
+		);
+
 		// Ensure that a Search Console property must be set at all times.
 		add_filter(
 			'googlesitekit_setup_complete',
@@ -68,19 +84,6 @@ final class Search_Console extends Module
 			}
 		);
 
-		// Filter the reference site URL to use Search Console property if available.
-		add_filter(
-			'googlesitekit_site_url',
-			function( $url ) {
-				$property_id = $this->get_property_id();
-				if ( $property_id ) {
-					return $property_id;
-				}
-				return $url;
-			},
-			-9999
-		);
-
 		// Provide Search Console property information to JavaScript.
 		add_filter(
 			'googlesitekit_setup_data',
@@ -91,19 +94,6 @@ final class Search_Console extends Module
 			},
 			11
 		);
-	}
-
-	/**
-	 * Gets the property ID and ensures it is a valid URL.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string|bool Property ID URL if set and valid, otherwise false.
-	 */
-	protected function get_property_id() {
-		$option = $this->get_settings()->get();
-
-		return filter_var( $option['propertyID'], FILTER_VALIDATE_URL );
 	}
 
 	/**
@@ -134,7 +124,7 @@ final class Search_Console extends Module
 			'searchanalytics' => 'webmasters',
 
 			// POST.
-			'site'            => '',
+			'site'            => 'webmasters',
 		);
 	}
 
@@ -180,7 +170,10 @@ final class Search_Console extends Module
 					);
 				}
 
-				$site_url = trailingslashit( $data['siteURL'] );
+				$site_url = $data['siteURL'];
+				if ( 0 !== strpos( $site_url, 'sc-domain:' ) ) {
+					$site_url = trailingslashit( $site_url );
+				}
 
 				return function () use ( $site_url ) {
 					$restore_defer = $this->with_client_defer( false );
@@ -234,33 +227,28 @@ final class Search_Console extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:matched-sites':
 				/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
-				$sites            = $this->map_sites( (array) $response->getSiteEntry() );
-				$current_url      = $this->context->get_reference_site_url();
-				$current_host     = wp_parse_url( $current_url, PHP_URL_HOST );
-				$property_matches = array_filter(
-					$sites,
-					function ( array $site ) use ( $current_host ) {
-						$site_host = wp_parse_url( str_replace( 'sc-domain:', 'https://', $site['siteURL'] ), PHP_URL_HOST );
+				$sites = $this->map_sites( (array) $response->getSiteEntry() );
 
-						// Ensure host names overlap, from right to left.
-						return 0 === strpos( strrev( $current_host ), strrev( $site_host ) );
-					}
+				$current_url                  = trailingslashit( $this->context->get_reference_site_url() );
+				$sufficient_permission_levels = array(
+					'siteRestrictedUser',
+					'siteOwner',
+					'siteFullUser',
 				);
 
-				$exact_match = array_reduce(
-					$property_matches,
-					function ( $match, array $site ) use ( $current_url ) {
-						if ( ! $match && trailingslashit( $current_url ) === trailingslashit( $site['siteURL'] ) ) {
-							return $site;
+				return array_values(
+					array_filter(
+						$sites,
+						function ( array $site ) use ( $current_url, $sufficient_permission_levels ) {
+							$site_url = trailingslashit( $site['siteURL'] );
+							if ( 0 === strpos( $site_url, 'sc-domain:' ) ) {
+								$url_match = str_replace( array( 'http://', 'https://' ), 'sc-domain:', $current_url ) === $site_url;
+							} else {
+								$url_match = $current_url === $site_url;
+							}
+							return $url_match && in_array( $site['permissionLevel'], $sufficient_permission_levels, true );
 						}
-						return $match;
-					},
-					null
-				);
-
-				return array(
-					'exactMatch'      => $exact_match, // (array) single site object, or null if no match.
-					'propertyMatches' => $property_matches, // (array) of site objects, or empty array if none.
+					)
 				);
 			case 'GET:searchanalytics':
 				return $response->getRows();
@@ -343,7 +331,7 @@ final class Search_Console extends Module
 
 		return $this->get_webmasters_service()
 			->searchanalytics
-			->query( $this->context->get_reference_site_url(), $request );
+			->query( $this->get_property_id(), $request );
 	}
 
 	/**
@@ -392,6 +380,52 @@ final class Search_Console extends Module
 		}
 
 		return (bool) $has_data;
+	}
+
+	/**
+	 * Gets the property ID.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @return string Property ID URL if set, or empty string.
+	 */
+	protected function get_property_id() {
+		$option = $this->get_settings()->get();
+
+		return $option['propertyID'];
+	}
+
+	/**
+	 * Detects the property ID to use for this site.
+	 *
+	 * This method runs a Search Console API request. The determined ID should therefore be stored and accessed through
+	 * {@see Search_Console::get_property_id()} instead.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @return string Property ID, or empty string if none found.
+	 */
+	protected function detect_property_id() {
+		$properties = $this->get_data( 'matched-sites' );
+		if ( is_wp_error( $properties ) || ! $properties ) {
+			return '';
+		}
+
+		// If there are multiple, prefer URL property over domain property.
+		if ( count( $properties ) > 1 ) {
+			$url_properties = array_filter(
+				$properties,
+				function( $property ) {
+					return 0 !== strpos( $property['siteURL'], 'sc-domain:' );
+				}
+			);
+			if ( count( $url_properties ) > 0 ) {
+				$properties = $url_properties;
+			}
+		}
+
+		$property = array_shift( $properties );
+		return $property['siteURL'];
 	}
 
 	/**
@@ -445,7 +479,7 @@ final class Search_Console extends Module
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @return Module_Settings
 	 */
