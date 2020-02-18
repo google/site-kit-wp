@@ -16,6 +16,8 @@ function add_mask() {
     echo "::add-mask::$1"
 }
 
+debug "Wiki publish"
+
 if [ -z "$GITHUB_ACTOR" ]; then
     error "GITHUB_ACTOR environment variable is not set"
     exit 1
@@ -52,7 +54,7 @@ tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
 
 debug "Enumerating contents of $1"
 mkdir -p "$tmp_dir/$1"
-for file in $(find $1 -maxdepth 1 -type f -name '*.zip' -execdir basename '{}' ';'); do
+for file in $(find $1 -maxdepth 1 -type f -name '*' -execdir basename '{}' ';'); do
     debug "Copying $file"
     cp "$1/$file" "$tmp_dir/$1"
 done
