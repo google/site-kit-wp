@@ -10,9 +10,6 @@
 
 namespace Google\Site_Kit\Core\Util;
 
-use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\Storage\User_Setting;
-
 /**
  * Class managing admin tracking.
  *
@@ -20,16 +17,27 @@ use Google\Site_Kit\Core\Storage\User_Setting;
  * @access private
  * @ignore
  */
-final class Tracking extends User_Setting {
-
-	/**
-	 * The user option name for this setting.
-	 *
-	 * @var string
-	 */
-	const OPTION = 'googlesitekit_tracking_optin';
+final class Tracking {
 
 	const TRACKING_ID = 'UA-130569087-3';
+
+	/**
+	 * Tracking_Consent instance.
+	 *
+	 * @var Tracking_Consent
+	 */
+	protected $consent;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Tracking_Consent $consent Tracking_Consent instance.
+	 */
+	public function __construct( Tracking_Consent $consent ) {
+		$this->consent = $consent;
+	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -37,7 +45,7 @@ final class Tracking extends User_Setting {
 	 * @since 1.0.0
 	 */
 	public function register() {
-		parent::register();
+		$this->consent->register();
 
 		add_filter(
 			'googlesitekit_inline_base_data',
@@ -56,7 +64,7 @@ final class Tracking extends User_Setting {
 	 * @return bool True if tracking enabled, and False if not.
 	 */
 	public function is_active() {
-		return (bool) $this->user_options->get( self::OPTION );
+		return (bool) $this->consent->get();
 	}
 
 	/**
@@ -72,30 +80,5 @@ final class Tracking extends User_Setting {
 		$data['trackingID']      = self::TRACKING_ID;
 
 		return $data;
-	}
-
-	/**
-	 * Gets the expected value type.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string The type name.
-	 */
-	protected function get_type() {
-		return 'boolean';
-	}
-
-	/**
-	 * Gets the visibility of this setting for REST responses.
-	 *
-	 * Whether data associated with this meta key can be considered public and
-	 * should be accessible via the REST API.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return bool
-	 */
-	protected function get_show_in_rest() {
-		return current_user_can( Permissions::SETUP );
 	}
 }
