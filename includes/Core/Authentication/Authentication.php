@@ -168,7 +168,10 @@ final class Authentication {
 	 * @since 1.0.0
 	 */
 	public function register() {
-		$this->credentials->register();
+		$this->credentials()->register();
+		$this->verification()->register();
+		$this->verification_file()->register();
+		$this->verification_meta()->register();
 
 		add_action(
 			'init',
