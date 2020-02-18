@@ -1286,7 +1286,7 @@ final class Analytics extends Module
 			);
 
 			if ( is_wp_error( $reports ) ) {
-				return false;
+				$reports = array(); // Bypass data check and cache.
 			}
 
 			foreach ( $reports as $report ) {

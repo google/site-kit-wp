@@ -364,7 +364,7 @@ final class Search_Console extends Module
 			);
 
 			if ( is_wp_error( $response_rows ) ) {
-				return false;
+				$response_rows = array(); // Bypass data check and cache.
 			}
 
 			foreach ( $response_rows as $data_row ) {
