@@ -56,7 +56,6 @@ abstract class User_Setting {
 			array(
 				'type'              => $this->get_type(),
 				'sanitize_callback' => $this->get_sanitize_callback(),
-				'show_in_rest'      => $this->get_show_in_rest(),
 				'single'            => true,
 			)
 		);
@@ -159,19 +158,5 @@ abstract class User_Setting {
 	 */
 	protected function get_sanitize_callback() {
 		return null;
-	}
-
-	/**
-	 * Gets the visibility of this setting for REST responses.
-	 *
-	 * Whether data associated with this meta key can be considered public and
-	 * should be accessible via the REST API.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return bool
-	 */
-	protected function get_show_in_rest() {
-		return false;
 	}
 }
