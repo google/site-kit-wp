@@ -8,9 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-        repository: adamsilverstein/site-kit-wp
-        ref: ${{ github.ref }}
     - name: Get Composer Cache Directory
       id: composer-cache
       run: |
