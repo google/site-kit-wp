@@ -57,7 +57,7 @@ jobs:
         gulp zip
     - name: Prep files for wiki
       run: |
-        mkdir ${{ github.ref }}
+        mkdir -p ${{ github.ref }}
         mv google-site-kit.zip ${{ github.ref }}
         mv google-site-kit-dev.zip ${{ github.ref }}
     - name: Deploy to wiki
