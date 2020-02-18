@@ -4,13 +4,12 @@ on:
   pull_request:
     types: [closed]
 jobs:
-  remove-pr-from-wiki:
+  trigger-pr-release:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
     - name: Repository Dispatch
-      run: |
-        bash .github/remove-from-wiki.sh ${{ GITHUB_REF }}
-      env:
-        GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
-        WIKI_COMMIT_MESSAGE: "Remove build files for PR ${{ GITHUB_REF }}"
+    run: |
+      bash .github/remove-from-wiki.sh ${{ github.ref }}
+    env:
+      GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+      WIKI_COMMIT_MESSAGE: "Remove build files for PR ${{ github.ref }}"
