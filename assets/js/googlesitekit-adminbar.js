@@ -34,13 +34,14 @@ import 'GoogleModules';
  * WordPress dependencies
  */
 import { doAction } from '@wordpress/hooks';
-import { Component, Fragment, render } from '@wordpress/element';
+import { Component, render } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies.
  */
 import AdminbarModules from 'GoogleComponents/adminbar/adminbar-modules';
+import ErrorHandler from 'GoogleComponents/ErrorHandler';
 
 export class GoogleSitekitAdminbar extends Component {
 	constructor( props ) {
@@ -77,7 +78,7 @@ export class GoogleSitekitAdminbar extends Component {
 		} = global.googlesitekit;
 
 		return (
-			<Fragment>
+			<ErrorHandler>
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
 						<div className="
@@ -125,7 +126,7 @@ export class GoogleSitekitAdminbar extends Component {
 				>
 					{ __( 'More details', 'google-site-kit' ) }
 				</Link>
-			</Fragment>
+			</ErrorHandler>
 		);
 	}
 }
