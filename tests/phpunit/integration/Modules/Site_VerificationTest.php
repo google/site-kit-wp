@@ -12,9 +12,9 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Verification_File;
+use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
@@ -56,17 +56,48 @@ class Site_VerificationTest extends TestCase {
 		$this->assertTrue( has_action( 'init' ) );
 	}
 
+	public function test_meta_tag_cache() {
+		remove_all_actions( 'wp_head' );
+		remove_all_actions( 'added_user_meta' );
+		remove_all_actions( 'updated_user_meta' );
+		remove_all_actions( 'deleted_user_meta' );
+		$user_id           = $this->factory()->user->create();
+		$context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options      = new User_Options( $context );
+		$site_verification = new Site_Verification( $context );
+		$site_verification->register();
+
+		$meta_key          = $user_options->get_meta_key( Verification_Meta::OPTION );
+		$verification_meta = uniqid( 'test-verification-' );
+
+		add_user_meta( $user_id, $meta_key, $verification_meta );
+
+		$this->assertFalse( get_transient( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
+		$this->assertContains( $verification_meta, $this->capture_action( 'wp_head' ) );
+		$this->assertContains( $verification_meta, get_transient( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
+
+		$updated_verification_meta = $verification_meta . '-updated';
+		update_user_meta( $user_id, $meta_key, $updated_verification_meta );
+
+		$this->assertFalse( get_transient( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
+		$this->assertContains( $updated_verification_meta, $this->capture_action( 'wp_head' ) );
+		$this->assertContains( $updated_verification_meta, get_transient( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
+
+		delete_user_meta( $user_id, $meta_key );
+
+		$this->assertFalse( get_transient( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
+	}
+
 	/**
 	 * @dataProvider data_register_head_verification_tags
 	 */
 	public function test_register_head_verification_tags( $saved_tag, $expected_output ) {
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'login_head' );
-		$options           = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$site_verification = new Site_Verification( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$site_verification->register();
 
-		$options->set( Site_Verification::OPTION_VERIFICATION_META_TAGS, array( $saved_tag ) );
+		set_transient( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS, array( $saved_tag ) );
 
 		$this->assertContains(
 			$expected_output,
