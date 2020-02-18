@@ -52,9 +52,9 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	const VERIFICATION_TYPE_FILE = 'FILE';
 
 	/**
-	 * Verification meta tag cache option.
+	 * Verification meta tag cache key.
 	 */
-	const OPTION_VERIFICATION_META_TAGS = 'googlesitekit_verification_meta_tags';
+	const TRANSIENT_VERIFICATION_META_TAGS = 'googlesitekit_verification_meta_tags';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -102,12 +102,14 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			}
 		);
 
-		add_action(
-			'googlesitekit_invalidate_verification_meta_cache',
-			function () {
-				$this->options->delete( self::OPTION_VERIFICATION_META_TAGS );
+		$clear_verification_meta_cache = function ( $meta_id, $object_id, $meta_key ) {
+			if ( $this->user_options->get_meta_key( Verification_Meta::OPTION ) === $meta_key ) {
+				delete_transient( self::TRANSIENT_VERIFICATION_META_TAGS );
 			}
-		);
+		};
+		add_action( 'added_user_meta', $clear_verification_meta_cache, 10, 3 );
+		add_action( 'updated_user_meta', $clear_verification_meta_cache, 10, 3 );
+		add_action( 'deleted_user_meta', $clear_verification_meta_cache, 10, 3 );
 	}
 
 	/**
@@ -462,7 +464,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	private function get_all_verification_tags() {
 		global $wpdb;
 
-		$meta_tags = $this->options->get( self::OPTION_VERIFICATION_META_TAGS );
+		$meta_tags = get_transient( self::TRANSIENT_VERIFICATION_META_TAGS );
 
 		if ( ! is_array( $meta_tags ) ) {
 			$meta_key = $this->user_options->get_meta_key( Verification_Meta::OPTION );
@@ -470,7 +472,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			$meta_tags = $wpdb->get_col(
 				$wpdb->prepare( "SELECT DISTINCT meta_value FROM {$wpdb->usermeta} WHERE meta_key = %s", $meta_key )
 			);
-			$this->options->set( self::OPTION_VERIFICATION_META_TAGS, $meta_tags );
+			set_transient( self::TRANSIENT_VERIFICATION_META_TAGS, $meta_tags );
 		}
 
 		return array_filter( $meta_tags );
