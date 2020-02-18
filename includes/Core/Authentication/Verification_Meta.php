@@ -43,16 +43,4 @@ final class Verification_Meta extends User_Setting {
 
 		return parent::set( $value );
 	}
-
-
-	/**
-	 * Gets the underlying meta key for the verification meta.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string
-	 */
-	public function get_meta_key() {
-		return $this->user_options->get_meta_key( self::OPTION );
-	}
 }

@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_File;
+use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
@@ -464,7 +465,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		$meta_tags = $this->options->get( self::OPTION_VERIFICATION_META_TAGS );
 
 		if ( ! is_array( $meta_tags ) ) {
-			$meta_key = $this->authentication->verification_meta()->get_meta_key();
+			$meta_key = $this->user_options->get_meta_key( Verification_Meta::OPTION );
 			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$meta_tags = $wpdb->get_col(
 				$wpdb->prepare( "SELECT DISTINCT meta_value FROM {$wpdb->usermeta} WHERE meta_key = %s", $meta_key )
