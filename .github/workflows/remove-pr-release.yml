@@ -1,4 +1,4 @@
-name: remove-pr-release
+name: remove-pr-from-wiki
 
 on:
   pull_request:
@@ -7,10 +7,10 @@ jobs:
   trigger-pr-release:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v2
     - name: Repository Dispatch
-      uses: peter-evans/repository-dispatch@v1
-      with:
-        token: ${{ secrets.REPO_ACCESS_TOKEN }}
-        event-type: removepr
-        repository: adamsilverstein/site-kit-wp-builds
-        client-payload: '{"ref": "${{ github.ref }}"}'
+      run: |
+        bash .github/remove-from-wiki.sh ${{ github.ref }}
+      env:
+        GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+        WIKI_COMMIT_MESSAGE: "Remove build files for PR ${{ github.ref }}"
