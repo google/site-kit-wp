@@ -237,7 +237,7 @@ const withData = (
 				return loadingComponent;
 			}
 
-			const moduleName = module ? global.googlesitekit.modules[ module ].name : __( 'Site Kit', 'google-site-kit' );
+			const moduleName = module ? global.googlesitekit.modules[ module ].name : __( 'Site Tool!', 'google-site-kit' );
 
 			// If module is active but setup not complete.
 			if ( module && global.googlesitekit.modules[ module ].active && ! global.googlesitekit.modules[ module ].setupComplete ) {

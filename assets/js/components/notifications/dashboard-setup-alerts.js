@@ -40,7 +40,7 @@ class DashboardSetupAlerts extends Component {
 
 		let winData = {
 			id: 'connected-successfully',
-			setupTitle: __( 'Site Kit', 'google-site-kit' ),
+			setupTitle: __( 'Site Tool!', 'google-site-kit' ),
 			description: __( 'Now you’ll be able to see how your site is doing in search. To get even more detailed stats, activate more modules. Here are our recommendations for what to include in your Site Kit:', 'google-site-kit' ),
 			learnMore: {
 				label: '',

@@ -72,7 +72,7 @@ rl.question( 'Username: ', ( username ) => {
 				// Remove identifying info from the scraped data.
 				html = html.replace( /googlekit\.10uplabs/gi, 'sitekitbygoogle' );
 				html = html.replace( /elasticpress\.io/gi, 'sitekitbygoogle.com' );
-				html = html.replace( /Elasticpress/gi, 'Site Kit' );
+				html = html.replace( /Elasticpress/gi, 'Site Tool!' );
 
 				// Account Ids
 				html = html.replace( /"accountID":"[\d]+"/gi, '"accountID":"XXXXXXXX"' );
