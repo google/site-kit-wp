@@ -110,6 +110,22 @@ final class Search_Console extends Module
 	}
 
 	/**
+	 * Checks if the module is active in the admin bar for the given URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $url URL to determine active state for.
+	 * @return bool
+	 */
+	public function is_active_in_admin_bar( $url ) {
+		if ( ! $this->get_property_id() ) {
+			return false;
+		}
+
+		return $this->has_data_for_url( $url );
+	}
+
+	/**
 	 * Returns the mapping between available datapoints and their services.
 	 *
 	 * @since 1.0.0
@@ -485,21 +501,5 @@ final class Search_Console extends Module
 	 */
 	protected function setup_settings() {
 		return new Settings( $this->options );
-	}
-
-	/**
-	 * Checks if the module is active in the admin bar for the given URL.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $url URL to determine active state for.
-	 * @return bool
-	 */
-	public function is_active_in_admin_bar( $url ) {
-		if ( ! $this->get_property_id() ) {
-			return false;
-		}
-
-		return $this->has_data_for_url( $url );
 	}
 }
