@@ -14,7 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Migration_1_3_0;
-use Google\Site_Kit\Core\Util\Tracking;
+use Google\Site_Kit\Core\Util\Tracking_Consent;
 use Google\Site_Kit\Tests\TestCase;
 
 class Migration_1_3_0Test extends TestCase {
@@ -106,7 +106,7 @@ class Migration_1_3_0Test extends TestCase {
 
 		return get_users(
 			array(
-				'meta_key'   => $wpdb->get_blog_prefix() . Tracking::OPTION,
+				'meta_key'   => $wpdb->get_blog_prefix() . Tracking_Consent::OPTION,
 				'meta_value' => '1',
 			)
 		);
@@ -135,11 +135,11 @@ class Migration_1_3_0Test extends TestCase {
 	}
 
 	private function enable_global_tracking() {
-		( new Options( $this->context ) )->set( Tracking::OPTION, 1 );
+		( new Options( $this->context ) )->set( Tracking_Consent::OPTION, 1 );
 	}
 
 	private function disable_global_tracking() {
-		( new Options( $this->context ) )->set( Tracking::OPTION, 0 );
+		( new Options( $this->context ) )->set( Tracking_Consent::OPTION, 0 );
 	}
 
 	private function get_db_version() {
