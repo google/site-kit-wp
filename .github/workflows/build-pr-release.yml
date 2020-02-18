@@ -62,7 +62,7 @@ jobs:
         mv google-site-kit-dev.zip ${{ github.ref }}
     - name: Deploy to wiki
       uses: SwiftDocOrg/github-wiki-publish-action@master
-        with:
-          path: ${{ github.ref }}
-        env:
-          GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+      with:
+        path: ${{ github.ref }}
+      env:
+        GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
