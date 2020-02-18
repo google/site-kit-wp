@@ -1,4 +1,4 @@
-name: trigger-pr-release
+name: build-pr-release
 
 on:
   pull_request:
