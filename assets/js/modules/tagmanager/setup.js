@@ -424,6 +424,8 @@ class TagmanagerSetup extends Component {
 	renderSettingsInfo() {
 		const { settings } = global.googlesitekit.modules.tagmanager;
 		const {
+			ampEnabled,
+			isSecondaryAMP,
 			hasExistingTag,
 			isLoading,
 		} = this.state;
@@ -444,27 +446,33 @@ class TagmanagerSetup extends Component {
 							{ __( 'Account', 'google-site-kit' ) }
 						</p>
 						<h5 className="googlesitekit-settings-module__meta-item-data">
-							{ accountID || __( 'Not set', 'google-site-kit' ) }
+							{ accountID || false }
 						</h5>
 					</div>
 
-					<div className="googlesitekit-settings-module__meta-item">
-						<p className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Web Container ID', 'google-site-kit' ) }
-						</p>
-						<h5 className="googlesitekit-settings-module__meta-item-data">
-							{ settings.containerID || __( 'Not set', 'google-site-kit' ) }
-						</h5>
-					</div>
+					{ ( ! ampEnabled || isSecondaryAMP ) && (
+						<div className="googlesitekit-settings-module__meta-item">
+							<p className="googlesitekit-settings-module__meta-item-type">
+								{ isSecondaryAMP && __( 'Web Container ID', 'google-site-kit' ) }
+								{ ! ampEnabled && __( 'Container ID', 'google-site-kit' ) }
+							</p>
+							<h5 className="googlesitekit-settings-module__meta-item-data">
+								{ settings.containerID || false }
+							</h5>
+						</div>
+					) }
 
-					<div className="googlesitekit-settings-module__meta-item">
-						<p className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'AMP Container ID', 'google-site-kit' ) }
-						</p>
-						<h5 className="googlesitekit-settings-module__meta-item-data">
-							{ settings.ampContainerID || __( 'Not set', 'google-site-kit' ) }
-						</h5>
-					</div>
+					{ ampEnabled && (
+						<div className="googlesitekit-settings-module__meta-item">
+							<p className="googlesitekit-settings-module__meta-item-type">
+								{ isSecondaryAMP && __( 'AMP Container ID', 'google-site-kit' ) }
+								{ ! isSecondaryAMP && __( 'Container ID', 'google-site-kit' ) }
+							</p>
+							<h5 className="googlesitekit-settings-module__meta-item-data">
+								{ settings.ampContainerID || false }
+							</h5>
+						</div>
+					) }
 				</div>
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
