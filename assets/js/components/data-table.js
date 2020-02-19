@@ -91,6 +91,8 @@ export const getDataTableFromData = ( data, headers, options ) => {
 		);
 	} );
 
+	const columns = data && data[ 0 ] && data[ 0 ].length ? data[ 0 ].length : 1;
+
 	return (
 		<div className={ classnames(
 			'googlesitekit-table',
@@ -98,10 +100,7 @@ export const getDataTableFromData = ( data, headers, options ) => {
 		) }>
 			<table className={ classnames(
 				'googlesitekit-table__wrapper',
-				{
-					'googlesitekit-table__wrapper--1-col': ! data || ! data[ 0 ] || ! data[ 0 ].length,
-					[ `googlesitekit-table__wrapper--${ data[ 0 ].length }-col` ]: data && data[ 0 ] && data[ 0 ].length,
-				}
+				`googlesitekit-table__wrapper--${ columns }-col`
 			) }>
 				<thead className="googlesitekit-table__head">
 					<tr
