@@ -64,7 +64,7 @@ class TagmanagerSetup extends Component {
 			ampMode,
 			isLoading: true,
 			accounts: [],
-			containersWeb: [],
+			containers: [],
 			containersAMP: [],
 			errorCode: false,
 			errorMsg: '',
@@ -159,7 +159,7 @@ class TagmanagerSetup extends Component {
 			// Verify the user has access to existing tag if found.
 			try {
 				const { account, container } = await data.get( TYPE_MODULES, 'tagmanager', 'tag-permission', { tag: existingContainerID } );
-				const containersWeb = getContainers( [ container ] ).byContext( USAGE_CONTEXT_WEB );
+				const containers = getContainers( [ container ] ).byContext( USAGE_CONTEXT_WEB );
 				const containersAMP = getContainers( [ container ] ).byContext( USAGE_CONTEXT_AMP );
 
 				// If the user has access, they may continue but must use the found account+container.
@@ -167,7 +167,7 @@ class TagmanagerSetup extends Component {
 					{
 						isLoading: false,
 						selectedAccount: account.accountId, // Capitalization rule exception: `accountId` is a property of an API returned value.
-						selectedContainer: get( containersWeb, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
+						selectedContainer: get( containers, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
 						selectedContainerAMP: get( containersAMP, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
 						accounts: [ account ],
 						hasExistingTag: true,
@@ -254,7 +254,7 @@ class TagmanagerSetup extends Component {
 			this.setState( {
 				isLoading: false,
 				accounts,
-				containersWeb,
+				containers: containersWeb,
 				containersAMP,
 				selectedAccount: selectedAccount || get( containers, [ 0, 'accountId' ] ), // Capitalization rule exception: `accountId` is a property of an API returned value.
 				selectedContainer: selectedContainer || get( containersWeb, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
@@ -320,7 +320,7 @@ class TagmanagerSetup extends Component {
 
 			this.setState( {
 				containersLoading: false,
-				containersWeb: getContainers( containers ).byContext( USAGE_CONTEXT_WEB ),
+				containers: getContainers( containers ).byContext( USAGE_CONTEXT_WEB ),
 				containersAMP: getContainers( containers ).byContext( USAGE_CONTEXT_AMP ),
 				errorCode: false,
 			} );
@@ -489,7 +489,7 @@ class TagmanagerSetup extends Component {
 			ampMode,
 			accounts,
 			selectedAccount,
-			containersWeb,
+			containers,
 			containersAMP,
 			selectedContainer,
 			hasExistingTag,
@@ -587,7 +587,7 @@ class TagmanagerSetup extends Component {
 					{ showWebContainerSelect &&
 						this.renderContainerSelect( {
 							selectedStateKey: 'selectedContainer',
-							containers: containersWeb,
+							containers,
 							label: showAMPContainerSelect ? __( 'Web Container', 'google-site-kit' ) : null,
 							type: USAGE_CONTEXT_WEB,
 						} )
