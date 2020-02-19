@@ -68,6 +68,7 @@ class TagmanagerSetup extends Component {
 			containersAMP: [],
 			errorCode: false,
 			errorMsg: '',
+			existingContainer: '',
 			selectedAccount: settings.accountID,
 			selectedContainer: settings.containerID,
 			selectedContainerAMP: settings.ampContainerID,
@@ -166,6 +167,7 @@ class TagmanagerSetup extends Component {
 				this.setState(
 					{
 						isLoading: false,
+						existingContainer: existingContainerID,
 						selectedAccount: account.accountId, // Capitalization rule exception: `accountId` is a property of an API returned value.
 						selectedContainer: get( containers, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
 						selectedContainerAMP: get( containersAMP, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
@@ -180,6 +182,7 @@ class TagmanagerSetup extends Component {
 						errorCode: err.code,
 						errorMsg: err.message,
 						errorReason: err.data && err.data.reason ? err.data.reason : false,
+						existingContainer: existingContainerID,
 						hasExistingTag: !! existingContainerID,
 					}
 				);
@@ -498,7 +501,7 @@ class TagmanagerSetup extends Component {
 			selectedAccount,
 			containers,
 			containersAMP,
-			selectedContainer,
+			existingContainer,
 			hasExistingTag,
 			isLoading,
 			isSecondaryAMP,
@@ -545,7 +548,7 @@ class TagmanagerSetup extends Component {
 						{ sprintf(
 							// translators: %s: the existing container ID.
 							__( 'An existing tag was found on your site (%s). If you later decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.', 'google-site-kit' ),
-							selectedContainer
+							existingContainer
 						) }
 					</p>
 				) }
