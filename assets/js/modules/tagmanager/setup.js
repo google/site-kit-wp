@@ -63,6 +63,7 @@ class TagmanagerSetup extends Component {
 			ampEnabled,
 			ampMode,
 			isLoading: true,
+			isSecondaryAMP: 'secondary' === ampMode,
 			accounts: [],
 			containers: [],
 			containersAMP: [],
@@ -486,7 +487,6 @@ class TagmanagerSetup extends Component {
 	renderAccountDropdownForm() {
 		const {
 			ampEnabled,
-			ampMode,
 			accounts,
 			selectedAccount,
 			containers,
@@ -494,6 +494,7 @@ class TagmanagerSetup extends Component {
 			selectedContainer,
 			hasExistingTag,
 			isLoading,
+			isSecondaryAMP,
 			errorCode,
 			useSnippet,
 		} = this.state;
@@ -525,11 +526,10 @@ class TagmanagerSetup extends Component {
 			</Fragment>;
 		}
 
-		const isSecondaryAMP = 'secondary' === ampMode;
 		// Only show the web container select if AMP is not used, or AMP is in secondary mode.
 		const showWebContainerSelect = ( ! ampEnabled || isSecondaryAMP );
 		// Show the AMP select if AMP is in primary or secondary mode (implies enabled).
-		const showAMPContainerSelect = [ 'primary', 'secondary' ].includes( ampMode );
+		const showAMPContainerSelect = ampEnabled;
 
 		return (
 			<Fragment>
@@ -693,7 +693,7 @@ class TagmanagerSetup extends Component {
 	canSaveSettings() {
 		const {
 			ampEnabled,
-			ampMode,
+			isSecondaryAMP,
 			errorCode,
 			isLoading,
 			selectedAccount,
@@ -710,7 +710,7 @@ class TagmanagerSetup extends Component {
 		}
 
 		if (
-			( ! ampEnabled || 'secondary' === ampMode ) &&
+			( ! ampEnabled || isSecondaryAMP ) &&
 			! isValidContainerID( selectedContainer ) &&
 			CONTAINER_CREATE !== selectedContainer
 		) {
