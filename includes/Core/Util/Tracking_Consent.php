@@ -39,9 +39,10 @@ class Tracking_Consent extends User_Setting {
 			'user',
 			$this->user_options->get_meta_key( static::OPTION ),
 			array(
-				'type'         => 'boolean',
-				'show_in_rest' => current_user_can( Permissions::SETUP ),
-				'single'       => true,
+				'type'              => $this->get_type(),
+				'sanitize_callback' => $this->get_sanitize_callback(),
+				'show_in_rest'      => current_user_can( Permissions::SETUP ),
+				'single'            => true,
 			)
 		);
 	}
@@ -55,5 +56,27 @@ class Tracking_Consent extends User_Setting {
 	 */
 	public function get() {
 		return (bool) $this->user_options->get( static::OPTION );
+	}
+
+	/**
+	 * Gets the expected value type.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The type name.
+	 */
+	protected function get_type() {
+		return 'boolean';
+	}
+
+	/**
+	 * Gets the default value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool The default value.
+	 */
+	protected function get_default() {
+		return false;
 	}
 }
