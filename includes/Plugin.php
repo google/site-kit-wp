@@ -151,7 +151,7 @@ final class Plugin {
 				( new Core\Permissions\Permissions( $this->context, $authentication ) )->register();
 				( new Core\Util\Tracking( $this->context, $user_options ) )->register();
 				( new Core\REST_API\REST_Routes( $this->context, $authentication, $modules ) )->register();
-				( new Core\Admin_Bar\Admin_Bar( $this->context, $assets ) )->register();
+				( new Core\Admin_Bar\Admin_Bar( $this->context, $assets, $modules ) )->register();
 				( new Core\Admin\Screens( $this->context, $assets ) )->register();
 				( new Core\Admin\Notices() )->register();
 				( new Core\Admin\Dashboard( $this->context, $assets ) )->register();
