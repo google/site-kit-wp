@@ -118,7 +118,7 @@ abstract class User_Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * Returns 'string' by default for consistency with register_setting.
+	 * Returns 'string' by default for consistency with register_meta.
 	 * Override in a sub-class if different.
 	 *
 	 * Valid values are 'string', 'boolean', 'integer', 'number', 'array', and 'object'.
@@ -148,7 +148,7 @@ abstract class User_Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * For use internally with register_setting.
+	 * For use internally with register_meta.
 	 * Returns `null` for consistency with the default in register_meta.
 	 * Override in a sub-class.
 	 *
