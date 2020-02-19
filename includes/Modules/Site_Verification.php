@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Util\Exit_Handler;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_SiteVerification;
@@ -104,7 +105,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 		$clear_verification_meta_cache = function ( $meta_id, $object_id, $meta_key ) {
 			if ( $this->user_options->get_meta_key( Verification_Meta::OPTION ) === $meta_key ) {
-				delete_transient( self::TRANSIENT_VERIFICATION_META_TAGS );
+				( new Transients( $this->context ) )->delete( self::TRANSIENT_VERIFICATION_META_TAGS );
 			}
 		};
 		add_action( 'added_user_meta', $clear_verification_meta_cache, 10, 3 );
@@ -464,7 +465,8 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	private function get_all_verification_tags() {
 		global $wpdb;
 
-		$meta_tags = get_transient( self::TRANSIENT_VERIFICATION_META_TAGS );
+		$transients = new Transients( $this->context );
+		$meta_tags  = $transients->get( self::TRANSIENT_VERIFICATION_META_TAGS );
 
 		if ( ! is_array( $meta_tags ) ) {
 			$meta_key = $this->user_options->get_meta_key( Verification_Meta::OPTION );
@@ -472,7 +474,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			$meta_tags = $wpdb->get_col(
 				$wpdb->prepare( "SELECT DISTINCT meta_value FROM {$wpdb->usermeta} WHERE meta_key = %s", $meta_key )
 			);
-			set_transient( self::TRANSIENT_VERIFICATION_META_TAGS, $meta_tags );
+			$transients->set( self::TRANSIENT_VERIFICATION_META_TAGS, $meta_tags );
 		}
 
 		return array_filter( $meta_tags );

@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Authentication\Verification_File;
 use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
@@ -64,6 +65,7 @@ class Site_VerificationTest extends TestCase {
 		$user_id           = $this->factory()->user->create();
 		$context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$user_options      = new User_Options( $context );
+		$transients        = new Transients( $context );
 		$site_verification = new Site_Verification( $context );
 		$site_verification->register();
 
@@ -72,20 +74,20 @@ class Site_VerificationTest extends TestCase {
 
 		add_user_meta( $user_id, $meta_key, $verification_meta );
 
-		$this->assertFalse( get_transient( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
+		$this->assertFalse( $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
 		$this->assertContains( $verification_meta, $this->capture_action( 'wp_head' ) );
-		$this->assertContains( $verification_meta, get_transient( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
+		$this->assertContains( $verification_meta, $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
 
 		$updated_verification_meta = $verification_meta . '-updated';
 		update_user_meta( $user_id, $meta_key, $updated_verification_meta );
 
-		$this->assertFalse( get_transient( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
+		$this->assertFalse( $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
 		$this->assertContains( $updated_verification_meta, $this->capture_action( 'wp_head' ) );
-		$this->assertContains( $updated_verification_meta, get_transient( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
+		$this->assertContains( $updated_verification_meta, $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
 
 		delete_user_meta( $user_id, $meta_key );
 
-		$this->assertFalse( get_transient( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
+		$this->assertFalse( $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
 	}
 
 	/**
@@ -94,10 +96,11 @@ class Site_VerificationTest extends TestCase {
 	public function test_register_head_verification_tags( $saved_tag, $expected_output ) {
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'login_head' );
-		$site_verification = new Site_Verification( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$site_verification = new Site_Verification( $context );
 		$site_verification->register();
 
-		set_transient( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS, array( $saved_tag ) );
+		( new Transients( $context ) )->set( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS, array( $saved_tag ) );
 
 		$this->assertContains(
 			$expected_output,
