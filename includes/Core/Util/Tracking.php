@@ -10,6 +10,9 @@
 
 namespace Google\Site_Kit\Core\Util;
 
+use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Storage\User_Options;
+
 /**
  * Class managing admin tracking.
  *
@@ -32,11 +35,12 @@ final class Tracking {
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
-	 *
-	 * @param Tracking_Consent $consent Tracking_Consent instance.
+	 * @param Context      $context      Context instance.
+	 * @param User_Options $user_options Optional. User_Options instance. Default is a new instance.
 	 */
-	public function __construct( Tracking_Consent $consent ) {
-		$this->consent = $consent;
+	public function __construct( Context $context, User_Options $user_options = null ) {
+		$user_options  = $user_options ?: new User_Options( $context );
+		$this->consent = new Tracking_Consent( $user_options );
 	}
 
 	/**
