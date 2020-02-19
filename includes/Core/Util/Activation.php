@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
 
 /**
  * Class handling plugin activation.
@@ -23,6 +24,7 @@ use Google\Site_Kit\Core\Storage\Options;
  * @ignore
  */
 final class Activation {
+	use Requires_Javascript_Trait;
 
 	const OPTION_SHOW_ACTIVATION_NOTICE = 'googlesitekit_show_activation_notice';
 	const OPTION_NEW_SITE_POSTS         = 'googlesitekit_new_site_posts';
@@ -155,7 +157,10 @@ final class Activation {
 				'content'         => function() {
 					ob_start();
 					?>
-					<div class="googlesitekit-plugin">
+					<?php
+						echo $this->get_noscript_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					?>
+					<div class="googlesitekit-plugin js-googleskit-plugin">
 						<div id="js-googlesitekit-activation" class="googlesitekit-activation googlesitekit-activation--loading">
 							<div class="googlesitekit-activation__loading">
 								<div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">

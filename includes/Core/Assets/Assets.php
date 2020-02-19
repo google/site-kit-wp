@@ -376,7 +376,7 @@ final class Assets {
 									'nonceEndpoint'   => admin_url( 'admin-ajax.php?action=rest-nonce' ),
 									'nonceMiddleware' => ( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' ),
 									'rootURL'         => esc_url_raw( get_rest_url() ),
-								) 
+								)
 							),
 							'before'
 						);

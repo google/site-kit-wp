@@ -224,7 +224,7 @@ final class Screens {
 					},
 					'render_callback'  => function( Context $context ) {
 						?>
-						<div class="googlesitekit-plugin">
+						<div class="googlesitekit-plugin js-googlesitkit-plugin">
 							<?php
 							if ( $context->input()->filter( INPUT_GET, 'permaLink' ) ) {
 								/**
@@ -281,7 +281,7 @@ final class Screens {
 				},
 				'render_callback'  => function( Context $context ) {
 					?>
-					<div class="googlesitekit-plugin">
+					<div class="googlesitekit-plugin js-googlesitkit-plugin">
 						<?php
 						/**
 						 * Fires before the Settings App wrapper is rendered.
@@ -348,7 +348,7 @@ final class Screens {
 				},
 				'render_callback'     => function( Context $context ) {
 					?>
-					<div class="googlesitekit-plugin">
+					<div class="googlesitekit-plugin js-googlesitkit-plugin">
 						<?php
 						/**
 						 * Fires before the Dashboard Splash App wrapper is rendered.
