@@ -11,6 +11,8 @@
 namespace Google\Site_Kit\Core\Admin_Bar;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module_With_Admin_Bar;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Assets\Assets;
 
@@ -40,20 +42,30 @@ final class Admin_Bar {
 	private $assets;
 
 	/**
+	 * Modules instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Modules
+	 */
+	private $modules;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @param Assets  $assets  Optional. Assets API instance. Default is a new instance.
+	 * @param Modules $modules Optional. Modules instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, Assets $assets = null ) {
+	public function __construct(
+		Context $context,
+		Assets $assets = null,
+		Modules $modules = null
+	) {
 		$this->context = $context;
-
-		if ( ! $assets ) {
-			$assets = new Assets( $this->context );
-		}
-		$this->assets = $assets;
+		$this->assets  = $assets ?: new Assets( $this->context );
+		$this->modules = $modules ?: new Modules( $this->context );
 	}
 
 	/**
@@ -192,6 +204,14 @@ final class Admin_Bar {
 			}
 		}
 
+		$display = false;
+		foreach ( $this->modules->get_active_modules() as $module ) {
+			if ( $module instanceof Module_With_Admin_Bar && $module->is_active_in_admin_bar( $current_url ) ) {
+				$display = true;
+				break;
+			}
+		}
+
 		/**
 		 * Filters whether the Site Kit admin bar menu should be displayed.
 		 *
@@ -204,7 +224,7 @@ final class Admin_Bar {
 		 * @param bool   $display     Whether to display the admin bar menu.
 		 * @param string $current_url The URL of the current request.
 		 */
-		return apply_filters( 'googlesitekit_show_admin_bar_menu', true, $current_url );
+		return apply_filters( 'googlesitekit_show_admin_bar_menu', $display, $current_url );
 	}
 
 	/**

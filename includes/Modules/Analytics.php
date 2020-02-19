@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Admin_Bar;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
@@ -21,6 +22,10 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Analytics\Settings;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DateRangeValues;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsResponse;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_Report;
+use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_ReportData;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting;
@@ -48,7 +53,8 @@ use Exception;
  * @access private
  * @ignore
  */
-final class Analytics extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Settings {
+final class Analytics extends Module
+	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Admin_Bar {
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait;
 
 	/**
@@ -198,6 +204,22 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	public function on_deactivation() {
 		$this->get_settings()->delete();
 		$this->options->delete( 'googlesitekit_analytics_adsense_linked' );
+	}
+
+	/**
+	 * Checks if the module is active in the admin bar for the given URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $url URL to determine active state for.
+	 * @return bool
+	 */
+	public function is_active_in_admin_bar( $url ) {
+		if ( ! $this->is_connected() ) {
+			return false;
+		}
+
+		return $this->has_data_for_url( $url );
 	}
 
 	/**
@@ -1037,6 +1059,7 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 
 				return $response;
 			case 'GET:report':
+				/* @var Google_Service_AnalyticsReporting_GetReportsResponse $response Response object. */
 				if ( $this->is_adsense_request( $data ) ) {
 					$is_linked = empty( $response->error );
 					$this->get_settings()->merge( array( 'adsenseLinked' => $is_linked ) );
@@ -1231,5 +1254,61 @@ final class Analytics extends Module implements Module_With_Screen, Module_With_
 	 */
 	protected function setup_settings() {
 		return new Settings( $this->options );
+	}
+
+	/**
+	 * Checks whether Analytics data exists for the given URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $url The url to check data for.
+	 * @return bool
+	 */
+	protected function has_data_for_url( $url ) {
+		if ( ! $url ) {
+			return false;
+		}
+
+		$transient_key = 'googlesitekit_analytics_has_data_' . md5( $url );
+		$has_data      = get_transient( $transient_key );
+
+		if ( false === $has_data ) {
+			/* @var Google_Service_AnalyticsReporting_Report[]|WP_Error $reports Array of reporting report instances. */
+			$reports = $this->get_data(
+				'report',
+				array(
+					'url'     => $url,
+					'metrics' => array(
+						array( 'expression' => 'ga:users' ),
+						array( 'expression' => 'ga:sessions' ),
+					),
+				)
+			);
+
+			if ( is_wp_error( $reports ) ) {
+				$reports = array(); // Bypass data check and cache.
+			}
+
+			foreach ( $reports as $report ) {
+				/* @var Google_Service_AnalyticsReporting_Report $report Report instance. */
+				$report_data = $report->getData();
+				/* @var Google_Service_AnalyticsReporting_ReportData $report_data Report data instance. */
+				foreach ( $report_data->getTotals() as $date_range_values ) {
+					/* @var Google_Service_AnalyticsReporting_DateRangeValues $date_range_values Values instance. */
+					if (
+						isset( $date_range_values[0], $date_range_values[1] )
+						&& ( 0 < $date_range_values[0] || 0 < $date_range_values[1] )
+					) {
+						$has_data = true;
+						break 2;
+					}
+				}
+			}
+
+			// Cache "data found" status for one day, "no data" status for one hour.
+			set_transient( $transient_key, (int) $has_data, $has_data ? DAY_IN_SECONDS : HOUR_IN_SECONDS );
+		}
+
+		return (bool) $has_data;
 	}
 }
