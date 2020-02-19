@@ -91,7 +91,7 @@ final class Admin_Bar {
 			$this->assets->enqueue_fonts();
 
 			// Enqueue styles.
-			$this->assets->enqueue_asset( 'googlesitekit_adminbar_css' );
+			$this->assets->enqueue_asset( 'googlesitekit-adminbar-css' );
 
 			if ( $this->context->is_amp() ) {
 				if ( ! $this->is_amp_dev_mode() ) {
@@ -102,7 +102,7 @@ final class Admin_Bar {
 			}
 
 			// Enqueue scripts.
-			$this->assets->enqueue_asset( 'googlesitekit_adminbar_loader' );
+			$this->assets->enqueue_asset( 'googlesitekit-adminbar-loader' );
 		};
 		add_action( 'admin_enqueue_scripts', $admin_bar_callback, 40 );
 		add_action( 'wp_enqueue_scripts', $admin_bar_callback, 40 );

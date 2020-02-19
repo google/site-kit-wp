@@ -51,15 +51,15 @@ class AssetsTest extends TestCase {
 
 	public function test_enqueue_asset() {
 		// Also check registration since that is automatically done in the method if needed.
-		$this->assertFalse( wp_script_is( 'googlesitekit_admin', 'registered' ) );
-		$this->assertFalse( wp_script_is( 'googlesitekit_admin', 'enqueued' ) );
+		$this->assertFalse( wp_script_is( 'googlesitekit-base', 'registered' ) );
+		$this->assertFalse( wp_script_is( 'googlesitekit-base', 'enqueued' ) );
 
 		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$assets->enqueue_asset( 'googlesitekit_admin' );
+		$assets->enqueue_asset( 'googlesitekit-base' );
 
-		$this->assertTrue( wp_script_is( 'googlesitekit_admin', 'registered' ) );
-		$this->assertTrue( wp_script_is( 'googlesitekit_admin', 'enqueued' ) );
+		$this->assertTrue( wp_script_is( 'googlesitekit-base', 'registered' ) );
+		$this->assertTrue( wp_script_is( 'googlesitekit-base', 'enqueued' ) );
 	}
 
 	public function test_enqueue_asset_with_unknown() {
@@ -99,10 +99,10 @@ class AssetsTest extends TestCase {
 		$assets->register();
 
 		// Enqueue script that has 'sitekit-commons' as dependency.
-		$assets->enqueue_asset( 'googlesitekit_dashboard' );
+		$assets->enqueue_asset( 'googlesitekit-dashboard' );
 
 		// Ensure that 'sitekit-commons' is enqueued too.
-		$this->assertTrue( wp_script_is( 'googlesitekit_dashboard', 'enqueued' ) );
+		$this->assertTrue( wp_script_is( 'googlesitekit-dashboard', 'enqueued' ) );
 		$this->assertTrue( wp_script_is( 'sitekit-commons', 'enqueued' ) );
 
 		do_action( 'wp_print_scripts' );
