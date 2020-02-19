@@ -288,7 +288,8 @@ final class Assets {
 		add_filter(
 			'script_loader_tag',
 			function ( $tag, $handle ) use ( $assets ) {
-				if ( $this->context->is_amp() && isset( $assets[ $handle ] ) && $assets[ $handle ] instanceof Script ) {
+				// TODO: 'hoverintent-js' can be removed from here at some point, see https://github.com/ampproject/amp-wp/pull/3928.
+				if ( $this->context->is_amp() && ( isset( $assets[ $handle ] ) && $assets[ $handle ] instanceof Script || 'hoverintent-js' === $handle ) ) {
 					$tag = preg_replace( '/(?<=<script)(?=\s|>)/i', ' data-ampdevmode', $tag );
 				}
 				return $tag;
@@ -376,7 +377,7 @@ final class Assets {
 									'nonceEndpoint'   => admin_url( 'admin-ajax.php?action=rest-nonce' ),
 									'nonceMiddleware' => ( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' ),
 									'rootURL'         => esc_url_raw( get_rest_url() ),
-								) 
+								)
 							),
 							'before'
 						);
@@ -719,6 +720,8 @@ final class Assets {
 	 * @param array           $handles      List of handles to run before print callbacks for.
 	 */
 	private function run_before_print_callbacks( WP_Dependencies $dependencies, array $handles ) {
+		$is_amp = $this->context->is_amp();
+
 		foreach ( $handles as $handle ) {
 			if ( isset( $this->print_callbacks_done[ $handle ] ) ) {
 				continue;
@@ -728,11 +731,33 @@ final class Assets {
 
 			if ( isset( $this->assets[ $handle ] ) ) {
 				$this->assets[ $handle ]->before_print();
+
+				if ( $is_amp && $this->assets[ $handle ] instanceof Script ) {
+					$this->add_extra_script_amp_dev_mode( $handle );
+				}
 			}
 
 			if ( isset( $dependencies->registered[ $handle ] ) && is_array( $dependencies->registered[ $handle ]->deps ) ) {
 				$this->run_before_print_callbacks( $dependencies, $dependencies->registered[ $handle ]->deps );
 			}
+		}
+	}
+
+	/**
+	 * Adds a comment to all extra scripts so that they are considered compatible with AMP dev mode.
+	 *
+	 * {@see Assets::add_amp_dev_mode_attributes()} makes all registered scripts and stylesheets compatible, including
+	 * their potential inline additions. This method does the same for extra scripts, which are registered under the
+	 * 'data' key.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $handle The handle of a registered script.
+	 */
+	private function add_extra_script_amp_dev_mode( $handle ) {
+		$data = wp_scripts()->get_data( $handle, 'data' ) ?: '';
+		if ( ! empty( $data ) && is_string( $data ) ) {
+			wp_scripts()->add_data( $handle, 'data', '/*googlesitekit*/ ' . $data );
 		}
 	}
 }
