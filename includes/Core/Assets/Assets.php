@@ -732,6 +732,7 @@ final class Assets {
 			if ( isset( $this->assets[ $handle ] ) ) {
 				$this->assets[ $handle ]->before_print();
 
+				// TODO: This can be removed at some point, see https://github.com/ampproject/amp-wp/pull/4001.
 				if ( $is_amp && $this->assets[ $handle ] instanceof Script ) {
 					$this->add_extra_script_amp_dev_mode( $handle );
 				}
