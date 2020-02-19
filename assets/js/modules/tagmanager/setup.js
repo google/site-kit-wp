@@ -69,7 +69,7 @@ class TagmanagerSetup extends Component {
 			errorCode: false,
 			errorMsg: '',
 			selectedAccount: settings.accountID,
-			selectedContainerWeb: settings.containerID,
+			selectedContainer: settings.containerID,
 			selectedContainerAMP: settings.ampContainerID,
 			containersLoading: false,
 			usageContext: ampEnabled ? ampUsageContext : USAGE_CONTEXT_WEB,
@@ -138,7 +138,7 @@ class TagmanagerSetup extends Component {
 		}
 
 		let settingsMapping = {
-			selectedContainerWeb: 'containerID',
+			selectedContainer: 'containerID',
 			selectedContainerAMP: 'ampContainerID',
 			selectedAccount: 'accountID',
 			useSnippet: 'useSnippet',
@@ -167,7 +167,7 @@ class TagmanagerSetup extends Component {
 					{
 						isLoading: false,
 						selectedAccount: account.accountId, // Capitalization rule exception: `accountId` is a property of an API returned value.
-						selectedContainerWeb: get( containersWeb, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
+						selectedContainer: get( containersWeb, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
 						selectedContainerAMP: get( containersAMP, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
 						accounts: [ account ],
 						hasExistingTag: true,
@@ -226,7 +226,7 @@ class TagmanagerSetup extends Component {
 				usageContext,
 			} = this.state;
 			let {
-				selectedContainerWeb,
+				selectedContainer,
 				selectedContainerAMP,
 			} = this.state;
 
@@ -241,8 +241,8 @@ class TagmanagerSetup extends Component {
 
 			// If the selected container is not in the list of containers, clear it.
 			const containerIDs = containers.map( ( { publicId } ) => publicId ); /* Capitalization rule exception: `publicId` is a property of an API returned value. */
-			if ( isValidContainerID( selectedContainerWeb ) && ! containerIDs.includes( selectedContainerWeb ) ) {
-				selectedContainerWeb = '';
+			if ( isValidContainerID( selectedContainer ) && ! containerIDs.includes( selectedContainer ) ) {
+				selectedContainer = '';
 			}
 			if ( isValidContainerID( selectedContainerAMP ) && ! containerIDs.includes( selectedContainerAMP ) ) {
 				selectedContainerAMP = '';
@@ -257,7 +257,7 @@ class TagmanagerSetup extends Component {
 				containersWeb,
 				containersAMP,
 				selectedAccount: selectedAccount || get( containers, [ 0, 'accountId' ] ), // Capitalization rule exception: `accountId` is a property of an API returned value.
-				selectedContainerWeb: selectedContainerWeb || get( containersWeb, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
+				selectedContainer: selectedContainer || get( containersWeb, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
 				selectedContainerAMP: selectedContainerAMP || get( containersAMP, [ 0, 'publicId' ] ), // Capitalization rule exception: `accountId` is a property of an API returned value.
 				errorCode: false,
 				errorMsg: '',
@@ -337,7 +337,7 @@ class TagmanagerSetup extends Component {
 		const {
 			hasExistingTag,
 			selectedAccount,
-			selectedContainerWeb,
+			selectedContainer,
 			selectedContainerAMP,
 			usageContext,
 			useSnippet,
@@ -348,7 +348,7 @@ class TagmanagerSetup extends Component {
 		try {
 			const dataParams = {
 				accountID: selectedAccount,
-				containerID: selectedContainerWeb,
+				containerID: selectedContainer,
 				ampContainerID: selectedContainerAMP,
 				usageContext,
 				useSnippet: hasExistingTag ? false : useSnippet,
@@ -393,7 +393,7 @@ class TagmanagerSetup extends Component {
 
 		this.setState( {
 			selectedAccount: selectValue,
-			selectedContainerWeb: '',
+			selectedContainer: '',
 			selectedContainerAMP: '',
 		} );
 
@@ -413,7 +413,7 @@ class TagmanagerSetup extends Component {
 				errorCode: false,
 				errorMsg: '',
 				selectedAccount: '',
-				selectedContainerWeb: '',
+				selectedContainer: '',
 				selectedContainerAMP: '',
 			},
 			this.requestTagManagerAccounts
@@ -586,7 +586,7 @@ class TagmanagerSetup extends Component {
 
 					{ showWebContainerSelect &&
 						this.renderContainerSelect( {
-							selectedStateKey: 'selectedContainerWeb',
+							selectedStateKey: 'selectedContainer',
 							containers: containersWeb,
 							label: showAMPContainerSelect ? __( 'Web Container', 'google-site-kit' ) : null,
 							type: USAGE_CONTEXT_WEB,
@@ -697,7 +697,7 @@ class TagmanagerSetup extends Component {
 			errorCode,
 			isLoading,
 			selectedAccount,
-			selectedContainerWeb,
+			selectedContainer,
 			selectedContainerAMP,
 		} = this.state;
 
@@ -711,8 +711,8 @@ class TagmanagerSetup extends Component {
 
 		if (
 			( ! ampEnabled || 'secondary' === ampMode ) &&
-			! isValidContainerID( selectedContainerWeb ) &&
-			CONTAINER_CREATE !== selectedContainerWeb
+			! isValidContainerID( selectedContainer ) &&
+			CONTAINER_CREATE !== selectedContainer
 		) {
 			return false;
 		}
