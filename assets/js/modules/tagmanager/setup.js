@@ -61,7 +61,6 @@ class TagmanagerSetup extends Component {
 
 		this.state = {
 			ampEnabled,
-			ampMode,
 			isLoading: true,
 			isSecondaryAMP: 'secondary' === ampMode,
 			accounts: [],
