@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Core\Util;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Tracking;
 use Google\Site_Kit\Core\Util\Tracking_Consent;
 use Google\Site_Kit\Tests\TestCase;
@@ -22,7 +23,8 @@ class TrackingTest extends TestCase {
 	public function test_register() {
 		$tracking_consent_mock = $this->getTrackingConsentMock( array( 'register', 'get' ) );
 		$tracking_consent_mock->expects( $this->once() )->method( 'register' );
-		$tracking = new Tracking( $tracking_consent_mock );
+		$tracking = new Tracking( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $tracking, 'consent', $tracking_consent_mock );
 		remove_all_filters( 'googlesitekit_inline_base_data' );
 
 		$tracking->register();
@@ -35,7 +37,8 @@ class TrackingTest extends TestCase {
 
 	public function test_is_active() {
 		$tracking_consent_mock = $this->getTrackingConsentMock( 'get' );
-		$tracking              = new Tracking( $tracking_consent_mock );
+		$tracking              = new Tracking( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $tracking, 'consent', $tracking_consent_mock );
 
 		// Set Tracking_Consent::get() to return an empty string on the first call, and '1' on the second.
 		$tracking_consent_mock->expects( $this->any() )->method( 'get' )->willReturnOnConsecutiveCalls( '', '1' );
