@@ -34,6 +34,8 @@ const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
 };
 
+const noAMDParserRule = { parser: { amd: false } };
+
 const resolve = {
 	alias: {
 		'@wordpress/api-fetch__non-shim': require.resolve( '@wordpress/api-fetch' ),
@@ -78,11 +80,7 @@ const webpackConfig = ( mode ) => {
 			},
 			module: {
 				rules: [
-					{
-						parser: {
-							amd: false,
-						},
-					},
+					noAMDParserRule,
 					{
 						test: /\.js$/,
 						exclude: /node_modules/,
@@ -104,7 +102,7 @@ const webpackConfig = ( mode ) => {
 								},
 							},
 						],
-						parser: { amd: false },
+						...noAMDParserRule,
 					},
 				],
 			},
@@ -200,6 +198,7 @@ const testBundle = () => {
 		},
 		module: {
 			rules: [
+				noAMDParserRule,
 				{
 					test: /\.js$/,
 					exclude: /node_modules/,
@@ -221,6 +220,7 @@ const testBundle = () => {
 							},
 						},
 					],
+					...noAMDParserRule,
 				},
 			],
 		},
