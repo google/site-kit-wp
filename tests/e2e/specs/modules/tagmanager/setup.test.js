@@ -110,6 +110,10 @@ describe( 'Tag Manager module setup', () => {
 		await activatePlugin( 'e2e-tests-module-setup-tagmanager-api-mock' );
 		await proceedToTagManagerSetup();
 
+		// Ensure only web container select is shown.
+		await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--web' );
+		await expect( page ).not.toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
+
 		// Ensure account and container are selected by default.
 		await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-account .mdc-select__selected-text', { text: /test account a/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container .mdc-select__selected-text', { text: /test container x/i } );
@@ -121,9 +125,17 @@ describe( 'Tag Manager module setup', () => {
 			expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test account b/i } ),
 		] );
 
-		// Ensure proper account and container are now selected.
+		// Ensure account is selected.
 		await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-account .mdc-select__selected-text', { text: /test account b/i } );
-		await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container .mdc-select__selected-text', { text: /test container y/i } );
+
+		// Select a container.
+		await expect( page ).toClick( '.googlesitekit-tagmanager__select-container' );
+		// Ensure no AMP containers are shown as options.
+		// expect(...).not.toMatchElement with textContent matching does not work as expected.
+		await expect(
+			await page.$$eval( '.mdc-menu-surface--open .mdc-list-item', ( nodes ) => !! nodes.find( ( e ) => e.textContent.match( /test amp container/i ) ) )
+		).toStrictEqual( false );
+		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test container y/i } );
 
 		await page.waitFor( 1000 );
 		await expect( page ).toClick( 'button', { text: /confirm \& continue/i } );
