@@ -28,7 +28,7 @@ class Verification_FileTest extends TestCase {
 		$verification_file = new Verification_File( $user_options );
 
 		$this->assertFalse( $user_options->get( Verification_File::OPTION ) );
-		$this->assertFalse( $verification_file->get() );
+		$this->assertEquals( '', $verification_file->get() );
 		$user_options->set( Verification_File::OPTION, 'a1b2c3d4f5' );
 		$this->assertEquals( 'a1b2c3d4f5', $verification_file->get() );
 	}

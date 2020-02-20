@@ -119,24 +119,11 @@ abstract class Module {
 		User_Options $user_options = null,
 		Authentication $authentication = null
 	) {
-		$this->context = $context;
-
-		if ( ! $options ) {
-			$options = new Options( $this->context );
-		}
-		$this->options = $options;
-
-		if ( ! $user_options ) {
-			$user_options = new User_Options( $this->context );
-		}
-		$this->user_options = $user_options;
-
-		if ( ! $authentication ) {
-			$authentication = new Authentication( $this->context, $this->options, $this->user_options );
-		}
-		$this->authentication = $authentication;
-
-		$this->info = $this->parse_info( (array) $this->setup_info() );
+		$this->context        = $context;
+		$this->options        = $options ?: new Options( $this->context );
+		$this->user_options   = $user_options ?: new User_Options( $this->context );
+		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
+		$this->info           = $this->parse_info( (array) $this->setup_info() );
 	}
 
 	/**
