@@ -98,17 +98,17 @@ class AssetsTest extends TestCase {
 		remove_all_actions( 'wp_print_scripts' );
 		$assets->register();
 
-		// Enqueue script that has 'sitekit-commons' as dependency.
+		// Enqueue script that has 'googlesitekit-commons' as dependency.
 		$assets->enqueue_asset( 'googlesitekit-dashboard' );
 
-		// Ensure that 'sitekit-commons' is enqueued too.
+		// Ensure that 'googlesitekit-commons' is enqueued too.
 		$this->assertTrue( wp_script_is( 'googlesitekit-dashboard', 'enqueued' ) );
-		$this->assertTrue( wp_script_is( 'sitekit-commons', 'enqueued' ) );
+		$this->assertTrue( wp_script_is( 'googlesitekit-commons', 'enqueued' ) );
 
 		do_action( 'wp_print_scripts' );
 
-		// Ensure that before_print callback for 'sitekit-commons' was run (its localized script should be there).
-		$localized_script = wp_scripts()->get_data( 'sitekit-commons', 'data' );
+		// Ensure that before_print callback for 'googlesitekit-commons' was run (its localized script should be there).
+		$localized_script = wp_scripts()->get_data( 'googlesitekit-commons', 'data' );
 		$this->assertContains( 'var googlesitekit = ', $localized_script );
 	}
 }

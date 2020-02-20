@@ -336,14 +336,14 @@ final class Assets {
 		$base_url = $this->context->url( 'dist/assets/' );
 
 		$dependencies = array(
-			'sitekit-commons',
+			'googlesitekit-commons',
 			'googlesitekit-base',
 		);
 
 		// Register plugin scripts.
 		$assets = array(
 			new Script(
-				'sitekit-commons',
+				'googlesitekit-commons',
 				array(
 					'src'          => false,
 					'before_print' => function( $handle ) {
