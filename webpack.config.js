@@ -79,6 +79,11 @@ const webpackConfig = ( mode ) => {
 			module: {
 				rules: [
 					{
+						parser: {
+							amd: false,
+						},
+					},
+					{
 						test: /\.js$/,
 						exclude: /node_modules/,
 						use: [
