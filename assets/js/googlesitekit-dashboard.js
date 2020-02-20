@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { clearWebStorage, loadTranslations } from 'GoogleUtil';
-import Notification from 'GoogleComponents/notifications/notification';
 import Setup from 'GoogleComponents/setup/setup-wrapper';
 import DashboardApp from 'GoogleComponents/dashboard/dashboard-app';
 import NotificationCounter from 'GoogleComponents/notifications/notification-counter';
@@ -30,26 +29,16 @@ import 'GoogleComponents/notifications';
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { Component, render, Fragment } from '@wordpress/element';
+import { Component, render } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
 
+/**
+ * Internal dependencies
+ */
+import ErrorHandler from 'GoogleComponents/ErrorHandler';
+import 'GoogleModules';
+
 class GoogleSitekitDashboard extends Component {
-	constructor( props ) {
-		super( props );
-
-		this.state = {
-			hasError: false,
-		};
-	}
-
-	componentDidCatch( error, info ) {
-		this.setState( {
-			hasError: true,
-			error,
-			info,
-		} );
-	}
-
 	render() {
 		const {
 			showModuleSetupWizard,
@@ -57,41 +46,24 @@ class GoogleSitekitDashboard extends Component {
 
 		if ( showModuleSetupWizard ) {
 			return (
-				<Setup />
+				<ErrorHandler>
+					<Setup />
+				</ErrorHandler>
 			);
 		}
 
-		const {
-			hasError,
-			error,
-			info,
-		} = this.state;
-
-		if ( hasError ) {
-			return <Notification
-				id={ 'googlesitekit-error' }
-				key={ 'googlesitekit-error' }
-				title={ error.message }
-				description={ info.componentStack }
-				dismiss={ '' }
-				isDismissable={ false }
-				format="small"
-				type="win-error"
-			/>;
-		}
-
 		return (
-			<Fragment>
+			<ErrorHandler>
 				<NotificationCounter />
 				<DashboardApp />
-			</Fragment>
+			</ErrorHandler>
 		);
 	}
 }
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
-	if ( googlesitekit.admin.resetSession ) {
+	if ( global.googlesitekit.admin.resetSession ) {
 		clearWebStorage();
 	}
 

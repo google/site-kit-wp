@@ -12,12 +12,15 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_File;
+use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Util\Exit_Handler;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_SiteVerification;
@@ -50,6 +53,11 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	const VERIFICATION_TYPE_FILE = 'FILE';
 
 	/**
+	 * Verification meta tag cache key.
+	 */
+	const TRANSIENT_VERIFICATION_META_TAGS = 'googlesitekit_verification_meta_tags';
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -73,6 +81,13 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		add_action( 'login_head', $print_site_verification_meta );
 
 		add_action(
+			'googlesitekit_authorize_user',
+			function() {
+				$this->user_options->set( Verification::OPTION, 'verified' );
+			}
+		);
+
+		add_action(
 			'init',
 			function () {
 				$request_uri    = $this->context->input()->filter( INPUT_SERVER, 'REQUEST_URI' );
@@ -88,6 +103,14 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			}
 		);
 
+		$clear_verification_meta_cache = function ( $meta_id, $object_id, $meta_key ) {
+			if ( $this->user_options->get_meta_key( Verification_Meta::OPTION ) === $meta_key ) {
+				( new Transients( $this->context ) )->delete( self::TRANSIENT_VERIFICATION_META_TAGS );
+			}
+		};
+		add_action( 'added_user_meta', $clear_verification_meta_cache, 10, 3 );
+		add_action( 'updated_user_meta', $clear_verification_meta_cache, 10, 3 );
+		add_action( 'deleted_user_meta', $clear_verification_meta_cache, 10, 3 );
 	}
 
 	/**
@@ -411,7 +434,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 */
 	private function print_site_verification_meta() {
 		// Get verification meta tags for all users.
-		$verification_tags = $this->authentication->verification_meta()->get_all();
+		$verification_tags = $this->get_all_verification_tags();
 		$allowed_html      = array(
 			'meta' => array(
 				'name'    => array(),
@@ -431,6 +454,33 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	}
 
 	/**
+	 * Gets all available verification tags for all users.
+	 *
+	 * This is a special method needed for printing all meta tags in the frontend.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of verification meta tags.
+	 */
+	private function get_all_verification_tags() {
+		global $wpdb;
+
+		$transients = new Transients( $this->context );
+		$meta_tags  = $transients->get( self::TRANSIENT_VERIFICATION_META_TAGS );
+
+		if ( ! is_array( $meta_tags ) ) {
+			$meta_key = $this->user_options->get_meta_key( Verification_Meta::OPTION );
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$meta_tags = $wpdb->get_col(
+				$wpdb->prepare( "SELECT DISTINCT meta_value FROM {$wpdb->usermeta} WHERE meta_key = %s", $meta_key )
+			);
+			$transients->set( self::TRANSIENT_VERIFICATION_META_TAGS, $meta_tags );
+		}
+
+		return array_filter( $meta_tags );
+	}
+
+	/**
 	 * Serves the verification file response.
 	 *
 	 * @param string $verification_token Token portion of verification.
@@ -438,14 +488,10 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * @since 1.1.0
 	 */
 	private function serve_verification_file( $verification_token ) {
-		global $wpdb;
-
-		// User option keys are prefixed in single site and multisite when not in network mode.
-		$key_prefix = $this->context->is_network_mode() ? '' : $wpdb->get_blog_prefix();
-		$user_ids   = ( new \WP_User_Query(
+		$user_ids = ( new \WP_User_Query(
 			array(
 				// phpcs:ignore WordPress.VIP.SlowDBQuery
-				'meta_key'   => $key_prefix . Verification_File::OPTION,
+				'meta_key'   => $this->user_options->get_meta_key( Verification_File::OPTION ),
 				// phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 				'meta_value' => $verification_token,
 				'fields'     => 'id',

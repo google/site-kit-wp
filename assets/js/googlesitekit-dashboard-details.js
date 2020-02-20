@@ -20,9 +20,9 @@
 /**
  * External dependencies
  */
-import Notification from 'GoogleComponents/notifications/notification';
 import 'GoogleComponents/notifications';
 import { loadTranslations } from 'GoogleUtil';
+import 'GoogleModules';
 
 /**
  * WordPress dependencies
@@ -34,46 +34,17 @@ import { Component, render } from '@wordpress/element';
 /**
  * Internal dependencies.
  */
+// eslint-disable-next-line @wordpress/dependency-group
 import DashboardDetailsApp from 'GoogleComponents/dashboard-details/dashboard-details-app';
+import ErrorHandler from 'GoogleComponents/ErrorHandler';
 
 class GoogleSitekitDashboardDetails extends Component {
-	constructor( props ) {
-		super( props );
-
-		this.state = {
-			hasError: false,
-		};
-	}
-
-	componentDidCatch( error, info ) {
-		this.setState( {
-			hasError: true,
-			error,
-			info,
-		} );
-	}
-
 	render() {
-		const {
-			hasError,
-			error,
-			info,
-		} = this.state;
-
-		if ( hasError ) {
-			return <Notification
-				id={ 'googlesitekit-error' }
-				key={ 'googlesitekit-error' }
-				title={ error.message }
-				description={ info.componentStack }
-				dismiss={ '' }
-				isDismissable={ false }
-				format="small"
-				type="win-error"
-			/>;
-		}
-
-		return <DashboardDetailsApp />;
+		return (
+			<ErrorHandler>
+				<DashboardDetailsApp />
+			</ErrorHandler>
+		);
 	}
 }
 

@@ -20,7 +20,7 @@ use WP_REST_Response;
 /**
  * Class responsible for providing the helper plugin via the automatic updater.
  *
- * @since n.e.x.t
+ * @since 1.3.0
  */
 class Developer_Plugin_Installer {
 
@@ -29,7 +29,7 @@ class Developer_Plugin_Installer {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 * @var Context
 	 */
 	private $context;
@@ -37,7 +37,7 @@ class Developer_Plugin_Installer {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @param Context $context Plugin context.
 	 */
@@ -48,7 +48,7 @@ class Developer_Plugin_Installer {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 */
 	public function register() {
 		// Only filter plugins API response if the developer plugin is not already active.
@@ -74,7 +74,7 @@ class Developer_Plugin_Installer {
 	/**
 	 * Gets related REST routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @return array List of REST_Route objects.
 	 */
@@ -134,7 +134,7 @@ class Developer_Plugin_Installer {
 	/**
 	 * Retrieves plugin information data from the Site Kit REST API.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @param false|object|array $value  The result object or array. Default false.
 	 * @param string             $action The type of information being requested from the Plugin Installation API.
@@ -179,7 +179,7 @@ class Developer_Plugin_Installer {
 	/**
 	 * Gets plugin data from the API.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @return array|null Associative array of plugin data, or null on failure.
 	 */

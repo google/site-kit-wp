@@ -39,7 +39,7 @@ class ScreenTest extends TestCase {
 			array(
 				'render_callback' => function () {
 				},
-			) 
+			)
 		);
 		$this->assertEquals( '', $screen->add( $context ) );
 
@@ -67,7 +67,7 @@ class ScreenTest extends TestCase {
 			array(
 				'render_callback' => function () {
 				},
-			) 
+			)
 		);
 		$this->assertEquals( 'toplevel_page_test-slug', $screen->add( $context ) );
 
@@ -77,7 +77,7 @@ class ScreenTest extends TestCase {
 				'render_callback' => function () {
 				},
 				'parent_slug'     => 'test-parent-slug',
-			) 
+			)
 		);
 		$this->assertEquals( 'toplevel_page_test-slug', $screen->add( $context ) );
 	}
@@ -91,7 +91,7 @@ class ScreenTest extends TestCase {
 			'test-slug',
 			array(
 				'initialize_callback' => $callback,
-			) 
+			)
 		);
 		$context     = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
@@ -103,7 +103,6 @@ class ScreenTest extends TestCase {
 
 	public function test_enqueue_assets() {
 		wp_dequeue_style( 'googlesitekit_admin_css' );
-		wp_dequeue_script( 'googlesitekit_modules' );
 
 		$invocations = array();
 		$callback    = function () use ( &$invocations ) {
@@ -113,17 +112,15 @@ class ScreenTest extends TestCase {
 			'test-slug',
 			array(
 				'enqueue_callback' => $callback,
-			) 
+			)
 		);
 
 		$this->assertFalse( wp_style_is( 'googlesitekit_admin_css', 'enqueued' ) );
-		$this->assertFalse( wp_script_is( 'googlesitekit_modules', 'enqueued' ) );
 
 		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$screen->enqueue_assets( $assets );
 
 		$this->assertTrue( wp_style_is( 'googlesitekit_admin_css', 'enqueued' ) );
-		$this->assertTrue( wp_script_is( 'googlesitekit_modules', 'enqueued' ) );
 		$this->assertCount( 1, $invocations );
 		$this->assertEquals( array( $assets ), $invocations[0] );
 	}

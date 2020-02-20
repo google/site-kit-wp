@@ -189,9 +189,6 @@ final class Screen {
 		if ( $this->args['enqueue_callback'] ) {
 			call_user_func( $this->args['enqueue_callback'], $assets );
 		}
-
-		// Enqueue module hooks.
-		$assets->enqueue_asset( 'googlesitekit_modules' );
 	}
 
 	/**

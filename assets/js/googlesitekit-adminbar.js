@@ -26,20 +26,22 @@ import {
 	decodeHtmlEntity,
 	getSiteKitAdminURL,
 	loadTranslations,
-	sendAnalyticsTrackingEvent,
+	trackEvent,
 } from 'GoogleUtil';
+import 'GoogleModules';
 
 /**
  * WordPress dependencies
  */
 import { doAction } from '@wordpress/hooks';
-import { Component, Fragment, render } from '@wordpress/element';
+import { Component, render } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies.
  */
 import AdminbarModules from 'GoogleComponents/adminbar/adminbar-modules';
+import ErrorHandler from 'GoogleComponents/ErrorHandler';
 
 export class GoogleSitekitAdminbar extends Component {
 	constructor( props ) {
@@ -54,7 +56,7 @@ export class GoogleSitekitAdminbar extends Component {
 			postID,
 			postType,
 			pageTitle,
-		} = googlesitekit;
+		} = global.googlesitekit;
 		const href = getSiteKitAdminURL(
 			'googlesitekit-dashboard',
 			{
@@ -65,7 +67,7 @@ export class GoogleSitekitAdminbar extends Component {
 			}
 		);
 
-		sendAnalyticsTrackingEvent( 'admin_bar', 'post_details_click' );
+		trackEvent( 'admin_bar', 'post_details_click' );
 		document.location = href;
 	}
 
@@ -73,10 +75,10 @@ export class GoogleSitekitAdminbar extends Component {
 		const {
 			pageTitle,
 			permaLink,
-		} = googlesitekit;
+		} = global.googlesitekit;
 
 		return (
-			<Fragment>
+			<ErrorHandler>
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
 						<div className="
@@ -124,7 +126,7 @@ export class GoogleSitekitAdminbar extends Component {
 				>
 					{ __( 'More details', 'google-site-kit' ) }
 				</Link>
-			</Fragment>
+			</ErrorHandler>
 		);
 	}
 }

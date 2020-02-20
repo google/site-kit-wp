@@ -25,5 +25,5 @@ import { setLocaleData } from '@wordpress/i18n';
  * Loads the translations for the google-site-kit text domain.
  */
 export function loadTranslations() {
-	setLocaleData( googlesitekit.locale, 'google-site-kit' );
+	setLocaleData( global.googlesitekit.locale, 'google-site-kit' );
 }

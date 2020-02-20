@@ -91,7 +91,7 @@ export default withData(
 			identifier: 'search-console',
 			datapoint: 'searchanalytics',
 			data: {
-				url: googlesitekit.permaLink,
+				url: global.googlesitekit.permaLink,
 				dimensions: 'date',
 				compareDateRanges: true,
 			},

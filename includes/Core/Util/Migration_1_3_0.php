@@ -1,6 +1,6 @@
 <?php
 /**
- * Migration for n.e.x.t
+ * Migration for 1.3.0
  *
  * @package   Google\Site_Kit\Core\Util
  * @copyright 2019 Google LLC
@@ -16,20 +16,18 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use WP_User;
 
-// phpcs:disable PEAR.NamingConventions.ValidClassName.Invalid
-
 /**
- * Class Migration_n_e_x_t
+ * Class Migration_1_3_0
  *
- * @since n.e.x.t
+ * @since 1.3.0
  * @access private
  * @ignore
  */
-class Migration_n_e_x_t {
+class Migration_1_3_0 {
 	/**
 	 * Target DB version.
 	 */
-	const DB_VERSION = 'n.e.x.t';
+	const DB_VERSION = '1.3.0';
 
 	/**
 	 * Context instance.
@@ -55,7 +53,7 @@ class Migration_n_e_x_t {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @param Context      $context      Plugin context instance.
 	 * @param Options      $options      Optional. Options instance.
@@ -74,7 +72,7 @@ class Migration_n_e_x_t {
 	/**
 	 * Registers hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 */
 	public function register() {
 		add_action( 'admin_init', array( $this, 'migrate' ) );
@@ -83,7 +81,7 @@ class Migration_n_e_x_t {
 	/**
 	 * Migrates the DB.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 */
 	public function migrate() {
 		$db_version = $this->options->get( 'googlesitekit_db_version' );
@@ -98,28 +96,28 @@ class Migration_n_e_x_t {
 	/**
 	 * Migrates the global tracking opt-in to a user option.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 */
 	private function migrate_tracking_opt_in() {
 		// Only migrate if tracking was opted-in.
-		if ( $this->options->get( Tracking::TRACKING_OPTIN_KEY ) ) {
+		if ( $this->options->get( Tracking_Consent::OPTION ) ) {
 			$user = $this->get_only_authenticated_user();
 
 			if ( $user ) {
 				$backup_user_id = $this->user_options->get_user_id();
 				$this->user_options->switch_user( $user->ID );
-				$this->user_options->set( Tracking::TRACKING_OPTIN_KEY, 1 );
+				$this->user_options->set( Tracking_Consent::OPTION, 1 );
 				$this->user_options->switch_user( $backup_user_id );
 			}
 		}
 
-		$this->options->delete( Tracking::TRACKING_OPTIN_KEY );
+		$this->options->delete( Tracking_Consent::OPTION );
 	}
 
 	/**
 	 * Gets the authenticated user connected to Site Kit, but only if there is a single one.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @return WP_User|bool User instance if only one authenticated user is found, otherwise false.
 	 */

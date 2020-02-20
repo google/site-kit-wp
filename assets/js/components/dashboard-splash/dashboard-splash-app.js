@@ -24,7 +24,7 @@ import DashboardSplashMain from 'GoogleComponents/dashboard-splash/dashboard-spl
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Component, Fragment, Suspense, lazy } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -32,8 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import DashboardSplashNotifications from './dashboard-splash-notifications';
 import ProgressBar from 'GoogleComponents/progress-bar';
-import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
-import { Suspense, lazy } from 'GoogleUtil/react-features';
+import { trackEvent } from 'GoogleUtil';
 import 'GoogleComponents/publisher-wins';
 
 const AUTHENTICATION = 1;
@@ -43,21 +42,21 @@ class DashboardSplashApp extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { connectURL } = googlesitekit.admin;
+		const { connectURL } = global.googlesitekit.admin;
 
 		const {
 			showModuleSetupWizard,
 			isAuthenticated,
 			isVerified,
 			hasSearchConsoleProperty,
-		} = googlesitekit.setup; /*eslint camelcase: 0*/
+		} = global.googlesitekit.setup; /*eslint camelcase: 0*/
 
 		const {
 			canAuthenticate,
 			canSetup,
 			canViewDashboard,
 			canPublishPosts,
-		} = googlesitekit.permissions;
+		} = global.googlesitekit.permissions;
 
 		this.state = {
 			showAuthenticationSetupWizard: canSetup && ( ! isAuthenticated || ! isVerified || ! hasSearchConsoleProperty ),
@@ -80,7 +79,7 @@ class DashboardSplashApp extends Component {
 	}
 
 	openAuthenticationSetupWizard() {
-		sendAnalyticsTrackingEvent( 'plugin_setup', 'setup_sitekit' );
+		trackEvent( 'plugin_setup', 'setup_sitekit' );
 
 		this.setState( {
 			showAuthenticationSetupWizard: true,
@@ -93,7 +92,7 @@ class DashboardSplashApp extends Component {
 			showAuthenticationSetupWizard: false,
 		} );
 
-		sendAnalyticsTrackingEvent( 'plugin_setup', 'connect_account' );
+		trackEvent( 'plugin_setup', 'connect_account' );
 
 		document.location = this.state.connectURL;
 	}
@@ -105,7 +104,7 @@ class DashboardSplashApp extends Component {
 			__webpack_public_path__ = global.googlesitekit.publicPath;
 		}
 
-		const { proxySetupURL } = googlesitekit.admin;
+		const { proxySetupURL } = global.googlesitekit.admin;
 
 		// If `proxySetupURL` is set it means the proxy is in use. We should never
 		// show the GCP splash screen when the proxy is being used, so skip this

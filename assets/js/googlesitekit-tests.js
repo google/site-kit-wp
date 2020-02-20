@@ -36,7 +36,6 @@ import {
 	validateJSON,
 	validateOptimizeID,
 	appendNotificationsCount,
-	sendAnalyticsTrackingEvent,
 	storageAvailable,
 	extractTag,
 	activateOrDeactivateModule,
@@ -50,7 +49,7 @@ const { setCache, getCache, deleteCache, invalidateCacheGroup, getCacheKey } = d
 
 global.googlesitekit = global.googlesitekit || {};
 
-googlesitekit.testFunctions = {
+global.googlesitekit.testFunctions = {
 	getTimeInSeconds,
 	changeToPercent,
 	prepareSecondsForDisplay,
@@ -67,7 +66,6 @@ googlesitekit.testFunctions = {
 	validateJSON,
 	validateOptimizeID,
 	appendNotificationsCount,
-	sendAnalyticsTrackingEvent,
 	storageAvailable,
 	extractTag,
 	activateOrDeactivateModule,
@@ -82,6 +80,6 @@ googlesitekit.testFunctions = {
 	getCacheKey,
 };
 
-googlesitekit.testUtilities = {
+global.googlesitekit.testUtilities = {
 	md5,
 };

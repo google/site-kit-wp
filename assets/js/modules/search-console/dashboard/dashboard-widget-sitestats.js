@@ -46,7 +46,7 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 	setOptions() {
 		const { selectedStats, series, vAxes } = this.props;
 
-		const pageTitle = googlesitekit.pageTitle && googlesitekit.pageTitle.length ? sprintf( __( 'Search Traffic Summary for %s', 'google-site-kit' ), decodeHtmlEntity( googlesitekit.pageTitle ) ) : __( 'Search Traffic Summary', 'google-site-kit' );
+		const pageTitle = global.googlesitekit.pageTitle && global.googlesitekit.pageTitle.length ? sprintf( __( 'Search Traffic Summary for %s', 'google-site-kit' ), decodeHtmlEntity( global.googlesitekit.pageTitle ) ) : __( 'Search Traffic Summary', 'google-site-kit' );
 
 		const options = {
 			chart: {

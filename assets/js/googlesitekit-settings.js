@@ -20,10 +20,9 @@
 /**
  * External dependencies
  */
-import SettingsApp from 'GoogleComponents/settings/settings-app';
-import Notification from 'GoogleComponents/notifications/notification';
 import 'GoogleComponents/notifications';
 import { loadTranslations } from 'GoogleUtil';
+import 'GoogleModules';
 
 /**
  * WordPress dependencies
@@ -32,44 +31,20 @@ import domReady from '@wordpress/dom-ready';
 import { doAction } from '@wordpress/hooks';
 import { Component, render } from '@wordpress/element';
 
+/**
+ * Internal dependencies
+ */
+// eslint-disable-next-line @wordpress/dependency-group
+import ErrorHandler from 'GoogleComponents/ErrorHandler';
+import SettingsApp from 'GoogleComponents/settings/settings-app';
+
 class GoogleSitekitSettings extends Component {
-	constructor( props ) {
-		super( props );
-
-		this.state = {
-			hasError: false,
-		};
-	}
-
-	componentDidCatch( error, info ) {
-		this.setState( {
-			hasError: true,
-			error,
-			info,
-		} );
-	}
-
 	render() {
-		const {
-			hasError,
-			error,
-			info,
-		} = this.state;
-
-		if ( hasError ) {
-			return <Notification
-				id={ 'googlesitekit-error' }
-				key={ 'googlesitekit-error' }
-				title={ error.message }
-				description={ info.componentStack }
-				dismiss={ '' }
-				isDismissable={ false }
-				format="small"
-				type="win-error"
-			/>;
-		}
-
-		return <SettingsApp />;
+		return (
+			<ErrorHandler>
+				<SettingsApp />
+			</ErrorHandler>
+		);
 	}
 }
 
