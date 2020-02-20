@@ -558,6 +558,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * @param string|array $usage_context The container usage context(s).
 	 *
 	 * @return string Container public ID.
+	 * @throws Exception Throws an exception if raised during container creation.
 	 */
 	protected function create_container( $account_id, $usage_context = self::USAGE_CONTEXT_WEB ) {
 		$restore_defer = $this->with_client_defer( false );
@@ -574,7 +575,12 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 		$container->setName( $container_name );
 		$container->setUsageContext( (array) $usage_context );
 
-		$new_container = $this->get_tagmanager_service()->accounts_containers->create( "accounts/{$account_id}", $container );
+		try {
+			$new_container = $this->get_tagmanager_service()->accounts_containers->create( "accounts/{$account_id}", $container );
+		} catch ( Exception $exception ) {
+			$restore_defer();
+			throw $exception;
+		}
 
 		$restore_defer();
 
