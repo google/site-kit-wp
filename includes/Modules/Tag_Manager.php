@@ -493,9 +493,21 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				}
 				return $this->get_tagmanager_service()->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
 			case 'POST:settings':
-				if ( ! isset( $data['accountID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
+				$required_params = array( 'accountID', 'usageContext' );
+
+				if ( self::USAGE_CONTEXT_WEB === $data['usageContext'] ) { // No AMP.
+					$required_params[] = $this->context_map[ self::USAGE_CONTEXT_WEB ];
+				} elseif ( self::USAGE_CONTEXT_AMP === $data['usageContext'] ) { // Primary AMP.
+					$required_params[] = $this->context_map[ self::USAGE_CONTEXT_AMP ];
+				} else { // Secondary AMP.
+					array_push( $required_params, ...array_values( $this->context_map ) );
+				}
+
+				foreach ( $required_params as $required_param ) {
+					if ( ! isset( $data[ $required_param ] ) ) {
+						/* translators: %s: Missing parameter name */
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), $required_param ), array( 'status' => 400 ) );
+					}
 				}
 
 				return function() use ( $data ) {
