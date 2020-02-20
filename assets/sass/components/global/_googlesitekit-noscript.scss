@@ -1,7 +1,7 @@
 /**
  * Header styles.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@
 
 	#googlesitekit-notice-activated {
 
-		border-left-color: $c-orange-roughy; // noscript renders inside success
+		border-left-color: $c-selective-yellow; // noscript renders inside success
 		margin: 5px 15px 5px 0; // fixes the alignment with rest of the page
 		padding: 0;
 
@@ -44,7 +44,7 @@
 		}
 	}
 
-	.js-googleskit-plugin {
+	[id^="js-googlesitekit-"] {
 		display: none;
 	}
 }

@@ -3,7 +3,7 @@
  * Trait Google\Site_Kit\Core\Util\Requires_Javascript_Trait
  *
  * @package   Google\Site_Kit\Core\Util
- * @copyright 2019 Google LLC
+ * @copyright 2020 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -32,7 +32,7 @@ trait Requires_Javascript_Trait {
 
 		?>
 			<noscript>
-				<div class="googlesitekit-noscript googlesitekit-plugin notice notice-warning">
+				<div class="googlesitekit-noscript notice notice-warning">
 					<div class="mdc-layout-grid">
 						<div class="mdc-layout-grid__inner">
 							<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
@@ -47,6 +47,7 @@ trait Requires_Javascript_Trait {
 				</div>
 			</noscript>
 		<?php
+
 		return ob_get_clean();
 	}
 }

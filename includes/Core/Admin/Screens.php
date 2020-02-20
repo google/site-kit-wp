@@ -223,33 +223,27 @@ final class Screens {
 						}
 					},
 					'render_callback'  => function( Context $context ) {
-						?>
-						<div class="googlesitekit-plugin js-googlesitkit-plugin">
-							<?php
-							if ( $context->input()->filter( INPUT_GET, 'permaLink' ) ) {
-								/**
-								 * Fires before the Dashboard Details App wrapper is rendered.
-								 *
-								 * @since 1.0.0
-								 */
-								do_action( 'googlesitekit_above_dashboard_details_app' );
-								?>
-								<div id="js-googlesitekit-dashboard-details" class="googlesitekit-page"></div>
-								<?php
-							} else {
-								/**
-								 * Fires before the Dashboard App wrapper is rendered.
-								 *
-								 * @since 1.0.0
-								 */
-								do_action( 'googlesitekit_above_dashboard_app' );
-								?>
-								<div id="js-googlesitekit-dashboard" class="googlesitekit-page"></div>
-								<?php
-							}
+						if ( $context->input()->filter( INPUT_GET, 'permaLink' ) ) {
+							/**
+							 * Fires before the Dashboard Details App wrapper is rendered.
+							 *
+							 * @since 1.0.0
+							 */
+							do_action( 'googlesitekit_above_dashboard_details_app' );
 							?>
-						</div>
-						<?php
+							<div id="js-googlesitekit-dashboard-details" class="googlesitekit-page"></div>
+							<?php
+						} else {
+							/**
+							 * Fires before the Dashboard App wrapper is rendered.
+							 *
+							 * @since 1.0.0
+							 */
+							do_action( 'googlesitekit_above_dashboard_app' );
+							?>
+							<div id="js-googlesitekit-dashboard" class="googlesitekit-page"></div>
+							<?php
+						}
 					},
 				)
 			),
@@ -280,18 +274,17 @@ final class Screens {
 					$assets->enqueue_asset( 'googlesitekit_settings' );
 				},
 				'render_callback'  => function( Context $context ) {
+					/**
+					 * Fires before the Settings App wrapper is rendered.
+					 *
+					 * @since 1.0.0
+					 */
+					do_action( 'googlesitekit_above_settings_app' );
+
 					?>
-					<div class="googlesitekit-plugin js-googlesitkit-plugin">
-						<?php
-						/**
-						 * Fires before the Settings App wrapper is rendered.
-						 *
-						 * @since 1.0.0
-						 */
-						do_action( 'googlesitekit_above_settings_app' );
-						?>
-						<div id="googlesitekit-settings-wrapper" class="googlesitekit-page"></div>
-					</div>
+
+					<div id="googlesitekit-settings-wrapper" class="googlesitekit-page"></div>
+
 					<?php
 				},
 			)
@@ -347,18 +340,17 @@ final class Screens {
 					$assets->enqueue_asset( 'googlesitekit_dashboard_splash' );
 				},
 				'render_callback'     => function( Context $context ) {
+					/**
+					 * Fires before the Dashboard Splash App wrapper is rendered.
+					 *
+					 * @since 1.0.0
+					 */
+					do_action( 'googlesitekit_above_dashboard_splash_app' );
+
 					?>
-					<div class="googlesitekit-plugin js-googlesitkit-plugin">
-						<?php
-						/**
-						 * Fires before the Dashboard Splash App wrapper is rendered.
-						 *
-						 * @since 1.0.0
-						 */
-						do_action( 'googlesitekit_above_dashboard_splash_app' );
-						?>
-						<div id="js-googlesitekit-dashboard-splash" class="googlesitekit-page"></div>
-					</div>
+
+					<div id="js-googlesitekit-dashboard-splash" class="googlesitekit-page"></div>
+
 					<?php
 				},
 			)

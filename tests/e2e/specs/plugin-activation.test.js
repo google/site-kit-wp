@@ -50,7 +50,7 @@ describe( 'Plugin Activation Notice', () => {
 
 			await page.waitForSelector( '.googlesitekit-activation__title' );
 
-			await expect( page ).toMatchElement( 'h3.googlesitekit-activation__title', { text: 'Congratulations, the Site Kit plugin is now activated.' } );
+			await expect( page ).toMatchElement( 'h3.googlesitekit-activation__title', { text: /Congratulations, the Site Kit plugin is now activated./i } );
 
 			await deactivateSiteKit();
 		} );
@@ -73,8 +73,9 @@ describe( 'Plugin Activation Notice', () => {
 
 		it( 'Should not display noscript notice', async () => {
 			await activateSiteKit();
-			const noscript = await page.$( '#wpbody-content' );
-			await expect( noscript ).not.toMatchElement( '.googlesitekit-noscript' );
+
+			await expect( page ).not.toMatchElement( '.googlesitekit-noscript' );
+
 			await deactivateSiteKit();
 		} );
 	} );
@@ -93,8 +94,9 @@ describe( 'Plugin Activation Notice', () => {
 			// Therefore need to be inline
 			await page.setJavaScriptEnabled( false );
 			await activateSiteKit();
-			const noscript = await page.$( '#wpbody-content' );
-			await expect( noscript ).not.toMatchElement( '.js-googlesitekit-plugin' );
+
+			await expect( page ).toMatchElement( '[id^=js-googlesitekit-]', { visible: false } );
+
 			await deactivateSiteKit();
 			await page.setJavaScriptEnabled( true );
 		} );
@@ -104,10 +106,13 @@ describe( 'Plugin Activation Notice', () => {
 			// Therefore need to be inline
 			await page.setJavaScriptEnabled( false );
 			await activateSiteKit();
-			const noscript = await page.waitForSelector( '.googlesitekit-noscript', {
-				visible: true,
-			} );
-			await expect( noscript ).toMatchElement( '.googlesitekit-noscript__title', { text: 'The Site Kit by Google plugin requires JavaScript to be enabled in your browser.' } );
+
+			await expect( page ).toMatchElement(
+				'.googlesitekit-noscript__title',
+				{ text: /The Site Kit by Google plugin requires JavaScript to be enabled in your browser./i },
+				{ visible: true }
+			);
+
 			await deactivateSiteKit();
 			await page.setJavaScriptEnabled( true );
 		} );

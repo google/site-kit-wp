@@ -274,14 +274,13 @@ final class Admin_Bar {
 	 * @since 1.0.0
 	 */
 	private function menu_markup() {
+
 		ob_start();
 
 		?>
-		<?php
-			echo $this->get_noscript_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		?>
 
-		<div class="googlesitekit-plugin js-googleskit-plugin">
+		<div class="googlesitekit-plugin">
+			<?php echo $this->get_noscript_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			<div id="js-googlesitekit-adminbar" class="ab-sub-wrapper googlesitekit-adminbar googlesitekit-adminbar--loading">
 				<div class="googlesitekit-adminbar__loading">
 					<div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">

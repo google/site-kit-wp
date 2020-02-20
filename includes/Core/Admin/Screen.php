@@ -205,9 +205,15 @@ final class Screen {
 			return;
 		}
 
-		echo $this->get_noscript_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		?>
+		<div class="googlesitekit-plugin">
+			<?php
+				echo $this->get_noscript_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		call_user_func( $this->args['render_callback'], $context );
+				call_user_func( $this->args['render_callback'], $context );
+			?>
+		</div>
+		<?php
 	}
 
 	/**
