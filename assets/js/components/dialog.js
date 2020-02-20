@@ -94,15 +94,17 @@ class Dialog extends Component {
 										{ subtitle }
 									</p>
 								}
-								<section id={ describedByID } className="mdc-dialog__content">
-									<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive">
-										{ provides && provides.map( ( attribute ) => (
-											<li className="mdc-list-item" key={ attribute }>
-												<span className="mdc-list-item__text">{ attribute }</span>
-											</li>
-										) ) }
-									</ul>
-								</section>
+								{ ( provides && provides.length ) &&
+									<section id={ describedByID } className="mdc-dialog__content">
+										<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive">
+											{ provides.map( ( attribute ) => (
+												<li className="mdc-list-item" key={ attribute }>
+													<span className="mdc-list-item__text">{ attribute }</span>
+												</li>
+											) ) }
+										</ul>
+									</section>
+								}
 								{ dependentModules &&
 									<p className="mdc-dialog__dependecies">
 										<strong>{ __( 'Note: ', 'google-site-kit' ) }</strong>{ dependentModules }
