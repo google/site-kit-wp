@@ -38,7 +38,7 @@ trait Requires_Javascript_Trait {
 							<div class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 								<h3 class="googlesitekit-heading-3 googlesitekit-noscript__title">
 									<?php
-										echo esc_html__( 'The Site Kit by Google plugin requires JavaScript to be enabled in your browser.', 'google-site-kit' )
+										esc_html_e( 'The Site Kit by Google plugin requires JavaScript to be enabled in your browser.', 'google-site-kit' )
 									?>
 								</h3>
 							</div>
@@ -50,4 +50,3 @@ trait Requires_Javascript_Trait {
 		return ob_get_clean();
 	}
 }
-
