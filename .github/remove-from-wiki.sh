@@ -16,7 +16,7 @@ function add_mask() {
     echo "::add-mask::$1"
 }
 
-debug "Wiki publish"
+debug "Wiki cleanup"
 
 if [ -z "$GITHUB_ACTOR" ]; then
     error "GITHUB_ACTOR environment variable is not set"
