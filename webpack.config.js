@@ -36,6 +36,33 @@ const projectPath = ( relativePath ) => {
 
 const noAMDParserRule = { parser: { amd: false } };
 
+const rules = [
+	noAMDParserRule,
+	{
+		test: /\.js$/,
+		exclude: /node_modules/,
+		use: [
+			{
+				loader: 'babel-loader',
+				query: {
+					presets: [ [ '@babel/env', {
+						useBuiltIns: 'entry',
+						corejs: 2,
+					} ], '@babel/preset-react' ],
+				},
+			},
+			{
+				loader: 'eslint-loader',
+				options: {
+					quiet: true,
+					formatter: require( 'eslint' ).CLIEngine.getFormatter( 'stylish' ),
+				},
+			},
+		],
+		...noAMDParserRule,
+	},
+];
+
 const resolve = {
 	alias: {
 		'@wordpress/api-fetch__non-shim': require.resolve( '@wordpress/api-fetch' ),
@@ -79,32 +106,7 @@ const webpackConfig = ( mode ) => {
 				maxEntrypointSize: 175000,
 			},
 			module: {
-				rules: [
-					noAMDParserRule,
-					{
-						test: /\.js$/,
-						exclude: /node_modules/,
-						use: [
-							{
-								loader: 'babel-loader',
-								query: {
-									presets: [ [ '@babel/env', {
-										useBuiltIns: 'entry',
-										corejs: 2,
-									} ], '@babel/preset-react' ],
-								},
-							},
-							{
-								loader: 'eslint-loader',
-								options: {
-									quiet: true,
-									formatter: require( 'eslint' ).CLIEngine.getFormatter( 'stylish' ),
-								},
-							},
-						],
-						...noAMDParserRule,
-					},
-				],
+				rules,
 			},
 			plugins: [
 				new ProvidePlugin( {
@@ -197,32 +199,7 @@ const testBundle = () => {
 			publicPath: '',
 		},
 		module: {
-			rules: [
-				noAMDParserRule,
-				{
-					test: /\.js$/,
-					exclude: /node_modules/,
-					use: [
-						{
-							loader: 'babel-loader',
-							query: {
-								presets: [ [ '@babel/env', {
-									useBuiltIns: 'entry',
-									corejs: 2,
-								} ], '@babel/preset-react' ],
-							},
-						},
-						{
-							loader: 'eslint-loader',
-							options: {
-								quiet: true,
-								formatter: require( 'eslint' ).CLIEngine.getFormatter( 'stylish' ),
-							},
-						},
-					],
-					...noAMDParserRule,
-				},
-			],
+			rules,
 		},
 		plugins: [
 			new WebpackBar( {
