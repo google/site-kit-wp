@@ -35,6 +35,8 @@ import { createElement, Fragment } from '@wordpress/element';
  *
  * @param {Component} NewComponent The new component to append to the filtered component.
  *
+ * @return {ReactElement} Filtered component with appended component.
+ *
  */
 export const createAddToFilter = ( NewComponent ) => {
 	return ( OriginalComponent ) => {

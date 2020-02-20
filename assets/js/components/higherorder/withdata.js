@@ -62,7 +62,12 @@ import { __ } from '@wordpress/i18n';
  *                                                 if the data is "zero".
  * @param {function}        getDataError           A callback function that is passed the resolved data and returns the
  *                                                 error message.
-
+ *
+ * @return {React.Component} Component  	Returns React.Components based on data and state.
+ * 											If has data  	  Return DataDependentComponent with data.
+ * 											has no data		  Fallback message when no data.
+ * 											in loading state  Return loadingComponent.
+ * 											has an error	  Returns error.
  *
  */
 const withData = (

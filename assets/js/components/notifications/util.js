@@ -103,9 +103,14 @@ const removeDismissed = ( notifications ) => {
 
 /**
  * Remove displayed wins set to show once.
- * We display 1 win at a time so we have sometihng new for the user each time.
+ * Display 1 win at a time. So user would see something new each time.
  *
- * @param {Array} notifications
+ * @param {Array} wins  Wins are notifications (including all errors).
+ * 						"Publisher Wins" are things like increased pageviews,
+ * 						or traffic that Site Kit will let user know.
+ *
+ * @return {Array} First win if there are wins to show. Otherwise return all wins.
+ *
  */
 const removeDisplayedWins = ( wins ) => {
 	const firstWin = ( items ) => Object.keys( items ).slice( 0, 1 ).map( ( i ) => {

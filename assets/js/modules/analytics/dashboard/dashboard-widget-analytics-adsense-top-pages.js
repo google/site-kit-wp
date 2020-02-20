@@ -139,6 +139,12 @@ const isDataZero = () => {
  *
  * @param {Object} data
  * @return {*}
+ *
+ * @return {string | false | null}  It will return
+ * 									string	data error message if it exists or unidentified error.
+ * 									false 	if no data and no error message
+ * 									null	if invalid agument
+ *
  */
 const getDataError = ( data ) => {
 	if ( ! data || ! data.error ) {

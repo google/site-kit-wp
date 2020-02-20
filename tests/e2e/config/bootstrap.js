@@ -176,7 +176,7 @@ function observeNavigationRequest( req ) {
 /**
  * Observe the given navigation response.
  *
- * @param {Object} req HTTP response object.
+ * @param {Object} res HTTP response object.
  */
 function observeNavigationResponse( res ) {
 	if ( res.request().isNavigationRequest() ) {

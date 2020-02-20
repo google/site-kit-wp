@@ -19,7 +19,7 @@
       "error",
       "element"
     ],
-    "valid-jsdoc": "warn"
+    "valid-jsdoc": "error"
   },
   "overrides": [
     {

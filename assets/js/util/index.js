@@ -61,10 +61,13 @@ export * from './i18n';
 /**
  * Remove a parameter from a URL string.
  *
- * Fallback for when URL is unable to handle this.
+ * Fallback for when URL is unable to handle parsedURL.searchParams.delete.
  *
  * @param {string} url       The URL to process.
  * @param {string} parameter The URL parameter to remove.
+ *
+ * @return {string} URL without the deleted parameter.
+ *
  */
 const removeURLFallBack = ( url, parameter ) => {
 	const urlparts = url.split( '?' );
@@ -90,6 +93,8 @@ const removeURLFallBack = ( url, parameter ) => {
  *
  * @param {string} url       The URL to process.
  * @param {string} parameter The URL parameter to remove.
+ *
+ * @return {string} URL without the deleted parameter.
  */
 export const removeURLParameter = ( url, parameter ) => {
 	const parsedURL = new URL( url );
@@ -222,6 +227,9 @@ export const getTimeInSeconds = ( period ) => {
  * For example, passing 65 returns '1m 5s'.
  *
  * @param {number} seconds The number of seconds.
+ *
+ * @return {string} Human redable string indicating time elapsed.
+ *
  */
 export const prepareSecondsForDisplay = ( seconds ) => {
 	seconds = parseInt( seconds, 10 );
@@ -286,6 +294,9 @@ export const changeToPercent = ( previous, current ) => {
  *
  * @param {Array}  rowData   An array of google charts row data.
  * @param {number} column The column to extract for the sparkline.
+ *
+ * @return {Array} Extracted column of dataset prepared for google charts.
+ *
  */
 export const extractForSparkline = ( rowData, column ) => {
 	return map( rowData, ( row, i ) => {
@@ -382,6 +393,8 @@ export const getReAuthURL = ( slug, status, _googlesitekit = global.googlesiteki
  *
  * @param {Component} NewComponent The component to render in place of the filtered component.
  * @param {Object}    newProps     The props to pass down to the new component.
+ *
+ * @return {React.Component} React Component after overriding filtered component with NewComponent.
  */
 export const fillFilterWithComponent = ( NewComponent, newProps ) => {
 	return ( OriginalComponent ) => {
@@ -397,9 +410,9 @@ export const fillFilterWithComponent = ( NewComponent, newProps ) => {
  * Get Site Kit Admin URL Helper
  *
  * @param { string } page The page slug. Optional. Default is 'googlesitekit-dashboard'.
- * @param { Object } args Optional. Object of argiments to add to the URL.
+ * @param { Object } args Optional. Object of arguments to add to the URL.
  *
- * @return string
+ * @return {string} Admin URL with appended query params.
  */
 export const getSiteKitAdminURL = ( page, args ) => {
 	const { adminRoot } = global.googlesitekit.admin;
@@ -417,7 +430,7 @@ export const getSiteKitAdminURL = ( page, args ) => {
  *
  * @param { string } stringToValidate The string to validate.
  *
- * @return boolean Whether JSON is valid.
+ * @return {boolean} Indicates JSON is valid.
  */
 export const validateJSON = ( stringToValidate ) => {
 	try {
@@ -432,7 +445,7 @@ export const validateJSON = ( stringToValidate ) => {
  *
  * @param { string } stringToValidate The string to validate.
  *
- * @return boolean
+ * @return {boolean} Indicates GTM tag is valid.
  */
 export const validateOptimizeID = ( stringToValidate ) => {
 	return ( stringToValidate.match( /^GTM-[a-zA-Z\d]{7}$/ ) );
@@ -518,7 +531,7 @@ export const extractTag = ( string, module ) => {
  * @param {Object}  restApiClient Rest API client from data module, this needed so we don't need to import data module in helper.
  * @param {string}  moduleSlug    Module slug to activate or deactivate.
  * @param {boolean} status        True if module should be activated, false if it should be deactivated.
- * @return {Promise}
+ * @return {Promise} A promise for activating/deactivating a module.
  */
 export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) => {
 	return restApiClient.setModuleActive( moduleSlug, status ).then( ( responseData ) => {
@@ -591,7 +604,7 @@ export const showErrorNotification = ( ErrorComponent, props = {} ) => {
  *
  * @param {string} str The string to decode.
  *
- * @return {string}
+ * @return {string} Decoded HTML entity.
  */
 export const decodeHtmlEntity = ( str ) => {
 	if ( ! str ) {
@@ -606,14 +619,14 @@ export const decodeHtmlEntity = ( str ) => {
 };
 
 /**
- * Performs some basic cleanup of a string for use as a post slug
+ * Performs some basic cleanup of a string for use as a post slug.
  *
  * Emnulates santize_title() from WordPress core.
- *
- * @return {string} Processed string
+ * @param {string} str String to convert to slug.
+ * @return {string} Processed string.
  */
-export function stringToSlug( string ) {
-	return toLower( deburr( trim( string.replace( /[\s./_]+/g, '-' ), '-' ) ) );
+export function stringToSlug( str ) {
+	return toLower( deburr( trim( str.replace( /[\s./_]+/g, '-' ), '-' ) ) );
 }
 
 /**
@@ -633,6 +646,8 @@ export function getCurrentDateRange() {
 /**
  * Return the currently selected date range as a string that fits in the sentence:
  * "Data for the last [date range]", eg "Date for the last 28 days".
+ *
+ * @return {string} Human friendly descriptive data range text.
  */
 export function getDateRangeFrom() {
 	return getCurrentDateRange().replace( 'Last ', '' );
@@ -654,7 +669,9 @@ export function getCurrentDateRangeSlug() {
  * @param {boolean} blockedByParentModule Whether the module is blocked by a parent module.
  * @param {string}  width                 The icon width.
  * @param {string}  height                The icon height.
- * @param {string}  class                 Class string to use for icon.
+ * @param {string}  useClass              Class string to use for icon.
+ *
+ * @return {HTMLImageElement}             <img> tag with module icon.
  */
 export function moduleIcon( module, blockedByParentModule, width = '33', height = '33', useClass = '' ) {
 	if ( ! global.googlesitekit ) {

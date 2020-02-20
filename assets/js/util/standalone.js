@@ -30,6 +30,11 @@ import {
  *
  * Retrieves the number from local storage previously stored by NotificationCounter
  * used in googlesitekit-admin.js
+ *
+ * @param {number} count	Notifications count.
+ *
+ * @return {HTMLElement}	Updated dashboard menu/admin bar with the notification count.
+ *
  */
 export const appendNotificationsCount = ( count = 0 ) => {
 	let menuSelector = null;
@@ -103,7 +108,7 @@ export const clearWebStorage = () => {
  * Used when URL.searchParams is unavailable.
  *
  * @param {string} name Query param to search for.
- * @return {string}
+ * @return {string}	matching query param from the current URL.
  */
 const fallbackGetQueryParamater = ( name ) => {
 	const queries = location.search.substr( 1 ).split( '&' );
