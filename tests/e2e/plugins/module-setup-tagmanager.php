@@ -19,11 +19,15 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 const ACCOUNT_ID_A = '100';
 const ACCOUNT_ID_B = '101';
 
-const PUBLIC_ID_X = 'GTM-ABCXYZ';
-const PUBLIC_ID_Y = 'GTM-BCDWXY';
+const PUBLIC_ID_X  = 'GTM-ABCXYZ';
+const PUBLIC_ID_Y  = 'GTM-BCDWXY';
+const PUBLIC_ID_AX = 'GTM-AMPXYZ';
+const PUBLIC_ID_AY = 'GTM-AMPWXY';
 
-const CONTAINER_ID_X = '200';
-const CONTAINER_ID_Y = '201';
+const CONTAINER_ID_X  = '200';
+const CONTAINER_ID_Y  = '201';
+const CONTAINER_ID_AX = '210';
+const CONTAINER_ID_AY = '211';
 
 function filter_by_account_id( $items, $account_id ) {
 	return array_values(
@@ -31,6 +35,17 @@ function filter_by_account_id( $items, $account_id ) {
 			$items,
 			function ( $item ) use ( $account_id ) {
 				return $item['accountId'] === $account_id;
+			}
+		)
+	);
+}
+
+function filter_by_context( $items, $context ) {
+	return array_values(
+		array_filter(
+			$items,
+			function ( $item ) use ( $context ) {
+				return (bool) array_intersect( (array) $context, $item['usageContext'] );
 			}
 		)
 	);
@@ -52,16 +67,32 @@ add_action(
 		);
 		$containers = array(
 			array(
-				'accountId'   => ACCOUNT_ID_A,
-				'publicId'    => PUBLIC_ID_X,
-				'containerId' => CONTAINER_ID_X,
-				'name'        => 'Test Container X',
+				'accountId'    => ACCOUNT_ID_A,
+				'publicId'     => PUBLIC_ID_X,
+				'containerId'  => CONTAINER_ID_X,
+				'name'         => 'Test Container X',
+				'usageContext' => array( 'web' ),
 			),
 			array(
-				'accountId'   => ACCOUNT_ID_B,
-				'publicId'    => PUBLIC_ID_Y,
-				'containerId' => CONTAINER_ID_Y,
-				'name'        => 'Test Container Y',
+				'accountId'    => ACCOUNT_ID_B,
+				'publicId'     => PUBLIC_ID_Y,
+				'containerId'  => CONTAINER_ID_Y,
+				'name'         => 'Test Container Y',
+				'usageContext' => array( 'web' ),
+			),
+			array(
+				'accountId'    => ACCOUNT_ID_A,
+				'publicId'     => PUBLIC_ID_AX,
+				'containerId'  => CONTAINER_ID_AX,
+				'name'         => 'Test AMP Container AX',
+				'usageContext' => array( 'amp' ),
+			),
+			array(
+				'accountId'    => ACCOUNT_ID_B,
+				'publicId'     => PUBLIC_ID_AY,
+				'containerId'  => CONTAINER_ID_AY,
+				'name'         => 'Test AMP Container AY',
+				'usageContext' => array( 'amp' ),
 			),
 		);
 
@@ -84,6 +115,7 @@ add_action(
 				'methods'  => 'GET',
 				'callback' => function ( $request ) use ( $accounts, $containers ) {
 					$account_id = $request['accountID'] ?: $accounts[0]['accountId'];
+					$containers = filter_by_context( $containers, $request['usageContext'] );
 
 					return array(
 						'accounts'   => $accounts,
@@ -100,6 +132,8 @@ add_action(
 			array(
 				'methods'  => 'GET',
 				'callback' => function ( $request ) use ( $containers ) {
+					$containers = filter_by_context( $containers, $request['usageContext'] );
+
 					return filter_by_account_id( $containers, $request['accountID'] );
 				},
 			),
