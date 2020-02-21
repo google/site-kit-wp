@@ -3,6 +3,10 @@
  */
 import { createRegistry } from '@wordpress/data';
 
-const DataStoreRegistry = createRegistry();
+const siteKitRegistry = createRegistry();
 
-export default DataStoreRegistry;
+export * from '@wordpress/data';
+
+export const { registerStore } = siteKitRegistry;
+
+export default siteKitRegistry;

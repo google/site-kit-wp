@@ -1,10 +1,15 @@
 /**
  * External dependencies
  */
-import Data from 'assets/js/googlesitekit/data';
+import SiteKitRegistry, * as DataFunctions from 'assets/js/googlesitekit/data';
 
 if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};
 }
 
-global.googlesitekit.data = Data;
+if ( typeof global.googlesitekit.data === 'undefined' ) {
+	global.googlesitekit.data = { ...DataFunctions, SiteKitRegistry };
+}
+
+export * from 'assets/js/googlesitekit/data';
+export default SiteKitRegistry;
