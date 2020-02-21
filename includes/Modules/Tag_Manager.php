@@ -493,40 +493,40 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				}
 				return $this->get_tagmanager_service()->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
 			case 'POST:settings':
-				if ( ! isset( $data['accountID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
+				$required_params = array( 'accountID', 'usageContext' );
+
+				if ( self::USAGE_CONTEXT_WEB === $data['usageContext'] ) { // No AMP.
+					$required_params[] = $this->context_map[ self::USAGE_CONTEXT_WEB ];
+				} elseif ( self::USAGE_CONTEXT_AMP === $data['usageContext'] ) { // Primary AMP.
+					$required_params[] = $this->context_map[ self::USAGE_CONTEXT_AMP ];
+				} else { // Secondary AMP.
+					array_push( $required_params, ...array_values( $this->context_map ) );
 				}
 
-				$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
-
-				if ( self::USAGE_CONTEXT_WEB === $usage_context && ! isset( $data['containerID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ), array( 'status' => 400 ) );
-				}
-				if ( self::USAGE_CONTEXT_AMP === $usage_context && ! isset( $data['ampContainerID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampContainerID' ), array( 'status' => 400 ) );
+				foreach ( $required_params as $required_param ) {
+					if ( ! isset( $data[ $required_param ] ) ) {
+						/* translators: %s: Missing parameter name */
+						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), $required_param ), array( 'status' => 400 ) );
+					}
 				}
 
-				return function() use ( $data, $usage_context ) {
-					$option        = $data->data;
-					$container_key = $this->context_map[ $usage_context ];
-					$container_id  = $data[ $container_key ];
+				return function() use ( $data ) {
+					$option = $data->data;
 
-					if ( 'container_create' === $container_id ) {
-						$create_container_response = $this->create_container( $data['accountID'], $usage_context );
-
-						if ( is_wp_error( $create_container_response ) ) {
-							return $create_container_response;
+					try {
+						if ( 'container_create' === $data['containerID'] ) {
+							$option['containerID'] = $this->create_container( $data['accountID'], self::USAGE_CONTEXT_WEB );
 						}
-
-						$option[ $container_key ] = $create_container_response;
+						if ( 'container_create' === $data['ampContainerID'] ) {
+							$option['ampContainerID'] = $this->create_container( $data['accountID'], self::USAGE_CONTEXT_AMP );
+						}
+					} catch ( Exception $e ) {
+						return $this->exception_to_error( $e, $data->datapoint );
 					}
 
 					$this->get_settings()->merge( $option );
 
-					return $option;
+					return $this->get_settings()->get();
 				};
 			case 'GET:tag-permission':
 				return function () use ( $data ) {
@@ -566,16 +566,21 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * Creates GTM Container.
 	 *
 	 * @since 1.0.0
-	 * @param string       $account_id The account ID.
+	 * @param string       $account_id    The account ID.
 	 * @param string|array $usage_context The container usage context(s).
 	 *
-	 * @return mixed Container ID on success, or WP_Error on failure.
+	 * @return string Container public ID.
+	 * @throws Exception Throws an exception if raised during container creation.
 	 */
 	protected function create_container( $account_id, $usage_context = self::USAGE_CONTEXT_WEB ) {
 		$restore_defer = $this->with_client_defer( false );
 
 		// Use site name for container, fallback to domain of reference URL.
 		$container_name = get_bloginfo( 'name' ) ?: wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
+		// Prevent naming conflict (Tag Manager does not allow more than one with same name).
+		if ( self::USAGE_CONTEXT_AMP === $usage_context ) {
+			$container_name .= ' AMP';
+		}
 		$container_name = self::sanitize_container_name( $container_name );
 
 		$container = new Google_Service_TagManager_Container();
@@ -583,21 +588,15 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 		$container->setUsageContext( (array) $usage_context );
 
 		try {
-			$container = $this->get_tagmanager_service()->accounts_containers->create( "accounts/{$account_id}", $container );
-		} catch ( Google_Service_Exception $e ) {
+			$new_container = $this->get_tagmanager_service()->accounts_containers->create( "accounts/{$account_id}", $container );
+		} catch ( Exception $exception ) {
 			$restore_defer();
-			$message = $e->getErrors();
-			if ( isset( $message[0]['message'] ) ) {
-				$message = $message[0]['message'];
-			}
-			return new WP_Error( $e->getCode(), $message );
-		} catch ( Exception $e ) {
-			$restore_defer();
-			return new WP_Error( $e->getCode(), $e->getMessage() );
+			throw $exception;
 		}
 
 		$restore_defer();
-		return $container->getPublicId();
+
+		return $new_container->getPublicId();
 	}
 
 	/**
@@ -646,26 +645,14 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				return array_merge( $response, compact( 'containers' ) );
 			case 'GET:containers':
 				/* @var Google_Service_TagManager_ListContainersResponse $response Response object. */
-				$account_id    = $data['accountID'];
 				$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
 				/* @var Google_Service_TagManager_Container[] $containers Filtered containers. */
 				$containers = array_filter(
 					(array) $response->getContainer(),
 					function ( Google_Service_TagManager_Container $container ) use ( $usage_context ) {
-						return in_array( $usage_context, $container->getUsageContext(), true );
+						return array_intersect( (array) $usage_context, $container->getUsageContext() );
 					}
 				);
-
-				if ( ! $containers && $account_id ) {
-					// If no containers, attempt to create a new container.
-					$new_container = $this->create_container( $account_id, $usage_context );
-
-					if ( is_wp_error( $new_container ) ) {
-						return $new_container;
-					}
-
-					return $this->get_data( 'containers', array( 'accountID' => $account_id ) );
-				}
 
 				return array_values( $containers );
 		}
@@ -693,7 +680,13 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	private function get_account_for_container( $container_id, $accounts ) {
 		foreach ( (array) $accounts as $account ) {
 			/* @var Google_Service_TagManager_Account $account Tag manager account */
-			$containers = $this->get_data( 'containers', array( 'accountID' => $account->getAccountId() ) );
+			$containers = $this->get_data(
+				'containers',
+				array(
+					'accountID'    => $account->getAccountId(),
+					'usageContext' => array_keys( $this->context_map ),
+				)
+			);
 
 			if ( is_wp_error( $containers ) ) {
 				break;
