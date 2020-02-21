@@ -194,21 +194,11 @@ export const resolvers = {
 			const connectionInfo = yield actions.fetchConnectionInfo();
 			return actions.receiveConnectionInfo( connectionInfo );
 		} catch ( err ) {
-			// TODO: Implement an error handler store...
+			// TODO: Implement an error handler store or some kind of centralized
+			// place for error dispatch...
 			return actions.receiveConnectionInfoFailed( err );
 		}
 	},
-
-	// *reset() {
-	// 	try {
-	// 		const resetResult = yield actions.fetchReset();
-	// 		yield actions.resetSuccess();
-	// 		return actions.initialize();
-	// 	} catch ( err ) {
-	// 		// TODO: Implement an error handler store...
-	// 		return actions.resetFailure( err );
-	// 	}
-	// },
 };
 
 export default {
