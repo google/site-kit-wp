@@ -29,6 +29,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
+import { withInstanceId } from '@wordpress/compose';
 import { Component, createRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -62,7 +63,11 @@ class Dialog extends Component {
 			subtitle,
 			confirmButton,
 			dependentModules,
+			instanceId,
 		} = this.props;
+
+		const labelledByID = `googlesitekit-dialog-label-${ instanceId }`;
+		const describedByID = `googlesitekit-dialog-description-${ instanceId }`;
 
 		return (
 			<div
@@ -73,8 +78,8 @@ class Dialog extends Component {
 				) }
 				role="alertdialog"
 				aria-modal="true"
-				aria-labelledby="remove-module-dialog"
-				aria-describedby="remove-module-dialog-description"
+				aria-labelledby={ title ? labelledByID : undefined }
+				aria-describedby={ ( provides && provides.length ) ? describedByID : undefined }
 				aria-hidden={ dialogActive ? 'false' : 'true' }
 				tabIndex="-1"
 			>
@@ -84,7 +89,7 @@ class Dialog extends Component {
 						<div className="mdc-dialog__container">
 							<div className="mdc-dialog__surface">
 								{ title &&
-									<h2 id="remove-module-dialog" className="mdc-dialog__title">
+									<h2 id={ labelledByID } className="mdc-dialog__title">
 										{ title }
 									</h2>
 								}
@@ -93,15 +98,17 @@ class Dialog extends Component {
 										{ subtitle }
 									</p>
 								}
-								<section id="remove-module-dialog-description" className="mdc-dialog__content">
-									<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive">
-										{ provides && provides.map( ( attribute ) => (
-											<li className="mdc-list-item" key={ attribute }>
-												<span className="mdc-list-item__text">{ attribute }</span>
-											</li>
-										) ) }
-									</ul>
-								</section>
+								{ ( provides && provides.length ) &&
+									<section id={ describedByID } className="mdc-dialog__content">
+										<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive">
+											{ provides.map( ( attribute ) => (
+												<li className="mdc-list-item" key={ attribute }>
+													<span className="mdc-list-item__text">{ attribute }</span>
+												</li>
+											) ) }
+										</ul>
+									</section>
+								}
 								{ dependentModules &&
 									<p className="mdc-dialog__dependecies">
 										<strong>{ __( 'Note: ', 'google-site-kit' ) }</strong>{ dependentModules }
@@ -144,4 +151,4 @@ Dialog.defaultProps = {
 	confirmButton: null,
 };
 
-export default Dialog;
+export default withInstanceId( Dialog );
