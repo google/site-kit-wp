@@ -179,6 +179,7 @@ final class Plugin {
 		( new Core\Util\Activation( $this->context, $options, $assets ) )->register();
 		( new Core\Util\Migration_1_3_0( $this->context, $options ) )->register();
 		( new Core\Util\Reset( $this->context ) )->register();
+		( new Core\Util\Debug_Data( $this->context ) )->register();
 		( new Core\Util\Developer_Plugin_Installer( $this->context ) )->register();
 	}
 
