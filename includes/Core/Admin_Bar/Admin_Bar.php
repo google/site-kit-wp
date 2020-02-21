@@ -274,11 +274,10 @@ final class Admin_Bar {
 	 * @since 1.0.0
 	 */
 	private function menu_markup() {
-
+		// Start buffer output.
 		ob_start();
 
 		?>
-
 		<div class="googlesitekit-plugin">
 			<?php echo $this->get_noscript_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			<div id="js-googlesitekit-adminbar" class="ab-sub-wrapper googlesitekit-adminbar googlesitekit-adminbar--loading">

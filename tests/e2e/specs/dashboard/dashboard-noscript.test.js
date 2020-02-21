@@ -29,7 +29,7 @@ describe( 'Site Kit noscript notice', () => {
 
 		it( 'Should display noscript notice', async () => {
 			await expect( page ).toMatchElement(
-				'.googlesitekit-noscript__title',
+				'.googlesitekit-noscript__text',
 				{ text: /The Site Kit by Google plugin requires JavaScript to be enabled in your browser/i },
 				{ visible: true }
 			);

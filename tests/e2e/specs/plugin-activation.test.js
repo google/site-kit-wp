@@ -50,7 +50,7 @@ describe( 'Plugin Activation Notice', () => {
 
 			await page.waitForSelector( '.googlesitekit-activation__title' );
 
-			await expect( page ).toMatchElement( 'h3.googlesitekit-activation__title', { text: /Congratulations, the Site Kit plugin is now activated./i } );
+			await expect( page ).toMatchElement( '.googlesitekit-activation__title', { text: /Congratulations, the Site Kit plugin is now activated./i } );
 
 			await deactivateSiteKit();
 		} );
@@ -94,7 +94,6 @@ describe( 'Plugin Activation Notice', () => {
 			// Each test without JavaScript must use
 			// `await page.setJavaScriptEnabled( false );` and
 			// `await page.setJavaScriptEnabled( true );` in the test itself.
-			// Therefore need to be inline
 			await page.setJavaScriptEnabled( false );
 			await activateSiteKit();
 
@@ -105,13 +104,11 @@ describe( 'Plugin Activation Notice', () => {
 		} );
 
 		it( 'Should display noscript notice', async () => {
-			// Disabling javascript beforeEach breaks utility functions
-			// Therefore need to be inline
 			await page.setJavaScriptEnabled( false );
 			await activateSiteKit();
 
 			await expect( page ).toMatchElement(
-				'.googlesitekit-noscript__title',
+				'.googlesitekit-noscript__text',
 				{ text: /The Site Kit by Google plugin requires JavaScript to be enabled in your browser./i },
 				{ visible: true }
 			);
