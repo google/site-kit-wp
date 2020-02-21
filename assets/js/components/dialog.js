@@ -67,6 +67,7 @@ class Dialog extends Component {
 
 		const labelledByID = `googlesitekit-dialog-label-${ instanceId }`;
 		const describedByID = `googlesitekit-dialog-description-${ instanceId }`;
+		const hasProvides = !! ( provides && provides.length );
 
 		return (
 			<div
@@ -75,7 +76,7 @@ class Dialog extends Component {
 				role="alertdialog"
 				aria-modal="true"
 				aria-labelledby={ title ? labelledByID : undefined }
-				aria-describedby={ ( provides && provides.length ) ? describedByID : undefined }
+				aria-describedby={ hasProvides ? describedByID : undefined }
 				aria-hidden={ dialogActive ? 'false' : 'true' }
 				tabIndex="-1"
 			>
@@ -94,7 +95,7 @@ class Dialog extends Component {
 										{ subtitle }
 									</p>
 								}
-								{ ( provides && provides.length ) &&
+								{ hasProvides &&
 									<section id={ describedByID } className="mdc-dialog__content">
 										<ul className="mdc-list mdc-list--underlined mdc-list--non-interactive">
 											{ provides.map( ( attribute ) => (
