@@ -90,7 +90,10 @@ describe( 'Plugin Activation Notice', () => {
 		} );
 
 		it( 'Should not display plugin html', async () => {
-			// Disabling javascript beforeEach breaks utility functions.
+			// Disabling JavaScript in `beforeEach` breaks utility functions.
+			// Each test without JavaScript must use
+			// `await page.setJavaScriptEnabled( false );` and
+			// `await page.setJavaScriptEnabled( true );` in the test itself.
 			// Therefore need to be inline
 			await page.setJavaScriptEnabled( false );
 			await activateSiteKit();
