@@ -126,9 +126,7 @@ final class Screen {
 						__( 'Site Kit', 'google-site-kit' ),
 						$this->args['capability'],
 						$this->slug,
-						function() use ( $context ) {
-							$this->render( $context );
-						},
+						'',
 						$context->url( 'dist/assets/images/logo-g_white_small.png' )
 					);
 					$menu_slug = $this->slug;
@@ -179,11 +177,11 @@ final class Screen {
 		$assets->enqueue_fonts();
 
 		// Enqueue base admin screen stylesheet.
-		$assets->enqueue_asset( 'googlesitekit_admin_css' );
+		$assets->enqueue_asset( 'googlesitekit-admin-css' );
 
 		// Helps detection of enabled ad blockers to warn users before activating or setup AdSense module.
 		if ( $this->is_ad_blocker_detection_required() ) {
-			$assets->enqueue_asset( 'googlesitekit_ads_detect' );
+			$assets->enqueue_asset( 'googlesitekit-ads-detect' );
 		}
 
 		if ( $this->args['enqueue_callback'] ) {
