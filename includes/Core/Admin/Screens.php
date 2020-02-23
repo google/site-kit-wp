@@ -217,9 +217,9 @@ final class Screens {
 					'capability'       => Permissions::VIEW_DASHBOARD,
 					'enqueue_callback' => function( Assets $assets ) {
 						if ( $this->context->input()->filter( INPUT_GET, 'permaLink' ) ) {
-							$assets->enqueue_asset( 'googlesitekit_dashboard_details' );
+							$assets->enqueue_asset( 'googlesitekit-dashboard-details' );
 						} else {
-							$assets->enqueue_asset( 'googlesitekit_dashboard' );
+							$assets->enqueue_asset( 'googlesitekit-dashboard' );
 						}
 					},
 					'render_callback'  => function( Context $context ) {
@@ -271,7 +271,7 @@ final class Screens {
 				'title'            => __( 'Settings', 'google-site-kit' ),
 				'capability'       => Permissions::MANAGE_OPTIONS,
 				'enqueue_callback' => function( Assets $assets ) {
-					$assets->enqueue_asset( 'googlesitekit_settings' );
+					$assets->enqueue_asset( 'googlesitekit-settings' );
 				},
 				'render_callback'  => function( Context $context ) {
 					/**
@@ -337,7 +337,7 @@ final class Screens {
 					exit;
 				},
 				'enqueue_callback'    => function( Assets $assets ) {
-					$assets->enqueue_asset( 'googlesitekit_dashboard_splash' );
+					$assets->enqueue_asset( 'googlesitekit-dashboard-splash' );
 				},
 				'render_callback'     => function( Context $context ) {
 					/**

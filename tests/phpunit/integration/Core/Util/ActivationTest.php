@@ -118,11 +118,11 @@ class ActivationTest extends TestCase {
 		wp_styles()->queue = array();
 		$this->assertNotEmpty( $this->options->get( Activation::OPTION_SHOW_ACTIVATION_NOTICE ) );
 		// googlesitekit-fonts is only enqueued in AMP context, only need to check admin css.
-		$this->assertFalse( wp_style_is( 'googlesitekit_admin_css', 'enqueued' ) );
+		$this->assertFalse( wp_style_is( 'googlesitekit-admin-css', 'enqueued' ) );
 
 		do_action( 'admin_enqueue_scripts', 'plugins.php' );
 
-		$this->assertTrue( wp_style_is( 'googlesitekit_admin_css', 'enqueued' ) );
+		$this->assertTrue( wp_style_is( 'googlesitekit-admin-css', 'enqueued' ) );
 	}
 
 	protected function network_activate_site_kit() {
