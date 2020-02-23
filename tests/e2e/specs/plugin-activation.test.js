@@ -98,6 +98,7 @@ describe( 'Plugin Activation Notice', () => {
 			await activateSiteKit();
 
 			await expect( page ).toMatchElement( '[id^=js-googlesitekit-]', { visible: false } );
+			await expect( page ).not.toMatchElement( '.googlesitekit-activation__title' );
 
 			await deactivateSiteKit();
 			await page.setJavaScriptEnabled( true );

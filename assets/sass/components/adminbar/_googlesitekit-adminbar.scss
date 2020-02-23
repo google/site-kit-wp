@@ -18,6 +18,28 @@
 
 #wpadminbar {
 
+	&.nojs {
+
+		.googlesitekit-noscript {
+
+			@include shadow;
+
+			border-left: 4px solid $c-selective-yellow;
+			display: none;
+			left: 0;
+			position: absolute;
+			top: 32px;
+			width: 100%;
+		}
+
+		.googlesitekit-wp-adminbar:hover {
+
+			.googlesitekit-noscript {
+				display: block;
+			}
+		}
+	}
+
 	.googlesitekit-plugin .googlesitekit-adminbar {
 
 		@include shadow;
@@ -66,8 +88,7 @@
 	}
 
 	// Display sub menu on hover.
-	.googlesitekit-wp-adminbar.hover .googlesitekit-adminbar,
-	&.nojs .googlesitekit-wp-adminbar:hover .googlesitekit-adminbar {
+	&:not(.nojs) .googlesitekit-wp-adminbar:hover .googlesitekit-adminbar {
 		display: block;
 
 		&.--has-error {

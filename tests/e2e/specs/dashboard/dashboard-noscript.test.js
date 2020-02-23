@@ -25,6 +25,8 @@ describe( 'Site Kit noscript notice', () => {
 
 		it( 'Should not display plugin html', async () => {
 			await expect( page ).toMatchElement( '[id^=js-googlesitekit-]', { visible: false } );
+			await expect( page ).not.toMatchElement( '.googlesitekit-header' );
+			await expect( page ).not.toMatchElement( '.googlesitekit-module-page' );
 		} );
 
 		it( 'Should display noscript notice', async () => {

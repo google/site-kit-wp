@@ -1,5 +1,5 @@
 /**
- * Header styles.
+ * Noscript notification styles.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -30,19 +30,6 @@
 }
 
 .no-js {
-
-	#googlesitekit-notice-activated {
-
-		border-left-color: $c-selective-yellow; // noscript renders inside success notification parent.
-		margin: 5px 15px 5px 0; // fixes the alignment with rest of the page
-		padding: 0;
-
-		.googlesitekit-noscript {
-			border: 0;
-			margin: 0;
-			padding: 0;
-		}
-	}
 
 	[id^="js-googlesitekit-"] {
 		display: none;
