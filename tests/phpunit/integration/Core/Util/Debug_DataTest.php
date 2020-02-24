@@ -30,7 +30,7 @@ class Debug_DataTest extends TestCase {
 		$info = apply_filters( 'debug_information', array() );
 		$this->assertArrayHasKey( 'google-site-kit', $info );
 
-		$this->assertEqualSetsWithIndex(
+		$this->assertEqualSets(
 			array(
 				'version',
 				'php_version',
@@ -39,6 +39,7 @@ class Debug_DataTest extends TestCase {
 				'site_status',
 				'user_status',
 				'active_modules',
+				'reference_url',
 			),
 			array_keys( $info['google-site-kit']['fields'] )
 		);
