@@ -68,8 +68,8 @@
 
 	// Active menu styling.
 	.ab-top-menu > .googlesitekit-wp-adminbar.hover > .ab-item,
-	&:not(.mobile) .ab-top-menu > .googlesitekit-wp-adminbar:hover > .ab-item,
-	&:not(.mobile) .ab-top-menu > .googlesitekit-wp-adminbar > .ab-item:focus,
+	&:not(.mobile) .quicklinks .ab-top-menu > .googlesitekit-wp-adminbar:hover > .ab-item,
+	&:not(.mobile) .quicklinks .ab-top-menu > .googlesitekit-wp-adminbar > .ab-item:focus,
 	&.nojq .quicklinks .ab-top-menu > .googlesitekit-wp-adminbar > .ab-item:focus {
 		background-color: $c-base;
 		color: $c-primary;
