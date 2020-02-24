@@ -72,7 +72,8 @@ function capturePageEventsForTearDown() {
 
 /**
  * Opt out of all Analytics tracking on page load.
- * @link https://tools.google.com/dlpage/gaoptout
+ *
+ * {@link https://tools.google.com/dlpage/gaoptout | Google Analytics Opt-out Browser Add-on}
  */
 function optOutOfEventTracking() {
 	page.on( 'load', async () => {

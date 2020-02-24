@@ -45,8 +45,8 @@ if ( active && setupComplete ) {
 	const addPageSpeedInsightsDashboardWidgetHomepageSpeed = createAddToFilter( <PageSpeedInsightsDashboardWidgetHomepageSpeed /> );
 
 	/**
-	* Add components to the Site Kit Dashboard.
-	*/
+	 * Add components to the Site Kit Dashboard.
+	 */
 	addFilter( 'googlesitekit.DashboardModule',
 		'googlesitekit.PageSpeedInsights',
 		addDashboardSpeed, 45 );

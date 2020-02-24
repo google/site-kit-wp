@@ -37,7 +37,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * @param {boolean} fullWidth  Creates layout with 'cell--span-12' to be full width. Default: false.
  * @param {boolean} createGrid Adds a full grid layout with padding. Default: false.
  *
- * @return {React.Component} Returns CTA component with configuration CTA.
+ * @return {WPElement} Returns CTA component with configuration CTA.
  */
 const getSetupIncompleteComponent = ( module, inGrid = false, fullWidth = false, createGrid = false ) => {
 	const { name } = global.googlesitekit.modules[ module ];

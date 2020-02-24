@@ -77,12 +77,12 @@ class GoogleChart extends Component {
 			// Set the `src` to begin transport
 			script.src = 'https://www.gstatic.com/charts/loader.js';
 		} else if ( ! global.google || ! global.google.charts ) {
-			// When the google chart object not loaded, load draw chart later.
+			// When the Google chart object not loaded, load draw chart later.
 			addAction( 'googlesitekit.ChartLoaderLoaded', 'googlesitekit.HandleChartLoaderLoaded', () => {
 				global.google.charts.setOnLoadCallback( this.onChartsLoad );
 			} );
 		} else {
-			// When the google chart object loaded, draw chart now.
+			// When the Google chart object loaded, draw chart now.
 			global.google.charts.setOnLoadCallback( this.onChartsLoad );
 		}
 	}

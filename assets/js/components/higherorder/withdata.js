@@ -45,7 +45,7 @@ import { __ } from '@wordpress/i18n';
  * called with the error message string if there is a data error and called with no string if the data is empty.
  * `handleDataSuccess` will be called when data resolves correctly.
  *
- * @param {React.Component} DataDependentComponent The React Component to render once we have its required data.
+ * @param {WPElement}       DataDependentComponent The React Component to render once we have its required data.
  * @param {Array}           selectData             An array of data objects to resolve.
  *                                                 Each object includes the following properties:
  *                                                 {string}         type       The data type. Either 'core' or 'modules'.
@@ -56,18 +56,18 @@ import { __ } from '@wordpress/i18n';
  *                                                 {number}         maxAge     How long to cache the data results.
  *                                                 {string | array} context    The context(s) to resolve data, eg 'Dashboard'.
  *
- * @param {React.Component} loadingComponent       A React Component to render while the data is resolving.
+ * @param {WPElement}       loadingComponent       A React Component to render while the data is resolving.
  * @param {Object}          layoutOptions          An object with layout options that are passed to the getNoDataComponent and getDataErrorComponent components.
- * @param {function}        isDataZero             A callback function that is passed the resolved data and returns true
+ * @param {Function}        isDataZero             A callback function that is passed the resolved data and returns true
  *                                                 if the data is "zero".
- * @param {function}        getDataError           A callback function that is passed the resolved data and returns the
+ * @param {Function}        getDataError           A callback function that is passed the resolved data and returns the
  *                                                 error message.
  *
- * @return {React.Component} Component  	Returns React.Components based on data and state.
- * 											If has data  	  Return DataDependentComponent with data.
- * 											has no data		  Fallback message when no data.
- * 											in loading state  Return loadingComponent.
- * 											has an error	  Returns error.
+ * @return {WPElement} Component  	Returns React.Components based on data and state.
+ *                                  If has data  	  Return DataDependentComponent with data.
+ *                                  has no data		  Fallback message when no data.
+ *                                  in loading state  Return loadingComponent.
+ *                                  has an error	  Returns error.
  *
  */
 const withData = (

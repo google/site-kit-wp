@@ -228,7 +228,7 @@ export const getTimeInSeconds = ( period ) => {
  *
  * @param {number} seconds The number of seconds.
  *
- * @return {string} Human redable string indicating time elapsed.
+ * @return {string} Human readable string indicating time elapsed.
  *
  */
 export const prepareSecondsForDisplay = ( seconds ) => {
@@ -290,12 +290,12 @@ export const changeToPercent = ( previous, current ) => {
 };
 
 /**
- * Extract a single column of data for a sparkline from a dataset prepared for google charts.
+ * Extract a single column of data for a sparkline from a dataset prepared for Google charts.
  *
- * @param {Array}  rowData   An array of google charts row data.
+ * @param {Array}  rowData   An array of Google charts row data.
  * @param {number} column The column to extract for the sparkline.
  *
- * @return {Array} Extracted column of dataset prepared for google charts.
+ * @return {Array} Extracted column of dataset prepared for Google charts.
  *
  */
 export const extractForSparkline = ( rowData, column ) => {
@@ -391,10 +391,10 @@ export const getReAuthURL = ( slug, status, _googlesitekit = global.googlesiteki
  * 			onSettingsPage: true,
  * 		} ) );
  *
- * @param {Component} NewComponent The component to render in place of the filtered component.
+ * @param {WPElement} NewComponent The component to render in place of the filtered component.
  * @param {Object}    newProps     The props to pass down to the new component.
  *
- * @return {React.Component} React Component after overriding filtered component with NewComponent.
+ * @return {WPElement} React Component after overriding filtered component with NewComponent.
  */
 export const fillFilterWithComponent = ( NewComponent, newProps ) => {
 	return ( OriginalComponent ) => {
@@ -457,7 +457,7 @@ export const validateOptimizeID = ( stringToValidate ) => {
  *
  * @param {string} module Module slug.
  *
- * @param {string|null} The tag id if found, otherwise null.
+ * @return {string|null} The tag id if found, otherwise null.
  */
 export const getExistingTag = async ( module ) => {
 	const { homeURL, ampMode } = global.googlesitekit.admin;
@@ -587,7 +587,7 @@ export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settin
 /**
  * Trigger error notification on top of the page.
  *
- * @param {Component} ErrorComponent The error component to render in place.
+ * @param {WPElement} ErrorComponent The error component to render in place.
  * @param {Object}    props          The props to pass down to the error component. Optional.
  */
 export const showErrorNotification = ( ErrorComponent, props = {} ) => {
@@ -622,6 +622,7 @@ export const decodeHtmlEntity = ( str ) => {
  * Performs some basic cleanup of a string for use as a post slug.
  *
  * Emnulates santize_title() from WordPress core.
+ *
  * @param {string} str String to convert to slug.
  * @return {string} Processed string.
  */

@@ -746,6 +746,7 @@ class TagmanagerSetup extends Component {
 
 	/**
 	 * Render Error or Notice format depending on the errorCode.
+	 *
 	 * @return {WPElement|null} Error message if any, or null.
 	 */
 	renderErrorOrNotice() {

@@ -324,6 +324,7 @@ export const isDataZeroForReporting = ( data ) => {
 
 /**
  * Default data object for making Analytics adsense requests.
+ *
  * @type {Object}
  */
 export const analyticsAdsenseReportDataDefaults = {
@@ -356,6 +357,7 @@ export const analyticsAdsenseReportDataDefaults = {
 
 /**
  * Default data object for making Analytics site analytics report requests.
+ *
  * @type {Object}
  */
 export const siteAnalyticsReportDataDefaults = {
@@ -388,6 +390,7 @@ export const siteAnalyticsReportDataDefaults = {
 
 /**
  * Default data object for making Analytics site analytics report requests.
+ *
  * @type {Object}
  */
 export const overviewReportDataDefaults = {
@@ -424,6 +427,7 @@ export const overviewReportDataDefaults = {
 
 /**
  * Default data object for making Analytics traffic sources report requests.
+ *
  * @type {Object}
  */
 export const trafficSourcesReportDataDefaults = {

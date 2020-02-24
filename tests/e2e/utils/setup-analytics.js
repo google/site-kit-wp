@@ -14,6 +14,7 @@ const defaultSettings = {
 
 /**
  * Activate and set up the Analytics module.
+ *
  * @param {Object} settingsOverrides Optional settings to override the defaults.
  */
 export async function setupAnalytics( settingsOverrides = {} ) {

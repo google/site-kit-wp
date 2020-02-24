@@ -35,7 +35,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * @param {boolean} fullWidth  Creates layout with 'cell--span-12' to be full width. Default: false.
  * @param {boolean} createGrid Adds a full grid layout with padding. Default: false.
  *
- * @return {React.Component} Returns CTA component with no data fallback notification.
+ * @return {WPElement} Returns CTA component with no data fallback notification.
  */
 const getNoDataComponent = ( moduleName, inGrid = false, fullWidth = false, createGrid = false ) => {
 	const cta = <CTA

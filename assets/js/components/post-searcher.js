@@ -58,7 +58,7 @@ class PostSearcher extends Component {
 	 * Search for posts based on user input.
 	 *
 	 * @param {string} query             The search query.
-	 * @param {function} populateResults The callback function to pass the results to.
+	 * @param {Function} populateResults The callback function to pass the results to.
 	 */
 	async postSearch( query, populateResults ) {
 		populateResults( [ __( 'Loading...', 'google-site-kit' ) ] );
@@ -96,7 +96,7 @@ class PostSearcher extends Component {
 	 *
 	 * @param {string} url
 	 *
-	 * @return {string | false} Returns the pathname or false if param is not a valid URL.
+	 * @return {string} Returns the pathname or false if param is not a valid URL.
 	 */
 	getURLPathname( url ) {
 		try {

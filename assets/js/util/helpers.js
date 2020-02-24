@@ -33,9 +33,9 @@ import { createElement, Fragment } from '@wordpress/element';
  *			createAddToFilter( <DashboardEarnings /> ), // Using the helper to append a component.
  * 			11 ); // Priority will determine the order items are appended.
  *
- * @param {Component} NewComponent The new component to append to the filtered component.
+ * @param {WPElement} NewComponent The new component to append to the filtered component.
  *
- * @return {ReactElement} Filtered component with appended component.
+ * @return {WPElement} Filtered component with appended component.
  *
  */
 export const createAddToFilter = ( NewComponent ) => {
