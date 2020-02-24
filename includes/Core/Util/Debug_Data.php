@@ -125,6 +125,10 @@ class Debug_Data {
 				'label' => __( 'WordPress Version', 'google-site-kit' ),
 				'value' => get_bloginfo( 'version' ),
 			),
+			'reference_url'  => array(
+				'label' => __( 'Reference Site URL', 'google-site-kit' ),
+				'value' => $this->context->get_reference_site_url(),
+			),
 			'amp_mode'       => $this->get_amp_mode_field(),
 			'site_status'    => $this->get_site_status_field(),
 			'user_status'    => $this->get_user_status_field(),
