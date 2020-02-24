@@ -108,7 +108,7 @@ export const clearWebStorage = () => {
  * Used when URL.searchParams is unavailable.
  *
  * @param {string} name Query param to search for.
- * @return {string}	matching query param from the current URL.
+ * @return {string}	Matching query param from the current URL.
  */
 const fallbackGetQueryParamater = ( name ) => {
 	const queries = location.search.substr( 1 ).split( '&' );

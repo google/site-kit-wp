@@ -140,7 +140,7 @@ const isDataZero = () => {
  * @param {Object} data
  * @return {*}
  *
- * @return {string | false | null}  It will return
+ * @return {string | false | null}  Returns a string with an error message if there is an error. Returns `false` when there is no data and no error message. Will return `null` when arguments are invalid.
  * 									string	data error message if it exists or unidentified error.
  * 									false 	if no data and no error message
  * 									null	if invalid agument

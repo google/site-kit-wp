@@ -96,7 +96,7 @@ class PostSearcher extends Component {
 	 *
 	 * @param {string} url
 	 *
-	 * @return {string | false} Returns the pathname or false if param is not valid url.
+	 * @return {string | false} Returns the pathname or false if param is not a valid URL.
 	 */
 	getURLPathname( url ) {
 		try {
