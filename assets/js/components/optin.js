@@ -36,6 +36,7 @@ import { __ } from '@wordpress/i18n';
 import {
 	isTrackingEnabled,
 	toggleTracking,
+	trackEvent,
 } from '../util/tracking';
 
 class OptIn extends Component {
@@ -55,6 +56,10 @@ class OptIn extends Component {
 		const trackingUserOptInKey = getMetaKeyForUserOption( 'googlesitekit_tracking_optin' );
 
 		toggleTracking( checked );
+
+		if ( checked ) {
+			trackEvent( 'tracking_plguin', this.props.optinAction );
+		}
 
 		apiFetch( {
 			path: '/wp/v2/users/me',
@@ -120,6 +125,7 @@ OptIn.propTypes = {
 	id: PropTypes.string,
 	name: PropTypes.string,
 	className: PropTypes.string,
+	optinAction: PropTypes.string,
 };
 
 OptIn.defaultProps = {

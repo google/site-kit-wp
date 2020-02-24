@@ -84,7 +84,9 @@ class WizardStepAuthentication extends Component {
 								}
 							</p>
 							<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
-								<OptIn />
+								<OptIn
+									optinAction="analytics_optin_setup_fallback"
+								/>
 								<HelpLink />
 							</div>
 						</div>
