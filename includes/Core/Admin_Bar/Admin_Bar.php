@@ -278,9 +278,9 @@ final class Admin_Bar {
 		ob_start();
 
 		?>
-		<div class="googlesitekit-plugin">
+		<div class="googlesitekit-plugin ab-sub-wrapper">
 			<?php echo $this->get_noscript_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-			<div id="js-googlesitekit-adminbar" class="ab-sub-wrapper googlesitekit-adminbar googlesitekit-adminbar--loading">
+			<div id="js-googlesitekit-adminbar" class="googlesitekit-adminbar googlesitekit-adminbar--loading">
 				<div class="googlesitekit-adminbar__loading">
 					<div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
 						<div class="mdc-linear-progress__buffering-dots"></div>
