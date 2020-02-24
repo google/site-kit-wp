@@ -99,7 +99,7 @@ describe( ' core/site store ', () => {
 		describe( 'reset', () => {
 			it( 'does not require any params', () => {
 				expect( async () => {
-					const response = { success: true };
+					const response = true;
 					fetch
 						.doMockOnceIf(
 							/^\/google-site-kit\/v1\/core\/site\/data\/reset/
@@ -114,7 +114,7 @@ describe( ' core/site store ', () => {
 			} );
 
 			it( 'resets connection info', async () => {
-				const response = { success: true };
+				const response = true;
 				fetch
 					.doMockOnceIf(
 						/^\/google-site-kit\/v1\/core\/site\/data\/reset/
@@ -143,6 +143,45 @@ describe( ' core/site store ', () => {
 				// After a successful reset, `connectionInfo` should be `null` again.
 				const connectionInfo = await registry.select( STORE_NAME ).getConnection();
 				expect( connectionInfo ).toEqual( null );
+			} );
+
+			it( 'does not reset local connection info if reset request fails', async () => {
+				// Make sure there is existing data in the store so we can ensure
+				// it isn't reset.
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
+					)
+					.mockResponseOnce(
+						JSON.stringify( { connected: true, resettable: true } ),
+						{ status: 200 }
+					);
+				await registry.select( STORE_NAME ).getConnection();
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).getConnection() !== null,
+				);
+
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/core\/site\/data\/reset/
+					)
+					.mockResponseOnce(
+						JSON.stringify( response ),
+						{ status: 500 }
+					);
+
+				muteConsole( 'error' );
+				await registry.dispatch( STORE_NAME ).reset();
+				expect( fetch ).toHaveBeenCalledTimes( 2 );
+
+				// After a failed reset, `connectionInfo` should still exist.
+				const connectionInfo = await registry.select( STORE_NAME ).getConnection();
+				expect( connectionInfo ).toEqual( { connected: true, resettable: true } );
 			} );
 		} );
 	} );
