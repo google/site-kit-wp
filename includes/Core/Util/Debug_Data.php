@@ -130,8 +130,19 @@ class Debug_Data {
 			'user_status'    => $this->get_user_status_field(),
 			'active_modules' => $this->get_active_modules_field(),
 		);
+		$none   = __( 'None', 'google-site-kit' );
 
-		return array_merge( $fields, $this->get_module_fields() );
+		return array_map(
+			function ( $field ) use ( $none ) {
+				if ( empty( $field['value'] ) ) {
+					$field['value'] = $none;
+					$field['debug'] = 'none';
+				}
+
+				return $field;
+			},
+			array_merge( $fields, $this->get_module_fields() )
+		);
 	}
 
 	/**
