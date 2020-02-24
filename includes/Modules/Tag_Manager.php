@@ -13,12 +13,14 @@ namespace Google\Site_Kit\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager;
@@ -37,7 +39,7 @@ use Exception;
  * @access private
  * @ignore
  */
-final class Tag_Manager extends Module implements Module_With_Scopes, Module_With_Settings {
+final class Tag_Manager extends Module implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields {
 	use Module_With_Scopes_Trait, Module_With_Settings_Trait;
 
 	/**
@@ -177,6 +179,40 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
+	}
+
+	/**
+	 * Gets an array of debug field definitions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_debug_fields() {
+		$settings = $this->get_settings()->get();
+
+		return array(
+			'tagmanager_account_id'   => array(
+				'label' => __( 'Tag Manager account ID', 'google-site-kit' ),
+				'value' => $settings['accountID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
+			),
+			'tagmanager_container_id' => array(
+				'label' => __( 'Tag Manager container ID', 'google-site-kit' ),
+				'value' => $settings['containerID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['containerID'] ),
+			),
+			'tagmanager_amp_id'       => array(
+				'label' => __( 'Tag Manager AMP container ID', 'google-site-kit' ),
+				'value' => $settings['ampContainerID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['ampContainerID'] ),
+			),
+			'tagmanager_use_snippet'  => array(
+				'label' => __( 'Tag Manager snippet placed', 'google-site-kit' ),
+				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
+				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
+			),
+		);
 	}
 
 	/**
