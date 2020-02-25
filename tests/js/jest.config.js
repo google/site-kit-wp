@@ -8,6 +8,7 @@ module.exports = {
 	],
 	coverageDirectory: 'coverage',
 	coveragePathIgnorePatterns: [
+		'<rootDir>/build/',
 		'<rootDir>/node_modules/',
 	],
 	coverageReporters: [
@@ -48,7 +49,4 @@ module.exports = {
 		'^GoogleUtil/(.*)$': '<rootDir>assets/js/util/$1',
 		'^GoogleModules/(.*)$': '<rootDir>assets/js/modules/$1',
 	},
-	coveragePathIgnorePatterns: [ '/node_modules/', '<rootDir>/build/' ],
-	coverageReporters: [ 'lcov' ],
-	coverageDirectory: '<rootDir>/build/logs',
 };

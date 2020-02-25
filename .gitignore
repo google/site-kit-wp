@@ -39,5 +39,4 @@ tests/backstop/html_report/
 tests/backstop/tests/
 
 # Jest coverage
-build/
 coverage/
