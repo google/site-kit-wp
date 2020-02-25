@@ -202,8 +202,8 @@ class Notifications {
 		$body    = wp_remote_retrieve_body( $response );
 		$decoded = json_decode( $body, true );
 
-		if ( null === $decoded ) {
-			throw new Exception( __( 'Failed to parse response', 'google-site-kit' ) );
+		if ( json_last_error() ) {
+			throw new Exception( 'Error while decoding response: ' . json_last_error() );
 		}
 
 		if ( ! empty( $decoded['error'] ) ) {
