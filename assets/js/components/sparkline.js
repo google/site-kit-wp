@@ -33,6 +33,7 @@ class Sparkline extends Component {
 			data,
 			change,
 			id,
+			invertChangeColor,
 			loadSmall,
 			loadCompressed,
 			loadHeight,
@@ -42,6 +43,9 @@ class Sparkline extends Component {
 		if ( ! data ) {
 			return 'loading...';
 		}
+
+		const positiveColor = ! invertChangeColor ? 'green' : 'red';
+		const negativeColor = ! invertChangeColor ? 'red' : 'green';
 
 		const chartOptions = {
 			title: '',
@@ -66,7 +70,7 @@ class Sparkline extends Component {
 			},
 			axes: [],
 			colors: [
-				0 <= +change ? 'green' : 'red', // Converts change to number.
+				0 <= parseFloat( change ) ? positiveColor : negativeColor,
 			],
 		};
 
@@ -87,6 +91,7 @@ class Sparkline extends Component {
 }
 
 Sparkline.propTypes = {
+	invertChangeColor: PropTypes.bool,
 	loadSmall: PropTypes.bool,
 	loadCompressed: PropTypes.bool,
 	loadHeight: PropTypes.number,
@@ -94,6 +99,7 @@ Sparkline.propTypes = {
 };
 
 Sparkline.defaultProps = {
+	invertChangeColor: false,
 	loadSmall: true,
 	loadCompressed: true,
 	loadHeight: 46,
