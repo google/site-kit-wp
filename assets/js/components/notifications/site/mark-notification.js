@@ -14,6 +14,10 @@ const DISMISSED = 'dismissed';
  * @param {state} state Notification state.
  */
 export async function markNotification( id, state ) {
+	// Invalidate the cache so that notifications will be fetched fresh
+	// to not show a marked notification again.
+	data.invalidateCacheGroup( TYPE_CORE, 'site', 'notifications' );
+
 	return await data.set( TYPE_CORE, 'site', 'mark-notification', {
 		notificationID: id,
 		notificationState: state,
