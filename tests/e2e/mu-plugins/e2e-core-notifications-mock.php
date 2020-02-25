@@ -16,6 +16,10 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use WP_Error;
 use WP_REST_Request;
 
+/**
+ * Option to store temporary notification data.
+ * This will be cleared by the normal Site Kit plugin reset which happens many times throughout the tests.
+ */
 const OPTION = 'googlesitekit_e2e_site_notifications';
 
 add_action(
