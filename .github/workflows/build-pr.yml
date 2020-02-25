@@ -43,18 +43,13 @@ jobs:
     - name: Build develop version
       run: |
         npm run build:dev
-        gulp release
-        gulp copy
-        gulp pre-zip
-        gulp zip
-        mv google-site-kit.zip google-site-kit-dev.zip
+        ZIP=`gulp release | grep Creating | cut -c10-`
+        mv "$ZIP" google-site-kit-dev.zip
     - name: Build release version
       run: |
         npm run build
-        gulp release
-        gulp copy
-        gulp pre-zip
-        gulp zip
+        ZIP=`gulp release | grep Creating | cut -c10-`
+        mv "$ZIP" google-site-kit.zip
     - name: Deploy build files to wiki
       run: |
         mkdir -p ${{ github.ref }}
