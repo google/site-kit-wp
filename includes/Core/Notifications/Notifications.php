@@ -190,8 +190,7 @@ class Notifications {
 					$notification['id'],
 					array(
 						'title'            => $notification['title'],
-						'content'          => $notification['content'],
-						'image'            => $notification['image'],
+						'content'          => $notification['description'],
 						'cta_url'          => $notification['ctaURL'],
 						'cta_label'        => $notification['ctaLabel'],
 						'cta_target'       => $notification['ctaTarget'],
