@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { withInstanceId } from '@wordpress/compose';
 import { Component } from '@wordpress/element';
 
 class Sparkline extends Component {
@@ -106,4 +107,4 @@ Sparkline.defaultProps = {
 	loadText: false,
 };
 
-export default Sparkline;
+export default withInstanceId( Sparkline );
