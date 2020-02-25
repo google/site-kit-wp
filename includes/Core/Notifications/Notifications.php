@@ -228,7 +228,7 @@ class Notifications {
 					$notification['id'],
 					array(
 						'title'            => $notification['title'],
-						'content'          => $notification['description'],
+						'content'          => $notification['content'],
 						'cta_url'          => $notification['ctaURL'],
 						'cta_label'        => $notification['ctaLabel'],
 						'cta_target'       => $notification['ctaTarget'],
