@@ -2,7 +2,7 @@
 /**
  * External dependencies
  */
-import { TYPE_CORE, set } from 'GoogleComponents/data';
+import data, { TYPE_CORE } from 'GoogleComponents/data';
 
 const ACCEPTED = 'accepted';
 const DISMISSED = 'dismissed';
@@ -14,7 +14,7 @@ const DISMISSED = 'dismissed';
  * @param {state} state Notification state.
  */
 export async function markNotification( id, state ) {
-	return await set( TYPE_CORE, 'site', 'mark-notification', {
+	return await data.set( TYPE_CORE, 'site', 'mark-notification', {
 		notificationID: id,
 		notificationState: state,
 	} );

@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { TYPE_CORE, get } from 'GoogleComponents/data';
+import data, { TYPE_CORE } from 'GoogleComponents/data';
 
 /**
  * Gets core site notifications.
@@ -10,5 +10,5 @@ import { TYPE_CORE, get } from 'GoogleComponents/data';
  * @return {Array} List of notification objects.
  */
 export default async function getNotifications() {
-	return await get( TYPE_CORE, 'site', 'notifications', {}, false );
+	return await data.get( TYPE_CORE, 'site', 'notifications', {}, false );
 }
