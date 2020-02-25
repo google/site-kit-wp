@@ -1,9 +1,4 @@
 /**
- * External dependencies
- */
-import { render } from '@testing-library/react';
-
-/**
  * WordPress dependencies
  */
 import { applyFilters } from '@wordpress/hooks';
@@ -11,13 +6,14 @@ import { applyFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import { testRender } from '../../../../tests/js/test-utils';
 import { showErrorNotification } from '../';
 
 describe( 'showErrorNotification', () => {
 	it( 'returns null if nothing is passed', () => {
 		showErrorNotification( () => null );
 
-		const { container } = render( applyFilters( 'googlesitekit.ErrorNotification', [] )() );
+		const { container } = testRender( applyFilters( 'googlesitekit.ErrorNotification', [] )() );
 
 		expect( container ).toMatchSnapshot();
 	} );
@@ -28,7 +24,7 @@ describe( 'showErrorNotification', () => {
 			id: 'dummy-error',
 		} );
 
-		const { container } = render( applyFilters( 'googlesitekit.ErrorNotification', [] )() );
+		const { container } = testRender( applyFilters( 'googlesitekit.ErrorNotification', [] )() );
 
 		expect( container ).toMatchSnapshot();
 	} );

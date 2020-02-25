@@ -1,9 +1,4 @@
 /**
- * External dependencies
- */
-import { render } from '@testing-library/react';
-
-/**
  * WordPress dependencies
  */
 import { applyFilters, addFilter } from '@wordpress/hooks';
@@ -11,6 +6,7 @@ import { applyFilters, addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import { testRender } from '../../../../tests/js/test-utils';
 import { fillFilterWithComponent } from '../';
 
 describe( 'fillFilterWithComponent', () => {
@@ -19,7 +15,7 @@ describe( 'fillFilterWithComponent', () => {
 
 		addFilter( 'googlesitekit.Test', 'googlesitekit.AdSenseModuleSettingsDetails', fillFilterWithComponent( filterTester, {} ) );
 
-		const { container } = render( applyFilters( 'googlesitekit.Test', 'test' )() );
+		const { container } = testRender( applyFilters( 'googlesitekit.Test', 'test' )() );
 		expect( container.firstChild ).toMatchSnapshot();
 	} );
 } );
