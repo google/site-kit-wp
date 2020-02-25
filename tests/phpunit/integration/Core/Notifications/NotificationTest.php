@@ -8,10 +8,14 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests;
+namespace Google\Site_Kit\Tests\Core\Notifications;
 
 use Google\Site_Kit\Core\Notifications\Notification;
+use Google\Site_Kit\Tests\TestCase;
 
+/**
+ * @group Notifications
+ */
 class NotificationTest extends TestCase {
 
 	public function test_get_slug() {
