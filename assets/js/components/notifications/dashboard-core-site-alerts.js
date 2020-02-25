@@ -55,7 +55,7 @@ class DashboardCoreSiteAlerts extends Component {
 		const { notifications } = this.state;
 
 		if ( ! Array.isArray( notifications ) ) {
-			return;
+			return null;
 		}
 
 		return notifications.map(
