@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\Notifications;
 
+use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
@@ -17,6 +18,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
+use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -111,6 +113,12 @@ class Notifications {
 								return $response;
 							}
 
+							try {
+								$response = $this->parse_response( $response );
+							} catch ( Exception $e ) {
+								return new WP_Error( 'exception', $e->getMessage() );
+							}
+
 							$data = array_map(
 								function ( Notification $notification ) {
 									return $notification->prepare_for_js();
@@ -130,6 +138,15 @@ class Notifications {
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function ( WP_REST_Request $request ) {
+							$data = $request['data'];
+
+							if ( empty( $data['notificationID'] ) ) {
+								return $this->missing_required_param( 'data.notificationID' );
+							}
+							if ( empty( $data['notificationState'] ) ) {
+								return $this->missing_required_param( 'data.notificationState' );
+							}
+
 							$credentials = $this->credentials->get();
 							$response    = wp_remote_post(
 								$this->google_proxy->url( '/notifications/mark' ),
@@ -137,8 +154,8 @@ class Notifications {
 									'body' => array(
 										'site_id'         => $credentials['oauth2_client_id'],
 										'site_secret'     => $credentials['oauth2_client_secret'],
-										'notification_id' => $request['notificationID'],
-										'notification_state' => $request['notificationState'],
+										'notification_id' => $data['notificationID'],
+										'notification_state' => $data['notificationState'],
 									),
 								)
 							);
@@ -147,25 +164,22 @@ class Notifications {
 								return $response;
 							}
 
+							try {
+								$response = $this->parse_response( $response );
+							} catch ( Exception $e ) {
+								return new WP_Error( 'exception', $e->getMessage() );
+							}
+
 							return new WP_REST_Response(
 								array(
 									'success' => isset( $response['success'] ) ? (bool) $response['success'] : false,
-								) 
+								)
 							);
 						},
 						'args'                => array(
-							'notificationID'    => array(
-								'type'     => 'string',
+							'data' => array(
 								'required' => true,
-							),
-							'notificationState' => array(
-								'type'     => 'string',
-								'required' => true,
-								'enum'     => array(
-									'accepted',
-									'dismissed',
-									'ignored',
-								),
+								'type'     => 'object',
 							),
 						),
 						'permission_callback' => $can_setup,
@@ -173,6 +187,30 @@ class Notifications {
 				)
 			),
 		);
+	}
+
+	/**
+	 * Validates and parses the given JSON response into an array.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $response HTTP response array.
+	 * @return mixed JSON decoded response.
+	 * @throws Exception Throws exception if response cannot be parsed or if an error is returned.
+	 */
+	private function parse_response( $response ) {
+		$body    = wp_remote_retrieve_body( $response );
+		$decoded = json_decode( $body, true );
+
+		if ( null === $decoded ) {
+			throw new Exception( __( 'Failed to parse response', 'google-site-kit' ) );
+		}
+
+		if ( ! empty( $decoded['error'] ) ) {
+			throw new Exception( $decoded['error'] );
+		}
+
+		return $decoded;
 	}
 
 	/**
@@ -202,6 +240,23 @@ class Notifications {
 				);
 			},
 			$response
+		);
+	}
+
+	/**
+	 * Gets a WP_Error instance for the given missing required parameter.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $param Missing required parameter.
+	 * @return WP_Error
+	 */
+	private function missing_required_param( $param ) {
+		return new WP_Error(
+			'missing_required_param',
+			/* translators: %s: Missing parameter name */
+			sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), $param ),
+			array( 'status' => 400 )
 		);
 	}
 }
