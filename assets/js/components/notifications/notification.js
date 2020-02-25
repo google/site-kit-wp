@@ -55,8 +55,9 @@ class Notification extends Component {
 		}
 	}
 
-	handleDismiss( e ) {
+	async handleDismiss( e ) {
 		const { isClosed } = this.state;
+		const { onDismiss } = this.props;
 		const card = this.cardRef.current;
 
 		e.preventDefault();
@@ -64,6 +65,10 @@ class Notification extends Component {
 		this.setState( {
 			isClosed: ! isClosed,
 		} );
+
+		if ( onDismiss ) {
+			await onDismiss( e );
+		}
 
 		setTimeout( () => {
 			data.setCache( `notification::dismissed::${ this.props.id }`, new Date() );
@@ -116,6 +121,7 @@ class Notification extends Component {
 			module,
 			moduleName,
 			pageIndex,
+			onCTAClick,
 		} = this.props;
 
 		if ( data.getCache( `notification::dismissed::${ id }` ) ) {
@@ -255,7 +261,13 @@ class Notification extends Component {
 							) }
 
 							{ ctaLink &&
-								<Button href={ ctaLink } target={ ctaTarget }>{ ctaLabel }</Button>
+								<Button
+									href={ ctaLink }
+									target={ ctaTarget }
+									onClick={ onCTAClick }
+								>
+									{ ctaLabel }
+								</Button>
 							}
 
 							{ isDismissable && dismiss &&
@@ -320,6 +332,8 @@ Notification.propTypes = {
 	pageIndex: PropTypes.string,
 	dismissExpires: PropTypes.number,
 	showOnce: PropTypes.bool,
+	onCTAClick: PropTypes.func,
+	onDismiss: PropTypes.func,
 };
 
 Notification.defaultProps = {
