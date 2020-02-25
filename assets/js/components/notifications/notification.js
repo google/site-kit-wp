@@ -181,10 +181,11 @@ class Notification extends Component {
 
 		const inlineMarkup = (
 			<Fragment>
-				<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
-					{ title }
-				</h3>
-
+				{ title &&
+					<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
+						{ title }
+					</h3>
+				}
 				{ description &&
 					<div className="googlesitekit-publisher-win__desc">
 						<p>
