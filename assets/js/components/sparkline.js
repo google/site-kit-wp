@@ -33,7 +33,7 @@ class Sparkline extends Component {
 		const {
 			data,
 			change,
-			id,
+			instanceId,
 			invertChangeColor,
 			loadSmall,
 			loadCompressed,
@@ -80,7 +80,7 @@ class Sparkline extends Component {
 				<GoogleChart
 					data={ data }
 					options={ chartOptions }
-					id={ id }
+					id={ `googlesitekit-sparkline-${ instanceId }` }
 					loadSmall={ loadSmall }
 					loadCompressed={ loadCompressed }
 					loadHeight={ loadHeight }
@@ -92,6 +92,7 @@ class Sparkline extends Component {
 }
 
 Sparkline.propTypes = {
+	instanceId: PropTypes.string.isRequired,
 	invertChangeColor: PropTypes.bool,
 	loadSmall: PropTypes.bool,
 	loadCompressed: PropTypes.bool,
