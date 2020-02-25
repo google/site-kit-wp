@@ -130,8 +130,44 @@ class Notifications {
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function ( WP_REST_Request $request ) {
-							return new WP_REST_Response( /* TODO */ );
+							$credentials = $this->credentials->get();
+							$response    = wp_remote_post(
+								$this->google_proxy->url( '/notifications/mark' ),
+								array(
+									'body' => array(
+										'site_id'         => $credentials['oauth2_client_id'],
+										'site_secret'     => $credentials['oauth2_client_secret'],
+										'notification_id' => $request['notificationID'],
+										'notification_state' => $request['notificationState'],
+									),
+								)
+							);
+
+							if ( is_wp_error( $response ) ) {
+								return $response;
+							}
+
+							return new WP_REST_Response(
+								array(
+									'success' => isset( $response['success'] ) ? (bool) $response['success'] : false,
+								) 
+							);
 						},
+						'args'                => array(
+							'notificationID'    => array(
+								'type'     => 'string',
+								'required' => true,
+							),
+							'notificationState' => array(
+								'type'     => 'string',
+								'required' => true,
+								'enum'     => array(
+									'accepted',
+									'dismissed',
+									'ignored',
+								),
+							),
+						),
 						'permission_callback' => $can_setup,
 					),
 				)
