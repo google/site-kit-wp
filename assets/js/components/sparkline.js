@@ -71,7 +71,7 @@ class Sparkline extends Component {
 			},
 			axes: [],
 			colors: [
-				0 <= parseFloat( change ) ? positiveColor : negativeColor,
+				0 <= ( parseFloat( change ) || 0 ) ? positiveColor : negativeColor,
 			],
 		};
 
@@ -92,7 +92,7 @@ class Sparkline extends Component {
 }
 
 Sparkline.propTypes = {
-	instanceId: PropTypes.string.isRequired,
+	instanceId: PropTypes.number.isRequired,
 	invertChangeColor: PropTypes.bool,
 	loadSmall: PropTypes.bool,
 	loadCompressed: PropTypes.bool,
