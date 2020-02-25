@@ -86,13 +86,13 @@ class Notification {
 	}
 
 	/**
-	 * Gets the unencoded JSON representation of the notification.
+	 * Prepares the JS representation of the Notification.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @return array
 	 */
-	public function to_json() {
+	public function prepare_for_js() {
 		return array(
 			'slug'           => $this->get_slug(),
 			'title'          => $this->args['title'],

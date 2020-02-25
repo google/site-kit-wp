@@ -24,7 +24,7 @@ class NotificationTest extends TestCase {
 		$this->assertEquals( '', $notification->get_slug() );
 	}
 
-	public function test_to_json() {
+	public function test_prepare_for_js() {
 		$notification = new Notification(
 			'test-slug',
 			array(
@@ -55,7 +55,7 @@ class NotificationTest extends TestCase {
 				'dismissLabel'   => 'test-dismiss-label',
 				'slug'           => 'test-slug',
 			),
-			$notification->to_json()
+			$notification->prepare_for_js()
 		);
 	}
 }

@@ -113,7 +113,7 @@ class Notifications {
 
 							$data = array_map(
 								function ( Notification $notification ) {
-									return $notification->to_json();
+									return $notification->prepare_for_js();
 								},
 								$this->map_response_to_notifications( $response )
 							);
