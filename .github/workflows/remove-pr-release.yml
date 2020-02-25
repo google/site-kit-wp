@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [closed]
 jobs:
-  trigger-pr-release:
+  remove-pr-from-wiki:
     runs-on: ubuntu-latest
     steps:
     - name: Repository Dispatch
@@ -12,4 +12,3 @@ jobs:
         bash .github/remove-from-wiki.sh ${{ github.ref }}
       env:
         GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
-        WIKI_COMMIT_MESSAGE: "Remove build files for PR ${{ github.ref }}"
