@@ -60,19 +60,24 @@ class Notification extends Component {
 	}
 
 	async handleDismiss( e ) {
-		const { isClosed } = this.state;
-		const { onDismiss } = this.props;
-		const card = this.cardRef.current;
-
+		e.persist();
 		e.preventDefault();
 
-		this.setState( {
-			isClosed: ! isClosed,
-		} );
+		const { onDismiss } = this.props;
 
 		if ( onDismiss ) {
 			await onDismiss( e );
 		}
+
+		this.dismiss();
+	}
+
+	dismiss() {
+		const card = this.cardRef.current;
+
+		this.setState( {
+			isClosed: true,
+		} );
 
 		setTimeout( () => {
 			data.setCache( `notification::dismissed::${ this.props.id }`, new Date() );
