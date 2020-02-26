@@ -196,6 +196,7 @@ class Notification extends Component {
 				{ description &&
 					<div className="googlesitekit-publisher-win__desc">
 						<p dangerouslySetInnerHTML={ { __html: safeDescription( description ) } } />
+						{ ( learnMoreLabel || pageIndex ) &&
 						<p>
 							{ learnMoreLabel &&
 								<Fragment>
@@ -210,6 +211,7 @@ class Notification extends Component {
 								<span className="googlesitekit-publisher-win__detect">{ pageIndex }</span>
 							}
 						</p>
+						}
 					</div>
 				}
 				{ children }
