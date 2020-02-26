@@ -192,12 +192,12 @@ class Notification extends Component {
 				}
 				{ description &&
 					<div className="googlesitekit-publisher-win__desc">
-						<p dangerouslySetInnerHTML={ sanitizeHTML( description, {
-							ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
-							ALLOWED_ATTR: [ 'href' ],
-						} ) } />
-						{ ( learnMoreLabel || pageIndex ) &&
 						<p>
+							<span dangerouslySetInnerHTML={ sanitizeHTML( description, {
+								ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
+								ALLOWED_ATTR: [ 'href' ],
+							} ) } />
+
 							{ learnMoreLabel &&
 								<Fragment>
 									{ ' ' }
@@ -211,7 +211,6 @@ class Notification extends Component {
 								<span className="googlesitekit-publisher-win__detect">{ pageIndex }</span>
 							}
 						</p>
-						}
 					</div>
 				}
 				{ children }
