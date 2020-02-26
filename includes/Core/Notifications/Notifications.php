@@ -100,8 +100,8 @@ class Notifications {
 	 * @return array List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
-		$can_setup = function () {
-			return current_user_can( Permissions::SETUP );
+		$can_use_notifications = function () {
+			return current_user_can( Permissions::SETUP ) && $this->credentials->has();
 		};
 
 		return array(
@@ -138,7 +138,7 @@ class Notifications {
 
 							return new WP_REST_Response( $data );
 						},
-						'permission_callback' => $can_setup,
+						'permission_callback' => $can_use_notifications,
 					),
 				)
 			),
@@ -192,7 +192,7 @@ class Notifications {
 								'type'     => 'object',
 							),
 						),
-						'permission_callback' => $can_setup,
+						'permission_callback' => $can_use_notifications,
 					),
 				)
 			),
