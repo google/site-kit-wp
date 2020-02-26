@@ -2,6 +2,11 @@ export const testSiteNotification = {
 	id: 'test-notification-id',
 	title: 'Test notification title',
 	content: 'Test notification content',
+	ctaURL: '',
+	ctaLabel: '',
+	ctaTarget: '',
 	dismissible: true,
-	dismiss_label: 'test dismiss site notification',
+	dismissLabel: 'test dismiss site notification',
+	learnMoreURL: '',
+	learnMoreLabel: '',
 };
