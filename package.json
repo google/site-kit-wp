@@ -45,7 +45,7 @@
     },
     {
       "path": "./dist/assets/js/googlesitekit-*.js",
-      "maxSize": "270 kB"
+      "maxSize": "280 kB"
     }
   ],
   "repository": {
