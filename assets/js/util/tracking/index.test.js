@@ -78,18 +78,27 @@ describe( 'trackEvent', () => {
 
 		trackEvent( 'category', 'name', 'label', 'value' );
 
-		expect( push ).toHaveBeenCalledWith( [
-			'event',
-			'name',
-			{
-				send_to: config.trackingID,
-				event_category: 'category',
-				event_label: 'label',
-				event_value: 'value',
-				dimension1: 'https://www.example.com',
-				dimension2: 'true',
-				dimension3: config.userIDHash,
-			},
-		] );
+		function makeArguments() {
+			return arguments;
+		}
+		// dataLayerPush must push an instance of `Arguments` onto the data layer.
+		// Because `arguments` is a special, `Array`-like object (but not an actual `Array`),
+		// we can only create it using the magic `arguments` variable
+		// made available to normal, non-arrow functions.
+		expect( push ).toHaveBeenCalledWith(
+			makeArguments(
+				'event',
+				'name',
+				{
+					send_to: config.trackingID,
+					event_category: 'category',
+					event_label: 'label',
+					event_value: 'value',
+					dimension1: 'https://www.example.com',
+					dimension2: 'true',
+					dimension3: config.userIDHash,
+				}
+			)
+		);
 	} );
 } );
