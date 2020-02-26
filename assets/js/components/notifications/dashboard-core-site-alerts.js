@@ -63,8 +63,8 @@ class DashboardCoreSiteAlerts extends Component {
 
 		return notifications.map(
 			( notification ) => <Notification
-				key={ notification.slug }
-				id={ notification.slug }
+				key={ notification.id }
+				id={ notification.id }
 				title={ notification.title || '' }
 				description={ notification.content || '' }
 				learnMoreURL={ notification.learnMoreURL || '' }
@@ -75,10 +75,10 @@ class DashboardCoreSiteAlerts extends Component {
 				dismiss={ notification.dismissLabel || __( 'OK, Got it!', 'google-site-kit' ) }
 				isDismissable={ notification.dismissible }
 				onCTAClick={ async () => {
-					await acceptNotification( notification.slug );
+					await acceptNotification( notification.id );
 				} }
 				onDismiss={ async () => {
-					await dismissNotification( notification.slug );
+					await dismissNotification( notification.id );
 				} }
 			/>
 		);

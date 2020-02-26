@@ -94,7 +94,7 @@ class Notification {
 	 */
 	public function prepare_for_js() {
 		return array(
-			'slug'           => $this->get_slug(),
+			'id'             => $this->get_slug(),
 			'title'          => $this->args['title'],
 			'content'        => $this->args['content'],
 			'image'          => $this->args['image'],

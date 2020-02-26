@@ -1,5 +1,5 @@
 export const testSiteNotification = {
-	slug: 'test-notification-slug',
+	id: 'test-notification-id',
 	title: 'Test notification title',
 	content: 'Test notification content',
 	dismissible: true,
