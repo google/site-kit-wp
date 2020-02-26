@@ -3,8 +3,8 @@
  */
 import { purify } from './purify';
 
-export const sanitizeHTML = ( unsafeHTML, domPurifyConfig = {}, _purify = purify ) => {
+export const sanitizeHTML = ( unsafeHTML, domPurifyConfig = {} ) => {
 	return {
-		__html: _purify.sanitize( unsafeHTML, domPurifyConfig ),
+		__html: purify.sanitize( unsafeHTML, domPurifyConfig ),
 	};
 };
