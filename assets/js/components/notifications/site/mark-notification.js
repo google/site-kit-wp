@@ -1,8 +1,8 @@
-
 /**
  * External dependencies
  */
 import data, { TYPE_CORE } from 'GoogleComponents/data';
+import { trackEvent } from 'assets/js/util/tracking';
 
 const ACCEPTED = 'accepted';
 const DISMISSED = 'dismissed';
@@ -17,6 +17,8 @@ export async function markNotification( id, state ) {
 	// Invalidate the cache so that notifications will be fetched fresh
 	// to not show a marked notification again.
 	data.invalidateCacheGroup( TYPE_CORE, 'site', 'notifications' );
+
+	trackEvent( 'site_notifications', state, id );
 
 	return await data.set( TYPE_CORE, 'site', 'mark-notification', {
 		notificationID: id,
