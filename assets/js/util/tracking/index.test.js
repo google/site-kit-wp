@@ -78,18 +78,24 @@ describe( 'trackEvent', () => {
 
 		trackEvent( 'category', 'name', 'label', 'value' );
 
-		expect( push ).toHaveBeenCalledWith( [
-			'event',
-			'name',
-			{
-				send_to: config.trackingID,
-				event_category: 'category',
-				event_label: 'label',
-				event_value: 'value',
-				dimension1: 'https://www.example.com',
-				dimension2: 'true',
-				dimension3: config.userIDHash,
-			},
-		] );
+		function makeArguments() {
+			return arguments;
+		}
+		// dataLayerPush must push `arguments` onto the data layer.
+		expect( push ).toHaveBeenCalledWith(
+			makeArguments(
+				'event',
+				'name',
+				{
+					send_to: config.trackingID,
+					event_category: 'category',
+					event_label: 'label',
+					event_value: 'value',
+					dimension1: 'https://www.example.com',
+					dimension2: 'true',
+					dimension3: config.userIDHash,
+				}
+			)
+		);
 	} );
 } );
