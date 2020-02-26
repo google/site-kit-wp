@@ -63,25 +63,27 @@ class DashboardCoreSiteAlerts extends Component {
 		}
 
 		return notifications.map(
-			( notification ) => <Notification
-				key={ notification.id }
-				id={ notification.id }
-				title={ notification.title || '' }
-				description={ notification.content || '' }
-				learnMoreURL={ notification.learnMoreURL || '' }
-				learnMoreLabel={ notification.learnMoreLabel || '' }
-				ctaLink={ notification.ctaURL || '' }
-				ctaLabel={ notification.ctaLabel || '' }
-				ctaTarget={ notification.ctaTarget || '' }
-				dismiss={ notification.dismissLabel || __( 'OK, Got it!', 'google-site-kit' ) }
-				isDismissable={ notification.dismissible }
-				onCTAClick={ async () => {
-					await acceptNotification( notification.id );
-				} }
-				onDismiss={ async () => {
-					await dismissNotification( notification.id );
-				} }
-			/>
+			( notification ) => (
+				<Notification
+					key={ notification.id }
+					id={ notification.id }
+					title={ notification.title || '' }
+					description={ notification.content || '' }
+					learnMoreURL={ notification.learnMoreURL || '' }
+					learnMoreLabel={ notification.learnMoreLabel || '' }
+					ctaLink={ notification.ctaURL || '' }
+					ctaLabel={ notification.ctaLabel || '' }
+					ctaTarget={ notification.ctaTarget || '' }
+					dismiss={ notification.dismissLabel || __( 'OK, Got it!', 'google-site-kit' ) }
+					isDismissable={ notification.dismissible }
+					onCTAClick={ async () => {
+						await acceptNotification( notification.id );
+					} }
+					onDismiss={ async () => {
+						await dismissNotification( notification.id );
+					} }
+				/>
+			)
 		);
 	}
 }
