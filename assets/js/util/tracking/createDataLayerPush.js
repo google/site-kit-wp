@@ -13,11 +13,10 @@ import { DATA_LAYER } from './index.private';
 export default function createDataLayerPush( target ) {
 	/**
 	 * Pushes data onto the data layer.
-	 *
-	 * @param {...any} args Arguments to push onto the data layer.
+	 * Must use `arguments` internally.
 	 */
-	return function dataLayerPush( ...args ) {
+	return function dataLayerPush() {
 		target[ DATA_LAYER ] = target[ DATA_LAYER ] || [];
-		target[ DATA_LAYER ].push( args );
+		target[ DATA_LAYER ].push( arguments );
 	};
 }
