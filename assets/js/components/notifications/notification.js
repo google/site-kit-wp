@@ -49,6 +49,7 @@ class Notification extends Component {
 		this.cardRef = createRef();
 
 		this.handleDismiss = this.handleDismiss.bind( this );
+		this.handleCTAClick = this.handleCTAClick.bind( this );
 
 		if ( 0 < this.props.dismissExpires ) {
 			this.expireDismiss();
@@ -86,6 +87,19 @@ class Notification extends Component {
 			const event = new Event( 'notificationDismissed' );
 			document.dispatchEvent( event );
 		}, 350 );
+	}
+
+	handleCTAClick( e ) {
+		e.persist();
+
+		const { isDismissable, onCTAClick } = this.props;
+		const dismiss = isDismissable ? this.dismiss : () => {};
+
+		if ( onCTAClick ) {
+			onCTAClick( e, dismiss );
+		} else {
+			dismiss( e );
+		}
 	}
 
 	expireDismiss() {
@@ -130,7 +144,6 @@ class Notification extends Component {
 			module,
 			moduleName,
 			pageIndex,
-			onCTAClick,
 		} = this.props;
 
 		if ( data.getCache( `notification::dismissed::${ id }` ) ) {
@@ -278,7 +291,7 @@ class Notification extends Component {
 								<Button
 									href={ ctaLink }
 									target={ ctaTarget }
-									onClick={ onCTAClick }
+									onClick={ this.handleCTAClick }
 								>
 									{ ctaLabel }
 								</Button>
