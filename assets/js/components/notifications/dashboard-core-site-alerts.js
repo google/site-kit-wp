@@ -46,12 +46,13 @@ class DashboardCoreSiteAlerts extends Component {
 	}
 
 	async componentDidMount() {
-		const notifications = await getNotifications().catch( ( e ) => {
+		try {
+			const notifications = await getNotifications();
+			this.setState( { notifications } );
+		} catch ( error ) {
 			// eslint-disable-next-line no-console
-			console.warn( 'Error caught while fetching notifications', JSON.stringify( e ) );
-		} );
-
-		this.setState( { notifications } );
+			console.warn( 'Error caught while fetching notifications', error );
+		}
 	}
 
 	render() {
