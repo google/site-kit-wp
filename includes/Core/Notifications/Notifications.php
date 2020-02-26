@@ -115,7 +115,7 @@ class Notifications {
 								array(
 									'site_id' => $this->credentials->get()['oauth2_client_id'],
 								),
-								$this->google_proxy->url( '/notifications' )
+								$this->google_proxy->url( '/notifications/' )
 							);
 							$response = wp_remote_get( $endpoint ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
 
@@ -159,7 +159,7 @@ class Notifications {
 
 							$credentials = $this->credentials->get();
 							$response    = wp_remote_post(
-								$this->google_proxy->url( '/notifications/mark' ),
+								$this->google_proxy->url( '/notifications/mark/' ),
 								array(
 									'body' => array(
 										'site_id'         => $credentials['oauth2_client_id'],
