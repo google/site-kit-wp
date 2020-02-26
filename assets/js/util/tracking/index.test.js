@@ -81,7 +81,10 @@ describe( 'trackEvent', () => {
 		function makeArguments() {
 			return arguments;
 		}
-		// dataLayerPush must push `arguments` onto the data layer.
+		// dataLayerPush must push an instance of `Arguments` onto the data layer.
+		// Because `arguments` is a special, `Array`-like object (but not an actual `Array`),
+		// we can only create it using the magic `arguments` variable
+		// made available to normal, non-arrow functions.
 		expect( push ).toHaveBeenCalledWith(
 			makeArguments(
 				'event',
