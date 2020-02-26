@@ -57,7 +57,7 @@ class NotificationTest extends TestCase {
 				'learnMoreLabel' => 'test-learn-more-label',
 				'dismissible'    => true,
 				'dismissLabel'   => 'test-dismiss-label',
-				'slug'           => 'test-slug',
+				'id'             => 'test-slug',
 			),
 			$notification->prepare_for_js()
 		);
