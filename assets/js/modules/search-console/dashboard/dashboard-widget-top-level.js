@@ -130,7 +130,6 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 							<Sparkline
 								data={ extractForSparkline( dataMap, 2 ) }
 								change={ totalImpressionsChange }
-								id="search-console-impressions-sparkline"
 							/>
 						}
 					/>
@@ -156,7 +155,6 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 							<Sparkline
 								data={ extractForSparkline( dataMap, 1 ) }
 								change={ totalClicksChange }
-								id="search-console-clicks-sparkline"
 							/>
 						}
 					/>
