@@ -40,6 +40,14 @@ class Notifications {
 	private $context;
 
 	/**
+	 * Options instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Options
+	 */
+	private $options;
+
+	/**
 	 * Google_Proxy instance.
 	 *
 	 * @since n.e.x.t
@@ -61,11 +69,13 @@ class Notifications {
 	 * @since n.e.x.t
 	 *
 	 * @param Context $context Context instance.
+	 * @param Options $options Options instance.
 	 */
-	public function __construct( Context $context ) {
+	public function __construct( Context $context, Options $options = null ) {
 		$this->context      = $context;
+		$this->options      = $options ?: new Options( $context );
 		$this->google_proxy = new Google_Proxy( $this->context );
-		$this->credentials  = new Credentials( new Encrypted_Options( new Options( $context ) ) );
+		$this->credentials  = new Credentials( new Encrypted_Options( $this->options ) );
 	}
 
 	/**
