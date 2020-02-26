@@ -27,19 +27,16 @@ import Warning from 'GoogleComponents/notifications/warning';
 import Error from 'GoogleComponents/notifications/error';
 import Link from 'GoogleComponents/link';
 import SvgIcon from 'GoogleUtil/svg-icon';
-import { sanitize } from 'dompurify';
 import { map } from 'lodash';
 /**
  * WordPress dependencies
  */
 import { Component, Fragment, createRef } from '@wordpress/element';
 
-const safeDescription = ( raw ) => {
-	return sanitize( raw, {
-		ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
-		ALLOWED_ATTR: [ 'href' ],
-	} );
-};
+/**
+ * Internal dependencies
+ */
+import { sanitizeHTML } from '../../util/sanitize';
 
 class Notification extends Component {
 	constructor( props ) {
@@ -195,7 +192,10 @@ class Notification extends Component {
 				}
 				{ description &&
 					<div className="googlesitekit-publisher-win__desc">
-						<p dangerouslySetInnerHTML={ { __html: safeDescription( description ) } } />
+						<p dangerouslySetInnerHTML={ sanitizeHTML( description, {
+							ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
+							ALLOWED_ATTR: [ 'href' ],
+						} ) } />
 						{ ( learnMoreLabel || pageIndex ) &&
 						<p>
 							{ learnMoreLabel &&
