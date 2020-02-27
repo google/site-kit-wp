@@ -97,14 +97,28 @@ class Migration_1_3_0Test extends TestCase {
 		remove_all_actions( 'admin_init' );
 		$migration->register();
 
+		$users_with_access_tokens    = array();
+		$users_without_access_tokens = array();
+
+		foreach ( range( 1, 40 ) as $i ) {
+			if ( $i % 2 ) {
+				$users_with_access_tokens[] = $this->create_user_with_access_token();
+			} else {
+				$users_without_access_tokens[] = $this->create_user_without_access_token();
+			}
+		}
+
 		$this->enable_global_tracking();
-		$this->create_user_with_access_token();
-		$this->create_user_with_access_token();
-		$this->assertCount( 2, $this->get_users_with_access_tokens() );
+
+		$this->assertCount( 20, $users_with_access_tokens );
+		$this->assertCount( 20, $users_without_access_tokens );
 
 		$migration->migrate();
 
-		$this->assertEmpty( $this->get_opted_in_users() );
+		$this->assertEqualSets(
+			$users_with_access_tokens,
+			$this->get_opted_in_users()
+		);
 		$this->assertEquals( Migration_1_3_0::DB_VERSION, $this->get_db_version() );
 	}
 
