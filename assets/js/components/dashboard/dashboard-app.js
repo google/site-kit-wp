@@ -36,11 +36,13 @@ import { __ } from '@wordpress/i18n';
 import DashboardMain from './dashboard-main';
 import DashboardNotifications from './dashboard-notifications';
 import ErrorHandler from 'GoogleComponents/ErrorHandler';
+import ErrorComponent from 'GoogleComponents/ErrorHandler/ErrorComponent';
 
 class DashboardApp extends Component {
 	render() {
 		return (
 			<ErrorHandler>
+				<ErrorComponent />
 				<Header />
 				<DashboardNotifications />
 				<div className="googlesitekit-module-page">

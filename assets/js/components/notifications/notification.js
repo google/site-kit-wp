@@ -31,7 +31,7 @@ import { map } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { Component, Fragment, createRef } from '@wordpress/element';
+import { Component, Fragment, createRef, isValidElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -212,10 +212,12 @@ class Notification extends Component {
 				{ description &&
 					<div className="googlesitekit-publisher-win__desc">
 						<p>
-							<span dangerouslySetInnerHTML={ sanitizeHTML( description, {
-								ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
-								ALLOWED_ATTR: [ 'href' ],
-							} ) } />
+							{ isValidElement( description ) ? description : (
+								<span dangerouslySetInnerHTML={ sanitizeHTML( description, {
+									ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
+									ALLOWED_ATTR: [ 'href' ],
+								} ) } />
+							) }
 
 							{ learnMoreLabel &&
 								<Fragment>
@@ -341,7 +343,7 @@ class Notification extends Component {
 Notification.propTypes = {
 	id: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
-	description: PropTypes.string,
+	description: PropTypes.node,
 	learnMoreURL: PropTypes.string,
 	learnMoreDescription: PropTypes.string,
 	learnMoreLabel: PropTypes.string,
