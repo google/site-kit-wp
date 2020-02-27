@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Core\Util;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Migration_1_3_0;
 use Google\Site_Kit\Core\Util\Tracking_Consent;
 use Google\Site_Kit\Tests\TestCase;
@@ -23,9 +24,15 @@ class Migration_1_3_0Test extends TestCase {
 	 */
 	protected $context;
 
+	/**
+	 * @var User_Options
+	 */
+	protected $user_options;
+
 	public function setUp() {
 		parent::setUp();
-		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->user_options = new User_Options( $this->context );
 		$this->delete_db_version();
 	}
 
@@ -102,22 +109,19 @@ class Migration_1_3_0Test extends TestCase {
 	}
 
 	private function get_opted_in_users() {
-		global $wpdb;
-
 		return get_users(
 			array(
-				'meta_key'   => $wpdb->get_blog_prefix() . Tracking_Consent::OPTION,
+				'meta_key'   => $this->user_options->get_meta_key( Tracking_Consent::OPTION ),
 				'meta_value' => '1',
+				'fields'     => 'ID',
 			)
 		);
 	}
 
 	private function get_users_with_access_tokens() {
-		global $wpdb;
-
 		return get_users(
 			array(
-				'meta_key'     => $wpdb->get_blog_prefix() . OAuth_Client::OPTION_ACCESS_TOKEN,
+				'meta_key'     => $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ),
 				'meta_compare' => 'EXISTS',
 			)
 		);
@@ -129,7 +133,8 @@ class Migration_1_3_0Test extends TestCase {
 
 	private function create_user_with_access_token() {
 		$user_id = $this->factory()->user->create();
-		update_user_option( $user_id, OAuth_Client::OPTION_ACCESS_TOKEN, "test-access-token-$user_id" );
+		$this->user_options->switch_user( $user_id );
+		$this->user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN, "test-access-token-$user_id" );
 
 		return $user_id;
 	}
