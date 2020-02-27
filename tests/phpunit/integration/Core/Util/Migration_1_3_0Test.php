@@ -88,7 +88,7 @@ class Migration_1_3_0Test extends TestCase {
 
 		$opted_in_users = $this->get_opted_in_users();
 		$this->assertCount( 1, $opted_in_users );
-		$this->assertEquals( $user_id, $opted_in_users[0]->ID );
+		$this->assertEquals( $user_id, $opted_in_users[0] );
 		$this->assertEquals( Migration_1_3_0::DB_VERSION, $this->get_db_version() );
 	}
 
@@ -137,6 +137,7 @@ class Migration_1_3_0Test extends TestCase {
 			array(
 				'meta_key'     => $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ),
 				'meta_compare' => 'EXISTS',
+				'fields'       => 'ID',
 			)
 		);
 	}
