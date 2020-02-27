@@ -76,9 +76,8 @@ class DashboardCoreSiteAlerts extends Component {
 					ctaTarget={ notification.ctaTarget || '' }
 					dismiss={ notification.dismissLabel || __( 'OK, Got it!', 'google-site-kit' ) }
 					isDismissable={ notification.dismissible }
-					onCTAClick={ async ( e, dismiss ) => {
+					onCTAClick={ async () => {
 						await acceptNotification( notification.id );
-						dismiss();
 					} }
 					onDismiss={ async () => {
 						await dismissNotification( notification.id );

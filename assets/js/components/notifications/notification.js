@@ -89,16 +89,17 @@ class Notification extends Component {
 		}, 350 );
 	}
 
-	handleCTAClick( e ) {
+	async handleCTAClick( e ) {
 		e.persist();
 
 		const { isDismissable, onCTAClick } = this.props;
-		const dismiss = isDismissable ? this.dismiss : () => {};
 
 		if ( onCTAClick ) {
-			onCTAClick( e, dismiss );
-		} else {
-			dismiss( e );
+			await onCTAClick( e );
+		}
+
+		if ( isDismissable ) {
+			this.dismiss();
 		}
 	}
 
