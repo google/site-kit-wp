@@ -97,7 +97,7 @@ class Migration_1_3_0 {
 	 * Migrates the global tracking opt-in to a user option.
 	 *
 	 * @since 1.3.0
-	 * @since n.e.x.t Migrates preference for up to 20 users.
+	 * @since 1.4.0 Migrates preference for up to 20 users.
 	 */
 	private function migrate_tracking_opt_in() {
 		// Only migrate if tracking was opted-in.
@@ -116,7 +116,7 @@ class Migration_1_3_0 {
 	/**
 	 * Gets the authenticated users connected to Site Kit.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return string[] User IDs of authenticated users. Maximum of 20.
 	 */
