@@ -97,46 +97,38 @@ class Migration_1_3_0 {
 	 * Migrates the global tracking opt-in to a user option.
 	 *
 	 * @since 1.3.0
+	 * @since n.e.x.t Migrates preference for up to 20 users.
 	 */
 	private function migrate_tracking_opt_in() {
 		// Only migrate if tracking was opted-in.
 		if ( $this->options->get( Tracking_Consent::OPTION ) ) {
-			$user = $this->get_only_authenticated_user();
+			$backup_user_id = $this->user_options->get_user_id();
 
-			if ( $user ) {
-				$backup_user_id = $this->user_options->get_user_id();
-				$this->user_options->switch_user( $user->ID );
+			foreach ( $this->get_authenticated_users() as $user_id ) {
+				$this->user_options->switch_user( $user_id );
 				$this->user_options->set( Tracking_Consent::OPTION, 1 );
-				$this->user_options->switch_user( $backup_user_id );
 			}
-		}
 
-		$this->options->delete( Tracking_Consent::OPTION );
+			$this->user_options->switch_user( $backup_user_id );
+		}
 	}
 
 	/**
-	 * Gets the authenticated user connected to Site Kit, but only if there is a single one.
+	 * Gets the authenticated users connected to Site Kit.
 	 *
-	 * @since 1.3.0
+	 * @since n.e.x.t
 	 *
-	 * @return WP_User|bool User instance if only one authenticated user is found, otherwise false.
+	 * @return string[] User IDs of authenticated users. Maximum of 20.
 	 */
-	private function get_only_authenticated_user() {
-		global $wpdb;
-
-		$users = get_users(
+	private function get_authenticated_users() {
+		return get_users(
 			array(
-				'meta_key'     => $wpdb->get_blog_prefix() . OAuth_Client::OPTION_ACCESS_TOKEN, // phpcs:ignore WordPress.VIP.SlowDBQuery.slow_db_query_meta_key
+				'meta_key'     => $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ), // phpcs:ignore WordPress.VIP.SlowDBQuery.slow_db_query_meta_key
 				'meta_compare' => 'EXISTS',
-				'number'       => 2, // Needed to make sure there is only one.
+				'number'       => 20,
+				'fields'       => 'ID',
 			)
 		);
-
-		if ( ! $users || 1 < count( $users ) ) {
-			return false;
-		}
-
-		return $users[0];
 	}
 
 }
