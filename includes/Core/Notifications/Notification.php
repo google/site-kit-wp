@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Notifications;
 /**
  * Class for representing a notification.
  *
- * @since n.e.x.t
+ * @since 1.4.0
  * @access private
  * @ignore
  */
@@ -21,7 +21,7 @@ class Notification {
 	/**
 	 * Unique notification slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 * @var string
 	 */
 	private $slug;
@@ -29,7 +29,7 @@ class Notification {
 	/**
 	 * Notification arguments.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 * @var array
 	 */
 	private $args;
@@ -37,7 +37,7 @@ class Notification {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param string $slug Unique notification slug.
 	 * @param array  $args {
@@ -77,7 +77,7 @@ class Notification {
 	/**
 	 * Gets the notification's slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return string Unique notification slug.
 	 */
@@ -88,7 +88,7 @@ class Notification {
 	/**
 	 * Prepares the JS representation of the Notification.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return array
 	 */

@@ -26,7 +26,7 @@ use WP_REST_Server;
 /**
  * Class for managing core notifications.
  *
- * @since n.e.x.t
+ * @since 1.4.0
  * @access private
  * @ignore
  */
@@ -34,7 +34,7 @@ class Notifications {
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 * @var Context
 	 */
 	private $context;
@@ -42,7 +42,7 @@ class Notifications {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 * @var Options
 	 */
 	private $options;
@@ -50,7 +50,7 @@ class Notifications {
 	/**
 	 * Google_Proxy instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 * @var Google_Proxy
 	 */
 	private $google_proxy;
@@ -58,7 +58,7 @@ class Notifications {
 	/**
 	 * Credentials instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 * @var Credentials
 	 */
 	private $credentials;
@@ -66,7 +66,7 @@ class Notifications {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param Context $context Context instance.
 	 * @param Options $options Options instance.
@@ -81,7 +81,7 @@ class Notifications {
 	/**
 	 * Registers core notifications.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 */
 	public function register() {
 		add_filter(
@@ -95,7 +95,7 @@ class Notifications {
 	/**
 	 * Gets related REST routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return array List of REST_Route objects.
 	 */
@@ -202,7 +202,7 @@ class Notifications {
 	/**
 	 * Validates and parses the given JSON response into an array.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param array $response HTTP response array.
 	 * @return mixed JSON decoded response.
@@ -226,7 +226,7 @@ class Notifications {
 	/**
 	 * Maps the response objects into Notification objects.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param array $response Array of notification objects from API.
 	 * @return Notification[] Array of Notification objects.
@@ -256,7 +256,7 @@ class Notifications {
 	/**
 	 * Gets a WP_Error instance for the given missing required parameter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param string $param Missing required parameter.
 	 * @return WP_Error
