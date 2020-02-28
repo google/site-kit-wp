@@ -7,7 +7,7 @@
     "build": "npm run remove-dist && npm run build:production && npm run build:static",
     "build:production": "webpack -p --mode=production",
     "build:test": "webpack -p --mode=production --include-tests",
-    "build:dev": "npm run build:static && webpack --mode=development --debug --devtool cheap-source-map --output-pathinfo",
+    "build:dev": "npm run remove-dist && npm run build:static && webpack --mode=development --debug --devtool cheap-source-map --output-pathinfo",
     "build:static": "gulp svg imagemin",
     "dev": "npm run build:dev && npm run build:static",
     "dev-zip": "npm run build:dev && gulp release",
