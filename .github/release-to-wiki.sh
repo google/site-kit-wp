@@ -5,7 +5,7 @@ tmp_dir="/tmp/build/${GIT_REF}"
 mkdir -p "$tmp_dir"
 (
     cd "$tmp_dir" || exit 1
-    git clone "$GIT_REPOSITORY_URL" .
+    git clone --depth 1 "$GIT_REPOSITORY_URL" .
     git config user.name "$GITHUB_ACTOR"
     git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 )
