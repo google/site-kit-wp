@@ -36,6 +36,13 @@ const projectPath = ( relativePath ) => {
 
 const noAMDParserRule = { parser: { amd: false } };
 
+const siteKitExternals = {
+	'googlesitekit-api': [ 'googlesitekit', 'api' ],
+	'googlesitekit-data': [ 'googlesitekit', 'data' ],
+};
+
+const externals = { ...siteKitExternals };
+
 const rules = [
 	noAMDParserRule,
 	{
@@ -83,6 +90,7 @@ const webpackConfig = ( mode ) => {
 				// New Modules (Post-JSR).
 				'googlesitekit-api': './assets/js/googlesitekit-api.js',
 				'googlesitekit-data': './assets/js/googlesitekit-data.js',
+				// 'googlesitekit-site': './assets/js/googlesitekit-site.js',
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
 				'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
@@ -96,6 +104,7 @@ const webpackConfig = ( mode ) => {
 				// Needed to test if a browser extension blocks this by naming convention.
 				ads: './assets/js/ads.js',
 			},
+			externals,
 			output: {
 				filename: '[name].js',
 				path: __dirname + '/dist/assets/js',
@@ -207,6 +216,7 @@ const testBundle = () => {
 				color: '#34a853',
 			} ),
 		],
+		externals,
 		resolve,
 	};
 };
