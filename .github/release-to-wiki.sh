@@ -1,7 +1,7 @@
 #!/bin/bash
 
 GIT_REPOSITORY_URL="https://${GITHUB_PERSONAL_ACCESS_TOKEN}@github.com/$GITHUB_REPOSITORY.wiki.git"
-tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
+tmp_dir="/tmp/build/${GIT_REF}"
 (
     cd "$tmp_dir" || exit 1
     git init
