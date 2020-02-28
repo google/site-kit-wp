@@ -1,7 +1,7 @@
 #!/bin/bash
 
 GIT_REPOSITORY_URL="https://${GITHUB_PERSONAL_ACCESS_TOKEN}@github.com/$GITHUB_REPOSITORY.wiki.git"
-
+GIT_REF="$1"
 tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
 (
     cd "$tmp_dir" || exit 1
@@ -11,16 +11,16 @@ tmp_dir=$(mktemp -d -t ci-XXXXXXXXXX)
     git pull "$GIT_REPOSITORY_URL"
 )
 
-mkdir -p "$tmp_dir/$1"
-for file in $(find $1 -maxdepth 1 -type f -name '*' -execdir basename '{}' ';'); do
-    cp "$1/$file" "$tmp_dir/$1"
+mkdir -p "$tmp_dir/${GIT_REF}"
+for file in $(find ${GIT_REF} -maxdepth 1 -type f -name '*' -execdir basename '{}' ';'); do
+    cp "${GIT_REF}/$file" "$tmp_dir/${GIT_REF}"
 done
 
-echo "Publishing build files for $1"
+echo "Publishing build files for ${GIT_REF}"
 (
     cd "$tmp_dir" || exit 1
     git add .
-    git commit -m "Build and publish $1"
+    git commit -m "Build and publish ${GIT_REF}"
     git push --set-upstream "$GIT_REPOSITORY_URL" master
 )
 
