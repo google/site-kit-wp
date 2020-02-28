@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import DashboardCoreSiteAlerts from 'GoogleComponents/notifications/dashboard-core-site-alerts';
 import DashboardSetupAlerts from 'GoogleComponents/notifications/dashboard-setup-alerts';
 import DashboardModulesAlerts from 'GoogleComponents/notifications/dashboard-modules-alerts';
 import DashboardWinsAlerts from 'GoogleComponents/notifications/dashboard-wins-alerts';
@@ -33,10 +34,15 @@ import { addFilter } from '@wordpress/hooks';
 const { setup } = global.googlesitekit;
 const notification = getQueryParameter( 'notification' );
 
+const addCoreSiteNotifications = createAddToFilter( <DashboardCoreSiteAlerts /> );
 const addSetupNotifications = createAddToFilter( <DashboardSetupAlerts /> );
 const addModulesNotifications = createAddToFilter( <DashboardModulesAlerts /> );
 const addWinsNotifications = createAddToFilter( <DashboardWinsAlerts /> );
 const addAuthNotification = createAddToFilter( <DashboardAuthAlert /> );
+
+addFilter( 'googlesitekit.DashboardNotifications',
+	'googlesitekit.SetupNotification',
+	addCoreSiteNotifications, 10 );
 
 if ( setup.needReauthenticate ) {
 	addFilter( 'googlesitekit.ErrorNotification',

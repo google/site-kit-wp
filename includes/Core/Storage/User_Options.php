@@ -152,7 +152,7 @@ final class User_Options implements User_Options_Interface {
 	/**
 	 * Gets the underlying meta key for the given option.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param string $option Option name.
 	 * @return string Meta key name.

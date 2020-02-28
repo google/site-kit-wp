@@ -102,7 +102,7 @@ final class Encrypted_User_Options implements User_Options_Interface {
 	/**
 	 * Gets the underlying meta key for the given option.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param string $option Option name.
 	 * @return string Meta key name.
@@ -114,7 +114,7 @@ final class Encrypted_User_Options implements User_Options_Interface {
 	/**
 	 * Gets the ID of the user that options are controlled for.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return int User ID.
 	 */
@@ -125,7 +125,7 @@ final class Encrypted_User_Options implements User_Options_Interface {
 	/**
 	 * Switches the user that options are controlled for to the one with the given ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param int $user_id User ID.
 	 */

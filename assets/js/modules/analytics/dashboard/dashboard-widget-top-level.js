@@ -135,7 +135,6 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 								<Sparkline
 									data={ extractForSparkline( extractedAnalytics, 1 ) }
 									change={ totalUsersChange }
-									id="analytics-users-sparkline"
 								/>
 						}
 					/>
@@ -171,7 +170,6 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 										<Sparkline
 											data={ extractForSparkline( extractedAnalytics, 2 ) }
 											change={ averageBounceRateChange }
-											id="analytics-sessions-sparkline"
 										/>
 								}
 							/>
@@ -201,7 +199,6 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 								<Sparkline
 									data={ extractForSparkline( extractedAnalytics, 3 ) }
 									change={ goalCompletionsChange }
-									id="analytics-sessions-sparkline"
 								/>
 							}
 						/>
