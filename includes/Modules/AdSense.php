@@ -255,8 +255,7 @@ tag_partner: "site_kit"
 			),
 			'adsense_account_status' => array(
 				'label' => __( 'AdSense account status', 'google-site-kit' ),
-				'value' => $settings['accountStatus'], // TODO: translate value.
-				'debug' => $settings['accountStatus'],
+				'value' => $settings['accountStatus'],
 			),
 			// TODO: adsense_site_status.
 			'adsense_use_snippet'    => array(
