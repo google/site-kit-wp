@@ -9,6 +9,7 @@ jobs:
     steps:
     - name: Repository Dispatch
       run: |
-        bash .github/remove-from-wiki.sh ${{ github.ref }}
+        bash .github/remove-from-wiki.sh
       env:
         GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+        GIT_REF: ${{ github.ref }}
