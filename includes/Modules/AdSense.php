@@ -752,7 +752,7 @@ tag_partner: "site_kit"
 	/**
 	 * Transforms an exception into a WP_Error object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param Exception $e         Exception object.
 	 * @param string    $datapoint Datapoint originally requested.

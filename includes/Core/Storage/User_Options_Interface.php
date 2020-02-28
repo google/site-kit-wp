@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Storage;
 /**
  * Interface for Options implementations.
  *
- * @since n.e.x.t
+ * @since 1.4.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ interface User_Options_Interface {
 	/**
 	 * Gets the value of the given option.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param string $option Option name.
 	 * @return mixed Value set for the option, or false if not set.
@@ -32,7 +32,7 @@ interface User_Options_Interface {
 	/**
 	 * Sets the value for a option.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param string $option Option name.
 	 * @param mixed  $value  Option value. Must be serializable if non-scalar.
@@ -43,7 +43,7 @@ interface User_Options_Interface {
 	/**
 	 * Deletes the given option.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param string $option Option name.
 	 * @return bool True on success, false on failure.
@@ -53,7 +53,7 @@ interface User_Options_Interface {
 	/**
 	 * Gets the underlying meta key for the given option.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param string $option Option name.
 	 * @return string Meta key name.
@@ -63,7 +63,7 @@ interface User_Options_Interface {
 	/**
 	 * Gets the current user ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return int User ID.
 	 */
@@ -72,7 +72,7 @@ interface User_Options_Interface {
 	/**
 	 * Sets the current user ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param int $user_id User ID.
 	 */

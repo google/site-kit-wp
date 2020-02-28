@@ -29,7 +29,7 @@ final class Verification extends User_Setting {
 	/**
 	 * Gets the value of the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return mixed Value set for the option, or default if not set.
 	 */
@@ -56,7 +56,7 @@ final class Verification extends User_Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return string The type name.
 	 */
@@ -69,7 +69,7 @@ final class Verification extends User_Setting {
 	 *
 	 * Returns an empty string by default for consistency with get_user_meta.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return mixed The default value.
 	 */
