@@ -236,7 +236,12 @@ class Debug_Data {
 
 		return array(
 			'label' => __( 'Active Modules', 'google-site-kit' ),
-			'value' => join( ', ', $module_slugs ),
+			'value' => join(
+				/* translators: used between list items, there is a space after the comma. */
+				__( ', ', 'google-site-kit' ),
+				$module_slugs
+			),
+			'debug' => join( ', ', $module_slugs ),
 		);
 	}
 
