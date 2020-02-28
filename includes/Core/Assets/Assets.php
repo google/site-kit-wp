@@ -343,15 +343,12 @@ final class Assets {
 
 		// Register plugin scripts.
 		$assets = array(
-			new Script(
+			new Script_Data(
 				'googlesitekit-commons',
 				array(
-					'src'          => false,
-					'before_print' => function( $handle ) {
-						$data = wp_scripts()->get_data( $handle, 'data' ) ?: '';
-						$script = 'var googlesitekit = ' . wp_json_encode( $this->get_inline_data() ) . ';';
-
-						wp_scripts()->add_data( $handle, 'data', $script . $data );
+					'global'        => 'googlesitekit',
+					'data_callback' => function () {
+						return $this->get_inline_data();
 					},
 				)
 			),
