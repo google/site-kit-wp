@@ -4,9 +4,10 @@ GIT_REPOSITORY_URL="https://${GITHUB_PERSONAL_ACCESS_TOKEN}@github.com/$GITHUB_R
 
 echo "Checking out wiki repository"
 tmp_dir="/tmp/build/${GIT_REF}"
+mkdir -p "$tmp_dir"
 (
     cd "$tmp_dir" || exit 1
-    git clone "$GIT_REPOSITORY_URL"
+    git clone "$GIT_REPOSITORY_URL" .
     git config user.name "$GITHUB_ACTOR"
     git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 )
