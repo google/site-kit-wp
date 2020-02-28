@@ -10,9 +10,7 @@ tmp_dir="/tmp/build/${GIT_REF}"
 )
 
 mkdir -p "$tmp_dir/${GIT_REF}"
-for file in $(find ${GIT_REF} -maxdepth 1 -type f -name '*' -execdir basename '{}' ';'); do
-    cp "${GIT_REF}/$file" "$tmp_dir/${GIT_REF}"
-done
+cp "${GIT_REF}/*.zip" "$tmp_dir/${GIT_REF}"
 
 echo "Publishing build files for ${GIT_REF}"
 (
