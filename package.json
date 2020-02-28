@@ -10,6 +10,7 @@
     "build:dev": "npm run build:static && webpack --mode=development --debug --devtool cheap-source-map --output-pathinfo",
     "build:static": "gulp svg imagemin",
     "dev": "npm run build:dev && npm run build:static",
+    "dev-zip": "npm run build:dev && gulp release",
     "watch": "npm run remove-dist && npm run build:static && webpack --watch --mode=development --debug --devtool cheap-module-eval-source-map --output-pathinfo",
     "release-zip": "npm run build && gulp release",
     "remove-dist": "rm -rf dist/*",

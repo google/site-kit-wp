@@ -42,13 +42,12 @@ jobs:
         npm install gulp-cli -g
     - name: Build develop version
       run: |
-        npm run build:dev
-        ZIP=`gulp release | grep Creating | cut -c10-`
+        ZIP=`npm run release-zip | grep Creating | cut -c10-`
         mv "$ZIP" google-site-kit-dev.zip
     - name: Build release version
       run: |
         npm run build
-        ZIP=`gulp release | grep Creating | cut -c10-`
+        ZIP=`npm run dev-zip | grep Creating | cut -c10-`
         mv "$ZIP" google-site-kit.zip
     - name: Deploy build files to wiki
       run: |
