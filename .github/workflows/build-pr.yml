@@ -42,19 +42,18 @@ jobs:
     - name: npm install
       run: |
         npm install
+    - name: Create destination directory
+      run: mkdir -p ${{ github.ref }}
     - name: Build develop version
       run: |
         npm run dev-zip
-        mv *.zip google-site-kit-dev.zip
+        mv *.zip ${{ github.ref }}/google-site-kit-dev.zip
     - name: Build release version
       run: |
         npm run release-zip
-        mv *.zip google-site-kit.zip
+        mv *.zip ${{ github.ref }}/google-site-kit.zip
     - name: Deploy build files to wiki
       run: |
-        mkdir -p ${{ github.ref }}
-        mv google-site-kit.zip ${{ github.ref }}
-        mv google-site-kit-dev.zip ${{ github.ref }}
         bash .github/release-to-wiki.sh
       env:
         GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
