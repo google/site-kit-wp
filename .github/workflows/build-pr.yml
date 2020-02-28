@@ -44,15 +44,12 @@ jobs:
         npm install
     - name: Build develop version
       run: |
-        ZIP=`npm run release-zip | grep Creating | cut -c10-`
-        echo "built $ZIP"
-        mv "$ZIP" google-site-kit-dev.zip
+        npm run dev-zip
+        mv *.zip google-site-kit-dev.zip
     - name: Build release version
       run: |
-        npm run build
-        ZIP=`npm run dev-zip | grep Creating | cut -c10-`
-        echo "built $ZIP"
-        mv "$ZIP" google-site-kit.zip
+        npm run release-zip
+        mv *.zip google-site-kit.zip
     - name: Deploy build files to wiki
       run: |
         mkdir -p ${{ github.ref }}
