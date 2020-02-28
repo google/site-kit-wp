@@ -75,6 +75,6 @@ class Script_Data extends Script {
 			preg_replace( '[^\w\d_-]', '', $this->args['global'] ), // Ensure only a-zA-Z0-9_- are allowed.
 			wp_json_encode( $data )
 		);
-		wp_scripts()->add_data( $this->handle, 'data', "$script_data\n$js" );
+		wp_scripts()->add_data( $this->handle, 'data', trim( "$script_data\n$js" ) );
 	}
 }
