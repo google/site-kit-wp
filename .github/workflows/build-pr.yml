@@ -25,10 +25,13 @@ jobs:
       uses: php-actions/composer@v1
       with:
         args: install
-    - name: Setup Node.js 10
+    - name: Read .nvmrc
+      run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
+      id: nvm
+    - name: Setup Node.js (.nvmrc)
       uses: actions/setup-node@v1
       with:
-        node-version: '10.x'
+        node-version: "${{ steps.nvm.outputs.NVMRC }}"
     - name: Cache Node - npm
       uses: actions/cache@v1
       with:
