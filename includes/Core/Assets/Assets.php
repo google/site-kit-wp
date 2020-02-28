@@ -352,6 +352,28 @@ final class Assets {
 					},
 				)
 			),
+			new Script_Data(
+				'googlesitekit-base-data',
+				array(
+					'global'        => '_googlesitekitBase',
+					'data_callback' => function () {
+						return $this->get_inline_base_data();
+					},
+				)
+			),
+			new Script_Data(
+				'googlesitekit-apifetch-data',
+				array(
+					'global'        => '_googlesitekitAPIFetchData',
+					'data_callback' => function () {
+						return array(
+							'nonceEndpoint'   => admin_url( 'admin-ajax.php?action=rest-nonce' ),
+							'nonceMiddleware' => ( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' ),
+							'rootURL'         => esc_url_raw( get_rest_url() ),
+						);
+					},
+				)
+			),
 			// Admin assets.
 			new Script(
 				'googlesitekit-activation',
@@ -364,26 +386,8 @@ final class Assets {
 				'googlesitekit-base',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-admin.js',
-					'dependencies' => array(),
+					'dependencies' => array( 'googlesitekit-apifetch-data', 'googlesitekit-base-data' ),
 					'execution'    => 'defer',
-					'before_print' => function( $handle ) {
-						wp_add_inline_script(
-							$handle,
-							'window._googlesitekitAPIFetchData = ' . wp_json_encode(
-								array(
-									'nonceEndpoint'   => admin_url( 'admin-ajax.php?action=rest-nonce' ),
-									'nonceMiddleware' => ( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' ),
-									'rootURL'         => esc_url_raw( get_rest_url() ),
-								)
-							),
-							'before'
-						);
-						wp_add_inline_script(
-							$handle,
-							'window._googlesitekitBase = ' . wp_json_encode( $this->get_inline_base_data() ),
-							'before'
-						);
-					},
 				)
 			),
 			// Begin JSR Assets.
