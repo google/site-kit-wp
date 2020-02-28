@@ -209,7 +209,7 @@ final class Analytics extends Module
 	/**
 	 * Checks if the module is active in the admin bar for the given URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param string $url URL to determine active state for.
 	 * @return bool
@@ -1259,7 +1259,7 @@ final class Analytics extends Module
 	/**
 	 * Checks whether Analytics data exists for the given URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param string $url The url to check data for.
 	 * @return bool

@@ -458,7 +458,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 *
 	 * This is a special method needed for printing all meta tags in the frontend.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return array List of verification meta tags.
 	 */
