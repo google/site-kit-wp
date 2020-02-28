@@ -39,10 +39,9 @@ jobs:
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-cache-
-    - name: npm/Gulp Install
+    - name: npm install
       run: |
         npm install
-        npm install gulp-cli -g
     - name: Build develop version
       run: |
         ZIP=`npm run release-zip | grep Creating | cut -c10-`
