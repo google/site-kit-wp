@@ -51,10 +51,28 @@ jobs:
     - name: Build release version
       run: |
         npm run release-zip
-        mv *.zip ${{ github.ref }}/google-site-kit.zip
-    - name: Deploy build files to wiki
-      run: |
-        bash .github/release-to-wiki.sh
-      env:
-        GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
-        GIT_REF: ${{ github.ref }}
+        # mv *.zip ${{ github.ref }}/google-site-kit.zip
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: zip-files
+        path: ${{ github.ref }}
+
+  deploy-to-wiki:
+    runs-on: ubuntu-latest
+    needs: build-pr
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository }}.wiki
+      - name: Download artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: zip-files
+          path: ${{ github.ref }}
+      - name: Commit updates
+        run: |
+          git add .
+          git status
+          git commit -m "Build and publish ${{ github.ref }}"
+          git log --name-status HEAD^..HEAD
