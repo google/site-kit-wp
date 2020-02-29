@@ -75,8 +75,7 @@ jobs:
           git add .
           git status
           git commit -m "Build and publish ${{ github.ref }}"
-          git log --name-status HEAD^..HEAD
-          git push origin master --dry-run
+          git push origin master
         env:
           GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
           GIT_AUTHOR_NAME: ${{ github.actor }}
