@@ -51,7 +51,7 @@ jobs:
     - name: Build release version
       run: |
         npm run release-zip
-        # mv *.zip ${{ github.ref }}/google-site-kit.zip
+        mv *.zip ${{ github.ref }}/google-site-kit.zip
     - name: Upload artifacts
       uses: actions/upload-artifact@v1
       with:
