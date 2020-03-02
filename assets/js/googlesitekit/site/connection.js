@@ -41,7 +41,7 @@ export const actions = {
 };
 
 export const controls = {
-	[ FETCH_CONNECTION ]: async () => {
+	[ FETCH_CONNECTION ]: () => {
 		return get( 'core', 'site', 'connection' );
 	},
 };
@@ -95,11 +95,10 @@ export const resolvers = {
 };
 
 export const selectors = {
-	getConnection: ( /* state */ ) => {
-		return 'should fail';
-		// const { connection } = state;
+	getConnection( state ) {
+		const { connection } = state;
 
-		// return connection;
+		return connection;
 	},
 };
 

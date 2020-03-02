@@ -101,6 +101,10 @@ describe( 'core/site connection', () => {
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( connection ).toEqual( response );
+
+				const connectionSelect = registry.select( STORE_NAME ).getConnection();
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( connectionSelect ).toEqual( connection );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {

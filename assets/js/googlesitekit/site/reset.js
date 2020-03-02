@@ -48,7 +48,7 @@ export const actions = {
 	},
 };
 
-export const reducer = ( state = INITIAL_STATE, action = {} ) => {
+export const reducer = ( state, action ) => {
 	switch ( action.type ) {
 		case FETCH_RESET: {
 			return {
@@ -77,12 +77,6 @@ export const reducer = ( state = INITIAL_STATE, action = {} ) => {
 };
 
 export const selectors = {
-	getConnection: ( state ) => {
-		const { connection } = state;
-
-		return connection;
-	},
-
 	isResetting: ( state ) => {
 		const { isResetting } = state;
 
