@@ -136,7 +136,6 @@ class AdSenseDashboardMainSummary extends Component {
 											<Sparkline
 												data={ extractForSparkline( processedData.dataMap, 2 ) }
 												change={ 1 }
-												id="adsense-rpm-sparkline"
 												loadSmall={ false }
 											/>
 										}
@@ -161,7 +160,6 @@ class AdSenseDashboardMainSummary extends Component {
 											<Sparkline
 												data={ extractForSparkline( processedData.dataMap, 1 ) }
 												change={ 1 }
-												id="adsense-earnings-sparkline"
 												loadSmall={ false }
 											/>
 										}
@@ -184,7 +182,6 @@ class AdSenseDashboardMainSummary extends Component {
 											<Sparkline
 												data={ extractForSparkline( processedData.dataMap, 3 ) }
 												change={ 1 }
-												id="adsense-impressions-sparkline"
 												loadSmall={ false }
 											/>
 										}

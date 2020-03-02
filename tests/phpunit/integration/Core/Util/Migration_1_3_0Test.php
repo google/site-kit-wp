@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Core\Util;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Migration_1_3_0;
 use Google\Site_Kit\Core\Util\Tracking_Consent;
 use Google\Site_Kit\Tests\TestCase;
@@ -23,9 +24,15 @@ class Migration_1_3_0Test extends TestCase {
 	 */
 	protected $context;
 
+	/**
+	 * @var User_Options
+	 */
+	protected $user_options;
+
 	public function setUp() {
 		parent::setUp();
-		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->user_options = new User_Options( $this->context );
 		$this->delete_db_version();
 	}
 
@@ -81,7 +88,7 @@ class Migration_1_3_0Test extends TestCase {
 
 		$opted_in_users = $this->get_opted_in_users();
 		$this->assertCount( 1, $opted_in_users );
-		$this->assertEquals( $user_id, $opted_in_users[0]->ID );
+		$this->assertEquals( $user_id, $opted_in_users[0] );
 		$this->assertEquals( Migration_1_3_0::DB_VERSION, $this->get_db_version() );
 	}
 
@@ -90,35 +97,47 @@ class Migration_1_3_0Test extends TestCase {
 		remove_all_actions( 'admin_init' );
 		$migration->register();
 
+		$users_with_access_tokens    = array();
+		$users_without_access_tokens = array();
+
+		foreach ( range( 1, 40 ) as $i ) {
+			if ( $i % 2 ) {
+				$users_with_access_tokens[] = $this->create_user_with_access_token();
+			} else {
+				$users_without_access_tokens[] = $this->create_user_without_access_token();
+			}
+		}
+
 		$this->enable_global_tracking();
-		$this->create_user_with_access_token();
-		$this->create_user_with_access_token();
-		$this->assertCount( 2, $this->get_users_with_access_tokens() );
+
+		$this->assertCount( 20, $users_with_access_tokens );
+		$this->assertCount( 20, $users_without_access_tokens );
 
 		$migration->migrate();
 
-		$this->assertEmpty( $this->get_opted_in_users() );
+		$this->assertEqualSets(
+			$users_with_access_tokens,
+			$this->get_opted_in_users()
+		);
 		$this->assertEquals( Migration_1_3_0::DB_VERSION, $this->get_db_version() );
 	}
 
 	private function get_opted_in_users() {
-		global $wpdb;
-
 		return get_users(
 			array(
-				'meta_key'   => $wpdb->get_blog_prefix() . Tracking_Consent::OPTION,
+				'meta_key'   => $this->user_options->get_meta_key( Tracking_Consent::OPTION ),
 				'meta_value' => '1',
+				'fields'     => 'ID',
 			)
 		);
 	}
 
 	private function get_users_with_access_tokens() {
-		global $wpdb;
-
 		return get_users(
 			array(
-				'meta_key'     => $wpdb->get_blog_prefix() . OAuth_Client::OPTION_ACCESS_TOKEN,
+				'meta_key'     => $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ),
 				'meta_compare' => 'EXISTS',
+				'fields'       => 'ID',
 			)
 		);
 	}
@@ -129,7 +148,8 @@ class Migration_1_3_0Test extends TestCase {
 
 	private function create_user_with_access_token() {
 		$user_id = $this->factory()->user->create();
-		update_user_option( $user_id, OAuth_Client::OPTION_ACCESS_TOKEN, "test-access-token-$user_id" );
+		$this->user_options->switch_user( $user_id );
+		$this->user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN, "test-access-token-$user_id" );
 
 		return $user_id;
 	}

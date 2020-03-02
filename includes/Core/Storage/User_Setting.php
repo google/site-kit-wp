@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Storage;
 /**
  * Base class for a single user setting.
  *
- * @since n.e.x.t
+ * @since 1.4.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ abstract class User_Setting {
 	/**
 	 * User_Options_Interface implementation.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 * @var User_Options_Interface
 	 */
 	protected $user_options;
@@ -36,7 +36,7 @@ abstract class User_Setting {
 	/**
 	 * User_Setting constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param User_Options_Interface $user_options User_Options_Interface instance.
 	 */
@@ -47,7 +47,7 @@ abstract class User_Setting {
 	/**
 	 * Registers the setting in WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 */
 	public function register() {
 		register_meta(
@@ -64,7 +64,7 @@ abstract class User_Setting {
 	/**
 	 * Checks whether or not the setting exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return bool True on success, false on failure.
 	 */
@@ -79,7 +79,7 @@ abstract class User_Setting {
 	/**
 	 * Gets the value of the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return mixed Value set for the option, or default if not set.
 	 */
@@ -94,7 +94,7 @@ abstract class User_Setting {
 	/**
 	 * Sets the value of the setting with the given value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param mixed $value Setting value. Must be serializable if non-scalar.
 	 *
@@ -107,7 +107,7 @@ abstract class User_Setting {
 	/**
 	 * Deletes the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return bool True on success, false on failure.
 	 */
@@ -123,7 +123,7 @@ abstract class User_Setting {
 	 *
 	 * Valid values are 'string', 'boolean', 'integer', 'number', 'array', and 'object'.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return string The type name.
 	 */
@@ -137,7 +137,7 @@ abstract class User_Setting {
 	 * Returns an empty string by default for consistency with get_user_meta.
 	 * Override in a sub-class if different.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return mixed The default value.
 	 */
@@ -152,7 +152,7 @@ abstract class User_Setting {
 	 * Returns `null` for consistency with the default in register_meta.
 	 * Override in a sub-class.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return callable|null
 	 */

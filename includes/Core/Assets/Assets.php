@@ -761,7 +761,7 @@ final class Assets {
 	 * their potential inline additions. This method does the same for extra scripts, which are registered under the
 	 * 'data' key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param string $handle The handle of a registered script.
 	 */
