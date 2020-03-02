@@ -90,7 +90,6 @@ const webpackConfig = ( mode ) => {
 				// New Modules (Post-JSR).
 				'googlesitekit-api': './assets/js/googlesitekit-api.js',
 				'googlesitekit-data': './assets/js/googlesitekit-data.js',
-				// 'googlesitekit-site': './assets/js/googlesitekit-site.js',
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
 				'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
