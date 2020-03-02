@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -52,19 +53,21 @@ class Link extends Component {
 
 		return (
 			<SemanticLink
-				className={ `
-					googlesitekit-cta-link
-					${ className ? className : '' }
-					${ arrow ? 'googlesitekit-cta-link--arrow' : '' }
-					${ external ? 'googlesitekit-cta-link--external' : '' }
-					${ inverse ? 'googlesitekit-cta-link--inverse' : '' }
-					${ back ? 'googlesitekit-cta-link--back' : '' }
-					${ small ? 'googlesitekit-cta-link--small' : '' }
-					${ inherit ? 'googlesitekit-cta-link--inherit' : '' }
-					${ caps ? 'googlesitekit-cta-link--caps' : '' }
-					${ danger ? 'googlesitekit-cta-link--danger' : '' }
-					${ disabled ? 'googlesitekit-cta-link--disabled' : '' }
-				` }
+				className={ classnames(
+					'googlesitekit-cta-link',
+					className,
+					{
+						'googlesitekit-cta-link--arrow': arrow,
+						'googlesitekit-cta-link--external': external,
+						'googlesitekit-cta-link--inverse': inverse,
+						'googlesitekit-cta-link--back': back,
+						'googlesitekit-cta-link--small': small,
+						'googlesitekit-cta-link--inherit': inherit,
+						'googlesitekit-cta-link--caps': caps,
+						'googlesitekit-cta-link--danger': danger,
+						'googlesitekit-cta-link--disabled': disabled,
+					}
+				) }
 				onClick={ onClick }
 				id={ id }
 				href={ isAnchor ? href : undefined }
