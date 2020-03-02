@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { getTotalNotifications, incrementCount, decrementCount } from 'GoogleComponents/notifications/util';
 
 /**
@@ -84,7 +85,11 @@ class NotificationCounter extends Component {
 		);
 
 		const markup = (
-			<span className={ `googlesitekit-notifications-counter update-plugins count-${ this.state.count }` }>
+			<span className={ classnames(
+				'googlesitekit-notifications-counter',
+				'update-plugins',
+				`count-${ this.state.count }`
+			) }>
 				<span className="plugin-count" aria-hidden="true">{ this.state.count }</span>
 				<span className="screen-reader-text">{ screenReader }</span>
 			</span>

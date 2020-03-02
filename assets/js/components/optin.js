@@ -22,7 +22,7 @@
 import Checkbox from 'GoogleComponents/checkbox';
 import PropTypes from 'prop-types';
 import { getMetaKeyForUserOption } from 'GoogleUtil';
-
+import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
@@ -95,7 +95,10 @@ class OptIn extends Component {
 		} = this.props;
 
 		return (
-			<div className={ `googlesitekit-opt-in ${ className }` }>
+			<div className={ classnames(
+				'googlesitekit-opt-in',
+				className
+			) }>
 				<Checkbox
 					id={ id }
 					name={ name }
