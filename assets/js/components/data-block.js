@@ -26,7 +26,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Component, Fragment, cloneElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -73,6 +73,14 @@ class DataBlock extends Component {
 
 		const role = ( 'button' === context ) ? 'button' : '';
 
+		// The `sparkline` prop is passed as a component, but if `invertChangeColor`
+		// is set, we should pass that to `<Sparkline>`. In that case, we clone
+		// the element and add the prop.
+		let sparklineComponent = sparkline;
+		if ( sparklineComponent && invertChangeColor ) {
+			sparklineComponent = cloneElement( sparkline, { invertChangeColor } );
+		}
+
 		return (
 			<div
 				className={ classnames(
@@ -99,9 +107,9 @@ class DataBlock extends Component {
 						{ `${ datapoint }${ datapointUnit }` }
 					</div>
 				</div>
-				{ sparkline &&
+				{ sparklineComponent &&
 					<div className="googlesitekit-data-block__sparkline">
-						{ sparkline }
+						{ sparklineComponent }
 					</div>
 				}
 				<div className="googlesitekit-data-block__change-source-wrapper">

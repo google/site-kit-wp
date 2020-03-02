@@ -44,7 +44,7 @@ final class Admin_Bar {
 	/**
 	 * Modules instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 * @var Modules
 	 */
 	private $modules;
