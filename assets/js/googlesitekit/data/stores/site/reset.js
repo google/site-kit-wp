@@ -77,7 +77,7 @@ export const reducer = ( state, action ) => {
 };
 
 export const selectors = {
-	isResetting: ( state ) => {
+	isDoingReset: ( state ) => {
 		const { isResetting } = state;
 
 		return isResetting;

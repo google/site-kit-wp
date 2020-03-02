@@ -39,7 +39,7 @@ describe( 'core/site reset', () => {
 
 	describe( 'actions', () => {
 		describe( 'fetchReset', () => {
-			it( 'sets isResetting ', async () => {
+			it( 'sets isDoingReset ', async () => {
 				const response = true;
 				fetch
 					.doMockOnceIf(
@@ -51,7 +51,7 @@ describe( 'core/site reset', () => {
 					);
 
 				registry.dispatch( STORE_NAME ).fetchReset();
-				expect( registry.select( STORE_NAME ).isResetting() ).toEqual( true );
+				expect( registry.select( STORE_NAME ).isDoingReset() ).toEqual( true );
 			} );
 		} );
 
