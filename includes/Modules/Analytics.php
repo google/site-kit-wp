@@ -1191,6 +1191,17 @@ final class Analytics extends Module
 	}
 
 	/**
+	 * Gets the hostname of the home URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string
+	 */
+	private function get_home_domain() {
+		return wp_parse_url( home_url(), PHP_URL_HOST );
+	}
+
+	/**
 	 * Sets up the module's settings instance.
 	 *
 	 * @since 1.2.0
