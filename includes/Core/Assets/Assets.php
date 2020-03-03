@@ -355,7 +355,7 @@ final class Assets {
 			new Script_Data(
 				'googlesitekit-base-data',
 				array(
-					'global'        => '_googlesitekitBase',
+					'global'        => '_googlesitekitBaseData',
 					'data_callback' => function () {
 						return $this->get_inline_base_data();
 					},
