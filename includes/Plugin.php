@@ -156,6 +156,7 @@ final class Plugin {
 				( new Core\Admin\Notices() )->register();
 				( new Core\Admin\Dashboard( $this->context, $assets ) )->register();
 				( new Core\Notifications\Notifications( $this->context, $options ) )->register();
+				( new Core\Util\Debug_Data( $this->context, $options, $user_options, $authentication, $modules ) )->register();
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(
@@ -180,7 +181,6 @@ final class Plugin {
 		( new Core\Util\Activation( $this->context, $options, $assets ) )->register();
 		( new Core\Util\Migration_1_3_0( $this->context, $options ) )->register();
 		( new Core\Util\Reset( $this->context ) )->register();
-		( new Core\Util\Debug_Data( $this->context ) )->register();
 		( new Core\Util\Developer_Plugin_Installer( $this->context ) )->register();
 	}
 

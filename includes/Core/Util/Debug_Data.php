@@ -38,6 +38,30 @@ class Debug_Data {
 	private $context;
 
 	/**
+	 * Options instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Options
+	 */
+	private $options;
+
+	/**
+	 * User_Options instance.
+	 *
+	 * @since n.e.x.t
+	 * @var User_Options
+	 */
+	private $user_options;
+
+	/**
+	 * Authentication instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Authentication
+	 */
+	private $authentication;
+
+	/**
 	 * Modules instance.
 	 *
 	 * @since n.e.x.t
@@ -50,11 +74,24 @@ class Debug_Data {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Context $context Context instance.
+	 * @param Context        $context        Context instance.
+	 * @param Options        $options        Optional. Options instance. Default is a new instance.
+	 * @param User_Options   $user_options   Optional. User_Options instance. Default is a new instance.
+	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Modules        $modules        Optional. Modules instance. Default is a new instance.
 	 */
-	public function __construct( Context $context ) {
-		$this->context = $context;
-		$this->modules = new Modules( $context );
+	public function __construct(
+		Context $context,
+		Options $options = null,
+		User_Options $user_options = null,
+		Authentication $authentication = null,
+		Modules $modules = null
+	) {
+		$this->context        = $context;
+		$this->options        = $options ?: new Options( $this->context );
+		$this->user_options   = $user_options ?: new User_Options( $this->context );
+		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
+		$this->modules        = $modules ?: new Modules( $this->context, $this->options, $this->user_options, $this->authentication );
 	}
 
 	/**
