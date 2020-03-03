@@ -100,12 +100,6 @@ final class Analytics extends Module
 		// For AMP Reader, AMP plugin version <1.3.
 		add_action( 'amp_post_template_footer', $print_amp_gtag, 20 );
 
-		$print_amp_client_id_optin = function() {
-			$this->print_amp_client_id_optin();
-		};
-		add_action( 'wp_head', $print_amp_client_id_optin ); // For AMP Native and Transitional.
-		add_action( 'amp_post_template_head', $print_amp_client_id_optin ); // For AMP Reader.
-
 		add_filter( // Load amp-analytics component for AMP Reader.
 			'amp_post_template_data',
 			function( $data ) {
@@ -375,33 +369,6 @@ final class Analytics extends Module
 			</script>
 		</amp-analytics>
 		<?php
-	}
-
-	/**
-	 * Adds an additional meta tag for AMP content if opted in.
-	 *
-	 * @since 1.0.0
-	 */
-	protected function print_amp_client_id_optin() {
-		if ( ! $this->context->is_amp() ) {
-			return;
-		}
-
-		$use_snippet = $this->get_data( 'use-snippet' );
-		if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
-			return;
-		}
-
-		$amp_client_id_optin = $this->get_data( 'amp-client-id-opt-in' );
-		if ( is_wp_error( $amp_client_id_optin ) || ! $amp_client_id_optin ) {
-			return;
-		}
-
-		if ( $this->is_tracking_disabled() ) {
-			return;
-		}
-
-		echo '<meta name="amp-google-client-id-api" content="googleanalytics">';
 	}
 
 	/**
