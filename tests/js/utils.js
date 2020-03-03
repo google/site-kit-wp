@@ -4,6 +4,11 @@
 import { castArray } from 'lodash';
 
 /**
+ * Internal dependencies
+ */
+import { registerOn as siteStoreRegisterOn } from 'assets/js/googlesitekit/datastore/site';
+
+/**
  * Mute a given console during tests.
  *
  * Use this to mute expect console output during tests for things like
@@ -18,6 +23,20 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
 	Array.from( { length: times } ).forEach( () => {
 		global.console[ type ].mockImplementationOnce( () => jest.fn() );
 	} );
+};
+
+/**
+ * Register all Site Kit stores on a registry.
+ *
+ * Use this to register every available Site Kit store on a registry.
+ * Useful for testing, when you want to ensure that every registry is
+ * available for connected components and data store tests to use.
+ *
+ * @param {wp.data.registry} registry Registry to register each store on.
+ * @return {void}
+ */
+export const registerAllStoresOn = ( registry ) => {
+	siteStoreRegisterOn( registry );
 };
 
 const unsubscribes = [];

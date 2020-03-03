@@ -11,9 +11,9 @@ import { createRegistry } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import { registerSiteKitStores } from 'assets/js/googlesitekit/data/store';
 import {
 	muteConsole,
+	registerAllStoresOn,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
@@ -27,7 +27,7 @@ describe( 'core/site reset', () => {
 
 	beforeEach( () => {
 		registry = createRegistry();
-		registerSiteKitStores( registry );
+		registerAllStoresOn( registry );
 
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );

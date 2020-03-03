@@ -50,4 +50,8 @@ const store = {
 	selectors,
 };
 
+export const registerOn = ( registry ) => {
+	registry.registerStore( STORE_NAME, store );
+};
+
 export default store;

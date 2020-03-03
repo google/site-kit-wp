@@ -349,7 +349,7 @@ final class Assets {
 					'src'          => false,
 					'before_print' => function( $handle ) {
 						$data = wp_scripts()->get_data( $handle, 'data' ) ?: '';
-						$script = 'var googlesitekit = ' . wp_json_encode( $this->get_inline_data() ) . ';';
+						$script = 'window.googlesitekit = ' . wp_json_encode( $this->get_inline_data() ) . ';';
 
 						wp_scripts()->add_data( $handle, 'data', $script . $data );
 					},
@@ -402,6 +402,13 @@ final class Assets {
 				array(
 					'src'          => $base_url . 'js/googlesitekit-data.js',
 					'dependencies' => array( 'googlesitekit-api' ),
+				)
+			),
+			new Script(
+				'googlesitekit-datastore-site',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-site.js',
+					'dependencies' => array( 'googlesitekit-data' ),
 				)
 			),
 			// End JSR Assets.

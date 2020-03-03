@@ -11,8 +11,7 @@ import { createRegistry } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import { registerSiteKitStores } from 'assets/js/googlesitekit/data/store';
-import { unsubscribeFromAll } from 'tests/js/utils';
+import { registerAllStoresOn, unsubscribeFromAll } from 'tests/js/utils';
 import {
 	INITIAL_STATE,
 	STORE_NAME,
@@ -25,7 +24,7 @@ describe( 'core/site store', () => {
 
 	beforeEach( () => {
 		registry = createRegistry();
-		registerSiteKitStores( registry );
+		registerAllStoresOn( registry );
 		store = registry.stores[ STORE_NAME ].store;
 
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
