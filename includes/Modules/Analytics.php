@@ -343,6 +343,9 @@ final class Analytics extends Module
 				'config'  => array(
 					$tracking_id => array(
 						'groups' => 'default',
+						'linker' => array(
+							'domains' => array( $this->get_home_domain() ),
+						),
 					),
 				),
 			),
