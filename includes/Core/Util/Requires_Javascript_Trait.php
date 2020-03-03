@@ -20,16 +20,11 @@ namespace Google\Site_Kit\Core\Util;
 trait Requires_Javascript_Trait {
 
 	/**
-	 * Display fallback message when Javascript is disabled
+	 * Outputs a fallback message when Javascript is disabled.
 	 *
 	 * @since n.e.x.t
-	 *
-	 * @return string noscript HTML tag,
 	 */
-	protected function get_noscript_html() {
-
-		ob_start();
-
+	protected function render_noscript_html() {
 		?>
 			<noscript>
 				<div class="googlesitekit-noscript notice notice-warning">
@@ -47,7 +42,5 @@ trait Requires_Javascript_Trait {
 				</div>
 			</noscript>
 		<?php
-
-		return ob_get_clean();
 	}
 }
