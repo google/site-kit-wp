@@ -117,11 +117,11 @@ class Debug_Data {
 	 *
 	 * @param string $string     Input string to redact.
 	 * @param int    $mask_start Starting position of redaction and length of preserved characters.
-	 *                             If negative, characters are redacted from the beginning preserving the last X characters.
 	 *                             If positive, characters are redacted from the end, preserving the first X characters.
+	 *                             If negative, characters are redacted from the beginning preserving the last X characters.
 	 * @return string
 	 */
-	public static function redact_debug_value( $string, $mask_start = -4 ) {
+	public static function redact_debug_value( $string, $mask_start = 4 ) {
 		if ( ! is_scalar( $string ) ) {
 			return '';
 		}
