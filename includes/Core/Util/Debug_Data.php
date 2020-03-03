@@ -12,12 +12,9 @@ namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
-use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Modules;
-use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 
@@ -215,9 +212,8 @@ class Debug_Data {
 	 * @return array
 	 */
 	private function get_site_status_field() {
-		$credentials  = new Credentials( new Encrypted_Options( new Options( $this->context ) ) );
-		$is_connected = $credentials->has();
-		$using_proxy  = ( new Authentication( $this->context ) )->get_oauth_client()->using_proxy();
+		$is_connected = $this->authentication->credentials()->has();
+		$using_proxy  = $this->authentication->get_oauth_client()->using_proxy();
 		$status_map   = array(
 			'connected-site'  => __( 'Connected through site credentials', 'google-site-kit' ),
 			'connected-oauth' => __( 'Connected through OAuth client credentials', 'google-site-kit' ),
@@ -247,10 +243,7 @@ class Debug_Data {
 	 * @return array
 	 */
 	private function get_user_status_field() {
-		$user_options      = new User_Options( $this->context );
-		$has_auth_token    = (bool) $user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN );
-		$has_refresh_token = (bool) $user_options->get( OAuth_Client::OPTION_REFRESH_TOKEN );
-		$is_connected      = $has_auth_token && $has_refresh_token;
+		$is_connected = $this->authentication->is_authenticated();
 
 		return array(
 			'label' => __( 'User Status', 'google-site-kit' ),
