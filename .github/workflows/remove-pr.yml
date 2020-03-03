@@ -12,10 +12,10 @@ jobs:
           repository: ${{ github.repository }}.wiki
       - name: Prune PR files
         run: |
-          rm -rf ${{ github.ref }}
+          rm -rf ${{ github.head_ref }}
           git add .
           git status
-          git commit -m "Prune ${{ github.ref }}"
+          git commit -m "Prune ${{ github.head_ref }}"
           git push origin master
         env:
           GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
