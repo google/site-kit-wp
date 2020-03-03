@@ -262,6 +262,12 @@ final class Analytics extends Module
 
 		$gtag_opt = array();
 
+		if ( $this->context->get_amp_mode() ) {
+			$gtag_opt['linker'] = array(
+				'domains' => array( $this->get_home_domain() ),
+			);
+		}
+
 		$anonymize_ip = $this->get_data( 'anonymize-ip' );
 		if ( ! is_wp_error( $anonymize_ip ) && $anonymize_ip ) {
 			// See https://developers.google.com/analytics/devguides/collection/gtagjs/ip-anonymization.
@@ -280,6 +286,14 @@ final class Analytics extends Module
 		 * @param array $gtag_opt gtag config options.
 		 */
 		$gtag_opt = apply_filters( 'googlesitekit_gtag_opt', $gtag_opt );
+
+		if ( ! empty( $gtag_opt['linker'] ) ) {
+			wp_add_inline_script(
+				'google_gtagjs',
+				'gtag(\'set\', \'linker\', ' . wp_json_encode( $gtag_opt['linker'] ) . ' );'
+			);
+		}
+		unset( $gtag_opt['linker'] );
 
 		if ( empty( $gtag_opt ) ) {
 			wp_add_inline_script(
