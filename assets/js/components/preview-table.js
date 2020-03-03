@@ -21,6 +21,7 @@
  */
 import PreviewBlock from 'GoogleComponents/preview-block';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -47,10 +48,10 @@ class PreviewTable extends Component {
 		}
 
 		return (
-			<div className={ `
-				googlesitekit-preview-table
-				${ padding ? 'googlesitekit-preview-table--padding' : '' }
-			` }>
+			<div className={ classnames(
+				'googlesitekit-preview-table',
+				{ 'googlesitekit-preview-table--padding': padding }
+			) }>
 				{ rowData }
 			</div>
 		);

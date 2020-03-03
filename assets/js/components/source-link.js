@@ -21,6 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import Link from 'GoogleComponents/link';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -33,7 +34,10 @@ class SourceLink extends Component {
 		const { name, href, className, external } = this.props;
 
 		return (
-			<div className={ `googlesitekit-source-link ${ className }` }>
+			<div className={ classnames(
+				'googlesitekit-source-link',
+				className
+			) }>
 				{ [
 					__( 'Source:', 'google-site-kit' ),
 					' ',

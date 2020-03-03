@@ -21,6 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import SourceLink from 'GoogleComponents/source-link';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -82,12 +83,12 @@ class DataBlock extends Component {
 
 		return (
 			<div
-				className={ `
-					googlesitekit-data-block
-					googlesitekit-data-block--${ context }
-					${ selected ? 'googlesitekit-data-block--selected' : '' }
-					${ className }
-				` }
+				className={ classnames(
+					'googlesitekit-data-block',
+					className,
+					`googlesitekit-data-block--${ context }`,
+					{ 'googlesitekit-data-block--selected': selected },
+				) }
 				tabIndex={ 'button' === context ? '0' : '-1' }
 				role={ handleStatSelection && role }
 				onClick={ handleStatSelection && this.handleClick }
