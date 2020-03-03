@@ -84,7 +84,7 @@ class GoogleChart extends Component {
 
 	async componentDidMount() {
 		await loadCharts();
-		global.google.charts.load( 'visualization', '1', {
+		global.google.charts.load( 'current', {
 			packages: [ 'corechart' ],
 		} );
 		global.google.charts.setOnLoadCallback( this.onChartsLoad );
