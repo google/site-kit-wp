@@ -21,6 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import Link from 'GoogleComponents/link';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -36,13 +37,17 @@ class LayoutHeader extends Component {
 					<div className="mdc-layout-grid__inner">
 						{ title &&
 							<div
-								className={ `
-									mdc-layout-grid__cell
-									${ ctaLink ? 'mdc-layout-grid__cell--span-6-desktop' : 'mdc-layout-grid__cell--span-12-desktop' }
-									mdc-layout-grid__cell--align-middle
-									${ ctaLink ? '' : 'mdc-layout-grid__cell--span-8-tablet' }
-									mdc-layout-grid__cell--span-4-phone
-								` }>
+								className={ classnames(
+									'mdc-layout-grid__cell',
+									'mdc-layout-grid__cell--align-middle',
+									'mdc-layout-grid__cell--span-4-phone',
+									{
+										'mdc-layout-grid__cell--span-6-desktop': ctaLink,
+										'mdc-layout-grid__cell--span-12-desktop': ! ctaLink,
+										'mdc-layout-grid__cell--span-8-tablet': ! ctaLink,
+									},
+								) }
+							>
 								<h3 className="googlesitekit-subheading-1 googlesitekit-layout__header-title">
 									{ title }
 								</h3>

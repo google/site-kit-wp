@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
 /**
  * Class managing a user's anonymous usage tracking consent.
  *
- * @since n.e.x.t
+ * @since 1.4.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ class Tracking_Consent extends User_Setting {
 	/**
 	 * Registers the setting in WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 */
 	public function register() {
 		register_meta(
@@ -50,7 +50,7 @@ class Tracking_Consent extends User_Setting {
 	/**
 	 * Gets the value of the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return bool Whether or not the current user has consented to anonymous tracking.
 	 */
@@ -61,7 +61,7 @@ class Tracking_Consent extends User_Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return string The type name.
 	 */
@@ -72,7 +72,7 @@ class Tracking_Consent extends User_Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @return bool The default value.
 	 */

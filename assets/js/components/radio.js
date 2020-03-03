@@ -21,6 +21,7 @@
  */
 import { MDCFormField, MDCRadio } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -45,10 +46,10 @@ class Radio extends Component {
 		return (
 			<div className="mdc-form-field" ref={ this.formFieldRef }>
 				<div
-					className={ `
-						mdc-radio
-						${ disabled ? 'mdc-radio--disabled' : '' }
-					` }
+					className={ classnames(
+						'mdc-radio',
+						{ 'mdc-radio--disabled': disabled }
+					) }
 					ref={ this.radioRef }
 				>
 					<input

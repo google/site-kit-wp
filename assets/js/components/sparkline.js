@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { withInstanceId } from '@wordpress/compose';
 import { Component } from '@wordpress/element';
 
 class Sparkline extends Component {
@@ -32,7 +33,8 @@ class Sparkline extends Component {
 		const {
 			data,
 			change,
-			id,
+			instanceId,
+			invertChangeColor,
 			loadSmall,
 			loadCompressed,
 			loadHeight,
@@ -42,6 +44,9 @@ class Sparkline extends Component {
 		if ( ! data ) {
 			return 'loading...';
 		}
+
+		const positiveColor = ! invertChangeColor ? 'green' : 'red';
+		const negativeColor = ! invertChangeColor ? 'red' : 'green';
 
 		const chartOptions = {
 			title: '',
@@ -66,7 +71,7 @@ class Sparkline extends Component {
 			},
 			axes: [],
 			colors: [
-				0 <= +change ? 'green' : 'red', // Converts change to number.
+				0 <= ( parseFloat( change ) || 0 ) ? positiveColor : negativeColor,
 			],
 		};
 
@@ -75,7 +80,7 @@ class Sparkline extends Component {
 				<GoogleChart
 					data={ data }
 					options={ chartOptions }
-					id={ id }
+					id={ `googlesitekit-sparkline-${ instanceId }` }
 					loadSmall={ loadSmall }
 					loadCompressed={ loadCompressed }
 					loadHeight={ loadHeight }
@@ -87,6 +92,8 @@ class Sparkline extends Component {
 }
 
 Sparkline.propTypes = {
+	instanceId: PropTypes.number.isRequired,
+	invertChangeColor: PropTypes.bool,
 	loadSmall: PropTypes.bool,
 	loadCompressed: PropTypes.bool,
 	loadHeight: PropTypes.number,
@@ -94,10 +101,11 @@ Sparkline.propTypes = {
 };
 
 Sparkline.defaultProps = {
+	invertChangeColor: false,
 	loadSmall: true,
 	loadCompressed: true,
 	loadHeight: 46,
 	loadText: false,
 };
 
-export default Sparkline;
+export default withInstanceId( Sparkline );

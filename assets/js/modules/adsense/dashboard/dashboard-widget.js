@@ -22,6 +22,7 @@
 import Header from 'GoogleComponents/header';
 import PageHeader from 'GoogleComponents/page-header';
 import Layout from 'GoogleComponents/layout/layout';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -139,7 +140,7 @@ class AdSenseDashboardWidget extends Component {
 		return (
 			<Fragment>
 				<Header />
-				<div className={ `${ wrapperClass }` }>
+				<div className={ wrapperClass }>
 					<Alert module="adsense" />
 				</div>
 
@@ -184,11 +185,11 @@ class AdSenseDashboardWidget extends Component {
 							{ ! receivingData && (
 								error ? getDataErrorComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( _x( 'AdSense', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
-							<div className={ `
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								${ wrapperClass }
-							` } >
+							<div className={ classnames(
+								'mdc-layout-grid__cell',
+								'mdc-layout-grid__cell--span-12',
+								wrapperClass
+							) }>
 								<ModuleSettingsWarning slug="adsense" context="module-dashboard" />
 								<Layout
 									header
@@ -202,11 +203,11 @@ class AdSenseDashboardWidget extends Component {
 									/>
 								</Layout>
 							</div>
-							<div className={ `
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								${ wrapperClass }
-							` } >
+							<div className={ classnames(
+								'mdc-layout-grid__cell',
+								'mdc-layout-grid__cell--span-12',
+								wrapperClass
+							) }>
 								<Layout
 									header
 									title={ __( 'Performance over previous 28 days', 'google-site-kit' ) }
@@ -223,11 +224,11 @@ class AdSenseDashboardWidget extends Component {
 									/>
 								</Layout>
 							</div>
-							<div className={ `
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								${ wrapperClass }
-							` } >
+							<div className={ classnames(
+								'mdc-layout-grid__cell',
+								'mdc-layout-grid__cell--span-12',
+								wrapperClass
+							) }>
 								<DashboardAdSenseTopPages />
 							</div>
 							<div className="

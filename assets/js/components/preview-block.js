@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -37,21 +38,20 @@ class PreviewBlock extends Component {
 
 		return (
 			<div
-				className={ `
-					googlesitekit-preview-block
-					${ padding ? 'googlesitekit-preview-block--padding' : '' }
-				` }
+				className={ classnames(
+					'googlesitekit-preview-block',
+					{ 'googlesitekit-preview-block--padding': padding }
+				) }
 				style={ {
 					width,
 					height,
 				} }
 			>
-				<div
-					className={ `
-					googlesitekit-preview-block__wrapper
-					${ 'circular' === shape ? 'googlesitekit-preview-block__wrapper--circle' : '' }
-				` }
-				></div>
+				<div className={ classnames(
+					'googlesitekit-preview-block__wrapper',
+					{ 'googlesitekit-preview-block__wrapper--circle': shape === 'circular' }
+				) }>
+				</div>
 			</div>
 		);
 	}
