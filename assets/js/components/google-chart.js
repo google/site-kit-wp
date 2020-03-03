@@ -85,6 +85,7 @@ class GoogleChart extends Component {
 			// When the google chart object loaded, draw chart now.
 			global.google.charts.setOnLoadCallback( this.onChartsLoad );
 		}
+		this.resize = debounce( this.drawChart, 100 );
 	}
 
 	onChartsLoad() {
@@ -95,12 +96,6 @@ class GoogleChart extends Component {
 	}
 
 	componentDidMount() {
-		const self = this;
-
-		this.resize = debounce( function() {
-			self.drawChart();
-		}, 100 );
-
 		global.addEventListener( 'resize', this.resize );
 	}
 
