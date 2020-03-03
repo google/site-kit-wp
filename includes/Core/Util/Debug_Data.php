@@ -262,16 +262,16 @@ class Debug_Data {
 	 * @return array
 	 */
 	private function get_active_modules_field() {
-		$module_slugs = wp_list_pluck( $this->modules->get_active_modules(), 'slug' );
+		$active_modules = $this->modules->get_active_modules();
 
 		return array(
 			'label' => __( 'Active Modules', 'google-site-kit' ),
 			'value' => join(
 				/* translators: used between list items, there is a space after the comma. */
 				__( ', ', 'google-site-kit' ),
-				$module_slugs
+				wp_list_pluck( $active_modules, 'name' )
 			),
-			'debug' => join( ', ', $module_slugs ),
+			'debug' => join( ', ', wp_list_pluck( $active_modules, 'slug' ) ),
 		);
 	}
 
