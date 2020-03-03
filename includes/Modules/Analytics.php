@@ -411,7 +411,6 @@ final class Analytics extends Module
 			'profile-id'                   => '',
 			'internal-web-property-id'     => '',
 			'use-snippet'                  => '',
-			'amp-client-id-opt-in'         => '',
 			'tracking-disabled'            => '',
 			// GET.
 			'anonymize-ip'                 => '',
@@ -462,21 +461,6 @@ final class Analytics extends Module
 				};
 			case 'GET:accounts-properties-profiles':
 				return $this->get_service( 'analytics' )->management_accounts->listManagementAccounts();
-			case 'GET:amp-client-id-opt-in':
-				return function() {
-					$option = $this->get_settings()->get();
-
-					return ! empty( $option['ampClientIDOptIn'] );
-				};
-			case 'POST:amp-client-id-opt-in':
-				if ( ! isset( $data['ampClientIDOptIn'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampClientIDOptIn' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$this->get_settings()->merge( array( 'ampClientIDOptIn' => $data['ampClientIDOptIn'] ) );
-					return true;
-				};
 			case 'GET:anonymize-ip':
 				return function() {
 					$option = $this->get_settings()->get();

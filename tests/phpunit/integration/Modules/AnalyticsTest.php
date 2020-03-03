@@ -136,7 +136,6 @@ class AnalyticsTest extends TestCase {
 				'profile-id',
 				'internal-web-property-id',
 				'use-snippet',
-				'amp-client-id-opt-in',
 				'goals',
 				'accounts-properties-profiles',
 				'properties-profiles',
