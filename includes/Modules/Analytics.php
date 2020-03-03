@@ -812,7 +812,6 @@ final class Analytics extends Module
 							'profileID'             => $profile_id,
 							'useSnippet'            => ! empty( $data['useSnippet'] ),
 							'anonymizeIP'           => (bool) $data['anonymizeIP'],
-							'ampClientIDOptIn'      => ! empty( $data['ampClientIDOptIn'] ),
 							'trackingDisabled'      => (array) $data['trackingDisabled'],
 							'adsenseLinked'         => false,
 						)

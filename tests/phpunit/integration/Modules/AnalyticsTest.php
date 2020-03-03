@@ -88,7 +88,6 @@ class AnalyticsTest extends TestCase {
 		$this->assertArrayHasKey( 'profileID', $info['settings'] );
 		$this->assertArrayHasKey( 'internalWebPropertyID', $info['settings'] );
 		$this->assertArrayHasKey( 'useSnippet', $info['settings'] );
-		$this->assertArrayHasKey( 'ampClientIDOptIn', $info['settings'] );
 		$this->assertArrayHasKey( 'trackingDisabled', $info['settings'] );
 	}
 

@@ -253,7 +253,6 @@ add_action(
 						'profileID'             => $request['profileID'] ?: time(),  // fake a new profile ID if empty
 						'useSnippet'            => ! empty( $request['useSnippet'] ),
 						'anonymizeIP'           => isset( $request['anonymizeIP'] ) ? (bool) $request['anonymizeIP'] : true,
-						'ampClientIDOptIn'      => ! empty( $request['ampClientIDOptIn'] ),
 					);
 					update_option( 'googlesitekit_analytics_settings', $option );
 
