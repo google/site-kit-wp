@@ -87,7 +87,6 @@ class OptimizeTest extends TestCase {
 			array(
 				'optimize-id',
 				'amp-experiment-json',
-				'amp-client-id-opt-in',
 				'settings',
 			),
 			$optimize->get_datapoints()
