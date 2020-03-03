@@ -177,7 +177,7 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 			'optimize_id' => array(
 				'label' => __( 'Optimize ID', 'google-site-kit' ),
 				'value' => $settings['optimizeID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['optimizeID'] ),
+				'debug' => Debug_Data::redact_debug_value( $settings['optimizeID'], 7 ),
 			),
 		);
 	}

@@ -200,12 +200,12 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			'tagmanager_container_id'     => array(
 				'label' => __( 'Tag Manager container ID', 'google-site-kit' ),
 				'value' => $settings['containerID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['containerID'] ),
+				'debug' => Debug_Data::redact_debug_value( $settings['containerID'], 7 ),
 			),
 			'tagmanager_amp_container_id' => array(
 				'label' => __( 'Tag Manager AMP container ID', 'google-site-kit' ),
 				'value' => $settings['ampContainerID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['ampContainerID'] ),
+				'debug' => Debug_Data::redact_debug_value( $settings['ampContainerID'], 7 ),
 			),
 			'tagmanager_use_snippet'      => array(
 				'label' => __( 'Tag Manager snippet placed', 'google-site-kit' ),

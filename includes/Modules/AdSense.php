@@ -246,12 +246,12 @@ tag_partner: "site_kit"
 			'adsense_account_id'     => array(
 				'label' => __( 'AdSense account ID', 'google-site-kit' ),
 				'value' => $settings['accountID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
+				'debug' => Debug_Data::redact_debug_value( $settings['accountID'], 7 ),
 			),
 			'adsense_client_id'      => array(
 				'label' => __( 'AdSense client ID', 'google-site-kit' ),
 				'value' => $settings['clientID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['clientID'] ),
+				'debug' => Debug_Data::redact_debug_value( $settings['clientID'], 10 ),
 			),
 			'adsense_account_status' => array(
 				'label' => __( 'AdSense account status', 'google-site-kit' ),

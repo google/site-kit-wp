@@ -243,7 +243,7 @@ final class Analytics extends Module
 			'analytics_property_id' => array(
 				'label' => __( 'Analytics property ID', 'google-site-kit' ),
 				'value' => $settings['propertyID'],
-				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'] ),
+				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
 			'analytics_profile_id'  => array(
 				'label' => __( 'Analytics profile ID', 'google-site-kit' ),
