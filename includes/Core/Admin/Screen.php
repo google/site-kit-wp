@@ -206,7 +206,7 @@ final class Screen {
 		?>
 		<div class="googlesitekit-plugin">
 			<?php
-				echo $this->get_noscript_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				$this->render_noscript_html();
 
 				call_user_func( $this->args['render_callback'], $context );
 			?>

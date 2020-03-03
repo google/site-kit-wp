@@ -158,7 +158,8 @@ final class Activation {
 					ob_start();
 					?>
 					<div class="googlesitekit-plugin">
-						<?php echo $this->get_noscript_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						<?php $this->render_noscript_html(); ?>
+
 						<div id="js-googlesitekit-activation" class="googlesitekit-activation googlesitekit-activation--loading">
 							<div class="googlesitekit-activation__loading">
 								<div role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
