@@ -15,6 +15,7 @@ jobs:
           rm -rf ${{ github.head_ref }}
           git add .
           git status
+          git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
           git commit -m "Prune ${{ github.head_ref }}"
           git push origin master
         env:
