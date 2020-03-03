@@ -200,7 +200,7 @@ class Debug_Data {
 		return array(
 			'label' => __( 'AMP Mode', 'google-site-kit' ),
 			'value' => isset( $mode_map[ $mode ] ) ? $mode_map[ $mode ] : __( 'No', 'google-site-kit' ),
-			'debug' => $mode,
+			'debug' => isset( $mode_map[ $mode ] ) ? $mode : 'no',
 		);
 	}
 
