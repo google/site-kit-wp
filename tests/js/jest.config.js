@@ -10,7 +10,7 @@ module.exports = {
 	coveragePathIgnorePatterns: [
 		'<rootDir>/build/',
 		'<rootDir>/node_modules/',
-		'assets/js/googlesitekit-*.js',
+		'<rootDir>/assets/js/googlesitekit-(.*)\.js',
 	],
 	coverageReporters: [
 		'html',
