@@ -350,7 +350,7 @@ final class Assets {
 					'src'          => false,
 					'before_print' => function( $handle ) {
 						$data = wp_scripts()->get_data( $handle, 'data' ) ?: '';
-						$script = 'window.googlesitekit = ' . wp_json_encode( $this->get_inline_data() ) . ';';
+						$script = 'var googlesitekit = ' . wp_json_encode( $this->get_inline_data() ) . ';';
 
 						wp_scripts()->add_data( $handle, 'data', $script . $data );
 					},
