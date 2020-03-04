@@ -9,14 +9,20 @@ import apiFetch from '@wordpress/api-fetch';
 // eslint-disable-next-line @wordpress/dependency-group
 import { muteConsole, unexpectedSuccess } from 'tests/js/utils';
 import * as CacheModule from './cache';
-import { setSelectedStorageBackend } from './cache.private';
-import { invalidateCache, usingCache, get, set, setUsingCache } from './index';
-import { createCacheKey, siteKitRequest } from './index.private';
+import {
+	createCacheKey,
+	get,
+	invalidateCache,
+	set,
+	setUsingCache,
+	siteKitRequest,
+	usingCache,
+} from './index';
 
 describe( 'googlesitekit.api', () => {
 	// We import the entire caching module so we can use
 	// `jest.spyOn(CacheModule, 'getItem')` to monitor caching calls.
-	const { getItem, setItem } = CacheModule;
+	const { getItem, setItem, setSelectedStorageBackend } = CacheModule;
 	let storageMechanism;
 
 	let apiFetchSpy;
