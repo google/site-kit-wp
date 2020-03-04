@@ -23,6 +23,19 @@ import invariant from 'invariant';
 
 const INITIALIZE = 'INITIALIZE';
 
+/**
+ * Collect and combine multiple objects of similar shape.
+ *
+ * Used to combine objects like actions, selectors, etc. for a data
+ * store while ensuring no keys/action names/selector names are duplicated.
+ *
+ * Effectively this is an object spread, but throws an error if keys are
+ * duplicated.
+ *
+ * @private
+ * @param {Object} ...items A list of arguments, each one should be an object to combine into one.
+ * @return {Object} The combined object.
+ */
 export const collect = ( ...items ) => {
 	const collectedObject = items.reduce( ( acc, item ) => {
 		return { ...acc, ...item };
@@ -38,6 +51,14 @@ export const collect = ( ...items ) => {
 	return collectedObject;
 };
 
+/**
+ * An initialize action.
+ *
+ * Generic action used by all stores. Dispatching it returns the store
+ * to its INITIAL_STATE.
+ *
+ * @return {Object} An initialize action.
+ */
 export const initializeAction = () => {
 	return {
 		payload: {},
@@ -45,14 +66,36 @@ export const initializeAction = () => {
 	};
 };
 
+/**
+ * Collect all actions and add an initialize action.
+ *
+ * @param {Object} ...args A list of objects, each containing their own actions.
+ * @return {Object} The combined object.
+ */
 export const collectActions = ( ...args ) => {
 	return collect( ...args, {
 		initialize: initializeAction,
 	} );
 };
 
+/**
+ * Collect all controls.
+ *
+ * @param {Object} ...args A list of objects, each containing their own controls.
+ * @return {Object} The combined object.
+ */
 export const collectControls = collect;
 
+/**
+ * Collect all reducers and add an initialize reducer.
+ *
+ * This combines reducers and adds a reducer that resets the store to its
+ * initial state if the `initialize()` action is dispatched on it.
+ *
+ * @param {Object} initialState The collected store's default state (`INITIAL_STATE`).
+ * @param {Array} reducers An array of reducer functions, each combined with each other.
+ * @return {Function} A Redux-style reducer.
+ */
 export const collectReducers = ( initialState, reducers ) => {
 	const initializeReducer = ( state, action ) => {
 		switch ( action.type ) {
@@ -73,13 +116,38 @@ export const collectReducers = ( initialState, reducers ) => {
 	};
 };
 
+/**
+ * Collect all resolvers.
+ *
+ * @param {Object} ...args A list of objects, each containing their own resolvers.
+ * @return {Object} The combined object.
+ */
 export const collectResolvers = collect;
 
+/**
+ * Collect all selectors.
+ *
+ * @param {Object} ...args A list of objects, each containing their own selectors.
+ * @return {Object} The combined object.
+ */
 export const collectSelectors = collect;
 
+/**
+ * Collect all state values.
+ *
+ * @param {Object} ...args A list of objects, each containing their own state values.
+ * @return {Object} The combined object.
+ */
 export const collectState = collect;
 
-function findDuplicates( array ) {
+/**
+ * Find all duplicate items in an array and return them.
+ *
+ * @private
+ * @param {Array} array Any array.
+ * @return {Array} All values in the input array that were duplicated.
+ */
+const findDuplicates = ( array ) => {
 	const duplicates = [];
 	const counts = {};
 
@@ -92,4 +160,4 @@ function findDuplicates( array ) {
 	}
 
 	return duplicates;
-}
+};

@@ -37,6 +37,14 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
+	/**
+	 * Dispatch an action that creates an HTTP request.
+	 *
+	 * Requests the `core/site/connection` endpoint.
+	 *
+	 * @private
+	 * @return {Object} Redux-style action.
+	 */
 	fetchConnection() {
 		return {
 			payload: {},
@@ -44,6 +52,13 @@ export const actions = {
 		};
 	},
 
+	/**
+	 * Store connection info received from the REST API.
+	 *
+	 * @private
+	 * @param {Object} connection Connection info from the API.
+	 * @return {Object} Redux-style action.
+	 */
 	receiveConnection( connection ) {
 		invariant( connection, 'connection is required.' );
 
@@ -53,6 +68,12 @@ export const actions = {
 		};
 	},
 
+	/**
+	 * Dispatch an action signifying the `fetchConnection` side-effect failed.
+	 *
+	 * @private
+	 * @return {Object} Redux-style action.
+	 */
 	receiveConnectionFailed() {
 		return {
 			payload: {},
@@ -113,6 +134,22 @@ export const resolvers = {
 };
 
 export const selectors = {
+	/**
+	 * Get the connection info for this site.
+	 *
+	 * Returns `null` if the connection info is not available/loaded.
+	 *
+	 * Returns an object with the shape when successful:
+	 * ```
+	 * {
+	 *   connected: <Boolean>,
+	 *   resettable: <Boolean,
+	 * }
+	 * ```
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Object|null} Site connection info.
+	 */
 	getConnection( state ) {
 		const { connection } = state;
 
