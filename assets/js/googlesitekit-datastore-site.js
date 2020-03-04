@@ -1,5 +1,5 @@
 /**
- * Public Data store entrypoint.
+ * Entrypoint for the "core/site" data store.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -23,15 +23,4 @@
 /**
  * Internal dependencies
  */
-import Data from 'assets/js/googlesitekit/data';
-
-if ( typeof global.googlesitekit === 'undefined' ) {
-	global.googlesitekit = {};
-}
-
-if ( typeof global.googlesitekit.data === 'undefined' ) {
-	global.googlesitekit.data = Data;
-}
-
-// This is only exported for Jest and is not used in production.
-export default Data;
+import 'assets/js/googlesitekit/datastore/site';
