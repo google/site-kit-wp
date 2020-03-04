@@ -15,7 +15,7 @@ interface Module_With_Admin_Bar {
 	/**
 	 * Checks if the module is active in the admin bar for the given URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.4.0
 	 *
 	 * @param string $url URL to determine active state for.
 	 * @return bool

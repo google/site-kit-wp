@@ -53,6 +53,8 @@ class REST_RoutesTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/developer-plugin',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/setup-tag',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/connection',
+			'/' . REST_Routes::REST_ROOT . '/core/site/data/notifications',
+			'/' . REST_Routes::REST_ROOT . '/core/site/data/mark-notification',
 		);
 
 		$this->assertEqualSets( $routes, array_keys( $server->get_routes() ) );

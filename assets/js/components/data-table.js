@@ -22,6 +22,7 @@
 import PropTypes from 'prop-types';
 import SourceLink from 'GoogleComponents/source-link';
 import Link from 'GoogleComponents/link';
+import classnames from 'classnames';
 import {
 	each,
 	debounce,
@@ -90,14 +91,17 @@ export const getDataTableFromData = ( data, headers, options ) => {
 		);
 	} );
 
+	const columns = data && data[ 0 ] && data[ 0 ].length ? data[ 0 ].length : 1;
+
 	return (
-		<div className={ `googlesitekit-table${ ( options && options.disableListMode ? '' : ' googlesitekit-table--with-list' ) }` }>
-			<table
-				className={ `
-					googlesitekit-table__wrapper
-					googlesitekit-table__wrapper--${ data && data[ 0 ] ? data[ 0 ].length : 1 }-col
-				` }
-			>
+		<div className={ classnames(
+			'googlesitekit-table',
+			{ 'googlesitekit-table--with-list': ! options || ! options.disableListMode }
+		) }>
+			<table className={ classnames(
+				'googlesitekit-table__wrapper',
+				`googlesitekit-table__wrapper--${ columns }-col`
+			) }>
 				<thead className="googlesitekit-table__head">
 					<tr
 						key="gksc_data_row_header-wrap"
@@ -107,10 +111,10 @@ export const getDataTableFromData = ( data, headers, options ) => {
 						{ headers.map( ( header, i ) => (
 							<th
 								key={ `gksc_data_row_header-${ i }` }
-								className={ `
-									googlesitekit-table__head-item
-									${ header.primary ? 'googlesitekit-table__head-item--primary' : '' }
-								` }
+								className={ classnames(
+									'googlesitekit-table__head-item',
+									{ 'googlesitekit-table__head-item--primary': header.primary }
+								) }
 								data-tooltip={ header.tooltip }
 							>
 								{ header.title }
@@ -180,10 +184,11 @@ export class TableOverflowContainer extends Component {
 		return (
 			<div
 				onScroll={ debounce( this.updateFadeOnScroll, 100 ) }
-				className={ `
-					googlesitekit-table-overflow
-					${ isScrolling ? 'googlesitekit-table-overflow--gradient' : '' }
-				` }>
+				className={ classnames(
+					'googlesitekit-table-overflow',
+					{ 'googlesitekit-table-overflow--gradient': isScrolling }
+				) }
+			>
 				<div ref={ this.scrollRef } className="googlesitekit-table-overflow__container">
 					{ children }
 				</div>
