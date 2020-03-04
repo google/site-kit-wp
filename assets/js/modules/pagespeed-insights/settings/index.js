@@ -4,9 +4,9 @@
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
- * External dependencies
+ * Internal dependencies
  */
-import { sanitizeHTML } from 'assets/js/util';
+import { sanitizeHTML } from '../../../util';
 
 export const settingsDetails = () => {
 	const { dashboardPermalink } = global.googlesitekit;
