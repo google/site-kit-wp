@@ -102,7 +102,7 @@ describe( 'core/site reset', () => {
 				expect( connection ).toEqual( null );
 			} );
 
-			it( 'does not reset local connection  if reset request fails', async () => {
+			it( 'does not reset local connection if reset request fails', async () => {
 				// Make sure there is existing data in the store so we can ensure
 				// it isn't reset.
 				fetch

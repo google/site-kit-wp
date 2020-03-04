@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import invariant from 'invariant';
 
 /**
  * Internal dependencies
@@ -51,11 +50,9 @@ export const actions = {
 		};
 	},
 
-	receiveResetFailed( error ) {
-		invariant( error, 'error is required.' );
-
+	receiveResetFailed() {
 		return {
-			payload: { error },
+			payload: {},
 			type: RECEIVE_RESET_FAILURE,
 		};
 	},
@@ -66,7 +63,9 @@ export const actions = {
 			yield actions.receiveReset();
 			return initializeAction();
 		} catch ( err ) {
-			return actions.receiveResetFailed( err );
+			// TODO: Implement an error handler store or some kind of centralized
+			// place for error dispatch...
+			return actions.receiveResetFailed();
 		}
 	},
 };
@@ -87,10 +86,8 @@ export const reducer = ( state, action ) => {
 		}
 
 		case RECEIVE_RESET_FAILURE: {
-			const { error } = action.payload;
 			return {
 				...state,
-				resetError: error,
 				isDoingReset: false,
 			};
 		}

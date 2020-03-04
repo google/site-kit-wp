@@ -90,8 +90,7 @@ describe( 'core/site connection', () => {
 				expect( initialConnection ).toEqual( null );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getConnection() !== null &&
-						registry.select( STORE_NAME ).getConnection() !== undefined
+						registry.select( STORE_NAME ).getConnection() !== null
 					),
 				);
 
@@ -123,16 +122,15 @@ describe( 'core/site connection', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getConnection();
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).getConnection() !== null,
+					// TODO: We may want a selector for this, but for now this is fine
+					// because it's internal-only.
+					() => store.getState().isFetchingConnection === false,
 				);
 
 				const connection = registry.select( STORE_NAME ).getConnection();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
-				expect( connection ).toEqual( {
-					error: response,
-					hasError: true,
-				} );
+				expect( connection ).toEqual( null );
 			} );
 		} );
 	} );

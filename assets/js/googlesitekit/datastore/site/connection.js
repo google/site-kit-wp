@@ -53,11 +53,9 @@ export const actions = {
 		};
 	},
 
-	receiveConnectionFailed( error ) {
-		invariant( error, 'error is required.' );
-
+	receiveConnectionFailed() {
 		return {
-			payload: { error },
+			payload: {},
 			type: RECEIVE_CONNECTION_FAILED,
 		};
 	},
@@ -89,12 +87,9 @@ export const reducer = ( state, action ) => {
 		}
 
 		case RECEIVE_CONNECTION_FAILED: {
-			const { error } = action.payload;
-
 			return {
 				...state,
 				isFetchingConnection: false,
-				connection: { error, hasError: true },
 			};
 		}
 
@@ -112,7 +107,7 @@ export const resolvers = {
 		} catch ( err ) {
 			// TODO: Implement an error handler store or some kind of centralized
 			// place for error dispatch...
-			return actions.receiveConnectionFailed( err );
+			return actions.receiveConnectionFailed();
 		}
 	},
 };
