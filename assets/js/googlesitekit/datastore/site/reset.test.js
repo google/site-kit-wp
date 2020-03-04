@@ -6,14 +6,13 @@
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
-import { createRegistry } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
 import {
+	createTestRegistry,
 	muteConsole,
-	registerAllStoresOn,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
@@ -26,8 +25,7 @@ describe( 'core/site reset', () => {
 	let registry;
 
 	beforeEach( () => {
-		registry = createRegistry();
-		registerAllStoresOn( registry );
+		registry = createTestRegistry();
 
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );

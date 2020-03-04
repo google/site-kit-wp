@@ -6,15 +6,14 @@
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
-import { createRegistry } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
-import { setUsingCache } from 'googlesitekit-api';
+import API from 'googlesitekit-api';
 import {
+	createTestRegistry,
 	muteConsole,
-	registerAllStoresOn,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
@@ -26,19 +25,18 @@ describe( 'core/site connection', () => {
 	let store;
 
 	beforeAll( () => {
-		setUsingCache( false );
+		API.setUsingCache( false );
 	} );
 
 	beforeEach( () => {
-		registry = createRegistry();
-		registerAllStoresOn( registry );
+		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
 
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
-		setUsingCache( true );
+		API.setUsingCache( true );
 	} );
 
 	afterEach( () => {

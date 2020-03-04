@@ -6,17 +6,14 @@
  * Internal dependencies
  */
 import SiteKitRegistry from 'assets/js/googlesitekit/data';
-import { collect, collectReducers } from 'assets/js/googlesitekit/data/utils';
 
 if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};
 }
 
-const registry = SiteKitRegistry;
 if ( typeof global.googlesitekit.data === 'undefined' ) {
-	global.googlesitekit.data = { collect, collectReducers, registry };
+	global.googlesitekit.data = SiteKitRegistry;
 }
 
-export { collect, collectReducers, registry };
-
-export default global.googlesitekit.data;
+// This is only exported for Jest and is not used in production.
+export default SiteKitRegistry;

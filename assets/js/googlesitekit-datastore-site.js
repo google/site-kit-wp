@@ -6,6 +6,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { registerOn } from 'assets/js/googlesitekit/datastore/site';
+import store, { STORE_NAME } from 'assets/js/googlesitekit/datastore/site';
 
-registerOn( Data.registry );
+// Register this store on the global registry.
+Data.registerStore( STORE_NAME, store );

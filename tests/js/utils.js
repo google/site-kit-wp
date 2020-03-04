@@ -4,9 +4,27 @@
 import { castArray } from 'lodash';
 
 /**
+ * WordPress dependencies
+ */
+import { createRegistry } from '@wordpress/data';
+
+/**
  * Internal dependencies
  */
-import { registerOn as siteStoreRegisterOn } from 'assets/js/googlesitekit/datastore/site';
+import siteStore, { STORE_NAME as siteStoreName } from 'assets/js/googlesitekit/datastore/site';
+
+/**
+ * Create a registry with all available stores.
+ *
+ * @return {wp.data.registry} Registry with all available stores registered.
+ */
+export const createTestRegistry = () => {
+	const registry = createRegistry();
+
+	registerAllStoresOn( registry );
+
+	return registry;
+};
 
 /**
  * Mute a given console during tests.
@@ -36,7 +54,7 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
  * @return {void}
  */
 export const registerAllStoresOn = ( registry ) => {
-	siteStoreRegisterOn( registry );
+	registry.registerStore( siteStoreName, siteStore );
 };
 
 const unsubscribes = [];

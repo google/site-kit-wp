@@ -6,7 +6,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { set } from 'googlesitekit-api';
+import API from 'googlesitekit-api';
 import { INITIAL_STATE } from './index';
 
 // Actions
@@ -48,6 +48,12 @@ export const actions = {
 	},
 };
 
+export const controls = {
+	[ FETCH_RESET ]: () => {
+		return API.set( 'core', 'site', 'reset' );
+	},
+};
+
 export const reducer = ( state, action ) => {
 	switch ( action.type ) {
 		case FETCH_RESET: {
@@ -76,6 +82,8 @@ export const reducer = ( state, action ) => {
 	}
 };
 
+export const resolvers = {};
+
 export const selectors = {
 	isDoingReset: ( state ) => {
 		const { isResetting } = state;
@@ -83,14 +91,6 @@ export const selectors = {
 		return isResetting;
 	},
 };
-
-export const controls = {
-	[ FETCH_RESET ]: () => {
-		return set( 'core', 'site', 'reset' );
-	},
-};
-
-export const resolvers = {};
 
 export default {
 	actions,

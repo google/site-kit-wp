@@ -6,7 +6,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { get } from 'googlesitekit-api';
+import API from 'googlesitekit-api';
 
 // Actions
 const FETCH_CONNECTION = 'FETCH_CONNECTION';
@@ -42,7 +42,7 @@ export const actions = {
 
 export const controls = {
 	[ FETCH_CONNECTION ]: () => {
-		return get( 'core', 'site', 'connection' );
+		return API.get( 'core', 'site', 'connection' );
 	},
 };
 

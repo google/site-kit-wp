@@ -79,8 +79,6 @@ final class Dashboard {
 
 				// Enqueue scripts.
 				$this->assets->enqueue_asset( 'googlesitekit-wp-dashboard' );
-				$this->assets->enqueue_asset( 'googlesitekit-datastore-site' );
-
 			}
 		};
 

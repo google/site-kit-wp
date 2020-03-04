@@ -6,12 +6,11 @@
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
-import { createRegistry } from '@wordpress/data';
 
 /**
  * Internal dependencies
  */
-import { registerAllStoresOn, unsubscribeFromAll } from 'tests/js/utils';
+import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
 import {
 	INITIAL_STATE,
 	STORE_NAME,
@@ -23,8 +22,7 @@ describe( 'core/site store', () => {
 	let store;
 
 	beforeEach( () => {
-		registry = createRegistry();
-		registerAllStoresOn( registry );
+		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
 
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );

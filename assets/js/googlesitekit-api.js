@@ -1,14 +1,19 @@
 /**
  * External dependencies
  */
-import * as API from 'assets/js/googlesitekit/api';
 
-if ( typeof global.googlesitekit === 'undefined' ) {
+/**
+ * Internal dependencies
+ */
+import API from 'assets/js/googlesitekit/api';
+
+if ( global.googlesitekit === undefined ) {
 	global.googlesitekit = {};
 }
 
-if ( typeof global.googlesitekit.api === 'undefined' ) {
+if ( global.googlesitekit.api === undefined ) {
 	global.googlesitekit.api = API;
 }
 
-export * from 'assets/js/googlesitekit/api';
+// This is only exported for Jest and is not used in production.
+export default API;
