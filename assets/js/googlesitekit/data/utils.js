@@ -48,7 +48,7 @@ export const collectReducers = ( initialState, reducers ) => {
 		}
 	};
 
-	return ( state = initialState, action ) => {
+	return ( state = initialState, action = {} ) => {
 		return [ ...reducers, initializeReducer ].reduce( ( newState, reducer ) => {
 			return reducer( newState, action );
 		}, state );
