@@ -339,7 +339,6 @@ final class Assets {
 		$dependencies = array(
 			'googlesitekit-commons',
 			'googlesitekit-base',
-			// 'googlesitekit-datastore-site',
 		);
 
 		// Register plugin scripts.
