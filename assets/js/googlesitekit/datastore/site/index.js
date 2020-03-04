@@ -5,39 +5,38 @@
 /**
  * Internal dependencies
  */
-import { collect, collectReducers } from 'assets/js/googlesitekit/data/utils';
+import Data from 'googlesitekit-data';
 import connection from './connection';
 import reset from './reset';
 
-export const INITIAL_STATE = {
-	connection: null,
-	isFetchingConnection: false,
-	isResetting: false,
-};
+export const INITIAL_STATE = Data.collectState(
+	connection.INITIAL_STATE,
+	reset.INITIAL_STATE,
+);
 
 export const STORE_NAME = 'core/site';
 
-export const actions = collect(
+export const actions = Data.collectActions(
 	connection.actions,
 	reset.actions,
 );
 
-export const controls = collect(
+export const controls = Data.collectControls(
 	connection.controls,
 	reset.controls,
 );
 
-export const reducer = collectReducers( INITIAL_STATE, [
+export const reducer = Data.collectReducers( INITIAL_STATE, [
 	connection.reducer,
 	reset.reducer,
 ] );
 
-export const resolvers = collect(
+export const resolvers = Data.collectResolvers(
 	connection.resolvers,
 	reset.resolvers,
 );
 
-export const selectors = collect(
+export const selectors = Data.collectSelectors(
 	connection.selectors,
 	reset.selectors,
 );

@@ -13,6 +13,11 @@ const FETCH_CONNECTION = 'FETCH_CONNECTION';
 const RECEIVE_CONNECTION = 'RECEIVE_CONNECTION';
 const RECEIVE_CONNECTION_FAILED = 'RECEIVE_CONNECTION_FAILED';
 
+export const INITIAL_STATE = {
+	connection: null,
+	isFetchingConnection: false,
+};
+
 export const actions = {
 	fetchConnection() {
 		return {
@@ -103,6 +108,7 @@ export const selectors = {
 };
 
 export default {
+	INITIAL_STATE,
 	actions,
 	controls,
 	reducer,

@@ -3,6 +3,8 @@
  */
 import invariant from 'invariant';
 
+const INITIALIZE = 'INITIALIZE';
+
 export const collect = ( ...items ) => {
 	const collectedObject = items.reduce( ( acc, item ) => {
 		return { ...acc, ...item };
@@ -18,13 +20,46 @@ export const collect = ( ...items ) => {
 	return collectedObject;
 };
 
+export const initializeAction = () => {
+	return {
+		payload: {},
+		type: INITIALIZE,
+	};
+};
+
+export const collectActions = ( ...args ) => {
+	return collect( ...args, {
+		initialize: initializeAction,
+	} );
+};
+
+export const collectControls = collect;
+
 export const collectReducers = ( initialState, reducers ) => {
+	const initializeReducer = ( state, action ) => {
+		switch ( action.type ) {
+			case INITIALIZE: {
+				return { ...initialState };
+			}
+
+			default: {
+				return { ...state };
+			}
+		}
+	};
+
 	return ( state = initialState, action ) => {
-		return reducers.reduce( ( newState, reducer ) => {
+		return [ ...reducers, initializeReducer ].reduce( ( newState, reducer ) => {
 			return reducer( newState, action );
 		}, state );
 	};
 };
+
+export const collectResolvers = collect;
+
+export const collectSelectors = collect;
+
+export const collectState = collect;
 
 function findDuplicates( array ) {
 	const duplicates = [];

@@ -7,12 +7,16 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { INITIAL_STATE } from './index';
+import { initializeAction } from 'assets/js/googlesitekit/data/utils';
 
 // Actions
 const FETCH_RESET = 'FETCH_RESET';
 const RECEIVE_RESET = 'RECEIVE_RESET';
 const RECEIVE_RESET_FAILURE = 'RECEIVE_RESET_FAILURE';
+
+export const INITIAL_STATE = {
+	isDoingReset: false,
+};
 
 export const actions = {
 	fetchReset() {
@@ -41,7 +45,8 @@ export const actions = {
 	*reset() {
 		try {
 			yield actions.fetchReset();
-			return actions.receiveReset();
+			yield actions.receiveReset();
+			return initializeAction();
 		} catch ( err ) {
 			return actions.receiveResetFailed( err );
 		}
@@ -59,7 +64,7 @@ export const reducer = ( state, action ) => {
 		case FETCH_RESET: {
 			return {
 				...state,
-				isResetting: true,
+				isDoingReset: true,
 			};
 		}
 
@@ -68,7 +73,7 @@ export const reducer = ( state, action ) => {
 			return {
 				...state,
 				resetError: error,
-				isResetting: false,
+				isDoingReset: false,
 			};
 		}
 
@@ -86,13 +91,14 @@ export const resolvers = {};
 
 export const selectors = {
 	isDoingReset: ( state ) => {
-		const { isResetting } = state;
+		const { isDoingReset } = state;
 
-		return isResetting;
+		return isDoingReset;
 	},
 };
 
 export default {
+	INITIAL_STATE,
 	actions,
 	controls,
 	reducer,
