@@ -49,4 +49,7 @@ const store = {
 	selectors,
 };
 
+// Register this store on the global registry.
+Data.registerStore( STORE_NAME, store );
+
 export default store;

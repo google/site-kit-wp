@@ -5,4 +5,4 @@
 /**
  * Internal dependencies
  */
-import 'assets/js/googlesitekit/datastore/site/register';
+import 'assets/js/googlesitekit/datastore/site';
