@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Core\Authentication;
 
-use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Storage\User_Setting;
 
 /**
  * Class representing the status of whether a user is verified as an owner of the site.
@@ -19,7 +19,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
  * @access private
  * @ignore
  */
-final class Verification {
+final class Verification extends User_Setting {
 
 	/**
 	 * User option key.
@@ -27,33 +27,14 @@ final class Verification {
 	const OPTION = 'googlesitekit_site_verified_meta';
 
 	/**
-	 * User_Options object.
+	 * Gets the value of the setting.
 	 *
-	 * @since 1.0.0
-	 * @var User_Options
-	 */
-	private $user_options;
-
-	/**
-	 * Constructor.
+	 * @since 1.4.0
 	 *
-	 * @since 1.0.0
-	 *
-	 * @param User_Options $user_options User Options instance.
-	 */
-	public function __construct( User_Options $user_options ) {
-		$this->user_options = $user_options;
-	}
-
-	/**
-	 * Retrieves the user verification tag.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return bool True if the user is verified, or false otherwise.
+	 * @return mixed Value set for the option, or default if not set.
 	 */
 	public function get() {
-		return (bool) $this->user_options->get( self::OPTION );
+		return (bool) parent::get();
 	}
 
 	/**
@@ -66,21 +47,33 @@ final class Verification {
 	 */
 	public function set( $verified ) {
 		if ( ! $verified ) {
-			return $this->user_options->delete( self::OPTION );
+			return $this->delete();
 		}
 
-		return $this->user_options->set( self::OPTION, 'verified' );
+		return parent::set( '1' );
 	}
 
 	/**
-	 * Checks whether the user is verified.
+	 * Gets the expected value type.
 	 *
-	 * @since 1.0.0
+	 * @since 1.4.0
 	 *
-	 * @return bool True if verified, false otherwise.
+	 * @return string The type name.
 	 */
-	public function has() {
-		// Kind of redundant, but here for consistency.
-		return $this->get();
+	protected function get_type() {
+		return 'boolean';
+	}
+
+	/**
+	 * Gets the default value.
+	 *
+	 * Returns an empty string by default for consistency with get_user_meta.
+	 *
+	 * @since 1.4.0
+	 *
+	 * @return mixed The default value.
+	 */
+	protected function get_default() {
+		return false;
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * \Google\Site_Kit\Tests\Core\Util\Migration_n_e_x_tTest
+ * \Google\Site_Kit\Tests\Core\Util\Migration_1_3_0Test
  *
  * @package   Google\Site_Kit\Tests\Core\Util
  * @copyright 2020 Google LLC
@@ -13,26 +13,31 @@ namespace Google\Site_Kit\Tests\Core\Util;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Util\Migration_n_e_x_t;
-use Google\Site_Kit\Core\Util\Tracking;
+use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Migration_1_3_0;
+use Google\Site_Kit\Core\Util\Tracking_Consent;
 use Google\Site_Kit\Tests\TestCase;
 
-// phpcs:disable PEAR.NamingConventions.ValidClassName.Invalid
-
-class Migration_n_e_x_tTest extends TestCase {
+class Migration_1_3_0Test extends TestCase {
 	/**
 	 * @var Context
 	 */
 	protected $context;
 
+	/**
+	 * @var User_Options
+	 */
+	protected $user_options;
+
 	public function setUp() {
 		parent::setUp();
-		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->user_options = new User_Options( $this->context );
 		$this->delete_db_version();
 	}
 
 	public function test_register() {
-		$migration = new Migration_n_e_x_t( $this->context );
+		$migration = new Migration_1_3_0( $this->context );
 		remove_all_actions( 'admin_init' );
 
 		$migration->register();
@@ -41,7 +46,7 @@ class Migration_n_e_x_tTest extends TestCase {
 	}
 
 	public function test_migrate_without_tracking_enabled() {
-		$migration = new Migration_n_e_x_t( $this->context );
+		$migration = new Migration_1_3_0( $this->context );
 		remove_all_actions( 'admin_init' );
 		$migration->register();
 
@@ -52,11 +57,11 @@ class Migration_n_e_x_tTest extends TestCase {
 		$migration->migrate();
 
 		$this->assertEmpty( $this->get_opted_in_users() );
-		$this->assertEquals( Migration_n_e_x_t::DB_VERSION, $this->get_db_version() );
+		$this->assertEquals( Migration_1_3_0::DB_VERSION, $this->get_db_version() );
 	}
 
 	public function test_migrate_with_tracking_enabled_and_no_authenticated_users() {
-		$migration = new Migration_n_e_x_t( $this->context );
+		$migration = new Migration_1_3_0( $this->context );
 		remove_all_actions( 'admin_init' );
 		$migration->register();
 
@@ -67,11 +72,11 @@ class Migration_n_e_x_tTest extends TestCase {
 		$migration->migrate();
 
 		$this->assertEmpty( $this->get_opted_in_users() );
-		$this->assertEquals( Migration_n_e_x_t::DB_VERSION, $this->get_db_version() );
+		$this->assertEquals( Migration_1_3_0::DB_VERSION, $this->get_db_version() );
 	}
 
 	public function test_migrate_with_tracking_enabled_and_one_authenticated_user() {
-		$migration = new Migration_n_e_x_t( $this->context );
+		$migration = new Migration_1_3_0( $this->context );
 		remove_all_actions( 'admin_init' );
 		$migration->register();
 
@@ -83,44 +88,56 @@ class Migration_n_e_x_tTest extends TestCase {
 
 		$opted_in_users = $this->get_opted_in_users();
 		$this->assertCount( 1, $opted_in_users );
-		$this->assertEquals( $user_id, $opted_in_users[0]->ID );
-		$this->assertEquals( Migration_n_e_x_t::DB_VERSION, $this->get_db_version() );
+		$this->assertEquals( $user_id, $opted_in_users[0] );
+		$this->assertEquals( Migration_1_3_0::DB_VERSION, $this->get_db_version() );
 	}
 
 	public function test_migrate_with_tracking_enabled_and_multiple_authenticated_users() {
-		$migration = new Migration_n_e_x_t( $this->context );
+		$migration = new Migration_1_3_0( $this->context );
 		remove_all_actions( 'admin_init' );
 		$migration->register();
 
+		$users_with_access_tokens    = array();
+		$users_without_access_tokens = array();
+
+		foreach ( range( 1, 40 ) as $i ) {
+			if ( $i % 2 ) {
+				$users_with_access_tokens[] = $this->create_user_with_access_token();
+			} else {
+				$users_without_access_tokens[] = $this->create_user_without_access_token();
+			}
+		}
+
 		$this->enable_global_tracking();
-		$this->create_user_with_access_token();
-		$this->create_user_with_access_token();
-		$this->assertCount( 2, $this->get_users_with_access_tokens() );
+
+		$this->assertCount( 20, $users_with_access_tokens );
+		$this->assertCount( 20, $users_without_access_tokens );
 
 		$migration->migrate();
 
-		$this->assertEmpty( $this->get_opted_in_users() );
-		$this->assertEquals( Migration_n_e_x_t::DB_VERSION, $this->get_db_version() );
+		$this->assertEqualSets(
+			$users_with_access_tokens,
+			$this->get_opted_in_users()
+		);
+		$this->assertEquals( Migration_1_3_0::DB_VERSION, $this->get_db_version() );
 	}
 
 	private function get_opted_in_users() {
-		global $wpdb;
-
 		return get_users(
 			array(
-				'meta_key'   => $wpdb->get_blog_prefix() . Tracking::TRACKING_OPTIN_KEY,
+				'meta_key'   => $this->user_options->get_meta_key( Tracking_Consent::OPTION ),
 				'meta_value' => '1',
+				'fields'     => 'ID',
 			)
 		);
 	}
 
 	private function get_users_with_access_tokens() {
-		global $wpdb;
-
 		return get_users(
 			array(
-				'meta_key'     => $wpdb->get_blog_prefix() . OAuth_Client::OPTION_ACCESS_TOKEN,
+				'meta_key'     => $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ),
 				'meta_compare' => 'EXISTS',
+				'fields'       => 'ID',
 			)
 		);
 	}
@@ -131,17 +148,18 @@ class Migration_n_e_x_tTest extends TestCase {
 
 	private function create_user_with_access_token() {
 		$user_id = $this->factory()->user->create();
-		update_user_option( $user_id, OAuth_Client::OPTION_ACCESS_TOKEN, "test-access-token-$user_id" );
+		$this->user_options->switch_user( $user_id );
+		$this->user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN, "test-access-token-$user_id" );
 
 		return $user_id;
 	}
 
 	private function enable_global_tracking() {
-		( new Options( $this->context ) )->set( Tracking::TRACKING_OPTIN_KEY, 1 );
+		( new Options( $this->context ) )->set( Tracking_Consent::OPTION, 1 );
 	}
 
 	private function disable_global_tracking() {
-		( new Options( $this->context ) )->set( Tracking::TRACKING_OPTIN_KEY, 0 );
+		( new Options( $this->context ) )->set( Tracking_Consent::OPTION, 0 );
 	}
 
 	private function get_db_version() {

@@ -20,64 +20,30 @@
  * External dependencies
  */
 import { clearWebStorage, loadTranslations } from 'GoogleUtil';
-import Notification from 'GoogleComponents/notifications/notification';
 import 'GoogleComponents/notifications';
 
 /**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { Component, render, Fragment } from '@wordpress/element';
+import { Component, render } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
  */
+// eslint-disable-next-line @wordpress/dependency-group
+import ErrorHandler from 'GoogleComponents/ErrorHandler';
 import DashboardSplashApp from './components/dashboard-splash/dashboard-splash-app';
 import NotificationCounter from './components/notifications/notification-counter';
 
 class GoogleSitekitDashboardSplash extends Component {
-	constructor( props ) {
-		super( props );
-
-		this.state = {
-			hasError: false,
-		};
-	}
-
-	componentDidCatch( error, info ) {
-		this.setState( {
-			hasError: true,
-			error,
-			info,
-		} );
-	}
-
 	render() {
-		const {
-			hasError,
-			error,
-			info,
-		} = this.state;
-
-		if ( hasError ) {
-			return <Notification
-				id={ 'googlesitekit-error' }
-				key={ 'googlesitekit-error' }
-				title={ error.message }
-				description={ info.componentStack }
-				dismiss={ '' }
-				isDismissable={ false }
-				format="small"
-				type="win-error"
-			/>;
-		}
-
 		return (
-			<Fragment>
+			<ErrorHandler>
 				<NotificationCounter />
 				<DashboardSplashApp />
-			</Fragment>
+			</ErrorHandler>
 		);
 	}
 }

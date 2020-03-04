@@ -11,8 +11,6 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Options;
 
 /**
@@ -24,56 +22,25 @@ use Google\Site_Kit\Core\Storage\User_Options;
  */
 final class Tracking {
 
-	/**
-	 * Tracking Optin Key
-	 *
-	 * @var string tracking optin key for options table.
-	 */
-	const TRACKING_OPTIN_KEY = 'googlesitekit_tracking_optin';
-
 	const TRACKING_ID = 'UA-130569087-3';
 
 	/**
-	 * Plugin context.
+	 * Tracking_Consent instance.
 	 *
-	 * @since 1.0.0
-	 * @var Context
+	 * @var Tracking_Consent
 	 */
-	private $context;
-
-	/**
-	 * Authentication instance.
-	 *
-	 * @since 1.0.0
-	 * @var Authentication
-	 */
-	protected $authentication;
-
-	/**
-	 * User_Options instance.
-	 *
-	 * @var User_Options
-	 */
-	protected $user_options;
+	protected $consent;
 
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.0.0
-	 * @since n.e.x.t Added User_Options.
-	 *
-	 * @param Context        $context        Plugin context.
-	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
-	 * @param User_Options   $user_options   Optional. User_Options instance. Default is a new instance.
+	 * @since 1.4.0
+	 * @param Context      $context      Context instance.
+	 * @param User_Options $user_options Optional. User_Options instance. Default is a new instance.
 	 */
-	public function __construct(
-		Context $context,
-		Authentication $authentication = null,
-		User_Options $user_options = null
-	) {
-		$this->context        = $context;
-		$this->authentication = $authentication ?: new Authentication( $this->context );
-		$this->user_options   = $user_options ?: new User_Options( $this->context );
+	public function __construct( Context $context, User_Options $user_options = null ) {
+		$user_options  = $user_options ?: new User_Options( $context );
+		$this->consent = new Tracking_Consent( $user_options );
 	}
 
 	/**
@@ -82,17 +49,12 @@ final class Tracking {
 	 * @since 1.0.0
 	 */
 	public function register() {
+		$this->consent->register();
+
 		add_filter(
 			'googlesitekit_inline_base_data',
 			function ( $data ) {
 				return $this->inline_js_base_data( $data );
-			}
-		);
-
-		add_action(
-			'init',
-			function () {
-				$this->register_settings();
 			}
 		);
 	}
@@ -101,18 +63,18 @@ final class Tracking {
 	 * Is tracking active for the current user?
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Tracking is now user-specific.
+	 * @since 1.3.0 Tracking is now user-specific.
 	 *
 	 * @return bool True if tracking enabled, and False if not.
 	 */
 	public function is_active() {
-		return (bool) $this->user_options->get( self::TRACKING_OPTIN_KEY );
+		return (bool) $this->consent->get();
 	}
 
 	/**
 	 * Modifies the base data to pass to JS.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @param array $data Inline JS data.
 	 * @return array Filtered $data.
@@ -122,25 +84,5 @@ final class Tracking {
 		$data['trackingID']      = self::TRACKING_ID;
 
 		return $data;
-	}
-
-	/**
-	 * Register tracking settings and allow access from Rest API.
-	 *
-	 * @since 1.0.0
-	 * @since n.e.x.t Registers a meta field instead of setting.
-	 */
-	private function register_settings() {
-		global $wpdb;
-		$args = array(
-			'type'         => 'boolean',
-			'description'  => __( 'Allowing tracking of anonymous usage stats.', 'google-site-kit' ),
-			'default'      => false,
-			'single'       => true,
-			'show_in_rest' => current_user_can( Permissions::SETUP ),
-		);
-		// Need to conditionally include the blog prefix as this is a user option.
-		$prefix = ! $this->context->is_network_mode() ? $wpdb->get_blog_prefix() : '';
-		register_meta( 'user', $prefix . self::TRACKING_OPTIN_KEY, $args );
 	}
 }

@@ -149,12 +149,13 @@ final class Plugin {
 				$modules->register();
 
 				( new Core\Permissions\Permissions( $this->context, $authentication ) )->register();
-				( new Core\Util\Tracking( $this->context, $authentication ) )->register();
+				( new Core\Util\Tracking( $this->context, $user_options ) )->register();
 				( new Core\REST_API\REST_Routes( $this->context, $authentication, $modules ) )->register();
-				( new Core\Admin_Bar\Admin_Bar( $this->context, $assets ) )->register();
+				( new Core\Admin_Bar\Admin_Bar( $this->context, $assets, $modules ) )->register();
 				( new Core\Admin\Screens( $this->context, $assets ) )->register();
 				( new Core\Admin\Notices() )->register();
 				( new Core\Admin\Dashboard( $this->context, $assets ) )->register();
+				( new Core\Notifications\Notifications( $this->context, $options ) )->register();
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(
@@ -177,7 +178,7 @@ final class Plugin {
 		);
 
 		( new Core\Util\Activation( $this->context, $options, $assets ) )->register();
-		( new Core\Util\Migration_n_e_x_t( $this->context, $options ) )->register();
+		( new Core\Util\Migration_1_3_0( $this->context, $options ) )->register();
 		( new Core\Util\Reset( $this->context ) )->register();
 		( new Core\Util\Developer_Plugin_Installer( $this->context ) )->register();
 	}

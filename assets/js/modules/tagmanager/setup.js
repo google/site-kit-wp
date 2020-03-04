@@ -29,7 +29,7 @@ import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
 import { getExistingTag, toggleConfirmModuleSettings } from 'GoogleUtil';
 import { get } from 'lodash';
-
+import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
@@ -37,26 +37,43 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 import { addFilter, removeFilter } from '@wordpress/hooks';
 
+/**
+ * Internal dependencies
+ */
+import {
+	getContainers,
+	isValidAccountID,
+	isValidContainerID,
+} from './util';
+
+const ACCOUNT_CREATE = 'account_create';
+const CONTAINER_CREATE = 'container_create';
+const USAGE_CONTEXT_WEB = 'web';
+const USAGE_CONTEXT_AMP = 'amp';
+
 class TagmanagerSetup extends Component {
 	constructor( props ) {
 		super( props );
 
+		const { ampEnabled, ampMode } = global.googlesitekit.admin;
 		const { settings } = global.googlesitekit.modules.tagmanager;
-		const usageContext = global.googlesitekit.admin.ampMode === 'primary' ? 'amp' : 'web';
-		const containerKey = usageContext === 'amp' ? 'ampContainerID' : 'containerID';
+		const ampUsageContext = ampMode === 'primary' ? USAGE_CONTEXT_AMP : [ USAGE_CONTEXT_WEB, USAGE_CONTEXT_AMP ];
 
 		this.state = {
+			ampEnabled,
 			isLoading: true,
+			isSecondaryAMP: 'secondary' === ampMode,
 			accounts: [],
 			containers: [],
+			containersAMP: [],
 			errorCode: false,
 			errorMsg: '',
-			refetch: false,
+			existingContainer: '',
 			selectedAccount: settings.accountID,
-			selectedContainer: settings[ containerKey ],
+			selectedContainer: settings.containerID,
+			selectedContainerAMP: settings.ampContainerID,
 			containersLoading: false,
-			usageContext,
-			containerKey,
+			usageContext: ampEnabled ? ampUsageContext : USAGE_CONTEXT_WEB,
 			hasExistingTag: false,
 			useSnippet: settings.useSnippet,
 		};
@@ -64,8 +81,13 @@ class TagmanagerSetup extends Component {
 		this.handleSubmit = this.handleSubmit.bind( this );
 		this.renderAccountDropdownForm = this.renderAccountDropdownForm.bind( this );
 		this.handleAccountChange = this.handleAccountChange.bind( this );
-		this.handleContainerChange = this.handleContainerChange.bind( this );
 		this.refetchAccount = this.refetchAccount.bind( this );
+	}
+
+	setState() {
+		if ( this._isMounted ) {
+			Component.prototype.setState.apply( this, arguments );
+		}
 	}
 
 	async componentDidMount() {
@@ -99,12 +121,6 @@ class TagmanagerSetup extends Component {
 	}
 
 	componentDidUpdate() {
-		const { refetch } = this.state;
-
-		if ( refetch ) {
-			this.requestTagManagerAccounts();
-		}
-
 		this.toggleConfirmChangesButton();
 	}
 
@@ -121,16 +137,16 @@ class TagmanagerSetup extends Component {
 		if ( ! this.props.isEditing ) {
 			return;
 		}
-		const { containerKey, errorCode } = this.state;
 
 		let settingsMapping = {
-			selectedContainer: containerKey,
-			selectedAccount: 'selectedAccount',
+			selectedContainer: 'containerID',
+			selectedContainerAMP: 'ampContainerID',
+			selectedAccount: 'accountID',
 			useSnippet: 'useSnippet',
 		};
 
-		// Disable the confirmation button if user lacks necessary permission on the existing tag.
-		if ( 'tag_manager_existing_tag_permission' === errorCode ) {
+		// Disable the confirmation button if necessary conditions are not met.
+		if ( ! this.canSaveSettings() ) {
 			settingsMapping = {};
 		}
 
@@ -144,15 +160,18 @@ class TagmanagerSetup extends Component {
 			// Verify the user has access to existing tag if found.
 			try {
 				const { account, container } = await data.get( TYPE_MODULES, 'tagmanager', 'tag-permission', { tag: existingContainerID } );
+				const containers = getContainers( [ container ] ).byContext( USAGE_CONTEXT_WEB );
+				const containersAMP = getContainers( [ container ] ).byContext( USAGE_CONTEXT_AMP );
 
 				// If the user has access, they may continue but must use the found account+container.
 				this.setState(
 					{
 						isLoading: false,
+						existingContainer: existingContainerID,
 						selectedAccount: account.accountId, // Capitalization rule exception: `accountId` is a property of an API returned value.
-						selectedContainer: container.publicId, // Capitalization rule exception: `publicId` is a property of an API returned value.
+						selectedContainer: get( containers, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
+						selectedContainerAMP: get( containersAMP, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
 						accounts: [ account ],
-						containers: [ container ],
 						hasExistingTag: true,
 					}
 				);
@@ -163,13 +182,14 @@ class TagmanagerSetup extends Component {
 						errorCode: err.code,
 						errorMsg: err.message,
 						errorReason: err.data && err.data.reason ? err.data.reason : false,
+						existingContainer: existingContainerID,
 						hasExistingTag: !! existingContainerID,
 					}
 				);
 			}
 		} else {
 			// Only load accounts if there is no existing tag.
-			await this.requestTagManagerAccounts();
+			await this.requestTagManagerAccountsContainers();
 		}
 	}
 
@@ -180,60 +200,108 @@ class TagmanagerSetup extends Component {
 		try {
 			const {
 				selectedAccount,
+			} = this.state;
+
+			const accounts = await data.get( TYPE_MODULES, 'tagmanager', 'accounts' );
+
+			this.validateAccounts( accounts, selectedAccount );
+
+			this.setState( {
+				isLoading: false,
+				accounts,
+			} );
+		} catch ( err ) {
+			this.setState( {
+				isLoading: false,
+				errorCode: err.code,
+				errorMsg: err.message,
+			} );
+		}
+	}
+
+	/**
+	 * Request Tag Manager accounts and containers.
+	 */
+	async requestTagManagerAccountsContainers() {
+		try {
+			const {
+				selectedAccount,
 				usageContext,
 			} = this.state;
-			let { selectedContainer } = this.state;
+			let {
+				selectedContainer,
+				selectedContainerAMP,
+			} = this.state;
 
 			const queryArgs = {
 				accountID: selectedAccount,
 				usageContext,
 			};
 
-			let errorCode = false;
-			let errorMsg = '';
 			const { accounts, containers } = await data.get( TYPE_MODULES, 'tagmanager', 'accounts-containers', queryArgs );
 
-			if ( ! selectedAccount && 0 === accounts.length ) {
-				errorCode = 'accountEmpty';
-				errorMsg = __(
+			this.validateAccounts( accounts, selectedAccount );
+
+			// If the selected container is not in the list of containers, clear it.
+			const containerIDs = containers.map( ( { publicId } ) => publicId ); /* Capitalization rule exception: `publicId` is a property of an API returned value. */
+			if ( isValidContainerID( selectedContainer ) && ! containerIDs.includes( selectedContainer ) ) {
+				selectedContainer = '';
+			}
+			if ( isValidContainerID( selectedContainerAMP ) && ! containerIDs.includes( selectedContainerAMP ) ) {
+				selectedContainerAMP = '';
+			}
+
+			const containersWeb = getContainers( containers ).byContext( USAGE_CONTEXT_WEB );
+			const containersAMP = getContainers( containers ).byContext( USAGE_CONTEXT_AMP );
+
+			this.setState( {
+				isLoading: false,
+				accounts,
+				containers: containersWeb,
+				containersAMP,
+				selectedAccount: selectedAccount || get( containers, [ 0, 'accountId' ] ), // Capitalization rule exception: `accountId` is a property of an API returned value.
+				selectedContainer: selectedContainer || get( containersWeb, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
+				selectedContainerAMP: selectedContainerAMP || get( containersAMP, [ 0, 'publicId' ] ), // Capitalization rule exception: `accountId` is a property of an API returned value.
+				errorCode: false,
+				errorMsg: '',
+			} );
+		} catch ( err ) {
+			this.setState( {
+				isLoading: false,
+				errorCode: err.code,
+				errorMsg: err.message,
+			} );
+		}
+	}
+
+	/**
+	 * Validates the given accounts with the given selected account.
+	 *
+	 * @param {Array} accounts List of account objects to validate.
+	 * @param {string} selectedAccount Currently chosen account.
+	 * @throws {Object} If there is no selected account and user has no accounts.
+	 * @throws {Object} If the user does not have access to the selected account.
+	 */
+	validateAccounts( accounts, selectedAccount ) {
+		if ( ! selectedAccount && 0 === accounts.length ) {
+			throw {
+				code: 'accountEmpty',
+				message: __(
 					'We didn’t find an associated Google Tag Manager account, would you like to set it up now? If you’ve just set up an account please re-fetch your account to sync it with Site Kit.',
 					'google-site-kit'
-				);
-			}
+				),
+			};
+		}
 
-			// Verify if user has access to the selected account.
-			if ( selectedAccount && ! accounts.find( ( account ) => account.accountId === selectedAccount ) ) { // Capitalization rule exception: `accountId` is a property of an API returned value.
-				data.invalidateCacheGroup( TYPE_MODULES, 'tagmanager', 'accounts-containers' );
-				errorCode = 'insufficientPermissions';
-				errorMsg = __( 'You currently don\'t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.', 'google-site-kit' );
-			}
-
-			// If the selectedContainer is not in the list of containers, clear it.
-			if ( selectedContainer && ! containers.find( ( container ) => container.publicId === selectedContainer ) ) {
-				selectedContainer = null;
-			}
-
-			if ( this._isMounted ) {
-				this.setState( {
-					isLoading: false,
-					accounts,
-					selectedAccount: selectedAccount || get( containers, [ 0, 'accountId' ] ), // Capitalization rule exception: `accountId` is a property of an API returned value.
-					containers,
-					selectedContainer: selectedContainer || get( containers, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
-					refetch: false,
-					errorCode,
-					errorMsg,
-				} );
-			}
-		} catch ( err ) {
-			if ( this._isMounted ) {
-				this.setState( {
-					isLoading: false,
-					errorCode: err.code,
-					errorMsg: err.message,
-					refetch: false,
-				} );
-			}
+		// Verify if user has access to the selected account.
+		if ( isValidAccountID( selectedAccount ) && ! accounts.find( ( account ) => account.accountId === selectedAccount ) ) { // Capitalization rule exception: `accountId` is a property of an API returned value.
+			throw {
+				code: 'insufficientPermissions',
+				message: __(
+					'You currently don’t have access to this Google Tag Manager account. You can either request access from your team, or remove this Google Tag Manager snippet and connect to a different account.',
+					'google-site-kit'
+				),
+			};
 		}
 	}
 
@@ -243,6 +311,8 @@ class TagmanagerSetup extends Component {
 	 * @param {string} selectedAccount The account ID to get containers from.
 	 */
 	async requestTagManagerContainers( selectedAccount ) {
+		this.setState( { containersLoading: true } );
+
 		try {
 			const queryArgs = {
 				accountID: selectedAccount,
@@ -251,30 +321,27 @@ class TagmanagerSetup extends Component {
 
 			const containers = await data.get( TYPE_MODULES, 'tagmanager', 'containers', queryArgs );
 
-			if ( this._isMounted ) {
-				this.setState( {
-					containersLoading: false,
-					containers,
-					selectedContainer: get( containers, [ 0, 'publicId' ] ), // Capitalization rule exception: `publicId` is a property of an API returned value.
-					errorCode: false,
-				} );
-			}
+			this.setState( {
+				containersLoading: false,
+				containers: getContainers( containers ).byContext( USAGE_CONTEXT_WEB ),
+				containersAMP: getContainers( containers ).byContext( USAGE_CONTEXT_AMP ),
+				errorCode: false,
+			} );
 		} catch ( err ) {
-			if ( this._isMounted ) {
-				this.setState( {
-					errorCode: err.code,
-					errorMsg: err.message,
-				} );
-			}
+			this.setState( {
+				containersLoading: false,
+				errorCode: err.code,
+				errorMsg: err.message,
+			} );
 		}
 	}
 
 	async handleSubmit() {
 		const {
-			containerKey,
 			hasExistingTag,
 			selectedAccount,
 			selectedContainer,
+			selectedContainerAMP,
 			usageContext,
 			useSnippet,
 		} = this.state;
@@ -284,7 +351,8 @@ class TagmanagerSetup extends Component {
 		try {
 			const dataParams = {
 				accountID: selectedAccount,
-				[ containerKey ]: selectedContainer,
+				containerID: selectedContainer,
+				ampContainerID: selectedContainerAMP,
 				usageContext,
 				useSnippet: hasExistingTag ? false : useSnippet,
 			};
@@ -297,79 +365,70 @@ class TagmanagerSetup extends Component {
 
 			global.googlesitekit.modules.tagmanager.settings = savedSettings;
 
-			if ( this._isMounted ) {
-				this.setState( {
-					isSaving: false,
-				} );
-			}
+			this.setState( {
+				isSaving: false,
+			} );
 		} catch ( err ) {
-			if ( this._isMounted ) {
-				this.setState( {
-					isLoading: false,
-					errorCode: err.code,
-					errorMsg: err.message,
-				} );
-			}
+			this.setState( {
+				isLoading: false,
+				isSaving: false,
+				errorCode: err.code,
+				errorMsg: err.message,
+			} );
 
-			// Catches error in handleButtonAction from <SettingsModules> component.
-			return new Promise.reject( err );
+			// Re-throw the error to return a rejected promise.
+			throw err;
 		}
 	}
 
 	static createNewAccount( e ) {
 		e.preventDefault();
-		global.open( 'https://marketingplatform.google.com/about/tag-manager/', '_blank' );
+		global.open( 'https://tagmanager.google.com/#/admin/accounts/create', '_blank' );
 	}
 
 	handleAccountChange( index, item ) {
 		const { selectedAccount } = this.state;
-		const selectValue = item.getAttribute( 'data-value' );
+		const selectValue = item.dataset.value;
 
 		if ( selectValue === selectedAccount ) {
 			return;
 		}
 
-		if ( this._isMounted ) {
-			this.setState( {
-				containersLoading: true,
-				selectedAccount: selectValue,
-			} );
+		this.setState( {
+			selectedAccount: selectValue,
+			selectedContainer: '',
+			selectedContainerAMP: '',
+		} );
+
+		if ( ! isValidAccountID( selectValue ) ) {
+			return;
 		}
 
 		this.requestTagManagerContainers( selectValue );
 	}
 
-	handleContainerChange( index, item ) {
-		const { selectedContainer } = this.state;
-		const selectValue = item.getAttribute( 'data-value' );
-
-		if ( selectValue === selectedContainer ) {
-			return;
-		}
-
-		if ( this._isMounted ) {
-			this.setState( {
-				selectedContainer: selectValue,
-			} );
-		}
-	}
-
 	refetchAccount( e ) {
 		e.preventDefault();
-		if ( this._isMounted ) {
-			this.setState( {
+
+		this.setState(
+			{
 				isLoading: true,
-				refetch: true,
 				errorCode: false,
-			} );
-		}
+				errorMsg: '',
+				selectedAccount: '',
+				selectedContainer: '',
+				selectedContainerAMP: '',
+			},
+			this.requestTagManagerAccounts
+		);
 	}
 
 	renderSettingsInfo() {
 		const { settings } = global.googlesitekit.modules.tagmanager;
 		const {
+			ampEnabled,
+			isSecondaryAMP,
 			hasExistingTag,
-			containerKey,
 			isLoading,
 		} = this.state;
 		const {
@@ -392,14 +451,30 @@ class TagmanagerSetup extends Component {
 							{ accountID || false }
 						</h5>
 					</div>
-					<div className="googlesitekit-settings-module__meta-item">
-						<p className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Container ID', 'google-site-kit' ) }
-						</p>
-						<h5 className="googlesitekit-settings-module__meta-item-data">
-							{ settings[ containerKey ] || false }
-						</h5>
-					</div>
+
+					{ ( ! ampEnabled || isSecondaryAMP ) && (
+						<div className="googlesitekit-settings-module__meta-item">
+							<p className="googlesitekit-settings-module__meta-item-type">
+								{ isSecondaryAMP && __( 'Web Container ID', 'google-site-kit' ) }
+								{ ! ampEnabled && __( 'Container ID', 'google-site-kit' ) }
+							</p>
+							<h5 className="googlesitekit-settings-module__meta-item-data">
+								{ settings.containerID || false }
+							</h5>
+						</div>
+					) }
+
+					{ ampEnabled && (
+						<div className="googlesitekit-settings-module__meta-item">
+							<p className="googlesitekit-settings-module__meta-item-type">
+								{ isSecondaryAMP && __( 'AMP Container ID', 'google-site-kit' ) }
+								{ ! isSecondaryAMP && __( 'Container ID', 'google-site-kit' ) }
+							</p>
+							<h5 className="googlesitekit-settings-module__meta-item-data">
+								{ settings.ampContainerID || false }
+							</h5>
+						</div>
+					) }
 				</div>
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
@@ -421,13 +496,15 @@ class TagmanagerSetup extends Component {
 
 	renderAccountDropdownForm() {
 		const {
+			ampEnabled,
 			accounts,
 			selectedAccount,
 			containers,
-			selectedContainer,
+			containersAMP,
+			existingContainer,
 			hasExistingTag,
 			isLoading,
-			containersLoading,
+			isSecondaryAMP,
 			errorCode,
 			useSnippet,
 		} = this.state;
@@ -448,18 +525,21 @@ class TagmanagerSetup extends Component {
 		}
 
 		if ( 'accountEmpty' === errorCode ) {
-			return (
-				<Fragment>
-					<div className="googlesitekit-setup-module__action">
-						<Button onClick={ TagmanagerSetup.createNewAccount }>{ __( 'Create an account', 'google-site-kit' ) }</Button>
-
-						<div className="googlesitekit-setup-module__sub-action">
-							<Link onClick={ this.refetchAccount }>{ __( 'Re-fetch My Account', 'google-site-kit' ) }</Link>
-						</div>
-					</div>
-				</Fragment>
-			);
+			return this.renderCreateAccount();
 		}
+
+		if ( ACCOUNT_CREATE === selectedAccount ) {
+			return <Fragment>
+				<p>{ __( 'To create a new account, click the button below which will open the Google Tag Manager account creation screen in a new window.', 'google-site-kit' ) }</p>
+				<p>{ __( 'Once completed, click the link below to re-fetch your accounts to continue.', 'google-site-kit' ) }</p>
+				{ this.renderCreateAccount() }
+			</Fragment>;
+		}
+
+		// Only show the web container select if AMP is not used, or AMP is in secondary mode.
+		const showWebContainerSelect = ( ! ampEnabled || isSecondaryAMP );
+		// Show the AMP select if AMP is in primary or secondary mode (implies enabled).
+		const showAMPContainerSelect = ampEnabled;
 
 		return (
 			<Fragment>
@@ -468,16 +548,26 @@ class TagmanagerSetup extends Component {
 						{ sprintf(
 							// translators: %s: the existing container ID.
 							__( 'An existing tag was found on your site (%s). If you later decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.', 'google-site-kit' ),
-							selectedContainer
+							existingContainer
 						) }
 					</p>
 				) }
-				{ ! hasExistingTag && (
-					<p>{ __( 'Please select your Tag Manager account and container below, the snippet will be inserted automatically into your site.', 'google-site-kit' ) }</p>
+
+				{ ( ! hasExistingTag && ! isSecondaryAMP ) && (
+					<p>
+						{ __( 'Please select your Tag Manager account and container below, the snippet will be inserted automatically on your site.', 'google-site-kit' ) }
+					</p>
+				) }
+
+				{ ( ! hasExistingTag && isSecondaryAMP ) && (
+					<p>
+						{ __( 'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below, the snippets will be inserted automatically on your site.', 'google-site-kit' ) }
+					</p>
 				) }
 
 				<div className="googlesitekit-setup-module__inputs">
 					<Select
+						className="googlesitekit-tagmanager__select-account"
 						enhanced
 						name="accounts"
 						label={ __( 'Account', 'google-site-kit' ) }
@@ -486,39 +576,42 @@ class TagmanagerSetup extends Component {
 						onEnhancedChange={ this.handleAccountChange }
 						outlined
 					>
-						{ accounts.map( ( account ) => {
-							return (
-								<Option
-									key={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }
-									value={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }>
-									{ account.name }
-								</Option>
-							);
-						} ) }
+						{ []
+							.concat( accounts )
+							.concat( ! hasExistingTag ? {
+								name: __( 'Set up a new account', 'google-site-kit' ),
+								accountId: ACCOUNT_CREATE, /* Capitalization rule exception: `accountId` is a property of an API returned value. */
+							} : [] )
+							.map( ( account ) => {
+								return (
+									<Option
+										key={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }
+										value={ account.accountId /* Capitalization rule exception: `accountId` is a property of an API returned value. */ }>
+										{ account.name }
+									</Option>
+								);
+							} )
+						}
 					</Select>
 
-					{ containersLoading ? ( <ProgressBar small /> ) : (
-						<Select
-							enhanced
-							name="containers"
-							label={ __( 'Container', 'google-site-kit' ) }
-							value={ selectedContainer }
-							disabled={ hasExistingTag }
-							onEnhancedChange={ this.handleContainerChange }
-							outlined
-						>
-							{ containers.concat( {
-								name: __( 'Set up a new container', 'google-site-kit' ),
-								publicId: 0,
-							} ).map( ( { name, publicId }, i ) =>
-								<Option
-									key={ i }
-									value={ publicId /* Capitalization rule exception: `publicId` is a property of an API returned value. */ }>
-									{ name }
-								</Option>
-							) }
-						</Select>
-					) }
+					{ showWebContainerSelect &&
+						this.renderContainerSelect( {
+							selectedStateKey: 'selectedContainer',
+							containers,
+							label: showAMPContainerSelect ? __( 'Web Container', 'google-site-kit' ) : null,
+							type: USAGE_CONTEXT_WEB,
+						} )
+					}
+
+					{ showAMPContainerSelect &&
+						this.renderContainerSelect( {
+							selectedStateKey: 'selectedContainerAMP',
+							containers: containersAMP,
+							// Use the default label if it is the only select shown.
+							label: showWebContainerSelect ? __( 'AMP Container', 'google-site-kit' ) : null,
+							type: USAGE_CONTEXT_AMP,
+						} )
+					}
 				</div>
 
 				{ onSettingsPage &&
@@ -547,12 +640,108 @@ class TagmanagerSetup extends Component {
 				{
 					! onSettingsPage &&
 					<div className="googlesitekit-setup-module__action">
-						<Button onClick={ this.handleSubmit }>{ __( 'Confirm & Continue', 'google-site-kit' ) }</Button>
+						<Button
+							onClick={ this.handleSubmit }
+							disabled={ ! this.canSaveSettings() }
+						>{ __( 'Confirm & Continue', 'google-site-kit' ) }</Button>
 					</div>
 				}
 
 			</Fragment>
 		);
+	}
+
+	renderContainerSelect( args ) {
+		const {
+			label,
+			selectedStateKey,
+			containers,
+			type,
+		} = args;
+		const {
+			containersLoading,
+			selectedAccount,
+			hasExistingTag,
+		} = this.state;
+		const hasContainers = !! containers.length;
+
+		if ( containersLoading ) {
+			return <ProgressBar small />;
+		}
+
+		return (
+			<Select
+				className={ `
+					googlesitekit-tagmanager__select-container
+					googlesitekit-tagmanager__select-container--${ type }
+				` }
+				label={ label || __( 'Container', 'google-site-kit' ) }
+				value={ hasContainers ? this.state[ selectedStateKey ] : CONTAINER_CREATE }
+				onEnhancedChange={ ( idx, item ) => this.setState( { [ selectedStateKey ]: item.dataset.value } ) }
+				disabled={ hasExistingTag || ! isValidAccountID( selectedAccount ) }
+				enhanced
+				outlined
+			>
+				{ []
+					.concat( containers )
+					.concat( ! hasExistingTag ? {
+						name: __( 'Set up a new container', 'google-site-kit' ),
+						publicId: CONTAINER_CREATE, /* Capitalization rule exception: `publicId` is a property of an API returned value. */
+					} : [] )
+					.map( ( { name, publicId }, i ) =>
+						<Option
+							key={ i }
+							value={ publicId /* Capitalization rule exception: `publicId` is a property of an API returned value. */ }
+						>
+							{ name }
+						</Option>
+					) }
+			</Select>
+		);
+	}
+
+	canSaveSettings() {
+		const {
+			ampEnabled,
+			isSecondaryAMP,
+			errorCode,
+			isLoading,
+			selectedAccount,
+			selectedContainer,
+			selectedContainerAMP,
+		} = this.state;
+
+		if (
+			isLoading ||
+			'tag_manager_existing_tag_permission' === errorCode ||
+			! isValidAccountID( selectedAccount )
+		) {
+			return false;
+		}
+
+		if (
+			( ! ampEnabled || isSecondaryAMP ) &&
+			! isValidContainerID( selectedContainer ) &&
+			CONTAINER_CREATE !== selectedContainer
+		) {
+			return false;
+		}
+
+		if ( ampEnabled && ! isValidContainerID( selectedContainerAMP ) && CONTAINER_CREATE !== selectedContainerAMP ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	renderCreateAccount() {
+		return <div className="googlesitekit-setup-module__action">
+			<Button onClick={ TagmanagerSetup.createNewAccount }>{ __( 'Create an account', 'google-site-kit' ) }</Button>
+
+			<div className="googlesitekit-setup-module__sub-action">
+				<Link onClick={ this.refetchAccount }>{ __( 'Re-fetch My Account', 'google-site-kit' ) }</Link>
+			</div>
+		</div>;
 	}
 
 	/**
@@ -576,7 +765,7 @@ class TagmanagerSetup extends Component {
 		const showErrorFormat = onSettingsPage && 'insufficientPermissions' === errorCode ? false : true; // default error format.
 
 		return (
-			<div className={ showErrorFormat ? 'googlesitekit-error-text' : '' }>
+			<div className={ classnames( { 'googlesitekit-error-text': showErrorFormat } ) }>
 				<p>{
 					showErrorFormat ?
 

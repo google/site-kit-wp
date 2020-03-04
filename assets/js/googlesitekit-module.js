@@ -20,7 +20,6 @@
  * External dependencies
  */
 import ProgressBar from 'GoogleComponents/progress-bar';
-import Notification from 'GoogleComponents/notifications/notification';
 import 'GoogleComponents/data';
 import 'GoogleComponents/notifications';
 import { loadTranslations } from 'GoogleUtil';
@@ -31,11 +30,12 @@ import 'GoogleModules';
  */
 import domReady from '@wordpress/dom-ready';
 import { doAction, applyFilters } from '@wordpress/hooks';
-import { Component, render, Fragment, Suspense, lazy } from '@wordpress/element';
+import { Component, render, Suspense, lazy } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import ErrorHandler from 'GoogleComponents/ErrorHandler';
 import ModuleApp from './components/module-app';
 
 class GoogleSitekitModule extends Component {
@@ -43,46 +43,14 @@ class GoogleSitekitModule extends Component {
 		super( props );
 
 		this.state = {
-			hasError: false,
+			showModuleSetupWizard: global.googlesitekit.setup.showModuleSetupWizard,
 		};
-
-		const {
-			showModuleSetupWizard,
-		} = global.googlesitekit.setup;
-
-		this.state = {
-			showModuleSetupWizard,
-		};
-	}
-
-	componentDidCatch( error, info ) {
-		this.setState( {
-			hasError: true,
-			error,
-			info,
-		} );
 	}
 
 	render() {
 		const {
-			hasError,
-			error,
-			info,
 			showModuleSetupWizard,
 		} = this.state;
-
-		if ( hasError ) {
-			return <Notification
-				id={ 'googlesitekit-error' }
-				key={ 'googlesitekit-error' }
-				title={ error.message }
-				description={ info.componentStack }
-				dismiss={ '' }
-				isDismissable={ false }
-				format="small"
-				type="win-error"
-			/>;
-		}
 
 		const { currentAdminPage } = global.googlesitekit.admin;
 
@@ -103,8 +71,8 @@ class GoogleSitekitModule extends Component {
 			const Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wrapper" */'./components/setup/setup-wrapper' ) );
 
 			return (
-				<Suspense fallback={
-					<Fragment>
+				<ErrorHandler>
+					<Suspense fallback={
 						<div className="googlesitekit-setup">
 							<div className="mdc-layout-grid">
 								<div className="mdc-layout-grid__inner">
@@ -128,15 +96,17 @@ class GoogleSitekitModule extends Component {
 								</div>
 							</div>
 						</div>
-					</Fragment>
-				}>
-					<Setup />
-				</Suspense>
+					}>
+						<Setup />
+					</Suspense>
+				</ErrorHandler>
 			);
 		}
 
 		return (
-			<ModuleApp />
+			<ErrorHandler>
+				<ModuleApp />
+			</ErrorHandler>
 		);
 	}
 }

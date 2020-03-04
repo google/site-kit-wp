@@ -13,6 +13,7 @@
  */
 
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Modules\Search_Console\Settings;
 
 register_activation_hook(
 	__FILE__,
@@ -94,7 +95,9 @@ add_action(
 				'callback' => function ( WP_REST_Request $request ) {
 					$data = $request->get_param( 'data' );
 
-					update_option( 'googlesitekit_search_console_property', $data['siteURL'] );
+					$settings = get_option( Settings::OPTION );
+					$settings['propertyID'] = $data['siteURL'];
+					update_option( Settings::OPTION, $settings );
 
 					return array(
 						'siteURL'         => $data['siteURL'],

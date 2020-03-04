@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Exception;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
@@ -746,5 +747,25 @@ tag_partner: "site_kit"
 	 */
 	protected function setup_settings() {
 		return new Settings( $this->options );
+	}
+
+	/**
+	 * Transforms an exception into a WP_Error object.
+	 *
+	 * @since 1.4.0
+	 *
+	 * @param Exception $e         Exception object.
+	 * @param string    $datapoint Datapoint originally requested.
+	 * @return WP_Error WordPress error object.
+	 */
+	protected function exception_to_error( Exception $e, $datapoint ) {
+		if ( in_array( $datapoint, array( 'accounts', 'alerts', 'clients', 'urlchannels' ), true ) ) {
+			$errors = json_decode( $e->getMessage() );
+			if ( $errors ) {
+				return new WP_Error( $e->getCode(), $errors, array( 'status' => 500 ) );
+			}
+		}
+
+		return parent::exception_to_error( $e, $datapoint );
 	}
 }

@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Admin_Bar;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
@@ -23,6 +24,8 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Search_Console\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters;
+use Google\Site_Kit_Dependencies\Google_Service_Webmasters_ApiDataRow;
+use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SearchAnalyticsQueryResponse;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SitesListResponse;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters_WmxSite;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters_SearchAnalyticsQueryRequest;
@@ -39,7 +42,8 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Search_Console extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Settings {
+final class Search_Console extends Module
+	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Admin_Bar {
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait;
 
 	/**
@@ -90,23 +94,6 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 			},
 			11
 		);
-
-		add_filter(
-			'googlesitekit_show_admin_bar_menu',
-			function( $display, $current_url ) {
-				if ( ! $this->get_property_id() ) {
-					return false;
-				}
-
-				if ( ! $this->has_data_for_url( $current_url ) ) {
-					return false;
-				}
-
-				return $display;
-			},
-			10,
-			2
-		);
 	}
 
 	/**
@@ -120,6 +107,22 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 		return array(
 			'https://www.googleapis.com/auth/webmasters',
 		);
+	}
+
+	/**
+	 * Checks if the module is active in the admin bar for the given URL.
+	 *
+	 * @since 1.4.0
+	 *
+	 * @param string $url URL to determine active state for.
+	 * @return bool
+	 */
+	public function is_active_in_admin_bar( $url ) {
+		if ( ! $this->get_property_id() ) {
+			return false;
+		}
+
+		return $this->has_data_for_url( $url );
 	}
 
 	/**
@@ -348,57 +351,41 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	}
 
 	/**
-	 * Checks whether Search Console data exists for the given post.
+	 * Checks whether Search Console data exists for the given URL.
 	 *
 	 * The result of this query is stored in a transient.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $current_url The current url.
+	 * @param string $url The url to check data for.
 	 * @return bool True if Search Console data exists, false otherwise.
 	 */
-	protected function has_data_for_url( $current_url ) {
-		if ( ! $current_url ) {
+	protected function has_data_for_url( $url ) {
+		if ( ! $url ) {
 			return false;
 		}
 
-		$transient_key = 'googlesitekit_sc_data_' . md5( $current_url );
+		$transient_key = 'googlesitekit_sc_data_' . md5( $url );
 		$has_data      = get_transient( $transient_key );
+
 		if ( false === $has_data ) {
-
-			// Check search console for data.
-			$datasets = array(
+			/* @var Google_Service_Webmasters_ApiDataRow[]|WP_Error $response_rows Array of data rows. */
+			$response_rows = $this->get_data(
+				'searchanalytics',
 				array(
-					'identifier' => $this->slug,
-					'key'        => 'sc-site-analytics',
-					'datapoint'  => 'searchanalytics',
-					'data'       => array(
-						'url'               => $current_url,
-						'dateRange'         => 'last-90-days',
-						'dimensions'        => 'date',
-						'compareDateRanges' => true,
-					),
-				),
-			);
-
-			$responses = $this->get_batch_data(
-				array_map(
-					function( $dataset ) {
-						return (object) $dataset;
-					},
-					$datasets
+					'url'               => $url,
+					'dimensions'        => 'date',
+					'compareDateRanges' => true,
 				)
 			);
 
-			$has_data = false;
+			if ( is_wp_error( $response_rows ) ) {
+				$response_rows = array(); // Bypass data check and cache.
+			}
 
-			// Go thru results, any impressions means the URL has data.
-			foreach ( $responses['sc-site-analytics'] as $key => $response ) {
-				if ( is_wp_error( $response ) || empty( $response ) || ! isset( $response->impressions ) ) {
-					continue;
-				}
-
-				if ( $response->impressions > 0 ) {
+			foreach ( $response_rows as $data_row ) {
+				/* @var Google_Service_Webmasters_ApiDataRow $data_row Data row instance. */
+				if ( 0 < $data_row->getImpressions() ) {
 					$has_data = true;
 					break;
 				}
@@ -414,7 +401,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	/**
 	 * Gets the property ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @return string Property ID URL if set, or empty string.
 	 */
@@ -430,7 +417,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	 * This method runs a Search Console API request. The determined ID should therefore be stored and accessed through
 	 * {@see Search_Console::get_property_id()} instead.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @return string Property ID, or empty string if none found.
 	 */
@@ -508,7 +495,7 @@ final class Search_Console extends Module implements Module_With_Screen, Module_
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.3.0
 	 *
 	 * @return Module_Settings
 	 */

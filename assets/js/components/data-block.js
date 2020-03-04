@@ -21,11 +21,12 @@
  */
 import PropTypes from 'prop-types';
 import SourceLink from 'GoogleComponents/source-link';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Component, Fragment, cloneElement } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -72,14 +73,22 @@ class DataBlock extends Component {
 
 		const role = ( 'button' === context ) ? 'button' : '';
 
+		// The `sparkline` prop is passed as a component, but if `invertChangeColor`
+		// is set, we should pass that to `<Sparkline>`. In that case, we clone
+		// the element and add the prop.
+		let sparklineComponent = sparkline;
+		if ( sparklineComponent && invertChangeColor ) {
+			sparklineComponent = cloneElement( sparkline, { invertChangeColor } );
+		}
+
 		return (
 			<div
-				className={ `
-					googlesitekit-data-block
-					googlesitekit-data-block--${ context }
-					${ selected ? 'googlesitekit-data-block--selected' : '' }
-					${ className }
-				` }
+				className={ classnames(
+					'googlesitekit-data-block',
+					className,
+					`googlesitekit-data-block--${ context }`,
+					{ 'googlesitekit-data-block--selected': selected },
+				) }
 				tabIndex={ 'button' === context ? '0' : '-1' }
 				role={ handleStatSelection && role }
 				onClick={ handleStatSelection && this.handleClick }
@@ -98,9 +107,9 @@ class DataBlock extends Component {
 						{ `${ datapoint }${ datapointUnit }` }
 					</div>
 				</div>
-				{ sparkline &&
+				{ sparklineComponent &&
 					<div className="googlesitekit-data-block__sparkline">
-						{ sparkline }
+						{ sparklineComponent }
 					</div>
 				}
 				<div className="googlesitekit-data-block__change-source-wrapper">

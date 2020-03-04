@@ -264,17 +264,15 @@ final class OAuth_Client {
 
 		// This is called when the client refreshes the access token on-the-fly.
 		$client->setTokenCallback(
-			function( $cache_key, $access_token ) {
+			function( $cache_key, $access_token ) use ( $client ) {
 				$expires_in = HOUR_IN_SECONDS; // Sane default, Google OAuth tokens are typically valid for an hour.
 				$created    = 0; // This will be replaced with the current timestamp when saving.
 
 				// Try looking up the real values if possible.
-				if ( isset( $client ) ) {
-					$token = $client->getAccessToken();
-					if ( isset( $token['access_token'], $token['expires_in'], $token['created'] ) && $access_token === $token['access_token'] ) {
-						$expires_in = $token['expires_in'];
-						$created    = $token['created'];
-					}
+				$token = $client->getAccessToken();
+				if ( isset( $token['access_token'], $token['expires_in'], $token['created'] ) && $access_token === $token['access_token'] ) {
+					$expires_in = $token['expires_in'];
+					$created    = $token['created'];
 				}
 
 				$this->set_access_token( $access_token, $expires_in, $created );
@@ -631,7 +629,7 @@ final class OAuth_Client {
 			 * refresh token for the current user, which may happen to set up the initial connection or to request
 			 * access to further scopes.
 			 *
-			 * @since n.e.x.t
+			 * @since 1.3.0
 			 */
 			do_action( 'googlesitekit_authorize_user' );
 		}

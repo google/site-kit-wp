@@ -74,17 +74,21 @@ describe( 'Tag Manager module setup', () => {
 		] );
 
 		await Promise.all( [
-			page.waitForResponse( ( req ) => req.url().match( 'tagmanager/data/accounts-containers' ) ),
+			page.waitForResponse( ( req ) => req.url().match( 'tagmanager/data/accounts' ) ),
 			expect( page ).toClick( '.googlesitekit-cta-link', { text: /Re-fetch My Account/i } ),
 		] );
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
-		// Ensure account and container are selected by default.
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account a/i } );
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test container x/i } );
+		// Ensure account and container selections are cleared.
+		await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-account .mdc-select__selected-text', { text: '' } );
+		await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container .mdc-select__selected-text', { text: '' } );
+
+		// Choose an account.
+		await expect( page ).toClick( '.googlesitekit-tagmanager__select-account' );
+		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test account a/i } );
 
 		// Ensure "Set up a new container" option is present in container select.
-		await expect( page ).toClick( '.mdc-select', { text: /test container x/i } );
+		await expect( page ).toClick( '.googlesitekit-tagmanager__select-container' );
 		await expect( page ).toMatchElement( '.mdc-menu-surface--open .mdc-list-item', { text: /set up a new container/i } );
 		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test container x/i } );
 
@@ -106,20 +110,32 @@ describe( 'Tag Manager module setup', () => {
 		await activatePlugin( 'e2e-tests-module-setup-tagmanager-api-mock' );
 		await proceedToTagManagerSetup();
 
+		// Ensure only web container select is shown.
+		await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--web' );
+		await expect( page ).not.toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
+
 		// Ensure account and container are selected by default.
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account a/i } );
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test container x/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-account .mdc-select__selected-text', { text: /test account a/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container .mdc-select__selected-text', { text: /test container x/i } );
 
 		// Ensure choosing a different account loads the proper values.
-		await expect( page ).toClick( '.mdc-select', { text: /test account a/i } );
+		await expect( page ).toClick( '.googlesitekit-tagmanager__select-account' );
 		await Promise.all( [
 			page.waitForResponse( ( res ) => res.url().match( 'modules/tagmanager/data' ) ),
 			expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test account b/i } ),
 		] );
 
-		// Ensure proper account and container are now selected.
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account b/i } );
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test container y/i } );
+		// Ensure account is selected.
+		await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-account .mdc-select__selected-text', { text: /test account b/i } );
+
+		// Select a container.
+		await expect( page ).toClick( '.googlesitekit-tagmanager__select-container' );
+		// Ensure no AMP containers are shown as options.
+		// expect(...).not.toMatchElement with textContent matching does not work as expected.
+		await expect(
+			await page.$$eval( '.mdc-menu-surface--open .mdc-list-item', ( nodes ) => !! nodes.find( ( e ) => e.textContent.match( /test amp container/i ) ) )
+		).toStrictEqual( false );
+		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test container y/i } );
 
 		await page.waitFor( 1000 );
 		await expect( page ).toClick( 'button', { text: /confirm \& continue/i } );
@@ -133,5 +149,24 @@ describe( 'Tag Manager module setup', () => {
 			page.waitForNavigation(),
 		] );
 		await expect( page ).toMatchElement( 'script[src^="https://www.googletagmanager.com/gtm.js?id=GTM-BCDWXY"]' );
+	} );
+
+	it( 'displays instructions for account creation when "Set up a new account" option is selected', async () => {
+		await activatePlugin( 'e2e-tests-module-setup-tagmanager-api-mock' );
+		await proceedToTagManagerSetup();
+
+		// Ensure "setup a new account" is an available choice.
+		await expect( page ).toClick( '.googlesitekit-tagmanager__select-account' );
+		await expect( page ).toMatchElement( '.mdc-menu-surface--open .mdc-list-item', { text: /set up a new account/i } );
+
+		// Choose set up a new account.
+		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /set up a new account/i } );
+
+		// Ensure instructions are present.
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module--tag-manager p', { text: /to create a new account/i } );
+
+		// Ensure buttons are present.
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module--tag-manager .mdc-button', { text: /create an account/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module--tag-manager .googlesitekit-cta-link', { text: /re-fetch my account/i } );
 	} );
 } );
