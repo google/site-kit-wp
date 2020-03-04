@@ -164,9 +164,7 @@ class SetupUsingProxy extends Component {
 																<Fragment>
 																	{ CTAFeedback }
 
-																	<OptIn
-																		optinAction="analytics_optin_setup_fallback"
-																	/>
+																	<OptIn optinAction="analytics_optin_setup_fallback" />
 
 																	<div className="googlesitekit-start-setup-wrap">
 																		<Button
