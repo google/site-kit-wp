@@ -1,7 +1,12 @@
 /**
  * Internal dependencies
  */
-import { collect } from './utils';
+import {
+	collect,
+	collectActions,
+	collectReducers,
+	initializeAction,
+} from './utils';
 
 describe( 'data utils', () => {
 	describe( 'collect()', () => {
@@ -76,6 +81,65 @@ describe( 'data utils', () => {
 			expect( () => {
 				collect( objectOne, objectTwo );
 			} ).toThrow( /Your call to collect\(\) contains the following duplicated functions: cat, feline./ );
+		} );
+	} );
+
+	describe( 'collectActions()', () => {
+		it( 'should collect multiple actions and combine them into one object', () => {
+			const objectOne = {
+				bar: () => {},
+				foo: () => {},
+			};
+			const objectTwo = {
+				cat: () => {},
+				dog: () => {},
+			};
+
+			expect( collectActions( objectOne, objectTwo ) ).toMatchObject( {
+				...objectOne,
+				...objectTwo,
+			} );
+		} );
+
+		it( 'should include an initialize action that dispatches an INITIALIZE action type', () => {
+			const objectOne = {
+				bar: () => {},
+				foo: () => {},
+			};
+			const objectTwo = {
+				cat: () => {},
+				dog: () => {},
+			};
+
+			expect( collectActions( objectOne, objectTwo ) ).toMatchObject( {
+				initialize: initializeAction,
+			} );
+		} );
+	} );
+
+	describe( 'collectReducers()', () => {
+		it( 'should respond to an INITIALIZE action because it extends the reducers to include one', () => {
+			const reducer = ( state, action ) => {
+				switch ( action.type ) {
+					default: {
+						return { ...state };
+					}
+				}
+			};
+			const initialState = { count: 0 };
+			const combinedReducer = collectReducers( initialState, [ reducer ] );
+
+			let state = combinedReducer();
+			expect( state ).toEqual( { count: 0 } );
+
+			// Normally we'd be dispatching an action to change state, but for our
+			// testing purposes this is fine 😅
+			state.count = 5;
+			expect( state ).toEqual( { count: 5 } );
+
+			state = combinedReducer( state, initializeAction() );
+
+			expect( state ).toEqual( { count: 0 } );
 		} );
 	} );
 } );
