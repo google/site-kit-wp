@@ -402,7 +402,14 @@ final class Assets {
 				'googlesitekit-data',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-data.js',
-					'dependencies' => $dependencies,
+					'dependencies' => array( 'googlesitekit-api' ),
+				)
+			),
+			new Script(
+				'googlesitekit-datastore-site',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-site.js',
+					'dependencies' => array( 'googlesitekit-data' ),
 				)
 			),
 			// End JSR Assets.

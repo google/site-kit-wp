@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Admin_Bar;
+use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
@@ -21,6 +22,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Analytics\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DateRangeValues;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsResponse;
@@ -54,7 +56,7 @@ use Exception;
  * @ignore
  */
 final class Analytics extends Module
-	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Admin_Bar {
+	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Admin_Bar, Module_With_Debug_Fields {
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait;
 
 	/**
@@ -220,6 +222,40 @@ final class Analytics extends Module
 		}
 
 		return $this->has_data_for_url( $url );
+	}
+
+	/**
+	 * Gets an array of debug field definitions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_debug_fields() {
+		$settings = $this->get_settings()->get();
+
+		return array(
+			'analytics_account_id'  => array(
+				'label' => __( 'Analytics account ID', 'google-site-kit' ),
+				'value' => $settings['accountID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
+			),
+			'analytics_property_id' => array(
+				'label' => __( 'Analytics property ID', 'google-site-kit' ),
+				'value' => $settings['propertyID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
+			),
+			'analytics_profile_id'  => array(
+				'label' => __( 'Analytics profile ID', 'google-site-kit' ),
+				'value' => $settings['profileID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['profileID'] ),
+			),
+			'analytics_use_snippet' => array(
+				'label' => __( 'Analytics snippet placed', 'google-site-kit' ),
+				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
+				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
+			),
+		);
 	}
 
 	/**
