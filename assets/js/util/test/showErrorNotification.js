@@ -6,14 +6,18 @@ import { applyFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import { testRender } from '../../../../tests/js/test-utils';
 import { showErrorNotification } from '../';
+
+/**
+ * External dependencies
+ */
+import { render } from 'tests/js/test-utils';
 
 describe( 'showErrorNotification', () => {
 	it( 'returns null if nothing is passed', () => {
 		showErrorNotification( () => null );
 
-		const { container } = testRender( applyFilters( 'googlesitekit.ErrorNotification', [] )() );
+		const { container } = render( applyFilters( 'googlesitekit.ErrorNotification', [] )() );
 
 		expect( container ).toMatchSnapshot();
 	} );
@@ -24,7 +28,7 @@ describe( 'showErrorNotification', () => {
 			id: 'dummy-error',
 		} );
 
-		const { container } = testRender( applyFilters( 'googlesitekit.ErrorNotification', [] )() );
+		const { container } = render( applyFilters( 'googlesitekit.ErrorNotification', [] )() );
 
 		expect( container ).toMatchSnapshot();
 	} );

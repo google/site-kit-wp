@@ -6,8 +6,12 @@ import { applyFilters, addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import { testRender } from '../../../../tests/js/test-utils';
 import { fillFilterWithComponent } from '../';
+
+/**
+ * External dependencies
+ */
+import { render } from 'tests/js/test-utils';
 
 describe( 'fillFilterWithComponent', () => {
 	it( 'fills filtered component', () => {
@@ -15,7 +19,7 @@ describe( 'fillFilterWithComponent', () => {
 
 		addFilter( 'googlesitekit.Test', 'googlesitekit.AdSenseModuleSettingsDetails', fillFilterWithComponent( filterTester, {} ) );
 
-		const { container } = testRender( applyFilters( 'googlesitekit.Test', 'test' )() );
+		const { container } = render( applyFilters( 'googlesitekit.Test', 'test' )() );
 		expect( container.firstChild ).toMatchSnapshot();
 	} );
 } );
