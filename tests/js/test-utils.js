@@ -26,9 +26,12 @@ TestProviders.propTypes = {
 };
 
 // custom render with the test provider component
-export const testRender = ( ui, options ) => {
+const customRender = ( ui, options ) => {
 	return render( ui, { wrapper: TestProviders, ...options } );
 };
 
 // re-export testing library
 export * from '@testing-library/react';
+
+// override render method
+export { customRender as render };
