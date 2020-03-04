@@ -58,7 +58,7 @@ class OptIn extends Component {
 		toggleTracking( checked );
 
 		if ( checked ) {
-			trackEvent( 'tracking_plguin', this.props.optinAction );
+			trackEvent( 'tracking_plugin', this.props.optinAction );
 		}
 
 		apiFetch( {
