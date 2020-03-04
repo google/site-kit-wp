@@ -11,8 +11,8 @@ import { sanitizeHTML } from 'assets/js/util';
 export const settingsDetails = () => {
 	const { dashboardPermalink } = global.googlesitekit;
 
-	/* translators: %s is the URL to the Site Kit dashboard. */
 	const content = sprintf(
+		/* translators: %s is the URL to the Site Kit dashboard. */
 		__( 'To view insights, <a href="%s">visit the dashboard</a>.', 'google-site-kit' ),
 		dashboardPermalink
 	);
