@@ -134,3 +134,13 @@ export const invalidateCache = async ( type, identifier, datapoint ) => {
 		}
 	} );
 };
+
+const API = {
+	invalidateCache,
+	get,
+	set,
+	setUsingCache,
+	usingCache,
+};
+
+export default API;
