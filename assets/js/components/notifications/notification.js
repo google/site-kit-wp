@@ -27,12 +27,17 @@ import Warning from 'GoogleComponents/notifications/warning';
 import Error from 'GoogleComponents/notifications/error';
 import Link from 'GoogleComponents/link';
 import SvgIcon from 'GoogleUtil/svg-icon';
-
+import classnames from 'classnames';
 import { map } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { Component, Fragment, createRef } from '@wordpress/element';
+import { Component, Fragment, createRef, isValidElement } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { sanitizeHTML } from '../../util/sanitize';
 
 class Notification extends Component {
 	constructor( props ) {
@@ -45,6 +50,7 @@ class Notification extends Component {
 		this.cardRef = createRef();
 
 		this.handleDismiss = this.handleDismiss.bind( this );
+		this.handleCTAClick = this.handleCTAClick.bind( this );
 
 		if ( 0 < this.props.dismissExpires ) {
 			this.expireDismiss();
@@ -55,14 +61,24 @@ class Notification extends Component {
 		}
 	}
 
-	handleDismiss( e ) {
-		const { isClosed } = this.state;
-		const card = this.cardRef.current;
-
+	async handleDismiss( e ) {
+		e.persist();
 		e.preventDefault();
 
+		const { onDismiss } = this.props;
+
+		if ( onDismiss ) {
+			await onDismiss( e );
+		}
+
+		this.dismiss();
+	}
+
+	dismiss() {
+		const card = this.cardRef.current;
+
 		this.setState( {
-			isClosed: ! isClosed,
+			isClosed: true,
 		} );
 
 		setTimeout( () => {
@@ -72,6 +88,20 @@ class Notification extends Component {
 			const event = new Event( 'notificationDismissed' );
 			document.dispatchEvent( event );
 		}, 350 );
+	}
+
+	async handleCTAClick( e ) {
+		e.persist();
+
+		const { isDismissable, onCTAClick } = this.props;
+
+		if ( onCTAClick ) {
+			await onCTAClick( e );
+		}
+
+		if ( isDismissable ) {
+			this.dismiss();
+		}
 	}
 
 	expireDismiss() {
@@ -160,7 +190,16 @@ class Notification extends Component {
 						{
 							map( blockData, ( block, i ) => {
 								return (
-									<div key={ i } className={ `mdc-layout-grid__cell ${ inlineLayout ? 'mdc-layout-grid__cell--span-5-desktop' : 'mdc-layout-grid__cell--span-4-desktop' }` }>
+									<div
+										key={ i }
+										className={ classnames(
+											'mdc-layout-grid__cell',
+											{
+												'mdc-layout-grid__cell--span-5-desktop': inlineLayout,
+												'mdc-layout-grid__cell--span-4-desktop': ! inlineLayout,
+											}
+										) }
+									>
 										<div className="googlesitekit-publisher-win__stats">
 											<DataBlock { ...block } />
 										</div>
@@ -175,14 +214,21 @@ class Notification extends Component {
 
 		const inlineMarkup = (
 			<Fragment>
-				<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
-					{ title }
-				</h3>
-
+				{ title &&
+					<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
+						{ title }
+					</h3>
+				}
 				{ description &&
 					<div className="googlesitekit-publisher-win__desc">
 						<p>
-							{ description }
+							{ isValidElement( description ) ? description : (
+								<span dangerouslySetInnerHTML={ sanitizeHTML( description, {
+									ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
+									ALLOWED_ATTR: [ 'href' ],
+								} ) } />
+							) }
+
 							{ learnMoreLabel &&
 								<Fragment>
 									{ ' ' }
@@ -205,17 +251,29 @@ class Notification extends Component {
 		const logoSVG = module ? <SvgIcon id={ module } height="19" width="19" /> : <SvgIcon id={ 'logo-g' } height="34" width="32" />;
 
 		return (
-			<section ref={ this.cardRef } className={ `
-				googlesitekit-publisher-win
-				${ format ? `googlesitekit-publisher-win--${ format }` : '' }
-				${ type ? `googlesitekit-publisher-win--${ type }` : '' }
-				${ closedClass ? `googlesitekit-publisher-win--${ closedClass }` : '' }
-			` }>
+			<section
+				ref={ this.cardRef }
+				className={ classnames(
+					'googlesitekit-publisher-win',
+					{
+						[ `googlesitekit-publisher-win--${ format }` ]: format,
+						[ `googlesitekit-publisher-win--${ type }` ]: type,
+						[ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass,
+					}
+				) }
+			>
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
 
 						{ logo &&
-							<div className={ `mdc-layout-grid__cell mdc-layout-grid__cell--span-12 ${ inlineLayout ? 'mdc-layout-grid__cell--order-2-phone mdc-layout-grid__cell--order-1-tablet' : '' }` }>
+							<div className={ classnames(
+								'mdc-layout-grid__cell',
+								'mdc-layout-grid__cell--span-12',
+								{
+									'mdc-layout-grid__cell--order-2-phone': inlineLayout,
+									'mdc-layout-grid__cell--order-1-tablet': inlineLayout,
+								}
+							) }>
 								<div className="googlesitekit-publisher-win__logo">
 									{ logoSVG }
 								</div>
@@ -236,7 +294,10 @@ class Notification extends Component {
 							</div>
 						}
 
-						<div className={ `mdc-layout-grid__cell ${ layout }` }>
+						<div className={ classnames(
+							'mdc-layout-grid__cell',
+							layout
+						) } >
 
 							{ inlineLayout ? (
 								<div className="mdc-layout-grid__inner">
@@ -255,7 +316,13 @@ class Notification extends Component {
 							) }
 
 							{ ctaLink &&
-								<Button href={ ctaLink } target={ ctaTarget }>{ ctaLabel }</Button>
+								<Button
+									href={ ctaLink }
+									target={ ctaTarget }
+									onClick={ this.handleCTAClick }
+								>
+									{ ctaLabel }
+								</Button>
 							}
 
 							{ isDismissable && dismiss &&
@@ -301,7 +368,7 @@ class Notification extends Component {
 Notification.propTypes = {
 	id: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
-	description: PropTypes.string,
+	description: PropTypes.node,
 	learnMoreURL: PropTypes.string,
 	learnMoreDescription: PropTypes.string,
 	learnMoreLabel: PropTypes.string,
@@ -320,6 +387,8 @@ Notification.propTypes = {
 	pageIndex: PropTypes.string,
 	dismissExpires: PropTypes.number,
 	showOnce: PropTypes.bool,
+	onCTAClick: PropTypes.func,
+	onDismiss: PropTypes.func,
 };
 
 Notification.defaultProps = {

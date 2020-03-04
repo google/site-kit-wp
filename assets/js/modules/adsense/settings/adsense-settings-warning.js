@@ -1,6 +1,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import SvgIcon from 'GoogleUtil/svg-icon';
 /**
  * WordPress dependencies
@@ -28,7 +29,10 @@ class AdSenseSettingsWarning extends Component {
 
 		if ( ! global.googlesitekit.canAdsRun ) {
 			return (
-				<div className={ `googlesitekit-settings-module-warning googlesitekit-settings-module-warning--${ context }` }>
+				<div className={ classnames(
+					'googlesitekit-settings-module-warning',
+					`googlesitekit-settings-module-warning--${ context }`
+				) }>
 					<SvgIcon id="error" height="20" width="23" /> { message }
 				</div>
 			);
