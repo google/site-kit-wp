@@ -29,6 +29,7 @@ const FETCH_NOTIFICATIONS = 'FETCH_NOTIFICATIONS';
 const RECEIVE_NOTIFICATIONS = 'RECEIVE_NOTIFICATIONS';
 const RECEIVE_NOTIFICATIONS_FAILED = 'RECEIVE_NOTIFICATIONS_FAILED';
 
+// This should remain private for now, hence not be exported on Data.
 export const createNotificationsStore = ( type, identifier, datapoint ) => {
 	const INITIAL_STATE = {
 		serverNotifications: {},
