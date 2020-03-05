@@ -17,7 +17,7 @@ namespace Google\Site_Kit\Core\Assets;
  * @access private
  * @ignore
  */
-final class Script extends Asset {
+class Script extends Asset {
 
 	/**
 	 * Constructor.
