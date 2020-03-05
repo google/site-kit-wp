@@ -444,37 +444,6 @@ const dataAPI = {
 	},
 
 	/**
-	 * Gets notifications from Rest API.
-	 *
-	 * @param {string} moduleSlug Slug of the module to get notifications for.
-	 * @param {number} maxAge     The cache TTL in seconds. If not provided, no TTL will be checked.
-	 *
-	 * @return {Promise} A promise for the fetch request.
-	 */
-	async getNotifications( moduleSlug, maxAge = 0 ) {
-		let notifications = [];
-
-		if ( ! moduleSlug ) {
-			return notifications;
-		}
-
-		const cacheKey = this.getCacheKey( 'modules', moduleSlug, 'notifications' );
-
-		notifications = dataAPI.getCache( cacheKey, maxAge );
-
-		if ( ! notifications || 0 === notifications.length ) {
-			// Make an API request to retrieve the notifications.
-			notifications = await apiFetch( {
-				path: `/google-site-kit/v1/modules/${ moduleSlug }/notifications/`,
-			} );
-
-			dataAPI.setCache( cacheKey, notifications );
-		}
-
-		return notifications;
-	},
-
-	/**
 	 * Sets data using the REST API.
 	 *
 	 * @param {string} type       The data to access. One of 'core' or 'modules'.
