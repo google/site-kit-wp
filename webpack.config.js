@@ -39,6 +39,7 @@ const noAMDParserRule = { parser: { amd: false } };
 const siteKitExternals = {
 	'googlesitekit-api': [ 'googlesitekit', 'api' ],
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
+	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 };
 
 const externals = { ...siteKitExternals };
