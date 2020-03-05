@@ -430,7 +430,7 @@ final class Modules {
 
 		return array(
 			new REST_Route(
-				'modules',
+				'core/modules/data/list',
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
@@ -449,7 +449,7 @@ final class Modules {
 				)
 			),
 			new REST_Route(
-				'modules/(?P<slug>[a-z\-]+)',
+				'core/modules/data/info',
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
