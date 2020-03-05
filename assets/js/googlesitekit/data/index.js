@@ -29,6 +29,8 @@ import { createRegistry } from '@wordpress/data';
  * Internal dependencies
  */
 import {
+	addInitializeAction,
+	addInitializeReducer,
 	collectActions,
 	collectControls,
 	collectReducers,
@@ -41,6 +43,8 @@ const Data = createRegistry();
 
 // Attach some of our utility functions to the registry so third-party
 // developers can use them.
+Data.addInitializeAction = addInitializeAction;
+Data.addInitializeReducer = addInitializeReducer;
 Data.collectActions = collectActions;
 Data.collectControls = collectControls;
 Data.collectReducers = collectReducers;
