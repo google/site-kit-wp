@@ -110,6 +110,10 @@ export const resolvers = {
 			return actions.receiveConnectionFailed();
 		}
 	},
+
+	*isConnected() {
+		yield resolvers.getConnection();
+	},
 };
 
 export const selectors = {
@@ -117,6 +121,12 @@ export const selectors = {
 		const { connection } = state;
 
 		return connection;
+	},
+
+	isConnected( state ) {
+		const connection = selectors.getConnection( state );
+
+		return connection ? connection.connected : null;
 	},
 };
 

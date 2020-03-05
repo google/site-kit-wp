@@ -133,5 +133,63 @@ describe( 'core/site connection', () => {
 				expect( connection ).toEqual( null );
 			} );
 		} );
+
+		describe( 'isConnected', () => {
+			it( 'uses a resolver get all connection info', async () => {
+				const response = { connected: true, resettable: true };
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
+					)
+					.mockResponseOnce(
+						JSON.stringify( response ),
+						{ status: 200 }
+					);
+
+				const initialIsConnected = registry.select( STORE_NAME ).isConnected();
+				// The connection info will be its initial value while the connection
+				// info is fetched.
+				expect( initialIsConnected ).toEqual( null );
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).isConnected() !== null
+					),
+				);
+
+				const isConnected = registry.select( STORE_NAME ).isConnected();
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( isConnected ).toEqual( response.connected );
+			} );
+
+			it( 'dispatches an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
+					)
+					.mockResponseOnce(
+						JSON.stringify( response ),
+						{ status: 500 }
+					);
+
+				muteConsole( 'error' );
+				registry.select( STORE_NAME ).isConnected();
+				await subscribeUntil( registry,
+					// TODO: We may want a selector for this, but for now this is fine
+					// because it's internal-only.
+					() => store.getState().isFetchingConnection === false,
+				);
+
+				const isConnected = registry.select( STORE_NAME ).isConnected();
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( isConnected ).toEqual( null );
+			} );
+		} );
 	} );
 } );
