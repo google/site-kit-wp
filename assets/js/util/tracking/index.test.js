@@ -13,7 +13,7 @@ import {
 } from './index.private';
 
 const resetGlobals = () => {
-	delete global._googlesitekitBase;
+	delete global._googlesitekitBaseData;
 	delete global[ DATA_LAYER ];
 };
 
@@ -36,12 +36,12 @@ describe( 'disableTracking and isTrackingEnabled', () => {
 	afterEach( resetGlobals );
 
 	it( 'does not mutate global tracking settings when toggling active state', () => {
-		global._googlesitekitBase = { trackingEnabled: true };
+		global._googlesitekitBaseData = { trackingEnabled: true };
 
 		disableTracking();
 
 		expect( isTrackingEnabled() ).toStrictEqual( false );
-		expect( global._googlesitekitBase.trackingEnabled ).toStrictEqual( true );
+		expect( global._googlesitekitBaseData.trackingEnabled ).toStrictEqual( true );
 	} );
 } );
 
@@ -49,12 +49,12 @@ describe( 'enableTracking and isTrackingEnabled', () => {
 	afterEach( resetGlobals );
 
 	it( 'does not mutate global tracking settings when toggling active state', () => {
-		global._googlesitekitBase = { trackingEnabled: false };
+		global._googlesitekitBaseData = { trackingEnabled: false };
 
 		enableTracking();
 
 		expect( isTrackingEnabled() ).toStrictEqual( true );
-		expect( global._googlesitekitBase.trackingEnabled ).toStrictEqual( false );
+		expect( global._googlesitekitBaseData.trackingEnabled ).toStrictEqual( false );
 	} );
 } );
 

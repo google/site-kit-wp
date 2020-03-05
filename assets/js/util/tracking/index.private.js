@@ -32,7 +32,7 @@ const {
 	trackingID,
 	referenceSiteURL,
 	userIDHash,
-} = global._googlesitekitBase || {};
+} = global._googlesitekitBaseData || {};
 
 export const initialConfig = {
 	isFirstAdmin,
