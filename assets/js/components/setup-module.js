@@ -119,11 +119,7 @@ class SetupModule extends Component {
 					<Spinner isSaving={ isSaving } />
 				</div>
 				<div className="googlesitekit-settings-connect-module__logo">
-					{
-						! blockedByParentModule ?
-							moduleIcon( slug ) :
-							moduleIcon( `${ slug }-disabled` )
-					}
+					{ moduleIcon( slug ) }
 				</div>
 				<h3 className="
 					googlesitekit-subheading-1
