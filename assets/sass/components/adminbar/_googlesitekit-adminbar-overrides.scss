@@ -214,6 +214,26 @@
 		}
 	}
 
+	&.nojs .googlesitekit-noscript {
+
+		.mdc-layout-grid {
+
+			@extend .mdc-layout-grid;
+		}
+
+		.mdc-layout-grid__inner {
+
+			@extend .mdc-layout-grid__inner;
+		}
+
+		.mdc-layout-grid__cell {
+
+			@extend .mdc-layout-grid__cell;
+			@extend .mdc-layout-grid__cell--span-12-tablet;
+		}
+
+	}
+
 	// Higher-specificity overrides.
 	.googlesitekit-plugin .googlesitekit-adminbar {
 

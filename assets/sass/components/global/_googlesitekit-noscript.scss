@@ -1,5 +1,5 @@
 /**
- * Event tracking utilities.
+ * Noscript notification styles.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,28 +16,22 @@
  * limitations under the License.
  */
 
-/**
- * gtag script identifier.
- */
-export const SCRIPT_IDENTIFIER = 'data-googlesitekit-gtag';
+.googlesitekit-noscript {
 
-/**
- * Data layer global used for internal/private Site Kit data.
- */
-export const DATA_LAYER = '_googlesitekitDataLayer';
+	@include googlesitekit-inner-padding;
+	@include shadow;
 
-const {
-	isFirstAdmin,
-	trackingEnabled,
-	trackingID,
-	referenceSiteURL,
-	userIDHash,
-} = global._googlesitekitBaseData || {};
+	background-color: $c-base;
+	margin: 5px 20px 5px 0;
 
-export const initialConfig = {
-	isFirstAdmin,
-	trackingEnabled,
-	trackingID,
-	referenceSiteURL,
-	userIDHash,
-};
+	&__title {
+		margin: 0;
+	}
+}
+
+.no-js {
+
+	[id^="js-googlesitekit-"] {
+		display: none;
+	}
+}

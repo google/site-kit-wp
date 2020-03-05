@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Admin_Bar;
+use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
@@ -43,7 +44,7 @@ use WP_Error;
  * @ignore
  */
 final class Search_Console extends Module
-	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Admin_Bar {
+	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Admin_Bar, Module_With_Debug_Fields {
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait;
 
 	/**
@@ -123,6 +124,22 @@ final class Search_Console extends Module
 		}
 
 		return $this->has_data_for_url( $url );
+	}
+
+	/**
+	 * Gets an array of debug field definitions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_debug_fields() {
+		return array(
+			'search_console_property' => array(
+				'label' => __( 'Search Console property', 'google-site-kit' ),
+				'value' => $this->get_property_id(),
+			),
+		);
 	}
 
 	/**
