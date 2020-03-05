@@ -17,33 +17,13 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import {
 	createNotificationsStore,
 } from '../data/create-notifications-store';
 
 export const createModuleStore = ( slug ) => {
-	const notifications = createNotificationsStore( 'modules', slug, 'notifications' );
-
-	const INITIAL_STATE = Data.collectState( notifications.INITIAL_STATE );
-	const actions = Data.collectActions( notifications.actions );
-	const controls = Data.collectControls( notifications.controls );
-	const reducer = Data.collectReducers( INITIAL_STATE, [ notifications.reducer ] );
-	const resolvers = Data.collectResolvers( notifications.resolvers );
-	const selectors = Data.collectSelectors( notifications.resolvers );
-
-	return {
-		INITIAL_STATE,
-		actions,
-		controls,
-		reducer,
-		resolvers,
-		selectors,
-	};
+	// For now, a base module store only consists of the notifications functionality.
+	return createNotificationsStore( 'modules', slug, 'notifications' );
 };
