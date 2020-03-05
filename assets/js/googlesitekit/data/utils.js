@@ -76,9 +76,13 @@ export const collect = ( ...items ) => {
 	return collectedObject;
 };
 
-export const collectActions = ( ...args ) => {
-	return collect( ...args );
-};
+/**
+ * Collect all actions.
+ *
+ * @param {Object} ...args A list of objects, each containing their own actions.
+ * @return {Object} The combined object.
+ */
+export const collectActions = collect;
 
 export const collectControls = collect;
 
