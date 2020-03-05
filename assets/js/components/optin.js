@@ -38,6 +38,7 @@ import {
 	toggleTracking,
 	trackEvent,
 } from '../util/tracking';
+import { sanitizeHTML } from '../util';
 
 class OptIn extends Component {
 	constructor( props ) {
@@ -111,8 +112,15 @@ class OptIn extends Component {
 					checked={ optIn }
 					onChange={ this.handleOptIn }
 				>
-					{ __( 'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with ', 'google-site-kit' ) }
-					<a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">{ __( 'Google Privacy Policy', 'google-site-kit' ) }</a>.
+					<span
+						dangerouslySetInnerHTML={ sanitizeHTML(
+							__( 'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>', 'google-site-kit' ),
+							{
+								ALLOWED_TAGS: [ 'a' ],
+								ALLOWED_ATTR: [ 'href', 'target', 'rel' ],
+							}
+						) }
+					/>
 				</Checkbox>
 				{ error &&
 				<div className="googlesitekit-error-text">
