@@ -40,7 +40,7 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { trafficSourcesReportDataDefaults } from '../util';
+import { trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../util';
 
 class AnalyticsDashboardWidgetTopAcquisitionSources extends Component {
 	render() {
@@ -128,5 +128,7 @@ export default withData(
 	<PreviewTable
 		rows={ 4 }
 		rowHeight={ 50 }
-	/>
+	/>,
+	{},
+	isDataZeroForReporting
 );

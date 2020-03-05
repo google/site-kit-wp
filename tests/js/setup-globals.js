@@ -49,7 +49,7 @@ global.gtag = function( type, name, sendto, category, label, value ) {
 	};
 };
 
-global._googlesitekitBase = global._googlesitekitBase || {};
+global._googlesitekitBaseData = global._googlesitekitBaseData || {};
 global._googlesitekitAPIFetchData = global._googlesitekitAPIFetchData || {};
 
 global._googlesitekitAPIFetchData.rootURL = 'http://sitekit.test/';

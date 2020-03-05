@@ -1,5 +1,5 @@
 /**
- * Event tracking utilities.
+ * Entrypoint for the "core/site" data store.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,27 +17,10 @@
  */
 
 /**
- * gtag script identifier.
+ * External dependencies
  */
-export const SCRIPT_IDENTIFIER = 'data-googlesitekit-gtag';
 
 /**
- * Data layer global used for internal/private Site Kit data.
+ * Internal dependencies
  */
-export const DATA_LAYER = '_googlesitekitDataLayer';
-
-const {
-	isFirstAdmin,
-	trackingEnabled,
-	trackingID,
-	referenceSiteURL,
-	userIDHash,
-} = global._googlesitekitBaseData || {};
-
-export const initialConfig = {
-	isFirstAdmin,
-	trackingEnabled,
-	trackingID,
-	referenceSiteURL,
-	userIDHash,
-};
+import 'assets/js/googlesitekit/datastore/site';
