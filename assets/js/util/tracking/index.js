@@ -21,20 +21,6 @@
  */
 import createTracking from './createTracking';
 
-/**
- * gtag script identifier.
- *
- * @private
- */
-export const SCRIPT_IDENTIFIER = 'data-googlesitekit-gtag';
-
-/**
- * Data layer global used for internal/private Site Kit data.
- *
- * @private
- */
-export const DATA_LAYER = '_googlesitekitDataLayer';
-
 const {
 	isFirstAdmin,
 	trackingEnabled,

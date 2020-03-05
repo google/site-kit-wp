@@ -2,7 +2,7 @@
 /**
  * Internal dependencies
  */
-import { DATA_LAYER } from './index';
+import { DATA_LAYER } from './createEnableTracking';
 
 /**
  * Returns a function which, when invoked will initialize the dataLayer and push data onto it.

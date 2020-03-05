@@ -3,8 +3,8 @@
  * Internal dependencies
  */
 import createTracking from './createTracking';
+import { DATA_LAYER } from './createEnableTracking';
 import {
-	DATA_LAYER,
 	disableTracking,
 	enableTracking,
 	isTrackingEnabled,
