@@ -34,6 +34,7 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 	const INITIAL_STATE = {
 		serverNotifications: {},
 		clientNotifications: {},
+		isFetchingNotifications: false,
 	};
 
 	const actions = {
@@ -71,7 +72,7 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 			invariant( error, 'error is required.' );
 
 			return {
-				payload: { error },
+				payload: {},
 				type: RECEIVE_NOTIFICATIONS_FAILED,
 			};
 		},
@@ -126,12 +127,9 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 			}
 
 			case RECEIVE_NOTIFICATIONS_FAILED: {
-				const { error } = action.payload;
-
 				return {
 					...state,
 					isFetchingNotifications: false,
-					serverNotifications: { error, hasError: true }, // TODO.
 				};
 			}
 
