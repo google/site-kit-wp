@@ -12,10 +12,12 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Optimize\Settings;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -27,7 +29,7 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Optimize extends Module implements Module_With_Settings {
+final class Optimize extends Module implements Module_With_Settings, Module_With_Debug_Fields {
 	use Module_With_Settings_Trait;
 
 	/**
@@ -159,6 +161,25 @@ final class Optimize extends Module implements Module_With_Settings {
 			</script>
 		</amp-experiment>
 		<?php
+	}
+
+	/**
+	 * Gets an array of debug field definitions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_debug_fields() {
+		$settings = $this->get_settings()->get();
+
+		return array(
+			'optimize_id' => array(
+				'label' => __( 'Optimize ID', 'google-site-kit' ),
+				'value' => $settings['optimizeID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['optimizeID'], 7 ),
+			),
+		);
 	}
 
 	/**

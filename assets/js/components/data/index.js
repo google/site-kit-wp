@@ -77,17 +77,10 @@ const dataAPI = {
 	maxRequests: 10,
 
 	init() {
-		if ( global.googlesitekit.initialized ) {
-			return;
-		}
-		global.googlesitekit.initialized = true;
-		this.collectModuleData = this.collectModuleData.bind( this );
-		global.googlesitekit.cache = [];
-
 		addAction(
 			'googlesitekit.moduleLoaded',
 			'googlesitekit.collectModuleListingData',
-			this.collectModuleData
+			this.collectModuleData.bind( this )
 		);
 	},
 
