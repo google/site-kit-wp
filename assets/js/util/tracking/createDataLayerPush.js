@@ -2,7 +2,7 @@
 /**
  * Internal dependencies
  */
-import { DATA_LAYER } from './index.private';
+import { DATA_LAYER } from './index';
 
 /**
  * Returns a function which, when invoked will initialize the dataLayer and push data onto it.
