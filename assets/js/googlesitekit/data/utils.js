@@ -23,6 +23,44 @@ import invariant from 'invariant';
 
 const INITIALIZE = 'INITIALIZE';
 
+/**
+ * Add an initialize action to an existing object of actions.
+ *
+ * @param {Object} actions An object of actions.
+ * @return {Object} The combined action object, extended with an initialize() action.
+ */
+export const addInitializeAction = ( actions ) => {
+	return collect( actions, {
+		initialize: initializeAction,
+	} );
+};
+
+/**
+ * Add an initialize reducer handler to an existing reducer.
+ *
+ * Adds a reducer that resets the store to its initial state if the
+ * `initialize()` action is dispatched on it.
+ *
+ * @param {Object} initialState The store's default state (`INITIAL_STATE`).
+ * @param {Function} reducer A single reducer to extend with an initialize() handler.
+ * @return {Function} A Redux-style reducer.
+ */
+export const addInitializeReducer = ( initialState, reducer ) => {
+	const initializeReducer = ( state, action ) => {
+		switch ( action.type ) {
+			case INITIALIZE: {
+				return { ...initialState };
+			}
+
+			default: {
+				return { ...state };
+			}
+		}
+	};
+
+	return collectReducers( initialState, reducer, initializeReducer );
+};
+
 export const collect = ( ...items ) => {
 	const collectedObject = items.reduce( ( acc, item ) => {
 		return { ...acc, ...item };
@@ -38,36 +76,35 @@ export const collect = ( ...items ) => {
 	return collectedObject;
 };
 
-export const initializeAction = () => {
-	return {
-		payload: {},
-		type: INITIALIZE,
-	};
-};
-
 export const collectActions = ( ...args ) => {
-	return collect( ...args, {
-		initialize: initializeAction,
-	} );
+	return collect( ...args );
 };
 
 export const collectControls = collect;
 
-export const collectReducers = ( initialState, reducers ) => {
-	const initializeReducer = ( state, action ) => {
-		switch ( action.type ) {
-			case INITIALIZE: {
-				return { ...initialState };
-			}
+/**
+ * Collect all reducers and add an initialize reducer.
+ *
+ * This combines reducers and adds a reducer that resets the store to its
+ * initial state if the `initialize()` action is dispatched on it.
+ *
+ * If the first argument passed is not a function, it will be used as the
+ * combined reducer's `INITIAL_STATE`.
+ *
+ * @param {Object} initialState? The combined reducer's `INITIAL_STATE`. Only used when first argument is not a function.
+ * @param {Function} ...args A list of reducers, each containing their own controls.
+ * @return {Function} A Redux-style reducer.
+ */
+export const collectReducers = ( ...args ) => {
+	const reducers = [ ...args ];
+	let initialState;
 
-			default: {
-				return { ...state };
-			}
-		}
-	};
+	if ( typeof reducers[ 0 ] !== 'function' ) {
+		initialState = reducers.shift();
+	}
 
 	return ( state = initialState, action = {} ) => {
-		return [ ...reducers, initializeReducer ].reduce( ( newState, reducer ) => {
+		return reducers.reduce( ( newState, reducer ) => {
 			return reducer( newState, action );
 		}, state );
 	};
@@ -79,7 +116,7 @@ export const collectSelectors = collect;
 
 export const collectState = collect;
 
-function findDuplicates( array ) {
+const findDuplicates = ( array ) => {
 	const duplicates = [];
 	const counts = {};
 
@@ -92,4 +129,11 @@ function findDuplicates( array ) {
 	}
 
 	return duplicates;
-}
+};
+
+export const initializeAction = () => {
+	return {
+		payload: {},
+		type: INITIALIZE,
+	};
+};
