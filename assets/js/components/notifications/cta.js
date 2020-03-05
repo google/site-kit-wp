@@ -21,6 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import Link from 'GoogleComponents/link';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -39,10 +40,12 @@ class CTA extends Component {
 		} = this.props;
 
 		return (
-			<div className={ `
-				googlesitekit-cta
-				${ error ? 'googlesitekit-cta--error' : '' }
-			` }>
+			<div
+				className={ classnames(
+					'googlesitekit-cta',
+					{ 'googlesitekit-cta--error': error }
+				) }
+			>
 				{ title &&
 					<h3 className="googlesitekit-cta__title">
 						{ title }

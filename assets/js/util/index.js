@@ -54,6 +54,7 @@ import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMa
 import { tagMatchers as tagmanagerTagMatchers } from '../modules/tagmanager/util';
 import { trackEvent } from './tracking';
 export { trackEvent };
+export * from './sanitize';
 export * from './standalone';
 export * from './storage';
 export * from './i18n';
@@ -698,11 +699,11 @@ export function sortObjectProperties( obj ) {
  * Gets the meta key for the given user option.
  *
  * @param {string} userOptionName User option name.
- * @param {Object} _googlesitekitBase Site Kit base data (used for testing).
+ * @param {Object} _googlesitekitBaseData Site Kit base data (used for testing).
  * @return {string} meta key name.
  */
-export function getMetaKeyForUserOption( userOptionName, _googlesitekitBase = global._googlesitekitBase ) {
-	const { blogPrefix, isNetworkMode } = _googlesitekitBase;
+export function getMetaKeyForUserOption( userOptionName, _googlesitekitBaseData = global._googlesitekitBaseData ) {
+	const { blogPrefix, isNetworkMode } = _googlesitekitBaseData;
 
 	if ( ! isNetworkMode ) {
 		return blogPrefix + userOptionName;

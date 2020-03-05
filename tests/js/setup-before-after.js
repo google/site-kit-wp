@@ -1,4 +1,10 @@
 beforeEach( () => {
+	global.console.error.mockClear();
+	global.console.warn.mockClear();
+	global.console.log.mockClear();
+	global.console.info.mockClear();
+	global.console.debug.mockClear();
+
 	localStorage.clear();
 	sessionStorage.clear();
 

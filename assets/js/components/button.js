@@ -21,7 +21,7 @@
  */
 import { MDCRipple } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
-
+import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
@@ -60,12 +60,14 @@ class Button extends Component {
 
 		return (
 			<SemanticButton
-				className={ `
-					mdc-button
-					${ ! text && 'mdc-button--raised' }
-					${ className && className }
-					${ danger ? 'mdc-button--danger' : '' }
-				` }
+				className={ classnames(
+					'mdc-button',
+					className,
+					{
+						'mdc-button--raised': ! text,
+						'mdc-button--danger': danger,
+					}
+				) }
 				onClick={ onClick }
 				href={ disabled ? undefined : href }
 				ref={ this.buttonRef }
