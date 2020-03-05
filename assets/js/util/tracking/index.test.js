@@ -4,13 +4,11 @@
  */
 import createTracking from './createTracking';
 import {
+	DATA_LAYER,
 	disableTracking,
 	enableTracking,
 	isTrackingEnabled,
-} from '.';
-import {
-	DATA_LAYER,
-} from './index.private';
+} from './index';
 
 const resetGlobals = () => {
 	delete global._googlesitekitBaseData;

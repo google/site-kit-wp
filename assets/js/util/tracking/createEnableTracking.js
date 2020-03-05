@@ -5,7 +5,7 @@ import createDataLayerPush from './createDataLayerPush';
 import {
 	DATA_LAYER,
 	SCRIPT_IDENTIFIER,
-} from './index.private';
+} from './index';
 
 /**
  * Returns a function which, when invoked enables tracking and injects the gtag script if necessary.

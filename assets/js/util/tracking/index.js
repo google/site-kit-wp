@@ -20,7 +20,36 @@
  * Internal dependencies
  */
 import createTracking from './createTracking';
-import { initialConfig } from './index.private';
+
+/**
+ * gtag script identifier.
+ *
+ * @private
+ */
+export const SCRIPT_IDENTIFIER = 'data-googlesitekit-gtag';
+
+/**
+ * Data layer global used for internal/private Site Kit data.
+ *
+ * @private
+ */
+export const DATA_LAYER = '_googlesitekitDataLayer';
+
+const {
+	isFirstAdmin,
+	trackingEnabled,
+	trackingID,
+	referenceSiteURL,
+	userIDHash,
+} = global._googlesitekitBaseData || {};
+
+const initialConfig = {
+	isFirstAdmin,
+	trackingEnabled,
+	trackingID,
+	referenceSiteURL,
+	userIDHash,
+};
 
 const {
 	enableTracking,
@@ -33,6 +62,7 @@ const {
  * Change the active state of tracking.
  *
  * @param {boolean} activeStatus The new state to set.
+ * @return {void}
  */
 function toggleTracking( activeStatus ) {
 	if ( !! activeStatus ) {
