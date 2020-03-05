@@ -506,17 +506,7 @@ const dataAPI = {
 	 * @return {Promise} A promise for the fetch request.
 	 */
 	setModuleActive( moduleSlug, active ) {
-		// Make an API request to store the value.
-		return apiFetch( { path: `/google-site-kit/v1/modules/${ moduleSlug }`,
-			data: { active },
-			method: 'POST',
-		} ).then( ( response ) => {
-			return new Promise( ( resolve ) => {
-				resolve( response );
-			} );
-		} ).catch( ( err ) => {
-			return Promise.reject( err );
-		} );
+		return this.set( TYPE_CORE, 'modules', moduleSlug, { active } );
 	},
 };
 
