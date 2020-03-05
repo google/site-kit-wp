@@ -454,12 +454,12 @@ final class Modules {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function( WP_REST_Request $request ) {
-							$slug = $request['slug'];
 							try {
-								$module = $this->get_module( $slug );
-							} catch ( \Exception $e ) {
-								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
+								$module = $this->get_module( $request['slug'] );
+							} catch ( Exception $e ) {
+								return new WP_Error( 'invalid_module_slug', $e->getMessage() );
 							}
+
 							return new WP_REST_Response( $this->prepare_module_data_for_response( $module ) );
 						},
 						'permission_callback' => $can_authenticate,
@@ -468,11 +468,17 @@ final class Modules {
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function( WP_REST_Request $request ) {
 							$slug = $request['slug'];
-							$modules = $this->get_available_modules();
-							if ( ! isset( $modules[ $slug ] ) ) {
-								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
+							$data = $request['data'];
+
+							try {
+								$this->get_module( $slug );
+							} catch ( Exception $e ) {
+								return new WP_Error( 'invalid_module_slug', $e->getMessage() );
 							}
-							if ( $request['active'] ) {
+
+							$modules = $this->get_available_modules();
+
+							if ( ! empty( $data['active'] ) ) {
 								// Prevent activation if one of the dependencies is not active.
 								$dependency_slugs = $this->get_module_dependencies( $slug );
 								foreach ( $dependency_slugs as $dependency_slug ) {
@@ -503,10 +509,9 @@ final class Modules {
 						},
 						'permission_callback' => $can_manage_options,
 						'args'                => array(
-							'active' => array(
-								'type'        => 'boolean',
-								'description' => __( 'Whether to activate or deactivate the module.', 'google-site-kit' ),
-								'required'    => true,
+							'data' => array(
+								'type'     => 'object',
+								'required' => true,
 							),
 						),
 					),
