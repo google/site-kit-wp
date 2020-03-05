@@ -146,7 +146,7 @@ class SettingsAdmin extends Component {
 												googlesitekit-settings-module__meta-item
 												googlesitekit-settings-module__meta-item--nomargin
 											">
-												<OptIn />
+												<OptIn optinAction="analytics_optin_settings_page" />
 											</div>
 										</div>
 									</div>
