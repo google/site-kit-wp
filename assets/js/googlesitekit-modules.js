@@ -21,18 +21,14 @@
 /**
  * Internal dependencies
  */
-import { createModuleStore } from './googlesitekit/modules';
-
-const modules = {
-	createModuleStore,
-};
+import Modules from './googlesitekit/modules';
 
 if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};
 }
 
 if ( typeof global.googlesitekit.modules === 'undefined' ) {
-	global.googlesitekit.modules = modules;
+	global.googlesitekit.modules = Modules;
 }
 
-export default modules;
+export default Modules;

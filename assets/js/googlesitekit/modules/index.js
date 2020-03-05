@@ -18,4 +18,13 @@
  * limitations under the License.
  */
 
-export { createModuleStore } from './create-module-store';
+/**
+ * Internal dependencies
+ */
+import { createModuleStore } from './create-module-store';
+
+const Modules = {
+	createModuleStore,
+};
+
+export default Modules;

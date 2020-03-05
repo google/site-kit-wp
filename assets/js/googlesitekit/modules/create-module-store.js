@@ -19,11 +19,11 @@
 /**
  * External dependencies
  */
-import Data from 'googlesitekit-data';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import {
 	createNotificationsStore,
 } from '../data/create-notifications-store';
