@@ -156,6 +156,7 @@ final class Plugin {
 				( new Core\Admin\Notices() )->register();
 				( new Core\Admin\Dashboard( $this->context, $assets ) )->register();
 				( new Core\Notifications\Notifications( $this->context, $options ) )->register();
+				( new Core\Util\Debug_Data( $this->context, $options, $user_options, $authentication, $modules ) )->register();
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(
