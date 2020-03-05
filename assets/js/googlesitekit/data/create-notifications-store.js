@@ -29,12 +29,12 @@ const FETCH_NOTIFICATIONS = 'FETCH_NOTIFICATIONS';
 const RECEIVE_NOTIFICATIONS = 'RECEIVE_NOTIFICATIONS';
 const RECEIVE_NOTIFICATIONS_FAILED = 'RECEIVE_NOTIFICATIONS_FAILED';
 
-export const INITIAL_STATE = {
-	serverNotifications: {},
-	clientNotifications: {},
-};
-
 export const createNotificationsStore = ( type, identifier, datapoint ) => {
+	const INITIAL_STATE = {
+		serverNotifications: {},
+		clientNotifications: {},
+	};
+
 	const actions = {
 		addNotification( notification ) {
 			return {
@@ -163,6 +163,7 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 	};
 
 	return {
+		INITIAL_STATE,
 		actions,
 		controls,
 		reducer,

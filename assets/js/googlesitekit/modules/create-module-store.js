@@ -25,19 +25,17 @@ import data from 'googlesitekit-data';
  * Internal dependencies
  */
 import {
-	INITIAL_STATE as INITIAL_NOTIFICATIONS_STATE,
 	createNotificationsStore,
 } from '../data/create-notifications-store';
 
 const { collect, collectReducers } = data;
 
-export const INITIAL_STATE = {
-	...INITIAL_NOTIFICATIONS_STATE,
-};
-
 export const createModuleStore = ( slug ) => {
 	const notifications = createNotificationsStore( 'modules', slug, 'notifications' );
 
+	const INITIAL_STATE = {
+		...notifications.INITIAL_STATE,
+	};
 	const actions = collect( notifications.actions );
 	const controls = collect( notifications.controls );
 	const reducer = collectReducers( INITIAL_STATE, [ notifications.reducer ] );
@@ -45,6 +43,7 @@ export const createModuleStore = ( slug ) => {
 	const selectors = collect( notifications.resolvers );
 
 	return {
+		INITIAL_STATE,
 		actions,
 		controls,
 		reducer,
