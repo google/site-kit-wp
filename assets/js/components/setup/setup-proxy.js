@@ -108,8 +108,8 @@ class SetupUsingProxy extends Component {
 			description = __( 'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Start Setup" below to generate new credentials.', 'google-site-kit' );
 			startSetupText = __( 'Sign in with Google', 'google-site-kit' );
 		} else if ( isSecondAdmin ) {
-			title = __( 'Sign in with Google to configure Site Kit' );
-			description = __( 'To use Site Kit, sign in with your Google account. The Site Kit service will guide you through 3 simple steps to complete the connection and configure the plugin.' );
+			title = __( 'Sign in with Google to configure Site Kit', 'google-site-kit' );
+			description = __( 'To use Site Kit, sign in with your Google account. The Site Kit service will guide you through 3 simple steps to complete the connection and configure the plugin.', 'google-site-kit' );
 			startSetupText = __( 'Sign in with Google', 'google-site-kit' );
 		} else {
 			title = __( 'Sign in with Google to set up Site Kit', 'google-site-kit' );
