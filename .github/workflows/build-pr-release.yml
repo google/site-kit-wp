@@ -1,13 +1,14 @@
-name: build-pr-release
+name: build-pr
 
 on:
   push:
     branches:
       - develop
+      - master
   pull_request:
 
 jobs:
-  build-pr-release:
+  build-pr:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -25,10 +26,13 @@ jobs:
       uses: php-actions/composer@v1
       with:
         args: install
-    - name: Setup Node.js 10
+    - name: Read .nvmrc
+      run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
+      id: nvm
+    - name: Setup Node.js (.nvmrc)
       uses: actions/setup-node@v1
       with:
-        node-version: '10.x'
+        node-version: "${{ steps.nvm.outputs.NVMRC }}"
     - name: Cache Node - npm
       uses: actions/cache@v1
       with:
@@ -36,30 +40,46 @@ jobs:
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-cache-
-    - name: npm/Gulp Install
+    - name: npm install
       run: |
         npm install
-        npm install gulp-cli -g
+    - name: Create destination directory
+      run: mkdir -p ${{ github.ref }}
     - name: Build develop version
       run: |
-        npm run build:dev
-        gulp release
-        gulp copy
-        gulp pre-zip
-        gulp zip
-        mv google-site-kit.zip google-site-kit-dev.zip
+        npm run dev-zip
+        mv *.zip ${{ github.ref }}/google-site-kit-dev.zip
     - name: Build release version
       run: |
-        npm run build
-        gulp release
-        gulp copy
-        gulp pre-zip
-        gulp zip
-    - name: Deploy build files to wiki
-      run: |
-        mkdir -p ${{ github.ref }}
-        mv google-site-kit.zip ${{ github.ref }}
-        mv google-site-kit-dev.zip ${{ github.ref }}
-        bash .github/release-to-wiki.sh ${{ github.ref }}
-      env:
-        GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+        npm run release-zip
+        mv *.zip ${{ github.ref }}/google-site-kit.zip
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v1
+      with:
+        name: zip-files
+        path: ${{ github.ref }}
+
+  deploy-to-wiki:
+    runs-on: ubuntu-latest
+    needs: build-pr
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          repository: ${{ github.repository }}.wiki
+          token: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+      - name: Download artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: zip-files
+          path: ${{ github.ref }}
+      - name: Commit updates
+        run: |
+          git add .
+          git status
+          git commit -m "Build and publish ${{ github.ref }}"
+          git push origin master
+        env:
+          GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
+          GIT_AUTHOR_NAME: ${{ github.actor }}
+          GIT_COMMITTER_EMAIL: ${{ github.actor }}@users.noreply.github.com
+          GIT_COMMITTER_NAME: ${{ github.actor }}
