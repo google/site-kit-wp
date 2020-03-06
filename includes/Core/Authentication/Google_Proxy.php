@@ -106,7 +106,7 @@ class Google_Proxy {
 		$creds = $credentials->get();
 
 		wp_remote_post(
-			self::OAUTH2_SITE_URI,
+			$this->url( self::OAUTH2_SITE_URI ),
 			array(
 				'body'     => array_merge(
 					$this->get_site_fields(),
