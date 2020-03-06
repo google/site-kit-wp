@@ -163,7 +163,10 @@ class ModulesList extends Component {
 							) }
 							{ ! isConnected && blockedByParentModule && (
 								<Link disabled small inherit>
-									{ sprintf( __( 'Enable %s to start setup', 'google-site-kit' ), parentBlockerName ) }
+									{
+										/* translators: %s: parent module name */
+										sprintf( __( 'Enable %s to start setup', 'google-site-kit' ), parentBlockerName )
+									}
 								</Link>
 							) }
 						</div>
