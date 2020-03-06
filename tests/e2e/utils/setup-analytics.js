@@ -9,7 +9,6 @@ const defaultSettings = {
 	profileID: 300,
 	internalWebPropertyID: 400,
 	useSnippet: true,
-	// ampClientIDOptIn: (bool)
 };
 
 /**
