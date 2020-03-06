@@ -1079,7 +1079,8 @@ class AnalyticsSetup extends Component {
 				}
 
 				{ !! existingTag &&
-					<p>{ sprintf( __( 'An existing analytics tag was found on your site with the id %s. If later on you decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.', 'google-site-kit' ), existingTag ) }</p>
+					/* translators: %s: Analytics tag ID */
+					<p>{ sprintf( __( 'An existing analytics tag was found on your site with the ID %s. If later on you decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.', 'google-site-kit' ), existingTag ) }</p>
 				}
 
 				{ this.renderErrorOrNotice() }
