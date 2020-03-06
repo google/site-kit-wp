@@ -740,15 +740,8 @@ final class OAuth_Client {
 
 		// If no site identification information is present, we need to provide details for a new site.
 		if ( empty( $query_params['site_id'] ) && empty( $query_params['site_code'] ) ) {
-			$home_url           = home_url();
-			$home_url_no_scheme = str_replace( array( 'http://', 'https://' ), '', $home_url );
-			$rest_root          = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', rest_url() );
-			$admin_root         = str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', admin_url() );
-
-			$query_params['name']       = rawurlencode( wp_specialchars_decode( get_bloginfo( 'name' ) ) );
-			$query_params['url']        = rawurlencode( $home_url );
-			$query_params['rest_root']  = rawurlencode( $rest_root );
-			$query_params['admin_root'] = rawurlencode( $admin_root );
+			$site_fields  = array_map( 'rawurlencode', $this->google_proxy->get_site_fields() );
+			$query_params = array_merge( $query_params, $site_fields );
 		}
 
 		return add_query_arg( $query_params, $this->google_proxy->url( Google_Proxy::SETUP_URI ) );
