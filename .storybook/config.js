@@ -82,7 +82,7 @@ global.googlesitekit.admin = global.googlesitekit.admin || googlesitekit.admin;
 global.googlesitekit.modules = global.googlesitekit.modules || googlesitekit.modules;
 global.googlesitekit.admin.assetsRoot = '/assets/';
 global.googlesitekit.isStorybook = true;
-global._googlesitekitBase = {
+global._googlesitekitBaseData = {
 	basePrefix: 'wp_',
 	splashURL: 'http://localhost/wp-admin/admin.php?page=googlesitekit-splash',
 };

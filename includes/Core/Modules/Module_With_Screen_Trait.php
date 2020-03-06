@@ -55,10 +55,8 @@ trait Module_With_Screen_Trait {
 						?>
 						<script type="text/javascript">var googlesitekitCurrentModule = <?php echo wp_json_encode( $module_info ); ?>;
 						</script>
-						<div class="googlesitekit-plugin">
-							<?php do_action( 'googlesitekit_above_module_app' ); ?>
-							<div id="js-googlesitekit-module" class="googlesitekit-page"></div>
-						</div>
+						<?php do_action( 'googlesitekit_above_module_app' ); ?>
+						<div id="js-googlesitekit-module" class="googlesitekit-page"></div>
 						<?php
 					},
 				)
