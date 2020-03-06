@@ -11,11 +11,76 @@
 namespace Google\Site_Kit\Tests\Core\Authentication;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Tests\MethodSpy;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 
 class Google_ProxyTest extends TestCase {
+
+	public function test_get_site_fields() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$google_proxy = new Google_Proxy( $context );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'url'        => home_url(),
+				'action_url' => admin_url( 'index.php' ),
+				'admin_root' => admin_url(),
+				'name'       => get_bloginfo( 'name' ),
+				'return_url' => $context->admin_url( 'splash' ),
+			),
+			$google_proxy->get_site_fields()
+		);
+	}
+
+	public function test_sync_site_fields() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$google_proxy = new Google_Proxy( $context );
+		$credentials  = new Credentials( new Options( $context ) );
+
+		add_filter( // Fake "using proxy"
+			'googlesitekit_oauth_secret',
+			function () {
+				return array(
+					'web' => array(
+						'client_id'     => '12345678.apps.sitekit.withgoogle.com',
+						'client_secret' => 'test-client-secret',
+					),
+				);
+			}
+		);
+
+		$spy = new MethodSpy();
+		add_action( 'http_api_debug', array( $spy, 'callback' ), 10, 5 );
+
+		$google_proxy->sync_site_fields( $credentials );
+
+		$this->assertCount( 1, $spy->invocations['callback'] );
+		list( $response, , , $args, $url ) = $spy->invocations['callback'][0];
+		// Ensure the request was blocked by WP_HTTP_BLOCK_EXTERNAL.
+		$this->assertWPError( $response );
+		$this->assertEquals( 'http_request_not_executed', $response->get_error_code() );
+		// Ensure the request was made with the proper URL and body parameters.
+		$this->assertEquals( $google_proxy->url( Google_Proxy::OAUTH2_SITE_URI ), $url );
+		$this->assertEquals( 'POST', $args['method'] );
+		$this->assertEqualSets(
+			array(
+				'site_id',
+				'site_secret',
+				'nonce',
+				'url',
+				'name',
+				'admin_root',
+				'return_url',
+				'action_url',
+			),
+			array_keys( $args['body'] )
+		);
+	}
+
 	public function test_exchange_site_code() {
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$google_proxy = new Google_Proxy( $context );
