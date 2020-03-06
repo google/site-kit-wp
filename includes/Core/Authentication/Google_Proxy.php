@@ -75,6 +75,23 @@ class Google_Proxy {
 	}
 
 	/**
+	 * Gets site fields.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_site_fields() {
+		return array(
+			'name'       => wp_specialchars_decode( get_bloginfo( 'name' ) ),
+			'url'        => home_url(),
+			'admin_root' => admin_url(),
+			'action_url' => admin_url( 'index.php' ),
+			'return_url' => $this->context->admin_url( 'splash' ),
+		);
+	}
+
+	/**
 	 * Exchanges a site code for client credentials from the proxy.
 	 *
 	 * @since 1.1.2
