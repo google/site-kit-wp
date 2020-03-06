@@ -28,7 +28,7 @@ import classnames from 'classnames';
  */
 import apiFetch from '@wordpress/api-fetch';
 import { Component } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -100,6 +100,12 @@ class OptIn extends Component {
 			className,
 		} = this.props;
 
+		const labelHTML = sprintf(
+			/* translators: %s: privacy policy URL */
+			__( 'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with <a href="%s" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>', 'google-site-kit' ),
+			'https://policies.google.com/privacy'
+		);
+
 		return (
 			<div className={ classnames(
 				'googlesitekit-opt-in',
@@ -114,7 +120,7 @@ class OptIn extends Component {
 				>
 					<span
 						dangerouslySetInnerHTML={ sanitizeHTML(
-							__( 'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google Privacy Policy</a>', 'google-site-kit' ),
+							labelHTML,
 							{
 								ALLOWED_TAGS: [ 'a' ],
 								ALLOWED_ATTR: [ 'href', 'target', 'rel' ],
