@@ -257,7 +257,7 @@ final class Analytics extends Module
 
 		wp_add_inline_script(
 			'google_gtagjs',
-			'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag(\'js\', new Date());'
+			'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}'
 		);
 
 		$gtag_opt = array();
@@ -294,6 +294,11 @@ final class Analytics extends Module
 			);
 		}
 		unset( $gtag_opt['linker'] );
+
+		wp_add_inline_script(
+			'google_gtagjs',
+			'gtag(\'js\', new Date());'
+		);
 
 		if ( empty( $gtag_opt ) ) {
 			wp_add_inline_script(
