@@ -500,13 +500,13 @@ const dataAPI = {
 	/**
 	 * Sets a module to activated or deactivated using the REST API.
 	 *
-	 * @param {string}  moduleSlug The module slug.
-	 * @param {boolean} active     Whether the module should be active or not.
+	 * @param {string}  slug   The module slug.
+	 * @param {boolean} active Whether the module should be active or not.
 	 *
 	 * @return {Promise} A promise for the fetch request.
 	 */
-	setModuleActive( moduleSlug, active ) {
-		return this.set( TYPE_CORE, 'modules', moduleSlug, { active } );
+	setModuleActive( slug, active ) {
+		return this.set( TYPE_CORE, 'modules', 'info', { slug, active } );
 	},
 };
 

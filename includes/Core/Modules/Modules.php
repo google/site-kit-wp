@@ -449,7 +449,7 @@ final class Modules {
 				)
 			),
 			new REST_Route(
-				'core/modules/data/(?P<slug>[a-z\\-]+)',
+				'core/modules/data/info',
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
@@ -463,12 +463,19 @@ final class Modules {
 							return new WP_REST_Response( $this->prepare_module_data_for_response( $module ) );
 						},
 						'permission_callback' => $can_authenticate,
+						'args'                => array(
+							'slug' => array(
+								'type'              => 'string',
+								'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
+								'sanitize_callback' => 'sanitize_key',
+							),
+						),
 					),
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function( WP_REST_Request $request ) {
-							$slug = $request['slug'];
 							$data = $request['data'];
+							$slug = isset( $data['slug'] ) ? $data['slug'] : '';
 
 							try {
 								$this->get_module( $slug );
@@ -517,13 +524,6 @@ final class Modules {
 					),
 				),
 				array(
-					'args'   => array(
-						'slug' => array(
-							'type'              => 'string',
-							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
-							'sanitize_callback' => 'sanitize_key',
-						),
-					),
 					'schema' => $this->get_module_schema(),
 				)
 			),
