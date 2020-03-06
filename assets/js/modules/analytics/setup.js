@@ -58,7 +58,6 @@ class AnalyticsSetup extends Component {
 			profileID,
 			propertyID,
 			useSnippet,
-			ampClientIDOptIn,
 			trackingDisabled,
 		} = global.googlesitekit.modules.analytics.settings;
 
@@ -79,7 +78,6 @@ class AnalyticsSetup extends Component {
 			selectedProperty: propertyID,
 			selectedProfile: profileID,
 			selectedinternalWebProperty: internalWebPropertyID,
-			ampClientIDOptIn,
 			existingTag: false,
 			trackingDisabled: trackingDisabled || [],
 		};
@@ -168,7 +166,6 @@ class AnalyticsSetup extends Component {
 			selectedProfile: 'profileID',
 			selectedinternalWebProperty: 'internalWebPropertyID',
 			useSnippet: 'useSnippet',
-			ampClientIDOptIn: 'ampClientIDOptIn',
 			trackingDisabled: 'trackingDisabled',
 		};
 
@@ -490,7 +487,6 @@ class AnalyticsSetup extends Component {
 			accounts,
 			properties,
 			profiles,
-			ampClientIDOptIn,
 			trackingDisabled,
 		} = this.state;
 
@@ -522,7 +518,6 @@ class AnalyticsSetup extends Component {
 			propertyID,
 			internalWebPropertyID,
 			useSnippet: useSnippet || false,
-			ampClientIDOptIn: ampClientIDOptIn || false,
 			trackingDisabled,
 		};
 
@@ -623,7 +618,6 @@ class AnalyticsSetup extends Component {
 			anonymizeIP,
 			useSnippet,
 			isSaving,
-			ampClientIDOptIn,
 			existingTag,
 		} = this.state;
 
@@ -632,7 +626,7 @@ class AnalyticsSetup extends Component {
 			onSettingsPage,
 		} = this.props;
 		const disabled = ! isEditing;
-		const { ampEnabled, ampMode } = global.googlesitekit.admin;
+		const { ampMode } = global.googlesitekit.admin;
 		const useSnippetSettings = global.googlesitekit.modules.analytics.settings.useSnippet;
 
 		return (
@@ -684,24 +678,7 @@ class AnalyticsSetup extends Component {
 						</Radio>
 					</Fragment>
 				}
-				{ useSnippet && ampEnabled &&
-					<div className="googlesitekit-setup-module__input">
-						<Switch
-							id="ampClientIDOptIn"
-							label={ __( 'Opt in AMP Client ID', 'google-site-kit' ) }
-							onClick={ this.switchStatus( 'ampClientIDOptIn' ) }
-							checked={ ampClientIDOptIn }
-							hideLabel={ false }
-						/>
-						<p>
-							{ ampClientIDOptIn ?
-								__( 'Sessions will be combined across AMP/non-AMP pages.', 'google-site-kit' ) + ' ' :
-								__( 'Sessions will be tracked separately between AMP/non-AMP pages.', 'google-site-kit' ) + ' '
-							}
-							<Link href="https://support.google.com/analytics/answer/7486764" external inherit>{ __( 'Learn more', 'google-site-kit' ) }</Link>
-						</p>
-					</div>
-				}
+
 				{ onSettingsPage && useSnippet && ampMode !== 'primary' && (
 					<div className="googlesitekit-setup-module__input">
 						<Switch
