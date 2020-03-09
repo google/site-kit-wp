@@ -170,9 +170,9 @@ class AnalyticsTest extends TestCase {
 	 *
 	 * @param array $settings
 	 * @param bool $logged_in
-	 * @param string $test_method
+	 * @param \Closure $assert_opt_out_presence
 	 */
-	public function test_tracking_disabled( $settings, $logged_in, $test_method ) {
+	public function test_tracking_disabled( $settings, $logged_in, $assert_opt_out_presence ) {
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
@@ -189,8 +189,14 @@ class AnalyticsTest extends TestCase {
 		$head_html = $this->capture_action( 'wp_head' );
 		// Sanity check.
 		$this->assertNotEmpty( $head_html );
+		// Whether or not tracking is disabled does not affect output of snippet.
+		if ( $settings['useSnippet'] ) {
+			$this->assertContains( "id={$settings['propertyID']}", $head_html );
+		} else {
+			$this->assertNotContains( "id={$settings['propertyID']}", $head_html );
+		}
 
-		$this->{$test_method}( "id={$settings['propertyID']}", $head_html );
+		$assert_opt_out_presence( $head_html );
 	}
 
 	public function tracking_disabled_provider() {
@@ -203,42 +209,51 @@ class AnalyticsTest extends TestCase {
 			'trackingDisabled'      => array( 'loggedinUsers' ),
 		);
 
+		$assert_contains_opt_out     = function ( $html ) {
+			$this->assertContains( 'ioo : function() { return true', $html );
+		};
+		$assert_not_contains_opt_out = function ( $html ) {
+			$this->assertNotContains( 'ioo : function() { return true', $html );
+		};
+
 		return array(
-			// Tracking is active by default.
+			// Tracking is active by default for non-logged-in users.
 			array(
 				$base_settings,
 				false,
-				'assertContains',
+				$assert_not_contains_opt_out,
 			),
-			// Tracking is not active if snippet is disabled.
+			// Tracking is not active for non-logged-in users if snippet is disabled,
+			// but opt-out is not added because tracking is not disabled.
 			array(
 				array_merge( $base_settings, array( 'useSnippet' => false ) ),
 				false,
-				'assertNotContains',
+				$assert_not_contains_opt_out,
 			),
-			// Tracking is not active for logged in users by default.
+			// Tracking is not active for logged-in users by default (opt-out expected).
 			array(
 				$base_settings,
 				true,
-				'assertNotContains',
+				$assert_contains_opt_out,
 			),
-			// Tracking is not active if snippet is disabled for logged in users.
+			// Tracking is not active if snippet is disabled for logged in users,
+			// but opt-out is not added because tracking is not disabled.
 			array(
 				array_merge( $base_settings, array( 'useSnippet' => false ) ),
 				true,
-				'assertNotContains',
+				$assert_contains_opt_out,
 			),
-			// Tracking is active for logged in users if enabled via settings.
+			// Tracking is active for logged-in users if enabled via settings.
 			array(
 				array_merge( $base_settings, array( 'trackingDisabled' => array() ) ),
 				true,
-				'assertContains',
+				$assert_not_contains_opt_out,
 			),
-			// Tracking is active for guests if disabled for logged in users.
+			// Tracking is still active for guests if disabled for logged in users.
 			array(
 				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
 				false,
-				'assertContains',
+				$assert_not_contains_opt_out,
 			),
 		);
 	}

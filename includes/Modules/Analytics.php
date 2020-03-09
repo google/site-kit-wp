@@ -108,6 +108,16 @@ final class Analytics extends Module
 				return $this->amp_data_load_analytics_component( $data );
 			}
 		);
+
+		add_action(
+			'wp_print_scripts',
+			function () {
+				if ( $this->is_tracking_disabled() ) {
+					$this->print_tracking_opt_out();
+				}
+			},
+			0
+		);
 	}
 
 	/**
@@ -278,10 +288,6 @@ final class Analytics extends Module
 			return;
 		}
 
-		if ( $this->is_tracking_disabled() ) {
-			return;
-		}
-
 		wp_enqueue_script( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 			'google_gtagjs',
 			'https://www.googletagmanager.com/gtag/js?id=' . esc_attr( $tracking_id ),
@@ -371,10 +377,6 @@ final class Analytics extends Module
 
 		$tracking_id = $this->get_data( 'property-id' );
 		if ( is_wp_error( $tracking_id ) ) {
-			return;
-		}
-
-		if ( $this->is_tracking_disabled() ) {
 			return;
 		}
 
@@ -1257,6 +1259,22 @@ final class Analytics extends Module
 	 */
 	private function get_home_domain() {
 		return wp_parse_url( home_url(), PHP_URL_HOST );
+	}
+
+	/**
+	 * Outputs the user tracking opt-out script.
+	 *
+	 * This script opts out of all Google Analytics tracking, for all measurement IDs, regardless of implementation.
+	 * E.g. via Tag Manager, etc.
+	 *
+	 * @since n.e.x.t
+	 * @link https://developers.google.com/analytics/devguides/collection/analyticsjs/user-opt-out
+	 */
+	private function print_tracking_opt_out() {
+		?>
+		<!-- <?php esc_html_e( 'Google Analytics user opt-out added via Site Kit by Google', 'google-site-kit' ); ?> -->
+		<script type="text/javascript">window["_gaUserPrefs"] = { ioo : function() { return true; } }</script>
+		<?php
 	}
 
 	/**
