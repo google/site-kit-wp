@@ -506,7 +506,7 @@ const dataAPI = {
 	 * @return {Promise} A promise for the fetch request.
 	 */
 	setModuleActive( slug, active ) {
-		return this.set( TYPE_CORE, 'modules', 'info', { slug, active } );
+		return this.set( TYPE_CORE, 'modules', 'activation', { slug, active } );
 	},
 };
 
