@@ -134,7 +134,7 @@ class AdSenseSettings extends Component {
 		} = this.state;
 		const {
 			isEditing,
-			switchLabel,
+			switchLabel = __( 'Let Site Kit place code on your site', 'google-site-kit' ),
 			switchOnMessage,
 			switchOffMessage,
 		} = this.props;
@@ -200,7 +200,6 @@ AdSenseSettings.defaultProps = {
 	isEditing: false,
 	accountTagMatch: false,
 	existingTag: false,
-	switchLabel: __( 'Let Site Kit place code on your site', 'google-site-kit' ),
 	switchOnMessage: '',
 	switchOffMessage: '',
 };
