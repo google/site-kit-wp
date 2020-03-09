@@ -288,10 +288,6 @@ final class Analytics extends Module
 			return;
 		}
 
-		if ( $this->is_tracking_disabled() ) {
-			return;
-		}
-
 		wp_enqueue_script( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
 			'google_gtagjs',
 			'https://www.googletagmanager.com/gtag/js?id=' . esc_attr( $tracking_id ),
@@ -381,10 +377,6 @@ final class Analytics extends Module
 
 		$tracking_id = $this->get_data( 'property-id' );
 		if ( is_wp_error( $tracking_id ) ) {
-			return;
-		}
-
-		if ( $this->is_tracking_disabled() ) {
 			return;
 		}
 
