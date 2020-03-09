@@ -68,8 +68,8 @@
 
 	// Active menu styling.
 	.ab-top-menu > .googlesitekit-wp-adminbar.hover > .ab-item,
-	&:not(.mobile) .ab-top-menu > .googlesitekit-wp-adminbar:hover > .ab-item,
-	&:not(.mobile) .ab-top-menu > .googlesitekit-wp-adminbar > .ab-item:focus,
+	&:not(.mobile) .quicklinks .ab-top-menu > .googlesitekit-wp-adminbar:hover > .ab-item,
+	&:not(.mobile) .quicklinks .ab-top-menu > .googlesitekit-wp-adminbar > .ab-item:focus,
 	&.nojq .quicklinks .ab-top-menu > .googlesitekit-wp-adminbar > .ab-item:focus {
 		background-color: $c-base;
 		color: $c-primary;
@@ -79,7 +79,6 @@
 
 	// Active menu icon.
 	.googlesitekit-wp-adminbar.hover .googlesitekit-wp-adminbar__icon,
-	&.nojs .googlesitekit-wp-adminbar:hover .googlesitekit-wp-adminbar__icon,
 	&:not(.mobile) .googlesitekit-wp-adminbar:hover .googlesitekit-wp-adminbar__icon,
 	&:not(.mobile) .googlesitekit-wp-adminbar .ab-item:focus .googlesitekit-wp-adminbar__icon {
 		background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2243%22%20height%3D%2244%22%20viewBox%3D%220%200%2043%2044%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%3E%3Cdefs%3E%3Cpath%20d%3D%22M42.5%2018H22v8.5h11.8C32.7%2031.9%2028.1%2035%2022%2035c-7.2%200-13-5.8-13-13S14.8%209%2022%209c3.1%200%205.9%201.1%208.1%202.9l6.4-6.4C32.6%202.1%2027.6%200%2022%200%209.8%200%200%209.8%200%2022s9.8%2022%2022%2022c11%200%2021-8%2021-22%200-1.3-.2-2.7-.5-4z%22%20id%3D%22a%22%2F%3E%3C%2Fdefs%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cmask%20id%3D%22b%22%20fill%3D%22%23fff%22%3E%3Cuse%20xlink%3Ahref%3D%22%23a%22%2F%3E%3C%2Fmask%3E%3Cpath%20fill%3D%22%23FBBC05%22%20mask%3D%22url(%23b)%22%20d%3D%22M-2%2035V9l17%2013z%22%2F%3E%3Cpath%20fill%3D%22%2334A853%22%20mask%3D%22url(%23b)%22%20d%3D%22M-2%2035l30-23%207.9%201L46-2v48H-2z%22%2F%3E%3Cpath%20fill%3D%22%234285F4%22%20mask%3D%22url(%23b)%22%20d%3D%22M46%2046L15%2022l-4-3L46%209z%22%2F%3E%3Cpath%20fill%3D%22%23EA4335%22%20mask%3D%22url(%23b)%22%20d%3D%22M-2%209l17%2013%207-6.1L46%2012V-2H-2z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E");

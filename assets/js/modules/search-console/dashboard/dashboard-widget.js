@@ -188,6 +188,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 							) }>
 								<Layout
 									header
+									/* translators: %s: date range */
 									title={ sprintf( __( 'Overview for the last %s', 'google-site-kit' ), dateRangeFrom ) }
 									headerCtaLabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
 									headerCtaLink={ searchConsoleDeepLink }
@@ -207,6 +208,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 								wrapperClass
 							) }>
 								<Layout
+									/* translators: %s: date range */
 									title={ sprintf( __( 'Top search queries over the last %s', 'google-site-kit' ), dateRangeFrom ) }
 									header
 									footer

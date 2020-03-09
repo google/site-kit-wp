@@ -75,12 +75,8 @@ class NotificationCounter extends Component {
 
 	render() {
 		const screenReader = sprintf(
-			_n(
-				'%d notification',
-				'%d notifications',
-				this.state.count,
-				'google-site-kit'
-			),
+			/* translators: %d: the number of notifications */
+			_n( '%d notification', '%d notifications', this.state.count, 'google-site-kit' ),
 			this.state.count
 		);
 

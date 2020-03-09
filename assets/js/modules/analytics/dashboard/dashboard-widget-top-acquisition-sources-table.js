@@ -62,10 +62,12 @@ class AnalyticsDashboardWidgetTopAcquisitionSources extends Component {
 			},
 			{
 				title: __( 'New Users', 'google-site-kit' ),
+				/* translators: %s: date range */
 				tooltip: sprintf( __( 'Number of new users to visit your page over %s', 'google-site-kit' ), dateRangeFrom ),
 			},
 			{
 				title: __( 'Sessions', 'google-site-kit' ),
+				/* translators: %s: date range */
 				tooltip: sprintf( __( 'Number of sessions users had on your website over %s', 'google-site-kit' ), dateRangeFrom ),
 			},
 			{
