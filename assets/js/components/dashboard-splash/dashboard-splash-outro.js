@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
 class DashboardSplashOutro extends Component {
 	render() {
 		const {
-			description,
+			description = __( 'Bringing the best of Google tools to WordPress.', 'google-site-kit' ),
 			buttonLabel,
 			onButtonClick,
 		} = this.props;
@@ -77,7 +77,6 @@ DashboardSplashOutro.propTypes = {
 };
 
 DashboardSplashOutro.defaultProps = {
-	description: __( 'Bringing the best of Google tools to WordPress.', 'google-site-kit' ),
 };
 
 export default DashboardSplashOutro;

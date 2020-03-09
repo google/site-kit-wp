@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
 class DashboardSplashIntro extends Component {
 	render() {
 		const {
-			title,
+			title = __( 'Welcome to Site Kit.', 'google-site-kit' ),
 			description,
 			buttonLabel,
 			onButtonClick,
@@ -89,7 +89,6 @@ DashboardSplashIntro.propTypes = {
 };
 
 DashboardSplashIntro.defaultProps = {
-	title: __( 'Welcome to Site Kit.', 'google-site-kit' ),
 };
 
 export default DashboardSplashIntro;

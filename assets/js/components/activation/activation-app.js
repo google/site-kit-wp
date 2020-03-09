@@ -33,7 +33,7 @@ import NotificationCounter from '../notifications/notification-counter';
 
 export class ActivationApp extends Component {
 	render() {
-		const { proxySetupURL, splashURL } = global._googlesitekitBase;
+		const { proxySetupURL, splashURL } = global._googlesitekitBaseData;
 		const { canViewDashboard } = global.googlesitekit.permissions;
 		const { dashboardPermalink } = global.googlesitekit;
 

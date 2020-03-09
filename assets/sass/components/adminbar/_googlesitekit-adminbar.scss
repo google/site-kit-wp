@@ -18,12 +18,37 @@
 
 #wpadminbar {
 
+	&.nojs {
+
+		.googlesitekit-noscript {
+
+			@include shadow;
+
+			border-left: 4px solid $c-selective-yellow;
+			display: none;
+			left: 0;
+			position: absolute;
+			top: 32px;
+			width: 100%;
+		}
+
+		.googlesitekit-wp-adminbar:hover {
+
+			.googlesitekit-noscript {
+				display: block;
+			}
+		}
+	}
+
+	.googlesitekit-plugin.ab-sub-wrapper {
+		left: 0;
+	}
+
 	.googlesitekit-plugin .googlesitekit-adminbar {
 
 		@include shadow;
 		background: $c-base;
 		color: $c-black;
-		display: none;
 		left: 0;
 		padding: 0;
 		position: absolute;
@@ -61,16 +86,6 @@
 		}
 
 		.googlesitekit-adminbar__link {
-			display: none;
-		}
-	}
-
-	// Display sub menu on hover.
-	.googlesitekit-wp-adminbar.hover .googlesitekit-adminbar,
-	&.nojs .googlesitekit-wp-adminbar:hover .googlesitekit-adminbar {
-		display: block;
-
-		&.--has-error {
 			display: none;
 		}
 	}

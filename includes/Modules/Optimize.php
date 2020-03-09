@@ -12,10 +12,12 @@ namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Optimize\Settings;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -27,7 +29,7 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class Optimize extends Module implements Module_With_Settings {
+final class Optimize extends Module implements Module_With_Settings, Module_With_Debug_Fields {
 	use Module_With_Settings_Trait;
 
 	/**
@@ -73,13 +75,11 @@ final class Optimize extends Module implements Module_With_Settings {
 			__( 'Probability and confidence calculations', 'google-site-kit' ),
 		);
 
-		$optimize_id          = $this->get_data( 'optimize-id' );
-		$amp_client_id_opt_in = $this->get_data( 'amp-client-id-opt-in' );
-		$amp_experiment_json  = $this->get_data( 'amp-experiment-json' );
+		$optimize_id         = $this->get_data( 'optimize-id' );
+		$amp_experiment_json = $this->get_data( 'amp-experiment-json' );
 
 		$info['settings'] = array(
 			'optimizeID'        => ! is_wp_error( $optimize_id ) ? $optimize_id : false,
-			'ampClientIDOptIn'  => ! is_wp_error( $amp_client_id_opt_in ) ? $amp_client_id_opt_in : false,
 			'ampExperimentJSON' => ! is_wp_error( $amp_experiment_json ) ? $amp_experiment_json : '',
 		);
 
@@ -142,11 +142,6 @@ final class Optimize extends Module implements Module_With_Settings {
 			return;
 		}
 
-		$amp_client_id_opt_in = $this->get_data( 'amp-client-id-opt-in' );
-		if ( is_wp_error( $amp_client_id_opt_in ) || ! $amp_client_id_opt_in ) {
-			return;
-		}
-
 		$amp_experiment_json = $this->get_data( 'amp-experiment-json' );
 		if ( is_wp_error( $amp_experiment_json ) || ! $amp_experiment_json ) {
 			return;
@@ -162,6 +157,25 @@ final class Optimize extends Module implements Module_With_Settings {
 	}
 
 	/**
+	 * Gets an array of debug field definitions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_debug_fields() {
+		$settings = $this->get_settings()->get();
+
+		return array(
+			'optimize_id' => array(
+				'label' => __( 'Optimize ID', 'google-site-kit' ),
+				'value' => $settings['optimizeID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['optimizeID'], 7 ),
+			),
+		);
+	}
+
+	/**
 	 * Adds AMP experiment script if opted in.
 	 *
 	 * @since 1.0.0
@@ -170,11 +184,6 @@ final class Optimize extends Module implements Module_With_Settings {
 	 * @return array Filtered $data.
 	 */
 	protected function amp_data_load_experiment_component( $data ) {
-		$amp_client_id_opt_in = $this->get_data( 'amp-client-id-opt-in' );
-		if ( is_wp_error( $amp_client_id_opt_in ) || ! $amp_client_id_opt_in ) {
-			return $data;
-		}
-
 		$amp_experiment_json = $this->get_data( 'amp-experiment-json' );
 		if ( is_wp_error( $amp_experiment_json ) || ! $amp_experiment_json ) {
 			return $data;
@@ -194,12 +203,10 @@ final class Optimize extends Module implements Module_With_Settings {
 	protected function get_datapoint_services() {
 		return array(
 			// GET / POST.
-			'optimize-id'          => '',
-			'amp-experiment-json'  => '',
-			// GET.
-			'amp-client-id-opt-in' => '',
+			'optimize-id'         => '',
+			'amp-experiment-json' => '',
 			// POST.
-			'settings'             => '',
+			'settings'            => '',
 		);
 	}
 
@@ -214,13 +221,6 @@ final class Optimize extends Module implements Module_With_Settings {
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:amp-client-id-opt-in':
-				return function() {
-					// Get this from Analytics, read-only from here.
-					$analytics = ( new Analytics\Settings( $this->options ) )->get();
-
-					return ! empty( $analytics['ampClientIDOptIn'] );
-				};
 			case 'GET:amp-experiment-json':
 				return function() {
 					$option = $this->get_settings()->get();
