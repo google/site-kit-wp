@@ -66,8 +66,8 @@ addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
 	} ) );
 
 /**
-* Add components to the Site Kit Dashboard.
-*/
+ * Add components to the Site Kit Dashboard.
+ */
 addFilter( 'googlesitekit.DashboardModule',
 	'googlesitekit.SearchConsole',
 	addDashboardSearchFunnel, 11 );
@@ -79,8 +79,8 @@ addFilter( 'googlesitekit.DashboardSearchFunnel',
 	addSearchConsoleDashboardWidgetTopLevel );
 
 /**
-* Add components to the Site Kit URL Details Dashboard.
-*/
+ * Add components to the Site Kit URL Details Dashboard.
+ */
 addFilter( 'googlesitekit.DashboardDetailsModule',
 	'googlesitekit.SearchConsole',
 	addDashboardDetailsSearchFunnel );
@@ -97,7 +97,7 @@ addFilter( 'googlesitekit.DashboardPopularity',
 
 /**
  * Add components to the WordPress Dashboard widget.
-*/
+ */
 addFilter( 'googlesitekit.WPDashboardHeader',
 	'googlesitekit.SearchConsole',
 	addWPSearchConsoleDashboardWidget, 11 );

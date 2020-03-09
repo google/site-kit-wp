@@ -33,12 +33,12 @@ class PageHeader extends Component {
 	render() {
 		const { title, icon, iconWidth, iconHeight, iconID, className, status, statusText, fullWidth } = this.props;
 
-		const widthClasses = fullWidth ?
-			`
+		const widthClasses = fullWidth
+			? `
 			mdc-layout-grid__cell
 			mdc-layout-grid__cell--span-12
-			` :
 			`
+			: `
 			mdc-layout-grid__cell
 			mdc-layout-grid__cell--span-4-phone
 			mdc-layout-grid__cell--span-4-tablet

@@ -143,11 +143,11 @@ class SetupModule extends Component {
 							arrow
 						>
 							{
-								! blockedByParentModule ?
+								! blockedByParentModule
 									/* translators: %s: module name */
-									sprintf( __( 'Set up %s', 'google-site-kit' ), name ) :
+									? sprintf( __( 'Set up %s', 'google-site-kit' ), name )
 									/* translators: %s: module name */
-									sprintf( __( 'Set up Analytics to gain access to %s', 'google-site-kit' ), name )
+									: sprintf( __( 'Set up Analytics to gain access to %s', 'google-site-kit' ), name )
 							}
 						</Link>
 					</p>

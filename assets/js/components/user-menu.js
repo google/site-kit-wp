@@ -155,9 +155,9 @@ class UserMenu extends Component {
 						className="googlesitekit-header__dropdown mdc-button--dropdown"
 						text
 						onClick={ this.handleMenu }
-						icon={ picture ?
-							<i className="mdc-button__icon" aria-hidden="true"><img className="mdc-button__icon--image" src={ picture } alt={ __( 'User Avatar', 'google-site-kit' ) } /></i> :
-							undefined
+						icon={ picture
+							? <i className="mdc-button__icon" aria-hidden="true"><img className="mdc-button__icon--image" src={ picture } alt={ __( 'User Avatar', 'google-site-kit' ) } /></i>
+							: undefined
 						}
 						ariaHaspopup="menu"
 						ariaExpanded={ menuOpen }

@@ -137,8 +137,13 @@ const isDataZero = () => {
 /**
  * Check error data response, and handle the INVALID_ARGUMENT specifically.
  *
- * @param {Object} data
- * @return {*}
+ * @param {Object} data Response data.
+ *
+ * @return {(string|boolean|null)}  Returns a string with an error message if there is an error. Returns `false` when there is no data and no error message. Will return `null` when arguments are invalid.
+ *                            string   data error message if it exists or unidentified error.
+ *                            false    if no data and no error message
+ *                            null     if invalid agument
+ *
  */
 const getDataError = ( data ) => {
 	if ( ! data || ! data.error ) {

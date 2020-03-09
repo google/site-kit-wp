@@ -190,9 +190,9 @@ class OptimizeSetup extends Component {
 		return (
 			<Fragment>
 				{
-					optimizeID ?
-						<div>{ __( 'Your Optimize Container ID', 'google-site-kit' ) }: <strong>{ optimizeID }</strong></div> :
-						<div>{ __( 'Optimize Container ID missing, press "edit" to add', 'google-site-kit' ) }.</div>
+					optimizeID
+						? <div>{ __( 'Your Optimize Container ID', 'google-site-kit' ) }: <strong>{ optimizeID }</strong></div>
+						: <div>{ __( 'Optimize Container ID missing, press "edit" to add', 'google-site-kit' ) }.</div>
 				}
 			</Fragment>
 		);

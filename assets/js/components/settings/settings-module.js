@@ -187,9 +187,9 @@ class SettingsModule extends Component {
 
 		const moduleKey = `${ slug }-module`;
 		const isConnected = applyFilters( `googlesitekit.Connected-${ slug }`, setupComplete );
-		const connectedClassName = isConnected ?
-			'googlesitekit-settings-module__status-icon--connected' :
-			'googlesitekit-settings-module__status-icon--not-connected';
+		const connectedClassName = isConnected
+			? 'googlesitekit-settings-module__status-icon--connected'
+			: 'googlesitekit-settings-module__status-icon--not-connected';
 
 		/* translators: %s: module name */
 		const subtitle = sprintf( __( 'By disconnecting the %s module from Site Kit, you will no longer have access to:', 'google-site-kit' ), name );
@@ -284,20 +284,20 @@ class SettingsModule extends Component {
 									">
 										<p className="googlesitekit-settings-module__status">
 											{
-												isConnected ?
+												isConnected
 													/* translators: %s: module name */
-													sprintf( __( '%s is connected', 'google-site-kit' ), name ) :
+													? sprintf( __( '%s is connected', 'google-site-kit' ), name )
 													/* translators: %s: module name */
-													sprintf( __( '%s is not connected', 'google-site-kit' ), name )
+													: sprintf( __( '%s is not connected', 'google-site-kit' ), name )
 											}
 											<span className={ classnames(
 												'googlesitekit-settings-module__status-icon',
 												connectedClassName
 											) }>
 												<span className="screen-reader-text">
-													{ isConnected ?
-														__( 'Connected', 'google-site-kit' ) :
-														__( 'Not Connected', 'google-site-kit' )
+													{ isConnected
+														? __( 'Connected', 'google-site-kit' )
+														: __( 'Not Connected', 'google-site-kit' )
 													}
 												</span>
 											</span>
@@ -438,8 +438,8 @@ class SettingsModule extends Component {
 							onKeyPress={ this.handleCloseModal }
 							provides={ provides }
 							handleConfirm={ this.handleConfirmRemoveModule }
-							dependentModules={ dependentModules ?
-								sprintf(
+							dependentModules={ dependentModules
+								? sprintf(
 									/* translators: %s: module name */
 									__( 'these active modules depend on %s and will also be disconnected: ', 'google-site-kit' ),
 									name
