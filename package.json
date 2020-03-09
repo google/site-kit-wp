@@ -123,7 +123,7 @@
     "@wordpress/e2e-test-utils": "^2.1.0",
     "@wordpress/element": "^2.10.0",
     "@wordpress/escape-html": "^1.6.0",
-    "@wordpress/eslint-plugin": "^3.4.1",
+    "@wordpress/eslint-plugin": "^4.0.0",
     "@wordpress/hooks": "^2.6.0",
     "@wordpress/i18n": "^3.7.0",
     "@wordpress/is-shallow-equal": "^1.6.1",
