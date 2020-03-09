@@ -254,8 +254,8 @@ export const prepareSecondsForDisplay = ( seconds ) => {
 /**
  * Retrieve number of days between 2 dates.
  *
- * @param {Object} dateStart
- * @param {Object} dateEnd
+ * @param {Date} dateStart Start date instance.
+ * @param {Date} dateEnd   End date instance.
  *
  * @return {number} The number of days.
  */

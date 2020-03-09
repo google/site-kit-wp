@@ -94,7 +94,7 @@ class PostSearcher extends Component {
 	/**
 	 * Return the pathname of URL.
 	 *
-	 * @param {string} url
+	 * @param {string} url URL to parse pathname from.
 	 *
 	 * @return {string} Returns the pathname or false if param is not a valid URL.
 	 */

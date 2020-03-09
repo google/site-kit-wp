@@ -248,8 +248,8 @@ export const calculateOverviewData = ( reports ) => {
  * Translate Analytics API Error Response.
  * See https://developers.google.com/analytics/devguides/reporting/core/v4/errors
  *
- * @param {string} status
- * @param {string} message
+ * @param {string} status  Error status code.
+ * @param {string} message Error message.
  *
  * @return {string} Human readable Analytics API error message based on error status.
  */

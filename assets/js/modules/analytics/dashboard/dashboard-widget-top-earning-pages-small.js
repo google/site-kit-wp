@@ -114,7 +114,7 @@ const isDataZero = () => {
 /**
  * Check error data response.
  *
- * @param {Object} data
+ * @param {Object} data Response data.
  *
  * @return {HTMLElement | null} Returns HTML element markup with error message if it exists.
  */

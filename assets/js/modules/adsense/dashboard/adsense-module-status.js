@@ -63,7 +63,7 @@ class AdSenseModuleStatus extends Component {
 	/**
 	 * If setup requires a continue step, the method repopulates state with the new data.
 	 *
-	 * @param {Object} continueData
+	 * @param {Object} continueData New props to use for instructions.
 	 */
 	continueSetup( continueData ) {
 		const { instructionProps } = this.state;
