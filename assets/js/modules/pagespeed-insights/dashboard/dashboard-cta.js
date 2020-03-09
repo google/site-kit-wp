@@ -48,15 +48,15 @@ const PageSpeedInsightsCTA = () => {
 			mdc-layout-grid__cell--span-12
 		">
 			<CTA
-				title={ ! setupComplete && active ?
-					__( 'Complete PageSpeed Insights activation.', 'google-site-kit' ) :
-					__( 'Activate PageSpeed Insights.', 'google-site-kit' )
+				title={ ! setupComplete && active
+					? __( 'Complete PageSpeed Insights activation.', 'google-site-kit' )
+					: __( 'Activate PageSpeed Insights.', 'google-site-kit' )
 				}
 				description={ __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA.', 'google-site-kit' ) }
 				ctaLink={ '#' }
-				ctaLabel={ ! setupComplete && active ?
-					__( 'Complete activation', 'google-site-kit' ) :
-					__( 'Activate PageSpeed Insights', 'google-site-kit' )
+				ctaLabel={ ! setupComplete && active
+					? __( 'Complete activation', 'google-site-kit' )
+					: __( 'Activate PageSpeed Insights', 'google-site-kit' )
 				}
 				onClick={ handleSetUpClick }
 			/>

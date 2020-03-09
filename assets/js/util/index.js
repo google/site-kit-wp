@@ -144,9 +144,9 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
 
 	if ( 0 === number ) {
 		readableNumber = '0.00';
-		return currencyCode ?
-			new Intl.NumberFormat( navigator.language, { style: 'currency', currency: currencyCode } ).format( number ) :
-			number;
+		return currencyCode
+			? new Intl.NumberFormat( navigator.language, { style: 'currency', currency: currencyCode } ).format( number )
+			: number;
 	}
 
 	// Format as amount if currencyCode is passed.

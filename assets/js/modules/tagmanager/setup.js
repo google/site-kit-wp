@@ -628,9 +628,9 @@ class TagmanagerSetup extends Component {
 							hideLabel={ false }
 						/>
 						<p>
-							{ useSnippet ?
-								__( 'Site Kit will add the code automatically', 'google-site-kit' ) :
-								__( 'Site Kit will not add the code to your site', 'google-site-kit' )
+							{ useSnippet
+								? __( 'Site Kit will add the code automatically', 'google-site-kit' )
+								: __( 'Site Kit will not add the code to your site', 'google-site-kit' )
 							}
 						</p>
 					</Fragment>
@@ -768,11 +768,11 @@ class TagmanagerSetup extends Component {
 		return (
 			<div className={ classnames( { 'googlesitekit-error-text': showErrorFormat } ) }>
 				<p>{
-					showErrorFormat ?
+					showErrorFormat
 
 						/* translators: %s: Error message */
-						sprintf( __( 'Error: %s', 'google-site-kit' ), errorMsg ) :
-						errorMsg
+						? sprintf( __( 'Error: %s', 'google-site-kit' ), errorMsg )
+						: errorMsg
 				}</p>
 			</div>
 		);

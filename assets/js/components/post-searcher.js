@@ -136,9 +136,9 @@ class PostSearcher extends Component {
 		const { modules } = global.googlesitekit;
 
 		// Set column width full if Analytics active, half otherwise.
-		const classNameForColumn = modules.analytics && modules.analytics.active ?
-			'mdc-layout-grid__cell mdc-layout-grid__cell--span-12' :
-			'mdc-layout-grid__cell mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-6-desktop';
+		const classNameForColumn = modules.analytics && modules.analytics.active
+			? 'mdc-layout-grid__cell mdc-layout-grid__cell--span-12'
+			: 'mdc-layout-grid__cell mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-6-desktop';
 
 		return (
 			<div

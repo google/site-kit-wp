@@ -7,7 +7,7 @@
  * @param {string} text     Text to paste into the selector.
  *
  * {@link https://stackoverflow.com/a/46012210/1037938 | Trigger onChange event in react}
- * 
+ *
  */
 export async function pasteText( selector, text ) {
 	await page.$eval( selector, ( element, input ) => {
