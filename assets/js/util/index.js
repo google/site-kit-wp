@@ -410,8 +410,8 @@ export const fillFilterWithComponent = ( NewComponent, newProps ) => {
 /**
  * Get Site Kit Admin URL Helper
  *
- * @param { string } page The page slug. Optional. Default is 'googlesitekit-dashboard'.
- * @param { Object } args Optional. Object of arguments to add to the URL.
+ * @param {string} page The page slug. Optional. Default is 'googlesitekit-dashboard'.
+ * @param {Object} args Optional. Object of arguments to add to the URL.
  *
  * @return {string} Admin URL with appended query params.
  */
@@ -429,7 +429,7 @@ export const getSiteKitAdminURL = ( page, args ) => {
 /**
  * Verifies whether JSON is valid.
  *
- * @param { string } stringToValidate The string to validate.
+ * @param {string} stringToValidate The string to validate.
  *
  * @return {boolean} Indicates JSON is valid.
  */
@@ -444,7 +444,7 @@ export const validateJSON = ( stringToValidate ) => {
 /**
  * Verifies Optimize ID
  *
- * @param { string } stringToValidate The string to validate.
+ * @param {string} stringToValidate The string to validate.
  *
  * @return {boolean} Indicates GTM tag is valid.
  */

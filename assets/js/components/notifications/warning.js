@@ -19,7 +19,7 @@
 /**
  * Warning Icon - Yellow circle with an exclamation mark.
  *
- * @return { SVGImageElement } Notification warning SVG icon.
+ * @return {SVGImageElement} Notification warning SVG icon.
  *
  */
 function Warning() {
