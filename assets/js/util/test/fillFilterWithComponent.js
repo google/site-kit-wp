@@ -1,9 +1,4 @@
 /**
- * External dependencies
- */
-import { render } from '@testing-library/react';
-
-/**
  * WordPress dependencies
  */
 import { applyFilters, addFilter } from '@wordpress/hooks';
@@ -12,6 +7,11 @@ import { applyFilters, addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import { fillFilterWithComponent } from '../';
+
+/**
+ * External dependencies
+ */
+import { render } from 'test-utils';
 
 describe( 'fillFilterWithComponent', () => {
 	it( 'fills filtered component', () => {
