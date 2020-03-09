@@ -19,7 +19,12 @@
       "error",
       "element"
     ],
-    "valid-jsdoc": "error"
+    "valid-jsdoc": [
+      "error",
+      {
+        "requireReturn": false
+      }
+    ]
   },
   "overrides": [
     {
