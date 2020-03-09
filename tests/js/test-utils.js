@@ -30,8 +30,11 @@ const customRender = ( ui, options ) => {
 	return render( ui, { wrapper: TestProviders, ...options } );
 };
 
-// re-export testing library
+// Export our own test utils from this file.
+export * from 'tests/js/utils';
+
+// Export @testing-library/react as normal.
 export * from '@testing-library/react';
 
-// override render method
+// Override @testing-library/react's render method with our own.
 export { customRender as render };

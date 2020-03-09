@@ -1,4 +1,8 @@
 /**
+ * External dependencies
+ */
+
+/**
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
@@ -6,8 +10,7 @@ import apiFetch from '@wordpress/api-fetch';
 /**
  * Internal dependencies
  */
-// eslint-disable-next-line @wordpress/dependency-group
-import { unexpectedSuccess } from 'tests/js/utils';
+import { unexpectedSuccess } from 'test-utils';
 import * as CacheModule from './cache';
 import { setSelectedStorageBackend } from './cache.private';
 import { invalidateCache, usingCache, get, set, setUsingCache } from './index';

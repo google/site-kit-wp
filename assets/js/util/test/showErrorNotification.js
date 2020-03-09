@@ -11,7 +11,7 @@ import { showErrorNotification } from '../';
 /**
  * External dependencies
  */
-import { render } from 'tests/js/test-utils';
+import { render } from 'test-utils';
 
 describe( 'showErrorNotification', () => {
 	it( 'returns null if nothing is passed', () => {
