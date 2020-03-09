@@ -18,7 +18,8 @@
     "react/jsx-fragments": [
       "error",
       "element"
-    ]
+    ],
+    "valid-jsdoc": "error"
   },
   "overrides": [
     {
