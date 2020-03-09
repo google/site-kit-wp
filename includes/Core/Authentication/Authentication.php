@@ -134,6 +134,13 @@ final class Authentication {
 	protected $google_proxy;
 
 	/**
+	 * Flag set when site fields are synchronized during the current request.
+	 *
+	 * @var bool
+	 */
+	private $did_sync_fields;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -240,6 +247,25 @@ final class Authentication {
 				$this->redirect_to_proxy( $code );
 			}
 		);
+
+		// Synchronize site fields on shutdown when select options change.
+		$option_updated = function () {
+			$sync_site_fields = function () {
+				if ( $this->did_sync_fields ) {
+					return;
+				}
+				// This method should run no more than once per request.
+				$this->did_sync_fields = true;
+
+				if ( $this->get_oauth_client()->using_proxy() ) {
+					$this->google_proxy->sync_site_fields( $this->credentials() );
+				}
+			};
+			add_action( 'shutdown', $sync_site_fields );
+		};
+		add_action( 'update_option_home', $option_updated );
+		add_action( 'update_option_siteurl', $option_updated );
+		add_action( 'update_option_googlesitekit_db_version', $option_updated );
 	}
 
 	/**
