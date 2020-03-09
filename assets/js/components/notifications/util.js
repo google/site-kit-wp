@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import data from 'GoogleComponents/data';
-import { getDaysBetweenDates, getTimeInSeconds } from 'GoogleUtil';
+import data, { TYPE_MODULES } from 'GoogleComponents/data';
+import { getDaysBetweenDates } from 'GoogleUtil';
 /**
  * Internal dependencies
  */
@@ -171,7 +171,7 @@ export async function getModulesNotifications() {
 			const { identifier } = module;
 
 			const notifications = removeDismissed(
-				await data.getNotifications( identifier, getTimeInSeconds( 'day' ) )
+				await data.get( TYPE_MODULES, identifier, 'notifications', {}, false )
 			);
 
 			resolve( { identifier, notifications } );

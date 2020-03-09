@@ -182,6 +182,7 @@ class AnalyticsDashboardWidget extends Component {
 							) }>
 								<Layout
 									header
+									/* translators: %s: date range */
 									title={ sprintf( __( 'Audience overview for the last %s', 'google-site-kit' ), dateRangeFrom ) }
 									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
 									headerCtaLink="http://analytics.google.com"
@@ -208,6 +209,7 @@ class AnalyticsDashboardWidget extends Component {
 								<Layout
 									header
 									footer
+									/* translators: %s: date range */
 									title={ sprintf( __( 'Top content over the last %s', 'google-site-kit' ), dateRangeFrom ) }
 									headerCtaLink="https://analytics.google.com"
 									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
@@ -225,6 +227,7 @@ class AnalyticsDashboardWidget extends Component {
 								<Layout
 									header
 									footer
+									/* translators: %s: date range */
 									title={ sprintf( __( 'Top acquisition sources over the last %s', 'google-site-kit' ), dateRangeFrom ) }
 									headerCtaLink="https://analytics.google.com"
 									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
