@@ -68,6 +68,33 @@ class AuthenticationTest extends TestCase {
 		);
 	}
 
+	/**
+	 * @dataProvider option_action_provider
+	 * @param string $option
+	 * @param string $initial_value
+	 * @param string $new_value
+	 */
+	public function test_register_option_update_actions( $option, $initial_value, $new_value ) {
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		remove_all_actions( "update_option_$option" );
+		remove_all_actions( 'shutdown' );
+		$auth->register();
+
+		delete_option( $option );
+		add_option( $option, $initial_value );
+		update_option( $option, $new_value );
+
+		$this->assertTrue( has_action( 'shutdown' ), $option );
+	}
+
+	public function option_action_provider() {
+		return array(
+			array( 'home', 'http://example.com', 'http://new.example.com' ),
+			array( 'siteurl', 'http://example.com', 'http://new.example.com' ),
+			array( 'googlesitekit_db_version', '1.0', '2.0' ),
+		);
+	}
+
 	protected function assertAdminDataExtended() {
 		$data = apply_filters( 'googlesitekit_admin_data', array() );
 
