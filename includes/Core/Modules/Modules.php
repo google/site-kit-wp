@@ -449,28 +449,8 @@ final class Modules {
 				)
 			),
 			new REST_Route(
-				'core/modules/data/info',
+				'core/modules/data/activation',
 				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							try {
-								$module = $this->get_module( $request['slug'] );
-							} catch ( Exception $e ) {
-								return new WP_Error( 'invalid_module_slug', $e->getMessage() );
-							}
-
-							return new WP_REST_Response( $this->prepare_module_data_for_response( $module ) );
-						},
-						'permission_callback' => $can_authenticate,
-						'args'                => array(
-							'slug' => array(
-								'type'              => 'string',
-								'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
-								'sanitize_callback' => 'sanitize_key',
-							),
-						),
-					),
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function( WP_REST_Request $request ) {
@@ -512,13 +492,42 @@ final class Modules {
 									return new WP_Error( 'cannot_deactivate_module', __( 'An internal error occurred while trying to deactivate the module.', 'google-site-kit' ), array( 'status' => 500 ) );
 								}
 							}
-							return new WP_REST_Response( $this->prepare_module_data_for_response( $modules[ $slug ] ) );
+
+							return new WP_REST_Response( array( 'success' => true ) );
 						},
 						'permission_callback' => $can_manage_options,
 						'args'                => array(
 							'data' => array(
 								'type'     => 'object',
 								'required' => true,
+							),
+						),
+					),
+				),
+				array(
+					'schema' => $this->get_module_schema(),
+				)
+			),
+			new REST_Route(
+				'core/modules/data/info',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							try {
+								$module = $this->get_module( $request['slug'] );
+							} catch ( Exception $e ) {
+								return new WP_Error( 'invalid_module_slug', $e->getMessage() );
+							}
+
+							return new WP_REST_Response( $this->prepare_module_data_for_response( $module ) );
+						},
+						'permission_callback' => $can_authenticate,
+						'args'                => array(
+							'slug' => array(
+								'type'              => 'string',
+								'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
+								'sanitize_callback' => 'sanitize_key',
 							),
 						),
 					),
