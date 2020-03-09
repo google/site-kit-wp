@@ -28,9 +28,9 @@ class Google_ProxyTest extends TestCase {
 			array(
 				'url'        => home_url(),
 				'action_url' => admin_url( 'index.php' ),
-				'admin_root' => admin_url(),
 				'name'       => get_bloginfo( 'name' ),
 				'return_url' => $context->admin_url( 'splash' ),
+				'admin_root' => parse_url( admin_url( '/' ), PHP_URL_PATH ),
 			),
 			$google_proxy->get_site_fields()
 		);
