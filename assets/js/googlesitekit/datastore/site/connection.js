@@ -38,10 +38,11 @@ export const INITIAL_STATE = {
 
 export const actions = {
 	/**
-	 * Dispatch an action that creates an HTTP request.
+	 * Dispatches an action that creates an HTTP request.
 	 *
 	 * Requests the `core/site/connection` endpoint.
 	 *
+	 * @since @n.e.x.t
 	 * @private
 	 * @return {Object} Redux-style action.
 	 */
@@ -53,8 +54,9 @@ export const actions = {
 	},
 
 	/**
-	 * Store connection info received from the REST API.
+	 * Stores connection info received from the REST API.
 	 *
+	 * @since @n.e.x.t
 	 * @private
 	 * @param {Object} connection Connection info from the API.
 	 * @return {Object} Redux-style action.
@@ -69,8 +71,9 @@ export const actions = {
 	},
 
 	/**
-	 * Dispatch an action signifying the `fetchConnection` side-effect failed.
+	 * Dispatches an action signifying the `fetchConnection` side-effect failed.
 	 *
+	 * @since @n.e.x.t
 	 * @private
 	 * @return {Object} Redux-style action.
 	 */
@@ -135,7 +138,7 @@ export const resolvers = {
 
 export const selectors = {
 	/**
-	 * Get the connection info for this site.
+	 * Gets the connection info for this site.
 	 *
 	 * Returns `null` if the connection info is not available/loaded.
 	 *
@@ -147,6 +150,7 @@ export const selectors = {
 	 * }
 	 * ```
 	 *
+	 * @since @n.e.x.t
 	 * @param {Object} state Data store's state.
 	 * @return {Object|null} Site connection info.
 	 */

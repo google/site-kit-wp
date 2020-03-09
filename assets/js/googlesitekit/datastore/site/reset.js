@@ -37,10 +37,11 @@ export const INITIAL_STATE = {
 
 export const actions = {
 	/**
-	 * Dispatch an action that creates an HTTP request.
+	 * Dispatches an action that creates an HTTP request.
 	 *
 	 * Requests the `core/site/reset` endpoint.
 	 *
+	 * @since @n.e.x.t
 	 * @private
 	 * @return {Object} Redux-style action.
 	 */
@@ -52,8 +53,9 @@ export const actions = {
 	},
 
 	/**
-	 * Dispatch to signify that reset confirmation was received from the REST API.
+	 * Dispatches that reset confirmation was received from the REST API.
 	 *
+	 * @since @n.e.x.t
 	 * @private
 	 * @return {Object} Redux-style action.
 	 */
@@ -65,8 +67,9 @@ export const actions = {
 	},
 
 	/**
-	 * Dispatch an action signifying the `fetchReset` side-effect failed.
+	 * Dispatches an action signifying the `fetchReset` side-effect failed.
 	 *
+	 * @since @n.e.x.t
 	 * @private
 	 * @return {Object} Redux-style action.
 	 */
@@ -78,12 +81,13 @@ export const actions = {
 	},
 
 	/**
-	 * Reset the website's connection info to Site Kit.
+	 * Resets the website's connection info to Site Kit.
 	 *
 	 * WARNING: This causes the website's connection with Google Site Kit to be
 	 * removed and will require re-authentication. Use this action with caution,
 	 * and always request user confirmation before dispatching.
 	 *
+	 * @since @n.e.x.t
 	 * @return {Object} Redux-style action.
 	 */
 	*reset() {
@@ -135,8 +139,9 @@ export const resolvers = {};
 
 export const selectors = {
 	/**
-	 * Check if reset action is in-process.
+	 * Checks if reset action is in-process.
 	 *
+	 * @since @n.e.x.t
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} `true` if resetting is in-flight; `false` if not.
 	 */
