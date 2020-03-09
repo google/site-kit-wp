@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Admin_Bar;
+use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Screen_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
@@ -21,6 +22,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Analytics\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DateRangeValues;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsResponse;
@@ -54,7 +56,7 @@ use Exception;
  * @ignore
  */
 final class Analytics extends Module
-	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Admin_Bar {
+	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Admin_Bar, Module_With_Debug_Fields {
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait;
 
 	/**
@@ -99,12 +101,6 @@ final class Analytics extends Module
 		add_action( 'wp_footer', $print_amp_gtag, 20 );
 		// For AMP Reader, AMP plugin version <1.3.
 		add_action( 'amp_post_template_footer', $print_amp_gtag, 20 );
-
-		$print_amp_client_id_optin = function() {
-			$this->print_amp_client_id_optin();
-		};
-		add_action( 'wp_head', $print_amp_client_id_optin ); // For AMP Native and Transitional.
-		add_action( 'amp_post_template_head', $print_amp_client_id_optin ); // For AMP Reader.
 
 		add_filter( // Load amp-analytics component for AMP Reader.
 			'amp_post_template_data',
@@ -223,6 +219,40 @@ final class Analytics extends Module
 	}
 
 	/**
+	 * Gets an array of debug field definitions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_debug_fields() {
+		$settings = $this->get_settings()->get();
+
+		return array(
+			'analytics_account_id'  => array(
+				'label' => __( 'Analytics account ID', 'google-site-kit' ),
+				'value' => $settings['accountID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['accountID'] ),
+			),
+			'analytics_property_id' => array(
+				'label' => __( 'Analytics property ID', 'google-site-kit' ),
+				'value' => $settings['propertyID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
+			),
+			'analytics_profile_id'  => array(
+				'label' => __( 'Analytics profile ID', 'google-site-kit' ),
+				'value' => $settings['profileID'],
+				'debug' => Debug_Data::redact_debug_value( $settings['profileID'] ),
+			),
+			'analytics_use_snippet' => array(
+				'label' => __( 'Analytics snippet placed', 'google-site-kit' ),
+				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
+				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
+			),
+		);
+	}
+
+	/**
 	 * Outputs gtag snippet.
 	 *
 	 * @since 1.0.0
@@ -263,14 +293,15 @@ final class Analytics extends Module
 
 		wp_add_inline_script(
 			'google_gtagjs',
-			'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag(\'js\', new Date());'
+			'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}'
 		);
 
 		$gtag_opt = array();
 
-		$amp_client_id_optin = $this->get_data( 'amp-client-id-opt-in' );
-		if ( ! is_wp_error( $amp_client_id_optin ) && $amp_client_id_optin ) {
-			$gtag_opt['useAmpClientId'] = true;
+		if ( $this->context->get_amp_mode() ) {
+			$gtag_opt['linker'] = array(
+				'domains' => array( $this->get_home_domain() ),
+			);
 		}
 
 		$anonymize_ip = $this->get_data( 'anonymize-ip' );
@@ -291,6 +322,19 @@ final class Analytics extends Module
 		 * @param array $gtag_opt gtag config options.
 		 */
 		$gtag_opt = apply_filters( 'googlesitekit_gtag_opt', $gtag_opt );
+
+		if ( ! empty( $gtag_opt['linker'] ) ) {
+			wp_add_inline_script(
+				'google_gtagjs',
+				'gtag(\'set\', \'linker\', ' . wp_json_encode( $gtag_opt['linker'] ) . ' );'
+			);
+		}
+		unset( $gtag_opt['linker'] );
+
+		wp_add_inline_script(
+			'google_gtagjs',
+			'gtag(\'js\', new Date());'
+		);
 
 		if ( empty( $gtag_opt ) ) {
 			wp_add_inline_script(
@@ -340,6 +384,9 @@ final class Analytics extends Module
 				'config'  => array(
 					$tracking_id => array(
 						'groups' => 'default',
+						'linker' => array(
+							'domains' => array( $this->get_home_domain() ),
+						),
 					),
 				),
 			),
@@ -375,33 +422,6 @@ final class Analytics extends Module
 			</script>
 		</amp-analytics>
 		<?php
-	}
-
-	/**
-	 * Adds an additional meta tag for AMP content if opted in.
-	 *
-	 * @since 1.0.0
-	 */
-	protected function print_amp_client_id_optin() {
-		if ( ! $this->context->is_amp() ) {
-			return;
-		}
-
-		$use_snippet = $this->get_data( 'use-snippet' );
-		if ( is_wp_error( $use_snippet ) || ! $use_snippet ) {
-			return;
-		}
-
-		$amp_client_id_optin = $this->get_data( 'amp-client-id-opt-in' );
-		if ( is_wp_error( $amp_client_id_optin ) || ! $amp_client_id_optin ) {
-			return;
-		}
-
-		if ( $this->is_tracking_disabled() ) {
-			return;
-		}
-
-		echo '<meta name="amp-google-client-id-api" content="googleanalytics">';
 	}
 
 	/**
@@ -449,7 +469,6 @@ final class Analytics extends Module
 			'profile-id'                   => '',
 			'internal-web-property-id'     => '',
 			'use-snippet'                  => '',
-			'amp-client-id-opt-in'         => '',
 			'tracking-disabled'            => '',
 			// GET.
 			'anonymize-ip'                 => '',
@@ -500,21 +519,6 @@ final class Analytics extends Module
 				};
 			case 'GET:accounts-properties-profiles':
 				return $this->get_service( 'analytics' )->management_accounts->listManagementAccounts();
-			case 'GET:amp-client-id-opt-in':
-				return function() {
-					$option = $this->get_settings()->get();
-
-					return ! empty( $option['ampClientIDOptIn'] );
-				};
-			case 'POST:amp-client-id-opt-in':
-				if ( ! isset( $data['ampClientIDOptIn'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampClientIDOptIn' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$this->get_settings()->merge( array( 'ampClientIDOptIn' => $data['ampClientIDOptIn'] ) );
-					return true;
-				};
 			case 'GET:anonymize-ip':
 				return function() {
 					$option = $this->get_settings()->get();
@@ -866,7 +870,6 @@ final class Analytics extends Module
 							'profileID'             => $profile_id,
 							'useSnippet'            => ! empty( $data['useSnippet'] ),
 							'anonymizeIP'           => (bool) $data['anonymizeIP'],
-							'ampClientIDOptIn'      => ! empty( $data['ampClientIDOptIn'] ),
 							'trackingDisabled'      => (array) $data['trackingDisabled'],
 							'adsenseLinked'         => false,
 						)
@@ -1243,6 +1246,17 @@ final class Analytics extends Module
 		}
 
 		return false;
+	}
+
+	/**
+	 * Gets the hostname of the home URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string
+	 */
+	private function get_home_domain() {
+		return wp_parse_url( home_url(), PHP_URL_HOST );
 	}
 
 	/**

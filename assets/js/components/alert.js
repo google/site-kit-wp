@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import data from 'GoogleComponents/data';
+import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import Notification from 'GoogleComponents/notifications/notification';
 import PropTypes from 'prop-types';
 
@@ -50,12 +50,12 @@ class Alert extends Component {
 			const { module } = this.props;
 
 			// Fetching the data, could be from the cache or rest endpoint.
-			const responseData = await data.getNotifications( module, 3600 );
+			const alerts = await data.get( TYPE_MODULES, module, 'notifications', {}, false );
 
 			this.setState( {
 				isLoading: false,
 				error: false,
-				alerts: responseData,
+				alerts,
 			} );
 		} catch ( err ) {
 			this.setState( {

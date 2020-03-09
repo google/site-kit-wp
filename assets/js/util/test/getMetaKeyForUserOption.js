@@ -37,7 +37,7 @@ const valuesToTest = [
 ];
 
 describe( 'getMetaKeyForUserOption', () => {
-	it.each( valuesToTest )( 'should format the user option %s with _googlesitekitBase %p', ( userOptionName, _googlesitekitBase, expected ) => {
-		expect( getMetaKeyForUserOption( userOptionName, _googlesitekitBase ) ).toStrictEqual( expected );
+	it.each( valuesToTest )( 'should format the user option %s with _googlesitekitBaseData %p', ( userOptionName, _googlesitekitBaseData, expected ) => {
+		expect( getMetaKeyForUserOption( userOptionName, _googlesitekitBaseData ) ).toStrictEqual( expected );
 	} );
 } );

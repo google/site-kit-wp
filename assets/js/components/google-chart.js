@@ -27,13 +27,34 @@ import PropTypes from 'prop-types';
  */
 import { __ } from '@wordpress/i18n';
 import { Component, createRef } from '@wordpress/element';
-import { doAction, addAction } from '@wordpress/hooks';
 import { debounce } from 'lodash';
 
-/**
- * Flag for tracking loaded state of Google Charts library.
- */
-let googleChartsLoaded = global.google && global.google.charts;
+let chartLoadPromise;
+
+async function loadCharts() {
+	if ( chartLoadPromise ) {
+		return chartLoadPromise;
+	}
+
+	// Inject the script if not already loaded and resolve on load.
+	if ( ! global.google || ! global.google.charts ) {
+		const script = document.createElement( 'script' );
+		script.type = 'text/javascript';
+
+		chartLoadPromise = new Promise( ( resolve ) => {
+			script.onload = resolve;
+			// Add the script to the DOM
+			global.document.head.appendChild( script );
+			// Set the `src` to begin transport
+			script.src = 'https://www.gstatic.com/charts/loader.js';
+		} );
+	} else {
+		// Charts is already available - resolve immediately.
+		chartLoadPromise = Promise.resolve();
+	}
+
+	return chartLoadPromise;
+}
 
 class GoogleChart extends Component {
 	constructor( props ) {
@@ -51,40 +72,7 @@ class GoogleChart extends Component {
 		this.drawChart = this.drawChart.bind( this );
 		this.updateChart = this.updateChart.bind( this );
 		this.chartRef = createRef();
-
-		// Inject the script if not already loaded.
-		if ( ! googleChartsLoaded ) {
-			googleChartsLoaded = true;
-			const script = document.createElement( 'script' );
-			script.type = 'text/javascript';
-			script.onload = () => {
-				// Cleanup onload handler
-				script.onload = null;
-
-				// Initialize charts.
-				global.google.charts.load( 'visualization', '1', {
-					packages: [ 'corechart' ],
-				} );
-
-				global.google.charts.setOnLoadCallback( this.onChartsLoad );
-
-				doAction( 'googlesitekit.ChartLoaderLoaded' );
-			};
-
-			// Add the script to the DOM
-			( document.getElementsByTagName( 'head' )[ 0 ] ).appendChild( script );
-
-			// Set the `src` to begin transport
-			script.src = 'https://www.gstatic.com/charts/loader.js';
-		} else if ( ! global.google || ! global.google.charts ) {
-			// When the google chart object not loaded, load draw chart later.
-			addAction( 'googlesitekit.ChartLoaderLoaded', 'googlesitekit.HandleChartLoaderLoaded', () => {
-				global.google.charts.setOnLoadCallback( this.onChartsLoad );
-			} );
-		} else {
-			// When the google chart object loaded, draw chart now.
-			global.google.charts.setOnLoadCallback( this.onChartsLoad );
-		}
+		this.resize = debounce( this.drawChart, 100 );
 	}
 
 	onChartsLoad() {
@@ -94,13 +82,12 @@ class GoogleChart extends Component {
 		this.setState( { loading: false } );
 	}
 
-	componentDidMount() {
-		const self = this;
-
-		this.resize = debounce( function() {
-			self.drawChart();
-		}, 100 );
-
+	async componentDidMount() {
+		await loadCharts();
+		global.google.charts.load( 'current', {
+			packages: [ 'corechart' ],
+		} );
+		global.google.charts.setOnLoadCallback( this.onChartsLoad );
 		global.addEventListener( 'resize', this.resize );
 	}
 

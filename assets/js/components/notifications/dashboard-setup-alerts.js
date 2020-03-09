@@ -75,6 +75,7 @@ class DashboardSetupAlerts extends Component {
 					<Fragment>
 						<Notification
 							id={ winData.id }
+							/* translators: %s: the name of a module that setup was completed for */
 							title={ sprintf( __( 'Congrats on completing the setup for %s!', 'google-site-kit' ), winData.setupTitle ) }
 							description={ winData.description }
 							handleDismiss={ () => {} }

@@ -45,7 +45,6 @@ class OptimizeSetup extends Component {
 
 		const {
 			optimizeID,
-			ampClientIDOptIn,
 			ampExperimentJSON,
 		} = global.googlesitekit.modules.optimize.settings;
 
@@ -67,7 +66,6 @@ class OptimizeSetup extends Component {
 			gtmUseSnippet,
 			errorCode: false,
 			errorMsg: '',
-			ampClientIDOptIn: ampClientIDOptIn || false,
 			ampExperimentJSON: ampExperimentJSON || '',
 			ampExperimentJSONValidated: true,
 			OptimizeIDValidated: true,
@@ -235,7 +233,6 @@ class OptimizeSetup extends Component {
 	renderAMPSnippet() {
 		const {
 			analyticsUseSnippet,
-			ampClientIDOptIn,
 			ampExperimentJSON,
 			ampExperimentJSONValidated,
 		} = this.state;
@@ -248,28 +245,23 @@ class OptimizeSetup extends Component {
 
 		return (
 			<Fragment>
-				{ ampClientIDOptIn &&
-					<Fragment>
-						<p>{ __( 'Please input your AMP experiment settings in JSON format below.', 'google-site-kit' ) } <Link href="https://developers.google.com/optimize/devguides/amp-experiments" external inherit>{ __( 'Learn More.', 'google-site-kit' ) }</Link></p>
-						<TextField
-							className={ classnames(
-								'mdc-text-field',
-								{ 'mdc-text-field--error': ! ampExperimentJSONValidated }
-							) }
-							name="amp-experiment"
-							onChange={ this.handleAMPOptimizeEntry }
-							textarea
-						>
-							<Input
-								inputType="textarea"
-								value={ null === ampExperimentJSON ? '' : ampExperimentJSON }
-							/>
-						</TextField>
-						{ ! ampExperimentJSONValidated &&
-							<p className="googlesitekit-error-text">{ __( 'Error: AMP experiment settings are not in a valid JSON format.', 'google-site-kit' ) }</p>
-						}
-					</Fragment>
-
+				<p>{ __( 'Please input your AMP experiment settings in JSON format below.', 'google-site-kit' ) } <Link href="https://developers.google.com/optimize/devguides/amp-experiments" external inherit>{ __( 'Learn More.', 'google-site-kit' ) }</Link></p>
+				<TextField
+					className={ classnames(
+						'mdc-text-field',
+						{ 'mdc-text-field--error': ! ampExperimentJSONValidated }
+					) }
+					name="amp-experiment"
+					onChange={ this.handleAMPOptimizeEntry }
+					textarea
+				>
+					<Input
+						inputType="textarea"
+						value={ null === ampExperimentJSON ? '' : ampExperimentJSON }
+					/>
+				</TextField>
+				{ ! ampExperimentJSONValidated &&
+				<p className="googlesitekit-error-text">{ __( 'Error: AMP experiment settings are not in a valid JSON format.', 'google-site-kit' ) }</p>
 				}
 			</Fragment>
 		);

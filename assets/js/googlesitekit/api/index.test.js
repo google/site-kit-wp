@@ -10,7 +10,7 @@ import apiFetch from '@wordpress/api-fetch';
 /**
  * Internal dependencies
  */
-import { unexpectedSuccess } from 'test-utils';
+import { muteConsole, unexpectedSuccess } from 'test-utils';
 import * as CacheModule from './cache';
 import { setSelectedStorageBackend } from './cache.private';
 import { invalidateCache, usingCache, get, set, setUsingCache } from './index';
@@ -136,6 +136,7 @@ describe( 'googlesitekit.api', () => {
 				.mockResponseOnce( JSON.stringify( errorResponse ), { status: 404 } );
 
 			try {
+				muteConsole( 'error' );
 				await get( 'core', 'search-console', 'other' );
 			} catch ( err ) {
 				expect( err ).toEqual( errorResponse );
@@ -156,6 +157,7 @@ describe( 'googlesitekit.api', () => {
 				.mockResponseOnce( JSON.stringify( errorResponse ), { status: 500 } );
 
 			try {
+				muteConsole( 'error' );
 				await get( 'core', 'search-console', 'users' );
 			} catch ( err ) {
 				expect( err ).toEqual( errorResponse );
