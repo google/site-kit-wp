@@ -23,8 +23,10 @@ export async function setupAnalytics( settingsOverrides = {} ) {
 	// Activate the module.
 	await wpApiFetch( {
 		method: 'post',
-		path: 'google-site-kit/v1/modules/analytics',
-		data: { active: true },
+		path: 'google-site-kit/v1/core/modules/data/activation',
+		data: {
+			data: { slug: 'analytics', active: true },
+		},
 	} );
 	// Set dummy connection data.
 	await wpApiFetch( {
