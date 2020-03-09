@@ -251,7 +251,7 @@ export const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 /**
  * Determine the AdSense account status.
  *
- * @param {string|boolean} existingTag String existing clientID, or false.
+ * @param {(string|boolean)} existingTag String existing clientID, or false.
  * @param {Function} statusUpdateCallback The function to call back with status updates.
  */
 export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdateCallback = () => {} ) => {

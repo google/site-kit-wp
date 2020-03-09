@@ -285,7 +285,7 @@ const dataAPI = {
 	 * Sets data in the cache.
 	 *
 	 * @param {string} key  The cache key.
-	 * @param {(Object | undefined)}  data The data to cache.
+	 * @param {Object} data The data to cache.
 	 */
 	setCache( key, data ) {
 		if ( 'undefined' === typeof data ) {
@@ -314,7 +314,7 @@ const dataAPI = {
 	 * @param {string} key    The cache key.
 	 * @param {number} maxAge The cache TTL in seconds. If not provided, no TTL will be checked.
 	 *
-	 * @return {(Object | undefined)} Cached data, or undefined if lookup failed.
+	 * @return {(Object|undefined)} Cached data, or undefined if lookup failed.
 	 */
 	getCache( key, maxAge ) {
 		// Skip if js caching is disabled.

@@ -111,8 +111,8 @@ export const removeURLParameter = ( url, parameter ) => {
 /**
  * Format a large number for shortened display.
  *
- * @param {number}         number       The large number to format.
- * @param {string|boolean} currencyCode Optional currency code to format as amount.
+ * @param {number}           number       The large number to format.
+ * @param {(string|boolean)} currencyCode Optional currency code to format as amount.
  *
  * @return {string} The formatted number.
  */
@@ -273,7 +273,7 @@ export const getDaysBetweenDates = ( dateStart, dateEnd ) => {
  * @param {number} previous The previous value.
  * @param {number} current  The current value.
  *
- * @return {number|string} The percent change.
+ * @return {(number|string)} The percent change.
  */
 export const changeToPercent = ( previous, current ) => {
 	// Prevent divide by zero errors.
@@ -458,7 +458,7 @@ export const validateOptimizeID = ( stringToValidate ) => {
  *
  * @param {string} module Module slug.
  *
- * @return {string|null} The tag id if found, otherwise null.
+ * @return {(string|null)} The tag id if found, otherwise null.
  */
 export const getExistingTag = async ( module ) => {
 	const { homeURL, ampMode } = global.googlesitekit.admin;
@@ -490,7 +490,7 @@ export const getExistingTag = async ( module ) => {
  * @param {string} url URL request and parse tag from.
  * @param {string} module The module to parse tag for.
  *
- * @return {string|null} The tag id if found, otherwise null.
+ * @return {(string|null)} The tag id if found, otherwise null.
  */
 export const scrapeTag = async ( url, module ) => {
 	try {
@@ -507,7 +507,7 @@ export const scrapeTag = async ( url, module ) => {
  * @param {string} string The string from where to find the tag.
  * @param {string} module The tag to search for, one of 'adsense' or 'analytics'
  *
- * @return {string|boolean} The tag id if found, otherwise false.
+ * @return {(string|boolean)} The tag id if found, otherwise false.
  */
 export const extractTag = ( string, module ) => {
 	const matchers = {
@@ -562,7 +562,7 @@ export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) 
  * @param {Object} settingsState   The changed settings component state to compare with.
  * @param {Object} skipDOM         Skip DOm checks/modifications, used for testing.
  * @param {Object}  _googlesitekit googlesitekit global; can be replaced for testing.
- * @return {void|boolean} True if a module has been toggled.
+ * @return {(void|boolean)} True if a module has been toggled.
  */
 export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, _googlesitekit = global.googlesitekit ) => {
 	const { settings, setupComplete } = _googlesitekit.modules[ moduleSlug ];
