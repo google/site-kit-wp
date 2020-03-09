@@ -65,12 +65,8 @@ export const appendNotificationsCount = ( count = 0 ) => {
 	const screenReader = document.createElement( 'span' );
 	screenReader.setAttribute( 'class', 'screen-reader-text' );
 	screenReader.textContent = sprintf(
-		_n(
-			'%d notification',
-			'%d notifications',
-			count,
-			'google-site-kit'
-		),
+		/* translators: %d is the number of notifications */
+		_n( '%d notification', '%d notifications', count, 'google-site-kit' ),
 		count
 	);
 

@@ -30,6 +30,7 @@ import {
 } from 'GoogleUtil';
 import GenericError from 'GoogleComponents/notifications/generic-error';
 import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -116,11 +117,14 @@ class ModulesList extends Component {
 					}
 
 					return (
-						<div key={ slug } className={ `
-							googlesitekit-modules-list__module
-							googlesitekit-modules-list__module--${ slug }
-							${ blockedByParentModule ? 'googlesitekit-modules-list__module--disabled' : '' }
-						` }>
+						<div
+							key={ slug }
+							className={ classnames(
+								'googlesitekit-modules-list__module',
+								`googlesitekit-modules-list__module--${ slug }`,
+								{ 'googlesitekit-modules-list__module--disabled': blockedByParentModule }
+							) }
+						>
 							<div className="googlesitekit-settings-connect-module__wrapper">
 								<div className="googlesitekit-settings-connect-module__logo">
 									{ moduleIcon( slug, blockedByParentModule ) }
@@ -159,7 +163,10 @@ class ModulesList extends Component {
 							) }
 							{ ! isConnected && blockedByParentModule && (
 								<Link disabled small inherit>
-									{ sprintf( __( 'Enable %s to start setup', 'google-site-kit' ), parentBlockerName ) }
+									{
+										/* translators: %s: parent module name */
+										sprintf( __( 'Enable %s to start setup', 'google-site-kit' ), parentBlockerName )
+									}
 								</Link>
 							) }
 						</div>

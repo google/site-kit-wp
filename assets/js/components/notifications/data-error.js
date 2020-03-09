@@ -43,6 +43,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 const getDataErrorComponent = ( moduleName, error, inGrid = false, fullWidth = false, createGrid = false ) => {
 	const cta = <CTA
+		/* translators: %s: module name */
 		title={ sprintf( __( 'Data error in %s', 'google-site-kit' ), moduleName ) }
 		description={ error }
 		error

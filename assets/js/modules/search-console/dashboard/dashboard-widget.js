@@ -20,6 +20,7 @@
  * External dependencies
  */
 import Header from 'GoogleComponents/header';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -180,13 +181,14 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 							{ ! receivingData && (
 								error ? getDataErrorComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
-							<div className={ `
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								${ wrapperClass }
-							` }>
+							<div className={ classnames(
+								'mdc-layout-grid__cell',
+								'mdc-layout-grid__cell--span-12',
+								wrapperClass
+							) }>
 								<Layout
 									header
+									/* translators: %s: date range */
 									title={ sprintf( __( 'Overview for the last %s', 'google-site-kit' ), dateRangeFrom ) }
 									headerCtaLabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
 									headerCtaLink={ searchConsoleDeepLink }
@@ -200,12 +202,13 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 									<SearchConsoleDashboardWidgetSiteStats selectedStats={ selectedStats } series={ series } vAxes={ vAxes } />
 								</Layout>
 							</div>
-							<div className={ `
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								${ wrapperClass }
-							` }>
+							<div className={ classnames(
+								'mdc-layout-grid__cell',
+								'mdc-layout-grid__cell--span-12',
+								wrapperClass
+							) }>
 								<Layout
+									/* translators: %s: date range */
 									title={ sprintf( __( 'Top search queries over the last %s', 'google-site-kit' ), dateRangeFrom ) }
 									header
 									footer
