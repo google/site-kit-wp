@@ -32,6 +32,7 @@ import { addFilter } from '@wordpress/hooks';
 import DashboardSpeed from './dashboard/dashboard-widget-speed';
 import PageSpeedInsightsDashboardWidgetHomepageSpeed from './dashboard/dashboard-widget-homepage-speed';
 import PageSpeedInsightsCTA from './dashboard/dashboard-cta';
+import { settingsDetails as SettingsDetails } from './settings';
 
 const slug = 'pagespeed-insights';
 
@@ -45,8 +46,8 @@ if ( active && setupComplete ) {
 	const addPageSpeedInsightsDashboardWidgetHomepageSpeed = createAddToFilter( <PageSpeedInsightsDashboardWidgetHomepageSpeed /> );
 
 	/**
-	* Add components to the Site Kit Dashboard.
-	*/
+	 * Add components to the Site Kit Dashboard.
+	 */
 	addFilter( 'googlesitekit.DashboardModule',
 		'googlesitekit.PageSpeedInsights',
 		addDashboardSpeed, 45 );
@@ -62,3 +63,7 @@ if ( active && setupComplete ) {
 		'googlesitekit.PageSpeedInsights',
 		addPageSpeedInsightsCTA, 45 );
 }
+
+addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
+	'googlesitekit.PageSpeedInsightsModuleSettingsDetails',
+	createAddToFilter( <SettingsDetails /> ), 10 );

@@ -21,6 +21,7 @@
  */
 import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -33,10 +34,10 @@ class SettingsOverlay extends Component {
 		const { compress } = this.props;
 
 		return (
-			<div className={ `
-				googlesitekit-overlay
-				${ compress ? 'googlesitekit-overlay--compress' : '' }
-			` }>
+			<div className={ classnames(
+				'googlesitekit-overlay',
+				{ 'googlesitekit-overlay--compress': compress }
+			) }>
 				<div className="googlesitekit-overlay__wrapper">
 					<div className="googlesitekit-overlay__icon">
 						<SvgIcon id="lock" width="22" height="30" />

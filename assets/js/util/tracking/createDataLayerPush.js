@@ -15,7 +15,8 @@ export default function createDataLayerPush( target ) {
 	 * Pushes data onto the data layer.
 	 * Must push an instance of Arguments to the target.
 	 * Using an ES6 spread operator (i.e. `...args`) will cause tracking events to _silently_ fail.
-	 * @link https://github.com/google/site-kit-wp/issues/1181
+	 *
+	 * @see {@link https://github.com/google/site-kit-wp/issues/1181}
 	 */
 	return function dataLayerPush() {
 		target[ DATA_LAYER ] = target[ DATA_LAYER ] || [];

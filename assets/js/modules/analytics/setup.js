@@ -33,6 +33,7 @@ import {
 	getExistingTag,
 	toggleConfirmModuleSettings,
 } from 'GoogleUtil';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -57,7 +58,6 @@ class AnalyticsSetup extends Component {
 			profileID,
 			propertyID,
 			useSnippet,
-			ampClientIDOptIn,
 			trackingDisabled,
 		} = global.googlesitekit.modules.analytics.settings;
 
@@ -78,7 +78,6 @@ class AnalyticsSetup extends Component {
 			selectedProperty: propertyID,
 			selectedProfile: profileID,
 			selectedinternalWebProperty: internalWebPropertyID,
-			ampClientIDOptIn,
 			existingTag: false,
 			trackingDisabled: trackingDisabled || [],
 		};
@@ -167,7 +166,6 @@ class AnalyticsSetup extends Component {
 			selectedProfile: 'profileID',
 			selectedinternalWebProperty: 'internalWebPropertyID',
 			useSnippet: 'useSnippet',
-			ampClientIDOptIn: 'ampClientIDOptIn',
 			trackingDisabled: 'trackingDisabled',
 		};
 
@@ -489,7 +487,6 @@ class AnalyticsSetup extends Component {
 			accounts,
 			properties,
 			profiles,
-			ampClientIDOptIn,
 			trackingDisabled,
 		} = this.state;
 
@@ -521,7 +518,6 @@ class AnalyticsSetup extends Component {
 			propertyID,
 			internalWebPropertyID,
 			useSnippet: useSnippet || false,
-			ampClientIDOptIn: ampClientIDOptIn || false,
 			trackingDisabled,
 		};
 
@@ -622,7 +618,6 @@ class AnalyticsSetup extends Component {
 			anonymizeIP,
 			useSnippet,
 			isSaving,
-			ampClientIDOptIn,
 			existingTag,
 		} = this.state;
 
@@ -631,7 +626,7 @@ class AnalyticsSetup extends Component {
 			onSettingsPage,
 		} = this.props;
 		const disabled = ! isEditing;
-		const { ampEnabled, ampMode } = global.googlesitekit.admin;
+		const { ampMode } = global.googlesitekit.admin;
 		const useSnippetSettings = global.googlesitekit.modules.analytics.settings.useSnippet;
 
 		return (
@@ -683,24 +678,7 @@ class AnalyticsSetup extends Component {
 						</Radio>
 					</Fragment>
 				}
-				{ useSnippet && ampEnabled &&
-					<div className="googlesitekit-setup-module__input">
-						<Switch
-							id="ampClientIDOptIn"
-							label={ __( 'Opt in AMP Client ID', 'google-site-kit' ) }
-							onClick={ this.switchStatus( 'ampClientIDOptIn' ) }
-							checked={ ampClientIDOptIn }
-							hideLabel={ false }
-						/>
-						<p>
-							{ ampClientIDOptIn ?
-								__( 'Sessions will be combined across AMP/non-AMP pages.', 'google-site-kit' ) + ' ' :
-								__( 'Sessions will be tracked separately between AMP/non-AMP pages.', 'google-site-kit' ) + ' '
-							}
-							<Link href="https://support.google.com/analytics/answer/7486764" external inherit>{ __( 'Learn more', 'google-site-kit' ) }</Link>
-						</p>
-					</div>
-				}
+
 				{ onSettingsPage && useSnippet && ampMode !== 'primary' && (
 					<div className="googlesitekit-setup-module__input">
 						<Switch
@@ -711,9 +689,9 @@ class AnalyticsSetup extends Component {
 							hideLabel={ false }
 						/>
 						<p>
-							{ anonymizeIP ?
-								__( 'IP addresses will be anonymized.', 'google-site-kit' ) :
-								__( 'IP addresses will not be anonymized.', 'google-site-kit' )
+							{ anonymizeIP
+								? __( 'IP addresses will be anonymized.', 'google-site-kit' )
+								: __( 'IP addresses will not be anonymized.', 'google-site-kit' )
 							}
 							{ ' ' }
 							<Link
@@ -1013,9 +991,9 @@ class AnalyticsSetup extends Component {
 				</div>
 
 				<p>
-					{ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) ?
-						__( 'Logged-in users will be excluded from Analytics tracking.', 'google-site-kit' ) :
-						__( 'Logged-in users will be included in Analytics tracking.', 'google-site-kit' )
+					{ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS )
+						? __( 'Logged-in users will be excluded from Analytics tracking.', 'google-site-kit' )
+						: __( 'Logged-in users will be included in Analytics tracking.', 'google-site-kit' )
 					}
 				</p>
 			</div>
@@ -1060,13 +1038,13 @@ class AnalyticsSetup extends Component {
 		}
 
 		return (
-			<div className={ showErrorFormat ? 'googlesitekit-error-text' : '' }>
+			<div className={ classnames( { 'googlesitekit-error-text': showErrorFormat } ) }>
 				<p>{
-					showErrorFormat ?
+					showErrorFormat
 
 						/* translators: %s: Error message */
-						sprintf( __( 'Error: %s', 'google-site-kit' ), message ) :
-						message
+						? sprintf( __( 'Error: %s', 'google-site-kit' ), message )
+						: message
 				}</p>
 			</div>
 		);
@@ -1101,7 +1079,8 @@ class AnalyticsSetup extends Component {
 				}
 
 				{ !! existingTag &&
-					<p>{ sprintf( __( 'An existing analytics tag was found on your site with the id %s. If later on you decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.', 'google-site-kit' ), existingTag ) }</p>
+					/* translators: %s: Analytics tag ID */
+					<p>{ sprintf( __( 'An existing analytics tag was found on your site with the ID %s. If later on you decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.', 'google-site-kit' ), existingTag ) }</p>
 				}
 
 				{ this.renderErrorOrNotice() }

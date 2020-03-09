@@ -41,9 +41,9 @@ class WizardStepSearchConsoleProperty extends Component {
 							mdc-layout-grid__cell--span-12
 						">
 							{
-								shouldSetup ?
-									<SearchConsole shouldSetup={ shouldSetup } { ...this.props } /> :
-									SearchConsole.connected()
+								shouldSetup
+									? <SearchConsole shouldSetup={ shouldSetup } { ...this.props } />
+									: SearchConsole.connected()
 							}
 						</div>
 					</div>

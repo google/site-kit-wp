@@ -180,6 +180,9 @@ class SettingsModules extends Component {
 	 *
 	 * @param {Object}  modules List of modules
 	 * @param {boolean} active Sets styling for active modules, helps with parent/child grouping.
+	 *
+	 * @return {HTMLElement} HTML markup with modules.
+	 *
 	 */
 	mapToModule( modules, active = false ) {
 		const { isSaving } = this.state;

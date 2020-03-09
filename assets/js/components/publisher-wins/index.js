@@ -41,8 +41,8 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 		} );
 
 	/**
-	* Add components to the Site Kit Dashboard Win Notifications.
-	*/
+	 * Add components to the Site Kit Dashboard Win Notifications.
+	 */
 	addFilter( 'googlesitekit.WinsNotificationsRequest',
 		'googlesitekit.PublisherWinsNotification',
 		( wins ) => {

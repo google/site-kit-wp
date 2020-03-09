@@ -20,6 +20,7 @@
  * External dependencies
  */
 import Header from 'GoogleComponents/header';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -174,13 +175,14 @@ class AnalyticsDashboardWidget extends Component {
 							{ ! receivingData && (
 								error ? getDataErrorComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( _x( 'Analytics', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
-							<div className={ `
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								${ wrapperClass }
-							` }>
+							<div className={ classnames(
+								'mdc-layout-grid__cell',
+								'mdc-layout-grid__cell--span-12',
+								wrapperClass
+							) }>
 								<Layout
 									header
+									/* translators: %s: date range */
 									title={ sprintf( __( 'Audience overview for the last %s', 'google-site-kit' ), dateRangeFrom ) }
 									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
 									headerCtaLink="http://analytics.google.com"
@@ -199,14 +201,15 @@ class AnalyticsDashboardWidget extends Component {
 									/>
 								</Layout>
 							</div>
-							<div className={ `
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								${ wrapperClass }
-							` }>
+							<div className={ classnames(
+								'mdc-layout-grid__cell',
+								'mdc-layout-grid__cell--span-12',
+								wrapperClass
+							) }>
 								<Layout
 									header
 									footer
+									/* translators: %s: date range */
 									title={ sprintf( __( 'Top content over the last %s', 'google-site-kit' ), dateRangeFrom ) }
 									headerCtaLink="https://analytics.google.com"
 									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
@@ -216,14 +219,15 @@ class AnalyticsDashboardWidget extends Component {
 									<AnalyticsDashboardWidgetTopPagesTable />
 								</Layout>
 							</div>
-							<div className={ `
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								${ wrapperClass }
-							` }>
+							<div className={ classnames(
+								'mdc-layout-grid__cell',
+								'mdc-layout-grid__cell--span-12',
+								wrapperClass
+							) }>
 								<Layout
 									header
 									footer
+									/* translators: %s: date range */
 									title={ sprintf( __( 'Top acquisition sources over the last %s', 'google-site-kit' ), dateRangeFrom ) }
 									headerCtaLink="https://analytics.google.com"
 									headerCtaLabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
