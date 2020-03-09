@@ -335,8 +335,8 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'admin_root=', $url );
 		$this->assertContains( 'scope=', $url );
 		$this->assertContains( 'nonce=', $url );
-		$this->assertContains( 'return_url=', $url );
-		$this->assertContains( 'action_url=', $url );
+		$this->assertContains( 'return_uri=', $url );
+		$this->assertContains( 'action_uri=', $url );
 		$this->assertNotContains( 'site_id=', $url );
 
 		// Otherwise, pass site ID and given temporary access code.
@@ -350,8 +350,8 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertNotContains( 'name=', $url );
 		$this->assertNotContains( 'url=', $url );
 		$this->assertNotContains( 'admin_root=', $url );
-		$this->assertNotContains( 'return_url=', $url );
-		$this->assertNotContains( 'action_url=', $url );
+		$this->assertNotContains( 'return_uri=', $url );
+		$this->assertNotContains( 'action_uri=', $url );
 	}
 
 	public function test_get_proxy_permissions_url() {
