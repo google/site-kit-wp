@@ -32,7 +32,7 @@ const RECEIVE_CONNECTION = 'RECEIVE_CONNECTION';
 const RECEIVE_CONNECTION_FAILED = 'RECEIVE_CONNECTION_FAILED';
 
 export const INITIAL_STATE = {
-	connection: null,
+	connection: undefined,
 	isFetchingConnection: false,
 };
 
