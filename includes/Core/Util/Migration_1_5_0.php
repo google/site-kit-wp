@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Util\Migration_n_e_x_t
+ * Class Google\Site_Kit\Core\Util\Migration_1_5_0
  *
  * @package   Google\Site_Kit\Core\Util
  * @copyright 2020 Google LLC
@@ -14,20 +14,20 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 
 /**
- * Class Migration_n_e_x_t
+ * Class Migration_1_5_0
  *
- * @since n.e.x.t
+ * @since 1.5.0
  * @access private
  * @ignore
  * @property-read string $db_version
  */
-class Migration_n_e_x_t /* phpcs:ignore PEAR.NamingConventions.ValidClassName.Invalid */ {
+class Migration_1_5_0 /* phpcs:ignore PEAR.NamingConventions.ValidClassName.Invalid */ {
 	/**
 	 * Target DB version.
 	 *
 	 * @var string
 	 */
-	protected $db_version = 'n.e.x.t';
+	protected $db_version = '1.5.0';
 
 	/**
 	 * Context instance.
@@ -46,7 +46,7 @@ class Migration_n_e_x_t /* phpcs:ignore PEAR.NamingConventions.ValidClassName.In
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @param Context $context Plugin context instance.
 	 * @param Options $options Optional. Options instance.
@@ -59,7 +59,7 @@ class Migration_n_e_x_t /* phpcs:ignore PEAR.NamingConventions.ValidClassName.In
 	/**
 	 * Registers hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 */
 	public function register() {
 		add_action( 'admin_init', array( $this, 'migrate' ) );
@@ -68,7 +68,7 @@ class Migration_n_e_x_t /* phpcs:ignore PEAR.NamingConventions.ValidClassName.In
 	/**
 	 * Migrates the DB.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 */
 	public function migrate() {
 		$db_version = $this->options->get( 'googlesitekit_db_version' );
@@ -81,7 +81,7 @@ class Migration_n_e_x_t /* phpcs:ignore PEAR.NamingConventions.ValidClassName.In
 	/**
 	 * Gets protected properties.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @param string $name Property name.
 	 *

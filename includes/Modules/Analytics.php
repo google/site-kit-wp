@@ -231,7 +231,7 @@ final class Analytics extends Module
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @return array
 	 */
@@ -1253,7 +1253,7 @@ final class Analytics extends Module
 	/**
 	 * Gets the hostname of the home URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @return string
 	 */
@@ -1267,7 +1267,7 @@ final class Analytics extends Module
 	 * This script opts out of all Google Analytics tracking, for all measurement IDs, regardless of implementation.
 	 * E.g. via Tag Manager, etc.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 * @link https://developers.google.com/analytics/devguides/collection/analyticsjs/user-opt-out
 	 */
 	private function print_tracking_opt_out() {

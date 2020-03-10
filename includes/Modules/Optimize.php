@@ -159,7 +159,7 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @return array
 	 */

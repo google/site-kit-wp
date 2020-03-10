@@ -13,14 +13,14 @@ namespace Google\Site_Kit\Core\Modules;
 /**
  * Interface Module_With_Debug_Fields
  *
- * @since n.e.x.t
+ * @since 1.5.0
  */
 interface Module_With_Debug_Fields {
 
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @return array
 	 */
