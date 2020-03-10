@@ -38,7 +38,7 @@ import {
 	applyFilters,
 } from '@wordpress/hooks';
 import {
-	__,
+	_n,
 	sprintf,
 } from '@wordpress/i18n';
 import { addQueryArgs, getQueryString } from '@wordpress/url';
@@ -628,9 +628,10 @@ export function getCurrentDateRange() {
 	 *
 	 * @param String The selected date range. Default 'Last 28 days'.
 	 */
+	const dateRange = applyFilters( 'googlesitekit.dateRange', 28 );
 	return sprintf(
-		__( '%d days', 'google-site-kit' ),
-		applyFilters( 'googlesitekit.dateRange', 28 )
+		_n( '%d day', '%d days', dateRange, 'google-site-kit' ),
+		dateRange
 	);
 }
 

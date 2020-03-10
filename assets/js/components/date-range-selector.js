@@ -6,7 +6,7 @@ import { Option, Select } from 'SiteKitCore/material-components';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { _n, sprintf } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 import {
 	addAction,
@@ -98,10 +98,10 @@ class DateRangeSelector extends Component {
 	render() {
 		const { dateValue } = this.state;
 		const options = {
-			7: sprintf( __( 'Last %d days', 'google-site-kit' ), 7 ),
-			14: sprintf( __( 'Last %d days', 'google-site-kit' ), 14 ),
-			28: sprintf( __( 'Last %d days', 'google-site-kit' ), 28 ),
-			90: sprintf( __( 'Last %d days', 'google-site-kit' ), 90 ),
+			7: sprintf( _n( 'Last %d day', 'Last %d days', 7, 'google-site-kit' ), 7 ),
+			14: sprintf( _n( 'Last %d day', 'Last %d days', 14, 'google-site-kit' ), 14 ),
+			28: sprintf( _n( 'Last %d day', 'Last %d days', 28, 'google-site-kit' ), 28 ),
+			90: sprintf( _n( 'Last %d day', 'Last %d days', 90, 'google-site-kit' ), 90 ),
 		};
 
 		return (
