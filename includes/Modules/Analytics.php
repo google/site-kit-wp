@@ -110,7 +110,7 @@ final class Analytics extends Module
 		);
 
 		add_action(
-			'wp_print_scripts',
+			'wp_head',
 			function () {
 				if ( $this->is_tracking_disabled() ) {
 					$this->print_tracking_opt_out();
