@@ -21,6 +21,10 @@
  */
 import invariant from 'invariant';
 import { keyBy, omit } from 'lodash';
+
+/**
+ * Internal dependencies
+ */
 import { get } from 'googlesitekit-api';
 
 const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
