@@ -16,7 +16,7 @@ import siteStore, { STORE_NAME as siteStoreName } from 'assets/js/googlesitekit/
 /**
  * Create a registry with all available stores.
  *
- * @since @1.5.0
+ * @since 1.5.0
  * @return {wp.data.registry} Registry with all available stores registered.
  */
 export const createTestRegistry = () => {
@@ -34,7 +34,7 @@ export const createTestRegistry = () => {
  * API fetch errors or other things you expect to log to console but don't
  * want appearing in the jest output.
  *
- * @since @1.5.0
+ * @since 1.5.0
  * @param {string} type  Type of console to mute (one of: `'error'`, `'warn'`, `'log'`, `'info'`, or `'debug'`)
  * @param {number} times Number of times to mute console output perform resuming.
  */
@@ -51,7 +51,7 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
  * Useful for testing, when you want to ensure that every registry is
  * available for connected components and data store tests to use.
  *
- * @since @1.5.0
+ * @since 1.5.0
  * @param {wp.data.registry} registry Registry to register each store on.
  */
 export const registerAllStoresOn = ( registry ) => {
@@ -102,7 +102,7 @@ export const unsubscribeFromAll = () => {
  * Use this to ensure that the unintended path throws an error rather than
  * silently succeed.
  *
- * @since @1.5.0
+ * @since 1.5.0
  * @return {Promise} A rejected promise.
  */
 export const unexpectedSuccess = () => {

@@ -41,7 +41,7 @@ export const actions = {
 	 *
 	 * Requests the `core/site/reset` endpoint.
 	 *
-	 * @since @1.5.0
+	 * @since 1.5.0
 	 * @private
 	 * @return {Object} Redux-style action.
 	 */
@@ -55,7 +55,7 @@ export const actions = {
 	/**
 	 * Dispatches that reset confirmation was received from the REST API.
 	 *
-	 * @since @1.5.0
+	 * @since 1.5.0
 	 * @private
 	 * @return {Object} Redux-style action.
 	 */
@@ -69,7 +69,7 @@ export const actions = {
 	/**
 	 * Dispatches an action signifying the `fetchReset` side-effect failed.
 	 *
-	 * @since @1.5.0
+	 * @since 1.5.0
 	 * @private
 	 * @return {Object} Redux-style action.
 	 */
@@ -87,7 +87,7 @@ export const actions = {
 	 * removed and will require re-authentication. Use this action with caution,
 	 * and always request user confirmation before dispatching.
 	 *
-	 * @since @1.5.0
+	 * @since 1.5.0
 	 * @return {Object} Redux-style action.
 	 */
 	*reset() {
@@ -141,7 +141,7 @@ export const selectors = {
 	/**
 	 * Checks if reset action is in-process.
 	 *
-	 * @since @1.5.0
+	 * @since 1.5.0
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} `true` if resetting is in-flight; `false` if not.
 	 */

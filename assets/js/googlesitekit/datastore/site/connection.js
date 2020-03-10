@@ -42,7 +42,7 @@ export const actions = {
 	 *
 	 * Requests the `core/site/connection` endpoint.
 	 *
-	 * @since @1.5.0
+	 * @since 1.5.0
 	 * @private
 	 * @return {Object} Redux-style action.
 	 */
@@ -56,7 +56,7 @@ export const actions = {
 	/**
 	 * Stores connection info received from the REST API.
 	 *
-	 * @since @1.5.0
+	 * @since 1.5.0
 	 * @private
 	 * @param {Object} connection Connection info from the API.
 	 * @return {Object} Redux-style action.
@@ -73,7 +73,7 @@ export const actions = {
 	/**
 	 * Dispatches an action signifying the `fetchConnection` side-effect failed.
 	 *
-	 * @since @1.5.0
+	 * @since 1.5.0
 	 * @private
 	 * @return {Object} Redux-style action.
 	 */
@@ -150,7 +150,7 @@ export const selectors = {
 	 * }
 	 * ```
 	 *
-	 * @since @1.5.0
+	 * @since 1.5.0
 	 * @param {Object} state Data store's state.
 	 * @return {Object|null} Site connection info.
 	 */

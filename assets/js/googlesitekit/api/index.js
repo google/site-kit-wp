@@ -47,7 +47,7 @@ const KEY_SEPARATOR = '::';
 /**
  * Create a cache key for a set of type/identifier/datapoint values.
  *
- * @since @1.5.0
+ * @since 1.5.0
  * @private
  * @param {string} type        The data to access. One of 'core' or 'modules'.
  * @param {string} identifier  The data identifier, eg. a module slug like `'search-console'`.
@@ -76,7 +76,7 @@ export const createCacheKey = ( type, identifier, datapoint, queryParams = {} ) 
 /**
  * Make a request to a WP REST API Site Kit endpoint.
  *
- * @since @1.5.0
+ * @since 1.5.0
  * @private
  * @param {string}  type                The data to access. One of 'core' or 'modules'.
  * @param {string}  identifier          The data identifier, eg. a module slug like `'search-console'`.
@@ -146,7 +146,7 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
  * This method automatically handles authentication, so no credentials
  * are required to use this method.
  *
- * @since @1.5.0
+ * @since 1.5.0
  * @param {string}  type             The data to access. One of 'core' or 'modules'.
  * @param {string}  identifier       The data identifier, eg. a module slug like `'search-console'`.
  * @param {string}  datapoint        The endpoint to request data from.
@@ -180,7 +180,7 @@ export const get = async (
  * This method automatically handles authentication, so no credentials
  * are required to use this method.
  *
- * @since @1.5.0
+ * @since 1.5.0
  * @param {string} type                 The data to access. One of 'core' or 'modules'.
  * @param {string} identifier           The data identifier, eg. a module slug like `'adsense'`.
  * @param {string} datapoint            The endpoint to send data to.
@@ -217,7 +217,7 @@ export const set = async (
  * Individual requests can still be overridden to _disable_ caching,
  * but if caching is turned off it cannot be turned on for a specific request.
  *
- * @since @1.5.0
+ * @since 1.5.0
  * @param {boolean} shouldUseCache Set to `true` to use this cache across requests; set to `false` to disable caching.
  * @return {boolean} The new caching state (`true` for on, `false` for off).
  */
@@ -246,7 +246,7 @@ export const usingCache = () => {
  * Calling `invalidateCache()` will invalidate _all_ cached data, while calling
  * `invalidateCache( 'modules', 'adsense' )` will invalidate all AdSense data only.
  *
- * @since @1.5.0
+ * @since 1.5.0
  * @param {string} type       The data type to operate on. One of 'core' or 'modules'.
  * @param {string} identifier The data identifier, eg. a module slug like `'adsense'`.
  * @param {string} datapoint  The endpoint to invalidate cache data for.
