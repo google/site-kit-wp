@@ -21,7 +21,7 @@
 /**
  * Internal dependencies
  */
-import Modules from './googlesitekit/modules';
+import Modules from 'assets/js/googlesitekit/modules';
 
 if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};
