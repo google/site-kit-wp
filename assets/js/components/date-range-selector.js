@@ -1,12 +1,12 @@
 /**
  * External dependencies
  */
-import { Select } from 'SiteKitCore/material-components';
+import { Option, Select } from 'SiteKitCore/material-components';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { _n, sprintf } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 import {
 	addAction,
@@ -32,7 +32,7 @@ class DateRangeSelector extends Component {
 
 		this.state = {
 			context: 'Dashboard',
-			dateValue: applyFilters( this.dateRangeHook, __( 'Last 28 days', 'google-site-kit' ) ),
+			dateValue: applyFilters( this.dateRangeHook, 'last-28-days' ),
 		};
 
 		// Store the current context when the screen loads, so we can reuse it later.
@@ -89,7 +89,7 @@ class DateRangeSelector extends Component {
 
 		// Update this component.
 		this.setState( {
-			dateValue: applyFilters( this.dateRangeHook, __( 'Last 28 days', 'google-site-kit' ) ),
+			dateValue: applyFilters( this.dateRangeHook, 'last-28-days' ),
 		} );
 
 		return false;
@@ -97,12 +97,12 @@ class DateRangeSelector extends Component {
 
 	render() {
 		const { dateValue } = this.state;
-		const options = [
-			__( 'Last 7 days', 'google-site-kit' ),
-			__( 'Last 14 days', 'google-site-kit' ),
-			__( 'Last 28 days', 'google-site-kit' ),
-			__( 'Last 90 days', 'google-site-kit' ),
-		];
+		const options = {
+			'last-7-days': sprintf( _n( 'Last %s day', 'Last %s days', 7, 'google-site-kit' ), 7 ),
+			'last-14-days': sprintf( _n( 'Last %s day', 'Last %s days', 14, 'google-site-kit' ), 14 ),
+			'last-28-days': sprintf( _n( 'Last %s day', 'Last %s days', 28, 'google-site-kit' ), 28 ),
+			'last-90-days': sprintf( _n( 'Last %s day', 'Last %s days', 90, 'google-site-kit' ), 90 ),
+		};
 
 		return (
 			<Select
@@ -111,9 +111,16 @@ class DateRangeSelector extends Component {
 				name="time_period"
 				label=""
 				onEnhancedChange={ this.handleSelection }
-				options={ options }
 				value={ dateValue }
-			/>
+			>
+				{ Object.keys( options ).map( ( option ) => {
+					return (
+						<Option key={ option } value={ option }>
+							{ options[ option ] }
+						</Option>
+					);
+				} ) }
+			</Select>
 		);
 	}
 }
