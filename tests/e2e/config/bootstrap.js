@@ -72,7 +72,8 @@ function capturePageEventsForTearDown() {
 
 /**
  * Opt out of all Analytics tracking on page load.
- * @link https://tools.google.com/dlpage/gaoptout
+ *
+ * @see {@link https://tools.google.com/dlpage/gaoptout}
  */
 function optOutOfEventTracking() {
 	page.on( 'load', async () => {
@@ -176,7 +177,7 @@ function observeNavigationRequest( req ) {
 /**
  * Observe the given navigation response.
  *
- * @param {Object} req HTTP response object.
+ * @param {Object} res HTTP response object.
  */
 function observeNavigationResponse( res ) {
 	if ( res.request().isNavigationRequest() ) {

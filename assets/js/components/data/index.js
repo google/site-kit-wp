@@ -91,7 +91,7 @@ const dataAPI = {
 	 * Solves issue for publisher wins to retrieve data without performing additional requests.
 	 * Likely this will be removed after refactoring.
 	 *
- 	 * @param {Array.<{ maxAge: timestamp, type: string, identifier: string, datapoint: string, callback: function }>} combinedRequest An array of data requests to resolve.
+	 * @param {Array.<{maxAge: Date, type: string, identifier: string, datapoint: string, callback: Function}>} combinedRequest An array of data requests to resolve.
 	 *
 	 * @return {Promise} A promise for the cache lookup.
 	 */
@@ -122,8 +122,10 @@ const dataAPI = {
 	/**
 	 * Gets data for multiple requests from the REST API using a single batch process.
 	 *
- 	 * @param {Array.<{ maxAge: timestamp, type: string, identifier: string, datapoint: string, callback: function }>} combinedRequest An array of data requests to resolve.
+	 * @param {Array.<{maxAge: Date, type: string, identifier: string, datapoint: string, callback: Function}>} combinedRequest An array of data requests to resolve.
 	 * @param {boolean} secondaryRequest Is this the second (or more) request?
+	 *
+	 * @return {Promise} A promise for multiple fetch requests.
 	 */
 	combinedGet( combinedRequest, secondaryRequest = false ) {
 		// First, resolve any cache matches immediately, queue resolution of the rest.
@@ -283,7 +285,7 @@ const dataAPI = {
 	 * Sets data in the cache.
 	 *
 	 * @param {string} key  The cache key.
-	 * @param {mixed}  data The data to cache.
+	 * @param {Object} data The data to cache.
 	 */
 	setCache( key, data ) {
 		if ( 'undefined' === typeof data ) {
@@ -312,7 +314,7 @@ const dataAPI = {
 	 * @param {string} key    The cache key.
 	 * @param {number} maxAge The cache TTL in seconds. If not provided, no TTL will be checked.
 	 *
-	 * @return {mixed} Cached data, or undefined if lookup failed.
+	 * @return {(Object|undefined)} Cached data, or undefined if lookup failed.
 	 */
 	getCache( key, maxAge ) {
 		// Skip if js caching is disabled.
@@ -385,7 +387,7 @@ const dataAPI = {
 	 *
 	 * @param {string} context The context to retrieve the module data for. One of 'Dashboard', 'Settings',
 	 *                         or 'Post'.
-	 * @param {mixed} moduleArgs Arguments passed from the module.
+	 * @param {Object} moduleArgs Arguments passed from the module.
 	 *
 	 */
 	collectModuleData( context, moduleArgs ) {

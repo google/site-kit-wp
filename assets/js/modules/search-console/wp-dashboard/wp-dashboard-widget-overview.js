@@ -57,16 +57,16 @@ class WPSearchConsoleDashboardWidgetOverview extends Component {
 
 		return (
 			<Fragment>
-				{ ! data.length ?
-					<div className="googlesitekit-wp-dashboard-stats__cta">
+				{ ! data.length
+					? <div className="googlesitekit-wp-dashboard-stats__cta">
 						<CTA
 							title={ __( 'Search Console Data Empty', 'google-site-kit' ) }
 							description={ __( 'Search Console data is not yet available, please check back later.', 'google-site-kit' ) }
 							ctaLink={ '' }
 							ctaLabel={ '' }
 						/>
-					</div> :
-					<Fragment>
+					</div>
+					: <Fragment>
 						<DataBlock
 							className="googlesitekit-wp-dashboard-stats__data-table overview-total-impressions"
 							title={ __( 'Total Impressions', 'google-site-kit' ) }

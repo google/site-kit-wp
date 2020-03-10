@@ -95,8 +95,7 @@ export const collectControls = collect;
  * If the first argument passed is not a function, it will be used as the
  * combined reducer's `INITIAL_STATE`.
  *
- * @param {Object} initialState? The combined reducer's `INITIAL_STATE`. Only used when first argument is not a function.
- * @param {Function} ...args A list of reducers, each containing their own controls.
+ * @param {...Object|Function} args A list of reducers, each containing their own controls. If the first argument is not a function, it will be used as the combined reducer's `INITIAL_STATE`.
  * @return {Function} A Redux-style reducer.
  */
 export const collectReducers = ( ...args ) => {

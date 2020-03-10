@@ -56,8 +56,8 @@ export const getDataTableFromData = ( data, headers, options ) => {
 
 			cells.push(
 				<td key={ 'cell-' + i } className="googlesitekit-table__body-item">
-					{ row[ 0 ] === cell && link ?
-						<div className="googlesitekit-table__body-item-content">
+					{ row[ 0 ] === cell && link
+						? <div className="googlesitekit-table__body-item-content">
 							<Link
 								className="googlesitekit-table__body-item-link"
 								href={ link }
@@ -77,8 +77,8 @@ export const getDataTableFromData = ( data, headers, options ) => {
 									{ trim( link, '/' ) }
 								</Link>
 							}
-						</div> :
-						<div className="googlesitekit-table__body-item-content">{ cell }</div>
+						</div>
+						: <div className="googlesitekit-table__body-item-content">{ cell }</div>
 					}
 				</td>
 			);
