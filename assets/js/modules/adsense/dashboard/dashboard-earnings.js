@@ -44,7 +44,6 @@ class DashboardEarnings extends Component {
 					<DashboardModuleHeader
 						title={ __( 'Earnings', 'google-site-kit' ) }
 						description={ __( 'How much you’re earning from your content through AdSense.', 'google-site-kit' ) }
-						timePeriod={ __( 'Last 28 days', 'google-site-kit' ) }
 					/>
 					<ModuleSettingsWarning slug="adsense" context="module-sitekit-dashboard" />
 				</div>
