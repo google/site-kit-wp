@@ -24,9 +24,6 @@ import {
 	isNull,
 	isUndefined,
 	unescape,
-	deburr,
-	toLower,
-	trim,
 } from 'lodash';
 import data, { TYPE_CORE } from 'GoogleComponents/data';
 import SvgIcon from 'GoogleUtil/svg-icon';
@@ -42,6 +39,7 @@ import {
 } from '@wordpress/hooks';
 import {
 	__,
+	sprintf,
 } from '@wordpress/i18n';
 import { addQueryArgs, getQueryString } from '@wordpress/url';
 
@@ -620,18 +618,6 @@ export const decodeHtmlEntity = ( str ) => {
 };
 
 /**
- * Performs some basic cleanup of a string for use as a post slug.
- *
- * Emnulates santize_title() from WordPress core.
- *
- * @param {string} str String to convert to slug.
- * @return {string} Processed string.
- */
-export function stringToSlug( str ) {
-	return toLower( deburr( trim( str.replace( /[\s./_]+/g, '-' ), '-' ) ) );
-}
-
-/**
  * Gets the current dateRange string.
  *
  * @return {string} the date range string.
@@ -642,17 +628,10 @@ export function getCurrentDateRange() {
 	 *
 	 * @param String The selected date range. Default 'Last 28 days'.
 	 */
-	return applyFilters( 'googlesitekit.dateRange', __( 'Last 28 days', 'google-site-kit' ) );
-}
-
-/**
- * Return the currently selected date range as a string that fits in the sentence:
- * "Data for the last [date range]", eg "Date for the last 28 days".
- *
- * @return {string} Human friendly descriptive data range text.
- */
-export function getDateRangeFrom() {
-	return getCurrentDateRange().replace( 'Last ', '' );
+	return sprintf(
+		__( '%d days', 'google-site-kit' ),
+		applyFilters( 'googlesitekit.dateRange', 28 )
+	);
 }
 
 /**
@@ -661,7 +640,7 @@ export function getDateRangeFrom() {
  * @return {string} the date range slug.
  */
 export function getCurrentDateRangeSlug() {
-	return stringToSlug( getCurrentDateRange() );
+	return `last-${ applyFilters( 'googlesitekit.dateRange', 28 ) }-days`;
 }
 
 /**

@@ -6,7 +6,7 @@ import { Option, Select } from 'SiteKitCore/material-components';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 import {
 	addAction,
@@ -32,7 +32,7 @@ class DateRangeSelector extends Component {
 
 		this.state = {
 			context: 'Dashboard',
-			dateValue: applyFilters( this.dateRangeHook, 'Last 28 days' ),
+			dateValue: applyFilters( this.dateRangeHook, 28 ),
 		};
 
 		// Store the current context when the screen loads, so we can reuse it later.
@@ -89,7 +89,7 @@ class DateRangeSelector extends Component {
 
 		// Update this component.
 		this.setState( {
-			dateValue: applyFilters( this.dateRangeHook, 'Last 28 days' ),
+			dateValue: applyFilters( this.dateRangeHook, 28 ),
 		} );
 
 		return false;
@@ -98,10 +98,10 @@ class DateRangeSelector extends Component {
 	render() {
 		const { dateValue } = this.state;
 		const options = {
-			'Last 7 days': __( 'Last 7 days', 'google-site-kit' ),
-			'Last 14 days': __( 'Last 14 days', 'google-site-kit' ),
-			'Last 28 days': __( 'Last 28 days', 'google-site-kit' ),
-			'Last 90 days': __( 'Last 90 days', 'google-site-kit' ),
+			7: sprintf( __( 'Last %d days', 'google-site-kit' ), 7 ),
+			14: sprintf( __( 'Last %d days', 'google-site-kit' ), 14 ),
+			28: sprintf( __( 'Last %d days', 'google-site-kit' ), 28 ),
+			90: sprintf( __( 'Last %d days', 'google-site-kit' ), 90 ),
 		};
 
 		return (
@@ -111,7 +111,7 @@ class DateRangeSelector extends Component {
 				name="time_period"
 				label=""
 				onEnhancedChange={ this.handleSelection }
-				value={ dateValue }
+				value={ `${ dateValue }` }
 			>
 				{ Object.keys( options ).map( ( option ) => {
 					return (

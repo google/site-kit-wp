@@ -22,9 +22,9 @@
 import withData from 'GoogleComponents/higherorder/withdata';
 import { TYPE_MODULES } from 'GoogleComponents/data';
 import {
+	getCurrentDateRange,
 	getTimeInSeconds,
 	numberFormat,
-	getDateRangeFrom,
 } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
@@ -49,7 +49,7 @@ class AnalyticsDashboardWidgetTopAcquisitionSources extends Component {
 			return null;
 		}
 
-		const { dateRangeFrom } = getDateRangeFrom();
+		const dateRange = getCurrentDateRange();
 
 		const headers = [
 			{
@@ -63,12 +63,12 @@ class AnalyticsDashboardWidgetTopAcquisitionSources extends Component {
 			{
 				title: __( 'New Users', 'google-site-kit' ),
 				/* translators: %s: date range */
-				tooltip: sprintf( __( 'Number of new users to visit your page over %s', 'google-site-kit' ), dateRangeFrom ),
+				tooltip: sprintf( __( 'Number of new users to visit your page over last %s', 'google-site-kit' ), dateRange ),
 			},
 			{
 				title: __( 'Sessions', 'google-site-kit' ),
 				/* translators: %s: date range */
-				tooltip: sprintf( __( 'Number of sessions users had on your website over %s', 'google-site-kit' ), dateRangeFrom ),
+				tooltip: sprintf( __( 'Number of sessions users had on your website over last %s', 'google-site-kit' ), dateRange ),
 			},
 			{
 				title: __( 'Percentage', 'google-site-kit' ),
