@@ -628,11 +628,17 @@ export function getCurrentDateRange() {
 	 *
 	 * @param String The selected date range. Default 'Last 28 days'.
 	 */
-	const dateRange = applyFilters( 'googlesitekit.dateRange', 28 );
-	return sprintf(
-		_n( '%d day', '%d days', dateRange, 'google-site-kit' ),
-		dateRange
-	);
+	const dateRange = applyFilters( 'googlesitekit.dateRange', 'last-28-days' );
+	const daysMatch = dateRange.match( /last-(\d+)-days/ );
+
+	if ( daysMatch && daysMatch[ 1 ] ) {
+		return sprintf(
+			_n( '%s day', '%s days', parseInt( daysMatch[ 1 ], 10 ), 'google-site-kit' ),
+			daysMatch[ 1 ]
+		);
+	}
+
+	throw new Error( 'Unrecognized date range slug used in `googlesitekit.dateRange`.' );
 }
 
 /**
@@ -641,7 +647,7 @@ export function getCurrentDateRange() {
  * @return {string} the date range slug.
  */
 export function getCurrentDateRangeSlug() {
-	return `last-${ applyFilters( 'googlesitekit.dateRange', 28 ) }-days`;
+	return applyFilters( 'googlesitekit.dateRange', 'last-28-days' );
 }
 
 /**

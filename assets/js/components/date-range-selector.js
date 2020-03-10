@@ -32,7 +32,7 @@ class DateRangeSelector extends Component {
 
 		this.state = {
 			context: 'Dashboard',
-			dateValue: applyFilters( this.dateRangeHook, 28 ),
+			dateValue: applyFilters( this.dateRangeHook, 'last-28-days' ),
 		};
 
 		// Store the current context when the screen loads, so we can reuse it later.
@@ -89,7 +89,7 @@ class DateRangeSelector extends Component {
 
 		// Update this component.
 		this.setState( {
-			dateValue: applyFilters( this.dateRangeHook, 28 ),
+			dateValue: applyFilters( this.dateRangeHook, 'last-28-days' ),
 		} );
 
 		return false;
@@ -98,10 +98,10 @@ class DateRangeSelector extends Component {
 	render() {
 		const { dateValue } = this.state;
 		const options = {
-			7: sprintf( _n( 'Last %d day', 'Last %d days', 7, 'google-site-kit' ), 7 ),
-			14: sprintf( _n( 'Last %d day', 'Last %d days', 14, 'google-site-kit' ), 14 ),
-			28: sprintf( _n( 'Last %d day', 'Last %d days', 28, 'google-site-kit' ), 28 ),
-			90: sprintf( _n( 'Last %d day', 'Last %d days', 90, 'google-site-kit' ), 90 ),
+			'last-7-days': sprintf( _n( 'Last %s day', 'Last %s days', 7, 'google-site-kit' ), 7 ),
+			'last-14-days': sprintf( _n( 'Last %s day', 'Last %s days', 14, 'google-site-kit' ), 14 ),
+			'last-28-days': sprintf( _n( 'Last %s day', 'Last %s days', 28, 'google-site-kit' ), 28 ),
+			'last-90-days': sprintf( _n( 'Last %s day', 'Last %s days', 90, 'google-site-kit' ), 90 ),
 		};
 
 		return (
@@ -111,7 +111,7 @@ class DateRangeSelector extends Component {
 				name="time_period"
 				label=""
 				onEnhancedChange={ this.handleSelection }
-				value={ `${ dateValue }` }
+				value={ dateValue }
 			>
 				{ Object.keys( options ).map( ( option ) => {
 					return (
