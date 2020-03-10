@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { keyBy, omit } from 'lodash';
 
 /**
  * Internal dependencies
@@ -97,7 +96,7 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 					...state,
 					clientNotifications: {
 						...state.clientNotifications,
-						...keyBy( [ notification ], 'id' ),
+						[ notification.id ]: notification,
 					},
 				};
 			}
@@ -105,9 +104,12 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 			case REMOVE_NOTIFICATION: {
 				const { id } = action.payload;
 
+				const newNotifications = { ...state.clientNotifications };
+				delete newNotifications[ id ];
+
 				return {
 					...state,
-					clientNotifications: omit( state.clientNotifications, [ id ] ),
+					clientNotifications: newNotifications,
 				};
 			}
 
@@ -124,9 +126,15 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 				return {
 					...state,
 					isFetchingNotifications: false,
-					serverNotifications: {
-						...keyBy( notifications, 'id' ),
-					},
+					serverNotifications: notifications.reduce(
+						( acc, notification ) => {
+							return {
+								...acc,
+								[ notification.id ]: notification,
+							};
+						},
+						{}
+					),
 				};
 			}
 
