@@ -97,9 +97,9 @@ describe( 'core/site reset', () => {
 						{ status: 200 }
 					);
 
-				// After a successful reset, `connection` should be `null` again.
+				// After a successful reset, `connection` should be `undefined` again.
 				const connection = await registry.select( STORE_NAME ).getConnection();
-				expect( connection ).toEqual( null );
+				expect( connection ).toEqual( undefined );
 			} );
 
 			it( 'does not reset local connection if reset request fails', async () => {
@@ -115,7 +115,7 @@ describe( 'core/site reset', () => {
 					);
 				await registry.select( STORE_NAME ).getConnection();
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).getConnection() !== null,
+					() => registry.select( STORE_NAME ).getConnection() !== undefined,
 				);
 
 				const response = {
