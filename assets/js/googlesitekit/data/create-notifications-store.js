@@ -44,14 +44,14 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 	const actions = {
 		addNotification( notification ) {
 			return {
-				notification,
+				payload: { notification },
 				type: ADD_NOTIFICATION,
 			};
 		},
 
 		removeNotification( id ) {
 			return {
-				id,
+				payload: { id },
 				type: REMOVE_NOTIFICATION,
 			};
 		},
@@ -91,7 +91,7 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 	const reducer = ( state = INITIAL_STATE, action ) => {
 		switch ( action.type ) {
 			case ADD_NOTIFICATION: {
-				const { notification } = action;
+				const { notification } = action.payload;
 
 				return {
 					...state,
@@ -103,7 +103,7 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 			}
 
 			case REMOVE_NOTIFICATION: {
-				const { id } = action;
+				const { id } = action.payload;
 
 				return {
 					...state,
