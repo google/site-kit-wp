@@ -1,21 +1,18 @@
 /**
  * Internal dependencies
  */
-// eslint-disable-next-line @wordpress/dependency-group
 import {
+	STORAGE_KEY_PREFIX,
 	clearCache,
 	deleteItem,
 	getItem,
 	getKeys,
-	setItem,
-} from './cache';
-import {
-	STORAGE_KEY_PREFIX,
 	getStorage,
 	resetDefaultStorageOrder,
+	setItem,
 	setSelectedStorageBackend,
 	setStorageOrder,
-} from './cache.private';
+} from './cache';
 
 let previousCacheValue;
 const disableCache = () => {

@@ -24,8 +24,9 @@ import invariant from 'invariant';
 const INITIALIZE = 'INITIALIZE';
 
 /**
- * Add an initialize action to an existing object of actions.
+ * Adds an initialize action to an existing object of actions.
  *
+ * @since n.e.x.t
  * @param {Object} actions An object of actions.
  * @return {Object} The combined action object, extended with an initialize() action.
  */
@@ -36,11 +37,12 @@ export const addInitializeAction = ( actions ) => {
 };
 
 /**
- * Add an initialize reducer handler to an existing reducer.
+ * Adds an initialize reducer handler to an existing reducer.
  *
  * Adds a reducer that resets the store to its initial state if the
  * `initialize()` action is dispatched on it.
  *
+ * @since n.e.x.t
  * @param {Object} initialState The store's default state (`INITIAL_STATE`).
  * @param {Function} reducer A single reducer to extend with an initialize() handler.
  * @return {Function} A Redux-style reducer.
@@ -61,6 +63,20 @@ export const addInitializeReducer = ( initialState, reducer ) => {
 	return collectReducers( initialState, reducer, initializeReducer );
 };
 
+/*
+ * Collects and combines multiple objects of similar shape.
+ *
+ * Used to combine objects like actions, selectors, etc. for a data
+ * store while ensuring no keys/action names/selector names are duplicated.
+ *
+ * Effectively this is an object spread, but throws an error if keys are
+ * duplicated.
+ *
+ * @since n.e.x.t
+ * @private
+ * @param {Object} ...items A list of arguments, each one should be an object to combine into one.
+ * @return {Object} The combined object.
+ */
 export const collect = ( ...items ) => {
 	const collectedObject = items.reduce( ( acc, item ) => {
 		return { ...acc, ...item };
@@ -77,24 +93,46 @@ export const collect = ( ...items ) => {
 };
 
 /**
- * Collect all actions.
+ * Dispatches an initialize action.
  *
+ * Generic action used by all stores. Dispatching it returns the store
+ * to its INITIAL_STATE.
+ *
+ * @since n.e.x.t
+ * @return {Object} An initialize action.
+ */
+export const initializeAction = () => {
+	return {
+		payload: {},
+		type: INITIALIZE,
+	};
+};
+
+/**
+ * Collects all actions.
+ *
+ * @since n.e.x.t
  * @param {Object} ...args A list of objects, each containing their own actions.
  * @return {Object} The combined object.
  */
 export const collectActions = collect;
 
+/**
+ * Collects all controls.
+ *
+ * @since n.e.x.t
+ * @param {Object} ...args A list of objects, each containing their own controls.
+ * @return {Object} The combined object.
+ */
 export const collectControls = collect;
 
 /**
- * Collect all reducers and add an initialize reducer.
- *
- * This combines reducers and adds a reducer that resets the store to its
- * initial state if the `initialize()` action is dispatched on it.
+ * Collects all reducers and (optionally) provides initial state.
  *
  * If the first argument passed is not a function, it will be used as the
  * combined reducer's `INITIAL_STATE`.
  *
+ * @since n.e.x.t
  * @param {...Object|Function} args A list of reducers, each containing their own controls. If the first argument is not a function, it will be used as the combined reducer's `INITIAL_STATE`.
  * @return {Function} A Redux-style reducer.
  */
@@ -113,12 +151,40 @@ export const collectReducers = ( ...args ) => {
 	};
 };
 
+/**
+ * Collects all resolvers.
+ *
+ * @since n.e.x.t
+ * @param {Object} ...args A list of objects, each containing their own resolvers.
+ * @return {Object} The combined object.
+ */
 export const collectResolvers = collect;
 
+/**
+ * Collects all selectors.
+ *
+ * @since n.e.x.t
+ * @param {Object} ...args A list of objects, each containing their own selectors.
+ * @return {Object} The combined object.
+ */
 export const collectSelectors = collect;
 
+/**
+ * Collects all state values.
+ *
+ * @param {Object} ...args A list of objects, each containing their own state values.
+ * @return {Object} The combined object.
+ */
 export const collectState = collect;
 
+/**
+ * Finds all duplicate items in an array and return them.
+ *
+ * @since n.e.x.t
+ * @private
+ * @param {Array} array Any array.
+ * @return {Array} All values in the input array that were duplicated.
+ */
 const findDuplicates = ( array ) => {
 	const duplicates = [];
 	const counts = {};
@@ -132,11 +198,4 @@ const findDuplicates = ( array ) => {
 	}
 
 	return duplicates;
-};
-
-export const initializeAction = () => {
-	return {
-		payload: {},
-		type: INITIALIZE,
-	};
 };

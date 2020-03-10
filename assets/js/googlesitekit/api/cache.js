@@ -22,21 +22,146 @@
 import { isEqual } from 'lodash';
 
 /**
- * Internal dependencies
+ * Prefix used for all Site Kit keys.
+ *
+ * Anything not using this key should not be touched by this library.
+ *
+ * @since @n.e.x.t
+ * @private
  */
-import {
-	STORAGE_KEY_PREFIX,
-	getStorage,
-} from './cache.private';
+export const STORAGE_KEY_PREFIX = 'googlesitekit_';
+
+const defaultOrder = [ 'localStorage', 'sessionStorage' ];
+let storageBackend;
+let storageOrder = [ ...defaultOrder	];
+/**
+ * Override the storage backend.
+ *
+ * Largely used for tests. Should not be used directly.
+ *
+ * @since @n.e.x.t
+ * @private
+ * @param {*} backend Backend to set for the cache.
+ */
+export const setSelectedStorageBackend = ( backend ) => {
+	storageBackend = backend;
+};
+
+/**
+ * Override the priority of storage mechanisms.
+ *
+ * Largely used for tests. Implicitly resets the selected storage backend,
+ * causing `_getStorage` to re-run its checks for the best available
+ * storage backend.
+ *
+ * @since @n.e.x.t
+ * @private
+ * @param {Array} order Ordered array of storage backends to use.
+ */
+export const setStorageOrder = ( order ) => {
+	storageOrder = [ ...order ];
+	setSelectedStorageBackend( undefined );
+};
+
+/**
+ * Reset the storage mechanism order.
+ *
+ * Largely used for tests. Implicitly resets the selected storage backend,
+ * causing `_getStorage` to re-run its checks for the best available
+ * storage backend.
+ *
+ * @since @n.e.x.t
+ * @private
+ */
+export const resetDefaultStorageOrder = () => {
+	storageOrder = [ ...defaultOrder ];
+	setSelectedStorageBackend( undefined );
+};
+
+/**
+ * Detects whether browser storage is both supported and available.
+ *
+ * @since @n.e.x.t
+ * @private
+ * @param {string} type Browser storage to test. Should be one of `localStorage` or `sessionStorage`.
+ * @return {boolean} True if the given storage is available, false otherwise.
+ */
+export const isStorageAvailable = async ( type ) => {
+	const storage = global[ type ];
+
+	if ( ! storage ) {
+		return false;
+	}
+
+	try {
+		const x = '__storage_test__';
+
+		storage.setItem( x, x );
+		storage.removeItem( x );
+		return true;
+	} catch ( e ) {
+		return e instanceof DOMException && (
+
+			// everything except Firefox
+			22 === e.code ||
+
+			// Firefox
+			1014 === e.code ||
+
+			// test name field too, because code might not be present
+			// everything except Firefox
+			'QuotaExceededError' === e.name ||
+
+			// Firefox
+			'NS_ERROR_DOM_QUOTA_REACHED' === e.name ) &&
+
+			// acknowledge QuotaExceededError only if there's something already stored
+			0 !== storage.length;
+	}
+};
+
+/**
+ * Gets the storage object to use.
+ *
+ * @since @n.e.x.t
+ * @private
+ * @return {Object|null} A storage mechanism (`localStorage` or `sessionStorage`) if available; otherwise returns `null`;
+ */
+export const getStorage = async () => {
+	// If `googlesitekit.admin.nojscache` is `true`, we should never use
+	// the cache.
+	if ( global.googlesitekit && global.googlesitekit.admin && global.googlesitekit.admin.nojscache ) {
+		return null;
+	}
+
+	// Only run the logic to determine the storage object once.
+	if ( storageBackend === undefined ) {
+		for ( const backend of storageOrder ) {
+			if ( storageBackend ) {
+				continue;
+			}
+
+			if ( await isStorageAvailable( backend ) ) {
+				storageBackend = global[ backend ];
+			}
+		}
+
+		if ( storageBackend === undefined ) {
+			storageBackend = null;
+		}
+	}
+
+	return storageBackend;
+};
 
 /**
  * Get cached data.
  *
  * Get cached data from the persistent storage cache.
  *
+ * @since @n.e.x.t
  * @param {string} key              Name of cache key.
  * @param {number} cacheTimeToLive  The number of seconds before cached data will be considered stale. If the cached data is more than this many seconds old no data will be returned. If not set/set to `null`, any data will be returned.
- *
  * @return {Promise} A promise returned, containing an object with the cached value (if found) and whether or not there was a cache hit.
  */
 export const getItem = async ( key, cacheTimeToLive = null ) => {
@@ -74,10 +199,10 @@ export const getItem = async ( key, cacheTimeToLive = null ) => {
  *
  * Save data to the relevant local storage mechanism, if available.
  *
+ * @since @n.e.x.t
  * @param {string} key        Name of cache key.
  * @param {*}      value      Value to store in the cache.
  * @param {number} _timestamp Timestamp to set as the cache data save time.
- *
  * @return {Promise} A promise: resolves to `true` if the value was saved; `false` if not (usually because no storage method was available).
  */
 export const setItem = async ( key, value, _timestamp = undefined ) => {
@@ -115,8 +240,8 @@ export const setItem = async ( key, value, _timestamp = undefined ) => {
  *
  * Remove one piece of cached data from the persistent storage cache, by key.
  *
+ * @since @n.e.x.t
  * @param {string} key Name of cache key.
- *
  * @return {Promise} A promise: resolves to `true` if the value was deleted; `false` if not (usually because no storage method was available).
  */
 export const deleteItem = async ( key ) => {
@@ -139,6 +264,7 @@ export const deleteItem = async ( key ) => {
 /**
  * Get all cache keys created by Site Kit.
  *
+ * @since @n.e.x.t
  * @return {Promise} A promise: resolves to an array of all keys.
  */
 export const getKeys = async () => {
@@ -167,6 +293,7 @@ export const getKeys = async () => {
 /**
  * Remove the entire cache created by Site Kit.
  *
+ * @since @n.e.x.t
  * @return {Promise} A promise: resolves to `true` if the cache was cleared; `false` if there was an error.
  */
 export const clearCache = async () => {
