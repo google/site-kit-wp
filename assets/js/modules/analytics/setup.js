@@ -689,9 +689,9 @@ class AnalyticsSetup extends Component {
 							hideLabel={ false }
 						/>
 						<p>
-							{ anonymizeIP ?
-								__( 'IP addresses will be anonymized.', 'google-site-kit' ) :
-								__( 'IP addresses will not be anonymized.', 'google-site-kit' )
+							{ anonymizeIP
+								? __( 'IP addresses will be anonymized.', 'google-site-kit' )
+								: __( 'IP addresses will not be anonymized.', 'google-site-kit' )
 							}
 							{ ' ' }
 							<Link
@@ -991,9 +991,9 @@ class AnalyticsSetup extends Component {
 				</div>
 
 				<p>
-					{ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) ?
-						__( 'Logged-in users will be excluded from Analytics tracking.', 'google-site-kit' ) :
-						__( 'Logged-in users will be included in Analytics tracking.', 'google-site-kit' )
+					{ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS )
+						? __( 'Logged-in users will be excluded from Analytics tracking.', 'google-site-kit' )
+						: __( 'Logged-in users will be included in Analytics tracking.', 'google-site-kit' )
 					}
 				</p>
 			</div>
@@ -1040,11 +1040,11 @@ class AnalyticsSetup extends Component {
 		return (
 			<div className={ classnames( { 'googlesitekit-error-text': showErrorFormat } ) }>
 				<p>{
-					showErrorFormat ?
+					showErrorFormat
 
 						/* translators: %s: Error message */
-						sprintf( __( 'Error: %s', 'google-site-kit' ), message ) :
-						message
+						? sprintf( __( 'Error: %s', 'google-site-kit' ), message )
+						: message
 				}</p>
 			</div>
 		);

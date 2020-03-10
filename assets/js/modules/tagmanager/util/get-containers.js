@@ -8,6 +8,7 @@ export default function getContainers( containers ) {
 	return {
 		/**
 		 * Gets containers that include the given usage context.
+		 *
 		 * @param {string} context The context to filter by.
 		 * @return {Array} Containers with the given usage context.
 		 */

@@ -133,8 +133,7 @@ export const collectControls = collect;
  * combined reducer's `INITIAL_STATE`.
  *
  * @since n.e.x.t
- * @param {Object} initialState? The combined reducer's `INITIAL_STATE`. Only used when first argument is not a function.
- * @param {...Object|Function} args A list of reducers. If the first argument is not a function, it will be used as the combined reducer's `INITIAL_STATE`.
+ * @param {...Object|Function} args A list of reducers, each containing their own controls. If the first argument is not a function, it will be used as the combined reducer's `INITIAL_STATE`.
  * @return {Function} A Redux-style reducer.
  */
 export const collectReducers = ( ...args ) => {

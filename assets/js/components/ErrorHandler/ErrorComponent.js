@@ -31,7 +31,7 @@ const ErrorComponent = () => {
 				setShouldThrow( true );
 			} }
 		>
-				Simulate an error
+			Simulate an error
 		</Button>
 	);
 };

@@ -117,8 +117,8 @@ class SearchConsole extends Component {
 	/**
 	 * Sets the Search Console property and adds it if necessary through the API.
 	 *
-	 * @param { string }  siteURL The siteURL for the property.
-	 * @param { boolean } isNew   Whether siteURL is for a new property.
+	 * @param {string}  siteURL The siteURL for the property.
+	 * @param {boolean} isNew   Whether siteURL is for a new property.
 	 */
 	async insertPropertyToSearchConsole( siteURL, isNew = false ) {
 		await data.set( TYPE_MODULES, 'search-console', 'site', { siteURL } );

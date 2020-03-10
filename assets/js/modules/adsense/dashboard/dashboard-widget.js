@@ -152,9 +152,9 @@ class AdSenseDashboardWidget extends Component {
 								mdc-layout-grid__cell--span-12
 							">
 								{
-									( ! error && global.googlesitekit.modules.adsense.setupComplete ) ?
-										<PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="connected" statusText={ __( 'AdSense is connected', 'google-site-kit' ) } /> :
-										<PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="not-connected" statusText={ __( 'AdSense is not connected', 'google-site-kit' ) } />
+									( ! error && global.googlesitekit.modules.adsense.setupComplete )
+										? <PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="connected" statusText={ __( 'AdSense is connected', 'google-site-kit' ) } />
+										: <PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="not-connected" statusText={ __( 'AdSense is not connected', 'google-site-kit' ) } />
 								}
 								{ loading && <ProgressBar /> }
 							</div>

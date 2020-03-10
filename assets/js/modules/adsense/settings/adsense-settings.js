@@ -142,8 +142,8 @@ class AdSenseSettings extends Component {
 		return (
 			<Fragment>
 				{
-					isEditing ?
-						<Fragment>
+					isEditing
+						? <Fragment>
 							<div className="googlesitekit-setup-module__switch">
 								<Switch
 									id="enableAutoAds"
@@ -170,12 +170,12 @@ class AdSenseSettings extends Component {
 									</div>
 								</div>
 							}
-						</Fragment> :
-						<Fragment>
+						</Fragment>
+						: <Fragment>
 							{	__( 'The AdSense code has', 'google-site-kit' ) } {
-								useSnippet ?
-									__( 'been placed on your site.', 'google-site-kit' ) :
-									__( 'not been placed on your site.', 'google-site-kit' )
+								useSnippet
+									? __( 'been placed on your site.', 'google-site-kit' )
+									: __( 'not been placed on your site.', 'google-site-kit' )
 							}
 						</Fragment>
 				}

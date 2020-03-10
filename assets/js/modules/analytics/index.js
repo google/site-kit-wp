@@ -98,8 +98,8 @@ if ( global.googlesitekit.modules.analytics.active ) {
 		addAnalyticsDashboardWidgetPopularPagesTableSmall, 20 );
 
 	/**
-	* Add components to the Site Kit URL Details Dashboard.
-	*/
+	 * Add components to the Site Kit URL Details Dashboard.
+	 */
 	addFilter( 'googlesitekit.DashboardDetailsModule',
 		'googlesitekit.Analytics',
 		addAnalyticsDashboardDetailsWidget, 20 );

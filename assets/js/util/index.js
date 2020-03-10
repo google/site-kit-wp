@@ -24,9 +24,6 @@ import {
 	isNull,
 	isUndefined,
 	unescape,
-	deburr,
-	toLower,
-	trim,
 } from 'lodash';
 import data, { TYPE_CORE } from 'GoogleComponents/data';
 import SvgIcon from 'GoogleUtil/svg-icon';
@@ -41,7 +38,8 @@ import {
 	applyFilters,
 } from '@wordpress/hooks';
 import {
-	__,
+	_n,
+	sprintf,
 } from '@wordpress/i18n';
 import { addQueryArgs, getQueryString } from '@wordpress/url';
 
@@ -62,10 +60,13 @@ export * from './i18n';
 /**
  * Remove a parameter from a URL string.
  *
- * Fallback for when URL is unable to handle this.
+ * Fallback for when URL is unable to handle parsedURL.searchParams.delete.
  *
  * @param {string} url       The URL to process.
  * @param {string} parameter The URL parameter to remove.
+ *
+ * @return {string} URL without the deleted parameter.
+ *
  */
 const removeURLFallBack = ( url, parameter ) => {
 	const urlparts = url.split( '?' );
@@ -91,6 +92,8 @@ const removeURLFallBack = ( url, parameter ) => {
  *
  * @param {string} url       The URL to process.
  * @param {string} parameter The URL parameter to remove.
+ *
+ * @return {string} URL without the deleted parameter.
  */
 export const removeURLParameter = ( url, parameter ) => {
 	const parsedURL = new URL( url );
@@ -106,8 +109,8 @@ export const removeURLParameter = ( url, parameter ) => {
 /**
  * Format a large number for shortened display.
  *
- * @param {number}         number       The large number to format.
- * @param {string|boolean} currencyCode Optional currency code to format as amount.
+ * @param {number}           number       The large number to format.
+ * @param {(string|boolean)} currencyCode Optional currency code to format as amount.
  *
  * @return {string} The formatted number.
  */
@@ -139,9 +142,9 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
 
 	if ( 0 === number ) {
 		readableNumber = '0.00';
-		return currencyCode ?
-			new Intl.NumberFormat( navigator.language, { style: 'currency', currency: currencyCode } ).format( number ) :
-			number;
+		return currencyCode
+			? new Intl.NumberFormat( navigator.language, { style: 'currency', currency: currencyCode } ).format( number )
+			: number;
 	}
 
 	// Format as amount if currencyCode is passed.
@@ -223,6 +226,9 @@ export const getTimeInSeconds = ( period ) => {
  * For example, passing 65 returns '1m 5s'.
  *
  * @param {number} seconds The number of seconds.
+ *
+ * @return {string} Human readable string indicating time elapsed.
+ *
  */
 export const prepareSecondsForDisplay = ( seconds ) => {
 	seconds = parseInt( seconds, 10 );
@@ -246,8 +252,8 @@ export const prepareSecondsForDisplay = ( seconds ) => {
 /**
  * Retrieve number of days between 2 dates.
  *
- * @param {Object} dateStart
- * @param {Object} dateEnd
+ * @param {Date} dateStart Start date instance.
+ * @param {Date} dateEnd   End date instance.
  *
  * @return {number} The number of days.
  */
@@ -265,7 +271,7 @@ export const getDaysBetweenDates = ( dateStart, dateEnd ) => {
  * @param {number} previous The previous value.
  * @param {number} current  The current value.
  *
- * @return {number|string} The percent change.
+ * @return {(number|string)} The percent change.
  */
 export const changeToPercent = ( previous, current ) => {
 	// Prevent divide by zero errors.
@@ -283,10 +289,13 @@ export const changeToPercent = ( previous, current ) => {
 };
 
 /**
- * Extract a single column of data for a sparkline from a dataset prepared for google charts.
+ * Extract a single column of data for a sparkline from a dataset prepared for Google charts.
  *
- * @param {Array}  rowData   An array of google charts row data.
+ * @param {Array}  rowData   An array of Google charts row data.
  * @param {number} column The column to extract for the sparkline.
+ *
+ * @return {Array} Extracted column of dataset prepared for Google charts.
+ *
  */
 export const extractForSparkline = ( rowData, column ) => {
 	return map( rowData, ( row, i ) => {
@@ -381,8 +390,10 @@ export const getReAuthURL = ( slug, status, _googlesitekit = global.googlesiteki
  * 			onSettingsPage: true,
  * 		} ) );
  *
- * @param {Component} NewComponent The component to render in place of the filtered component.
+ * @param {WPElement} NewComponent The component to render in place of the filtered component.
  * @param {Object}    newProps     The props to pass down to the new component.
+ *
+ * @return {WPElement} React Component after overriding filtered component with NewComponent.
  */
 export const fillFilterWithComponent = ( NewComponent, newProps ) => {
 	return ( OriginalComponent ) => {
@@ -397,10 +408,10 @@ export const fillFilterWithComponent = ( NewComponent, newProps ) => {
 /**
  * Get Site Kit Admin URL Helper
  *
- * @param { string } page The page slug. Optional. Default is 'googlesitekit-dashboard'.
- * @param { Object } args Optional. Object of argiments to add to the URL.
+ * @param {string} page The page slug. Optional. Default is 'googlesitekit-dashboard'.
+ * @param {Object} args Optional. Object of arguments to add to the URL.
  *
- * @return string
+ * @return {string} Admin URL with appended query params.
  */
 export const getSiteKitAdminURL = ( page, args ) => {
 	const { adminRoot } = global.googlesitekit.admin;
@@ -416,9 +427,9 @@ export const getSiteKitAdminURL = ( page, args ) => {
 /**
  * Verifies whether JSON is valid.
  *
- * @param { string } stringToValidate The string to validate.
+ * @param {string} stringToValidate The string to validate.
  *
- * @return boolean Whether JSON is valid.
+ * @return {boolean} Indicates JSON is valid.
  */
 export const validateJSON = ( stringToValidate ) => {
 	try {
@@ -431,9 +442,9 @@ export const validateJSON = ( stringToValidate ) => {
 /**
  * Verifies Optimize ID
  *
- * @param { string } stringToValidate The string to validate.
+ * @param {string} stringToValidate The string to validate.
  *
- * @return boolean
+ * @return {boolean} Indicates GTM tag is valid.
  */
 export const validateOptimizeID = ( stringToValidate ) => {
 	return ( stringToValidate.match( /^GTM-[a-zA-Z\d]{7}$/ ) );
@@ -445,7 +456,7 @@ export const validateOptimizeID = ( stringToValidate ) => {
  *
  * @param {string} module Module slug.
  *
- * @param {string|null} The tag id if found, otherwise null.
+ * @return {(string|null)} The tag id if found, otherwise null.
  */
 export const getExistingTag = async ( module ) => {
 	const { homeURL, ampMode } = global.googlesitekit.admin;
@@ -477,7 +488,7 @@ export const getExistingTag = async ( module ) => {
  * @param {string} url URL request and parse tag from.
  * @param {string} module The module to parse tag for.
  *
- * @return {string|null} The tag id if found, otherwise null.
+ * @return {(string|null)} The tag id if found, otherwise null.
  */
 export const scrapeTag = async ( url, module ) => {
 	try {
@@ -494,7 +505,7 @@ export const scrapeTag = async ( url, module ) => {
  * @param {string} string The string from where to find the tag.
  * @param {string} module The tag to search for, one of 'adsense' or 'analytics'
  *
- * @return {string|boolean} The tag id if found, otherwise false.
+ * @return {(string|boolean)} The tag id if found, otherwise false.
  */
 export const extractTag = ( string, module ) => {
 	const matchers = {
@@ -519,7 +530,7 @@ export const extractTag = ( string, module ) => {
  * @param {Object}  restApiClient Rest API client from data module, this needed so we don't need to import data module in helper.
  * @param {string}  moduleSlug    Module slug to activate or deactivate.
  * @param {boolean} status        True if module should be activated, false if it should be deactivated.
- * @return {Promise}
+ * @return {Promise} A promise for activating/deactivating a module.
  */
 export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) => {
 	return restApiClient.setModuleActive( moduleSlug, status ).then( ( responseData ) => {
@@ -549,7 +560,7 @@ export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) 
  * @param {Object} settingsState   The changed settings component state to compare with.
  * @param {Object} skipDOM         Skip DOm checks/modifications, used for testing.
  * @param {Object}  _googlesitekit googlesitekit global; can be replaced for testing.
- * @return {void|boolean} True if a module has been toggled.
+ * @return {(void|boolean)} True if a module has been toggled.
  */
 export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, _googlesitekit = global.googlesitekit ) => {
 	const { settings, setupComplete } = _googlesitekit.modules[ moduleSlug ];
@@ -575,7 +586,7 @@ export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settin
 /**
  * Trigger error notification on top of the page.
  *
- * @param {Component} ErrorComponent The error component to render in place.
+ * @param {WPElement} ErrorComponent The error component to render in place.
  * @param {Object}    props          The props to pass down to the error component. Optional.
  */
 export const showErrorNotification = ( ErrorComponent, props = {} ) => {
@@ -592,7 +603,7 @@ export const showErrorNotification = ( ErrorComponent, props = {} ) => {
  *
  * @param {string} str The string to decode.
  *
- * @return {string}
+ * @return {string} Decoded HTML entity.
  */
 export const decodeHtmlEntity = ( str ) => {
 	if ( ! str ) {
@@ -607,17 +618,6 @@ export const decodeHtmlEntity = ( str ) => {
 };
 
 /**
- * Performs some basic cleanup of a string for use as a post slug
- *
- * Emnulates santize_title() from WordPress core.
- *
- * @return {string} Processed string
- */
-export function stringToSlug( string ) {
-	return toLower( deburr( trim( string.replace( /[\s./_]+/g, '-' ), '-' ) ) );
-}
-
-/**
  * Gets the current dateRange string.
  *
  * @return {string} the date range string.
@@ -628,15 +628,17 @@ export function getCurrentDateRange() {
 	 *
 	 * @param String The selected date range. Default 'Last 28 days'.
 	 */
-	return applyFilters( 'googlesitekit.dateRange', __( 'Last 28 days', 'google-site-kit' ) );
-}
+	const dateRange = applyFilters( 'googlesitekit.dateRange', 'last-28-days' );
+	const daysMatch = dateRange.match( /last-(\d+)-days/ );
 
-/**
- * Return the currently selected date range as a string that fits in the sentence:
- * "Data for the last [date range]", eg "Date for the last 28 days".
- */
-export function getDateRangeFrom() {
-	return getCurrentDateRange().replace( 'Last ', '' );
+	if ( daysMatch && daysMatch[ 1 ] ) {
+		return sprintf(
+			_n( '%s day', '%s days', parseInt( daysMatch[ 1 ], 10 ), 'google-site-kit' ),
+			daysMatch[ 1 ]
+		);
+	}
+
+	throw new Error( 'Unrecognized date range slug used in `googlesitekit.dateRange`.' );
 }
 
 /**
@@ -645,7 +647,7 @@ export function getDateRangeFrom() {
  * @return {string} the date range slug.
  */
 export function getCurrentDateRangeSlug() {
-	return stringToSlug( getCurrentDateRange() );
+	return applyFilters( 'googlesitekit.dateRange', 'last-28-days' );
 }
 
 /**
@@ -655,7 +657,9 @@ export function getCurrentDateRangeSlug() {
  * @param {boolean} blockedByParentModule Whether the module is blocked by a parent module.
  * @param {string}  width                 The icon width.
  * @param {string}  height                The icon height.
- * @param {string}  class                 Class string to use for icon.
+ * @param {string}  useClass              Class string to use for icon.
+ *
+ * @return {HTMLImageElement}             <img> tag with module icon.
  */
 export function moduleIcon( module, blockedByParentModule, width = '33', height = '33', useClass = '' ) {
 	if ( ! global.googlesitekit ) {
