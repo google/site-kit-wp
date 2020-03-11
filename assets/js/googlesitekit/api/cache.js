@@ -84,6 +84,7 @@ export const resetDefaultStorageOrder = () => {
  * @since 1.5.0
  * @private
  * @param {string} type Browser storage to test. Should be one of `localStorage` or `sessionStorage`.
+ *
  * @return {boolean} True if the given storage is available, false otherwise.
  */
 export const isStorageAvailable = async ( type ) => {
@@ -125,6 +126,7 @@ export const isStorageAvailable = async ( type ) => {
  *
  * @since 1.5.0
  * @private
+ *
  * @return {Object|null} A storage mechanism (`localStorage` or `sessionStorage`) if available; otherwise returns `null`;
  */
 export const getStorage = async () => {
@@ -162,6 +164,7 @@ export const getStorage = async () => {
  * @since 1.5.0
  * @param {string} key              Name of cache key.
  * @param {number} cacheTimeToLive  The number of seconds before cached data will be considered stale. If the cached data is more than this many seconds old no data will be returned. If not set/set to `null`, any data will be returned.
+ *
  * @return {Promise} A promise returned, containing an object with the cached value (if found) and whether or not there was a cache hit.
  */
 export const getItem = async ( key, cacheTimeToLive = null ) => {
@@ -203,6 +206,7 @@ export const getItem = async ( key, cacheTimeToLive = null ) => {
  * @param {string} key        Name of cache key.
  * @param {*}      value      Value to store in the cache.
  * @param {number} _timestamp Timestamp to set as the cache data save time.
+ *
  * @return {Promise} A promise: resolves to `true` if the value was saved; `false` if not (usually because no storage method was available).
  */
 export const setItem = async ( key, value, _timestamp = undefined ) => {
@@ -242,6 +246,7 @@ export const setItem = async ( key, value, _timestamp = undefined ) => {
  *
  * @since 1.5.0
  * @param {string} key Name of cache key.
+ *
  * @return {Promise} A promise: resolves to `true` if the value was deleted; `false` if not (usually because no storage method was available).
  */
 export const deleteItem = async ( key ) => {
@@ -265,6 +270,7 @@ export const deleteItem = async ( key ) => {
  * Gets all cache keys created by Site Kit.
  *
  * @since 1.5.0
+ *
  * @return {Promise} A promise: resolves to an array of all keys.
  */
 export const getKeys = async () => {
@@ -294,6 +300,7 @@ export const getKeys = async () => {
  * Removes the entire cache created by Site Kit.
  *
  * @since 1.5.0
+ *
  * @return {Promise} A promise: resolves to `true` if the cache was cleared; `false` if there was an error.
  */
 export const clearCache = async () => {

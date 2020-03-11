@@ -28,6 +28,7 @@ const INITIALIZE = 'INITIALIZE';
  *
  * @since 1.5.0
  * @param {Object} actions An object of actions.
+ *
  * @return {Object} The combined action object, extended with an initialize() action.
  */
 export const addInitializeAction = ( actions ) => {
@@ -45,6 +46,7 @@ export const addInitializeAction = ( actions ) => {
  * @since 1.5.0
  * @param {Object} initialState The store's default state (`INITIAL_STATE`).
  * @param {Function} reducer A single reducer to extend with an initialize() handler.
+ *
  * @return {Function} A Redux-style reducer.
  */
 export const addInitializeReducer = ( initialState, reducer ) => {
@@ -75,6 +77,7 @@ export const addInitializeReducer = ( initialState, reducer ) => {
  * @since 1.5.0
  * @private
  * @param {...Object} items A list of arguments, each one should be an object to combine into one.
+ *
  * @return {Object} The combined object.
  */
 export const collect = ( ...items ) => {
@@ -99,6 +102,7 @@ export const collect = ( ...items ) => {
  * to its INITIAL_STATE.
  *
  * @since 1.5.0
+ *
  * @return {Object} An initialize action.
  */
 export const initializeAction = () => {
@@ -113,6 +117,7 @@ export const initializeAction = () => {
  *
  * @since 1.5.0
  * @param {...Object} args A list of objects, each containing their own actions.
+ *
  * @return {Object} The combined object.
  */
 export const collectActions = collect;
@@ -122,6 +127,7 @@ export const collectActions = collect;
  *
  * @since 1.5.0
  * @param {...Object} args A list of objects, each containing their own controls.
+ *
  * @return {Object} The combined object.
  */
 export const collectControls = collect;
@@ -134,6 +140,7 @@ export const collectControls = collect;
  *
  * @since 1.5.0
  * @param {...(Object|Function)} args A list of reducers, each containing their own controls. If the first argument is not a function, it will be used as the combined reducer's `INITIAL_STATE`.
+ *
  * @return {Function} A Redux-style reducer.
  */
 export const collectReducers = ( ...args ) => {
@@ -156,6 +163,7 @@ export const collectReducers = ( ...args ) => {
  *
  * @since 1.5.0
  * @param {...Object} args A list of objects, each containing their own resolvers.
+ *
  * @return {Object} The combined object.
  */
 export const collectResolvers = collect;
@@ -165,6 +173,7 @@ export const collectResolvers = collect;
  *
  * @since 1.5.0
  * @param {...Object} args A list of objects, each containing their own selectors.
+ *
  * @return {Object} The combined object.
  */
 export const collectSelectors = collect;
@@ -173,6 +182,7 @@ export const collectSelectors = collect;
  * Collects all state values.
  *
  * @param {...Object} args A list of objects, each containing their own state values.
+ *
  * @return {Object} The combined object.
  */
 export const collectState = collect;
@@ -183,6 +193,7 @@ export const collectState = collect;
  * @since 1.5.0
  * @private
  * @param {Array} array Any array.
+ *
  * @return {Array} All values in the input array that were duplicated.
  */
 const findDuplicates = ( array ) => {

@@ -43,6 +43,7 @@ export const actions = {
 	 *
 	 * @since 1.5.0
 	 * @private
+	 *
 	 * @return {Object} Redux-style action.
 	 */
 	fetchReset() {
@@ -57,6 +58,7 @@ export const actions = {
 	 *
 	 * @since 1.5.0
 	 * @private
+	 *
 	 * @return {Object} Redux-style action.
 	 */
 	receiveReset() {
@@ -71,6 +73,7 @@ export const actions = {
 	 *
 	 * @since 1.5.0
 	 * @private
+	 *
 	 * @return {Object} Redux-style action.
 	 */
 	receiveResetFailed() {
@@ -88,6 +91,7 @@ export const actions = {
 	 * and always request user confirmation before dispatching.
 	 *
 	 * @since 1.5.0
+	 *
 	 * @return {Object} Redux-style action.
 	 */
 	*reset() {
@@ -143,6 +147,7 @@ export const selectors = {
 	 *
 	 * @since 1.5.0
 	 * @param {Object} state Data store's state.
+	 *
 	 * @return {boolean} `true` if resetting is in-flight; `false` if not.
 	 */
 	isDoingReset: ( state ) => {
