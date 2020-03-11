@@ -63,7 +63,7 @@ export const addInitializeReducer = ( initialState, reducer ) => {
 	return collectReducers( initialState, reducer, initializeReducer );
 };
 
-/*
+/**
  * Collects and combines multiple objects of similar shape.
  *
  * Used to combine objects like actions, selectors, etc. for a data
