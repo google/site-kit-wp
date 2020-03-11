@@ -21,7 +21,7 @@
  */
 import {
 	createNotificationsStore,
-} from '../data/create-notifications-store';
+} from 'assets/js/googlesitekit/data/create-notifications-store';
 
 /**
  * Creates a base store object for a Site Kit module.
