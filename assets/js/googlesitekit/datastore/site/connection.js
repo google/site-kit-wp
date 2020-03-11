@@ -32,11 +32,20 @@ const RECEIVE_CONNECTION = 'RECEIVE_CONNECTION';
 const RECEIVE_CONNECTION_FAILED = 'RECEIVE_CONNECTION_FAILED';
 
 export const INITIAL_STATE = {
-	connection: null,
+	connection: undefined,
 	isFetchingConnection: false,
 };
 
 export const actions = {
+	/**
+	 * Dispatches an action that creates an HTTP request.
+	 *
+	 * Requests the `core/site/connection` endpoint.
+	 *
+	 * @since 1.5.0
+	 * @private
+	 * @return {Object} Redux-style action.
+	 */
 	fetchConnection() {
 		return {
 			payload: {},
@@ -44,6 +53,14 @@ export const actions = {
 		};
 	},
 
+	/**
+	 * Stores connection info received from the REST API.
+	 *
+	 * @since 1.5.0
+	 * @private
+	 * @param {Object} connection Connection info from the API.
+	 * @return {Object} Redux-style action.
+	 */
 	receiveConnection( connection ) {
 		invariant( connection, 'connection is required.' );
 
@@ -53,6 +70,13 @@ export const actions = {
 		};
 	},
 
+	/**
+	 * Dispatches an action signifying the `fetchConnection` side-effect failed.
+	 *
+	 * @since 1.5.0
+	 * @private
+	 * @return {Object} Redux-style action.
+	 */
 	receiveConnectionFailed() {
 		return {
 			payload: {},
@@ -113,6 +137,23 @@ export const resolvers = {
 };
 
 export const selectors = {
+	/**
+	 * Gets the connection info for this site.
+	 *
+	 * Returns `null` if the connection info is not available/loaded.
+	 *
+	 * Returns an object with the shape when successful:
+	 * ```
+	 * {
+	 *   connected: <Boolean>,
+	 *   resettable: <Boolean,
+	 * }
+	 * ```
+	 *
+	 * @since 1.5.0
+	 * @param {Object} state Data store's state.
+	 * @return {Object|null} Site connection info.
+	 */
 	getConnection( state ) {
 		const { connection } = state;
 

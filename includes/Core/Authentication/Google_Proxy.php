@@ -77,7 +77,7 @@ class Google_Proxy {
 	/**
 	 * Gets site fields.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @return array
 	 */
@@ -97,7 +97,7 @@ class Google_Proxy {
 	/**
 	 * Synchronizes site fields with the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 */

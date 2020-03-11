@@ -87,10 +87,10 @@ describe( 'core/site connection', () => {
 				const initialConnection = registry.select( STORE_NAME ).getConnection();
 				// The connection info will be its initial value while the connection
 				// info is fetched.
-				expect( initialConnection ).toEqual( null );
+				expect( initialConnection ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getConnection() !== null
+						registry.select( STORE_NAME ).getConnection() !== undefined
 					),
 				);
 
@@ -130,7 +130,7 @@ describe( 'core/site connection', () => {
 				const connection = registry.select( STORE_NAME ).getConnection();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
-				expect( connection ).toEqual( null );
+				expect( connection ).toEqual( undefined );
 			} );
 		} );
 	} );

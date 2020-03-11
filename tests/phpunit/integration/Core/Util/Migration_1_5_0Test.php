@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Tests\Core\Util\Migration_n_e_x_tTest
+ * Class Google\Site_Kit\Tests\Core\Util\Migration_1_5_0Test
  *
  * @package   Google\Site_Kit\Tests\Core\Util
  * @copyright 2020 Google LLC
@@ -12,12 +12,12 @@ namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Util\Migration_n_e_x_t;
+use Google\Site_Kit\Core\Util\Migration_1_5_0;
 use Google\Site_Kit\Tests\TestCase;
 
-class Migration_n_e_x_tTest extends TestCase /* phpcs:ignore PEAR.NamingConventions.ValidClassName.Invalid */ {
+class Migration_1_5_0Test extends TestCase /* phpcs:ignore PEAR.NamingConventions.ValidClassName.Invalid */ {
 	public function test_register() {
-		$migration = new Migration_n_e_x_t( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$migration = new Migration_1_5_0( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		remove_all_actions( 'admin_init' );
 
 		$migration->register();
@@ -28,7 +28,7 @@ class Migration_n_e_x_tTest extends TestCase /* phpcs:ignore PEAR.NamingConventi
 	public function test_migrate() {
 		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options   = new Options( $context );
-		$migration = new Migration_n_e_x_t( $context, $options );
+		$migration = new Migration_1_5_0( $context, $options );
 
 		// Test clean install.
 		$options->delete( 'googlesitekit_db_version' );
