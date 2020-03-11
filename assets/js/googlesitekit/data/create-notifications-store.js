@@ -26,6 +26,7 @@ import invariant from 'invariant';
  */
 import { get } from 'googlesitekit-api';
 
+// Actions
 const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
 const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION';
 const FETCH_NOTIFICATIONS = 'FETCH_NOTIFICATIONS';
@@ -33,11 +34,12 @@ const RECEIVE_NOTIFICATIONS = 'RECEIVE_NOTIFICATIONS';
 const RECEIVE_NOTIFICATIONS_FAILED = 'RECEIVE_NOTIFICATIONS_FAILED';
 
 /**
- * Creates a store object hat includes actions and selectors for managing notifications.
+ * Creates a store object that includes actions and selectors for managing notifications.
  *
  * The three required parameters hook up the store to the respective REST API endpoint.
  *
  * @since n.e.x.t
+ * @private
  * @param {string} type       The data to access. One of 'core' or 'modules'.
  * @param {string} identifier The data identifier, eg. a module slug like 'search-console'.
  * @param {string} datapoint  The endpoint to request data from, e.g. 'notifications'.

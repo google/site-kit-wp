@@ -23,6 +23,19 @@ import {
 	createNotificationsStore,
 } from '../data/create-notifications-store';
 
+/**
+ * Creates a base store object for a Site Kit module.
+ *
+ * Every module that intends to register its own store must use this function
+ * to get the base store. It can then combine the base module with its own
+ * selectors and actions to individualize the store.
+ *
+ * Each module store must be registered under 'modules/{slug}'.
+ *
+ * @since n.e.x.t
+ * @param {string} slug Slug of the module that the store is for.
+ * @return {Object} The base module store object.
+ */
 export const createModuleStore = ( slug ) => {
 	// For now, a base module store only consists of the notifications functionality.
 	return createNotificationsStore( 'modules', slug, 'notifications' );
