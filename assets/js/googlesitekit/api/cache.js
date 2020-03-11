@@ -41,6 +41,7 @@ let storageOrder = [ ...defaultOrder	];
  *
  * @since 1.5.0
  * @private
+ *
  * @param {*} backend Backend to set for the cache.
  */
 export const setSelectedStorageBackend = ( backend ) => {
@@ -56,6 +57,7 @@ export const setSelectedStorageBackend = ( backend ) => {
  *
  * @since 1.5.0
  * @private
+ *
  * @param {Array} order Ordered array of storage backends to use.
  */
 export const setStorageOrder = ( order ) => {
@@ -83,8 +85,8 @@ export const resetDefaultStorageOrder = () => {
  *
  * @since 1.5.0
  * @private
- * @param {string} type Browser storage to test. Should be one of `localStorage` or `sessionStorage`.
  *
+ * @param {string} type Browser storage to test. Should be one of `localStorage` or `sessionStorage`.
  * @return {boolean} True if the given storage is available, false otherwise.
  */
 export const isStorageAvailable = async ( type ) => {
@@ -162,9 +164,9 @@ export const getStorage = async () => {
  * Get cached data from the persistent storage cache.
  *
  * @since 1.5.0
+ *
  * @param {string} key              Name of cache key.
  * @param {number} cacheTimeToLive  The number of seconds before cached data will be considered stale. If the cached data is more than this many seconds old no data will be returned. If not set/set to `null`, any data will be returned.
- *
  * @return {Promise} A promise returned, containing an object with the cached value (if found) and whether or not there was a cache hit.
  */
 export const getItem = async ( key, cacheTimeToLive = null ) => {
@@ -203,10 +205,10 @@ export const getItem = async ( key, cacheTimeToLive = null ) => {
  * Save data to the relevant local storage mechanism, if available.
  *
  * @since 1.5.0
+ *
  * @param {string} key        Name of cache key.
  * @param {*}      value      Value to store in the cache.
  * @param {number} _timestamp Timestamp to set as the cache data save time.
- *
  * @return {Promise} A promise: resolves to `true` if the value was saved; `false` if not (usually because no storage method was available).
  */
 export const setItem = async ( key, value, _timestamp = undefined ) => {
@@ -245,8 +247,8 @@ export const setItem = async ( key, value, _timestamp = undefined ) => {
  * Remove one piece of cached data from the persistent storage cache, by key.
  *
  * @since 1.5.0
- * @param {string} key Name of cache key.
  *
+ * @param {string} key Name of cache key.
  * @return {Promise} A promise: resolves to `true` if the value was deleted; `false` if not (usually because no storage method was available).
  */
 export const deleteItem = async ( key ) => {

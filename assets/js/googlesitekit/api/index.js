@@ -49,11 +49,11 @@ const KEY_SEPARATOR = '::';
  *
  * @since 1.5.0
  * @private
+ *
  * @param {string} type        The data to access. One of 'core' or 'modules'.
  * @param {string} identifier  The data identifier, eg. a module slug like `'search-console'`.
  * @param {string} datapoint   The endpoint to request data from.
  * @param {Object} queryParams Query params to send with the request.
- *
  * @return {string} The cache key to use for this set of values.
  */
 export const createCacheKey = ( type, identifier, datapoint, queryParams = {} ) => {
@@ -79,6 +79,7 @@ export const createCacheKey = ( type, identifier, datapoint, queryParams = {} ) 
  *
  * @since 1.5.0
  * @private
+ *
  * @param {string}  type                The data to access. One of 'core' or 'modules'.
  * @param {string}  identifier          The data identifier, eg. a module slug like `'search-console'`.
  * @param {string}  datapoint           The endpoint to request data from.
@@ -88,7 +89,6 @@ export const createCacheKey = ( type, identifier, datapoint, queryParams = {} ) 
  * @param {number}  options.method      HTTP method to use for this request.
  * @param {Object}  options.queryParams Query params to send with the request.
  * @param {boolean} options.useCache    Enable or disable caching for this request only. (Caching is only used for `GET` requests.)
- *
  * @return {Promise} Response of HTTP request.
  */
 export const siteKitRequest = async ( type, identifier, datapoint, {
@@ -149,6 +149,7 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
  * are required to use this method.
  *
  * @since 1.5.0
+ *
  * @param {string}  type             The data to access. One of 'core' or 'modules'.
  * @param {string}  identifier       The data identifier, eg. a module slug like `'search-console'`.
  * @param {string}  datapoint        The endpoint to request data from.
@@ -156,7 +157,6 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
  * @param {Object}  options          Extra options for this request.
  * @param {number}  options.cacheTTL The oldest cache data to use, in seconds.
  * @param {boolean} options.useCache Enable or disable caching for this request only.
- *
  * @return {Promise} A promise for the `fetch` request.
  */
 export const get = async (
@@ -184,6 +184,7 @@ export const get = async (
  * are required to use this method.
  *
  * @since 1.5.0
+ *
  * @param {string} type                 The data to access. One of 'core' or 'modules'.
  * @param {string} identifier           The data identifier, eg. a module slug like `'adsense'`.
  * @param {string} datapoint            The endpoint to send data to.
@@ -191,7 +192,6 @@ export const get = async (
  * @param {Object}  options             Extra options for this request.
  * @param {number}  options.method      HTTP method to use for this request.
  * @param {boolean} options.queryParams Query params to send with the request.
- *
  * @return {Promise} A promise for the `fetch` request.
  */
 export const set = async (
@@ -222,8 +222,8 @@ export const set = async (
  * but if caching is turned off it cannot be turned on for a specific request.
  *
  * @since 1.5.0
- * @param {boolean} shouldUseCache Set to `true` to use this cache across requests; set to `false` to disable caching.
  *
+ * @param {boolean} shouldUseCache Set to `true` to use this cache across requests; set to `false` to disable caching.
  * @return {boolean} The new caching state (`true` for on, `false` for off).
  */
 export const setUsingCache = ( shouldUseCache ) => {
@@ -254,6 +254,7 @@ export const usingCache = () => {
  * `invalidateCache( 'modules', 'adsense' )` will invalidate all AdSense data only.
  *
  * @since 1.5.0
+ *
  * @param {string} type       The data type to operate on. One of 'core' or 'modules'.
  * @param {string} identifier The data identifier, eg. a module slug like `'adsense'`.
  * @param {string} datapoint  The endpoint to invalidate cache data for.

@@ -146,8 +146,8 @@ export const selectors = {
 	 * Checks if reset action is in-process.
 	 *
 	 * @since 1.5.0
-	 * @param {Object} state Data store's state.
 	 *
+	 * @param {Object} state Data store's state.
 	 * @return {boolean} `true` if resetting is in-flight; `false` if not.
 	 */
 	isDoingReset: ( state ) => {

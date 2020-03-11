@@ -59,8 +59,8 @@ export const actions = {
 	 *
 	 * @since 1.5.0
 	 * @private
-	 * @param {Object} connection Connection info from the API.
 	 *
+	 * @param {Object} connection Connection info from the API.
 	 * @return {Object} Redux-style action.
 	 */
 	receiveConnection( connection ) {
@@ -154,8 +154,8 @@ export const selectors = {
 	 * ```
 	 *
 	 * @since 1.5.0
-	 * @param {Object} state Data store's state.
 	 *
+	 * @param {Object} state Data store's state.
 	 * @return {Object|null} Site connection info.
 	 */
 	getConnection( state ) {
