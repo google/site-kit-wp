@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { get } from 'googlesitekit-api';
+import API from 'googlesitekit-api';
 
 // Actions
 const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
@@ -61,6 +61,8 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 		 * @return {Object} Redux-style action.
 		 */
 		addNotification( notification ) {
+			invariant( notification, 'notification is required.' );
+
 			return {
 				payload: { notification },
 				type: ADD_NOTIFICATION,
@@ -75,6 +77,8 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 		 * @return {Object} Redux-style action.
 		 */
 		removeNotification( id ) {
+			invariant( id, 'id is required.' );
+
 			return {
 				payload: { id },
 				type: REMOVE_NOTIFICATION,
@@ -129,7 +133,7 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 
 	const controls = {
 		[ FETCH_NOTIFICATIONS ]: () => {
-			return get( type, identifier, datapoint );
+			return API.get( type, identifier, datapoint );
 		},
 	};
 
