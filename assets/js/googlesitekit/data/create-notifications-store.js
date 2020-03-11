@@ -233,8 +233,12 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 		getNotifications( state ) {
 			const { serverNotifications, clientNotifications } = state;
 
+			if ( 'undefined' === typeof serverNotifications ) {
+				return serverNotifications;
+			}
+
 			return Object.values( {
-				...( serverNotifications || {} ),
+				...serverNotifications,
 				...clientNotifications,
 			} );
 		},
