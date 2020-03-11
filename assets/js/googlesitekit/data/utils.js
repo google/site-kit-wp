@@ -74,7 +74,7 @@ export const addInitializeReducer = ( initialState, reducer ) => {
  *
  * @since 1.5.0
  * @private
- * @param {Object} ...items A list of arguments, each one should be an object to combine into one.
+ * @param {...Object} items A list of arguments, each one should be an object to combine into one.
  * @return {Object} The combined object.
  */
 export const collect = ( ...items ) => {
@@ -112,7 +112,7 @@ export const initializeAction = () => {
  * Collects all actions.
  *
  * @since 1.5.0
- * @param {Object} ...args A list of objects, each containing their own actions.
+ * @param {...Object} args A list of objects, each containing their own actions.
  * @return {Object} The combined object.
  */
 export const collectActions = collect;
@@ -121,7 +121,7 @@ export const collectActions = collect;
  * Collects all controls.
  *
  * @since 1.5.0
- * @param {Object} ...args A list of objects, each containing their own controls.
+ * @param {...Object} args A list of objects, each containing their own controls.
  * @return {Object} The combined object.
  */
 export const collectControls = collect;
@@ -155,7 +155,7 @@ export const collectReducers = ( ...args ) => {
  * Collects all resolvers.
  *
  * @since 1.5.0
- * @param {Object} ...args A list of objects, each containing their own resolvers.
+ * @param {...Object} args A list of objects, each containing their own resolvers.
  * @return {Object} The combined object.
  */
 export const collectResolvers = collect;
@@ -164,7 +164,7 @@ export const collectResolvers = collect;
  * Collects all selectors.
  *
  * @since 1.5.0
- * @param {Object} ...args A list of objects, each containing their own selectors.
+ * @param {...Object} args A list of objects, each containing their own selectors.
  * @return {Object} The combined object.
  */
 export const collectSelectors = collect;
@@ -172,7 +172,7 @@ export const collectSelectors = collect;
 /**
  * Collects all state values.
  *
- * @param {Object} ...args A list of objects, each containing their own state values.
+ * @param {...Object} args A list of objects, each containing their own state values.
  * @return {Object} The combined object.
  */
 export const collectState = collect;
