@@ -32,7 +32,17 @@ const FETCH_NOTIFICATIONS = 'FETCH_NOTIFICATIONS';
 const RECEIVE_NOTIFICATIONS = 'RECEIVE_NOTIFICATIONS';
 const RECEIVE_NOTIFICATIONS_FAILED = 'RECEIVE_NOTIFICATIONS_FAILED';
 
-// This should remain private for now, hence not be exported on Data.
+/**
+ * Creates a store object hat includes actions and selectors for managing notifications.
+ *
+ * The three required parameters hook up the store to the respective REST API endpoint.
+ *
+ * @since n.e.x.t
+ * @param {string} type       The data to access. One of 'core' or 'modules'.
+ * @param {string} identifier The data identifier, eg. a module slug like 'search-console'.
+ * @param {string} datapoint  The endpoint to request data from, e.g. 'notifications'.
+ * @return {Object} The notifications store object.
+ */
 export const createNotificationsStore = ( type, identifier, datapoint ) => {
 	const INITIAL_STATE = {
 		serverNotifications: undefined,
@@ -41,6 +51,13 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 	};
 
 	const actions = {
+		/**
+		 * Adds a notification to the store.
+		 *
+		 * @since n.e.x.t
+		 * @param {Object} notification Notification object to add.
+		 * @return {Object} Redux-style action.
+		 */
 		addNotification( notification ) {
 			return {
 				payload: { notification },
@@ -48,6 +65,13 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 			};
 		},
 
+		/**
+		 * Removes a notification from the store.
+		 *
+		 * @since n.e.x.t
+		 * @param {string} id ID of the notification to remove.
+		 * @return {Object} Redux-style action.
+		 */
 		removeNotification( id ) {
 			return {
 				payload: { id },
@@ -55,6 +79,13 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 			};
 		},
 
+		/**
+		 * Dispatches an action that creates an HTTP request to the notifications endpoint.
+		 *
+		 * @since n.e.x.t
+		 * @private
+		 * @return {Object} Redux-style action.
+		 */
 		fetchNotifications() {
 			return {
 				payload: {},
@@ -62,6 +93,14 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 			};
 		},
 
+		/**
+		 * Stores notifications received from the REST API.
+		 *
+		 * @since n.e.x.t
+		 * @private
+		 * @param {Array} notifications Notifications from the API.
+		 * @return {Object} Redux-style action.
+		 */
 		receiveNotifications( notifications ) {
 			invariant( notifications, 'notifications is required.' );
 
@@ -71,9 +110,14 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 			};
 		},
 
-		receiveNotificationsFailed( error ) {
-			invariant( error, 'error is required.' );
-
+		/**
+		 * Dispatches an action signifying the `fetchNotifications` side-effect failed.
+		 *
+		 * @since n.e.x.t
+		 * @private
+		 * @return {Object} Redux-style action.
+		 */
+		receiveNotificationsFailed() {
 			return {
 				payload: {},
 				type: RECEIVE_NOTIFICATIONS_FAILED,
@@ -157,12 +201,21 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 				const notifications = yield actions.fetchNotifications();
 				return actions.receiveNotifications( notifications );
 			} catch ( err ) {
-				return actions.receiveNotificationsFailed( err );
+				return actions.receiveNotificationsFailed();
 			}
 		},
 	};
 
 	const selectors = {
+		/**
+		 * Gets the current notifications.
+		 *
+		 * Returns `undefined` if notifications are not available/loaded.
+		 *
+		 * @since n.e.x.t
+		 * @param {Object} state Data store's state.
+		 * @return {Array|undefined} Current list of notifications.
+		 */
 		getNotifications( state ) {
 			const { serverNotifications, clientNotifications } = state;
 
