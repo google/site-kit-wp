@@ -35,7 +35,7 @@ const defaultOrder = [ 'localStorage', 'sessionStorage' ];
 let storageBackend;
 let storageOrder = [ ...defaultOrder	];
 /**
- * Override the storage backend.
+ * Overrides the storage backend.
  *
  * Largely used for tests. Should not be used directly.
  *
@@ -48,7 +48,7 @@ export const setSelectedStorageBackend = ( backend ) => {
 };
 
 /**
- * Override the priority of storage mechanisms.
+ * Overrides the priority of storage mechanisms.
  *
  * Largely used for tests. Implicitly resets the selected storage backend,
  * causing `_getStorage` to re-run its checks for the best available
@@ -64,7 +64,7 @@ export const setStorageOrder = ( order ) => {
 };
 
 /**
- * Reset the storage mechanism order.
+ * Resets the storage mechanism order.
  *
  * Largely used for tests. Implicitly resets the selected storage backend,
  * causing `_getStorage` to re-run its checks for the best available
@@ -155,7 +155,7 @@ export const getStorage = async () => {
 };
 
 /**
- * Get cached data.
+ * Gets cached data.
  *
  * Get cached data from the persistent storage cache.
  *
@@ -195,7 +195,7 @@ export const getItem = async ( key, cacheTimeToLive = null ) => {
 };
 
 /**
- * Set cached data using a key.
+ * Sets cached data using a key.
  *
  * Save data to the relevant local storage mechanism, if available.
  *
@@ -236,7 +236,7 @@ export const setItem = async ( key, value, _timestamp = undefined ) => {
 };
 
 /**
- * Remove cached data by key.
+ * Removes cached data by key.
  *
  * Remove one piece of cached data from the persistent storage cache, by key.
  *
@@ -262,7 +262,7 @@ export const deleteItem = async ( key ) => {
 };
 
 /**
- * Get all cache keys created by Site Kit.
+ * Gets all cache keys created by Site Kit.
  *
  * @since 1.5.0
  * @return {Promise} A promise: resolves to an array of all keys.
@@ -291,7 +291,7 @@ export const getKeys = async () => {
 };
 
 /**
- * Remove the entire cache created by Site Kit.
+ * Removes the entire cache created by Site Kit.
  *
  * @since 1.5.0
  * @return {Promise} A promise: resolves to `true` if the cache was cleared; `false` if there was an error.
