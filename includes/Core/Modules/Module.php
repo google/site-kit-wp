@@ -712,26 +712,27 @@ abstract class Module {
 			$code = 'unknown';
 		}
 
-		$reason = '';
+		$message = $e->getMessage();
+		$status  = is_numeric( $code ) ? (int) $code : 500;
+		$reason  = '';
 
 		if ( $e instanceof Google_Service_Exception ) {
-			$message = $e->getErrors();
-			if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-				$message = $message[0]['message'];
-				$errors  = json_decode( $e->getMessage() );
-				if ( isset( $errors->error->errors[0]->reason ) ) {
-					$reason = $errors->error->errors[0]->reason;
+			$errors = $e->getErrors();
+			if ( isset( $errors[0] ) ) {
+				if ( isset( $errors[0]['message'] ) ) {
+					$message = $errors[0]['message'];
+				}
+				if ( isset( $errors[0]['reason'] ) ) {
+					$reason = $errors[0]['reason'];
 				}
 			}
-		} else {
-			$message = $e->getMessage();
 		}
 
 		return new WP_Error(
 			$code,
 			$message,
 			array(
-				'status' => 500,
+				'status' => $status,
 				'reason' => $reason,
 			)
 		);
