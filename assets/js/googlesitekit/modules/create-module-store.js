@@ -33,6 +33,7 @@ import {
  * Each module store must be registered under 'modules/{slug}'.
  *
  * @since n.e.x.t
+ *
  * @param {string} slug Slug of the module that the store is for.
  * @return {Object} The base module store object.
  */

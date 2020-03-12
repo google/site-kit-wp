@@ -57,6 +57,7 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 		 * Adds a notification to the store.
 		 *
 		 * @since n.e.x.t
+		 *
 		 * @param {Object} notification Notification object to add.
 		 * @return {Object} Redux-style action.
 		 */
@@ -73,6 +74,7 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 		 * Removes a notification from the store.
 		 *
 		 * @since n.e.x.t
+		 *
 		 * @param {string} id ID of the notification to remove.
 		 * @return {Object} Redux-style action.
 		 */
@@ -90,6 +92,7 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 		 *
 		 * @since n.e.x.t
 		 * @private
+		 *
 		 * @return {Object} Redux-style action.
 		 */
 		fetchNotifications() {
@@ -104,6 +107,7 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 		 *
 		 * @since n.e.x.t
 		 * @private
+		 *
 		 * @param {Array} notifications Notifications from the API.
 		 * @return {Object} Redux-style action.
 		 */
@@ -121,6 +125,7 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 		 *
 		 * @since n.e.x.t
 		 * @private
+		 *
 		 * @return {Object} Redux-style action.
 		 */
 		receiveNotificationsFailed() {
@@ -231,6 +236,7 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 		 * Returns `undefined` if notifications are not available/loaded.
 		 *
 		 * @since n.e.x.t
+		 *
 		 * @param {Object} state Data store's state.
 		 * @return {Array|undefined} Current list of notifications.
 		 */
