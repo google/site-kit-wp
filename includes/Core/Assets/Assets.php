@@ -395,7 +395,7 @@ final class Assets {
 				'googlesitekit-api',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-api.js',
-					'dependencies' => $dependencies,
+					'dependencies' => array( 'googlesitekit-apifetch-data' ),
 				)
 			),
 			new Script(
