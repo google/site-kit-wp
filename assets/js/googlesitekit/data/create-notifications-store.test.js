@@ -77,9 +77,9 @@ describe( 'createNotificationsStore store', () => {
 				} ).toThrow( 'notification is required.' );
 			} );
 
-			it( 'adds the notification to client notifications', async () => {
+			it( 'adds the notification to client notifications', () => {
 				const notification = { id: 'added_notification' };
-				await registry.dispatch( STORE_NAME ).addNotification( notification );
+				registry.dispatch( STORE_NAME ).addNotification( notification );
 
 				const state = store.getState();
 
@@ -88,6 +88,7 @@ describe( 'createNotificationsStore store', () => {
 				} );
 			} );
 		} );
+
 		describe( 'removeNotification', () => {
 			it( 'requires the id param', () => {
 				expect( () => {
@@ -95,11 +96,11 @@ describe( 'createNotificationsStore store', () => {
 				} ).toThrow( 'id is required.' );
 			} );
 
-			it( 'removes the notification from client notifications', async () => {
+			it( 'removes the notification from client notifications', () => {
 				const notification = { id: 'notification_to_remove' };
-				await registry.dispatch( STORE_NAME ).addNotification( notification );
+				registry.dispatch( STORE_NAME ).addNotification( notification );
 
-				await registry.dispatch( STORE_NAME ).removeNotification( notification.id );
+				registry.dispatch( STORE_NAME ).removeNotification( notification.id );
 
 				const state = store.getState();
 
@@ -122,9 +123,9 @@ describe( 'createNotificationsStore store', () => {
 				} ).toThrow( 'notifications is required.' );
 			} );
 
-			it( 'receives and sets notifications', async () => {
+			it( 'receives and sets notifications', () => {
 				const notifications = [ { id: 'test_notification' } ];
-				await registry.dispatch( STORE_NAME ).receiveNotifications( notifications );
+				registry.dispatch( STORE_NAME ).receiveNotifications( notifications );
 
 				const state = store.getState();
 
