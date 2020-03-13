@@ -35,6 +35,7 @@ import {
 	isDataZeroForReporting,
 	getAnalyticsErrorMessageFromData,
 	overviewReportDataDefaults,
+	userReportDataDefaults,
 } from '../util';
 import PreviewBlock from 'GoogleComponents/preview-block';
 import PropTypes from 'prop-types';
@@ -46,21 +47,51 @@ import { __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 
 class AnalyticsDashboardWidgetOverview extends Component {
-	render() {
-		const { data, selectedStats, handleStatSelection } = this.props;
+	constructor( props ) {
+		super( props );
+		this.state = {
+			report: false,
+			directTotalUsers: false,
+		};
+	}
+	// When additional data is returned, componentDidUpdate will fire.
+	componentDidUpdate() {
+		this.processCallbackData();
+	}
 
-		if ( ! data || ! data.length ) {
+	componentDidMount() {
+		this.processCallbackData();
+	}
+
+	/**
+	 * Process callback data received from the API.
+	 */
+	processCallbackData() {
+		const {
+			data,
+			requestDataToState,
+		} = this.props;
+
+		if ( data && ! data.error && 'function' === typeof requestDataToState ) {
+			this.setState( requestDataToState );
+		}
+	}
+
+	render() {
+		const { selectedStats, handleStatSelection } = this.props;
+		const { report, directTotalUsers } = this.state;
+
+		if ( ! report || ! report.length || ! directTotalUsers ) {
 			return null;
 		}
 
-		const overviewData = calculateOverviewData( data );
+		const overviewData = calculateOverviewData( report );
 
 		if ( ! overviewData ) {
 			return null;
 		}
 
 		const {
-			totalUsers,
 			totalSessions,
 			averageBounceRate,
 			averageSessionDuration,
@@ -70,11 +101,13 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			averageSessionDurationChange,
 		} = overviewData;
 
+		const directTotalUsersData = directTotalUsers && directTotalUsers[ 0 ].data.totals[ 0 ].values[ 0 ];
+
 		const dataBlocks = [
 			{
 				className: 'googlesitekit-data-block--users googlesitekit-data-block--button-1',
 				title: __( 'Users', 'google-site-kit' ),
-				datapoint: readableLargeNumber( totalUsers ),
+				datapoint: readableLargeNumber( directTotalUsersData ),
 				change: totalUsersChange,
 				changeDataUnit: '%',
 				context: 'button',
@@ -167,6 +200,29 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
+			toState( state, { data } ) {
+				if ( ! state.report ) {
+					return {
+						report: data,
+					};
+				}
+			},
+		},
+		{
+			type: TYPE_MODULES,
+			identifier: 'analytics',
+			datapoint: 'report',
+			data: userReportDataDefaults,
+			priority: 1,
+			maxAge: getTimeInSeconds( 'day' ),
+			context: [ 'Single' ],
+			toState( state, { data } ) {
+				if ( ! state.directTotalUsers ) {
+					return {
+						directTotalUsers: data,
+					};
+				}
+			},
 		},
 	],
 	<PreviewBlock width="100%" height="190px" padding />,

@@ -426,6 +426,20 @@ export const overviewReportDataDefaults = {
 };
 
 /**
+ * Default data object for making Analytics user report requests.
+ *
+ * @type {Object}
+ */
+export const userReportDataDefaults = {
+	metrics: [
+		{
+			expression: 'ga:users',
+			alias: 'Total Users',
+		},
+	],
+};
+
+/**
  * Default data object for making Analytics traffic sources report requests.
  *
  * @type {Object}
