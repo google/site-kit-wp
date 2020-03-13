@@ -43,14 +43,26 @@ const RECEIVE_SAVE_SETTINGS_FAILED = 'RECEIVE_SAVE_SETTINGS_FAILED';
  *
  * @since n.e.x.t
  * @private
- * @param {string} type        The data to access. One of 'core' or 'modules'.
- * @param {string} identifier  The data identifier, eg. a module slug like 'search-console'.
- * @param {string} datapoint   The endpoint to request data from, e.g. 'settings'.
- * @param {Array}  subSettings List of the slugs that are part of the settings object handled
- *                             by the respective API endpoint.
- * @return {Object} The settings store object.
+ * @param {string} type                 The data to access. One of 'core' or 'modules'.
+ * @param {string} identifier           The data identifier, eg. a module slug like 'search-console'.
+ * @param {string} datapoint            The endpoint to request data from, e.g. 'settings'.
+ * @param {Object} options              Optional. Options to consider for the store.
+ * @param {number} options.storeName    Store name to use. Default is '{type}/{identifier}'.
+ * @param {Array}  options.settingSlugs List of the slugs that are part of the settings object
+ *                                      handled by the respective API endpoint.
+ * @return {Object} The settings store object, with additional `STORE_NAME` and
+ *                  `INITIAL_STATE` properties.
  */
-export const createSettingsStore = ( type, identifier, datapoint, subSettings ) => {
+export const createSettingsStore = ( type, identifier, datapoint, {
+	storeName = undefined,
+	settingSlugs = [],
+} = {} ) => {
+	invariant( type, 'type is required.' );
+	invariant( identifier, 'identifier is required.' );
+	invariant( datapoint, 'datapoint is required.' );
+
+	const STORE_NAME = storeName || `${ type }/${ identifier }`;
+
 	const INITIAL_STATE = {
 		settings: undefined,
 		savedSettings: undefined,
@@ -59,7 +71,7 @@ export const createSettingsStore = ( type, identifier, datapoint, subSettings ) 
 	};
 
 	// This will be populated further down with sub-setting-specific reducer functions.
-	const subSettingReducers = {};
+	const settingReducers = {};
 
 	const actions = {
 		/**
@@ -280,8 +292,8 @@ export const createSettingsStore = ( type, identifier, datapoint, subSettings ) 
 
 			default: {
 				// Check if this action is for a sub-setting reducer.
-				if ( 'undefined' !== typeof subSettingReducers[ action.type ] ) {
-					return subSettingReducers[ action.type ]( state, action );
+				if ( 'undefined' !== typeof settingReducers[ action.type ] ) {
+					return settingReducers[ action.type ]( state, action );
 				}
 
 				return { ...state };
@@ -343,45 +355,46 @@ export const createSettingsStore = ( type, identifier, datapoint, subSettings ) 
 	};
 
 	// Define individual actions, selectors and related for sub-settings.
-	subSettings.forEach( ( setting ) => {
-		const pascalCaseSetting = setting.charAt( 0 ).toUpperCase() + setting.slice( 1 );
-		const constantSetting = setting.replace( /([a-z0-9]{1})([A-Z]{1})/g, '$1_$2' ).toUpperCase();
+	settingSlugs.forEach( ( slug ) => {
+		const pascalCaseSlug = slug.charAt( 0 ).toUpperCase() + slug.slice( 1 );
+		const constantSlug = slug.replace( /([a-z0-9]{1})([A-Z]{1})/g, '$1_$2' ).toUpperCase();
 
-		actions[ `set${ pascalCaseSetting }` ] = ( value ) => {
+		actions[ `set${ pascalCaseSlug }` ] = ( value ) => {
 			invariant( value, 'value is required.' );
 
 			return {
 				payload: { value },
-				type: `SET_${ constantSetting }`,
+				type: `SET_${ constantSlug }`,
 			};
 		};
 
-		subSettingReducers[ `SET_${ constantSetting }` ] = ( state, action ) => {
+		settingReducers[ `SET_${ constantSlug }` ] = ( state, action ) => {
 			const { value } = action.payload;
 
 			return {
 				...state,
 				settings: {
 					...( state.settings || {} ),
-					[ setting ]: value,
+					[ slug ]: value,
 				},
 			};
 		};
 
-		resolvers[ `get${ pascalCaseSetting }` ] = resolvers.getSettings;
+		resolvers[ `get${ pascalCaseSlug }` ] = resolvers.getSettings;
 
-		selectors[ `get${ pascalCaseSetting }` ] = ( state ) => {
+		selectors[ `get${ pascalCaseSlug }` ] = ( state ) => {
 			const { settings } = state;
 
 			if ( 'undefined' === typeof settings ) {
 				return settings;
 			}
 
-			return settings[ setting ];
+			return settings[ slug ];
 		};
 	} );
 
 	return {
+		STORE_NAME,
 		INITIAL_STATE,
 		actions,
 		controls,
