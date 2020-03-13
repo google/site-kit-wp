@@ -395,7 +395,7 @@ final class Assets {
 				'googlesitekit-api',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-api.js',
-					'dependencies' => $dependencies,
+					'dependencies' => array( 'googlesitekit-apifetch-data' ),
 				)
 			),
 			new Script(
@@ -409,7 +409,14 @@ final class Assets {
 				'googlesitekit-datastore-site',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-datastore-site.js',
-					'dependencies' => array( 'googlesitekit-data' ),
+					'dependencies' => array( 'googlesitekit-api', 'googlesitekit-data' ),
+				)
+			),
+			new Script(
+				'googlesitekit-modules',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-modules.js',
+					'dependencies' => array( 'googlesitekit-api', 'googlesitekit-data' ),
 				)
 			),
 			// End JSR Assets.
