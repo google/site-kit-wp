@@ -49,6 +49,7 @@ const KEY_SEPARATOR = '::';
  *
  * @since 1.5.0
  * @private
+ *
  * @param {string} type        The data to access. One of 'core' or 'modules'.
  * @param {string} identifier  The data identifier, eg. a module slug like `'search-console'`.
  * @param {string} datapoint   The endpoint to request data from.
@@ -78,6 +79,7 @@ export const createCacheKey = ( type, identifier, datapoint, queryParams = {} ) 
  *
  * @since 1.5.0
  * @private
+ *
  * @param {string}  type                The data to access. One of 'core' or 'modules'.
  * @param {string}  identifier          The data identifier, eg. a module slug like `'search-console'`.
  * @param {string}  datapoint           The endpoint to request data from.
@@ -147,6 +149,7 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
  * are required to use this method.
  *
  * @since 1.5.0
+ *
  * @param {string}  type             The data to access. One of 'core' or 'modules'.
  * @param {string}  identifier       The data identifier, eg. a module slug like `'search-console'`.
  * @param {string}  datapoint        The endpoint to request data from.
@@ -181,6 +184,7 @@ export const get = async (
  * are required to use this method.
  *
  * @since 1.5.0
+ *
  * @param {string} type                 The data to access. One of 'core' or 'modules'.
  * @param {string} identifier           The data identifier, eg. a module slug like `'adsense'`.
  * @param {string} datapoint            The endpoint to send data to.
@@ -218,6 +222,7 @@ export const set = async (
  * but if caching is turned off it cannot be turned on for a specific request.
  *
  * @since 1.5.0
+ *
  * @param {boolean} shouldUseCache Set to `true` to use this cache across requests; set to `false` to disable caching.
  * @return {boolean} The new caching state (`true` for on, `false` for off).
  */
@@ -229,6 +234,8 @@ export const setUsingCache = ( shouldUseCache ) => {
 
 /**
  * Get current caching state for the API.
+ *
+ * @since 1.5.0
  *
  * @return {boolean} The current caching state (`true` for on, `false` for off).
  */
@@ -247,6 +254,7 @@ export const usingCache = () => {
  * `invalidateCache( 'modules', 'adsense' )` will invalidate all AdSense data only.
  *
  * @since 1.5.0
+ *
  * @param {string} type       The data type to operate on. One of 'core' or 'modules'.
  * @param {string} identifier The data identifier, eg. a module slug like `'adsense'`.
  * @param {string} datapoint  The endpoint to invalidate cache data for.
