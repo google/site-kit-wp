@@ -136,8 +136,8 @@ export const createSettingsStore = ( type, identifier, datapoint, subSettings ) 
 		 */
 		*saveSettings() {
 			try {
-				const values = yield actions.fetchSaveSettings();
-				return actions.receiveSaveSettings( values );
+				const savedValues = yield actions.fetchSaveSettings();
+				return actions.receiveSaveSettings( savedValues );
 			} catch ( err ) {
 				// TODO: Implement an error handler store or some kind of centralized
 				// place for error dispatch...
@@ -198,8 +198,9 @@ export const createSettingsStore = ( type, identifier, datapoint, subSettings ) 
 		[ FETCH_SETTINGS ]: () => {
 			return API.get( type, identifier, datapoint );
 		},
-		[ FETCH_SAVE_SETTINGS ]: () => {
-			return API.set( type, identifier, datapoint );
+		// TODO: How do we get the current values to be available here?
+		[ FETCH_SAVE_SETTINGS ]: ( values ) => {
+			return API.set( type, identifier, datapoint, values );
 		},
 	};
 
