@@ -44,7 +44,7 @@ describe( 'createNotificationsStore store', () => {
 	let apiFetchSpy;
 	let dispatch;
 	let registry;
-	let selectors;
+	let select;
 	let storeDefinition;
 	let store;
 
@@ -59,7 +59,7 @@ describe( 'createNotificationsStore store', () => {
 		registry.registerStore( STORE_NAME, storeDefinition );
 		dispatch = registry.dispatch( STORE_NAME );
 		store = registry.stores[ STORE_NAME ].store;
-		selectors = registry.select( STORE_NAME );
+		select = registry.select( STORE_NAME );
 
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
@@ -104,7 +104,7 @@ describe( 'createNotificationsStore store', () => {
 				dispatch.removeNotification( 'not_a_real_id' );
 
 				muteConsole( 'error' ); //Ignore the API fetch error here.
-				expect( selectors.getNotifications() ).toEqual( undefined );
+				expect( select.getNotifications() ).toEqual( undefined );
 			} );
 
 			it( 'does not fail when no matching notification is found', () => {
@@ -114,7 +114,7 @@ describe( 'createNotificationsStore store', () => {
 				dispatch.removeNotification( 'not_a_real_id' );
 
 				muteConsole( 'error' ); //Ignore the API fetch error here.
-				expect( selectors.getNotifications() ).toEqual( [ notification ] );
+				expect( select.getNotifications() ).toEqual( [ notification ] );
 			} );
 
 			it( 'removes the notification from client notifications', () => {
@@ -138,7 +138,7 @@ describe( 'createNotificationsStore store', () => {
 
 				expect( state.clientNotifications ).toMatchObject( {} );
 				muteConsole( 'error' ); // Mute API fetch failure here.
-				expect( selectors.getNotifications() ).toMatchObject( {} );
+				expect( select.getNotifications() ).toMatchObject( {} );
 			} );
 
 			it( 'does not remove server notifications and emits a warning if they are sent to removeNotification', async () => {
@@ -154,7 +154,7 @@ describe( 'createNotificationsStore store', () => {
 
 				const clientNotification = { id: 'client_notification' };
 
-				selectors.getNotifications();
+				select.getNotifications();
 				dispatch.addNotification( clientNotification );
 
 				await subscribeUntil( registry,
@@ -168,7 +168,7 @@ describe( 'createNotificationsStore store', () => {
 
 				expect( global.console.warn ).toHaveBeenCalledWith( `Cannot remove server-side notification with ID "${ serverNotifications[ 0 ].id }"; this may be changed in a future release.` );
 				expect(
-					selectors.getNotifications()
+					select.getNotifications()
 				).toEqual( expect.arrayContaining( serverNotifications ) );
 			} );
 		} );
@@ -214,21 +214,21 @@ describe( 'createNotificationsStore store', () => {
 						{ status: 200 }
 					);
 
-				const initialNotifications = selectors.getNotifications();
+				const initialNotifications = select.getNotifications();
 				// Notifications will be their initial value while being fetched.
 				expect( initialNotifications ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						selectors.getNotifications() !== undefined
+						select.getNotifications() !== undefined
 					),
 				);
 
-				const notifications = selectors.getNotifications();
+				const notifications = select.getNotifications();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( notifications ).toEqual( response );
 
-				const notificationsSelect = selectors.getNotifications();
+				const notificationsSelect = select.getNotifications();
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( notificationsSelect ).toEqual( notifications );
 			} );
@@ -243,7 +243,7 @@ describe( 'createNotificationsStore store', () => {
 				// returned when server notifications haven't loaded yet, but client
 				// notifications have been dispatched.
 				muteConsole( 'error' ); // Ignore the API fetch failure here.
-				expect( selectors.getNotifications() ).toEqual( [ notification ] );
+				expect( select.getNotifications() ).toEqual( [ notification ] );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -262,14 +262,14 @@ describe( 'createNotificationsStore store', () => {
 					);
 
 				muteConsole( 'error' );
-				selectors.getNotifications();
+				select.getNotifications();
 				await subscribeUntil( registry,
 					// TODO: We may want a selector for this, but for now this is fine
 					// because it's internal-only.
 					() => store.getState().isFetchingNotifications === false,
 				);
 
-				const notifications = selectors.getNotifications();
+				const notifications = select.getNotifications();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( notifications ).toEqual( undefined );
