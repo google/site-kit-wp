@@ -52,7 +52,7 @@ const RECEIVE_SAVE_SETTINGS_FAILED = 'RECEIVE_SAVE_SETTINGS_FAILED';
  */
 export const createSettingsStore = ( type, identifier, datapoint, subSettings ) => {
 	const INITIAL_STATE = {
-		settings: {},
+		settings: undefined,
 		savedSettings: undefined,
 		isFetchingSettings: false,
 		isFetchingSaveSettings: false,
@@ -211,7 +211,7 @@ export const createSettingsStore = ( type, identifier, datapoint, subSettings ) 
 				return {
 					...state,
 					settings: {
-						...state.settings,
+						...( state.settings || {} ),
 						...values,
 					},
 				};
@@ -235,6 +235,8 @@ export const createSettingsStore = ( type, identifier, datapoint, subSettings ) 
 					},
 					settings: {
 						...values,
+						// In case settings were already changed, they should take precedence.
+						...( state.settings || {} ),
 					},
 				};
 			}
@@ -359,7 +361,7 @@ export const createSettingsStore = ( type, identifier, datapoint, subSettings ) 
 			return {
 				...state,
 				settings: {
-					...state.settings,
+					...( state.settings || {} ),
 					[ setting ]: value,
 				},
 			};
