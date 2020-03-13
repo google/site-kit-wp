@@ -29,7 +29,7 @@
 	}
 }
 
-.no-js {
+.no-js:not([amp-version]) {
 
 	[id^="js-googlesitekit-"] {
 		display: none;
