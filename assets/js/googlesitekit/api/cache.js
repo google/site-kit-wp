@@ -35,12 +35,13 @@ const defaultOrder = [ 'localStorage', 'sessionStorage' ];
 let storageBackend;
 let storageOrder = [ ...defaultOrder	];
 /**
- * Override the storage backend.
+ * Overrides the storage backend.
  *
  * Largely used for tests. Should not be used directly.
  *
  * @since 1.5.0
  * @private
+ *
  * @param {*} backend Backend to set for the cache.
  */
 export const setSelectedStorageBackend = ( backend ) => {
@@ -48,7 +49,7 @@ export const setSelectedStorageBackend = ( backend ) => {
 };
 
 /**
- * Override the priority of storage mechanisms.
+ * Overrides the priority of storage mechanisms.
  *
  * Largely used for tests. Implicitly resets the selected storage backend,
  * causing `_getStorage` to re-run its checks for the best available
@@ -56,6 +57,7 @@ export const setSelectedStorageBackend = ( backend ) => {
  *
  * @since 1.5.0
  * @private
+ *
  * @param {Array} order Ordered array of storage backends to use.
  */
 export const setStorageOrder = ( order ) => {
@@ -64,7 +66,7 @@ export const setStorageOrder = ( order ) => {
 };
 
 /**
- * Reset the storage mechanism order.
+ * Resets the storage mechanism order.
  *
  * Largely used for tests. Implicitly resets the selected storage backend,
  * causing `_getStorage` to re-run its checks for the best available
@@ -83,6 +85,7 @@ export const resetDefaultStorageOrder = () => {
  *
  * @since 1.5.0
  * @private
+ *
  * @param {string} type Browser storage to test. Should be one of `localStorage` or `sessionStorage`.
  * @return {boolean} True if the given storage is available, false otherwise.
  */
@@ -125,6 +128,7 @@ export const isStorageAvailable = async ( type ) => {
  *
  * @since 1.5.0
  * @private
+ *
  * @return {Object|null} A storage mechanism (`localStorage` or `sessionStorage`) if available; otherwise returns `null`;
  */
 export const getStorage = async () => {
@@ -155,11 +159,12 @@ export const getStorage = async () => {
 };
 
 /**
- * Get cached data.
+ * Gets cached data.
  *
  * Get cached data from the persistent storage cache.
  *
  * @since 1.5.0
+ *
  * @param {string} key              Name of cache key.
  * @param {number} cacheTimeToLive  The number of seconds before cached data will be considered stale. If the cached data is more than this many seconds old no data will be returned. If not set/set to `null`, any data will be returned.
  * @return {Promise} A promise returned, containing an object with the cached value (if found) and whether or not there was a cache hit.
@@ -195,11 +200,12 @@ export const getItem = async ( key, cacheTimeToLive = null ) => {
 };
 
 /**
- * Set cached data using a key.
+ * Sets cached data using a key.
  *
  * Save data to the relevant local storage mechanism, if available.
  *
  * @since 1.5.0
+ *
  * @param {string} key        Name of cache key.
  * @param {*}      value      Value to store in the cache.
  * @param {number} _timestamp Timestamp to set as the cache data save time.
@@ -236,11 +242,12 @@ export const setItem = async ( key, value, _timestamp = undefined ) => {
 };
 
 /**
- * Remove cached data by key.
+ * Removes cached data by key.
  *
  * Remove one piece of cached data from the persistent storage cache, by key.
  *
  * @since 1.5.0
+ *
  * @param {string} key Name of cache key.
  * @return {Promise} A promise: resolves to `true` if the value was deleted; `false` if not (usually because no storage method was available).
  */
@@ -262,9 +269,10 @@ export const deleteItem = async ( key ) => {
 };
 
 /**
- * Get all cache keys created by Site Kit.
+ * Gets all cache keys created by Site Kit.
  *
  * @since 1.5.0
+ *
  * @return {Promise} A promise: resolves to an array of all keys.
  */
 export const getKeys = async () => {
@@ -291,9 +299,10 @@ export const getKeys = async () => {
 };
 
 /**
- * Remove the entire cache created by Site Kit.
+ * Removes the entire cache created by Site Kit.
  *
  * @since 1.5.0
+ *
  * @return {Promise} A promise: resolves to `true` if the cache was cleared; `false` if there was an error.
  */
 export const clearCache = async () => {
