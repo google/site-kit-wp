@@ -143,7 +143,7 @@ export const selectors = {
 	/**
 	 * Gets the connection info for this site.
 	 *
-	 * Returns `null` if the connection info is not available/loaded.
+	 * Returns `undefined` if the connection info is not available/loaded.
 	 *
 	 * Returns an object with the shape when successful:
 	 * ```
@@ -156,7 +156,7 @@ export const selectors = {
 	 * @since 1.5.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object|null} Site connection info.
+	 * @return {Object|undefined} Site connection info.
 	 */
 	getConnection( state ) {
 		const { connection } = state;
