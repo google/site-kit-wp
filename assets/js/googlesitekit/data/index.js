@@ -37,6 +37,7 @@ import {
 	collectResolvers,
 	collectSelectors,
 	collectState,
+	collectName,
 } from 'assets/js/googlesitekit/data/utils';
 
 const Data = createRegistry();
@@ -51,6 +52,6 @@ Data.collectReducers = collectReducers;
 Data.collectResolvers = collectResolvers;
 Data.collectSelectors = collectSelectors;
 Data.collectState = collectState;
-Data.collectReducers = collectReducers;
+Data.collectName = collectName;
 
 export default Data;

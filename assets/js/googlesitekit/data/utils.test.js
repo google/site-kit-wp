@@ -25,6 +25,7 @@ import {
 	collect,
 	collectActions,
 	collectReducers,
+	collectName,
 	initializeAction,
 } from './utils';
 
@@ -194,6 +195,24 @@ describe( 'data utils', () => {
 				//
 				state = combinedReducer( state, initializeAction() );
 				expect( state ).toEqual( initialState );
+			} );
+		} );
+
+		describe( 'collectName()', () => {
+			it( 'should return the single store name', () => {
+				const individualStoreName = 'core/site';
+				const collectedStoreName = collectName( individualStoreName, individualStoreName, individualStoreName );
+
+				expect( collectedStoreName ).toEqual( individualStoreName );
+			} );
+
+			it( 'should error if not all store names match', () => {
+				const storeName = 'core/site';
+				const wrongStoreName = 'core/user';
+
+				expect( () => {
+					collectName( storeName, storeName, wrongStoreName, storeName );
+				} ).toThrow( /collectName\(\) must not receive different names./ );
 			} );
 		} );
 	} );
