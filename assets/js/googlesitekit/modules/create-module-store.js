@@ -30,12 +30,14 @@ import {
  * to get the base store. It can then combine the base module with its own
  * selectors and actions to individualize the store.
  *
- * Each module store must be registered under 'modules/{slug}'.
+ * The return object of this function also includes a `STORE_NAME` property,
+ * the value of which must be used as the name when registering the store.
  *
  * @since n.e.x.t
  *
  * @param {string} slug Slug of the module that the store is for.
- * @return {Object} The base module store object.
+ * @return {Object} The base module store object, with additional `STORE_NAME` and
+ *                  `INITIAL_STATE` properties.
  */
 export const createModuleStore = ( slug ) => {
 	// For now, a base module store only consists of the notifications functionality.
