@@ -380,6 +380,10 @@ final class Analytics extends Module
 			return;
 		}
 
+		if ( $this->is_tracking_disabled() ) {
+			return;
+		}
+
 		$gtag_amp_opt = array(
 			'vars' => array(
 				'gtag_id' => $tracking_id,
