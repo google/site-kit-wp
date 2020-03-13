@@ -163,7 +163,8 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 				const { id } = action.payload;
 
 				// At this point, only client-side notifications can be removed.
-				if ( 'undefined' !== typeof state.clientNotifications &&
+				if (
+					'undefined' === typeof state.clientNotifications ||
 					'undefined' === typeof state.clientNotifications[ id ]
 				) {
 					// Trigger a warning clarifying that if a server-side notification is attempted to be removed.
@@ -173,10 +174,6 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 						global.console.warn( `Cannot remove server-side notification with ID "${ id }"; this may be changed in a future release.` );
 					}
 
-					return { ...state };
-				}
-
-				if ( 'undefined' === typeof state.clientNotifications ) {
 					return { ...state };
 				}
 
