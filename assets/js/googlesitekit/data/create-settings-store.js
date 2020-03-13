@@ -25,6 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
 
 // Actions
 const SET_SETTINGS = 'SET_SETTINGS';
@@ -50,12 +51,15 @@ const RECEIVE_SAVE_SETTINGS_FAILED = 'RECEIVE_SAVE_SETTINGS_FAILED';
  * @param {number} options.storeName    Store name to use. Default is '{type}/{identifier}'.
  * @param {Array}  options.settingSlugs List of the slugs that are part of the settings object
  *                                      handled by the respective API endpoint.
+ * @param {Object} options.registry     Store registry that this store will be registered on. Default
+ *                                      is the main Site Kit registry `googlesitekit.data`.
  * @return {Object} The settings store object, with additional `STORE_NAME` and
  *                  `INITIAL_STATE` properties.
  */
 export const createSettingsStore = ( type, identifier, datapoint, {
 	storeName = undefined,
 	settingSlugs = [],
+	registry = Data,
 } = {} ) => {
 	invariant( type, 'type is required.' );
 	invariant( identifier, 'identifier is required.' );
@@ -70,7 +74,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		isFetchingSaveSettings: false,
 	};
 
-	// This will be populated further down with sub-setting-specific reducer functions.
+	// This will be populated further down with reducer functions for individual settings.
 	const settingReducers = {};
 
 	const actions = {
@@ -147,8 +151,10 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {Object} Redux-style action.
 		 */
 		*saveSettings() {
+			const values = yield registry.select( STORE_NAME ).getSettings();
+
 			try {
-				const savedValues = yield actions.fetchSaveSettings();
+				const savedValues = yield actions.fetchSaveSettings( values );
 				return actions.receiveSaveSettings( savedValues );
 			} catch ( err ) {
 				// TODO: Implement an error handler store or some kind of centralized
@@ -163,11 +169,14 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @since n.e.x.t
 		 * @private
 		 *
+		 * @param {Object} values Settings with their values to save.
 		 * @return {Object} Redux-style action.
 		 */
-		fetchSaveSettings() {
+		fetchSaveSettings( values ) {
+			invariant( values, 'values is required.' );
+
 			return {
-				payload: {},
+				payload: { values },
 				type: FETCH_SAVE_SETTINGS,
 			};
 		},
@@ -210,7 +219,6 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		[ FETCH_SETTINGS ]: () => {
 			return API.get( type, identifier, datapoint );
 		},
-		// TODO: How do we get the current values to be available here?
 		[ FETCH_SAVE_SETTINGS ]: ( values ) => {
 			return API.set( type, identifier, datapoint, values );
 		},
