@@ -299,7 +299,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			}
 
 			default: {
-				// Check if this action is for a sub-setting reducer.
+				// Check if this action is for a reducer for an individual setting.
 				if ( 'undefined' !== typeof settingReducers[ action.type ] ) {
 					return settingReducers[ action.type ]( state, action );
 				}
@@ -367,6 +367,14 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		const pascalCaseSlug = slug.charAt( 0 ).toUpperCase() + slug.slice( 1 );
 		const constantSlug = slug.replace( /([a-z0-9]{1})([A-Z]{1})/g, '$1_$2' ).toUpperCase();
 
+		/**
+		 * Sets the setting indicated by the action name to the given value.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {*} value Value for the setting.
+		 * @return {Object} Redux-style action.
+		 */
 		actions[ `set${ pascalCaseSlug }` ] = ( value ) => {
 			invariant( value, 'value is required.' );
 
@@ -390,6 +398,14 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 		resolvers[ `get${ pascalCaseSlug }` ] = resolvers.getSettings;
 
+		/**
+		 * Gets the current value for the setting indicated by the selector name.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} state Data store's state.
+		 * @return {*} Setting value, or undefined.
+		 */
 		selectors[ `get${ pascalCaseSlug }` ] = ( state ) => {
 			const { settings } = state;
 
