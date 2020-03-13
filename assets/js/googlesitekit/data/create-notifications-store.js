@@ -48,7 +48,10 @@ const RECEIVE_NOTIFICATIONS_FAILED = 'RECEIVE_NOTIFICATIONS_FAILED';
 export const createNotificationsStore = ( type, identifier, datapoint ) => {
 	const INITIAL_STATE = {
 		serverNotifications: undefined,
-		clientNotifications: {},
+		// Initialize clientNotifications as undefined rather than an empty
+		// object so we can know if a client notification was added and then
+		// removed from state.
+		clientNotifications: undefined,
 		isFetchingNotifications: false,
 	};
 
@@ -150,7 +153,7 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 				return {
 					...state,
 					clientNotifications: {
-						...state.clientNotifications,
+						...state.clientNotifications || {},
 						[ notification.id ]: notification,
 					},
 				};
@@ -160,14 +163,20 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 				const { id } = action.payload;
 
 				// At this point, only client-side notifications can be removed.
-				if ( 'undefined' === typeof state.clientNotifications[ id ] ) {
+				if ( 'undefined' !== typeof state.clientNotifications &&
+					'undefined' === typeof state.clientNotifications[ id ]
+				) {
 					// Trigger a warning clarifying that if a server-side notification is attempted to be removed.
 					if ( 'undefined' !== typeof state.serverNotifications &&
 						'undefined' !== typeof state.serverNotifications[ id ]
 					) {
-						global.console.warn( `Cannot remove server-side notification ${ id }; this may be changed in a future release.` );
+						global.console.warn( `Cannot remove server-side notification with ID "${ id }"; this may be changed in a future release.` );
 					}
 
+					return { ...state };
+				}
+
+				if ( 'undefined' === typeof state.clientNotifications ) {
 					return { ...state };
 				}
 
@@ -243,13 +252,20 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 		getNotifications( state ) {
 			const { serverNotifications, clientNotifications } = state;
 
-			if ( 'undefined' === typeof serverNotifications ) {
+			// If there are no client notifications and the server notifications
+			// haven't loaded yet, return `undefined` (the value of
+			// `serverNotifications` here) to signify to anything using this
+			// selector that notifications have not loaded yet.
+			if ( 'undefined' === typeof serverNotifications && 'undefined' === typeof clientNotifications ) {
 				return serverNotifications;
 			}
 
+			// If there are any notifications from either the client or server,
+			// we should return them, even if the server notifications haven't
+			// finished loading yet.
 			return Object.values( {
-				...serverNotifications,
-				...clientNotifications,
+				...serverNotifications || {},
+				...clientNotifications || {},
 			} );
 		},
 	};
