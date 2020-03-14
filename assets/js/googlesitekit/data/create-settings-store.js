@@ -396,18 +396,15 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			};
 		};
 
-		resolvers[ `get${ pascalCaseSlug }` ] = resolvers.getSettings;
-
 		/**
 		 * Gets the current value for the setting indicated by the selector name.
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object} state Data store's state.
 		 * @return {*} Setting value, or undefined.
 		 */
-		selectors[ `get${ pascalCaseSlug }` ] = ( state ) => {
-			const { settings } = state;
+		selectors[ `get${ pascalCaseSlug }` ] = () => {
+			const settings = registry.select( STORE_NAME ).getSettings();
 
 			if ( 'undefined' === typeof settings ) {
 				return settings;
