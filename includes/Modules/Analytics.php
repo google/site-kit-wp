@@ -1276,12 +1276,16 @@ final class Analytics extends Module
 	 * @link https://developers.google.com/analytics/devguides/collection/analyticsjs/user-opt-out
 	 */
 	private function print_tracking_opt_out() {
+		printf( '<!-- %s -->', esc_html__( 'Google Analytics user opt-out added via Site Kit by Google', 'google-site-kit' ) );
+
 		if ( $this->context->is_amp() ) {
-			// AMP does not support inline custom JS.
+			?>
+			<meta id="__gaOptOutExtension">
+			<?php
 			return;
 		}
+
 		?>
-		<!-- <?php esc_html_e( 'Google Analytics user opt-out added via Site Kit by Google', 'google-site-kit' ); ?> -->
 		<script type="text/javascript">window["_gaUserPrefs"] = { ioo : function() { return true; } }</script>
 		<?php
 	}
