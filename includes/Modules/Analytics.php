@@ -388,12 +388,13 @@ final class Analytics extends Module
 			'vars' => array(
 				'gtag_id' => $tracking_id,
 				'config'  => array(
-					$tracking_id => array(
+					$tracking_id      => array(
 						'groups' => 'default',
 						'linker' => array(
 							'domains' => array( $this->get_home_domain() ),
 						),
 					),
+					'optoutElementId' => '__gaOptOutExtension',
 				),
 			),
 		);
