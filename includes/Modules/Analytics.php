@@ -381,18 +381,18 @@ final class Analytics extends Module
 		}
 
 		$gtag_amp_opt = array(
-			'vars' => array(
+			'vars'            => array(
 				'gtag_id' => $tracking_id,
 				'config'  => array(
-					$tracking_id      => array(
+					$tracking_id => array(
 						'groups' => 'default',
 						'linker' => array(
 							'domains' => array( $this->get_home_domain() ),
 						),
 					),
-					'optoutElementId' => '__gaOptOutExtension',
 				),
 			),
+			'optoutElementId' => '__gaOptOutExtension',
 		);
 
 		/**
