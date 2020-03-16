@@ -1276,7 +1276,7 @@ final class Analytics extends Module
 
 		if ( $this->context->is_amp() ) {
 			?>
-			<meta id="__gaOptOutExtension">
+			<script type="text/plain" id="__gaOptOutExtension"></script>
 			<?php
 			return;
 		}
