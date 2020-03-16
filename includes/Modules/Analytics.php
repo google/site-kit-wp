@@ -1274,7 +1274,7 @@ final class Analytics extends Module
 	private function print_tracking_opt_out() {
 		?>
 		<!-- <?php esc_html_e( 'Google Analytics user opt-out added via Site Kit by Google', 'google-site-kit' ); ?> -->
-		<?php if ( $this->context->is_amp() ) : // TODO: update script type to `text/plain` when supported by AMP plugin. ?>
+		<?php if ( $this->context->is_amp() ) : ?>
 			<script type="application/ld+json" id="__gaOptOutExtension"></script>
 		<?php else : ?>
 			<script type="text/javascript">window["_gaUserPrefs"] = { ioo : function() { return true; } }</script>
