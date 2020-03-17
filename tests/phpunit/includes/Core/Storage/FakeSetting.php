@@ -24,6 +24,13 @@ class FakeSetting extends Setting {
 	protected $register_callback;
 
 	/**
+	 * Callback to handle validation.
+	 *
+	 * @var callable
+	 */
+	protected $validate_callback;
+
+	/**
 	 * @inheritDoc
 	 */
 	public function register() {
@@ -39,5 +46,25 @@ class FakeSetting extends Setting {
 	 */
 	public function set_register_callback( callable $callback ) {
 		$this->register_callback = $callback;
+	}
+
+	/**
+	 * Sets the callback to invoke during `validate()`.
+	 *
+	 * @param callable $callback Callback to perform validation.
+	 */
+	public function set_validate_callback( callable $callback ) {
+		$this->validate_callback = $callback;
+	}
+
+	/**
+	 * Gets the callback for validating the setting's value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return callable|null
+	 */
+	protected function get_validate_callback() {
+		return $this->validate_callback;
 	}
 }
