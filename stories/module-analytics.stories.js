@@ -18,7 +18,14 @@ import AnalyticsDashboardWidgetSiteStats from 'GoogleModules/analytics/dashboard
 import DashboardAcquisitionPieChart from 'GoogleModules/analytics/dashboard/dashboard-widget-acquisition-piechart';
 import AnalyticsDashboardWidgetTopAcquisitionSources from 'GoogleModules/analytics/dashboard/dashboard-widget-top-acquisition-sources-table';
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
-import { AccountSelect, PropertySelect, ProfileSelect, AnonymizeIPSwitch, UseSnippetSwitch } from '../assets/js/modules/analytics/common';
+import {
+	AccountSelect,
+	PropertySelect,
+	ProfileSelect,
+	AnonymizeIPSwitch,
+	UseSnippetSwitch,
+	TrackingExclusionSwitches,
+} from '../assets/js/modules/analytics/common';
 
 function SetupWrap( { children } ) {
 	return (
@@ -38,6 +45,7 @@ const defaultSelectors = {
 	getProfileID: () => '987654321',
 	getAnonymizeIP: () => true,
 	getUseSnippet: () => true,
+	getTrackingDisabled: () => [ 'loggedinUsers' ],
 	hasExistingTag: () => false,
 	getAccounts: () => [
 		{ id: '1234567', name: 'Test Account' },
@@ -146,6 +154,27 @@ storiesOf( 'Analytics Module', module )
 		return (
 			<SetupWrap>
 				<UseSnippetSwitch { ...dataProps } />
+			</SetupWrap>
+		);
+	} )
+	.add( 'Tracking exclusions (default)', () => {
+		const dataProps = makeDataProps();
+
+		return (
+			<SetupWrap>
+				<TrackingExclusionSwitches { ...dataProps } />
+			</SetupWrap>
+		);
+	} )
+	.add( 'Tracking exclusions (including loggedinUsers)', () => {
+		const dataProps = makeDataProps( {
+			...defaultSelectors,
+			getTrackingDisabled: () => [],
+		} );
+
+		return (
+			<SetupWrap>
+				<TrackingExclusionSwitches { ...dataProps } />
 			</SetupWrap>
 		);
 	} )
