@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Core\Storage;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\TestCase;
+use WP_Error;
 
 /**
  * @group Storage
