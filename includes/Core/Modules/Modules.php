@@ -725,14 +725,14 @@ final class Modules {
 		}
 
 		$settings = $module->get_settings();
-		foreach ( $settings->get() as $slug => $value ) {
-			if ( ! isset( $data[ $slug ] ) ) {
-				/* translators: %s: Missing parameter name */
-				return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), $slug ), array( 'status' => 400 ) );
-			}
+
+		$validated = $settings->validate( $data );
+		if ( is_wp_error( $validated ) ) {
+			$validated->add_data( array( 'status' => 400 ) );
+			return $validated;
 		}
 
-		if ( ! $settings->merge( $data ) ) {
+		if ( ! $settings->merge( $validated ) ) {
 			return new WP_Error( 'updating_settings_failed', __( 'Updating settings failed.', 'google-site-kit' ), array( 'status' => 500 ) );
 		}
 

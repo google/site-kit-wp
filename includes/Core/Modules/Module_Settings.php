@@ -96,4 +96,20 @@ abstract class Module_Settings extends Setting {
 	protected function get_type() {
 		return 'object';
 	}
+
+	/**
+	 * Gets the callback for validating the setting's value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return callable|null
+	 */
+	protected function get_validate_callback() {
+		return function( $option ) {
+			if ( ! is_array( $option ) ) {
+				return new WP_Error( 'invalid_data_type', __( 'The value must be an associative array.', 'google-site-kit' ) );
+			}
+			return $option;
+		};
+	}
 }
