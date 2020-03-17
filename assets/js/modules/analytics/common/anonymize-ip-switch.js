@@ -38,7 +38,6 @@ export default function AnonymizeIPSwitch( { useSelect, useDispatch } ) {
 	return (
 		<div className="googlesitekit-analytics-anonymizeip">
 			<Switch
-				id="anonymizeIP"
 				label={ __( 'Anonymize IP addresses', 'google-site-kit' ) }
 				onClick={ onChange }
 				checked={ anonymizeIP }
