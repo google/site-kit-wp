@@ -18,8 +18,93 @@ import AnalyticsDashboardWidgetSiteStats from 'GoogleModules/analytics/dashboard
 import DashboardAcquisitionPieChart from 'GoogleModules/analytics/dashboard/dashboard-widget-acquisition-piechart';
 import AnalyticsDashboardWidgetTopAcquisitionSources from 'GoogleModules/analytics/dashboard/dashboard-widget-top-acquisition-sources-table';
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
+import { AccountSelect, PropertySelect, ProfileSelect } from '../assets/js/modules/analytics/common';
+
+function SetupWrap( { children } ) {
+	return (
+		<div className="googlesitekit-setup">
+			<section className="googlesitekit-setup__wrapper">
+				<div className="googlesitekit-setup-module">
+					{ children }
+				</div>
+			</section>
+		</div>
+	);
+}
+
+const defaultSelectors = {
+	getAccountID: () => '1234567',
+	getPropertyID: () => 'UA-1234567-1',
+	getProfileID: () => '987654321',
+	hasExistingTag: () => false,
+	getAccounts: () => [
+		{ id: '1234567', name: 'Test Account' },
+	],
+	getProperties: () => [
+		{ id: 'UA-1234567-1', name: 'Test Property' },
+	],
+	getProfiles: () => [
+		{ id: '987654321', name: 'Test Profile' },
+	],
+};
+
+function makeMockSelect( selectors = defaultSelectors ) {
+	// Return the given selectors, regardless of the store requested.
+	return () => {
+		return {
+			...selectors,
+		};
+	};
+}
+const mockDispatch = new Proxy( {}, {
+	// Return a dummy function for every action.
+	get: ( target, action ) => {
+		return ( ...dispatchArgs ) => {
+			// eslint-disable-next-line no-console
+			console.log( 'mockDispatch', action, { dispatchArgs } );
+		};
+	},
+} );
+function makeDataProps( selectors = defaultSelectors ) {
+	const mockSelect = makeMockSelect( selectors );
+	return {
+		useSelect: ( mapSelect ) => mapSelect( mockSelect ),
+		useDispatch: () => mockDispatch,
+	};
+}
 
 storiesOf( 'Analytics Module', module )
+	.add( 'Account Property Profile Select (none selected)', () => {
+		const dataProps = makeDataProps( {
+			...defaultSelectors,
+			getAccountID: () => '',
+			getPropertyID: () => '',
+			getProfileID: () => '',
+		} );
+
+		return (
+			<SetupWrap>
+				<div className="googlesitekit-setup-module__inputs">
+					<AccountSelect { ...dataProps } />
+					<PropertySelect { ...dataProps } />
+					<ProfileSelect { ...dataProps } />
+				</div>
+			</SetupWrap>
+		);
+	} )
+	.add( 'Account Property Profile Select (all selected)', () => {
+		const dataProps = makeDataProps();
+
+		return (
+			<SetupWrap>
+				<div className="googlesitekit-setup-module__inputs">
+					<AccountSelect { ...dataProps } />
+					<PropertySelect { ...dataProps } />
+					<ProfileSelect { ...dataProps } />
+				</div>
+			</SetupWrap>
+		);
+	} )
 	.add( 'Audience Overview Chart', () => {
 		global.googlesitekit = analyticsData;
 
