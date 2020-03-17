@@ -142,7 +142,7 @@ class SettingTest extends TestCase {
 		$setting = new FakeSetting( new Options( $this->context ) );
 
 		// Without callback, value should be passed through.
-		$this->assertEquals( '1234', $setting->validate( '1234' ) );
+		$this->assertSame( '1234', $setting->validate( '1234' ) );
 
 		$setting->set_validate_callback(
 			function( $value ) {
@@ -154,7 +154,7 @@ class SettingTest extends TestCase {
 		);
 
 		// With callback and valid value.
-		$this->assertEquals( 1234, $setting->validate( $value ) );
+		$this->assertSame( 1234, $setting->validate( $value ) );
 
 		// With callback and invalid value.
 		$this->assertWPError( $setting->validate( '' ), 'Empty value.' );
