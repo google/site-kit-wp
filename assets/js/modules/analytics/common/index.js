@@ -19,3 +19,4 @@
 export { default as AccountSelect } from './account-select';
 export { default as PropertySelect } from './property-select';
 export { default as ProfileSelect } from './profile-select';
+export { default as AnonymizeIPSwitch } from './anonymize-ip-switch';
