@@ -18,7 +18,7 @@ import AnalyticsDashboardWidgetSiteStats from 'GoogleModules/analytics/dashboard
 import DashboardAcquisitionPieChart from 'GoogleModules/analytics/dashboard/dashboard-widget-acquisition-piechart';
 import AnalyticsDashboardWidgetTopAcquisitionSources from 'GoogleModules/analytics/dashboard/dashboard-widget-top-acquisition-sources-table';
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
-import { AccountSelect, PropertySelect, ProfileSelect } from '../assets/js/modules/analytics/common';
+import { AccountSelect, PropertySelect, ProfileSelect, AnonymizeIPSwitch } from '../assets/js/modules/analytics/common';
 
 function SetupWrap( { children } ) {
 	return (
@@ -36,6 +36,7 @@ const defaultSelectors = {
 	getAccountID: () => '1234567',
 	getPropertyID: () => 'UA-1234567-1',
 	getProfileID: () => '987654321',
+	getAnonymizeIP: () => true,
 	hasExistingTag: () => false,
 	getAccounts: () => [
 		{ id: '1234567', name: 'Test Account' },
@@ -102,6 +103,27 @@ storiesOf( 'Analytics Module', module )
 					<PropertySelect { ...dataProps } />
 					<ProfileSelect { ...dataProps } />
 				</div>
+			</SetupWrap>
+		);
+	} )
+	.add( 'Anonymize IP switch, toggled on', () => {
+		const dataProps = makeDataProps();
+
+		return (
+			<SetupWrap>
+				<AnonymizeIPSwitch { ...dataProps } />
+			</SetupWrap>
+		);
+	} )
+	.add( 'Anonymize IP switch, toggled off', () => {
+		const dataProps = makeDataProps( {
+			...defaultSelectors,
+			getAnonymizeIP: () => false,
+		} );
+
+		return (
+			<SetupWrap>
+				<AnonymizeIPSwitch { ...dataProps } />
 			</SetupWrap>
 		);
 	} )
