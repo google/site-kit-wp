@@ -50,6 +50,7 @@ class REST_RoutesTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z\\-]+)/data/(?P<datapoint>[a-z\\-]+)',
 			'/' . REST_Routes::REST_ROOT . '/data',
 			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z\\-]+)/data/notifications',
+			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z\\-]+)/data/settings',
 			'/' . REST_Routes::REST_ROOT . '/core/search/data/post-search',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/developer-plugin',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/setup-tag',
