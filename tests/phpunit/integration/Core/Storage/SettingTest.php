@@ -138,26 +138,4 @@ class SettingTest extends TestCase {
 
 		$this->assertFalse( get_network_option( null, FakeSetting::OPTION ) );
 	}
-
-	public function test_validate() {
-		$setting = new FakeSetting( new Options( $this->context ) );
-
-		// Without callback, value should be passed through.
-		$this->assertSame( '1234', $setting->validate( '1234' ) );
-
-		$setting->set_validate_callback(
-			function( $value ) {
-				if ( empty( $value ) ) {
-					return new WP_Error( 'empty_value', 'Empty value.' );
-				}
-				return (int) $value;
-			}
-		);
-
-		// With callback and valid value.
-		$this->assertSame( 1234, $setting->validate( '1234' ) );
-
-		// With callback and invalid value.
-		$this->assertWPError( $setting->validate( '' ), 'Empty value.' );
-	}
 }
