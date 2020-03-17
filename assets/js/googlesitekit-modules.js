@@ -1,5 +1,7 @@
 /**
- * Event tracking utilities.
+ * Modules API.
+ *
+ * Provides API functions to manage modules.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,27 +19,16 @@
  */
 
 /**
- * gtag script identifier.
+ * Internal dependencies
  */
-export const SCRIPT_IDENTIFIER = 'data-googlesitekit-gtag';
+import Modules from 'assets/js/googlesitekit/modules';
 
-/**
- * Data layer global used for internal/private Site Kit data.
- */
-export const DATA_LAYER = '_googlesitekitDataLayer';
+if ( typeof global.googlesitekit === 'undefined' ) {
+	global.googlesitekit = {};
+}
 
-const {
-	isFirstAdmin,
-	trackingEnabled,
-	trackingID,
-	referenceSiteURL,
-	userIDHash,
-} = global._googlesitekitBaseData || {};
+if ( typeof global.googlesitekit.modules === 'undefined' ) {
+	global.googlesitekit.modules = Modules;
+}
 
-export const initialConfig = {
-	isFirstAdmin,
-	trackingEnabled,
-	trackingID,
-	referenceSiteURL,
-	userIDHash,
-};
+export default Modules;

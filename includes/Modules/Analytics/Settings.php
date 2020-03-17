@@ -138,7 +138,6 @@ class Settings extends Module_Settings {
 		return array(
 			'accountID'             => '',
 			'adsenseLinked'         => false,
-			'ampClientIDOptIn'      => true,
 			'anonymizeIP'           => true,
 			'internalWebPropertyID' => '',
 			'profileID'             => '',

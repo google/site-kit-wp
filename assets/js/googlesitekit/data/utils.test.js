@@ -1,7 +1,27 @@
 /**
+ * Data store utilities tests.
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * Internal dependencies
  */
 import {
+	addInitializeAction,
+	addInitializeReducer,
 	collect,
 	collectActions,
 	collectReducers,
@@ -84,23 +104,7 @@ describe( 'data utils', () => {
 		} );
 	} );
 
-	describe( 'collectActions()', () => {
-		it( 'should collect multiple actions and combine them into one object', () => {
-			const objectOne = {
-				bar: () => {},
-				foo: () => {},
-			};
-			const objectTwo = {
-				cat: () => {},
-				dog: () => {},
-			};
-
-			expect( collectActions( objectOne, objectTwo ) ).toMatchObject( {
-				...objectOne,
-				...objectTwo,
-			} );
-		} );
-
+	describe( 'addInitializeAction()', () => {
 		it( 'should include an initialize action that dispatches an INITIALIZE action type', () => {
 			const objectOne = {
 				bar: () => {},
@@ -111,35 +115,86 @@ describe( 'data utils', () => {
 				dog: () => {},
 			};
 
-			expect( collectActions( objectOne, objectTwo ) ).toMatchObject( {
+			expect(
+				addInitializeAction( collectActions( objectOne, objectTwo ) )
+			).toMatchObject( {
 				initialize: initializeAction,
 			} );
 		} );
 	} );
 
-	describe( 'collectReducers()', () => {
-		it( 'should respond to an INITIALIZE action because it extends the reducers to include one', () => {
-			const reducer = ( state, action ) => {
-				switch ( action.type ) {
-					default: {
-						return { ...state };
-					}
+	describe( 'reducer utility functions', () => {
+		const fakeAction = () => {
+			return { type: 'ACTION_ONE', payload: {} };
+		};
+		const anotherFakeAction = () => {
+			return { type: 'ACTION_TWO', payload: {} };
+		};
+
+		const fakeReducer = ( state, action ) => {
+			switch ( action.type ) {
+				case 'ACTION_ONE':
+					return { ...state, one: true };
+				default: {
+					return { ...state };
 				}
-			};
-			const initialState = { count: 0 };
-			const combinedReducer = collectReducers( initialState, [ reducer ] );
+			}
+		};
+		const fakeReducerTwo = ( state, action ) => {
+			switch ( action.type ) {
+				case 'ACTION_TWO':
+					return { ...state, two: 2 };
+				default: {
+					return { ...state };
+				}
+			}
+		};
 
-			let state = combinedReducer();
-			expect( state ).toEqual( { count: 0 } );
+		describe( 'collectReducers()', () => {
+			it( 'should return modified state based on the reducers supplied', () => {
+				const initialState = { count: 0 };
+				const combinedReducer = collectReducers( initialState, fakeReducer, fakeReducerTwo );
 
-			// Normally we'd be dispatching an action to change state, but for our
-			// testing purposes this is fine 😅
-			state.count = 5;
-			expect( state ).toEqual( { count: 5 } );
+				let state = combinedReducer();
+				expect( state ).toEqual( { count: 0 } );
+				expect( state.one ).toEqual( undefined );
 
-			state = combinedReducer( state, initializeAction() );
+				state = combinedReducer( state, fakeAction() );
+				expect( state ).toEqual( { count: 0, one: true } );
 
-			expect( state ).toEqual( { count: 0 } );
+				state = combinedReducer( state, anotherFakeAction() );
+				expect( state ).toEqual( { count: 0, one: true, two: 2 } );
+
+				// Should not respond to the initializeAction as this reducer is not
+				// extended with `addInitializeReducer()`. This will return state as-is.
+				const newState = combinedReducer( state, initializeAction() );
+
+				expect( state ).toEqual( newState );
+			} );
+		} );
+
+		describe( 'addInitializeReducer()', () => {
+			it( 'should respond to an INITIALIZE action because it extends the reducers to include one', () => {
+				const initialState = { count: 0 };
+				const combinedReducer = addInitializeReducer(
+					initialState,
+					collectReducers( fakeReducer, fakeReducerTwo )
+				);
+
+				let state = combinedReducer();
+				expect( state ).toEqual( { count: 0 } );
+
+				// It should still respond to the original actions.
+				state = combinedReducer( state, fakeAction() );
+				expect( state ).toEqual( { count: 0, one: true } );
+
+				state = combinedReducer( state, anotherFakeAction() );
+				expect( state ).toEqual( { count: 0, one: true, two: 2 } );
+
+				//
+				state = combinedReducer( state, initializeAction() );
+				expect( state ).toEqual( initialState );
+			} );
 		} );
 	} );
 } );

@@ -66,7 +66,6 @@ class OptimizeTest extends TestCase {
 		);
 		$this->assertEquals( 'optimize', $info['slug'] );
 		$this->assertArrayHasKey( 'optimizeID', $info['settings'] );
-		$this->assertArrayHasKey( 'ampClientIDOptIn', $info['settings'] );
 		$this->assertArrayHasKey( 'ampExperimentJSON', $info['settings'] );
 	}
 
@@ -87,7 +86,6 @@ class OptimizeTest extends TestCase {
 			array(
 				'optimize-id',
 				'amp-experiment-json',
-				'amp-client-id-opt-in',
 				'settings',
 			),
 			$optimize->get_datapoints()

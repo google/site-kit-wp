@@ -50,7 +50,6 @@ class DashboardSearchFunnel extends Component {
 					<DashboardModuleHeader
 						title={ __( 'Search Funnel', 'google-site-kit' ) }
 						description={ __( 'How your site appeared in Search results and how many visitors you got from Search.', 'google-site-kit' ) }
-						timePeriod={ __( 'Last 28 days', 'google-site-kit' ) }
 					/>
 				</div>
 				<div className={ classnames(

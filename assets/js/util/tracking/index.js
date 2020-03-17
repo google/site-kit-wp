@@ -20,7 +20,22 @@
  * Internal dependencies
  */
 import createTracking from './createTracking';
-import { initialConfig } from './index.private';
+
+const {
+	isFirstAdmin,
+	trackingEnabled,
+	trackingID,
+	referenceSiteURL,
+	userIDHash,
+} = global._googlesitekitBaseData || {};
+
+const initialConfig = {
+	isFirstAdmin,
+	trackingEnabled,
+	trackingID,
+	referenceSiteURL,
+	userIDHash,
+};
 
 const {
 	enableTracking,

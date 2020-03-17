@@ -94,7 +94,6 @@ class SettingsTest extends SettingsTestCase {
 				'internalWebPropertyID' => '',
 				'useSnippet'            => true,
 				'anonymizeIP'           => true,
-				'ampClientIDOptIn'      => true,
 				'trackingDisabled'      => array( 'loggedinUsers' ),
 				'adsenseLinked'         => false,
 			),

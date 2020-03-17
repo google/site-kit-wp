@@ -91,7 +91,7 @@ const dataAPI = {
 	 * Solves issue for publisher wins to retrieve data without performing additional requests.
 	 * Likely this will be removed after refactoring.
 	 *
- 	 * @param {Array.<{ maxAge: timestamp, type: string, identifier: string, datapoint: string, callback: function }>} combinedRequest An array of data requests to resolve.
+	 * @param {Array.<{maxAge: Date, type: string, identifier: string, datapoint: string, callback: Function}>} combinedRequest An array of data requests to resolve.
 	 *
 	 * @return {Promise} A promise for the cache lookup.
 	 */
@@ -122,8 +122,10 @@ const dataAPI = {
 	/**
 	 * Gets data for multiple requests from the REST API using a single batch process.
 	 *
- 	 * @param {Array.<{ maxAge: timestamp, type: string, identifier: string, datapoint: string, callback: function }>} combinedRequest An array of data requests to resolve.
+	 * @param {Array.<{maxAge: Date, type: string, identifier: string, datapoint: string, callback: Function}>} combinedRequest An array of data requests to resolve.
 	 * @param {boolean} secondaryRequest Is this the second (or more) request?
+	 *
+	 * @return {Promise} A promise for multiple fetch requests.
 	 */
 	combinedGet( combinedRequest, secondaryRequest = false ) {
 		// First, resolve any cache matches immediately, queue resolution of the rest.
@@ -283,7 +285,7 @@ const dataAPI = {
 	 * Sets data in the cache.
 	 *
 	 * @param {string} key  The cache key.
-	 * @param {mixed}  data The data to cache.
+	 * @param {Object} data The data to cache.
 	 */
 	setCache( key, data ) {
 		if ( 'undefined' === typeof data ) {
@@ -312,7 +314,7 @@ const dataAPI = {
 	 * @param {string} key    The cache key.
 	 * @param {number} maxAge The cache TTL in seconds. If not provided, no TTL will be checked.
 	 *
-	 * @return {mixed} Cached data, or undefined if lookup failed.
+	 * @return {(Object|undefined)} Cached data, or undefined if lookup failed.
 	 */
 	getCache( key, maxAge ) {
 		// Skip if js caching is disabled.
@@ -385,7 +387,7 @@ const dataAPI = {
 	 *
 	 * @param {string} context The context to retrieve the module data for. One of 'Dashboard', 'Settings',
 	 *                         or 'Post'.
-	 * @param {mixed} moduleArgs Arguments passed from the module.
+	 * @param {Object} moduleArgs Arguments passed from the module.
 	 *
 	 */
 	collectModuleData( context, moduleArgs ) {
@@ -441,37 +443,6 @@ const dataAPI = {
 
 			return Promise.reject( err );
 		} );
-	},
-
-	/**
-	 * Gets notifications from Rest API.
-	 *
-	 * @param {string} moduleSlug Slug of the module to get notifications for.
-	 * @param {number} maxAge     The cache TTL in seconds. If not provided, no TTL will be checked.
-	 *
-	 * @return {Promise} A promise for the fetch request.
-	 */
-	async getNotifications( moduleSlug, maxAge = 0 ) {
-		let notifications = [];
-
-		if ( ! moduleSlug ) {
-			return notifications;
-		}
-
-		const cacheKey = this.getCacheKey( 'modules', moduleSlug, 'notifications' );
-
-		notifications = dataAPI.getCache( cacheKey, maxAge );
-
-		if ( ! notifications || 0 === notifications.length ) {
-			// Make an API request to retrieve the notifications.
-			notifications = await apiFetch( {
-				path: `/google-site-kit/v1/modules/${ moduleSlug }/notifications/`,
-			} );
-
-			dataAPI.setCache( cacheKey, notifications );
-		}
-
-		return notifications;
 	},
 
 	/**
@@ -531,23 +502,13 @@ const dataAPI = {
 	/**
 	 * Sets a module to activated or deactivated using the REST API.
 	 *
-	 * @param {string}  moduleSlug The module slug.
-	 * @param {boolean} active     Whether the module should be active or not.
+	 * @param {string}  slug   The module slug.
+	 * @param {boolean} active Whether the module should be active or not.
 	 *
 	 * @return {Promise} A promise for the fetch request.
 	 */
-	setModuleActive( moduleSlug, active ) {
-		// Make an API request to store the value.
-		return apiFetch( { path: `/google-site-kit/v1/modules/${ moduleSlug }`,
-			data: { active },
-			method: 'POST',
-		} ).then( ( response ) => {
-			return new Promise( ( resolve ) => {
-				resolve( response );
-			} );
-		} ).catch( ( err ) => {
-			return Promise.reject( err );
-		} );
+	setModuleActive( slug, active ) {
+		return this.set( TYPE_CORE, 'modules', 'activation', { slug, active } );
 	},
 };
 

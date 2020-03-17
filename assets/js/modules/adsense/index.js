@@ -138,8 +138,8 @@ if ( global.googlesitekit.modules.adsense.active ) {
 		} );
 
 	/**
- 	 * Add components to the Notification requests.
- 	 */
+	 * Add components to the Notification requests.
+	 */
 	addFilter( 'googlesitekit.ModulesNotificationsRequest',
 		'googlesitekit.adsenseNotifications', ( modules ) => {
 			modules.push( {

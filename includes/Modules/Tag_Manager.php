@@ -184,7 +184,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @return array
 	 */
@@ -302,9 +302,20 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			return;
 		}
 
+		// Add the optoutElementId for compatibility with our Analytics opt-out mechanism.
+		// This configuration object will be merged with the configuration object returned
+		// by the `config` attribute URL.
+		$gtm_amp_opt = array(
+			'optoutElementId' => '__gaOptOutExtension',
+		);
+
 		?>
 		<!-- Google Tag Manager added by Site Kit -->
-		<amp-analytics config="<?php echo esc_url( "https://www.googletagmanager.com/amp.json?id=$container_id" ); ?>" data-credentials="include"></amp-analytics>
+		<amp-analytics config="<?php echo esc_url( "https://www.googletagmanager.com/amp.json?id=$container_id" ); ?>" data-credentials="include">
+			<script type="application/json">
+				<?php echo wp_json_encode( $gtm_amp_opt ); ?>
+			</script>
+		</amp-analytics>
 		<!-- End Google Tag Manager -->
 		<?php
 	}

@@ -99,7 +99,7 @@ export const extractSearchConsoleDashboardData = ( rows ) => {
  * Check for Zero data from Search Console API.
  *
  * @param {Object} data The data returned from the Search Console API call.
- * @return {boolean}
+ * @return {boolean} Indicates zero data was returned from Search Console API call.
  */
 export const isDataZeroSearchConsole = ( data ) => {
 	if ( ! data.length ) {

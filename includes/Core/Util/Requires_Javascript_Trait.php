@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Trait to display no javascript fallback message.
  *
- * @since n.e.x.t
+ * @since 1.5.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ trait Requires_Javascript_Trait {
 	/**
 	 * Outputs a fallback message when Javascript is disabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 */
 	protected function render_noscript_html() {
 		?>

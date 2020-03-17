@@ -8,8 +8,8 @@
  * see https://github.com/GoogleChrome/puppeteer/issues/1229#issuecomment-380133332
  * this is the workaround until Page.setBypassCSP lands... https://github.com/GoogleChrome/puppeteer/pull/2324
  *
- * @param      {REQUEST}  request
- * @return     {VOID}
+ * @param      {Request}  request
+ * @return     {void}
  *
  * Use this in an onBefore script E.G.
   ```

@@ -10,8 +10,8 @@ const DISMISSED = 'dismissed';
 /**
  * Marks the given notification with the provided state.
  *
- * @param {string} id   Notification ID.
- * @param {state} state Notification state.
+ * @param {string} id    Notification ID.
+ * @param {string} state Notification state.
  */
 export async function markNotification( id, state ) {
 	// Invalidate the cache so that notifications will be fetched fresh

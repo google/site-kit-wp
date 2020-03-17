@@ -1,7 +1,9 @@
 /**
- * Backstop config.
+ * Modules API.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Provides API functions to manage modules.
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +18,13 @@
  * limitations under the License.
  */
 
-const scenarios = require( './tests/backstop/scenarios' );
+/**
+ * Internal dependencies
+ */
+import { createModuleStore } from './create-module-store';
 
-const backstopOptions = require( './tests/backstop/backstop-options' );
+const Modules = {
+	createModuleStore,
+};
 
-module.exports = backstopOptions( scenarios );
+export default Modules;

@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Assets;
 /**
  * Class for virtual "data-only" scripts.
  *
- * @since n.e.x.t
+ * @since 1.5.0
  * @access private
  * @ignore
  */
@@ -21,7 +21,7 @@ class Script_Data extends Script {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @param string $handle Unique script handle.
 	 * @param array  $args {
@@ -64,7 +64,7 @@ class Script_Data extends Script {
 	 *
 	 * @see \WP_Scripts::localize
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @param mixed $data Data to be assigned to the defined global.
 	 */

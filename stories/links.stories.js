@@ -12,7 +12,7 @@ storiesOf( 'Global', module )
 					<Link
 						href="http://google.com"
 					>
-					Default Link
+						Default Link
 					</Link>
 				</p>
 				<p>
@@ -25,7 +25,7 @@ storiesOf( 'Global', module )
 				</p>
 				<p>
 					<Link>
-					Default Link Button
+						Default Link Button
 					</Link>
 				</p>
 				<p>
@@ -33,7 +33,7 @@ storiesOf( 'Global', module )
 						href="http://google.com"
 						inherit
 					>
-					Inherited Link
+						Inherited Link
 					</Link>
 				</p>
 				<p>
@@ -41,7 +41,7 @@ storiesOf( 'Global', module )
 						href="http://google.com"
 						small
 					>
-					Small Link
+						Small Link
 					</Link>
 				</p>
 				<p>
@@ -49,7 +49,7 @@ storiesOf( 'Global', module )
 						href="http://google.com"
 						inverse
 					>
-					Inverse Link
+						Inverse Link
 					</Link>
 				</p>
 				<p>
@@ -57,7 +57,7 @@ storiesOf( 'Global', module )
 						href="http://google.com"
 						back
 					>
-					Back Link
+						Back Link
 					</Link>
 				</p>
 				<p>
@@ -65,7 +65,7 @@ storiesOf( 'Global', module )
 						href="http://google.com"
 						external
 					>
-					External Link
+						External Link
 					</Link>
 				</p>
 				<p>
@@ -73,7 +73,7 @@ storiesOf( 'Global', module )
 						href="http://google.com"
 						caps
 					>
-					All Caps Link
+						All Caps Link
 					</Link>
 				</p>
 				<p>
@@ -100,7 +100,7 @@ storiesOf( 'Global', module )
 						href="http://google.com"
 						danger
 					>
-					Danger Link
+						Danger Link
 					</Link>
 				</p>
 				<p>
@@ -108,7 +108,7 @@ storiesOf( 'Global', module )
 						href="http://google.com"
 						disabled
 					>
-					Disabled Link
+						Disabled Link
 					</Link>
 				</p>
 			</div>
