@@ -53,14 +53,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	const USAGE_CONTEXT_AMP = 'amp';
 
 	/**
-	 * Settings instance.
-	 *
-	 * @since 1.2.0
-	 * @var Settings
-	 */
-	protected $settings;
-
-	/**
 	 * Map of container usageContext to option key for containerID.
 	 *
 	 * @var array
