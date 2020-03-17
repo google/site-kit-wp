@@ -1,5 +1,5 @@
 /**
- * isValidPropertyID utility.
+ * Validation utilities.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,11 +17,23 @@
  */
 
 /**
+ * Checks if the given account ID appears to be a valid Analyics account.
+ *
+ * @param {(string|number)} accountID Account ID to test.
+ * @return {boolean} Whether or not the given account ID is valid.
+ */
+export function isValidAccountID( accountID ) {
+	const accountInt = parseInt( accountID ) || 0;
+
+	return accountInt > 0;
+}
+
+/**
  * Checks whether the given property ID appears to be valid.
  *
  * @param {*} propertyID Property ID to check.
  * @return {boolean} Whether or not the given property ID is valid.
  */
-export default function isValidPropertyID( propertyID ) {
+export function isValidPropertyID( propertyID ) {
 	return typeof propertyID === 'string' && propertyID.match( /^UA-\d+-\d+$/ );
 }

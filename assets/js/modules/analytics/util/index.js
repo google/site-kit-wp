@@ -27,8 +27,7 @@ import { each } from 'lodash';
  */
 import { __ } from '@wordpress/i18n';
 
-export { default as isValidAccountID } from './is-valid-account-id';
-export { default as isValidPropertyID } from './is-valid-property-id';
+export * from './validation';
 
 export const extractAnalyticsDataForTrafficChart = ( reports ) => {
 	if ( ! reports || ! reports.length ) {
