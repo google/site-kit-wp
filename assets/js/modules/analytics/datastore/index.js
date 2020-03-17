@@ -25,7 +25,9 @@
  */
 import Data from 'googlesitekit-data';
 import { createModuleStore } from 'assets/js/googlesitekit/modules/create-module-store';
-import analytics from './analytics';
+import accounts from './accounts';
+import properties from './properties';
+import profiles from './profiles';
 
 export const STORE_NAME = 'modules/analytics';
 
@@ -41,37 +43,49 @@ const baseModuleStore = createModuleStore( 'analytics', { settingSlugs: [
 
 export const INITIAL_STATE = Data.collectState(
 	baseModuleStore.INITIAL_STATE,
-	analytics.INITIAL_STATE,
+	accounts.INITIAL_STATE,
+	properties.INITIAL_STATE,
+	profiles.INITIAL_STATE,
 );
 
 export const actions = Data.addInitializeAction(
 	Data.collectActions(
 		baseModuleStore.actions,
-		analytics.actions,
+		accounts.actions,
+		properties.actions,
+		profiles.actions,
 	)
 );
 
 export const controls = Data.collectControls(
 	baseModuleStore.controls,
-	analytics.controls,
+	accounts.controls,
+	properties.controls,
+	profiles.controls,
 );
 
 export const reducer = Data.addInitializeReducer(
 	INITIAL_STATE,
 	Data.collectReducers(
 		baseModuleStore.reducer,
-		analytics.reducer,
+		accounts.reducer,
+		properties.reducer,
+		profiles.reducer,
 	)
 );
 
 export const resolvers = Data.collectResolvers(
 	baseModuleStore.resolvers,
-	analytics.resolvers,
+	accounts.resolvers,
+	properties.resolvers,
+	profiles.resolvers,
 );
 
 export const selectors = Data.collectSelectors(
 	baseModuleStore.selectors,
-	analytics.selectors,
+	accounts.selectors,
+	properties.selectors,
+	profiles.selectors,
 );
 
 const store = {
