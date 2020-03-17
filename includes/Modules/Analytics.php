@@ -792,16 +792,16 @@ final class Analytics extends Module
 				}
 
 				return function() use ( $data ) {
-					$property_id              = null;
-					$internal_web_property_id = null;
+					$option          = $data->data;
+					$is_new_property = false;
 
-					if ( '0' === $data['propertyID'] ) {
+					if ( '0' === $option['propertyID'] ) {
 						$is_new_property = true;
 						$restore_defer   = $this->with_client_defer( false );
 						$property        = new Google_Service_Analytics_Webproperty();
 						$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 						try {
-							$property = $this->get_service( 'analytics' )->management_webproperties->insert( $data['accountID'], $property );
+							$property = $this->get_service( 'analytics' )->management_webproperties->insert( $option['accountID'], $property );
 						} catch ( Google_Service_Exception $e ) {
 							$restore_defer();
 							$message = $e->getErrors();
@@ -815,20 +815,15 @@ final class Analytics extends Module
 						}
 						$restore_defer();
 						/* @var Google_Service_Analytics_Webproperty $property Property instance. */
-						$property_id              = $property->getId();
-						$internal_web_property_id = $property->getInternalWebPropertyId();
-					} else {
-						$is_new_property          = false;
-						$property_id              = $data['propertyID'];
-						$internal_web_property_id = $data['internalWebPropertyID'];
+						$option['propertyID']            = $property->getId();
+						$option['internalWebPropertyID'] = $property->getInternalWebPropertyId();
 					}
-					$profile_id = null;
-					if ( '0' === $data['profileID'] ) {
+					if ( '0' === $option['profileID'] ) {
 						$restore_defer = $this->with_client_defer( false );
 						$profile       = new Google_Service_Analytics_Profile();
 						$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
 						try {
-							$profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $property_id, $profile );
+							$profile = $this->get_service( 'analytics' )->management_profiles->insert( $option['accountID'], $option['propertyID'], $profile );
 						} catch ( Google_Service_Exception $e ) {
 							$restore_defer();
 							$message = $e->getErrors();
@@ -841,17 +836,15 @@ final class Analytics extends Module
 							return new WP_Error( $e->getCode(), $e->getMessage() );
 						}
 						$restore_defer();
-						$profile_id = $profile->id;
-					} else {
-						$profile_id = $data['profileID'];
+						$option['profileID'] = $profile->id;
 					}
 					// Set default profile for new property.
 					if ( $is_new_property ) {
 						$restore_defer = $this->with_client_defer( false );
 						$property      = new Google_Service_Analytics_Webproperty();
-						$property->setDefaultProfileId( $profile_id );
+						$property->setDefaultProfileId( $option['profileID'] );
 						try {
-							$property = $this->get_service( 'analytics' )->management_webproperties->patch( $data['accountID'], $property_id, $property );
+							$property = $this->get_service( 'analytics' )->management_webproperties->patch( $option['accountID'], $option['propertyID'], $property );
 						} catch ( Google_Service_Exception $e ) {
 							$restore_defer();
 							$message = $e->getErrors();
@@ -865,18 +858,7 @@ final class Analytics extends Module
 						}
 						$restore_defer();
 					}
-					$this->get_settings()->merge(
-						array(
-							'accountID'             => $data['accountID'],
-							'propertyID'            => $property_id,
-							'internalWebPropertyID' => $internal_web_property_id,
-							'profileID'             => $profile_id,
-							'useSnippet'            => ! empty( $data['useSnippet'] ),
-							'anonymizeIP'           => (bool) $data['anonymizeIP'],
-							'trackingDisabled'      => (array) $data['trackingDisabled'],
-							'adsenseLinked'         => false,
-						)
-					);
+					$this->get_settings()->merge( $option );
 					return $this->get_settings()->get();
 				};
 			case 'GET:tag-permission':
