@@ -62,7 +62,7 @@ const mockDispatch = new Proxy( {}, {
 	get: ( target, action ) => {
 		return ( ...dispatchArgs ) => {
 			// eslint-disable-next-line no-console
-			console.log( 'mockDispatch', action, { dispatchArgs } );
+			console.log( 'mockDispatch', action, ...dispatchArgs );
 		};
 	},
 } );
