@@ -574,6 +574,68 @@ final class Modules {
 				)
 			),
 			new REST_Route(
+				'modules/(?P<slug>[a-z\-]+)/data/settings',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$slug = $request['slug'];
+							try {
+								$module = $this->get_module( $slug );
+							} catch ( \Exception $e ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
+							}
+							if ( ! $module instanceof Module_With_Settings ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Module does not support settings.', 'google-site-kit' ), array( 'status' => 400 ) );
+							}
+
+							return new WP_REST_Response( $module->get_settings()->get() );
+						},
+						'permission_callback' => $can_manage_options,
+					),
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$slug = $request['slug'];
+							try {
+								$module = $this->get_module( $slug );
+							} catch ( \Exception $e ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
+							}
+							if ( ! $module instanceof Module_With_Settings ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Module does not support settings.', 'google-site-kit' ), array( 'status' => 400 ) );
+							}
+
+							$data   = isset( $request['data'] ) ? (array) $request['data'] : array();
+							$result = $this->update_module_settings( $module, $data );
+							if ( is_wp_error( $result ) ) {
+								return $result;
+							}
+							return new WP_REST_Response( $module->get_settings()->get() );
+						},
+						'permission_callback' => $can_manage_options,
+						'args'                => array(
+							'data' => array(
+								'type'              => 'object',
+								'description'       => __( 'Settings to set.', 'google-site-kit' ),
+								'validate_callback' => function( $value ) {
+									return is_array( $value );
+								},
+							),
+						),
+					),
+				),
+				array(
+					'args' => array(
+						'slug' => array(
+							'type'              => 'string',
+							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
+							'sanitize_callback' => 'sanitize_key',
+						),
+					),
+				)
+			),
+			new REST_Route(
 				'modules/(?P<slug>[a-z\-]+)/data/(?P<datapoint>[a-z\-]+)',
 				array(
 					array(
@@ -637,6 +699,44 @@ final class Modules {
 				)
 			),
 		);
+	}
+
+	/**
+	 * Updates settings for a module.
+	 *
+	 * If the module includes a datapoint 'POST:settings', that datapoint is relied upon, allowing more advanced
+	 * customization. Otherwise this method will ensure every setting is present as a parameter and then update the
+	 * settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Module $module Module to update settings for. Must implement {@see Module_With_Settings}.
+	 * @param array  $data   Associative array of new settings data to set.
+	 * @return bool|WP_Error True on success, or an error object on failure.
+	 */
+	private function update_module_settings( Module $module, array $data ) {
+		if ( in_array( 'settings', $module->get_datapoints(), true ) ) {
+			$result = $module->set_data( 'settings', $data );
+			if ( is_wp_error( $result ) && $result->get_error_code() !== 'invalid_datapoint' ) {
+				return $result;
+			} elseif ( ! is_wp_error( $result ) ) {
+				return true;
+			}
+		}
+
+		$settings = $module->get_settings();
+		foreach ( $settings->get() as $slug => $value ) {
+			if ( ! isset( $data[ $slug ] ) ) {
+				/* translators: %s: Missing parameter name */
+				return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), $slug ), array( 'status' => 400 ) );
+			}
+		}
+
+		if ( ! $settings->merge( $data ) ) {
+			return new WP_Error( 'updating_settings_failed', __( 'Updating settings failed.', 'google-site-kit' ), array( 'status' => 500 ) );
+		}
+
+		return true;
 	}
 
 	/**
