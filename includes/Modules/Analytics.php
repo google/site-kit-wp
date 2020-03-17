@@ -770,78 +770,77 @@ final class Analytics extends Module
 
 				return $this->get_analyticsreporting_service()->reports->batchGet( $body );
 			case 'POST:settings':
-				$option = $data->data;
-				$option = $this->get_settings()->validate( $option );
-				if ( is_wp_error( $option ) ) {
-					$option->add_data( array( 'status' => 400 ) );
-					return $option;
-				}
-
-				return function() use ( $data, $option ) {
+				return function() use ( $data ) {
+					$option          = $data->data;
 					$is_new_property = false;
 
-					if ( '0' === $option['propertyID'] ) {
-						$is_new_property = true;
-						$restore_defer   = $this->with_client_defer( false );
-						$property        = new Google_Service_Analytics_Webproperty();
-						$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
-						try {
-							$property = $this->get_service( 'analytics' )->management_webproperties->insert( $option['accountID'], $property );
-						} catch ( Google_Service_Exception $e ) {
-							$restore_defer();
-							$message = $e->getErrors();
-							if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-								$message = $message[0]['message'];
+					if ( isset( $option['accountID'], $option['propertyID'] ) ) {
+						if ( '0' === $option['propertyID'] ) {
+							$is_new_property = true;
+							$restore_defer   = $this->with_client_defer( false );
+							$property        = new Google_Service_Analytics_Webproperty();
+							$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+							try {
+								$property = $this->get_service( 'analytics' )->management_webproperties->insert( $option['accountID'], $property );
+							} catch ( Google_Service_Exception $e ) {
+								$restore_defer();
+								$message = $e->getErrors();
+								if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
+									$message = $message[0]['message'];
+								}
+								return new WP_Error( $e->getCode(), $message );
+							} catch ( Exception $e ) {
+								$restore_defer();
+								return new WP_Error( $e->getCode(), $e->getMessage() );
 							}
-							return new WP_Error( $e->getCode(), $message );
-						} catch ( Exception $e ) {
 							$restore_defer();
-							return new WP_Error( $e->getCode(), $e->getMessage() );
+							/* @var Google_Service_Analytics_Webproperty $property Property instance. */
+							$option['propertyID']            = $property->getId();
+							$option['internalWebPropertyID'] = $property->getInternalWebPropertyId();
 						}
-						$restore_defer();
-						/* @var Google_Service_Analytics_Webproperty $property Property instance. */
-						$option['propertyID']            = $property->getId();
-						$option['internalWebPropertyID'] = $property->getInternalWebPropertyId();
-					}
-					if ( '0' === $option['profileID'] ) {
-						$restore_defer = $this->with_client_defer( false );
-						$profile       = new Google_Service_Analytics_Profile();
-						$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
-						try {
-							$profile = $this->get_service( 'analytics' )->management_profiles->insert( $option['accountID'], $option['propertyID'], $profile );
-						} catch ( Google_Service_Exception $e ) {
-							$restore_defer();
-							$message = $e->getErrors();
-							if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-								$message = $message[0]['message'];
+						if ( isset( $option['profileID'] ) ) {
+							if ( '0' === $option['profileID'] ) {
+								$restore_defer = $this->with_client_defer( false );
+								$profile       = new Google_Service_Analytics_Profile();
+								$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
+								try {
+									$profile = $this->get_service( 'analytics' )->management_profiles->insert( $option['accountID'], $option['propertyID'], $profile );
+								} catch ( Google_Service_Exception $e ) {
+									$restore_defer();
+									$message = $e->getErrors();
+									if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
+										$message = $message[0]['message'];
+									}
+									return new WP_Error( $e->getCode(), $message );
+								} catch ( Exception $e ) {
+									$restore_defer();
+									return new WP_Error( $e->getCode(), $e->getMessage() );
+								}
+								$restore_defer();
+								$option['profileID'] = $profile->id;
 							}
-							return new WP_Error( $e->getCode(), $message );
-						} catch ( Exception $e ) {
-							$restore_defer();
-							return new WP_Error( $e->getCode(), $e->getMessage() );
-						}
-						$restore_defer();
-						$option['profileID'] = $profile->id;
-					}
-					// Set default profile for new property.
-					if ( $is_new_property ) {
-						$restore_defer = $this->with_client_defer( false );
-						$property      = new Google_Service_Analytics_Webproperty();
-						$property->setDefaultProfileId( $option['profileID'] );
-						try {
-							$property = $this->get_service( 'analytics' )->management_webproperties->patch( $option['accountID'], $option['propertyID'], $property );
-						} catch ( Google_Service_Exception $e ) {
-							$restore_defer();
-							$message = $e->getErrors();
-							if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-								$message = $message[0]['message'];
+
+							// Set default profile for new property.
+							if ( $is_new_property ) {
+								$restore_defer = $this->with_client_defer( false );
+								$property      = new Google_Service_Analytics_Webproperty();
+								$property->setDefaultProfileId( $option['profileID'] );
+								try {
+									$property = $this->get_service( 'analytics' )->management_webproperties->patch( $option['accountID'], $option['propertyID'], $property );
+								} catch ( Google_Service_Exception $e ) {
+									$restore_defer();
+									$message = $e->getErrors();
+									if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
+										$message = $message[0]['message'];
+									}
+									return new WP_Error( $e->getCode(), $message );
+								} catch ( Exception $e ) {
+									$restore_defer();
+									return new WP_Error( $e->getCode(), $e->getMessage() );
+								}
+								$restore_defer();
 							}
-							return new WP_Error( $e->getCode(), $message );
-						} catch ( Exception $e ) {
-							$restore_defer();
-							return new WP_Error( $e->getCode(), $e->getMessage() );
 						}
-						$restore_defer();
 					}
 					$this->get_settings()->merge( $option );
 					return $this->get_settings()->get();

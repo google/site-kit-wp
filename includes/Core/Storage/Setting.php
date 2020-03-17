@@ -10,8 +10,6 @@
 
 namespace Google\Site_Kit\Core\Storage;
 
-use WP_Error;
-
 /**
  * Base class for a single setting.
  *
@@ -111,22 +109,6 @@ abstract class Setting {
 	}
 
 	/**
-	 * Validates the setting.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param mixed $value Setting value. Must be serializable if non-scalar.
-	 * @return mixed|WP_Error Validated setting value, or error object on failure.
-	 */
-	final public function validate( $value ) {
-		$callback = $this->get_validate_callback();
-		if ( $callback ) {
-			return $callback( $value );
-		}
-		return $value;
-	}
-
-	/**
 	 * Gets the expected value type.
 	 *
 	 * Returns 'string' by default for consistency with register_setting.
@@ -153,22 +135,6 @@ abstract class Setting {
 	 */
 	protected function get_default() {
 		return false;
-	}
-
-	/**
-	 * Gets the callback for validating the setting's value.
-	 *
-	 * This callback is used by {@see Setting::validate()}, as WordPress core
-	 * does not provide a mechanism for setting validation. The callback must
-	 * return the validated setting, or a WP_Error object.
-	 * Override in a sub-class.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return callable|null
-	 */
-	protected function get_validate_callback() {
-		return null;
 	}
 
 	/**

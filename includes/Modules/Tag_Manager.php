@@ -532,23 +532,20 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				}
 				return $this->get_tagmanager_service()->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
 			case 'POST:settings':
-				$option = $data->data;
-				$option = $this->get_settings()->validate( $option );
-				if ( is_wp_error( $option ) ) {
-					$option->add_data( array( 'status' => 400 ) );
-					return $option;
-				}
+				return function() use ( $data ) {
+					$option = $data->data;
 
-				return function() use ( $data, $option ) {
-					try {
-						if ( 'container_create' === $data['containerID'] ) {
-							$option['containerID'] = $this->create_container( $data['accountID'], self::USAGE_CONTEXT_WEB );
+					if ( isset( $option['accountID'] ) ) {
+						try {
+							if ( isset( $option['containerID'] ) && 'container_create' === $option['containerID'] ) {
+								$option['containerID'] = $this->create_container( $option['accountID'], self::USAGE_CONTEXT_WEB );
+							}
+							if ( isset( $option['ampContainerID'] ) && 'container_create' === $option['ampContainerID'] ) {
+								$option['ampContainerID'] = $this->create_container( $option['accountID'], self::USAGE_CONTEXT_AMP );
+							}
+						} catch ( Exception $e ) {
+							return $this->exception_to_error( $e, $data->datapoint );
 						}
-						if ( 'container_create' === $data['ampContainerID'] ) {
-							$option['ampContainerID'] = $this->create_container( $data['accountID'], self::USAGE_CONTEXT_AMP );
-						}
-					} catch ( Exception $e ) {
-						return $this->exception_to_error( $e, $data->datapoint );
 					}
 
 					$this->get_settings()->merge( $option );

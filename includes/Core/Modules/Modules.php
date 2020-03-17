@@ -724,15 +724,7 @@ final class Modules {
 			}
 		}
 
-		$settings = $module->get_settings();
-
-		$validated = $settings->validate( $data );
-		if ( is_wp_error( $validated ) ) {
-			$validated->add_data( array( 'status' => 400 ) );
-			return $validated;
-		}
-
-		if ( ! $settings->merge( $validated ) ) {
+		if ( ! $module->get_settings()->merge( $data ) ) {
 			return new WP_Error( 'updating_settings_failed', __( 'Updating settings failed.', 'google-site-kit' ), array( 'status' => 500 ) );
 		}
 
