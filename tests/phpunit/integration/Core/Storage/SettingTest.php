@@ -154,7 +154,7 @@ class SettingTest extends TestCase {
 		);
 
 		// With callback and valid value.
-		$this->assertSame( 1234, $setting->validate( $value ) );
+		$this->assertSame( 1234, $setting->validate( '1234' ) );
 
 		// With callback and invalid value.
 		$this->assertWPError( $setting->validate( '' ), 'Empty value.' );
