@@ -40,7 +40,6 @@ export default function AnonymizeIPSwitch( { useSelect, useDispatch } ) {
 			<Switch
 				id="anonymizeIP"
 				label={ __( 'Anonymize IP addresses', 'google-site-kit' ) }
-				// eslint-disable-next-line no-console
 				onClick={ onChange }
 				checked={ anonymizeIP }
 				hideLabel={ false }
