@@ -54,4 +54,17 @@ class Settings extends Module_Settings {
 			'propertyID' => '',
 		);
 	}
+
+	/**
+	 * Gets the callback for validating the setting's value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return callable|null
+	 */
+	protected function get_validate_callback() {
+		return function( $option ) {
+			return $this->validate_required_fields( $option, array( 'propertyID' ) );
+		};
+	}
 }

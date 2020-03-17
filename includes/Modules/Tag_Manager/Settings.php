@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules\Tag_Manager;
 
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Storage\Setting_With_Legacy_Keys_Trait;
+use Google\Site_Kit\Modules\Tag_Manager;
 
 /**
  * Class for Tag Manager settings.
@@ -57,6 +58,31 @@ class Settings extends Module_Settings {
 			'containerID'    => '',
 			'useSnippet'     => true,
 		);
+	}
+
+	/**
+	 * Gets the callback for validating the setting's value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return callable|null
+	 */
+	protected function get_validate_callback() {
+		return function( $option ) {
+			$required_fields = array( 'accountID' );
+
+			// 'usageContext' is not an actual sub-setting, but can be specified to modify requirements.
+			if ( isset( $option['usageContext'] ) && Tag_Manager::USAGE_CONTEXT_WEB === $option['usageContext'] ) {
+				$required_fields[] = 'containerID';
+			} elseif ( isset( $option['usageContext'] ) && Tag_Manager::USAGE_CONTEXT_AMP === $option['usageContext'] ) {
+				$required_fields[] = 'ampContainerID';
+			} else { // Otherwise, both container fields are required, e.g. for secondary AMP.
+				$required_fields[] = 'containerID';
+				$required_fields[] = 'ampContainerID';
+			}
+
+			return $this->validate_required_fields( $option, $required_fields );
+		};
 	}
 
 	/**

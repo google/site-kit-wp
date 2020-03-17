@@ -770,29 +770,14 @@ final class Analytics extends Module
 
 				return $this->get_analyticsreporting_service()->reports->batchGet( $body );
 			case 'POST:settings':
-				if ( ! isset( $data['accountID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
-				}
-				if ( ! isset( $data['propertyID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ), array( 'status' => 400 ) );
-				}
-				if ( ! isset( $data['internalWebPropertyID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalWebPropertyID' ), array( 'status' => 400 ) );
-				}
-				if ( ! isset( $data['profileID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileID' ), array( 'status' => 400 ) );
-				}
-				if ( ! isset( $data['useSnippet'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'useSnippet' ), array( 'status' => 400 ) );
+				$option = $data->data;
+				$option = $this->get_settings()->validate( $option );
+				if ( is_wp_error( $option ) ) {
+					$option->add_data( array( 'status' => 400 ) );
+					return $option;
 				}
 
-				return function() use ( $data ) {
-					$option          = $data->data;
+				return function() use ( $data, $option ) {
 					$is_new_property = false;
 
 					if ( '0' === $option['propertyID'] ) {

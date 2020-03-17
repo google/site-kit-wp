@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Modules;
 
 use Google\Site_Kit\Core\Storage\Setting;
+use WP_Error;
 
 /**
  * Base class for module settings.
@@ -106,10 +107,33 @@ abstract class Module_Settings extends Setting {
 	 */
 	protected function get_validate_callback() {
 		return function( $option ) {
-			if ( ! is_array( $option ) ) {
-				return new WP_Error( 'invalid_data_type', __( 'The value must be an associative array.', 'google-site-kit' ) );
-			}
-			return $option;
+			return $this->validate_required_fields( $option );
 		};
+	}
+
+	/**
+	 * Validates a module settings option against a list of required fields.
+	 *
+	 * This method also ensures the passed value is an array.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $option          Value to validate against required fields.
+	 * @param array $required_fields Optional. List of required fields. Default empty array.
+	 * @return mixed|WP_Error Validated setting value, or error object on failure.
+	 */
+	protected function validate_required_fields( $option, array $required_fields = array() ) {
+		if ( ! is_array( $option ) ) {
+			return new WP_Error( 'invalid_data_type', __( 'The value must be an associative array.', 'google-site-kit' ) );
+		}
+
+		foreach ( $required_fields as $field ) {
+			if ( ! isset( $option[ $field ] ) ) {
+				/* translators: %s: Missing field name */
+				return new WP_Error( 'missing_required_field', sprintf( __( 'Required field is empty: %s.', 'google-site-kit' ), $field ) );
+			}
+		}
+
+		return $option;
 	}
 }

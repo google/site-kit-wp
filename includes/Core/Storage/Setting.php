@@ -10,6 +10,8 @@
 
 namespace Google\Site_Kit\Core\Storage;
 
+use WP_Error;
+
 /**
  * Base class for a single setting.
  *

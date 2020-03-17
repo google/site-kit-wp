@@ -540,26 +540,14 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				}
 				return $this->get_tagmanager_service()->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
 			case 'POST:settings':
-				$required_params = array( 'accountID', 'usageContext' );
-
-				if ( self::USAGE_CONTEXT_WEB === $data['usageContext'] ) { // No AMP.
-					$required_params[] = $this->context_map[ self::USAGE_CONTEXT_WEB ];
-				} elseif ( self::USAGE_CONTEXT_AMP === $data['usageContext'] ) { // Primary AMP.
-					$required_params[] = $this->context_map[ self::USAGE_CONTEXT_AMP ];
-				} else { // Secondary AMP.
-					array_push( $required_params, ...array_values( $this->context_map ) );
+				$option = $data->data;
+				$option = $this->get_settings()->validate( $option );
+				if ( is_wp_error( $option ) ) {
+					$option->add_data( array( 'status' => 400 ) );
+					return $option;
 				}
 
-				foreach ( $required_params as $required_param ) {
-					if ( ! isset( $data[ $required_param ] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), $required_param ), array( 'status' => 400 ) );
-					}
-				}
-
-				return function() use ( $data ) {
-					$option = $data->data;
-
+				return function() use ( $data, $option ) {
 					try {
 						if ( 'container_create' === $data['containerID'] ) {
 							$option['containerID'] = $this->create_container( $data['accountID'], self::USAGE_CONTEXT_WEB );

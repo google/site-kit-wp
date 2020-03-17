@@ -84,6 +84,19 @@ class Settings extends Module_Settings {
 	}
 
 	/**
+	 * Gets the callback for validating the setting's value.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return callable|null
+	 */
+	protected function get_validate_callback() {
+		return function( $option ) {
+			return $this->validate_required_fields( $option, array( 'accountID', 'clientID' ) );
+		};
+	}
+
+	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
 	 * @since n.e.x.t
