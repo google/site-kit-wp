@@ -18,7 +18,7 @@ import AnalyticsDashboardWidgetSiteStats from 'GoogleModules/analytics/dashboard
 import DashboardAcquisitionPieChart from 'GoogleModules/analytics/dashboard/dashboard-widget-acquisition-piechart';
 import AnalyticsDashboardWidgetTopAcquisitionSources from 'GoogleModules/analytics/dashboard/dashboard-widget-top-acquisition-sources-table';
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
-import { AccountSelect, PropertySelect, ProfileSelect, AnonymizeIPSwitch } from '../assets/js/modules/analytics/common';
+import { AccountSelect, PropertySelect, ProfileSelect, AnonymizeIPSwitch, UseSnippetSwitch } from '../assets/js/modules/analytics/common';
 
 function SetupWrap( { children } ) {
 	return (
@@ -37,6 +37,7 @@ const defaultSelectors = {
 	getPropertyID: () => 'UA-1234567-1',
 	getProfileID: () => '987654321',
 	getAnonymizeIP: () => true,
+	getUseSnippet: () => true,
 	hasExistingTag: () => false,
 	getAccounts: () => [
 		{ id: '1234567', name: 'Test Account' },
@@ -124,6 +125,27 @@ storiesOf( 'Analytics Module', module )
 		return (
 			<SetupWrap>
 				<AnonymizeIPSwitch { ...dataProps } />
+			</SetupWrap>
+		);
+	} )
+	.add( 'Use Snippet switch, toggled on (default)', () => {
+		const dataProps = makeDataProps();
+
+		return (
+			<SetupWrap>
+				<UseSnippetSwitch { ...dataProps } />
+			</SetupWrap>
+		);
+	} )
+	.add( 'Use Snippet switch, toggled off', () => {
+		const dataProps = makeDataProps( {
+			...defaultSelectors,
+			getUseSnippet: () => false,
+		} );
+
+		return (
+			<SetupWrap>
+				<UseSnippetSwitch { ...dataProps } />
 			</SetupWrap>
 		);
 	} )
