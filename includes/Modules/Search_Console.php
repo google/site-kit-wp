@@ -247,6 +247,20 @@ final class Search_Console extends Module
 	}
 
 	/**
+	 * Returns a punycode version of a unicode URL.
+	 *
+	 * @param string $url The URL to decode.
+	 */
+	protected function decode_unicode_url( $url ) {
+		$parts = wp_parse_url( $url );
+		if ( ! $parts ) {
+			return $url;
+		}
+		$decoded = \Requests_IDNAEncoder::encode( $parts['host'] );
+		return $parts['scheme'] . '://' . $decoded . $parts['path'];
+	}
+
+	/**
 	 * Parses a response for the given datapoint.
 	 *
 	 * @since 1.0.0
@@ -260,9 +274,10 @@ final class Search_Console extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:matched-sites':
 				/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
-				$sites = $this->map_sites( (array) $response->getSiteEntry() );
-
-				$current_url                  = trailingslashit( $this->context->get_reference_site_url() );
+				$sites       = $this->map_sites( (array) $response->getSiteEntry() );
+				$current_url = trailingslashit( $this->context->get_reference_site_url() );
+				// Use the punycode version of unicode domains for comparisons.
+				$current_url                  = self::decode_unicode_url( $current_url );
 				$sufficient_permission_levels = array(
 					'siteRestrictedUser',
 					'siteOwner',
@@ -274,6 +289,8 @@ final class Search_Console extends Module
 						$sites,
 						function ( array $site ) use ( $current_url, $sufficient_permission_levels ) {
 							$site_url = trailingslashit( $site['siteURL'] );
+							// Use the punycode version of unicode domains for comparisons.
+							$site_url = self::decode_unicode_url( $site_url );
 							if ( 0 === strpos( $site_url, 'sc-domain:' ) ) {
 								$url_match = str_replace( array( 'http://', 'https://' ), 'sc-domain:', $current_url ) === $site_url;
 							} else {
