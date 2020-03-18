@@ -163,12 +163,16 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
  *
  * @param {number} number The number to format.
  * @param {Object} [options] Formatting options.
- * @param {string} [locale] Locale tag. Optional.
+ * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter}
+ *      For all available formatting options.
  *
  * @return {string} The formatted number.
  */
-export const numberFormat = ( number, options = {}, locale = getLocale() ) => {
-	return new Intl.NumberFormat( locale, options ).format( number );
+export const numberFormat = ( number, options = {} ) => {
+	const { locale = getLocale(), ...formatOptions } = options;
+
+	return new Intl.NumberFormat( locale, formatOptions ).format( number );
 };
 
 /**
