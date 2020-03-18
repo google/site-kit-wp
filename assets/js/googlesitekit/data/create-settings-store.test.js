@@ -213,6 +213,33 @@ describe( 'createSettingsStore store', () => {
 				expect( store.getState().settings ).toMatchObject( { ...serverValues } );
 			} );
 		} );
+
+		// Tests for "pseudo-action" setSetting, available via setting-specific "set{SettingSlug}".
+		describe( 'setSetting', () => {
+			it( 'has the correct action name', () => {
+				expect( Object.keys( storeDefinition.actions ) ).toEqual(
+					expect.arrayContaining( [ SETTING.action ] )
+				);
+			} );
+
+			it( 'returns the correct action type', () => {
+				const action = storeDefinition.actions[ SETTING.action ]( true );
+				expect( action.type ).toEqual( SETTING.actionType );
+			} );
+
+			it( 'requires the value param', () => {
+				expect( () => {
+					dispatch[ SETTING.action ]();
+				} ).toThrow( 'value is required.' );
+			} );
+
+			it( 'updates the respective setting', () => {
+				const value = 'new';
+
+				dispatch[ SETTING.action ]( value );
+				expect( store.getState().settings ).toMatchObject( { [ SETTING.slug ]: value } );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -320,6 +347,42 @@ describe( 'createSettingsStore store', () => {
 				// False after updating settings back to original server value on client.
 				dispatch.setSettings( serverValues );
 				expect( select.haveSettingsChanged() ).toEqual( false );
+			} );
+		} );
+
+		// Tests for "pseudo-selector" getSetting, available via setting-specific "get{SettingSlug}".
+		describe( 'getSetting', () => {
+			it( 'has the correct selector name', () => {
+				expect( Object.keys( storeDefinition.selectors ) ).toEqual(
+					expect.arrayContaining( [ SETTING.selector ] )
+				);
+			} );
+
+			it( 'uses a resolver to make a network request', async () => {
+				const value = 'serverside';
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/core\/site\/data\/settings/
+					)
+					.mockResponseOnce(
+						JSON.stringify( {
+							otherSetting: 'other-value',
+							[ SETTING.slug ]: value,
+						} ),
+						{ status: 200 }
+					);
+
+				// Setting will have its initial value while being fetched.
+				expect( select[ SETTING.selector ]() ).toEqual( undefined );
+				await subscribeUntil( registry,
+					() => (
+						select.getSettings() !== undefined
+					),
+				);
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( select[ SETTING.selector ]() ).toEqual( value );
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
 			} );
 		} );
 	} );
