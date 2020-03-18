@@ -39,6 +39,7 @@ import {
 } from '@wordpress/hooks';
 import {
 	_n,
+	__,
 	sprintf,
 } from '@wordpress/i18n';
 import { addQueryArgs, getQueryString } from '@wordpress/url';
@@ -135,11 +136,23 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
 
 	switch ( true ) {
 		case 1000000 < number :
-			return `${ numberFormat( number / 1000000, withSingleDecimal ) }M`;
+			return sprintf(
+				// translators: %s: an abbreviated number in millions.
+				__( '%sM', 'google-site-kit' ),
+				numberFormat( number / 1000000, withSingleDecimal )
+			);
 		case 99000 < number :
-			return `${ Math.round( number / 1000 ) }K`;
+			return sprintf(
+				// translators: %s: an abbreviated number in thousands.
+				__( '%sK', 'google-site-kit' ),
+				numberFormat( Math.round( number / 1000 ) )
+			);
 		case 1000 < number :
-			return `${ numberFormat( number / 1000, withSingleDecimal ) }K`;
+			return sprintf(
+				// translators: %s: an abbreviated number in thousands.
+				__( '%sK', 'google-site-kit' ),
+				numberFormat( number / 1000, withSingleDecimal )
+			);
 		default:
 			return parseInt( number ).toString();
 	}
