@@ -51,7 +51,7 @@ class PageSpeed_InsightsTest extends TestCase {
 				'autoActivate',
 				'internal',
 				'screenID',
-				'hasSettings',
+				'settings',
 				'provides',
 			),
 			array_keys( $info )

@@ -58,9 +58,8 @@ class OptimizeTest extends TestCase {
 				'autoActivate',
 				'internal',
 				'screenID',
-				'hasSettings',
-				'provides',
 				'settings',
+				'provides',
 			),
 			array_keys( $info )
 		);

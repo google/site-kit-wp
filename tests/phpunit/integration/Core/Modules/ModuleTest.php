@@ -43,7 +43,7 @@ class ModuleTest extends TestCase {
 				'slug'        => 'module-slug',
 				'name'        => 'module name',
 				'description' => 'module description',
-			) 
+			)
 		);
 
 		$this->assertTrue( isset( $module->slug ) );
@@ -75,7 +75,7 @@ class ModuleTest extends TestCase {
 			'autoActivate',
 			'internal',
 			'screenID',
-			'hasSettings',
+			'settings',
 		);
 
 		$this->assertEqualSets( $keys, array_keys( $module->prepare_info_for_js() ) );
@@ -112,7 +112,7 @@ class ModuleTest extends TestCase {
 			array(
 				'foo'     => 'bar',
 				'asArray' => true,
-			) 
+			)
 		);
 		$this->assertInternalType( 'array', $response );
 		$this->assertEquals( 'GET', $response['method'] );
@@ -122,7 +122,7 @@ class ModuleTest extends TestCase {
 				'foo'     => 'bar',
 				'asArray' => true,
 			),
-			$response['data'] 
+			$response['data']
 		);
 	}
 
