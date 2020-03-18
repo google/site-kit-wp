@@ -582,7 +582,7 @@ final class Modules {
 							$slug = $request['slug'];
 							try {
 								$module = $this->get_module( $slug );
-							} catch ( \Exception $e ) {
+							} catch ( Exception $e ) {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
 
@@ -599,7 +599,7 @@ final class Modules {
 							$slug = $request['slug'];
 							try {
 								$module = $this->get_module( $slug );
-							} catch ( \Exception $e ) {
+							} catch ( Exception $e ) {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
 
@@ -641,7 +641,7 @@ final class Modules {
 							$slug = $request['slug'];
 							try {
 								$module = $this->get_module( $slug );
-							} catch ( \Exception $e ) {
+							} catch ( Exception $e ) {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
 							$data = $module->get_data( $request['datapoint'], $request->get_params() );
@@ -658,7 +658,7 @@ final class Modules {
 							$slug = $request['slug'];
 							try {
 								$module = $this->get_module( $slug );
-							} catch ( \Exception $e ) {
+							} catch ( Exception $e ) {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
 							$data = isset( $request['data'] ) ? (array) $request['data'] : array();
