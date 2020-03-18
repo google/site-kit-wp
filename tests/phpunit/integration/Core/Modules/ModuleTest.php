@@ -224,7 +224,7 @@ class ModuleTest extends TestCase {
 				'reason'  => 'Insufficient permissions.',
 			),
 		);
-		$exception       = new Google_Service_Exception( json_encode( $response_errors ), 400, $response_errors );
+		$exception       = new Google_Service_Exception( json_encode( $response_errors ), 400, null, $response_errors );
 		$this->assertWPError( $error, $response_errors[0]['message'] );
 		$this->assertSame( 400, $error->get_error_code() );
 		$this->assertEqualSetsWithIndex(
