@@ -393,19 +393,19 @@ describe( 'createSettingsStore store', () => {
 				fetch
 					.mockResponseOnce( async ( req ) => {
 						if ( req.url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` ) ) {
-							return Promise.resolve( {
+							return {
 								body: JSON.stringify( response ),
 								init: { status: 200 },
-							} );
+							};
 						}
-						return Promise.resolve( {
+						return {
 							body: JSON.stringify( {
 								code: 'incorrect_api_endpoint',
 								message: 'Incorrect API endpoint',
 								data: { status: 400 },
 							} ),
 							init: { status: 400 },
-						} );
+						};
 					} );
 
 				const result = await storeDefinition.controls.FETCH_SETTINGS();
@@ -424,19 +424,19 @@ describe( 'createSettingsStore store', () => {
 				fetch
 					.mockResponseOnce( async ( req ) => {
 						if ( req.url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` ) ) {
-							return Promise.resolve( {
+							return {
 								body: JSON.stringify( response ),
 								init: { status: 200 },
-							} );
+							};
 						}
-						return Promise.resolve( {
+						return {
 							body: JSON.stringify( {
 								code: 'incorrect_api_endpoint',
 								message: 'Incorrect API endpoint',
 								data: { status: 400 },
 							} ),
 							init: { status: 400 },
-						} );
+						};
 					} );
 
 				const result = await storeDefinition.controls.FETCH_SAVE_SETTINGS( {} );
