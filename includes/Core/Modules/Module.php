@@ -708,13 +708,14 @@ abstract class Module {
 	 */
 	protected function exception_to_error( Exception $e, $datapoint ) {
 		$code = $e->getCode();
-		if ( empty( $code ) ) {
-			$code = 'unknown';
-		}
 
 		$message = $e->getMessage();
 		$status  = is_numeric( $code ) && $code ? (int) $code : 500;
 		$reason  = '';
+
+		if ( empty( $code ) ) {
+			$code = 'unknown';
+		}
 
 		if ( $e instanceof Google_Service_Exception ) {
 			$errors = $e->getErrors();
