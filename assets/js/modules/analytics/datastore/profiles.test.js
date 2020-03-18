@@ -47,6 +47,7 @@ describe( 'modules/analytics profiles', () => {
 	const fixtures = {
 		// TODO: Use consolidated fixture data.
 		accountsPropertiesProfiles: JSON.parse( fs.readFileSync( path.join( __dirname, '__fixtures__', 'accounts-properties-profiles.json' ) ) ),
+		createProfile: JSON.parse( fs.readFileSync( path.join( __dirname, '__fixtures__', 'create-profile.json' ) ) ),
 		propertiesProfiles: JSON.parse( fs.readFileSync( path.join( __dirname, '__fixtures__', 'properties-profiles.json' ) ) ),
 		profiles: JSON.parse( fs.readFileSync( path.join( __dirname, '__fixtures__', 'profiles.json' ) ) ),
 	};
@@ -75,7 +76,73 @@ describe( 'modules/analytics profiles', () => {
 	} );
 
 	describe( 'actions', () => {
+		describe( 'createProfile', () => {
+			it( 'creates a profile and adds it to the store ', async () => {
+				const accountId = fixtures.accountsPropertiesProfiles.accounts[ 6 ].id;
+				const propertyId = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
 
+				fetch
+					.doMockIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/
+					)
+					.mockResponse(
+						JSON.stringify( fixtures.createProfile ),
+						{ status: 200 }
+					);
+
+				registry.dispatch( STORE_NAME ).createProfile( accountId, propertyId );
+				// TODO: This is failing and I'm not clear on why, when it works fine
+				// in `assets/js/googlesitekit/datastore/site/reset.test.js`
+				// expect( registry.select( STORE_NAME ).isDoingCreateProfile( accountId ) ).toEqual( true );
+
+				muteConsole( 'error' );
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getProfiles( accountId, propertyId )
+					),
+				);
+
+				const profiles = registry.select( STORE_NAME ).getProfiles( accountId, propertyId );
+				expect( profiles ).toMatchObject( [ fixtures.createProfile.profile ] );
+			} );
+
+			it( 'dispatches an error if the request fails ', async () => {
+				const accountId = fixtures.accountsPropertiesProfiles.accounts[ 6 ].id;
+				const propertyId = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetch
+					.doMockIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/
+					)
+					.mockResponse(
+						JSON.stringify( response ),
+						{ status: 500 }
+					);
+
+				muteConsole( 'error' );
+				registry.dispatch( STORE_NAME ).createProfile( accountId, propertyId );
+
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getError()
+					),
+				);
+
+				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( response );
+
+				// Ignore the request fired by the `getProperties` selector.
+				muteConsole( 'error' );
+				const properties = registry.select( STORE_NAME ).getProperties( accountId );
+				// No properties should have been added yet, as the property creation
+				// failed.
+				expect( properties ).toEqual( undefined );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {

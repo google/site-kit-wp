@@ -25,22 +25,115 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from './index';
 
 // Actions
+const FETCH_CREATE_PROFILE = 'FETCH_CREATE_PROFILE';
 const FETCH_PROFILES = 'FETCH_PROFILES';
+const RECEIVE_CREATE_PROFILE = 'RECEIVE_CREATE_PROFILE';
+const RECEIVE_CREATE_PROFILE_FAILED = 'RECEIVE_CREATE_PROFILE_FAILED';
 const RECEIVE_PROFILES = 'RECEIVE_PROFILES';
 const RECEIVE_PROFILES_FAILED = 'RECEIVE_PROFILES_FAILED';
 
 export const INITIAL_STATE = {
+	isDoingCreateProfile: {},
 	isFetchingProfiles: {},
 	profiles: undefined,
 };
 
 export const actions = {
+	/**
+	 * Creates a new Analytics profile.
+	 *
+	 * Creates a new Analytics profile for an existing Google Analytics
+	 * account + property combination.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} accountId Google Analytics account ID.
+	 * @param {string} propertyId Google Analytics property ID.
+	 * @return {Function} Generator function action.
+	 */
+	*createProfile( accountId, propertyId ) {
+		invariant( accountId, 'accountId is required.' );
+		invariant( propertyId, 'propertyId is required.' );
+
+		try {
+			const response = yield actions.fetchCreateProfile( accountId, propertyId );
+
+			const { profile } = response;
+
+			yield actions.receiveCreateProfile( { accountId, propertyId, profile } );
+			yield Data.dispatch( STORE_NAME ).setProfileID( profile.id );
+			return;
+		} catch ( error ) {
+			// TODO: Implement an error handler store or some kind of centralized
+			// place for error dispatch...
+			return actions.receiveCreateProfileFailed( { accountId, error, propertyId } );
+		}
+	},
+
+	*fetchCreateProfile( accountId, propertyId ) {
+		return {
+			payload: { accountId, propertyId },
+			type: FETCH_CREATE_PROFILE,
+		};
+	},
+
 	*fetchProfiles( accountId, propertyId ) {
 		return {
 			payload: { accountId, propertyId },
 			type: FETCH_PROFILES,
+		};
+	},
+
+	/**
+	 * Adds a property to the data store.
+	 *
+	 * Adds the newly-created property to the existing properties in
+	 * the data store.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} args Argument params.
+	 * @param {string} args.accountId Google Analytics account ID.
+	 * @param {string} args.propertyId Google Analytics profile ID.
+	 * @param {Object} args.profile Google Analytics profile object.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveCreateProfile( { accountId, propertyId, profile } ) {
+		invariant( accountId, 'accountId is required.' );
+		invariant( propertyId, 'propertyId is required.' );
+		invariant( profile, 'profile is required.' );
+
+		return {
+			payload: { accountId, propertyId, profile },
+			type: RECEIVE_CREATE_PROFILE,
+		};
+	},
+
+	/**
+	 * Logs an error with profile creation.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} args Argument params.
+	 * @param {string} args.accountId Google Analytics account ID.
+	 * @param {string} args.propertyId Google Analytics property ID.
+	 * @param {Object} args.error Error object.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveCreateProfileFailed( { accountId, error, propertyId } ) {
+		invariant( accountId, 'accountId is required' );
+		invariant( error, 'error is required.' );
+		invariant( propertyId, 'propertyId is required.' );
+
+		return {
+			payload: { accountId, error, propertyId },
+			type: RECEIVE_CREATE_PROFILE_FAILED,
 		};
 	},
 
@@ -68,13 +161,34 @@ export const actions = {
 };
 
 export const controls = {
-	[ FETCH_PROFILES ]: ( accountId, profileId ) => {
-		return API.get( 'modules', 'analytics', 'profiles', { accountID: accountId, profileID: profileId } );
+	[ FETCH_CREATE_PROFILE ]: ( accountId, propertyId ) => {
+		return API.set( 'modules', 'analytics', 'create-profile', {
+			accountID: accountId,
+			propertyID: propertyId,
+		} );
+	},
+	[ FETCH_PROFILES ]: ( accountId, propertyId ) => {
+		return API.get( 'modules', 'analytics', 'profiles', {
+			accountID: accountId,
+			propertyID: propertyId,
+		} );
 	},
 };
 
 export const reducer = ( state, action ) => {
 	switch ( action.type ) {
+		case FETCH_CREATE_PROFILE: {
+			const { accountId, propertyId } = action.payload;
+
+			return {
+				...state,
+				isDoingCreateProperty: {
+					...state.isDoingCreateProperty,
+					[ `${ accountId }::${ propertyId }` ]: true,
+				},
+			};
+		}
+
 		case FETCH_PROFILES: {
 			const { accountId, propertyId } = action.payload;
 
@@ -83,6 +197,35 @@ export const reducer = ( state, action ) => {
 				isFetchingProfiles: {
 					...state.isFetchingProfiles,
 					[ `${ accountId }::${ propertyId }` ]: true,
+				},
+			};
+		}
+
+		case RECEIVE_CREATE_PROFILE: {
+			const { accountId, propertyId, profile } = action.payload;
+
+			return {
+				...state,
+				isDoingCreateProfile: {
+					...state.isDoingCreateProfile,
+					[ `${ accountId }::${ propertyId }` ]: false,
+				},
+				profiles: [
+					...state.profiles || [],
+					profile,
+				],
+			};
+		}
+
+		case RECEIVE_CREATE_PROFILE_FAILED: {
+			const { accountId, error, propertyId } = action.payload;
+
+			return {
+				...state,
+				error,
+				isDoingCreateProfile: {
+					...state.isDoingCreateProfile,
+					[ `${ accountId }::${ propertyId }` ]: false,
 				},
 			};
 		}

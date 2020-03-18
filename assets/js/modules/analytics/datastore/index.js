@@ -32,15 +32,17 @@ import tags from './tags';
 
 export const STORE_NAME = 'modules/analytics';
 
-const baseModuleStore = createModuleStore( 'analytics', { settingSlugs: [
-	'anonymizeIP',
-	'accountID',
-	'profileID',
-	'propertyID',
-	'internalWebPropertyID',
-	'useSnippet',
-	'trackingDisabled',
-] } );
+const baseModuleStore = createModuleStore( 'analytics', {
+	settingSlugs: [
+		'anonymizeIP',
+		'accountID',
+		'profileID',
+		'propertyID',
+		'internalWebPropertyID',
+		'useSnippet',
+		'trackingDisabled',
+	],
+} );
 
 export const INITIAL_STATE = Data.collectState(
 	baseModuleStore.INITIAL_STATE,
