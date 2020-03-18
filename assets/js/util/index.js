@@ -23,6 +23,7 @@ import {
 	isEqual,
 	isNull,
 	isUndefined,
+	get,
 	unescape,
 } from 'lodash';
 import data, { TYPE_CORE } from 'GoogleComponents/data';
@@ -169,19 +170,28 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
  * Internationalization Number Format.
  *
  * @param {number} number The number to format.
- * @param {string} locale Optional, locale to format as amount, default to Browser's locale.
+ * @param {Object} [options] Formatting options.
+ * @param {string} [locale] Locale tag. Optional.
  *
  * @return {string} The formatted number.
  */
-export const numberFormat = ( number, locale = '' ) => {
-	if ( ! locale ) {
-		locale = navigator.language;
+export const numberFormat = ( number, options = {}, locale = getLocale() ) => {
+	return new Intl.NumberFormat( locale, options ).format( number );
+};
+
+/**
+ * Gets the current locale for use with browser APIs.
+ *
+ * @return {string} Current Site Kit locale if set, otherwise the current language set by the browser.
+ */
+export const getLocale = () => {
+	const siteKitLocale = get( global, [ 'googlesitekit', 'locale', '', 'lang' ] );
+
+	if ( siteKitLocale ) {
+		return siteKitLocale.replace( '_', '-' );
 	}
 
-	// This line to make sure we use lower case local format, ex: en-us.
-	locale = locale.replace( '_', '-' ).toLocaleLowerCase();
-
-	return new Intl.NumberFormat( locale ).format( number );
+	return global.navigator.language;
 };
 
 /**
