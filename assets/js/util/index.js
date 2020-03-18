@@ -175,6 +175,7 @@ export const numberFormat = ( number, options = {}, locale = getLocale() ) => {
  * Gets the current locale for use with browser APIs.
  *
  * @return {string} Current Site Kit locale if set, otherwise the current language set by the browser.
+ *                  E.g. `en-US` or `de-DE`
  */
 export const getLocale = () => {
 	const siteKitLocale = get( global, [ 'googlesitekit', 'locale', '', 'lang' ] );
