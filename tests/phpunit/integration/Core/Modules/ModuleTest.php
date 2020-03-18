@@ -13,6 +13,8 @@ namespace Google\Site_Kit\Tests\Core\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\Google_Service_Exception;
+use Exception;
 
 /**
  * @group Modules
@@ -184,6 +186,53 @@ class ModuleTest extends TestCase {
 		$this->assertEqualSets(
 			array( 'test-request' ),
 			$module->get_datapoints()
+		);
+	}
+
+	public function test_exception_to_error() {
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		// Regular exception.
+		$exception = new Exception( 'This is an error.' );
+		$error     = $module->exception_to_error( $exception, 'test' );
+		$this->assertWPError( $error, 'This is an error.' );
+		$this->assertSame( 'unknown', $error->get_error_code() );
+		$this->assertEqualSetsWithIndex(
+			array(
+				'status' => 500,
+				'reason' => '',
+			),
+			$error->get_error_data()
+		);
+
+		// Google service exception without JSON response body.
+		$exception = new Google_Service_Exception( 'FATAL', 500 );
+		$this->assertWPError( $error, 'FATAL' );
+		$this->assertSame( 500, $error->get_error_code() );
+		$this->assertEqualSetsWithIndex(
+			array(
+				'status' => 500,
+				'reason' => '',
+			),
+			$error->get_error_data()
+		);
+
+		// Google service exception with JSON response body.
+		$response_errors = array(
+			array(
+				'message' => 'Bad request.',
+				'reason'  => 'Insufficient permissions.',
+			),
+		);
+		$exception       = new Google_Service_Exception( json_encode( $response_errors ), 400, $response_errors );
+		$this->assertWPError( $error, $response_errors[0]['message'] );
+		$this->assertSame( 400, $error->get_error_code() );
+		$this->assertEqualSetsWithIndex(
+			array(
+				'status' => 400,
+				'reason' => $response_errors[0]['reason'],
+			),
+			$error->get_error_data()
 		);
 	}
 }
