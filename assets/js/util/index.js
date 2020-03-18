@@ -154,7 +154,7 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
 				numberFormat( number / 1000, withSingleDecimal )
 			);
 		default:
-			return parseInt( number ).toString();
+			return number.toString();
 	}
 };
 
