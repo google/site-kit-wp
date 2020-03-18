@@ -116,8 +116,6 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 			__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
 		);
 
-		$info['settings'] = $this->get_settings()->get();
-
 		// Clear datapoints that don't need to be localized.
 		$idenfifier_args = array(
 			'source' => 'site-kit',

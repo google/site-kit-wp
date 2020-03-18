@@ -75,14 +75,6 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 			__( 'Probability and confidence calculations', 'google-site-kit' ),
 		);
 
-		$optimize_id         = $this->get_data( 'optimize-id' );
-		$amp_experiment_json = $this->get_data( 'amp-experiment-json' );
-
-		$info['settings'] = array(
-			'optimizeID'        => ! is_wp_error( $optimize_id ) ? $optimize_id : false,
-			'ampExperimentJSON' => ! is_wp_error( $amp_experiment_json ) ? $amp_experiment_json : '',
-		);
-
 		return $info;
 	}
 
