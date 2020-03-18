@@ -37,12 +37,6 @@ import {
 } from 'tests/js/utils';
 import { createSettingsStore } from './create-settings-store';
 
-const SETTING = {
-	slug: 'testSetting',
-	action: 'setTestSetting',
-	selector: 'getTestSetting',
-	actionType: 'SET_TEST_SETTING',
-};
 const STORE_ARGS = [ 'core', 'site', 'settings' ];
 
 describe( 'createSettingsStore store', () => {
@@ -61,7 +55,7 @@ describe( 'createSettingsStore store', () => {
 		registry = createRegistry();
 
 		storeDefinition = createSettingsStore( ...STORE_ARGS, {
-			settingSlugs: [ SETTING.slug ],
+			settingSlugs: [ 'isSkyBlue' ],
 			registry,
 		} );
 		registry.registerStore( storeDefinition.STORE_NAME, storeDefinition );
@@ -218,26 +212,28 @@ describe( 'createSettingsStore store', () => {
 		describe( 'setSetting', () => {
 			it( 'has the correct action name', () => {
 				expect( Object.keys( storeDefinition.actions ) ).toEqual(
-					expect.arrayContaining( [ SETTING.action ] )
+					// "isSkyBlue" should turn into "setIsSkyBlue".
+					expect.arrayContaining( [ 'setIsSkyBlue' ] )
 				);
 			} );
 
 			it( 'returns the correct action type', () => {
-				const action = storeDefinition.actions[ SETTING.action ]( true );
-				expect( action.type ).toEqual( SETTING.actionType );
+				const action = storeDefinition.actions.setIsSkyBlue( true );
+				// "isSkyBlue" should turn into "SET_IS_SKY_BLUE".
+				expect( action.type ).toEqual( 'SET_IS_SKY_BLUE' );
 			} );
 
 			it( 'requires the value param', () => {
 				expect( () => {
-					dispatch[ SETTING.action ]();
+					dispatch.setIsSkyBlue();
 				} ).toThrow( 'value is required.' );
 			} );
 
 			it( 'updates the respective setting', () => {
 				const value = 'new';
 
-				dispatch[ SETTING.action ]( value );
-				expect( store.getState().settings ).toMatchObject( { [ SETTING.slug ]: value } );
+				dispatch.setIsSkyBlue( value );
+				expect( store.getState().settings ).toMatchObject( { isSkyBlue: value } );
 			} );
 		} );
 	} );
@@ -354,7 +350,8 @@ describe( 'createSettingsStore store', () => {
 		describe( 'getSetting', () => {
 			it( 'has the correct selector name', () => {
 				expect( Object.keys( storeDefinition.selectors ) ).toEqual(
-					expect.arrayContaining( [ SETTING.selector ] )
+					// "isSkyBlue" should turn into "getIsSkyBlue".
+					expect.arrayContaining( [ 'getIsSkyBlue' ] )
 				);
 			} );
 
@@ -367,13 +364,13 @@ describe( 'createSettingsStore store', () => {
 					.mockResponseOnce(
 						JSON.stringify( {
 							otherSetting: 'other-value',
-							[ SETTING.slug ]: value,
+							isSkyBlue: value,
 						} ),
 						{ status: 200 }
 					);
 
 				// Setting will have its initial value while being fetched.
-				expect( select[ SETTING.selector ]() ).toEqual( undefined );
+				expect( select.getIsSkyBlue() ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
 						select.getSettings() !== undefined
@@ -381,7 +378,7 @@ describe( 'createSettingsStore store', () => {
 				);
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
-				expect( select[ SETTING.selector ]() ).toEqual( value );
+				expect( select.getIsSkyBlue() ).toEqual( value );
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 			} );
 		} );
