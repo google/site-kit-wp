@@ -207,6 +207,7 @@ class ModuleTest extends TestCase {
 
 		// Google service exception without JSON response body.
 		$exception = new Google_Service_Exception( 'FATAL', 500 );
+		$error     = $module->exception_to_error( $exception, 'test' );
 		$this->assertWPError( $error, 'FATAL' );
 		$this->assertSame( 500, $error->get_error_code() );
 		$this->assertEqualSetsWithIndex(
@@ -225,6 +226,7 @@ class ModuleTest extends TestCase {
 			),
 		);
 		$exception       = new Google_Service_Exception( json_encode( $response_errors ), 400, null, $response_errors );
+		$error           = $module->exception_to_error( $exception, 'test' );
 		$this->assertWPError( $error, $response_errors[0]['message'] );
 		$this->assertSame( 400, $error->get_error_code() );
 		$this->assertEqualSetsWithIndex(
