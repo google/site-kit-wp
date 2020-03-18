@@ -28,7 +28,6 @@ use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DateRangeValu
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_Report;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_ReportData;
-use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsRequest;
@@ -780,16 +779,9 @@ final class Analytics extends Module
 							$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 							try {
 								$property = $this->get_service( 'analytics' )->management_webproperties->insert( $option['accountID'], $property );
-							} catch ( Google_Service_Exception $e ) {
-								$restore_defer();
-								$message = $e->getErrors();
-								if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-									$message = $message[0]['message'];
-								}
-								return new WP_Error( $e->getCode(), $message );
 							} catch ( Exception $e ) {
 								$restore_defer();
-								return new WP_Error( $e->getCode(), $e->getMessage() );
+								return $this->exception_to_error( $e, $data->datapoint );
 							}
 							$restore_defer();
 							/* @var Google_Service_Analytics_Webproperty $property Property instance. */
@@ -803,16 +795,9 @@ final class Analytics extends Module
 								$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
 								try {
 									$profile = $this->get_service( 'analytics' )->management_profiles->insert( $option['accountID'], $option['propertyID'], $profile );
-								} catch ( Google_Service_Exception $e ) {
-									$restore_defer();
-									$message = $e->getErrors();
-									if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-										$message = $message[0]['message'];
-									}
-									return new WP_Error( $e->getCode(), $message );
 								} catch ( Exception $e ) {
 									$restore_defer();
-									return new WP_Error( $e->getCode(), $e->getMessage() );
+									return $this->exception_to_error( $e, $data->datapoint );
 								}
 								$restore_defer();
 								$option['profileID'] = $profile->id;
@@ -825,16 +810,9 @@ final class Analytics extends Module
 								$property->setDefaultProfileId( $option['profileID'] );
 								try {
 									$property = $this->get_service( 'analytics' )->management_webproperties->patch( $option['accountID'], $option['propertyID'], $property );
-								} catch ( Google_Service_Exception $e ) {
-									$restore_defer();
-									$message = $e->getErrors();
-									if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-										$message = $message[0]['message'];
-									}
-									return new WP_Error( $e->getCode(), $message );
 								} catch ( Exception $e ) {
 									$restore_defer();
-									return new WP_Error( $e->getCode(), $e->getMessage() );
+									return $this->exception_to_error( $e, $data->datapoint );
 								}
 								$restore_defer();
 							}
