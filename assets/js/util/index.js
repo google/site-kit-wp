@@ -21,8 +21,8 @@
 import {
 	map,
 	isEqual,
-	isNull,
-	isUndefined,
+	isFinite,
+	get,
 	unescape,
 } from 'lodash';
 import data, { TYPE_CORE } from 'GoogleComponents/data';
@@ -39,6 +39,7 @@ import {
 } from '@wordpress/hooks';
 import {
 	_n,
+	__,
 	sprintf,
 } from '@wordpress/i18n';
 import { addQueryArgs, getQueryString } from '@wordpress/url';
@@ -115,73 +116,79 @@ export const removeURLParameter = ( url, parameter ) => {
  * @return {string} The formatted number.
  */
 export const readableLargeNumber = ( number, currencyCode = false ) => {
-	let readableNumber;
+	// Cast parseable values to numeric types.
+	number = isFinite( number ) ? number : Number( number );
 
-	// Handle passed data undefined.
-	if ( isUndefined( number ) ) {
-		readableNumber = 0;
-	} else if ( 1000000 < number ) {
-		number = number / 1000000;
-		readableNumber = number.toFixed( 1 ) + 'M';
-	} else if ( 1000 < number ) {
-		number = number / 1000;
-		if ( 99 < number ) {
-			readableNumber = Math.round( number ) + 'K';
-		} else {
-			readableNumber = number.toFixed( 1 ) + 'K';
-		}
-	} else {
-		readableNumber = number;
-	}
-
-	// Handle errors after calculations.
-	if ( isNull( number ) || isUndefined( number ) || isNaN( number ) ) {
-		readableNumber = '';
+	if ( ! isFinite( number ) ) {
+		// eslint-disable-next-line no-console
+		console.warn( 'Invalid number', number, typeof number );
 		number = 0;
 	}
 
-	if ( 0 === number ) {
-		readableNumber = '0.00';
-		return currencyCode
-			? new Intl.NumberFormat( navigator.language, { style: 'currency', currency: currencyCode } ).format( number )
-			: number;
+	if ( currencyCode ) {
+		return numberFormat( number, { style: 'currency', currency: currencyCode } );
 	}
 
-	// Format as amount if currencyCode is passed.
-	if ( false !== currencyCode && '' !== readableNumber ) {
-		const formatedParts = new Intl.NumberFormat( navigator.language, { style: 'currency', currency: currencyCode } ).formatToParts( number );
+	const withSingleDecimal = {
+		minimumFractionDigits: 1,
+		maximumFractionDigits: 1,
+	};
 
-		const decimal = formatedParts.find( ( part ) => 'decimal' === part.type );
-		if ( ! isUndefined( decimal ) && ! isUndefined( decimal.value ) && 1000 > number ) {
-			readableNumber = Number.isInteger( number ) ? number : number.replace( '.', decimal.value );
-		}
-
-		const currencyFound = formatedParts.find( ( part ) => 'currency' === part.type );
-		const currency = currencyFound ? currencyFound.value : '';
-
-		return `${ currency }${ readableNumber }`;
+	switch ( true ) {
+		case 1000000 < number :
+			return sprintf(
+				// translators: %s: an abbreviated number in millions.
+				__( '%sM', 'google-site-kit' ),
+				numberFormat( number / 1000000, withSingleDecimal )
+			);
+		case 99000 < number :
+			return sprintf(
+				// translators: %s: an abbreviated number in thousands.
+				__( '%sK', 'google-site-kit' ),
+				numberFormat( Math.round( number / 1000 ) )
+			);
+		case 1000 < number :
+			return sprintf(
+				// translators: %s: an abbreviated number in thousands.
+				__( '%sK', 'google-site-kit' ),
+				numberFormat( number / 1000, withSingleDecimal )
+			);
+		default:
+			return number.toString();
 	}
-
-	return readableNumber.toString();
 };
 
 /**
  * Internationalization Number Format.
  *
  * @param {number} number The number to format.
- * @param {string} locale Optional, locale to format as amount, default to Browser's locale.
+ * @param {Object} [options] Formatting options.
+ * @param {string} [options.locale] Locale to use for formatting. Defaults to current locale used by Site Kit.
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/NumberFormat/NumberFormat|`options` parameter}
+ *      For all available formatting options.
  *
  * @return {string} The formatted number.
  */
-export const numberFormat = ( number, locale = '' ) => {
-	if ( ! locale ) {
-		locale = navigator.language;
+export const numberFormat = ( number, options = {} ) => {
+	const { locale = getLocale(), ...formatOptions } = options;
+
+	return new Intl.NumberFormat( locale, formatOptions ).format( number );
+};
+
+/**
+ * Gets the current locale for use with browser APIs.
+ *
+ * @return {string} Current Site Kit locale if set, otherwise the current language set by the browser.
+ *                  E.g. `en-US` or `de-DE`
+ */
+export const getLocale = () => {
+	const siteKitLocale = get( global, [ 'googlesitekit', 'locale', '', 'lang' ] );
+
+	if ( siteKitLocale ) {
+		return siteKitLocale.replace( '_', '-' );
 	}
 
-	// This line to make sure we use lower case local format, ex: en-us.
-	locale = locale.replace( '_', '-' ).toLocaleLowerCase();
-
-	return new Intl.NumberFormat( locale ).format( number );
+	return global.navigator.language;
 };
 
 /**
