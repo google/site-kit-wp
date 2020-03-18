@@ -173,8 +173,6 @@ final class Analytics extends Module
 			__( 'Top acquisition sources', 'google-site-kit' ),
 		);
 
-		$info['settings'] = $this->get_settings()->get();
-
 		return $info;
 	}
 

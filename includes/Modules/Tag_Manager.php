@@ -140,8 +140,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			__( 'Create tags without updating code', 'google-site-kit' ),
 		);
 
-		$info['settings'] = $this->get_settings()->get();
-
 		return $info;
 	}
 

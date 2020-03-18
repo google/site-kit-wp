@@ -206,14 +206,12 @@ class SettingsModule extends Component {
 
 		const dependentModules = map( this.getDependentModules(), 'name' ).join( ', ' );
 
-		const nothingToSave = 'pagespeed-insights' === slug;
-
 		// Set button text based on state.
 		let buttonText = __( 'Close', 'google-site-kit' );
 		if ( hasSettings && setupComplete ) {
 			if ( isSavingModule ) {
 				buttonText = __( 'Saving...', 'google-site-kit' );
-			} else if ( nothingToSave === false ) {
+			} else {
 				buttonText = __( 'Confirm Changes', 'google-site-kit' );
 			}
 		}
@@ -349,7 +347,7 @@ class SettingsModule extends Component {
 											{ isEditing[ moduleKey ] || isSavingModule ? (
 												<Fragment>
 													<Button
-														onClick={ () => handleEdit( moduleKey, setupComplete ? 'confirm' : 'cancel', nothingToSave ) }
+														onClick={ () => handleEdit( moduleKey, hasSettings && setupComplete ? 'confirm' : 'cancel' ) }
 														disabled={ isSavingModule }
 														id={ hasSettings && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
 													>
@@ -366,7 +364,7 @@ class SettingsModule extends Component {
 													</Link>
 													}
 												</Fragment>
-											) : ( hasSettings &&
+											) : ( ( hasSettings || ! autoActivate ) &&
 											<Link
 												className="googlesitekit-settings-module__edit-button"
 												onClick={ () => {
