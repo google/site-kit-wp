@@ -158,7 +158,7 @@ class SettingsModules extends Component {
 				homepage={ module.homepage }
 				learnmore={ module.learnMore }
 				active={ module.active }
-				hasSettings={ module.hasSettings }
+				hasSettings={ !! module.settings }
 				autoActivate={ module.autoActivate }
 				updateModulesList={ this.updateModulesList }
 				handleEdit={ this.handleButtonAction }
