@@ -21,8 +21,7 @@
 import {
 	map,
 	isEqual,
-	isNull,
-	isUndefined,
+	isFinite,
 	get,
 	unescape,
 } from 'lodash';
@@ -116,54 +115,34 @@ export const removeURLParameter = ( url, parameter ) => {
  * @return {string} The formatted number.
  */
 export const readableLargeNumber = ( number, currencyCode = false ) => {
-	let readableNumber;
+	// Cast parseable values to numeric types.
+	number = isFinite( number ) ? number : Number( number );
 
-	// Handle passed data undefined.
-	if ( isUndefined( number ) ) {
-		readableNumber = 0;
-	} else if ( 1000000 < number ) {
-		number = number / 1000000;
-		readableNumber = number.toFixed( 1 ) + 'M';
-	} else if ( 1000 < number ) {
-		number = number / 1000;
-		if ( 99 < number ) {
-			readableNumber = Math.round( number ) + 'K';
-		} else {
-			readableNumber = number.toFixed( 1 ) + 'K';
-		}
-	} else {
-		readableNumber = number;
-	}
-
-	// Handle errors after calculations.
-	if ( isNull( number ) || isUndefined( number ) || isNaN( number ) ) {
-		readableNumber = '';
+	if ( ! isFinite( number ) ) {
+		// eslint-disable-next-line no-console
+		console.warn( 'Invalid number', number, typeof number );
 		number = 0;
 	}
 
-	if ( 0 === number ) {
-		readableNumber = '0.00';
-		return currencyCode
-			? new Intl.NumberFormat( navigator.language, { style: 'currency', currency: currencyCode } ).format( number )
-			: number;
+	if ( currencyCode ) {
+		return numberFormat( number, { style: 'currency', currency: currencyCode } );
 	}
 
-	// Format as amount if currencyCode is passed.
-	if ( false !== currencyCode && '' !== readableNumber ) {
-		const formatedParts = new Intl.NumberFormat( navigator.language, { style: 'currency', currency: currencyCode } ).formatToParts( number );
+	const withSingleDecimal = {
+		minimumFractionDigits: 1,
+		maximumFractionDigits: 1,
+	};
 
-		const decimal = formatedParts.find( ( part ) => 'decimal' === part.type );
-		if ( ! isUndefined( decimal ) && ! isUndefined( decimal.value ) && 1000 > number ) {
-			readableNumber = Number.isInteger( number ) ? number : number.replace( '.', decimal.value );
-		}
-
-		const currencyFound = formatedParts.find( ( part ) => 'currency' === part.type );
-		const currency = currencyFound ? currencyFound.value : '';
-
-		return `${ currency }${ readableNumber }`;
+	switch ( true ) {
+		case 1000000 < number :
+			return `${ numberFormat( number / 1000000, withSingleDecimal ) }M`;
+		case 99000 < number :
+			return `${ Math.round( number / 1000 ) }K`;
+		case 1000 < number :
+			return `${ numberFormat( number / 1000, withSingleDecimal ) }K`;
+		default:
+			return parseInt( number ).toString();
 	}
-
-	return readableNumber.toString();
 };
 
 /**
