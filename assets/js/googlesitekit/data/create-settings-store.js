@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isEqual } from 'lodash';
 
 /**
  * Internal dependencies
@@ -159,7 +160,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			} catch ( err ) {
 				// TODO: Implement an error handler store or some kind of centralized
 				// place for error dispatch...
-				return actions.receiveResetFailed();
+				return actions.receiveSaveSettingsFailed();
 			}
 		},
 
@@ -194,7 +195,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			invariant( values, 'values is required.' );
 
 			return {
-				payload: {},
+				payload: { values },
 				type: RECEIVE_SAVE_SETTINGS,
 			};
 		},
@@ -346,7 +347,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		haveSettingsChanged( state ) {
 			const { settings, savedSettings } = state;
 
-			return settings !== savedSettings;
+			return ! isEqual( settings, savedSettings );
 		},
 
 		/**
