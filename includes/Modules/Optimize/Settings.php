@@ -56,4 +56,22 @@ class Settings extends Module_Settings {
 			'optimizeID'        => '',
 		);
 	}
+
+	/**
+	 * Gets the callback for sanitizing the setting's value before saving.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return callable|null
+	 */
+	protected function get_sanitize_callback() {
+		return function( $option ) {
+			if ( is_array( $option ) ) {
+				if ( isset( $option['ampExperimentJSON'] ) && is_string( $option['ampExperimentJSON'] ) ) {
+					$option['ampExperimentJSON'] = json_decode( $option['ampExperimentJSON'] );
+				}
+			}
+			return $option;
+		};
+	}
 }
