@@ -90,9 +90,6 @@ describe( 'modules/analytics properties', () => {
 					);
 
 				registry.dispatch( STORE_NAME ).createProperty( accountId );
-				// TODO: This is failing and I'm not clear on why, when it works fine
-				// in `assets/js/googlesitekit/datastore/site/reset.test.js`
-				// expect( registry.select( STORE_NAME ).isDoingCreateProperty( accountId ) ).toEqual( true );
 
 				muteConsole( 'error' );
 				await subscribeUntil( registry,
