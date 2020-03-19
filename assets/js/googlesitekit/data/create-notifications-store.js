@@ -40,12 +40,24 @@ const RECEIVE_NOTIFICATIONS_FAILED = 'RECEIVE_NOTIFICATIONS_FAILED';
  *
  * @since n.e.x.t
  * @private
- * @param {string} type       The data to access. One of 'core' or 'modules'.
- * @param {string} identifier The data identifier, eg. a module slug like 'search-console'.
- * @param {string} datapoint  The endpoint to request data from, e.g. 'notifications'.
- * @return {Object} The notifications store object.
+ *
+ * @param {string} type              The data to access. One of 'core' or 'modules'.
+ * @param {string} identifier        The data identifier, eg. a module slug like 'search-console'.
+ * @param {string} datapoint         The endpoint to request data from, e.g. 'notifications'.
+ * @param {Object} options           Optional. Options to consider for the store.
+ * @param {number} options.storeName Store name to use. Default is '{type}/{identifier}'.
+ * @return {Object} The notifications store object, with additional `STORE_NAME` and
+ *                  `INITIAL_STATE` properties.
  */
-export const createNotificationsStore = ( type, identifier, datapoint ) => {
+export const createNotificationsStore = ( type, identifier, datapoint, {
+	storeName = undefined,
+} = {} ) => {
+	invariant( type, 'type is required.' );
+	invariant( identifier, 'identifier is required.' );
+	invariant( datapoint, 'datapoint is required.' );
+
+	const STORE_NAME = storeName || `${ type }/${ identifier }`;
+
 	const INITIAL_STATE = {
 		serverNotifications: undefined,
 		// Initialize clientNotifications as undefined rather than an empty
@@ -268,6 +280,7 @@ export const createNotificationsStore = ( type, identifier, datapoint ) => {
 	};
 
 	return {
+		STORE_NAME,
 		INITIAL_STATE,
 		actions,
 		controls,

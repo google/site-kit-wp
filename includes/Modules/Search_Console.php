@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\Google_URL_Matcher_Trait;
 use Google\Site_Kit\Modules\Search_Console\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_Webmasters;
@@ -45,7 +46,7 @@ use WP_Error;
  */
 final class Search_Console extends Module
 	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Admin_Bar, Module_With_Debug_Fields {
-	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait;
+	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Google_URL_Matcher_Trait;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -60,8 +61,16 @@ final class Search_Console extends Module
 		// Detect and store Search Console property when receiving token for the first time.
 		add_action(
 			'googlesitekit_authorize_user',
-			function() {
-				// Only detect if there isn't one set already.
+			function( array $token_response ) {
+				// If the response includes the Search Console property, set that.
+				if ( ! empty( $token_response['search_console_property'] ) ) {
+					$this->get_settings()->merge(
+						array( 'propertyID' => $token_response['search_console_property'] )
+					);
+					return;
+				}
+
+				// Otherwise try to detect if there isn't one set already.
 				$property_id = $this->get_property_id() ?: $this->detect_property_id();
 				if ( ! $property_id ) {
 					return;
@@ -247,20 +256,6 @@ final class Search_Console extends Module
 	}
 
 	/**
-	 * Returns a punycode version of a unicode URL.
-	 *
-	 * @param string $url The URL to decode.
-	 */
-	protected function decode_unicode_url( $url ) {
-		$parts = wp_parse_url( $url );
-		if ( ! $parts ) {
-			return $url;
-		}
-		$decoded = \Requests_IDNAEncoder::encode( $parts['host'] );
-		return $parts['scheme'] . '://' . $decoded . $parts['path'];
-	}
-
-	/**
 	 * Parses a response for the given datapoint.
 	 *
 	 * @since 1.0.0
@@ -274,10 +269,9 @@ final class Search_Console extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:matched-sites':
 				/* @var Google_Service_Webmasters_SitesListResponse $response Response object. */
-				$sites       = $this->map_sites( (array) $response->getSiteEntry() );
-				$current_url = trailingslashit( $this->context->get_reference_site_url() );
-				// Use the punycode version of unicode domains for comparisons.
-				$current_url                  = self::decode_unicode_url( $current_url );
+				$entries = $this->map_sites( (array) $response->getSiteEntry() );
+
+				$current_url                  = $this->context->get_reference_site_url();
 				$sufficient_permission_levels = array(
 					'siteRestrictedUser',
 					'siteOwner',
@@ -286,17 +280,14 @@ final class Search_Console extends Module
 
 				return array_values(
 					array_filter(
-						$sites,
-						function ( array $site ) use ( $current_url, $sufficient_permission_levels ) {
-							$site_url = trailingslashit( $site['siteURL'] );
-							// Use the punycode version of unicode domains for comparisons.
-							$site_url = self::decode_unicode_url( $site_url );
-							if ( 0 === strpos( $site_url, 'sc-domain:' ) ) {
-								$url_match = str_replace( array( 'http://', 'https://' ), 'sc-domain:', $current_url ) === $site_url;
+						$entries,
+						function ( array $entry ) use ( $current_url, $sufficient_permission_levels ) {
+							if ( 0 === strpos( $entry['siteURL'], 'sc-domain:' ) ) {
+								$match = $this->is_domain_match( substr( $entry['siteURL'], strlen( 'sc-domain:' ) ), $current_url );
 							} else {
-								$url_match = $current_url === $site_url;
+								$match = $this->is_url_match( $entry['siteURL'], $current_url );
 							}
-							return $url_match && in_array( $site['permissionLevel'], $sufficient_permission_levels, true );
+							return $match && in_array( $entry['permissionLevel'], $sufficient_permission_levels, true );
 						}
 					)
 				);

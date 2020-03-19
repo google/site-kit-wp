@@ -255,27 +255,6 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 					$this->get_settings()->merge( array( 'optimizeID' => $data['optimizeID'] ) );
 					return true;
 				};
-			case 'POST:settings':
-				if ( ! isset( $data['optimizeID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'optimizeID' ), array( 'status' => 400 ) );
-				}
-				if ( ! isset( $data['ampExperimentJSON'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampExperimentJSON' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$option = array(
-						'optimizeID'        => $data['optimizeID'],
-						'ampExperimentJSON' => $data['ampExperimentJSON'],
-					);
-					if ( is_string( $option['ampExperimentJSON'] ) ) {
-						$option['ampExperimentJSON'] = json_decode( $option['ampExperimentJSON'] );
-					}
-					$this->get_settings()->merge( $option );
-
-					return $this->get_settings()->get();
-				};
 		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
