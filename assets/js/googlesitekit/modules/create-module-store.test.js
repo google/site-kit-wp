@@ -38,8 +38,8 @@ import {
 } from 'assets/js/googlesitekit/data/create-notifications-store';
 import { createModuleStore } from './create-module-store';
 
-const STORE_NAME = 'modules/base';
-const STORE_ARGS = [ 'base' ];
+const SETTING_SLUG = 'testSetting';
+const MODULE_SLUG = 'base';
 
 describe( 'createModuleStore store', () => {
 	let apiFetchSpy;
@@ -53,8 +53,11 @@ describe( 'createModuleStore store', () => {
 	beforeEach( () => {
 		registry = createRegistry();
 
-		storeDefinition = createModuleStore( ...STORE_ARGS );
-		registry.registerStore( STORE_NAME, storeDefinition );
+		storeDefinition = createModuleStore( MODULE_SLUG, {
+			settingSlugs: [ SETTING_SLUG ],
+			registry,
+		} );
+		registry.registerStore( storeDefinition.STORE_NAME, storeDefinition );
 
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
@@ -68,22 +71,50 @@ describe( 'createModuleStore store', () => {
 		apiFetchSpy.mockRestore();
 	} );
 
+	describe( 'name', () => {
+		it( 'returns the correct default store name', () => {
+			expect( storeDefinition.STORE_NAME ).toEqual( `modules/${ MODULE_SLUG }` );
+		} );
+	} );
+
 	describe( 'actions', () => {
 		it( 'includes all notifications store actions', () => {
-			const notificationsStoreDefinition = createNotificationsStore( ...STORE_ARGS );
+			const notificationsStoreDefinition = createNotificationsStore( 'modules', MODULE_SLUG, 'notifications' );
 
 			expect( Object.keys( storeDefinition.actions ) ).toEqual(
 				expect.arrayContaining( Object.keys( notificationsStoreDefinition.actions ) )
+			);
+		} );
+
+		it( 'includes all settings store actions', () => {
+			const settingsStoreDefinition = createNotificationsStore( 'modules', MODULE_SLUG, 'settings', {
+				settingSlugs: [ SETTING_SLUG ],
+				registry,
+			} );
+
+			expect( Object.keys( storeDefinition.actions ) ).toEqual(
+				expect.arrayContaining( Object.keys( settingsStoreDefinition.actions ) )
 			);
 		} );
 	} );
 
 	describe( 'selectors', () => {
 		it( 'includes all notifications store selectors', () => {
-			const notificationsStoreDefinition = createNotificationsStore( ...STORE_ARGS );
+			const notificationsStoreDefinition = createNotificationsStore( 'modules', MODULE_SLUG, 'notifications' );
 
 			expect( Object.keys( storeDefinition.selectors ) ).toEqual(
 				expect.arrayContaining( Object.keys( notificationsStoreDefinition.selectors ) )
+			);
+		} );
+
+		it( 'includes all settings store selectors', () => {
+			const settingsStoreDefinition = createNotificationsStore( 'modules', MODULE_SLUG, 'settings', {
+				settingSlugs: [ SETTING_SLUG ],
+				registry,
+			} );
+
+			expect( Object.keys( storeDefinition.selectors ) ).toEqual(
+				expect.arrayContaining( Object.keys( settingsStoreDefinition.selectors ) )
 			);
 		} );
 	} );
