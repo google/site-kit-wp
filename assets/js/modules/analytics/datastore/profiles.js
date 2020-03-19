@@ -311,6 +311,25 @@ export const selectors = {
 
 		return profiles;
 	},
+
+	/**
+	 * Check if a profile is being created for an account and property.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} accountId The Analytics Account ID to check for profile creation.
+	 * @param {string} propertyId The Analytics Property ID to check for profile creation.
+	 * @return {boolean} `true` if creating a profile, `false` if not.
+	 */
+	isDoingCreateProfile( state, accountId, propertyId ) {
+		invariant( accountId, 'accountId is required' );
+		invariant( propertyId, 'propertyId is required' );
+
+		const { isDoingCreateProfile } = state;
+
+		return !! isDoingCreateProfile[ `${ accountId }::${ propertyId }` ];
+	},
 };
 
 export default {

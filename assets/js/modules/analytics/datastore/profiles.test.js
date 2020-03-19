@@ -103,6 +103,23 @@ describe( 'modules/analytics profiles', () => {
 				expect( profiles ).toMatchObject( [ fixtures.createProfile.profile ] );
 			} );
 
+			it( 'sets isDoingCreateProfile ', async () => {
+				const accountId = fixtures.accountsPropertiesProfiles.accounts[ 6 ].id;
+				const propertyId = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
+
+				fetch
+					.doMockIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/
+					)
+					.mockResponse(
+						JSON.stringify( fixtures.createProfile ),
+						{ status: 200 }
+					);
+
+				registry.dispatch( STORE_NAME ).fetchCreateProfile( accountId, propertyId );
+				expect( registry.select( STORE_NAME ).isDoingCreateProfile( accountId, propertyId ) ).toEqual( true );
+			} );
+
 			it( 'dispatches an error if the request fails ', async () => {
 				const accountId = fixtures.accountsPropertiesProfiles.accounts[ 6 ].id;
 				const propertyId = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
