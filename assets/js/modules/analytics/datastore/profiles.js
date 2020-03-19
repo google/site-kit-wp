@@ -182,8 +182,8 @@ export const reducer = ( state, action ) => {
 
 			return {
 				...state,
-				isDoingCreateProperty: {
-					...state.isDoingCreateProperty,
+				isDoingCreateProfile: {
+					...state.isDoingCreateProfile,
 					[ `${ accountId }::${ propertyId }` ]: true,
 				},
 			};
