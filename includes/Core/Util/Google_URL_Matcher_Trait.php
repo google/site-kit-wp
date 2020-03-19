@@ -41,7 +41,7 @@ trait Google_URL_Matcher_Trait {
 	/**
 	 * Compares two domains for whether they qualify for a Site Verification or Search Console domain match.
 	 *
-	 * The value to compare may be either a domain or a full URL. If the latter, its protocol and a potential trailing
+	 * The value to compare may be either a domain or a full URL. If the latter, its scheme and a potential trailing
 	 * slash will be stripped out before the comparison.
 	 *
 	 * In order for the comparison to be considered a match then, the domains have to fully match, except for a
@@ -56,27 +56,21 @@ trait Google_URL_Matcher_Trait {
 	 */
 	protected function is_domain_match( $domain, $compare ) {
 		$domain  = $this->strip_domain_www( $domain );
-		$compare = $this->strip_domain_www( $this->strip_url_protocol( untrailingslashit( $compare ) ) );
+		$compare = $this->strip_domain_www( $this->strip_url_scheme( untrailingslashit( $compare ) ) );
 
 		return $domain === $compare;
 	}
 
 	/**
-	 * Strips the protocol from a URL.
+	 * Strips the scheme from a URL.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $url URL with or without protocol.
-	 * @return string The passed $url without its protocol.
+	 * @param string $url URL with or without scheme.
+	 * @return string The passed $url without its scheme.
 	 */
-	protected function strip_url_protocol( $url ) {
-		$protocols = array( 'https://', 'http://', '//' );
-		foreach ( $protocols as $protocol ) {
-			if ( 0 === strpos( $url, $protocol ) ) {
-				return substr( $url, strlen( $protocol ) );
-			}
-		}
-		return $url;
+	protected function strip_url_scheme( $url ) {
+		return preg_replace( '#^(\w+:)?//#', '', $url );
 	}
 
 	/**
@@ -88,9 +82,6 @@ trait Google_URL_Matcher_Trait {
 	 * @return string The passed $domain without "www." prefix.
 	 */
 	protected function strip_domain_www( $domain ) {
-		if ( 0 === strpos( $domain, 'www.' ) ) {
-			return substr( $domain, strlen( 'www.' ) );
-		}
-		return $domain;
+		return preg_replace( '/^www\./', '', $domain );
 	}
 }
