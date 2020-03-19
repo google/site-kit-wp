@@ -61,8 +61,16 @@ final class Search_Console extends Module
 		// Detect and store Search Console property when receiving token for the first time.
 		add_action(
 			'googlesitekit_authorize_user',
-			function() {
-				// Only detect if there isn't one set already.
+			function( array $token_response ) {
+				// If the response includes the Search Console property, set that.
+				if ( ! empty( $token_response['search_console_property'] ) ) {
+					$this->get_settings()->merge(
+						array( 'propertyID' => $token_response['search_console_property'] )
+					);
+					return;
+				}
+
+				// Otherwise try to detect if there isn't one set already.
 				$property_id = $this->get_property_id() ?: $this->detect_property_id();
 				if ( ! $property_id ) {
 					return;
