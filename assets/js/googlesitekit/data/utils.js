@@ -188,6 +188,25 @@ export const collectSelectors = collect;
 export const collectState = collect;
 
 /**
+ * Collects all store names.
+ *
+ * This function's main purpose is to ensure generated store names for a single store match.
+ *
+ * @since n.e.x.t
+ *
+ * @param {...string} args A list of store names, all of which must be equal.
+ * @return {string} The single store name.
+ */
+export const collectName = ( ...args ) => {
+	const names = [ ...args ];
+
+	const duplicates = findDuplicates( names );
+	invariant( duplicates.length === names.length - 1, 'collectName() must not receive different names.' );
+
+	return names.shift();
+};
+
+/**
  * Finds all duplicate items in an array and return them.
  *
  * @since 1.5.0

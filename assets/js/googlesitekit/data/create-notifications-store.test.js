@@ -37,7 +37,6 @@ import {
 } from 'tests/js/utils';
 import { createNotificationsStore } from './create-notifications-store';
 
-const STORE_NAME = 'core/site-notifications';
 const STORE_ARGS = [ 'core', 'site', 'notifications' ];
 
 describe( 'createNotificationsStore store', () => {
@@ -56,10 +55,10 @@ describe( 'createNotificationsStore store', () => {
 		registry = createRegistry();
 
 		storeDefinition = createNotificationsStore( ...STORE_ARGS );
-		registry.registerStore( STORE_NAME, storeDefinition );
-		dispatch = registry.dispatch( STORE_NAME );
-		store = registry.stores[ STORE_NAME ].store;
-		select = registry.select( STORE_NAME );
+		registry.registerStore( storeDefinition.STORE_NAME, storeDefinition );
+		dispatch = registry.dispatch( storeDefinition.STORE_NAME );
+		store = registry.stores[ storeDefinition.STORE_NAME ].store;
+		select = registry.select( storeDefinition.STORE_NAME );
 
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
@@ -71,6 +70,12 @@ describe( 'createNotificationsStore store', () => {
 	afterEach( () => {
 		unsubscribeFromAll( registry );
 		apiFetchSpy.mockRestore();
+	} );
+
+	describe( 'name', () => {
+		it( 'returns the correct default store name', () => {
+			expect( storeDefinition.STORE_NAME ).toEqual( `${ STORE_ARGS[ 0 ] }/${ STORE_ARGS[ 1 ] }` );
+		} );
 	} );
 
 	describe( 'actions', () => {
@@ -286,19 +291,19 @@ describe( 'createNotificationsStore store', () => {
 				fetch
 					.mockResponseOnce( async ( req ) => {
 						if ( req.url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` ) ) {
-							return Promise.resolve( {
+							return {
 								body: JSON.stringify( response ),
 								init: { status: 200 },
-							} );
+							};
 						}
-						return Promise.resolve( {
+						return {
 							body: JSON.stringify( {
 								code: 'incorrect_api_endpoint',
 								message: 'Incorrect API endpoint',
 								data: { status: 400 },
 							} ),
 							init: { status: 400 },
-						} );
+						};
 					} );
 
 				const result = await storeDefinition.controls.FETCH_NOTIFICATIONS();
