@@ -64,7 +64,7 @@ class Google_URL_Matcher_TraitTest extends TestCase {
 				'http://example.com/test/',
 				false,
 			),
-			'different protocol'              => array(
+			'different scheme'                => array(
 				'http://example.com',
 				'https://example.com',
 				false,
