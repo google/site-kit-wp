@@ -304,7 +304,7 @@ export const selectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} accountId The Analytics Account ID to check for property creation.
-	 * @return {boolean} `true` if creating an account, `false` if not.
+	 * @return {boolean} `true` if creating a property, `false` if not.
 	 */
 	isDoingCreateProperty( state, accountId ) {
 		invariant( accountId, 'accountId is required' );
