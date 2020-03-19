@@ -420,13 +420,10 @@ final class Assets {
 				)
 			),
 			new Script(
-				'googlesitekit-modules-analytics',
+				'googlesitekit-datastore-modules-analytics',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-modules-analytics.js',
-					'dependencies' => array(
-						'googlesitekit-api',
-						'googlesitekit-data',
-					),
+					'src'          => $base_url . 'js/googlesitekit-datastore-modules-analytics.js',
+					'dependencies' => array( 'googlesitekit-modules' ),
 				)
 			),
 			// End JSR Assets.
