@@ -167,7 +167,7 @@ export const controls = {
 			propertyID: propertyId,
 		} );
 	},
-	[ FETCH_PROFILES ]: ( accountId, propertyId ) => {
+	[ FETCH_PROFILES ]: ( { payload: { accountId, propertyId } } ) => {
 		return API.get( 'modules', 'analytics', 'profiles', {
 			accountID: accountId,
 			propertyID: propertyId,

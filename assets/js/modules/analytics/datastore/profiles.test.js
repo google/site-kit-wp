@@ -166,6 +166,15 @@ describe( 'modules/analytics profiles', () => {
 				} );
 
 				const initialProfiles = registry.select( STORE_NAME ).getProfiles( testAccountId, testPropertyId );
+
+				// Ensure the proper parameters were sent.
+				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
+					{
+						accountID: testAccountId,
+						propertyID: testPropertyId,
+					}
+				);
+
 				expect( initialProfiles ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
