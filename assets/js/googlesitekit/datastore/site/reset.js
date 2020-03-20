@@ -113,8 +113,8 @@ export const controls = {
 	},
 };
 
-export const reducer = ( state, action ) => {
-	switch ( action.type ) {
+export const reducer = ( state, { type } ) => {
+	switch ( type ) {
 		case FETCH_RESET: {
 			return {
 				...state,
