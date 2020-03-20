@@ -38,6 +38,7 @@ import {
 } from 'assets/js/googlesitekit/data/create-notifications-store';
 import { createModuleStore } from './create-module-store';
 
+const SETTING_SLUG = 'testSetting';
 const MODULE_SLUG = 'base';
 
 describe( 'createModuleStore store', () => {
@@ -52,7 +53,10 @@ describe( 'createModuleStore store', () => {
 	beforeEach( () => {
 		registry = createRegistry();
 
-		storeDefinition = createModuleStore( MODULE_SLUG );
+		storeDefinition = createModuleStore( MODULE_SLUG, {
+			settingSlugs: [ SETTING_SLUG ],
+			registry,
+		} );
 		registry.registerStore( storeDefinition.STORE_NAME, storeDefinition );
 
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
@@ -81,6 +85,17 @@ describe( 'createModuleStore store', () => {
 				expect.arrayContaining( Object.keys( notificationsStoreDefinition.actions ) )
 			);
 		} );
+
+		it( 'includes all settings store actions', () => {
+			const settingsStoreDefinition = createNotificationsStore( 'modules', MODULE_SLUG, 'settings', {
+				settingSlugs: [ SETTING_SLUG ],
+				registry,
+			} );
+
+			expect( Object.keys( storeDefinition.actions ) ).toEqual(
+				expect.arrayContaining( Object.keys( settingsStoreDefinition.actions ) )
+			);
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -89,6 +104,17 @@ describe( 'createModuleStore store', () => {
 
 			expect( Object.keys( storeDefinition.selectors ) ).toEqual(
 				expect.arrayContaining( Object.keys( notificationsStoreDefinition.selectors ) )
+			);
+		} );
+
+		it( 'includes all settings store selectors', () => {
+			const settingsStoreDefinition = createNotificationsStore( 'modules', MODULE_SLUG, 'settings', {
+				settingSlugs: [ SETTING_SLUG ],
+				registry,
+			} );
+
+			expect( Object.keys( storeDefinition.selectors ) ).toEqual(
+				expect.arrayContaining( Object.keys( settingsStoreDefinition.selectors ) )
 			);
 		} );
 	} );

@@ -28,7 +28,6 @@ use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DateRangeValu
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_Report;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_ReportData;
-use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsRequest;
@@ -172,8 +171,6 @@ final class Analytics extends Module
 			__( 'Top pages', 'google-site-kit' ),
 			__( 'Top acquisition sources', 'google-site-kit' ),
 		);
-
-		$info['settings'] = $this->get_settings()->get();
 
 		return $info;
 	}
@@ -381,7 +378,7 @@ final class Analytics extends Module
 		}
 
 		$gtag_amp_opt = array(
-			'vars' => array(
+			'vars'            => array(
 				'gtag_id' => $tracking_id,
 				'config'  => array(
 					$tracking_id => array(
@@ -392,6 +389,7 @@ final class Analytics extends Module
 					),
 				),
 			),
+			'optoutElementId' => '__gaOptOutExtension',
 		);
 
 		/**
@@ -769,113 +767,58 @@ final class Analytics extends Module
 
 				return $this->get_analyticsreporting_service()->reports->batchGet( $body );
 			case 'POST:settings':
-				if ( ! isset( $data['accountID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
-				}
-				if ( ! isset( $data['propertyID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ), array( 'status' => 400 ) );
-				}
-				if ( ! isset( $data['internalWebPropertyID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalWebPropertyID' ), array( 'status' => 400 ) );
-				}
-				if ( ! isset( $data['profileID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileID' ), array( 'status' => 400 ) );
-				}
-				if ( ! isset( $data['useSnippet'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'useSnippet' ), array( 'status' => 400 ) );
-				}
-
 				return function() use ( $data ) {
-					$property_id              = null;
-					$internal_web_property_id = null;
+					$option          = $data->data;
+					$is_new_property = false;
 
-					if ( '0' === $data['propertyID'] ) {
-						$is_new_property = true;
-						$restore_defer   = $this->with_client_defer( false );
-						$property        = new Google_Service_Analytics_Webproperty();
-						$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
-						try {
-							$property = $this->get_service( 'analytics' )->management_webproperties->insert( $data['accountID'], $property );
-						} catch ( Google_Service_Exception $e ) {
-							$restore_defer();
-							$message = $e->getErrors();
-							if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-								$message = $message[0]['message'];
+					if ( isset( $option['accountID'], $option['propertyID'] ) ) {
+						if ( '0' === $option['propertyID'] ) {
+							$is_new_property = true;
+							$restore_defer   = $this->with_client_defer( false );
+							$property        = new Google_Service_Analytics_Webproperty();
+							$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+							try {
+								$property = $this->get_service( 'analytics' )->management_webproperties->insert( $option['accountID'], $property );
+							} catch ( Exception $e ) {
+								$restore_defer();
+								return $this->exception_to_error( $e, $data->datapoint );
 							}
-							return new WP_Error( $e->getCode(), $message );
-						} catch ( Exception $e ) {
 							$restore_defer();
-							return new WP_Error( $e->getCode(), $e->getMessage() );
+							/* @var Google_Service_Analytics_Webproperty $property Property instance. */
+							$option['propertyID']            = $property->getId();
+							$option['internalWebPropertyID'] = $property->getInternalWebPropertyId();
 						}
-						$restore_defer();
-						/* @var Google_Service_Analytics_Webproperty $property Property instance. */
-						$property_id              = $property->getId();
-						$internal_web_property_id = $property->getInternalWebPropertyId();
-					} else {
-						$is_new_property          = false;
-						$property_id              = $data['propertyID'];
-						$internal_web_property_id = $data['internalWebPropertyID'];
-					}
-					$profile_id = null;
-					if ( '0' === $data['profileID'] ) {
-						$restore_defer = $this->with_client_defer( false );
-						$profile       = new Google_Service_Analytics_Profile();
-						$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
-						try {
-							$profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $property_id, $profile );
-						} catch ( Google_Service_Exception $e ) {
-							$restore_defer();
-							$message = $e->getErrors();
-							if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-								$message = $message[0]['message'];
+						if ( isset( $option['profileID'] ) ) {
+							if ( '0' === $option['profileID'] ) {
+								$restore_defer = $this->with_client_defer( false );
+								$profile       = new Google_Service_Analytics_Profile();
+								$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
+								try {
+									$profile = $this->get_service( 'analytics' )->management_profiles->insert( $option['accountID'], $option['propertyID'], $profile );
+								} catch ( Exception $e ) {
+									$restore_defer();
+									return $this->exception_to_error( $e, $data->datapoint );
+								}
+								$restore_defer();
+								$option['profileID'] = $profile->id;
 							}
-							return new WP_Error( $e->getCode(), $message );
-						} catch ( Exception $e ) {
-							$restore_defer();
-							return new WP_Error( $e->getCode(), $e->getMessage() );
-						}
-						$restore_defer();
-						$profile_id = $profile->id;
-					} else {
-						$profile_id = $data['profileID'];
-					}
-					// Set default profile for new property.
-					if ( $is_new_property ) {
-						$restore_defer = $this->with_client_defer( false );
-						$property      = new Google_Service_Analytics_Webproperty();
-						$property->setDefaultProfileId( $profile_id );
-						try {
-							$property = $this->get_service( 'analytics' )->management_webproperties->patch( $data['accountID'], $property_id, $property );
-						} catch ( Google_Service_Exception $e ) {
-							$restore_defer();
-							$message = $e->getErrors();
-							if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-								$message = $message[0]['message'];
+
+							// Set default profile for new property.
+							if ( $is_new_property ) {
+								$restore_defer = $this->with_client_defer( false );
+								$property      = new Google_Service_Analytics_Webproperty();
+								$property->setDefaultProfileId( $option['profileID'] );
+								try {
+									$property = $this->get_service( 'analytics' )->management_webproperties->patch( $option['accountID'], $option['propertyID'], $property );
+								} catch ( Exception $e ) {
+									$restore_defer();
+									return $this->exception_to_error( $e, $data->datapoint );
+								}
+								$restore_defer();
 							}
-							return new WP_Error( $e->getCode(), $message );
-						} catch ( Exception $e ) {
-							$restore_defer();
-							return new WP_Error( $e->getCode(), $e->getMessage() );
 						}
-						$restore_defer();
 					}
-					$this->get_settings()->merge(
-						array(
-							'accountID'             => $data['accountID'],
-							'propertyID'            => $property_id,
-							'internalWebPropertyID' => $internal_web_property_id,
-							'profileID'             => $profile_id,
-							'useSnippet'            => ! empty( $data['useSnippet'] ),
-							'anonymizeIP'           => (bool) $data['anonymizeIP'],
-							'trackingDisabled'      => (array) $data['trackingDisabled'],
-							'adsenseLinked'         => false,
-						)
-					);
+					$this->get_settings()->merge( $option );
 					return $this->get_settings()->get();
 				};
 			case 'GET:tag-permission':
@@ -1273,7 +1216,11 @@ final class Analytics extends Module
 	private function print_tracking_opt_out() {
 		?>
 		<!-- <?php esc_html_e( 'Google Analytics user opt-out added via Site Kit by Google', 'google-site-kit' ); ?> -->
-		<script type="text/javascript">window["_gaUserPrefs"] = { ioo : function() { return true; } }</script>
+		<?php if ( $this->context->is_amp() ) : ?>
+			<script type="application/ld+json" id="__gaOptOutExtension"></script>
+		<?php else : ?>
+			<script type="text/javascript">window["_gaUserPrefs"] = { ioo : function() { return true; } }</script>
+		<?php endif; ?>
 		<?php
 	}
 

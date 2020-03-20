@@ -75,14 +75,6 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 			__( 'Probability and confidence calculations', 'google-site-kit' ),
 		);
 
-		$optimize_id         = $this->get_data( 'optimize-id' );
-		$amp_experiment_json = $this->get_data( 'amp-experiment-json' );
-
-		$info['settings'] = array(
-			'optimizeID'        => ! is_wp_error( $optimize_id ) ? $optimize_id : false,
-			'ampExperimentJSON' => ! is_wp_error( $amp_experiment_json ) ? $amp_experiment_json : '',
-		);
-
 		return $info;
 	}
 
@@ -262,27 +254,6 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 				return function() use ( $data ) {
 					$this->get_settings()->merge( array( 'optimizeID' => $data['optimizeID'] ) );
 					return true;
-				};
-			case 'POST:settings':
-				if ( ! isset( $data['optimizeID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'optimizeID' ), array( 'status' => 400 ) );
-				}
-				if ( ! isset( $data['ampExperimentJSON'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampExperimentJSON' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$option = array(
-						'optimizeID'        => $data['optimizeID'],
-						'ampExperimentJSON' => $data['ampExperimentJSON'],
-					);
-					if ( is_string( $option['ampExperimentJSON'] ) ) {
-						$option['ampExperimentJSON'] = json_decode( $option['ampExperimentJSON'] );
-					}
-					$this->get_settings()->merge( $option );
-
-					return $this->get_settings()->get();
 				};
 		}
 

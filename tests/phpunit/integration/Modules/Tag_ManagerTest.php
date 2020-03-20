@@ -87,9 +87,8 @@ class Tag_ManagerTest extends TestCase {
 				'autoActivate',
 				'internal',
 				'screenID',
-				'hasSettings',
-				'provides',
 				'settings',
+				'provides',
 			),
 			array_keys( $info )
 		);

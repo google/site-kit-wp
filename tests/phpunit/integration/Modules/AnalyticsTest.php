@@ -75,9 +75,8 @@ class AnalyticsTest extends TestCase {
 				'autoActivate',
 				'internal',
 				'screenID',
-				'hasSettings',
-				'provides',
 				'settings',
+				'provides',
 			),
 			array_keys( $info )
 		);
