@@ -166,6 +166,12 @@ describe( 'modules/analytics properties', () => {
 				const accountIdWithProperties = fixtures.propertiesProfiles.properties[ 5 ].accountId;
 
 				const initialProperties = registry.select( STORE_NAME ).getProperties( accountIdWithProperties );
+
+				// Ensure the proper parameters were passed.
+				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
+					{ accountID: accountIdWithProperties }
+				);
+
 				expect( initialProperties ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
