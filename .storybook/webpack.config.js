@@ -7,11 +7,14 @@ module.exports = async ( { config } ) => {
 		alias: {
 			...config.resolve.alias,
 			'@wordpress/api-fetch$': path.resolve( __dirname, 'wp-api-fetch-mock.js' ),
+			'googlesitekit-data': path.resolve( __dirname, '../assets/js/googlesitekit-data.js' ),
+			'googlesitekit-api': path.resolve( __dirname, '../assets/js/googlesitekit-api.js' ),
 			SiteKitCore: path.resolve( __dirname, '../assets/js/' ),
 			GoogleComponents: path.resolve( __dirname, '../assets/js/components/' ),
 			GoogleUtil: path.resolve( __dirname, '../assets/js/util/' ),
 			GoogleModules: path.resolve( __dirname, '../assets/js/modules/' ),
 		},
+		modules: [ path.resolve( __dirname, '..' ), 'node_modules' ],
 	};
 
 	config.plugins = [
