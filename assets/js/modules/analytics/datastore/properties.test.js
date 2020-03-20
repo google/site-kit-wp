@@ -105,15 +105,6 @@ describe( 'modules/analytics properties', () => {
 			it( 'sets isDoingCreateProperty ', async () => {
 				const accountId = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
 
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/
-					)
-					.mockResponse(
-						JSON.stringify( fixtures.createProperty ),
-						{ status: 200 }
-					);
-
 				registry.dispatch( STORE_NAME ).fetchCreateProperty( accountId );
 				expect( registry.select( STORE_NAME ).isDoingCreateProperty( accountId ) ).toEqual( true );
 			} );
