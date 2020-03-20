@@ -116,7 +116,7 @@ export const controls = {
 		// currently quite nested and difficult to straightforwardly test.
 		return getExistingTag( 'analytics' );
 	},
-	[ FETCH_TAG_PERMISSION ]: ( accountId, propertyId, tag ) => {
+	[ FETCH_TAG_PERMISSION ]: ( { payload: { tag } } ) => {
 		return API.get( 'modules', 'analytics', 'tag-permission', { tag } );
 	},
 };

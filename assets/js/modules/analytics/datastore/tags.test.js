@@ -80,6 +80,14 @@ describe( 'modules/analytics tags', () => {
 				const existingAnalyticsTag = '151753095-2';
 
 				const initialSelect = registry.select( STORE_NAME ).getTagPermission( accountId, propertyId, existingAnalyticsTag );
+
+				// Ensure the proper parameters were sent.
+				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
+					{
+						tag: existingAnalyticsTag,
+					}
+				);
+
 				// The connection info will be its initial value while the connection
 				// info is fetched.
 				expect( initialSelect ).toEqual( undefined );
