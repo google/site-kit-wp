@@ -156,7 +156,7 @@ export const actions = {
 };
 
 export const controls = {
-	[ FETCH_CREATE_PROPERTY ]: ( accountId ) => {
+	[ FETCH_CREATE_PROPERTY ]: ( { payload: { accountId } } ) => {
 		return API.set( 'modules', 'analytics', 'create-property', { accountID: accountId } );
 	},
 	[ FETCH_PROPERTIES_PROFILES ]: ( accountId ) => {
