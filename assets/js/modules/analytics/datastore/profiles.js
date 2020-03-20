@@ -161,7 +161,7 @@ export const actions = {
 };
 
 export const controls = {
-	[ FETCH_CREATE_PROFILE ]: ( accountId, propertyId ) => {
+	[ FETCH_CREATE_PROFILE ]: ( { payload: { accountId, propertyId } } ) => {
 		return API.set( 'modules', 'analytics', 'create-profile', {
 			accountID: accountId,
 			propertyID: propertyId,

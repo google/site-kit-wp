@@ -76,6 +76,14 @@ describe( 'modules/analytics profiles', () => {
 
 				registry.dispatch( STORE_NAME ).createProfile( accountId, propertyId );
 
+				// Ensure the proper body parameters were sent.
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
+					{
+						accountID: accountId,
+						propertyID: propertyId,
+					}
+				);
+
 				muteConsole( 'error' );
 				await subscribeUntil( registry,
 					() => (
