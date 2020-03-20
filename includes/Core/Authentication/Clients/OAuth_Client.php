@@ -332,21 +332,21 @@ final class OAuth_Client {
 		}
 
 		try {
-			$authentication_token = $this->google_client->fetchAccessTokenWithRefreshToken( $refresh_token );
+			$token_response = $this->google_client->fetchAccessTokenWithRefreshToken( $refresh_token );
 		} catch ( \Exception $e ) {
 			$this->handle_fetch_token_exception( $e );
 			return;
 		}
 
-		if ( ! isset( $authentication_token['access_token'] ) ) {
+		if ( ! isset( $token_response['access_token'] ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'access_token_not_received' );
 			return;
 		}
 
 		$this->set_access_token(
-			$authentication_token['access_token'],
-			isset( $authentication_token['expires_in'] ) ? $authentication_token['expires_in'] : '',
-			isset( $authentication_token['created'] ) ? $authentication_token['created'] : 0
+			$token_response['access_token'],
+			isset( $token_response['expires_in'] ) ? $token_response['expires_in'] : '',
+			isset( $token_response['created'] ) ? $token_response['created'] : 0
 		);
 	}
 
@@ -567,7 +567,7 @@ final class OAuth_Client {
 		}
 
 		try {
-			$authentication_token = $this->get_client()->fetchAccessTokenWithAuthCode( $code );
+			$token_response = $this->get_client()->fetchAccessTokenWithAuthCode( $code );
 		} catch ( Google_Proxy_Code_Exception $e ) {
 			// Redirect back to proxy immediately with the access code.
 			wp_safe_redirect( $this->get_proxy_setup_url( $e->getAccessCode(), $e->getMessage() ) );
@@ -578,16 +578,16 @@ final class OAuth_Client {
 			exit();
 		}
 
-		if ( ! isset( $authentication_token['access_token'] ) ) {
+		if ( ! isset( $token_response['access_token'] ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'access_token_not_received' );
 			wp_safe_redirect( admin_url() );
 			exit();
 		}
 
 		$this->set_access_token(
-			$authentication_token['access_token'],
-			isset( $authentication_token['expires_in'] ) ? $authentication_token['expires_in'] : '',
-			isset( $authentication_token['created'] ) ? $authentication_token['created'] : 0
+			$token_response['access_token'],
+			isset( $token_response['expires_in'] ) ? $token_response['expires_in'] : '',
+			isset( $token_response['created'] ) ? $token_response['created'] : 0
 		);
 
 		// Update the site refresh token.
@@ -595,8 +595,8 @@ final class OAuth_Client {
 		$this->set_refresh_token( $refresh_token );
 
 		// Update granted scopes.
-		if ( isset( $authentication_token['scope'] ) ) {
-			$scopes = explode( ' ', sanitize_text_field( $authentication_token['scope'] ) );
+		if ( isset( $token_response['scope'] ) ) {
+			$scopes = explode( ' ', sanitize_text_field( $token_response['scope'] ) );
 		} elseif ( $this->context->input()->filter( INPUT_GET, 'scope' ) ) {
 			$scope  = $this->context->input()->filter( INPUT_GET, 'scope', FILTER_SANITIZE_STRING );
 			$scopes = explode( ' ', $scope );
@@ -630,8 +630,11 @@ final class OAuth_Client {
 			 * access to further scopes.
 			 *
 			 * @since 1.3.0
+			 * @since n.e.x.t The $token_response parameter was added.
+			 *
+			 * @param array $token_response Token response data.
 			 */
-			do_action( 'googlesitekit_authorize_user' );
+			do_action( 'googlesitekit_authorize_user', $token_response );
 		}
 
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
