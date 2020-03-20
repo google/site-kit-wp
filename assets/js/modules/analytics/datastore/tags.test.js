@@ -17,16 +17,6 @@
  */
 
 /**
- * Node dependencies
- */
-import fs from 'fs';
-import path from 'path';
-
-/**
- * External dependencies
- */
-
-/**
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
@@ -42,12 +32,9 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
+import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics tags', () => {
-	const fixtures = {
-		getTagPermissionAccess: JSON.parse( fs.readFileSync( path.join( __dirname, '__fixtures__', 'tag-permissions-access.json' ) ) ),
-		getTagPermissionNoAccess: JSON.parse( fs.readFileSync( path.join( __dirname, '__fixtures__', 'tag-permissions-no-access.json' ) ) ),
-	};
 	let apiFetchSpy;
 	let registry;
 	let store;
@@ -84,7 +71,7 @@ describe( 'modules/analytics tags', () => {
 						/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/
 					)
 					.mockResponseOnce(
-						JSON.stringify( fixtures.getTagPermissionAccess ),
+						JSON.stringify( fixtures.getTagPermissionsAccess ),
 						{ status: 200 }
 					);
 
@@ -114,7 +101,7 @@ describe( 'modules/analytics tags', () => {
 						/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/
 					)
 					.mockResponseOnce(
-						JSON.stringify( fixtures.getTagPermissionNoAccess ),
+						JSON.stringify( fixtures.getTagPermissionsNoAccess ),
 						{ status: 403 }
 					);
 

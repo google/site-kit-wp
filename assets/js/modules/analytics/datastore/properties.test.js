@@ -17,16 +17,6 @@
  */
 
 /**
- * Node dependencies
- */
-import fs from 'fs';
-import path from 'path';
-
-/**
- * External dependencies
- */
-
-/**
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
@@ -42,15 +32,9 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
+import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics properties', () => {
-	const fixtures = {
-		// TODO: Use consolidated fixture data.
-		accountsPropertiesProfiles: JSON.parse( fs.readFileSync( path.join( __dirname, '__fixtures__', 'accounts-properties-profiles.json' ) ) ),
-		createProperty: JSON.parse( fs.readFileSync( path.join( __dirname, '__fixtures__', 'create-property.json' ) ) ),
-		propertiesProfiles: JSON.parse( fs.readFileSync( path.join( __dirname, '__fixtures__', 'properties-profiles.json' ) ) ),
-		profiles: JSON.parse( fs.readFileSync( path.join( __dirname, '__fixtures__', 'profiles.json' ) ) ),
-	};
 	let apiFetchSpy;
 	let registry;
 	let store;
