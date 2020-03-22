@@ -222,15 +222,24 @@ export const reducer = ( state, { type, payload } ) => {
 		case RECEIVE_PROPERTIES_PROFILES: {
 			const { accountID, properties, profiles } = payload;
 
-			return {
+			const updatedState = {
 				...state,
 				isFetchingPropertiesProfiles: {
 					...state.isFetchingPropertiesProfiles,
 					[ accountID ]: false,
 				},
 				properties,
-				profiles,
 			};
+
+			// If profiles are returned, determine their property ID.
+			if ( profiles.length ) {
+				updatedState.profiles = {
+					...state.profiles || {},
+					[ `${ accountID }::${ profiles[ 0 ].webPropertyId }` ]: profiles, // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
+				};
+			}
+
+			return updatedState;
 		}
 
 		case RECEIVE_PROPERTIES_PROFILES_FAILED: {

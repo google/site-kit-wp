@@ -62,8 +62,8 @@ describe( 'modules/analytics profiles', () => {
 	describe( 'actions', () => {
 		describe( 'createProfile', () => {
 			it( 'creates a profile and adds it to the store ', async () => {
-				const accountID = fixtures.accountsPropertiesProfiles.accounts[ 6 ].id;
-				const propertyID = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
+				const accountID = fixtures.createProfile.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const propertyID = fixtures.createProfile.webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 
 				fetch
 					.doMockIf(
@@ -92,12 +92,12 @@ describe( 'modules/analytics profiles', () => {
 				);
 
 				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
-				expect( profiles ).toMatchObject( [ fixtures.createProfile.profile ] );
+				expect( profiles ).toMatchObject( [ fixtures.createProfile ] );
 			} );
 
 			it( 'sets isDoingCreateProfile ', async () => {
-				const accountID = fixtures.accountsPropertiesProfiles.accounts[ 6 ].id;
-				const propertyID = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
+				const accountID = fixtures.createProfile.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const propertyID = fixtures.createProfile.webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 
 				fetch
 					.doMockIf(
@@ -113,8 +113,9 @@ describe( 'modules/analytics profiles', () => {
 			} );
 
 			it( 'dispatches an error if the request fails ', async () => {
-				const accountID = fixtures.accountsPropertiesProfiles.accounts[ 6 ].id;
-				const propertyID = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
+				const accountID = fixtures.createProfile.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const propertyID = fixtures.createProfile.webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
+
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -159,19 +160,12 @@ describe( 'modules/analytics profiles', () => {
 						/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/
 					)
 					.mockResponseOnce(
-						JSON.stringify( fixtures.propertiesProfiles ),
+						JSON.stringify( fixtures.profiles ),
 						{ status: 200 }
 					);
 
-				const testAccountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
-				const testPropertyID = fixtures.propertiesProfiles.properties[ 0 ].id;
-
-				// Dispatch specific data to the stores without mocking extra requests.
-				registry.dispatch( STORE_NAME ).receiveAccountsPropertiesProfiles( { accounts: fixtures.accountsPropertiesProfiles.accounts } );
-				registry.dispatch( STORE_NAME ).receivePropertiesProfiles( {
-					accountID: testAccountID,
-					properties: fixtures.propertiesProfiles.properties,
-				} );
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 
 				const initialProfiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 
@@ -193,7 +187,7 @@ describe( 'modules/analytics profiles', () => {
 				const profiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
-				expect( profiles ).toEqual( fixtures.propertiesProfiles.profiles );
+				expect( profiles ).toEqual( fixtures.profiles );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -211,8 +205,8 @@ describe( 'modules/analytics profiles', () => {
 						{ status: 500 }
 					);
 
-				const testAccountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
-				const testPropertyID = fixtures.propertiesProfiles.properties[ 0 ].id;
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const testPropertyID = fixtures.profiles[ 0 ].id;
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );

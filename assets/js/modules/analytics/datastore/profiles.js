@@ -60,9 +60,7 @@ export const actions = {
 		invariant( propertyID, 'propertyID is required.' );
 
 		try {
-			const response = yield actions.fetchCreateProfile( accountID, propertyID );
-
-			const { profile } = response;
+			const profile = yield actions.fetchCreateProfile( accountID, propertyID );
 
 			yield actions.receiveCreateProfile( { accountID, propertyID, profile } );
 			yield Data.dispatch( STORE_NAME ).setProfileID( profile.id );
@@ -210,10 +208,13 @@ export const reducer = ( state, { type, payload } ) => {
 					...state.isDoingCreateProfile,
 					[ `${ accountID }::${ propertyID }` ]: false,
 				},
-				profiles: [
-					...state.profiles || [],
-					profile,
-				],
+				profiles: {
+					...state.profiles || {},
+					[ `${ accountID }::${ propertyID }` ]: [
+						...( state.profiles || {} )[ `${ accountID }::${ propertyID }` ] || [],
+						profile,
+					],
+				},
 			};
 		}
 
@@ -239,7 +240,10 @@ export const reducer = ( state, { type, payload } ) => {
 					...state.isFetchingProfiles,
 					[ `${ accountID }::${ propertyID }` ]: false,
 				},
-				profiles,
+				profiles: {
+					...state.profiles || {},
+					[ `${ accountID }::${ propertyID }` ]: profiles,
+				},
 			};
 		}
 
@@ -265,8 +269,7 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {
 	*getProfiles( accountID, propertyID ) {
 		try {
-			const response = yield actions.fetchProfiles( accountID, propertyID );
-			const { profiles } = response;
+			const profiles = yield actions.fetchProfiles( accountID, propertyID );
 
 			yield actions.receiveProfiles( { accountID, propertyID, profiles } );
 
@@ -300,16 +303,11 @@ export const selectors = {
 
 		const { profiles } = state;
 
-		if ( profiles && profiles.length ) {
-			return profiles.filter( ( profile ) => {
-				return (
-					profile.accountId === accountID && // Capitalization rule exception: `accountId` is a property of an API returned value.
-					profile.webPropertyId === propertyID // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
-				);
-			} );
+		if ( 'undefined' === typeof profiles || 'undefined' === typeof profiles[ `${ accountID }::${ propertyID }` ] ) {
+			return undefined;
 		}
 
-		return profiles;
+		return profiles[ `${ accountID }::${ propertyID }` ];
 	},
 
 	/**
