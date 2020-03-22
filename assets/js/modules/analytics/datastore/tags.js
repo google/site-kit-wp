@@ -244,7 +244,7 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {boolean|undefined} `true` is a tag exists, `false` if not; `undefined` if not loaded.
+	 * @return {boolean|undefined} True if a tag exists, false if not; undefined if not loaded.
 	 */
 	hasExistingTag() {
 		const existingTag = Data.select( STORE_NAME ).getExistingTag();
@@ -284,8 +284,9 @@ export const selectors = {
 	 * Returns `undefined` if the permission check has not yet loaded.
 	 *
 	 * @since n.e.x.t
-	 * @param {Object} state Data store's state.
-	 * @param {string} accountID The Analytics Account ID to fetch permissions for.
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} accountID  The Analytics Account ID to fetch permissions for.
 	 * @param {string} propertyID The Analytics Property ID to check permissions for.
 	 * @return {boolean|undefined} `true` if account + property has permission to access the tag, `false` if not; `undefined` if not loaded.
 	 */

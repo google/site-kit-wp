@@ -96,9 +96,9 @@ export const actions = {
 	 * @since n.e.x.t
 	 * @private
 	 *
-	 * @param {Object} args Argument params.
+	 * @param {Object} args           Argument params.
 	 * @param {string} args.accountID Google Analytics account ID.
-	 * @param {Object} args.property Google Analytics property object.
+	 * @param {Object} args.property  Google Analytics property object.
 	 * @return {Object} Redux-style action.
 	 */
 	receiveCreateProperty( { accountID, property } ) {
@@ -117,9 +117,9 @@ export const actions = {
 	 * @since n.e.x.t
 	 * @private
 	 *
-	 * @param {Object} args Argument params.
+	 * @param {Object} args           Argument params.
 	 * @param {string} args.accountID Google Analytics account ID.
-	 * @param {Object} args.error Error object.
+	 * @param {Object} args.error     Error object.
 	 * @return {Object} Redux-style action.
 	 */
 	receiveCreatePropertyFailed( { accountID, error } ) {
@@ -292,7 +292,7 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state Data store's state.
+	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The Analytics Account ID to fetch properties for.
 	 * @return {Array|undefined} An array of Analytics properties; `undefined` if not loaded.
 	 */
@@ -313,7 +313,7 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state Data store's state.
+	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The Analytics Account ID to check for property creation.
 	 * @return {boolean} `true` if creating a property, `false` if not.
 	 */

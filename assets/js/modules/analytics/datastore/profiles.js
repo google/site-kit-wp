@@ -51,7 +51,7 @@ export const actions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {string} accountID Google Analytics account ID.
+	 * @param {string} accountID  Google Analytics account ID.
 	 * @param {string} propertyID Google Analytics property ID.
 	 * @return {Function} Generator function action.
 	 */
@@ -95,10 +95,10 @@ export const actions = {
 	 * @since n.e.x.t
 	 * @private
 	 *
-	 * @param {Object} args Argument params.
-	 * @param {string} args.accountID Google Analytics account ID.
+	 * @param {Object} args            Argument params.
+	 * @param {string} args.accountID  Google Analytics account ID.
 	 * @param {string} args.propertyID Google Analytics profile ID.
-	 * @param {Object} args.profile Google Analytics profile object.
+	 * @param {Object} args.profile    Google Analytics profile object.
 	 * @return {Object} Redux-style action.
 	 */
 	receiveCreateProfile( { accountID, propertyID, profile } ) {
@@ -118,16 +118,16 @@ export const actions = {
 	 * @since n.e.x.t
 	 * @private
 	 *
-	 * @param {Object} args Argument params.
-	 * @param {string} args.accountID Google Analytics account ID.
+	 * @param {Object} args            Argument params.
+	 * @param {string} args.accountID  Google Analytics account ID.
 	 * @param {string} args.propertyID Google Analytics property ID.
-	 * @param {Object} args.error Error object.
+	 * @param {Object} args.error      Error object.
 	 * @return {Object} Redux-style action.
 	 */
-	receiveCreateProfileFailed( { accountID, error, propertyID } ) {
+	receiveCreateProfileFailed( { accountID, propertyID, error } ) {
 		invariant( accountID, 'accountID is required' );
-		invariant( error, 'error is required.' );
 		invariant( propertyID, 'propertyID is required.' );
+		invariant( error, 'error is required.' );
 
 		return {
 			payload: { accountID, error, propertyID },
@@ -292,8 +292,8 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state Data store's state.
-	 * @param {string} accountID The Analytics Account ID to fetch profiles for.
+	 * @param {Object} state      Data store's state.
+	 * @param {string} accountID  The Analytics Account ID to fetch profiles for.
 	 * @param {string} propertyID The Analytics Property ID to fetch profiles for.
 	 * @return {Array|undefined} An array of Analytics profiles; `undefined` if not loaded.
 	 */
@@ -315,8 +315,8 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state Data store's state.
-	 * @param {string} accountID The Analytics Account ID to check for profile creation.
+	 * @param {Object} state      Data store's state.
+	 * @param {string} accountID  The Analytics Account ID to check for profile creation.
 	 * @param {string} propertyID The Analytics Property ID to check for profile creation.
 	 * @return {boolean} `true` if creating a profile, `false` if not.
 	 */
