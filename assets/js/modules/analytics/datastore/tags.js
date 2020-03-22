@@ -41,7 +41,7 @@ export const INITIAL_STATE = {
 	existingTag: undefined,
 	isFetchingExistingTag: false,
 	isFetchingTagPermission: {},
-	tagPermissions: {},
+	tagPermissions: undefined,
 };
 
 export const actions = {
@@ -169,11 +169,8 @@ export const reducer = ( state, { type, payload } ) => {
 					[ `${ accountID }::${ propertyID }` ]: false,
 				},
 				tagPermissions: {
-					...state.tagPermissions,
-					[ accountID ]: {
-						...state.tagPermissions[ accountID ] || {},
-						[ propertyID ]: permission,
-					},
+					...state.tagPermissions || {},
+					[ `${ accountID }::${ propertyID }` ]: permission,
 				},
 			};
 		}
@@ -298,15 +295,11 @@ export const selectors = {
 
 		const { tagPermissions } = state;
 
-		if (
-			tagPermissions &&
-			tagPermissions[ accountID ] &&
-			tagPermissions[ accountID ][ propertyID ] !== undefined
-		) {
-			return tagPermissions[ accountID ][ propertyID ];
+		if ( 'undefined' === typeof tagPermissions || 'undefined' === typeof tagPermissions[ `${ accountID }::${ propertyID }` ] ) {
+			return undefined;
 		}
 
-		return undefined;
+		return tagPermissions[ `${ accountID }::${ propertyID }` ];
 	},
 };
 
