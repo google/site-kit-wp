@@ -37,7 +37,7 @@ const RECEIVE_PROPERTIES_PROFILES = 'RECEIVE_PROPERTIES_PROFILES';
 const RECEIVE_PROPERTIES_PROFILES_FAILED = 'RECEIVE_PROPERTIES_PROFILES_FAILED';
 
 export const INITIAL_STATE = {
-	isDoingCreateProperty: {},
+	isFetchingCreateProperty: {},
 	isFetchingPropertiesProfiles: {},
 	properties: undefined,
 };
@@ -169,8 +169,8 @@ export const reducer = ( state, { type, payload } ) => {
 
 			return {
 				...state,
-				isDoingCreateProperty: {
-					...state.isDoingCreateProperty,
+				isFetchingCreateProperty: {
+					...state.isFetchingCreateProperty,
 					[ accountID ]: true,
 				},
 			};
@@ -193,8 +193,8 @@ export const reducer = ( state, { type, payload } ) => {
 
 			return {
 				...state,
-				isDoingCreateProperty: {
-					...state.isDoingCreateProperty,
+				isFetchingCreateProperty: {
+					...state.isFetchingCreateProperty,
 					[ accountID ]: false,
 				},
 				properties: {
@@ -213,8 +213,8 @@ export const reducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				error,
-				isDoingCreateProperty: {
-					...state.isDoingCreateProperty,
+				isFetchingCreateProperty: {
+					...state.isFetchingCreateProperty,
 					[ accountID ]: false,
 				},
 			};
@@ -320,9 +320,9 @@ export const selectors = {
 	isDoingCreateProperty( state, accountID ) {
 		invariant( accountID, 'accountID is required' );
 
-		const { isDoingCreateProperty } = state;
+		const { isFetchingCreateProperty } = state;
 
-		return !! isDoingCreateProperty[ accountID ];
+		return !! isFetchingCreateProperty[ accountID ];
 	},
 };
 
