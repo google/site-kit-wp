@@ -75,6 +75,9 @@ describe( 'modules/analytics accounts', () => {
 						{ status: 200 }
 					);
 
+				const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const propertyID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
+
 				const initialAccounts = registry.select( STORE_NAME ).getAccounts();
 				// The connection info will be its initial value while the connection
 				// info is fetched.
@@ -91,8 +94,8 @@ describe( 'modules/analytics accounts', () => {
 				// Properties and profiles should also have been received by
 				// this action.
 				muteConsole( 'error', 2 );
-				const properties = registry.select( STORE_NAME ).getProperties( accounts[ 6 ].id );
-				const profiles = registry.select( STORE_NAME ).getProfiles( accounts[ 6 ].id, properties[ 0 ].id );
+				const properties = registry.select( STORE_NAME ).getProperties( accountID );
+				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 
 				expect( accounts ).toEqual( fixtures.accountsPropertiesProfiles.accounts );
 				expect( properties ).toEqual( fixtures.accountsPropertiesProfiles.properties );
