@@ -62,7 +62,7 @@ describe( 'modules/analytics properties', () => {
 	describe( 'actions', () => {
 		describe( 'createProperty', () => {
 			it( 'creates a property and adds it to the store ', async () => {
-				const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
+				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 
 				fetch
 					.doMockIf(
@@ -87,18 +87,18 @@ describe( 'modules/analytics properties', () => {
 				);
 
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
-				expect( properties ).toMatchObject( [ fixtures.createProperty.property ] );
+				expect( properties ).toMatchObject( [ fixtures.createProperty ] );
 			} );
 
 			it( 'sets isDoingCreateProperty ', async () => {
-				const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
+				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 
 				registry.dispatch( STORE_NAME ).fetchCreateProperty( accountID );
 				expect( registry.select( STORE_NAME ).isDoingCreateProperty( accountID ) ).toEqual( true );
 			} );
 
 			it( 'dispatches an error if the request fails ', async () => {
-				const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
+				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -147,29 +147,30 @@ describe( 'modules/analytics properties', () => {
 						{ status: 200 }
 					);
 
-				const accountIDWithProperties = fixtures.propertiesProfiles.properties[ 5 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const propertyID = fixtures.propertiesProfiles.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 
-				const initialProperties = registry.select( STORE_NAME ).getProperties( accountIDWithProperties );
+				const initialProperties = registry.select( STORE_NAME ).getProperties( accountID );
 
 				// Ensure the proper parameters were passed.
 				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
-					{ accountID: accountIDWithProperties }
+					{ accountID }
 				);
 
 				expect( initialProperties ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getProperties( accountIDWithProperties ) !== undefined
+						registry.select( STORE_NAME ).getProperties( accountID ) !== undefined
 					),
 				);
 
-				const properties = registry.select( STORE_NAME ).getProperties( accountIDWithProperties );
+				const properties = registry.select( STORE_NAME ).getProperties( accountID );
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
 				// Profiles should also have been received by this action.
 				muteConsole( 'error' );
-				const profiles = registry.select( STORE_NAME ).getProfiles( accountIDWithProperties, properties[ 0 ].id );
+				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 
 				expect( properties ).toEqual( fixtures.propertiesProfiles.properties );
 				expect( profiles ).toEqual( fixtures.propertiesProfiles.profiles );

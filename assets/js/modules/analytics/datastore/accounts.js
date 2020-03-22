@@ -83,10 +83,17 @@ export const reducer = ( state, { type, payload } ) => {
 				...state,
 				accounts,
 				isFetchingAccountsPropertiesProfiles: false,
-				properties,
 			};
 
-			// If profiles are returned, determine their property ID.
+			// If properties are returned, determine their account ID.
+			if ( properties.length ) {
+				updatedState.properties = {
+					...state.properties || {},
+					[ properties[ 0 ].accountId ]: properties, // Capitalization rule exception: `accountId` is a property of an API returned value.
+				};
+			}
+
+			// If profiles are returned, determine their account ID and property ID.
 			if ( profiles.length ) {
 				updatedState.profiles = {
 					...state.profiles || {},

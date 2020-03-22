@@ -57,9 +57,7 @@ export const actions = {
 		invariant( accountID, 'accountID is required.' );
 
 		try {
-			const response = yield actions.fetchCreateProperty( accountID );
-
-			const { property } = response;
+			const property = yield actions.fetchCreateProperty( accountID );
 
 			yield actions.receiveCreateProperty( { accountID, property } );
 			yield Data.dispatch( STORE_NAME ).setPropertyID( property.id );
@@ -199,10 +197,13 @@ export const reducer = ( state, { type, payload } ) => {
 					...state.isDoingCreateProperty,
 					[ accountID ]: false,
 				},
-				properties: [
-					...state.properties || [],
-					property,
-				],
+				properties: {
+					...state.properties || {},
+					[ accountID ]: [
+						...( state.properties || {} )[ accountID ] || [],
+						property,
+					],
+				},
 			};
 		}
 
@@ -228,7 +229,10 @@ export const reducer = ( state, { type, payload } ) => {
 					...state.isFetchingPropertiesProfiles,
 					[ accountID ]: false,
 				},
-				properties,
+				properties: {
+					...state.properties || {},
+					[ accountID ]: properties,
+				},
 			};
 
 			// If profiles are returned, determine their property ID.
@@ -297,13 +301,11 @@ export const selectors = {
 
 		const { properties } = state;
 
-		if ( properties && properties.length ) {
-			return properties.filter( ( property ) => {
-				return property.accountId === accountID; // Capitalization rule exception: `accountId` is a property of an API returned value.
-			} );
+		if ( 'undefined' === typeof properties || 'undefined' === typeof properties[ accountID ] ) {
+			return undefined;
 		}
 
-		return properties;
+		return properties[ accountID ];
 	},
 
 	/**
