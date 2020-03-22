@@ -52,12 +52,11 @@ export const actions = {
 		};
 	},
 
-	*fetchTagPermission( { accountID, propertyID } ) {
-		invariant( accountID, 'accountID is required.' );
+	*fetchTagPermission( { propertyID, accountID = '' } ) {
 		invariant( propertyID, 'propertyID is required.' );
 
 		return {
-			payload: { accountID, propertyID },
+			payload: { propertyID, accountID },
 			type: FETCH_TAG_PERMISSION,
 		};
 	},
@@ -80,21 +79,19 @@ export const actions = {
 		};
 	},
 
-	receiveTagPermission( { accountID, propertyID, permission } ) {
-		invariant( accountID, 'accountID is required.' );
-		invariant( permission !== undefined, 'permission cannot be undefined.' );
+	receiveTagPermission( { propertyID, accountID, permission } ) {
 		invariant( propertyID, 'propertyID is required.' );
+		invariant( permission !== undefined, 'permission cannot be undefined.' );
 
 		return {
-			payload: { accountID, propertyID, permission },
+			payload: { propertyID, accountID, permission },
 			type: RECEIVE_TAG_PERMISSION,
 		};
 	},
 
-	receiveTagPermissionFailed( { accountID, error, propertyID } ) {
-		invariant( accountID, 'accountID is required.' );
-		invariant( error, 'error is required.' );
+	receiveTagPermissionFailed( { propertyID, accountID, error } ) {
 		invariant( propertyID, 'propertyID is required.' );
+		invariant( error, 'error is required.' );
 
 		return {
 			payload: { accountID, error, propertyID },
@@ -113,8 +110,8 @@ export const controls = {
 		// currently quite nested and difficult to straightforwardly test.
 		return getExistingTag( 'analytics' );
 	},
-	[ FETCH_TAG_PERMISSION ]: ( { payload: { propertyID } } ) => {
-		return API.get( 'modules', 'analytics', 'tag-permission', { tag: propertyID } );
+	[ FETCH_TAG_PERMISSION ]: ( { payload: { propertyID, accountID } } ) => {
+		return API.get( 'modules', 'analytics', 'tag-permission', { propertyID, accountID } );
 	},
 };
 
@@ -128,13 +125,13 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case FETCH_TAG_PERMISSION: {
-			const { accountID, propertyID } = payload;
+			const { propertyID } = payload;
 
 			return {
 				...state,
 				isFetchingTagPermission: {
 					...state.isFetchingTagPermission,
-					[ `${ accountID }::${ propertyID }` ]: true,
+					[ propertyID ]: true,
 				},
 			};
 		}
@@ -160,30 +157,30 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_TAG_PERMISSION: {
-			const { accountID, propertyID, permission } = payload;
+			const { propertyID, accountID, permission } = payload;
 
 			return {
 				...state,
 				isFetchingTagPermission: {
 					...state.isFetchingTagPermission,
-					[ `${ accountID }::${ propertyID }` ]: false,
+					[ propertyID ]: false,
 				},
 				tagPermissions: {
 					...state.tagPermissions || {},
-					[ `${ accountID }::${ propertyID }` ]: permission,
+					[ propertyID ]: { accountID, permission },
 				},
 			};
 		}
 
 		case RECEIVE_TAG_PERMISSION_FAILED: {
-			const { accountID, propertyID, error } = payload;
+			const { propertyID, error } = payload;
 
 			return {
 				...state,
 				error,
 				isFetchingTagPermission: {
 					...state.isFetchingTagPermission,
-					[ `${ accountID }::${ propertyID }` ]: false,
+					[ propertyID ]: false,
 				},
 			};
 		}
@@ -211,23 +208,28 @@ export const resolvers = {
 		}
 	},
 
-	*getTagPermission( accountID, propertyID ) {
+	*getTagPermission( propertyID, accountID = '' ) {
 		try {
-			const response = yield actions.fetchTagPermission( { accountID, propertyID } );
+			const response = yield actions.fetchTagPermission( { propertyID, accountID } );
 
-			const permission = (
-				accountID === response.accountID &&
-				propertyID === response.propertyID
-			);
+			if ( propertyID !== response.propertyID ) {
+				throw {
+					code: 'google_analytics_existing_tag_permission',
+				};
+			}
 
-			yield actions.receiveTagPermission( { accountID, propertyID, permission } );
+			yield actions.receiveTagPermission( {
+				accountID: response.accountID,
+				propertyID,
+				permission: true,
+			} );
 
 			return;
 		} catch ( error ) {
 			// This error code indicates the current user doesn't have access to this
 			// tag and shouldn't dispatch an error action.
 			if ( error.code === 'google_analytics_existing_tag_permission' ) {
-				yield actions.receiveTagPermission( { accountID, propertyID, permission: false } );
+				yield actions.receiveTagPermission( { propertyID, accountID, permission: false } );
 				return;
 			}
 
@@ -274,33 +276,50 @@ export const selectors = {
 	},
 
 	/**
-	 * Check permissions for an existing Google Analytics tag.
+	 * Checks whether the user has access to an existing Google Analytics tag / property.
 	 *
-	 * Get permissions for a tag based on a Google Analytics `accountID` and
-	 * `propertyID`. Useful when an existing tag on the site is found and
-	 * you want to verify that an account + property combination has access to
-	 * said tag.
+	 * This can be an existing tag found on the site, or any Google Analytics property.
+	 * If the account ID is known, it should be specified as well.
 	 *
 	 * Returns `undefined` if the permission check has not yet loaded.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state      Data store's state.
-	 * @param {string} accountID  The Analytics Account ID to fetch permissions for.
 	 * @param {string} propertyID The Analytics Property ID to check permissions for.
-	 * @return {boolean|undefined} `true` if account + property has permission to access the tag, `false` if not; `undefined` if not loaded.
+	 * @param {string} accountID  Optional. The Analytics Account ID the property belongs to, if known.
+	 * @return {boolean|undefined} True if the user has access, false if not; `undefined` if not loaded.
 	 */
-	getTagPermission( state, accountID, propertyID ) {
-		invariant( accountID, 'accountID is required.' );
+	hasTagPermission( state, propertyID, accountID = '' ) {
+		const response = Data.select( STORE_NAME ).getTagPermission( propertyID, accountID );
+		return response !== undefined ? response.permission : undefined;
+	},
+
+	/**
+	 * Checks permissions for an existing Google Analytics tag / property.
+	 *
+	 * This can be an existing tag found on the site, or any Google Analytics property.
+	 * If the account ID is known, it should be specified as well.
+	 *
+	 * Returns `undefined` if the permission check has not yet loaded.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state      Data store's state.
+	 * @param {string} propertyID The Analytics Property ID to check permissions for.
+	 * @param {string} accountID  Optional. The Analytics Account ID the property belongs to, if known.
+	 * @return {Object|undefined} Object with string `accountID` and boolean `permission` properties; `undefined` if not loaded.
+	 */
+	getTagPermission( state, propertyID, accountID = '' ) { // eslint-disable-line no-unused-vars
 		invariant( propertyID, 'propertyID is required.' );
 
 		const { tagPermissions } = state;
 
-		if ( 'undefined' === typeof tagPermissions || 'undefined' === typeof tagPermissions[ `${ accountID }::${ propertyID }` ] ) {
+		if ( 'undefined' === typeof tagPermissions || 'undefined' === typeof tagPermissions[ propertyID ] ) {
 			return undefined;
 		}
 
-		return tagPermissions[ `${ accountID }::${ propertyID }` ];
+		return tagPermissions[ propertyID ];
 	},
 };
 

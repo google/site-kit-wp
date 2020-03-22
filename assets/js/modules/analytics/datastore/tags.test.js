@@ -75,15 +75,16 @@ describe( 'modules/analytics tags', () => {
 						{ status: 200 }
 					);
 
-				const accountID = fixtures.getTagPermissionsAccess.accountID;
 				const propertyID = fixtures.getTagPermissionsAccess.propertyID;
+				const accountID = fixtures.getTagPermissionsAccess.accountID;
 
-				const initialSelect = registry.select( STORE_NAME ).getTagPermission( accountID, propertyID );
+				const initialSelect = registry.select( STORE_NAME ).getTagPermission( propertyID, accountID );
 
 				// Ensure the proper parameters were sent.
 				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
 					{
-						tag: propertyID,
+						propertyID,
+						accountID,
 					}
 				);
 
@@ -92,14 +93,17 @@ describe( 'modules/analytics tags', () => {
 				expect( initialSelect ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getTagPermission( accountID, propertyID ) !== undefined
+						registry.select( STORE_NAME ).getTagPermission( propertyID, accountID ) !== undefined
 					),
 				);
 
-				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( accountID, propertyID );
+				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( propertyID, accountID );
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
-				expect( permissionForTag ).toEqual( true );
+				expect( permissionForTag ).toEqual( {
+					accountID,
+					permission: true,
+				} );
 			} );
 
 			it( 'returns false if a user cannot access the requested tag', async () => {
@@ -112,25 +116,28 @@ describe( 'modules/analytics tags', () => {
 						{ status: 403 }
 					);
 
-				const accountID = fixtures.getTagPermissionsAccess.accountID;
 				const propertyID = fixtures.getTagPermissionsAccess.propertyID;
+				const accountID = fixtures.getTagPermissionsAccess.accountID;
 
 				// The API will return an error response here, so we mute the console.
 				muteConsole( 'error' );
-				const initialSelect = registry.select( STORE_NAME ).getTagPermission( accountID, propertyID );
+				const initialSelect = registry.select( STORE_NAME ).getTagPermission( propertyID, accountID );
 				// The connection info will be its initial value while the connection
 				// info is fetched.
 				expect( initialSelect ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getTagPermission( accountID, propertyID ) !== undefined
+						registry.select( STORE_NAME ).getTagPermission( propertyID, accountID ) !== undefined
 					),
 				);
 
-				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( accountID, propertyID );
+				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( propertyID, accountID );
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
-				expect( permissionForTag ).toEqual( false );
+				expect( permissionForTag ).toEqual( {
+					accountID,
+					permission: false,
+				} );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -148,21 +155,94 @@ describe( 'modules/analytics tags', () => {
 						{ status: 500 }
 					);
 
-				const accountID = fixtures.getTagPermissionsAccess.accountID;
 				const propertyID = fixtures.getTagPermissionsAccess.propertyID;
+				const accountID = fixtures.getTagPermissionsAccess.accountID;
 
 				muteConsole( 'error' );
-				registry.select( STORE_NAME ).getTagPermission( accountID, propertyID );
+				registry.select( STORE_NAME ).getTagPermission( propertyID, accountID );
 				await subscribeUntil( registry,
 					// TODO: We may want a selector for this, but for now this is fine
 					// because it's internal-only.
-					() => store.getState().isFetchingTagPermission[ `${ accountID }::${ propertyID }` ] === false,
+					() => store.getState().isFetchingTagPermission[ propertyID ] === false,
 				);
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
-				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( accountID, propertyID );
+				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( propertyID, accountID );
 				expect( permissionForTag ).toEqual( undefined );
+			} );
+
+			it( 'returns true if a user has access to this tag without passing account ID', async () => {
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/
+					)
+					.mockResponseOnce(
+						JSON.stringify( fixtures.getTagPermissionsAccess ),
+						{ status: 200 }
+					);
+
+				const propertyID = fixtures.getTagPermissionsAccess.propertyID;
+
+				const initialSelect = registry.select( STORE_NAME ).getTagPermission( propertyID );
+
+				// Ensure the proper parameters were sent.
+				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
+					{
+						propertyID,
+						accountID: '',
+					}
+				);
+
+				// The connection info will be its initial value while the connection
+				// info is fetched.
+				expect( initialSelect ).toEqual( undefined );
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getTagPermission( propertyID ) !== undefined
+					),
+				);
+
+				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( propertyID );
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+
+				expect( permissionForTag ).toEqual( {
+					accountID: fixtures.getTagPermissionsAccess.accountID,
+					permission: true,
+				} );
+			} );
+
+			it( 'returns false if a user cannot access the requested tag without passing account ID', async () => {
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/
+					)
+					.mockResponseOnce(
+						JSON.stringify( fixtures.getTagPermissionsNoAccess ),
+						{ status: 403 }
+					);
+
+				const propertyID = fixtures.getTagPermissionsAccess.propertyID;
+
+				// The API will return an error response here, so we mute the console.
+				muteConsole( 'error' );
+				const initialSelect = registry.select( STORE_NAME ).getTagPermission( propertyID );
+				// The connection info will be its initial value while the connection
+				// info is fetched.
+				expect( initialSelect ).toEqual( undefined );
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getTagPermission( propertyID ) !== undefined
+					),
+				);
+
+				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( propertyID );
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+
+				expect( permissionForTag ).toEqual( {
+					accountID: '',
+					permission: false,
+				} );
 			} );
 		} );
 	} );
