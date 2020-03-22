@@ -823,18 +823,29 @@ final class Analytics extends Module
 				};
 			case 'GET:tag-permission':
 				return function() use ( $data ) {
-					if ( ! isset( $data['tag'] ) ) {
-						return new WP_Error(
-							'missing_required_param',
-							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'tag' ),
-							array( 'status' => 400 )
-						);
+					// TODO: Remove support for this parameter once no longer used.
+					if ( isset( $data['tag'] ) ) {
+						$property_id = $data['tag'];
+					} else {
+						if ( ! isset( $data['propertyID'] ) ) {
+							return new WP_Error(
+								'missing_required_param',
+								/* translators: %s: Missing parameter name */
+								sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+								array( 'status' => 400 )
+							);
+						}
+						$property_id = $data['propertyID'];
 					}
-					$accounts               = $this->get_data( 'accounts-properties-profiles' );
-					$has_access_to_property = $this->has_access_to_property( $data['tag'], $accounts['accounts'] );
 
-					if ( empty( $has_access_to_property ) ) {
+					// This can be passed if known, to speed up the lookup.
+					if ( isset( $data['accountID'] ) ) {
+						$account_id = $data['accountID'];
+					}
+
+					$has_access_to_property = $this->has_access_to_property( $property_id, $account_id );
+
+					if ( ! $has_access_to_property ) {
 						return new WP_Error(
 							'google_analytics_existing_tag_permission',
 							sprintf(
@@ -1138,25 +1149,39 @@ final class Analytics extends Module
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $property_id   Property found in the existing tag.
-	 * @param array  $accounts      List of accounts to loop through properties.
+	 * @param string $property_id Property found in the existing tag.
+	 * @param string $account_id  Optional. Account ID the property belongs to, if known. Default empty.
 	 * @return mixed False if user has no access to the existing property or array with account id and property found.
 	 */
-	protected function has_access_to_property( $property_id, $accounts ) {
-
-		if ( empty( $property_id ) || empty( $accounts ) ) {
+	protected function has_access_to_property( $property_id, $account_id = '' ) {
+		if ( empty( $property_id ) ) {
 			return false;
+		}
+
+		if ( ! empty( $account_id ) ) {
+			$account_ids = array( $account_id );
+		} else {
+			$accounts = $this->get_data( 'accounts-properties-profiles' );
+			if ( is_wp_error( $accounts ) || empty( $accounts ) ) {
+				return false;
+			}
+
+			$account_ids = array_map(
+				function( $account ) {
+					return $account->getId();
+				},
+				$accounts['accounts']
+			);
 		}
 
 		$response = false;
 
-		foreach ( $accounts as $account ) {
-			$account_id = $account->getId();
+		foreach ( $account_ids as $account_id ) {
 			$properties = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
-
 			if ( is_wp_error( $properties ) ) {
 				continue;
 			}
+
 			$existing_property_match = array_filter(
 				$properties['properties'],
 				function( $property ) use ( $property_id ) {
