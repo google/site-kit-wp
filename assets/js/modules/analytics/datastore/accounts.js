@@ -67,8 +67,8 @@ export const controls = {
 	},
 };
 
-export const reducer = ( state, action ) => {
-	switch ( action.type ) {
+export const reducer = ( state, { type, payload } ) => {
+	switch ( type ) {
 		case FETCH_ACCOUNTS_PROPERTIES_PROFILES: {
 			return {
 				...state,
@@ -77,7 +77,7 @@ export const reducer = ( state, action ) => {
 		}
 
 		case RECEIVE_ACCOUNTS_PROPERTIES_PROFILES: {
-			const { accounts, properties, profiles } = action.payload;
+			const { accounts, properties, profiles } = payload;
 
 			return {
 				...state,
@@ -89,7 +89,7 @@ export const reducer = ( state, action ) => {
 		}
 
 		case RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED: {
-			const { error } = action.payload;
+			const { error } = payload;
 
 			return {
 				...state,

@@ -175,10 +175,10 @@ export const controls = {
 	},
 };
 
-export const reducer = ( state, action ) => {
-	switch ( action.type ) {
+export const reducer = ( state, { type, payload } ) => {
+	switch ( type ) {
 		case FETCH_CREATE_PROFILE: {
-			const { accountId, propertyId } = action.payload;
+			const { accountId, propertyId } = payload;
 
 			return {
 				...state,
@@ -190,7 +190,7 @@ export const reducer = ( state, action ) => {
 		}
 
 		case FETCH_PROFILES: {
-			const { accountId, propertyId } = action.payload;
+			const { accountId, propertyId } = payload;
 
 			return {
 				...state,
@@ -202,7 +202,7 @@ export const reducer = ( state, action ) => {
 		}
 
 		case RECEIVE_CREATE_PROFILE: {
-			const { accountId, propertyId, profile } = action.payload;
+			const { accountId, propertyId, profile } = payload;
 
 			return {
 				...state,
@@ -218,7 +218,7 @@ export const reducer = ( state, action ) => {
 		}
 
 		case RECEIVE_CREATE_PROFILE_FAILED: {
-			const { accountId, error, propertyId } = action.payload;
+			const { accountId, error, propertyId } = payload;
 
 			return {
 				...state,
@@ -231,7 +231,7 @@ export const reducer = ( state, action ) => {
 		}
 
 		case RECEIVE_PROFILES: {
-			const { accountId, propertyId, profiles } = action.payload;
+			const { accountId, propertyId, profiles } = payload;
 
 			return {
 				...state,
@@ -244,7 +244,7 @@ export const reducer = ( state, action ) => {
 		}
 
 		case RECEIVE_PROFILES_FAILED: {
-			const { accountId, error, propertyId } = action.payload;
+			const { accountId, error, propertyId } = payload;
 
 			return {
 				...state,

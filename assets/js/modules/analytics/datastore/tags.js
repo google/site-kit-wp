@@ -121,8 +121,8 @@ export const controls = {
 	},
 };
 
-export const reducer = ( state, action ) => {
-	switch ( action.type ) {
+export const reducer = ( state, { type, payload } ) => {
+	switch ( type ) {
 		case FETCH_EXISTING_TAG: {
 			return {
 				...state,
@@ -131,7 +131,7 @@ export const reducer = ( state, action ) => {
 		}
 
 		case FETCH_TAG_PERMISSION: {
-			const { tag } = action.payload;
+			const { tag } = payload;
 
 			return {
 				...state,
@@ -143,7 +143,7 @@ export const reducer = ( state, action ) => {
 		}
 
 		case RECEIVE_EXISTING_TAG: {
-			const { existingTag } = action.payload;
+			const { existingTag } = payload;
 
 			return {
 				...state,
@@ -153,7 +153,7 @@ export const reducer = ( state, action ) => {
 		}
 
 		case RECEIVE_EXISTING_TAG_FAILED: {
-			const { error } = action.payload;
+			const { error } = payload;
 
 			return {
 				...state,
@@ -163,7 +163,7 @@ export const reducer = ( state, action ) => {
 		}
 
 		case RECEIVE_TAG_PERMISSION: {
-			const { accountId, propertyId, permission, tag } = action.payload;
+			const { accountId, propertyId, permission, tag } = payload;
 
 			return {
 				...state,
@@ -182,7 +182,7 @@ export const reducer = ( state, action ) => {
 		}
 
 		case RECEIVE_TAG_PERMISSION_FAILED: {
-			const { error, tag } = action.payload;
+			const { error, tag } = payload;
 
 			return {
 				...state,
