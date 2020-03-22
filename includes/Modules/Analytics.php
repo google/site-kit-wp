@@ -479,6 +479,8 @@ final class Analytics extends Module
 			'tag-permission'               => '',
 			'report'                       => 'analyticsreporting',
 			// POST.
+			'create-property'              => 'analytics',
+			'create-profile'               => 'analytics',
 			'settings'                     => '',
 		);
 	}
@@ -766,6 +768,39 @@ final class Analytics extends Module
 				$body->setReportRequests( array( $request ) );
 
 				return $this->get_analyticsreporting_service()->reports->batchGet( $body );
+			case 'POST:create-property':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+				$property = new Google_Service_Analytics_Webproperty();
+				$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+				$property->setWebsiteUrl( $this->context->get_reference_site_url() );
+				return $this->get_service( 'analytics' )->management_webproperties->insert( $data['accountID'], $property );
+			case 'POST:create-profile':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+				$profile = new Google_Service_Analytics_Profile();
+				$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
+				return $profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $data['propertyID'], $profile );
 			case 'POST:settings':
 				return function() use ( $data ) {
 					$option          = $data->data;
