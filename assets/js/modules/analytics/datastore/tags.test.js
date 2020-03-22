@@ -75,11 +75,11 @@ describe( 'modules/analytics tags', () => {
 						{ status: 200 }
 					);
 
-				const accountId = '151753095';
-				const propertyId = 'UA-151753095-2';
+				const accountID = '151753095';
+				const propertyID = 'UA-151753095-2';
 				const existingAnalyticsTag = '151753095-2';
 
-				const initialSelect = registry.select( STORE_NAME ).getTagPermission( accountId, propertyId, existingAnalyticsTag );
+				const initialSelect = registry.select( STORE_NAME ).getTagPermission( accountID, propertyID, existingAnalyticsTag );
 
 				// Ensure the proper parameters were sent.
 				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
@@ -93,11 +93,11 @@ describe( 'modules/analytics tags', () => {
 				expect( initialSelect ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getTagPermission( accountId, propertyId, existingAnalyticsTag ) !== undefined
+						registry.select( STORE_NAME ).getTagPermission( accountID, propertyID, existingAnalyticsTag ) !== undefined
 					),
 				);
 
-				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( accountId, propertyId, existingAnalyticsTag );
+				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( accountID, propertyID, existingAnalyticsTag );
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
 				expect( permissionForTag ).toEqual( true );
@@ -113,23 +113,23 @@ describe( 'modules/analytics tags', () => {
 						{ status: 403 }
 					);
 
-				const accountId = '151753095';
-				const propertyId = 'UA-151753095-2';
+				const accountID = '151753095';
+				const propertyID = 'UA-151753095-2';
 				const existingAnalyticsTag = '151753095-2';
 
 				// The API will return an error response here, so we mute the console.
 				muteConsole( 'error' );
-				const initialSelect = registry.select( STORE_NAME ).getTagPermission( accountId, propertyId, existingAnalyticsTag );
+				const initialSelect = registry.select( STORE_NAME ).getTagPermission( accountID, propertyID, existingAnalyticsTag );
 				// The connection info will be its initial value while the connection
 				// info is fetched.
 				expect( initialSelect ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getTagPermission( accountId, propertyId, existingAnalyticsTag ) !== undefined
+						registry.select( STORE_NAME ).getTagPermission( accountID, propertyID, existingAnalyticsTag ) !== undefined
 					),
 				);
 
-				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( accountId, propertyId, existingAnalyticsTag );
+				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( accountID, propertyID, existingAnalyticsTag );
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
 				expect( permissionForTag ).toEqual( false );
@@ -150,12 +150,12 @@ describe( 'modules/analytics tags', () => {
 						{ status: 500 }
 					);
 
-				const accountId = '151753095';
-				const propertyId = 'UA-151753095-2';
+				const accountID = '151753095';
+				const propertyID = 'UA-151753095-2';
 				const existingAnalyticsTag = '151753095-2';
 
 				muteConsole( 'error' );
-				registry.select( STORE_NAME ).getTagPermission( accountId, propertyId, existingAnalyticsTag );
+				registry.select( STORE_NAME ).getTagPermission( accountID, propertyID, existingAnalyticsTag );
 				await subscribeUntil( registry,
 					// TODO: We may want a selector for this, but for now this is fine
 					// because it's internal-only.
@@ -164,7 +164,7 @@ describe( 'modules/analytics tags', () => {
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
-				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( accountId, propertyId, existingAnalyticsTag );
+				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( accountID, propertyID, existingAnalyticsTag );
 				expect( permissionForTag ).toEqual( undefined );
 			} );
 		} );

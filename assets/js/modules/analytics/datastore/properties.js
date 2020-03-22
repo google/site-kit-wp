@@ -50,41 +50,41 @@ export const actions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} accountId Google Analytics account ID.
+	 * @param {Object} accountID Google Analytics account ID.
 	 * @return {Object} Redux-style action.
 	 */
-	*createProperty( accountId ) {
-		invariant( accountId, 'accountId is required.' );
+	*createProperty( accountID ) {
+		invariant( accountID, 'accountID is required.' );
 
 		try {
-			const response = yield actions.fetchCreateProperty( accountId );
+			const response = yield actions.fetchCreateProperty( accountID );
 
 			const { property } = response;
 
-			yield actions.receiveCreateProperty( { accountId, property } );
+			yield actions.receiveCreateProperty( { accountID, property } );
 			yield Data.dispatch( STORE_NAME ).setPropertyID( property.id );
 			return;
 		} catch ( error ) {
 			// TODO: Implement an error handler store or some kind of centralized
 			// place for error dispatch...
-			return actions.receiveCreatePropertyFailed( { accountId, error } );
+			return actions.receiveCreatePropertyFailed( { accountID, error } );
 		}
 	},
 
-	*fetchCreateProperty( accountId ) {
-		invariant( accountId, 'accountId is required.' );
+	*fetchCreateProperty( accountID ) {
+		invariant( accountID, 'accountID is required.' );
 
 		return {
-			payload: { accountId },
+			payload: { accountID },
 			type: FETCH_CREATE_PROPERTY,
 		};
 	},
 
-	*fetchPropertiesProfiles( accountId ) {
-		invariant( accountId, 'accountId is required.' );
+	*fetchPropertiesProfiles( accountID ) {
+		invariant( accountID, 'accountID is required.' );
 
 		return {
-			payload: { accountId },
+			payload: { accountID },
 			type: FETCH_PROPERTIES_PROFILES,
 		};
 	},
@@ -99,16 +99,16 @@ export const actions = {
 	 * @private
 	 *
 	 * @param {Object} args Argument params.
-	 * @param {string} args.accountId Google Analytics account ID.
+	 * @param {string} args.accountID Google Analytics account ID.
 	 * @param {Object} args.property Google Analytics property object.
 	 * @return {Object} Redux-style action.
 	 */
-	receiveCreateProperty( { accountId, property } ) {
-		invariant( accountId, 'accountId is required' );
+	receiveCreateProperty( { accountID, property } ) {
+		invariant( accountID, 'accountID is required' );
 		invariant( property, 'property is required' );
 
 		return {
-			payload: { accountId, property },
+			payload: { accountID, property },
 			type: RECEIVE_CREATE_PROPERTY,
 		};
 	},
@@ -120,84 +120,84 @@ export const actions = {
 	 * @private
 	 *
 	 * @param {Object} args Argument params.
-	 * @param {string} args.accountId Google Analytics account ID.
+	 * @param {string} args.accountID Google Analytics account ID.
 	 * @param {Object} args.error Error object.
 	 * @return {Object} Redux-style action.
 	 */
-	receiveCreatePropertyFailed( { accountId, error } ) {
-		invariant( accountId, 'accountId is required' );
+	receiveCreatePropertyFailed( { accountID, error } ) {
+		invariant( accountID, 'accountID is required' );
 		invariant( error, 'error is required.' );
 
 		return {
-			payload: { accountId, error },
+			payload: { accountID, error },
 			type: RECEIVE_CREATE_PROPERTY_FAILED,
 		};
 	},
 
-	receivePropertiesProfiles( { accountId, properties, profiles } ) {
-		invariant( accountId, 'accountId is required' );
+	receivePropertiesProfiles( { accountID, properties, profiles } ) {
+		invariant( accountID, 'accountID is required' );
 		invariant( properties, 'properties is required' );
 
 		return {
-			payload: { accountId, properties, profiles },
+			payload: { accountID, properties, profiles },
 			type: RECEIVE_PROPERTIES_PROFILES,
 		};
 	},
 
-	receivePropertiesProfilesFailed( { accountId, error } ) {
-		invariant( accountId, 'accountId is required' );
+	receivePropertiesProfilesFailed( { accountID, error } ) {
+		invariant( accountID, 'accountID is required' );
 		invariant( error, 'error is required.' );
 
 		return {
-			payload: { accountId, error },
+			payload: { accountID, error },
 			type: RECEIVE_PROPERTIES_PROFILES_FAILED,
 		};
 	},
 };
 
 export const controls = {
-	[ FETCH_CREATE_PROPERTY ]: ( { payload: { accountId } } ) => {
-		return API.set( 'modules', 'analytics', 'create-property', { accountID: accountId } );
+	[ FETCH_CREATE_PROPERTY ]: ( { payload: { accountID } } ) => {
+		return API.set( 'modules', 'analytics', 'create-property', { accountID } );
 	},
-	[ FETCH_PROPERTIES_PROFILES ]: ( { payload: { accountId } } ) => {
-		return API.get( 'modules', 'analytics', 'properties-profiles', { accountID: accountId } );
+	[ FETCH_PROPERTIES_PROFILES ]: ( { payload: { accountID } } ) => {
+		return API.get( 'modules', 'analytics', 'properties-profiles', { accountID } );
 	},
 };
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case FETCH_CREATE_PROPERTY: {
-			const { accountId } = payload;
+			const { accountID } = payload;
 
 			return {
 				...state,
 				isDoingCreateProperty: {
 					...state.isDoingCreateProperty,
-					[ accountId ]: true,
+					[ accountID ]: true,
 				},
 			};
 		}
 
 		case FETCH_PROPERTIES_PROFILES: {
-			const { accountId } = payload;
+			const { accountID } = payload;
 
 			return {
 				...state,
 				isFetchingPropertiesProfiles: {
 					...state.isFetchingPropertiesProfiles,
-					[ accountId ]: true,
+					[ accountID ]: true,
 				},
 			};
 		}
 
 		case RECEIVE_CREATE_PROPERTY: {
-			const { accountId, property } = payload;
+			const { accountID, property } = payload;
 
 			return {
 				...state,
 				isDoingCreateProperty: {
 					...state.isDoingCreateProperty,
-					[ accountId ]: false,
+					[ accountID ]: false,
 				},
 				properties: [
 					...state.properties || [],
@@ -207,26 +207,26 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_CREATE_PROPERTY_FAILED: {
-			const { accountId, error } = payload;
+			const { accountID, error } = payload;
 
 			return {
 				...state,
 				error,
 				isDoingCreateProperty: {
 					...state.isDoingCreateProperty,
-					[ accountId ]: false,
+					[ accountID ]: false,
 				},
 			};
 		}
 
 		case RECEIVE_PROPERTIES_PROFILES: {
-			const { accountId, properties, profiles } = payload;
+			const { accountID, properties, profiles } = payload;
 
 			return {
 				...state,
 				isFetchingPropertiesProfiles: {
 					...state.isFetchingPropertiesProfiles,
-					[ accountId ]: false,
+					[ accountID ]: false,
 				},
 				properties,
 				profiles,
@@ -234,14 +234,14 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_PROPERTIES_PROFILES_FAILED: {
-			const { accountId, error } = payload;
+			const { accountID, error } = payload;
 
 			return {
 				...state,
 				error,
 				isFetchingPropertiesProfiles: {
 					...state.isFetchingPropertiesProfiles,
-					[ accountId ]: false,
+					[ accountID ]: false,
 				},
 			};
 		}
@@ -253,18 +253,18 @@ export const reducer = ( state, { type, payload } ) => {
 };
 
 export const resolvers = {
-	*getProperties( accountId ) {
+	*getProperties( accountID ) {
 		try {
-			const response = yield actions.fetchPropertiesProfiles( accountId );
+			const response = yield actions.fetchPropertiesProfiles( accountID );
 			const { properties, profiles } = response;
 
-			yield actions.receivePropertiesProfiles( { accountId, properties, profiles } );
+			yield actions.receivePropertiesProfiles( { accountID, properties, profiles } );
 
 			return;
 		} catch ( error ) {
 			// TODO: Implement an error handler store or some kind of centralized
 			// place for error dispatch...
-			return actions.receivePropertiesProfilesFailed( { accountId, error } );
+			return actions.receivePropertiesProfilesFailed( { accountID, error } );
 		}
 	},
 };
@@ -280,17 +280,17 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @param {string} accountId The Analytics Account ID to fetch properties for.
+	 * @param {string} accountID The Analytics Account ID to fetch properties for.
 	 * @return {Array|undefined} An array of Analytics properties; `undefined` if not loaded.
 	 */
-	getProperties( state, accountId ) {
-		invariant( accountId, 'accountId is required' );
+	getProperties( state, accountID ) {
+		invariant( accountID, 'accountID is required' );
 
 		const { properties } = state;
 
 		if ( properties && properties.length ) {
 			return properties.filter( ( property ) => {
-				return property.accountId === accountId;
+				return property.accountId === accountID; // Capitalization rule exception: `accountId` is a property of an API returned value.
 			} );
 		}
 
@@ -303,15 +303,15 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @param {string} accountId The Analytics Account ID to check for property creation.
+	 * @param {string} accountID The Analytics Account ID to check for property creation.
 	 * @return {boolean} `true` if creating a property, `false` if not.
 	 */
-	isDoingCreateProperty( state, accountId ) {
-		invariant( accountId, 'accountId is required' );
+	isDoingCreateProperty( state, accountID ) {
+		invariant( accountID, 'accountID is required' );
 
 		const { isDoingCreateProperty } = state;
 
-		return !! isDoingCreateProperty[ accountId ];
+		return !! isDoingCreateProperty[ accountID ];
 	},
 };
 

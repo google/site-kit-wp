@@ -62,8 +62,8 @@ describe( 'modules/analytics profiles', () => {
 	describe( 'actions', () => {
 		describe( 'createProfile', () => {
 			it( 'creates a profile and adds it to the store ', async () => {
-				const accountId = fixtures.accountsPropertiesProfiles.accounts[ 6 ].id;
-				const propertyId = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
+				const accountID = fixtures.accountsPropertiesProfiles.accounts[ 6 ].id;
+				const propertyID = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
 
 				fetch
 					.doMockIf(
@@ -74,30 +74,30 @@ describe( 'modules/analytics profiles', () => {
 						{ status: 200 }
 					);
 
-				registry.dispatch( STORE_NAME ).createProfile( accountId, propertyId );
+				registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID );
 
 				// Ensure the proper body parameters were sent.
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
 					{
-						accountID: accountId,
-						propertyID: propertyId,
+						accountID,
+						propertyID,
 					}
 				);
 
 				muteConsole( 'error' );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getProfiles( accountId, propertyId )
+						registry.select( STORE_NAME ).getProfiles( accountID, propertyID )
 					),
 				);
 
-				const profiles = registry.select( STORE_NAME ).getProfiles( accountId, propertyId );
+				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 				expect( profiles ).toMatchObject( [ fixtures.createProfile.profile ] );
 			} );
 
 			it( 'sets isDoingCreateProfile ', async () => {
-				const accountId = fixtures.accountsPropertiesProfiles.accounts[ 6 ].id;
-				const propertyId = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
+				const accountID = fixtures.accountsPropertiesProfiles.accounts[ 6 ].id;
+				const propertyID = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
 
 				fetch
 					.doMockIf(
@@ -108,13 +108,13 @@ describe( 'modules/analytics profiles', () => {
 						{ status: 200 }
 					);
 
-				registry.dispatch( STORE_NAME ).fetchCreateProfile( accountId, propertyId );
-				expect( registry.select( STORE_NAME ).isDoingCreateProfile( accountId, propertyId ) ).toEqual( true );
+				registry.dispatch( STORE_NAME ).fetchCreateProfile( accountID, propertyID );
+				expect( registry.select( STORE_NAME ).isDoingCreateProfile( accountID, propertyID ) ).toEqual( true );
 			} );
 
 			it( 'dispatches an error if the request fails ', async () => {
-				const accountId = fixtures.accountsPropertiesProfiles.accounts[ 6 ].id;
-				const propertyId = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
+				const accountID = fixtures.accountsPropertiesProfiles.accounts[ 6 ].id;
+				const propertyID = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -131,7 +131,7 @@ describe( 'modules/analytics profiles', () => {
 					);
 
 				muteConsole( 'error' );
-				registry.dispatch( STORE_NAME ).createProfile( accountId, propertyId );
+				registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID );
 
 				await subscribeUntil( registry,
 					() => (
@@ -143,7 +143,7 @@ describe( 'modules/analytics profiles', () => {
 
 				// Ignore the request fired by the `getProperties` selector.
 				muteConsole( 'error' );
-				const properties = registry.select( STORE_NAME ).getProperties( accountId );
+				const properties = registry.select( STORE_NAME ).getProperties( accountID );
 				// No properties should have been added yet, as the property creation
 				// failed.
 				expect( properties ).toEqual( undefined );
@@ -163,34 +163,34 @@ describe( 'modules/analytics profiles', () => {
 						{ status: 200 }
 					);
 
-				const testAccountId = fixtures.propertiesProfiles.properties[ 0 ].accountId;
-				const testPropertyId = fixtures.propertiesProfiles.properties[ 0 ].id;
+				const testAccountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const testPropertyID = fixtures.propertiesProfiles.properties[ 0 ].id;
 
 				// Dispatch specific data to the stores without mocking extra requests.
 				registry.dispatch( STORE_NAME ).receiveAccountsPropertiesProfiles( { accounts: fixtures.accountsPropertiesProfiles.accounts } );
 				registry.dispatch( STORE_NAME ).receivePropertiesProfiles( {
-					accountId: testAccountId,
+					accountID: testAccountID,
 					properties: fixtures.propertiesProfiles.properties,
 				} );
 
-				const initialProfiles = registry.select( STORE_NAME ).getProfiles( testAccountId, testPropertyId );
+				const initialProfiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 
 				// Ensure the proper parameters were sent.
 				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
 					{
-						accountID: testAccountId,
-						propertyID: testPropertyId,
+						accountID: testAccountID,
+						propertyID: testPropertyID,
 					}
 				);
 
 				expect( initialProfiles ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getProfiles( testAccountId, testPropertyId ) !== undefined
+						registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID ) !== undefined
 					),
 				);
 
-				const profiles = registry.select( STORE_NAME ).getProfiles( testAccountId, testPropertyId );
+				const profiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( profiles ).toEqual( fixtures.propertiesProfiles.profiles );
@@ -211,20 +211,20 @@ describe( 'modules/analytics profiles', () => {
 						{ status: 500 }
 					);
 
-				const testAccountId = fixtures.propertiesProfiles.properties[ 0 ].accountId;
-				const testPropertyId = fixtures.propertiesProfiles.properties[ 0 ].id;
+				const testAccountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const testPropertyID = fixtures.propertiesProfiles.properties[ 0 ].id;
 
 				muteConsole( 'error' );
-				registry.select( STORE_NAME ).getProfiles( testAccountId, testPropertyId );
+				registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 				await subscribeUntil( registry,
 					// TODO: We may want a selector for this, but for now this is fine
 					// because it's internal-only.
-					() => store.getState().isFetchingProfiles[ `${ testAccountId }::${ testPropertyId }` ] === false,
+					() => store.getState().isFetchingProfiles[ `${ testAccountID }::${ testPropertyID }` ] === false,
 				);
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
-				const profiles = registry.select( STORE_NAME ).getProfiles( testAccountId, testPropertyId );
+				const profiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
 				expect( profiles ).toEqual( undefined );
 			} );
 		} );

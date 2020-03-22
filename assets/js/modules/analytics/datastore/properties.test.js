@@ -62,7 +62,7 @@ describe( 'modules/analytics properties', () => {
 	describe( 'actions', () => {
 		describe( 'createProperty', () => {
 			it( 'creates a property and adds it to the store ', async () => {
-				const accountId = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
+				const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
 
 				fetch
 					.doMockIf(
@@ -73,32 +73,32 @@ describe( 'modules/analytics properties', () => {
 						{ status: 200 }
 					);
 
-				registry.dispatch( STORE_NAME ).createProperty( accountId );
+				registry.dispatch( STORE_NAME ).createProperty( accountID );
 				// Ensure the proper parameters were passed.
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
-					{ accountID: accountId }
+					{ accountID }
 				);
 
 				muteConsole( 'error' );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getProperties( accountId )
+						registry.select( STORE_NAME ).getProperties( accountID )
 					),
 				);
 
-				const properties = registry.select( STORE_NAME ).getProperties( accountId );
+				const properties = registry.select( STORE_NAME ).getProperties( accountID );
 				expect( properties ).toMatchObject( [ fixtures.createProperty.property ] );
 			} );
 
 			it( 'sets isDoingCreateProperty ', async () => {
-				const accountId = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
+				const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
 
-				registry.dispatch( STORE_NAME ).fetchCreateProperty( accountId );
-				expect( registry.select( STORE_NAME ).isDoingCreateProperty( accountId ) ).toEqual( true );
+				registry.dispatch( STORE_NAME ).fetchCreateProperty( accountID );
+				expect( registry.select( STORE_NAME ).isDoingCreateProperty( accountID ) ).toEqual( true );
 			} );
 
 			it( 'dispatches an error if the request fails ', async () => {
-				const accountId = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
+				const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -115,7 +115,7 @@ describe( 'modules/analytics properties', () => {
 					);
 
 				muteConsole( 'error' );
-				registry.dispatch( STORE_NAME ).createProperty( accountId );
+				registry.dispatch( STORE_NAME ).createProperty( accountID );
 
 				await subscribeUntil( registry,
 					() => (
@@ -127,7 +127,7 @@ describe( 'modules/analytics properties', () => {
 
 				// Ignore the request fired by the `getProperties` selector.
 				muteConsole( 'error' );
-				const properties = registry.select( STORE_NAME ).getProperties( accountId );
+				const properties = registry.select( STORE_NAME ).getProperties( accountID );
 				// No properties should have been added yet, as the property creation
 				// failed.
 				expect( properties ).toEqual( undefined );
@@ -147,29 +147,29 @@ describe( 'modules/analytics properties', () => {
 						{ status: 200 }
 					);
 
-				const accountIdWithProperties = fixtures.propertiesProfiles.properties[ 5 ].accountId;
+				const accountIDWithProperties = fixtures.propertiesProfiles.properties[ 5 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 
-				const initialProperties = registry.select( STORE_NAME ).getProperties( accountIdWithProperties );
+				const initialProperties = registry.select( STORE_NAME ).getProperties( accountIDWithProperties );
 
 				// Ensure the proper parameters were passed.
 				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
-					{ accountID: accountIdWithProperties }
+					{ accountID: accountIDWithProperties }
 				);
 
 				expect( initialProperties ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getProperties( accountIdWithProperties ) !== undefined
+						registry.select( STORE_NAME ).getProperties( accountIDWithProperties ) !== undefined
 					),
 				);
 
-				const properties = registry.select( STORE_NAME ).getProperties( accountIdWithProperties );
+				const properties = registry.select( STORE_NAME ).getProperties( accountIDWithProperties );
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
 				// Profiles should also have been received by this action.
 				muteConsole( 'error' );
-				const profiles = registry.select( STORE_NAME ).getProfiles( accountIdWithProperties, properties[ 0 ].id );
+				const profiles = registry.select( STORE_NAME ).getProfiles( accountIDWithProperties, properties[ 0 ].id );
 
 				expect( properties ).toEqual( fixtures.propertiesProfiles.properties );
 				expect( profiles ).toEqual( fixtures.propertiesProfiles.profiles );
@@ -190,18 +190,18 @@ describe( 'modules/analytics properties', () => {
 						{ status: 500 }
 					);
 
-				const fakeAccountId = '777888999';
+				const fakeAccountID = '777888999';
 				muteConsole( 'error' );
-				registry.select( STORE_NAME ).getProperties( fakeAccountId );
+				registry.select( STORE_NAME ).getProperties( fakeAccountID );
 				await subscribeUntil( registry,
 					// TODO: We may want a selector for this, but for now this is fine
 					// because it's internal-only.
-					() => store.getState().isFetchingPropertiesProfiles[ fakeAccountId ] === false,
+					() => store.getState().isFetchingPropertiesProfiles[ fakeAccountID ] === false,
 				);
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
-				const properties = registry.select( STORE_NAME ).getProperties( fakeAccountId );
+				const properties = registry.select( STORE_NAME ).getProperties( fakeAccountID );
 				expect( properties ).toEqual( undefined );
 			} );
 		} );
