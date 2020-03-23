@@ -209,9 +209,9 @@ export const reducer = ( state, { type, payload } ) => {
 					[ `${ accountID }::${ propertyID }` ]: false,
 				},
 				profiles: {
-					...state.profiles || {},
+					...state.profiles,
 					[ `${ accountID }::${ propertyID }` ]: [
-						...( state.profiles || {} )[ `${ accountID }::${ propertyID }` ] || [],
+						...( state.profiles[ `${ accountID }::${ propertyID }` ] || [] ),
 						profile,
 					],
 				},
