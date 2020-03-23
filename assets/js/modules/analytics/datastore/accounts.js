@@ -31,7 +31,7 @@ import { actions as profileActions } from './profiles';
 // Actions
 const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
 const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
-const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES';
+const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED';
 
 export const INITIAL_STATE = {
@@ -65,10 +65,10 @@ export const actions = {
 		};
 	},
 
-	receiveAccountsPropertiesProfiles() {
+	receiveAccountsPropertiesProfilesCompleted() {
 		return {
 			payload: {},
-			type: RECEIVE_ACCOUNTS_PROPERTIES_PROFILES,
+			type: RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED,
 		};
 	},
 
@@ -106,7 +106,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_ACCOUNTS_PROPERTIES_PROFILES: {
+		case RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED: {
 			return {
 				...state,
 				isFetchingAccountsPropertiesProfiles: false,
@@ -139,7 +139,7 @@ export const resolvers = {
 			yield propertyActions.receiveProperties( properties );
 			yield profileActions.receiveProfiles( profiles );
 
-			return yield actions.receiveAccountsPropertiesProfiles();
+			return yield actions.receiveAccountsPropertiesProfilesCompleted();
 		} catch ( err ) {
 			// TODO: Implement an error handler store or some kind of centralized
 			// place for error dispatch...
