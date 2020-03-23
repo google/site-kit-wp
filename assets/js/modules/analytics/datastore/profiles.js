@@ -146,6 +146,16 @@ export const actions = {
 		};
 	},
 
+	receiveProfilesCompleted( accountID, propertyID ) {
+		invariant( accountID, 'accountID is required' );
+		invariant( propertyID, 'propertyID is required.' );
+
+		return {
+			payload: { accountID, propertyID },
+			type: RECEIVE_PROFILES_COMPLETED,
+		};
+	},
+
 	receiveProfilesFailed( { accountID, error, propertyID } ) {
 		invariant( accountID, 'accountID is required' );
 		invariant( error, 'error is required.' );
@@ -279,9 +289,9 @@ export const resolvers = {
 		try {
 			const profiles = yield actions.fetchProfiles( accountID, propertyID );
 
-			yield actions.receiveProfiles( { accountID, propertyID, profiles } );
+			yield actions.receiveProfiles( profiles );
 
-			return;
+			return actions.receiveProfilesCompleted( accountID, propertyID );
 		} catch ( error ) {
 			// TODO: Implement an error handler store or some kind of centralized
 			// place for error dispatch...
