@@ -286,8 +286,7 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {
 	*getProperties( accountID ) {
 		try {
-			const response = yield actions.fetchPropertiesProfiles( accountID );
-			const { properties, profiles } = response;
+			const { properties, profiles } = yield actions.fetchPropertiesProfiles( accountID );
 
 			yield actions.receiveProperties( properties );
 			yield profileActions.receiveProfiles( profiles );
