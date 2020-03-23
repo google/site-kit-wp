@@ -28,6 +28,7 @@ import API from 'googlesitekit-api';
 
 // Actions
 const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
+const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED';
 
@@ -41,6 +42,24 @@ export const actions = {
 		return {
 			payload: {},
 			type: FETCH_ACCOUNTS_PROPERTIES_PROFILES,
+		};
+	},
+
+	/**
+	 * Creates an action for receiving accounts.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Array} accounts Accounts to receive.
+	 * @return {Object} action object.
+	 */
+	receiveAccounts( accounts ) {
+		invariant( ! Array.isArray( accounts ), 'accounts must be an array.' );
+
+		return {
+			payload: { accounts },
+			type: RECEIVE_ACCOUNTS,
 		};
 	},
 
@@ -73,6 +92,15 @@ export const reducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				isFetchingAccountsPropertiesProfiles: true,
+			};
+		}
+
+		case RECEIVE_ACCOUNTS: {
+			const { accounts } = payload;
+
+			return {
+				...state,
+				accounts: [ ...accounts ],
 			};
 		}
 
