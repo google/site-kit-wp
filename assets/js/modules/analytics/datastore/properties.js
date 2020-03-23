@@ -36,7 +36,7 @@ const FETCH_PROPERTIES_PROFILES = 'FETCH_PROPERTIES_PROFILES';
 const RECEIVE_CREATE_PROPERTY = 'RECEIVE_CREATE_PROPERTY';
 const RECEIVE_CREATE_PROPERTY_FAILED = 'RECEIVE_CREATE_PROPERTY_FAILED';
 const RECEIVE_PROPERTIES = 'RECEIVE_PROPERTIES';
-const RECEIVE_PROPERTIES_PROFILES = 'RECEIVE_PROPERTIES_PROFILES';
+const RECEIVE_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_PROPERTIES_PROFILES_COMPLETED';
 const RECEIVE_PROPERTIES_PROFILES_FAILED = 'RECEIVE_PROPERTIES_PROFILES_FAILED';
 
 export const INITIAL_STATE = {
@@ -153,13 +153,12 @@ export const actions = {
 		};
 	},
 
-	receivePropertiesProfiles( { accountID, properties, profiles } ) {
+	receivePropertiesProfilesCompleted( accountID ) {
 		invariant( accountID, 'accountID is required' );
-		invariant( properties, 'properties is required' );
 
 		return {
-			payload: { accountID, properties, profiles },
-			type: RECEIVE_PROPERTIES_PROFILES,
+			payload: { accountID },
+			type: RECEIVE_PROPERTIES_PROFILES_COMPLETED,
 		};
 	},
 
@@ -253,18 +252,16 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_PROPERTIES_PROFILES: {
+		case RECEIVE_PROPERTIES_PROFILES_COMPLETED: {
 			const { accountID } = payload;
 
-			const updatedState = {
+			return {
 				...state,
 				isFetchingPropertiesProfiles: {
 					...state.isFetchingPropertiesProfiles,
 					[ accountID ]: false,
 				},
 			};
-
-			return updatedState;
 		}
 
 		case RECEIVE_PROPERTIES_PROFILES_FAILED: {
@@ -295,7 +292,7 @@ export const resolvers = {
 			yield actions.receiveProperties( properties );
 			yield profileActions.receiveProfiles( profiles );
 
-			return yield actions.receivePropertiesProfiles( { accountID, properties, profiles } );
+			return yield actions.receivePropertiesProfilesCompleted( accountID );
 		} catch ( error ) {
 			// TODO: Implement an error handler store or some kind of centralized
 			// place for error dispatch...
