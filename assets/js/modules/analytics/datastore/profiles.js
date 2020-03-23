@@ -137,7 +137,7 @@ export const actions = {
 
 	receiveProfiles( { accountID, propertyID, profiles } ) {
 		invariant( accountID, 'accountID is required' );
-		invariant( propertyID, 'accountID is required' );
+		invariant( propertyID, 'propertyID is required' );
 		invariant( profiles, 'profiles is required' );
 
 		return {
@@ -149,7 +149,7 @@ export const actions = {
 	receiveProfilesFailed( { accountID, error, propertyID } ) {
 		invariant( accountID, 'accountID is required' );
 		invariant( error, 'error is required.' );
-		invariant( propertyID, 'accountID is required' );
+		invariant( propertyID, 'propertyID is required' );
 
 		return {
 			payload: { accountID, error, propertyID },
