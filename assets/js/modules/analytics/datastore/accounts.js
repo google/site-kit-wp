@@ -26,6 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import { actions as propertyActions } from './properties';
+import { actions as profileActions } from './profiles';
 
 // Actions
 const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
@@ -64,9 +65,9 @@ export const actions = {
 		};
 	},
 
-	receiveAccountsPropertiesProfiles( { accounts, properties, profiles } ) {
+	receiveAccountsPropertiesProfiles() {
 		return {
-			payload: { accounts, properties, profiles },
+			payload: {},
 			type: RECEIVE_ACCOUNTS_PROPERTIES_PROFILES,
 		};
 	},
@@ -136,9 +137,9 @@ export const resolvers = {
 
 			yield actions.receiveAccounts( accounts );
 			yield propertyActions.receiveProperties( properties );
-			yield actions.receiveAccountsPropertiesProfiles( { accounts, properties, profiles } );
+			yield profileActions.receiveProfiles( profiles );
 
-			return;
+			return yield actions.receiveAccountsPropertiesProfiles();
 		} catch ( err ) {
 			// TODO: Implement an error handler store or some kind of centralized
 			// place for error dispatch...
