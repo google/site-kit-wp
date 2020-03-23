@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { groupBy } from 'lodash';
 
 /**
  * Internal dependencies
@@ -33,6 +34,7 @@ const FETCH_CREATE_PROPERTY = 'FETCH_CREATE_PROPERTY';
 const FETCH_PROPERTIES_PROFILES = 'FETCH_PROPERTIES_PROFILES';
 const RECEIVE_CREATE_PROPERTY = 'RECEIVE_CREATE_PROPERTY';
 const RECEIVE_CREATE_PROPERTY_FAILED = 'RECEIVE_CREATE_PROPERTY_FAILED';
+const RECEIVE_PROPERTIES = 'RECEIVE_PROPERTIES';
 const RECEIVE_PROPERTIES_PROFILES = 'RECEIVE_PROPERTIES_PROFILES';
 const RECEIVE_PROPERTIES_PROFILES_FAILED = 'RECEIVE_PROPERTIES_PROFILES_FAILED';
 
@@ -132,6 +134,24 @@ export const actions = {
 		};
 	},
 
+	/**
+	 * Adds properties to the store.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Array} properties Properties to add.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveProperties( properties ) {
+		invariant( Array.isArray( properties ), 'properties must be an array.' );
+
+		return {
+			payload: { properties },
+			type: RECEIVE_PROPERTIES_PROFILES,
+		};
+	},
+
 	receivePropertiesProfiles( { accountID, properties, profiles } ) {
 		invariant( accountID, 'accountID is required' );
 		invariant( properties, 'properties is required' );
@@ -216,6 +236,19 @@ export const reducer = ( state, { type, payload } ) => {
 				isFetchingCreateProperty: {
 					...state.isFetchingCreateProperty,
 					[ accountID ]: false,
+				},
+			};
+		}
+
+		case RECEIVE_PROPERTIES: {
+			const { properties } = payload;
+			const propertiesByAccountID = groupBy( properties, 'accountId' ); // Capitalization rule exception: `accountId` is a property of an API returned value.
+
+			return {
+				...state,
+				properties: {
+					...state.properties,
+					...propertiesByAccountID,
 				},
 			};
 		}
