@@ -41,7 +41,7 @@ const RECEIVE_PROPERTIES_PROFILES_FAILED = 'RECEIVE_PROPERTIES_PROFILES_FAILED';
 export const INITIAL_STATE = {
 	isFetchingCreateProperty: {},
 	isFetchingPropertiesProfiles: {},
-	properties: undefined,
+	properties: {},
 };
 
 export const actions = {
@@ -330,10 +330,6 @@ export const selectors = {
 		invariant( accountID, 'accountID is required' );
 
 		const { properties } = state;
-
-		if ( 'undefined' === typeof properties || 'undefined' === typeof properties[ accountID ] ) {
-			return undefined;
-		}
 
 		return properties[ accountID ];
 	},
