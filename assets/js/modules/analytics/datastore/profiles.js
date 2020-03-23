@@ -39,7 +39,7 @@ const RECEIVE_PROFILES_FAILED = 'RECEIVE_PROFILES_FAILED';
 export const INITIAL_STATE = {
 	isFetchingCreateProfile: {},
 	isFetchingProfiles: {},
-	profiles: undefined,
+	profiles: {},
 };
 
 export const actions = {
@@ -241,8 +241,8 @@ export const reducer = ( state, { type, payload } ) => {
 					[ `${ accountID }::${ propertyID }` ]: false,
 				},
 				profiles: {
-					...state.profiles || {},
-					[ `${ accountID }::${ propertyID }` ]: profiles,
+					...state.profiles,
+					[ `${ accountID }::${ propertyID }` ]: [ ...profiles ],
 				},
 			};
 		}
