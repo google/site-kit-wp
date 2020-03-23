@@ -315,10 +315,14 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {
 	*getProperties( accountID ) {
 		try {
-			const { properties, profiles } = yield actions.fetchPropertiesProfiles( accountID );
+			const { properties, profiles, matchedProperty } = yield actions.fetchPropertiesProfiles( accountID );
 
 			yield actions.receiveProperties( properties );
 			yield profileActions.receiveProfiles( profiles );
+
+			if ( matchedProperty ) {
+				yield actions.receiveMatchedProperty( matchedProperty );
+			}
 
 			return yield actions.receivePropertiesProfilesCompleted( accountID );
 		} catch ( error ) {

@@ -133,11 +133,15 @@ export const resolvers = {
 	*getAccounts() {
 		try {
 			const response = yield actions.fetchAccountsPropertiesProfiles();
-			const { accounts, properties, profiles } = response;
+			const { accounts, properties, profiles, matchedProperty } = response;
 
 			yield actions.receiveAccounts( accounts );
 			yield propertyActions.receiveProperties( properties );
 			yield profileActions.receiveProfiles( profiles );
+
+			if ( matchedProperty ) {
+				yield propertyActions.receiveMatchedProperty( matchedProperty );
+			}
 
 			return yield actions.receiveAccountsPropertiesProfilesCompleted();
 		} catch ( err ) {
