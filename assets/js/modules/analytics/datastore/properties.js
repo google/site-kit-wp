@@ -254,17 +254,13 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_PROPERTIES_PROFILES: {
-			const { accountID, properties, profiles } = payload;
+			const { accountID, profiles } = payload;
 
 			const updatedState = {
 				...state,
 				isFetchingPropertiesProfiles: {
 					...state.isFetchingPropertiesProfiles,
 					[ accountID ]: false,
-				},
-				properties: {
-					...state.properties || {},
-					[ accountID ]: properties,
 				},
 			};
 
@@ -304,6 +300,7 @@ export const resolvers = {
 			const response = yield actions.fetchPropertiesProfiles( accountID );
 			const { properties, profiles } = response;
 
+			yield actions.receiveProperties( properties );
 			yield actions.receivePropertiesProfiles( { accountID, properties, profiles } );
 
 			return;

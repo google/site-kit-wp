@@ -25,6 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { actions as propertyActions } from './properties';
 
 // Actions
 const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
@@ -154,6 +155,7 @@ export const resolvers = {
 			const { accounts, properties, profiles } = response;
 
 			yield actions.receiveAccounts( accounts );
+			yield propertyActions.receiveProperties( properties );
 			yield actions.receiveAccountsPropertiesProfiles( { accounts, properties, profiles } );
 
 			return;
