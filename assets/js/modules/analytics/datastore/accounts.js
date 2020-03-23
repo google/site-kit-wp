@@ -55,7 +55,7 @@ export const actions = {
 	 * @return {Object} action object.
 	 */
 	receiveAccounts( accounts ) {
-		invariant( ! Array.isArray( accounts ), 'accounts must be an array.' );
+		invariant( Array.isArray( accounts ), 'accounts must be an array.' );
 
 		return {
 			payload: { accounts },
