@@ -149,7 +149,7 @@ export const actions = {
 
 		return {
 			payload: { properties },
-			type: RECEIVE_PROPERTIES_PROFILES,
+			type: RECEIVE_PROPERTIES,
 		};
 	},
 
