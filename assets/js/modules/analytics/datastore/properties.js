@@ -28,6 +28,7 @@ import { groupBy } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './index';
+import { actions as profileActions } from './profiles';
 
 // Actions
 const FETCH_CREATE_PROPERTY = 'FETCH_CREATE_PROPERTY';
@@ -242,19 +243,18 @@ export const reducer = ( state, { type, payload } ) => {
 
 		case RECEIVE_PROPERTIES: {
 			const { properties } = payload;
-			const propertiesByAccountID = groupBy( properties, 'accountId' ); // Capitalization rule exception: `accountId` is a property of an API returned value.
 
 			return {
 				...state,
 				properties: {
 					...state.properties,
-					...propertiesByAccountID,
+					...groupBy( properties, 'accountId' ), // Capitalization rule exception: `accountId` is a property of an API returned value.
 				},
 			};
 		}
 
 		case RECEIVE_PROPERTIES_PROFILES: {
-			const { accountID, profiles } = payload;
+			const { accountID } = payload;
 
 			const updatedState = {
 				...state,
@@ -263,14 +263,6 @@ export const reducer = ( state, { type, payload } ) => {
 					[ accountID ]: false,
 				},
 			};
-
-			// If profiles are returned, determine their property ID.
-			if ( profiles.length ) {
-				updatedState.profiles = {
-					...state.profiles || {},
-					[ `${ accountID }::${ profiles[ 0 ].webPropertyId }` ]: profiles, // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
-				};
-			}
 
 			return updatedState;
 		}
@@ -301,9 +293,9 @@ export const resolvers = {
 			const { properties, profiles } = response;
 
 			yield actions.receiveProperties( properties );
-			yield actions.receivePropertiesProfiles( { accountID, properties, profiles } );
+			yield profileActions.receiveProfiles( profiles );
 
-			return;
+			return yield actions.receivePropertiesProfiles( { accountID, properties, profiles } );
 		} catch ( error ) {
 			// TODO: Implement an error handler store or some kind of centralized
 			// place for error dispatch...
