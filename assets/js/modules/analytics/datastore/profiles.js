@@ -127,7 +127,7 @@ export const actions = {
 	 * @return {Object} Redux-style action.
 	 */
 	receiveCreateProfileFailed( { accountID, propertyID, error } ) {
-		invariant( accountID, 'accountID is required' );
+		invariant( accountID, 'accountID is required.' );
 		invariant( propertyID, 'propertyID is required.' );
 		invariant( error, 'error is required.' );
 
@@ -147,7 +147,7 @@ export const actions = {
 	},
 
 	receiveProfilesCompleted( accountID, propertyID ) {
-		invariant( accountID, 'accountID is required' );
+		invariant( accountID, 'accountID is required.' );
 		invariant( propertyID, 'propertyID is required.' );
 
 		return {
@@ -157,9 +157,9 @@ export const actions = {
 	},
 
 	receiveProfilesFailed( { accountID, error, propertyID } ) {
-		invariant( accountID, 'accountID is required' );
+		invariant( accountID, 'accountID is required.' );
 		invariant( error, 'error is required.' );
-		invariant( propertyID, 'propertyID is required' );
+		invariant( propertyID, 'propertyID is required.' );
 
 		return {
 			payload: { accountID, error, propertyID },
@@ -316,8 +316,8 @@ export const selectors = {
 	 * @return {Array|undefined} An array of Analytics profiles; `undefined` if not loaded.
 	 */
 	getProfiles( state, accountID, propertyID ) {
-		invariant( accountID, 'accountID is required' );
-		invariant( propertyID, 'propertyID is required' );
+		invariant( accountID, 'accountID is required.' );
+		invariant( propertyID, 'propertyID is required.' );
 
 		const { profiles } = state;
 
@@ -339,8 +339,8 @@ export const selectors = {
 	 * @return {boolean} `true` if creating a profile, `false` if not.
 	 */
 	isDoingCreateProfile( state, accountID, propertyID ) {
-		invariant( accountID, 'accountID is required' );
-		invariant( propertyID, 'propertyID is required' );
+		invariant( accountID, 'accountID is required.' );
+		invariant( propertyID, 'propertyID is required.' );
 
 		const { isFetchingCreateProfile } = state;
 

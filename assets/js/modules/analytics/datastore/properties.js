@@ -107,8 +107,8 @@ export const actions = {
 	 * @return {Object} Redux-style action.
 	 */
 	receiveCreateProperty( { accountID, property } ) {
-		invariant( accountID, 'accountID is required' );
-		invariant( property, 'property is required' );
+		invariant( accountID, 'accountID is required.' );
+		invariant( property, 'property is required.' );
 
 		return {
 			payload: { accountID, property },
@@ -128,7 +128,7 @@ export const actions = {
 	 * @return {Object} Redux-style action.
 	 */
 	receiveCreatePropertyFailed( { accountID, error } ) {
-		invariant( accountID, 'accountID is required' );
+		invariant( accountID, 'accountID is required.' );
 		invariant( error, 'error is required.' );
 
 		return {
@@ -174,7 +174,7 @@ export const actions = {
 	},
 
 	receivePropertiesProfilesCompleted( accountID ) {
-		invariant( accountID, 'accountID is required' );
+		invariant( accountID, 'accountID is required.' );
 
 		return {
 			payload: { accountID },
@@ -183,7 +183,7 @@ export const actions = {
 	},
 
 	receivePropertiesProfilesFailed( { accountID, error } ) {
-		invariant( accountID, 'accountID is required' );
+		invariant( accountID, 'accountID is required.' );
 		invariant( error, 'error is required.' );
 
 		return {
@@ -344,7 +344,7 @@ export const selectors = {
 	 * @return {Array|undefined} An array of Analytics properties; `undefined` if not loaded.
 	 */
 	getProperties( state, accountID ) {
-		invariant( accountID, 'accountID is required' );
+		invariant( accountID, 'accountID is required.' );
 
 		const { properties } = state;
 
@@ -361,7 +361,7 @@ export const selectors = {
 	 * @return {boolean} `true` if creating a property, `false` if not.
 	 */
 	isDoingCreateProperty( state, accountID ) {
-		invariant( accountID, 'accountID is required' );
+		invariant( accountID, 'accountID is required.' );
 
 		const { isFetchingCreateProperty } = state;
 
