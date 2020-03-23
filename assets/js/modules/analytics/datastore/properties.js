@@ -35,6 +35,7 @@ const FETCH_CREATE_PROPERTY = 'FETCH_CREATE_PROPERTY';
 const FETCH_PROPERTIES_PROFILES = 'FETCH_PROPERTIES_PROFILES';
 const RECEIVE_CREATE_PROPERTY = 'RECEIVE_CREATE_PROPERTY';
 const RECEIVE_CREATE_PROPERTY_FAILED = 'RECEIVE_CREATE_PROPERTY_FAILED';
+const RECEIVE_MATCHED_PROPERTY = 'RECEIVE_MATCHED_PROPERTY';
 const RECEIVE_PROPERTIES = 'RECEIVE_PROPERTIES';
 const RECEIVE_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_PROPERTIES_PROFILES_COMPLETED';
 const RECEIVE_PROPERTIES_PROFILES_FAILED = 'RECEIVE_PROPERTIES_PROFILES_FAILED';
@@ -43,6 +44,7 @@ export const INITIAL_STATE = {
 	isFetchingCreateProperty: {},
 	isFetchingPropertiesProfiles: {},
 	properties: {},
+	matchedProperty: undefined,
 };
 
 export const actions = {
@@ -132,6 +134,24 @@ export const actions = {
 		return {
 			payload: { accountID, error },
 			type: RECEIVE_CREATE_PROPERTY_FAILED,
+		};
+	},
+
+	/**
+	 * Adds a matchedProperty to the store.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} matchedProperty Property object.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveMatchedProperty( matchedProperty ) {
+		invariant( matchedProperty, 'matchedProperty is required.' );
+
+		return {
+			payload: { matchedProperty },
+			type: RECEIVE_MATCHED_PROPERTY,
 		};
 	},
 
@@ -237,6 +257,15 @@ export const reducer = ( state, { type, payload } ) => {
 					...state.isFetchingCreateProperty,
 					[ accountID ]: false,
 				},
+			};
+		}
+
+		case RECEIVE_MATCHED_PROPERTY: {
+			const { matchedProperty } = payload;
+
+			return {
+				...state,
+				matchedProperty,
 			};
 		}
 
