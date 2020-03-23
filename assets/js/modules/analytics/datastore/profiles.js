@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { groupBy } from 'lodash';
 
 /**
  * Internal dependencies
@@ -34,6 +35,7 @@ const FETCH_PROFILES = 'FETCH_PROFILES';
 const RECEIVE_CREATE_PROFILE = 'RECEIVE_CREATE_PROFILE';
 const RECEIVE_CREATE_PROFILE_FAILED = 'RECEIVE_CREATE_PROFILE_FAILED';
 const RECEIVE_PROFILES = 'RECEIVE_PROFILES';
+const RECEIVE_PROFILES_COMPLETED = 'RECEIVE_PROFILES_COMPLETED';
 const RECEIVE_PROFILES_FAILED = 'RECEIVE_PROFILES_FAILED';
 
 export const INITIAL_STATE = {
@@ -135,13 +137,11 @@ export const actions = {
 		};
 	},
 
-	receiveProfiles( { accountID, propertyID, profiles } ) {
-		invariant( accountID, 'accountID is required' );
-		invariant( propertyID, 'propertyID is required' );
-		invariant( profiles, 'profiles is required' );
+	receiveProfiles( profiles ) {
+		invariant( Array.isArray( profiles ), 'profiles must be an array.' );
 
 		return {
-			payload: { accountID, propertyID, profiles },
+			payload: { profiles },
 			type: RECEIVE_PROFILES,
 		};
 	},
@@ -232,17 +232,25 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_PROFILES: {
-			const { accountID, propertyID, profiles } = payload;
+			const { profiles } = payload;
+
+			return {
+				...state,
+				profiles: {
+					...state.profiles,
+					...groupBy( profiles, ( { accountId, webPropertyId } ) => `${ accountId }::${ webPropertyId }` ), // Capitalization rule exception: `accountId` and `webPropertyId` are properties of an API returned value.
+				},
+			};
+		}
+
+		case RECEIVE_PROFILES_COMPLETED: {
+			const { accountID, propertyID } = payload;
 
 			return {
 				...state,
 				isFetchingProfiles: {
 					...state.isFetchingProfiles,
 					[ `${ accountID }::${ propertyID }` ]: false,
-				},
-				profiles: {
-					...state.profiles,
-					[ `${ accountID }::${ propertyID }` ]: [ ...profiles ],
 				},
 			};
 		}
