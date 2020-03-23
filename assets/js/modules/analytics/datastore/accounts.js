@@ -105,11 +105,10 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_ACCOUNTS_PROPERTIES_PROFILES: {
-			const { accounts, properties, profiles } = payload;
+			const { properties, profiles } = payload;
 
 			const updatedState = {
 				...state,
-				accounts,
 				isFetchingAccountsPropertiesProfiles: false,
 			};
 
@@ -154,6 +153,7 @@ export const resolvers = {
 			const response = yield actions.fetchAccountsPropertiesProfiles();
 			const { accounts, properties, profiles } = response;
 
+			yield actions.receiveAccounts( accounts );
 			yield actions.receiveAccountsPropertiesProfiles( { accounts, properties, profiles } );
 
 			return;
