@@ -107,7 +107,7 @@ class ContextTest extends TestCase {
 			array(
 				'foo'  => 'bar',
 				'page' => 'different',
-			) 
+			)
 		);
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -166,7 +166,7 @@ class ContextTest extends TestCase {
 			array(
 				'post_title' => 'homepage',
 				'post_type'  => 'page',
-			) 
+			)
 		);
 		self::factory()->category->create( array( 'slug' => 'postcategory' ) );
 
@@ -229,5 +229,9 @@ class ContextTest extends TestCase {
 		// Ensure re-checking evaluates as true.
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->assertTrue( $context->is_network_active() );
+	}
+
+	public function test_get_current_entity() {
+		$this->markTestSkipped( 'Test not written yet.' );
 	}
 }

@@ -409,14 +409,41 @@ final class Assets {
 				'googlesitekit-datastore-site',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-datastore-site.js',
-					'dependencies' => array( 'googlesitekit-api', 'googlesitekit-data' ),
+					'dependencies' => array(
+						'googlesitekit-api',
+						'googlesitekit-data',
+					),
+					'before_print' => function( $handle ) use ( $base_url ) {
+						$current_entity = $this->context->get_current_entity();
+						$inline_data = array(
+							'adminRootURL'        => esc_url_raw( get_admin_url() . 'admin.php' ),
+							'ampMode'             => $this->context->get_amp_mode(),
+							'currentEntityID'     => $current_entity ? $current_entity->ID : null,
+							'currentEntityTitle'  => $current_entity ? $current_entity->title : null,
+							// TODO: This seems like an incomplete approach to the suggestion in
+							// https://github.com/google/site-kit-wp/issues/1000
+							// It should possibly return `''` or `false`.
+							'currentEntityType'   => is_home() ? 'home' : 'post',
+							'currentReferenceURL' => $this->context->get_reference_canonical(),
+							'homeURL'             => home_url(),
+							'referenceSiteURL'    => esc_url_raw( $site_url ),
+						);
+						wp_add_inline_script(
+							$handle,
+							'window._googlesitekitSiteData = ' . wp_json_encode( $inline_data ),
+							'before'
+						);
+					},
 				)
 			),
 			new Script(
 				'googlesitekit-modules',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-modules.js',
-					'dependencies' => array( 'googlesitekit-api', 'googlesitekit-data' ),
+					'dependencies' => array(
+						'googlesitekit-api',
+						'googlesitekit-data',
+					),
 				)
 			),
 			// End JSR Assets.

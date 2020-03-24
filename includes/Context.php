@@ -317,4 +317,25 @@ final class Context {
 
 		return $this->network_active;
 	}
+
+	/**
+	 * Gets the current entity (a post)
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return WP_Post|bool The current post
+	 */
+	public function get_current_entity() {
+		if ( is_admin() ) {
+			$post = get_post();
+		} else {
+			$post = get_queried_object();
+		}
+
+		if ( ! $post instanceof \WP_Post ) {
+			return null;
+		}
+
+		return $post;
+	}
 }
