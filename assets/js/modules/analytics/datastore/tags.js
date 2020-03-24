@@ -29,6 +29,8 @@ import Data from 'googlesitekit-data';
 import { getExistingTag } from 'assets/js/util';
 import { STORE_NAME } from './index';
 
+const { getRegistry } = Data.commonActions;
+
 // Actions
 const FETCH_EXISTING_TAG = 'FETCH_EXISTING_TAG';
 const FETCH_TAG_PERMISSION = 'FETCH_TAG_PERMISSION';
@@ -192,13 +194,24 @@ export const reducer = ( state, { type, payload } ) => {
 };
 
 export const resolvers = {
+	*hasExistingTag() {
+		const registry = yield getRegistry();
+		yield registry.select( STORE_NAME ).getExistingTag();
+	},
+
+	*hasTagPermission( propertyID, accountID = '' ) {
+		const registry = yield getRegistry();
+		yield registry.select( STORE_NAME ).getTagPermission( propertyID, accountID );
+	},
+
 	*getExistingTag() {
 		try {
+			const registry = yield actions.getRegistry();
 			const existingTag = yield actions.fetchExistingTag( 'analytics' );
 			yield actions.receiveExistingTag( existingTag );
 
 			// Invalidate this resolver so it will run again.
-			yield Data.stores[ STORE_NAME ].getActions().invalidateResolutionForStoreSelector( 'getExistingTag' );
+			yield registry.getActions().invalidateResolutionForStoreSelector( 'getExistingTag' );
 
 			return;
 		} catch ( err ) {
@@ -246,10 +259,11 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
+	 * @param {Object} state Data store's state.
 	 * @return {?boolean} True if a tag exists, false if not; undefined if not loaded.
 	 */
-	hasExistingTag() {
-		const existingTag = Data.select( STORE_NAME ).getExistingTag();
+	hasExistingTag( state ) {
+		const existingTag = selectors.getExistingTag( state );
 		return existingTag !== undefined ? !! existingTag : undefined;
 	},
 
@@ -291,7 +305,7 @@ export const selectors = {
 	 * @return {?boolean} True if the user has access, false if not; `undefined` if not loaded.
 	 */
 	hasTagPermission( state, propertyID, accountID = '' ) {
-		const response = Data.select( STORE_NAME ).getTagPermission( propertyID, accountID );
+		const response = selectors.getTagPermission( state, propertyID, accountID );
 		return response !== undefined ? response.permission : undefined;
 	},
 

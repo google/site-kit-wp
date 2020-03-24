@@ -52,17 +52,17 @@ export const INITIAL_STATE = Data.collectState(
 	tags.INITIAL_STATE,
 );
 
-export const actions = Data.addInitializeAction(
-	Data.collectActions(
-		baseModuleStore.actions,
-		accounts.actions,
-		properties.actions,
-		profiles.actions,
-		tags.actions,
-	)
+export const actions = Data.collectActions(
+	Data.commonActions,
+	baseModuleStore.actions,
+	accounts.actions,
+	properties.actions,
+	profiles.actions,
+	tags.actions,
 );
 
 export const controls = Data.collectControls(
+	Data.commonControls,
 	baseModuleStore.controls,
 	accounts.controls,
 	properties.controls,
