@@ -231,7 +231,7 @@ export const commonActions = {
 	 * @return {Object} FSA-compatible action.
 	 */
 	getRegistry() {
-		return { type: 'GET_REGISTRY' };
+		return { type: GET_REGISTRY };
 	},
 	initialize: initializeAction,
 };
