@@ -1,0 +1,7 @@
+{
+  "code": "google_analytics_existing_tag_permission",
+  "message": "We've detected there's already an existing Analytics tag on your site (ID UA-123456789-Y), but your account doesn't seem to have access to this Analytics property. You can either remove the existing tag and connect to a different account, or request access to this property from your team.",
+  "data": {
+    "status": 403
+  }
+}

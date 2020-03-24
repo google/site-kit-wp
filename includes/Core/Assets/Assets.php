@@ -419,6 +419,13 @@ final class Assets {
 					'dependencies' => array( 'googlesitekit-api', 'googlesitekit-data' ),
 				)
 			),
+			new Script(
+				'googlesitekit-datastore-modules-analytics',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-modules-analytics.js',
+					'dependencies' => array( 'googlesitekit-modules' ),
+				)
+			),
 			// End JSR Assets.
 			new Script(
 				'googlesitekit-ads-detect',
