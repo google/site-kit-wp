@@ -38,6 +38,8 @@ import {
 	collectSelectors,
 	collectState,
 	collectName,
+	commonActions,
+	commonControls,
 } from 'assets/js/googlesitekit/data/utils';
 
 const Data = createRegistry();
@@ -53,5 +55,7 @@ Data.collectResolvers = collectResolvers;
 Data.collectSelectors = collectSelectors;
 Data.collectState = collectState;
 Data.collectName = collectName;
+Data.commonActions = commonActions;
+Data.commonControls = commonControls;
 
 export default Data;
