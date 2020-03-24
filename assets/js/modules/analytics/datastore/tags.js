@@ -45,14 +45,14 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
-	*fetchExistingTag() {
+	fetchExistingTag() {
 		return {
 			payload: {},
 			type: FETCH_EXISTING_TAG,
 		};
 	},
 
-	*fetchTagPermission( { propertyID, accountID = '' } ) {
+	fetchTagPermission( { propertyID, accountID = '' } ) {
 		invariant( propertyID, 'propertyID is required.' );
 
 		return {

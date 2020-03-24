@@ -74,7 +74,7 @@ export const actions = {
 		}
 	},
 
-	*fetchCreateProperty( accountID ) {
+	fetchCreateProperty( accountID ) {
 		invariant( accountID, 'accountID is required.' );
 
 		return {
@@ -83,7 +83,7 @@ export const actions = {
 		};
 	},
 
-	*fetchPropertiesProfiles( accountID ) {
+	fetchPropertiesProfiles( accountID ) {
 		invariant( accountID, 'accountID is required.' );
 
 		return {

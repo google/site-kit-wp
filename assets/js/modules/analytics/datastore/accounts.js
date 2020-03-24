@@ -40,7 +40,7 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
-	*fetchAccountsPropertiesProfiles() {
+	fetchAccountsPropertiesProfiles() {
 		return {
 			payload: {},
 			type: FETCH_ACCOUNTS_PROPERTIES_PROFILES,

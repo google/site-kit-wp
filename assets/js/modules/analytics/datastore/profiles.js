@@ -74,14 +74,14 @@ export const actions = {
 		}
 	},
 
-	*fetchCreateProfile( accountID, propertyID ) {
+	fetchCreateProfile( accountID, propertyID ) {
 		return {
 			payload: { accountID, propertyID },
 			type: FETCH_CREATE_PROFILE,
 		};
 	},
 
-	*fetchProfiles( accountID, propertyID ) {
+	fetchProfiles( accountID, propertyID ) {
 		return {
 			payload: { accountID, propertyID },
 			type: FETCH_PROFILES,
