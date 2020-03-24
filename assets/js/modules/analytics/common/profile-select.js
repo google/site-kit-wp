@@ -24,10 +24,11 @@ import {
 	useSelect as useSelectHook,
 	useDispatch as useDispatchHook,
 } from '@wordpress/data';
+
+import { STORE_NAME } from '../datastore';
 import { isValidPropertyID } from '../util';
 
 export const PROFILE_CREATE = 'profile_create';
-const STORE_NAME = 'modules/analytics'; // temp
 
 export default function ProfileSelect( { useSelect, useDispatch } ) {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );

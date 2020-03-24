@@ -25,8 +25,9 @@ import {
 	useDispatch as useDispatchHook,
 } from '@wordpress/data';
 
+import { STORE_NAME } from '../datastore';
+
 export const ACCOUNT_CREATE = 'account_create';
-const STORE_NAME = 'modules/analytics'; // temp
 
 export default function AccountSelect( { useSelect, useDispatch } ) {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
