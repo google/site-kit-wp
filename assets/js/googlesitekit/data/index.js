@@ -19,8 +19,8 @@
 /**
  * WordPress dependencies
  */
-import { createRegistry } from '@wordpress/data';
-export {
+import {
+	createRegistry,
 	createRegistryControl,
 	createRegistrySelector,
 } from '@wordpress/data';
@@ -57,5 +57,7 @@ Data.collectState = collectState;
 Data.collectName = collectName;
 Data.commonActions = commonActions;
 Data.commonControls = commonControls;
+Data.createRegistryControl = createRegistryControl;
+Data.createRegistrySelector = createRegistrySelector;
 
 export default Data;
