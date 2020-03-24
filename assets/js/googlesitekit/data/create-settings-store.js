@@ -28,7 +28,7 @@ import { isEqual } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 
-const { commonActions, createRegistrySelector } = Data;
+const { commonActions, commonControls, createRegistrySelector } = Data;
 const { getRegistry } = commonActions;
 
 // Actions
@@ -79,6 +79,8 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 	const settingReducers = {};
 
 	const actions = {
+		...commonActions,
+
 		/**
 		 * Sets settings for the given values.
 		 *
@@ -152,7 +154,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {Object} Redux-style action.
 		 */
 		*saveSettings() {
-			const registry = yield getRegistry(); // eslint-disable-line no-shadow
+			const registry = yield getRegistry();
 			const values = yield registry.select( STORE_NAME ).getSettings();
 
 			try {
@@ -218,6 +220,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 	};
 
 	const controls = {
+		...commonControls,
 		[ FETCH_SETTINGS ]: () => {
 			return API.get( type, identifier, datapoint );
 		},
