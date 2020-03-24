@@ -30,6 +30,7 @@ import reset from './reset';
 
 export const INITIAL_STATE = Data.collectState(
 	connection.INITIAL_STATE,
+	info.INITIAL_STATE,
 	reset.INITIAL_STATE,
 );
 

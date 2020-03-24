@@ -39,14 +39,16 @@ import { STORE_NAME } from './index';
 const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 
 export const INITIAL_STATE = {
-	adminURL: undefined,
-	ampMode: undefined,
-	currentReferenceURL: undefined,
-	currentEntityID: undefined,
-	currentEntityTitle: undefined,
-	currentEntityType: undefined,
-	homeURL: undefined,
-	referenceSiteURL: undefined,
+	siteInfo: {
+		adminURL: undefined,
+		ampMode: undefined,
+		currentReferenceURL: undefined,
+		currentEntityID: undefined,
+		currentEntityTitle: undefined,
+		currentEntityType: undefined,
+		homeURL: undefined,
+		referenceSiteURL: undefined,
+	},
 };
 
 export const actions = {
@@ -91,14 +93,16 @@ export const reducer = ( state, { payload, type } ) => {
 
 			return {
 				...state,
-				adminURL,
-				ampMode,
-				currentReferenceURL,
-				currentEntityID: parseFloat( currentEntityID, 10 ),
-				currentEntityTitle,
-				currentEntityType,
-				homeURL,
-				referenceSiteURL,
+				siteInfo: {
+					adminURL,
+					ampMode,
+					currentReferenceURL,
+					currentEntityID: parseFloat( currentEntityID, 10 ),
+					currentEntityTitle,
+					currentEntityType,
+					homeURL,
+					referenceSiteURL,
+				},
 			};
 		}
 
@@ -110,11 +114,17 @@ export const reducer = ( state, { payload, type } ) => {
 
 export const resolvers = {
 	*getSiteInfo( siteInfo = global._googlesitekitSiteData ) {
-		yield actions.receiveSiteInfo( siteInfo );
+		if ( siteInfo ) {
+			yield actions.receiveSiteInfo( siteInfo );
 
-		if ( global._googlesitekitSiteData ) {
-			delete global._googlesitekitSiteData;
+			if ( global._googlesitekitSiteData ) {
+				delete global._googlesitekitSiteData;
+			}
+
+			return;
 		}
+
+		global.console.error( 'Could not load core/site info.' );
 	},
 };
 
@@ -141,7 +151,7 @@ export const selectors = {
 			currentEntityType,
 			homeURL,
 			referenceSiteURL,
-		} = state;
+		} = state.siteInfo || {};
 
 		return {
 			adminURL,
