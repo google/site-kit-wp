@@ -26,9 +26,10 @@ import { isEqual } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data, { createRegistrySelector } from 'googlesitekit-data';
+import Data from 'googlesitekit-data';
 
-const { getRegistry } = Data.commonActions;
+const { commonActions, createRegistrySelector } = Data;
+const { getRegistry } = commonActions;
 
 // Actions
 const SET_SETTINGS = 'SET_SETTINGS';
