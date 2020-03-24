@@ -53,7 +53,6 @@ export const INITIAL_STATE = Data.collectState(
 );
 
 export const actions = Data.collectActions(
-	Data.commonActions,
 	baseModuleStore.actions,
 	accounts.actions,
 	properties.actions,
@@ -62,7 +61,6 @@ export const actions = Data.collectActions(
 );
 
 export const controls = Data.collectControls(
-	Data.commonControls,
 	baseModuleStore.controls,
 	accounts.controls,
 	properties.controls,

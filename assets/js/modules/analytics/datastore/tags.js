@@ -25,9 +25,11 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { createRegistrySelector } from 'googlesitekit-data';
+import Data from 'googlesitekit-data';
 import { getExistingTag } from 'assets/js/util';
 import { STORE_NAME } from './index';
+
+const { createRegistrySelector } = Data;
 
 // Actions
 const FETCH_EXISTING_TAG = 'FETCH_EXISTING_TAG';
