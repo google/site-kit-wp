@@ -20,6 +20,10 @@
  * WordPress dependencies
  */
 import { createRegistry } from '@wordpress/data';
+export {
+	createRegistryControl,
+	createRegistrySelector,
+} from '@wordpress/data';
 
 /**
  * Internal dependencies
