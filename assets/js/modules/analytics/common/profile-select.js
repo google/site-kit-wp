@@ -31,9 +31,10 @@ import { isValidPropertyID } from '../util';
 export const PROFILE_CREATE = 'profile_create';
 
 export default function ProfileSelect( { useSelect, useDispatch } ) {
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const profiles = useSelect( ( select ) => select( STORE_NAME ).getProfiles( accountID, propertyID ) ) || [];
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
-	const profiles = useSelect( ( select ) => select( STORE_NAME ).getProfiles() );
 
 	const { setProfileID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
