@@ -345,7 +345,7 @@ export const selectors = {
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The Analytics Account ID to fetch properties for.
-	 * @return {Array|undefined} An array of Analytics properties; `undefined` if not loaded.
+	 * @return {?Array.<Object>} An array of Analytics properties; `undefined` if not loaded.
 	 */
 	getProperties( state, accountID ) {
 		invariant( accountID, 'accountID is required.' );

@@ -246,7 +246,7 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {boolean|undefined} True if a tag exists, false if not; undefined if not loaded.
+	 * @return {?boolean} True if a tag exists, false if not; undefined if not loaded.
 	 */
 	hasExistingTag() {
 		const existingTag = Data.select( STORE_NAME ).getExistingTag();
@@ -267,7 +267,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object|undefined} Site connection info.
+	 * @return {?Object} Site connection info.
 	 */
 	getExistingTag( state ) {
 		const { existingTag } = state;
@@ -288,7 +288,7 @@ export const selectors = {
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID The Analytics Property ID to check permissions for.
 	 * @param {string} accountID  Optional. The Analytics Account ID the property belongs to, if known.
-	 * @return {boolean|undefined} True if the user has access, false if not; `undefined` if not loaded.
+	 * @return {?boolean} True if the user has access, false if not; `undefined` if not loaded.
 	 */
 	hasTagPermission( state, propertyID, accountID = '' ) {
 		const response = Data.select( STORE_NAME ).getTagPermission( propertyID, accountID );
@@ -308,7 +308,7 @@ export const selectors = {
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID The Analytics Property ID to check permissions for.
 	 * @param {string} accountID  Optional. The Analytics Account ID the property belongs to, if known.
-	 * @return {Object|undefined} Object with string `accountID` and boolean `permission` properties; `undefined` if not loaded.
+	 * @return {?Object} Object with string `accountID` and boolean `permission` properties; `undefined` if not loaded.
 	 */
 	getTagPermission( state, propertyID, accountID = '' ) { // eslint-disable-line no-unused-vars
 		invariant( propertyID, 'propertyID is required.' );

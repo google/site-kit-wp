@@ -313,7 +313,7 @@ export const selectors = {
 	 * @param {Object} state      Data store's state.
 	 * @param {string} accountID  The Analytics Account ID to fetch profiles for.
 	 * @param {string} propertyID The Analytics Property ID to fetch profiles for.
-	 * @return {Array|undefined} An array of Analytics profiles; `undefined` if not loaded.
+	 * @return {?Array.<Object>} An array of Analytics profiles; `undefined` if not loaded.
 	 */
 	getProfiles( state, accountID, propertyID ) {
 		invariant( accountID, 'accountID is required.' );
