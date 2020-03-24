@@ -54,15 +54,12 @@ const RECEIVE_SAVE_SETTINGS_FAILED = 'RECEIVE_SAVE_SETTINGS_FAILED';
  * @param {number} options.storeName    Store name to use. Default is '{type}/{identifier}'.
  * @param {Array}  options.settingSlugs List of the slugs that are part of the settings object
  *                                      handled by the respective API endpoint.
- * @param {Object} options.registry     Store registry that this store will be registered on. Default
- *                                      is the main Site Kit registry `googlesitekit.data`.
  * @return {Object} The settings store object, with additional `STORE_NAME` and
  *                  `INITIAL_STATE` properties.
  */
 export const createSettingsStore = ( type, identifier, datapoint, {
 	storeName = undefined,
 	settingSlugs = [],
-	registry = Data,
 } = {} ) => {
 	invariant( type, 'type is required.' );
 	invariant( identifier, 'identifier is required.' );
