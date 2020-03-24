@@ -59,13 +59,11 @@ import {
 export const createModuleStore = ( slug, {
 	storeName = undefined,
 	settingSlugs = undefined,
-	registry = Data,
 } = {} ) => {
 	invariant( slug, 'slug is required.' );
 
 	const notificationsStore = createNotificationsStore( 'modules', slug, 'notifications', {
 		storeName,
-		registry,
 	} );
 
 	const STORE_NAME = [ notificationsStore.STORE_NAME ];
@@ -81,7 +79,6 @@ export const createModuleStore = ( slug, {
 		const settingsStore = createSettingsStore( 'modules', slug, 'settings', {
 			storeName,
 			settingSlugs,
-			registry,
 		} );
 
 		STORE_NAME.push( settingsStore.STORE_NAME );
