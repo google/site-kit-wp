@@ -154,7 +154,7 @@ export const resolvers = {
 
 export const selectors = {
 	/**
-	 * Get all Google Analytics accounts this user can access.
+	 * Gets all Google Analytics accounts this user can access.
 	 *
 	 * Returns an array of all analytics accounts.
 	 *
@@ -172,7 +172,7 @@ export const selectors = {
 	},
 
 	/**
-	 * Get an errors encountered by this store or its side effects.
+	 * Gets an error encountered by this store or its side effects.
 	 *
 	 * Returns an object with the shape when there is an error:
 	 * ```

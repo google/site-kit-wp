@@ -321,10 +321,6 @@ export const selectors = {
 
 		const { profiles } = state;
 
-		if ( 'undefined' === typeof profiles || 'undefined' === typeof profiles[ `${ accountID }::${ propertyID }` ] ) {
-			return undefined;
-		}
-
 		return profiles[ `${ accountID }::${ propertyID }` ];
 	},
 

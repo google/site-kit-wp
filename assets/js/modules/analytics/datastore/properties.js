@@ -356,7 +356,7 @@ export const selectors = {
 	},
 
 	/**
-	 * Check if a property is being created for an account.
+	 * Checks if a property is being created for an account.
 	 *
 	 * @since n.e.x.t
 	 *
