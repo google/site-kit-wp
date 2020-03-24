@@ -26,7 +26,7 @@ import { isEqual } from 'lodash';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Data from 'googlesitekit-data';
+import Data, { createRegistrySelector } from 'googlesitekit-data';
 
 const { getRegistry } = Data.commonActions;
 
@@ -408,15 +408,15 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 *
 		 * @return {*} Setting value, or undefined.
 		 */
-		selectors[ `get${ pascalCaseSlug }` ] = () => {
-			const settings = registry.select( STORE_NAME ).getSettings();
+		selectors[ `get${ pascalCaseSlug }` ] = createRegistrySelector( ( select ) => () => {
+			const settings = select( STORE_NAME ).getSettings();
 
 			if ( 'undefined' === typeof settings ) {
 				return settings;
 			}
 
 			return settings[ slug ];
-		};
+		} );
 	} );
 
 	return {
