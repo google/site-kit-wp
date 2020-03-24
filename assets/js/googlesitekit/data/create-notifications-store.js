@@ -157,10 +157,10 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 		},
 	};
 
-	const reducer = ( state = INITIAL_STATE, action ) => {
-		switch ( action.type ) {
+	const reducer = ( state = INITIAL_STATE, { type, payload } ) => { // eslint-disable-line no-shadow
+		switch ( type ) {
 			case ADD_NOTIFICATION: {
-				const { notification } = action.payload;
+				const { notification } = payload;
 
 				return {
 					...state,
@@ -172,7 +172,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 			}
 
 			case REMOVE_NOTIFICATION: {
-				const { id } = action.payload;
+				const { id } = payload;
 
 				// At this point, only client-side notifications can be removed.
 				if (
@@ -206,7 +206,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 			}
 
 			case RECEIVE_NOTIFICATIONS: {
-				const { notifications } = action.payload;
+				const { notifications } = payload;
 
 				return {
 					...state,
