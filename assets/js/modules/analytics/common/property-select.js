@@ -31,8 +31,8 @@ import { isValidAccountID } from '../util';
 export const PROPERTY_CREATE = 'property_create';
 
 export default function PropertySelect( { useSelect, useDispatch } ) {
-	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties() );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties( accountID ) ) || [];
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 
