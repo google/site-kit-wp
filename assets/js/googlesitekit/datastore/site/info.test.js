@@ -107,7 +107,7 @@ describe( 'core/site site info', () => {
 			[ 'getCurrentEntityID' ],
 			[ 'getCurrentEntityTitle' ],
 			[ 'getCurrentEntityType' ],
-			[ 'getCurrentReferenceURL' ],
+			[ 'getCurrentEntityURL' ],
 			[ 'getHomeURL' ],
 			[ 'getReferenceSiteURL' ],
 		] )( `%i()`, ( selector ) => {

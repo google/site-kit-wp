@@ -42,7 +42,7 @@ export const INITIAL_STATE = {
 	siteInfo: {
 		adminURL: undefined,
 		ampMode: undefined,
-		currentReferenceURL: undefined,
+		currentEntityURL: undefined,
 		currentEntityID: undefined,
 		currentEntityTitle: undefined,
 		currentEntityType: undefined,
@@ -83,7 +83,7 @@ export const reducer = ( state, { payload, type } ) => {
 			const {
 				adminURL,
 				ampMode,
-				currentReferenceURL,
+				currentEntityURL,
 				currentEntityID,
 				currentEntityTitle,
 				currentEntityType,
@@ -96,7 +96,7 @@ export const reducer = ( state, { payload, type } ) => {
 				siteInfo: {
 					adminURL,
 					ampMode,
-					currentReferenceURL,
+					currentEntityURL,
 					currentEntityID: parseFloat( currentEntityID, 10 ),
 					currentEntityTitle,
 					currentEntityType,
@@ -145,7 +145,7 @@ export const selectors = {
 		const {
 			adminURL,
 			ampMode,
-			currentReferenceURL,
+			currentEntityURL,
 			currentEntityID,
 			currentEntityTitle,
 			currentEntityType,
@@ -156,7 +156,7 @@ export const selectors = {
 		return {
 			adminURL,
 			ampMode,
-			currentReferenceURL,
+			currentEntityURL,
 			currentEntityID,
 			currentEntityTitle,
 			currentEntityType,
@@ -243,10 +243,10 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {string|undefined} Current entity's reference URL.
 	 */
-	getCurrentReferenceURL: createRegistrySelector( ( select ) => () => {
-		const { currentReferenceURL } = select( STORE_NAME ).getSiteInfo();
+	getCurrentEntityURL: createRegistrySelector( ( select ) => () => {
+		const { currentEntityURL } = select( STORE_NAME ).getSiteInfo();
 
-		return currentReferenceURL;
+		return currentEntityURL;
 	} ),
 
 	/**
