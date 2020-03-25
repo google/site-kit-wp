@@ -3,18 +3,22 @@
  */
 import apiFetch from '@wordpress/api-fetch__non-shim';
 
-if ( global._googlesitekitAPIFetchData ) {
-	if ( global._googlesitekitAPIFetchData.rootURL ) {
-		apiFetch.use( apiFetch.createRootURLMiddleware( global._googlesitekitAPIFetchData.rootURL ) );
-	}
+const {
+	nonce,
+	nonceEndpoint,
+	preloadedData,
+	rootURL,
+} = global._googlesitekitAPIFetchData || {};
 
-	if ( global._googlesitekitAPIFetchData.nonceMiddleware ) {
-		apiFetch.nonceMiddleware = apiFetch.createNonceMiddleware();
-		apiFetch.use( apiFetch.createNonceMiddleware( global._googlesitekitAPIFetchData.nonceMiddleware ) );
-		apiFetch.use( apiFetch.mediaUploadMiddleware );
-		apiFetch.nonceEndpoint = global._googlesitekitAPIFetchData.nonceEndpoint;
-	}
-}
+apiFetch.nonceEndpoint = nonceEndpoint;
+apiFetch.nonceMiddleware = apiFetch.createNonceMiddleware( nonce );
+apiFetch.rootURLMiddleware = apiFetch.createRootURLMiddleware( rootURL );
+apiFetch.preloadingMiddleware = apiFetch.createPreloadingMiddleware( preloadedData );
+
+apiFetch.use( apiFetch.nonceMiddleware );
+apiFetch.use( apiFetch.mediaUploadMiddleware );
+apiFetch.use( apiFetch.rootURLMiddleware );
+apiFetch.use( apiFetch.preloadingMiddleware );
 
 export * from '@wordpress/api-fetch__non-shim';
 
