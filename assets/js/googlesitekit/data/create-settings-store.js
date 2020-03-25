@@ -28,6 +28,9 @@ import { isEqual } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 
+const { commonActions, commonControls, createRegistrySelector } = Data;
+const { getRegistry } = commonActions;
+
 // Actions
 const SET_SETTINGS = 'SET_SETTINGS';
 const FETCH_SETTINGS = 'FETCH_SETTINGS';
@@ -52,15 +55,12 @@ const RECEIVE_SAVE_SETTINGS_FAILED = 'RECEIVE_SAVE_SETTINGS_FAILED';
  * @param {number} options.storeName    Store name to use. Default is '{type}/{identifier}'.
  * @param {Array}  options.settingSlugs List of the slugs that are part of the settings object
  *                                      handled by the respective API endpoint.
- * @param {Object} options.registry     Store registry that this store will be registered on. Default
- *                                      is the main Site Kit registry `googlesitekit.data`.
  * @return {Object} The settings store object, with additional `STORE_NAME` and
  *                  `INITIAL_STATE` properties.
  */
 export const createSettingsStore = ( type, identifier, datapoint, {
 	storeName = undefined,
 	settingSlugs = [],
-	registry = Data,
 } = {} ) => {
 	invariant( type, 'type is required.' );
 	invariant( identifier, 'identifier is required.' );
@@ -79,6 +79,8 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 	const settingReducers = {};
 
 	const actions = {
+		...commonActions,
+
 		/**
 		 * Sets settings for the given values.
 		 *
@@ -152,6 +154,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {Object} Redux-style action.
 		 */
 		*saveSettings() {
+			const registry = yield getRegistry();
 			const values = yield registry.select( STORE_NAME ).getSettings();
 
 			try {
@@ -217,6 +220,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 	};
 
 	const controls = {
+		...commonControls,
 		[ FETCH_SETTINGS ]: () => {
 			return API.get( type, identifier, datapoint );
 		},
@@ -405,15 +409,15 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 *
 		 * @return {*} Setting value, or undefined.
 		 */
-		selectors[ `get${ pascalCaseSlug }` ] = () => {
-			const settings = registry.select( STORE_NAME ).getSettings();
+		selectors[ `get${ pascalCaseSlug }` ] = createRegistrySelector( ( select ) => () => {
+			const settings = select( STORE_NAME ).getSettings();
 
 			if ( 'undefined' === typeof settings ) {
 				return settings;
 			}
 
 			return settings[ slug ];
-		};
+		} );
 	} );
 
 	return {

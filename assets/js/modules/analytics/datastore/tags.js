@@ -29,6 +29,8 @@ import Data from 'googlesitekit-data';
 import { getExistingTag } from 'assets/js/util';
 import { STORE_NAME } from './index';
 
+const { createRegistrySelector } = Data;
+
 // Actions
 const FETCH_EXISTING_TAG = 'FETCH_EXISTING_TAG';
 const FETCH_TAG_PERMISSION = 'FETCH_TAG_PERMISSION';
@@ -194,11 +196,12 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {
 	*getExistingTag() {
 		try {
+			const registry = yield actions.getRegistry();
 			const existingTag = yield actions.fetchExistingTag( 'analytics' );
 			yield actions.receiveExistingTag( existingTag );
 
 			// Invalidate this resolver so it will run again.
-			yield Data.stores[ STORE_NAME ].getActions().invalidateResolutionForStoreSelector( 'getExistingTag' );
+			yield registry.getActions().invalidateResolutionForStoreSelector( 'getExistingTag' );
 
 			return;
 		} catch ( err ) {
@@ -246,12 +249,14 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
+	 * @param {Object} state Data store's state.
 	 * @return {?boolean} True if a tag exists, false if not; undefined if not loaded.
 	 */
-	hasExistingTag() {
-		const existingTag = Data.select( STORE_NAME ).getExistingTag();
+	hasExistingTag: createRegistrySelector( ( select ) => () => {
+		const existingTag = select( STORE_NAME ).getExistingTag();
+
 		return existingTag !== undefined ? !! existingTag : undefined;
-	},
+	} ),
 
 	/**
 	 * Get an existing tag on the site, if present.
@@ -290,10 +295,11 @@ export const selectors = {
 	 * @param {string} accountID  Optional. The Analytics Account ID the property belongs to, if known.
 	 * @return {?boolean} True if the user has access, false if not; `undefined` if not loaded.
 	 */
-	hasTagPermission( state, propertyID, accountID = '' ) {
-		const response = Data.select( STORE_NAME ).getTagPermission( propertyID, accountID );
-		return response !== undefined ? response.permission : undefined;
-	},
+	hasTagPermission: createRegistrySelector( ( select ) => ( state, propertyID, accountID = '' ) => {
+		const { permission } = select( STORE_NAME ).getTagPermission( state, propertyID, accountID ) || {};
+
+		return permission;
+	} ),
 
 	/**
 	 * Checks permissions for an existing Google Analytics tag / property.
