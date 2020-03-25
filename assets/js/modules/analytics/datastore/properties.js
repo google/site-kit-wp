@@ -314,6 +314,9 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getProperties( accountID ) {
+		if ( typeof accountID === 'undefined' ) {
+			return undefined;
+		}
 		try {
 			const { properties, profiles, matchedProperty } = yield actions.fetchPropertiesProfiles( accountID );
 
