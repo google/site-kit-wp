@@ -104,7 +104,10 @@ function makeDataProps( selectors = defaultSelectors ) {
 
 storiesOf( 'Analytics Module', module )
 	.add( 'Account Property Profile Select (none selected)', () => {
-		fetchMock.sandbox().any( fixtures.accountsPropertiesProfiles );
+		fetchMock.mock(
+			/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
+			fixtures.accountsPropertiesProfiles
+		);
 		return (
 			<WithTestRegistry>
 				<SetupWrap>
