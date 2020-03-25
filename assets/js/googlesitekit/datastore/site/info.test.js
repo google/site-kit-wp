@@ -32,15 +32,19 @@ import {
 import { INITIAL_STATE, STORE_NAME } from './index';
 
 describe( 'core/site site info', () => {
-	const siteInfo = {
+	const baseInfoVar = '_googlesitekitBaseData';
+	const baseInfo = {
 		adminURL: 'http://something.test/wp-admin',
 		ampMode: 'reader',
-		currentReferenceURL: 'http://something.test',
-		currentEntityID: '4',
-		currentEntityTitle: 'Something Witty',
-		currentEntityType: 'post',
 		homeURL: 'http://something.test/homepage',
 		referenceSiteURL: 'http://something.test',
+	};
+	const entityInfoVar = '_googlesitekitEntityData';
+	const entityInfo = {
+		currentEntityURL: 'http://something.test',
+		currentEntityType: 'post',
+		currentEntityTitle: 'Something Witty',
+		currentEntityID: '4',
 	};
 	let registry;
 
@@ -49,6 +53,8 @@ describe( 'core/site site info', () => {
 	} );
 
 	afterEach( () => {
+		delete global[ baseInfoVar ];
+		delete global[ entityInfoVar ];
 		unsubscribeFromAll( registry );
 	} );
 
@@ -61,11 +67,11 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'receives and sets site info ', async () => {
-				await registry.dispatch( STORE_NAME ).receiveSiteInfo( siteInfo );
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
 
 				expect(
 					registry.select( STORE_NAME ).getSiteInfo()
-				).toMatchObject( { ...siteInfo, currentEntityID: 4 } );
+				).toMatchObject( { ...baseInfo, ...entityInfo, currentEntityID: 4 } );
 			} );
 		} );
 	} );
@@ -73,11 +79,12 @@ describe( 'core/site site info', () => {
 	describe( 'selectors', () => {
 		describe( 'getSiteInfo', () => {
 			it( 'uses a resolver to load site info from a global variable by default, then deletes that global variable after consumption', async () => {
-				global._googlesitekitSiteData = {
-					...siteInfo,
-				};
+				global[ baseInfoVar ] = baseInfo;
+				global[ entityInfoVar ] = entityInfo;
 
-				expect( global._googlesitekitSiteData ).not.toEqual( undefined );
+				expect( global[ baseInfoVar ] ).not.toEqual( undefined );
+				expect( global[ entityInfoVar ] ).not.toEqual( undefined );
+
 				registry.select( STORE_NAME ).getSiteInfo();
 				await subscribeUntil( registry,
 					() => (
@@ -87,12 +94,16 @@ describe( 'core/site site info', () => {
 
 				const info = registry.select( STORE_NAME ).getSiteInfo();
 
-				expect( info ).toEqual( { ...siteInfo, currentEntityID: 4 } );
-				expect( global._googlesitekitSiteData ).toEqual( undefined );
+				expect( info ).toEqual( { ...baseInfo, ...entityInfo, currentEntityID: 4 } );
+
+				// Data must not be wiped after retrieving, as it could be used by other dependants.
+				expect( global[ baseInfoVar ] ).not.toEqual( undefined );
+				expect( global[ entityInfoVar ] ).not.toEqual( undefined );
 			} );
 
 			it( 'will return initial state (undefined values) when no data is available', async () => {
-				expect( global._googlesitekitSiteData ).toEqual( undefined );
+				expect( global[ baseInfoVar ] ).toEqual( undefined );
+				expect( global[ entityInfoVar ] ).toEqual( undefined );
 
 				muteConsole( 'error' );
 				const info = registry.select( STORE_NAME ).getSiteInfo();
@@ -112,9 +123,8 @@ describe( 'core/site site info', () => {
 			[ 'getReferenceSiteURL' ],
 		] )( `%i()`, ( selector ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
-				global._googlesitekitSiteData = {
-					...siteInfo,
-				};
+				global[ baseInfoVar ] = baseInfo;
+				global[ entityInfoVar ] = entityInfo;
 
 				registry.select( STORE_NAME )[ selector ]();
 				await subscribeUntil( registry,
@@ -125,11 +135,12 @@ describe( 'core/site site info', () => {
 
 				const info = registry.select( STORE_NAME ).getSiteInfo();
 
-				expect( info ).toEqual( { ...siteInfo, currentEntityID: 4 } );
+				expect( info ).toEqual( { ...baseInfo, ...entityInfo, currentEntityID: 4 } );
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
-				expect( global._googlesitekitSiteData ).toEqual( undefined );
+				expect( global[ baseInfoVar ] ).toEqual( undefined );
+				expect( global[ entityInfoVar ] ).toEqual( undefined );
 
 				muteConsole( 'error' );
 				const result = registry.select( STORE_NAME )[ selector ]();
@@ -140,9 +151,8 @@ describe( 'core/site site info', () => {
 
 		describe( 'isAmp', () => {
 			it( 'uses a resolver to load site info, then returns true if AMP mode is set', async () => {
-				global._googlesitekitSiteData = {
-					...siteInfo,
-				};
+				global[ baseInfoVar ] = baseInfo;
+				global[ entityInfoVar ] = entityInfo;
 
 				registry.select( STORE_NAME ).isAmp();
 				await subscribeUntil( registry,
@@ -156,11 +166,12 @@ describe( 'core/site site info', () => {
 				expect( isAmp ).toEqual( true );
 			} );
 
-			it( 'uses a resolver to load site info, then returns fallse if AMP mode is not set', async () => {
-				global._googlesitekitSiteData = {
-					...siteInfo,
+			it( 'uses a resolver to load site info, then returns false if AMP mode is not set', async () => {
+				global[ baseInfoVar ] = {
+					...baseInfo,
 					ampMode: null,
 				};
+				global[ entityInfoVar ] = entityInfo;
 
 				registry.select( STORE_NAME ).isAmp();
 				await subscribeUntil( registry,
@@ -175,7 +186,8 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
-				expect( global._googlesitekitSiteData ).toEqual( undefined );
+				expect( global[ baseInfoVar ] ).toEqual( undefined );
+				expect( global[ entityInfoVar ] ).toEqual( undefined );
 
 				muteConsole( 'error' );
 				const result = registry.select( STORE_NAME ).isAmp();

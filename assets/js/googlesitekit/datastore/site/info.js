@@ -113,18 +113,35 @@ export const reducer = ( state, { payload, type } ) => {
 };
 
 export const resolvers = {
-	*getSiteInfo( siteInfo = global._googlesitekitSiteData ) {
-		if ( siteInfo ) {
-			yield actions.receiveSiteInfo( siteInfo );
-
-			if ( global._googlesitekitSiteData ) {
-				delete global._googlesitekitSiteData;
-			}
-
+	*getSiteInfo() {
+		if ( ! global._googlesitekitBaseData || ! global._googlesitekitEntityData ) {
+			global.console.error( 'Could not load core/site info.' );
 			return;
 		}
 
-		global.console.error( 'Could not load core/site info.' );
+		const {
+			adminURL,
+			ampMode,
+			homeURL,
+			referenceSiteURL,
+		} = global._googlesitekitBaseData;
+		const {
+			currentEntityURL,
+			currentEntityID,
+			currentEntityTitle,
+			currentEntityType,
+		} = global._googlesitekitEntityData;
+
+		yield actions.receiveSiteInfo( {
+			adminURL,
+			ampMode,
+			currentEntityURL,
+			currentEntityID,
+			currentEntityTitle,
+			currentEntityType,
+			homeURL,
+			referenceSiteURL,
+		} );
 	},
 };
 
