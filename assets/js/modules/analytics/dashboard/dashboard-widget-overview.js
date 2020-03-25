@@ -68,14 +68,9 @@ class AnalyticsDashboardWidgetOverview extends Component {
 	 * Process callback data received from the API.
 	 */
 	processCallbackData() {
-		const {
-			data,
-			requestDataToState,
-		} = this.props;
+		const { requestDataToState } = this.props;
 
-		if ( data && ! data.error && 'function' === typeof requestDataToState ) {
-			this.setState( requestDataToState );
-		}
+		this.setState( requestDataToState );
 	}
 
 	render() {
