@@ -22,18 +22,12 @@
 import invariant from 'invariant';
 
 /**
- * WordPress dependencies
- */
-// TODO: change this to use:
-// import Data from `googlesitekit-data`;
-// const { createRegistrySelector } = Data;
-// After https://github.com/google/site-kit-wp/pull/1278 is merged into `develop`.
-import { createRegistrySelector } from '@wordpress/data';
-
-/**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { STORE_NAME } from './index';
+
+const { createRegistrySelector } = Data;
 
 // Actions
 const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
