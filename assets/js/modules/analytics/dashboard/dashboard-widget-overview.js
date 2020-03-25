@@ -39,6 +39,7 @@ import {
 } from '../util';
 import PreviewBlock from 'GoogleComponents/preview-block';
 import PropTypes from 'prop-types';
+import { get } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -101,7 +102,11 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			averageSessionDurationChange,
 		} = overviewData;
 
-		const directTotalUsersData = directTotalUsers && directTotalUsers[ 0 ].data.totals[ 0 ].values[ 0 ];
+		const directTotalUsersData = get( directTotalUsers, '[0].data.totals[0].values[0]' );
+
+		if ( ! directTotalUsersData ) {
+			return null;
+		}
 
 		const dataBlocks = [
 			{
