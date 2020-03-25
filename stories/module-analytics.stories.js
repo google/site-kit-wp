@@ -2,10 +2,12 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
+import fetchMock from 'fetch-mock';
 
 /**
  * WordPress dependencies
  */
+import { RegistryProvider } from '@wordpress/data';
 import { doAction } from '@wordpress/hooks';
 import { __, _x } from '@wordpress/i18n';
 
@@ -26,6 +28,23 @@ import {
 	UseSnippetSwitch,
 	TrackingExclusionSwitches,
 } from '../assets/js/modules/analytics/common';
+import { createTestRegistry } from '../tests/js/utils';
+
+import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
+
+function WithTestRegistry( { children, callback } ) {
+	const registry = createTestRegistry();
+
+	if ( callback ) {
+		callback( registry );
+	}
+
+	return (
+		<RegistryProvider value={ registry }>
+			{ children }
+		</RegistryProvider>
+	);
+}
 
 function SetupWrap( { children } ) {
 	return (
@@ -85,21 +104,17 @@ function makeDataProps( selectors = defaultSelectors ) {
 
 storiesOf( 'Analytics Module', module )
 	.add( 'Account Property Profile Select (none selected)', () => {
-		const dataProps = makeDataProps( {
-			...defaultSelectors,
-			getAccountID: () => '',
-			getPropertyID: () => '',
-			getProfileID: () => '',
-		} );
-
+		fetchMock.sandbox().any( fixtures.accountsPropertiesProfiles );
 		return (
-			<SetupWrap>
-				<div className="googlesitekit-setup-module__inputs">
-					<AccountSelect { ...dataProps } />
-					<PropertySelect { ...dataProps } />
-					<ProfileSelect { ...dataProps } />
-				</div>
-			</SetupWrap>
+			<WithTestRegistry>
+				<SetupWrap>
+					<div className="googlesitekit-setup-module__inputs">
+						<AccountSelect />
+						<PropertySelect />
+						<ProfileSelect />
+					</div>
+				</SetupWrap>
+			</WithTestRegistry>
 		);
 	} )
 	.add( 'Account Property Profile Select (all selected)', () => {
