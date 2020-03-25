@@ -233,7 +233,6 @@ export const commonActions = {
 	getRegistry() {
 		return { type: GET_REGISTRY };
 	},
-	initialize: initializeAction,
 };
 
 /**
