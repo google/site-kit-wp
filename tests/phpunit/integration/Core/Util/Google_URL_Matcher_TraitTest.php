@@ -79,6 +79,31 @@ class Google_URL_Matcher_TraitTest extends TestCase {
 				'http://www.example.com',
 				false,
 			),
+			'unicode domain'                  => array(
+				'http://türkish.com',
+				'http://türkish.com',
+				true,
+			),
+			'unicode and punycode domain'     => array(
+				'http://türkish.com',
+				'http://xn--trkish-3ya.com',
+				true,
+			),
+			'unicode different path'          => array(
+				'http://türkish.com/path',
+				'http://xn--trkish-3ya.com/other-path',
+				false,
+			),
+			'punycode domains'                => array(
+				'http://xn--trkish-3ya.com',
+				'http://xn--trkish-3ya.com',
+				true,
+			),
+			'unicode and non-unicode domain'  => array(
+				'http://türkish.com',
+				'http://turkish.com',
+				false,
+			),
 		);
 	}
 
@@ -100,22 +125,22 @@ class Google_URL_Matcher_TraitTest extends TestCase {
 
 	public function data_is_domain_match() {
 		return array(
-			'equal domain'                          => array(
+			'equal domain'                            => array(
 				'example.com',
 				'example.com',
 				true,
 			),
-			'different domain'                      => array(
+			'different domain'                        => array(
 				'example.com',
 				'example2.com',
 				false,
 			),
-			'subdomain'                             => array(
+			'subdomain'                               => array(
 				'example.com',
 				'blog.example.com',
 				false,
 			),
-			'www subdomain'                         => array(
+			'www subdomain'                           => array(
 				'example.com',
 				'www.example.com',
 				true,
@@ -125,20 +150,60 @@ class Google_URL_Matcher_TraitTest extends TestCase {
 				'http://example.com/',
 				true,
 			),
-			'full URL with equal domain and a path' => array(
+			'full URL with equal domain and a path'   => array(
 				'example.com',
 				'http://example.com/home',
 				false,
 			),
-			'full URL with subdomain'               => array(
+			'full URL with subdomain'                 => array(
 				'example.com',
 				'http://blog.example.com',
 				false,
 			),
-			'full URL with www subdomain'           => array(
+			'full URL with www subdomain'             => array(
 				'example.com',
 				'http://www.example.com',
 				true,
+			),
+			'unicode domain'                          => array(
+				'türkish.com',
+				'türkish.com',
+				true,
+			),
+			'unicode domain full url'                 => array(
+				'türkish.com',
+				'http://türkish.com',
+				true,
+			),
+			'unicode domain full url trailing slash'  => array(
+				'türkish.com',
+				'http://türkish.com/',
+				true,
+			),
+			'unicode and punycode domain'             => array(
+				'türkish.com',
+				'xn--trkish-3ya.com',
+				true,
+			),
+			'unicode domain and full url punycode'    => array(
+				'türkish.com',
+				'http://xn--trkish-3ya.com',
+				true,
+			),
+			'full unicode domain with trailing slash' => array(
+				'türkish.com',
+				'http://xn--trkish-3ya.com/',
+				true,
+			),
+			'punycode domains'                        => array(
+				'xn--trkish-3ya.com',
+				'xn--trkish-3ya.com',
+				true,
+			),
+			'unicode and non-unicode domain'          => array(
+				'türkish.com',
+				'turkish.com',
+				false,
 			),
 		);
 	}
