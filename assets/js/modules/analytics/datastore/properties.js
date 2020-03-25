@@ -315,6 +315,16 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {
 	*getProperties( accountID ) {
 		try {
+			const registry = yield Data.commonActions.getRegistry();
+
+			const existingProperties = registry.select( STORE_NAME ).getProperties( accountID );
+
+			// If there are already properties loaded in state for this request; consider it fulfilled
+			// and don't make an API request.
+			if ( existingProperties && existingProperties.length ) {
+				return;
+			}
+
 			const { properties, profiles, matchedProperty } = yield actions.fetchPropertiesProfiles( accountID );
 
 			yield actions.receiveProperties( properties );

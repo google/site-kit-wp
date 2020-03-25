@@ -102,6 +102,20 @@ describe( 'modules/analytics accounts', () => {
 				expect( profiles ).toEqual( fixtures.accountsPropertiesProfiles.profiles );
 			} );
 
+			it( 'does not make a network request if accounts are already present', async () => {
+				registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accountsPropertiesProfiles.accounts );
+
+				const accounts = registry.select( STORE_NAME ).getAccounts();
+
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getAccounts' )
+				);
+
+				expect( accounts ).toEqual( fixtures.accountsPropertiesProfiles.accounts );
+				expect( fetch ).not.toHaveBeenCalled();
+			} );
+
 			it( 'dispatches an error if the request fails', async () => {
 				const response = {
 					code: 'internal_server_error',

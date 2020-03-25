@@ -173,7 +173,27 @@ describe( 'modules/analytics properties', () => {
 				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 
 				expect( properties ).toEqual( fixtures.propertiesProfiles.properties );
+				expect( properties ).toHaveLength( 17 );
 				expect( profiles ).toEqual( fixtures.propertiesProfiles.profiles );
+			} );
+
+			it( 'does not make a network request if properties for this account are already present', async () => {
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+
+				// Load data into this store so there are matches for the data we're about to select,
+				// even though the selector hasn't fulfilled yet.
+				registry.dispatch( STORE_NAME ).receiveProperties( fixtures.propertiesProfiles.properties );
+
+				const properties = registry.select( STORE_NAME ).getProperties( testAccountID );
+
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getProperties', [ testAccountID ] )
+				);
+
+				expect( fetch ).not.toHaveBeenCalled();
+				expect( properties ).toEqual( fixtures.propertiesProfiles.properties );
+				expect( properties ).toHaveLength( 17 );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
