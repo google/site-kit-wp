@@ -36,11 +36,11 @@ export const INITIAL_STATE = Data.collectState(
 
 export const STORE_NAME = 'core/site';
 
-
 export const actions = Data.addInitializeAction(
 	Data.collectActions(
 		Data.commonActions,
 		connection.actions,
+		info.actions,
 		reset.actions,
 	)
 );
