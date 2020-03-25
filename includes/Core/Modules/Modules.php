@@ -705,7 +705,7 @@ final class Modules {
 	 * customization. Otherwise this method will ensure every setting is present as a parameter and then update the
 	 * settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.6.0
 	 *
 	 * @param Module $module Module to update settings for. Must implement {@see Module_With_Settings}.
 	 * @param array  $data   Associative array of new settings data to set.

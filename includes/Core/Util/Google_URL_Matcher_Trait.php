@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Trait for matching URLs and domains for Google Site Verification and Search Console.
  *
- * @since n.e.x.t
+ * @since 1.6.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ trait Google_URL_Matcher_Trait {
 	 * In order for the URLs to be considered a match, they have to be fully equal, except for a potential
 	 * trailing slash in one of them, which will be ignored.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.6.0
 	 *
 	 * @param string $url     The URL.
 	 * @param string $compare The URL to compare.
@@ -50,7 +50,7 @@ trait Google_URL_Matcher_Trait {
 	 * potential "www." prefix, which will be ignored. If the value to compare is a full URL and includes a path other
 	 * than just a trailing slash, it will not be a match.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.6.0
 	 *
 	 * @param string $domain  A domain.
 	 * @param string $compare The domain or URL to compare.
@@ -68,7 +68,7 @@ trait Google_URL_Matcher_Trait {
 	/**
 	 * Strips the scheme from a URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.6.0
 	 *
 	 * @param string $url URL with or without scheme.
 	 * @return string The passed $url without its scheme.
@@ -80,7 +80,7 @@ trait Google_URL_Matcher_Trait {
 	/**
 	 * Strips the "www." prefix from a domain.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.6.0
 	 *
 	 * @param string $domain Domain with or without "www." prefix.
 	 * @return string The passed $domain without "www." prefix.
@@ -92,7 +92,7 @@ trait Google_URL_Matcher_Trait {
 	/**
 	 * Returns a punycode encoded unicode URL or domain name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.6.0
 	 *
 	 * @param string $url The URL or domain name to decode.
 	 */
