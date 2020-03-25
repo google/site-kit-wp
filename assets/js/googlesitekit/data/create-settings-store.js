@@ -220,15 +220,16 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		[ FETCH_SETTINGS ]: () => {
 			return API.get( type, identifier, datapoint );
 		},
-		[ FETCH_SAVE_SETTINGS ]: ( values ) => {
+		[ FETCH_SAVE_SETTINGS ]: ( { payload } ) => {
+			const { values } = payload;
 			return API.set( type, identifier, datapoint, values );
 		},
 	};
 
-	const reducer = ( state = INITIAL_STATE, action ) => {
-		switch ( action.type ) {
+	const reducer = ( state = INITIAL_STATE, { type, payload } ) => { // eslint-disable-line no-shadow
+		switch ( type ) {
 			case SET_SETTINGS: {
-				const { values } = action.payload;
+				const { values } = payload;
 
 				return {
 					...state,
@@ -247,7 +248,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			}
 
 			case RECEIVE_SETTINGS: {
-				const { values } = action.payload;
+				const { values } = payload;
 
 				return {
 					...state,
@@ -278,7 +279,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			}
 
 			case RECEIVE_SAVE_SETTINGS: {
-				const { values } = action.payload;
+				const { values } = payload;
 
 				return {
 					...state,
@@ -301,8 +302,8 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 			default: {
 				// Check if this action is for a reducer for an individual setting.
-				if ( 'undefined' !== typeof settingReducers[ action.type ] ) {
-					return settingReducers[ action.type ]( state, action );
+				if ( 'undefined' !== typeof settingReducers[ type ] ) {
+					return settingReducers[ type ]( state, { type, payload } );
 				}
 
 				return { ...state };
@@ -385,8 +386,8 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			};
 		};
 
-		settingReducers[ `SET_${ constantSlug }` ] = ( state, action ) => {
-			const { value } = action.payload;
+		settingReducers[ `SET_${ constantSlug }` ] = ( state, { payload } ) => {
+			const { value } = payload;
 
 			return {
 				...state,

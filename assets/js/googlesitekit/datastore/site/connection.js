@@ -94,8 +94,8 @@ export const controls = {
 	},
 };
 
-export const reducer = ( state, action ) => {
-	switch ( action.type ) {
+export const reducer = ( state, { type, payload } ) => {
+	switch ( type ) {
 		case FETCH_CONNECTION: {
 			return {
 				...state,
@@ -104,7 +104,7 @@ export const reducer = ( state, action ) => {
 		}
 
 		case RECEIVE_CONNECTION: {
-			const { connection } = action.payload;
+			const { connection } = payload;
 
 			return {
 				...state,
