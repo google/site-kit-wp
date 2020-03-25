@@ -34,6 +34,8 @@ trait Google_URL_Matcher_Trait {
 	protected function is_url_match( $url, $compare ) {
 		$url     = untrailingslashit( $url );
 		$compare = untrailingslashit( $compare );
+		$url     = $this->decode_unicode_url_or_domain( $url );
+		$compare = $this->decode_unicode_url_or_domain( $compare );
 
 		return $url === $compare;
 	}
@@ -57,6 +59,8 @@ trait Google_URL_Matcher_Trait {
 	protected function is_domain_match( $domain, $compare ) {
 		$domain  = $this->strip_domain_www( $domain );
 		$compare = $this->strip_domain_www( $this->strip_url_scheme( untrailingslashit( $compare ) ) );
+		$domain  = $this->decode_unicode_url_or_domain( $domain );
+		$compare = $this->decode_unicode_url_or_domain( $compare );
 
 		return $domain === $compare;
 	}
@@ -83,5 +87,21 @@ trait Google_URL_Matcher_Trait {
 	 */
 	protected function strip_domain_www( $domain ) {
 		return preg_replace( '/^www\./', '', $domain );
+	}
+
+	/**
+	 * Returns a punycode encoded unicode URL or domain name.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $url The URL or domain name to decode.
+	 */
+	protected function decode_unicode_url_or_domain( $url ) {
+		$parts = wp_parse_url( $url );
+		if ( ! $parts || ! isset( $parts['host'] ) || '' === $parts['host'] ) {
+			return \Requests_IDNAEncoder::encode( $url );
+		}
+		$decoded_host = \Requests_IDNAEncoder::encode( $parts['host'] );
+		return str_replace( $parts['host'], $decoded_host, $url );
 	}
 }
