@@ -376,6 +376,7 @@ final class Assets {
 						 * @param array $preload_paths Array of paths to preload.
 						 */
 						$preload_paths = apply_filters( 'googlesitekit_apifetch_preload_paths', array() );
+						$preload_paths = array_unique( $preload_paths );
 
 						return array(
 							'nonce'         => ( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' ),
