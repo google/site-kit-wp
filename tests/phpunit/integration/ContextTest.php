@@ -231,7 +231,7 @@ class ContextTest extends TestCase {
 		$this->assertTrue( $context->is_network_active() );
 	}
 
-	public function test_get_current_entity() {
+	public function test_get_reference_entity() {
 		$this->markTestSkipped( 'Test not written yet.' );
 	}
 }

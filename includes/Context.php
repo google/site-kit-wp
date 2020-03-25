@@ -13,6 +13,7 @@ namespace Google\Site_Kit;
 use AMP_Options_Manager;
 use AMP_Theme_Support;
 use Google\Site_Kit\Core\Util\Input;
+use Google\Site_Kit\Core\Util\Entity;
 
 /**
  * Class representing the context in which the plugin is running.
@@ -183,6 +184,52 @@ final class Context {
 	}
 
 	/**
+	 * Gets the entity for the current request context.
+	 *
+	 * An entity in Site Kit terminology is based on a canonical URL, i.e. every
+	 * canonical URL has an associated entity.
+	 *
+	 * An entity may also have a type, a title, and an ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Entity|null The current entity, or null if none could be determined.
+	 */
+	public function get_reference_entity() {
+		// If currently in WP admin, run admin-specific checks.
+		if ( is_admin() ) {
+			$post = get_post();
+			if ( $post instanceof \WP_Post ) {
+				return $this->create_entity_for_post( $post );
+			}
+			return null;
+		}
+
+		// Otherwise, run frontend-specific checks.
+		if ( is_singular() || is_home() && ! is_front_page() ) {
+			$post = get_queried_object();
+			if ( $post instanceof \WP_Post ) {
+				return $this->create_entity_for_post( $post );
+			}
+			return null;
+		}
+
+		// If not singular (see above) but front page, this is the blog archive.
+		if ( is_front_page() ) {
+			return new Entity(
+				user_trailingslashit( $this->get_reference_site_url() ),
+				array(
+					'type' => 'home',
+				)
+			);
+		}
+
+		// TODO: This is not comprehensive, but will be expanded in the future.
+		// Related: https://github.com/google/site-kit-wp/issues/174.
+		return null;
+	}
+
+	/**
 	 * Gets the permalink of the reference site to use for stats.
 	 *
 	 * @since 1.0.0
@@ -192,55 +239,38 @@ final class Context {
 	 * @return string|false The reference permalink URL or false if post does not exist.
 	 */
 	public function get_reference_permalink( $post = 0 ) {
-		$reference_site_url = $this->get_reference_site_url();
-		$orig_site_url      = home_url();
-
-		// Gets post object. On front area we need to use get_queried_object to get the current post object.
-		if ( ! $post ) {
-			if ( is_admin() ) {
-				$post = get_post();
-			} else {
-				$post = get_queried_object();
+		// If post is provided, get URL for that.
+		if ( $post ) {
+			$permalink = get_permalink( $post );
+			if ( false === $permalink ) {
+				return $permalink;
 			}
-
-			if ( ! $post instanceof \WP_Post ) {
-				return false;
-			}
+			return $this->filter_reference_url( $permalink );
 		}
 
-		$permalink = get_permalink( $post );
-		if ( false === $permalink ) {
-			return $permalink;
+		// Otherwise use entity detection.
+		$entity = $this->get_reference_entity();
+		if ( ! $entity || 'post' !== $entity->get_type() ) {
+			return false;
 		}
 
-		if ( $orig_site_url !== $reference_site_url ) {
-			$permalink = str_replace( $orig_site_url, $reference_site_url, $permalink );
-		}
-
-		return $permalink;
+		return $entity->get_url();
 	}
 
 	/**
 	 * Gets the canonical url for the current request.
 	 *
+	 * @since 1.0.0
+	 *
 	 * @return string|false The reference canonical URL or false if no URL was identified.
 	 */
 	public function get_reference_canonical() {
-		$reference_permalink = $this->get_reference_permalink();
-
-		if ( $reference_permalink || is_admin() ) {
-			return $reference_permalink;
+		$entity = $this->get_reference_entity();
+		if ( ! $entity ) {
+			return false;
 		}
 
-		// Handle the home page URL.
-		if ( is_front_page() ) {
-			return user_trailingslashit( $this->get_reference_site_url() );
-		} elseif ( is_home() ) {
-			return $this->get_reference_permalink( get_option( 'page_for_posts' ) );
-		}
-
-		// Unidentified URL.
-		return false;
+		return $entity->get_url();
 	}
 
 	/**
@@ -256,6 +286,8 @@ final class Context {
 
 	/**
 	 * Gets the current AMP mode.
+	 *
+	 * @since 1.0.0
 	 *
 	 * @return bool|string 'primary' if in standard mode,
 	 *                     'secondary' if in transitional or reader modes
@@ -319,23 +351,50 @@ final class Context {
 	}
 
 	/**
-	 * Gets the current entity (a post)
+	 * Creates the entity for a given post object.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return WP_Post|bool The current post
+	 * @param \WP_Post $post A WordPress post object.
+	 * @return Entity The entity for the post.
 	 */
-	public function get_current_entity() {
-		if ( is_admin() ) {
-			$post = get_post();
-		} else {
-			$post = get_queried_object();
+	private function create_entity_for_post( \WP_Post $post ) {
+		$type = 'post';
+
+		// If this post is assigned as the home page, it is actually the blog archive.
+		if ( (int) get_option( 'page_for_posts' ) === (int) $post->ID ) {
+			$type = 'home';
 		}
 
-		if ( ! $post instanceof \WP_Post ) {
-			return null;
+		return new Entity(
+			$this->filter_reference_url( get_permalink( $post ) ),
+			array(
+				'type'  => $type,
+				'title' => $post->post_title,
+				'id'    => $post->ID,
+			)
+		);
+	}
+
+	/**
+	 * Filters the given URL to ensure the reference URL is used as part of it.
+	 *
+	 * If the site reference URL differs from the home URL (e.g. via filters),
+	 * this method performs the necessary replacement.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $url Input URL.
+	 * @return string URL that starts with the site reference URL.
+	 */
+	private function filter_reference_url( $url ) {
+		$reference_site_url = $this->get_reference_site_url();
+		$orig_site_url      = home_url();
+
+		if ( $orig_site_url !== $reference_site_url ) {
+			$url = str_replace( $orig_site_url, $reference_site_url, $url );
 		}
 
-		return $post;
+		return $url;
 	}
 }
