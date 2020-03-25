@@ -366,10 +366,22 @@ final class Assets {
 				array(
 					'global'        => '_googlesitekitAPIFetchData',
 					'data_callback' => function () {
+						/**
+						 * Preload common data by specifying an array of REST API paths that will be preloaded.
+						 *
+						 * Filters the array of paths that will be preloaded.
+						 *
+						 * @since n.e.x.t
+						 *
+						 * @param array $preload_paths Array of paths to preload.
+						 */
+						$preload_paths = apply_filters( 'googlesitekit_apifetch_preload_paths', array() );
+						
 						return array(
 							'nonceEndpoint'   => admin_url( 'admin-ajax.php?action=rest-nonce' ),
 							'nonceMiddleware' => ( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' ),
 							'rootURL'         => esc_url_raw( get_rest_url() ),
+							'preloadedData'   => array_reduce( $preload_paths, 'rest_preload_api_request', array() ),
 						);
 					},
 				)
