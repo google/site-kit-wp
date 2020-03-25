@@ -153,6 +153,7 @@ final class Analytics extends Module
 			'https://www.googleapis.com/auth/analytics.readonly',
 			'https://www.googleapis.com/auth/analytics.manage.users',
 			'https://www.googleapis.com/auth/analytics.edit',
+			'https://www.googleapis.com/auth/analytics.provision',
 		);
 	}
 
