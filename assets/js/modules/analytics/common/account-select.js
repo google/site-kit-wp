@@ -30,7 +30,7 @@ import { STORE_NAME } from '../datastore';
 export const ACCOUNT_CREATE = 'account_create';
 
 export default function AccountSelect( { useSelect, useDispatch } ) {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
+	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 
