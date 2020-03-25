@@ -58,6 +58,8 @@ final class Analytics extends Module
 	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Admin_Bar, Module_With_Debug_Fields {
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait;
 
+	const ANALYTICS_PROVISIONING_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_atid';
+
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
@@ -767,6 +769,57 @@ final class Analytics extends Module
 				$body->setReportRequests( array( $request ) );
 
 				return $this->get_analyticsreporting_service()->reports->batchGet( $body );
+			case 'POST:create-account-ticket':
+				if ( ! isset( $data['accountName'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountName' ), array( 'status' => 400 ) );
+				}
+				if ( ! isset( $data['propertyName'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyName' ), array( 'status' => 400 ) );
+				}
+				if ( ! isset( $data['profileName'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileName' ), array( 'status' => 400 ) );
+				}
+				if ( ! isset( $data['timezone'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'timezone' ), array( 'status' => 400 ) );
+				}
+
+				$account = new Google_Service_Analytics_Account();
+				$account->setName( $data['accountName'] );
+
+				$property = new Google_Service_Analytics_Webproperty();
+				$property->setName( $data['propertyName'] );
+				$property->setWebsiteUrl( $this->context->get_reference_site_url() );
+
+				$profile = new Google_Service_Analytics_Profile();
+				$profile->setName( $data['profileName'] );
+				$profile->setTimezone( $data['timezone'] );
+
+				$account_ticket = new Google_Service_Analytics_AccountTicket();
+				$account_ticket->setAccount( $account );
+				$account_ticket->setProperty( $property );
+				$account_ticket->setProfile( $profile );
+				$account_ticket->setRedirectUri( $this->get_provisioning_redirect_uri() );
+
+				$restore_defer = $this->with_client_defer( false );
+				try {
+					$account_ticket = $this->get_service( 'analytics' )->provisioning->createAccountTicket( $account_ticket );
+				} catch ( Exception $e ) {
+					$restore_defer();
+					return $this->exception_to_error( $e, $data->datapoint );
+				}
+				$restore_defer();
+				$account_ticket_id = $account_ticket->getId();
+				if ( empty( $account_ticket_id ) ) {
+					return new WP_Error( 'analytics-provisioning', 'no-account-ticket-id', array( 'status' => 500 ) );
+				}
+
+				// Cache the create ticket id long enough to verify it upon completion of the terms of service.
+				set_transient( $self::ANALYTICS_PROVISIONING_ACCOUNT_TICKET_ID . '::' . get_current_user_id(), $account_ticket_id, 15 * MINUTE_IN_SECONDS );
+				return $account_ticket;
 			case 'POST:settings':
 				return function() use ( $data ) {
 					$option          = $data->data;
@@ -1234,6 +1287,17 @@ final class Analytics extends Module
 	 */
 	protected function setup_settings() {
 		return new Settings( $this->options );
+	}
+
+	/**
+	 * Gets the provisioning redirect URI that listens for the Terms of Service redirect.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Provisioning redirect URI.
+	 */
+	private function get_provisioning_redirect_uri() {
+		return add_query_arg( 'gatoscallback', '1', untrailingslashit( home_url() ) );
 	}
 
 	/**
