@@ -146,6 +146,7 @@
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-jest": "^22.15.2",
     "eslint-scope": "^5.0.0",
+    "fetch-mock": "^9.3.1",
     "focus-trap-react": "^5.0.1",
     "formdata-polyfill": "^3.0.17",
     "git-repo-info": "^2.1.1",
