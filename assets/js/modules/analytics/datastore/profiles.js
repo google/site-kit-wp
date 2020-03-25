@@ -286,6 +286,9 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getProfiles( accountID, propertyID ) {
+		if ( typeof accountID === 'undefined' || typeof propertyID === 'undefined' ) {
+			return undefined;
+		}
 		try {
 			const profiles = yield actions.fetchProfiles( accountID, propertyID );
 
