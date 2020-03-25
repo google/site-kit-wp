@@ -6,7 +6,7 @@ module.exports = async ( { config } ) => {
 		...config.resolve,
 		alias: {
 			...config.resolve.alias,
-			'@wordpress/api-fetch$': path.resolve( __dirname, 'wp-api-fetch-mock.js' ),
+			// '@wordpress/api-fetch$': path.resolve( __dirname, 'wp-api-fetch-mock.js' ),
 			'googlesitekit-data': path.resolve( __dirname, '../assets/js/googlesitekit-data.js' ),
 			'googlesitekit-api': path.resolve( __dirname, '../assets/js/googlesitekit-api.js' ),
 			SiteKitCore: path.resolve( __dirname, '../assets/js/' ),
