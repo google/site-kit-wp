@@ -439,7 +439,10 @@ describe( 'createSettingsStore store', () => {
 						};
 					} );
 
-				const result = await storeDefinition.controls.FETCH_SAVE_SETTINGS( {} );
+				const result = await storeDefinition.controls.FETCH_SAVE_SETTINGS( {
+					type: 'FETCH_SAVE_SETTINGS',
+					payload: { values: {} },
+				} );
 				expect( result ).toEqual( response );
 				// Ensure `console.error()` wasn't called, which will happen if the API
 				// request fails.
