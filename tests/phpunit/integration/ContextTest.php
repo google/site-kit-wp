@@ -230,8 +230,4 @@ class ContextTest extends TestCase {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->assertTrue( $context->is_network_active() );
 	}
-
-	public function test_get_reference_entity() {
-		$this->markTestSkipped( 'Test not written yet.' );
-	}
 }
