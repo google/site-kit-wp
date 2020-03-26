@@ -198,7 +198,7 @@ export const collectState = collect;
  *
  * This function's main purpose is to ensure generated store names for a single store match.
  *
- * @since n.e.x.t
+ * @since 1.6.0
  *
  * @param {...string} args A list of store names, all of which must be equal.
  * @return {string} The single store name.

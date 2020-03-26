@@ -25,8 +25,8 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { actions as propertyActions } from './properties';
-import { actions as profileActions } from './profiles';
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '.';
 
 // Actions
 const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
@@ -132,15 +132,25 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {
 	*getAccounts() {
 		try {
+			const registry = yield Data.commonActions.getRegistry();
+
+			const existingAccounts = registry.select( STORE_NAME ).getAccounts();
+
+			// If there are already accounts loaded in state, we don't want to make this request
+			// and consider this resolver fulfilled.
+			if ( existingAccounts && existingAccounts.length ) {
+				return;
+			}
+
 			const response = yield actions.fetchAccountsPropertiesProfiles();
 			const { accounts, properties, profiles, matchedProperty } = response;
 
 			yield actions.receiveAccounts( accounts );
-			yield propertyActions.receiveProperties( properties );
-			yield profileActions.receiveProfiles( profiles );
+			yield registry.dispatch( STORE_NAME ).receiveProperties( properties );
+			yield registry.dispatch( STORE_NAME ).receiveProfiles( profiles );
 
 			if ( matchedProperty ) {
-				yield propertyActions.receiveMatchedProperty( matchedProperty );
+				yield registry.dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
 			}
 
 			return yield actions.receiveAccountsPropertiesProfilesCompleted();

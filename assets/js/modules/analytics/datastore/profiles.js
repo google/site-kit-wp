@@ -290,6 +290,16 @@ export const resolvers = {
 			return undefined;
 		}
 		try {
+			const registry = yield Data.commonActions.getRegistry();
+
+			const existingProfiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
+
+			// If there are already profiles loaded in state for this request; consider it fulfilled
+			// and don't make an API request.
+			if ( existingProfiles && existingProfiles.length ) {
+				return;
+			}
+
 			const profiles = yield actions.fetchProfiles( accountID, propertyID );
 
 			yield actions.receiveProfiles( profiles );
