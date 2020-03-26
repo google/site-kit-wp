@@ -46,7 +46,7 @@ const RECEIVE_SAVE_SETTINGS_FAILED = 'RECEIVE_SAVE_SETTINGS_FAILED';
  * The first three parameters hook up the store to the respective REST API endpoint,
  * while the fourth defines the names of the sub-settings to support.
  *
- * @since n.e.x.t
+ * @since 1.6.0
  * @private
  * @param {string} type                 The data to access. One of 'core' or 'modules'.
  * @param {string} identifier           The data identifier, eg. a module slug like 'search-console'.
@@ -84,7 +84,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		/**
 		 * Sets settings for the given values.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 *
 		 * @param {Object} values Settings with their values to set.
 		 * @return {Object} Redux-style action.
@@ -101,7 +101,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		/**
 		 * Dispatches an action that creates an HTTP request to the settings endpoint.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 * @private
 		 *
 		 * @return {Object} Redux-style action.
@@ -116,7 +116,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		/**
 		 * Stores settings received from the REST API.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 * @private
 		 *
 		 * @param {Array} values Settings with their values from the API.
@@ -134,7 +134,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		/**
 		 * Dispatches an action signifying the `fetchSettings` side-effect failed.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 * @private
 		 *
 		 * @return {Object} Redux-style action.
@@ -149,7 +149,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		/**
 		 * Saves all current settings to the server.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 *
 		 * @return {Object} Redux-style action.
 		 */
@@ -170,7 +170,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		/**
 		 * Dispatches an action that creates an HTTP request to save settings.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 * @private
 		 *
 		 * @param {Object} values Settings with their values to save.
@@ -188,7 +188,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		/**
 		 * Dispatches that settings were saved via the REST API.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 * @private
 		 *
 		 * @param {Array} values Settings with their values from the API.
@@ -206,7 +206,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		/**
 		 * Dispatches an action signifying the `fetchSaveSettings` side-effect failed.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 * @private
 		 *
 		 * @return {Object} Redux-style action.
@@ -332,7 +332,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 *
 		 * Returns `undefined` if notifications are not available/loaded.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 *
 		 * @param {Object} state Data store's state.
 		 * @return {Object|undefined} Settings with their values, or undefined.
@@ -344,7 +344,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		/**
 		 * Indicates whether the current settings have changed from what is saved.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 *
 		 * @param {Object} state Data store's state.
 		 * @return {boolean} True if the settings have changed, false otherwise.
@@ -358,7 +358,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		/**
 		 * Indicates whether saving the settings is currently in progress.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 *
 		 * @param {Object} state Data store's state.
 		 * @return {boolean} True if the settings are being saved, false otherwise.
@@ -376,7 +376,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		/**
 		 * Sets the setting indicated by the action name to the given value.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 *
 		 * @param {*} value Value for the setting.
 		 * @return {Object} Redux-style action.
@@ -405,7 +405,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		/**
 		 * Gets the current value for the setting indicated by the selector name.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 *
 		 * @return {*} Setting value, or undefined.
 		 */
