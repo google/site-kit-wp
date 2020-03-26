@@ -160,8 +160,8 @@ describe( 'createSettingsStore store', () => {
 				dispatch.setSettings( { setting2: 'clientside' } );
 
 				await dispatch.saveSettings();
-				// Two fetch requests, one to get settings, the other to update.
-				expect( fetch ).toHaveBeenCalledTimes( 2 );
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
 				expect( store.getState().settings ).toMatchObject( response );
 			} );
