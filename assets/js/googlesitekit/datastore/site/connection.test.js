@@ -126,7 +126,7 @@ describe( 'core/site connection', () => {
 				const response = { connected: true, resettable: true };
 				registry.dispatch( STORE_NAME ).receiveConnection( response );
 
-				const connection = registry.select( STORE_NAME ).getConnection( );
+				const connection = registry.select( STORE_NAME ).getConnection();
 
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )

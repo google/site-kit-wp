@@ -135,7 +135,7 @@ export const resolvers = {
 
 			const existingConnection = registry.select( STORE_NAME ).getConnection();
 
-			// If there are already accounts loaded in state, we don't want to make this request
+			// If there is already connection data loaded in state, don't make this request
 			// and consider this resolver fulfilled.
 			if ( existingConnection ) {
 				return;
