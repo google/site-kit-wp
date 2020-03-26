@@ -2,7 +2,6 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import fetchMock from 'fetch-mock';
 
 /**
  * WordPress dependencies
@@ -31,6 +30,7 @@ import {
 import { createTestRegistry } from '../tests/js/utils';
 
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
+import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
 
 function WithTestRegistry( { children, callback } ) {
 	const registry = createTestRegistry();
@@ -104,13 +104,17 @@ function makeDataProps( selectors = defaultSelectors ) {
 
 storiesOf( 'Analytics Module', module )
 	.add( 'Account Property Profile Select (none selected)', () => {
-		fetchMock.reset();
-		fetchMock.mock( 'path:/google-site-kit/v1/modules/analytics/data/accounts-properties-profiles', fixtures.accountsPropertiesProfiles );
-		fetchMock.mock( 'path:/google-site-kit/v1/modules/analytics/data/properties-profiles', fixtures.propertiesProfiles );
-		fetchMock.mock( 'path:/google-site-kit/v1/modules/analytics/data/profiles', fixtures.profiles );
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 
 		return (
-			<WithTestRegistry>
+			<WithTestRegistry
+				callback={ ( { dispatch } ) => {
+					dispatch( STORE_NAME ).receiveSettings( {} );
+					dispatch( STORE_NAME ).receiveAccounts( accounts );
+					dispatch( STORE_NAME ).receiveProperties( properties );
+					dispatch( STORE_NAME ).receiveProfiles( profiles );
+				} }
+			>
 				<SetupWrap>
 					<div className="googlesitekit-setup-module__inputs">
 						<AccountSelect />
@@ -122,16 +126,30 @@ storiesOf( 'Analytics Module', module )
 		);
 	} )
 	.add( 'Account Property Profile Select (all selected)', () => {
-		const dataProps = makeDataProps();
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 
 		return (
-			<SetupWrap>
-				<div className="googlesitekit-setup-module__inputs">
-					<AccountSelect { ...dataProps } />
-					<PropertySelect { ...dataProps } />
-					<ProfileSelect { ...dataProps } />
-				</div>
-			</SetupWrap>
+			<WithTestRegistry
+				callback={ ( { dispatch } ) => {
+					dispatch( STORE_NAME ).receiveAccounts( accounts );
+					dispatch( STORE_NAME ).receiveProperties( properties );
+					dispatch( STORE_NAME ).receiveProfiles( profiles );
+					dispatch( STORE_NAME ).receiveSettings( {
+						accountID: profiles[ 0 ].accountId,
+						propertyID: profiles[ 0 ].webPropertyId,
+						internalWebPropertyID: profiles[ 0 ].internalWebPropertyId,
+						profileID: profiles[ 0 ].id,
+					} );
+				} }
+			>
+				<SetupWrap>
+					<div className="googlesitekit-setup-module__inputs">
+						<AccountSelect />
+						<PropertySelect />
+						<ProfileSelect />
+					</div>
+				</SetupWrap>
+			</WithTestRegistry>
 		);
 	} )
 	.add( 'Anonymize IP switch, toggled on', () => {
