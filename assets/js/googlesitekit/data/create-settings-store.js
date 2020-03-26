@@ -317,7 +317,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 	const resolvers = {
 		*getSettings() {
-			const registry = yield Data.commonActions.getRegistry();
+			const registry = yield getRegistry();
 			const existingSettings = registry.select( STORE_NAME ).getSettings();
 			// If settings are already present, don't fetch them.
 			if ( existingSettings ) {
