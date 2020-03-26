@@ -19,26 +19,9 @@ add_action(
 		wp_enqueue_script(
 			'googlesitekit-e2e-utilities',
 			plugins_url( 'dist/assets/js/e2e-utilities.js', GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
-			array(),
+			array( 'googlesitekit-apifetch-data' ),
 			md5_file( plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) . 'dist/assets/js/e2e-utilities.js' ),
 			true
-		);
-
-		wp_add_inline_script(
-			'googlesitekit-e2e-utilities',
-			implode(
-				"\n",
-				array(
-					'window._googlesitekitAPIFetchData = window._googlesitekitAPIFetchData || {};',
-					sprintf( 'window._googlesitekitAPIFetchData.rootURL = "%s";', esc_url_raw( get_rest_url() ) ),
-					sprintf(
-						'window._googlesitekitAPIFetchData.nonceMiddleware = "%s";',
-						( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' )
-					),
-					sprintf( 'window._googlesitekitAPIFetchData.nonceEndpoint = "%s";', admin_url( 'admin-ajax.php?action=rest-nonce' ) ),
-				)
-			),
-			'before'
 		);
 	}
 );
