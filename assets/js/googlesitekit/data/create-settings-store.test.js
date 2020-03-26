@@ -274,8 +274,11 @@ describe( 'createSettingsStore store', () => {
 
 				dispatch.receiveSettings( { isSkyBlue: value } );
 
-				expect( fetch ).not.toHaveBeenCalled();
 				expect( select.getIsSkyBlue() ).toEqual( value );
+
+				await subscribeUntil( registry, () => select.hasFinishedResolution( 'getSettings' ) );
+
+				expect( fetch ).not.toHaveBeenCalled();
 			} );
 
 			it( 'returns client settings even if server settings have not loaded', () => {
