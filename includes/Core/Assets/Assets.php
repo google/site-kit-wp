@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Assets;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Cache;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use WP_Dependencies;
 
 /**
@@ -376,12 +377,16 @@ final class Assets {
 						 * @param array $preload_paths Array of paths to preload.
 						 */
 						$preload_paths = apply_filters( 'googlesitekit_apifetch_preload_paths', array() );
-						$preload_paths = array_unique( $preload_paths );
+						$preloaded     = array_reduce(
+							array_unique( $preload_paths ),
+							array( BC_Functions::class, 'rest_preload_api_request' ),
+							array()
+						);
 
 						return array(
 							'nonce'         => ( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' ),
 							'nonceEndpoint' => admin_url( 'admin-ajax.php?action=rest-nonce' ),
-							'preloadedData' => array_reduce( $preload_paths, 'rest_preload_api_request', array() ),
+							'preloadedData' => $preloaded,
 							'rootURL'       => esc_url_raw( get_rest_url() ),
 						);
 					},
