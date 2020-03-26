@@ -122,6 +122,21 @@ describe( 'core/site connection', () => {
 				expect( connectionSelect ).toEqual( connection );
 			} );
 
+			it( 'does not make a network request if data is already in state', async () => {
+				const response = { connected: true, resettable: true };
+				registry.dispatch( STORE_NAME ).receiveConnection( response );
+
+				const connection = registry.select( STORE_NAME ).getConnection();
+
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getConnection' )
+				);
+
+				expect( fetch ).not.toHaveBeenCalled();
+				expect( connection ).toEqual( response );
+			} );
+
 			it( 'dispatches an error if the request fails', async () => {
 				const response = {
 					code: 'internal_server_error',

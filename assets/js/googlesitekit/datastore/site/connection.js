@@ -25,6 +25,8 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from './index';
 
 // Actions
 const FETCH_CONNECTION = 'FETCH_CONNECTION';
@@ -129,6 +131,16 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {
 	*getConnection() {
 		try {
+			const registry = yield Data.commonActions.getRegistry();
+
+			const existingConnection = registry.select( STORE_NAME ).getConnection();
+
+			// If there is already connection data loaded in state, don't make this request
+			// and consider this resolver fulfilled.
+			if ( existingConnection ) {
+				return;
+			}
+
 			const connection = yield actions.fetchConnection();
 			return actions.receiveConnection( connection );
 		} catch ( err ) {
