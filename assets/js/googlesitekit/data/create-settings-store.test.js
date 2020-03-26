@@ -269,6 +269,15 @@ describe( 'createSettingsStore store', () => {
 				expect( select.getSettings() ).toEqual( settings );
 			} );
 
+			it( 'does not make a network request if settings are already set', async () => {
+				const value = 'serverside';
+
+				dispatch.receiveSettings( { isSkyBlue: value } );
+
+				expect( fetch ).not.toHaveBeenCalled();
+				expect( select.getIsSkyBlue() ).toEqual( value );
+			} );
+
 			it( 'returns client settings even if server settings have not loaded', () => {
 				const values = { setting1: 'value' };
 				dispatch.setSettings( values );
