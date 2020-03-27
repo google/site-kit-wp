@@ -25,17 +25,33 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Button from '../../../components/button';
 import AccountSelect from '../common/account-select';
 import PropertySelect from '../common/property-select';
 import ProfileSelect from '../common/profile-select';
 import { STORE_NAME } from '../datastore';
+import { isValidAccountID, isValidPropertyID } from '../util';
 
 export default function AnalyticsSetupForm() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const isSavingSettings = useSelect( ( select ) => select( STORE_NAME ).isDoingSaveSettings() );
+
+	const isBlockedFromSaving = (
+		isSavingSettings ||
+		! isValidAccountID( accountID ) ||
+		! isValidPropertyID( propertyID )
+	);
+
+	const submitForm = () => {}; // TODO: Handle form submission
 
 	return (
-		<div className="googlesitekit-analytics-setup__form">
+		<form
+			className="googlesitekit-analytics-setup__form"
+			onSubmit={ submitForm }
+		>
 			{ ( !! accounts.length && ! hasExistingTag ) && (
 				<p>
 					{ __( 'Please select the account information below. You can change this view later in your settings.', 'google-site-kit' ) }
@@ -49,6 +65,12 @@ export default function AnalyticsSetupForm() {
 
 				<ProfileSelect />
 			</div>
-		</div>
+
+			<div className="googlesitekit-setup-module__action">
+				<Button disabled={ isBlockedFromSaving }>
+					{ __( 'Configure Analytics', 'google-site-kit' ) }
+				</Button>
+			</div>
+		</form>
 	);
 }
