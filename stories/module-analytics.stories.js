@@ -105,16 +105,15 @@ function makeDataProps( selectors = defaultSelectors ) {
 storiesOf( 'Analytics Module', module )
 	.add( 'Account Property Profile Select (none selected)', () => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveSettings( {} );
+			dispatch( STORE_NAME ).receiveAccounts( accounts );
+			dispatch( STORE_NAME ).receiveProperties( properties );
+			dispatch( STORE_NAME ).receiveProfiles( profiles );
+		};
 
 		return (
-			<WithTestRegistry
-				callback={ ( { dispatch } ) => {
-					dispatch( STORE_NAME ).receiveSettings( {} );
-					dispatch( STORE_NAME ).receiveAccounts( accounts );
-					dispatch( STORE_NAME ).receiveProperties( properties );
-					dispatch( STORE_NAME ).receiveProfiles( profiles );
-				} }
-			>
+			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
 					<div className="googlesitekit-setup-module__inputs">
 						<AccountSelect />
@@ -127,21 +126,20 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Account Property Profile Select (all selected)', () => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveAccounts( accounts );
+			dispatch( STORE_NAME ).receiveProperties( properties );
+			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveSettings( {
+				accountID: profiles[ 0 ].accountId,
+				propertyID: profiles[ 0 ].webPropertyId,
+				internalWebPropertyID: profiles[ 0 ].internalWebPropertyId,
+				profileID: profiles[ 0 ].id,
+			} );
+		};
 
 		return (
-			<WithTestRegistry
-				callback={ ( { dispatch } ) => {
-					dispatch( STORE_NAME ).receiveAccounts( accounts );
-					dispatch( STORE_NAME ).receiveProperties( properties );
-					dispatch( STORE_NAME ).receiveProfiles( profiles );
-					dispatch( STORE_NAME ).receiveSettings( {
-						accountID: profiles[ 0 ].accountId,
-						propertyID: profiles[ 0 ].webPropertyId,
-						internalWebPropertyID: profiles[ 0 ].internalWebPropertyId,
-						profileID: profiles[ 0 ].id,
-					} );
-				} }
-			>
+			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
 					<div className="googlesitekit-setup-module__inputs">
 						<AccountSelect />
@@ -153,66 +151,81 @@ storiesOf( 'Analytics Module', module )
 		);
 	} )
 	.add( 'Anonymize IP switch, toggled on', () => {
-		const dataProps = makeDataProps();
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setAnonymizeIP( true );
+		};
 
 		return (
-			<SetupWrap>
-				<AnonymizeIPSwitch { ...dataProps } />
-			</SetupWrap>
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<AnonymizeIPSwitch />
+				</SetupWrap>
+			</WithTestRegistry>
 		);
 	} )
 	.add( 'Anonymize IP switch, toggled off', () => {
-		const dataProps = makeDataProps( {
-			...defaultSelectors,
-			getAnonymizeIP: () => false,
-		} );
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setAnonymizeIP( false );
+		};
 
 		return (
-			<SetupWrap>
-				<AnonymizeIPSwitch { ...dataProps } />
-			</SetupWrap>
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<AnonymizeIPSwitch />
+				</SetupWrap>
+			</WithTestRegistry>
 		);
 	} )
 	.add( 'Use Snippet switch, toggled on (default)', () => {
-		const dataProps = makeDataProps();
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setUseSnippet( true );
+		};
 
 		return (
-			<SetupWrap>
-				<UseSnippetSwitch { ...dataProps } />
-			</SetupWrap>
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<UseSnippetSwitch />
+				</SetupWrap>
+			</WithTestRegistry>
 		);
 	} )
 	.add( 'Use Snippet switch, toggled off', () => {
-		const dataProps = makeDataProps( {
-			...defaultSelectors,
-			getUseSnippet: () => false,
-		} );
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setUseSnippet( false );
+		};
 
 		return (
-			<SetupWrap>
-				<UseSnippetSwitch { ...dataProps } />
-			</SetupWrap>
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<UseSnippetSwitch />
+				</SetupWrap>
+			</WithTestRegistry>
 		);
 	} )
 	.add( 'Tracking exclusions (default)', () => {
-		const dataProps = makeDataProps();
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setTrackingDisabled( [ 'loggedinUsers' ] );
+		};
 
 		return (
-			<SetupWrap>
-				<TrackingExclusionSwitches { ...dataProps } />
-			</SetupWrap>
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<TrackingExclusionSwitches />
+				</SetupWrap>
+			</WithTestRegistry>
 		);
 	} )
 	.add( 'Tracking exclusions (including loggedinUsers)', () => {
-		const dataProps = makeDataProps( {
-			...defaultSelectors,
-			getTrackingDisabled: () => [],
-		} );
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setTrackingDisabled( [] );
+		};
 
 		return (
-			<SetupWrap>
-				<TrackingExclusionSwitches { ...dataProps } />
-			</SetupWrap>
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<TrackingExclusionSwitches />
+				</SetupWrap>
+			</WithTestRegistry>
 		);
 	} )
 	.add( 'Audience Overview Chart', () => {
