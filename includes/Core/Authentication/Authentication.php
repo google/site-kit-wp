@@ -435,7 +435,7 @@ final class Authentication {
 	 * @return bool True if setup is completed, false otherwise.
 	 */
 	public function is_setup_complete() {
-		if ( ! $this->authentication->credentials()->has() ) {
+		if ( ! $this->authentication->has() ) {
 			return false;
 		}
 
