@@ -296,7 +296,7 @@ export const resolvers = {
 
 			// If there are already profiles loaded in state for this request; consider it fulfilled
 			// and don't make an API request.
-			if ( existingProfiles && existingProfiles.length ) {
+			if ( existingProfiles ) {
 				return;
 			}
 

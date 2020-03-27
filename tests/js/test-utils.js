@@ -4,27 +4,23 @@
 import { render } from '@testing-library/react';
 
 /**
- * WordPress dependencies
- */
-import { RegistryProvider } from '@wordpress/data';
-
-/**
  * Internal dependencies
  */
-import { createTestRegistry } from 'tests/js/utils';
+import { createTestRegistry, WithTestRegistry } from './utils';
 
 // Override `@testing-library/react`'s render method with one that includes
 // our data store.
 const customRender = ( children, options = {} ) => {
 	const {
+		setupRegistry,
 		registry = createTestRegistry(),
 		...renderOptions
 	} = options;
 	return {
 		...render( (
-			<RegistryProvider value={ registry }>
+			<WithTestRegistry callback={ setupRegistry } registry={ registry }>
 				{ children }
-			</RegistryProvider>
+			</WithTestRegistry>
 		), renderOptions ),
 		registry,
 	};

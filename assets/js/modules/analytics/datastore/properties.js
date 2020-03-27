@@ -324,7 +324,7 @@ export const resolvers = {
 
 			// If there are already properties loaded in state for this request; consider it fulfilled
 			// and don't make an API request.
-			if ( existingProperties && existingProperties.length ) {
+			if ( existingProperties ) {
 				return;
 			}
 

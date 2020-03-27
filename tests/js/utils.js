@@ -18,6 +18,7 @@ import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '
  * Create a registry with all available stores.
  *
  * @since 1.5.0
+ *
  * @return {wp.data.registry} Registry with all available stores registered.
  */
 export const createTestRegistry = () => {
@@ -33,14 +34,13 @@ export const createTestRegistry = () => {
  * which can be configured by its callback prop.
  *
  * @since n.e.x.t
- * @param {?Object} props Component props.
- * @param {?Function} props.callback Function which receives the registry instance.
  *
+ * @param {?Object}   props          Component props.
+ * @param {?Function} props.callback Function which receives the registry instance.
+ * @param {?Object}   props.registry Registry object; uses `createTestRegistry()` by default.
  * @return {WPElement} Wrapped components.
  */
-export function WithTestRegistry( { children, callback } ) {
-	const registry = createTestRegistry();
-
+export function WithTestRegistry( { children, callback, registry = createTestRegistry() } = {} ) {
 	if ( callback ) {
 		callback( registry );
 	}
@@ -60,6 +60,7 @@ export function WithTestRegistry( { children, callback } ) {
  * want appearing in the jest output.
  *
  * @since 1.5.0
+ *
  * @param {string} type  Type of console to mute (one of: `'error'`, `'warn'`, `'log'`, `'info'`, or `'debug'`)
  * @param {number} times Number of times to mute console output perform resuming.
  */
@@ -77,6 +78,7 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
  * available for connected components and data store tests to use.
  *
  * @since 1.5.0
+ *
  * @param {wp.data.registry} registry Registry to register each store on.
  */
 export const registerAllStoresOn = ( registry ) => {
@@ -129,6 +131,7 @@ export const unsubscribeFromAll = () => {
  * silently succeed.
  *
  * @since 1.5.0
+ *
  * @return {Promise} A rejected promise.
  */
 export const unexpectedSuccess = () => {

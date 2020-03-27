@@ -116,6 +116,20 @@ describe( 'modules/analytics accounts', () => {
 				expect( fetch ).not.toHaveBeenCalled();
 			} );
 
+			it( 'does not make a network request if accounts exist but are empty (this is a valid state)', async () => {
+				registry.dispatch( STORE_NAME ).receiveAccounts( [] );
+
+				const accounts = registry.select( STORE_NAME ).getAccounts();
+
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getAccounts' )
+				);
+
+				expect( accounts ).toEqual( [] );
+				expect( fetch ).not.toHaveBeenCalled();
+			} );
+
 			it( 'dispatches an error if the request fails', async () => {
 				const response = {
 					code: 'internal_server_error',
