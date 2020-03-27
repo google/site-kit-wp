@@ -1,10 +1,22 @@
-import React from 'react';
+/**
+ * WordPress dependencies
+ */
+import apiFetchMock from '@wordpress/api-fetch';
 
-import { fireEvent, muteConsole, render } from 'test-utils';
+/**
+ * Internal dependencies
+ */
+import AccountSelect from './account-select';
+import { fireEvent, render } from 'test-utils';
 import { STORE_NAME as modulesAnalyticsStoreName } from '../datastore';
 import * as fixtures from '../datastore/__fixtures__';
 
-import AccountSelect from './account-select';
+// Mock apiFetch so we know if it's called.
+jest.mock( '@wordpress/api-fetch' );
+apiFetchMock.mockImplementation( ( ...args ) => {
+	// eslint-disable-next-line no-console
+	console.warn( 'apiFetch', ...args );
+} );
 
 const setupRegistry = ( registry ) => {
 	registry.dispatch( modulesAnalyticsStoreName ).receiveSettings( {} );
@@ -17,55 +29,57 @@ const setupEmptyRegistry = ( registry ) => {
 };
 
 describe( 'AccountSelect', () => {
-	it( 'should render an option for each analytics account', async () => {
-		const { baseElement } = render( <AccountSelect />, { setupRegistry } );
+	afterEach( () => apiFetchMock.mockClear() );
+	afterAll( () => jest.restoreAllMocks() );
 
-		// The Material `<Select>` component puts its items at the bottom of the root
-		// element of the page, and doesn't offer great selectors to use for selecting
-		// them, so this is how we test the number of accounts rendered in the select box.
-		//
+	it( 'should render an option for each analytics account', async () => {
+		const { getAllByRole } = render( <AccountSelect />, { setupRegistry } );
+
+		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		// Note: we do length + 1 here because there should also be an item for
 		// "Set up a new account".
-		const listItems = baseElement.querySelectorAll( '.mdc-select__menu [role=menu] li' );
 		expect( listItems ).toHaveLength( fixtures.accountsPropertiesProfiles.accounts.length + 1 );
+		expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should have a "Set up a new account" item at the end of the list', async () => {
-		const { baseElement } = render( <AccountSelect />, { setupRegistry } );
+		const { getAllByRole } = render( <AccountSelect />, { setupRegistry } );
 
-		const listItems = baseElement.querySelectorAll( '.mdc-select__menu [role=menu] li' );
-		expect( listItems[ listItems.length - 1 ].textContent ).toEqual( 'Set up a new account' );
+		const listItems = getAllByRole( 'menuitem', { hidden: true } );
+		expect( listItems[ listItems.length - 1 ].textContent ).toMatch( /set up a new account/i );
+		expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should render a select box with only setup when accounts are undefined', async () => {
-		// Mute the console here; it will make an HTTP request to load accounts.
-		muteConsole( 'error' );
-		const { baseElement } = render( <AccountSelect /> );
+		const { getAllByRole } = render( <AccountSelect />, { setupRegistry: setupEmptyRegistry } );
 
-		const listItems = baseElement.querySelectorAll( '.mdc-select__menu [role=menu] li' );
+		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( 1 );
-		expect( listItems[ listItems.length - 1 ].textContent ).toEqual( 'Set up a new account' );
+		expect( listItems[ listItems.length - 1 ].textContent ).toMatch( /set up a new account/i );
+		expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should render a select box with only setup when no accounts exist', async () => {
-		const { baseElement } = render( <AccountSelect />, { setupRegistry: setupEmptyRegistry } );
+		const { getAllByRole } = render( <AccountSelect />, { setupRegistry: setupEmptyRegistry } );
 
-		const listItems = baseElement.querySelectorAll( '.mdc-select__menu [role=menu] li' );
+		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( 1 );
-		expect( listItems[ listItems.length - 1 ].textContent ).toEqual( 'Set up a new account' );
+		expect( listItems[ listItems.length - 1 ].textContent ).toMatch( /set up a new account/i );
+		expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should update accountID in the store when a new item is clicked', async () => {
-		const { baseElement, container, registry } = render( <AccountSelect />, { setupRegistry } );
+		const { getAllByRole, container, registry } = render( <AccountSelect />, { setupRegistry } );
 		const originalAccountID = registry.select( modulesAnalyticsStoreName ).getAccountID();
 
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 		// Click this element to select it and fire the onChange event.
-		fireEvent.click( baseElement.querySelectorAll( '.mdc-select__menu [role=menu] li' )[ 1 ] );
+		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
 
 		const newAccountID = registry.select( modulesAnalyticsStoreName ).getAccountID();
 		expect( originalAccountID ).not.toEqual( newAccountID );
 		expect( newAccountID ).toEqual( fixtures.accountsPropertiesProfiles.accounts[ 1 ].id );
+		expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 } );
