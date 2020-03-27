@@ -425,6 +425,33 @@ final class Authentication {
 	}
 
 	/**
+	 * Checks whether the Site Kit setup is considered complete.
+	 *
+	 * If this is not the case, most permissions will be force-prevented to ensure that only permissions required for
+	 * initial setup are granted.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return bool True if setup is completed, false otherwise.
+	 */
+	public function is_setup_complete() {
+		if ( ! $this->authentication->credentials()->has() ) {
+			return false;
+		}
+
+		/**
+		 * Filters whether the Site Kit plugin should consider its setup to be completed.
+		 *
+		 * This can be used by essential auto-activated modules to amend the result of this check.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param bool $complete Whether the setup is completed.
+		 */
+		return (bool) apply_filters( 'googlesitekit_setup_complete', true );
+	}
+
+	/**
 	 * Handles receiving a temporary OAuth code.
 	 *
 	 * @since 1.0.0
@@ -774,7 +801,6 @@ final class Authentication {
 	 * @return Notice Notice object.
 	 */
 	private function get_authentication_oauth_error_notice() {
-
 		return new Notice(
 			'oauth_error',
 			array(
@@ -939,32 +965,5 @@ final class Authentication {
 			$this->get_oauth_client()->get_proxy_setup_url( $code )
 		);
 		exit;
-	}
-
-	/**
-	 * Checks whether the Site Kit setup is considered complete.
-	 *
-	 * If this is not the case, most permissions will be force-prevented to ensure that only permissions required for
-	 * initial setup are granted.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return bool True if setup is completed, false otherwise.
-	 */
-	private function is_setup_complete() {
-		if ( ! $this->authentication->credentials()->has() ) {
-			return false;
-		}
-
-		/**
-		 * Filters whether the Site Kit plugin should consider its setup to be completed.
-		 *
-		 * This can be used by essential auto-activated modules to amend the result of this check.
-		 *
-		 * @since 1.0.0
-		 *
-		 * @param bool $complete Whether the setup is completed.
-		 */
-		return (bool) apply_filters( 'googlesitekit_setup_complete', true );
 	}
 }
