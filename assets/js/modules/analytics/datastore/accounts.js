@@ -224,6 +224,19 @@ export const selectors = {
 	isCreateAccount: createRegistrySelector( ( select ) => () => {
 		return ACCOUNT_CREATE === select( STORE_NAME ).getAccountID();
 	} ),
+
+	/**
+	 * Checks whether accounts are currently being fetched.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} Whether accounts are currently being fetched or not.
+	 */
+	isFetchingAccounts( state ) {
+		return !! state.isFetchingAccountsPropertiesProfiles;
+	},
 };
 
 export default {
