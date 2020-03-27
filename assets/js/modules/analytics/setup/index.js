@@ -16,6 +16,6 @@
  * limitations under the License.
  */
 
-export { default as AnalyticsSetup } from './analytics-setup';
+export { default as SetupMain } from './setup-main';
 export { default as SetupForm } from './setup-form';
-export { default as AnalyticsLegacyAccountCreation } from './account-create-legacy';
+export { default as AccountCreateLegacy } from './account-create-legacy';

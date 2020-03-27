@@ -1,5 +1,5 @@
 /**
- * AnalyticsSetup component.
+ * Analytics Main setup component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -30,7 +30,7 @@ import SetupForm from './setup-form';
 import { SvgIcon } from '../../../util';
 import { STORE_NAME } from '../datastore';
 
-export default function AnalyticsSetup() {
+export default function SetupMain() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 	const isCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isCreateAccount() );
 
