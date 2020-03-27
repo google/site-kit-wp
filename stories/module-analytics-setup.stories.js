@@ -66,14 +66,36 @@ storiesOf( 'Analytics Module Setup', module )
 			</WithTestRegistry>
 		);
 	} )
-	.add( 'Existing Tag', () => {
+	.add( 'No Accounts', () => {
+		filterAnalyticsSetup();
+
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveSettings( {} );
+			dispatch( STORE_NAME ).receiveAccounts( [] );
+		};
+
 		return (
-			<SetupWrapper />
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrapper />
+			</WithTestRegistry>
 		);
 	} )
-	.add( 'No Account', () => {
+	.add( 'Existing Tag', () => {
+		filterAnalyticsSetup();
+
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveSettings( {} );
+			dispatch( STORE_NAME ).receiveAccounts( accounts );
+			dispatch( STORE_NAME ).receiveProperties( properties );
+			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveExistingTag( fixtures.getTagPermissionsAccess );
+		};
+
 		return (
-			<SetupWrapper />
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrapper />
+			</WithTestRegistry>
 		);
 	} )
 ;
