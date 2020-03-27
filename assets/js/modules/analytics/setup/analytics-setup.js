@@ -19,15 +19,30 @@
 /**
  * WordPress dependencies
  */
+import { useSelect } from '@wordpress/data';
 import { _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import AccountCreate from './account-create-legacy';
 import AnalyticsSetupForm from './setup-form';
 import { SvgIcon } from '../../../util';
+import { STORE_NAME } from '../datastore';
 
 export default function AnalyticsSetup() {
+	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
+	const isCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isCreateAccount() );
+
+	const ViewComponent = ( () => {
+		switch ( true ) {
+			case ( ! accounts.length || isCreateAccount ) :
+				return AccountCreate;
+			default:
+				return AnalyticsSetupForm;
+		}
+	} )();
+
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 
@@ -41,7 +56,7 @@ export default function AnalyticsSetup() {
 
 			{ /* { this.renderErrorOrNotice() } */ }
 
-			<AnalyticsSetupForm />
+			<ViewComponent />
 		</div>
 	);
 }
