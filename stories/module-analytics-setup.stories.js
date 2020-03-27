@@ -37,16 +37,20 @@ import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
 import { WithTestRegistry } from '../tests/js/utils';
 
+function filterAnalyticsSetup() {
+	global.googlesitekit.setup.moduleToSetup = 'analytics';
+
+	removeAllFilters( 'googlesitekit.ModuleSetup-analytics' );
+	addFilter(
+		'googlesitekit.ModuleSetup-analytics',
+		'googlesitekit.AnalyticsModuleSetup',
+		fillFilterWithComponent( AnalyticsSetup )
+	);
+}
+
 storiesOf( 'Analytics Module Setup', module )
 	.add( 'Start', () => {
-		global.googlesitekit.setup.moduleToSetup = 'analytics';
-
-		removeAllFilters( 'googlesitekit.ModuleSetup-analytics' );
-		addFilter(
-			'googlesitekit.ModuleSetup-analytics',
-			'googlesitekit.AnalyticsModuleSetup',
-			fillFilterWithComponent( AnalyticsSetup )
-		);
+		filterAnalyticsSetup();
 
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
