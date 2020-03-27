@@ -803,7 +803,12 @@ final class Authentication {
 						);
 						$this->user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 					} else {
-						$message = $auth_client->get_error_message( $error_code );
+						$message  = $auth_client->get_error_message( $error_code );
+						$message .= ' ' . sprintf(
+							/* translators: %s: setup screen URL */
+							__( 'To resume setup, <a href="%s">start here</a>.', 'google-site-kit' ),
+							$this->context->admin_url( 'splash' )
+						);
 					}
 
 					$message = wp_kses(
