@@ -6,7 +6,7 @@ import { castArray } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { createRegistry } from '@wordpress/data';
+import { createRegistry, RegistryProvider } from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -27,6 +27,30 @@ export const createTestRegistry = () => {
 
 	return registry;
 };
+
+/**
+ * Wraps children components with a fresh test registry,
+ * which can be configured by its callback prop.
+ *
+ * @since n.e.x.t
+ * @param {?Object} props Component props.
+ * @param {?Function} props.callback Function which receives the registry instance.
+ *
+ * @return {WPElement} Wrapped components.
+ */
+export function WithTestRegistry( { children, callback } ) {
+	const registry = createTestRegistry();
+
+	if ( callback ) {
+		callback( registry );
+	}
+
+	return (
+		<RegistryProvider value={ registry }>
+			{ children }
+		</RegistryProvider>
+	);
+}
 
 /**
  * Mute a given console during tests.

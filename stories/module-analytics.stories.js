@@ -6,7 +6,6 @@ import { storiesOf } from '@storybook/react';
 /**
  * WordPress dependencies
  */
-import { RegistryProvider } from '@wordpress/data';
 import { doAction } from '@wordpress/hooks';
 import { __, _x } from '@wordpress/i18n';
 
@@ -27,24 +26,10 @@ import {
 	UseSnippetSwitch,
 	TrackingExclusionSwitches,
 } from '../assets/js/modules/analytics/common';
-import { createTestRegistry } from '../tests/js/utils';
+import { WithTestRegistry } from '../tests/js/utils';
 
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
-
-function WithTestRegistry( { children, callback } ) {
-	const registry = createTestRegistry();
-
-	if ( callback ) {
-		callback( registry );
-	}
-
-	return (
-		<RegistryProvider value={ registry }>
-			{ children }
-		</RegistryProvider>
-	);
-}
 
 function SetupWrap( { children } ) {
 	return (
