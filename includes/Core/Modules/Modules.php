@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
@@ -153,6 +154,23 @@ final class Modules {
 			$active_modules,
 			function( Module $module ) {
 				$module->register();
+			}
+		);
+
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $paths ) use ( $active_modules ) {
+				$settings_routes = array_map(
+					function ( Module $module ) {
+						if ( $module instanceof Module_With_Settings ) {
+							return '/' . REST_Routes::REST_ROOT . "/modules/{$module->slug}/data/settings";
+						}
+						return null;
+					},
+					array_values( $active_modules )
+				);
+
+				return array_merge( $paths, array_filter( $settings_routes ) );
 			}
 		);
 	}
@@ -430,7 +448,7 @@ final class Modules {
 
 		return array(
 			new REST_Route(
-				'modules',
+				'core/modules/data/list',
 				array(
 					array(
 						'methods'             => WP_REST_Server::READABLE,
@@ -449,30 +467,23 @@ final class Modules {
 				)
 			),
 			new REST_Route(
-				'modules/(?P<slug>[a-z\-]+)',
+				'core/modules/data/activation',
 				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$slug = $request['slug'];
-							try {
-								$module = $this->get_module( $slug );
-							} catch ( \Exception $e ) {
-								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
-							}
-							return new WP_REST_Response( $this->prepare_module_data_for_response( $module ) );
-						},
-						'permission_callback' => $can_authenticate,
-					),
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function( WP_REST_Request $request ) {
-							$slug = $request['slug'];
-							$modules = $this->get_available_modules();
-							if ( ! isset( $modules[ $slug ] ) ) {
-								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
+							$data = $request['data'];
+							$slug = isset( $data['slug'] ) ? $data['slug'] : '';
+
+							try {
+								$this->get_module( $slug );
+							} catch ( Exception $e ) {
+								return new WP_Error( 'invalid_module_slug', $e->getMessage() );
 							}
-							if ( $request['active'] ) {
+
+							$modules = $this->get_available_modules();
+
+							if ( ! empty( $data['active'] ) ) {
 								// Prevent activation if one of the dependencies is not active.
 								$dependency_slugs = $this->get_module_dependencies( $slug );
 								foreach ( $dependency_slugs as $dependency_slug ) {
@@ -499,27 +510,144 @@ final class Modules {
 									return new WP_Error( 'cannot_deactivate_module', __( 'An internal error occurred while trying to deactivate the module.', 'google-site-kit' ), array( 'status' => 500 ) );
 								}
 							}
-							return new WP_REST_Response( $this->prepare_module_data_for_response( $modules[ $slug ] ) );
+
+							return new WP_REST_Response( array( 'success' => true ) );
 						},
 						'permission_callback' => $can_manage_options,
 						'args'                => array(
-							'active' => array(
-								'type'        => 'boolean',
-								'description' => __( 'Whether to activate or deactivate the module.', 'google-site-kit' ),
-								'required'    => true,
+							'data' => array(
+								'type'     => 'object',
+								'required' => true,
 							),
 						),
 					),
 				),
 				array(
-					'args'   => array(
+					'schema' => $this->get_module_schema(),
+				)
+			),
+			new REST_Route(
+				'core/modules/data/info',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							try {
+								$module = $this->get_module( $request['slug'] );
+							} catch ( Exception $e ) {
+								return new WP_Error( 'invalid_module_slug', $e->getMessage() );
+							}
+
+							return new WP_REST_Response( $this->prepare_module_data_for_response( $module ) );
+						},
+						'permission_callback' => $can_authenticate,
+						'args'                => array(
+							'slug' => array(
+								'type'              => 'string',
+								'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
+								'sanitize_callback' => 'sanitize_key',
+							),
+						),
+					),
+				),
+				array(
+					'schema' => $this->get_module_schema(),
+				)
+			),
+			new REST_Route(
+				'modules/(?P<slug>[a-z\-]+)/data/notifications',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$slug = $request['slug'];
+							$modules = $this->get_available_modules();
+							if ( ! isset( $modules[ $slug ] ) ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
+							}
+							$notifications = array();
+							if ( $this->is_module_active( $slug ) ) {
+								$notifications = $modules[ $slug ]->get_data( 'notifications' );
+								if ( is_wp_error( $notifications ) ) {
+									// Don't consider it an error if the module does not have a 'notifications' datapoint.
+									if ( 'invalid_datapoint' !== $notifications->get_error_code() ) {
+										return $notifications;
+									}
+									$notifications = array();
+								}
+							}
+							return new WP_REST_Response( $notifications );
+						},
+						'permission_callback' => $can_authenticate,
+					),
+				),
+				array(
+					'args' => array(
 						'slug' => array(
 							'type'              => 'string',
 							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
 							'sanitize_callback' => 'sanitize_key',
 						),
 					),
-					'schema' => $this->get_module_schema(),
+				)
+			),
+			new REST_Route(
+				'modules/(?P<slug>[a-z\-]+)/data/settings',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$slug = $request['slug'];
+							try {
+								$module = $this->get_module( $slug );
+							} catch ( Exception $e ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
+							}
+
+							if ( ! $module instanceof Module_With_Settings ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Module does not support settings.', 'google-site-kit' ), array( 'status' => 400 ) );
+							}
+							return new WP_REST_Response( $module->get_settings()->get() );
+						},
+						'permission_callback' => $can_manage_options,
+					),
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$slug = $request['slug'];
+							try {
+								$module = $this->get_module( $slug );
+							} catch ( Exception $e ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
+							}
+
+							$data   = isset( $request['data'] ) ? (array) $request['data'] : array();
+							$result = $this->update_module_settings( $module, $data );
+							if ( is_wp_error( $result ) ) {
+								return $result;
+							}
+							return new WP_REST_Response( $module->get_settings()->get() );
+						},
+						'permission_callback' => $can_manage_options,
+						'args'                => array(
+							'data' => array(
+								'type'              => 'object',
+								'description'       => __( 'Settings to set.', 'google-site-kit' ),
+								'validate_callback' => function( $value ) {
+									return is_array( $value );
+								},
+							),
+						),
+					),
+				),
+				array(
+					'args' => array(
+						'slug' => array(
+							'type'              => 'string',
+							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
+							'sanitize_callback' => 'sanitize_key',
+						),
+					),
 				)
 			),
 			new REST_Route(
@@ -531,7 +659,7 @@ final class Modules {
 							$slug = $request['slug'];
 							try {
 								$module = $this->get_module( $slug );
-							} catch ( \Exception $e ) {
+							} catch ( Exception $e ) {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
 							$data = $module->get_data( $request['datapoint'], $request->get_params() );
@@ -548,7 +676,7 @@ final class Modules {
 							$slug = $request['slug'];
 							try {
 								$module = $this->get_module( $slug );
-							} catch ( \Exception $e ) {
+							} catch ( Exception $e ) {
 								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
 							}
 							$data = isset( $request['data'] ) ? (array) $request['data'] : array();
@@ -585,44 +713,41 @@ final class Modules {
 					),
 				)
 			),
-			new REST_Route(
-				'modules/(?P<slug>[a-z\-]+)/notifications',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$slug = $request['slug'];
-							$modules = $this->get_available_modules();
-							if ( ! isset( $modules[ $slug ] ) ) {
-								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
-							}
-							$notifications = array();
-							if ( $this->is_module_active( $slug ) ) {
-								$notifications = $modules[ $slug ]->get_data( 'notifications' );
-								if ( is_wp_error( $notifications ) ) {
-									// Don't consider it an error if the module does not have a 'notifications' datapoint.
-									if ( 'invalid_datapoint' !== $notifications->get_error_code() ) {
-										return $notifications;
-									}
-									$notifications = array();
-								}
-							}
-							return new WP_REST_Response( $notifications );
-						},
-						'permission_callback' => $can_authenticate,
-					),
-				),
-				array(
-					'args' => array(
-						'slug' => array(
-							'type'              => 'string',
-							'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
-							'sanitize_callback' => 'sanitize_key',
-						),
-					),
-				)
-			),
 		);
+	}
+
+	/**
+	 * Updates settings for a module.
+	 *
+	 * If the module includes a datapoint 'POST:settings', that datapoint is relied upon, allowing more advanced
+	 * customization. Otherwise this method will ensure every setting is present as a parameter and then update the
+	 * settings.
+	 *
+	 * @since 1.6.0
+	 *
+	 * @param Module $module Module to update settings for. Must implement {@see Module_With_Settings}.
+	 * @param array  $data   Associative array of new settings data to set.
+	 * @return bool|WP_Error True on success, or an error object on failure.
+	 */
+	private function update_module_settings( Module $module, array $data ) {
+		if ( ! $module instanceof Module_With_Settings ) {
+			return new WP_Error( 'invalid_module_slug', __( 'Module does not support settings.', 'google-site-kit' ), array( 'status' => 400 ) );
+		}
+
+		if ( in_array( 'settings', $module->get_datapoints(), true ) ) {
+			$result = $module->set_data( 'settings', $data );
+			if ( is_wp_error( $result ) && $result->get_error_code() !== 'invalid_datapoint' ) {
+				return $result;
+			} elseif ( ! is_wp_error( $result ) ) {
+				return true;
+			}
+		}
+
+		if ( ! $module->get_settings()->merge( $data ) ) {
+			return new WP_Error( 'updating_settings_failed', __( 'Updating settings failed.', 'google-site-kit' ), array( 'status' => 500 ) );
+		}
+
+		return true;
 	}
 
 	/**

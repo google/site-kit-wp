@@ -39,6 +39,7 @@ const noAMDParserRule = { parser: { amd: false } };
 const siteKitExternals = {
 	'googlesitekit-api': [ 'googlesitekit', 'api' ],
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
+	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 };
 
 const externals = { ...siteKitExternals };
@@ -91,6 +92,7 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-api': './assets/js/googlesitekit-api.js',
 				'googlesitekit-data': './assets/js/googlesitekit-data.js',
 				'googlesitekit-datastore-site': './assets/js/googlesitekit-datastore-site.js',
+				'googlesitekit-modules': './assets/js/googlesitekit-modules.js', // TODO: Add external following 1162.
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
 				'googlesitekit-settings': './assets/js/googlesitekit-settings.js',

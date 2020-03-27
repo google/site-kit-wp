@@ -22,7 +22,6 @@ use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
-use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Account;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
@@ -51,14 +50,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * Container usage context for AMP.
 	 */
 	const USAGE_CONTEXT_AMP = 'amp';
-
-	/**
-	 * Settings instance.
-	 *
-	 * @since 1.2.0
-	 * @var Settings
-	 */
-	protected $settings;
 
 	/**
 	 * Map of container usageContext to option key for containerID.
@@ -148,8 +139,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			__( 'Create tags without updating code', 'google-site-kit' ),
 		);
 
-		$info['settings'] = $this->get_settings()->get();
-
 		return $info;
 	}
 
@@ -184,7 +173,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @return array
 	 */
@@ -302,9 +291,20 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			return;
 		}
 
+		// Add the optoutElementId for compatibility with our Analytics opt-out mechanism.
+		// This configuration object will be merged with the configuration object returned
+		// by the `config` attribute URL.
+		$gtm_amp_opt = array(
+			'optoutElementId' => '__gaOptOutExtension',
+		);
+
 		?>
 		<!-- Google Tag Manager added by Site Kit -->
-		<amp-analytics config="<?php echo esc_url( "https://www.googletagmanager.com/amp.json?id=$container_id" ); ?>" data-credentials="include"></amp-analytics>
+		<amp-analytics config="<?php echo esc_url( "https://www.googletagmanager.com/amp.json?id=$container_id" ); ?>" data-credentials="include">
+			<script type="application/json">
+				<?php echo wp_json_encode( $gtm_amp_opt ); ?>
+			</script>
+		</amp-analytics>
 		<!-- End Google Tag Manager -->
 		<?php
 	}
@@ -529,35 +529,20 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				}
 				return $this->get_tagmanager_service()->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
 			case 'POST:settings':
-				$required_params = array( 'accountID', 'usageContext' );
-
-				if ( self::USAGE_CONTEXT_WEB === $data['usageContext'] ) { // No AMP.
-					$required_params[] = $this->context_map[ self::USAGE_CONTEXT_WEB ];
-				} elseif ( self::USAGE_CONTEXT_AMP === $data['usageContext'] ) { // Primary AMP.
-					$required_params[] = $this->context_map[ self::USAGE_CONTEXT_AMP ];
-				} else { // Secondary AMP.
-					array_push( $required_params, ...array_values( $this->context_map ) );
-				}
-
-				foreach ( $required_params as $required_param ) {
-					if ( ! isset( $data[ $required_param ] ) ) {
-						/* translators: %s: Missing parameter name */
-						return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), $required_param ), array( 'status' => 400 ) );
-					}
-				}
-
 				return function() use ( $data ) {
 					$option = $data->data;
 
-					try {
-						if ( 'container_create' === $data['containerID'] ) {
-							$option['containerID'] = $this->create_container( $data['accountID'], self::USAGE_CONTEXT_WEB );
+					if ( isset( $option['accountID'] ) ) {
+						try {
+							if ( isset( $option['containerID'] ) && 'container_create' === $option['containerID'] ) {
+								$option['containerID'] = $this->create_container( $option['accountID'], self::USAGE_CONTEXT_WEB );
+							}
+							if ( isset( $option['ampContainerID'] ) && 'container_create' === $option['ampContainerID'] ) {
+								$option['ampContainerID'] = $this->create_container( $option['accountID'], self::USAGE_CONTEXT_AMP );
+							}
+						} catch ( Exception $e ) {
+							return $this->exception_to_error( $e, $data->datapoint );
 						}
-						if ( 'container_create' === $data['ampContainerID'] ) {
-							$option['ampContainerID'] = $this->create_container( $data['accountID'], self::USAGE_CONTEXT_AMP );
-						}
-					} catch ( Exception $e ) {
-						return $this->exception_to_error( $e, $data->datapoint );
 					}
 
 					$this->get_settings()->merge( $option );

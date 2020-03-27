@@ -75,16 +75,6 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 			__( 'Probability and confidence calculations', 'google-site-kit' ),
 		);
 
-		$optimize_id          = $this->get_data( 'optimize-id' );
-		$amp_client_id_opt_in = $this->get_data( 'amp-client-id-opt-in' );
-		$amp_experiment_json  = $this->get_data( 'amp-experiment-json' );
-
-		$info['settings'] = array(
-			'optimizeID'        => ! is_wp_error( $optimize_id ) ? $optimize_id : false,
-			'ampClientIDOptIn'  => ! is_wp_error( $amp_client_id_opt_in ) ? $amp_client_id_opt_in : false,
-			'ampExperimentJSON' => ! is_wp_error( $amp_experiment_json ) ? $amp_experiment_json : '',
-		);
-
 		return $info;
 	}
 
@@ -144,11 +134,6 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 			return;
 		}
 
-		$amp_client_id_opt_in = $this->get_data( 'amp-client-id-opt-in' );
-		if ( is_wp_error( $amp_client_id_opt_in ) || ! $amp_client_id_opt_in ) {
-			return;
-		}
-
 		$amp_experiment_json = $this->get_data( 'amp-experiment-json' );
 		if ( is_wp_error( $amp_experiment_json ) || ! $amp_experiment_json ) {
 			return;
@@ -166,7 +151,7 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 	/**
 	 * Gets an array of debug field definitions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @return array
 	 */
@@ -191,11 +176,6 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 	 * @return array Filtered $data.
 	 */
 	protected function amp_data_load_experiment_component( $data ) {
-		$amp_client_id_opt_in = $this->get_data( 'amp-client-id-opt-in' );
-		if ( is_wp_error( $amp_client_id_opt_in ) || ! $amp_client_id_opt_in ) {
-			return $data;
-		}
-
 		$amp_experiment_json = $this->get_data( 'amp-experiment-json' );
 		if ( is_wp_error( $amp_experiment_json ) || ! $amp_experiment_json ) {
 			return $data;
@@ -215,12 +195,10 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 	protected function get_datapoint_services() {
 		return array(
 			// GET / POST.
-			'optimize-id'          => '',
-			'amp-experiment-json'  => '',
-			// GET.
-			'amp-client-id-opt-in' => '',
+			'optimize-id'         => '',
+			'amp-experiment-json' => '',
 			// POST.
-			'settings'             => '',
+			'settings'            => '',
 		);
 	}
 
@@ -235,13 +213,6 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
-			case 'GET:amp-client-id-opt-in':
-				return function() {
-					// Get this from Analytics, read-only from here.
-					$analytics = ( new Analytics\Settings( $this->options ) )->get();
-
-					return ! empty( $analytics['ampClientIDOptIn'] );
-				};
 			case 'GET:amp-experiment-json':
 				return function() {
 					$option = $this->get_settings()->get();
@@ -283,27 +254,6 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 				return function() use ( $data ) {
 					$this->get_settings()->merge( array( 'optimizeID' => $data['optimizeID'] ) );
 					return true;
-				};
-			case 'POST:settings':
-				if ( ! isset( $data['optimizeID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'optimizeID' ), array( 'status' => 400 ) );
-				}
-				if ( ! isset( $data['ampExperimentJSON'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'ampExperimentJSON' ), array( 'status' => 400 ) );
-				}
-				return function() use ( $data ) {
-					$option = array(
-						'optimizeID'        => $data['optimizeID'],
-						'ampExperimentJSON' => $data['ampExperimentJSON'],
-					);
-					if ( is_string( $option['ampExperimentJSON'] ) ) {
-						$option['ampExperimentJSON'] = json_decode( $option['ampExperimentJSON'] );
-					}
-					$this->get_settings()->merge( $option );
-
-					return $this->get_settings()->get();
 				};
 		}
 

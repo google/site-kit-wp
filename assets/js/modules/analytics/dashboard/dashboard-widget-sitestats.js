@@ -103,13 +103,13 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 	}
 
 	render() {
-		const { data, selectedStats, dateRangeFrom } = this.props;
+		const { data, selectedStats, dateRangeSlug } = this.props;
 
 		if ( ! data || ! data.length ) {
 			return null;
 		}
 
-		const days = dateRangeFrom ? dateRangeFrom.match( /\d+/ ).map( Number )[ 0 ] : 28;
+		const days = dateRangeSlug ? dateRangeSlug.match( /\d+/ ).map( Number )[ 0 ] : 28;
 		const dataMap = extractAnalyticsDashboardData( data, selectedStats, days );
 
 		if ( ! dataMap ) {

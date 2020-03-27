@@ -82,24 +82,10 @@ class SettingsModules extends Component {
 	 *
 	 * @param {string} module         The module slug.
 	 * @param {string} action         The action being performed, one of 'edit', 'cancel' or 'confirm'.
-	 * @param {boolean} nothingToSave Skip saving for this click.
 	 */
-	handleButtonAction( module, action, nothingToSave = false ) {
+	handleButtonAction( module, action ) {
 		if ( 'confirm' === action ) {
 			const modulePromise = applyFilters( 'googlekit.SettingsConfirmed', false, module );
-			if ( nothingToSave ) {
-				this.setState( ( prevState ) => {
-					return {
-						isSaving: false,
-						error: false,
-						isEditing: {
-							...prevState.isEditing,
-							[ module ]: ! prevState.isEditing[ module ],
-						},
-					};
-				} );
-				return;
-			}
 
 			this.setState( { isSaving: module } );
 			if ( ! modulePromise ) {
@@ -158,7 +144,7 @@ class SettingsModules extends Component {
 				homepage={ module.homepage }
 				learnmore={ module.learnMore }
 				active={ module.active }
-				hasSettings={ module.hasSettings }
+				hasSettings={ !! module.settings && 'search-console' !== module.slug }
 				autoActivate={ module.autoActivate }
 				updateModulesList={ this.updateModulesList }
 				handleEdit={ this.handleButtonAction }
@@ -180,6 +166,9 @@ class SettingsModules extends Component {
 	 *
 	 * @param {Object}  modules List of modules
 	 * @param {boolean} active Sets styling for active modules, helps with parent/child grouping.
+	 *
+	 * @return {HTMLElement} HTML markup with modules.
+	 *
 	 */
 	mapToModule( modules, active = false ) {
 		const { isSaving } = this.state;

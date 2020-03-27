@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Assets;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Cache;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use WP_Dependencies;
 
 /**
@@ -366,10 +367,27 @@ final class Assets {
 				array(
 					'global'        => '_googlesitekitAPIFetchData',
 					'data_callback' => function () {
+						/**
+						 * Preload common data by specifying an array of REST API paths that will be preloaded.
+						 *
+						 * Filters the array of paths that will be preloaded.
+						 *
+						 * @since n.e.x.t
+						 *
+						 * @param array $preload_paths Array of paths to preload.
+						 */
+						$preload_paths = apply_filters( 'googlesitekit_apifetch_preload_paths', array() );
+						$preloaded     = array_reduce(
+							array_unique( $preload_paths ),
+							array( BC_Functions::class, 'rest_preload_api_request' ),
+							array()
+						);
+
 						return array(
-							'nonceEndpoint'   => admin_url( 'admin-ajax.php?action=rest-nonce' ),
-							'nonceMiddleware' => ( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' ),
-							'rootURL'         => esc_url_raw( get_rest_url() ),
+							'nonce'         => ( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' ),
+							'nonceEndpoint' => admin_url( 'admin-ajax.php?action=rest-nonce' ),
+							'preloadedData' => $preloaded,
+							'rootURL'       => esc_url_raw( get_rest_url() ),
 						);
 					},
 				)
@@ -395,7 +413,7 @@ final class Assets {
 				'googlesitekit-api',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-api.js',
-					'dependencies' => $dependencies,
+					'dependencies' => array( 'googlesitekit-apifetch-data' ),
 				)
 			),
 			new Script(
@@ -409,7 +427,14 @@ final class Assets {
 				'googlesitekit-datastore-site',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-datastore-site.js',
-					'dependencies' => array( 'googlesitekit-data' ),
+					'dependencies' => array( 'googlesitekit-api', 'googlesitekit-data' ),
+				)
+			),
+			new Script(
+				'googlesitekit-modules',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-modules.js',
+					'dependencies' => array( 'googlesitekit-api', 'googlesitekit-data' ),
 				)
 			),
 			// End JSR Assets.

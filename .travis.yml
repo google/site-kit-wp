@@ -79,7 +79,7 @@ script:
     fi
   - |
     if [[ "$VRT" == "1" ]]; then
-      travis_retry npm run travis:visualtest || exit 1
+      travis_retry npm run test:visualtest || exit 1
     fi
   - |
     if [[ "$PHP" == "1" ]]; then

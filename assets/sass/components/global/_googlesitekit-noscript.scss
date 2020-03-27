@@ -1,7 +1,7 @@
 /**
- * Backstop config.
+ * Noscript notification styles.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,22 @@
  * limitations under the License.
  */
 
-const scenarios = require( './tests/backstop/scenarios' );
+.googlesitekit-noscript {
 
-const backstopOptions = require( './tests/backstop/backstop-options' );
+	@include googlesitekit-inner-padding;
+	@include shadow;
 
-module.exports = backstopOptions( scenarios );
+	background-color: $c-base;
+	margin: 5px 20px 5px 0;
+
+	&__title {
+		margin: 0;
+	}
+}
+
+.no-js:not([amp-version]) {
+
+	[id^="js-googlesitekit-"] {
+		display: none;
+	}
+}

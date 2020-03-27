@@ -24,9 +24,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Retrieve the score category slug based on the given score.
  *
- * @param number score Score between 1.0 and 0.0.
+ * @param {number} score Score between 1.0 and 0.0.
  *
- * @return string Either 'fast', 'average', or 'slow'.
+ * @return {string} Either 'fast', 'average', or 'slow'.
  */
 function getScoreCategory( score ) {
 	if ( 0.9 <= score ) {
@@ -43,9 +43,9 @@ function getScoreCategory( score ) {
 /**
  * Retrieve the score category label based on the given score.
  *
- * @param number score Score between 1.0 and 0.0.
+ * @param {number} score Score between 1.0 and 0.0.
  *
- * @return string Score category label.
+ * @return {string} Score category label.
  */
 export const getScoreCategoryLabel = ( score ) => {
 	const category = getScoreCategory( score );

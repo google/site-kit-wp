@@ -40,7 +40,7 @@ import Alert from 'GoogleComponents/alert';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import getNoDataComponent from 'GoogleComponents/notifications/nodata';
 import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
-import { getDateRangeFrom } from 'GoogleUtil';
+import { getCurrentDateRange } from 'GoogleUtil';
 import HelpLink from 'GoogleComponents/help-link';
 
 class GoogleSitekitSearchConsoleDashboardWidget extends Component {
@@ -159,7 +159,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 
 		// Hide AdSense data display when we don't have data.
 		const wrapperClass = ! loading && receivingData ? '' : 'googlesitekit-nodata';
-		const dateRangeFrom = getDateRangeFrom();
+		const dateRange = getCurrentDateRange();
 
 		const searchConsoleDeepLink = sprintf( 'https://search.google.com/u/1/search-console?resource_id=%s', global.googlesitekit.admin.siteURL );
 
@@ -188,7 +188,8 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 							) }>
 								<Layout
 									header
-									title={ sprintf( __( 'Overview for the last %s', 'google-site-kit' ), dateRangeFrom ) }
+									/* translators: %s: date range */
+									title={ sprintf( __( 'Overview for the last %s', 'google-site-kit' ), dateRange ) }
 									headerCtaLabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
 									headerCtaLink={ searchConsoleDeepLink }
 								>
@@ -207,7 +208,8 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 								wrapperClass
 							) }>
 								<Layout
-									title={ sprintf( __( 'Top search queries over the last %s', 'google-site-kit' ), dateRangeFrom ) }
+									/* translators: %s: date range */
+									title={ sprintf( __( 'Top search queries over the last %s', 'google-site-kit' ), dateRange ) }
 									header
 									footer
 									headerCtaLabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }

@@ -62,6 +62,8 @@ export const extractAnalyticsDataForTrafficChart = ( reports ) => {
  *
  * @param {Array} rows An array of rows to reduce.
  * @param {Array} selectedStats The currently selected stat we need to return data for.
+ *
+ * @return {Array} Array of selected stats from analytics row data.
  */
 function reduceAnalyticsRowsData( rows, selectedStats ) {
 	const dataMap = [];
@@ -165,6 +167,8 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
  * Extract the data required from an analytics 'site-analytics' request.
  *
  * @param {Object} reports The data returned from the Analytics API call.
+ *
+ * @return {Array} Required data from 'site-analytics' request.
  */
 export const extractAnalyticsDashboardSparklineData = ( reports ) => {
 	if ( ! reports || ! reports.length ) {
@@ -244,10 +248,10 @@ export const calculateOverviewData = ( reports ) => {
  * Translate Analytics API Error Response.
  * See https://developers.google.com/analytics/devguides/reporting/core/v4/errors
  *
- * @param {string} status
- * @param {string} message
+ * @param {string} status  Error status code.
+ * @param {string} message Error message.
  *
- * @return {string}
+ * @return {string} Human readable Analytics API error message based on error status.
  */
 export const translateAnalyticsError = ( status, message ) => {
 	let translatedMessage = '';
@@ -294,7 +298,7 @@ export const getAnalyticsErrorMessageFromData = ( data ) => {
  * Check for Zero data from Analytics API.
  *
  * @param {Object} data The data returned from the Analytics API call.
- * @return {boolean}
+ * @return {boolean} Indicates if zero data returned from Analytics API call or not.
  */
 export const isDataZeroForReporting = ( data ) => {
 	// Handle empty data.
@@ -320,6 +324,7 @@ export const isDataZeroForReporting = ( data ) => {
 
 /**
  * Default data object for making Analytics adsense requests.
+ *
  * @type {Object}
  */
 export const analyticsAdsenseReportDataDefaults = {
@@ -352,6 +357,7 @@ export const analyticsAdsenseReportDataDefaults = {
 
 /**
  * Default data object for making Analytics site analytics report requests.
+ *
  * @type {Object}
  */
 export const siteAnalyticsReportDataDefaults = {
@@ -384,6 +390,7 @@ export const siteAnalyticsReportDataDefaults = {
 
 /**
  * Default data object for making Analytics site analytics report requests.
+ *
  * @type {Object}
  */
 export const overviewReportDataDefaults = {
@@ -420,6 +427,7 @@ export const overviewReportDataDefaults = {
 
 /**
  * Default data object for making Analytics traffic sources report requests.
+ *
  * @type {Object}
  */
 export const trafficSourcesReportDataDefaults = {

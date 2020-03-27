@@ -32,6 +32,7 @@ import { Component, Fragment, cloneElement } from '@wordpress/element';
  * Internal dependencies
  */
 import ChangeArrow from './change-arrow';
+import { numberFormat } from '../util';
 
 class DataBlock extends Component {
 	constructor( props ) {
@@ -123,7 +124,7 @@ class DataBlock extends Component {
 								/>
 							</span>
 							<span className="googlesitekit-data-block__value">
-								{ `${ Math.abs( change ) }${ changeDataUnit } ${ period }` }
+								{ `${ numberFormat( Math.abs( change ) ) }${ changeDataUnit } ${ period }` }
 							</span>
 						</Fragment> }
 					</div>

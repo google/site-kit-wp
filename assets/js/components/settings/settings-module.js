@@ -187,10 +187,11 @@ class SettingsModule extends Component {
 
 		const moduleKey = `${ slug }-module`;
 		const isConnected = applyFilters( `googlesitekit.Connected-${ slug }`, setupComplete );
-		const connectedClassName = isConnected ?
-			'googlesitekit-settings-module__status-icon--connected' :
-			'googlesitekit-settings-module__status-icon--not-connected';
+		const connectedClassName = isConnected
+			? 'googlesitekit-settings-module__status-icon--connected'
+			: 'googlesitekit-settings-module__status-icon--not-connected';
 
+		/* translators: %s: module name */
 		const subtitle = sprintf( __( 'By disconnecting the %s module from Site Kit, you will no longer have access to:', 'google-site-kit' ), name );
 
 		const isSavingModule = isSaving === `${ slug }-module`;
@@ -205,14 +206,12 @@ class SettingsModule extends Component {
 
 		const dependentModules = map( this.getDependentModules(), 'name' ).join( ', ' );
 
-		const nothingToSave = 'pagespeed-insights' === slug;
-
 		// Set button text based on state.
 		let buttonText = __( 'Close', 'google-site-kit' );
 		if ( hasSettings && setupComplete ) {
 			if ( isSavingModule ) {
 				buttonText = __( 'Saving...', 'google-site-kit' );
-			} else if ( nothingToSave === false ) {
+			} else {
 				buttonText = __( 'Confirm Changes', 'google-site-kit' );
 			}
 		}
@@ -283,18 +282,20 @@ class SettingsModule extends Component {
 									">
 										<p className="googlesitekit-settings-module__status">
 											{
-												isConnected ?
-													sprintf( __( '%s is connected', 'google-site-kit' ), name ) :
-													sprintf( __( '%s is not connected', 'google-site-kit' ), name )
+												isConnected
+													/* translators: %s: module name */
+													? sprintf( __( '%s is connected', 'google-site-kit' ), name )
+													/* translators: %s: module name */
+													: sprintf( __( '%s is not connected', 'google-site-kit' ), name )
 											}
 											<span className={ classnames(
 												'googlesitekit-settings-module__status-icon',
 												connectedClassName
 											) }>
 												<span className="screen-reader-text">
-													{ isConnected ?
-														__( 'Connected', 'google-site-kit' ) :
-														__( 'Not Connected', 'google-site-kit' )
+													{ isConnected
+														? __( 'Connected', 'google-site-kit' )
+														: __( 'Not Connected', 'google-site-kit' )
 													}
 												</span>
 											</span>
@@ -346,7 +347,7 @@ class SettingsModule extends Component {
 											{ isEditing[ moduleKey ] || isSavingModule ? (
 												<Fragment>
 													<Button
-														onClick={ () => handleEdit( moduleKey, setupComplete ? 'confirm' : 'cancel', nothingToSave ) }
+														onClick={ () => handleEdit( moduleKey, hasSettings && setupComplete ? 'confirm' : 'cancel' ) }
 														disabled={ isSavingModule }
 														id={ hasSettings && setupComplete ? `confirm-changes-${ slug }` : `close-${ slug }` }
 													>
@@ -363,7 +364,7 @@ class SettingsModule extends Component {
 													</Link>
 													}
 												</Fragment>
-											) : ( hasSettings &&
+											) : ( ( hasSettings || ! autoActivate ) &&
 											<Link
 												className="googlesitekit-settings-module__edit-button"
 												onClick={ () => {
@@ -396,7 +397,10 @@ class SettingsModule extends Component {
 													inherit
 													danger
 												>
-													{ sprintf( __( 'Disconnect %s from Site Kit', 'google-site-kit' ), name ) }
+													{
+														/* translators: %s: module name */
+														sprintf( __( 'Disconnect %s from Site Kit', 'google-site-kit' ), name )
+													}
 													<SvgIcon
 														className="googlesitekit-settings-module__remove-button-icon"
 														id="trash"
@@ -412,7 +416,10 @@ class SettingsModule extends Component {
 													inherit
 													external
 												>
-													{ sprintf( __( 'See full details in %s', 'google-site-kit' ), name ) }
+													{
+														/* translators: %s: module name */
+														sprintf( __( 'See full details in %s', 'google-site-kit' ), name )
+													}
 												</Link>
 											) }
 										</div>
@@ -423,13 +430,15 @@ class SettingsModule extends Component {
 						<Dialog
 							dialogActive={ dialogActive }
 							handleDialog={ this.handleDialog }
+							/* translators: %s: module name */
 							title={ sprintf( __( 'Disconnect %s from Site Kit?', 'google-site-kit' ), name ) }
 							subtitle={ subtitle }
 							onKeyPress={ this.handleCloseModal }
 							provides={ provides }
 							handleConfirm={ this.handleConfirmRemoveModule }
-							dependentModules={ dependentModules ?
-								sprintf(
+							dependentModules={ dependentModules
+								? sprintf(
+									/* translators: %s: module name */
 									__( 'these active modules depend on %s and will also be disconnected: ', 'google-site-kit' ),
 									name
 								) + dependentModules : false

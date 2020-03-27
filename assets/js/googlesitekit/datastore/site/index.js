@@ -34,20 +34,27 @@ export const INITIAL_STATE = Data.collectState(
 
 export const STORE_NAME = 'core/site';
 
-export const actions = Data.collectActions(
-	connection.actions,
-	reset.actions,
+export const actions = Data.addInitializeAction(
+	Data.collectActions(
+		Data.commonActions,
+		connection.actions,
+		reset.actions,
+	)
 );
 
 export const controls = Data.collectControls(
+	Data.commonControls,
 	connection.controls,
 	reset.controls,
 );
 
-export const reducer = Data.collectReducers( INITIAL_STATE, [
-	connection.reducer,
-	reset.reducer,
-] );
+export const reducer = Data.addInitializeReducer(
+	INITIAL_STATE,
+	Data.collectReducers(
+		connection.reducer,
+		reset.reducer,
+	)
+);
 
 export const resolvers = Data.collectResolvers(
 	connection.resolvers,

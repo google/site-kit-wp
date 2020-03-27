@@ -21,7 +21,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 /**
  * Class for integrating debug information with Site Health.
  *
- * @since n.e.x.t
+ * @since 1.5.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Debug_Data {
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 * @var Context
 	 */
 	private $context;
@@ -37,7 +37,7 @@ class Debug_Data {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 * @var Options
 	 */
 	private $options;
@@ -45,7 +45,7 @@ class Debug_Data {
 	/**
 	 * User_Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 * @var User_Options
 	 */
 	private $user_options;
@@ -53,7 +53,7 @@ class Debug_Data {
 	/**
 	 * Authentication instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 * @var Authentication
 	 */
 	private $authentication;
@@ -61,7 +61,7 @@ class Debug_Data {
 	/**
 	 * Modules instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 * @var Modules
 	 */
 	private $modules;
@@ -69,7 +69,7 @@ class Debug_Data {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @param Context        $context        Context instance.
 	 * @param Options        $options        Optional. Options instance. Default is a new instance.
@@ -94,7 +94,7 @@ class Debug_Data {
 	/**
 	 * Registers debug information with Site Health.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 */
 	public function register() {
 		add_filter(
@@ -113,7 +113,7 @@ class Debug_Data {
 	/**
 	 * Redacts the given string by overwriting a portion with a mask character.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @param string $string     Input string to redact.
 	 * @param int    $mask_start Starting position of redaction and length of preserved characters.
@@ -141,7 +141,7 @@ class Debug_Data {
 	/**
 	 * Gets all fields.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @return array
 	 */
@@ -187,7 +187,7 @@ class Debug_Data {
 	/**
 	 * Gets the field definition for the amp_mode field.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @return array
 	 */
@@ -208,7 +208,7 @@ class Debug_Data {
 	/**
 	 * Gets the field definition for the site_status field.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @return array
 	 */
@@ -239,7 +239,7 @@ class Debug_Data {
 	/**
 	 * Gets the field definition for the user_status field.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @return array
 	 */
@@ -258,7 +258,7 @@ class Debug_Data {
 	/**
 	 * Gets the field definition for the active_modules field.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @return array
 	 */
@@ -279,7 +279,7 @@ class Debug_Data {
 	/**
 	 * Gets the field definition for the required_scopes field.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @return array
 	 */
@@ -302,7 +302,7 @@ class Debug_Data {
 	/**
 	 * Gets field definitions for each active module that supports debug fields.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.5.0
 	 *
 	 * @return array A flat array of all module debug fields.
 	 */
