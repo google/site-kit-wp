@@ -26,8 +26,7 @@ import {
 } from '@wordpress/data';
 
 import { STORE_NAME } from '../datastore';
-
-export const ACCOUNT_CREATE = 'account_create';
+import { ACCOUNT_CREATE } from '../datastore/accounts';
 
 export default function AccountSelect( { useSelect, useDispatch } ) {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
