@@ -53,6 +53,7 @@ import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMa
 import { tagMatchers as tagmanagerTagMatchers } from '../modules/tagmanager/util';
 import { trackEvent } from './tracking';
 export { trackEvent };
+export { SvgIcon };
 export * from './sanitize';
 export * from './standalone';
 export * from './storage';
