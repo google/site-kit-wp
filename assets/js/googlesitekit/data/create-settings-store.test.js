@@ -229,6 +229,12 @@ describe( 'createSettingsStore store', () => {
 				} ).toThrow( 'value is required.' );
 			} );
 
+			it( 'supports setting falsy values', () => {
+				expect( () => {
+					dispatch.setIsSkyBlue( false );
+				} ).not.toThrow( 'value is required.' );
+			} );
+
 			it( 'updates the respective setting', () => {
 				const value = 'new';
 
