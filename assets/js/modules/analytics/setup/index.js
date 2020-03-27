@@ -18,3 +18,4 @@
 
 export { default as AnalyticsSetup } from './analytics-setup';
 export { default as AnalyticsSetupForm } from './setup-form';
+export { default as AnalyticsLegacyAccountCreation } from './account-create-legacy';
