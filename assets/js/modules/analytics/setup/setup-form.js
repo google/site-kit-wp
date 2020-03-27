@@ -32,7 +32,7 @@ import ProfileSelect from '../common/profile-select';
 import { STORE_NAME } from '../datastore';
 import { isValidAccountID, isValidPropertyID } from '../util';
 
-export default function AnalyticsSetupForm() {
+export default function SetupForm() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );

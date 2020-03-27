@@ -26,7 +26,7 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import AccountCreate from './account-create-legacy';
-import AnalyticsSetupForm from './setup-form';
+import SetupForm from './setup-form';
 import { SvgIcon } from '../../../util';
 import { STORE_NAME } from '../datastore';
 
@@ -39,7 +39,7 @@ export default function AnalyticsSetup() {
 			case ( ! accounts.length || isCreateAccount ) :
 				return AccountCreate;
 			default:
-				return AnalyticsSetupForm;
+				return SetupForm;
 		}
 	} )();
 
