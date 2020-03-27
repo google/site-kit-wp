@@ -9,15 +9,11 @@ import AccountSelect from './account-select';
 const setupRegistry = ( registry ) => {
 	registry.dispatch( modulesAnalyticsStoreName ).receiveSettings( {} );
 	registry.dispatch( modulesAnalyticsStoreName ).receiveAccounts( fixtures.accountsPropertiesProfiles.accounts );
-	registry.dispatch( modulesAnalyticsStoreName ).receiveProperties( fixtures.accountsPropertiesProfiles.properties );
-	registry.dispatch( modulesAnalyticsStoreName ).receiveProfiles( fixtures.accountsPropertiesProfiles.profiles );
 };
 
 const setupEmptyRegistry = ( registry ) => {
 	registry.dispatch( modulesAnalyticsStoreName ).receiveSettings( {} );
 	registry.dispatch( modulesAnalyticsStoreName ).receiveAccounts( [] );
-	registry.dispatch( modulesAnalyticsStoreName ).receiveProperties( [] );
-	registry.dispatch( modulesAnalyticsStoreName ).receiveProfiles( [] );
 };
 
 describe( 'AccountSelect', () => {
