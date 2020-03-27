@@ -28,11 +28,15 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '.';
 
+const { createRegistrySelector } = Data;
+
 // Actions
 const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
 const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED';
+// Values
+const ACCOUNT_CREATE = 'account_create';
 
 export const INITIAL_STATE = {
 	accounts: undefined,
@@ -208,6 +212,18 @@ export const selectors = {
 
 		return error || null;
 	},
+
+	/**
+	 * Checks whether an Analytics account should be created or not.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @return {boolean} Whether an Analytics account should be created or not.
+	 */
+	isCreateAccount: createRegistrySelector( ( select ) => () => {
+		return ACCOUNT_CREATE === select( STORE_NAME ).getAccountID();
+	} ),
 };
 
 export default {
