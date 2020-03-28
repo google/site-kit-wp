@@ -32,6 +32,7 @@ export default function AccountSelect( { useSelect, useDispatch } ) {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const { accountID: existingTagAccountID } = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
 
 	const { setAccountID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -43,7 +44,7 @@ export default function AccountSelect( { useSelect, useDispatch } ) {
 			className="googlesitekit-analytics__select-account"
 			enhanced
 			name="accounts"
-			value={ accountID }
+			value={ existingTagAccountID || accountID }
 			onEnhancedChange={ onChange }
 			label={ __( 'Account', 'google-site-kit' ) }
 			disabled={ hasExistingTag }
