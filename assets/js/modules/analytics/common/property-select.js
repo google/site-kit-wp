@@ -61,7 +61,7 @@ export default function PropertySelect( { useSelect, useDispatch } ) {
 				.concat( ! hasExistingTag
 					? {
 						id: PROPERTY_CREATE,
-						name: __( 'Setup a new property', 'google-site-kit' ),
+						name: __( 'Set up a new property', 'google-site-kit' ),
 					}
 					: []
 				)
