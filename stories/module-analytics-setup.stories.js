@@ -80,7 +80,7 @@ storiesOf( 'Analytics Module Setup', module )
 			</WithTestRegistry>
 		);
 	} )
-	.add( 'Existing Tag', () => {
+	.add( 'Existing Tag (with access)', () => {
 		filterAnalyticsSetup();
 
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
