@@ -57,7 +57,7 @@ class OAuth_ClientTest extends TestCase {
 		// If the request completely fails (cURL error), ignore that.
 		$http_error = (string) get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id );
 		if ( 0 !== strpos( $http_error, 'cURL error' ) ) {
-			$this->assertEquals( 'invalid_client', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+			$this->assertEquals( 'refresh_token_not_exist', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
 		}
 
 		$client->get_client()->setHttpClient( new FakeHttpClient() );
