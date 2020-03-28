@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { useSelect } from '@wordpress/data';
-import { _x } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -33,6 +33,8 @@ import { STORE_NAME } from '../datastore';
 export default function SetupMain() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 	const isCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isCreateAccount() );
+	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const { propertyID: existingTag } = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
 
 	const ViewComponent = ( () => {
 		switch ( true ) {
@@ -53,6 +55,18 @@ export default function SetupMain() {
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
 				{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 			</h2>
+
+			{ !! hasExistingTag && (
+				<p>
+					{
+						sprintf(
+							/* translators: %s: Analytics tag ID */
+							__( 'An existing analytics tag was found on your site with the ID %s. If later on you decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.', 'google-site-kit' ),
+							JSON.stringify( existingTag )
+						)
+					}
+				</p>
+			) }
 
 			{ /* { this.renderErrorOrNotice() } */ }
 
