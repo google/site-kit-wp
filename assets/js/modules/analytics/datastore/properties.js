@@ -29,6 +29,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './index';
 import { actions as profileActions } from './profiles';
+import { isValidAccountID } from '../util';
 
 // Actions
 const FETCH_CREATE_PROPERTY = 'FETCH_CREATE_PROPERTY';
@@ -314,7 +315,7 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getProperties( accountID ) {
-		if ( typeof accountID === 'undefined' ) {
+		if ( ! isValidAccountID( accountID ) ) {
 			return undefined;
 		}
 		try {
