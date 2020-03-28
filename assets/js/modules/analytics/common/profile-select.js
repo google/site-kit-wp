@@ -31,8 +31,14 @@ import { isValidPropertyID } from '../util';
 export const PROFILE_CREATE = 'profile_create';
 
 export default function ProfileSelect( { useSelect, useDispatch } ) {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const {
+		accountID: existingTagAccountID,
+		propertyID: existingTagPropertyID,
+	} = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
+	const currentAccountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const accountID = existingTagAccountID || currentAccountID;
+	const currentPropertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const propertyID = existingTagPropertyID || currentPropertyID;
 	const profiles = useSelect( ( select ) => select( STORE_NAME ).getProfiles( accountID, propertyID ) ) || [];
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 
