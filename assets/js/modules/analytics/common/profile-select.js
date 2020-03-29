@@ -59,7 +59,7 @@ export default function ProfileSelect( { useSelect, useDispatch } ) {
 			{ profiles
 				.concat( {
 					id: PROFILE_CREATE,
-					name: __( 'Setup a new profile', 'google-site-kit' ),
+					name: __( 'Set up a new profile', 'google-site-kit' ),
 				} )
 				.map( ( { id, name }, index ) => (
 					<Option
