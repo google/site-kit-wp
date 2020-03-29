@@ -28,7 +28,7 @@ import {
 import { STORE_NAME } from '../datastore';
 import { isValidPropertyID } from '../util';
 
-export const PROFILE_CREATE = 'profile_create';
+import { PROFILE_CREATE } from '../datastore/profiles';
 
 export default function ProfileSelect( { useSelect, useDispatch } ) {
 	const {
