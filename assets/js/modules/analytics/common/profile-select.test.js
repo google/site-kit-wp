@@ -72,9 +72,9 @@ describe( 'ProfileSelect', () => {
 		expect( listItems ).toHaveLength( existingTagProfiles.length + 1 );
 
 		const selectedText = container.querySelector( '.mdc-select__selected-text' );
-		expect( selectedText.getAttribute( 'aria-disabled' ) ).toBe( 'false' );
-		expect( container.querySelector( '.googlesitekit-analytics__select-property.mdc-select--disabled' ) )
-			.not.toBeInTheDocument();
+		expect( selectedText ).toHaveAttribute( 'aria-disabled', 'false' );
+		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) )
+			.not.toHaveClass( 'mdc-select--disabled' );
 		expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 
@@ -83,21 +83,21 @@ describe( 'ProfileSelect', () => {
 		const validAccountID = registry.select( modulesAnalyticsStoreName ).getAccountID();
 
 		// A valid accountID is provided, so ensure it is not currently disabled.
-		expect( container.querySelector( '.googlesitekit-analytics__select-profile.mdc-select--disabled' ) )
-			.not.toBeInTheDocument();
+		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) )
+			.not.toHaveClass( 'mdc-select--disabled' );
 
 		await act( () => registry.dispatch( modulesAnalyticsStoreName ).setAccountID( '0' ) );
 
 		// An empty accountID is invalid, so ensure the select IS currently disabled.
-		expect( container.querySelector( '.googlesitekit-analytics__select-profile.mdc-select--disabled' ) )
-			.toBeInTheDocument();
+		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) )
+			.toHaveClass( 'mdc-select--disabled' );
 
 		await act( () => registry.dispatch( modulesAnalyticsStoreName ).setAccountID( validAccountID ) );
 		await act( () => registry.dispatch( modulesAnalyticsStoreName ).setPropertyID( '0' ) );
 
 		// The accountID is valid, but an empty propertyID is invalid, so ensure the select IS currently disabled.
-		expect( container.querySelector( '.googlesitekit-analytics__select-profile.mdc-select--disabled' ) )
-			.toBeInTheDocument();
+		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) )
+			.toHaveClass( 'mdc-select--disabled' );
 	} );
 
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {
