@@ -28,6 +28,7 @@ import { groupBy } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './index';
+import { isValidAccountID, isValidPropertyID } from '../util';
 
 // Actions
 const FETCH_CREATE_PROFILE = 'FETCH_CREATE_PROFILE';
@@ -288,9 +289,10 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getProfiles( accountID, propertyID ) {
-		if ( typeof accountID === 'undefined' || typeof propertyID === 'undefined' ) {
-			return undefined;
+		if ( ! isValidAccountID( accountID ) || ! isValidPropertyID( propertyID ) ) {
+			return;
 		}
+
 		try {
 			const registry = yield Data.commonActions.getRegistry();
 
