@@ -26,9 +26,8 @@ import {
 } from '@wordpress/data';
 
 import { STORE_NAME } from '../datastore';
-import { isValidPropertyID } from '../util';
-
 import { PROFILE_CREATE } from '../datastore/profiles';
+import { isValidPropertyID, isValidAccountID } from '../util';
 
 export default function ProfileSelect( { useSelect, useDispatch } ) {
 	const {
@@ -53,7 +52,7 @@ export default function ProfileSelect( { useSelect, useDispatch } ) {
 			label={ __( 'View', 'google-site-kit' ) }
 			value={ profileID }
 			onEnhancedChange={ onChange }
-			disabled={ ! isValidPropertyID( propertyID ) }
+			disabled={ ! isValidAccountID( accountID ) || ! isValidPropertyID( propertyID ) }
 			enhanced
 			outlined
 		>
