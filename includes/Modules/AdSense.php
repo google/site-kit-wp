@@ -441,8 +441,16 @@ tag_partner: "site_kit"
 					return true;
 				};
 			case 'GET:clients':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
 				$service = $this->get_service( 'adsense' );
-				return $service->adclients->listAdclients();
+				return $service->accounts_adclients->listAccountsAdclients( $data['accountID'] );
 			case 'GET:connection':
 				return function() {
 					$option   = $this->get_settings()->get();
@@ -569,12 +577,24 @@ tag_partner: "site_kit"
 					return true;
 				};
 			case 'GET:urlchannels':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
 				if ( ! isset( $data['clientID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ),
+						array( 'status' => 400 )
+					);
 				}
 				$service = $this->get_service( 'adsense' );
-				return $service->urlchannels->listUrlchannels( $data['clientID'] );
+				return $service->accounts_urlchannels->listAccountsUrlchannels( $data['accountID'], $data['clientID'] );
 			case 'GET:use-snippet':
 				return function() {
 					$option = $this->get_settings()->get();

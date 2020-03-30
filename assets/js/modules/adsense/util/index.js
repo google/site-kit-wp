@@ -275,7 +275,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 			statusUpdateCallback( __( 'Searching for domain…', 'google-site-kit' ) );
 			for ( const account of accountData ) {
 				const accountID = account.id;
-				const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { clientID: accountID } ).then( ( res ) => res ).catch( ( e ) => e );
+				const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { accountID, clientID: `ca-${ accountID }` } ).then( ( res ) => res ).catch( ( e ) => e );
 				const parsedURL = new URL( global.googlesitekit.admin.siteURL );
 				const matches = urlchannels && urlchannels.length ? filter( urlchannels, { urlPattern: parsedURL.hostname } ) : [];
 
@@ -334,7 +334,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 				trackEvent( 'adsense_setup', 'adsense_account_pending', 'accountPendingReview status ads-display-pending' );
 			} else {
 				// Attempt to retrieve and save the client id.
-				const clientResults = await data.get( TYPE_MODULES, 'adsense', 'clients' ).then( ( res ) => res ).catch( ( e ) => e );
+				const clientResults = await data.get( TYPE_MODULES, 'adsense', 'clients', { accountID: id } ).then( ( res ) => res ).catch( ( e ) => e );
 				const clients = clientResults.data && ( ! clientResults.data.status || 200 === clientResults.data.status ) ? clientResults.data : clientResults;
 				const hasClientError = clients && clients.message && clients.message.error;
 				const item = clients && clients.length ? find( clients, { productCode: 'AFC' } ) : false;
@@ -380,7 +380,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 						// Check the URL channels.
 						statusUpdateCallback( __( 'Looking for site domain…', 'google-site-kit' ) );
 
-						const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { clientID } ).then( ( res ) => res ).catch( ( e ) => e );
+						const urlchannels = await data.get( TYPE_MODULES, 'adsense', 'urlchannels', { accountID: id, clientID } ).then( ( res ) => res ).catch( ( e ) => e );
 
 						// Find a URL channel with a matching domain
 						const matches = urlchannels && urlchannels.length && filter( urlchannels, ( channel ) => {
