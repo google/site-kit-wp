@@ -150,7 +150,7 @@ class Settings extends Module_Settings {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.6.0
 	 *
 	 * @return callable|null
 	 */
