@@ -264,7 +264,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 	try {
 		// First, fetch the list of accounts connected to this user.
 		statusUpdateCallback( __( 'Locating accounts…', 'google-site-kit' ) );
-		const results = await data.get( TYPE_MODULES, 'adsense', 'accounts' ).then( ( res ) => res ).catch( ( e ) => e );
+		const results = await data.get( TYPE_MODULES, 'adsense', 'accounts', { maybeSetAccount: true } ).then( ( res ) => res ).catch( ( e ) => e );
 
 		const accountData = results.data && ( ! results.data.status || 200 === results.data.status ) ? results.data : results;
 

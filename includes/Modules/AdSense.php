@@ -637,15 +637,14 @@ tag_partner: "site_kit"
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
-				// Store the matched account as soon as we have it.
 				$accounts = $response->getItems();
-				if ( ! empty( $accounts ) ) {
+				// TODO: Remove this ugly side-effect once no longer used.
+				if ( $data['maybeSetAccount'] && ! empty( $accounts ) ) {
 					$account_id = $this->get_data( 'account-id' );
 					if ( is_wp_error( $account_id ) || ! $account_id ) {
 						$this->set_data( 'account-id', array( 'accountID' => $accounts[0]->id ) );
 					}
 				}
-				// TODO: Parse this response to a regular array.
 				return $accounts;
 
 			// Intentional fallthrough.

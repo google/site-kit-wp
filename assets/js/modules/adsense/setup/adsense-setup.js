@@ -61,7 +61,7 @@ class AdSenseSetupWidget extends Component {
 
 	async getAccounts() {
 		try {
-			const responseData = await data.get( TYPE_MODULES, 'adsense', 'accounts' );
+			const responseData = await data.get( TYPE_MODULES, 'adsense', 'accounts', { maybeSetAccount: true } );
 
 			/**
 			 * Defines the account status. Possible values:
