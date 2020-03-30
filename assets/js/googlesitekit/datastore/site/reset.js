@@ -32,7 +32,7 @@ const RECEIVE_RESET = 'RECEIVE_RESET';
 const RECEIVE_RESET_FAILURE = 'RECEIVE_RESET_FAILURE';
 
 export const INITIAL_STATE = {
-	isDoingReset: false,
+	isFetchingReset: false,
 };
 
 export const actions = {
@@ -43,6 +43,7 @@ export const actions = {
 	 *
 	 * @since 1.5.0
 	 * @private
+	 *
 	 * @return {Object} Redux-style action.
 	 */
 	fetchReset() {
@@ -57,6 +58,7 @@ export const actions = {
 	 *
 	 * @since 1.5.0
 	 * @private
+	 *
 	 * @return {Object} Redux-style action.
 	 */
 	receiveReset() {
@@ -71,6 +73,7 @@ export const actions = {
 	 *
 	 * @since 1.5.0
 	 * @private
+	 *
 	 * @return {Object} Redux-style action.
 	 */
 	receiveResetFailed() {
@@ -88,6 +91,7 @@ export const actions = {
 	 * and always request user confirmation before dispatching.
 	 *
 	 * @since 1.5.0
+	 *
 	 * @return {Object} Redux-style action.
 	 */
 	*reset() {
@@ -109,19 +113,19 @@ export const controls = {
 	},
 };
 
-export const reducer = ( state, action ) => {
-	switch ( action.type ) {
+export const reducer = ( state, { type } ) => {
+	switch ( type ) {
 		case FETCH_RESET: {
 			return {
 				...state,
-				isDoingReset: true,
+				isFetchingReset: true,
 			};
 		}
 
 		case RECEIVE_RESET_FAILURE: {
 			return {
 				...state,
-				isDoingReset: false,
+				isFetchingReset: false,
 			};
 		}
 
@@ -142,13 +146,14 @@ export const selectors = {
 	 * Checks if reset action is in-process.
 	 *
 	 * @since 1.5.0
+	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} `true` if resetting is in-flight; `false` if not.
 	 */
 	isDoingReset: ( state ) => {
-		const { isDoingReset } = state;
+		const { isFetchingReset } = state;
 
-		return isDoingReset;
+		return isFetchingReset;
 	},
 };
 

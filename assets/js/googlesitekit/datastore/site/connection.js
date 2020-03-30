@@ -25,6 +25,8 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from './index';
 
 // Actions
 const FETCH_CONNECTION = 'FETCH_CONNECTION';
@@ -44,6 +46,7 @@ export const actions = {
 	 *
 	 * @since 1.5.0
 	 * @private
+	 *
 	 * @return {Object} Redux-style action.
 	 */
 	fetchConnection() {
@@ -58,6 +61,7 @@ export const actions = {
 	 *
 	 * @since 1.5.0
 	 * @private
+	 *
 	 * @param {Object} connection Connection info from the API.
 	 * @return {Object} Redux-style action.
 	 */
@@ -75,6 +79,7 @@ export const actions = {
 	 *
 	 * @since 1.5.0
 	 * @private
+	 *
 	 * @return {Object} Redux-style action.
 	 */
 	receiveConnectionFailed() {
@@ -91,8 +96,8 @@ export const controls = {
 	},
 };
 
-export const reducer = ( state, action ) => {
-	switch ( action.type ) {
+export const reducer = ( state, { type, payload } ) => {
+	switch ( type ) {
 		case FETCH_CONNECTION: {
 			return {
 				...state,
@@ -101,7 +106,7 @@ export const reducer = ( state, action ) => {
 		}
 
 		case RECEIVE_CONNECTION: {
-			const { connection } = action.payload;
+			const { connection } = payload;
 
 			return {
 				...state,
@@ -126,6 +131,16 @@ export const reducer = ( state, action ) => {
 export const resolvers = {
 	*getConnection() {
 		try {
+			const registry = yield Data.commonActions.getRegistry();
+
+			const existingConnection = registry.select( STORE_NAME ).getConnection();
+
+			// If there is already connection data loaded in state, don't make this request
+			// and consider this resolver fulfilled.
+			if ( existingConnection ) {
+				return;
+			}
+
 			const connection = yield actions.fetchConnection();
 			return actions.receiveConnection( connection );
 		} catch ( err ) {
@@ -140,7 +155,7 @@ export const selectors = {
 	/**
 	 * Gets the connection info for this site.
 	 *
-	 * Returns `null` if the connection info is not available/loaded.
+	 * Returns `undefined` if the connection info is not available/loaded.
 	 *
 	 * Returns an object with the shape when successful:
 	 * ```
@@ -151,8 +166,9 @@ export const selectors = {
 	 * ```
 	 *
 	 * @since 1.5.0
+	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object|null} Site connection info.
+	 * @return {Object|undefined} Site connection info.
 	 */
 	getConnection( state ) {
 		const { connection } = state;

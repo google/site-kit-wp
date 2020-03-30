@@ -1,4 +1,22 @@
 /**
+ * Data store utilities tests.
+ *
+ * Site Kit by Google, Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
  * Internal dependencies
  */
 import {
@@ -7,6 +25,7 @@ import {
 	collect,
 	collectActions,
 	collectReducers,
+	collectName,
 	initializeAction,
 } from './utils';
 
@@ -176,6 +195,24 @@ describe( 'data utils', () => {
 				//
 				state = combinedReducer( state, initializeAction() );
 				expect( state ).toEqual( initialState );
+			} );
+		} );
+
+		describe( 'collectName()', () => {
+			it( 'should return the single store name', () => {
+				const individualStoreName = 'core/site';
+				const collectedStoreName = collectName( individualStoreName, individualStoreName, individualStoreName );
+
+				expect( collectedStoreName ).toEqual( individualStoreName );
+			} );
+
+			it( 'should error if not all store names match', () => {
+				const storeName = 'core/site';
+				const wrongStoreName = 'core/user';
+
+				expect( () => {
+					collectName( storeName, storeName, wrongStoreName, storeName );
+				} ).toThrow( /collectName\(\) must not receive different names./ );
 			} );
 		} );
 	} );

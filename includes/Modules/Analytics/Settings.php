@@ -146,4 +146,29 @@ class Settings extends Module_Settings {
 			'useSnippet'            => true,
 		);
 	}
+
+	/**
+	 * Gets the callback for sanitizing the setting's value before saving.
+	 *
+	 * @since 1.6.0
+	 *
+	 * @return callable|null
+	 */
+	protected function get_sanitize_callback() {
+		return function( $option ) {
+			if ( is_array( $option ) ) {
+				if ( isset( $option['useSnippet'] ) ) {
+					$option['useSnippet'] = (bool) $option['useSnippet'];
+				}
+				if ( isset( $option['anonymizeIP'] ) ) {
+					$option['anonymizeIP'] = (bool) $option['anonymizeIP'];
+				}
+				if ( isset( $option['trackingDisabled'] ) ) {
+					$option['trackingDisabled'] = (array) $option['trackingDisabled'];
+				}
+				$option['adsenseLinked'] = false;
+			}
+			return $option;
+		};
+	}
 }

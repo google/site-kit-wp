@@ -17,13 +17,13 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * WordPress dependencies
  */
-import { createRegistry } from '@wordpress/data';
+import {
+	createRegistry,
+	createRegistryControl,
+	createRegistrySelector,
+} from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -37,6 +37,9 @@ import {
 	collectResolvers,
 	collectSelectors,
 	collectState,
+	collectName,
+	commonActions,
+	commonControls,
 } from 'assets/js/googlesitekit/data/utils';
 
 const Data = createRegistry();
@@ -51,6 +54,10 @@ Data.collectReducers = collectReducers;
 Data.collectResolvers = collectResolvers;
 Data.collectSelectors = collectSelectors;
 Data.collectState = collectState;
-Data.collectReducers = collectReducers;
+Data.collectName = collectName;
+Data.commonActions = commonActions;
+Data.commonControls = commonControls;
+Data.createRegistryControl = createRegistryControl;
+Data.createRegistrySelector = createRegistrySelector;
 
 export default Data;

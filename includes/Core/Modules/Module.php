@@ -189,7 +189,7 @@ abstract class Module {
 			'autoActivate' => $this->force_active,
 			'internal'     => $this->internal,
 			'screenID'     => $this instanceof Module_With_Screen ? $this->get_screen()->get_slug() : false,
-			'hasSettings'  => ! in_array( $this->slug, array( 'site-verification', 'search-console' ), true ),
+			'settings'     => $this instanceof Module_With_Settings ? $this->get_settings()->get() : false,
 		);
 	}
 

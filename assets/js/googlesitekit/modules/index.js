@@ -1,5 +1,7 @@
 /**
- * Noscript notification styles.
+ * Modules API.
+ *
+ * Provides API functions to manage modules.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,22 +18,13 @@
  * limitations under the License.
  */
 
-.googlesitekit-noscript {
+/**
+ * Internal dependencies
+ */
+import { createModuleStore } from './create-module-store';
 
-	@include googlesitekit-inner-padding;
-	@include shadow;
+const Modules = {
+	createModuleStore,
+};
 
-	background-color: $c-base;
-	margin: 5px 20px 5px 0;
-
-	&__title {
-		margin: 0;
-	}
-}
-
-.no-js:not([amp-version]) {
-
-	[id^="js-googlesitekit-"] {
-		display: none;
-	}
-}
+export default Modules;
