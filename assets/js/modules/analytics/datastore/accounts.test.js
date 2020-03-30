@@ -66,6 +66,7 @@ describe( 'modules/analytics accounts', () => {
 	describe( 'selectors', () => {
 		describe( 'getAccounts', () => {
 			it( 'uses a resolver to make a network request', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {} );
 				fetch
 					.doMockOnceIf(
 						/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
@@ -167,6 +168,7 @@ describe( 'modules/analytics accounts', () => {
 					accountID: existingAccountID,
 					propertyID: existingPropertyID,
 				} );
+				registry.dispatch( STORE_NAME ).setSettings( {} );
 
 				fetch
 					.doMockOnceIf(
