@@ -43,50 +43,6 @@ function SetupWrap( { children } ) {
 	);
 }
 
-const defaultSelectors = {
-	getAccountID: () => '1234567',
-	getPropertyID: () => 'UA-1234567-1',
-	getProfileID: () => '987654321',
-	getAnonymizeIP: () => true,
-	getUseSnippet: () => true,
-	getTrackingDisabled: () => [ 'loggedinUsers' ],
-	hasExistingTag: () => false,
-	getAccounts: () => [
-		{ id: '1234567', name: 'Test Account' },
-	],
-	getProperties: () => [
-		{ id: 'UA-1234567-1', name: 'Test Property' },
-	],
-	getProfiles: () => [
-		{ id: '987654321', name: 'Test Profile' },
-	],
-};
-
-function makeMockSelect( selectors = defaultSelectors ) {
-	// Return the given selectors, regardless of the store requested.
-	return () => {
-		return {
-			...selectors,
-		};
-	};
-}
-const mockDispatch = new Proxy( {}, {
-	// Return a dummy function for every action.
-	get: ( target, action ) => {
-		return ( ...dispatchArgs ) => {
-			// eslint-disable-next-line no-console
-			console.log( 'mockDispatch', action, ...dispatchArgs );
-		};
-	},
-} );
-function makeDataProps( selectors = defaultSelectors ) {
-	const mockSelect = makeMockSelect( selectors );
-	return {
-		useSelect: ( mapSelect ) => mapSelect( mockSelect ),
-		useDispatch: () => mockDispatch,
-	};
-}
-
 storiesOf( 'Analytics Module', module )
 	.add( 'Account Property Profile Select (none selected)', () => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
