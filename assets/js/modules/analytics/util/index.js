@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { changeToPercent } from '../util';
+import { changeToPercent } from '../../../util';
 import { each } from 'lodash';
 
 /**
