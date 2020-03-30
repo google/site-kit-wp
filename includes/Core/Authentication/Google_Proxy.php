@@ -85,12 +85,13 @@ class Google_Proxy {
 		$home_url_no_scheme = str_replace( array( 'http://', 'https://' ), '', home_url() );
 
 		return array(
-			'name'       => wp_specialchars_decode( get_bloginfo( 'name' ) ),
-			'url'        => home_url(),
-			'action_uri' => admin_url( 'index.php' ),
-			'return_uri' => $this->context->admin_url( 'splash' ),
+			'name'                   => wp_specialchars_decode( get_bloginfo( 'name' ) ),
+			'url'                    => home_url(),
+			'action_uri'             => admin_url( 'index.php' ),
+			'return_uri'             => $this->context->admin_url( 'splash' ),
 			// TODO: Remove admin_root once proxy is updated.
-			'admin_root' => str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', admin_url() ),
+			'admin_root'             => str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', admin_url() ),
+			'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, home_url() ),
 		);
 	}
 
