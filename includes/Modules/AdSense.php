@@ -529,15 +529,15 @@ tag_partner: "site_kit"
 							array( 'status' => 400 )
 						);
 					}
-					$client_id = $data['clientID'];
-					if ( ! preg_match( '/^ca-(pub-[0-9]+)$/', $client_id, $matches ) ) {
+					$client_id  = $data['clientID'];
+					$account_id = $this->determine_account_id( $client_id );
+					if ( empty( $account_id ) ) {
 						return new WP_Error(
 							'invalid_param',
 							__( 'The clientID parameter is not a valid AdSense client ID.', 'google-site-kit' ),
 							array( 'status' => 400 )
 						);
 					}
-					$account_id = $matches[1];
 					return array(
 						'accountID'  => $account_id,
 						'clientID'   => $client_id,
@@ -837,5 +837,20 @@ tag_partner: "site_kit"
 			}
 		);
 		return ! empty( $client_match );
+	}
+
+	/**
+	 * Determines the AdSense account ID from a given AdSense client ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $client_id AdSense client ID.
+	 * @return string AdSense account ID, or empty string if invalid client ID.
+	 */
+	protected function determine_account_id( $client_id ) {
+		if ( ! preg_match( '/^ca-(pub-[0-9]+)$/', $client_id, $matches ) ) {
+			return '';
+		}
+		return $matches[1];
 	}
 }
