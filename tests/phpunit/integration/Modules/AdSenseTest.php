@@ -127,6 +127,7 @@ class AdSenseTest extends TestCase {
 				'account-url',
 				'reports-url',
 				'notifications',
+				'tag-permission',
 				'accounts',
 				'alerts',
 				'clients',
