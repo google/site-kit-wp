@@ -185,7 +185,7 @@ export const getLocale = () => {
 	const siteKitLocale = get( global, [ 'googlesitekit', 'locale', '', 'lang' ] );
 
 	if ( siteKitLocale ) {
-		return siteKitLocale.replace( '_', '-' );
+		return siteKitLocale.replace( /_/g, '-' );
 	}
 
 	return global.navigator.language;
