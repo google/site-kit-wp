@@ -44,9 +44,11 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
-	fetchAccountsPropertiesProfiles() {
+	fetchAccountsPropertiesProfiles( data ) {
 		return {
-			payload: {},
+			payload: {
+				data,
+			},
 			type: FETCH_ACCOUNTS_PROPERTIES_PROFILES,
 		};
 	},
@@ -87,8 +89,8 @@ export const actions = {
 };
 
 export const controls = {
-	[ FETCH_ACCOUNTS_PROPERTIES_PROFILES ]: () => {
-		return API.get( 'modules', 'analytics', 'accounts-properties-profiles' );
+	[ FETCH_ACCOUNTS_PROPERTIES_PROFILES ]: ( { payload } ) => {
+		return API.get( 'modules', 'analytics', 'accounts-properties-profiles', payload.data );
 	},
 };
 
@@ -146,7 +148,11 @@ export const resolvers = {
 				return;
 			}
 
-			const response = yield actions.fetchAccountsPropertiesProfiles();
+			const existingTag = registry.select( STORE_NAME ).getExistingTag() || {};
+			const response = yield actions.fetchAccountsPropertiesProfiles( {
+				existingAccountID: existingTag.accountID,
+				existingPropertyID: existingTag.propertyID,
+			} );
 			const { accounts, properties, profiles, matchedProperty } = response;
 
 			yield actions.receiveAccounts( accounts );

@@ -158,6 +158,42 @@ describe( 'modules/analytics accounts', () => {
 				const accounts = registry.select( STORE_NAME ).getAccounts();
 				expect( accounts ).toEqual( undefined );
 			} );
+
+			it( 'set passes existing tag IDs when fetching accounts', async () => {
+				const existingAccountID = '12345';
+				const existingPropertyID = 'UA-12345-1';
+
+				registry.dispatch( STORE_NAME ).receiveExistingTag( {
+					accountID: existingAccountID,
+					propertyID: existingPropertyID,
+				} );
+
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
+					)
+					.mockResponseOnce(
+						JSON.stringify( fixtures.accountsPropertiesProfiles ),
+						{ status: 200 }
+					);
+
+				registry.select( STORE_NAME ).getAccounts();
+
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getAccounts() !== undefined
+					),
+				);
+
+				// Ensure the proper parameters were sent.
+				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
+					{
+						existingAccountID,
+						existingPropertyID,
+					}
+				);
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+			} );
 		} );
 	} );
 } );
