@@ -25,41 +25,50 @@
  */
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
-import { STORE_NAME } from './name';
 import reset from './reset';
 
-const base = Modules.createModuleStore( 'adsense' );
+const baseModuleStore = Modules.createModuleStore( 'adsense', {
+	settingSlugs: [
+		'accountID',
+		'clientID',
+		'useSnippet',
+		'accountStatus',
+		'siteStatus',
+	],
+} );
+
+export const STORE_NAME = baseModuleStore.STORE_NAME;
 
 export const INITIAL_STATE = Data.collectState(
-	base.INITIAL_STATE,
+	baseModuleStore.INITIAL_STATE,
 	reset.INITIAL_STATE,
 );
 
 export const actions = Data.addInitializeAction( Data.collectActions(
-	base.actions,
+	baseModuleStore.actions,
 	reset.actions,
 ) );
 
 export const controls = Data.collectControls(
-	base.controls,
+	baseModuleStore.controls,
 	reset.controls,
 );
 
 export const reducer = Data.addInitializeReducer(
 	INITIAL_STATE,
 	Data.collectReducers(
-		base.reducer,
+		baseModuleStore.reducer,
 		reset.reducer,
 	)
 );
 
 export const resolvers = Data.collectResolvers(
-	base.resolvers,
+	baseModuleStore.resolvers,
 	reset.resolvers,
 );
 
 export const selectors = Data.collectSelectors(
-	base.selectors,
+	baseModuleStore.selectors,
 	reset.selectors,
 );
 
