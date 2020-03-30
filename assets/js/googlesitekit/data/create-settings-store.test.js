@@ -160,8 +160,8 @@ describe( 'createSettingsStore store', () => {
 				dispatch.setSettings( { setting2: 'clientside' } );
 
 				await dispatch.saveSettings();
-				// Two fetch requests, one to get settings, the other to update.
-				expect( fetch ).toHaveBeenCalledTimes( 2 );
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
 				expect( store.getState().settings ).toMatchObject( response );
 			} );
@@ -267,6 +267,18 @@ describe( 'createSettingsStore store', () => {
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( select.getSettings() ).toEqual( settings );
+			} );
+
+			it( 'does not make a network request if settings are already set', async () => {
+				const value = 'serverside';
+
+				dispatch.receiveSettings( { isSkyBlue: value } );
+
+				expect( select.getIsSkyBlue() ).toEqual( value );
+
+				await subscribeUntil( registry, () => select.hasFinishedResolution( 'getSettings' ) );
+
+				expect( fetch ).not.toHaveBeenCalled();
 			} );
 
 			it( 'returns client settings even if server settings have not loaded', () => {
@@ -439,7 +451,10 @@ describe( 'createSettingsStore store', () => {
 						};
 					} );
 
-				const result = await storeDefinition.controls.FETCH_SAVE_SETTINGS( {} );
+				const result = await storeDefinition.controls.FETCH_SAVE_SETTINGS( {
+					type: 'FETCH_SAVE_SETTINGS',
+					payload: { values: {} },
+				} );
 				expect( result ).toEqual( response );
 				// Ensure `console.error()` wasn't called, which will happen if the API
 				// request fails.
