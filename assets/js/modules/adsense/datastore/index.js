@@ -25,7 +25,7 @@
  */
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
-import reset from './reset';
+import tags from './tags';
 
 const baseModuleStore = Modules.createModuleStore( 'adsense', {
 	settingSlugs: [
@@ -41,35 +41,35 @@ export const STORE_NAME = baseModuleStore.STORE_NAME;
 
 export const INITIAL_STATE = Data.collectState(
 	baseModuleStore.INITIAL_STATE,
-	reset.INITIAL_STATE,
+	tags.INITIAL_STATE,
 );
 
 export const actions = Data.addInitializeAction( Data.collectActions(
 	baseModuleStore.actions,
-	reset.actions,
+	tags.actions,
 ) );
 
 export const controls = Data.collectControls(
 	baseModuleStore.controls,
-	reset.controls,
+	tags.controls,
 );
 
 export const reducer = Data.addInitializeReducer(
 	INITIAL_STATE,
 	Data.collectReducers(
 		baseModuleStore.reducer,
-		reset.reducer,
+		tags.reducer,
 	)
 );
 
 export const resolvers = Data.collectResolvers(
 	baseModuleStore.resolvers,
-	reset.resolvers,
+	tags.resolvers,
 );
 
 export const selectors = Data.collectSelectors(
 	baseModuleStore.selectors,
-	reset.selectors,
+	tags.selectors,
 );
 
 const store = {
