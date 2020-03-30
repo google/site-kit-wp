@@ -597,6 +597,7 @@ final class Assets {
 			'ampEnabled'       => (bool) $this->context->get_amp_mode(),
 			'ampMode'          => $this->context->get_amp_mode(),
 			'homeURL'          => home_url(),
+			'timezone'         => get_option( 'timezone_string' ),
 		);
 
 		return array(
