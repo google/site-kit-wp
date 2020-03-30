@@ -346,6 +346,7 @@ tag_partner: "site_kit"
 			'account-url'    => '',
 			'reports-url'    => '',
 			'notifications'  => '',
+			'tag-permission' => '',
 			'accounts'       => 'adsense',
 			'alerts'         => 'adsense',
 			'clients'        => 'adsense',
@@ -516,6 +517,31 @@ tag_partner: "site_kit"
 							'ctaLabel'      => __( 'Go to AdSense', 'google-site-kit' ),
 							'ctaTarget'     => '_blank',
 						),
+					);
+				};
+			case 'GET:tag-permission':
+				return function() use ( $data ) {
+					if ( ! isset( $data['clientID'] ) ) {
+						return new WP_Error(
+							'missing_required_param',
+							/* translators: %s: Missing parameter name */
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ),
+							array( 'status' => 400 )
+						);
+					}
+					$client_id = $data['clientID'];
+					if ( ! preg_match( '/^ca-(pub-[0-9]+)$/', $client_id, $matches ) ) {
+						return new WP_Error(
+							'invalid_param',
+							__( 'The clientID parameter is not a valid AdSense client ID.', 'google-site-kit' ),
+							array( 'status' => 400 )
+						);
+					}
+					$account_id = $matches[1];
+					return array(
+						'accountID'  => $account_id,
+						'clientID'   => $client_id,
+						'permission' => $this->has_access_to_client( $client_id, $account_id ),
 					);
 				};
 			case 'GET:reports-url':
@@ -780,5 +806,36 @@ tag_partner: "site_kit"
 	 */
 	protected function setup_settings() {
 		return new Settings( $this->options );
+	}
+
+	/**
+	 * Verifies that user has access to the given client and account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $client_id  Client found in the existing tag.
+	 * @param string $account_id Account ID the client belongs to.
+	 * @return bool True if the user has access, false otherwise.
+	 */
+	protected function has_access_to_client( $client_id, $account_id ) {
+		if ( empty( $client_id ) || empty( $account_id ) ) {
+			return false;
+		}
+
+		// Try to get clients for that account.
+		$clients = $this->get_data( 'clients', array( 'accountID' => $account_id ) );
+		if ( is_wp_error( $clients ) ) {
+			// No access to the account.
+			return false;
+		}
+
+		// Ensure there is access to the client.
+		$client_match = array_filter(
+			$clients,
+			function( $client ) use ( $client_id ) {
+				return $client->getId() === $client_id;
+			}
+		);
+		return ! empty( $client_match );
 	}
 }
