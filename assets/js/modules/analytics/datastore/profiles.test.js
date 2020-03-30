@@ -227,7 +227,7 @@ describe( 'modules/analytics profiles', () => {
 					);
 
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
-				const testPropertyID = fixtures.profiles[ 0 ].id;
+				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
