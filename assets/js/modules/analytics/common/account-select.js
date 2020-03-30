@@ -16,19 +16,21 @@
  * limitations under the License.
  */
 
-import { Select, Option } from 'SiteKitCore/material-components';
-import PropTypes from 'prop-types';
-import { __ } from '@wordpress/i18n';
+/**
+ * WordPress dependencies
+ */
+import { useSelect, useDispatch } from '@wordpress/data';
 import { useCallback } from '@wordpress/element';
-import {
-	useSelect as useSelectHook,
-	useDispatch as useDispatchHook,
-} from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import { Select, Option } from '../../../material-components';
 import { STORE_NAME } from '../datastore';
 import { ACCOUNT_CREATE } from '../datastore/accounts';
 
-export default function AccountSelect( { useSelect, useDispatch } ) {
+export default function AccountSelect() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
@@ -69,13 +71,3 @@ export default function AccountSelect( { useSelect, useDispatch } ) {
 		</Select>
 	);
 }
-
-AccountSelect.propTypes = {
-	useSelect: PropTypes.func,
-	useDispatch: PropTypes.func,
-};
-
-AccountSelect.defaultProps = {
-	useSelect: useSelectHook,
-	useDispatch: useDispatchHook,
-};
