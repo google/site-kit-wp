@@ -195,5 +195,36 @@ describe( 'modules/analytics accounts', () => {
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 			} );
 		} );
+
+		it( 'sets accountID, and propertyID in the store, if a matchedProperty is received and values are not set yet', async () => {
+			const { matchedProperty } = fixtures.accountsPropertiesProfiles;
+
+			registry.dispatch( STORE_NAME ).setSettings( {} );
+
+			fetch
+				.doMockOnceIf(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
+				)
+				.mockResponseOnce(
+					JSON.stringify( fixtures.accountsPropertiesProfiles ),
+					{ status: 200 }
+				);
+
+			expect( store.getState().matchedProperty ).toBeFalsy();
+			expect( registry.select( STORE_NAME ).getAccountID() ).toBeFalsy();
+			expect( registry.select( STORE_NAME ).getPropertyID() ).toBeFalsy();
+
+			registry.select( STORE_NAME ).getAccounts();
+
+			await subscribeUntil( registry,
+				() => (
+					registry.select( STORE_NAME ).getAccounts() !== undefined
+				),
+			);
+
+			expect( store.getState().matchedProperty ).toMatchObject( matchedProperty );
+			expect( registry.select( STORE_NAME ).getAccountID() ).toBe( matchedProperty.accountId );
+			expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( matchedProperty.id );
+		} );
 	} );
 } );
