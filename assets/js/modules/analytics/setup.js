@@ -112,6 +112,16 @@ class AnalyticsSetup extends Component {
 			// Verify the user has access to existing tag if found. If no access request will return 403 error and catch err.
 			try {
 				const existingTagData = await data.get( TYPE_MODULES, 'analytics', 'tag-permission', { tag: existingTagProperty } );
+				if ( ! existingTagData.permission ) {
+					throw {
+						code: 'google_analytics_existing_tag_permission',
+						message: sprintf(
+							/* translators: %s: Property id of the existing tag */
+							__( 'We\'ve detected there\'s already an existing Analytics tag on your site (ID %s), but your account doesn\'t seem to have access to this Analytics property. You can either remove the existing tag and connect to a different account, or request access to this property from your team.', 'google-site-kit' ),
+							existingTagProperty
+						),
+					};
+				}
 				await this.getAccounts( existingTagData );
 			} catch ( err ) {
 				this.setState(
