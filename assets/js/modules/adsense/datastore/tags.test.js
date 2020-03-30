@@ -81,13 +81,6 @@ describe( 'modules/adsense tags', () => {
 
 				const initialSelect = registry.select( STORE_NAME ).getTagPermission( clientID );
 
-				// Ensure the proper parameters were sent.
-				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
-					{
-						clientID,
-					}
-				);
-
 				// The connection info will be its initial value while the connection
 				// info is fetched.
 				expect( initialSelect ).toEqual( undefined );
@@ -116,9 +109,9 @@ describe( 'modules/adsense tags', () => {
 						{ status: 200 }
 					);
 
-				const clientID = fixtures.getTagPermissionsAccess.clientID;
-				const accountID = fixtures.getTagPermissionsAccess.accountID;
-				const permission = fixtures.getTagPermissionsAccess.permission;
+				const clientID = fixtures.getTagPermissionsNoAccess.clientID;
+				const accountID = fixtures.getTagPermissionsNoAccess.accountID;
+				const permission = fixtures.getTagPermissionsNoAccess.permission;
 
 				const initialSelect = registry.select( STORE_NAME ).getTagPermission( clientID );
 				// The connection info will be its initial value while the connection
