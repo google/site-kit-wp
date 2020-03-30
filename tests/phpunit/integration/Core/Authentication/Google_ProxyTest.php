@@ -31,7 +31,7 @@ class Google_ProxyTest extends TestCase {
 				'name'                   => get_bloginfo( 'name' ),
 				'return_uri'             => $context->admin_url( 'splash' ),
 				'admin_root'             => parse_url( admin_url( '/' ), PHP_URL_PATH ),
-				'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, home_url() ),
+				'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, untrailingslashit( home_url() ) ),
 			),
 			$google_proxy->get_site_fields()
 		);
