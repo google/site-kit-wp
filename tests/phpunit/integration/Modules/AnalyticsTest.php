@@ -263,7 +263,7 @@ class AnalyticsTest extends TestCase {
 	 * @dataProvider data_determine_account_id
 	 */
 	public function test_determine_account_id( $property_id, $expected ) {
-		$class  = new ReflectionClass( Analytics::class );
+		$class  = new \ReflectionClass( Analytics::class );
 		$method = $class->getMethod( 'determine_account_id' );
 		$method->setAccessible( true );
 
