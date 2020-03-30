@@ -111,7 +111,7 @@ class AnalyticsSetup extends Component {
 		if ( existingTagProperty && existingTagProperty.length ) {
 			// Verify the user has access to existing tag if found. If no access request will return 403 error and catch err.
 			try {
-				const existingTagData = await data.get( TYPE_MODULES, 'analytics', 'tag-permission', { tag: existingTagProperty } );
+				const existingTagData = await data.get( TYPE_MODULES, 'analytics', 'tag-permission', { propertyID: existingTagProperty } );
 				if ( ! existingTagData.permission ) {
 					throw {
 						code: 'google_analytics_existing_tag_permission',

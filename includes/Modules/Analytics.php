@@ -858,21 +858,16 @@ final class Analytics extends Module
 				};
 			case 'GET:tag-permission':
 				return function() use ( $data ) {
-					// TODO: Remove support for this parameter once no longer used.
-					if ( isset( $data['tag'] ) ) {
-						$property_id = $data['tag'];
-					} else {
-						if ( ! isset( $data['propertyID'] ) ) {
-							return new WP_Error(
-								'missing_required_param',
-								/* translators: %s: Missing parameter name */
-								sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
-								array( 'status' => 400 )
-							);
-						}
-						$property_id = $data['propertyID'];
+					if ( ! isset( $data['propertyID'] ) ) {
+						return new WP_Error(
+							'missing_required_param',
+							/* translators: %s: Missing parameter name */
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+							array( 'status' => 400 )
+						);
 					}
-					$account_id = $this->determine_account_id( $property_id );
+					$property_id = $data['propertyID'];
+					$account_id  = $this->determine_account_id( $property_id );
 					if ( empty( $account_id ) ) {
 						return new WP_Error(
 							'invalid_param',
