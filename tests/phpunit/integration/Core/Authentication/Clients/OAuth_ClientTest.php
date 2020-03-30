@@ -446,7 +446,6 @@ class OAuth_ClientTest extends TestCase {
 			OAuth_Client::OPTION_ACCESS_TOKEN_CREATED,
 			OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN,
 			OAuth_Client::OPTION_AUTH_SCOPES,
-			OAuth_Client::OPTION_ERROR_CODE,
 			OAuth_Client::OPTION_REDIRECT_URL,
 			OAuth_Client::OPTION_REFRESH_TOKEN,
 		);
