@@ -215,5 +215,55 @@ describe( 'modules/analytics tags', () => {
 				expect( fetch ).not.toHaveBeenCalled();
 			} );
 		} );
+
+		describe( 'hasTagPermission', () => {
+			it( "returns true if this user has permission to access this property's tag", async () => {
+				const { accountID, permission, propertyID } = fixtures.getTagPermissionsAccess;
+
+				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+					accountID,
+					propertyID,
+					permission,
+				} );
+
+				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( propertyID );
+
+				// Ensure the proper parameters were sent.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getTagPermission', [ propertyID ] )
+				);
+
+				expect( hasPermission ).toEqual( true );
+				expect( fetch ).not.toHaveBeenCalled();
+			} );
+
+			it( 'returns false if no existing tag exists', async () => {
+				const { accountID, permission, propertyID } = fixtures.getTagPermissionsNoAccess;
+
+				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+					accountID,
+					propertyID,
+					permission,
+				} );
+
+				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( propertyID );
+
+				// Ensure the proper parameters were sent.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getTagPermission', [ propertyID ] )
+				);
+
+				expect( hasPermission ).toEqual( false );
+				expect( fetch ).not.toHaveBeenCalled();
+			} );
+
+			it( 'returns undefined if existing tag has not been loaded yet', async () => {
+				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( fixtures.getTagPermissionsNoAccess.propertyID );
+
+				expect( hasPermission ).toEqual( undefined );
+			} );
+		} );
 	} );
 } );

@@ -29,7 +29,7 @@ import Data from 'googlesitekit-data';
 import { getExistingTag } from '../../../util';
 import { STORE_NAME } from './index';
 
-const { createRegistrySelector } = Data;
+const { commonActions, createRegistrySelector } = Data;
 
 // Actions
 const FETCH_EXISTING_TAG = 'FETCH_EXISTING_TAG';
@@ -218,6 +218,13 @@ export const resolvers = {
 
 	*getTagPermission( propertyID ) {
 		try {
+			const registry = yield commonActions.getRegistry();
+
+			// If these permissions are already available, don't make a request.
+			if ( registry.select( STORE_NAME ).getTagPermission( propertyID ) ) {
+				return;
+			}
+
 			const response = yield actions.fetchTagPermission( { propertyID } );
 
 			yield actions.receiveTagPermission( {
