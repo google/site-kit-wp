@@ -122,7 +122,15 @@ storiesOf( 'Analytics Module Setup', module )
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
-			dispatch( STORE_NAME ).receiveExistingTag( fixtures.getTagPermissionsNoAccess );
+			dispatch( STORE_NAME ).receiveExistingTag( {
+				accountID: '12345678',
+				propertyID: 'UA-12345678-1',
+			} );
+			dispatch( STORE_NAME ).receiveTagPermission( {
+				accountID: '12345678',
+				propertyID: 'UA-12345678-1',
+				permission: false,
+			} );
 		};
 
 		return <Setup callback={ setupRegistry } />;
