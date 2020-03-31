@@ -32,7 +32,7 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
 import SettingsModule from '../assets/js/components/settings/settings-module';
 import { SettingsMain as AnalyticsSettings } from '../assets/js/modules/analytics/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
-// import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
+import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
 import { WithTestRegistry } from '../tests/js/utils';
@@ -124,11 +124,19 @@ storiesOf( 'Analytics Module Settings', module )
 	.add( 'Edit, open with all settings', () => {
 		filterAnalyticsSettings();
 
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
 		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveAccounts( accounts );
+			dispatch( STORE_NAME ).receiveProperties( properties );
+			dispatch( STORE_NAME ).receiveProfiles( profiles );
 			dispatch( STORE_NAME ).receiveSettings( {
-				accountID: '1234567890',
-				propertyID: 'UA-1234567890-1',
-				profileID: '9999999',
+				accountID: accountId,
+				propertyID: webPropertyId,
+				profileID,
+				anonymizeIP: true,
+				useSnippet: true,
+				trackingDisabled: [ 'loggedinUsers' ],
 			} );
 		};
 
