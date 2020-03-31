@@ -113,4 +113,18 @@ storiesOf( 'Analytics Module Setup', module )
 
 		return <Setup callback={ setupRegistry } />;
 	} )
+	.add( 'Existing Tag (no access)', () => {
+		filterAnalyticsSetup();
+
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveSettings( {} );
+			dispatch( STORE_NAME ).receiveAccounts( accounts );
+			dispatch( STORE_NAME ).receiveProperties( properties );
+			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveExistingTag( fixtures.getTagPermissionsNoAccess );
+		};
+
+		return <Setup callback={ setupRegistry } />;
+	} )
 ;
