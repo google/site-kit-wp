@@ -27,13 +27,13 @@ import {
 } from 'SiteKitCore/material-components';
 import Button from 'GoogleComponents/button';
 import classnames from 'classnames';
+import ProgressBar from 'GoogleComponents/progress-bar';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
-import { trackEvent } from 'GoogleUtil';
 class AnalyticsSetupNoAccountNotice extends Component {
 	constructor( props ) {
 		super( props );
@@ -51,6 +51,7 @@ class AnalyticsSetupNoAccountNotice extends Component {
 
 		this.handleInputChange = this.handleInputChange.bind( this );
 		this.getTimezoneSelector = this.getTimezoneSelector.bind( this );
+		this.handleSubmit = this.handleSubmit.bind( this );
 	}
 
 	handleInputChange( e, inputName ) {
@@ -68,7 +69,6 @@ class AnalyticsSetupNoAccountNotice extends Component {
 			e.preventDefault();
 		}
 		this.setState( { isSubmitting: true } );
-		trackEvent( 'analytics_setup', 'new_account_setup_clicked', '' );
 	}
 
 	// Build the timezone selector and cache it for re-renders.
@@ -93,7 +93,7 @@ class AnalyticsSetupNoAccountNotice extends Component {
 				label={ __( 'Timezone', 'google-site-kit' ) }
 				outlined
 			>
-				{ timezones
+				{ timezones && timezones
 					.map( ( aTimezone, id ) =>
 						<Option
 							key={ id }
@@ -113,12 +113,13 @@ class AnalyticsSetupNoAccountNotice extends Component {
 			propertyName,
 			profileName,
 			validationIssues,
+			isSubmitting,
 		} = this.state;
 
 		const errorCode = '';
 
-		// Disable the submit button if there are validation errors.
-		const buttonDisabled = validationIssues.accountName || validationIssues.propertyName || validationIssues.profileName;
+		// Disable the submit button if there are validation errors, and while submission is in progress.
+		const buttonDisabled = validationIssues.accountName || validationIssues.propertyName || validationIssues.profileName || isSubmitting;
 
 		return (
 			<Fragment>
@@ -134,74 +135,79 @@ class AnalyticsSetupNoAccountNotice extends Component {
 							<p>
 								{ __( 'Confirm your account details:', 'google-site-kit' ) }
 							</p>
-							<div className="googlesitekit-setup-module__inputs">
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
-									<TextField
-										className={ classnames(
-											'mdc-text-field',
-											{ 'mdc-text-field--error': errorCode || validationIssues.accountName }
-										) }
-										label={ __( 'Account', 'google-site-kit' ) }
-										name="account"
-										onChange={ ( e ) => {
-											this.handleInputChange( e, 'accountName' );
-										} }
-										outlined
-										required
-									>
-										<Input
-											name="account"
-											value={ accountName }
-										/>
-									</TextField>
-								</div>
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
-									<TextField
-										className={ classnames(
-											'mdc-text-field',
-											{ 'mdc-text-field--error': errorCode || validationIssues.propertyName }
-										) }
-										label={ __( 'Property', 'google-site-kit' ) }
-										name="property"
-										onChange={ ( e ) => {
-											this.handleInputChange( e, 'propertyName' );
-										} }
-										outlined
-										required
-									>
-										<Input
-											name="property"
-											value={ propertyName }
-										/>
-									</TextField>
-								</div>
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
-									<TextField
-										className={ classnames(
-											'mdc-text-field',
-											{ 'mdc-text-field--error': errorCode || validationIssues.profileName }
-										) }
-										label={ __( 'Profile', 'google-site-kit' ) }
-										name="profile"
-										onChange={ ( e ) => {
-											this.handleInputChange( e, 'profileName' );
-										} }
-										outlined
-										required
-									>
-										<Input
-											name="profile"
-											value={ profileName }
-										/>
-									</TextField>
-								</div>
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
-									{ this.getTimezoneSelector() }
-								</div>
-							</div>
+							{
+								isSubmitting
+									? <ProgressBar />
+									: <div className="googlesitekit-setup-module__inputs">
+										<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+											<TextField
+												className={ classnames(
+													'mdc-text-field',
+													{ 'mdc-text-field--error': errorCode || validationIssues.accountName }
+												) }
+												label={ __( 'Account', 'google-site-kit' ) }
+												name="account"
+												onChange={ ( e ) => {
+													this.handleInputChange( e, 'accountName' );
+												} }
+												outlined
+												required
+											>
+												<Input
+													name="account"
+													value={ accountName }
+												/>
+											</TextField>
+										</div>
+										<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+											<TextField
+												className={ classnames(
+													'mdc-text-field',
+													{ 'mdc-text-field--error': errorCode || validationIssues.propertyName }
+												) }
+												label={ __( 'Property', 'google-site-kit' ) }
+												name="property"
+												onChange={ ( e ) => {
+													this.handleInputChange( e, 'propertyName' );
+												} }
+												outlined
+												required
+											>
+												<Input
+													name="property"
+													value={ propertyName }
+												/>
+											</TextField>
+										</div>
+										<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+											<TextField
+												className={ classnames(
+													'mdc-text-field',
+													{ 'mdc-text-field--error': errorCode || validationIssues.profileName }
+												) }
+												label={ __( 'Profile', 'google-site-kit' ) }
+												name="profile"
+												onChange={ ( e ) => {
+													this.handleInputChange( e, 'profileName' );
+												} }
+												outlined
+												required
+											>
+												<Input
+													name="profile"
+													value={ profileName }
+												/>
+											</TextField>
+										</div>
+										<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+											{ this.getTimezoneSelector() }
+										</div>
+									</div>
+							}
 							<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
 								<Button
 									disabled={ buttonDisabled }
+									onClick={ this.handleSubmit }
 								>
 									{ __( 'Create Account', 'google-site-kit' ) }
 								</Button>
