@@ -160,7 +160,7 @@ final class Context {
 	 * @return string Reference site URL.
 	 */
 	public function get_reference_site_url() {
-		return untrailingslashit( $this->filter_reference_url() );
+		return $this->filter_reference_url();
 	}
 
 	/**
@@ -368,7 +368,7 @@ final class Context {
 	 * @return string URL that starts with the reference site URL.
 	 */
 	private function filter_reference_url( $url = '' ) {
-		$orig_site_url = home_url();
+		$orig_site_url = untrailingslashit( home_url() );
 		$site_url      = $orig_site_url;
 
 		/**
@@ -386,6 +386,8 @@ final class Context {
 		// Ensure this is not empty.
 		if ( empty( $site_url ) ) {
 			$site_url = $orig_site_url;
+		} else {
+			$site_url = untrailingslashit( $site_url );
 		}
 
 		// If no URL given, just return the reference site URL.
