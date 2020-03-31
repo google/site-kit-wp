@@ -136,7 +136,7 @@ export const reducer = ( state, { type, payload } ) => {
 };
 
 export const resolvers = {
-	*getAccounts() {
+	*getAccounts( { force = false } = {} ) {
 		try {
 			const registry = yield Data.commonActions.getRegistry();
 
@@ -144,7 +144,7 @@ export const resolvers = {
 
 			// If there are already accounts loaded in state, we don't want to make this request
 			// and consider this resolver fulfilled.
-			if ( existingAccounts ) {
+			if ( existingAccounts && ! force ) {
 				return;
 			}
 
@@ -193,9 +193,11 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
+	 * @param {?Object} options Optional arguments.
+	 * @param {boolean} options.force Force fetch, even if in state (does not invalidate resolver).
 	 * @return {?Array.<Object>} An array of Analytics accounts; `undefined` if not loaded.
 	 */
-	getAccounts( state ) {
+	getAccounts( state, { force = false } = {} ) { // eslint-disable-line no-unused-vars
 		const { accounts } = state;
 
 		return accounts;
