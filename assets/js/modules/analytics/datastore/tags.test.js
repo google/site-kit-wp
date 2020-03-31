@@ -217,6 +217,31 @@ describe( 'modules/analytics tags', () => {
 		} );
 
 		describe( 'hasTagPermission', () => {
+			it( 'makes a request via the getTagPermission selector if no tag has been loaded ', async () => {
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/
+					)
+					.mockResponseOnce(
+						JSON.stringify( fixtures.getTagPermissionsAccess ),
+						{ status: 200 }
+					);
+
+				const { propertyID } = fixtures.getTagPermissionsAccess;
+
+				registry.select( STORE_NAME ).hasTagPermission( propertyID );
+				// Ensure the proper parameters were sent.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getTagPermission', [ propertyID ] )
+				);
+
+				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( propertyID );
+
+				expect( hasPermission ).toEqual( true );
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+			} );
+
 			it( "returns true if this user has permission to access this property's tag", async () => {
 				const { accountID, permission, propertyID } = fixtures.getTagPermissionsAccess;
 

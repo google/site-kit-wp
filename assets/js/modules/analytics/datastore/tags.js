@@ -221,7 +221,7 @@ export const resolvers = {
 			const registry = yield commonActions.getRegistry();
 
 			// If these permissions are already available, don't make a request.
-			if ( registry.select( STORE_NAME ).getTagPermission( propertyID ) ) {
+			if ( registry.select( STORE_NAME ).getTagPermission( propertyID ) !== undefined ) {
 				return;
 			}
 
