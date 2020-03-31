@@ -43,6 +43,14 @@ final class Dashboard {
 	private $assets;
 
 	/**
+	 * Modules instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Modules
+	 */
+	private $modules;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0

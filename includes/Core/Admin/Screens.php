@@ -44,6 +44,14 @@ final class Screens {
 	private $assets;
 
 	/**
+	 * Modules instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Modules
+	 */
+	private $modules;
+
+	/**
 	 * Associative array of $hook_suffix => $screen pairs.
 	 *
 	 * @since 1.0.0
@@ -66,11 +74,8 @@ final class Screens {
 		Modules $modules = null
 	) {
 		$this->context = $context;
-
-		if ( ! $assets ) {
-			$assets = new Assets( $this->context );
-		}
-		$this->assets = $assets;
+		$this->assets  = $assets ?: new Assets( $this->context );
+		$this->modules = $modules ?: new Modules( $this->context );
 	}
 
 	/**
