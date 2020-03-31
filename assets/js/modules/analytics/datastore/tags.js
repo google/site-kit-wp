@@ -28,6 +28,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { getExistingTag } from 'assets/js/util';
 import { STORE_NAME } from './index';
+import { isValidPropertyID } from '../util';
 
 const { createRegistrySelector } = Data;
 
@@ -212,6 +213,10 @@ export const resolvers = {
 	},
 
 	*getTagPermission( propertyID, accountID = '' ) {
+		if ( ! isValidPropertyID( propertyID ) ) {
+			return;
+		}
+
 		try {
 			const response = yield actions.fetchTagPermission( { propertyID, accountID } );
 
