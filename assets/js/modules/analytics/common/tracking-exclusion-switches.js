@@ -28,7 +28,7 @@ const STORE_NAME = 'modules/analytics'; // temp
 
 const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
 
-const trackingExclusionLabels = {
+export const trackingExclusionLabels = {
 	[ TRACKING_LOGGED_IN_USERS ]: __( 'Logged-in users', 'google-site-kit' ),
 };
 
