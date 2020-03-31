@@ -83,7 +83,7 @@ export const actions = {
 
 	receiveTagPermission( { propertyID, accountID, permission } ) {
 		invariant( propertyID, 'propertyID is required.' );
-		invariant( propertyID, 'accountID is required.' );
+		invariant( accountID, 'accountID is required.' );
 		invariant( permission !== undefined, 'permission cannot be undefined.' );
 
 		return {
@@ -283,7 +283,9 @@ export const selectors = {
 	 * @return {?boolean} True if the user has access, false if not; `undefined` if not loaded.
 	 */
 	hasTagPermission: createRegistrySelector( ( select ) => ( state, propertyID ) => {
-		const { permission } = select( STORE_NAME ).getTagPermission( state, propertyID ) || {};
+		const tagPermission = select( STORE_NAME ).getTagPermission( propertyID );
+		
+		return tagPermission ? tagPermission.permission : undefined;
 
 		return permission;
 	} ),
