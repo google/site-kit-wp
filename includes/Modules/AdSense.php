@@ -849,13 +849,12 @@ tag_partner: "site_kit"
 		}
 
 		// Ensure there is access to the client.
-		$client_match = array_filter(
-			$clients,
-			function( $client ) use ( $client_id ) {
-				return $client->getId() === $client_id;
+		foreach ( $clients as $client ) {
+			if ( $client->getId() === $client_id ) {
+				return true;
 			}
-		);
-		return ! empty( $client_match );
+		}
+		return false;
 	}
 
 	/**
