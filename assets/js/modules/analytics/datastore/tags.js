@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { getExistingTag } from 'assets/js/util';
+import { getExistingTag } from '../../../util';
 import { STORE_NAME } from './index';
 
 const { createRegistrySelector } = Data;
@@ -284,10 +284,8 @@ export const selectors = {
 	 */
 	hasTagPermission: createRegistrySelector( ( select ) => ( state, propertyID ) => {
 		const tagPermission = select( STORE_NAME ).getTagPermission( propertyID );
-		
-		return tagPermission ? tagPermission.permission : undefined;
 
-		return permission;
+		return tagPermission ? tagPermission.permission : undefined;
 	} ),
 
 	/**
