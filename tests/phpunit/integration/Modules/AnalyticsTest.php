@@ -260,11 +260,11 @@ class AnalyticsTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_determine_account_id
+	 * @dataProvider data_parse_account_id
 	 */
-	public function test_determine_account_id( $property_id, $expected ) {
+	public function test_parse_account_id( $property_id, $expected ) {
 		$class  = new \ReflectionClass( Analytics::class );
-		$method = $class->getMethod( 'determine_account_id' );
+		$method = $class->getMethod( 'parse_account_id' );
 		$method->setAccessible( true );
 
 		$result = $method->invokeArgs(
@@ -274,7 +274,7 @@ class AnalyticsTest extends TestCase {
 		$this->assertSame( $expected, $result );
 	}
 
-	public function data_determine_account_id() {
+	public function data_parse_account_id() {
 		return array(
 			array(
 				'UA-2358017-2',

@@ -867,7 +867,7 @@ final class Analytics extends Module
 						);
 					}
 					$property_id = $data['propertyID'];
-					$account_id  = $this->determine_account_id( $property_id );
+					$account_id  = $this->parse_account_id( $property_id );
 					if ( empty( $account_id ) ) {
 						return new WP_Error(
 							'invalid_param',
@@ -1321,7 +1321,7 @@ final class Analytics extends Module
 	 * @param string $property_id Analytics property ID.
 	 * @return string Analytics account ID, or empty string if invalid property ID.
 	 */
-	protected function determine_account_id( $property_id ) {
+	protected function parse_account_id( $property_id ) {
 		if ( ! preg_match( '/^UA-([0-9]+)-[0-9]+$/', $property_id, $matches ) ) {
 			return '';
 		}
