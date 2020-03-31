@@ -322,6 +322,9 @@ export const selectors = {
 	 * @return {?Object} Object with string `accountID` and boolean `permission` properties; `undefined` if not loaded.
 	 */
 	getTagPermission( state, propertyID, accountID = '' ) { // eslint-disable-line no-unused-vars
+		if ( undefined === propertyID ) {
+			return undefined;
+		}
 		invariant( propertyID, 'propertyID is required.' );
 
 		const { tagPermissions } = state;
