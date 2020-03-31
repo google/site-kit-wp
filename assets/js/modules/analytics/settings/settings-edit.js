@@ -42,11 +42,11 @@ export default function SettingsEdit() {
 
 	useEffect( () => {
 		const confirm = global.document.getElementById( 'confirm-changes-analytics' );
-		const forceDisable = ( hasExistingTag && existingTagPermission === false );
+		const forceDisable = ( hasExistingTag && existingTagPermission === false ) || ! accounts.length;
 		if ( confirm ) {
 			confirm.disabled = forceDisable || ! haveSettingsChanged;
 		}
-	}, [ settings ] );
+	}, [ settings, hasExistingTag, existingTagPermission, accounts ] );
 
 	const ViewComponent = ( () => {
 		switch ( true ) {
