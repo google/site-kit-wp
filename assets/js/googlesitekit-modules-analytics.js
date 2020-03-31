@@ -19,4 +19,4 @@
 /**
  * Internal dependencies
  */
-import 'assets/js/modules/analytics';
+import './modules/analytics';
