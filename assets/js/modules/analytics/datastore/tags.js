@@ -301,7 +301,7 @@ export const selectors = {
 	 * @return {?boolean} True if the user has access, false if not; `undefined` if not loaded.
 	 */
 	hasTagPermission: createRegistrySelector( ( select ) => ( state, propertyID, accountID = '' ) => {
-		const { permission } = select( STORE_NAME ).getTagPermission( state, propertyID, accountID ) || {};
+		const { permission } = select( STORE_NAME ).getTagPermission( propertyID, accountID ) || {};
 
 		return permission;
 	} ),
