@@ -25,10 +25,10 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import AccountCreate from './account-create-legacy';
 import ExistingTagError from './existing-tag-error';
 import SetupForm from './setup-form';
 import { SvgIcon } from '../../../util';
+import AccountCreate from '../common/account-create-legacy';
 import { STORE_NAME } from '../datastore';
 
 export default function SetupMain() {

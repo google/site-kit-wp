@@ -18,4 +18,3 @@
 
 export { default as SetupMain } from './setup-main';
 export { default as SetupForm } from './setup-form';
-export { default as AccountCreateLegacy } from './account-create-legacy';
