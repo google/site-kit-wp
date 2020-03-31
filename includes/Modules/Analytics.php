@@ -1189,13 +1189,12 @@ final class Analytics extends Module
 		}
 
 		// Ensure there is access to the property.
-		$property_match = array_filter(
-			$properties['properties'],
-			function( $property ) use ( $property_id ) {
-				return $property->getId() === $property_id;
+		foreach ( $properties['properties'] as $property ) {
+			if ( $property->getId() === $property_id ) {
+				return true;
 			}
-		);
-		return ! empty( $property_match );
+		}
+		return false;
 	}
 
 	/**
