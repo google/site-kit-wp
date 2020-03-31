@@ -64,7 +64,7 @@ export const actions = {
 	},
 
 	receiveExistingTag( existingTag ) {
-		invariant( existingTag, 'existingTag is required.' );
+		invariant( existingTag !== undefined, 'existingTag cannot be undefined.' );
 
 		return {
 			payload: { existingTag },
@@ -198,11 +198,15 @@ export const resolvers = {
 	*getExistingTag() {
 		try {
 			const registry = yield actions.getRegistry();
-			const existingTag = yield actions.fetchExistingTag();
-			yield actions.receiveExistingTag( existingTag );
 
-			// Invalidate this resolver so it will run again.
-			yield registry.getActions().invalidateResolutionForStoreSelector( 'getExistingTag' );
+			// If an existing tag was already loaded; return early and don't
+			// dispatch the fetch action.
+			if ( registry.select( STORE_NAME ).getExistingTag() !== undefined ) {
+				return;
+			}
+
+			const existingTag = yield actions.fetchExistingTag();
+			yield actions.receiveExistingTag( existingTag !== undefined ? existingTag : null );
 
 			return;
 		} catch ( err ) {

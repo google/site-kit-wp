@@ -170,5 +170,50 @@ describe( 'modules/analytics tags', () => {
 				expect( permissionForTag ).toEqual( undefined );
 			} );
 		} );
+
+		describe( 'hasExistingTag', () => {
+			it( 'returns true if an existing tag exists', async () => {
+				registry.dispatch( STORE_NAME ).receiveExistingTag( 'UA-12345678-1' );
+
+				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
+
+				// Ensure the proper parameters were sent.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getExistingTag' )
+				);
+
+				expect( hasExistingTag ).toEqual( true );
+				expect( fetch ).not.toHaveBeenCalled();
+			} );
+
+			it( 'returns false if no existing tag exists', async () => {
+				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+
+				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
+
+				// Ensure the proper parameters were sent.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getExistingTag' )
+				);
+
+				expect( hasExistingTag ).toEqual( false );
+				expect( fetch ).not.toHaveBeenCalled();
+			} );
+
+			it( 'returns undefined if existing tag has not been loaded yet', async () => {
+				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
+
+				// Ensure the proper parameters were sent.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getExistingTag' )
+				);
+
+				expect( hasExistingTag ).toEqual( undefined );
+				expect( fetch ).not.toHaveBeenCalled();
+			} );
+		} );
 	} );
 } );
