@@ -431,10 +431,11 @@ final class Authentication {
 	 * initial setup are granted.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Moved from `Permissions` class.
 	 *
 	 * @return bool True if setup is completed, false otherwise.
 	 */
-	public function is_setup_complete() {
+	public function is_setup_completed() {
 		if ( ! $this->credentials->has() ) {
 			return false;
 		}

@@ -213,7 +213,7 @@ final class Permissions {
 		// Special setup and authentication rules.
 		if ( ( isset( $this->primitive_to_core[ $cap ] ) || isset( $this->meta_to_core[ $cap ] ) ) ) {
 			// If setup has not yet been completed, require administrator capabilities for everything.
-			if ( self::MANAGE_OPTIONS !== $cap && ! $this->authentication->is_setup_complete() ) {
+			if ( self::MANAGE_OPTIONS !== $cap && ! $this->authentication->is_setup_completed() ) {
 				$caps[] = self::MANAGE_OPTIONS;
 			}
 
@@ -228,7 +228,7 @@ final class Permissions {
 
 				// For all users, require setup to have been completed.
 				if ( ! $prevent_access ) {
-					$prevent_access = ! $this->authentication->is_setup_complete();
+					$prevent_access = ! $this->authentication->is_setup_completed();
 				}
 
 				if ( $prevent_access ) {
