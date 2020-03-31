@@ -25,6 +25,7 @@ import {
 	Input,
 	TextField,
 } from 'SiteKitCore/material-components';
+import Button from 'GoogleComponents/button';
 import classnames from 'classnames';
 
 /**
@@ -44,41 +45,86 @@ class AnalyticsSetupNoAccountNotice extends Component {
 			propertyName: siteURL,
 			profileName: 'All website traffic',
 			timezone,
+			validationIssues: {},
+			isSubmitting: false,
 		};
 
 		this.handleInputChange = this.handleInputChange.bind( this );
+		this.getTimezoneSelector = this.getTimezoneSelector.bind( this );
 	}
 
 	handleInputChange( e, inputName ) {
 		this.setState( { [ inputName ]: e.target.value } );
+		const { validationIssues } = this.state;
+
+		// If the field is empty, it is invalid.
+		validationIssues[ inputName ] = '' === e.target.value;
+
+		this.setState( { validationIssues } );
 	}
 
 	async handleSubmit( e ) {
 		if ( e ) {
 			e.preventDefault();
 		}
+		this.setState( { isSubmitting: true } );
 		trackEvent( 'analytics_setup', 'new_account_setup_clicked', '' );
 	}
 
+	// Build the timezone selector and cache it for re-renders.
+	getTimezoneSelector() {
+		if ( this.timezoneData ) {
+			return this.timezoneData;
+		}
+		const { timezones } = global.googlesitekit.admin;
+		const {
+			timezone,
+		} = this.state;
+		this.timezoneData = (
+			<Select
+				className="googlesitekit-analytics__select-timezone"
+				name="timezone"
+				style={ { minWidth: '240px' } /*todo: move to css */ }
+				enhanced
+				value={ timezone }
+				onChange={ ( e ) => {
+					this.handleInputChange( e, 'timezone' );
+				} }
+				label={ __( 'Timezone', 'google-site-kit' ) }
+				outlined
+			>
+				{ timezones
+					.map( ( aTimezone, id ) =>
+						<Option
+							key={ id }
+							value={ aTimezone.value }
+						>
+							{ aTimezone.name }
+						</Option>
+					) }
+			</Select>
+		);
+		return this.timezoneData;
+	}
+
 	render() {
-		const allTimezones = [];
 		const {
 			accountName,
 			propertyName,
 			profileName,
-			timezone,
+			validationIssues,
 		} = this.state;
-		const accountValidated = true;
-		const propertyValidated = true;
-		const profileValidated = true;
-		const timezoneValidated = true;
+
 		const errorCode = '';
+
+		// Disable the submit button if there are validation errors.
+		const buttonDisabled = validationIssues.accountName || validationIssues.propertyName || validationIssues.profileName;
 
 		return (
 			<Fragment>
 				<div className="googlesitekit-setup-module">
 					<div className="mdc-layout-grid__inner">
-						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 							<h2>
 								{ __( 'Oops...', 'google-site-kit' ) }
 							</h2>
@@ -89,85 +135,76 @@ class AnalyticsSetupNoAccountNotice extends Component {
 								{ __( 'Confirm your account details:', 'google-site-kit' ) }
 							</p>
 							<div className="googlesitekit-setup-module__inputs">
-								<TextField
-									className={ classnames(
-										'mdc-text-field',
-										{ 'mdc-text-field--error': errorCode || ! accountValidated }
-									) }
-									label={ __( 'Account', 'google-site-kit' ) }
-									name="account"
-									onChange={ ( e ) => {
-										this.handleInputChange( e, 'accountName' );
-									} }
-									outlined
-									required
-								>
-									<Input
-										name="account"
-										value={ accountName }
-									/>
-								</TextField>
-								<TextField
-									className={ classnames(
-										'mdc-text-field',
-										{ 'mdc-text-field--error': errorCode || ! propertyValidated }
-									) }
-									label={ __( 'Property', 'google-site-kit' ) }
-									name="property"
-									onChange={ ( e ) => {
-										this.handleInputChange( e, 'propertyName' );
-									} }
-									outlined
-									required
-								>
-									<Input
-										name="property"
-										value={ propertyName }
-									/>
-								</TextField>
-								<TextField
-									className={ classnames(
-										'mdc-text-field',
-										{ 'mdc-text-field--error': errorCode || ! profileValidated }
-									) }
-									label={ __( 'Profile', 'google-site-kit' ) }
-									name="profile"
-									onChange={ ( e ) => {
-										this.handleInputChange( e, 'profileName' );
-									} }
-									outlined
-									required
-								>
-									<Input
-										name="profile"
-										value={ profileName }
-									/>
-								</TextField>
-							</div>
-							<div className="googlesitekit-setup-module__inputs">
-								<Select
-									className={ classnames(
-										'mdc-text-field googlesitekit-analytics__select-timezone',
-										{ 'mdc-text-field--error': errorCode || ! timezoneValidated }
-									) }
-									name="timezone"
-									value={ timezone }
-									onChange={ ( e ) => {
-										this.handleInputChange( e, 'timezone' );
-									} }
-									label={ __( 'Timezone', 'google-site-kit' ) }
-									outlined
-								>
-									{ allTimezones
-										.map( ( account, id ) =>
-											<Option
-												key={ id }
-												value={ account.id }
-											>
-												{ account.name }
-											</Option>
+								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+									<TextField
+										className={ classnames(
+											'mdc-text-field',
+											{ 'mdc-text-field--error': errorCode || validationIssues.accountName }
 										) }
-								</Select>
+										label={ __( 'Account', 'google-site-kit' ) }
+										name="account"
+										onChange={ ( e ) => {
+											this.handleInputChange( e, 'accountName' );
+										} }
+										outlined
+										required
+									>
+										<Input
+											name="account"
+											value={ accountName }
+										/>
+									</TextField>
+								</div>
+								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+									<TextField
+										className={ classnames(
+											'mdc-text-field',
+											{ 'mdc-text-field--error': errorCode || validationIssues.propertyName }
+										) }
+										label={ __( 'Property', 'google-site-kit' ) }
+										name="property"
+										onChange={ ( e ) => {
+											this.handleInputChange( e, 'propertyName' );
+										} }
+										outlined
+										required
+									>
+										<Input
+											name="property"
+											value={ propertyName }
+										/>
+									</TextField>
+								</div>
+								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+									<TextField
+										className={ classnames(
+											'mdc-text-field',
+											{ 'mdc-text-field--error': errorCode || validationIssues.profileName }
+										) }
+										label={ __( 'Profile', 'google-site-kit' ) }
+										name="profile"
+										onChange={ ( e ) => {
+											this.handleInputChange( e, 'profileName' );
+										} }
+										outlined
+										required
+									>
+										<Input
+											name="profile"
+											value={ profileName }
+										/>
+									</TextField>
+								</div>
+								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+									{ this.getTimezoneSelector() }
+								</div>
+							</div>
+							<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+								<Button
+									disabled={ buttonDisabled }
+								>
+									{ __( 'Create Account', 'google-site-kit' ) }
+								</Button>
 							</div>
 						</div>
 					</div>
