@@ -48,6 +48,14 @@ function filterAnalyticsSetup() {
 	);
 }
 
+function Setup( props ) {
+	return (
+		<WithTestRegistry { ...props }>
+			<SetupWrapper />
+		</WithTestRegistry>
+	);
+}
+
 storiesOf( 'Analytics Module Setup', module )
 	.add( 'Start', () => {
 		filterAnalyticsSetup();
@@ -60,11 +68,7 @@ storiesOf( 'Analytics Module Setup', module )
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
 		};
 
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<SetupWrapper />
-			</WithTestRegistry>
-		);
+		return <Setup callback={ setupRegistry } />;
 	} )
 	.add( 'Start (with matched property)', () => {
 		filterAnalyticsSetup();
@@ -83,11 +87,7 @@ storiesOf( 'Analytics Module Setup', module )
 			} );
 		};
 
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<SetupWrapper />
-			</WithTestRegistry>
-		);
+		return <Setup callback={ setupRegistry } />;
 	} )
 	.add( 'No Accounts', () => {
 		filterAnalyticsSetup();
@@ -97,11 +97,7 @@ storiesOf( 'Analytics Module Setup', module )
 			dispatch( STORE_NAME ).receiveAccounts( [] );
 		};
 
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<SetupWrapper />
-			</WithTestRegistry>
-		);
+		return <Setup callback={ setupRegistry } />;
 	} )
 	.add( 'Existing Tag (with access)', () => {
 		filterAnalyticsSetup();
@@ -115,10 +111,6 @@ storiesOf( 'Analytics Module Setup', module )
 			dispatch( STORE_NAME ).receiveExistingTag( fixtures.getTagPermissionsAccess );
 		};
 
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<SetupWrapper />
-			</WithTestRegistry>
-		);
+		return <Setup callback={ setupRegistry } />;
 	} )
 ;
