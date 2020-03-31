@@ -66,6 +66,29 @@ storiesOf( 'Analytics Module Setup', module )
 			</WithTestRegistry>
 		);
 	} )
+	.add( 'Start (with matched property)', () => {
+		filterAnalyticsSetup();
+
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const setupRegistry = ( { dispatch } ) => {
+			const [ matchedProperty ] = properties;
+			dispatch( STORE_NAME ).receiveAccounts( accounts );
+			dispatch( STORE_NAME ).receiveProperties( properties );
+			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
+			dispatch( STORE_NAME ).receiveSettings( {
+				accountID: matchedProperty.accountId,
+				propertyID: matchedProperty.id,
+				profileID: profiles[ 0 ].id,
+			} );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrapper />
+			</WithTestRegistry>
+		);
+	} )
 	.add( 'No Accounts', () => {
 		filterAnalyticsSetup();
 
