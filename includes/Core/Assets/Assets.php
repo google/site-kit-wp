@@ -565,10 +565,10 @@ final class Assets {
 		$current_user = wp_get_current_user();
 
 		$inline_data = array(
-			'homeURL'          => home_url(),
-			'referenceSiteURL' => esc_url_raw( $site_url ),
+			'homeURL'          => trailingslashit( home_url() ),
+			'referenceSiteURL' => esc_url_raw( trailingslashit( $site_url ) ),
 			'userIDHash'       => md5( $site_url . $current_user->ID ),
-			'adminURL'         => esc_url_raw( get_admin_url() . 'admin.php' ),
+			'adminURL'         => esc_url_raw( trailingslashit( admin_url() ) ),
 			'assetsURL'        => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
 			'blogPrefix'       => $wpdb->get_blog_prefix(),
 			'ampMode'          => $this->context->get_amp_mode(),

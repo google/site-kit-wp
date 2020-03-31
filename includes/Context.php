@@ -223,7 +223,7 @@ final class Context {
 		if ( $post ) {
 			$permalink = get_permalink( $post );
 			if ( false === $permalink ) {
-				return $permalink;
+				return false;
 			}
 			return $this->filter_reference_url( $permalink );
 		}

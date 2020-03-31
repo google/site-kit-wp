@@ -16,7 +16,7 @@ use Google\Site_Kit\Context;
  * Class representing an entity.
  *
  * An entity in Site Kit terminology is based on a canonical URL, i.e. every
- * canonical URL has an associated entity.
+ * canonical frontend URL has an associated entity.
  *
  * An entity may also have a type, if it can be determined.
  * Possible types are e.g. 'post' for a WordPress post (of any post type!),
@@ -85,10 +85,19 @@ final class Entity {
 	 * }
 	 */
 	public function __construct( $url, array $args = array() ) {
+		$args = array_merge(
+			array(
+				'type'  => '',
+				'title' => '',
+				'id'    => 0,
+			),
+			$args
+		);
+
 		$this->url   = $url;
-		$this->type  = isset( $args['type'] ) ? (string) $args['type'] : '';
-		$this->title = isset( $args['title'] ) ? (string) $args['title'] : '';
-		$this->id    = isset( $args['id'] ) ? (int) $args['id'] : 0;
+		$this->type  = (string) $args['type'];
+		$this->title = (string) $args['title'];
+		$this->id    = (int) $args['id'];
 	}
 
 	/**
