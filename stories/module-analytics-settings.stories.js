@@ -142,8 +142,7 @@ storiesOf( 'Analytics Module Settings', module )
 
 		return <Settings isEditing={ true } callback={ setupRegistry } />;
 	} )
-	/*
-	.add( 'Edit, with no accounts', () => {
+	.add( 'Edit, open with no accounts', () => {
 		filterAnalyticsSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
@@ -151,8 +150,9 @@ storiesOf( 'Analytics Module Settings', module )
 			dispatch( STORE_NAME ).receiveAccounts( [] );
 		};
 
-		return <Settings callback={ setupRegistry } />;
+		return <Settings isEditing={ true } callback={ setupRegistry } />;
 	} )
+	/*
 	.add( 'Edit, with existing tag (with access)', () => {
 		filterAnalyticsSettings();
 
