@@ -61,4 +61,13 @@ trait Module_With_Assets_Trait {
 			}
 		);
 	}
+
+	/**
+	 * Sets up the module's assets to register.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of Asset objects.
+	 */
+	abstract protected function setup_assets();
 }
