@@ -160,27 +160,7 @@ final class Context {
 	 * @return string Reference site URL.
 	 */
 	public function get_reference_site_url() {
-		$orig_site_url = home_url();
-		$site_url      = $orig_site_url;
-
-		/**
-		 * Filters the reference site URL to use for stats.
-		 *
-		 * This can be used to override the current site URL, for example when using the plugin on a non-public site,
-		 * such as in a staging environment.
-		 *
-		 * @since 1.0.0
-		 *
-		 * @param string $site_url Reference site URL, typically the WordPress home URL.
-		 */
-		$site_url = apply_filters( 'googlesitekit_site_url', $site_url );
-
-		// Ensure this is not empty.
-		if ( empty( $site_url ) ) {
-			$site_url = $orig_site_url;
-		}
-
-		return untrailingslashit( $site_url );
+		return untrailingslashit( $this->filter_reference_url() );
 	}
 
 	/**
@@ -384,15 +364,38 @@ final class Context {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $url Input URL.
-	 * @return string URL that starts with the site reference URL.
+	 * @param string $url Optional. Input URL. If not provided, returns the plain reference site URL.
+	 * @return string URL that starts with the reference site URL.
 	 */
-	private function filter_reference_url( $url ) {
-		$reference_site_url = $this->get_reference_site_url();
-		$orig_site_url      = home_url();
+	private function filter_reference_url( $url = '' ) {
+		$orig_site_url = home_url();
+		$site_url      = $orig_site_url;
 
-		if ( $orig_site_url !== $reference_site_url ) {
-			$url = str_replace( $orig_site_url, $reference_site_url, $url );
+		/**
+		 * Filters the reference site URL to use for stats.
+		 *
+		 * This can be used to override the current site URL, for example when using the plugin on a non-public site,
+		 * such as in a staging environment.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param string $site_url Reference site URL, typically the WordPress home URL.
+		 */
+		$site_url = apply_filters( 'googlesitekit_site_url', $site_url );
+
+		// Ensure this is not empty.
+		if ( empty( $site_url ) ) {
+			$site_url = $orig_site_url;
+		}
+
+		// If no URL given, just return the reference site URL.
+		if ( empty( $url ) ) {
+			return $site_url;
+		}
+
+		// Replace original site URL with the reference site URL.
+		if ( $orig_site_url !== $site_url ) {
+			$url = str_replace( $orig_site_url, $site_url, $url );
 		}
 
 		return $url;
