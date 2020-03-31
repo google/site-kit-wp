@@ -11,9 +11,10 @@
 namespace Google\Site_Kit\Core\Admin;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Modules\Modules;
+use Google\Site_Kit\Core\Permissions\Permissions;
 
 /**
  * Class managing admin screens.
@@ -57,8 +58,13 @@ final class Screens {
 	 *
 	 * @param Context $context Plugin context.
 	 * @param Assets  $assets  Optional. Assets API instance. Default is a new instance.
+	 * @param Modules $modules Optional. Modules instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, Assets $assets = null ) {
+	public function __construct(
+		Context $context,
+		Assets $assets = null,
+		Modules $modules = null
+	) {
 		$this->context = $context;
 
 		if ( ! $assets ) {
@@ -192,13 +198,7 @@ final class Screens {
 		}
 
 		$this->screens[ $hook_suffix ]->enqueue_assets( $this->assets );
-
-		/**
-		 * Fires when assets are enqueued for a Site Kit admin screen.
-		 *
-		 * @since 1.0.0
-		 */
-		do_action( 'googlesitekit_enqueue_screen_assets' );
+		$this->modules->enqueue_assets();
 	}
 
 	/**
