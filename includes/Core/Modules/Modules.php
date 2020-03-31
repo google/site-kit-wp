@@ -429,6 +429,23 @@ final class Modules {
 	}
 
 	/**
+	 * Enqueues all module-specific assets.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function enqueue_assets() {
+		$available_modules = $this->get_available_modules();
+		array_walk(
+			$available_modules,
+			function( Module $module ) {
+				if ( $module instanceof Module_With_Assets ) {
+					$module->enqueue_assets();
+				}
+			}
+		);
+	}
+
+	/**
 	 * Gets related REST routes.
 	 *
 	 * @since 1.3.0
