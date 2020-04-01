@@ -9,6 +9,7 @@ export { safeLoginUser } from './safe-login-user';
 export { setAnalyticsExistingPropertyID } from './set-analytics-existing-property-id';
 export { setAuthToken } from './set-auth-token';
 export { setClientConfig } from './set-client-config';
+export { setEditPostFeature } from './set-edit-post-feature';
 export { setSiteVerification } from './set-site-verification';
 export { setSearchConsoleProperty } from './set-search-console-property';
 export { setupAnalytics } from './setup-analytics';
