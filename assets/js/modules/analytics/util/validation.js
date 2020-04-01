@@ -17,16 +17,24 @@
  */
 
 /**
+ * Checks the given value to see if it is a positive integer.
+ *
+ * @param {*} input Value to check.
+ * @return {boolean} Validity.
+ */
+const isValidNumericID = function( input ) {
+	const id = parseInt( input ) || 0;
+
+	return id > 0;
+};
+
+/**
  * Checks if the given account ID appears to be a valid Analyics account.
  *
  * @param {(string|number)} accountID Account ID to test.
  * @return {boolean} Whether or not the given account ID is valid.
  */
-export function isValidAccountID( accountID ) {
-	const accountInt = parseInt( accountID ) || 0;
-
-	return accountInt > 0;
-}
+export { isValidNumericID as isValidAccountID };
 
 /**
  * Checks whether the given property ID appears to be valid.
@@ -37,3 +45,19 @@ export function isValidAccountID( accountID ) {
 export function isValidPropertyID( propertyID ) {
 	return typeof propertyID === 'string' && propertyID.match( /^UA-\d+-\d+$/ );
 }
+
+/**
+ * Checks if the given profile ID appears to be valid.
+ *
+ * @param {(string|number)} accountID Account ID to test.
+ * @return {boolean} Whether or not the given account ID is valid.
+ */
+export { isValidNumericID as isValidProfileID };
+
+/**
+ * Checks if the given internal web property ID appears to be valid.
+ *
+ * @param {(string|number)} accountID Account ID to test.
+ * @return {boolean} Whether or not the given account ID is valid.
+ */
+export { isValidNumericID as isValidInternalWebPropertyID };
