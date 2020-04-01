@@ -27,7 +27,7 @@ const path = require( 'path' );
  */
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require( 'clean-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 const { ProvidePlugin } = require( 'webpack' );
 
@@ -130,7 +130,7 @@ const webpackConfig = ( mode ) => {
 				} ),
 				new CleanWebpackPlugin( {
 					// Stop this build from removing unrelated JS and CSS files.
-					cleanOnceBeforeBuildPatterns: [], 
+					cleanOnceBeforeBuildPatterns: [],
 				} ),
 			],
 			optimization: {
