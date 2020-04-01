@@ -16,5 +16,6 @@
  * limitations under the License.
  */
 
+export { default as accounts } from './accounts';
 export { default as getTagPermissionsAccess } from './tag-permissions-access';
 export { default as getTagPermissionsNoAccess } from './tag-permissions-no-access';
