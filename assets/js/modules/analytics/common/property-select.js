@@ -53,13 +53,10 @@ export default function PropertySelect() {
 			outlined
 		>
 			{ properties
-				.concat( ! hasExistingTag
-					? {
-						id: PROPERTY_CREATE,
-						name: __( 'Set up a new property', 'google-site-kit' ),
-					}
-					: []
-				)
+				.concat( {
+					id: PROPERTY_CREATE,
+					name: __( 'Set up a new property', 'google-site-kit' ),
+				} )
 				.map( ( { id, name }, index ) => (
 					<Option
 						key={ index }
