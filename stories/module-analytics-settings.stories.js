@@ -152,21 +152,39 @@ storiesOf( 'Analytics Module Settings', module )
 
 		return <Settings isEditing={ true } callback={ setupRegistry } />;
 	} )
-	/*
 	.add( 'Edit, with existing tag (with access)', () => {
 		filterAnalyticsSettings();
 
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const { accounts } = fixtures.accountsPropertiesProfiles;
+		const { properties, profiles } = fixtures.propertiesProfiles;
+		const { accountId, webPropertyId, id: profileID } = fixtures.accountsPropertiesProfiles.profiles[ 0 ];
+		const existingTag = {
+			accountID: fixtures.propertiesProfiles.profiles[ 0 ].accountId,
+			propertyID: fixtures.propertiesProfiles.profiles[ 0 ].webPropertyId,
+		};
+
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
-			dispatch( STORE_NAME ).receiveExistingTag( fixtures.getTagPermissionsAccess );
+			dispatch( STORE_NAME ).receiveSettings( {
+				accountID: accountId,
+				propertyID: webPropertyId,
+				profileID,
+				anonymizeIP: true,
+				useSnippet: true,
+				trackingDisabled: [ 'loggedinUsers' ],
+			} );
+			dispatch( STORE_NAME ).receiveExistingTag( existingTag );
+			dispatch( STORE_NAME ).receiveTagPermission( {
+				...existingTag,
+				permission: true,
+			} );
 		};
 
-		return <Settings callback={ setupRegistry } />;
+		return <Settings isEditing={ true } callback={ setupRegistry } />;
 	} )
+	/*
 	.add( 'Edit, with existing tag (no access)', () => {
 		filterAnalyticsSettings();
 
