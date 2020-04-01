@@ -23,7 +23,6 @@ import { delay } from 'lodash';
 import Header from 'GoogleComponents/header';
 import Link from 'GoogleComponents/link';
 import HelpLink from 'GoogleComponents/help-link';
-import { getSiteKitAdminURL } from 'SiteKitCore/util';
 
 /**
  * WordPress dependencies
@@ -32,6 +31,11 @@ import { withFilters } from '@wordpress/components';
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { applyFilters } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import { getSiteKitAdminURL } from '../../util';
 
 class BaseComponent extends Component {
 	render() {

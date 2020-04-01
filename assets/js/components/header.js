@@ -19,12 +19,12 @@
 /**
  * External dependencies
  */
-import ErrorNotification from 'SiteKitCore/components/notifications/error-notification';
 import Logo from 'GoogleComponents/logo';
 /**
  * Internal dependencies
  */
 import UserMenu from './user-menu';
+import ErrorNotification from '../components/notifications/error-notification';
 /**
  * WordPress dependencies
  */

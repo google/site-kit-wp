@@ -26,7 +26,6 @@ import Layout from 'GoogleComponents/layout/layout';
 import Notification from 'GoogleComponents/notifications/notification';
 import OptIn from 'GoogleComponents/optin';
 import { trackEvent } from 'GoogleUtil';
-import { getSiteKitAdminURL } from 'SiteKitCore/util';
 import { delay } from 'lodash';
 
 /**
@@ -38,6 +37,7 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { getSiteKitAdminURL } from '../../util';
 import CompatibilityChecks from './compatibility-checks';
 
 class SetupUsingProxy extends Component {

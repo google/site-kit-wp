@@ -21,9 +21,7 @@
  */
 import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import ProgressBar from 'GoogleComponents/progress-bar';
-import { Select, TextField, Input } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
-import Button from 'SiteKitCore/components/button';
 import HelpLink from 'GoogleComponents/help-link';
 import { trackEvent } from 'GoogleUtil';
 
@@ -32,6 +30,12 @@ import { trackEvent } from 'GoogleUtil';
  */
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { Select, TextField, Input } from '../../material-components';
+import Button from '../../components/button';
 
 class SearchConsole extends Component {
 	constructor( props ) {

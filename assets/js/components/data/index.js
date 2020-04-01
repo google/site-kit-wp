@@ -21,13 +21,6 @@
 import DashboardAuthAlert from 'GoogleComponents/notifications/dashboard-auth-alert';
 import DashboardPermissionAlert from 'GoogleComponents/notifications/dashboard-permission-alert';
 import md5 from 'md5';
-import {
-	getStorage,
-	getCurrentDateRangeSlug,
-	fillFilterWithComponent,
-	getQueryParameter,
-	sortObjectProperties,
-} from 'SiteKitCore/util';
 import { cloneDeep, each, intersection, isEqual, sortBy } from 'lodash';
 
 /**
@@ -39,6 +32,17 @@ import { addAction, applyFilters, doAction, addFilter, removeFilter } from '@wor
 
 export const TYPE_CORE = 'core';
 export const TYPE_MODULES = 'modules';
+
+/**
+ * Internal dependencies
+ */
+import {
+	getStorage,
+	getCurrentDateRangeSlug,
+	fillFilterWithComponent,
+	getQueryParameter,
+	sortObjectProperties,
+} from '../../util';
 
 /**
  * Ensures that the local datacache object is properly set up.

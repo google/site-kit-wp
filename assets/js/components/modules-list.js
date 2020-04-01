@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { map } from 'lodash';
-import data from 'SiteKitCore/components/data';
 import {
 	refreshAuthentication,
 	getReAuthURL,
@@ -42,6 +41,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Link from './link';
+import data from '../components/data';
 
 class ModulesList extends Component {
 	constructor( props ) {

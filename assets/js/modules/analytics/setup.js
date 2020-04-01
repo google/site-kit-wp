@@ -26,7 +26,6 @@ import ProgressBar from 'GoogleComponents/progress-bar';
 import Link from 'GoogleComponents/link';
 import Radio from 'GoogleComponents/radio';
 import Switch from 'GoogleComponents/switch';
-import { Select, Option } from 'SiteKitCore/material-components';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import {
 	trackEvent,
@@ -47,6 +46,11 @@ const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
 const trackingExclusionLabels = {
 	[ TRACKING_LOGGED_IN_USERS ]: __( 'Logged-in users', 'google-site-kit' ),
 };
+
+/**
+ * Internal dependencies
+ */
+import { Select, Option } from '../../material-components';
 
 class AnalyticsSetup extends Component {
 	constructor( props ) {

@@ -22,7 +22,6 @@
 import PropTypes from 'prop-types';
 import Button from 'GoogleComponents/button';
 import Link from 'GoogleComponents/link';
-import { MDCDialog } from 'SiteKitCore/material-components';
 import FocusTrap from 'focus-trap-react';
 import classnames from 'classnames';
 
@@ -32,6 +31,11 @@ import classnames from 'classnames';
 import { withInstanceId } from '@wordpress/compose';
 import { Component, createRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { MDCDialog } from '../material-components';
 
 class Dialog extends Component {
 	constructor() {

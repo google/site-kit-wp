@@ -22,7 +22,6 @@
 import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import Button from 'GoogleComponents/button';
 import ProgressBar from 'GoogleComponents/progress-bar';
-import { TextField, Input } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
 import {
 	validateJSON,
@@ -35,6 +34,11 @@ import HelpLink from 'GoogleComponents/help-link';
  */
 import { __ } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { TextField, Input } from '../../material-components';
 
 class SiteVerification extends Component {
 	constructor( props ) {

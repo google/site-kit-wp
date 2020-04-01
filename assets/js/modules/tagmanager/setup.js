@@ -24,12 +24,12 @@ import Link from 'GoogleComponents/link';
 import Switch from 'GoogleComponents/switch';
 import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import ProgressBar from 'GoogleComponents/progress-bar';
-import { Select, Option } from 'SiteKitCore/material-components';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
 import { getExistingTag, toggleConfirmModuleSettings } from 'GoogleUtil';
 import { get } from 'lodash';
 import classnames from 'classnames';
+
 /**
  * WordPress dependencies
  */
@@ -45,6 +45,7 @@ import {
 	isValidAccountID,
 	isValidContainerID,
 } from './util';
+import { Select, Option } from '../../material-components';
 
 const ACCOUNT_CREATE = 'account_create';
 const CONTAINER_CREATE = 'container_create';

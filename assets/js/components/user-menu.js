@@ -23,13 +23,17 @@ import Button from 'GoogleComponents/button';
 import Menu from 'GoogleComponents/menu';
 import Modal from 'GoogleComponents/modal';
 import { clearWebStorage } from 'GoogleUtil';
-import { getSiteKitAdminURL } from 'SiteKitCore/util';
 
 /**
  * WordPress dependencies
  */
 import { Component, Fragment, createRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { getSiteKitAdminURL } from '../util';
 
 class UserMenu extends Component {
 	constructor( props ) {

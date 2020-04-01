@@ -22,13 +22,16 @@
 import CTA from 'GoogleComponents/notifications/cta';
 import ctaWrapper from 'GoogleComponents/notifications/cta-wrapper';
 import { showErrorNotification } from 'GoogleUtil';
-import InvalidCredentialsWarning
-	from 'SiteKitCore/components/notifications/invalid-credentials-warning';
 
 /**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import InvalidCredentialsWarning from '../../components/notifications/invalid-credentials-warning';
 
 /**
  * Creates a CTA component when there's a data error. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
