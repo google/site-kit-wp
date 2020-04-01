@@ -24,6 +24,8 @@ use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Analytics\Settings;
+use Google\Site_Kit\Modules\Analytics\AccountTicket;
+use Google\Site_Kit\Modules\Analytics\Provisioning;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DateRangeValues;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_Report;
@@ -419,7 +421,7 @@ final class Analytics extends Module
 
 		$gtag_amp_opt_filtered['vars']['gtag_id'] = $tracking_id;
 		?>
-		<amp-analytics type="gtag" data-credentials="include">
+		<amp-analytics type="gtag" data-this->credentials="include">
 			<script type="application/json">
 				<?php echo wp_json_encode( $gtag_amp_opt_filtered ); ?>
 			</script>
@@ -787,7 +789,11 @@ final class Analytics extends Module
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'timezone' ), array( 'status' => 400 ) );
 				}
 
-				$account = new Google_Service_Analytics_Account();
+				if ( ! $this->credentials->has() ) {
+					return new WP_Error( 'missing_credentials', __( 'Missing credentials..', 'google-site-kit' ), array( 'status' => 400 ) );
+				}
+
+				$account = new AccountTicket();
 				$account->setName( $data['accountName'] );
 
 				$property = new Google_Service_Analytics_Webproperty();
@@ -804,9 +810,18 @@ final class Analytics extends Module
 				$account_ticket->setProfile( $profile );
 				$account_ticket->setRedirectUri( $this->get_provisioning_redirect_uri() );
 
+				// Add site id and secret.
+				$creds = $this->credentials->get();
+				$account_ticket->setSiteId( $creds['oauth2_client_id'] );
+				$account_ticket->setSiteSecret( $creds['oauth2_client_secret'] );
+
 				$restore_defer = $this->with_client_defer( false );
 				try {
-					$account_ticket = $this->get_service( 'analytics' )->provisioning->createAccountTicket( $account_ticket );
+					$analytics_service = $this->get_service( 'analyticsprovisioning' );
+					// Use a custom provisioning method that accepts site id and secret.
+					$analytics_service->provisioning = new Provisioning();
+
+					$account_ticket = $analytics_service->provisioning->createAccountTicket( $account_ticket );
 				} catch ( Exception $e ) {
 					$restore_defer();
 					return $this->exception_to_error( $e, $data->datapoint );
@@ -1182,8 +1197,9 @@ final class Analytics extends Module
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array(
-			'analytics'          => new Google_Service_Analytics( $client ),
-			'analyticsreporting' => new Google_Service_AnalyticsReporting( $client ),
+			'analytics'             => new Google_Service_Analytics( $client ),
+			'analyticsreporting'    => new Google_Service_AnalyticsReporting( $client ),
+			'analyticsprovisioning' => new Provisioning( $client, $this->google_proxy->url() ),
 		);
 	}
 
