@@ -26,10 +26,10 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { getExistingTag } from 'assets/js/util';
+import { getExistingTag } from '../../../util';
 import { STORE_NAME } from './index';
 
-const { createRegistrySelector } = Data;
+const { commonActions, createRegistrySelector } = Data;
 
 // Actions
 const FETCH_EXISTING_TAG = 'FETCH_EXISTING_TAG';
@@ -54,17 +54,17 @@ export const actions = {
 		};
 	},
 
-	fetchTagPermission( { propertyID, accountID = '' } ) {
+	fetchTagPermission( { propertyID } ) {
 		invariant( propertyID, 'propertyID is required.' );
 
 		return {
-			payload: { propertyID, accountID },
+			payload: { propertyID },
 			type: FETCH_TAG_PERMISSION,
 		};
 	},
 
 	receiveExistingTag( existingTag ) {
-		invariant( existingTag, 'existingTag is required.' );
+		invariant( existingTag !== undefined, 'existingTag cannot be undefined.' );
 
 		return {
 			payload: { existingTag },
@@ -83,6 +83,7 @@ export const actions = {
 
 	receiveTagPermission( { propertyID, accountID, permission } ) {
 		invariant( propertyID, 'propertyID is required.' );
+		invariant( accountID, 'accountID is required.' );
 		invariant( permission !== undefined, 'permission cannot be undefined.' );
 
 		return {
@@ -91,12 +92,12 @@ export const actions = {
 		};
 	},
 
-	receiveTagPermissionFailed( { propertyID, accountID, error } ) {
+	receiveTagPermissionFailed( { propertyID, error } ) {
 		invariant( propertyID, 'propertyID is required.' );
 		invariant( error, 'error is required.' );
 
 		return {
-			payload: { accountID, error, propertyID },
+			payload: { error, propertyID },
 			type: RECEIVE_TAG_PERMISSION_FAILED,
 		};
 	},
@@ -112,8 +113,8 @@ export const controls = {
 		// currently quite nested and difficult to straightforwardly test.
 		return getExistingTag( 'analytics' );
 	},
-	[ FETCH_TAG_PERMISSION ]: ( { payload: { propertyID, accountID } } ) => {
-		return API.get( 'modules', 'analytics', 'tag-permission', { propertyID, accountID } );
+	[ FETCH_TAG_PERMISSION ]: ( { payload: { propertyID } } ) => {
+		return API.get( 'modules', 'analytics', 'tag-permission', { propertyID } );
 	},
 };
 
@@ -197,11 +198,15 @@ export const resolvers = {
 	*getExistingTag() {
 		try {
 			const registry = yield actions.getRegistry();
-			const existingTag = yield actions.fetchExistingTag( 'analytics' );
-			yield actions.receiveExistingTag( existingTag );
 
-			// Invalidate this resolver so it will run again.
-			yield registry.getActions().invalidateResolutionForStoreSelector( 'getExistingTag' );
+			// If an existing tag was already loaded; return early and don't
+			// dispatch the fetch action.
+			if ( registry.select( STORE_NAME ).getExistingTag() !== undefined ) {
+				return;
+			}
+
+			const existingTag = yield actions.fetchExistingTag();
+			yield actions.receiveExistingTag( existingTag !== undefined ? existingTag : null );
 
 			return;
 		} catch ( err ) {
@@ -211,34 +216,28 @@ export const resolvers = {
 		}
 	},
 
-	*getTagPermission( propertyID, accountID = '' ) {
+	*getTagPermission( propertyID ) {
 		try {
-			const response = yield actions.fetchTagPermission( { propertyID, accountID } );
+			const registry = yield commonActions.getRegistry();
 
-			if ( propertyID !== response.propertyID ) {
-				throw {
-					code: 'google_analytics_existing_tag_permission',
-				};
+			// If these permissions are already available, don't make a request.
+			if ( registry.select( STORE_NAME ).getTagPermission( propertyID ) !== undefined ) {
+				return;
 			}
+
+			const response = yield actions.fetchTagPermission( { propertyID } );
 
 			yield actions.receiveTagPermission( {
 				accountID: response.accountID,
 				propertyID,
-				permission: true,
+				permission: response.permission,
 			} );
 
 			return;
 		} catch ( error ) {
-			// This error code indicates the current user doesn't have access to this
-			// tag and shouldn't dispatch an error action.
-			if ( error.code === 'google_analytics_existing_tag_permission' ) {
-				yield actions.receiveTagPermission( { propertyID, accountID, permission: false } );
-				return;
-			}
-
 			// TODO: Implement an error handler store or some kind of centralized
 			// place for error dispatch...
-			return actions.receiveTagPermissionFailed( { accountID, error, propertyID } );
+			return actions.receiveTagPermissionFailed( { error, propertyID } );
 		}
 	},
 };
@@ -292,13 +291,12 @@ export const selectors = {
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID The Analytics Property ID to check permissions for.
-	 * @param {string} accountID  Optional. The Analytics Account ID the property belongs to, if known.
 	 * @return {?boolean} True if the user has access, false if not; `undefined` if not loaded.
 	 */
-	hasTagPermission: createRegistrySelector( ( select ) => ( state, propertyID, accountID = '' ) => {
-		const { permission } = select( STORE_NAME ).getTagPermission( state, propertyID, accountID ) || {};
+	hasTagPermission: createRegistrySelector( ( select ) => ( state, propertyID ) => {
+		const tagPermission = select( STORE_NAME ).getTagPermission( propertyID );
 
-		return permission;
+		return tagPermission ? tagPermission.permission : undefined;
 	} ),
 
 	/**
@@ -313,10 +311,9 @@ export const selectors = {
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID The Analytics Property ID to check permissions for.
-	 * @param {string} accountID  Optional. The Analytics Account ID the property belongs to, if known.
 	 * @return {?Object} Object with string `accountID` and boolean `permission` properties; `undefined` if not loaded.
 	 */
-	getTagPermission( state, propertyID, accountID = '' ) { // eslint-disable-line no-unused-vars
+	getTagPermission( state, propertyID ) {
 		invariant( propertyID, 'propertyID is required.' );
 
 		const { tagPermissions } = state;

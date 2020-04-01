@@ -260,6 +260,46 @@ class AnalyticsTest extends TestCase {
 	}
 
 	/**
+	 * @dataProvider data_parse_account_id
+	 */
+	public function test_parse_account_id( $property_id, $expected ) {
+		$class  = new \ReflectionClass( Analytics::class );
+		$method = $class->getMethod( 'parse_account_id' );
+		$method->setAccessible( true );
+
+		$result = $method->invokeArgs(
+			new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ),
+			array( $property_id )
+		);
+		$this->assertSame( $expected, $result );
+	}
+
+	public function data_parse_account_id() {
+		return array(
+			array(
+				'UA-2358017-2',
+				'2358017',
+			),
+			array(
+				'UA-13572468-4',
+				'13572468',
+			),
+			array(
+				'UA-13572468',
+				'',
+			),
+			array(
+				'GTM-13572468',
+				'',
+			),
+			array(
+				'13572468',
+				'',
+			),
+		);
+	}
+
+	/**
 	 * @return Module_With_Scopes
 	 */
 	protected function get_module_with_scopes() {
