@@ -1,9 +1,4 @@
 /**
- * External dependencies
- */
-import { render } from '@testing-library/react';
-
-/**
  * WordPress dependencies
  */
 import { applyFilters } from '@wordpress/hooks';
@@ -12,6 +7,11 @@ import { applyFilters } from '@wordpress/hooks';
  * Internal dependencies
  */
 import { showErrorNotification } from '../';
+
+/**
+ * External dependencies
+ */
+import { render } from 'test-utils';
 
 describe( 'showErrorNotification', () => {
 	it( 'returns null if nothing is passed', () => {

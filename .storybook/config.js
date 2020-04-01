@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 /* global __STORYBOOK_CLIENT_API__ */
 /**
  * External dependencies
@@ -34,9 +35,9 @@ import {
 /**
  * Internal dependencies
  */
-import '../dist/assets/css/wpdashboard.css';
-import '../dist/assets/css/adminbar.css';
-import '../dist/assets/css/admin.css';
+import '../assets/sass/wpdashboard.scss';
+import '../assets/sass/adminbar.scss';
+import '../assets/sass/admin.scss';
 import '../vendor/johnpbloch/wordpress-core/wp-admin/css/common.css';
 import '../vendor/johnpbloch/wordpress-core/wp-admin/css/dashboard.css';
 import '../vendor/johnpbloch/wordpress-core/wp-admin/css/edit.css';
@@ -72,28 +73,18 @@ wp.element.createPortal = createPortal;
 wp.i18n.__ = __ || {};
 wp.i18n.setLocaleData = setLocaleData || {};
 wp.i18n.sprintf = sprintf || {};
-window.wp = window.wp || wp;
-window.React = React;
-window.lodash = lodash;
-window.googlesitekit = window.googlesitekit || googlesitekit;
-window.googlesitekit.setup = window.googlesitekit.setup || googlesitekit.setup;
-window.googlesitekit.admin = window.googlesitekit.admin || googlesitekit.admin;
-window.googlesitekit.modules = window.googlesitekit.modules || googlesitekit.modules;
-window.googlesitekit.admin.assetsRoot = '/assets/';
-window.googlesitekit.isStorybook = true;
-window.wp.apiFetch = ( vars ) => {
-	const matches = vars.path.match( '/google-site-kit/v1/modules/(.*)/data/(.*[^/])' );
-
-	if ( window.googlesitekit.modules[ matches[ 1 ] ][ matches[ 2 ] ] ) {
-		return Promise.resolve( window.googlesitekit.modules[ matches[ 1 ] ][ matches[ 2 ] ] );
-	}
-	return {
-		then: () => {
-			return {
-				catch: () => false,
-			};
-		},
-	};
+global.wp = global.wp || wp;
+global.React = React;
+global.lodash = lodash;
+global.googlesitekit = global.googlesitekit || googlesitekit;
+global.googlesitekit.setup = global.googlesitekit.setup || googlesitekit.setup;
+global.googlesitekit.admin = global.googlesitekit.admin || googlesitekit.admin;
+global.googlesitekit.modules = global.googlesitekit.modules || googlesitekit.modules;
+global.googlesitekit.admin.assetsRoot = '/assets/';
+global.googlesitekit.isStorybook = true;
+global._googlesitekitBaseData = {
+	basePrefix: 'wp_',
+	splashURL: 'http://localhost/wp-admin/admin.php?page=googlesitekit-splash',
 };
 
 // Global Decorator.

@@ -45,12 +45,18 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 
 	setOptions() {
 		const { selectedStats, series, vAxes } = this.props;
+		const { pageTitle } = global.googlesitekit;
 
-		const pageTitle = googlesitekit.pageTitle && googlesitekit.pageTitle.length ? sprintf( __( 'Search Traffic Summary for %s', 'google-site-kit' ), decodeHtmlEntity( googlesitekit.pageTitle ) ) : __( 'Search Traffic Summary', 'google-site-kit' );
+		let title = __( 'Search Traffic Summary', 'google-site-kit' );
+
+		if ( pageTitle && pageTitle.length ) {
+			/* translators: %s: page title */
+			title = sprintf( __( 'Search Traffic Summary for %s', 'google-site-kit' ), decodeHtmlEntity( pageTitle ) );
+		}
 
 		const options = {
 			chart: {
-				title: pageTitle,
+				title,
 			},
 			curveType: 'line',
 			height: 270,
@@ -103,7 +109,6 @@ class SearchConsoleDashboardWidgetSiteStats extends Component {
 			options.vAxis.textPosition = 'none';
 			options.vAxis.gridlines.color = '#fff';
 			options.vAxis.minorGridlines.color = '#fff';
-			options.vAxes = {};
 			options.chartArea.width = '98%';
 		}
 

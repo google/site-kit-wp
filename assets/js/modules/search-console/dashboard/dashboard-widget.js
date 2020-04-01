@@ -20,6 +20,7 @@
  * External dependencies
  */
 import Header from 'GoogleComponents/header';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -39,7 +40,7 @@ import Alert from 'GoogleComponents/alert';
 import ProgressBar from 'GoogleComponents/progress-bar';
 import getNoDataComponent from 'GoogleComponents/notifications/nodata';
 import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
-import { getDateRangeFrom } from 'GoogleUtil';
+import { getCurrentDateRange } from 'GoogleUtil';
 import HelpLink from 'GoogleComponents/help-link';
 
 class GoogleSitekitSearchConsoleDashboardWidget extends Component {
@@ -126,14 +127,22 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 		const { selectedStats } = this.state;
 
 		const vAxesMap = {
-			0: 'Clicks',
-			1: 'Impressions',
-			2: 'Average CTR',
-			3: 'Average Position',
+			0: __( 'Clicks', 'google-site-kit' ),
+			1: __( 'Impressions', 'google-site-kit' ),
+			2: __( 'Average CTR', 'google-site-kit' ),
+			3: __( 'Average Position', 'google-site-kit' ),
 		};
 
 		return selectedStats.map( function( stat ) {
-			return { title: vAxesMap[ stat ] };
+			const otherSettings = {};
+			// The third index refers to the "Average Position" stat.
+			// We need to reverse the y-axis for this stat, see:
+			// https://github.com/google/site-kit-wp/issues/874
+			if ( stat === 3 ) {
+				otherSettings.direction = -1;
+			}
+
+			return { title: vAxesMap[ stat ], ...otherSettings };
 		} );
 	}
 
@@ -150,9 +159,9 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 
 		// Hide AdSense data display when we don't have data.
 		const wrapperClass = ! loading && receivingData ? '' : 'googlesitekit-nodata';
-		const dateRangeFrom = getDateRangeFrom();
+		const dateRange = getCurrentDateRange();
 
-		const searchConsoleDeepLink = sprintf( 'https://search.google.com/u/1/search-console?resource_id=%s', googlesitekit.admin.siteURL );
+		const searchConsoleDeepLink = sprintf( 'https://search.google.com/u/1/search-console?resource_id=%s', global.googlesitekit.admin.siteURL );
 
 		return (
 			<Fragment>
@@ -172,14 +181,15 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 							{ ! receivingData && (
 								error ? getDataErrorComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), error, true, true, true ) : getNoDataComponent( _x( 'Search Console', 'Service name', 'google-site-kit' ), true, true, true )
 							) }
-							<div className={ `
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								${ wrapperClass }
-							` }>
+							<div className={ classnames(
+								'mdc-layout-grid__cell',
+								'mdc-layout-grid__cell--span-12',
+								wrapperClass
+							) }>
 								<Layout
 									header
-									title={ sprintf( __( 'Overview for the last %s', 'google-site-kit' ), dateRangeFrom ) }
+									/* translators: %s: date range */
+									title={ sprintf( __( 'Overview for the last %s', 'google-site-kit' ), dateRange ) }
 									headerCtaLabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }
 									headerCtaLink={ searchConsoleDeepLink }
 								>
@@ -192,13 +202,14 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 									<SearchConsoleDashboardWidgetSiteStats selectedStats={ selectedStats } series={ series } vAxes={ vAxes } />
 								</Layout>
 							</div>
-							<div className={ `
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-								${ wrapperClass }
-							` }>
+							<div className={ classnames(
+								'mdc-layout-grid__cell',
+								'mdc-layout-grid__cell--span-12',
+								wrapperClass
+							) }>
 								<Layout
-									title={ sprintf( __( 'Top search queries over the last %s', 'google-site-kit' ), dateRangeFrom ) }
+									/* translators: %s: date range */
+									title={ sprintf( __( 'Top search queries over the last %s', 'google-site-kit' ), dateRange ) }
 									header
 									footer
 									headerCtaLabel={ __( 'See full stats in Search Console', 'google-site-kit' ) }

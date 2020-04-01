@@ -5,5 +5,13 @@
  * If the file does load, `googlesitekit.canAdsRun` is set to true.
  */
 
-window.googlesitekit = window.googlesitekit || {};
-googlesitekit.canAdsRun = true;
+if ( global.googlesitekit === undefined ) {
+	global.googlesitekit = {};
+}
+
+global.googlesitekit.canAdsRun = true;
+
+// Ensure that this flag does not get wiped at a later stage during pageload.
+document.addEventListener( 'DOMContentLoaded', function() {
+	global.googlesitekit.canAdsRun = true;
+} );

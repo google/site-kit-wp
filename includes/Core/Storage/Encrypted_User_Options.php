@@ -17,7 +17,7 @@ namespace Google\Site_Kit\Core\Storage;
  * @access private
  * @ignore
  */
-final class Encrypted_User_Options {
+final class Encrypted_User_Options implements User_Options_Interface {
 
 	/**
 	 * Data Encryption API instance.
@@ -97,5 +97,39 @@ final class Encrypted_User_Options {
 	 */
 	public function delete( $option ) {
 		return $this->user_options->delete( $option );
+	}
+
+	/**
+	 * Gets the underlying meta key for the given option.
+	 *
+	 * @since 1.4.0
+	 *
+	 * @param string $option Option name.
+	 * @return string Meta key name.
+	 */
+	public function get_meta_key( $option ) {
+		return $this->user_options->get_meta_key( $option );
+	}
+
+	/**
+	 * Gets the ID of the user that options are controlled for.
+	 *
+	 * @since 1.4.0
+	 *
+	 * @return int User ID.
+	 */
+	public function get_user_id() {
+		return $this->user_options->get_user_id();
+	}
+
+	/**
+	 * Switches the user that options are controlled for to the one with the given ID.
+	 *
+	 * @since 1.4.0
+	 *
+	 * @param int $user_id User ID.
+	 */
+	public function switch_user( $user_id ) {
+		$this->user_options->switch_user( $user_id );
 	}
 }

@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import withData from 'GoogleComponents/higherorder/withdata';
 import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
@@ -51,7 +52,7 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 			accountID,
 			internalWebPropertyID,
 			profileID,
-		} = googlesitekit.modules.analytics.settings;
+		} = global.googlesitekit.modules.analytics.settings;
 
 		if ( ! accountID ) {
 			return 'https://analytics.google.com/analytics/web/';
@@ -109,7 +110,10 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 		const dataTable = getDataTableFromData( dataMapped, headers, options );
 
 		return (
-			<div className={ `mdc-layout-grid__cell mdc-layout-grid__cell--span-${ colspan }` }>
+			<div className={ classnames(
+				'mdc-layout-grid__cell',
+				`mdc-layout-grid__cell--span-${ colspan }`
+			) }>
 				<TableOverflowContainer>
 					{ dataTable }
 				</TableOverflowContainer>

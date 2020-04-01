@@ -1,6 +1,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import SvgIcon from 'GoogleUtil/svg-icon';
 /**
  * WordPress dependencies
@@ -20,15 +21,18 @@ class AdSenseSettingsWarning extends Component {
 			return <OriginalComponent { ...this.props } />;
 		}
 
-		const { active, setupComplete } = googlesitekit.modules.adsense;
+		const { active, setupComplete } = global.googlesitekit.modules.adsense;
 		let message = __( 'Ad blocker detected, you need to disable it in order to setup AdSense.', 'google-site-kit' );
 		if ( active && setupComplete ) {
 			message = __( 'Ad blocker detected, You need to disable it to get the AdSense latest data.', 'google-site-kit' );
 		}
 
-		if ( ! googlesitekit.canAdsRun ) {
+		if ( ! global.googlesitekit.canAdsRun ) {
 			return (
-				<div className={ `googlesitekit-settings-module-warning googlesitekit-settings-module-warning--${ context }` }>
+				<div className={ classnames(
+					'googlesitekit-settings-module-warning',
+					`googlesitekit-settings-module-warning--${ context }`
+				) }>
 					<SvgIcon id="error" height="20" width="23" /> { message }
 				</div>
 			);

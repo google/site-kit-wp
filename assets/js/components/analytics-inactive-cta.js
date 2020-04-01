@@ -44,7 +44,7 @@ class AnalyticsInactiveCTA extends Component {
 			await refreshAuthentication();
 
 			// Redirect to ReAuthentication URL
-			window.location = getReAuthURL( 'analytics', true );
+			global.location = getReAuthURL( 'analytics', true );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'analytics-setup-error',
@@ -58,12 +58,12 @@ class AnalyticsInactiveCTA extends Component {
 
 	render() {
 		const {
-			title,
-			description,
-			ctaLabel,
+			title = __( 'Learn more about what visitors do on your site.', 'google-site-kit' ),
+			description = __( 'Connecting with Google Analytics to see unique vistors, goal completions, top pages and more.', 'google-site-kit' ),
+			ctaLabel = __( 'Set up Analytics', 'google-site-kit' ),
 		} = this.props;
 
-		const { canManageOptions } = googlesitekit.permissions;
+		const { canManageOptions } = global.googlesitekit.permissions;
 
 		if ( ! canManageOptions ) {
 			return null;
@@ -87,9 +87,6 @@ AnalyticsInactiveCTA.propTypes = {
 };
 
 AnalyticsInactiveCTA.defaultProps = {
-	title: __( 'Learn more about what visitors do on your site.', 'google-site-kit' ),
-	description: __( 'Connecting with Google Analytics to see unique vistors, goal completions, top pages and more.', 'google-site-kit' ),
-	ctaLabel: __( 'Set up Analytics', 'google-site-kit' ),
 };
 
 export default AnalyticsInactiveCTA;

@@ -21,7 +21,7 @@
  */
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-const { siteURL } = googlesitekit.admin;
+const { siteURL } = global.googlesitekit.admin;
 
 class SearchConsoleSettingStatus extends Component {
 	render() {

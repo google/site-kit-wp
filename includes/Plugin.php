@@ -87,6 +87,44 @@ final class Plugin {
 			return;
 		}
 
+		// REST route to set up a temporary tag to verify meta tag output works reliably.
+		add_filter(
+			'googlesitekit_rest_routes',
+			function( $routes ) {
+				$can_setup = function() {
+					return current_user_can( Core\Permissions\Permissions::SETUP );
+				};
+				$routes[]  = new Core\REST_API\REST_Route(
+					'core/site/data/setup-tag',
+					array(
+						array(
+							'methods'             => \WP_REST_Server::EDITABLE,
+							'callback'            => function( \WP_REST_Request $request ) {
+								$token = wp_generate_uuid4();
+								set_transient( 'googlesitekit_setup_token', $token, 5 * MINUTE_IN_SECONDS );
+
+								return new \WP_REST_Response( array( 'token' => $token ) );
+							},
+							'permission_callback' => $can_setup,
+						),
+					)
+				);
+				return $routes;
+			}
+		);
+
+		// Output temporary tag if set.
+		add_action(
+			'wp_head',
+			function () {
+				$token = get_transient( 'googlesitekit_setup_token' );
+
+				if ( $token ) {
+					printf( '<meta name="googlesitekit-setup" content="%s" />', esc_attr( $token ) );
+				}
+			}
+		);
+
 		$display_site_kit_meta = function() {
 			printf( '<meta name="generator" content="Site Kit by Google %s" />', esc_attr( GOOGLESITEKIT_VERSION ) );
 		};
@@ -111,12 +149,14 @@ final class Plugin {
 				$modules->register();
 
 				( new Core\Permissions\Permissions( $this->context, $authentication ) )->register();
-				( new Core\Util\Tracking( $this->context, $authentication ) )->register();
+				( new Core\Util\Tracking( $this->context, $user_options ) )->register();
 				( new Core\REST_API\REST_Routes( $this->context, $authentication, $modules ) )->register();
-				( new Core\Admin_Bar\Admin_Bar( $this->context, $assets ) )->register();
+				( new Core\Admin_Bar\Admin_Bar( $this->context, $assets, $modules ) )->register();
 				( new Core\Admin\Screens( $this->context, $assets ) )->register();
 				( new Core\Admin\Notices() )->register();
 				( new Core\Admin\Dashboard( $this->context, $assets ) )->register();
+				( new Core\Notifications\Notifications( $this->context, $options ) )->register();
+				( new Core\Util\Debug_Data( $this->context, $options, $user_options, $authentication, $modules ) )->register();
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(
@@ -139,18 +179,9 @@ final class Plugin {
 		);
 
 		( new Core\Util\Activation( $this->context, $options, $assets ) )->register();
-		( new Core\Util\Beta_Migration( $this->context ) )->register();
-		( new Core\Util\Migration_1_0_0( $this->context ) )->register();
-
-		if ( defined( 'WP_DEBUG' ) && true === WP_DEBUG ) {
-			add_filter(
-				'debug_bar_panels',
-				function( $panels ) {
-					$panels[] = new Core\Util\Debug_Bar();
-					return $panels;
-				}
-			);
-		}
+		( new Core\Util\Migration_1_3_0( $this->context, $options ) )->register();
+		( new Core\Util\Reset( $this->context ) )->register();
+		( new Core\Util\Developer_Plugin_Installer( $this->context ) )->register();
 	}
 
 	/**

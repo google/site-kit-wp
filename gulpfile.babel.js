@@ -23,7 +23,7 @@ import gulp from 'gulp';
 import requireDir from 'require-dir';
 import runSequence from 'run-sequence';
 import livereload from 'gulp-livereload';
-import phpunit from 'gulp-phpunit';
+import del from 'del';
 
 requireDir( './gulp-tasks' );
 
@@ -34,8 +34,7 @@ gulp.task( 'build', () => {
 	runSequence(
 		'webpack',
 		'svg',
-		'imagemin',
-		'copy-vendor'
+		'imagemin'
 	);
 } );
 
@@ -64,33 +63,29 @@ gulp.task( 'local', () => {
  * Gulp task to minify and combine svg's.
  */
 gulp.task( 'svg', () => {
-	runSequence( 'svgstore' );
-	runSequence( 'svgmin' );
+	runSequence(
+		'svgstore',
+		'svgmin'
+	);
+} );
+
+/**
+ * Gulp task to delete the temporary release directory.
+ */
+gulp.task( 'clean-release', () => {
+	del.sync( './release/**' );
 } );
 
 /**
  * Gulp task to run the default release processes in a sequential order.
  */
-gulp.task( 'release', () => {
+gulp.task( 'release', ( cb ) => {
 	runSequence(
-		'svg',
-		'imagemin',
-		'copy-vendor'
+		'clean-release',
+		'copy',
+		'zip',
+		'clean-release',
+		cb
 	);
 } );
 
-/**
- * Gulp task to run the default build processes in a sequential order.
- */
-gulp.task( 'default', () => {
-	runSequence(
-		'webpack',
-		'phpcs',
-		'copy-vendor'
-	);
-} );
-
-gulp.task( 'phpunit', function() {
-	gulp.src( '' )
-		.pipe( phpunit( './vendor/bin/phpunit' ) );
-} );

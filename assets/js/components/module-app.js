@@ -17,13 +17,9 @@
  */
 
 /**
- * External dependencies
- */
-import withFilters from 'GoogleComponents/higherorder/with-filters';
-
-/**
  * WordPress dependencies
  */
+import { withFilters } from '@wordpress/components';
 import { Component } from '@wordpress/element';
 
 /**
@@ -34,4 +30,4 @@ class ModuleApp extends Component {
 		return null;
 	}
 }
-export default withFilters( 'googlesitekit.ModuleApp-' + googlesitekitCurrentModule.slug )( ModuleApp );
+export default withFilters( `googlesitekit.ModuleApp-${ global.googlesitekitCurrentModule.slug }` )( ModuleApp );

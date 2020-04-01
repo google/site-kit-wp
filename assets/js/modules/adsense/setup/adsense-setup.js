@@ -96,8 +96,8 @@ class AdSenseSetupWidget extends Component {
 			message,
 		} = this.state;
 
-		return error && 0 < message.length ?
-			<div className="googlesitekit-error-text">
+		return error && 0 < message.length
+			? <div className="googlesitekit-error-text">
 				<p>{ __( 'Error:', 'google-site-kit' ) } { message }</p>
 			</div> : null;
 	}

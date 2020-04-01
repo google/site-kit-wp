@@ -37,11 +37,14 @@ class ModuleTest extends TestCase {
 		// Can't use force_set_property here since the property is private on the base module
 		$reflection_property = new \ReflectionProperty( self::MODULE_CLASS_NAME, 'info' );
 		$reflection_property->setAccessible( true );
-		$reflection_property->setValue( $module, array(
-			'slug'        => 'module-slug',
-			'name'        => 'module name',
-			'description' => 'module description',
-		) );
+		$reflection_property->setValue(
+			$module,
+			array(
+				'slug'        => 'module-slug',
+				'name'        => 'module name',
+				'description' => 'module description',
+			)
+		);
 
 		$this->assertTrue( isset( $module->slug ) );
 		$this->assertTrue( isset( $module->name ) );
@@ -57,7 +60,7 @@ class ModuleTest extends TestCase {
 
 	public function test_prepare_info_for_js() {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$keys = array(
+		$keys   = array(
 			'slug',
 			'name',
 			'description',
@@ -72,7 +75,7 @@ class ModuleTest extends TestCase {
 			'autoActivate',
 			'internal',
 			'screenID',
-			'hasSettings',
+			'settings',
 		);
 
 		$this->assertEqualSets( $keys, array_keys( $module->prepare_info_for_js() ) );
@@ -96,7 +99,7 @@ class ModuleTest extends TestCase {
 		// Number of required parameters can decrease while preserving B/C, but not increase
 		$this->assertEquals( 1, $method->getNumberOfRequiredParameters() );
 
-		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$module   = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$response = $module->get_data( 'test-request', array( 'foo' => 'bar' ) );
 		$this->assertInternalType( 'object', $response );
 		$this->assertEquals( 'GET', $response->method );
@@ -104,11 +107,23 @@ class ModuleTest extends TestCase {
 		$this->assertEquals( array( 'foo' => 'bar' ), (array) $response->data );
 
 		// Test that $data is available in parse_data_response
-		$response = $module->get_data( 'test-request', array( 'foo' => 'bar', 'asArray' => true ) );
+		$response = $module->get_data(
+			'test-request',
+			array(
+				'foo'     => 'bar',
+				'asArray' => true,
+			)
+		);
 		$this->assertInternalType( 'array', $response );
 		$this->assertEquals( 'GET', $response['method'] );
 		$this->assertEquals( 'test-request', $response['datapoint'] );
-		$this->assertEquals( array( 'foo' => 'bar', 'asArray' => true ), $response['data'] );
+		$this->assertEquals(
+			array(
+				'foo'     => 'bar',
+				'asArray' => true,
+			),
+			$response['data']
+		);
 	}
 
 	public function test_set_data() {
@@ -132,7 +147,7 @@ class ModuleTest extends TestCase {
 		// Number of required parameters can decrease while preserving B/C, but not increase
 		$this->assertEquals( 1, $method->getNumberOfRequiredParameters() );
 
-		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$module          = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$batch_responses = $module->get_batch_data(
 			array(
 				new Data_Request(
@@ -153,7 +168,7 @@ class ModuleTest extends TestCase {
 				),
 			)
 		);
-		$response = $batch_responses['request-1'];
+		$response        = $batch_responses['request-1'];
 		$this->assertEquals( 'GET', $response->method );
 		$this->assertEquals( 'test-request', $response->datapoint );
 		$this->assertEquals( array( 'foo' => 'bar' ), (array) $response->data );

@@ -21,7 +21,7 @@
  */
 import Layout from 'GoogleComponents/layout/layout';
 import Notification from 'GoogleComponents/notifications/notification';
-import { clearAppLocalStorage } from 'GoogleUtil/index';
+import { clearWebStorage } from 'GoogleUtil/index';
 import { map, filter, sortBy } from 'lodash';
 
 /**
@@ -55,8 +55,8 @@ class SettingsModules extends Component {
 	}
 
 	componentDidMount() {
-		if ( googlesitekit.editmodule && googlesitekit.modules[ googlesitekit.editmodule ].active ) {
-			this.handleButtonAction( `${ googlesitekit.editmodule }-module`, 'edit' );
+		if ( global.googlesitekit.editmodule && global.googlesitekit.modules[ global.googlesitekit.editmodule ].active ) {
+			this.handleButtonAction( `${ global.googlesitekit.editmodule }-module`, 'edit' );
 		}
 	}
 
@@ -82,35 +82,21 @@ class SettingsModules extends Component {
 	 *
 	 * @param {string} module         The module slug.
 	 * @param {string} action         The action being performed, one of 'edit', 'cancel' or 'confirm'.
-	 * @param {boolean} nothingToSave Skip saving for this click.
 	 */
-	handleButtonAction( module, action, nothingToSave = false ) {
+	handleButtonAction( module, action ) {
 		if ( 'confirm' === action ) {
 			const modulePromise = applyFilters( 'googlekit.SettingsConfirmed', false, module );
-			if ( nothingToSave ) {
-				this.setState( ( prevState ) => {
-					return {
-						isSaving: false,
-						error: false,
-						isEditing: {
-							...prevState.isEditing,
-							[ module ]: ! prevState.isEditing[ module ],
-						},
-					};
-				} );
-				return;
-			}
 
 			this.setState( { isSaving: module } );
 			if ( ! modulePromise ) {
 				// Clears session and local storage on successful setting.
-				clearAppLocalStorage();
+				clearWebStorage();
 
 				return;
 			}
 			modulePromise.then( () => {
 				// Clears session and local storage on every successful setting.
-				clearAppLocalStorage();
+				clearWebStorage();
 
 				this.setState( ( prevState ) => {
 					return {
@@ -145,7 +131,7 @@ class SettingsModules extends Component {
 	}
 
 	settingsModuleComponent( module, isSaving ) {
-		const { provides } = googlesitekit.modules[ module.slug ];
+		const { provides } = global.googlesitekit.modules[ module.slug ];
 		const { isEditing, openModules, error } = this.state;
 		const isOpen = openModules[ module.slug ] || false;
 
@@ -158,7 +144,7 @@ class SettingsModules extends Component {
 				homepage={ module.homepage }
 				learnmore={ module.learnMore }
 				active={ module.active }
-				hasSettings={ module.hasSettings }
+				hasSettings={ !! module.settings && 'search-console' !== module.slug }
 				autoActivate={ module.autoActivate }
 				updateModulesList={ this.updateModulesList }
 				handleEdit={ this.handleButtonAction }
@@ -180,6 +166,9 @@ class SettingsModules extends Component {
 	 *
 	 * @param {Object}  modules List of modules
 	 * @param {boolean} active Sets styling for active modules, helps with parent/child grouping.
+	 *
+	 * @return {HTMLElement} HTML markup with modules.
+	 *
 	 */
 	mapToModule( modules, active = false ) {
 		const { isSaving } = this.state;
@@ -211,12 +200,12 @@ class SettingsModules extends Component {
 		const { activeTab } = this.props;
 		const modulesBeingEdited = filter( isEditing, ( module ) => module );
 		const editActive = 0 < modulesBeingEdited.length;
-		if ( ! window.googlesitekit || ! window.googlesitekit.modules ) {
+		if ( ! global.googlesitekit || ! global.googlesitekit.modules ) {
 			return null;
 		}
 
 		// Filter out internal modules.
-		const modules = filter( window.googlesitekit.modules, ( module ) => ! module.internal );
+		const modules = filter( global.googlesitekit.modules, ( module ) => ! module.internal );
 
 		const activeModules = this.mapToModule(
 			sortBy(
@@ -295,7 +284,7 @@ class SettingsModules extends Component {
 							title={ __( 'Congrats, you’ve connected all services!', 'google-site-kit' ) }
 							description={ __( 'We’re working on adding new services to Site Kit by Google all the time, so please check back in the future.', 'google-site-kit' ) }
 							format="small"
-							smallImage={ `${ googlesitekit.admin.assetsRoot }images/thumbs-up.png` }
+							smallImage={ `${ global.googlesitekit.admin.assetsRoot }images/thumbs-up.png` }
 							type="win-success"
 						/>
 					</div>

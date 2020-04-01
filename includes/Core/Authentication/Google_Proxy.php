@@ -75,6 +75,58 @@ class Google_Proxy {
 	}
 
 	/**
+	 * Gets site fields.
+	 *
+	 * @since 1.5.0
+	 *
+	 * @return array
+	 */
+	public function get_site_fields() {
+		$home_url_no_scheme = str_replace( array( 'http://', 'https://' ), '', home_url() );
+
+		return array(
+			'name'       => wp_specialchars_decode( get_bloginfo( 'name' ) ),
+			'url'        => home_url(),
+			'action_uri' => admin_url( 'index.php' ),
+			'return_uri' => $this->context->admin_url( 'splash' ),
+			// TODO: Remove admin_root once proxy is updated.
+			'admin_root' => str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', admin_url() ),
+		);
+	}
+
+	/**
+	 * Synchronizes site fields with the proxy.
+	 *
+	 * @since 1.5.0
+	 *
+	 * @param Credentials $credentials Credentials instance.
+	 */
+	public function sync_site_fields( Credentials $credentials ) {
+		if ( ! $credentials->has() ) {
+			return;
+		}
+
+		$creds = $credentials->get();
+
+		wp_remote_post(
+			$this->url( self::OAUTH2_SITE_URI ),
+			array(
+				'body'     => array_merge(
+					$this->get_site_fields(),
+					array(
+						'nonce'       => wp_create_nonce( self::ACTION_SETUP ),
+						'site_id'     => $creds['oauth2_client_id'],
+						'site_secret' => $creds['oauth2_client_secret'],
+					)
+				),
+				/** Don't block the process from finishing waiting for a response. @see \spawn_cron(). */
+				'timeout'  => 0.01,
+				'blocking' => false,
+			)
+		);
+	}
+
+	/**
 	 * Exchanges a site code for client credentials from the proxy.
 	 *
 	 * @since 1.1.2

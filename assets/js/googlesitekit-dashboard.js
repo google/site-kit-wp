@@ -19,88 +19,60 @@
 /**
  * External dependencies
  */
-import { clearAppLocalStorage } from 'GoogleUtil';
-import Notification from 'GoogleComponents/notifications/notification';
+import { clearWebStorage, loadTranslations } from 'GoogleUtil';
 import Setup from 'GoogleComponents/setup/setup-wrapper';
 import DashboardApp from 'GoogleComponents/dashboard/dashboard-app';
 import NotificationCounter from 'GoogleComponents/notifications/notification-counter';
+import 'GoogleComponents/notifications';
 
 /**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { setLocaleData } from '@wordpress/i18n';
-import { Component, render, Fragment } from '@wordpress/element';
+import { Component, render } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
 
+/**
+ * Internal dependencies
+ */
+import ErrorHandler from 'GoogleComponents/ErrorHandler';
+import 'GoogleModules';
+
 class GoogleSitekitDashboard extends Component {
-	constructor( props ) {
-		super( props );
-		this.state = {
-			hasError: false,
-		};
-
-		// Set up translations.
-		setLocaleData( googlesitekit.locale, 'google-site-kit' );
-	}
-
-	componentDidCatch( error, info ) {
-		this.setState( {
-			hasError: true,
-			error,
-			info,
-		} );
-	}
-
 	render() {
 		const {
 			showModuleSetupWizard,
-		} = window.googlesitekit.setup;
+		} = global.googlesitekit.setup;
 
 		if ( showModuleSetupWizard ) {
 			return (
-				<Setup />
+				<ErrorHandler>
+					<Setup />
+				</ErrorHandler>
 			);
 		}
 
-		const {
-			hasError,
-			error,
-			info,
-		} = this.state;
-
-		if ( hasError ) {
-			return <Notification
-				id={ 'googlesitekit-error' }
-				key={ 'googlesitekit-error' }
-				title={ error }
-				description={ info.componentStack }
-				dismiss={ '' }
-				isDismissable={ false }
-				format="small"
-				type="win-error"
-			/>;
-		}
-
 		return (
-			<Fragment>
+			<ErrorHandler>
 				<NotificationCounter />
 				<DashboardApp />
-			</Fragment>
+			</ErrorHandler>
 		);
 	}
 }
 
 // Initialize the app once the DOM is ready.
-domReady( function() {
-	if ( googlesitekit.admin.resetSession ) {
-		clearAppLocalStorage();
+domReady( () => {
+	if ( global.googlesitekit.admin.resetSession ) {
+		clearWebStorage();
 	}
 
-	const dashboard = document.getElementById( 'js-googlesitekit-dashboard' );
-	if ( null !== dashboard ) {
-		// Render the Dashboard App.
-		render( <GoogleSitekitDashboard />, dashboard );
+	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard' );
+
+	if ( renderTarget ) {
+		loadTranslations();
+
+		render( <GoogleSitekitDashboard />, renderTarget );
 
 		/**
 		 * Action triggered when the dashboard App is loaded.

@@ -29,10 +29,11 @@ import Switch from 'GoogleComponents/switch';
 import { Select, Option } from 'SiteKitCore/material-components';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import {
-	sendAnalyticsTrackingEvent,
+	trackEvent,
 	getExistingTag,
 	toggleConfirmModuleSettings,
 } from 'GoogleUtil';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -57,9 +58,8 @@ class AnalyticsSetup extends Component {
 			profileID,
 			propertyID,
 			useSnippet,
-			ampClientIDOptIn,
 			trackingDisabled,
-		} = googlesitekit.modules.analytics.settings;
+		} = global.googlesitekit.modules.analytics.settings;
 
 		this.state = {
 			anonymizeIP,
@@ -78,7 +78,6 @@ class AnalyticsSetup extends Component {
 			selectedProperty: propertyID,
 			selectedProfile: profileID,
 			selectedinternalWebProperty: internalWebPropertyID,
-			ampClientIDOptIn,
 			existingTag: false,
 			trackingDisabled: trackingDisabled || [],
 		};
@@ -160,23 +159,27 @@ class AnalyticsSetup extends Component {
 			return;
 		}
 
-		const settingsMapping = {
+		let settingsMapping = {
 			anonymizeIP: 'anonymizeIP',
 			selectedAccount: 'accountID',
 			selectedProperty: 'propertyID',
 			selectedProfile: 'profileID',
 			selectedinternalWebProperty: 'internalWebPropertyID',
 			useSnippet: 'useSnippet',
-			ampClientIDOptIn: 'ampClientIDOptIn',
 			trackingDisabled: 'trackingDisabled',
 		};
+
+		// Prevent saving if "setup account" is chosen.
+		if ( '-1' === this.state.selectedAccount ) {
+			settingsMapping = {};
+		}
 
 		toggleConfirmModuleSettings( 'analytics', settingsMapping, this.state );
 	}
 
 	handleAccountChange( index, item ) {
 		const { selectedAccount } = this.state;
-		const selectValue = item.getAttribute( 'data-value' );
+		const selectValue = item.dataset.value;
 
 		if ( selectValue === selectedAccount ) {
 			return;
@@ -207,14 +210,17 @@ class AnalyticsSetup extends Component {
 		} );
 
 		// Track selection.
-		sendAnalyticsTrackingEvent( 'analytics_setup', 'account_change', selectValue );
+		trackEvent( 'analytics_setup', 'account_change', selectValue );
 
-		this.processAccountChange( selectValue );
+		// Don't query accounts if "setup a new account" was chosen.
+		if ( '-1' !== selectValue ) {
+			this.processAccountChange( selectValue );
+		}
 	}
 
 	handlePropertyChange( index, item ) {
 		const { selectedProperty } = this.state;
-		const selectValue = item.getAttribute( 'data-value' );
+		const selectValue = item.dataset.value;
 
 		if ( selectValue === selectedProperty ) {
 			return;
@@ -239,20 +245,20 @@ class AnalyticsSetup extends Component {
 		} );
 
 		// Track selection.
-		sendAnalyticsTrackingEvent( 'analytics_setup', 'property_change', selectValue );
+		trackEvent( 'analytics_setup', 'property_change', selectValue );
 
 		this.processPropertyChange( selectValue );
 	}
 
 	handleProfileChange( index, item ) {
-		const selectValue = item.getAttribute( 'data-value' );
+		const selectValue = item.dataset.value;
 
 		this.setState( {
 			selectedProfile: selectValue,
 		} );
 
 		// Track selection.
-		sendAnalyticsTrackingEvent( 'analytics_setup', 'profile_change', selectValue );
+		trackEvent( 'analytics_setup', 'profile_change', selectValue );
 	}
 
 	async getAccounts( existingTagData = false ) {
@@ -309,6 +315,12 @@ class AnalyticsSetup extends Component {
 						name: __( 'Select one...', 'google-site-kit' ),
 					} );
 				}
+			} else if ( '0' === selectedAccount ) {
+				// Accounts were just refreshed.
+				responseData.accounts.unshift( {
+					id: 0,
+					name: __( 'Select one...', 'google-site-kit' ),
+				} );
 			} else if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.id === selectedAccount ) ) {
 				data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 
@@ -475,7 +487,6 @@ class AnalyticsSetup extends Component {
 			accounts,
 			properties,
 			profiles,
-			ampClientIDOptIn,
 			trackingDisabled,
 		} = this.state;
 
@@ -507,7 +518,6 @@ class AnalyticsSetup extends Component {
 			propertyID,
 			internalWebPropertyID,
 			useSnippet: useSnippet || false,
-			ampClientIDOptIn: ampClientIDOptIn || false,
 			trackingDisabled,
 		};
 
@@ -517,10 +527,9 @@ class AnalyticsSetup extends Component {
 			data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 			await this.getAccounts();
 
-			googlesitekit.modules.analytics.settings = savedSettings;
+			global.googlesitekit.modules.analytics.settings = savedSettings;
 
-			// Track event.
-			sendAnalyticsTrackingEvent( 'analytics_setup', 'analytics_configured' );
+			trackEvent( 'analytics_setup', 'analytics_configured' );
 
 			if ( finishSetup ) {
 				finishSetup();
@@ -546,9 +555,9 @@ class AnalyticsSetup extends Component {
 
 	static createNewAccount( e ) {
 		e.preventDefault();
-		sendAnalyticsTrackingEvent( 'analytics_setup', 'new_analytics_account' );
+		trackEvent( 'analytics_setup', 'new_analytics_account' );
 
-		window.open( 'https://analytics.google.com/analytics/web/?#/provision/SignUp', '_blank' );
+		global.open( 'https://analytics.google.com/analytics/web/?#/provision/SignUp', '_blank' );
 	}
 
 	handleRadioClick( e ) {
@@ -558,7 +567,7 @@ class AnalyticsSetup extends Component {
 			useSnippet,
 		} );
 
-		sendAnalyticsTrackingEvent( 'analytics_setup', useSnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled' );
+		trackEvent( 'analytics_setup', useSnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled' );
 	}
 
 	switchStatus( stateVariable ) {
@@ -570,13 +579,19 @@ class AnalyticsSetup extends Component {
 	}
 
 	handleRefetchAccount() {
-		this.setState( {
-			isLoading: true,
-			errorCode: false,
-			errorMsg: '',
-		} );
-
-		this.getAccounts();
+		this.setState(
+			{
+				isLoading: true,
+				errorCode: false,
+				errorMsg: '',
+				selectedAccount: '0',
+				selectedProperty: '-1',
+				selectedProfile: '-1',
+				propertiesLoading: false,
+				profilesLoading: false,
+			},
+			this.getAccounts
+		);
 	}
 
 	handleExclusionsChange( e ) {
@@ -603,7 +618,6 @@ class AnalyticsSetup extends Component {
 			anonymizeIP,
 			useSnippet,
 			isSaving,
-			ampClientIDOptIn,
 			existingTag,
 		} = this.state;
 
@@ -612,8 +626,8 @@ class AnalyticsSetup extends Component {
 			onSettingsPage,
 		} = this.props;
 		const disabled = ! isEditing;
-		const { ampEnabled, ampMode } = window.googlesitekit.admin;
-		const useSnippetSettings = window.googlesitekit.modules.analytics.settings.useSnippet;
+		const { ampMode } = global.googlesitekit.admin;
+		const useSnippetSettings = global.googlesitekit.modules.analytics.settings.useSnippet;
 
 		return (
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
@@ -664,24 +678,7 @@ class AnalyticsSetup extends Component {
 						</Radio>
 					</Fragment>
 				}
-				{ useSnippet && ampEnabled &&
-					<div className="googlesitekit-setup-module__input">
-						<Switch
-							id="ampClientIDOptIn"
-							label={ __( 'Opt in AMP Client ID', 'google-site-kit' ) }
-							onClick={ this.switchStatus( 'ampClientIDOptIn' ) }
-							checked={ ampClientIDOptIn }
-							hideLabel={ false }
-						/>
-						<p>
-							{ ampClientIDOptIn ?
-								__( 'Sessions will be combined across AMP/non-AMP pages.', 'google-site-kit' ) + ' ' :
-								__( 'Sessions will be tracked separately between AMP/non-AMP pages.', 'google-site-kit' ) + ' '
-							}
-							<Link href="https://support.google.com/analytics/answer/7486764" external inherit>{ __( 'Learn more', 'google-site-kit' ) }</Link>
-						</p>
-					</div>
-				}
+
 				{ onSettingsPage && useSnippet && ampMode !== 'primary' && (
 					<div className="googlesitekit-setup-module__input">
 						<Switch
@@ -692,9 +689,9 @@ class AnalyticsSetup extends Component {
 							hideLabel={ false }
 						/>
 						<p>
-							{ anonymizeIP ?
-								__( 'IP addresses will be anonymized.', 'google-site-kit' ) :
-								__( 'IP addresses will not be anonymized.', 'google-site-kit' )
+							{ anonymizeIP
+								? __( 'IP addresses will be anonymized.', 'google-site-kit' )
+								: __( 'IP addresses will not be anonymized.', 'google-site-kit' )
 							}
 							{ ' ' }
 							<Link
@@ -731,6 +728,7 @@ class AnalyticsSetup extends Component {
 
 		return (
 			<Select
+				className="googlesitekit-analytics__select-account"
 				enhanced
 				name="accounts"
 				value={ selectedAccount || '0' }
@@ -739,13 +737,16 @@ class AnalyticsSetup extends Component {
 				disabled={ disabled }
 				outlined
 			>
-				{ accounts.map( ( account, id ) =>
-					<Option
-						key={ id }
-						value={ account.id }
-					>
-						{ account.name }
-					</Option> ) }
+				{ accounts
+					.concat( ! existingTag ? [ { id: '-1', name: __( 'Set up a new account', 'google-site-kit' ) } ] : [] )
+					.map( ( account, id ) =>
+						<Option
+							key={ id }
+							value={ account.id }
+						>
+							{ account.name }
+						</Option>
+					) }
 			</Select>
 		);
 	}
@@ -772,15 +773,15 @@ class AnalyticsSetup extends Component {
 			onSettingsPage,
 			isEditing,
 		} = this.props;
-		const disabledProfile = ! isEditing;
+		// The account number will be an integer if valid, otherwise zero.
+		const accountNumber = parseInt( selectedAccount ) || 0;
+		// -1 is used for "create an account", so ensure accountNumber is a positive integer.
+		const enablePropertySelect = ! existingTag && accountNumber > 0;
+		// Profiles may still be selected even in the case of an existing tag.
+		const enableProfileSelect = !! /^UA-/.test( selectedProperty.toString() );
 
-		let disabledProperty = ! isEditing;
-		if ( existingTag && selectedProperty ) {
-			disabledProperty = true;
-		}
-
-		const { ampMode } = window.googlesitekit.admin;
-		const { setupComplete } = googlesitekit.modules.analytics;
+		const { ampMode } = global.googlesitekit.admin;
+		const { setupComplete } = global.googlesitekit.modules.analytics;
 
 		if ( isLoading ) {
 			return <ProgressBar />;
@@ -790,13 +791,19 @@ class AnalyticsSetup extends Component {
 			return null;
 		}
 
-		if ( 0 >= accounts.length ) {
+		if ( ! accounts.length || '-1' === selectedAccount ) {
 			if ( ! isEditing ) {
 				return __( 'No account found.', 'google-site-kit' );
 			}
 			if ( ! setupComplete || isEditing ) {
 				return (
 					<Fragment>
+						{ '-1' === selectedAccount &&
+							<Fragment>
+								<p>{ __( 'To create a new account, click the button below which will open the Google Analytics account creation screen in a new window.', 'google-site-kit' ) }</p>
+								<p>{ __( 'Once completed, click the link below to re-fetch your accounts to continue.', 'google-site-kit' ) }</p>
+							</Fragment>
+						}
 						<div className="googlesitekit-setup-module__action">
 							<Button onClick={ AnalyticsSetup.createNewAccount }>{ __( 'Create an account', 'google-site-kit' ) }</Button>
 
@@ -906,12 +913,13 @@ class AnalyticsSetup extends Component {
 					{ this.accountsDropdown() }
 					{ propertiesLoading ? ( <ProgressBar small /> ) : (
 						<Select
+							className="googlesitekit-analytics__select-property"
 							enhanced
 							name="properties"
 							value={ selectedProperty || selectedProperty === 0 ? selectedProperty.toString() : '-1' }
 							onEnhancedChange={ this.handlePropertyChange }
 							label={ __( 'Property', 'google-site-kit' ) }
-							disabled={ disabledProperty }
+							disabled={ ! enablePropertySelect }
 							outlined
 						>
 							{ properties.map( ( property, id ) =>
@@ -925,12 +933,13 @@ class AnalyticsSetup extends Component {
 					) }
 					{ profilesLoading ? ( <ProgressBar small /> ) : (
 						<Select
+							className="googlesitekit-analytics__select-profile"
 							enhanced
 							name="profiles"
 							value={ selectedProfile || selectedProfile === 0 ? selectedProfile.toString() : '-1' }
 							onEnhancedChange={ this.handleProfileChange }
 							label={ __( 'View', 'google-site-kit' ) }
-							disabled={ disabledProfile }
+							disabled={ ! enableProfileSelect }
 							outlined
 						>
 							{ profiles.map( ( profile, id ) =>
@@ -982,9 +991,9 @@ class AnalyticsSetup extends Component {
 				</div>
 
 				<p>
-					{ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) ?
-						__( 'Logged-in users will be excluded from Analytics tracking.', 'google-site-kit' ) :
-						__( 'Logged-in users will be included in Analytics tracking.', 'google-site-kit' )
+					{ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS )
+						? __( 'Logged-in users will be excluded from Analytics tracking.', 'google-site-kit' )
+						: __( 'Logged-in users will be included in Analytics tracking.', 'google-site-kit' )
 					}
 				</p>
 			</div>
@@ -1012,7 +1021,7 @@ class AnalyticsSetup extends Component {
 
 		switch ( true ) {
 			case 'google_analytics_existing_tag_permission' === errorCode:
-				showErrorFormat = false;
+				showErrorFormat = true;
 				break;
 			case onSettingsPage && errorCode && 'insufficientPermissions' === errorReason:
 				showErrorFormat = false;
@@ -1024,18 +1033,18 @@ class AnalyticsSetup extends Component {
 				break;
 		}
 
-		if ( 0 === message.length ) {
+		if ( ! message || 0 === message.length ) {
 			return null;
 		}
 
 		return (
-			<div className={ showErrorFormat ? 'googlesitekit-error-text' : '' }>
+			<div className={ classnames( { 'googlesitekit-error-text': showErrorFormat } ) }>
 				<p>{
-					showErrorFormat ?
+					showErrorFormat
 
 						/* translators: %s: Error message */
-						sprintf( __( 'Error: %s', 'google-site-kit' ), message ) :
-						message
+						? sprintf( __( 'Error: %s', 'google-site-kit' ), message )
+						: message
 				}</p>
 			</div>
 		);
@@ -1049,7 +1058,7 @@ class AnalyticsSetup extends Component {
 		} = this.state;
 
 		if ( ! onSettingsPage ) {
-			sendAnalyticsTrackingEvent( 'analytics_setup', 'configure_analytics_screen' );
+			trackEvent( 'analytics_setup', 'configure_analytics_screen' );
 		}
 
 		return (
@@ -1070,7 +1079,8 @@ class AnalyticsSetup extends Component {
 				}
 
 				{ !! existingTag &&
-					<p>{ sprintf( __( 'An existing analytics tag was found on your site with the id %s. If later on you decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.', 'google-site-kit' ), existingTag ) }</p>
+					/* translators: %s: Analytics tag ID */
+					<p>{ sprintf( __( 'An existing analytics tag was found on your site with the ID %s. If later on you decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.', 'google-site-kit' ), existingTag ) }</p>
 				}
 
 				{ this.renderErrorOrNotice() }

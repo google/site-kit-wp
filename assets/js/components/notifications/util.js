@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import data from 'GoogleComponents/data';
-import { getDaysBetweenDates, getTimeInSeconds } from 'GoogleUtil';
+import data, { TYPE_MODULES } from 'GoogleComponents/data';
+import { getDaysBetweenDates } from 'GoogleUtil';
 /**
  * Internal dependencies
  */
@@ -47,7 +47,7 @@ export const modulesNotificationsToRequest = () => {
  * otherwise make the requests to get modules and page wins notifications.
  */
 export async function getTotalNotifications() {
-	const { setup } = window.googlesitekit;
+	const { setup } = global.googlesitekit;
 
 	if (
 		! setup.isSiteKitConnected ||
@@ -73,8 +73,8 @@ export async function getTotalNotifications() {
 
 	// The total notifications count should always rely on local storage
 	// directly for external availability.
-	if ( window.localStorage ) {
-		window.localStorage.setItem( 'googlesitekit::total-notifications', total );
+	if ( global.localStorage ) {
+		global.localStorage.setItem( 'googlesitekit::total-notifications', total );
 	}
 
 	return total;
@@ -103,9 +103,14 @@ const removeDismissed = ( notifications ) => {
 
 /**
  * Remove displayed wins set to show once.
- * We display 1 win at a time so we have sometihng new for the user each time.
+ * Display 1 win at a time. So user would see something new each time.
  *
- * @param {Array} notifications
+ * @param {Array} wins  Wins are notifications (including all errors).
+ *                      "Publisher Wins" are things like increased pageviews,
+ *                      or traffic that Site Kit will let user know.
+ *
+ * @return {Array} First win if there are wins to show. Otherwise return all wins.
+ *
  */
 const removeDisplayedWins = ( wins ) => {
 	const firstWin = ( items ) => Object.keys( items ).slice( 0, 1 ).map( ( i ) => {
@@ -171,7 +176,7 @@ export async function getModulesNotifications() {
 			const { identifier } = module;
 
 			const notifications = removeDismissed(
-				await data.getNotifications( identifier, getTimeInSeconds( 'day' ) )
+				await data.get( TYPE_MODULES, identifier, 'notifications', {}, false )
 			);
 
 			resolve( { identifier, notifications } );
@@ -250,8 +255,8 @@ export const incrementCount = ( state ) => {
 	const value = Math.abs( state.count ) + 1;
 	// The total notifications count should always rely on local storage
 	// directly for external availability.
-	if ( window.localStorage ) {
-		window.localStorage.setItem( 'googlesitekit::total-notifications', value );
+	if ( global.localStorage ) {
+		global.localStorage.setItem( 'googlesitekit::total-notifications', value );
 	}
 	return {
 		count: value,
@@ -262,8 +267,8 @@ export const decrementCount = ( state ) => {
 	const value = Math.max( 0, Math.abs( state.count ) - 1 );
 	// The total notifications count should always rely on local storage
 	// directly for external availability.
-	if ( window.localStorage ) {
-		window.localStorage.setItem( 'googlesitekit::total-notifications', value );
+	if ( global.localStorage ) {
+		global.localStorage.setItem( 'googlesitekit::total-notifications', value );
 	}
 	return {
 		count: value,

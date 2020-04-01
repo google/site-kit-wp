@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Admin;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
 
 /**
  * Class to handle all wp-admin Dashboard related functionality.
@@ -22,6 +23,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
  * @ignore
  */
 final class Dashboard {
+	use Requires_Javascript_Trait;
 
 	/**
 	 * Plugin context.
@@ -75,11 +77,10 @@ final class Dashboard {
 				$this->assets->enqueue_fonts();
 
 				// Enqueue styles.
-				$this->assets->enqueue_asset( 'googlesitekit_wp_dashboard_css' );
+				$this->assets->enqueue_asset( 'googlesitekit-wp-dashboard-css' );
 
 				// Enqueue scripts.
-				$this->assets->enqueue_asset( 'googlesitekit_wp_dashboard' );
-				$this->assets->enqueue_asset( 'googlesitekit_modules' );
+				$this->assets->enqueue_asset( 'googlesitekit-wp-dashboard' );
 			}
 		};
 
@@ -113,6 +114,8 @@ final class Dashboard {
 	 */
 	private function render_googlesitekit_wp_dashboard() {
 		do_action( 'googlesitekit_above_wp_dashboard_app' );
+
+		$this->render_noscript_html();
 		?>
 		<div id="js-googlesitekit-wp-dashboard"></div>
 		<?php

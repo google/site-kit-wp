@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_Meta;
+use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Exception\RedirectException;
@@ -64,6 +65,33 @@ class AuthenticationTest extends TestCase {
 				'oauth_error',
 			),
 			array_filter( $notice_slugs )
+		);
+	}
+
+	/**
+	 * @dataProvider option_action_provider
+	 * @param string $option
+	 * @param string $initial_value
+	 * @param string $new_value
+	 */
+	public function test_register_option_update_actions( $option, $initial_value, $new_value ) {
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		remove_all_actions( "update_option_$option" );
+		remove_all_actions( 'shutdown' );
+		$auth->register();
+
+		delete_option( $option );
+		add_option( $option, $initial_value );
+		update_option( $option, $new_value );
+
+		$this->assertTrue( has_action( 'shutdown' ), $option );
+	}
+
+	public function option_action_provider() {
+		return array(
+			array( 'home', 'http://example.com', 'http://new.example.com' ),
+			array( 'siteurl', 'http://example.com', 'http://new.example.com' ),
+			array( 'googlesitekit_db_version', '1.0', '2.0' ),
 		);
 	}
 
@@ -121,8 +149,7 @@ class AuthenticationTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$credentials = new Credentials( new Options( $context ) );
-		$auth = new Authentication( $context );
+		$auth    = new Authentication( $context );
 		$auth->register();
 
 		// Ensure that wp_die is called if nonce verification fails.
@@ -142,9 +169,9 @@ class AuthenticationTest extends TestCase {
 		remove_all_actions( 'admin_action_googlesitekit_proxy_setup' );
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
-		$credentials = new Credentials( new Options( $context ) );
-		$auth = new Authentication( $context );
+		$context     = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$credentials = new Credentials( new Encrypted_Options( new Options( $context ) ) );
+		$auth        = new Authentication( $context );
 		$auth->register();
 		$google_proxy = new Google_Proxy( $context );
 
@@ -290,7 +317,8 @@ class AuthenticationTest extends TestCase {
 			$user_options->set( $key, "test-$key-value" );
 		}
 
-		$mock_google_client = $this->getMock( 'Google\Site_Kit_Dependencies\Google_Client', array( 'revokeToken' ) );
+		$mock_google_client = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
+			->setMethods( array( 'revokeToken' ) )->getMock();
 		$mock_google_client->expects( $this->once() )->method( 'revokeToken' );
 		$this->force_set_property( $auth->get_oauth_client(), 'google_client', $mock_google_client );
 
@@ -312,7 +340,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertArraySubset(
 			array(
 				'googlesitekit_connect' => 1,
-				'page'                  => 'googlesitekit-splash'
+				'page'                  => 'googlesitekit-splash',
 			),
 			$params
 		);
@@ -329,7 +357,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertArraySubset(
 			array(
 				'googlesitekit_disconnect' => 1,
-				'page'                     => 'googlesitekit-splash'
+				'page'                     => 'googlesitekit-splash',
 			),
 			$params
 		);

@@ -17,7 +17,7 @@ namespace Google\Site_Kit\Core\Storage;
  * @access private
  * @ignore
  */
-final class Encrypted_Options {
+final class Encrypted_Options implements Options_Interface {
 
 	/**
 	 * Data Encryption API instance.
@@ -48,6 +48,18 @@ final class Encrypted_Options {
 	}
 
 	/**
+	 * Checks whether or not a value is set for the given option.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param string $option Option name.
+	 * @return bool True if value set, false otherwise.
+	 */
+	public function has( $option ) {
+		return $this->options->has( $option );
+	}
+
+	/**
 	 * Gets the value of the given option.
 	 *
 	 * @since 1.0.0
@@ -57,8 +69,10 @@ final class Encrypted_Options {
 	 */
 	public function get( $option ) {
 		$raw_value = $this->options->get( $option );
-		if ( ! $raw_value ) {
-			return false;
+
+		// If there is no value stored, return the default which will not be encrypted.
+		if ( ! $this->options->has( $option ) ) {
+			return $raw_value;
 		}
 
 		$data = $this->encryption->decrypt( $raw_value );

@@ -62,7 +62,8 @@ class AdSenseModuleStatus extends Component {
 
 	/**
 	 * If setup requires a continue step, the method repopulates state with the new data.
-	 * @param {Object} continueData
+	 *
+	 * @param {Object} continueData New props to use for instructions.
 	 */
 	continueSetup( continueData ) {
 		const { instructionProps } = this.state;
@@ -98,7 +99,7 @@ class AdSenseModuleStatus extends Component {
 	render() {
 		const { accountStatus, clientID, loadingMessage, instructionProps } = this.state;
 
-		const showInProcess = ! accountStatus || ! googlesitekit.modules.adsense.setupComplete || [
+		const showInProcess = ! accountStatus || ! global.googlesitekit.modules.adsense.setupComplete || [
 			'ads-display-pending',
 			'account-pending-review',
 			'account-required-action',
@@ -118,7 +119,7 @@ class AdSenseModuleStatus extends Component {
 					</h2>
 				</div>
 				<div className="googlesitekit-setup-module__step">
-					{ ! googlesitekit.canAdsRun && ! googlesitekit.modules.adsense.setupComplete && (
+					{ ! global.googlesitekit.canAdsRun && ! global.googlesitekit.modules.adsense.setupComplete && (
 						<div className="googlesitekit-settings-module-warning">
 							<SvgIcon id="error" height="20" width="23" />
 							{ __( 'Ad blocker detected, you need to disable it in order to setup AdSense.', 'google-site-kit' ) }
@@ -137,7 +138,7 @@ class AdSenseModuleStatus extends Component {
 						/>
 					) }
 
-					{ googlesitekit.canAdsRun && accountStatus && ( googlesitekit.modules.adsense.setupComplete || 'account-connected' === accountStatus ) && (
+					{ global.googlesitekit.canAdsRun && accountStatus && ( global.googlesitekit.modules.adsense.setupComplete || 'account-connected' === accountStatus ) && (
 						<AdSenseSetupInstructions
 							{ ...instructionProps }
 							accountStatus={ accountStatus }

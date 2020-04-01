@@ -22,7 +22,7 @@ import Dialog from 'GoogleComponents/dialog';
 import Button from 'GoogleComponents/button';
 import Menu from 'GoogleComponents/menu';
 import Modal from 'GoogleComponents/modal';
-import { clearAppLocalStorage } from 'GoogleUtil';
+import { clearWebStorage } from 'GoogleUtil';
 import { getSiteKitAdminURL } from 'SiteKitCore/util';
 
 /**
@@ -52,15 +52,15 @@ class UserMenu extends Component {
 	}
 
 	componentDidMount() {
-		window.addEventListener( 'mouseup', this.handleMenuClose );
-		window.addEventListener( 'keyup', this.handleMenuClose );
-		window.addEventListener( 'keyup', this.handleDialogClose );
+		global.addEventListener( 'mouseup', this.handleMenuClose );
+		global.addEventListener( 'keyup', this.handleMenuClose );
+		global.addEventListener( 'keyup', this.handleDialogClose );
 	}
 
 	componentWillUnmount() {
-		window.removeEventListener( 'mouseup', this.handleMenuClose );
-		window.removeEventListener( 'keyup', this.handleMenuClose );
-		window.removeEventListener( 'keyup', this.handleDialogClose );
+		global.removeEventListener( 'mouseup', this.handleMenuClose );
+		global.removeEventListener( 'keyup', this.handleMenuClose );
+		global.removeEventListener( 'keyup', this.handleDialogClose );
 	}
 
 	handleMenu() {
@@ -81,7 +81,7 @@ class UserMenu extends Component {
 	}
 
 	handleMenuItemSelect( index, e ) {
-		const { proxyPermissionsURL } = googlesitekit.admin;
+		const { proxyPermissionsURL } = global.googlesitekit.admin;
 
 		if (
 			( ( 'keydown' === e.type && (
@@ -95,7 +95,7 @@ class UserMenu extends Component {
 					this.handleDialog();
 					break;
 				case 1:
-					window.location.assign( proxyPermissionsURL );
+					global.location.assign( proxyPermissionsURL );
 					break;
 				default:
 					this.handleMenu();
@@ -129,7 +129,7 @@ class UserMenu extends Component {
 		} );
 
 		// Clear caches.
-		clearAppLocalStorage();
+		clearWebStorage();
 
 		// Navigate back to the splash screen to reconnect.
 		document.location = getSiteKitAdminURL(
@@ -144,7 +144,7 @@ class UserMenu extends Component {
 		const {
 			userData: { email = '', picture = '' },
 			proxyPermissionsURL,
-		} = googlesitekit.admin;
+		} = global.googlesitekit.admin;
 		const { dialogActive, menuOpen } = this.state;
 
 		return (
@@ -155,9 +155,9 @@ class UserMenu extends Component {
 						className="googlesitekit-header__dropdown mdc-button--dropdown"
 						text
 						onClick={ this.handleMenu }
-						icon={ picture ?
-							<i className="mdc-button__icon" aria-hidden="true"><img className="mdc-button__icon--image" src={ picture } alt={ __( 'User Avatar', 'google-site-kit' ) } /></i> :
-							undefined
+						icon={ picture
+							? <i className="mdc-button__icon" aria-hidden="true"><img className="mdc-button__icon--image" src={ picture } alt={ __( 'User Avatar', 'google-site-kit' ) } /></i>
+							: undefined
 						}
 						ariaHaspopup="menu"
 						ariaExpanded={ menuOpen }

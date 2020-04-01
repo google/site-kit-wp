@@ -21,7 +21,7 @@ use Google\Site_Kit\Context;
  * @access private
  * @ignore
  */
-final class User_Options {
+final class User_Options implements User_Options_Interface {
 
 	/**
 	 * Plugin context.
@@ -147,5 +147,23 @@ final class User_Options {
 	 */
 	public function switch_user( $user_id ) {
 		$this->user_id = (int) $user_id;
+	}
+
+	/**
+	 * Gets the underlying meta key for the given option.
+	 *
+	 * @since 1.4.0
+	 *
+	 * @param string $option Option name.
+	 * @return string Meta key name.
+	 */
+	public function get_meta_key( $option ) {
+		global $wpdb;
+
+		if ( $this->context->is_network_mode() ) {
+			return $option;
+		}
+
+		return $wpdb->get_blog_prefix() . $option;
 	}
 }

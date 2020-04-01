@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Admin;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
 
 /**
  * Class representing a single screen.
@@ -21,6 +22,7 @@ use Google\Site_Kit\Core\Assets\Assets;
  * @ignore
  */
 final class Screen {
+	use Requires_Javascript_Trait;
 
 	const MENU_SLUG = 'googlesitekit';
 
@@ -126,9 +128,7 @@ final class Screen {
 						__( 'Site Kit', 'google-site-kit' ),
 						$this->args['capability'],
 						$this->slug,
-						function() use ( $context ) {
-							$this->render( $context );
-						},
+						'',
 						$context->url( 'dist/assets/images/logo-g_white_small.png' )
 					);
 					$menu_slug = $this->slug;
@@ -179,19 +179,16 @@ final class Screen {
 		$assets->enqueue_fonts();
 
 		// Enqueue base admin screen stylesheet.
-		$assets->enqueue_asset( 'googlesitekit_admin_css' );
+		$assets->enqueue_asset( 'googlesitekit-admin-css' );
 
 		// Helps detection of enabled ad blockers to warn users before activating or setup AdSense module.
 		if ( $this->is_ad_blocker_detection_required() ) {
-			$assets->enqueue_asset( 'googlesitekit_ads_detect' );
+			$assets->enqueue_asset( 'googlesitekit-ads-detect' );
 		}
 
 		if ( $this->args['enqueue_callback'] ) {
 			call_user_func( $this->args['enqueue_callback'], $assets );
 		}
-
-		// Enqueue module hooks.
-		$assets->enqueue_asset( 'googlesitekit_modules' );
 	}
 
 	/**
@@ -206,7 +203,15 @@ final class Screen {
 			return;
 		}
 
-		call_user_func( $this->args['render_callback'], $context );
+		?>
+		<div class="googlesitekit-plugin">
+			<?php
+				$this->render_noscript_html();
+
+				call_user_func( $this->args['render_callback'], $context );
+			?>
+		</div>
+		<?php
 	}
 
 	/**

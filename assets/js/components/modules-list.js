@@ -30,6 +30,7 @@ import {
 } from 'GoogleUtil';
 import GenericError from 'GoogleComponents/notifications/generic-error';
 import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -62,7 +63,7 @@ class ModulesList extends Component {
 			await refreshAuthentication();
 
 			// Redirect to ReAuthentication URL
-			window.location = getReAuthURL( slug, true );
+			global.location = getReAuthURL( slug, true );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'setup-module-error',
@@ -77,7 +78,7 @@ class ModulesList extends Component {
 
 	render() {
 		// Filter out internal modules.
-		const modules = Object.values( window.googlesitekit.modules || {} ).filter( ( module ) => ! module.internal );
+		const modules = Object.values( global.googlesitekit.modules || {} ).filter( ( module ) => ! module.internal );
 
 		// Map of slug => name for every module that is active and completely set up.
 		const completedModuleNames = modules
@@ -116,11 +117,14 @@ class ModulesList extends Component {
 					}
 
 					return (
-						<div key={ slug } className={ `
-							googlesitekit-modules-list__module
-							googlesitekit-modules-list__module--${ slug }
-							${ blockedByParentModule ? 'googlesitekit-modules-list__module--disabled' : '' }
-						` }>
+						<div
+							key={ slug }
+							className={ classnames(
+								'googlesitekit-modules-list__module',
+								`googlesitekit-modules-list__module--${ slug }`,
+								{ 'googlesitekit-modules-list__module--disabled': blockedByParentModule }
+							) }
+						>
 							<div className="googlesitekit-settings-connect-module__wrapper">
 								<div className="googlesitekit-settings-connect-module__logo">
 									{ moduleIcon( slug, blockedByParentModule ) }
@@ -159,7 +163,10 @@ class ModulesList extends Component {
 							) }
 							{ ! isConnected && blockedByParentModule && (
 								<Link disabled small inherit>
-									{ sprintf( __( 'Enable %s to start setup', 'google-site-kit' ), parentBlockerName ) }
+									{
+										/* translators: %s: parent module name */
+										sprintf( __( 'Enable %s to start setup', 'google-site-kit' ), parentBlockerName )
+									}
 								</Link>
 							) }
 						</div>

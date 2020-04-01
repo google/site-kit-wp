@@ -20,70 +20,39 @@
  * External dependencies
  */
 import ProgressBar from 'GoogleComponents/progress-bar';
-import Notification from 'GoogleComponents/notifications/notification';
 import 'GoogleComponents/data';
+import 'GoogleComponents/notifications';
+import { loadTranslations } from 'GoogleUtil';
+import 'GoogleModules';
 
 /**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { setLocaleData } from '@wordpress/i18n';
 import { doAction, applyFilters } from '@wordpress/hooks';
-import { Component, render, Fragment } from '@wordpress/element';
+import { Component, render, Suspense, lazy } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { Suspense, lazy } from 'GoogleUtil/react-features';
+import ErrorHandler from 'GoogleComponents/ErrorHandler';
 import ModuleApp from './components/module-app';
 
 class GoogleSitekitModule extends Component {
 	constructor( props ) {
 		super( props );
-		this.state = { hasError: false };
-
-		// Set up translations.
-		setLocaleData( googlesitekit.locale, 'google-site-kit' );
-
-		const {
-			showModuleSetupWizard,
-		} = googlesitekit.setup;
 
 		this.state = {
-			showModuleSetupWizard,
+			showModuleSetupWizard: global.googlesitekit.setup.showModuleSetupWizard,
 		};
-	}
-
-	componentDidCatch( error, info ) {
-		this.setState( {
-			hasError: true,
-			error,
-			info,
-		} );
 	}
 
 	render() {
 		const {
-			hasError,
-			error,
-			info,
 			showModuleSetupWizard,
 		} = this.state;
 
-		if ( hasError ) {
-			return <Notification
-				id={ 'googlesitekit-error' }
-				key={ 'googlesitekit-error' }
-				title={ error }
-				description={ info.componentStack }
-				dismiss={ '' }
-				isDismissable={ false }
-				format="small"
-				type="win-error"
-			/>;
-		}
-
-		const { currentAdminPage } = googlesitekit.admin;
+		const { currentAdminPage } = global.googlesitekit.admin;
 
 		/**
 		 * Filters whether to show the Module setup wizard when showModuleSetupWizard is true.
@@ -94,16 +63,16 @@ class GoogleSitekitModule extends Component {
 
 		if ( showModuleSetupWizard && moduleHasSetupWizard ) {
 			// Set webpackPublicPath on-the-fly.
-			if ( window.googlesitekit && window.googlesitekit.publicPath ) {
+			if ( global.googlesitekit && global.googlesitekit.publicPath ) {
 				// eslint-disable-next-line no-undef
-				__webpack_public_path__ = window.googlesitekit.publicPath; /*eslint camelcase: 0*/
+				__webpack_public_path__ = global.googlesitekit.publicPath; /*eslint camelcase: 0*/
 			}
 
 			const Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wrapper" */'./components/setup/setup-wrapper' ) );
 
 			return (
-				<Suspense fallback={
-					<Fragment>
+				<ErrorHandler>
+					<Suspense fallback={
 						<div className="googlesitekit-setup">
 							<div className="mdc-layout-grid">
 								<div className="mdc-layout-grid__inner">
@@ -127,30 +96,34 @@ class GoogleSitekitModule extends Component {
 								</div>
 							</div>
 						</div>
-					</Fragment>
-				}>
-					<Setup />
-				</Suspense>
+					}>
+						<Setup />
+					</Suspense>
+				</ErrorHandler>
 			);
 		}
 
 		return (
-			<ModuleApp />
+			<ErrorHandler>
+				<ModuleApp />
+			</ErrorHandler>
 		);
 	}
 }
 
 // Initialize the app once the DOM is ready.
-domReady( function() {
-	const siteKitModule = document.getElementById( 'js-googlesitekit-module' );
-	if ( null !== siteKitModule ) {
-		// Render the Dashboard App.
-		render( <GoogleSitekitModule />, siteKitModule );
+domReady( () => {
+	const renderTarget = document.getElementById( 'js-googlesitekit-module' );
+
+	if ( renderTarget ) {
+		loadTranslations();
+
+		render( <GoogleSitekitModule />, renderTarget );
 
 		/**
 		 * Action triggered when the dashboard App is loaded.
 		 */
-		doAction( 'googlesitekit.moduleLoaded', 'Single', googlesitekitCurrentModule );
+		doAction( 'googlesitekit.moduleLoaded', 'Single', global.googlesitekitCurrentModule );
 	}
 } );
 

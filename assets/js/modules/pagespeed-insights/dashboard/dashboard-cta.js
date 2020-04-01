@@ -19,9 +19,9 @@ const PageSpeedInsightsCTA = () => {
 	const {
 		active,
 		setupComplete,
-	} = googlesitekit.modules[ 'pagespeed-insights' ];
+	} = global.googlesitekit.modules[ 'pagespeed-insights' ];
 
-	const { canManageOptions } = googlesitekit.permissions;
+	const { canManageOptions } = global.googlesitekit.permissions;
 
 	if ( ! canManageOptions && ! setupComplete ) {
 		return null;
@@ -30,7 +30,7 @@ const PageSpeedInsightsCTA = () => {
 	const handleSetUpClick = async () => {
 		try {
 			await activateOrDeactivateModule( data, 'pagespeed-insights', true );
-			window.location = getReAuthURL( 'pagespeed-insights' );
+			global.location = getReAuthURL( 'pagespeed-insights' );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'pagespeed-insights-setup-error',
@@ -48,15 +48,15 @@ const PageSpeedInsightsCTA = () => {
 			mdc-layout-grid__cell--span-12
 		">
 			<CTA
-				title={ ! setupComplete && active ?
-					__( 'Complete PageSpeed Insights activation.', 'google-site-kit' ) :
-					__( 'Activate PageSpeed Insights.', 'google-site-kit' )
+				title={ ! setupComplete && active
+					? __( 'Complete PageSpeed Insights activation.', 'google-site-kit' )
+					: __( 'Activate PageSpeed Insights.', 'google-site-kit' )
 				}
 				description={ __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA.', 'google-site-kit' ) }
 				ctaLink={ '#' }
-				ctaLabel={ ! setupComplete && active ?
-					__( 'Complete activation', 'google-site-kit' ) :
-					__( 'Activate PageSpeed Insights', 'google-site-kit' )
+				ctaLabel={ ! setupComplete && active
+					? __( 'Complete activation', 'google-site-kit' )
+					: __( 'Activate PageSpeed Insights', 'google-site-kit' )
 				}
 				onClick={ handleSetUpClick }
 			/>

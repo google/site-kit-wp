@@ -109,9 +109,22 @@
 	}
 }
 
+.googlesitekit-setup-compat {
+	max-width: 60rem;
+}
+
+.googlesitekit-start-setup-wrap {
+	display: flex;
+}
+
+.googlesitekit-start-setup {
+	margin-right: 16px;
+}
+
 .googlesitekit-wizard {
 
 	.googlesitekit-opt-in {
-		margin-top: 10px;
+		margin-bottom: 8px;
+		margin-top: 8px;
 	}
 }

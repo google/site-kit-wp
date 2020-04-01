@@ -88,19 +88,17 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await page.waitForResponse( ( res ) => res.url().match( 'modules/analytics/data/accounts-properties-profiles' ) );
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module--analytics p', { text: new RegExp( `An existing analytics tag was found on your site with the id ${ EXISTING_PROPERTY_ID }`, 'i' ) } );
 
-		await expect( page ).toMatchElement( '.mdc-select--disabled .mdc-select__selected-text', { text: /test account a/i } );
-		await expect( page ).toMatchElement( '.mdc-select--disabled .mdc-select__selected-text', { text: /test property x/i } );
-		await expect( page ).toMatchElement( '.mdc-select:not(.mdc-select--disabled) .mdc-select__selected-text', { text: /test profile x/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-account .mdc-select__selected-text', { text: /test account a/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-property .mdc-select__selected-text', { text: /test property x/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-profile .mdc-select__selected-text', { text: /test profile x/i } );
 
 		// Ensure that Views dropdown is not disabled
 		await expect( page ).toClick( '.mdc-select', { text: /test profile x/i } );
 		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test profile x/i } );
 
-		await Promise.all( [
-			expect( page ).toClick( 'button', { text: /configure analytics/i } ),
-			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
-		] );
+		await expect( page ).toClick( 'button', { text: /configure analytics/i } );
 
+		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
 	} );
 

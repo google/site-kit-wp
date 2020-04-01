@@ -10,26 +10,29 @@
  */
 
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Modules\Search_Console\Settings;
 
-add_action( 'rest_api_init', function () {
-	if ( ! defined( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE' ) ) {
-		return;
-	}
+add_action(
+	'rest_api_init',
+	function () {
+		if ( ! defined( 'GOOGLESITEKIT_PLUGIN_MAIN_FILE' ) ) {
+			return;
+		}
 
-	register_rest_route(
-		REST_Routes::REST_ROOT,
-		'e2e/setup/search-console-property',
-		array(
-			'methods'  => WP_REST_Server::EDITABLE,
-			'callback' => function ( WP_REST_Request $request ) {
-				if ( $request['property'] ) {
-					update_option( 'googlesitekit_search_console_property', $request['property'] );
-				} else {
-					delete_option( 'googlesitekit_search_console_property' );
-				}
+		register_rest_route(
+			REST_Routes::REST_ROOT,
+			'e2e/setup/search-console-property',
+			array(
+				'methods'  => WP_REST_Server::EDITABLE,
+				'callback' => function ( WP_REST_Request $request ) {
+					$settings = get_option( Settings::OPTION );
+					$settings['propertyID'] = $request['property'] ?: '';
+					update_option( Settings::OPTION, $settings );
 
-				return array( 'success' => true );
-			}
-		)
-	);
-}, 0 );
+					return array( 'success' => true );
+				},
+			)
+		);
+	},
+	0
+);

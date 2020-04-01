@@ -90,7 +90,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 			goals,
 		} = this.state;
 
-		const { permaLink } = googlesitekit;
+		const { permaLink } = global.googlesitekit;
 
 		const href = getSiteKitAdminURL( 'googlesitekit-module-analytics', {} );
 		const goalURL = 'https://support.google.com/analytics/answer/1032415?hl=en#create_or_edit_goals';
@@ -135,7 +135,6 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 								<Sparkline
 									data={ extractForSparkline( extractedAnalytics, 1 ) }
 									change={ totalUsersChange }
-									id="analytics-users-sparkline"
 								/>
 						}
 					/>
@@ -161,7 +160,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 								datapointUnit={ __( '%', 'google-site-kit' ) }
 								change={ averageBounceRateChange }
 								changeDataUnit="%"
-								reverseArrowDirection
+								invertChangeColor
 								source={ {
 									name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
 									link: href,
@@ -171,7 +170,6 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 										<Sparkline
 											data={ extractForSparkline( extractedAnalytics, 2 ) }
 											change={ averageBounceRateChange }
-											id="analytics-sessions-sparkline"
 										/>
 								}
 							/>
@@ -201,7 +199,6 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 								<Sparkline
 									data={ extractForSparkline( extractedAnalytics, 3 ) }
 									change={ goalCompletionsChange }
-									id="analytics-sessions-sparkline"
 								/>
 							}
 						/>
@@ -237,7 +234,7 @@ export default withData(
 			datapoint: 'report',
 			data: {
 				...overviewReportDataDefaults,
-				url: googlesitekit.permaLink,
+				url: global.googlesitekit.permaLink,
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
@@ -256,7 +253,7 @@ export default withData(
 			datapoint: 'report',
 			data: {
 				...siteAnalyticsReportDataDefaults,
-				url: googlesitekit.permaLink,
+				url: global.googlesitekit.permaLink,
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
@@ -274,7 +271,7 @@ export default withData(
 			identifier: 'analytics',
 			datapoint: 'goals',
 			data: {
-				url: googlesitekit.permaLink,
+				url: global.googlesitekit.permaLink,
 			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'hour' ),

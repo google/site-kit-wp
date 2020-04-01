@@ -14,7 +14,20 @@
 
 /**
  * Fake a verified site state.
+ * Verification checks for metadata existence so must filter get metadata instead of user option.
+ * @see \metadata_exists
  */
-add_filter( 'get_user_option_googlesitekit_site_verified_meta', function () {
-	return 'verified';
-} );
+add_filter(
+	'get_user_metadata',
+	function ( $null, $object_id, $meta_key ) {
+		if (
+			preg_match( '/googlesitekit_site_verified_meta$/', $meta_key )
+			&& get_current_user_id() === $object_id
+		) {
+			return '1';
+		}
+		return $null;
+	},
+	10,
+	3
+);

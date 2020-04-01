@@ -17,7 +17,7 @@ namespace Google\Site_Kit\Core\Assets;
  * @access private
  * @ignore
  */
-final class Script extends Asset {
+class Script extends Asset {
 
 	/**
 	 * Constructor.
@@ -28,14 +28,13 @@ final class Script extends Asset {
 	 * @param array  $args {
 	 *     Associative array of script arguments.
 	 *
-	 *     @type string   $src             Required script source URL.
-	 *     @type array    $dependencies    List of script dependencies. Default empty array.
-	 *     @type string   $version         Script version. Default is the version of Site Kit.
-	 *     @type bool     $fallback        Whether to only register as a fallback. Default false.
-	 *     @type callable $post_register   Optional callback to execute after registration. Default none.
-	 *     @type callable $post_enqueue    Optional callback to execute after enqueuing. Default none.
-	 *     @type bool     $in_footer       Whether to load script in footer. Default true.
-	 *     @type string   $execution       How to handle script execution, e.g. 'defer'. Default empty string.
+	 *     @type string   $src          Required script source URL.
+	 *     @type array    $dependencies List of script dependencies. Default empty array.
+	 *     @type string   $version      Script version. Default is the version of Site Kit.
+	 *     @type bool     $fallback     Whether to only register as a fallback. Default false.
+	 *     @type callable $before_print Optional callback to execute before printing. Default none.
+	 *     @type bool     $in_footer    Whether to load script in footer. Default true.
+	 *     @type string   $execution    How to handle script execution, e.g. 'defer'. Default empty string.
 	 * }
 	 */
 	public function __construct( $handle, array $args ) {
@@ -60,11 +59,6 @@ final class Script extends Asset {
 			return;
 		}
 
-		$post_register = $this->args['post_register'];
-		if ( $post_register && wp_script_is( $this->handle, 'registered' ) ) {
-			$post_register = null;
-		}
-
 		wp_register_script(
 			$this->handle,
 			$this->args['src'],
@@ -76,10 +70,6 @@ final class Script extends Asset {
 		if ( ! empty( $this->args['execution'] ) ) {
 			wp_script_add_data( $this->handle, 'script_execution', $this->args['execution'] );
 		}
-
-		if ( $post_register ) {
-			call_user_func( $post_register, $this->handle );
-		}
 	}
 
 	/**
@@ -88,15 +78,6 @@ final class Script extends Asset {
 	 * @since 1.0.0
 	 */
 	public function enqueue() {
-		$post_enqueue = $this->args['post_enqueue'];
-		if ( $post_enqueue && wp_script_is( $this->handle, 'enqueued' ) ) {
-			$post_enqueue = null;
-		}
-
 		wp_enqueue_script( $this->handle );
-
-		if ( $post_enqueue ) {
-			call_user_func( $post_enqueue, $this->handle );
-		}
 	}
 }

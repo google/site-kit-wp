@@ -20,12 +20,16 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 const SvgIcon = ( { id, className, height, width } ) => {
-	const svgPath = `${ googlesitekit.admin.assetsRoot }svg/svg.svg`;
+	const svgPath = `${ global.googlesitekit.admin.assetsRoot }svg/svg.svg`;
 	return (
 		<svg
-			className={ `${ 'svg' } ${ className }` }
+			className={ classnames(
+				'svg',
+				className
+			) }
 			height={ height }
 			width={ width }
 		>

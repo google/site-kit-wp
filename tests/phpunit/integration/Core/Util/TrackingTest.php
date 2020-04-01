@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Tracking;
+use Google\Site_Kit\Core\Util\Tracking_Consent;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -20,64 +21,39 @@ use Google\Site_Kit\Tests\TestCase;
 class TrackingTest extends TestCase {
 
 	public function test_register() {
-		remove_all_actions( 'googlesitekit_enqueue_screen_assets' );
-		remove_all_actions( 'admin_enqueue_scripts' );
+		$tracking_consent_mock = $this->getTrackingConsentMock( array( 'register', 'get' ) );
+		$tracking_consent_mock->expects( $this->once() )->method( 'register' );
 		$tracking = new Tracking( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $tracking, 'consent', $tracking_consent_mock );
+		remove_all_filters( 'googlesitekit_inline_base_data' );
 
 		$tracking->register();
 
-		$this->assertGtagScriptPrinted( 'googlesitekit_enqueue_screen_assets' );
-		$this->assertAdditionalScreensPrintGtag();
-	}
-
-	protected function assertGtagScriptPrinted( $action ) {
-		$this->opt_out_from_tracking();
-
-		$this->assertNotContains(
-			'https://www.googletagmanager.com/gtag/js?id=' . Tracking::TRACKING_ID,
-			$this->capture_action( $action )
-		);
-
-		$this->opt_in_to_tracking();
-
-		$this->assertContains(
-			'https://www.googletagmanager.com/gtag/js?id=' . Tracking::TRACKING_ID,
-			$this->capture_action( $action )
-		);
-	}
-
-	protected function assertAdditionalScreensPrintGtag() {
-		$tracking_id = Tracking::TRACKING_ID;
-		set_current_screen( 'test-screen' );
-		$this->assertEmpty( $this->capture_action( 'admin_enqueue_scripts' ) );
-
-		set_current_screen( 'dashboard' );
-		$this->assertGtagScriptPrinted( 'admin_enqueue_scripts' );
-		$this->assertContains( "send_to: '$tracking_id'", $this->capture_action( 'admin_enqueue_scripts' ) );
-
-		set_current_screen( 'plugins' );
-		$this->assertGtagScriptPrinted( 'admin_enqueue_scripts' );
-		$this->assertContains( "send_to: '$tracking_id'", $this->capture_action( 'admin_enqueue_scripts' ) );
-
-		set_current_screen( 'test-screen' );
+		$this->assertTrue( has_filter( 'googlesitekit_inline_base_data' ) );
+		$base_data = apply_filters( 'googlesitekit_inline_base_data', array() );
+		$this->assertArrayHasKey( 'trackingEnabled', $base_data );
+		$this->assertEquals( Tracking::TRACKING_ID, $base_data['trackingID'] );
 	}
 
 	public function test_is_active() {
-		$tracking = new Tracking( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->opt_out_from_tracking();
+		$tracking_consent_mock = $this->getTrackingConsentMock( 'get' );
+		$tracking              = new Tracking( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $tracking, 'consent', $tracking_consent_mock );
+
+		// Set Tracking_Consent::get() to return an empty string on the first call, and '1' on the second.
+		$tracking_consent_mock->expects( $this->any() )->method( 'get' )->willReturnOnConsecutiveCalls( '', '1' );
 
 		$this->assertFalse( $tracking->is_active() );
 
-		$this->opt_in_to_tracking();
+		// User option change is simulated with mock above.
 
 		$this->assertTrue( $tracking->is_active() );
 	}
 
-	protected function opt_in_to_tracking() {
-		update_option( Tracking::TRACKING_OPTIN_KEY, 1 );
-	}
-
-	protected function opt_out_from_tracking() {
-		update_option( Tracking::TRACKING_OPTIN_KEY, 0 );
+	protected function getTrackingConsentMock( $methods ) {
+		return $this->getMockBuilder( Tracking_Consent::class )
+					->disableOriginalConstructor()
+					->setMethods( (array) $methods )
+					->getMock();
 	}
 }

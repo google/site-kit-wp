@@ -58,7 +58,7 @@ class PostSearcher extends Component {
 	 * Search for posts based on user input.
 	 *
 	 * @param {string} query             The search query.
-	 * @param {function} populateResults The callback function to pass the results to.
+	 * @param {Function} populateResults The callback function to pass the results to.
 	 */
 	async postSearch( query, populateResults ) {
 		populateResults( [ __( 'Loading...', 'google-site-kit' ) ] );
@@ -94,9 +94,9 @@ class PostSearcher extends Component {
 	/**
 	 * Return the pathname of URL.
 	 *
-	 * @param {string} url
+	 * @param {string} url URL to parse pathname from.
 	 *
-	 * @return mixed Returns the pathname or false if param is not valid url.
+	 * @return {string} Returns the pathname or false if param is not a valid URL.
 	 */
 	getURLPathname( url ) {
 		try {
@@ -133,12 +133,12 @@ class PostSearcher extends Component {
 	}
 
 	render() {
-		const { modules } = googlesitekit;
+		const { modules } = global.googlesitekit;
 
 		// Set column width full if Analytics active, half otherwise.
-		const classNameForColumn = modules.analytics && modules.analytics.active ?
-			'mdc-layout-grid__cell mdc-layout-grid__cell--span-12' :
-			'mdc-layout-grid__cell mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-6-desktop';
+		const classNameForColumn = modules.analytics && modules.analytics.active
+			? 'mdc-layout-grid__cell mdc-layout-grid__cell--span-12'
+			: 'mdc-layout-grid__cell mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-6-desktop';
 
 		return (
 			<div

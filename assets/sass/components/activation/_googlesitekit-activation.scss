@@ -26,11 +26,24 @@
 		margin: 0;
 	}
 
-	.googlesitekit-activation__button {
-		margin-top: 12px;
-	}
-
-	.googlesitekit-activation__opt-in {
+	.googlesitekit-opt-in {
+		margin-bottom: 8px;
 		margin-top: 8px;
+	}
+}
+
+.googlesitekit-noscript {
+
+	#googlesitekit-notice-activated {
+
+		border-left-color: $c-selective-yellow; // noscript renders inside success notification parent.
+		margin: 5px 15px 5px 0; // fixes the alignment with rest of the page
+		padding: 0;
+
+		.googlesitekit-noscript {
+			border: 0;
+			margin: 0;
+			padding: 0;
+		}
 	}
 }

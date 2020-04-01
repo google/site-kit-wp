@@ -27,6 +27,7 @@ import {
 	getDataTableFromData,
 	TableOverflowContainer,
 } from 'GoogleComponents/data-table';
+import { get } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -43,8 +44,8 @@ import {
 	PageSpeedReportScoreGauge,
 } from './util';
 
-const isZeroData = ( data ) => {
-	return 0 === data.categories.performance.score;
+const hasData = ( data ) => {
+	return !! get( data, 'categories.performance.score' );
 };
 
 class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
@@ -67,7 +68,7 @@ class PageSpeedInsightsDashboardWidgetHomepageSpeedColumn extends Component {
 			return null;
 		}
 
-		if ( isZeroData( data ) ) {
+		if ( ! hasData( data ) ) {
 			return getDataErrorComponent(
 				_x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ),
 				__( 'An unknown error occurred while trying to fetch PageSpeed Insights data. Please try again later.', 'google-site-kit' ),
@@ -133,8 +134,9 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedMobile = withData(
 			identifier: 'pagespeed-insights',
 			datapoint: 'pagespeed',
 			data: {
-				url: googlesitekit.permaLink,
+				url: global.googlesitekit.permaLink,
 				strategy: 'mobile',
+				dateRange: null,
 			},
 			priority: 10,
 			maxAge: getTimeInSeconds( 'day' ),
@@ -155,8 +157,9 @@ export const PageSpeedInsightsDashboardWidgetHomepageSpeedDesktop = withData(
 			identifier: 'pagespeed-insights',
 			datapoint: 'pagespeed',
 			data: {
-				url: googlesitekit.permaLink,
+				url: global.googlesitekit.permaLink,
 				strategy: 'desktop',
+				dateRange: null,
 			},
 			priority: 10,
 			maxAge: getTimeInSeconds( 'day' ),

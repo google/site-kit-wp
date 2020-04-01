@@ -1,6 +1,9 @@
 node_modules
 bower_components
 vendor
+/php-scoper/*
+!/php-scoper/composer.*
+!/php-scoper/README.md
 /third-party
 release
 phpunit.xml
@@ -8,7 +11,7 @@ phpunit.xml
 npm-debug.log
 /dist
 /languages
-google-site-kit.zip
+google-site-kit*.zip
 
 # Editors
 *.esproj
@@ -34,3 +37,6 @@ Desktop.ini
 # Backstop
 tests/backstop/html_report/
 tests/backstop/tests/
+
+# Jest coverage
+coverage/

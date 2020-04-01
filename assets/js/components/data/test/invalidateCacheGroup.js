@@ -5,8 +5,8 @@ import data from '../';
 
 const { setCache, getCache, invalidateCacheGroup } = data;
 
-const nativeSessionStorage = window.sessionStorage;
-const nativeLocalStorage = window.localStorage;
+const nativeSessionStorage = global.sessionStorage;
+const nativeLocalStorage = global.localStorage;
 
 const valuesToTest = [
 	[
@@ -67,8 +67,8 @@ const valuesToTest = [
 
 describe( 'invalidateCacheGroup', () => {
 	it.each( valuesToTest )( 'variableStorage', ( keysToSet, args, expectedKeys ) => {
-		window.sessionStorage = undefined;
-		window.localStorage = undefined;
+		global.sessionStorage = undefined;
+		global.localStorage = undefined;
 
 		keysToSet.forEach( function( key ) {
 			setCache( key, 'value' );
@@ -86,16 +86,16 @@ describe( 'invalidateCacheGroup', () => {
 
 		expect( result ).toStrictEqual( expectedKeys );
 
-		window.googlesitekit.admin.datacache = {};
+		global.googlesitekit.admin.datacache = {};
 
-		window.sessionStorage = nativeSessionStorage;
-		window.localStorage = nativeLocalStorage;
+		global.sessionStorage = nativeSessionStorage;
+		global.localStorage = nativeLocalStorage;
 	} );
 
 	if ( nativeSessionStorage ) {
 		it.each( valuesToTest )( 'sessionStorage', ( keysToSet, args, expectedKeys ) => {
-			window.sessionStorage = nativeSessionStorage;
-			window.localStorage = undefined;
+			global.sessionStorage = nativeSessionStorage;
+			global.localStorage = undefined;
 
 			keysToSet.forEach( function( key ) {
 				setCache( key, 'value' );
@@ -113,17 +113,17 @@ describe( 'invalidateCacheGroup', () => {
 
 			expect( result ).toStrictEqual( expectedKeys );
 
-			window.googlesitekit.admin.datacache = {};
-			window.sessionStorage.clear();
+			global.googlesitekit.admin.datacache = {};
+			global.sessionStorage.clear();
 
-			window.localStorage = nativeLocalStorage;
+			global.localStorage = nativeLocalStorage;
 		} );
 	}
 
 	if ( nativeLocalStorage ) {
 		it.each( valuesToTest )( 'localStorage', ( keysToSet, args, expectedKeys ) => {
-			window.sessionStorage = undefined;
-			window.localStorage = nativeLocalStorage;
+			global.sessionStorage = undefined;
+			global.localStorage = nativeLocalStorage;
 
 			keysToSet.forEach( function( key ) {
 				setCache( key, 'value' );
@@ -141,10 +141,10 @@ describe( 'invalidateCacheGroup', () => {
 
 			expect( result ).toStrictEqual( expectedKeys );
 
-			window.googlesitekit.admin.datacache = {};
-			window.localStorage.clear();
+			global.googlesitekit.admin.datacache = {};
+			global.localStorage.clear();
 
-			window.sessionStorage = nativeSessionStorage;
+			global.sessionStorage = nativeSessionStorage;
 		} );
 	}
 } );

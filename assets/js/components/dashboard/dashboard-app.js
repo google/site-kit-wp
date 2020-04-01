@@ -23,12 +23,11 @@ import Header from 'GoogleComponents/header';
 import DateRangeSelector from 'GoogleComponents/date-range-selector';
 import PageHeader from 'GoogleComponents/page-header';
 import 'GoogleComponents/publisher-wins';
-import 'GoogleComponents/notifications';
 
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -36,11 +35,12 @@ import { __ } from '@wordpress/i18n';
  */
 import DashboardMain from './dashboard-main';
 import DashboardNotifications from './dashboard-notifications';
+import ErrorHandler from 'GoogleComponents/ErrorHandler';
 
 class DashboardApp extends Component {
 	render() {
 		return (
-			<Fragment>
+			<ErrorHandler>
 				<Header />
 				<DashboardNotifications />
 				<div className="googlesitekit-module-page">
@@ -76,7 +76,7 @@ class DashboardApp extends Component {
 						</div>
 					</div>
 				</div>
-			</Fragment>
+			</ErrorHandler>
 		);
 	}
 }

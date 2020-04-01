@@ -21,7 +21,7 @@
  */
 import { MDCRipple } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
-
+import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
@@ -55,20 +55,23 @@ class Button extends Component {
 			ariaControls,
 		} = this.props;
 
-		const SemanticButton = href ? 'a' : 'button';
+		// Use a button if disabled, even if a href is provided to ensure expected behavior.
+		const SemanticButton = ( href && ! disabled ) ? 'a' : 'button';
 
 		return (
 			<SemanticButton
-				className={ `
-					mdc-button
-					${ ! text && 'mdc-button--raised' }
-					${ className && className }
-					${ danger ? 'mdc-button--danger' : '' }
-				` }
+				className={ classnames(
+					'mdc-button',
+					className,
+					{
+						'mdc-button--raised': ! text,
+						'mdc-button--danger': danger,
+					}
+				) }
 				onClick={ onClick }
-				href={ href }
+				href={ disabled ? undefined : href }
 				ref={ this.buttonRef }
-				disabled={ disabled ? 'disabled' : '' }
+				disabled={ !! disabled }
 				target={ target || '_self' }
 				id={ id }
 				aria-haspopup={ ariaHaspopup }

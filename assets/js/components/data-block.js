@@ -21,12 +21,18 @@
  */
 import PropTypes from 'prop-types';
 import SourceLink from 'GoogleComponents/source-link';
-import SvgIcon from 'GoogleUtil/svg-icon';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Component, Fragment, cloneElement } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import ChangeArrow from './change-arrow';
+import { numberFormat } from '../util';
 
 class DataBlock extends Component {
 	constructor( props ) {
@@ -63,20 +69,27 @@ class DataBlock extends Component {
 			handleStatSelection,
 			source,
 			sparkline,
-			reverseArrowDirection,
+			invertChangeColor,
 		} = this.props;
 
 		const role = ( 'button' === context ) ? 'button' : '';
-		const changeType = 0 <= change ? '-positive' : '-negative';
+
+		// The `sparkline` prop is passed as a component, but if `invertChangeColor`
+		// is set, we should pass that to `<Sparkline>`. In that case, we clone
+		// the element and add the prop.
+		let sparklineComponent = sparkline;
+		if ( sparklineComponent && invertChangeColor ) {
+			sparklineComponent = cloneElement( sparkline, { invertChangeColor } );
+		}
 
 		return (
 			<div
-				className={ `
-					googlesitekit-data-block
-					googlesitekit-data-block--${ context }
-					${ selected ? 'googlesitekit-data-block--selected' : '' }
-					${ className }
-				` }
+				className={ classnames(
+					'googlesitekit-data-block',
+					className,
+					`googlesitekit-data-block--${ context }`,
+					{ 'googlesitekit-data-block--selected': selected },
+				) }
 				tabIndex={ 'button' === context ? '0' : '-1' }
 				role={ handleStatSelection && role }
 				onClick={ handleStatSelection && this.handleClick }
@@ -95,21 +108,25 @@ class DataBlock extends Component {
 						{ `${ datapoint }${ datapointUnit }` }
 					</div>
 				</div>
-				{ sparkline &&
+				{ sparklineComponent &&
 					<div className="googlesitekit-data-block__sparkline">
-						{ sparkline }
+						{ sparklineComponent }
 					</div>
 				}
 				<div className="googlesitekit-data-block__change-source-wrapper">
-					<div className={ `
-						googlesitekit-data-block__change
-						googlesitekit-data-block__change--${ 0 <= change ? 'positive' : 'negative' }
-					` }>
+					<div className="googlesitekit-data-block__change">
 						{ '' === change && <Fragment>&nbsp;</Fragment> }
-						{ change && [
-							<span key="arrow" className={ `googlesitekit-data-block__arrow ${ reverseArrowDirection ? 'googlesitekit-data-block__arrow--reverse' : '' }` }><SvgIcon id={ `arrow${ changeType }` } height="9" width="9" /></span>,
-							<span key="values" className="googlesitekit-data-block__value">{ `${ Math.abs( change ) }${ changeDataUnit } ${ period }` }</span>,
-						] }
+						{ change && <Fragment>
+							<span className="googlesitekit-data-block__arrow">
+								<ChangeArrow
+									direction={ 0 < parseFloat( change ) ? 'up' : 'down' }
+									invertColor={ invertChangeColor }
+								/>
+							</span>
+							<span className="googlesitekit-data-block__value">
+								{ `${ numberFormat( Math.abs( change ) ) }${ changeDataUnit } ${ period }` }
+							</span>
+						</Fragment> }
 					</div>
 					{ source && (
 						<SourceLink
@@ -143,7 +160,7 @@ DataBlock.propTypes = {
 	period: PropTypes.string,
 	selected: PropTypes.bool,
 	handleStatSelection: PropTypes.func,
-	reverseArrowDirection: PropTypes.bool,
+	invertChangeColor: PropTypes.bool,
 };
 
 DataBlock.defaultProps = {
@@ -159,7 +176,7 @@ DataBlock.defaultProps = {
 	period: '',
 	selected: false,
 	handleStatSelection: null,
-	reverseArrowDirection: false,
+	invertChangeColor: false,
 };
 
 export default DataBlock;

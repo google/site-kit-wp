@@ -21,7 +21,7 @@ import { googlesitekit as adSenseData } from '../.storybook/data/wp-admin-admin.
 
 storiesOf( 'AdSense Module', module )
 	.add( 'Estimate Earnings', () => {
-		window.googlesitekit = adSenseData;
+		global.googlesitekit = adSenseData;
 
 		// Load the datacache with data.
 		setTimeout( () => {
@@ -50,7 +50,7 @@ storiesOf( 'AdSense Module', module )
 		},
 	} )
 	.add( 'Performance', () => {
-		window.googlesitekit = adSenseData;
+		global.googlesitekit = adSenseData;
 
 		// Load the datacache with data.
 		setTimeout( () => {

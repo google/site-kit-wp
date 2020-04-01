@@ -30,15 +30,17 @@ import { getReAuthURL } from 'GoogleUtil';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
- * Creates a CTA component when modue needs to be configured. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
+ * Creates a CTA component when module needs to be configured. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
  *
  * @param {string}  module     Module slug.
  * @param {boolean} inGrid     Creates layout to fit within an existing grid with 'cell' classes. Default is half-width grid cells. Default: false.
  * @param {boolean} fullWidth  Creates layout with 'cell--span-12' to be full width. Default: false.
  * @param {boolean} createGrid Adds a full grid layout with padding. Default: false.
+ *
+ * @return {WPElement} Returns CTA component with configuration CTA.
  */
 const getSetupIncompleteComponent = ( module, inGrid = false, fullWidth = false, createGrid = false ) => {
-	const { name } = googlesitekit.modules[ module ];
+	const { name } = global.googlesitekit.modules[ module ];
 	const cta = <CTA
 
 		/* translators: %s: Module name */
@@ -48,7 +50,7 @@ const getSetupIncompleteComponent = ( module, inGrid = false, fullWidth = false,
 		description={ sprintf( __( '%s module needs to be configured', 'google-site-kit' ), name ) }
 		ctaLabel={ __( 'Complete activation', 'google-site-kit' ) }
 		onClick={ () => {
-			window.location = getReAuthURL( module, true );
+			global.location = getReAuthURL( module, true );
 		} }
 	/>;
 

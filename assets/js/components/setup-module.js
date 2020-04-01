@@ -32,6 +32,7 @@ import {
 	moduleIcon,
 } from 'GoogleUtil';
 import GenericError from 'GoogleComponents/notifications/generic-error';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -66,7 +67,7 @@ class SetupModule extends Component {
 			await refreshAuthentication();
 
 			// Redirect to ReAuthentication URL.
-			window.location = getReAuthURL( slug, true );
+			global.location = getReAuthURL( slug, true );
 		} catch ( err ) {
 			showErrorNotification( GenericError, {
 				id: 'activate-module-error',
@@ -92,7 +93,7 @@ class SetupModule extends Component {
 
 		let blockedByParentModule = false;
 
-		const { modules } = googlesitekit;
+		const { modules } = global.googlesitekit;
 
 		// Check if required module is active.
 		if ( modules[ slug ].required.length ) {
@@ -106,20 +107,19 @@ class SetupModule extends Component {
 		}
 
 		return (
-			<div className={ `
-				googlesitekit-settings-connect-module
-				googlesitekit-settings-connect-module--${ slug }
-				${ blockedByParentModule ? 'googlesitekit-settings-connect-module--disabled' : '' }
-			` } key={ slug }>
+			<div
+				className={ classnames(
+					'googlesitekit-settings-connect-module',
+					`googlesitekit-settings-connect-module--${ slug }`,
+					{ 'googlesitekit-settings-connect-module--disabled': blockedByParentModule }
+				) }
+				key={ slug }
+			>
 				<div className="googlesitekit-settings-connect-module__switch">
 					<Spinner isSaving={ isSaving } />
 				</div>
 				<div className="googlesitekit-settings-connect-module__logo">
-					{
-						! blockedByParentModule ?
-							moduleIcon( slug ) :
-							moduleIcon( `${ slug }-disabled` )
-					}
+					{ moduleIcon( slug ) }
 				</div>
 				<h3 className="
 					googlesitekit-subheading-1
@@ -143,9 +143,11 @@ class SetupModule extends Component {
 							arrow
 						>
 							{
-								! blockedByParentModule ?
-									sprintf( __( 'Set up %s', 'google-site-kit' ), name ) :
-									sprintf( __( 'Setup Analytics to gain access to %s', 'google-site-kit' ), name )
+								! blockedByParentModule
+									/* translators: %s: module name */
+									? sprintf( __( 'Set up %s', 'google-site-kit' ), name )
+									/* translators: %s: module name */
+									: sprintf( __( 'Set up Analytics to gain access to %s', 'google-site-kit' ), name )
 							}
 						</Link>
 					</p>

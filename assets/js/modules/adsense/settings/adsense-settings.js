@@ -23,7 +23,7 @@ import Switch from 'GoogleComponents/switch';
 import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import PropTypes from 'prop-types';
 import {
-	sendAnalyticsTrackingEvent,
+	trackEvent,
 	toggleConfirmModuleSettings,
 } from 'GoogleUtil';
 
@@ -37,7 +37,7 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
 class AdSenseSettings extends Component {
 	constructor( props ) {
 		super( props );
-		const { useSnippet = true } = googlesitekit.modules.adsense.settings;
+		const { useSnippet = true } = global.googlesitekit.modules.adsense.settings;
 
 		this.state = {
 			useSnippet: !! useSnippet,
@@ -88,8 +88,8 @@ class AdSenseSettings extends Component {
 		};
 
 		// Reset the localized variable.
-		if ( googlesitekit.modules.adsense.settings ) {
-			googlesitekit.modules.adsense.settings.useSnippet = useSnippet;
+		if ( global.googlesitekit.modules.adsense.settings ) {
+			global.googlesitekit.modules.adsense.settings.useSnippet = useSnippet;
 		}
 
 		return data.set( TYPE_MODULES, 'adsense', 'use-snippet', toSave ).then( ( res ) => res ).catch( ( e ) => e );
@@ -106,8 +106,7 @@ class AdSenseSettings extends Component {
 			} );
 		}
 
-		// Track the event.
-		sendAnalyticsTrackingEvent( 'adsense_setup', useSnippet ? 'adsense_tag_enabled' : 'adsense_tag_disabled' );
+		trackEvent( 'adsense_setup', useSnippet ? 'adsense_tag_enabled' : 'adsense_tag_disabled' );
 
 		if ( saveOnChange ) {
 			data.set( TYPE_MODULES, 'adsense', 'use-snippet', { useSnippet } ).then( ( res ) => res ).catch( ( e ) => e );
@@ -135,7 +134,7 @@ class AdSenseSettings extends Component {
 		} = this.state;
 		const {
 			isEditing,
-			switchLabel,
+			switchLabel = __( 'Let Site Kit place code on your site', 'google-site-kit' ),
 			switchOnMessage,
 			switchOffMessage,
 		} = this.props;
@@ -143,8 +142,8 @@ class AdSenseSettings extends Component {
 		return (
 			<Fragment>
 				{
-					isEditing ?
-						<Fragment>
+					isEditing
+						? <Fragment>
 							<div className="googlesitekit-setup-module__switch">
 								<Switch
 									id="enableAutoAds"
@@ -171,12 +170,12 @@ class AdSenseSettings extends Component {
 									</div>
 								</div>
 							}
-						</Fragment> :
-						<Fragment>
+						</Fragment>
+						: <Fragment>
 							{	__( 'The AdSense code has', 'google-site-kit' ) } {
-								useSnippet ?
-									__( 'been placed on your site.', 'google-site-kit' ) :
-									__( 'not been placed on your site.', 'google-site-kit' )
+								useSnippet
+									? __( 'been placed on your site.', 'google-site-kit' )
+									: __( 'not been placed on your site.', 'google-site-kit' )
 							}
 						</Fragment>
 				}
@@ -201,7 +200,6 @@ AdSenseSettings.defaultProps = {
 	isEditing: false,
 	accountTagMatch: false,
 	existingTag: false,
-	switchLabel: __( 'Let Site Kit place code on your site', 'google-site-kit' ),
 	switchOnMessage: '',
 	switchOffMessage: '',
 };

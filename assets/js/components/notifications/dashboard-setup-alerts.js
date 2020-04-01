@@ -49,7 +49,7 @@ class DashboardSetupAlerts extends Component {
 			},
 		};
 
-		const { canManageOptions } = googlesitekit.permissions;
+		const { canManageOptions } = global.googlesitekit.permissions;
 
 		switch ( notification ) {
 			case 'authentication_success':
@@ -59,26 +59,27 @@ class DashboardSetupAlerts extends Component {
 
 				const slug = getQueryParameter( 'slug' );
 
-				if ( slug && googlesitekit.modules[ slug ] && ! googlesitekit.modules[ slug ].active ) {
+				if ( slug && global.googlesitekit.modules[ slug ] && ! global.googlesitekit.modules[ slug ].active ) {
 					return null;
 				}
 
-				if ( slug && googlesitekit.modules[ slug ] ) {
+				if ( slug && global.googlesitekit.modules[ slug ] ) {
 					winData.id = `${ winData.id }-${ slug }`;
-					winData.setupTitle = googlesitekit.modules[ slug ].name;
+					winData.setupTitle = global.googlesitekit.modules[ slug ].name;
 					winData.description = __( 'Here are some other services you can connect to see even more stats:', 'google-site-kit' );
 
-					winData = applyFilters( `googlesitekit.SetupWinNotification-${ slug }`, winData );
+					winData = applyFilters( ` global.googlesitekit.SetupWinNotification-${ slug }`, winData );
 				}
 
 				return (
 					<Fragment>
 						<Notification
 							id={ winData.id }
+							/* translators: %s: the name of a module that setup was completed for */
 							title={ sprintf( __( 'Congrats on completing the setup for %s!', 'google-site-kit' ), winData.setupTitle ) }
 							description={ winData.description }
 							handleDismiss={ () => {} }
-							winImage={ googlesitekit.admin.assetsRoot + 'images/rocket.png' }
+							winImage={ global.googlesitekit.admin.assetsRoot + 'images/rocket.png' }
 							dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 							format="large"
 							type="win-success"

@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 /**
  * Internal dependencies
  */
@@ -32,19 +33,29 @@ import { Component } from '@wordpress/element';
 
 class DashboardSplashService extends Component {
 	render() {
-		const imagePath = googlesitekit.admin.assetsRoot + 'images/';
+		const imagePath = global.googlesitekit.admin.assetsRoot + 'images/';
 		const { image, title, content, link, linkText, opposite } = this.props;
 
 		return (
-			<div className={ `googlesitekit-splash-service ${ opposite ? 'googlesitekit-splash-service--opposite' : '' }` } style={ { backgroundImage: `url(${ imagePath }service-${ image }.jpg)` } }>
+			<div
+				className={ classnames(
+					'googlesitekit-splash-service',
+					{ 'googlesitekit-splash-service--opposite': opposite }
+				) }
+				style={ { backgroundImage: `url(${ imagePath }service-${ image }.jpg)` } }
+			>
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
-						<div className={ `
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-5-tablet
-							mdc-layout-grid__cell--span-7-desktop
-							${ opposite ? 'mdc-layout-grid__cell--start-3-tablet mdc-layout-grid__cell--start-5-desktop mdc-layout-grid__cell--offset-5-tablet' : '' }
-						` }>
+						<div className={ classnames(
+							'mdc-layout-grid__cell',
+							'mdc-layout-grid__cell--span-5-tablet',
+							'mdc-layout-grid__cell--span-7-desktop',
+							{
+								'mdc-layout-grid__cell--start-3-tablet': opposite,
+								'mdc-layout-grid__cell--start-5-desktop': opposite,
+								'mdc-layout-grid__cell--offset-5-tablet': opposite,
+							}
+						) }>
 							<div className="googlesitekit-splash-service__content">
 								<h3 className="
 									googlesitekit-heading-2

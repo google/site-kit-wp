@@ -19,81 +19,47 @@
 /**
  * External dependencies
  */
-import { clearAppLocalStorage } from 'GoogleUtil';
-import Notification from 'GoogleComponents/notifications/notification';
+import { clearWebStorage, loadTranslations } from 'GoogleUtil';
+import 'GoogleComponents/notifications';
 
 /**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { setLocaleData } from '@wordpress/i18n';
-import { Component, render, Fragment } from '@wordpress/element';
+import { Component, render } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
  */
+// eslint-disable-next-line @wordpress/dependency-group
+import ErrorHandler from 'GoogleComponents/ErrorHandler';
 import DashboardSplashApp from './components/dashboard-splash/dashboard-splash-app';
 import NotificationCounter from './components/notifications/notification-counter';
 
 class GoogleSitekitDashboardSplash extends Component {
-	constructor( props ) {
-		super( props );
-		this.state = {
-			hasError: false,
-		};
-
-		// Set up translations.
-		setLocaleData( googlesitekit.locale, 'google-site-kit' );
-	}
-
-	componentDidCatch( error, info ) {
-		this.setState( {
-			hasError: true,
-			error,
-			info,
-		} );
-	}
-
 	render() {
-		const {
-			hasError,
-			error,
-			info,
-		} = this.state;
-
-		if ( hasError ) {
-			return <Notification
-				id={ 'googlesitekit-error' }
-				key={ 'googlesitekit-error' }
-				title={ error }
-				description={ info.componentStack }
-				dismiss={ '' }
-				isDismissable={ false }
-				format="small"
-				type="win-error"
-			/>;
-		}
-
 		return (
-			<Fragment>
+			<ErrorHandler>
 				<NotificationCounter />
 				<DashboardSplashApp />
-			</Fragment>
+			</ErrorHandler>
 		);
 	}
 }
 
 // Initialize the app once the DOM is ready.
-domReady( function() {
-	if ( googlesitekit.admin.resetSession ) {
-		clearAppLocalStorage();
+domReady( () => {
+	if ( global.googlesitekit.admin.resetSession ) {
+		clearWebStorage();
 	}
 
-	const dashboardSplash = document.getElementById( 'js-googlesitekit-dashboard-splash' );
-	if ( null !== dashboardSplash ) {
-		// Render the Dashboard Splash App.
-		render( <GoogleSitekitDashboardSplash />, dashboardSplash );
+	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard-splash' );
+
+	if ( renderTarget ) {
+		loadTranslations();
+
+		render( <GoogleSitekitDashboardSplash />, renderTarget );
 
 		/**
 		 * Action triggered when the Dashboard Splash App is loaded.

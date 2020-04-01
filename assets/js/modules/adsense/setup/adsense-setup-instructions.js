@@ -29,7 +29,7 @@ import AdSenseSettings from '../settings/adsense-settings';
 import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import Spinner from 'GoogleComponents/spinner';
 import { Fragment } from 'react';
-import { sendAnalyticsTrackingEvent } from 'GoogleUtil';
+import { trackEvent } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -75,7 +75,7 @@ class AdSenseSetupInstructions extends Component {
 		} = this.props;
 
 		const { isSaving } = this.state;
-		const { userData: { email = '', picture = '' } } = googlesitekit.admin;
+		const { userData: { email = '', picture = '' } } = global.googlesitekit.admin;
 
 		return (
 			<div className="googlesitekit-setup-module googlesitekit-setup-module--adsense">
@@ -140,7 +140,7 @@ class AdSenseSetupInstructions extends Component {
 									disabled={ isSaving }
 									onClick={ () => {
 										if ( tracking ) {
-											sendAnalyticsTrackingEvent(
+											trackEvent(
 												tracking.eventCategory,
 												tracking.eventName
 											);

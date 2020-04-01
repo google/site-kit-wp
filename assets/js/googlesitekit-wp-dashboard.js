@@ -20,73 +20,43 @@
 /**
  * External dependencies
  */
-import Notification from 'GoogleComponents/notifications/notification';
+import { loadTranslations } from 'GoogleUtil';
+import 'GoogleModules';
 
 /**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { setLocaleData } from '@wordpress/i18n';
 import { doAction } from '@wordpress/hooks';
 import { Component, render } from '@wordpress/element';
 
-// Load the data module.
 /**
  * Internal dependencies
  */
+// Load the data module.
+// eslint-disable-next-line @wordpress/dependency-group
 import 'GoogleComponents/data';
-
-/**
- * Internal dependencies.
- */
+import ErrorHandler from 'GoogleComponents/ErrorHandler';
 import WPDashboardMain from './components/wp-dashboard/wp-dashboard-main';
 
 class GoogleSitekitWPDashboard extends Component {
-	constructor( props ) {
-		super( props );
-		this.state = { hasError: false };
-
-		// Set up translations.
-		setLocaleData( googlesitekit.locale, 'google-site-kit' );
-	}
-
-	componentDidCatch( error, info ) {
-		this.setState( {
-			hasError: true,
-			error,
-			info,
-		} );
-	}
-
 	render() {
-		const {
-			hasError,
-			error,
-			info,
-		} = this.state;
-
-		if ( hasError ) {
-			return <Notification
-				id={ 'googlesitekit-error' }
-				key={ 'googlesitekit-error' }
-				title={ error }
-				description={ info.componentStack }
-				dismiss={ '' }
-				isDismissable={ false }
-				format="small"
-				type="win-error"
-			/>;
-		}
-		return <WPDashboardMain />;
+		return (
+			<ErrorHandler>
+				<WPDashboardMain />
+			</ErrorHandler>
+		);
 	}
 }
 
 // Initialize the app once the DOM is ready.
-domReady( function() {
-	const wpDashboard = document.getElementById( 'js-googlesitekit-wp-dashboard' );
-	if ( null !== wpDashboard ) {
-		// Render the Dashboard App.
-		render( <GoogleSitekitWPDashboard />, wpDashboard );
+domReady( () => {
+	const renderTarget = document.getElementById( 'js-googlesitekit-wp-dashboard' );
+
+	if ( renderTarget ) {
+		loadTranslations();
+
+		render( <GoogleSitekitWPDashboard />, renderTarget );
 
 		/**
 		 * Action triggered when the WP Dashboard App is loaded.

@@ -66,12 +66,14 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		// Intercept the call to window.open and call our API to simulate a created account.
 		await page.evaluate( () => {
 			window.open = () => {
-				window.wp.apiFetch( {
+				window._e2eApiFetch( {
 					path: 'google-site-kit/v1/e2e/setup/analytics/account-created',
 					method: 'post',
 				} );
 			};
 		} );
+
+		await page.waitFor( 1000 );
 
 		// Clicking Create Account button will switch API mock plugins on the server to the one that has accounts.
 		await Promise.all( [
@@ -86,15 +88,14 @@ describe( 'setting up the Analytics module with no existing account and no exist
 
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account a/i } );
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test property x/i } );
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test profile x/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-account .mdc-select__selected-text', { text: /select one.../i } );
+		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-property .mdc-select__selected-text', { text: /select an account/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-profile .mdc-select__selected-text', { text: /select an account/i } );
 
-		await Promise.all( [
-			expect( page ).toClick( 'button', { text: /configure analytics/i } ),
-			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
-		] );
+		await page.waitFor( 1000 );
+		await expect( page ).toClick( 'button', { text: /configure analytics/i } );
 
+		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
 		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
 	} );
 } );

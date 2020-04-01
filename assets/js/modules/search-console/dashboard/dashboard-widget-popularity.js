@@ -42,7 +42,6 @@ class DashboardPopularity extends Component {
 					<DashboardModuleHeader
 						title={ __( 'Popularity', 'google-site-kit' ) }
 						description={ __( 'Your most popular pages and how people found them from Search.', 'google-site-kit' ) }
-						timePeriod={ __( 'Last 28 days', 'google-site-kit' ) }
 					/>
 				</div>
 				<DashboardPopularityInner />

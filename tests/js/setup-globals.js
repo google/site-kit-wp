@@ -48,3 +48,10 @@ global.gtag = function( type, name, sendto, category, label, value ) {
 		value,
 	};
 };
+
+global._googlesitekitBaseData = global._googlesitekitBaseData || {};
+global._googlesitekitAPIFetchData = global._googlesitekitAPIFetchData || {};
+
+global._googlesitekitAPIFetchData.rootURL = 'http://sitekit.test/';
+global._googlesitekitAPIFetchData.nonceMiddleware = '6af976d56d';
+global._googlesitekitAPIFetchData.nonceEndpoint = 'http://sitekit.test/wp-admin/admin-ajax.php?action=rest-nonce';

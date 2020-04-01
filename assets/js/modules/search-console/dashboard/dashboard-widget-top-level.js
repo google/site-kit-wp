@@ -42,7 +42,7 @@ import {
 	getTimeInSeconds,
 	extractForSparkline,
 	getSiteKitAdminURL,
-	sendAnalyticsTrackingEvent,
+	trackEvent,
 } from 'GoogleUtil';
 import CTA from 'GoogleComponents/notifications/cta';
 
@@ -52,7 +52,7 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 
 		const { error } = data;
 		if ( error ) {
-			sendAnalyticsTrackingEvent( 'plugin_setup', 'search_console_error', error.message );
+			trackEvent( 'plugin_setup', 'search_console_error', error.message );
 
 			return (
 				<div className="
@@ -130,7 +130,6 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 							<Sparkline
 								data={ extractForSparkline( dataMap, 2 ) }
 								change={ totalImpressionsChange }
-								id="search-console-impressions-sparkline"
 							/>
 						}
 					/>
@@ -156,7 +155,6 @@ class SearchConsoleDashboardWidgetTopLevel extends Component {
 							<Sparkline
 								data={ extractForSparkline( dataMap, 1 ) }
 								change={ totalClicksChange }
-								id="search-console-clicks-sparkline"
 							/>
 						}
 					/>
@@ -174,7 +172,7 @@ export default withData(
 			identifier: 'search-console',
 			datapoint: 'searchanalytics',
 			data: {
-				url: googlesitekit.permaLink,
+				url: global.googlesitekit.permaLink,
 				dimensions: 'date',
 				compareDateRanges: true,
 			},

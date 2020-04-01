@@ -22,28 +22,32 @@
 import { createAddToFilter } from 'GoogleUtil/helpers';
 
 /**
+ * WordPress dependencies
+ */
+import { addFilter } from '@wordpress/hooks';
+
+/**
  * Internal dependencies
  */
 import DashboardSpeed from './dashboard/dashboard-widget-speed';
 import PageSpeedInsightsDashboardWidgetHomepageSpeed from './dashboard/dashboard-widget-homepage-speed';
 import PageSpeedInsightsCTA from './dashboard/dashboard-cta';
+import { settingsDetails as SettingsDetails } from './settings';
 
-/**
- * WordPress dependencies
- */
-import { addFilter } from '@wordpress/hooks';
+const slug = 'pagespeed-insights';
+
 const {
 	active,
 	setupComplete,
-} = googlesitekit.modules[ 'pagespeed-insights' ];
+} = global.googlesitekit.modules[ slug ];
 
 if ( active && setupComplete ) {
 	const addDashboardSpeed = createAddToFilter( <DashboardSpeed /> );
 	const addPageSpeedInsightsDashboardWidgetHomepageSpeed = createAddToFilter( <PageSpeedInsightsDashboardWidgetHomepageSpeed /> );
 
 	/**
-	* Add components to the Site Kit Dashboard.
-	*/
+	 * Add components to the Site Kit Dashboard.
+	 */
 	addFilter( 'googlesitekit.DashboardModule',
 		'googlesitekit.PageSpeedInsights',
 		addDashboardSpeed, 45 );
@@ -59,3 +63,7 @@ if ( active && setupComplete ) {
 		'googlesitekit.PageSpeedInsights',
 		addPageSpeedInsightsCTA, 45 );
 }
+
+addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
+	'googlesitekit.PageSpeedInsightsModuleSettingsDetails',
+	createAddToFilter( <SettingsDetails /> ), 10 );

@@ -75,6 +75,7 @@
 // Global
 @import "components/global/googlesitekit-accordion";
 @import "components/global/googlesitekit-autocomplete";
+@import "components/global/googlesitekit-change-arrow";
 @import "components/global/googlesitekit-chart";
 @import "components/global/googlesitekit-chart-loading";
 @import "components/global/googlesitekit-cta";
@@ -104,6 +105,7 @@
 @import "components/global/googlesitekit-source-link";
 @import "components/global/googlesitekit-table";
 @import "components/global/googlesitekit-table-overflow";
+@import "components/global/googlesitekit-noscript";
 
 // Dashboard
 @import "components/dashboard/googlesitekit-signin-box";
@@ -126,7 +128,6 @@
 @import "components/dashboard/wizard/googlesitekit-wizard-progress";
 @import "components/dashboard/wizard/googlesitekit-wizard-progress-step";
 @import "components/dashboard/wizard/googlesitekit-wizard-step";
-@import "components/dashboard/wizard/googlesitekit-wizard-setup";
 
 // Setup
 @import "components/setup/googlesitekit-setup";

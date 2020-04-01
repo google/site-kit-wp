@@ -48,17 +48,15 @@ trait Module_With_Screen_Trait {
 					'title'            => $this->name,
 					'capability'       => Permissions::VIEW_MODULE_DETAILS,
 					'enqueue_callback' => function( Assets $assets ) {
-						$assets->enqueue_asset( 'googlesitekit_module_page' );
+						$assets->enqueue_asset( 'googlesitekit-module-page' );
 					},
 					'render_callback'  => function( Context $context ) {
 						$module_info = $this->prepare_info_for_js();
 						?>
 						<script type="text/javascript">var googlesitekitCurrentModule = <?php echo wp_json_encode( $module_info ); ?>;
 						</script>
-						<div class="googlesitekit-plugin">
-							<?php do_action( 'googlesitekit_above_module_app' ); ?>
-							<div id="js-googlesitekit-module" class="googlesitekit-page"></div>
-						</div>
+						<?php do_action( 'googlesitekit_above_module_app' ); ?>
+						<div id="js-googlesitekit-module" class="googlesitekit-page"></div>
 						<?php
 					},
 				)

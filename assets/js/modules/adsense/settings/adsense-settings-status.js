@@ -38,7 +38,7 @@ class AdSenseSettingsStatus extends Component {
 			OriginalComponent,
 		} = this.props;
 
-		const { accountStatus } = googlesitekit.modules.adsense.settings;
+		const { accountStatus } = global.googlesitekit.modules.adsense.settings;
 
 		if ( ! accountStatus || 'adsense' !== slug ) {
 			return <OriginalComponent { ...this.props } />;
@@ -54,7 +54,7 @@ class AdSenseSettingsStatus extends Component {
 						onClick={ () => {
 							const page = screenID ? screenID : 'googlesitekit-dashboard';
 
-							window.location = getSiteKitAdminURL( page, { reAuth: true, slug } );
+							global.location = getSiteKitAdminURL( page, { reAuth: true, slug } );
 						} }
 						inherit
 					>
