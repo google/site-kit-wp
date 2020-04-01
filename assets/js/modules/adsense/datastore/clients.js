@@ -163,7 +163,7 @@ export const resolvers = {
 
 			// If there are already clients loaded in state, consider it fulfilled
 			// and don't make an API request.
-			if ( existingClients && existingClients.length ) {
+			if ( existingClients ) {
 				return;
 			}
 

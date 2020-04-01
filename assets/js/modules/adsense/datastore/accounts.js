@@ -128,7 +128,7 @@ export const resolvers = {
 
 			// If there are already accounts loaded in state, consider it fulfilled
 			// and don't make an API request.
-			if ( existingAccounts && existingAccounts.length ) {
+			if ( existingAccounts ) {
 				return;
 			}
 
