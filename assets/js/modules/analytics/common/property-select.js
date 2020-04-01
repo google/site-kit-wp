@@ -32,14 +32,8 @@ import { PROPERTY_CREATE } from '../datastore/properties';
 import { isValidAccountID } from '../util';
 
 export default function PropertySelect() {
-	const {
-		accountID: existingTagAccountID,
-		propertyID: existingTagPropertyID,
-	} = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
-	const currentAccountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const accountID = existingTagAccountID || currentAccountID;
-	const currentPropertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const propertyID = existingTagPropertyID || currentPropertyID;
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties( accountID ) ) || [];
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 

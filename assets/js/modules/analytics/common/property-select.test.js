@@ -27,10 +27,11 @@ const setupRegistry = ( { dispatch } ) => {
 };
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
-	const validAccountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId;
-	dispatch( modulesAnalyticsStoreName ).setAccountID( validAccountID );
 	dispatch( modulesAnalyticsStoreName ).receiveProperties( fixtures.accountsPropertiesProfiles.properties );
 	dispatch( modulesAnalyticsStoreName ).receiveExistingTag( fixtures.getTagPermissionsAccess );
+	// Existing tag IDs are set in the resolver so we have to fill those here.
+	dispatch( modulesAnalyticsStoreName ).setAccountID( fixtures.getTagPermissionsAccess.accountID );
+	dispatch( modulesAnalyticsStoreName ).setPropertyID( fixtures.getTagPermissionsAccess.propertyID );
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
