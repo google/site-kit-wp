@@ -368,8 +368,7 @@ final class Context {
 	 * @return string URL that starts with the reference site URL.
 	 */
 	private function filter_reference_url( $url = '' ) {
-		$orig_site_url = untrailingslashit( home_url() );
-		$site_url      = $orig_site_url;
+		$site_url = untrailingslashit( home_url() );
 
 		/**
 		 * Filters the reference site URL to use for stats.
@@ -381,23 +380,22 @@ final class Context {
 		 *
 		 * @param string $site_url Reference site URL, typically the WordPress home URL.
 		 */
-		$site_url = apply_filters( 'googlesitekit_site_url', $site_url );
+		$reference_site_url = apply_filters( 'googlesitekit_site_url', $site_url );
+		$reference_site_url = untrailingslashit( $reference_site_url );
 
 		// Ensure this is not empty.
-		if ( empty( $site_url ) ) {
-			$site_url = $orig_site_url;
-		} else {
-			$site_url = untrailingslashit( $site_url );
+		if ( empty( $reference_site_url ) ) {
+			$reference_site_url = $site_url;
 		}
 
 		// If no URL given, just return the reference site URL.
 		if ( empty( $url ) ) {
-			return $site_url;
+			return $reference_site_url;
 		}
 
-		// Replace original site URL with the reference site URL.
-		if ( $orig_site_url !== $site_url ) {
-			$url = str_replace( $orig_site_url, $site_url, $url );
+		// Replace site URL with the reference site URL.
+		if ( $reference_site_url !== $site_url ) {
+			$url = str_replace( $site_url, $reference_site_url, $url );
 		}
 
 		return $url;
