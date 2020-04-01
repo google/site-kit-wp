@@ -532,7 +532,7 @@ final class Assets {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param array $routes List of Asset objects.
+		 * @param Asset[] $assets List of Asset objects.
 		 */
 		$assets = apply_filters( 'googlesitekit_assets', $assets );
 

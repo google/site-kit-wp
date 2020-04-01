@@ -26,7 +26,7 @@ interface Module_With_Assets {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array List of Asset objects.
+	 * @return Asset[] List of Asset objects.
 	 */
 	public function get_assets();
 

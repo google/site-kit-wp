@@ -34,7 +34,7 @@ trait Module_With_Assets_Trait {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array List of Asset objects.
+	 * @return Asset[] List of Asset objects.
 	 */
 	public function get_assets() {
 		if ( null === $this->registerable_assets ) {
@@ -67,7 +67,7 @@ trait Module_With_Assets_Trait {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array List of Asset objects.
+	 * @return Asset[] List of Asset objects.
 	 */
 	abstract protected function setup_assets();
 }
