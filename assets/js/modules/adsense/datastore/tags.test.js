@@ -71,13 +71,13 @@ describe( 'modules/adsense tags', () => {
 						/^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/
 					)
 					.mockResponseOnce(
-						JSON.stringify( fixtures.getTagPermissionsAccess ),
+						JSON.stringify( fixtures.tagPermissionAccess ),
 						{ status: 200 }
 					);
 
-				const clientID = fixtures.getTagPermissionsAccess.clientID;
-				const accountID = fixtures.getTagPermissionsAccess.accountID;
-				const permission = fixtures.getTagPermissionsAccess.permission;
+				const clientID = fixtures.tagPermissionAccess.clientID;
+				const accountID = fixtures.tagPermissionAccess.accountID;
+				const permission = fixtures.tagPermissionAccess.permission;
 
 				const initialSelect = registry.select( STORE_NAME ).getTagPermission( clientID );
 
@@ -105,13 +105,13 @@ describe( 'modules/adsense tags', () => {
 						/^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/
 					)
 					.mockResponseOnce(
-						JSON.stringify( fixtures.getTagPermissionsNoAccess ),
+						JSON.stringify( fixtures.tagPermissionNoAccess ),
 						{ status: 200 }
 					);
 
-				const clientID = fixtures.getTagPermissionsNoAccess.clientID;
-				const accountID = fixtures.getTagPermissionsNoAccess.accountID;
-				const permission = fixtures.getTagPermissionsNoAccess.permission;
+				const clientID = fixtures.tagPermissionNoAccess.clientID;
+				const accountID = fixtures.tagPermissionNoAccess.accountID;
+				const permission = fixtures.tagPermissionNoAccess.permission;
 
 				const initialSelect = registry.select( STORE_NAME ).getTagPermission( clientID );
 				// The connection info will be its initial value while the connection
@@ -147,7 +147,7 @@ describe( 'modules/adsense tags', () => {
 						{ status: 500 }
 					);
 
-				const clientID = fixtures.getTagPermissionsAccess.clientID;
+				const clientID = fixtures.tagPermissionAccess.clientID;
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getTagPermission( clientID );

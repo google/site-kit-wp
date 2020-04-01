@@ -20,5 +20,5 @@ export { default as accounts } from './accounts';
 export { default as clients } from './clients';
 export { default as urlchannels } from './urlchannels';
 export { default as alerts } from './alerts';
-export { default as getTagPermissionsAccess } from './tag-permissions-access';
-export { default as getTagPermissionsNoAccess } from './tag-permissions-no-access';
+export { default as tagPermissionAccess } from './tag-permission-access';
+export { default as tagPermissionNoAccess } from './tag-permission-no-access';
