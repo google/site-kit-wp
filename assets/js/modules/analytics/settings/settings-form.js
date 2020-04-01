@@ -24,13 +24,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import AccountSelect from '../common/account-select';
-import PropertySelect from '../common/property-select';
-import ProfileSelect from '../common/profile-select';
-import UseSnippetSwitch from '../common/use-snippet-switch';
-import AnonymizeIPSwitch from '../common/anonymize-ip-switch';
-import ExistingTagNotice from '../common/existing-tag-notice';
-import TrackingExclusionSwitches from '../common/tracking-exclusion-switches';
+import {
+	AccountSelect,
+	AnonymizeIPSwitch,
+	ExistingTagNotice,
+	ProfileSelect,
+	PropertySelect,
+	TrackingExclusionSwitches,
+	UseSnippetSwitch,
+} from '../common/';
 
 export default function SettingsForm() {
 	return (

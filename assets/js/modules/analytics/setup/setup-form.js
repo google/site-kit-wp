@@ -26,12 +26,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Button from '../../../components/button';
-import AccountSelect from '../common/account-select';
-import PropertySelect from '../common/property-select';
-import ProfileSelect from '../common/profile-select';
 import { STORE_NAME } from '../datastore';
 import { isValidAccountID, isValidPropertyID } from '../util';
-import ExistingTagNotice from '../common/existing-tag-notice';
+import {
+	AccountSelect,
+	ExistingTagNotice,
+	ProfileSelect,
+	PropertySelect,
+} from '../common/';
 
 export default function SetupForm() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
