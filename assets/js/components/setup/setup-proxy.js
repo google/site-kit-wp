@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import punycode from 'punycode';
 import Header from 'GoogleComponents/header';
 import Button from 'GoogleComponents/button';
 import ResetButton from 'GoogleComponents/reset-button';
@@ -57,7 +58,7 @@ class SetupUsingProxy extends Component {
 			proxySetupURL,
 			resetSuccess: getQueryArg( location.href, 'notification' ) === 'reset_success',
 			context: getQueryArg( location.href, 'googlesitekit_context' ),
-			siteHostname: ( new URL( siteURL ) ).hostname,
+			siteHostname: punycode.decode( ( new URL( siteURL ) ).hostname ),
 		};
 	}
 
