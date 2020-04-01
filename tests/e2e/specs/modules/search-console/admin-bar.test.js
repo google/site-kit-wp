@@ -7,6 +7,7 @@ import { activatePlugin, createURL } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import {
+	setEditPostFeature,
 	setSiteVerification,
 	setSearchConsoleProperty,
 	useRequestInterception,
@@ -14,6 +15,18 @@ import {
 import * as adminBarMockResponses from './fixtures/admin-bar';
 
 let mockBatchResponse;
+
+// Editor utilities are no-op if WP is pre v5.
+async function exitFullscreenEditor() {
+	const bodyClasses = await page.evaluate( () => Array.from( document.body.classList ) );
+	if ( bodyClasses.includes( 'is-fullscreen-mode' ) ) {
+		await setEditPostFeature( 'fullscreenMode', false );
+	}
+}
+
+async function dismissEditorWelcome() {
+	await setEditPostFeature( 'welcomeGuide', false );
+}
 
 describe( 'Site Kit admin bar component display', () => {
 	beforeAll( async () => {
@@ -73,6 +86,8 @@ describe( 'Site Kit admin bar component display', () => {
 		] );
 
 		// We're now in Gutenberg.
+		await dismissEditorWelcome();
+		await exitFullscreenEditor();
 
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),
