@@ -29,6 +29,7 @@ import accounts from './accounts';
 import alerts from './alerts';
 import clients from './clients';
 import tags from './tags';
+import urlchannels from './urlchannels';
 
 const baseModuleStore = Modules.createModuleStore( 'adsense', {
 	settingSlugs: [
@@ -48,6 +49,7 @@ export const INITIAL_STATE = Data.collectState(
 	alerts.INITIAL_STATE,
 	clients.INITIAL_STATE,
 	tags.INITIAL_STATE,
+	urlchannels.INITIAL_STATE,
 );
 
 export const actions = Data.addInitializeAction( Data.collectActions(
@@ -56,6 +58,7 @@ export const actions = Data.addInitializeAction( Data.collectActions(
 	alerts.actions,
 	clients.actions,
 	tags.actions,
+	urlchannels.actions,
 ) );
 
 export const controls = Data.collectControls(
@@ -64,6 +67,7 @@ export const controls = Data.collectControls(
 	alerts.controls,
 	clients.controls,
 	tags.controls,
+	urlchannels.controls,
 );
 
 export const reducer = Data.addInitializeReducer(
@@ -74,6 +78,7 @@ export const reducer = Data.addInitializeReducer(
 		alerts.reducer,
 		clients.reducer,
 		tags.reducer,
+		urlchannels.reducer,
 	)
 );
 
@@ -83,6 +88,7 @@ export const resolvers = Data.collectResolvers(
 	alerts.resolvers,
 	clients.resolvers,
 	tags.resolvers,
+	urlchannels.resolvers,
 );
 
 export const selectors = Data.collectSelectors(
@@ -91,6 +97,7 @@ export const selectors = Data.collectSelectors(
 	alerts.selectors,
 	clients.selectors,
 	tags.selectors,
+	urlchannels.selectors,
 );
 
 const store = {
