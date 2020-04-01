@@ -95,6 +95,7 @@ script:
 jobs:
   allow_failures:
     - php: nightly
+    - env: E2E=1 WP_VERSION=nightly
   include:
     - stage: test
       name: Lint
@@ -121,6 +122,9 @@ jobs:
     - stage: test
       name: E2E Tests (WordPress latest)
       env: E2E=1
+    - stage: test
+      name: E2E Tests (WordPress nightly)
+      env: E2E=1 WP_VERSION=nightly
     - stage: test
       name: E2E Tests (WordPress 4.7)
       env: E2E=1 WP_VERSION=4.7.13

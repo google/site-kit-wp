@@ -23,6 +23,10 @@ import {
 	createRegistry,
 	createRegistryControl,
 	createRegistrySelector,
+	useSelect,
+	useDispatch,
+	useRegistry,
+	RegistryProvider,
 } from '@wordpress/data';
 
 /**
@@ -59,5 +63,9 @@ Data.commonActions = commonActions;
 Data.commonControls = commonControls;
 Data.createRegistryControl = createRegistryControl;
 Data.createRegistrySelector = createRegistrySelector;
+Data.useSelect = useSelect;
+Data.useDispatch = useDispatch;
+Data.useRegistry = useRegistry;
+Data.RegistryProvider = RegistryProvider;
 
 export default Data;
