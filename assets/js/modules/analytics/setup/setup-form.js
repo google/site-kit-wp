@@ -31,6 +31,7 @@ import PropertySelect from '../common/property-select';
 import ProfileSelect from '../common/profile-select';
 import { STORE_NAME } from '../datastore';
 import { isValidAccountID, isValidPropertyID } from '../util';
+import ExistingTagNotice from '../common/existing-tag-notice';
 
 export default function SetupForm() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
@@ -57,6 +58,8 @@ export default function SetupForm() {
 					{ __( 'Please select the account information below. You can change this view later in your settings.', 'google-site-kit' ) }
 				</p>
 			) }
+
+			<ExistingTagNotice />
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />

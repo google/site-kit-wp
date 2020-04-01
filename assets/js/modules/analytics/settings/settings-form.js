@@ -29,11 +29,14 @@ import PropertySelect from '../common/property-select';
 import ProfileSelect from '../common/profile-select';
 import UseSnippetSwitch from '../common/use-snippet-switch';
 import AnonymizeIPSwitch from '../common/anonymize-ip-switch';
+import ExistingTagNotice from '../common/existing-tag-notice';
 import TrackingExclusionSwitches from '../common/tracking-exclusion-switches';
 
 export default function SettingsForm() {
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
+			<ExistingTagNotice />
+
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
 
