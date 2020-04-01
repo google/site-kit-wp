@@ -52,13 +52,10 @@ export default function AccountSelect() {
 			outlined
 		>
 			{ accounts
-				.concat( ! hasExistingTag
-					? {
-						id: ACCOUNT_CREATE,
-						name: __( 'Set up a new account', 'google-site-kit' ),
-					}
-					: []
-				)
+				.concat( {
+					id: ACCOUNT_CREATE,
+					name: __( 'Set up a new account', 'google-site-kit' ),
+				} )
 				.map( ( { id, name }, index ) => (
 					<Option
 						key={ index }
