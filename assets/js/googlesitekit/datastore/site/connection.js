@@ -25,6 +25,10 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from './index';
+
+const { createRegistrySelector } = Data;
 
 // Actions
 const FETCH_CONNECTION = 'FETCH_CONNECTION';
@@ -94,8 +98,8 @@ export const controls = {
 	},
 };
 
-export const reducer = ( state, action ) => {
-	switch ( action.type ) {
+export const reducer = ( state, { type, payload } ) => {
+	switch ( type ) {
 		case FETCH_CONNECTION: {
 			return {
 				...state,
@@ -104,7 +108,7 @@ export const reducer = ( state, action ) => {
 		}
 
 		case RECEIVE_CONNECTION: {
-			const { connection } = action.payload;
+			const { connection } = payload;
 
 			return {
 				...state,
@@ -129,6 +133,16 @@ export const reducer = ( state, action ) => {
 export const resolvers = {
 	*getConnection() {
 		try {
+			const registry = yield Data.commonActions.getRegistry();
+
+			const existingConnection = registry.select( STORE_NAME ).getConnection();
+
+			// If there is already connection data loaded in state, don't make this request
+			// and consider this resolver fulfilled.
+			if ( existingConnection ) {
+				return;
+			}
+
 			const connection = yield actions.fetchConnection();
 			return actions.receiveConnection( connection );
 		} catch ( err ) {
@@ -149,10 +163,12 @@ export const selectors = {
 	 * ```
 	 * {
 	 *   connected: <Boolean>,
-	 *   resettable: <Boolean,
+	 *   resettable: <Boolean>,
+	 *   setupCompleted: <Boolean>,
 	 * }
 	 * ```
 	 *
+	 * @private
 	 * @since 1.5.0
 	 *
 	 * @param {Object} state Data store's state.
@@ -163,6 +179,59 @@ export const selectors = {
 
 		return connection;
 	},
+
+	/**
+	 * Gets the Site Kit connection status for this site.
+	 *
+	 * Returns `true` if the site is connected to Site Kit, `false` if
+	 * not. Returns `undefined` if the connection info is not available/loaded.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} Site connection status.
+	 */
+	isConnected: createRegistrySelector( ( select ) => () => {
+		const connection = select( STORE_NAME ).getConnection();
+
+		return typeof connection !== 'undefined' ? connection.connected : connection;
+	} ),
+
+	/**
+	 * Gets the Site Kit reset availability for this site.
+	 *
+	 * Returns `true` if the site is connected to Site Kit and
+	 * the connection can be reset, `false` if reset is not available.
+	 * Returns `undefined` if the connection info is not available/loaded.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} Site reset status.
+	 */
+	isResettable: createRegistrySelector( ( select ) => () => {
+		const connection = select( STORE_NAME ).getConnection();
+
+		return typeof connection !== 'undefined' ? connection.resettable : connection;
+	} ),
+
+	/**
+	 * Gets the Site Kit setup status.
+	 *
+	 * Returns `true` if the site is connected to Site Kit and
+	 * the connection can be reset, `false` if reset is not available.
+	 * Returns `undefined` if the connection info is not available/loaded.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} Site setup completion status.
+	 */
+	isSetupCompleted: createRegistrySelector( ( select ) => () => {
+		const connection = select( STORE_NAME ).getConnection();
+
+		return typeof connection !== 'undefined' ? connection.setupCompleted : connection;
+	} ),
 };
 
 export default {
