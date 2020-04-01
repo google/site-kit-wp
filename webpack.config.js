@@ -129,7 +129,7 @@ const webpackConfig = ( mode ) => {
 					color: '#fbbc05',
 				} ),
 				new CleanWebpackPlugin( {
-					// Stop this build from removing unrelated JS and CSS files.
+					// Stop this build from removing files created by one of the other builds.
 					cleanOnceBeforeBuildPatterns: [],
 				} ),
 			],
@@ -198,7 +198,7 @@ const webpackConfig = ( mode ) => {
 					color: '#4285f4',
 				} ),
 				new CleanWebpackPlugin( {
-					// Stop this build from removing unrelated JS and CSS files.
+					// Stop this build from removing files created by one of the other builds.
 					cleanOnceBeforeBuildPatterns: [],
 				} ),
 			],
@@ -227,7 +227,7 @@ const testBundle = () => {
 				color: '#34a853',
 			} ),
 			new CleanWebpackPlugin( {
-				// Stop this build from removing unrelated JS and CSS files.
+				// Stop this build from removing files created by one of the other builds.
 				cleanOnceBeforeBuildPatterns: [],
 			} ),
 		],
