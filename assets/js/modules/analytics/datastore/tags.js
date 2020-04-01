@@ -209,6 +209,14 @@ export const resolvers = {
 			const existingTag = yield actions.fetchExistingTag();
 			yield actions.receiveExistingTag( existingTag !== undefined ? existingTag : null );
 
+			const { accountID, propertyID } = existingTag || {};
+			if ( accountID ) {
+				registry.dispatch( STORE_NAME ).setAccountID( accountID );
+			}
+			if ( propertyID ) {
+				registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
+			}
+
 			return;
 		} catch ( err ) {
 			// TODO: Implement an error handler store or some kind of centralized

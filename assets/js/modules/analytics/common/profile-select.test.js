@@ -29,15 +29,16 @@ const setupRegistry = ( { dispatch } ) => {
 };
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
-	const { id, webPropertyId, accountId } = fixtures.propertiesProfiles.profiles[ 0 ];
-	dispatch( modulesAnalyticsStoreName ).setAccountID( accountId );
-	dispatch( modulesAnalyticsStoreName ).setPropertyID( webPropertyId );
-	dispatch( modulesAnalyticsStoreName ).setProfileID( id );
-	dispatch( modulesAnalyticsStoreName ).receiveProfiles( fixtures.accountsPropertiesProfiles.profiles );
-	dispatch( modulesAnalyticsStoreName ).receiveExistingTag( {
+	const existingTag = {
 		accountID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId,
 		propertyID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId,
-	} );
+	};
+	const { id } = fixtures.propertiesProfiles.profiles[ 0 ];
+	dispatch( modulesAnalyticsStoreName ).setAccountID( existingTag.accountID );
+	dispatch( modulesAnalyticsStoreName ).setPropertyID( existingTag.propertyID );
+	dispatch( modulesAnalyticsStoreName ).setProfileID( id );
+	dispatch( modulesAnalyticsStoreName ).receiveProfiles( fixtures.accountsPropertiesProfiles.profiles );
+	dispatch( modulesAnalyticsStoreName ).receiveExistingTag( existingTag );
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
@@ -63,7 +64,7 @@ describe( 'ProfileSelect', () => {
 
 		const currentPropertyID = registry.select( modulesAnalyticsStoreName ).getPropertyID();
 		const existingTagPropertyID = registry.select( modulesAnalyticsStoreName ).getExistingTag().propertyID;
-		expect( existingTagPropertyID ).not.toEqual( currentPropertyID );
+		expect( existingTagPropertyID ).toEqual( currentPropertyID );
 
 		const existingTagProfiles = fixtures.accountsPropertiesProfiles.profiles
 			.filter( ( p ) => p.webPropertyId === existingTagPropertyID );
