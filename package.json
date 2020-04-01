@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npm run build:production && npm run build:static",
     "build:production": "webpack --mode=production",
-    "build:test": "webpack --mode=production --include-tests",
+    "build:test": "build:production -- --include-tests",
     "build:dev": "webpack --mode=development --debug --devtool cheap-source-map --output-pathinfo && npm run build:static",
     "build:static": "gulp svg imagemin",
     "dev": "npm run build:dev && npm run build:static",
