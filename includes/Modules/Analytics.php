@@ -1304,7 +1304,7 @@ final class Analytics extends Module
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array List of Asset objects.
+	 * @return Asset[] List of Asset objects.
 	 */
 	protected function setup_assets() {
 		$base_url = $this->context->url( 'dist/assets/' );
