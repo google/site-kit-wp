@@ -1,5 +1,5 @@
 /**
- * Entrypoint for the "modules/analytics" data store.
+ * Analytics module entrypoint.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,4 +19,4 @@
 /**
  * Internal dependencies
  */
-import 'assets/js/modules/analytics/datastore';
+import './modules/analytics';
