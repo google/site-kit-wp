@@ -532,6 +532,17 @@ final class Assets {
 			),
 		);
 
+		/**
+		 * Filters the list of assets that Site Kit should register.
+		 *
+		 * This filter covers both scripts and stylesheets.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param Asset[] $assets List of Asset objects.
+		 */
+		$assets = apply_filters( 'googlesitekit_assets', $assets );
+
 		$this->assets = array();
 		foreach ( $assets as $asset ) {
 			$this->assets[ $asset->get_handle() ] = $asset;
