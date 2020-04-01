@@ -151,7 +151,7 @@ describe( 'readableLargeNumber', () => {
 		expect( readableLargeNumber( value ) ).toStrictEqual( expected );
 	} );
 
-	describe( 'Numbers below 1000 outout the same value that was passed.', () => {
+	describe( 'Numbers below 1000 output the same value that was passed.', () => {
 		it.each( numbersBelowOneThousand )( 'for %d should return %s', ( value, expected ) => {
 			expect( readableLargeNumber( value ) ).toStrictEqual( expected );
 		} );
