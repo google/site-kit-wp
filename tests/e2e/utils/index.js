@@ -1,5 +1,6 @@
 export { clearSessionStorage } from './clear-session-storage';
 export { deactivateUtilityPlugins } from './deactivate-utility-plugins';
+export { getWPVersion } from './get-wp-version';
 export { logoutUser } from './logout-user';
 export { pasteText } from './paste-text';
 export { resetSiteKit } from './reset';
