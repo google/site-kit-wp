@@ -48,6 +48,11 @@ describe( 'modules/analytics setup', () => {
 		trackingDisabled: [],
 		anonymizeIP: true,
 	};
+	const tagWithPermission = {
+		accountID: '12345',
+		propertyID: 'UA-12345-1',
+		permission: true,
+	};
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -198,6 +203,7 @@ describe( 'modules/analytics setup', () => {
 		describe( 'canSubmitChanges', () => {
 			it( 'requires a valid accountID', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( STORE_NAME ).receiveTagPermission( tagWithPermission );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
@@ -208,6 +214,7 @@ describe( 'modules/analytics setup', () => {
 
 			it( 'requires a valid propertyID', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( STORE_NAME ).receiveTagPermission( tagWithPermission );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
@@ -218,6 +225,7 @@ describe( 'modules/analytics setup', () => {
 
 			it( 'requires a valid profileID', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( STORE_NAME ).receiveTagPermission( tagWithPermission );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
