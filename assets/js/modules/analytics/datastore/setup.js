@@ -136,36 +136,26 @@ export const selectors = {
 	 * Checks if changes can be submitted.
 	 */
 	canSubmitChanges: createRegistrySelector( ( select ) => () => {
-		/* eslint-disable @wordpress/no-unused-vars-before-return */
-		const accountID = select( STORE_NAME ).getAccountID();
-		const propertyID = select( STORE_NAME ).getPropertyID();
-		const profileID = select( STORE_NAME ).getProfileID();
-		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
-		const haveSettingsChanged = select( STORE_NAME ).haveSettingsChanged();
-		const hasExistingTag = select( STORE_NAME ).hasExistingTag();
-		const hasTagPermissions = select( STORE_NAME ).getTagPermission( propertyID );
-		const isSavingSettings = select( STORE_NAME ).isDoingSaveSettings();
-		/* eslint-enable @wordpress/no-unused-vars-before-return */
-
-		if ( hasExistingTag && ! hasTagPermissions ) {
-			return false;
-		}
-
-		const requiredFalsyValues = [
-			isSavingSettings,
-		];
-		if ( requiredFalsyValues.some( Boolean ) ) {
-			return false;
-		}
-		const requiredTruthyValues = [
-			isValidAccountID( accountID ),
-			isValidPropertyID( propertyID ),
-			isValidProfileID( profileID ),
-			isValidInternalWebPropertyID( internalWebPropertyID ),
+		const {
+			getAccountID,
+			getInternalWebPropertyID,
+			getProfileID,
+			getPropertyID,
+			hasExistingTag,
+			hasTagPermission,
 			haveSettingsChanged,
-		];
-		if ( requiredTruthyValues.some( ( value ) => ! value ) ) {
-			return false;
+			isDoingSubmitChanges,
+		} = select( STORE_NAME );
+
+		switch ( true ) {
+			case isDoingSubmitChanges() : return false;
+			case ! haveSettingsChanged() : return false;
+			case ! isValidAccountID( getAccountID() ) : return false;
+			case ! isValidPropertyID( getPropertyID() ) : return false;
+			case ! isValidProfileID( getProfileID() ) : return false;
+			case ! isValidInternalWebPropertyID( getInternalWebPropertyID() ) : return false;
+			// Do existing tag checks last.
+			case ( hasExistingTag() && ! hasTagPermission( getPropertyID() ) ) : return false;
 		}
 
 		return true;
