@@ -27,9 +27,11 @@ import { useEffect } from '@wordpress/element';
  */
 import { STORE_NAME } from '../datastore';
 import { ACCOUNT_CREATE } from '../datastore/accounts';
-import AccountCreate from '../common/account-create-legacy';
 import SettingsForm from './settings-form';
-import ExistingTagError from '../setup/existing-tag-error';
+import {
+	AccountCreate,
+	ExistingTagError,
+} from '../common';
 
 export default function SettingsEdit() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];

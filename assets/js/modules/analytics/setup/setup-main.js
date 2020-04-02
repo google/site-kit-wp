@@ -25,12 +25,14 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ExistingTagError from './existing-tag-error';
 import SetupForm from './setup-form';
 import { SvgIcon } from '../../../util';
-import AccountCreate from '../common/account-create-legacy';
 import { STORE_NAME } from '../datastore';
 import { ACCOUNT_CREATE } from '../datastore/accounts';
+import {
+	AccountCreate,
+	ExistingTagError,
+} from '../common';
 
 export default function SetupMain() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
