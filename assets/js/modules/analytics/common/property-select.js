@@ -37,9 +37,10 @@ export default function PropertySelect() {
 	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties( accountID ) ) || [];
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 
-	const { setPropertyID } = useDispatch( STORE_NAME );
+	const { setPropertyID, setInternalWebPropertyID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
 		setPropertyID( item.dataset.value );
+		setInternalWebPropertyID( item.dataset.internalWebProperty || '' );
 	}, [ propertyID ] );
 
 	return (
@@ -57,10 +58,11 @@ export default function PropertySelect() {
 					id: PROPERTY_CREATE,
 					name: __( 'Set up a new property', 'google-site-kit' ),
 				} )
-				.map( ( { id, name }, index ) => (
+				.map( ( { id, name, internalWebPropertyId }, index ) => (
 					<Option
 						key={ index }
 						value={ id }
+						data-internal-web-property={ internalWebPropertyId }
 					>
 						{ name }
 					</Option>

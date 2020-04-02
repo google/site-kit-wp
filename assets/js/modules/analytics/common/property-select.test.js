@@ -99,4 +99,23 @@ describe( 'PropertySelect', () => {
 		expect( originalPropertyID ).not.toEqual( newPropertyID );
 		expect( newPropertyID ).toEqual( fixtures.accountsPropertiesProfiles.properties[ 1 ].id );
 	} );
+
+	it( 'should update internalWebPropertyID in the store when an item is selected', () => {
+		const { getAllByRole, container, registry } = render( <PropertySelect />, { setupRegistry } );
+		const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId;
+		const originalID = registry.select( modulesAnalyticsStoreName ).getInternalWebPropertyID();
+		const properties = registry.select( modulesAnalyticsStoreName ).getProperties( accountID );
+		const targetProperty = properties[ 1 ];
+
+		// Click the label to expose the elements in the menu.
+		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
+		// Click this element to select it and fire the onChange event.
+		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
+
+		const newPropertyID = registry.select( modulesAnalyticsStoreName ).getPropertyID();
+		expect( targetProperty.id ).toEqual( newPropertyID );
+		const newID = registry.select( modulesAnalyticsStoreName ).getInternalWebPropertyID();
+		expect( originalID ).not.toEqual( newID );
+		expect( newID ).toEqual( targetProperty.internalWebPropertyId );
+	} );
 } );
