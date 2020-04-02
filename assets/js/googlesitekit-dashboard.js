@@ -28,7 +28,7 @@ import { doAction } from '@wordpress/hooks';
  */
 import { clearWebStorage, loadTranslations } from './util';
 import ErrorHandler from './components/ErrorHandler';
-import 'GoogleModules';
+import './modules';
 import Setup from './components/setup/setup-wrapper';
 import DashboardApp from './components/dashboard/dashboard-app';
 import NotificationCounter from './components/notifications/notification-counter';

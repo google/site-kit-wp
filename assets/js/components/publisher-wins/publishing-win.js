@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { extractSearchConsoleDashboardData } from 'GoogleModules/search-console/dashboard/util';
+import { extractSearchConsoleDashboardData } from '../../modules/search-console/dashboard/util';
 import { readableLargeNumber } from '../../util';
 
 const publishingWin = ( data, id ) => {

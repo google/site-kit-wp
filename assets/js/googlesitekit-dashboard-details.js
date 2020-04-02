@@ -20,7 +20,7 @@
 /**
  * External dependencies
  */
-import 'GoogleModules';
+import './modules';
 
 /**
  * WordPress dependencies

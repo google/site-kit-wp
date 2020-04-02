@@ -22,9 +22,9 @@
 import { __ } from '@wordpress/i18n';
 
 /**
- * External dependencies
+ * Internal dependencies
  */
-import { extractSearchConsoleDashboardData } from 'GoogleModules/search-console/dashboard/util';
+import { extractSearchConsoleDashboardData } from '../../modules/search-console/dashboard/util';
 import { getTimeInSeconds, getDaysBetweenDates } from '../../util';
 
 const totalStats = ( data, id ) => {

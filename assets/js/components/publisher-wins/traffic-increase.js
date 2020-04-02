@@ -22,10 +22,10 @@
 import { __ } from '@wordpress/i18n';
 
 /**
- * External dependencies
+ * Internal dependencies
  */
 import { getTimeInSeconds, readableLargeNumber } from '../../util';
-import { calculateOverviewData } from 'GoogleModules/analytics/util';
+import { calculateOverviewData } from '../../modules/analytics/util';
 
 const trafficIncrease = ( data, id ) => {
 	if ( ! global.googlesitekit.modules.analytics || ! global.googlesitekit.modules.analytics.active ) {

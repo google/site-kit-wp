@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { numberFormat, getTimeInSeconds } from '../../util';
-import { calculateOverviewData } from 'GoogleModules/analytics/util';
+import { calculateOverviewData } from '../../modules/analytics/util';
 
 const pageviewIncrease = ( data, id ) => {
 	if ( ! global.googlesitekit.modules.analytics || ! global.googlesitekit.modules.analytics.active ) {

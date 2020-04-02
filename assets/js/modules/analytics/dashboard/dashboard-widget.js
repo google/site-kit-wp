@@ -42,8 +42,8 @@ import Alert from '../../../components/alert';
 import ProgressBar from '../../../components/progress-bar';
 import getNoDataComponent from '../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../components/notifications/data-error';
-import AdSenseDashboardOutro from 'GoogleModules/adsense/dashboard/dashboard-outro';
-import { isAdsenseConnectedAnalytics } from 'GoogleModules/adsense/util';
+import AdSenseDashboardOutro from '../../../modules/adsense/dashboard/dashboard-outro';
+import { isAdsenseConnectedAnalytics } from '../../../modules/adsense/util';
 import { getCurrentDateRange, getCurrentDateRangeSlug } from '../../../util';
 import HelpLink from '../../../components/help-link';
 
