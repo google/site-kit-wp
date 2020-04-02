@@ -26,16 +26,18 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { STORE_NAME } from '../datastore';
+import { ACCOUNT_CREATE } from '../datastore/accounts';
 import AccountCreate from '../common/account-create-legacy';
 import SettingsForm from './settings-form';
 import ExistingTagError from '../setup/existing-tag-error';
 
 export default function SettingsEdit() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
-	const isCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isCreateAccount() );
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
 	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasTagPermission( existingTag.propertyID, existingTag.accountID ) );
+	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	const settings = useSelect( ( select ) => select( STORE_NAME ).getSettings() );
 	const haveSettingsChanged = useSelect( ( select ) => select( STORE_NAME ).haveSettingsChanged() );

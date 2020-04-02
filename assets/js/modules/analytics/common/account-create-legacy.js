@@ -13,11 +13,13 @@ import Link from '../../../components/link';
 import ProgressBar from '../../../components/progress-bar';
 import { trackEvent } from '../../../util';
 import { STORE_NAME } from '../datastore';
+import { ACCOUNT_CREATE } from '../datastore/accounts';
 
 export default function AccountCreateLegacy() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts( { force: true } ) ) || [];
-	const isCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isCreateAccount() );
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const isFetchingAccounts = useSelect( ( select ) => select( STORE_NAME ).isFetchingAccounts() );
+	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	const { stores } = useRegistry();
 	const { invalidateResolutionForStoreSelector } = stores[ STORE_NAME ].getActions();

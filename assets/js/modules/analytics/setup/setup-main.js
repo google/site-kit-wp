@@ -30,13 +30,15 @@ import SetupForm from './setup-form';
 import { SvgIcon } from '../../../util';
 import AccountCreate from '../common/account-create-legacy';
 import { STORE_NAME } from '../datastore';
+import { ACCOUNT_CREATE } from '../datastore/accounts';
 
 export default function SetupMain() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
-	const isCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isCreateAccount() );
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
 	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasTagPermission( existingTag.propertyID, existingTag.accountID ) );
+	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	const ViewComponent = ( () => {
 		switch ( true ) {
