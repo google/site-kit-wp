@@ -19,7 +19,8 @@
 /**
  * WordPress dependencies
  */
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -39,7 +40,10 @@ export default function SetupForm() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 
-	const submitForm = () => {}; // TODO: Handle form submission
+	const { submitChanges } = useDispatch( STORE_NAME );
+	const submitForm = useCallback( () => {
+		submitChanges();
+	}, [ canSubmitChanges ] );
 
 	return (
 		<form
