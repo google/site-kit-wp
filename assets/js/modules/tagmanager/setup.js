@@ -27,7 +27,7 @@ import ProgressBar from 'GoogleComponents/progress-bar';
 import { Select, Option } from 'SiteKitCore/material-components';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
-import { getExistingTag, toggleConfirmModuleSettings } from 'GoogleUtil';
+import { getExistingTag, toggleConfirmModuleSettings, getModulesData } from 'GoogleUtil';
 import { get } from 'lodash';
 import classnames from 'classnames';
 /**
@@ -56,7 +56,7 @@ class TagmanagerSetup extends Component {
 		super( props );
 
 		const { ampEnabled, ampMode } = global.googlesitekit.admin;
-		const { settings } = global.googlesitekit.modules.tagmanager;
+		const { settings } = getModulesData().tagmanager;
 		const ampUsageContext = ampMode === 'primary' ? USAGE_CONTEXT_AMP : [ USAGE_CONTEXT_WEB, USAGE_CONTEXT_AMP ];
 
 		this.state = {
@@ -363,7 +363,7 @@ class TagmanagerSetup extends Component {
 				finishSetup();
 			}
 
-			global.googlesitekit.modules.tagmanager.settings = savedSettings;
+			getModulesData().tagmanager.settings = savedSettings;
 
 			this.setState( {
 				isSaving: false,
@@ -424,7 +424,7 @@ class TagmanagerSetup extends Component {
 	}
 
 	renderSettingsInfo() {
-		const { settings } = global.googlesitekit.modules.tagmanager;
+		const { settings } = getModulesData().tagmanager;
 		const {
 			ampEnabled,
 			isSecondaryAMP,

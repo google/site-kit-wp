@@ -29,6 +29,7 @@ import {
 	validateJSON,
 	validateOptimizeID,
 	toggleConfirmModuleSettings,
+	getModulesData,
 } from 'GoogleUtil';
 import classnames from 'classnames';
 
@@ -43,19 +44,21 @@ class OptimizeSetup extends Component {
 	constructor( props ) {
 		super( props );
 
+		const modulesData = getModulesData();
+
 		const {
 			optimizeID,
 			ampExperimentJSON,
-		} = global.googlesitekit.modules.optimize.settings;
+		} = modulesData.optimize.settings;
 
 		const {
 			settings: analyticsSettings,
-		} = global.googlesitekit.modules.analytics || {};
+		} = modulesData.analytics || {};
 
 		const {
 			active: gtmActive,
 			settings: gtmSettings,
-		} = global.googlesitekit.modules.tagmanager || {};
+		} = modulesData.tagmanager || {};
 
 		const analyticsUseSnippet = analyticsSettings ? analyticsSettings.useSnippet : false;
 		const gtmUseSnippet = gtmActive && gtmSettings ? gtmSettings.useSnippet : false;
@@ -144,7 +147,7 @@ class OptimizeSetup extends Component {
 				finishSetup();
 			}
 
-			global.googlesitekit.modules.optimize.settings.optimizeID = optimizeID;
+			getModulesData().optimize.settings.optimizeID = optimizeID;
 
 			if ( this._isMounted ) {
 				this.setState( {

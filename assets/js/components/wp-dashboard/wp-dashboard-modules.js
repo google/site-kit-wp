@@ -17,11 +17,6 @@
  */
 
 /**
- * Internal dependencies
- */
-import WPDashboardModule from './wp-dashboard-module';
-import WPDashboardHeader from './wp-dashboard-header';
-/**
  * External dependencies
  */
 import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
@@ -33,19 +28,28 @@ import classnames from 'classnames';
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import { getModulesData } from 'GoogleUtil';
+import WPDashboardModule from './wp-dashboard-module';
+import WPDashboardHeader from './wp-dashboard-header';
+
 class WPDashboardModules extends Component {
 	render() {
+		const modulesData = getModulesData();
+
 		return (
 			<Fragment>
 				<div className={ classnames(
 					'googlesitekit-wp-dashboard-stats',
-					{ 'googlesitekit-wp-dashboard-stats--fourup': global.googlesitekit.modules.analytics.active }
+					{ 'googlesitekit-wp-dashboard-stats--fourup': modulesData.analytics.active }
 				) }>
 					<WPDashboardHeader
 						key={ 'googlesitekit-wp-dashboard-header' }
 					/>
 					{ // Show the Analytics CTA if analytics is not enabled.
-						( ! global.googlesitekit.modules.analytics.active ) &&
+						( ! modulesData.analytics.active ) &&
 						<div className="googlesitekit-wp-dashboard-stats__cta">
 							<AnalyticsInactiveCTA
 								title={ __( 'See unique vistors, goal completions, top pages and more.', 'google-site-kit' ) }

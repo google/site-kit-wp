@@ -32,6 +32,11 @@ import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
+ * Internal dependencies
+ */
+import { getModulesData } from 'GoogleUtil';
+
+/**
  * A Higher order Component that provides data functionality to Components.
  *
  * This function takes a React Component that is data dependent, resolving via the data API.
@@ -242,10 +247,11 @@ const withData = (
 				return loadingComponent;
 			}
 
-			const moduleName = module ? global.googlesitekit.modules[ module ].name : __( 'Site Kit', 'google-site-kit' );
+			const modulesData = getModulesData();
+			const moduleName = module ? modulesData[ module ].name : __( 'Site Kit', 'google-site-kit' );
 
 			// If module is active but setup not complete.
-			if ( module && global.googlesitekit.modules[ module ].active && ! global.googlesitekit.modules[ module ].setupComplete ) {
+			if ( module && modulesData[ module ].active && ! modulesData[ module ].setupComplete ) {
 				return getSetupIncompleteComponent( module, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
 			}
 

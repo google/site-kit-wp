@@ -29,6 +29,11 @@ import { each } from 'lodash';
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import { getModulesData } from 'GoogleUtil';
+
 class DashboardModulesAlerts extends Component {
 	constructor( props ) {
 		super( props );
@@ -57,6 +62,7 @@ class DashboardModulesAlerts extends Component {
 			return null;
 		}
 
+		const modulesData = getModulesData();
 		const notifications = [];
 
 		Object.keys( data ).forEach( ( key ) => {
@@ -81,7 +87,7 @@ class DashboardModulesAlerts extends Component {
 						isDismissable={ notification.isDismissable || true }
 						logo={ notification.logo || true }
 						module={ key }
-						moduleName={ global.googlesitekit.modules[ key ].name }
+						moduleName={ modulesData[ key ].name }
 						pageIndex={ notification.pageIndex || '' }
 						dismissExpires={ notification.dismissExpires || 0 }
 						showOnce={ notification.showOnce || false }

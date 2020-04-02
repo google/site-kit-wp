@@ -34,6 +34,7 @@ import {
 	getReAuthURL,
 	moduleIcon,
 	showErrorNotification,
+	getModulesData,
 } from 'GoogleUtil';
 import Spinner from 'GoogleComponents/spinner';
 import SettingsOverlay from 'GoogleComponents/settings/settings-overlay';
@@ -56,7 +57,7 @@ class SettingsModule extends Component {
 	constructor( props ) {
 		super( props );
 		const { slug } = props;
-		const { setupComplete } = global.googlesitekit.modules[ slug ];
+		const { setupComplete } = getModulesData()[ slug ];
 		this.state = {
 			isSaving: false,
 			active: props.active,

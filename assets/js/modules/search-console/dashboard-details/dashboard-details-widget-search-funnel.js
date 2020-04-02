@@ -33,6 +33,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import DashboardSearchFunnelInner from '../dashboard/dashboard-widget-search-funnel-inner';
+import { getModulesData } from 'GoogleUtil';
 
 class DashboardDetailsSearchFunnel extends Component {
 	render() {
@@ -53,7 +54,7 @@ class DashboardDetailsSearchFunnel extends Component {
 							<div className="mdc-layout-grid__inner">
 								<DashboardSearchFunnelInner />
 								{ // Show the Analytics CTA if analytics is not enabled.
-									( ! global.googlesitekit.modules.analytics.active ) &&
+									( ! getModulesData().analytics.active ) &&
 									<div className="
 										mdc-layout-grid__cell
 										mdc-layout-grid__cell--span-4-phone

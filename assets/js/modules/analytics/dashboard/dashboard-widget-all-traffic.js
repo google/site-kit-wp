@@ -17,12 +17,6 @@
  */
 
 /**
- * Internal dependencies
- */
-import DashboardAcquisitionPieChart from './dashboard-widget-acquisition-piechart';
-import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from './dashboard-alltraffic-widget-top-acquisition-sources-table';
-
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
@@ -37,6 +31,13 @@ import getNoDataComponent from 'GoogleComponents/notifications/nodata';
 import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
 import getSetupIncompleteComponent from 'GoogleComponents/notifications/setup-incomplete';
 import classnames from 'classnames';
+
+/**
+ * Internal dependencies
+ */
+import DashboardAcquisitionPieChart from './dashboard-widget-acquisition-piechart';
+import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from './dashboard-alltraffic-widget-top-acquisition-sources-table';
+import { getModulesData } from 'GoogleUtil';
 
 class AnalyticsAllTraffic extends Component {
 	constructor( props ) {
@@ -76,7 +77,7 @@ class AnalyticsAllTraffic extends Component {
 		const {
 			active,
 			setupComplete,
-		} = global.googlesitekit.modules.analytics;
+		} = getModulesData().analytics;
 
 		const {
 			error,

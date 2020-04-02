@@ -21,7 +21,7 @@
  */
 import Layout from 'GoogleComponents/layout/layout';
 import Notification from 'GoogleComponents/notifications/notification';
-import { clearWebStorage } from 'GoogleUtil/index';
+import { clearWebStorage, getModulesData } from 'GoogleUtil';
 import { map, filter, sortBy } from 'lodash';
 
 /**
@@ -55,7 +55,8 @@ class SettingsModules extends Component {
 	}
 
 	componentDidMount() {
-		if ( global.googlesitekit.editmodule && global.googlesitekit.modules[ global.googlesitekit.editmodule ].active ) {
+		const modulesData = getModulesData();
+		if ( global.googlesitekit.editmodule && modulesData[ global.googlesitekit.editmodule ].active ) {
 			this.handleButtonAction( `${ global.googlesitekit.editmodule }-module`, 'edit' );
 		}
 	}
@@ -131,7 +132,9 @@ class SettingsModules extends Component {
 	}
 
 	settingsModuleComponent( module, isSaving ) {
-		const { provides } = global.googlesitekit.modules[ module.slug ];
+		const modulesData = getModulesData();
+
+		const { provides } = modulesData[ module.slug ];
 		const { isEditing, openModules, error } = this.state;
 		const isOpen = openModules[ module.slug ] || false;
 
@@ -196,16 +199,18 @@ class SettingsModules extends Component {
 	}
 
 	render() {
+		const modulesData = getModulesData();
+
 		const { isEditing } = this.state;
 		const { activeTab } = this.props;
 		const modulesBeingEdited = filter( isEditing, ( module ) => module );
 		const editActive = 0 < modulesBeingEdited.length;
-		if ( ! global.googlesitekit || ! global.googlesitekit.modules ) {
+		if ( ! Object.values( modulesData ).length ) {
 			return null;
 		}
 
 		// Filter out internal modules.
-		const modules = filter( global.googlesitekit.modules, ( module ) => ! module.internal );
+		const modules = filter( modulesData, ( module ) => ! module.internal );
 
 		const activeModules = this.mapToModule(
 			sortBy(
