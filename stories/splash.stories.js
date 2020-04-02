@@ -6,10 +6,14 @@ import { storiesOf } from '@storybook/react';
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
-import DashboardSplashIntro from 'GoogleComponents/dashboard-splash/dashboard-splash-intro';
-import DashboardSplashModule from 'GoogleComponents/dashboard-splash/dashboard-splash-module';
-import DashboardSplashService from 'GoogleComponents/dashboard-splash/dashboard-splash-service';
-import DashboardSplashOutro from 'GoogleComponents/dashboard-splash/dashboard-splash-outro';
+
+/**
+ * Internal dependencies
+ */
+import DashboardSplashIntro from '../assets/js/components/dashboard-splash/dashboard-splash-intro';
+import DashboardSplashModule from '../assets/js/components/dashboard-splash/dashboard-splash-module';
+import DashboardSplashService from '../assets/js/components/dashboard-splash/dashboard-splash-service';
+import DashboardSplashOutro from '../assets/js/components/dashboard-splash/dashboard-splash-outro';
 
 storiesOf( 'Splash', module )
 	.add( 'Splash Page', () => (

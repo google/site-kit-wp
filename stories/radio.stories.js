@@ -2,7 +2,11 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import Radio from 'GoogleComponents/radio';
+
+/**
+ * Internal dependencies
+ */
+import Radio from '../assets/js/components/radio';
 
 storiesOf( 'Global', module )
 	.add( 'Radios', () => (
