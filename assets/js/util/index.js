@@ -55,6 +55,7 @@ import { trackEvent } from './tracking';
 export { trackEvent };
 export { SvgIcon };
 export * from './sanitize';
+export * from './stringify';
 export * from './standalone';
 export * from './storage';
 export * from './i18n';
@@ -684,27 +685,6 @@ export function moduleIcon( module, blockedByParentModule, width = '33', height 
 	}
 
 	return iconComponent;
-}
-
-/**
- * Sorts an object by its keys.
- *
- * The returned value will be a sorted copy of the input object.
- * Any inner objects will also be sorted recursively.
- *
- * @param {Object} obj The data object to sort.
- * @return {Object} The sorted data object.
- */
-export function sortObjectProperties( obj ) {
-	const orderedData = {};
-	Object.keys( obj ).sort().forEach( ( key ) => {
-		let val = obj[ key ];
-		if ( val && 'object' === typeof val && ! Array.isArray( val ) ) {
-			val = sortObjectProperties( val );
-		}
-		orderedData[ key ] = val;
-	} );
-	return orderedData;
 }
 
 /**
