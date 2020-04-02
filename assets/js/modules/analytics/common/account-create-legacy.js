@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { useSelect, useDispatch, useRegistry } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -16,13 +16,10 @@ import { STORE_NAME } from '../datastore';
 import { ACCOUNT_CREATE } from '../datastore/accounts';
 
 export default function AccountCreateLegacy() {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts( { force: true } ) ) || [];
+	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const isFetchingAccounts = useSelect( ( select ) => select( STORE_NAME ).isFetchingAccounts() );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
-
-	const { stores } = useRegistry();
-	const { invalidateResolutionForStoreSelector } = stores[ STORE_NAME ].getActions();
 
 	const createAccountHandler = ( e ) => {
 		e.preventDefault();
@@ -30,13 +27,9 @@ export default function AccountCreateLegacy() {
 		global.open( 'https://analytics.google.com/analytics/web/?#/provision/SignUp', '_blank' );
 	};
 
-	const { setAccountID, setPropertyID, setProfileID } = useDispatch( STORE_NAME );
+	const { resetAccounts } = useDispatch( STORE_NAME );
 	const refetchAccountsHandler = useCallback( () => {
-		setAccountID( '' );
-		setPropertyID( '' );
-		setProfileID( '' );
-		// Invalidate the resolver for getAccounts so it will run again when called.
-		invalidateResolutionForStoreSelector( 'getAccounts' );
+		resetAccounts();
 	} );
 
 	if ( isFetchingAccounts ) {
