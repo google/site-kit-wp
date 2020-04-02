@@ -23,9 +23,9 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '.';
 import {
 	isValidAccountID,
-	isValidPropertyID,
-	isValidProfileID,
 	isValidInternalWebPropertyID,
+	isValidPropertySelection,
+	isValidProfileSelection,
 } from '../util';
 import { PROPERTY_CREATE } from './properties';
 import { PROFILE_CREATE } from './profiles';
@@ -151,8 +151,8 @@ export const selectors = {
 			case isDoingSubmitChanges() : return false;
 			case ! haveSettingsChanged() : return false;
 			case ! isValidAccountID( getAccountID() ) : return false;
-			case ! isValidPropertyID( getPropertyID() ) : return false;
-			case ! isValidProfileID( getProfileID() ) : return false;
+			case ! isValidPropertySelection( getPropertyID() ) : return false;
+			case ! isValidProfileSelection( getProfileID() ) : return false;
 			case ! isValidInternalWebPropertyID( getInternalWebPropertyID() ) : return false;
 			// Do existing tag checks last.
 			case ( hasExistingTag() && ! hasTagPermission( getPropertyID() ) ) : return false;

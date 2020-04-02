@@ -26,6 +26,7 @@ import apiFetch from '@wordpress/api-fetch';
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME } from '.';
+import { ACCOUNT_CREATE } from './accounts';
 import { PROPERTY_CREATE } from './properties';
 import { PROFILE_CREATE } from './profiles';
 import * as fixtures from './__fixtures__';
@@ -256,6 +257,27 @@ describe( 'modules/analytics setup', () => {
 					permission: false,
 				} );
 				expect( registry.select( STORE_NAME ).hasTagPermission( existingTag.propertyID ) ).toBe( false );
+
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+			} );
+
+			it( 'supports creating a property', () => {
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( STORE_NAME ).setPropertyID( PROPERTY_CREATE );
+
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+			} );
+
+			it( 'supports creating a profile', () => {
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
+
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+			} );
+
+			it( 'does not support creating an account', () => {
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 			} );
