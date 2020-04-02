@@ -18,10 +18,6 @@
 /**
  * External dependencies
  */
-import Dialog from 'GoogleComponents/dialog';
-import Button from 'GoogleComponents/button';
-import Menu from 'GoogleComponents/menu';
-import Modal from 'GoogleComponents/modal';
 import { clearWebStorage } from 'GoogleUtil';
 
 /**
@@ -33,6 +29,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Dialog from './dialog';
+import Button from './button';
+import Menu from './menu';
+import Modal from './modal';
 import { getSiteKitAdminURL } from '../util';
 
 class UserMenu extends Component {

@@ -19,9 +19,6 @@
 /**
  * External dependencies
  */
-import Button from 'GoogleComponents/button';
-import Link from 'GoogleComponents/link';
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
 import {
@@ -41,6 +38,9 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import Button from '../../components/button';
+import Link from '../../components/link';
+import data, { TYPE_MODULES } from '../../components/data';
 import { TextField, Input, HelperText } from '../../material-components';
 
 class OptimizeSetup extends Component {

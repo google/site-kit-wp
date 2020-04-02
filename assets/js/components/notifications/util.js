@@ -19,12 +19,12 @@
 /**
  * External dependencies
  */
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import { getDaysBetweenDates } from 'GoogleUtil';
 /**
  * Internal dependencies
  */
 import WinsWithData from './wins-withdata';
+import data, { TYPE_MODULES } from '../data';
 
 /**
  * WordPress dependencies

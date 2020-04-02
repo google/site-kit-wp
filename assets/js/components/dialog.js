@@ -20,8 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import Button from 'GoogleComponents/button';
-import Link from 'GoogleComponents/link';
 import FocusTrap from 'focus-trap-react';
 import classnames from 'classnames';
 
@@ -35,6 +33,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Button from './button';
+import Link from './link';
 import { MDCDialog } from '../material-components';
 
 class Dialog extends Component {

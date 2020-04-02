@@ -19,22 +19,22 @@
 /**
  * External dependencies
  */
-import withData from 'GoogleComponents/higherorder/withdata';
-import { TYPE_MODULES } from 'GoogleComponents/data';
-import GoogleChart from 'GoogleComponents/google-chart.js';
-import PreviewBlock from 'GoogleComponents/preview-block';
 import { decodeHtmlEntity, getTimeInSeconds } from 'GoogleUtil';
-
-/**
- * Internal dependencies
- */
-import { extractSearchConsoleDashboardData } from './util';
 
 /**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import withData from '../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../components/data';
+import GoogleChart from '../../../components/google-chart.js';
+import PreviewBlock from '../../../components/preview-block';
+import { extractSearchConsoleDashboardData } from './util';
 
 class SearchConsoleDashboardWidgetSiteStats extends Component {
 	constructor( props ) {

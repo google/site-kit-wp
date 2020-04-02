@@ -42,8 +42,12 @@ import {
 	toggleConfirmModuleSettings,
 	showErrorNotification,
 } from 'GoogleUtil';
-import data from 'GoogleComponents/data';
 import md5 from 'md5';
+
+/**
+ * Internal dependencies
+ */
+import data from './components/data';
 
 const { setCache, getCache, deleteCache, invalidateCacheGroup, getCacheKey } = data;
 

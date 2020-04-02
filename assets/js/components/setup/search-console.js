@@ -19,10 +19,7 @@
 /**
  * External dependencies
  */
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
-import ProgressBar from 'GoogleComponents/progress-bar';
 import PropTypes from 'prop-types';
-import HelpLink from 'GoogleComponents/help-link';
 import { trackEvent } from 'GoogleUtil';
 
 /**
@@ -34,6 +31,9 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import data, { TYPE_MODULES } from '../../components/data';
+import ProgressBar from '../../components/progress-bar';
+import HelpLink from '../../components/help-link';
 import { Select, TextField, Input } from '../../material-components';
 import Button from '../../components/button';
 

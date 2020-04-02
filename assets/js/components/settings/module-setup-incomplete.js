@@ -22,8 +22,6 @@
 import {
 	getReAuthURL,
 } from 'GoogleUtil';
-import Link from 'GoogleComponents/link';
-import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
 
 /**
  * WordPress dependencies
@@ -31,6 +29,12 @@ import ModuleSettingsWarning from 'GoogleComponents/notifications/module-setting
 import { withFilters } from '@wordpress/components';
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Link from '../link';
+import ModuleSettingsWarning from '../notifications/module-settings-warning';
 
 class ModuleSetupIncomplete extends Component {
 	render() {

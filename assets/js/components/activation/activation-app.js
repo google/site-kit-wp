@@ -25,8 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-// eslint-disable-next-line @wordpress/dependency-group
-import ErrorHandler from 'GoogleComponents/ErrorHandler';
+import ErrorHandler from '../ErrorHandler';
 import { trackEvent } from 'GoogleUtil';
 import { ActivationMain } from './activation-main';
 import NotificationCounter from '../notifications/notification-counter';

@@ -19,9 +19,6 @@
 /**
  * External dependencies
  */
-import ProgressBar from 'GoogleComponents/progress-bar';
-import 'GoogleComponents/data';
-import 'GoogleComponents/notifications';
 import { loadTranslations } from 'GoogleUtil';
 import 'GoogleModules';
 
@@ -35,7 +32,10 @@ import { Component, render, Suspense, lazy } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import ErrorHandler from 'GoogleComponents/ErrorHandler';
+import ProgressBar from './components/progress-bar';
+import './components/data';
+import './components/notifications';
+import ErrorHandler from './components/ErrorHandler';
 import ModuleApp from './components/module-app';
 
 class GoogleSitekitModule extends Component {

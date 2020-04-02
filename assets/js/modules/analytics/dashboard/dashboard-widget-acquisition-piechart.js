@@ -19,10 +19,8 @@
 /**
  * External dependencies
  */
-import GoogleChart from 'GoogleComponents/google-chart';
 import { getSiteKitAdminURL, getTimeInSeconds } from 'GoogleUtil';
-import withData from 'GoogleComponents/higherorder/withdata';
-import { TYPE_MODULES } from 'GoogleComponents/data';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -33,9 +31,11 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import PropTypes from 'prop-types';
-import Link from 'GoogleComponents/link';
-import PreviewBlock from 'GoogleComponents/preview-block';
+import GoogleChart from '../../../components/google-chart';
+import withData from '../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../components/data';
+import Link from '../../../components/link';
+import PreviewBlock from '../../../components/preview-block';
 import { extractAnalyticsDataForTrafficChart, getAnalyticsErrorMessageFromData, trafficSourcesReportDataDefaults, isDataZeroForReporting } from '../util';
 
 class DashboardAcquisitionPieChart extends Component {

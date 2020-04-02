@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import Checkbox from 'GoogleComponents/checkbox';
 import PropTypes from 'prop-types';
 import { getMetaKeyForUserOption } from 'GoogleUtil';
 import classnames from 'classnames';
@@ -33,6 +32,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Checkbox from './checkbox';
 import {
 	isTrackingEnabled,
 	toggleTracking,

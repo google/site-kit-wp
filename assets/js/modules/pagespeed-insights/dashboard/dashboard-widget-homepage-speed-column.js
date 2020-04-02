@@ -19,14 +19,7 @@
 /**
  * External dependencies
  */
-import withData from 'GoogleComponents/higherorder/withdata';
-import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
-import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds } from 'GoogleUtil';
-import {
-	getDataTableFromData,
-	TableOverflowContainer,
-} from 'GoogleComponents/data-table';
 import { get } from 'lodash';
 
 /**
@@ -38,6 +31,13 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import withData from '../../../components/higherorder/withdata';
+import getDataErrorComponent from '../../../components/notifications/data-error';
+import { TYPE_MODULES } from '../../../components/data';
+import {
+	getDataTableFromData,
+	TableOverflowContainer,
+} from '../../../components/data-table';
 import {
 	getScoreCategoryLabel,
 	PageSpeedReportScoreCategoryWrapper,

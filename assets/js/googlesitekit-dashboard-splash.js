@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { clearWebStorage, loadTranslations } from 'GoogleUtil';
-import 'GoogleComponents/notifications';
 
 /**
  * WordPress dependencies
@@ -32,8 +31,8 @@ import { doAction } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-// eslint-disable-next-line @wordpress/dependency-group
-import ErrorHandler from 'GoogleComponents/ErrorHandler';
+import './components/notifications';
+import ErrorHandler from './components/ErrorHandler';
 import DashboardSplashApp from './components/dashboard-splash/dashboard-splash-app';
 import NotificationCounter from './components/notifications/notification-counter';
 

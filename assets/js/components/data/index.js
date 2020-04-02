@@ -18,8 +18,6 @@
 /**
  * External dependencies
  */
-import DashboardAuthAlert from 'GoogleComponents/notifications/dashboard-auth-alert';
-import DashboardPermissionAlert from 'GoogleComponents/notifications/dashboard-permission-alert';
 import md5 from 'md5';
 import { cloneDeep, each, intersection, isEqual, sortBy } from 'lodash';
 
@@ -43,6 +41,8 @@ import {
 	getQueryParameter,
 	sortObjectProperties,
 } from '../../util';
+import DashboardAuthAlert from '../notifications/dashboard-auth-alert';
+import DashboardPermissionAlert from '../notifications/dashboard-permission-alert';
 
 /**
  * Ensures that the local datacache object is properly set up.

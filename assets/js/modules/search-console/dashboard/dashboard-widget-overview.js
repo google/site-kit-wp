@@ -19,19 +19,7 @@
 /**
  * External dependencies
  */
-import DataBlock from 'GoogleComponents/data-block';
-import withData from 'GoogleComponents/higherorder/withdata';
-import { TYPE_MODULES } from 'GoogleComponents/data';
-import PreviewBlock from 'GoogleComponents/preview-block';
 import { getTimeInSeconds } from 'GoogleUtil';
-/**
- * Internal dependencies
- */
-import {
-	extractSearchConsoleDashboardData,
-	isDataZeroSearchConsole,
-} from './util';
-import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -39,6 +27,18 @@ import PropTypes from 'prop-types';
 import { __ } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 
+/**
+ * Internal dependencies
+ */
+import DataBlock from '../../../components/data-block';
+import withData from '../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../components/data';
+import PreviewBlock from '../../../components/preview-block';
+import {
+	extractSearchConsoleDashboardData,
+	isDataZeroSearchConsole,
+} from './util';
+import PropTypes from 'prop-types';
 class SearchConsoleDashboardWidgetOverview extends Component {
 	render() {
 		const { data, selectedStats, handleStatSelection } = this.props;

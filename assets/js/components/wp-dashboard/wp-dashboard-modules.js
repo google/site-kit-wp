@@ -17,14 +17,8 @@
  */
 
 /**
- * Internal dependencies
- */
-import WPDashboardModule from './wp-dashboard-module';
-import WPDashboardHeader from './wp-dashboard-header';
-/**
  * External dependencies
  */
-import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
 import classnames from 'classnames';
 
 /**
@@ -32,6 +26,13 @@ import classnames from 'classnames';
  */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import AnalyticsInactiveCTA from '../analytics-inactive-cta';
+import WPDashboardModule from './wp-dashboard-module';
+import WPDashboardHeader from './wp-dashboard-header';
 
 class WPDashboardModules extends Component {
 	render() {

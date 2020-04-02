@@ -25,16 +25,20 @@ import {
 	getReAuthURL,
 	showErrorNotification,
 } from 'GoogleUtil';
-import data from 'GoogleComponents/data';
-import CTA from 'GoogleComponents/notifications/cta';
 import PropTypes from 'prop-types';
-import GenericError from 'GoogleComponents/notifications/generic-error';
 
 /**
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import data from './data';
+import CTA from './notifications/cta';
+import GenericError from './notifications/generic-error';
 
 class AnalyticsInactiveCTA extends Component {
 	static async setupAnalyticsClick() {

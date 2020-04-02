@@ -19,11 +19,6 @@
 /**
  * External dependencies
  */
-import PreviewBlocks from 'GoogleComponents/preview-blocks';
-import DataBlock from 'GoogleComponents/data-block';
-import CTA from 'GoogleComponents/notifications/cta';
-import withData from 'GoogleComponents/higherorder/withdata';
-import { TYPE_MODULES } from 'GoogleComponents/data';
 import {
 	getTimeInSeconds,
 	prepareSecondsForDisplay,
@@ -31,15 +26,20 @@ import {
 } from 'GoogleUtil';
 
 /**
- * Internal dependencies
- */
-import { calculateOverviewData, getAnalyticsErrorMessageFromData, isDataZeroForReporting, overviewReportDataDefaults } from '../util';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import PreviewBlocks from '../../../components/preview-blocks';
+import DataBlock from '../../../components/data-block';
+import CTA from '../../../components/notifications/cta';
+import withData from '../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../components/data';
+import { calculateOverviewData, getAnalyticsErrorMessageFromData, isDataZeroForReporting, overviewReportDataDefaults } from '../util';
 
 class WPAnalyticsDashboardWidgetOverview extends Component {
 	render() {

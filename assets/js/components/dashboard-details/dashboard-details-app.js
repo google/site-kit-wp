@@ -17,25 +17,26 @@
  */
 
 /**
- * Internal dependencies
- */
-import DashboardDetailsModules from './dashboard-details-modules';
-/**
  * External dependencies
  */
-import Header from 'GoogleComponents/header';
-import Link from 'GoogleComponents/link';
-import PageHeader from 'GoogleComponents/page-header';
-import Layout from 'GoogleComponents/layout/layout';
 import { decodeHtmlEntity } from 'GoogleUtil';
-import DateRangeSelector from 'GoogleComponents/date-range-selector';
-import HelpLink from 'GoogleComponents/help-link';
 
 /**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Header from '../header';
+import Link from '../link';
+import PageHeader from '../page-header';
+import Layout from '../layout/layout';
+import DateRangeSelector from '../date-range-selector';
+import HelpLink from '../help-link';
+import DashboardDetailsModules from './dashboard-details-modules';
 
 class DashboardDetailsApp extends Component {
 	constructor( props ) {

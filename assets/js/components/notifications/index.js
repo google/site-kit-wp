@@ -19,11 +19,6 @@
 /**
  * External dependencies
  */
-import DashboardCoreSiteAlerts from 'GoogleComponents/notifications/dashboard-core-site-alerts';
-import DashboardSetupAlerts from 'GoogleComponents/notifications/dashboard-setup-alerts';
-import DashboardModulesAlerts from 'GoogleComponents/notifications/dashboard-modules-alerts';
-import DashboardWinsAlerts from 'GoogleComponents/notifications/dashboard-wins-alerts';
-import DashboardAuthAlert from 'GoogleComponents/notifications/dashboard-auth-alert';
 import { createAddToFilter } from 'GoogleUtil/helpers';
 import { getQueryParameter } from 'GoogleUtil';
 
@@ -31,6 +26,16 @@ import { getQueryParameter } from 'GoogleUtil';
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import DashboardCoreSiteAlerts from './dashboard-core-site-alerts';
+import DashboardSetupAlerts from './dashboard-setup-alerts';
+import DashboardModulesAlerts from './dashboard-modules-alerts';
+import DashboardWinsAlerts from './dashboard-wins-alerts';
+import DashboardAuthAlert from './dashboard-auth-alert';
+
 const { setup } = global.googlesitekit;
 const notification = getQueryParameter( 'notification' );
 

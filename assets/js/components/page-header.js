@@ -18,7 +18,6 @@
 /**
  * External dependencies
  */
-import DateRangeSelector from 'GoogleComponents/date-range-selector';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import SvgIcon from 'GoogleUtil/svg-icon';
@@ -28,6 +27,11 @@ import SvgIcon from 'GoogleUtil/svg-icon';
  */
 import { Component } from '@wordpress/element';
 import { applyFilters } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import DateRangeSelector from './date-range-selector';
 
 class PageHeader extends Component {
 	render() {

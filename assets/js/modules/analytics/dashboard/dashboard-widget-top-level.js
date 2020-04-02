@@ -19,12 +19,6 @@
 /**
  * External dependencies
  */
-import DataBlock from 'GoogleComponents/data-block';
-import withData from 'GoogleComponents/higherorder/withdata';
-import { TYPE_MODULES } from 'GoogleComponents/data';
-import Sparkline from 'GoogleComponents/sparkline';
-import CTA from 'GoogleComponents/notifications/cta';
-import PreviewBlock from 'GoogleComponents/preview-block';
 import {
 	getTimeInSeconds,
 	readableLargeNumber,
@@ -50,6 +44,12 @@ import {
 	overviewReportDataDefaults,
 	isDataZeroForReporting,
 } from '../util';
+import DataBlock from '../../../components/data-block';
+import withData from '../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../components/data';
+import Sparkline from '../../../components/sparkline';
+import CTA from '../../../components/notifications/cta';
+import PreviewBlock from '../../../components/preview-block';
 
 class AnalyticsDashboardWidgetTopLevel extends Component {
 	constructor( props ) {

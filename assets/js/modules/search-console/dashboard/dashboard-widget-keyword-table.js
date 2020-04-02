@@ -19,11 +19,7 @@
 /**
  * External dependencies
  */
-import withData from 'GoogleComponents/higherorder/withdata';
-import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
-import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
-import PreviewTable from 'GoogleComponents/preview-table';
 import { map } from 'lodash';
 
 /**
@@ -31,6 +27,14 @@ import { map } from 'lodash';
  */
 import { __, sprintf } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import withData from '../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../components/data';
+import { getDataTableFromData, TableOverflowContainer } from '../../../components/data-table';
+import PreviewTable from '../../../components/preview-table';
 
 class SearchConsoleDashboardWidgetKeywordTable extends Component {
 	render() {

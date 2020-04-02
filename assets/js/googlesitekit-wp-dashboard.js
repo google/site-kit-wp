@@ -34,9 +34,9 @@ import { Component, render } from '@wordpress/element';
  * Internal dependencies
  */
 // Load the data module.
-// eslint-disable-next-line @wordpress/dependency-group
-import 'GoogleComponents/data';
-import ErrorHandler from 'GoogleComponents/ErrorHandler';
+
+import './components/data';
+import ErrorHandler from './components/ErrorHandler';
 import WPDashboardMain from './components/wp-dashboard/wp-dashboard-main';
 
 class GoogleSitekitWPDashboard extends Component {

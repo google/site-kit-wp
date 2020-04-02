@@ -22,13 +22,17 @@
 import {
 	getSiteKitAdminURL,
 } from 'GoogleUtil';
-import Link from 'GoogleComponents/link';
 
 /**
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Link from '../../../components/link';
 
 class AdSenseSettingsStatus extends Component {
 	render() {

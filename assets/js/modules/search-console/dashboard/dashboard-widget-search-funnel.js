@@ -17,15 +17,8 @@
  */
 
 /**
- * Internal dependencies
- */
-import DashboardSearchFunnelInner from './dashboard-widget-search-funnel-inner';
-/**
  * External dependencies
  */
-import Layout from 'GoogleComponents/layout/layout';
-import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
-import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
 import classnames from 'classnames';
 
 /**
@@ -33,6 +26,14 @@ import classnames from 'classnames';
  */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Layout from '../../../components//layout/layout';
+import DashboardModuleHeader from '../../../components//dashboard/dashboard-module-header';
+import AnalyticsInactiveCTA from '../../../components//analytics-inactive-cta';
+import DashboardSearchFunnelInner from './dashboard-widget-search-funnel-inner';
 
 class DashboardSearchFunnel extends Component {
 	render() {

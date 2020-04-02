@@ -21,7 +21,6 @@
 /**
  * External dependencies
  */
-import Link from 'GoogleComponents/link';
 import {
 	decodeHtmlEntity,
 	getSiteKitAdminURL,
@@ -40,8 +39,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies.
  */
-import AdminbarModules from 'GoogleComponents/adminbar/adminbar-modules';
-import ErrorHandler from 'GoogleComponents/ErrorHandler';
+import Link from './components/link';
+import AdminbarModules from './components/adminbar/adminbar-modules';
+import ErrorHandler from './components/ErrorHandler';
 
 export class GoogleSitekitAdminbar extends Component {
 	constructor( props ) {

@@ -17,14 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import Header from 'GoogleComponents/header';
-import DateRangeSelector from 'GoogleComponents/date-range-selector';
-import PageHeader from 'GoogleComponents/page-header';
-import 'GoogleComponents/publisher-wins';
-
-/**
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
@@ -35,7 +27,11 @@ import { __ } from '@wordpress/i18n';
  */
 import DashboardMain from './dashboard-main';
 import DashboardNotifications from './dashboard-notifications';
-import ErrorHandler from 'GoogleComponents/ErrorHandler';
+import ErrorHandler from '../ErrorHandler';
+import Header from '../header';
+import DateRangeSelector from '../date-range-selector';
+import PageHeader from '../page-header';
+import '../publisher-wins';
 
 class DashboardApp extends Component {
 	render() {

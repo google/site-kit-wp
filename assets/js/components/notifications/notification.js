@@ -20,12 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import data from 'GoogleComponents/data';
-import DataBlock from 'GoogleComponents/data-block';
-import Button from 'GoogleComponents/button';
-import Warning from 'GoogleComponents/notifications/warning';
-import Error from 'GoogleComponents/notifications/error';
-import Link from 'GoogleComponents/link';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import classnames from 'classnames';
 import { map } from 'lodash';
@@ -38,6 +32,12 @@ import { Component, Fragment, createRef, isValidElement } from '@wordpress/eleme
  * Internal dependencies
  */
 import { sanitizeHTML } from '../../util/sanitize';
+import data from '../data';
+import DataBlock from '../data-block';
+import Button from '../button';
+import Warning from '../notifications/warning';
+import Error from '../notifications/error';
+import Link from '../link';
 
 class Notification extends Component {
 	constructor( props ) {

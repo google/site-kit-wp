@@ -20,9 +20,6 @@
  * External dependencies
  */
 import { delay } from 'lodash';
-import Header from 'GoogleComponents/header';
-import Link from 'GoogleComponents/link';
-import HelpLink from 'GoogleComponents/help-link';
 
 /**
  * WordPress dependencies
@@ -35,6 +32,9 @@ import { applyFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import Header from '../header';
+import Link from '../link';
+import HelpLink from '../help-link';
 import { getSiteKitAdminURL } from '../../util';
 
 class BaseComponent extends Component {

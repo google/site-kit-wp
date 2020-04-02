@@ -20,13 +20,7 @@
  * External dependencies
  */
 import { map } from 'lodash';
-import withData from 'GoogleComponents/higherorder/withdata';
-import { TYPE_MODULES } from 'GoogleComponents/data';
 import { getTimeInSeconds } from 'GoogleUtil';
-import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
-import PreviewTable from 'GoogleComponents/preview-table';
-import Layout from 'GoogleComponents/layout/layout';
-import CTA from 'GoogleComponents/notifications/cta';
 
 /**
  * WordPress dependencies
@@ -37,6 +31,12 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import withData from '../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../components/data';
+import { getDataTableFromData, TableOverflowContainer } from '../../../components/data-table';
+import PreviewTable from '../../../components/preview-table';
+import Layout from '../../../components/layout/layout';
+import CTA from '../../../components/notifications/cta';
 import { analyticsAdsenseReportDataDefaults } from '../util';
 
 class AdSenseDashboardWidgetTopPagesTableSmall extends Component {

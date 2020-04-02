@@ -20,8 +20,6 @@
  * External dependencies
  */
 import { getQueryParameter } from 'GoogleUtil';
-import Notification from 'GoogleComponents/notifications/notification';
-import ModulesList from 'GoogleComponents/modules-list';
 
 /**
  * WordPress dependencies
@@ -29,6 +27,12 @@ import ModulesList from 'GoogleComponents/modules-list';
 import { Component, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { applyFilters } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import Notification from './notification';
+import ModulesList from '../modules-list';
 
 class DashboardSetupAlerts extends Component {
 	render() {

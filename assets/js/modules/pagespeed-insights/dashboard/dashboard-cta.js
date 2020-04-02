@@ -1,9 +1,6 @@
 /**
  * External dependencies
  */
-import CTA from 'GoogleComponents/notifications/cta';
-import data from 'GoogleComponents/data';
-import GenericError from 'GoogleComponents/notifications/generic-error';
 import {
 	activateOrDeactivateModule,
 	getReAuthURL,
@@ -14,6 +11,13 @@ import {
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import CTA from '../../../components/notifications/cta';
+import data from '../../../components/data';
+import GenericError from '../../../components/notifications/generic-error';
 
 const PageSpeedInsightsCTA = () => {
 	const {

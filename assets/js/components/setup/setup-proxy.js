@@ -19,12 +19,6 @@
 /**
  * External dependencies
  */
-import Header from 'GoogleComponents/header';
-import Button from 'GoogleComponents/button';
-import ResetButton from 'GoogleComponents/reset-button';
-import Layout from 'GoogleComponents/layout/layout';
-import Notification from 'GoogleComponents/notifications/notification';
-import OptIn from 'GoogleComponents/optin';
 import { trackEvent } from 'GoogleUtil';
 import { delay } from 'lodash';
 
@@ -37,6 +31,12 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import Header from '../header';
+import Button from '../button';
+import ResetButton from '../reset-button';
+import Layout from '../layout/layout';
+import Notification from '../notifications/notification';
+import OptIn from '../optin';
 import { getSiteKitAdminURL } from '../../util';
 import CompatibilityChecks from './compatibility-checks';
 

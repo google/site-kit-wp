@@ -20,14 +20,18 @@
 /**
  * External dependencies
  */
-import CTA from 'GoogleComponents/notifications/cta';
-import ctaWrapper from 'GoogleComponents/notifications/cta-wrapper';
 import { getReAuthURL } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import CTA from './cta';
+import ctaWrapper from './cta-wrapper';
 
 /**
  * Creates a CTA component when module needs to be configured. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.

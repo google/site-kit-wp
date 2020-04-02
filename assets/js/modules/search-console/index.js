@@ -17,21 +17,8 @@
  */
 
 /**
- * Internal dependencies
- */
-import GoogleSitekitSearchConsoleDashboardWidget from './dashboard/dashboard-widget';
-import GoogleSitekitSearchConsoleAdminbarWidget from './adminbar/adminbar-widget';
-import WPSearchConsoleDashboardWidget from './wp-dashboard/wp-dashboard-widget';
-import DashboardSearchFunnel from './dashboard/dashboard-widget-search-funnel.js';
-import SearchConsoleDashboardWidgetTopLevel from './dashboard/dashboard-widget-top-level';
-import DashboardDetailsWidgetKeywordsTable from './dashboard-details/dashboard-details-widget-keyword-table';
-import DashboardWidgetPopularKeywordsTable from './dashboard/dashboard-widget-popular-keyword-table';
-import DashboardDetailsWidgetSearchFunnel from './dashboard-details/dashboard-details-widget-search-funnel';
-import DashboardPopularity from './dashboard/dashboard-widget-popularity';
-/**
  * External dependencies
  */
-import PostSearcher from 'GoogleComponents/post-searcher';
 import SearchConsoleSettingStatus from './settings/search-console-settings-status';
 
 import { createAddToFilter } from 'GoogleUtil/helpers';
@@ -55,6 +42,20 @@ const addDashboardDetailsKeywords = createAddToFilter( <DashboardDetailsWidgetKe
 const addDashboardPopularKeywords = createAddToFilter( <DashboardWidgetPopularKeywordsTable /> );
 const addDashboardPopularity = createAddToFilter( <DashboardPopularity /> );
 const addPostSearcher = createAddToFilter( <PostSearcher /> );
+
+/**
+ * Internal dependencies
+ */
+import PostSearcher from '../../components/post-searcher';
+import GoogleSitekitSearchConsoleDashboardWidget from './dashboard/dashboard-widget';
+import GoogleSitekitSearchConsoleAdminbarWidget from './adminbar/adminbar-widget';
+import WPSearchConsoleDashboardWidget from './wp-dashboard/wp-dashboard-widget';
+import DashboardSearchFunnel from './dashboard/dashboard-widget-search-funnel.js';
+import SearchConsoleDashboardWidgetTopLevel from './dashboard/dashboard-widget-top-level';
+import DashboardDetailsWidgetKeywordsTable from './dashboard-details/dashboard-details-widget-keyword-table';
+import DashboardWidgetPopularKeywordsTable from './dashboard/dashboard-widget-popular-keyword-table';
+import DashboardDetailsWidgetSearchFunnel from './dashboard-details/dashboard-details-widget-search-funnel';
+import DashboardPopularity from './dashboard/dashboard-widget-popularity';
 
 /**
  * Add components to the settings page.

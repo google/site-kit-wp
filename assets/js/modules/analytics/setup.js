@@ -19,13 +19,7 @@
 /**
  * External dependencies
  */
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import PropTypes from 'prop-types';
-import Button from 'GoogleComponents/button';
-import ProgressBar from 'GoogleComponents/progress-bar';
-import Link from 'GoogleComponents/link';
-import Radio from 'GoogleComponents/radio';
-import Switch from 'GoogleComponents/switch';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import {
 	trackEvent,
@@ -51,6 +45,12 @@ const trackingExclusionLabels = {
  * Internal dependencies
  */
 import { Select, Option } from '../../material-components';
+import data, { TYPE_MODULES } from '../../components/data';
+import Button from '../../components/button';
+import ProgressBar from '../../components/progress-bar';
+import Link from '../../components/link';
+import Radio from '../../components/radio';
+import Switch from '../../components/switch';
 
 class AnalyticsSetup extends Component {
 	constructor( props ) {

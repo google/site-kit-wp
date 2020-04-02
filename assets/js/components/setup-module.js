@@ -20,10 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import data from 'GoogleComponents/data';
-import Spinner from 'GoogleComponents/spinner';
-import Link from 'GoogleComponents/link';
-import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
 import {
 	activateOrDeactivateModule,
 	refreshAuthentication,
@@ -31,7 +27,6 @@ import {
 	showErrorNotification,
 	moduleIcon,
 } from 'GoogleUtil';
-import GenericError from 'GoogleComponents/notifications/generic-error';
 import classnames from 'classnames';
 
 /**
@@ -40,6 +35,15 @@ import classnames from 'classnames';
 import { sprintf, __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 import { applyFilters } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import data from '../components/data';
+import Spinner from '../components/spinner';
+import Link from '../components/link';
+import ModuleSettingsWarning from '../components/notifications/module-settings-warning';
+import GenericError from '../components/notifications/generic-error';
 
 /**
  * A single module. Keeps track of its own active state and settings.

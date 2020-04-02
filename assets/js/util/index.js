@@ -25,7 +25,6 @@ import {
 	get,
 	unescape,
 } from 'lodash';
-import data, { TYPE_CORE } from 'GoogleComponents/data';
 import SvgIcon from 'GoogleUtil/svg-icon';
 import React from 'react';
 
@@ -52,6 +51,7 @@ import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatche
 import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
 import { tagMatchers as tagmanagerTagMatchers } from '../modules/tagmanager/util';
 import { trackEvent } from './tracking';
+import data, { TYPE_CORE } from '../components/data';
 export { trackEvent };
 export * from './sanitize';
 export * from './standalone';

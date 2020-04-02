@@ -20,19 +20,23 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import Button from 'GoogleComponents/button';
-import Link from 'GoogleComponents/link';
 import {
 	trackEvent,
 } from 'GoogleUtil';
-import OptIn from 'GoogleComponents/optin';
-import HelpLink from 'GoogleComponents/help-link';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Button from '../button';
+import Link from '../link';
+import OptIn from '../optin';
+import HelpLink from '../help-link';
 
 class WizardStepAuthentication extends Component {
 	render() {

@@ -20,9 +20,6 @@
  * External dependencies
  */
 import { each } from 'lodash';
-import getNoDataComponent from 'GoogleComponents/notifications/nodata';
-import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
-import getSetupIncompleteComponent from 'GoogleComponents/notifications/setup-incomplete';
 
 /**
  * WordPress dependencies
@@ -30,6 +27,13 @@ import getSetupIncompleteComponent from 'GoogleComponents/notifications/setup-in
 import { addFilter, addAction } from '@wordpress/hooks';
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import getNoDataComponent from '../notifications/nodata';
+import getDataErrorComponent from '../notifications/data-error';
+import getSetupIncompleteComponent from '../notifications/setup-incomplete';
 
 /**
  * A Higher order Component that provides data functionality to Components.
