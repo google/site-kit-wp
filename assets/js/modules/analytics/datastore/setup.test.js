@@ -248,14 +248,16 @@ describe( 'modules/analytics setup', () => {
 					...existingTag,
 					permission: true,
 				} );
-				expect( registry.select( STORE_NAME ).hasTagPermission( 'UA-999999-1' ) ).toBe( true );
+				expect( registry.select( STORE_NAME ).hasTagPermission( existingTag.propertyID ) ).toBe( true );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
 				registry.dispatch( STORE_NAME ).receiveTagPermission( {
 					...existingTag,
 					permission: false,
 				} );
+				expect( registry.select( STORE_NAME ).hasTagPermission( existingTag.propertyID ) ).toBe( false );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 			} );
 		} );
 	} );
