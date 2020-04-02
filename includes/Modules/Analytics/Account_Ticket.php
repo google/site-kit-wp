@@ -27,7 +27,7 @@ class AccountTicket extends Google_Service_Analytics_AccountTicket {
 	 * @since n.e.x.t
 	 * @var String
 	 */
-	protected $site_id = '';
+	public $site_id = '';
 
 	/**
 	 * The site secret.
@@ -35,7 +35,7 @@ class AccountTicket extends Google_Service_Analytics_AccountTicket {
 	 * @since n.e.x.t
 	 * @var String
 	 */
-	protected $site_secret = '';
+	public $site_secret = '';
 
 	/**
 	 * Get the site ID.

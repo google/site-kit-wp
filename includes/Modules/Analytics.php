@@ -20,8 +20,11 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Authentication\Credentials;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Analytics\Settings;
 use Google\Site_Kit\Modules\Analytics\AccountTicket;
@@ -485,6 +488,7 @@ final class Analytics extends Module
 			'report'                       => 'analyticsreporting',
 			// POST.
 			'settings'                     => '',
+			'create-account-ticket'        => 'analytics',
 		);
 	}
 
@@ -788,12 +792,12 @@ final class Analytics extends Module
 					/* translators: %s: Missing parameter name */
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'timezone' ), array( 'status' => 400 ) );
 				}
-
-				if ( ! $this->credentials->has() ) {
+				$credentials = new Credentials( new Encrypted_Options( $this->options ) );
+				if ( ! $credentials->has() ) {
 					return new WP_Error( 'missing_credentials', __( 'Missing credentials..', 'google-site-kit' ), array( 'status' => 400 ) );
 				}
 
-				$account = new AccountTicket();
+				$account = new Google_Service_Analytics_Account();
 				$account->setName( $data['accountName'] );
 
 				$property = new Google_Service_Analytics_Webproperty();
@@ -804,22 +808,38 @@ final class Analytics extends Module
 				$profile->setName( $data['profileName'] );
 				$profile->setTimezone( $data['timezone'] );
 
-				$account_ticket = new Google_Service_Analytics_AccountTicket();
+				$account_ticket = new AccountTicket();
 				$account_ticket->setAccount( $account );
-				$account_ticket->setProperty( $property );
+				$account_ticket->setWebproperty( $property );
 				$account_ticket->setProfile( $profile );
 				$account_ticket->setRedirectUri( $this->get_provisioning_redirect_uri() );
 
 				// Add site id and secret.
-				$creds = $this->credentials->get();
+				$creds = $credentials->get();
 				$account_ticket->setSiteId( $creds['oauth2_client_id'] );
 				$account_ticket->setSiteSecret( $creds['oauth2_client_secret'] );
 
 				$restore_defer = $this->with_client_defer( false );
 				try {
 					$analytics_service = $this->get_service( 'analyticsprovisioning' );
+
+					$custom_provisioning = new Provisioning(
+						$analytics_service,
+						$analytics_service->serviceName, // phpcs:ignore WordPress.NamingConventions.ValidVariableName
+						'provisioning',
+						array(
+							'methods' => array(
+								'createAccountTicket' => array(
+									'path'       => 'provisioning/createAccountTicket',
+									'httpMethod' => 'POST',
+									'parameters' => array(),
+								),
+							),
+						)
+					);
+
 					// Use a custom provisioning method that accepts site id and secret.
-					$analytics_service->provisioning = new Provisioning();
+					$analytics_service->provisioning = $custom_provisioning;
 
 					$account_ticket = $analytics_service->provisioning->createAccountTicket( $account_ticket );
 				} catch ( Exception $e ) {
@@ -1196,10 +1216,11 @@ final class Analytics extends Module
 	 *               instance of Google_Service.
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
+		$google_proxy = new Google_Proxy( $this->context );
 		return array(
 			'analytics'             => new Google_Service_Analytics( $client ),
 			'analyticsreporting'    => new Google_Service_AnalyticsReporting( $client ),
-			'analyticsprovisioning' => new Provisioning( $client, $this->google_proxy->url() ),
+			'analyticsprovisioning' => new Google_Service_Analytics( $client, $google_proxy->url() ), // Send provisioning requests to the proxy.
 		);
 	}
 

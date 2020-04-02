@@ -29,7 +29,7 @@ class Provisioning extends \Google\Site_Kit_Dependencies\Google_Service_Resource
 	 * @return Google_Service_Analytics_AccountTicket
 	 */
 	public function createAccountTicket( AccountTicket $post_body, $opt_params = array() ) {
-		$params = array( 'post_body' => $post_body );
+		$params = array( 'postBody' => $post_body );
 		$params = \array_merge( $params, $opt_params );
 		return $this->call( 'createAccountTicket', array( $params ), 'Google\Site_Kit\Modules\Analytics\AccountTicket' );
 	}
