@@ -27,7 +27,6 @@ import { __ } from '@wordpress/i18n';
  */
 import Button from '../../../components/button';
 import { STORE_NAME } from '../datastore';
-import { isValidAccountID, isValidPropertyID } from '../util';
 import {
 	AccountSelect,
 	ExistingTagNotice,
@@ -37,16 +36,8 @@ import {
 
 export default function SetupForm() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const isSavingSettings = useSelect( ( select ) => select( STORE_NAME ).isDoingSaveSettings() );
-
-	const isBlockedFromSaving = (
-		isSavingSettings ||
-		! isValidAccountID( accountID ) ||
-		! isValidPropertyID( propertyID )
-	);
+	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 
 	const submitForm = () => {}; // TODO: Handle form submission
 
@@ -72,7 +63,7 @@ export default function SetupForm() {
 			</div>
 
 			<div className="googlesitekit-setup-module__action">
-				<Button disabled={ isBlockedFromSaving }>
+				<Button disabled={ ! canSubmitChanges }>
 					{ __( 'Configure Analytics', 'google-site-kit' ) }
 				</Button>
 			</div>
