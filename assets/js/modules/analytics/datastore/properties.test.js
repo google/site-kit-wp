@@ -79,11 +79,8 @@ describe( 'modules/analytics properties', () => {
 					{ accountID }
 				);
 
-				muteConsole( 'error' );
 				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getProperties( accountID )
-					),
+					() => registry.select( STORE_NAME ).isDoingCreateProperty( accountID ) === false
 				);
 
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
