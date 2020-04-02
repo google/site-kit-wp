@@ -341,7 +341,7 @@ export const resolvers = {
 				yield actions.receiveMatchedProperty( matchedProperty );
 			}
 
-			return yield actions.receivePropertiesProfilesCompleted( accountID );
+			return actions.receivePropertiesProfilesCompleted( accountID );
 		} catch ( error ) {
 			// TODO: Implement an error handler store or some kind of centralized
 			// place for error dispatch...
