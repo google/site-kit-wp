@@ -28,6 +28,7 @@ import Modules from 'googlesitekit-modules';
 import accounts from './accounts';
 import alerts from './alerts';
 import clients from './clients';
+import report from './report';
 import tags from './tags';
 import urlchannels from './urlchannels';
 
@@ -48,6 +49,7 @@ export const INITIAL_STATE = Data.collectState(
 	accounts.INITIAL_STATE,
 	alerts.INITIAL_STATE,
 	clients.INITIAL_STATE,
+	report.INITIAL_STATE,
 	tags.INITIAL_STATE,
 	urlchannels.INITIAL_STATE,
 );
@@ -57,6 +59,7 @@ export const actions = Data.addInitializeAction( Data.collectActions(
 	accounts.actions,
 	alerts.actions,
 	clients.actions,
+	report.actions,
 	tags.actions,
 	urlchannels.actions,
 ) );
@@ -66,6 +69,7 @@ export const controls = Data.collectControls(
 	accounts.controls,
 	alerts.controls,
 	clients.controls,
+	report.controls,
 	tags.controls,
 	urlchannels.controls,
 );
@@ -77,6 +81,7 @@ export const reducer = Data.addInitializeReducer(
 		accounts.reducer,
 		alerts.reducer,
 		clients.reducer,
+		report.reducer,
 		tags.reducer,
 		urlchannels.reducer,
 	)
@@ -87,6 +92,7 @@ export const resolvers = Data.collectResolvers(
 	accounts.resolvers,
 	alerts.resolvers,
 	clients.resolvers,
+	report.resolvers,
 	tags.resolvers,
 	urlchannels.resolvers,
 );
@@ -96,6 +102,7 @@ export const selectors = Data.collectSelectors(
 	accounts.selectors,
 	alerts.selectors,
 	clients.selectors,
+	report.selectors,
 	tags.selectors,
 	urlchannels.selectors,
 );
