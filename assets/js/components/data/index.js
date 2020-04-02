@@ -18,7 +18,6 @@
 /**
  * External dependencies
  */
-import md5 from 'md5';
 import { cloneDeep, each, intersection, isEqual, sortBy } from 'lodash';
 
 /**
@@ -28,9 +27,6 @@ import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
 import { addAction, applyFilters, doAction, addFilter, removeFilter } from '@wordpress/hooks';
 
-export const TYPE_CORE = 'core';
-export const TYPE_MODULES = 'modules';
-
 /**
  * Internal dependencies
  */
@@ -39,10 +35,13 @@ import {
 	getCurrentDateRangeSlug,
 	fillFilterWithComponent,
 	getQueryParameter,
-	sortObjectProperties,
+	stringifyObject,
 } from '../../util';
 import DashboardAuthAlert from '../notifications/dashboard-auth-alert';
 import DashboardPermissionAlert from '../notifications/dashboard-permission-alert';
+
+export const TYPE_CORE = 'core';
+export const TYPE_MODULES = 'modules';
 
 /**
  * Ensures that the local datacache object is properly set up.
@@ -497,7 +496,7 @@ const dataAPI = {
 		}
 
 		if ( 3 === key.length && data && 'object' === typeof data && Object.keys( data ).length ) {
-			key.push( md5( JSON.stringify( sortObjectProperties( data ) ) ) );
+			key.push( stringifyObject( data ) );
 		}
 
 		return key.join( '::' );
