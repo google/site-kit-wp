@@ -67,9 +67,10 @@ export const actions = {
 		try {
 			const property = yield actions.fetchCreateProperty( accountID );
 
-			yield actions.receiveCreateProperty( { accountID, property } );
-			yield Data.dispatch( STORE_NAME ).setPropertyID( property.id );
-			return;
+			const registry = yield Data.commonActions.getRegistry();
+			registry.dispatch( STORE_NAME ).setPropertyID( property.id );
+
+			return actions.receiveCreateProperty( { accountID, property } );
 		} catch ( error ) {
 			// TODO: Implement an error handler store or some kind of centralized
 			// place for error dispatch...
