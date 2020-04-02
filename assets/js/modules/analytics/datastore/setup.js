@@ -64,10 +64,8 @@ export const actions = {
 		const profileID = registry.select( STORE_NAME ).getProfileID();
 		if ( profileID === PROFILE_CREATE ) {
 			const accountID = registry.select( STORE_NAME ).getAccountID();
-			let newProperty;
 			try {
-				newProperty = yield actions.submitProfileCreate( accountID );
-				propertyID = newProperty.id;
+				yield actions.submitProfileCreate( accountID, propertyID );
 			} catch ( error ) {
 				return actions.submitChangesFailed( { error } );
 			}
@@ -104,6 +102,10 @@ export const actions = {
 export const controls = {
 	[ SUBMIT_PROPERTY_CREATE ]: createRegistryControl( ( registry ) => ( { payload } ) => {
 		return registry.dispatch( STORE_NAME ).createProperty( payload.accountID );
+	} ),
+	[ SUBMIT_PROFILE_CREATE ]: createRegistryControl( ( registry ) => ( { payload } ) => {
+		const { accountID, propertyID } = payload;
+		return registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID );
 	} ),
 };
 

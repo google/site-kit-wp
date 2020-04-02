@@ -27,6 +27,7 @@ import apiFetch from '@wordpress/api-fetch';
 import API from 'googlesitekit-api';
 import { STORE_NAME } from '.';
 import { PROPERTY_CREATE } from './properties';
+import { PROFILE_CREATE } from './profiles';
 import * as fixtures from './__fixtures__';
 import {
 	createTestRegistry,
@@ -74,16 +75,17 @@ describe( 'modules/analytics setup', () => {
 					accountID: '12345',
 					propertyID: PROPERTY_CREATE,
 				} );
+				const createdProperty = {
+					...fixtures.propertiesProfiles.properties[ 0 ],
+					id: 'UA-12345-1',
+				};
 
 				fetch
 					.doMockOnceIf(
 						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/
 					)
 					.mockResponseOnce(
-						JSON.stringify( {
-							...fixtures.propertiesProfiles.properties[ 0 ],
-							id: 'UA-12345-1',
-						} ),
+						JSON.stringify( createdProperty ),
 						{ status: 200 }
 					);
 
@@ -94,12 +96,47 @@ describe( 'modules/analytics setup', () => {
 					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
 				);
 
-				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatch( '/google-site-kit/v1/modules/analytics/data/create-property' );
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject( {
 					accountID: '12345',
 				} );
 
-				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( 'UA-12345-1' );
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( createdProperty.id );
+			} );
+
+			it( 'dispatches createProfile if the "set up a new profile" option is chosen', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {
+					...validSettings,
+					accountID: '12345',
+					propertyID: 'UA-12345-1',
+					profileID: PROFILE_CREATE,
+				} );
+				const createdProfile = {
+					...fixtures.propertiesProfiles.profiles[ 0 ],
+					id: '987654321',
+				};
+
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/
+					)
+					.mockResponseOnce(
+						JSON.stringify( createdProfile ),
+						{ status: 200 }
+					);
+
+				registry.dispatch( STORE_NAME ).submitChanges();
+
+				await subscribeUntil(
+					registry,
+					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
+				);
+
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject( {
+					accountID: '12345',
+					propertyID: 'UA-12345-1',
+				} );
+
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( createdProfile.id );
 			} );
 		} );
 	} );
