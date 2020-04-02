@@ -138,6 +138,39 @@ describe( 'modules/analytics setup', () => {
 
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( createdProfile.id );
 			} );
+
+			it( 'dispatches both createProperty and createProfile when selected', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {
+					...validSettings,
+					accountID: '12345',
+					propertyID: PROPERTY_CREATE,
+					profileID: PROFILE_CREATE,
+				} );
+				const createdProperty = {
+					...fixtures.propertiesProfiles.properties[ 0 ],
+					id: 'UA-12345-1',
+				};
+				const createdProfile = {
+					...fixtures.propertiesProfiles.profiles[ 0 ],
+					id: '987654321',
+				};
+
+				fetch
+					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/ )
+					.mockResponseOnce( JSON.stringify( createdProperty ), { status: 200 } )
+					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/ )
+					.mockResponseOnce( JSON.stringify( createdProfile ), { status: 200 } );
+
+				registry.dispatch( STORE_NAME ).submitChanges();
+
+				await subscribeUntil(
+					registry,
+					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
+				);
+
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( createdProperty.id );
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( createdProfile.id );
+			} );
 		} );
 	} );
 
