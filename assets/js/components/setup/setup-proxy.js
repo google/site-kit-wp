@@ -58,7 +58,7 @@ class SetupUsingProxy extends Component {
 			proxySetupURL,
 			resetSuccess: getQueryArg( location.href, 'notification' ) === 'reset_success',
 			context: getQueryArg( location.href, 'googlesitekit_context' ),
-			siteHostname: punycode.decode( ( new URL( siteURL ) ).hostname ),
+			siteHostname: punycode.toUnicode( ( new URL( siteURL ) ).hostname ),
 		};
 	}
 
