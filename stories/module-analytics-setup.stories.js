@@ -36,6 +36,7 @@ import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__
 
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
 import { WithTestRegistry } from '../tests/js/utils';
+import { ACCOUNT_CREATE } from '../assets/js/modules/analytics/datastore/accounts';
 
 function filterAnalyticsSetup() {
 	global.googlesitekit.setup.moduleToSetup = 'analytics';
@@ -95,6 +96,21 @@ storiesOf( 'Analytics Module Setup', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( [] );
+		};
+
+		return <Setup callback={ setupRegistry } />;
+	} )
+	.add( 'Create Account', () => {
+		filterAnalyticsSetup();
+
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveAccounts( accounts );
+			dispatch( STORE_NAME ).receiveProperties( properties );
+			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveSettings( {
+				accountID: ACCOUNT_CREATE,
+			} );
 		};
 
 		return <Setup callback={ setupRegistry } />;
