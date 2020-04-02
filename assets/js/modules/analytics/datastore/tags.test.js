@@ -285,6 +285,7 @@ describe( 'modules/analytics tags', () => {
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
+				muteConsole( 'error' );
 				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( fixtures.getTagPermissionsNoAccess.propertyID );
 
 				expect( hasPermission ).toEqual( undefined );
