@@ -60,7 +60,48 @@ describe( 'modules/analytics accounts', () => {
 	} );
 
 	describe( 'actions', () => {
+		describe( 'resetAccounts', () => {
+			it( 'sets accounts and related values back to their initial values', () => {
+				registry.dispatch( STORE_NAME ).setSettings( {
+					accountID: '12345',
+					propertyID: 'UA-12345-1',
+					internalWebPropertyID: '23245',
+					profileID: '54321',
+					useSnippet: true,
+					trackingDisabled: [],
+					anonymizeIP: true,
+				} );
+				registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accountsPropertiesProfiles.accounts );
+				registry.dispatch( STORE_NAME ).receiveProperties( fixtures.accountsPropertiesProfiles.properties );
+				registry.dispatch( STORE_NAME ).receiveProfiles( fixtures.accountsPropertiesProfiles.profiles );
 
+				registry.dispatch( STORE_NAME ).resetAccounts();
+
+				expect( registry.select( STORE_NAME ).getAccountID() ).toStrictEqual( undefined );
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toStrictEqual( undefined );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toStrictEqual( undefined );
+				expect( registry.select( STORE_NAME ).getProfileID() ).toStrictEqual( undefined );
+				expect( registry.select( STORE_NAME ).getAccounts() ).toStrictEqual( undefined );
+				// Other settings are left untouched.
+				expect( registry.select( STORE_NAME ).getUseSnippet() ).toStrictEqual( true );
+				expect( registry.select( STORE_NAME ).getTrackingDisabled() ).toStrictEqual( [] );
+				expect( registry.select( STORE_NAME ).getAnonymizeIP() ).toStrictEqual( true );
+			} );
+
+			it( 'invalidates the resolver for getAccounts', async () => {
+				registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accountsPropertiesProfiles.accounts );
+				registry.select( STORE_NAME ).getAccounts();
+
+				await subscribeUntil(
+					registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getAccounts' )
+				);
+
+				registry.dispatch( STORE_NAME ).resetAccounts();
+
+				expect( registry.select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) ).toStrictEqual( false );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {

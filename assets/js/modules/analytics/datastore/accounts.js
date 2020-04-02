@@ -33,6 +33,7 @@ const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
 const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED';
+const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 // Values
 export const ACCOUNT_CREATE = 'account_create';
 
@@ -84,6 +85,15 @@ export const actions = {
 			type: RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED,
 		};
 	},
+
+	*resetAccounts() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield { type: RESET_ACCOUNTS };
+
+		return registry.stores[ STORE_NAME ].getActions()
+			.invalidateResolutionForStoreSelector( 'getAccounts' );
+	},
 };
 
 export const controls = {
@@ -127,6 +137,20 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case RESET_ACCOUNTS: {
+			return {
+				...state,
+				accounts: undefined,
+				settings: {
+					...state.settings,
+					accountID: undefined,
+					propertyID: undefined,
+					internalWebPropertyID: undefined,
+					profileID: undefined,
+				},
+			};
+		}
+
 		default: {
 			return { ...state };
 		}
@@ -134,7 +158,7 @@ export const reducer = ( state, { type, payload } ) => {
 };
 
 export const resolvers = {
-	*getAccounts( { force = false } = {} ) {
+	*getAccounts() {
 		try {
 			const registry = yield Data.commonActions.getRegistry();
 
@@ -142,7 +166,7 @@ export const resolvers = {
 
 			// If there are already accounts loaded in state, we don't want to make this request
 			// and consider this resolver fulfilled.
-			if ( existingAccounts && ! force ) {
+			if ( existingAccounts ) {
 				return;
 			}
 
@@ -191,11 +215,9 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @param {?Object} options Optional arguments.
-	 * @param {boolean} options.force Force fetch, even if in state (does not invalidate resolver).
 	 * @return {?Array.<Object>} An array of Analytics accounts; `undefined` if not loaded.
 	 */
-	getAccounts( state, { force = false } = {} ) { // eslint-disable-line no-unused-vars
+	getAccounts( state ) {
 		const { accounts } = state;
 
 		return accounts;
