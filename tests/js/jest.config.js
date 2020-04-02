@@ -43,7 +43,5 @@ module.exports = {
 	moduleNameMapper: {
 		// New (JSR) modules.
 		'^googlesitekit-(.+)$': '<rootDir>assets/js/googlesitekit-$1',
-		// Specific to our tests; makes importing our test utils easier.
-		'^test-utils$': '<rootDir>tests/js/test-utils',
 	},
 };
