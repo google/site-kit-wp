@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { getQueryParameter } from 'GoogleUtil';
+import { getQueryParameter, getModulesData } from 'GoogleUtil';
 import Notification from 'GoogleComponents/notifications/notification';
 import ModulesList from 'GoogleComponents/modules-list';
 
@@ -57,15 +57,16 @@ class DashboardSetupAlerts extends Component {
 					return null;
 				}
 
+				const modulesData = getModulesData();
 				const slug = getQueryParameter( 'slug' );
 
-				if ( slug && global.googlesitekit.modules[ slug ] && ! global.googlesitekit.modules[ slug ].active ) {
+				if ( slug && modulesData[ slug ] && ! modulesData[ slug ].active ) {
 					return null;
 				}
 
-				if ( slug && global.googlesitekit.modules[ slug ] ) {
+				if ( slug && modulesData[ slug ] ) {
 					winData.id = `${ winData.id }-${ slug }`;
-					winData.setupTitle = global.googlesitekit.modules[ slug ].name;
+					winData.setupTitle = modulesData[ slug ].name;
 					winData.description = __( 'Here are some other services you can connect to see even more stats:', 'google-site-kit' );
 
 					winData = applyFilters( ` global.googlesitekit.SetupWinNotification-${ slug }`, winData );

@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { fillFilterWithComponent } from 'GoogleUtil';
+import { fillFilterWithComponent, getModulesData } from 'GoogleUtil';
 import TagmanagerSetup from 'GoogleModules/tagmanager/setup';
 /**
  * WordPress dependencies
@@ -27,7 +27,7 @@ import TagmanagerSetup from 'GoogleModules/tagmanager/setup';
 import { addFilter } from '@wordpress/hooks';
 const slug = 'tagmanager';
 
-if ( global.googlesitekit.modules.tagmanager.active ) {
+if ( getModulesData().tagmanager.active ) {
 	/**
 	 * Add components to the settings page.
 	 */

@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { changeToPercent } from 'GoogleUtil';
+import { changeToPercent, getModulesData } from 'GoogleUtil';
 import { each } from 'lodash';
 
 /**
@@ -476,7 +476,7 @@ export const getTopPagesReportDataDefaults = () => {
 		},
 	];
 
-	if ( global.googlesitekit.modules.analytics.settings.adsenseLinked ) {
+	if ( getModulesData().analytics.settings.adsenseLinked ) {
 		metrics.push(
 			{
 				expression: 'ga:adsenseRevenue',

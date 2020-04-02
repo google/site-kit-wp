@@ -22,7 +22,7 @@
  */
 import CTA from 'GoogleComponents/notifications/cta';
 import ctaWrapper from 'GoogleComponents/notifications/cta-wrapper';
-import { getReAuthURL } from 'GoogleUtil';
+import { getReAuthURL, getModulesData } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -40,7 +40,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * @return {WPElement} Returns CTA component with configuration CTA.
  */
 const getSetupIncompleteComponent = ( module, inGrid = false, fullWidth = false, createGrid = false ) => {
-	const { name } = global.googlesitekit.modules[ module ];
+	const { name } = getModulesData()[ module ];
 	const cta = <CTA
 
 		/* translators: %s: Module name */

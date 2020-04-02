@@ -17,10 +17,6 @@
  */
 
 /**
- * Internal dependencies
- */
-import AnalyticsAdminbarWidgetOverview from './adminbar-widget-overview';
-/**
  * External dependencies
  */
 import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
@@ -30,13 +26,19 @@ import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
  */
 import { Component, Fragment } from '@wordpress/element';
 
+/**
+ * Internal dependencies
+ */
+import AnalyticsAdminbarWidgetOverview from './adminbar-widget-overview';
+import { getModulesData } from 'GoogleUtil';
+
 class AnalyticsAdminbarWidget extends Component {
 	render() {
 		if ( typeof global.googlesitekit.permaLink !== typeof undefined && '' === global.googlesitekit.permaLink ) {
 			return null;
 		}
 
-		if ( ! global.googlesitekit.modules.analytics.active ) {
+		if ( ! getModulesData().analytics.active ) {
 			return (
 				<Fragment>
 					<div className="

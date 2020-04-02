@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { getTimeInSeconds, getQueryParameter } from 'GoogleUtil';
+import { getTimeInSeconds, getQueryParameter, getModulesData } from 'GoogleUtil';
 import { TYPE_MODULES } from 'GoogleComponents/data';
 import * as publisherWinCallbacks from 'GoogleComponents/publisher-wins/callbacks';
 /**
@@ -97,7 +97,8 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 			return wins;
 		}, 2 );
 
-	if ( global.googlesitekit.modules.analytics.active ) {
+	const modulesData = getModulesData();
+	if ( modulesData.analytics.active ) {
 		addFilter( 'googlesitekit.WinsNotificationsRequest',
 			'googlesitekit.PublisherWinsNotification',
 			( wins ) => {

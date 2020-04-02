@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { numberFormat, getTimeInSeconds } from 'GoogleUtil';
+import { numberFormat, getTimeInSeconds, getModulesData } from 'GoogleUtil';
 import { calculateOverviewData } from 'GoogleModules/analytics/util';
 
 /**
@@ -28,7 +28,9 @@ import { calculateOverviewData } from 'GoogleModules/analytics/util';
 import { __ } from '@wordpress/i18n';
 
 const pageviewIncrease = ( data, id ) => {
-	if ( ! global.googlesitekit.modules.analytics || ! global.googlesitekit.modules.analytics.active ) {
+	const modulesData = getModulesData();
+
+	if ( ! modulesData.analytics || ! modulesData.analytics.active ) {
 		return false;
 	}
 

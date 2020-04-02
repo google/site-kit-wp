@@ -20,7 +20,7 @@
  * External dependencies
  */
 import { extractSearchConsoleDashboardData } from 'GoogleModules/search-console/dashboard/util';
-import { readableLargeNumber } from 'GoogleUtil';
+import { readableLargeNumber, getModulesData } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -37,7 +37,8 @@ const publishingWin = ( data, id ) => {
 	let message = __( 'That’s out of this world.', 'google-site-kit' );
 	let dataBlocks = [];
 
-	if ( global.googlesitekit.modules[ 'search-console' ] && global.googlesitekit.modules[ 'search-console' ].active && data ) {
+	const modulesData = getModulesData();
+	if ( modulesData[ 'search-console' ] && modulesData[ 'search-console' ].active && data ) {
 		const processedData = extractSearchConsoleDashboardData( data );
 
 		const {

@@ -22,7 +22,7 @@
 import classnames from 'classnames';
 import withData from 'GoogleComponents/higherorder/withdata';
 import { TYPE_MODULES } from 'GoogleComponents/data';
-import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
+import { getTimeInSeconds, numberFormat, getModulesData } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
 import { map } from 'lodash';
@@ -52,7 +52,7 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 			accountID,
 			internalWebPropertyID,
 			profileID,
-		} = global.googlesitekit.modules.analytics.settings;
+		} = getModulesData().analytics.settings;
 
 		if ( ! accountID ) {
 			return 'https://analytics.google.com/analytics/web/';

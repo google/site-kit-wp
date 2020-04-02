@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { fillFilterWithComponent } from 'GoogleUtil';
+import { fillFilterWithComponent, getModulesData } from 'GoogleUtil';
 import OptimizeSetup from 'GoogleModules/optimize/setup';
 /**
  * WordPress dependencies
@@ -28,7 +28,8 @@ import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 const slug = 'optimize';
 
-if ( global.googlesitekit.modules.optimize.active ) {
+const modulesData = getModulesData();
+if ( modulesData.optimize.active ) {
 	/**
 	 * Add components to the settings page.
 	 */

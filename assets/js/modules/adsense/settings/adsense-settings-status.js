@@ -21,6 +21,7 @@
  */
 import {
 	getSiteKitAdminURL,
+	getModulesData,
 } from 'GoogleUtil';
 import Link from 'GoogleComponents/link';
 
@@ -38,7 +39,7 @@ class AdSenseSettingsStatus extends Component {
 			OriginalComponent,
 		} = this.props;
 
-		const { accountStatus } = global.googlesitekit.modules.adsense.settings;
+		const { accountStatus } = getModulesData().adsense.settings;
 
 		if ( ! accountStatus || 'adsense' !== slug ) {
 			return <OriginalComponent { ...this.props } />;

@@ -21,7 +21,7 @@
  */
 import withData from 'GoogleComponents/higherorder/withdata';
 import { TYPE_MODULES } from 'GoogleComponents/data';
-import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
+import { getTimeInSeconds, numberFormat, getModulesData } from 'GoogleUtil';
 import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
 import PreviewTable from 'GoogleComponents/preview-table';
 import Layout from 'GoogleComponents/layout/layout';
@@ -50,7 +50,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 					className="googlesitekit-popular-content"
 					footer
 					footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					footerCtaLink={ global.googlesitekit.modules.analytics.homepage }
+					footerCtaLink={ getModulesData().analytics.homepage }
 					fill
 				>
 					{ component }

@@ -32,6 +32,7 @@ import {
 	trackEvent,
 	getExistingTag,
 	toggleConfirmModuleSettings,
+	getModulesData,
 } from 'GoogleUtil';
 import classnames from 'classnames';
 
@@ -59,7 +60,7 @@ class AnalyticsSetup extends Component {
 			propertyID,
 			useSnippet,
 			trackingDisabled,
-		} = global.googlesitekit.modules.analytics.settings;
+		} = getModulesData().analytics.settings;
 
 		this.state = {
 			anonymizeIP,
@@ -527,7 +528,7 @@ class AnalyticsSetup extends Component {
 			data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 			await this.getAccounts();
 
-			global.googlesitekit.modules.analytics.settings = savedSettings;
+			getModulesData().analytics.settings = savedSettings;
 
 			trackEvent( 'analytics_setup', 'analytics_configured' );
 
@@ -627,7 +628,7 @@ class AnalyticsSetup extends Component {
 		} = this.props;
 		const disabled = ! isEditing;
 		const { ampMode } = global.googlesitekit.admin;
-		const useSnippetSettings = global.googlesitekit.modules.analytics.settings.useSnippet;
+		const useSnippetSettings = getModulesData().analytics.settings.useSnippet;
 
 		return (
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
@@ -781,7 +782,7 @@ class AnalyticsSetup extends Component {
 		const enableProfileSelect = !! /^UA-/.test( selectedProperty.toString() );
 
 		const { ampMode } = global.googlesitekit.admin;
-		const { setupComplete } = global.googlesitekit.modules.analytics;
+		const { setupComplete } = getModulesData().analytics;
 
 		if ( isLoading ) {
 			return <ProgressBar />;

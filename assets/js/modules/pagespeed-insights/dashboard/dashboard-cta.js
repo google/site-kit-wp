@@ -8,6 +8,7 @@ import {
 	activateOrDeactivateModule,
 	getReAuthURL,
 	showErrorNotification,
+	getModulesData,
 } from 'GoogleUtil';
 
 /**
@@ -19,7 +20,7 @@ const PageSpeedInsightsCTA = () => {
 	const {
 		active,
 		setupComplete,
-	} = global.googlesitekit.modules[ 'pagespeed-insights' ];
+	} = getModulesData()[ 'pagespeed-insights' ];
 
 	const { canManageOptions } = global.googlesitekit.permissions;
 

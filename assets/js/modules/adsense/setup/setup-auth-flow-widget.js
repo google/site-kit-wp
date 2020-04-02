@@ -27,6 +27,11 @@ import Button from 'GoogleComponents/button';
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import { getModulesData } from 'GoogleUtil';
+
 class AdSenseSetupAuthFlowWidget extends Component {
 	constructor( props ) {
 		super( props );
@@ -37,7 +42,7 @@ class AdSenseSetupAuthFlowWidget extends Component {
 	static createNewAccount( e ) {
 		e.preventDefault();
 
-		const { signupURL } = global.googlesitekit.modules.adsense;
+		const { signupURL } = getModulesData().adsense;
 
 		global.open( signupURL, '_blank' );
 	}
