@@ -25,19 +25,18 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './index';
+import { STORE_NAME } from '.';
+import { PROPERTY_CREATE } from './properties';
+import * as fixtures from './__fixtures__';
 import {
 	createTestRegistry,
-	// muteConsole,
-	// subscribeUntil,
+	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
-// import * as fixtures from './__fixtures__';
+} from '../../../../../tests/js/utils';
 
 describe( 'modules/analytics setup', () => {
 	let apiFetchSpy;
 	let registry;
-	// let store;
 
 	const validSettings = {
 		accountID: '12345',
@@ -67,7 +66,65 @@ describe( 'modules/analytics setup', () => {
 		apiFetchSpy.mockRestore();
 	} );
 
+	describe( 'actions', () => {
+		describe( 'submitChanges', () => {
+			it( 'dispatches createProperty if the "set up a new property" option is chosen', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {
+					...validSettings,
+					accountID: '12345',
+					propertyID: PROPERTY_CREATE,
+				} );
+
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/
+					)
+					.mockResponseOnce(
+						JSON.stringify( {
+							...fixtures.propertiesProfiles.properties[ 0 ],
+							id: 'UA-12345-1',
+						} ),
+						{ status: 200 }
+					);
+
+				registry.dispatch( STORE_NAME ).submitChanges();
+
+				await subscribeUntil(
+					registry,
+					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
+				);
+
+				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatch( '/google-site-kit/v1/modules/analytics/data/create-property' );
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject( {
+					accountID: '12345',
+				} );
+
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( 'UA-12345-1' );
+			} );
+		} );
+	} );
+
 	describe( 'selectors', () => {
+		describe( 'isDoingSubmitChanges', () => {
+			it( 'sets internal state while submitting changes', () => {
+				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
+
+				registry.dispatch( STORE_NAME ).startSubmitChanges();
+
+				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
+			} );
+
+			it( 'toggles the internal state again once submission is completed', () => {
+				registry.dispatch( STORE_NAME ).startSubmitChanges();
+
+				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
+
+				registry.dispatch( STORE_NAME ).finishSubmitChanges();
+
+				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
+			} );
+		} );
+
 		describe( 'canSubmitChanges', () => {
 			it( 'requires a valid accountID', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );

@@ -27,13 +27,106 @@ import {
 	isValidProfileID,
 	isValidInternalWebPropertyID,
 } from '../util';
+import { PROPERTY_CREATE } from './properties';
+import { PROFILE_CREATE } from './profiles';
 
-const { createRegistrySelector } = Data;
+const { createRegistrySelector, createRegistryControl } = Data;
 
-export const INITIAL_STATE = {};
-export const actions = {};
-export const controls = {};
-export const reducer = ( state ) => state;
+// Actions
+const SUBMIT_CHANGES_START = 'SUBMIT_CHANGES_START';
+const SUBMIT_CHANGES_COMPLETED = 'SUBMIT_CHANGES_COMPLETED';
+const SUBMIT_PROPERTY_CREATE = 'SUBMIT_PROPERTY_CREATE';
+const SUBMIT_PROFILE_CREATE = 'SUBMIT_PROFILE_CREATE';
+const SUBMIT_CHANGES_FAILED = 'SUBMIT_CHANGES_FAILED';
+
+export const INITIAL_STATE = {
+	isDoingSubmitChanges: false,
+};
+
+export const actions = {
+	*submitChanges() {
+		yield actions.startSubmitChanges();
+
+		const registry = yield Data.commonActions.getRegistry();
+		let propertyID = registry.select( STORE_NAME ).getPropertyID();
+
+		if ( propertyID === PROPERTY_CREATE ) {
+			const accountID = registry.select( STORE_NAME ).getAccountID();
+
+			try {
+				const { payload: { property: newProperty } } = yield actions.submitPropertyCreate( accountID );
+				propertyID = newProperty.id;
+			} catch ( error ) {
+				return actions.submitChangesFailed( { error } );
+			}
+		}
+
+		const profileID = registry.select( STORE_NAME ).getProfileID();
+		if ( profileID === PROFILE_CREATE ) {
+			const accountID = registry.select( STORE_NAME ).getAccountID();
+			let newProperty;
+			try {
+				newProperty = yield actions.submitProfileCreate( accountID );
+				propertyID = newProperty.id;
+			} catch ( error ) {
+				return actions.submitChangesFailed( { error } );
+			}
+		}
+
+		return actions.finishSubmitChanges();
+	},
+	submitPropertyCreate( accountID ) {
+		return {
+			payload: { accountID },
+			type: SUBMIT_PROPERTY_CREATE,
+		};
+	},
+	submitProfileCreate( accountID, propertyID ) {
+		return {
+			payload: { accountID, propertyID },
+			type: SUBMIT_PROFILE_CREATE,
+		};
+	},
+	startSubmitChanges() {
+		return { type: SUBMIT_CHANGES_START };
+	},
+	finishSubmitChanges() {
+		return { type: SUBMIT_CHANGES_COMPLETED };
+	},
+	submitChangesFailed( { error } ) {
+		return {
+			payload: { error },
+			type: SUBMIT_CHANGES_FAILED,
+		};
+	},
+};
+
+export const controls = {
+	[ SUBMIT_PROPERTY_CREATE ]: createRegistryControl( ( registry ) => ( { payload } ) => {
+		return registry.dispatch( STORE_NAME ).createProperty( payload.accountID );
+	} ),
+};
+
+export const reducer = ( state, { type } ) => {
+	switch ( type ) {
+		case SUBMIT_CHANGES_START: {
+			return {
+				...state,
+				isDoingSubmitChanges: true,
+			};
+		}
+
+		case SUBMIT_CHANGES_COMPLETED: {
+			return {
+				...state,
+				isDoingSubmitChanges: false,
+			};
+		}
+
+		default: return state;
+	}
+};
+
 export const resolvers = {};
 
 export const selectors = {
@@ -75,6 +168,10 @@ export const selectors = {
 
 		return true;
 	} ),
+
+	isDoingSubmitChanges( state ) {
+		return !! state.isDoingSubmitChanges;
+	},
 };
 
 export default {
