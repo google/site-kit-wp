@@ -17,6 +17,13 @@
  */
 
 /**
+ * Internal dependencies
+ */
+import { ACCOUNT_CREATE } from '../datastore/accounts';
+import { PROPERTY_CREATE } from '../datastore/properties';
+import { PROFILE_CREATE } from '../datastore/profiles';
+
+/**
  * Checks the given value to see if it is a positive integer.
  *
  * @param {*} input Value to check.
@@ -37,6 +44,20 @@ const isValidNumericID = function( input ) {
 export { isValidNumericID as isValidAccountID };
 
 /**
+ * Checks if the given value is a valid selection for an Account.
+ *
+ * @param {?string} value Selected value
+ * @return {boolean} True if valid, otherwise false.
+ */
+export function isValidAccountSelection( value ) {
+	if ( value === ACCOUNT_CREATE ) {
+		return true;
+	}
+
+	return isValidNumericID( value );
+}
+
+/**
  * Checks whether the given property ID appears to be valid.
  *
  * @param {*} propertyID Property ID to check.
@@ -47,12 +68,40 @@ export function isValidPropertyID( propertyID ) {
 }
 
 /**
+ * Checks if the given value is a valid selection for a Property.
+ *
+ * @param {?string} value Selected value
+ * @return {boolean} True if valid, otherwise false.
+ */
+export function isValidPropertySelection( value ) {
+	if ( value === PROPERTY_CREATE ) {
+		return true;
+	}
+
+	return isValidPropertyID( value );
+}
+
+/**
  * Checks if the given profile ID appears to be valid.
  *
  * @param {(string|number)} accountID Account ID to test.
  * @return {boolean} Whether or not the given account ID is valid.
  */
 export { isValidNumericID as isValidProfileID };
+
+/**
+ * Checks if the given value is a valid selection for a Profile.
+ *
+ * @param {?string} value Selected value
+ * @return {boolean} True if valid, otherwise false.
+ */
+export function isValidProfileSelection( value ) {
+	if ( value === PROFILE_CREATE ) {
+		return true;
+	}
+
+	return isValidNumericID( value );
+}
 
 /**
  * Checks if the given internal web property ID appears to be valid.
