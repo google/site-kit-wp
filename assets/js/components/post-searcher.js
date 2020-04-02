@@ -26,9 +26,6 @@ import {
 	trim,
 } from 'lodash';
 import Autocomplete from 'accessible-autocomplete/react';
-import {
-	getSiteKitAdminURL,
-} from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -39,6 +36,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	getSiteKitAdminURL,
+} from '../util';
 import data, { TYPE_CORE } from './data';
 import Button from './button';
 import Layout from './layout/layout';

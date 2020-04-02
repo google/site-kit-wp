@@ -17,14 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import {
-	getTimeInSeconds,
-	readableLargeNumber,
-} from 'GoogleUtil';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -33,6 +25,10 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import {
+	getTimeInSeconds,
+	readableLargeNumber,
+} from '../../../util';
 import DataBlock from '../../../components/data-block';
 import PreviewBlock from '../../../components/preview-block';
 import withData from '../../../components/higherorder/withdata';

@@ -19,13 +19,18 @@
 /**
  * External dependencies
  */
-import { fillFilterWithComponent } from 'GoogleUtil';
 import TagmanagerSetup from 'GoogleModules/tagmanager/setup';
+
 /**
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
 const slug = 'tagmanager';
+
+/**
+ * Internal dependencies
+ */
+import { fillFilterWithComponent } from '../../util';
 
 if ( global.googlesitekit.modules.tagmanager.active ) {
 	/**

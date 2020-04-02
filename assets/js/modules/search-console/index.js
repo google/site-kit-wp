@@ -21,13 +21,16 @@
  */
 import SearchConsoleSettingStatus from './settings/search-console-settings-status';
 
-import { createAddToFilter } from 'GoogleUtil/helpers';
-import { fillFilterWithComponent } from 'GoogleUtil';
-
 /**
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import { createAddToFilter } from '../../util/helpers';
+import { fillFilterWithComponent } from '../../util';
 
 const slug = 'search-console';
 

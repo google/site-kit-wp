@@ -17,15 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import {
-	getTimeInSeconds,
-	prepareSecondsForDisplay,
-	readableLargeNumber,
-} from 'GoogleUtil';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -34,6 +25,11 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import {
+	getTimeInSeconds,
+	prepareSecondsForDisplay,
+	readableLargeNumber,
+} from '../../../util';
 import PreviewBlocks from '../../../components/preview-blocks';
 import DataBlock from '../../../components/data-block';
 import CTA from '../../../components/notifications/cta';

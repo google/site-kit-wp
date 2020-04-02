@@ -25,7 +25,6 @@ import {
 	get,
 	unescape,
 } from 'lodash';
-import SvgIcon from 'GoogleUtil/svg-icon';
 import React from 'react';
 
 /**
@@ -46,6 +45,7 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import SvgIcon from './svg-icon';
 import { tagMatchers as setupTagMatchers } from '../components/setup/compatibility-checks';
 import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
 import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';

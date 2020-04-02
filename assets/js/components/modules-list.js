@@ -20,13 +20,6 @@
  * External dependencies
  */
 import { map } from 'lodash';
-import {
-	refreshAuthentication,
-	getReAuthURL,
-	activateOrDeactivateModule,
-	showErrorNotification,
-	moduleIcon,
-} from 'GoogleUtil';
 import classnames from 'classnames';
 
 /**
@@ -38,6 +31,13 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	refreshAuthentication,
+	getReAuthURL,
+	activateOrDeactivateModule,
+	showErrorNotification,
+	moduleIcon,
+} from '../util';
 import Link from './link';
 import data from '../components/data';
 import GenericError from './notifications/generic-error';

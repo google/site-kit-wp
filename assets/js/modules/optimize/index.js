@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { fillFilterWithComponent } from 'GoogleUtil';
 import OptimizeSetup from 'GoogleModules/optimize/setup';
 /**
  * WordPress dependencies
@@ -27,6 +26,10 @@ import OptimizeSetup from 'GoogleModules/optimize/setup';
 import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 const slug = 'optimize';
+/**
+ * Internal dependencies
+ */
+import { fillFilterWithComponent } from '../../util';
 
 if ( global.googlesitekit.modules.optimize.active ) {
 	/**

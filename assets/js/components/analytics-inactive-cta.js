@@ -19,12 +19,6 @@
 /**
  * External dependencies
  */
-import {
-	activateOrDeactivateModule,
-	refreshAuthentication,
-	getReAuthURL,
-	showErrorNotification,
-} from 'GoogleUtil';
 import PropTypes from 'prop-types';
 
 /**
@@ -36,6 +30,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	activateOrDeactivateModule,
+	refreshAuthentication,
+	getReAuthURL,
+	showErrorNotification,
+} from '../util';
 import data from './data';
 import CTA from './notifications/cta';
 import GenericError from './notifications/generic-error';

@@ -20,7 +20,6 @@
 /**
  * External dependencies
  */
-import { loadTranslations } from 'GoogleUtil';
 import 'GoogleModules';
 
 /**
@@ -33,6 +32,7 @@ import { Component, render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { loadTranslations } from './util';
 import './components/notifications';
 import ErrorHandler from './components/ErrorHandler';
 import SettingsApp from './components/settings/settings-app';

@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import SvgIcon from 'GoogleUtil/svg-icon';
 import classnames from 'classnames';
 import { map } from 'lodash';
 /**
@@ -31,6 +30,7 @@ import { Component, Fragment, createRef, isValidElement } from '@wordpress/eleme
 /**
  * Internal dependencies
  */
+import SvgIcon from '../../util/svg-icon';
 import { sanitizeHTML } from '../../util/sanitize';
 import data from '../data';
 import DataBlock from '../data-block';

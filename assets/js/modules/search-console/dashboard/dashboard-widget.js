@@ -40,7 +40,7 @@ import Alert from '../../../components/alert';
 import ProgressBar from '../../../components/progress-bar';
 import getNoDataComponent from '../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../components/notifications/data-error';
-import { getCurrentDateRange } from 'GoogleUtil';
+import { getCurrentDateRange } from '../../../util';
 import HelpLink from '../../../components/help-link';
 
 class GoogleSitekitSearchConsoleDashboardWidget extends Component {

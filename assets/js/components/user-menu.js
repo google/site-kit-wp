@@ -15,10 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * External dependencies
- */
-import { clearWebStorage } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -29,11 +25,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { getSiteKitAdminURL, clearWebStorage } from '../util';
 import Dialog from './dialog';
 import Button from './button';
 import Menu from './menu';
 import Modal from './modal';
-import { getSiteKitAdminURL } from '../util';
 
 class UserMenu extends Component {
 	constructor( props ) {

@@ -17,13 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import {
-	getReAuthURL,
-} from 'GoogleUtil';
-
-/**
  * WordPress dependencies
  */
 import { withFilters } from '@wordpress/components';
@@ -33,6 +26,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	getReAuthURL,
+} from '../../util';
 import Link from '../link';
 import ModuleSettingsWarning from '../notifications/module-settings-warning';
 

@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { showErrorNotification } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -29,6 +28,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { showErrorNotification } from '../../util';
 import CTA from './cta';
 import ctaWrapper from './cta-wrapper';
 import InvalidCredentialsWarning from './invalid-credentials-warning';

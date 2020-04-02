@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { createAddToFilter } from 'GoogleUtil/helpers';
 
 /**
  * WordPress dependencies
@@ -29,6 +28,7 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import { createAddToFilter } from '../../util/helpers';
 import DashboardSpeed from './dashboard/dashboard-widget-speed';
 import PageSpeedInsightsDashboardWidgetHomepageSpeed from './dashboard/dashboard-widget-homepage-speed';
 import PageSpeedInsightsCTA from './dashboard/dashboard-cta';

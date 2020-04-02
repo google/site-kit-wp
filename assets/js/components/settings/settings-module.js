@@ -20,14 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import SvgIcon from 'GoogleUtil/svg-icon';
-import {
-	activateOrDeactivateModule,
-	refreshAuthentication,
-	getReAuthURL,
-	moduleIcon,
-	showErrorNotification,
-} from 'GoogleUtil';
 import { filter, map } from 'lodash';
 import classnames from 'classnames';
 
@@ -42,6 +34,14 @@ import { applyFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import SvgIcon from '../../util/svg-icon';
+import {
+	activateOrDeactivateModule,
+	refreshAuthentication,
+	getReAuthURL,
+	moduleIcon,
+	showErrorNotification,
+} from '../../util';
 import Link from '../../components/link';
 import Button from '../../components/button';
 import data, { TYPE_MODULES } from '../../components/data';

@@ -19,6 +19,11 @@
 /**
  * External dependencies
  */
+import md5 from 'md5';
+
+/**
+ * Internal dependencies
+ */
 import {
 	getTimeInSeconds,
 	changeToPercent,
@@ -41,12 +46,7 @@ import {
 	activateOrDeactivateModule,
 	toggleConfirmModuleSettings,
 	showErrorNotification,
-} from 'GoogleUtil';
-import md5 from 'md5';
-
-/**
- * Internal dependencies
- */
+} from './util';
 import data from './components/data';
 
 const { setCache, getCache, deleteCache, invalidateCacheGroup, getCacheKey } = data;

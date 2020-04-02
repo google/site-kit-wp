@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
 import { map } from 'lodash';
 
 /**
@@ -31,6 +30,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { getTimeInSeconds, numberFormat } from '../../../util';
 import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../util';
 import withData from '../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../components/data';

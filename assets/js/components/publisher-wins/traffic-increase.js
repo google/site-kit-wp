@@ -17,15 +17,15 @@
  */
 
 /**
- * External dependencies
- */
-import { getTimeInSeconds, readableLargeNumber } from 'GoogleUtil';
-import { calculateOverviewData } from 'GoogleModules/analytics/util';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+
+/**
+ * External dependencies
+ */
+import { getTimeInSeconds, readableLargeNumber } from '../../util';
+import { calculateOverviewData } from 'GoogleModules/analytics/util';
 
 const trafficIncrease = ( data, id ) => {
 	if ( ! global.googlesitekit.modules.analytics || ! global.googlesitekit.modules.analytics.active ) {

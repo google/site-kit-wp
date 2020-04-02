@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { clearWebStorage, loadTranslations } from 'GoogleUtil';
-
-/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
@@ -31,6 +26,7 @@ import { doAction } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import { clearWebStorage, loadTranslations } from './util';
 import ErrorHandler from './components/ErrorHandler';
 import 'GoogleModules';
 import Setup from './components/setup/setup-wrapper';

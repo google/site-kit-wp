@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { trackEvent } from 'GoogleUtil';
 import { delay } from 'lodash';
 
 /**
@@ -31,13 +30,13 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { trackEvent, getSiteKitAdminURL } from '../../util';
 import Header from '../header';
 import Button from '../button';
 import ResetButton from '../reset-button';
 import Layout from '../layout/layout';
 import Notification from '../notifications/notification';
 import OptIn from '../optin';
-import { getSiteKitAdminURL } from '../../util';
 import CompatibilityChecks from './compatibility-checks';
 
 class SetupUsingProxy extends Component {

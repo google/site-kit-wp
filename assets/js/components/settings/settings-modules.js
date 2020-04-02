@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { clearWebStorage } from 'GoogleUtil/index';
 import { map, filter, sortBy } from 'lodash';
 
 /**
@@ -32,6 +31,7 @@ import { applyFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import { clearWebStorage } from '../../util/index';
 import Layout from '../layout/layout';
 import Notification from '../notifications/notification';
 import SettingsModule from './settings-module';

@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { parse as pslParse } from 'psl';
-import { trackEvent, getReAuthURL, getSiteKitAdminURL } from 'GoogleUtil';
 import { each, find, filter } from 'lodash';
 
 /**
@@ -31,6 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { trackEvent, getReAuthURL, getSiteKitAdminURL } from '../../../util';
 import { analyticsAdsenseReportDataDefaults } from '../../analytics/util';
 import data, { TYPE_MODULES } from '../../../components/data';
 

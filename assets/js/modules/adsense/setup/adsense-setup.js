@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
-
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
@@ -30,6 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import data, { TYPE_MODULES } from '../../../components/data';
 import AdSenseSetupAuthFlowWidget from './setup-auth-flow-widget';
 import Spinner from '../../../components/spinner';
 

@@ -19,11 +19,6 @@
 /**
  * External dependencies
  */
-import {
-	getTimeInSeconds,
-	prepareSecondsForDisplay,
-	readableLargeNumber,
-} from 'GoogleUtil';
 import PropTypes from 'prop-types';
 
 /**
@@ -35,6 +30,11 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import {
+	getTimeInSeconds,
+	prepareSecondsForDisplay,
+	readableLargeNumber,
+} from '../../../util';
 import DataBlock from '../../../components/data-block';
 import withData from '../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../components/data';

@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import ErrorHandler from '../ErrorHandler';
-import { trackEvent } from 'GoogleUtil';
+import { trackEvent } from '../../util';
 import { ActivationMain } from './activation-main';
 import NotificationCounter from '../notifications/notification-counter';
 

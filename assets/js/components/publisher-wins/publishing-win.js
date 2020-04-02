@@ -17,15 +17,15 @@
  */
 
 /**
- * External dependencies
- */
-import { extractSearchConsoleDashboardData } from 'GoogleModules/search-console/dashboard/util';
-import { readableLargeNumber } from 'GoogleUtil';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { extractSearchConsoleDashboardData } from 'GoogleModules/search-console/dashboard/util';
+import { readableLargeNumber } from '../../util';
 
 const publishingWin = ( data, id ) => {
 	const showNotification = 5 === parseInt( global.googlesitekit.admin.newSitePosts, 10 );

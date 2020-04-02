@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { getTimeInSeconds } from 'GoogleUtil';
 import { get } from 'lodash';
 
 /**
@@ -31,6 +30,7 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { getTimeInSeconds } from '../../../util';
 import withData from '../../../components/higherorder/withdata';
 import getDataErrorComponent from '../../../components/notifications/data-error';
 import { TYPE_MODULES } from '../../../components/data';

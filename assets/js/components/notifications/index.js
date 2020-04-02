@@ -19,8 +19,6 @@
 /**
  * External dependencies
  */
-import { createAddToFilter } from 'GoogleUtil/helpers';
-import { getQueryParameter } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -30,6 +28,8 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import { createAddToFilter } from '../../util/helpers';
+import { getQueryParameter } from '../../util';
 import DashboardCoreSiteAlerts from './dashboard-core-site-alerts';
 import DashboardSetupAlerts from './dashboard-setup-alerts';
 import DashboardModulesAlerts from './dashboard-modules-alerts';

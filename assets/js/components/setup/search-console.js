@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { trackEvent } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -31,6 +30,7 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { trackEvent } from '../../util';
 import data, { TYPE_MODULES } from '../../components/data';
 import ProgressBar from '../../components/progress-bar';
 import HelpLink from '../../components/help-link';

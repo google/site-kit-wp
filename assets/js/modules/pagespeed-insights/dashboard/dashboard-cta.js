@@ -1,13 +1,4 @@
 /**
- * External dependencies
- */
-import {
-	activateOrDeactivateModule,
-	getReAuthURL,
-	showErrorNotification,
-} from 'GoogleUtil';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -15,6 +6,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	activateOrDeactivateModule,
+	getReAuthURL,
+	showErrorNotification,
+} from '../../../util';
 import CTA from '../../../components/notifications/cta';
 import data from '../../../components/data';
 import GenericError from '../../../components/notifications/generic-error';

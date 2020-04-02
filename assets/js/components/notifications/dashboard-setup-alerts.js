@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { getQueryParameter } from 'GoogleUtil';
-
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
@@ -31,6 +26,7 @@ import { applyFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import { getQueryParameter } from '../../util';
 import Notification from './notification';
 import ModulesList from '../modules-list';
 

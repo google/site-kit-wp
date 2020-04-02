@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { decodeHtmlEntity, getTimeInSeconds } from 'GoogleUtil';
-
-/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
@@ -30,6 +25,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { decodeHtmlEntity, getTimeInSeconds } from '../../../util';
 import withData from '../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../components/data';
 import GoogleChart from '../../../components/google-chart.js';

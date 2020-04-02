@@ -19,12 +19,6 @@
 /**
  * External dependencies
  */
-import {
-	getTimeInSeconds,
-	readableLargeNumber,
-	extractForSparkline,
-	getSiteKitAdminURL,
-} from 'GoogleUtil';
 import { isEmpty } from 'lodash';
 
 /**
@@ -36,6 +30,12 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import {
+	getTimeInSeconds,
+	readableLargeNumber,
+	extractForSparkline,
+	getSiteKitAdminURL,
+} from '../../../util';
 import {
 	calculateOverviewData,
 	extractAnalyticsDashboardSparklineData,

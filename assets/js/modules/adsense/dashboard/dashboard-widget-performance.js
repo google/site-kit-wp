@@ -19,10 +19,6 @@
 /**
  * External dependencies
  */
-import {
-	getTimeInSeconds,
-	readableLargeNumber,
-} from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -34,6 +30,10 @@ import { isUndefined } from 'lodash';
 /**
  * Internal dependencies
  */
+import {
+	getTimeInSeconds,
+	readableLargeNumber,
+} from '../../../util';
 import { TYPE_MODULES } from '../../../components/data';
 import DataBlock from '../../../components/data-block.js';
 import PreviewBlock from '../../../components/preview-block';

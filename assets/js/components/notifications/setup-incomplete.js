@@ -18,11 +18,6 @@
  */
 
 /**
- * External dependencies
- */
-import { getReAuthURL } from 'GoogleUtil';
-
-/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
@@ -30,6 +25,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { getReAuthURL } from '../../util';
 import CTA from './cta';
 import ctaWrapper from './cta-wrapper';
 

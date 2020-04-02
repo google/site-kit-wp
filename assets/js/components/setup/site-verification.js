@@ -20,10 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import {
-	validateJSON,
-	trackEvent,
-} from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -34,6 +30,10 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import {
+	validateJSON,
+	trackEvent,
+} from '../../util';
 import { TextField, Input } from '../../material-components';
 import data, { TYPE_MODULES } from '../data';
 import Button from '../button';

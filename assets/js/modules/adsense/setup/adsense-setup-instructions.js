@@ -19,9 +19,7 @@
 /**
  * External dependencies
  */
-import SvgIcon from 'GoogleUtil/svg-icon';
 import { Fragment } from 'react';
-import { trackEvent } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -32,6 +30,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import SvgIcon from '../../../util/svg-icon';
+import { trackEvent } from '../../../util';
 import AdSenseSettings from '../settings/adsense-settings';
 import data, { TYPE_MODULES } from '../../../components/data';
 import Spinner from '../../../components/spinner';

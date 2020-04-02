@@ -21,12 +21,6 @@
 /**
  * External dependencies
  */
-import {
-	decodeHtmlEntity,
-	getSiteKitAdminURL,
-	loadTranslations,
-	trackEvent,
-} from 'GoogleUtil';
 import 'GoogleModules';
 
 /**
@@ -39,6 +33,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies.
  */
+import {
+	decodeHtmlEntity,
+	getSiteKitAdminURL,
+	loadTranslations,
+	trackEvent,
+} from './util';
 import Link from './components/link';
 import AdminbarModules from './components/adminbar/adminbar-modules';
 import ErrorHandler from './components/ErrorHandler';

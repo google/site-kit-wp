@@ -19,10 +19,6 @@
 /**
  * External dependencies
  */
-import {
-	getTimeInSeconds,
-	readableLargeNumber,
-} from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -33,6 +29,10 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import {
+	getTimeInSeconds,
+	readableLargeNumber,
+} from '../../../util';
 import DataBlock from '../../../components/data-block';
 import withData from '../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../components/data';

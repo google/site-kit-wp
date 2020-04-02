@@ -17,13 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import {
-	getTimeInSeconds,
-} from 'GoogleUtil';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -32,6 +25,9 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import {
+	getTimeInSeconds,
+} from '../../../util';
 import GoogleChart from '../../../components/google-chart';
 import withData from '../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../components/data';

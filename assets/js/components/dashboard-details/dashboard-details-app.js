@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { decodeHtmlEntity } from 'GoogleUtil';
-
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
@@ -30,6 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { decodeHtmlEntity } from '../../util';
 import Header from '../header';
 import Link from '../link';
 import PageHeader from '../page-header';

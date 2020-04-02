@@ -20,12 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import SvgIcon from 'GoogleUtil/svg-icon';
-import {
-	trackEvent,
-	getExistingTag,
-	toggleConfirmModuleSettings,
-} from 'GoogleUtil';
 import classnames from 'classnames';
 
 /**
@@ -34,6 +28,16 @@ import classnames from 'classnames';
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 import { addFilter, removeFilter } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import {
+	trackEvent,
+	getExistingTag,
+	toggleConfirmModuleSettings,
+} from '../../util';
+import SvgIcon from '../../util/svg-icon';
 
 const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
 

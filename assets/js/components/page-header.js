@@ -20,7 +20,6 @@
  */
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import SvgIcon from 'GoogleUtil/svg-icon';
 
 /**
  * WordPress dependencies
@@ -31,6 +30,7 @@ import { applyFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import SvgIcon from '../util/svg-icon';
 import DateRangeSelector from './date-range-selector';
 
 class PageHeader extends Component {

@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { getSiteKitAdminURL, getTimeInSeconds } from 'GoogleUtil';
 import PropTypes from 'prop-types';
 
 /**
@@ -31,6 +30,7 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { getSiteKitAdminURL, getTimeInSeconds } from '../../../util';
 import GoogleChart from '../../../components/google-chart';
 import withData from '../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../components/data';

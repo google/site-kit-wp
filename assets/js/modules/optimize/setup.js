@@ -19,13 +19,7 @@
 /**
  * External dependencies
  */
-import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
-import {
-	validateJSON,
-	validateOptimizeID,
-	toggleConfirmModuleSettings,
-} from 'GoogleUtil';
 import classnames from 'classnames';
 
 /**
@@ -38,6 +32,12 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import {
+	validateJSON,
+	validateOptimizeID,
+	toggleConfirmModuleSettings,
+} from '../../util';
+import SvgIcon from '../../util/svg-icon';
 import Button from '../../components/button';
 import Link from '../../components/link';
 import data, { TYPE_MODULES } from '../../components/data';

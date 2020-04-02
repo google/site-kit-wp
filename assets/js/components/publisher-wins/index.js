@@ -17,21 +17,18 @@
  */
 
 /**
- * External dependencies
- */
-import { getTimeInSeconds, getQueryParameter } from 'GoogleUtil';
-/**
- * Internal dependencies
- */
-import { overviewReportDataDefaults } from '../../modules/analytics/util';
-import { TYPE_MODULES } from '../data';
-import * as publisherWinCallbacks from './callbacks';
-
-/**
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
 const notification = getQueryParameter( 'notification' );
+
+/**
+ * Internal dependencies
+ */
+import { getTimeInSeconds, getQueryParameter } from '../../util';
+import { overviewReportDataDefaults } from '../../modules/analytics/util';
+import { TYPE_MODULES } from '../data';
+import * as publisherWinCallbacks from './callbacks';
 
 if ( 'authentication_success' !== notification && 'authentication_failure' !== notification ) {
 	addFilter( 'googlesitekit.winCallbacks',

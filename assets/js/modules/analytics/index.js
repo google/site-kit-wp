@@ -19,11 +19,11 @@
 /**
  * External dependencies
  */
-import { fillFilterWithComponent, getSiteKitAdminURL } from 'GoogleUtil';
-import { createAddToFilter } from 'GoogleUtil/helpers';
 /**
  * Internal dependencies
  */
+import { fillFilterWithComponent, getSiteKitAdminURL } from '../../util';
+import { createAddToFilter } from '../../util/helpers';
 import AnalyticsDashboardWidget from './dashboard/dashboard-widget';
 import AnalyticsAdminbarWidget from './adminbar/adminbar-widget';
 import AnalyticsAllTraffic from './dashboard/dashboard-widget-all-traffic';

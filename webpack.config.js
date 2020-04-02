@@ -75,7 +75,6 @@ const resolve = {
 	alias: {
 		'@wordpress/api-fetch__non-shim': require.resolve( '@wordpress/api-fetch' ),
 		'@wordpress/api-fetch$': path.resolve( 'assets/js/api-fetch-shim.js' ),
-		GoogleUtil: path.resolve( 'assets/js/util/' ),
 		GoogleModules: path.resolve( './assets/js/modules/' ),
 	},
 	modules: [ projectPath( '.' ), 'node_modules' ],

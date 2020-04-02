@@ -38,7 +38,7 @@ import {
 	readableLargeNumber,
 	extractForSparkline,
 	getSiteKitAdminURL,
-} from 'GoogleUtil';
+} from '../../../util';
 import DataBlock from '../../../components/data-block';
 import Sparkline from '../../../components/sparkline';
 

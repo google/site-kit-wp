@@ -17,13 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import {
-	getSiteKitAdminURL,
-} from 'GoogleUtil';
-
-/**
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
@@ -32,6 +25,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	getSiteKitAdminURL,
+} from '../../../util';
 import Link from '../../../components/link';
 
 class AdSenseSettingsStatus extends Component {

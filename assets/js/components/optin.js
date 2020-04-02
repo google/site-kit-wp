@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { getMetaKeyForUserOption } from 'GoogleUtil';
 import classnames from 'classnames';
 /**
  * WordPress dependencies
@@ -32,13 +31,13 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { getMetaKeyForUserOption, sanitizeHTML } from '../util';
 import Checkbox from './checkbox';
 import {
 	isTrackingEnabled,
 	toggleTracking,
 	trackEvent,
 } from '../util/tracking';
-import { sanitizeHTML } from '../util';
 
 class OptIn extends Component {
 	constructor( props ) {

@@ -20,9 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import {
-	trackEvent,
-} from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -33,6 +30,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { trackEvent } from '../../util';
 import Button from '../button';
 import Link from '../link';
 import OptIn from '../optin';

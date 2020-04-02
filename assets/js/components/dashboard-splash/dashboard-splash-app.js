@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import DashboardSplashMain from './dashboard-splash-main';
 import DashboardSplashNotifications from './dashboard-splash-notifications';
 import ProgressBar from '../progress-bar';
-import { trackEvent } from 'GoogleUtil';
+import { trackEvent } from '../../util';
 import '../publisher-wins';
 
 const AUTHENTICATION = 1;

@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { getTimeInSeconds } from 'GoogleUtil';
 import { map } from 'lodash';
 
 /**
@@ -31,6 +30,7 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { getTimeInSeconds } from '../../../util';
 import withData from '../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../components/data-table';

@@ -20,13 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import {
-	activateOrDeactivateModule,
-	refreshAuthentication,
-	getReAuthURL,
-	showErrorNotification,
-	moduleIcon,
-} from 'GoogleUtil';
 import classnames from 'classnames';
 
 /**
@@ -39,6 +32,13 @@ import { applyFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import {
+	activateOrDeactivateModule,
+	refreshAuthentication,
+	getReAuthURL,
+	showErrorNotification,
+	moduleIcon,
+} from '../util';
 import data from '../components/data';
 import Spinner from '../components/spinner';
 import Link from '../components/link';

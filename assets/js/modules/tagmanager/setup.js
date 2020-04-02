@@ -19,9 +19,7 @@
 /**
  * External dependencies
  */
-import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
-import { getExistingTag, toggleConfirmModuleSettings } from 'GoogleUtil';
 import { get } from 'lodash';
 import classnames from 'classnames';
 
@@ -35,6 +33,8 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import SvgIcon from '../../util/svg-icon';
+import { getExistingTag, toggleConfirmModuleSettings } from '../../util';
 import {
 	getContainers,
 	isValidAccountID,
