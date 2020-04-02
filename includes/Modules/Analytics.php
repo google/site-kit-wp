@@ -424,7 +424,7 @@ final class Analytics extends Module
 
 		$gtag_amp_opt_filtered['vars']['gtag_id'] = $tracking_id;
 		?>
-		<amp-analytics type="gtag" data-this->credentials="include">
+		<amp-analytics type="gtag" data-credentials="include">
 			<script type="application/json">
 				<?php echo wp_json_encode( $gtag_amp_opt_filtered ); ?>
 			</script>
