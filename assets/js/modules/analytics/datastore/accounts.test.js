@@ -81,6 +81,7 @@ describe( 'modules/analytics accounts', () => {
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toStrictEqual( undefined );
 				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toStrictEqual( undefined );
 				expect( registry.select( STORE_NAME ).getProfileID() ).toStrictEqual( undefined );
+				muteConsole( 'error' ); // getAccounts() will trigger a request again.
 				expect( registry.select( STORE_NAME ).getAccounts() ).toStrictEqual( undefined );
 				// Other settings are left untouched.
 				expect( registry.select( STORE_NAME ).getUseSnippet() ).toStrictEqual( true );
