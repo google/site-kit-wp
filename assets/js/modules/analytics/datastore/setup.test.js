@@ -26,9 +26,7 @@ import apiFetch from '@wordpress/api-fetch';
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME } from '.';
-import { ACCOUNT_CREATE } from './accounts';
-import { PROPERTY_CREATE } from './properties';
-import { PROFILE_CREATE } from './profiles';
+import { ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from '../datastore/constants';
 import * as fixtures from './__fixtures__';
 import {
 	createTestRegistry,

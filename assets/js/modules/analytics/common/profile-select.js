@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, Option } from '../../../material-components';
 import { STORE_NAME } from '../datastore';
-import { PROFILE_CREATE } from '../datastore/profiles';
+import { PROFILE_CREATE } from '../datastore/constants';
 import { isValidPropertyID, isValidAccountID } from '../util';
 
 export default function ProfileSelect() {

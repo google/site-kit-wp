@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, Option } from '../../../material-components';
 import { STORE_NAME } from '../datastore';
-import { ACCOUNT_CREATE } from '../datastore/accounts';
+import { ACCOUNT_CREATE } from '../datastore/constants';
 
 export default function AccountSelect() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];

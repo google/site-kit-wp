@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, Option } from '../../../material-components';
 import { STORE_NAME } from '../datastore';
-import { PROPERTY_CREATE } from '../datastore/properties';
+import { PROPERTY_CREATE } from '../datastore/constants';
 import { isValidAccountID } from '../util';
 
 export default function PropertySelect() {

@@ -26,7 +26,7 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import { STORE_NAME } from '../datastore';
-import { ACCOUNT_CREATE } from '../datastore/accounts';
+import { ACCOUNT_CREATE } from '../datastore/constants';
 import SettingsForm from './settings-form';
 import {
 	AccountCreate,

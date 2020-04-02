@@ -27,8 +27,7 @@ import {
 	isValidPropertySelection,
 	isValidProfileSelection,
 } from '../util';
-import { PROPERTY_CREATE } from './properties';
-import { PROFILE_CREATE } from './profiles';
+import { PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 

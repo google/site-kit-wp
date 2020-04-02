@@ -19,9 +19,7 @@
 /**
  * Internal dependencies
  */
-import { ACCOUNT_CREATE } from '../datastore/accounts';
-import { PROPERTY_CREATE } from '../datastore/properties';
-import { PROFILE_CREATE } from '../datastore/profiles';
+import { ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from '../datastore/constants';
 
 /**
  * Checks the given value to see if it is a positive integer.

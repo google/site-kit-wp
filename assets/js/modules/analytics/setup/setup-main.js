@@ -28,7 +28,7 @@ import { _x } from '@wordpress/i18n';
 import SetupForm from './setup-form';
 import { SvgIcon } from '../../../util';
 import { STORE_NAME } from '../datastore';
-import { ACCOUNT_CREATE } from '../datastore/accounts';
+import { ACCOUNT_CREATE } from '../datastore/constants';
 import {
 	AccountCreate,
 	ExistingTagError,
