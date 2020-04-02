@@ -20,13 +20,12 @@
  */
 import DashboardAuthAlert from 'GoogleComponents/notifications/dashboard-auth-alert';
 import DashboardPermissionAlert from 'GoogleComponents/notifications/dashboard-permission-alert';
-import md5 from 'md5';
 import {
 	getStorage,
 	getCurrentDateRangeSlug,
 	fillFilterWithComponent,
 	getQueryParameter,
-	sortObjectProperties,
+	stringifyObject,
 } from 'SiteKitCore/util';
 import { cloneDeep, each, intersection, isEqual, sortBy } from 'lodash';
 
@@ -493,7 +492,7 @@ const dataAPI = {
 		}
 
 		if ( 3 === key.length && data && 'object' === typeof data && Object.keys( data ).length ) {
-			key.push( md5( JSON.stringify( sortObjectProperties( data ) ) ) );
+			key.push( stringifyObject( data ) );
 		}
 
 		return key.join( '::' );
