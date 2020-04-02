@@ -29,7 +29,7 @@ if ( typeof global.googlesitekit === 'undefined' ) {
 
 if ( typeof global.googlesitekit.modules === 'undefined' ) {
 	global.googlesitekit.modules = Modules;
-} else { // TODO: Remove this once the old googlesitekit.modules has been faded out.
+} else { // TODO: Remove this once the old googlesitekit.modules has been phased out.
 	global.googlesitekit.modules = {
 		...global.googlesitekit.modules,
 		...Modules,
