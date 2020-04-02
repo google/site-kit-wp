@@ -52,6 +52,11 @@ describe( 'modules/analytics setup', () => {
 		propertyID: 'UA-12345-1',
 		permission: true,
 	};
+	const error = {
+		code: 'internal_error',
+		message: 'Something wrong happened.',
+		data: { status: 500 },
+	};
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -113,11 +118,6 @@ describe( 'modules/analytics setup', () => {
 					accountID: '12345',
 					propertyID: PROPERTY_CREATE,
 				} );
-				const error = {
-					code: 'internal_error',
-					message: 'Something wrong happened.',
-					data: { status: 500 },
-				};
 
 				fetch
 					.doMockOnceIf(
@@ -177,6 +177,38 @@ describe( 'modules/analytics setup', () => {
 				} );
 
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( createdProfile.id );
+			} );
+
+			it( 'handles an error if set while creating a profile', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {
+					...validSettings,
+					accountID: '12345',
+					propertyID: 'UA-12345-1',
+					profileID: PROFILE_CREATE,
+				} );
+
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/
+					)
+					.mockResponseOnce(
+						JSON.stringify( error ),
+						{ status: 500 }
+					);
+
+				registry.dispatch( STORE_NAME ).submitChanges();
+
+				await subscribeUntil(
+					registry,
+					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
+				);
+
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject( {
+					accountID: '12345',
+				} );
+
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( PROFILE_CREATE );
+				expect( registry.select( STORE_NAME ).getError() ).toEqual( error );
 			} );
 
 			it( 'dispatches both createProperty and createProfile when selected', async () => {
