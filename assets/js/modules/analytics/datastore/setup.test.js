@@ -107,6 +107,42 @@ describe( 'modules/analytics setup', () => {
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( createdProperty.id );
 			} );
 
+			it( 'handles an error if set while creating a property', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {
+					...validSettings,
+					accountID: '12345',
+					propertyID: PROPERTY_CREATE,
+				} );
+				const error = {
+					code: 'internal_error',
+					message: 'Something wrong happened.',
+					data: { status: 500 },
+				};
+
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/
+					)
+					.mockResponseOnce(
+						JSON.stringify( error ),
+						{ status: 500 }
+					);
+
+				registry.dispatch( STORE_NAME ).submitChanges();
+
+				await subscribeUntil(
+					registry,
+					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
+				);
+
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject( {
+					accountID: '12345',
+				} );
+
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( PROPERTY_CREATE );
+				expect( registry.select( STORE_NAME ).getError() ).toEqual( error );
+			} );
+
 			it( 'dispatches createProfile if the "set up a new profile" option is chosen', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( {
 					...validSettings,

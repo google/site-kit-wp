@@ -52,10 +52,12 @@ export const actions = {
 		if ( propertyID === PROPERTY_CREATE ) {
 			const accountID = registry.select( STORE_NAME ).getAccountID();
 
-			try {
-				const { payload: { property: newProperty } } = yield actions.submitPropertyCreate( accountID );
-				propertyID = newProperty.id;
-			} catch ( error ) {
+			const { payload } = yield actions.submitPropertyCreate( accountID );
+			const { property, error } = payload;
+
+			if ( property ) {
+				propertyID = property.id;
+			} else if ( error ) {
 				return actions.submitChangesFailed( { error } );
 			}
 		}
@@ -108,7 +110,7 @@ export const controls = {
 	} ),
 };
 
-export const reducer = ( state, { type } ) => {
+export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case SUBMIT_CHANGES_START: {
 			return {
@@ -120,6 +122,14 @@ export const reducer = ( state, { type } ) => {
 		case SUBMIT_CHANGES_COMPLETED: {
 			return {
 				...state,
+				isDoingSubmitChanges: false,
+			};
+		}
+
+		case SUBMIT_CHANGES_FAILED: {
+			return {
+				...state,
+				error: payload.error,
 				isDoingSubmitChanges: false,
 			};
 		}
