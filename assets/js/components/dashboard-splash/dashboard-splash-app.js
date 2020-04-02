@@ -28,8 +28,8 @@ import { __ } from '@wordpress/i18n';
 import DashboardSplashMain from './dashboard-splash-main';
 import DashboardSplashNotifications from './dashboard-splash-notifications';
 import ProgressBar from '../progress-bar';
+import { trackEvent } from 'GoogleUtil';
 import '../publisher-wins';
-import { trackEvent } from '../../util/tracking';
 
 const AUTHENTICATION = 1;
 const SETUP = 2;
