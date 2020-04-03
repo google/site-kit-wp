@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { useEffect } from '@wordpress/element';
+import { addFilter, removeFilter } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -32,7 +33,7 @@ import {
 	AccountCreate,
 	ExistingTagError,
 } from '../common';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SettingsEdit() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
@@ -50,6 +51,27 @@ export default function SettingsEdit() {
 			confirm.disabled = ! canSubmitChanges;
 		}
 	}, [ canSubmitChanges ] );
+
+	const { submitChanges } = useDispatch( STORE_NAME );
+	useEffect( () => {
+		addFilter(
+			'googlekit.SettingsConfirmed',
+			'googlekit.AnalyticsSettingsConfirmed',
+			( chain, module ) => {
+				if ( 'analytics-module' === module ) {
+					return submitChanges();
+				}
+				return chain;
+			}
+		);
+
+		return () => {
+			removeFilter(
+				'googlekit.SettingsConfirmed',
+				'googlekit.AnalyticsSettingsConfirmed',
+			);
+		};
+	} );
 
 	const ViewComponent = ( () => {
 		switch ( true ) {
