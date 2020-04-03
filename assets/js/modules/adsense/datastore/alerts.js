@@ -154,7 +154,7 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getAlerts( accountID ) {
-		if ( ! isValidAccountID( accountID ) ) {
+		if ( 'undefined' === typeof accountID || ! isValidAccountID( accountID ) ) {
 			return undefined;
 		}
 		try {
@@ -191,7 +191,9 @@ export const selectors = {
 	 * @return {?Array.<Object>} An array of AdSense alerts; `undefined` if not loaded.
 	 */
 	getAlerts( state, accountID ) {
-		invariant( accountID, 'accountID is required.' );
+		if ( 'undefined' === typeof accountID ) {
+			return undefined;
+		}
 
 		const { alerts } = state;
 

@@ -213,6 +213,10 @@ export const resolvers = {
 	},
 
 	*getTagPermission( clientID ) {
+		if ( 'undefined' === typeof clientID ) {
+			return undefined;
+		}
+
 		try {
 			const response = yield actions.fetchTagPermission( { clientID } );
 
@@ -303,7 +307,9 @@ export const selectors = {
 	 * @return {?Object} Object with string `accountID` and boolean `permission` properties; `undefined` if not loaded.
 	 */
 	getTagPermission( state, clientID ) {
-		invariant( clientID, 'clientID is required.' );
+		if ( 'undefined' === typeof clientID ) {
+			return undefined;
+		}
 
 		const { tagPermissions } = state;
 

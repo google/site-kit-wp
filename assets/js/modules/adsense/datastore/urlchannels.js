@@ -148,6 +148,10 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getURLChannels( accountID, clientID ) {
+		if ( 'undefined' === typeof accountID || 'undefined' === typeof clientID ) {
+			return undefined;
+		}
+
 		try {
 			const registry = yield Data.commonActions.getRegistry();
 
@@ -184,8 +188,9 @@ export const selectors = {
 	 * @return {?Array.<Object>} An array of AdSense URL channels; `undefined` if not loaded.
 	 */
 	getURLChannels( state, accountID, clientID ) {
-		invariant( accountID, 'accountID is required.' );
-		invariant( clientID, 'clientID is required.' );
+		if ( 'undefined' === typeof accountID || 'undefined' === typeof clientID ) {
+			return undefined;
+		}
 
 		const { urlchannels } = state;
 
