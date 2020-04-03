@@ -122,8 +122,7 @@ describe( 'modules/analytics accounts', () => {
 				const propertyID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 
 				const initialAccounts = registry.select( STORE_NAME ).getAccounts();
-				// The connection info will be its initial value while the connection
-				// info is fetched.
+
 				expect( initialAccounts ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
