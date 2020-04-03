@@ -186,11 +186,10 @@ export const resolvers = {
 			const accountID = registry.select( STORE_NAME ).getAccountID();
 			if ( matchedProperty && ! accountID ) {
 				yield registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId );
-			}
-
-			const propertyID = registry.select( STORE_NAME ).getPropertyID();
-			if ( matchedProperty && ! propertyID ) {
 				yield registry.dispatch( STORE_NAME ).setPropertyID( matchedProperty.id );
+				yield registry.dispatch( STORE_NAME ).setInternalWebPropertyID( matchedProperty.internalWebPropertyId );
+				const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === matchedProperty.id ) || {};
+				yield registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id || '' );
 			}
 
 			return yield actions.receiveAccountsPropertiesProfilesCompleted();

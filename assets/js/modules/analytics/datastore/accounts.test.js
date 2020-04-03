@@ -240,8 +240,23 @@ describe( 'modules/analytics accounts', () => {
 			} );
 		} );
 
-		it( 'sets accountID, and propertyID in the store, if a matchedProperty is received and values are not set yet', async () => {
-			const { matchedProperty } = fixtures.accountsPropertiesProfiles;
+		it( 'sets account, property, and profile IDs in the store, if a matchedProperty is received and an account is not selected yet', async () => {
+			const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
+			const matchedProfile = {
+				...fixtures.profiles[ 0 ],
+				id: '123456',
+				webPropertyId: matchedProperty.id,
+				accountId: matchedProperty.accountId,
+			};
+			const response = {
+				accounts,
+				properties,
+				profiles: [
+					matchedProfile,
+					...profiles,
+				],
+				matchedProperty,
+			};
 
 			registry.dispatch( STORE_NAME ).setSettings( {} );
 
@@ -250,13 +265,15 @@ describe( 'modules/analytics accounts', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
 				)
 				.mockResponseOnce(
-					JSON.stringify( fixtures.accountsPropertiesProfiles ),
+					JSON.stringify( response ),
 					{ status: 200 }
 				);
 
 			expect( store.getState().matchedProperty ).toBeFalsy();
 			expect( registry.select( STORE_NAME ).getAccountID() ).toBeFalsy();
 			expect( registry.select( STORE_NAME ).getPropertyID() ).toBeFalsy();
+			expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBeFalsy();
+			expect( registry.select( STORE_NAME ).getProfileID() ).toBeFalsy();
 
 			registry.select( STORE_NAME ).getAccounts();
 
@@ -269,6 +286,8 @@ describe( 'modules/analytics accounts', () => {
 			expect( store.getState().matchedProperty ).toMatchObject( matchedProperty );
 			expect( registry.select( STORE_NAME ).getAccountID() ).toBe( matchedProperty.accountId );
 			expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( matchedProperty.id );
+			expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( matchedProperty.internalWebPropertyId );
+			expect( registry.select( STORE_NAME ).getProfileID() ).toBe( matchedProfile.id );
 		} );
 	} );
 } );
