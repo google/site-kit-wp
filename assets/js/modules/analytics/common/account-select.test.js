@@ -37,12 +37,12 @@ apiFetchMock.mockImplementation( ( ...args ) => {
 } );
 
 const setupRegistry = ( registry ) => {
-	registry.dispatch( modulesAnalyticsStoreName ).receiveSettings( {} );
+	registry.dispatch( modulesAnalyticsStoreName ).setSettings( {} );
 	registry.dispatch( modulesAnalyticsStoreName ).receiveAccounts( fixtures.accountsPropertiesProfiles.accounts );
 };
 
 const setupEmptyRegistry = ( registry ) => {
-	registry.dispatch( modulesAnalyticsStoreName ).receiveSettings( {} );
+	registry.dispatch( modulesAnalyticsStoreName ).setSettings( {} );
 	registry.dispatch( modulesAnalyticsStoreName ).receiveAccounts( [] );
 };
 

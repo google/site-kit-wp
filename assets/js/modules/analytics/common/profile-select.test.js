@@ -60,7 +60,7 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
-	dispatch( modulesAnalyticsStoreName ).receiveSettings( {} );
+	dispatch( modulesAnalyticsStoreName ).setSettings( {} );
 	dispatch( modulesAnalyticsStoreName ).receiveProfiles( [] );
 };
 
