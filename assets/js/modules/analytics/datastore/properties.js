@@ -30,6 +30,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './index';
 import { actions as profileActions } from './profiles';
 import { isValidAccountID } from '../util';
+import { PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 
 // Actions
 const FETCH_CREATE_PROPERTY = 'FETCH_CREATE_PROPERTY';
@@ -337,6 +338,15 @@ export const resolvers = {
 
 			if ( matchedProperty ) {
 				yield actions.receiveMatchedProperty( matchedProperty );
+			}
+
+			const propertyID = registry.select( STORE_NAME ).getPropertyID();
+			if ( ! propertyID ) {
+				const property = matchedProperty || properties[ 0 ] || { id: PROPERTY_CREATE };
+				registry.dispatch( STORE_NAME ).setPropertyID( property.id );
+				registry.dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId || '' );
+				const profile = profiles[ 0 ] || { id: PROFILE_CREATE };
+				registry.dispatch( STORE_NAME ).setProfileID( profile.id );
 			}
 
 			return actions.receivePropertiesProfilesCompleted( accountID );
