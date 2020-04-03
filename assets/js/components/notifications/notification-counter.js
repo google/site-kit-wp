@@ -20,7 +20,6 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { getTotalNotifications, incrementCount, decrementCount } from 'GoogleComponents/notifications/util';
 
 /**
  * WordPress dependencies
@@ -28,6 +27,11 @@ import { getTotalNotifications, incrementCount, decrementCount } from 'GoogleCom
 import { Component, createPortal } from '@wordpress/element';
 import { _n, sprintf } from '@wordpress/i18n';
 import { addAction, removeAction } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import { getTotalNotifications, incrementCount, decrementCount } from '../notifications/util';
 
 class NotificationCounter extends Component {
 	constructor( props ) {

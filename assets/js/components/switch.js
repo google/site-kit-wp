@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { MDCSwitch } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
@@ -27,6 +26,11 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { Component, Fragment, createRef } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { MDCSwitch } from '../material-components';
 
 class Switch extends Component {
 	constructor( props ) {

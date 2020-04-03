@@ -2,8 +2,6 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import SettingsModules from 'GoogleComponents/settings/settings-modules';
-import Layout from 'GoogleComponents/layout/layout';
 
 /**
  * WordPress dependencies
@@ -13,10 +11,12 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import SettingsModules from '../assets/js/components/settings/settings-modules';
+import Layout from '../assets/js/components/layout/layout';
 import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-settings-googlesitekit.js';
-import { fillFilterWithComponent } from 'GoogleUtil';
-import AnalyticsSetup from 'GoogleModules/analytics/setup';
-import SearchConsoleSettingStatus from 'GoogleModules/search-console/settings/search-console-settings-status';
+import { fillFilterWithComponent } from '../assets/js/util';
+import AnalyticsSetup from '../assets/js/modules/analytics/setup';
+import SearchConsoleSettingStatus from '../assets/js/modules/search-console/settings/search-console-settings-status';
 import SettingsAdmin from '../assets/js/components/settings/settings-admin';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';

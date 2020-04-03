@@ -28,7 +28,7 @@ import apiFetch from '@wordpress/api-fetch';
 /**
  * Internal dependencies
  */
-import { muteConsole, unexpectedSuccess } from 'test-utils';
+import { muteConsole, unexpectedSuccess } from '../../../../tests/js/test-utils';
 import * as CacheModule from './cache';
 import {
 	createCacheKey,
@@ -585,8 +585,7 @@ describe( 'googlesitekit.api', () => {
 			};
 			expect(
 				// Query params are stored in the key as an MD5-hash of key-sorted
-				// params, eg:
-				// `md5( JSON.stringify( sortObjectProperties( queryParams ) ) )`
+				// params via `stringifyObject( queryParams )`.
 				// We manually set the value here to ensure all the external functions
 				// are working as expected. :-)
 				createCacheKey( 'core', 'search-console', 'users', queryParams )
