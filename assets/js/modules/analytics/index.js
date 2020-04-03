@@ -23,6 +23,7 @@ import Data from 'googlesitekit-data';
 import './datastore';
 import { fillFilterWithComponent } from '../../util';
 import { SetupMain as AnalyticsSetup } from './setup/index';
+import { SettingsMain as AnalyticsSettings } from './settings';
 
 /**
  * WordPress dependencies
@@ -37,8 +38,22 @@ function ConnectedAnalyticsSetup( props ) {
 	);
 }
 
+function ConnectedAnalyticsSettings( props ) {
+	return (
+		<Data.RegistryProvider value={ Data }>
+			<AnalyticsSettings { ...props } />
+		</Data.RegistryProvider>
+	);
+}
+
 addFilter(
 	'googlesitekit.ModuleSetup-analytics',
 	'googlesitekit.AnalyticsModuleSetup',
 	fillFilterWithComponent( ConnectedAnalyticsSetup )
+);
+
+addFilter(
+	'googlesitekit.ModuleSettingsDetails-analytics',
+	'googlesitekit.AnalyticsModuleSettings',
+	fillFilterWithComponent( ConnectedAnalyticsSettings )
 );

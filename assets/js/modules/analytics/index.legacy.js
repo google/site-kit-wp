@@ -24,7 +24,7 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import { fillFilterWithComponent, getSiteKitAdminURL, getModulesData } from '../../util';
+import { getSiteKitAdminURL, getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
 import AnalyticsDashboardWidget from './dashboard/dashboard-widget';
 import AnalyticsAdminbarWidget from './adminbar/adminbar-widget';
@@ -36,7 +36,6 @@ import WPAnalyticsDashboardWidgetTopPagesTable from './wp-dashboard/wp-dashboard
 import AnalyticsAdSenseDashboardWidgetTopPagesTable from './dashboard/dashboard-widget-analytics-adsense-top-pages';
 import AnalyticsDashboardWidgetPopularPagesTable from './dashboard/dashboard-widget-popular-pages-table';
 import AdSenseDashboardWidgetTopPagesTableSmall from './dashboard/dashboard-widget-top-earning-pages-small';
-import AnalyticsSetup from './setup';
 
 const slug = 'analytics';
 
@@ -127,15 +126,6 @@ if ( modulesData.analytics.active ) {
 	addFilter( 'googlesitekit.AnalyticsAdSenseTopPagesTable',
 		'googlesitekit.Analytics',
 		addAnalyticsAdSenseTopPagesWidget, 11 );
-
-	/**
-	 * Add components to the settings page.
-	 */
-	addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
-		'googlesitekit.AnalyticsModuleSettingsDetails',
-		fillFilterWithComponent( AnalyticsSetup, {
-			onSettingsPage: true,
-		} ) );
 
 	addFilter( `googlesitekit.showDateRangeSelector-${ slug }`,
 		'googlesitekit.analyticsShowDateRangeSelector',
