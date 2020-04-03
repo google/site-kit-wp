@@ -392,6 +392,21 @@ export const selectors = {
 
 		return !! isFetchingCreateProperty[ accountID ];
 	},
+
+	/**
+	 * Checks if properties are being fetched for the given account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state     Data store's state.
+	 * @param {string} accountID The Analytics Account ID to check for property creation.
+	 * @return {boolean} `true` if fetching a properties, `false` if not.
+	 */
+	isDoingGetProperties( state, accountID ) {
+		const { isFetchingPropertiesProfiles } = state;
+
+		return !! isFetchingPropertiesProfiles[ accountID ];
+	},
 };
 
 export default {
