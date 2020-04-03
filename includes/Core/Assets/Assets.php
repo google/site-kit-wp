@@ -345,6 +345,12 @@ final class Assets {
 
 		// Register plugin scripts.
 		$assets = array(
+			new Script(
+				'googlesitekit-vendor',
+				array(
+					'src' => $base_url . 'js/googlesitekit-vendor.js',
+				)
+			),
 			new Script_Data(
 				'googlesitekit-commons',
 				array(
@@ -419,12 +425,6 @@ final class Assets {
 				)
 			),
 			// Begin JSR Assets.
-			new Script(
-				'googlesitekit-vendor',
-				array(
-					'src' => $base_url . 'js/googlesitekit-vendor.js',
-				)
-			),
 			new Script(
 				'googlesitekit-api',
 				array(
