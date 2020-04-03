@@ -15,18 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-	useSelect as useSelectHook,
-	useDispatch as useDispatchHook,
-} from '@wordpress/data';
+
+/**
+ * WordPress dependencies
+ */
 import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../datastore';
 import Switch from '../../../components/switch';
+const { useSelect, useDispatch } = Data;
 
-const STORE_NAME = 'modules/analytics'; // temp
-
-export default function UseSnippetSwitch( { useSelect, useDispatch } ) {
+export default function UseSnippetSwitch() {
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 
 	const { setUseSnippet } = useDispatch( STORE_NAME );
@@ -51,13 +55,3 @@ export default function UseSnippetSwitch( { useSelect, useDispatch } ) {
 		</div>
 	);
 }
-
-UseSnippetSwitch.propTypes = {
-	useSelect: PropTypes.func,
-	useDispatch: PropTypes.func,
-};
-
-UseSnippetSwitch.defaultProps = {
-	useSelect: useSelectHook,
-	useDispatch: useDispatchHook,
-};
