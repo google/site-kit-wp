@@ -26,8 +26,8 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Analytics\Settings;
-use Google\Site_Kit\Modules\Analytics\AccountTicket;
-use Google\Site_Kit\Modules\Analytics\Provisioning;
+use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
+use Google\Site_Kit\Modules\Analytics\Proxy_Provisioning;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DateRangeValues;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_Report;
@@ -804,7 +804,7 @@ final class Analytics extends Module
 				$profile->setName( $data['profileName'] );
 				$profile->setTimezone( $data['timezone'] );
 
-				$account_ticket = new AccountTicket();
+				$account_ticket = new Proxy_AccountTicket();
 				$account_ticket->setAccount( $account );
 				$account_ticket->setWebproperty( $property );
 				$account_ticket->setProfile( $profile );
@@ -1201,7 +1201,7 @@ final class Analytics extends Module
 		$analytics_provisioning_service = new Google_Service_Analytics( $client, $google_proxy->url() );
 
 		// Use a custom provisioning method that accepts site id and secret.
-		$custom_provisioning                          = new Provisioning(
+		$custom_provisioning                          = new Proxy_Provisioning(
 			$analytics_provisioning_service,
 			$analytics_provisioning_service->serviceName, // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 			'provisioning',

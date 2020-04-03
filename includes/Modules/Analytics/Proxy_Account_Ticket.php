@@ -1,9 +1,9 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Analytics\Provisioning
+ * Class Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket
  *
  * @package   Google\Site_Kit\Modules\Analytics
- * @copyright 2019 Google LLC
+ * @copyright 2020 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -19,7 +19,7 @@ use Google\Site_Kit_Dependencies\Google_Service_Analytics_AccountTicket;
  * @access private
  * @ignore
  */
-class AccountTicket extends Google_Service_Analytics_AccountTicket {
+class Proxy_AccountTicket extends Google_Service_Analytics_AccountTicket {
 
 	/**
 	 * The site ID.
