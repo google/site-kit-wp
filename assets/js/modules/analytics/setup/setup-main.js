@@ -42,12 +42,13 @@ export default function SetupMain( { finishSetup } ) {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
 	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasTagPermission( existingTag.propertyID, existingTag.accountID ) );
-	const isCreateAccount = ACCOUNT_CREATE === accountID;
 	const isFetchingAccounts = useSelect( ( select ) => select( STORE_NAME ).isFetchingAccounts() );
+	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
+	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
-	const view = ( () => {
+	const viewComponent = ( () => {
 		switch ( true ) {
-			case ( isFetchingAccounts ) :
+			case ( isFetchingAccounts || isDoingSubmitChanges ) :
 				return <ProgressBar />;
 			case ( hasExistingTag && existingTagPermission === false ) :
 				return <ExistingTagError />;
@@ -69,7 +70,7 @@ export default function SetupMain( { finishSetup } ) {
 				{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 			</h2>
 
-			{ view }
+			{ viewComponent }
 		</div>
 	);
 }

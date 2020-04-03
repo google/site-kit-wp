@@ -29,6 +29,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore';
 import { ACCOUNT_CREATE } from '../datastore/constants';
 import SettingsForm from './settings-form';
+import ProgressBar from '../../../components/progress-bar';
 import {
 	AccountCreate,
 	ExistingTagError,
@@ -42,6 +43,8 @@ export default function SettingsEdit() {
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
 	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasTagPermission( existingTag.propertyID, existingTag.accountID ) );
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
+	const isFetchingAccounts = useSelect( ( select ) => select( STORE_NAME ).isFetchingAccounts() );
+	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	// Toggle disabled state of legacy confirm changes button.
@@ -73,20 +76,22 @@ export default function SettingsEdit() {
 		};
 	} );
 
-	const ViewComponent = ( () => {
+	const viewComponent = ( () => {
 		switch ( true ) {
+			case ( isFetchingAccounts || isDoingSubmitChanges ) :
+				return <ProgressBar />;
 			case ( hasExistingTag && existingTagPermission === false ) :
-				return ExistingTagError;
+				return <ExistingTagError />;
 			case ( ! accounts.length || isCreateAccount ) :
-				return AccountCreate;
+				return <AccountCreate />;
 			default:
-				return SettingsForm;
+				return <SettingsForm />;
 		}
 	} )();
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
-			<ViewComponent />
+			{ viewComponent }
 		</div>
 	);
 }
