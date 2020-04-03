@@ -36,7 +36,7 @@ export default function SettingsView() {
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getAnonymizeIP() );
-	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getTrackingDisabled() );
+	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getTrackingDisabled() ) || [];
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 
 	// TODO: use selector once available.
