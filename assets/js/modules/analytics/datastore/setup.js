@@ -26,6 +26,7 @@ import {
 	isValidInternalWebPropertyID,
 	isValidPropertySelection,
 	isValidProfileSelection,
+	isValidPropertyID,
 } from '../util';
 import { PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 
@@ -164,7 +165,8 @@ export const selectors = {
 			case ! isValidAccountID( getAccountID() ) : return false;
 			case ! isValidPropertySelection( getPropertyID() ) : return false;
 			case ! isValidProfileSelection( getProfileID() ) : return false;
-			case ! isValidInternalWebPropertyID( getInternalWebPropertyID() ) : return false;
+			// If the property ID is valid (non-create) the internal ID must be valid as well.
+			case ( isValidPropertyID( getPropertyID() ) && ! isValidInternalWebPropertyID( getInternalWebPropertyID() ) ) : return false;
 			// Do existing tag checks last.
 			case ( hasExistingTag() && ! hasTagPermission( getPropertyID() ) ) : return false;
 		}
