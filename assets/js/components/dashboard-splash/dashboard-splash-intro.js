@@ -19,8 +19,6 @@
 /**
  * External dependencies
  */
-import Button from 'GoogleComponents/button';
-import Logo from 'GoogleComponents/logo';
 import PropTypes from 'prop-types';
 
 /**
@@ -28,6 +26,12 @@ import PropTypes from 'prop-types';
  */
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Button from '../button';
+import Logo from '../logo';
 
 class DashboardSplashIntro extends Component {
 	render() {

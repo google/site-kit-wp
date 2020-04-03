@@ -2,7 +2,11 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import Link from 'GoogleComponents/link';
+
+/**
+ * Internal dependencies
+ */
+import Link from '../assets/js/components/link';
 
 storiesOf( 'Global', module )
 	.add( 'Links', () => {

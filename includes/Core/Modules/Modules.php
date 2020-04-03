@@ -149,6 +149,18 @@ final class Modules {
 			}
 		);
 
+		add_filter(
+			'googlesitekit_assets',
+			function( $assets ) use ( $available_modules ) {
+				foreach ( $available_modules as $module ) {
+					if ( $module instanceof Module_With_Assets ) {
+						$assets = array_merge( $assets, $module->get_assets() );
+					}
+				}
+				return $assets;
+			}
+		);
+
 		$active_modules = $this->get_active_modules();
 		array_walk(
 			$active_modules,
@@ -414,6 +426,23 @@ final class Modules {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Enqueues all module-specific assets.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function enqueue_assets() {
+		$available_modules = $this->get_available_modules();
+		array_walk(
+			$available_modules,
+			function( Module $module ) {
+				if ( $module instanceof Module_With_Assets ) {
+					$module->enqueue_assets();
+				}
+			}
+		);
 	}
 
 	/**

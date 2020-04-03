@@ -1,12 +1,17 @@
 /**
  * External dependencies
  */
+
 import { storiesOf } from '@storybook/react';
-import { Select, Option } from 'SiteKitCore/material-components';
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { Select, Option } from '../assets/js/material-components';
 
 storiesOf( 'Global', module )
 	.add( 'Selects', () => {
