@@ -40,18 +40,16 @@ export default function SettingsEdit() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
 	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasTagPermission( existingTag.propertyID, existingTag.accountID ) );
+	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
-	const settings = useSelect( ( select ) => select( STORE_NAME ).getSettings() );
-	const haveSettingsChanged = useSelect( ( select ) => select( STORE_NAME ).haveSettingsChanged() );
-
+	// Toggle disabled state of legacy confirm changes button.
 	useEffect( () => {
 		const confirm = global.document.getElementById( 'confirm-changes-analytics' );
-		const forceDisable = ( hasExistingTag && existingTagPermission === false ) || ! accounts.length;
 		if ( confirm ) {
-			confirm.disabled = forceDisable || ! haveSettingsChanged;
+			confirm.disabled = ! canSubmitChanges;
 		}
-	}, [ settings, hasExistingTag, existingTagPermission, accounts ] );
+	}, [ canSubmitChanges ] );
 
 	const ViewComponent = ( () => {
 		switch ( true ) {
