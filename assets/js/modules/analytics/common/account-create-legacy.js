@@ -19,19 +19,20 @@
 /**
  * WordPress dependencies
  */
-import { useSelect, useDispatch } from '@wordpress/data';
 import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Button from '../../../components/button';
 import Link from '../../../components/link';
 import ProgressBar from '../../../components/progress-bar';
 import { trackEvent } from '../../../util';
 import { STORE_NAME } from '../datastore';
 import { ACCOUNT_CREATE } from '../datastore/constants';
+const { useSelect, useDispatch } = Data;
 
 export default function AccountCreateLegacy() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];

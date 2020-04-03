@@ -19,17 +19,18 @@
 /**
  * WordPress dependencies
  */
-import { useSelect, useDispatch } from '@wordpress/data';
 import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../material-components';
 import { STORE_NAME } from '../datastore';
 import { PROFILE_CREATE } from '../datastore/constants';
 import { isValidPropertyID, isValidAccountID } from '../util';
+const { useSelect, useDispatch } = Data;
 
 export default function ProfileSelect() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );

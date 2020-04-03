@@ -19,16 +19,17 @@
 /**
  * WordPress dependencies
  */
-import { useSelect, useDispatch } from '@wordpress/data';
 import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../material-components';
 import { STORE_NAME } from '../datastore';
 import { ACCOUNT_CREATE } from '../datastore/constants';
+const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];

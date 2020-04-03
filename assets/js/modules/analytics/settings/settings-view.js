@@ -19,15 +19,16 @@
 /**
  * WordPress dependencies
  */
-import { useSelect } from '@wordpress/data';
 import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore';
 // import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site';
 import { trackingExclusionLabels } from '../common/tracking-exclusion-switches';
+const { useSelect } = Data;
 
 export default function SettingsView() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );

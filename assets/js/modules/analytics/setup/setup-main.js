@@ -19,12 +19,12 @@
 /**
  * WordPress dependencies
  */
-import { useSelect } from '@wordpress/data';
 import { _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import SetupForm from './setup-form';
 import { SvgIcon } from '../../../util';
 import { STORE_NAME } from '../datastore';
@@ -33,6 +33,7 @@ import {
 	AccountCreate,
 	ExistingTagError,
 } from '../common';
+const { useSelect } = Data;
 
 export default function SetupMain() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];

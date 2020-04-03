@@ -19,13 +19,13 @@
 /**
  * WordPress dependencies
  */
-import { useSelect, useDispatch } from '@wordpress/data';
 import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Button from '../../../components/button';
 import { STORE_NAME } from '../datastore';
 import {
@@ -34,6 +34,7 @@ import {
 	ProfileSelect,
 	PropertySelect,
 } from '../common/';
+const { useSelect, useDispatch } = Data;
 
 export default function SetupForm() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];

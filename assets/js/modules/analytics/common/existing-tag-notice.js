@@ -19,13 +19,14 @@
 /**
  * WordPress dependencies
  */
-import { useSelect } from '@wordpress/data';
 import { sprintf, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore';
+const { useSelect } = Data;
 
 export default function ExistingTagNotice() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
