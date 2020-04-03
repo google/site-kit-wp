@@ -17,20 +17,17 @@
  */
 
 /**
- * Internal dependencies
- */
-import DashboardSpeedInner from './dashboard-widget-speed-inner';
-/**
- * External dependencies
- */
-import Layout from 'GoogleComponents/layout/layout';
-import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
-
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Layout from '../../../components/layout/layout';
+import DashboardModuleHeader from '../../../components/dashboard/dashboard-module-header';
+import DashboardSpeedInner from './dashboard-widget-speed-inner';
 
 class DashboardSpeed extends Component {
 	render() {

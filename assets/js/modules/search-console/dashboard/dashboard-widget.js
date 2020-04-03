@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import Header from 'GoogleComponents/header';
 import classnames from 'classnames';
 
 /**
@@ -31,17 +30,18 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Header from '../../../components/header';
 import SearchConsoleDashboardWidgetSiteStats from './dashboard-widget-sitestats';
 import SearchConsoleDashboardWidgetKeywordTable from './dashboard-widget-keyword-table';
 import SearchConsoleDashboardWidgetOverview from './dashboard-widget-overview';
-import PageHeader from 'GoogleComponents/page-header';
-import Layout from 'GoogleComponents/layout/layout';
-import Alert from 'GoogleComponents/alert';
-import ProgressBar from 'GoogleComponents/progress-bar';
-import getNoDataComponent from 'GoogleComponents/notifications/nodata';
-import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
-import { getCurrentDateRange } from 'GoogleUtil';
-import HelpLink from 'GoogleComponents/help-link';
+import PageHeader from '../../../components/page-header';
+import Layout from '../../../components/layout/layout';
+import Alert from '../../../components/alert';
+import ProgressBar from '../../../components/progress-bar';
+import getNoDataComponent from '../../../components/notifications/nodata';
+import getDataErrorComponent from '../../../components/notifications/data-error';
+import { getCurrentDateRange } from '../../../util';
+import HelpLink from '../../../components/help-link';
 
 class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 	constructor( props ) {

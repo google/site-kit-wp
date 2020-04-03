@@ -17,15 +17,15 @@
  */
 
 /**
- * External dependencies
- */
-import GoogleChart from 'GoogleComponents/google-chart';
-import { colors } from 'GoogleComponents/colors';
-
-/**
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import GoogleChart from './google-chart';
+import { colors } from './colors';
 
 class MiniChart extends Component {
 	render() {

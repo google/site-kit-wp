@@ -35,8 +35,8 @@ import {
 	getItem,
 	getKeys,
 	setItem,
-} from 'assets/js/googlesitekit/api/cache';
-import { stringifyObject } from 'assets/js/util';
+} from './cache';
+import { stringifyObject } from '../../util';
 
 // Caching is enabled by default.
 let cachingEnabled = true;

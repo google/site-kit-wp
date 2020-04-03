@@ -19,19 +19,23 @@
 /**
  * External dependencies
  */
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
-import ProgressBar from 'GoogleComponents/progress-bar';
-import { Select, TextField, Input } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
-import Button from 'SiteKitCore/components/button';
-import HelpLink from 'GoogleComponents/help-link';
-import { trackEvent } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
  */
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { trackEvent } from '../../util';
+import data, { TYPE_MODULES } from '../../components/data';
+import ProgressBar from '../../components/progress-bar';
+import HelpLink from '../../components/help-link';
+import { Select, TextField, Input } from '../../material-components';
+import Button from '../../components/button';
 
 class SearchConsole extends Component {
 	constructor( props ) {
