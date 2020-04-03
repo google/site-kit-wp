@@ -20,7 +20,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
-use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
@@ -488,7 +487,7 @@ final class Analytics extends Module
 			'report'                       => 'analyticsreporting',
 			// POST.
 			'settings'                     => '',
-			'create-account-ticket'        => 'analytics',
+			'create-account-ticket'        => 'analyticsprovisioning',
 		);
 	}
 
@@ -792,10 +791,7 @@ final class Analytics extends Module
 					/* translators: %s: Missing parameter name */
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'timezone' ), array( 'status' => 400 ) );
 				}
-				$credentials = new Credentials( new Encrypted_Options( $this->options ) );
-				if ( ! $credentials->has() ) {
-					return new WP_Error( 'missing_credentials', __( 'Missing credentials..', 'google-site-kit' ), array( 'status' => 400 ) );
-				}
+				$credentials = $this->authentication->credentials();
 
 				$account = new Google_Service_Analytics_Account();
 				$account->setName( $data['accountName'] );
@@ -828,13 +824,9 @@ final class Analytics extends Module
 					return $this->exception_to_error( $e, $data->datapoint );
 				}
 				$restore_defer();
-				$account_ticket_id = $account_ticket->getId();
-				if ( empty( $account_ticket_id ) ) {
-					return new WP_Error( 'analytics-provisioning', 'no-account-ticket-id', array( 'status' => 500 ) );
-				}
 
 				// Cache the create ticket id long enough to verify it upon completion of the terms of service.
-				set_transient( $self::ANALYTICS_PROVISIONING_ACCOUNT_TICKET_ID . '::' . get_current_user_id(), $account_ticket_id, 15 * MINUTE_IN_SECONDS );
+				set_transient( $self::ANALYTICS_PROVISIONING_ACCOUNT_TICKET_ID . '::' . get_current_user_id(), $account_ticket->getId(), 15 * MINUTE_IN_SECONDS );
 				return $account_ticket;
 			case 'POST:settings':
 				return function() use ( $data ) {
