@@ -28,7 +28,7 @@ import apiFetch from '@wordpress/api-fetch';
 /**
  * Internal dependencies
  */
-import { muteConsole, unexpectedSuccess } from 'test-utils';
+import { muteConsole, unexpectedSuccess } from '../../../../tests/js/test-utils';
 import * as CacheModule from './cache';
 import {
 	createCacheKey,

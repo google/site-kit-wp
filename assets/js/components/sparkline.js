@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import GoogleChart from 'GoogleComponents/google-chart';
 import PropTypes from 'prop-types';
 
 /**
@@ -27,6 +26,11 @@ import PropTypes from 'prop-types';
  */
 import { withInstanceId } from '@wordpress/compose';
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import GoogleChart from './google-chart';
 
 class Sparkline extends Component {
 	render() {

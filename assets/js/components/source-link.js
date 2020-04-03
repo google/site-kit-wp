@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import Link from 'GoogleComponents/link';
 import classnames from 'classnames';
 
 /**
@@ -28,6 +27,11 @@ import classnames from 'classnames';
  */
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Link from '../components/link';
 
 class SourceLink extends Component {
 	render() {

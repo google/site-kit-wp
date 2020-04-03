@@ -17,12 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
-import Layout from 'GoogleComponents/layout/layout';
-
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
@@ -32,6 +26,8 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import SearchConsoleDashboardWidgetKeywordTable from '../dashboard/dashboard-widget-keyword-table';
+import DashboardModuleHeader from '../../../components/dashboard/dashboard-module-header';
+import Layout from '../../../components/layout/layout';
 
 class DashboardDetailsWidgetKeywordsTable extends Component {
 	render() {

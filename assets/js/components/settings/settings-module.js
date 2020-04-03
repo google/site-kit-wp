@@ -20,24 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import Link from 'GoogleComponents/link';
-import Button from 'GoogleComponents/button';
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
-import SvgIcon from 'GoogleUtil/svg-icon';
-import SetupModule from 'GoogleComponents/setup-module';
-import Dialog from 'GoogleComponents/dialog';
-import ModuleSettingsDetails from 'GoogleComponents/settings/module-settings-details';
-import ModuleSetupIncomplete from 'GoogleComponents/settings/module-setup-incomplete';
-import {
-	activateOrDeactivateModule,
-	refreshAuthentication,
-	getReAuthURL,
-	moduleIcon,
-	showErrorNotification,
-} from 'GoogleUtil';
-import Spinner from 'GoogleComponents/spinner';
-import SettingsOverlay from 'GoogleComponents/settings/settings-overlay';
-import GenericError from 'GoogleComponents/notifications/generic-error';
 import { filter, map } from 'lodash';
 import classnames from 'classnames';
 
@@ -50,13 +32,36 @@ import { __, sprintf } from '@wordpress/i18n';
 import { applyFilters } from '@wordpress/hooks';
 
 /**
+ * Internal dependencies
+ */
+import SvgIcon from '../../util/svg-icon';
+import {
+	activateOrDeactivateModule,
+	refreshAuthentication,
+	getReAuthURL,
+	moduleIcon,
+	showErrorNotification,
+	getModulesData,
+} from '../../util';
+import Link from '../../components/link';
+import Button from '../../components/button';
+import data, { TYPE_MODULES } from '../../components/data';
+import Spinner from '../../components/spinner';
+import SettingsOverlay from '../../components/settings/settings-overlay';
+import GenericError from '../../components/notifications/generic-error';
+import SetupModule from '../../components/setup-module';
+import Dialog from '../../components/dialog';
+import ModuleSettingsDetails from '../../components/settings/module-settings-details';
+import ModuleSetupIncomplete from '../../components/settings/module-setup-incomplete';
+
+/**
  * A single module. Keeps track of its own active state and settings.
  */
 class SettingsModule extends Component {
 	constructor( props ) {
 		super( props );
 		const { slug } = props;
-		const { setupComplete } = global.googlesitekit.modules[ slug ];
+		const { setupComplete } = getModulesData()[ slug ];
 		this.state = {
 			isSaving: false,
 			active: props.active,
