@@ -38,7 +38,11 @@ export default function AccountSelect() {
 
 	const { setAccountID, setPropertyID, setInternalWebPropertyID, setProfileID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
-		setAccountID( item.dataset.value );
+		const newAccountID = item.dataset.value;
+		if ( accountID === newAccountID ) {
+			return;
+		}
+		setAccountID( newAccountID );
 		setPropertyID( '' );
 		setInternalWebPropertyID( '' );
 		setProfileID( '' );
