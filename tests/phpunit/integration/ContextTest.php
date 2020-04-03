@@ -107,7 +107,7 @@ class ContextTest extends TestCase {
 			array(
 				'foo'  => 'bar',
 				'page' => 'different',
-			) 
+			)
 		);
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -166,7 +166,7 @@ class ContextTest extends TestCase {
 			array(
 				'post_title' => 'homepage',
 				'post_type'  => 'page',
-			) 
+			)
 		);
 		self::factory()->category->create( array( 'slug' => 'postcategory' ) );
 

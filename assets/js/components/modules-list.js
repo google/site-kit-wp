@@ -20,16 +20,6 @@
  * External dependencies
  */
 import { map } from 'lodash';
-import data from 'SiteKitCore/components/data';
-import {
-	refreshAuthentication,
-	getReAuthURL,
-	activateOrDeactivateModule,
-	showErrorNotification,
-	moduleIcon,
-} from 'GoogleUtil';
-import GenericError from 'GoogleComponents/notifications/generic-error';
-import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
 import classnames from 'classnames';
 
 /**
@@ -41,7 +31,18 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	refreshAuthentication,
+	getReAuthURL,
+	activateOrDeactivateModule,
+	showErrorNotification,
+	moduleIcon,
+	getModulesData,
+} from '../util';
 import Link from './link';
+import data from '../components/data';
+import GenericError from './notifications/generic-error';
+import ModuleSettingsWarning from './notifications/module-settings-warning';
 
 class ModulesList extends Component {
 	constructor( props ) {
@@ -77,8 +78,10 @@ class ModulesList extends Component {
 	}
 
 	render() {
+		const modulesData = getModulesData();
+
 		// Filter out internal modules.
-		const modules = Object.values( global.googlesitekit.modules || {} ).filter( ( module ) => ! module.internal );
+		const modules = Object.values( modulesData ).filter( ( module ) => ! module.internal );
 
 		// Map of slug => name for every module that is active and completely set up.
 		const completedModuleNames = modules

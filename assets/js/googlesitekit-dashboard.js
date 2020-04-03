@@ -17,15 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { clearWebStorage, loadTranslations } from 'GoogleUtil';
-import Setup from 'GoogleComponents/setup/setup-wrapper';
-import DashboardApp from 'GoogleComponents/dashboard/dashboard-app';
-import NotificationCounter from 'GoogleComponents/notifications/notification-counter';
-import 'GoogleComponents/notifications';
-
-/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
@@ -35,8 +26,13 @@ import { doAction } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import ErrorHandler from 'GoogleComponents/ErrorHandler';
-import 'GoogleModules';
+import { clearWebStorage, loadTranslations } from './util';
+import ErrorHandler from './components/ErrorHandler';
+import './modules';
+import Setup from './components/setup/setup-wrapper';
+import DashboardApp from './components/dashboard/dashboard-app';
+import NotificationCounter from './components/notifications/notification-counter';
+import './components/notifications';
 
 class GoogleSitekitDashboard extends Component {
 	render() {

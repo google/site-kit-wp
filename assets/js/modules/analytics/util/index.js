@@ -19,13 +19,17 @@
 /**
  * External dependencies
  */
-import { changeToPercent } from 'GoogleUtil';
 import { each } from 'lodash';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { changeToPercent, getModulesData } from '../../../util';
 
 export const extractAnalyticsDataForTrafficChart = ( reports ) => {
 	if ( ! reports || ! reports.length ) {
@@ -476,7 +480,7 @@ export const getTopPagesReportDataDefaults = () => {
 		},
 	];
 
-	if ( global.googlesitekit.modules.analytics.settings.adsenseLinked ) {
+	if ( getModulesData().analytics.settings.adsenseLinked ) {
 		metrics.push(
 			{
 				expression: 'ga:adsenseRevenue',

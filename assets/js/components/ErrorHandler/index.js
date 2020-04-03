@@ -12,7 +12,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Notification from 'GoogleComponents/notifications/notification';
+import Notification from '../notifications/notification';
 
 class ErrorHandler extends Component {
 	constructor( props ) {
