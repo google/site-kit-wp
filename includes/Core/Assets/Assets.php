@@ -338,6 +338,7 @@ final class Assets {
 		$base_url = $this->context->url( 'dist/assets/' );
 
 		$dependencies = array(
+			'googlesitekit-vendor',
 			'googlesitekit-commons',
 			'googlesitekit-base',
 		);
@@ -418,6 +419,12 @@ final class Assets {
 				)
 			),
 			// Begin JSR Assets.
+			new Script(
+				'googlesitekit-vendor',
+				array(
+					'src' => $base_url . 'js/googlesitekit-vendor.js',
+				)
+			),
 			new Script(
 				'googlesitekit-api',
 				array(
