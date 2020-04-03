@@ -205,14 +205,14 @@ describe( 'modules/analytics tags', () => {
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
-				// Ensure the proper parameters were sent.
+				expect( hasExistingTag ).toEqual( undefined );
+
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
 					.hasFinishedResolution( 'getExistingTag' )
 				);
 
-				expect( hasExistingTag ).toEqual( undefined );
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
 			} );
 		} );
 
