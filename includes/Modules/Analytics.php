@@ -825,8 +825,6 @@ final class Analytics extends Module
 				}
 				$restore_defer();
 
-				// Cache the create ticket id long enough to verify it upon completion of the terms of service.
-				set_transient( $self::ANALYTICS_PROVISIONING_ACCOUNT_TICKET_ID . '::' . get_current_user_id(), $account_ticket->getId(), 15 * MINUTE_IN_SECONDS );
 				return $account_ticket;
 			case 'POST:settings':
 				return function() use ( $data ) {
@@ -1076,6 +1074,14 @@ final class Analytics extends Module
 				}
 
 				return $response->getReports();
+			case 'POST:create-account-ticket':
+				// Cache the create ticket id long enough to verify it upon completion of the terms of service.
+				set_transient(
+					$self::ANALYTICS_PROVISIONING_ACCOUNT_TICKET_ID . '::' . get_current_user_id(),
+					$response->getId(),
+					15 * MINUTE_IN_SECONDS
+				);
+				return $response;
 		}
 
 		return $response;
