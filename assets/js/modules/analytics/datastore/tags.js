@@ -198,7 +198,7 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {
 	*getExistingTag() {
 		try {
-			const registry = yield actions.getRegistry();
+			const registry = yield Data.commonActions.getRegistry();
 
 			// If an existing tag was already loaded; return early and don't
 			// dispatch the fetch action.
