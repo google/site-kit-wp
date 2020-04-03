@@ -15,19 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { __ } from '@wordpress/i18n';
-import {
-	useSelect as useSelectHook,
-	useDispatch as useDispatchHook,
-} from '@wordpress/data';
+
+/**
+ * WordPress dependencies
+ */
 import { useCallback } from '@wordpress/element';
-import PropTypes from 'prop-types';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../datastore';
 import Switch from '../../../components/switch';
 import Link from '../../../components/link';
 
-const STORE_NAME = 'modules/analytics'; // temp
+const { useSelect, useDispatch } = Data;
 
-export default function AnonymizeIPSwitch( { useSelect, useDispatch } ) {
+export default function AnonymizeIPSwitch() {
 	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getAnonymizeIP() );
 
 	const { setAnonymizeIP } = useDispatch( STORE_NAME );
@@ -62,13 +67,3 @@ export default function AnonymizeIPSwitch( { useSelect, useDispatch } ) {
 		</div>
 	);
 }
-
-AnonymizeIPSwitch.propTypes = {
-	useSelect: PropTypes.func,
-	useDispatch: PropTypes.func,
-};
-
-AnonymizeIPSwitch.defaultProps = {
-	useSelect: useSelectHook,
-	useDispatch: useDispatchHook,
-};
