@@ -29,10 +29,10 @@ import { SetupMain as AnalyticsSetup } from './setup/index';
  */
 import { addFilter } from '@wordpress/hooks';
 
-function ConnectedAnalyticsSetup() {
+function ConnectedAnalyticsSetup( props ) {
 	return (
 		<Data.RegistryProvider value={ Data }>
-			<AnalyticsSetup />
+			<AnalyticsSetup { ...props } />
 		</Data.RegistryProvider>
 	);
 }
