@@ -188,6 +188,7 @@ describe( 'modules/analytics accounts', () => {
 						{ status: 500 }
 					);
 
+				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAccounts();
 				await subscribeUntil( registry,
