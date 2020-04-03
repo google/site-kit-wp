@@ -37,6 +37,7 @@ const SUBMIT_CHANGES_START = 'SUBMIT_CHANGES_START';
 const SUBMIT_CHANGES_COMPLETED = 'SUBMIT_CHANGES_COMPLETED';
 const SUBMIT_PROPERTY_CREATE = 'SUBMIT_PROPERTY_CREATE';
 const SUBMIT_PROFILE_CREATE = 'SUBMIT_PROFILE_CREATE';
+const SUBMIT_SAVE_SETTINGS = 'SUBMIT_SAVE_SETTINGS';
 const SUBMIT_CHANGES_FAILED = 'SUBMIT_CHANGES_FAILED';
 
 export const INITIAL_STATE = {
@@ -75,7 +76,10 @@ export const actions = {
 			}
 		}
 
-		registry.dispatch( STORE_NAME ).saveSettings();
+		const { payload } = yield actions.submitSaveSettings();
+		if ( payload.error ) {
+			return actions.submitChangesFailed( { error: payload.error } );
+		}
 
 		onSuccess();
 
@@ -92,6 +96,9 @@ export const actions = {
 			payload: { accountID, propertyID },
 			type: SUBMIT_PROFILE_CREATE,
 		};
+	},
+	submitSaveSettings() {
+		return { type: SUBMIT_SAVE_SETTINGS };
 	},
 	startSubmitChanges() {
 		return { type: SUBMIT_CHANGES_START };
@@ -114,6 +121,9 @@ export const controls = {
 	[ SUBMIT_PROFILE_CREATE ]: createRegistryControl( ( registry ) => ( { payload } ) => {
 		const { accountID, propertyID } = payload;
 		return registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID );
+	} ),
+	[ SUBMIT_SAVE_SETTINGS ]: createRegistryControl( ( registry ) => () => {
+		return registry.dispatch( STORE_NAME ).saveSettings();
 	} ),
 };
 

@@ -260,9 +260,7 @@ describe( 'modules/analytics setup', () => {
 
 				await subscribeUntil(
 					registry,
-					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false &&
-					registry.select( STORE_NAME ).isDoingSaveSettings() === false &&
-					registry.stores[ STORE_NAME ].store.getState().savedSettings !== undefined
+					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
 				);
 
 				expect( fetch ).toHaveBeenCalled();
