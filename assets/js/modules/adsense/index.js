@@ -17,25 +17,22 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
-import { createAddToFilter } from 'GoogleUtil/helpers';
-import { fillFilterWithComponent, getSiteKitAdminURL } from 'GoogleUtil';
+import { addFilter } from '@wordpress/hooks';
+const slug = 'adsense';
+
 /**
  * Internal dependencies
  */
+import { createAddToFilter } from '../../util/helpers';
+import { fillFilterWithComponent, getSiteKitAdminURL } from '../../util';
 import AdSenseDashboardWidget from './dashboard/dashboard-widget';
 import DashboardEarnings from './dashboard/dashboard-earnings';
 import AdSenseSettings from './settings/adsense-settings';
 import AdSenseModuleStatus from './dashboard/adsense-module-status';
 import AdSenseSettingsStatus from './settings/adsense-settings-status';
 import AdSenseSettingsWarning from './settings/adsense-settings-warning';
-
-/**
- * WordPress dependencies
- */
-import { addFilter } from '@wordpress/hooks';
-const slug = 'adsense';
 
 /**
  * Append ad blocker warning.

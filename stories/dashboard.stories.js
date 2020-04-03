@@ -11,17 +11,17 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
-import CTA from 'GoogleComponents/notifications/cta';
-import { createAddToFilter } from 'GoogleUtil/helpers';
-import Layout from 'GoogleComponents/layout/layout';
-import DashboardAcquisitionPieChart from 'GoogleModules/analytics/dashboard/dashboard-widget-acquisition-piechart';
-import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from 'GoogleModules/analytics/dashboard/dashboard-alltraffic-widget-top-acquisition-sources-table';
-import PageSpeedInsightsDashboardWidgetHomepageSpeed from 'GoogleModules/pagespeed-insights/dashboard/dashboard-widget-homepage-speed';
-import DashboardSearchFunnelInner from 'GoogleModules/search-console/dashboard/dashboard-widget-search-funnel-inner';
-import AnalyticsDashboardWidgetTopLevel from 'GoogleModules/analytics/dashboard/dashboard-widget-top-level';
-import SearchConsoleDashboardWidgetTopLevel from 'GoogleModules/search-console/dashboard/dashboard-widget-top-level';
-import PostSearcher from 'GoogleComponents/post-searcher';
+import DashboardModuleHeader from '../assets/js/components/dashboard/dashboard-module-header';
+import CTA from '../assets/js/components/notifications/cta';
+import { createAddToFilter } from '../assets/js/util/helpers';
+import Layout from '../assets/js/components/layout/layout';
+import DashboardAcquisitionPieChart from '../assets/js/modules/analytics/dashboard/dashboard-widget-acquisition-piechart';
+import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/dashboard/dashboard-alltraffic-widget-top-acquisition-sources-table';
+import PageSpeedInsightsDashboardWidgetHomepageSpeed from '../assets/js/modules/pagespeed-insights/dashboard/dashboard-widget-homepage-speed';
+import DashboardSearchFunnelInner from '../assets/js/modules/search-console/dashboard/dashboard-widget-search-funnel-inner';
+import AnalyticsDashboardWidgetTopLevel from '../assets/js/modules/analytics/dashboard/dashboard-widget-top-level';
+import SearchConsoleDashboardWidgetTopLevel from '../assets/js/modules/search-console/dashboard/dashboard-widget-top-level';
+import PostSearcher from '../assets/js/components/post-searcher';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
 

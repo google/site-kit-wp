@@ -20,16 +20,6 @@
  * External dependencies
  */
 import { map } from 'lodash';
-import data from 'SiteKitCore/components/data';
-import {
-	refreshAuthentication,
-	getReAuthURL,
-	activateOrDeactivateModule,
-	showErrorNotification,
-	moduleIcon,
-} from 'GoogleUtil';
-import GenericError from 'GoogleComponents/notifications/generic-error';
-import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
 import classnames from 'classnames';
 
 /**
@@ -41,7 +31,17 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	refreshAuthentication,
+	getReAuthURL,
+	activateOrDeactivateModule,
+	showErrorNotification,
+	moduleIcon,
+} from '../util';
 import Link from './link';
+import data from '../components/data';
+import GenericError from './notifications/generic-error';
+import ModuleSettingsWarning from './notifications/module-settings-warning';
 
 class ModulesList extends Component {
 	constructor( props ) {

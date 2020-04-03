@@ -19,9 +19,6 @@
 /**
  * External dependencies
  */
-import Header from 'GoogleComponents/header';
-import PageHeader from 'GoogleComponents/page-header';
-import Layout from 'GoogleComponents/layout/layout';
 import classnames from 'classnames';
 
 /**
@@ -35,16 +32,19 @@ import { __, _x } from '@wordpress/i18n';
  */
 import AdSenseEstimateEarningsWidget from './dashboard-widget-estimate-earnings';
 import AdSensePerformanceWidget from './dashboard-widget-performance';
-import Alert from 'GoogleComponents/alert';
+import Alert from '../../../components/alert';
 import DashboardAdSenseTopPages from './dashboard-adsense-top-pages';
-import getNoDataComponent from 'GoogleComponents/notifications/nodata';
-import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
-import ProgressBar from 'GoogleComponents/progress-bar';
+import getNoDataComponent from '../../../components/notifications/nodata';
+import getDataErrorComponent from '../../../components/notifications/data-error';
+import ProgressBar from '../../../components/progress-bar';
 import AdSenseDashboardOutro from './dashboard-outro';
 import { isAdsenseConnectedAnalytics, propsFromAccountStatus } from '../util';
-import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
+import ModuleSettingsWarning from '../../../components/notifications/module-settings-warning';
 import AdSenseInProcessStatus from './adsense-in-process-status';
-import HelpLink from 'GoogleComponents/help-link';
+import HelpLink from '../../../components/help-link';
+import Header from '../../../components/header';
+import PageHeader from '../../../components/page-header';
+import Layout from '../../../components/layout/layout';
 
 class AdSenseDashboardWidget extends Component {
 	constructor( props ) {

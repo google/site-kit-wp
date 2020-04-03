@@ -17,16 +17,16 @@
  */
 
 /**
- * External dependencies
- */
-import SvgIcon from 'GoogleUtil/svg-icon';
-import Button from 'GoogleComponents/button';
-
-/**
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import SvgIcon from '../../../util/svg-icon';
+import Button from '../../../components/button';
 
 class AdSenseDashboardOutro extends Component {
 	render() {

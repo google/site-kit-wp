@@ -19,13 +19,7 @@
 /**
  * External dependencies
  */
-import Switch from 'GoogleComponents/switch';
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import PropTypes from 'prop-types';
-import {
-	trackEvent,
-	toggleConfirmModuleSettings,
-} from 'GoogleUtil';
 
 /**
  * WordPress dependencies
@@ -34,6 +28,15 @@ import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addFilter, removeFilter } from '@wordpress/hooks';
 
+/**
+ * Internal dependencies
+ */
+import {
+	trackEvent,
+	toggleConfirmModuleSettings,
+} from '../../../util';
+import Switch from '../../../components/switch';
+import data, { TYPE_MODULES } from '../../../components/data';
 class AdSenseSettings extends Component {
 	constructor( props ) {
 		super( props );
