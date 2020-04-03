@@ -363,11 +363,6 @@ export const selectors = {
 	 * @return {?Array.<Object>} An array of Analytics properties; `undefined` if not loaded.
 	 */
 	getProperties( state, accountID ) {
-		if ( typeof accountID === 'undefined' ) {
-			return undefined;
-		}
-		invariant( accountID, 'accountID is required.' );
-
 		const { properties } = state;
 
 		return properties[ accountID ];
@@ -383,8 +378,6 @@ export const selectors = {
 	 * @return {boolean} `true` if creating a property, `false` if not.
 	 */
 	isDoingCreateProperty( state, accountID ) {
-		invariant( accountID, 'accountID is required.' );
-
 		const { isFetchingCreateProperty } = state;
 
 		return !! isFetchingCreateProperty[ accountID ];

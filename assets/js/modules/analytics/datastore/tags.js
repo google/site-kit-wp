@@ -44,7 +44,7 @@ export const INITIAL_STATE = {
 	existingTag: undefined,
 	isFetchingExistingTag: false,
 	isFetchingTagPermission: {},
-	tagPermissions: undefined,
+	tagPermissions: {},
 };
 
 export const actions = {
@@ -326,16 +326,7 @@ export const selectors = {
 	 * @return {?Object} Object with string `accountID` and boolean `permission` properties; `undefined` if not loaded.
 	 */
 	getTagPermission( state, propertyID ) {
-		if ( undefined === propertyID ) {
-			return undefined;
-		}
-		invariant( propertyID, 'propertyID is required.' );
-
 		const { tagPermissions } = state;
-
-		if ( 'undefined' === typeof tagPermissions || 'undefined' === typeof tagPermissions[ propertyID ] ) {
-			return undefined;
-		}
 
 		return tagPermissions[ propertyID ];
 	},

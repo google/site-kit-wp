@@ -332,12 +332,6 @@ export const selectors = {
 	 * @return {?Array.<Object>} An array of Analytics profiles; `undefined` if not loaded.
 	 */
 	getProfiles( state, accountID, propertyID ) {
-		if ( typeof accountID === 'undefined' || typeof propertyID === 'undefined' ) {
-			return undefined;
-		}
-		invariant( accountID, 'accountID is required.' );
-		invariant( propertyID, 'propertyID is required.' );
-
 		const { profiles } = state;
 
 		return profiles[ `${ accountID }::${ propertyID }` ];
@@ -354,9 +348,6 @@ export const selectors = {
 	 * @return {boolean} `true` if creating a profile, `false` if not.
 	 */
 	isDoingCreateProfile( state, accountID, propertyID ) {
-		invariant( accountID, 'accountID is required.' );
-		invariant( propertyID, 'propertyID is required.' );
-
 		const { isFetchingCreateProfile } = state;
 
 		return !! isFetchingCreateProfile[ `${ accountID }::${ propertyID }` ];
