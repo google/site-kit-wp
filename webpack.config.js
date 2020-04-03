@@ -236,7 +236,16 @@ const testBundle = () => {
 	};
 };
 
-module.exports = ( ...args ) => {
+module.exports = {
+	externals,
+	noAMDParserRule,
+	projectPath,
+	resolve,
+	rules,
+	siteKitExternals,
+};
+
+module.exports.default = ( ...args ) => {
 	const { includeTests, mode } = args[ 1 ];
 	const config = webpackConfig( mode );
 
