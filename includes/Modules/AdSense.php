@@ -847,6 +847,7 @@ tag_partner: "site_kit"
 				array(
 					'src'          => $base_url . 'js/googlesitekit-modules-adsense.js',
 					'dependencies' => array(
+						'googlesitekit-vendor',
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-modules',
