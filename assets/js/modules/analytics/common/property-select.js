@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../material-components';
+import ProgressBar from '../../../components/progress-bar';
 import { STORE_NAME } from '../datastore';
 import { PROPERTY_CREATE } from '../datastore/constants';
 import { isValidAccountID } from '../util';
@@ -37,6 +38,7 @@ export default function PropertySelect() {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties( accountID ) ) || [];
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const isLoading = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProperties( accountID ) );
 
 	const { setPropertyID, setInternalWebPropertyID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -47,6 +49,10 @@ export default function PropertySelect() {
 		setPropertyID( item.dataset.value );
 		setInternalWebPropertyID( item.dataset.internalWebProperty || '' );
 	}, [ propertyID ] );
+
+	if ( isLoading ) {
+		return <ProgressBar small />;
+	}
 
 	return (
 		<Select
