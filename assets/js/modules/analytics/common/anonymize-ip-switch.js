@@ -22,8 +22,8 @@ import {
 } from '@wordpress/data';
 import { useCallback } from '@wordpress/element';
 import PropTypes from 'prop-types';
-import Switch from 'GoogleComponents/switch';
-import Link from 'GoogleComponents/link';
+import Switch from '../../../components/switch';
+import Link from '../../../components/link';
 
 const STORE_NAME = 'modules/analytics'; // temp
 

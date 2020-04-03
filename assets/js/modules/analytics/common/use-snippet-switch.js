@@ -22,7 +22,7 @@ import {
 import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import PropTypes from 'prop-types';
-import Switch from 'GoogleComponents/switch';
+import Switch from '../../../components/switch';
 
 const STORE_NAME = 'modules/analytics'; // temp
 

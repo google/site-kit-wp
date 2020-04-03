@@ -10,7 +10,7 @@ import ProfileSelect from './profile-select';
 import { STORE_NAME as modulesAnalyticsStoreName } from '../datastore';
 import * as fixtures from '../datastore/__fixtures__';
 import { PROFILE_CREATE } from '../datastore/constants';
-import { fireEvent, render, act } from 'test-utils';
+import { fireEvent, render, act } from '../../../../../tests/js/test-utils';
 
 // Mock apiFetch so we know if it's called.
 jest.mock( '@wordpress/api-fetch' );

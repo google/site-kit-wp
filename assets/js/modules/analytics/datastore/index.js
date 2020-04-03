@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { createModuleStore } from 'assets/js/googlesitekit/modules/create-module-store';
+import Modules from 'googlesitekit-modules';
 import accounts from './accounts';
 import properties from './properties';
 import profiles from './profiles';
@@ -29,7 +29,7 @@ import tags from './tags';
 
 export const STORE_NAME = 'modules/analytics';
 
-const baseModuleStore = createModuleStore( 'analytics', {
+const baseModuleStore = Modules.createModuleStore( 'analytics', {
 	settingSlugs: [
 		'anonymizeIP',
 		'accountID',
