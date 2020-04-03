@@ -107,7 +107,7 @@ const webpackConfig = ( mode ) => {
 			output: {
 				filename: '[name].js',
 				path: __dirname + '/dist/assets/js',
-				chunkFilename: '[name].js',
+				chunkFilename: '[name]-[chunkhash].js',
 				publicPath: '',
 			},
 			performance: {
@@ -152,8 +152,9 @@ const webpackConfig = ( mode ) => {
 				splitChunks: {
 					cacheGroups: {
 						vendor: {
-							chunks: 'all',
+							chunks: 'initial',
 							name: 'googlesitekit-vendor',
+							filename: 'googlesitekit-vendor.js',
 							enforce: true,
 							test: /[\\/]node_modules[\\/]/,
 						},
