@@ -17,14 +17,14 @@
  */
 
 /**
- * Internal dependencies
- */
-import WPSearchConsoleDashboardWidgetOverview from './wp-dashboard-widget-overview';
-
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import WPSearchConsoleDashboardWidgetOverview from './wp-dashboard-widget-overview';
 
 class WPSearchConsoleDashboardWidget extends Component {
 	render() {

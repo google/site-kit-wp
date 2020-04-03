@@ -2,7 +2,11 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import ProgressBar from 'GoogleComponents/progress-bar';
+
+/**
+ * Internal dependencies
+ */
+import ProgressBar from '../assets/js/components/progress-bar';
 
 storiesOf( 'Global', module )
 	.add( 'Progress Bars', () => (
