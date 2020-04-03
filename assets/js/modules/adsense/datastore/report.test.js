@@ -135,7 +135,8 @@ describe( 'modules/adsense report', () => {
 				await subscribeUntil( registry,
 					// TODO: We may want a selector for this, but for now this is fine
 					// because it's internal-only.
-					() => store.getState().isFetchingReport[ JSON.stringify( options ) ] === false,
+					// This hash must remain stable, so hard-coding it here ensures it is the case.
+					() => store.getState().isFetchingReport[ '029df8a6f771dcfe67c270ef5f3fa62a' ] === false,
 				);
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );

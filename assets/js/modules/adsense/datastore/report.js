@@ -27,6 +27,7 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './index';
+import { stringifyObject } from '../../../util';
 
 // Actions
 const FETCH_REPORT = 'FETCH_REPORT';
@@ -94,7 +95,7 @@ export const reducer = ( state, { type, payload } ) => {
 				...state,
 				isFetchingReport: {
 					...state.isFetchingReport,
-					[ JSON.stringify( options ) ]: true,
+					[ stringifyObject( options ) ]: true,
 				},
 			};
 		}
@@ -106,7 +107,7 @@ export const reducer = ( state, { type, payload } ) => {
 				...state,
 				reports: {
 					...state.reports,
-					[ JSON.stringify( options ) ]: report,
+					[ stringifyObject( options ) ]: report,
 				},
 			};
 		}
@@ -118,7 +119,7 @@ export const reducer = ( state, { type, payload } ) => {
 				...state,
 				isFetchingReport: {
 					...state.isFetchingReport,
-					[ JSON.stringify( options ) ]: false,
+					[ stringifyObject( options ) ]: false,
 				},
 			};
 		}
@@ -131,7 +132,7 @@ export const reducer = ( state, { type, payload } ) => {
 				error,
 				isFetchingReport: {
 					...state.isFetchingReport,
-					[ JSON.stringify( options ) ]: false,
+					[ stringifyObject( options ) ]: false,
 				},
 			};
 		}
@@ -188,7 +189,7 @@ export const selectors = {
 	getReport( state, options = {} ) {
 		const { reports } = state;
 
-		return reports[ JSON.stringify( options ) ];
+		return reports[ stringifyObject( options ) ];
 	},
 };
 
