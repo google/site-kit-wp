@@ -36,9 +36,12 @@ export default function AccountSelect() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 
-	const { setAccountID } = useDispatch( STORE_NAME );
+	const { setAccountID, setPropertyID, setInternalWebPropertyID, setProfileID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
 		setAccountID( item.dataset.value );
+		setPropertyID( '' );
+		setInternalWebPropertyID( '' );
+		setProfileID( '' );
 	}, [ accountID ] );
 
 	return (

@@ -100,4 +100,24 @@ describe( 'AccountSelect', () => {
 		expect( newAccountID ).toEqual( fixtures.accountsPropertiesProfiles.accounts[ 1 ].id );
 		expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
+
+	it( 'should unset the chosen property and profile IDs when changed', () => {
+		const { getAllByRole, container, registry } = render( <AccountSelect />, { setupRegistry } );
+		registry.dispatch( modulesAnalyticsStoreName ).setPropertyID( 'UA-12345-1' );
+		registry.dispatch( modulesAnalyticsStoreName ).setInternalWebPropertyID( '987654' );
+		registry.dispatch( modulesAnalyticsStoreName ).setProfileID( '123987654' );
+
+		// Click the label to expose the elements in the menu.
+		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
+		// Click this element to select it and fire the onChange event.
+		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
+
+		const newPropertyID = registry.select( modulesAnalyticsStoreName ).getPropertyID();
+		const newWebPropertyID = registry.select( modulesAnalyticsStoreName ).getInternalWebPropertyID();
+		const newProfileID = registry.select( modulesAnalyticsStoreName ).getProfileID();
+		expect( newPropertyID ).toBeFalsy();
+		expect( newWebPropertyID ).toBeFalsy();
+		expect( newProfileID ).toBeFalsy();
+		expect( apiFetchMock ).not.toHaveBeenCalled();
+	} );
 } );
