@@ -1,5 +1,5 @@
 /**
- * All modules.
+ * AdSense module entrypoint.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,9 +19,4 @@
 /**
  * Internal dependencies
  */
-import './adsense/index.legacy';
-import './analytics';
-import './optimize';
-import './pagespeed-insights';
-import './search-console';
-import './tagmanager';
+import './modules/adsense';

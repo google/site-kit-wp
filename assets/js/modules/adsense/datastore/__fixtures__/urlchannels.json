@@ -1,0 +1,12 @@
+[
+  {
+    "id":"ca-pub-2833782679114991:example.com",
+    "kind":"adsense#urlChannel",
+    "urlPattern":"example.com"
+  },
+  {
+    "id":"ca-pub-2833782679114991:example-site.org",
+    "kind":"adsense#urlChannel",
+    "urlPattern":"example-site.org"
+  }
+]

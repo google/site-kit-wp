@@ -20,6 +20,10 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Assets;
+use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
@@ -36,8 +40,8 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class AdSense extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields {
-	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait;
+final class AdSense extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields {
+	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Module_With_Assets_Trait;
 
 	/**
 	 * Internal flag for whether the AdSense tag has been printed.
@@ -346,6 +350,7 @@ tag_partner: "site_kit"
 			'account-url'    => '',
 			'reports-url'    => '',
 			'notifications'  => '',
+			'tag-permission' => '',
 			'accounts'       => 'adsense',
 			'alerts'         => 'adsense',
 			'clients'        => 'adsense',
@@ -440,8 +445,16 @@ tag_partner: "site_kit"
 					return true;
 				};
 			case 'GET:clients':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
 				$service = $this->get_service( 'adsense' );
-				return $service->adclients->listAdclients();
+				return $service->accounts_adclients->listAccountsAdclients( $data['accountID'] );
 			case 'GET:connection':
 				return function() {
 					$option   = $this->get_settings()->get();
@@ -518,6 +531,31 @@ tag_partner: "site_kit"
 						),
 					);
 				};
+			case 'GET:tag-permission':
+				return function() use ( $data ) {
+					if ( ! isset( $data['clientID'] ) ) {
+						return new WP_Error(
+							'missing_required_param',
+							/* translators: %s: Missing parameter name */
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ),
+							array( 'status' => 400 )
+						);
+					}
+					$client_id  = $data['clientID'];
+					$account_id = $this->parse_account_id( $client_id );
+					if ( empty( $account_id ) ) {
+						return new WP_Error(
+							'invalid_param',
+							__( 'The clientID parameter is not a valid AdSense client ID.', 'google-site-kit' ),
+							array( 'status' => 400 )
+						);
+					}
+					return array(
+						'accountID'  => $account_id,
+						'clientID'   => $client_id,
+						'permission' => $this->has_access_to_client( $client_id, $account_id ),
+					);
+				};
 			case 'GET:reports-url':
 				return function() {
 					$account_id = $this->get_data( 'account-id' );
@@ -543,12 +581,24 @@ tag_partner: "site_kit"
 					return true;
 				};
 			case 'GET:urlchannels':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
 				if ( ! isset( $data['clientID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ),
+						array( 'status' => 400 )
+					);
 				}
 				$service = $this->get_service( 'adsense' );
-				return $service->urlchannels->listUrlchannels( $data['clientID'] );
+				return $service->accounts_urlchannels->listAccountsUrlchannels( $data['accountID'], $data['clientID'] );
 			case 'GET:use-snippet':
 				return function() {
 					$option = $this->get_settings()->get();
@@ -591,15 +641,14 @@ tag_partner: "site_kit"
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
-				// Store the matched account as soon as we have it.
 				$accounts = $response->getItems();
-				if ( ! empty( $accounts ) ) {
+				// TODO: Remove this ugly side-effect once no longer used.
+				if ( $data['maybeSetAccount'] && ! empty( $accounts ) ) {
 					$account_id = $this->get_data( 'account-id' );
 					if ( is_wp_error( $account_id ) || ! $account_id ) {
 						$this->set_data( 'account-id', array( 'accountID' => $accounts[0]->id ) );
 					}
 				}
-				// TODO: Parse this response to a regular array.
 				return $accounts;
 
 			// Intentional fallthrough.
@@ -783,22 +832,72 @@ tag_partner: "site_kit"
 	}
 
 	/**
-	 * Transforms an exception into a WP_Error object.
+	 * Sets up the module's assets to register.
 	 *
-	 * @since 1.4.0
+	 * @since n.e.x.t
 	 *
-	 * @param Exception $e         Exception object.
-	 * @param string    $datapoint Datapoint originally requested.
-	 * @return WP_Error WordPress error object.
+	 * @return Asset[] List of Asset objects.
 	 */
-	protected function exception_to_error( Exception $e, $datapoint ) {
-		if ( in_array( $datapoint, array( 'accounts', 'alerts', 'clients', 'urlchannels' ), true ) ) {
-			$errors = json_decode( $e->getMessage() );
-			if ( $errors ) {
-				return new WP_Error( $e->getCode(), $errors, array( 'status' => 500 ) );
-			}
+	protected function setup_assets() {
+		$base_url = $this->context->url( 'dist/assets/' );
+
+		return array(
+			new Script(
+				'googlesitekit-modules-adsense',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-modules-adsense.js',
+					'dependencies' => array(
+						'googlesitekit-api',
+						'googlesitekit-data',
+						'googlesitekit-modules',
+					),
+				)
+			),
+		);
+	}
+
+	/**
+	 * Verifies that user has access to the given client and account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $client_id  Client found in the existing tag.
+	 * @param string $account_id Account ID the client belongs to.
+	 * @return bool True if the user has access, false otherwise.
+	 */
+	protected function has_access_to_client( $client_id, $account_id ) {
+		if ( empty( $client_id ) || empty( $account_id ) ) {
+			return false;
 		}
 
-		return parent::exception_to_error( $e, $datapoint );
+		// Try to get clients for that account.
+		$clients = $this->get_data( 'clients', array( 'accountID' => $account_id ) );
+		if ( is_wp_error( $clients ) ) {
+			// No access to the account.
+			return false;
+		}
+
+		// Ensure there is access to the client.
+		foreach ( $clients as $client ) {
+			if ( $client->getId() === $client_id ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Determines the AdSense account ID from a given AdSense client ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $client_id AdSense client ID.
+	 * @return string AdSense account ID, or empty string if invalid client ID.
+	 */
+	protected function parse_account_id( $client_id ) {
+		if ( ! preg_match( '/^ca-(pub-[0-9]+)$/', $client_id, $matches ) ) {
+			return '';
+		}
+		return $matches[1];
 	}
 }
