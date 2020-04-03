@@ -75,16 +75,16 @@ describe( 'modules/adsense report', () => {
 						{ status: 200 }
 					);
 
-				const initialReport = registry.select( STORE_NAME ).getReport();
+				const initialReport = registry.select( STORE_NAME ).getReport( {} );
 
 				expect( initialReport ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getReport() !== undefined
+						registry.select( STORE_NAME ).getReport( {} ) !== undefined
 					),
 				);
 
-				const report = registry.select( STORE_NAME ).getReport();
+				const report = registry.select( STORE_NAME ).getReport( {} );
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( report ).toEqual( fixtures.report );
