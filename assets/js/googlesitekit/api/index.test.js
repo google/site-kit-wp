@@ -340,7 +340,7 @@ describe( 'googlesitekit.api', () => {
 			expect( fetch ).toHaveBeenCalledWith(
 				'/google-site-kit/v1/core/search-console/data/settings?_locale=user',
 				{
-					body: JSON.stringify( dataBody ),
+					body: JSON.stringify( { data: dataBody } ),
 					credentials: 'include',
 					headers: {
 						Accept: 'application/json, */*;q=0.1',
@@ -366,7 +366,7 @@ describe( 'googlesitekit.api', () => {
 			expect( fetch ).toHaveBeenCalledWith(
 				'/google-site-kit/v1/core/search-console/data/settings?foo=bar&_locale=user',
 				{
-					body: JSON.stringify( dataBody ),
+					body: JSON.stringify( { data: dataBody } ),
 					credentials: 'include',
 					headers: {
 						Accept: 'application/json, */*;q=0.1',

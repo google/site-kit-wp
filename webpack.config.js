@@ -149,6 +149,18 @@ const webpackConfig = ( mode ) => {
 						extractComments: false,
 					} ),
 				],
+				runtimeChunk: false,
+				splitChunks: {
+					cacheGroups: {
+						vendor: {
+							chunks: 'initial',
+							name: 'googlesitekit-vendor',
+							filename: 'googlesitekit-vendor.js',
+							enforce: true,
+							test: /[\\/]node_modules[\\/]/,
+						},
+					},
+				},
 			},
 			resolve,
 		},
