@@ -17,15 +17,8 @@
  */
 
 /**
- * Internal dependencies
- */
-import DashboardSearchFunnelInner from './dashboard-widget-search-funnel-inner';
-/**
  * External dependencies
  */
-import Layout from 'GoogleComponents/layout/layout';
-import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
-import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
 import classnames from 'classnames';
 
 /**
@@ -34,12 +27,22 @@ import classnames from 'classnames';
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import { getModulesData } from '../../../util';
+import Layout from '../../../components/layout/layout';
+import DashboardModuleHeader from '../../../components/dashboard/dashboard-module-header';
+import AnalyticsInactiveCTA from '../../../components/analytics-inactive-cta';
+import DashboardSearchFunnelInner from './dashboard-widget-search-funnel-inner';
+
 class DashboardSearchFunnel extends Component {
 	render() {
+		const modulesData = getModulesData();
 		const { canManageOptions } = global.googlesitekit.permissions;
 
 		// Users without manage options capability will not see Setup CTA.
-		const wrapperCols = ! global.googlesitekit.modules.analytics.active && ! canManageOptions ? 6 : 12;
+		const wrapperCols = ! modulesData.analytics.active && ! canManageOptions ? 6 : 12;
 
 		return (
 			<Fragment>
@@ -61,7 +64,7 @@ class DashboardSearchFunnel extends Component {
 							<div className="mdc-layout-grid__inner">
 								<DashboardSearchFunnelInner />
 								{ // Show the Analytics CTA if analytics is not enabled.
-									( ! global.googlesitekit.modules.analytics.active ) &&
+									( ! modulesData.analytics.active ) &&
 									<div className="
 										mdc-layout-grid__cell
 										mdc-layout-grid__cell--span-4-phone

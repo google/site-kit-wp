@@ -44,7 +44,7 @@ import {
 	collectName,
 	commonActions,
 	commonControls,
-} from 'assets/js/googlesitekit/data/utils';
+} from './utils';
 
 const Data = createRegistry();
 

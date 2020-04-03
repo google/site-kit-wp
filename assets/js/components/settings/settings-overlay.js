@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
@@ -28,6 +27,11 @@ import classnames from 'classnames';
  */
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import SvgIcon from '../../util/svg-icon';
 
 class SettingsOverlay extends Component {
 	render() {

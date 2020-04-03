@@ -19,8 +19,12 @@
 /**
  * External dependencies
  */
-import { changeToPercent, readableLargeNumber } from 'GoogleUtil';
 import { each } from 'lodash';
+
+/**
+ * Internal dependencies
+ */
+import { changeToPercent, readableLargeNumber } from '../../../util';
 
 function reduceSearchConsoleData( rows ) {
 	const dataMap = [
