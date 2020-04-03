@@ -32,7 +32,7 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds, numberFormat } from '../../../util';
+import { getTimeInSeconds, numberFormat, getModulesData } from '../../../util';
 import withData from '../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../components/data-table';
@@ -52,7 +52,7 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 			accountID,
 			internalWebPropertyID,
 			profileID,
-		} = global.googlesitekit.modules.analytics.settings;
+		} = getModulesData().analytics.settings;
 
 		if ( ! accountID ) {
 			return 'https://analytics.google.com/analytics/web/';

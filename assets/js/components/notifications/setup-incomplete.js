@@ -25,7 +25,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getReAuthURL } from '../../util';
+import { getReAuthURL, getModulesData } from '../../util';
 import CTA from './cta';
 import ctaWrapper from './cta-wrapper';
 
@@ -40,7 +40,7 @@ import ctaWrapper from './cta-wrapper';
  * @return {WPElement} Returns CTA component with configuration CTA.
  */
 const getSetupIncompleteComponent = ( module, inGrid = false, fullWidth = false, createGrid = false ) => {
-	const { name } = global.googlesitekit.modules[ module ];
+	const { name } = getModulesData()[ module ];
 	const cta = <CTA
 
 		/* translators: %s: Module name */

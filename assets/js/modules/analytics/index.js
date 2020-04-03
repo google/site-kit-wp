@@ -17,12 +17,9 @@
  */
 
 /**
- * External dependencies
- */
-/**
  * Internal dependencies
  */
-import { fillFilterWithComponent, getSiteKitAdminURL } from '../../util';
+import { fillFilterWithComponent, getSiteKitAdminURL, getModulesData } from '../../util';
 import { createAddToFilter } from '../../util/helpers';
 import AnalyticsDashboardWidget from './dashboard/dashboard-widget';
 import AnalyticsAdminbarWidget from './adminbar/adminbar-widget';
@@ -51,8 +48,10 @@ addFilter( 'googlesitekit.AdminbarModules',
 	'googlesitekit.Analytics',
 	addAnalyticsAdminbarWidget, 11 );
 
+const modulesData = getModulesData();
+
 // If setup is not complete, show the signup flow.
-if ( ! global.googlesitekit.modules[ slug ].setupComplete ) {
+if ( ! modulesData[ slug ].setupComplete ) {
 	const {
 		reAuth,
 		currentScreen,
@@ -70,7 +69,7 @@ if ( ! global.googlesitekit.modules[ slug ].setupComplete ) {
 	}
 }
 
-if ( global.googlesitekit.modules.analytics.active ) {
+if ( modulesData.analytics.active ) {
 	const addAnalyticsDashboardWidget = createAddToFilter( <AnalyticsDashboardWidget /> );
 	const addAnalyticsAllTraffic = createAddToFilter( <AnalyticsAllTraffic /> );
 	const addWPAnalyticsDashboardWidgetOverview = createAddToFilter( <WPAnalyticsDashboardWidgetOverview /> );

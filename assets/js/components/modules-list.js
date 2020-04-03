@@ -37,6 +37,7 @@ import {
 	activateOrDeactivateModule,
 	showErrorNotification,
 	moduleIcon,
+	getModulesData,
 } from '../util';
 import Link from './link';
 import data from '../components/data';
@@ -77,8 +78,10 @@ class ModulesList extends Component {
 	}
 
 	render() {
+		const modulesData = getModulesData();
+
 		// Filter out internal modules.
-		const modules = Object.values( global.googlesitekit.modules || {} ).filter( ( module ) => ! module.internal );
+		const modules = Object.values( modulesData ).filter( ( module ) => ! module.internal );
 
 		// Map of slug => name for every module that is active and completely set up.
 		const completedModuleNames = modules

@@ -10,6 +10,7 @@ import {
 	activateOrDeactivateModule,
 	getReAuthURL,
 	showErrorNotification,
+	getModulesData,
 } from '../../../util';
 import CTA from '../../../components/notifications/cta';
 import data from '../../../components/data';
@@ -19,7 +20,7 @@ const PageSpeedInsightsCTA = () => {
 	const {
 		active,
 		setupComplete,
-	} = global.googlesitekit.modules[ 'pagespeed-insights' ];
+	} = getModulesData()[ 'pagespeed-insights' ];
 
 	const { canManageOptions } = global.googlesitekit.permissions;
 

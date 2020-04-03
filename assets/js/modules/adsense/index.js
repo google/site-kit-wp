@@ -20,13 +20,12 @@
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
-const slug = 'adsense';
 
 /**
  * Internal dependencies
  */
 import { createAddToFilter } from '../../util/helpers';
-import { fillFilterWithComponent, getSiteKitAdminURL } from '../../util';
+import { fillFilterWithComponent, getSiteKitAdminURL, getModulesData } from '../../util';
 import AdSenseDashboardWidget from './dashboard/dashboard-widget';
 import DashboardEarnings from './dashboard/dashboard-earnings';
 import AdSenseSettings from './settings/adsense-settings';
@@ -34,6 +33,7 @@ import AdSenseModuleStatus from './dashboard/adsense-module-status';
 import AdSenseSettingsStatus from './settings/adsense-settings-status';
 import AdSenseSettingsWarning from './settings/adsense-settings-warning';
 
+const slug = 'adsense';
 /**
  * Append ad blocker warning.
  */
@@ -49,12 +49,13 @@ addFilter( 'googlesitekit.SetupModuleShowLink',
 		return showLink;
 	} );
 
-if ( global.googlesitekit.modules.adsense.active ) {
+const modulesData = getModulesData();
+if ( modulesData.adsense.active ) {
 	const addAdSenseDashboardWidget = createAddToFilter( <AdSenseDashboardWidget /> );
 	const addDashboardEarnings = createAddToFilter( <DashboardEarnings /> );
 
 	// If setup is complete, show the AdSense data.
-	if ( global.googlesitekit.modules[ slug ].setupComplete ) {
+	if ( modulesData[ slug ].setupComplete ) {
 		/**
 		 * Action triggered when the settings App is loaded.
 		 */
@@ -86,7 +87,7 @@ if ( global.googlesitekit.modules.adsense.active ) {
 		// Show module as connected in the settings when status is pending review.
 		addFilter( `googlesitekit.Connected-${ slug }`,
 			'googlesitekit.AdSenseModuleConnected', ( isConnected ) => {
-				const { settings } = global.googlesitekit.modules[ slug ];
+				const { settings } = modulesData[ slug ];
 				if ( ! isConnected && undefined !== settings && ( 'account-pending-review' === settings.accountStatus || 'ads-display-pending' === settings.accountStatus ) ) {
 					return true;
 				}
@@ -121,8 +122,8 @@ if ( global.googlesitekit.modules.adsense.active ) {
 				identifier: 'adsense',
 				toRefresh: () => {
 					let status = '';
-					if ( global.googlesitekit.modules.adsense && global.googlesitekit.modules.adsense[ 'account-status' ] ) {
-						status = global.googlesitekit.modules.adsense[ 'account-status' ].accountStatus;
+					if ( modulesData.adsense && modulesData.adsense[ 'account-status' ] ) {
+						status = modulesData.adsense[ 'account-status' ].accountStatus;
 					}
 
 					if ( status && -1 < status.indexOf( 'account-connected' ) ) {

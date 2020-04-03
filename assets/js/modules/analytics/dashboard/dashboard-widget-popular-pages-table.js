@@ -30,7 +30,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds, numberFormat } from '../../../util';
+import { getTimeInSeconds, numberFormat, getModulesData } from '../../../util';
 import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../util';
 import withData from '../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../components/data';
@@ -50,7 +50,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 					className="googlesitekit-popular-content"
 					footer
 					footerCtaLabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					footerCtaLink={ global.googlesitekit.modules.analytics.homepage }
+					footerCtaLink={ getModulesData().analytics.homepage }
 					fill
 				>
 					{ component }

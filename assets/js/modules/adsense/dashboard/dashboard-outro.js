@@ -25,12 +25,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { getModulesData } from '../../../util';
 import SvgIcon from '../../../util/svg-icon';
 import Button from '../../../components/button';
 
 class AdSenseDashboardOutro extends Component {
 	render() {
-		const { accountURL } = global.googlesitekit.modules.adsense;
+		const { accountURL } = getModulesData().adsense;
 
 		return (
 			<section className="googlesitekit-module-outro">

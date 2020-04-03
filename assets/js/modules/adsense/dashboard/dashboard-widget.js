@@ -41,6 +41,7 @@ import AdSenseDashboardOutro from './dashboard-outro';
 import { isAdsenseConnectedAnalytics, propsFromAccountStatus } from '../util';
 import ModuleSettingsWarning from '../../../components/notifications/module-settings-warning';
 import AdSenseInProcessStatus from './adsense-in-process-status';
+import { getModulesData } from '../../../util';
 import HelpLink from '../../../components/help-link';
 import Header from '../../../components/header';
 import PageHeader from '../../../components/page-header';
@@ -124,6 +125,8 @@ class AdSenseDashboardWidget extends Component {
 	}
 
 	render() {
+		const modulesData = getModulesData();
+
 		const {
 			receivingData,
 			error,
@@ -132,7 +135,7 @@ class AdSenseDashboardWidget extends Component {
 			zeroData,
 			instructionProps,
 		} = this.state;
-		const { homepage } = global.googlesitekit.modules.adsense;
+		const { homepage } = modulesData.adsense;
 
 		// Hide AdSense data display when we don't have data.
 		const wrapperClass = ( loading || ! receivingData || zeroData ) ? 'googlesitekit-nodata' : '';
@@ -152,7 +155,7 @@ class AdSenseDashboardWidget extends Component {
 								mdc-layout-grid__cell--span-12
 							">
 								{
-									( ! error && global.googlesitekit.modules.adsense.setupComplete )
+									( ! error && modulesData.adsense.setupComplete )
 										? <PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="connected" statusText={ __( 'AdSense is connected', 'google-site-kit' ) } />
 										: <PageHeader title={ _x( 'AdSense', 'Service name', 'google-site-kit' ) } icon iconWidth="30" iconHeight="26" iconID="adsense" status="not-connected" statusText={ __( 'AdSense is not connected', 'google-site-kit' ) } />
 								}

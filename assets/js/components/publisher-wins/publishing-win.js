@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { extractSearchConsoleDashboardData } from '../../modules/search-console/dashboard/util';
-import { readableLargeNumber } from '../../util';
+import { readableLargeNumber, getModulesData } from '../../util';
 
 const publishingWin = ( data, id ) => {
 	const showNotification = 5 === parseInt( global.googlesitekit.admin.newSitePosts, 10 );
@@ -37,7 +37,8 @@ const publishingWin = ( data, id ) => {
 	let message = __( 'That’s out of this world.', 'google-site-kit' );
 	let dataBlocks = [];
 
-	if ( global.googlesitekit.modules[ 'search-console' ] && global.googlesitekit.modules[ 'search-console' ].active && data ) {
+	const modulesData = getModulesData();
+	if ( modulesData[ 'search-console' ] && modulesData[ 'search-console' ].active && data ) {
 		const processedData = extractSearchConsoleDashboardData( data );
 
 		const {

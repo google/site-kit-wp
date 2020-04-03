@@ -41,6 +41,7 @@ import {
 	getReAuthURL,
 	moduleIcon,
 	showErrorNotification,
+	getModulesData,
 } from '../../util';
 import Link from '../../components/link';
 import Button from '../../components/button';
@@ -60,7 +61,7 @@ class SettingsModule extends Component {
 	constructor( props ) {
 		super( props );
 		const { slug } = props;
-		const { setupComplete } = global.googlesitekit.modules[ slug ];
+		const { setupComplete } = getModulesData()[ slug ];
 		this.state = {
 			isSaving: false,
 			active: props.active,

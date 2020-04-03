@@ -21,14 +21,16 @@
  */
 import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
-const slug = 'optimize';
+
 /**
  * Internal dependencies
  */
 import OptimizeSetup from '../../modules/optimize/setup';
-import { fillFilterWithComponent } from '../../util';
+import { fillFilterWithComponent, getModulesData } from '../../util';
 
-if ( global.googlesitekit.modules.optimize.active ) {
+const slug = 'optimize';
+const modulesData = getModulesData();
+if ( modulesData.optimize.active ) {
 	/**
 	 * Add components to the settings page.
 	 */

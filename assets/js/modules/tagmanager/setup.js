@@ -34,7 +34,7 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import SvgIcon from '../../util/svg-icon';
-import { getExistingTag, toggleConfirmModuleSettings } from '../../util';
+import { getExistingTag, toggleConfirmModuleSettings, getModulesData } from '../../util';
 import {
 	getContainers,
 	isValidAccountID,
@@ -57,7 +57,7 @@ class TagmanagerSetup extends Component {
 		super( props );
 
 		const { ampEnabled, ampMode } = global.googlesitekit.admin;
-		const { settings } = global.googlesitekit.modules.tagmanager;
+		const { settings } = getModulesData().tagmanager;
 		const ampUsageContext = ampMode === 'primary' ? USAGE_CONTEXT_AMP : [ USAGE_CONTEXT_WEB, USAGE_CONTEXT_AMP ];
 
 		this.state = {
@@ -364,7 +364,7 @@ class TagmanagerSetup extends Component {
 				finishSetup();
 			}
 
-			global.googlesitekit.modules.tagmanager.settings = savedSettings;
+			getModulesData().tagmanager.settings = savedSettings;
 
 			this.setState( {
 				isSaving: false,
@@ -425,7 +425,7 @@ class TagmanagerSetup extends Component {
 	}
 
 	renderSettingsInfo() {
-		const { settings } = global.googlesitekit.modules.tagmanager;
+		const { settings } = getModulesData().tagmanager;
 		const {
 			ampEnabled,
 			isSecondaryAMP,

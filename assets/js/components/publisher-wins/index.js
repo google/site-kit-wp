@@ -20,15 +20,16 @@
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
-const notification = getQueryParameter( 'notification' );
 
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds, getQueryParameter } from '../../util';
+import { getTimeInSeconds, getQueryParameter, getModulesData } from '../../util';
 import { overviewReportDataDefaults } from '../../modules/analytics/util';
 import { TYPE_MODULES } from '../data';
 import * as publisherWinCallbacks from './callbacks';
+
+const notification = getQueryParameter( 'notification' );
 
 if ( 'authentication_success' !== notification && 'authentication_failure' !== notification ) {
 	addFilter( 'googlesitekit.winCallbacks',
@@ -94,7 +95,8 @@ if ( 'authentication_success' !== notification && 'authentication_failure' !== n
 			return wins;
 		}, 2 );
 
-	if ( global.googlesitekit.modules.analytics.active ) {
+	const modulesData = getModulesData();
+	if ( modulesData.analytics.active ) {
 		addFilter( 'googlesitekit.WinsNotificationsRequest',
 			'googlesitekit.PublisherWinsNotification',
 			( wins ) => {

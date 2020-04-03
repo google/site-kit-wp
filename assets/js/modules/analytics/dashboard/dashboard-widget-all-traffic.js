@@ -37,6 +37,7 @@ import getDataErrorComponent from '../../../components/notifications/data-error'
 import getSetupIncompleteComponent from '../../../components/notifications/setup-incomplete';
 import DashboardAcquisitionPieChart from './dashboard-widget-acquisition-piechart';
 import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from './dashboard-alltraffic-widget-top-acquisition-sources-table';
+import { getModulesData } from '../../../util';
 
 class AnalyticsAllTraffic extends Component {
 	constructor( props ) {
@@ -76,7 +77,7 @@ class AnalyticsAllTraffic extends Component {
 		const {
 			active,
 			setupComplete,
-		} = global.googlesitekit.modules.analytics;
+		} = getModulesData().analytics;
 
 		const {
 			error,

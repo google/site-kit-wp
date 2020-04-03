@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import {
 	getSiteKitAdminURL,
+	getModulesData,
 } from '../../../util';
 import Link from '../../../components/link';
 
@@ -38,7 +39,7 @@ class AdSenseSettingsStatus extends Component {
 			OriginalComponent,
 		} = this.props;
 
-		const { accountStatus } = global.googlesitekit.modules.adsense.settings;
+		const { accountStatus } = getModulesData().adsense.settings;
 
 		if ( ! accountStatus || 'adsense' !== slug ) {
 			return <OriginalComponent { ...this.props } />;

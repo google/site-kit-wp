@@ -34,13 +34,15 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
 import {
 	trackEvent,
 	toggleConfirmModuleSettings,
+	getModulesData,
 } from '../../../util';
 import Switch from '../../../components/switch';
 import data, { TYPE_MODULES } from '../../../components/data';
+
 class AdSenseSettings extends Component {
 	constructor( props ) {
 		super( props );
-		const { useSnippet = true } = global.googlesitekit.modules.adsense.settings;
+		const { useSnippet = true } = getModulesData().adsense.settings;
 
 		this.state = {
 			useSnippet: !! useSnippet,
@@ -79,6 +81,8 @@ class AdSenseSettings extends Component {
 	}
 
 	save() {
+		const modulesData = getModulesData();
+
 		const { useSnippet } = this.state;
 		if ( this._isMounted ) {
 			this.setState( {
@@ -91,8 +95,8 @@ class AdSenseSettings extends Component {
 		};
 
 		// Reset the localized variable.
-		if ( global.googlesitekit.modules.adsense.settings ) {
-			global.googlesitekit.modules.adsense.settings.useSnippet = useSnippet;
+		if ( modulesData.adsense.settings ) {
+			modulesData.adsense.settings.useSnippet = useSnippet;
 		}
 
 		return data.set( TYPE_MODULES, 'adsense', 'use-snippet', toSave ).then( ( res ) => res ).catch( ( e ) => e );

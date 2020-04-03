@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { trackEvent, getReAuthURL, getSiteKitAdminURL } from '../../../util';
+import { trackEvent, getReAuthURL, getSiteKitAdminURL, getModulesData } from '../../../util';
 import { analyticsAdsenseReportDataDefaults } from '../../analytics/util';
 import data, { TYPE_MODULES } from '../../../components/data';
 
@@ -84,7 +84,7 @@ export const propsFromAccountStatus = ( accountStatus, existingTag ) => {
 	let switchOnMessage;
 	let tracking = false;
 
-	const { accountURL, signupURL } = global.googlesitekit.modules.adsense;
+	const { accountURL, signupURL } = getModulesData().adsense;
 	const moduleURL = getSiteKitAdminURL(
 		'googlesitekit-module-adsense',
 		{}
@@ -321,7 +321,7 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
 			}
 		} else {
 			// Set AdSense account link with account found.
-			global.googlesitekit.modules.adsense.accountURL = sprintf( 'https://www.google.com/adsense/new/%s/home', id );
+			getModulesData().adsense.accountURL = sprintf( 'https://www.google.com/adsense/new/%s/home', id );
 
 			statusUpdateCallback( __( 'Account found, checking account status…', 'google-site-kit' ) );
 
@@ -462,8 +462,10 @@ export const getAdSenseAccountStatus = async ( existingTag = false, statusUpdate
  * @return {Promise} Resolves to a boolean, whether or not AdSense is connected.
  */
 export const isAdsenseConnectedAnalytics = async () => {
-	const { active: adsenseActive } = global.googlesitekit.modules.adsense;
-	const { active: analyticsActive } = global.googlesitekit.modules.analytics;
+	const modulesData = getModulesData();
+
+	const { active: adsenseActive } = modulesData.adsense;
+	const { active: analyticsActive } = modulesData.analytics;
 
 	let adsenseConnect = true;
 

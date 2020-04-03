@@ -20,15 +20,15 @@
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
-const slug = 'tagmanager';
 
 /**
  * Internal dependencies
  */
 import TagmanagerSetup from '../../modules/tagmanager/setup';
-import { fillFilterWithComponent } from '../../util';
+import { fillFilterWithComponent, getModulesData } from '../../util';
 
-if ( global.googlesitekit.modules.tagmanager.active ) {
+const slug = 'tagmanager';
+if ( getModulesData().tagmanager.active ) {
 	/**
 	 * Add components to the settings page.
 	 */
