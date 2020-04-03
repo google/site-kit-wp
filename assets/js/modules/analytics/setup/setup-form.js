@@ -36,14 +36,15 @@ import {
 } from '../common/';
 const { useSelect, useDispatch } = Data;
 
-export default function SetupForm() {
+export default function SetupForm( { finishSetup } ) {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 
 	const { submitChanges } = useDispatch( STORE_NAME );
-	const submitForm = useCallback( () => {
-		submitChanges();
+	const submitForm = useCallback( async ( e ) => {
+		e.preventDefault();
+		submitChanges( finishSetup );
 	}, [ canSubmitChanges ] );
 
 	return (

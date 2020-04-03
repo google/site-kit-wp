@@ -35,7 +35,7 @@ import {
 } from '../common';
 const { useSelect } = Data;
 
-export default function SetupMain() {
+export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
@@ -65,7 +65,7 @@ export default function SetupMain() {
 				{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 			</h2>
 
-			<ViewComponent />
+			<ViewComponent finishSetup={ finishSetup } />
 		</div>
 	);
 }

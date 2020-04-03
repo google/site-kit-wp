@@ -44,7 +44,7 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
-	*submitChanges() {
+	*submitChanges( onSuccess = () => {} ) {
 		yield actions.startSubmitChanges();
 
 		const registry = yield Data.commonActions.getRegistry();
@@ -74,6 +74,8 @@ export const actions = {
 				return actions.submitChangesFailed( { error } );
 			}
 		}
+
+		onSuccess();
 
 		return actions.finishSubmitChanges();
 	},
