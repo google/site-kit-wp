@@ -25,6 +25,8 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from './index';
 
 // Actions
 const FETCH_REPORT = 'FETCH_REPORT';
@@ -142,6 +144,15 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getReport( options = {} ) {
+		const registry = yield Data.commonActions.getRegistry();
+		const existingReport = registry.select( STORE_NAME ).getReport( options );
+
+		// If there are already alerts loaded in state, consider it fulfilled
+		// and don't make an API request.
+		if ( existingReport ) {
+			return;
+		}
+
 		try {
 			const report = yield actions.fetchReport( options );
 

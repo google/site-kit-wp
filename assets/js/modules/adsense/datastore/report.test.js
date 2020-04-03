@@ -90,6 +90,26 @@ describe( 'modules/adsense report', () => {
 				expect( report ).toEqual( fixtures.report );
 			} );
 
+			it( 'does not make a network request if report for given options is already present', async () => {
+				const options = {
+					dateRange: 'last-90-days',
+				};
+
+				// Load data into this store so there are matches for the data we're about to select,
+				// even though the selector hasn't fulfilled yet.
+				registry.dispatch( STORE_NAME ).receiveReport( { options, report: fixtures.report } );
+
+				const report = registry.select( STORE_NAME ).getReport( options );
+
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getReport', [ options ] )
+				);
+
+				expect( fetch ).not.toHaveBeenCalled();
+				expect( report ).toEqual( fixtures.report );
+			} );
+
 			it( 'dispatches an error if the request fails', async () => {
 				const response = {
 					code: 'internal_server_error',
