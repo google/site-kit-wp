@@ -84,7 +84,7 @@ const numbersBetweet1000And10000 = [
 	],
 	[
 		1050,
-		'1K',
+		'1.1K',
 	],
 	[
 		3828,
