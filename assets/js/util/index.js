@@ -353,22 +353,19 @@ export const getModulesData = ( _googlesitekit = global.googlesitekit ) => {
 		return {};
 	}
 
-	const modules = {};
-	Object.keys( modulesObj ).forEach( ( slug ) => {
+	return Object.keys( modulesObj ).reduce( ( acc, slug ) => {
 		if ( 'object' !== typeof modulesObj[ slug ] ) {
-			return;
+			return acc;
 		}
 		if (
 			'undefined' === typeof modulesObj[ slug ].slug ||
 			'undefined' === typeof modulesObj[ slug ].name ||
 			modulesObj[ slug ].slug !== slug
 		) {
-			return;
+			return acc;
 		}
-		modules[ slug ] = modulesObj[ slug ];
-	} );
-
-	return modules;
+		return { ...acc, [ slug ]: modulesObj[ slug ] };
+	}, {} );
 };
 
 /**
