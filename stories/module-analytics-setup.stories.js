@@ -36,7 +36,7 @@ import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__
 
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
 import { WithTestRegistry } from '../tests/js/utils';
-import { ACCOUNT_CREATE } from '../assets/js/modules/analytics/datastore/accounts';
+import { ACCOUNT_CREATE } from '../assets/js/modules/analytics/datastore/constants';
 
 function filterAnalyticsSetup() {
 	global.googlesitekit.setup.moduleToSetup = 'analytics';
