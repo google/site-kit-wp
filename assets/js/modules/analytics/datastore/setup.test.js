@@ -106,7 +106,7 @@ describe( 'modules/analytics setup', () => {
 				);
 
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject( {
-					accountID: '12345',
+					data: { accountID: '12345' },
 				} );
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( createdProperty.id );
@@ -135,9 +135,13 @@ describe( 'modules/analytics setup', () => {
 					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
 				);
 
-				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject( {
-					accountID: '12345',
-				} );
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
+					{
+						data: {
+							accountID: '12345',
+						},
+					}
+				);
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( PROPERTY_CREATE );
 				expect( registry.select( STORE_NAME ).getError() ).toEqual( error );
@@ -171,10 +175,14 @@ describe( 'modules/analytics setup', () => {
 					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
 				);
 
-				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject( {
-					accountID: '12345',
-					propertyID: 'UA-12345-1',
-				} );
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
+					{
+						data: {
+							accountID: '12345',
+							propertyID: 'UA-12345-1',
+						},
+					}
+				);
 
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( createdProfile.id );
 			} );
@@ -203,9 +211,13 @@ describe( 'modules/analytics setup', () => {
 					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
 				);
 
-				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject( {
-					accountID: '12345',
-				} );
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
+					{
+						data: {
+							accountID: '12345',
+						},
+					}
+				);
 
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( PROFILE_CREATE );
 				expect( registry.select( STORE_NAME ).getError() ).toEqual( error );
@@ -264,7 +276,7 @@ describe( 'modules/analytics setup', () => {
 				);
 
 				expect( fetch ).toHaveBeenCalled();
-				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toEqual( validSettings );
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
 				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
 			} );
 		} );
