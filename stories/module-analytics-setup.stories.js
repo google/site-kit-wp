@@ -58,6 +58,19 @@ function Setup( props ) {
 }
 
 storiesOf( 'Analytics Module Setup', module )
+	.add( 'Loading', () => {
+		filterAnalyticsSetup();
+
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).setSettings( {} );
+			registry.dispatch( STORE_NAME ).receiveAccounts( [] );
+			registry.dispatch( STORE_NAME ).receiveProperties( [] );
+			registry.dispatch( STORE_NAME ).receiveProfiles( [] );
+			registry.stores[ STORE_NAME ].store.dispatch( { type: 'FETCH_ACCOUNTS_PROPERTIES_PROFILES' } );
+		};
+
+		return <Setup callback={ setupRegistry } />;
+	} )
 	.add( 'Start', () => {
 		filterAnalyticsSetup();
 

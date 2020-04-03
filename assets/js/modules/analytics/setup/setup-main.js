@@ -26,6 +26,7 @@ import { _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import SetupForm from './setup-form';
+import ProgressBar from '../../../components/progress-bar';
 import { SvgIcon } from '../../../util';
 import { STORE_NAME } from '../datastore';
 import { ACCOUNT_CREATE } from '../datastore/constants';
@@ -42,15 +43,18 @@ export default function SetupMain( { finishSetup } ) {
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
 	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasTagPermission( existingTag.propertyID, existingTag.accountID ) );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
+	const isFetchingAccounts = useSelect( ( select ) => select( STORE_NAME ).isFetchingAccounts() );
 
-	const ViewComponent = ( () => {
+	const view = ( () => {
 		switch ( true ) {
+			case ( isFetchingAccounts ) :
+				return <ProgressBar />;
 			case ( hasExistingTag && existingTagPermission === false ) :
-				return ExistingTagError;
+				return <ExistingTagError />;
 			case ( ! accounts.length || isCreateAccount ) :
-				return AccountCreate;
+				return <AccountCreate />;
 			default:
-				return SetupForm;
+				return <SetupForm finishSetup={ finishSetup } />;
 		}
 	} )();
 
@@ -65,7 +69,7 @@ export default function SetupMain( { finishSetup } ) {
 				{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 			</h2>
 
-			<ViewComponent finishSetup={ finishSetup } />
+			{ view }
 		</div>
 	);
 }
