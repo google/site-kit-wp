@@ -149,7 +149,7 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
 				__( '%sK', 'google-site-kit' ),
 				numberFormat( Math.round( number / 1000 ) )
 			);
-		// Numbers between 1000 and 10,000 round normally and display a single decimal unless the decimal is 0.
+		// Numbers between 1,000 and 10,000 round normally and display a single decimal unless the decimal is 0.
 		case 1000 <= number :
 			return sprintf(
 				// translators: %s: an abbreviated number in thousands.
