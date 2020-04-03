@@ -140,13 +140,4 @@ if ( modulesData.analytics.active ) {
 	addFilter( `googlesitekit.showDateRangeSelector-${ slug }`,
 		'googlesitekit.analyticsShowDateRangeSelector',
 		() => true );
-
-	/**
-	 * Add component to the setup wizard
-	 */
-	addFilter( `googlesitekit.ModuleSetup-${ slug }`,
-		'googlesitekit.AnalyticsModuleSetupWizard',
-		fillFilterWithComponent( AnalyticsSetup, {
-			onSettingsPage: false,
-		} ) );
 }

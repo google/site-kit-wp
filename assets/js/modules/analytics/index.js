@@ -19,4 +19,26 @@
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import './datastore';
+import { fillFilterWithComponent } from '../../util';
+import { SetupMain as AnalyticsSetup } from './setup/index';
+
+/**
+ * WordPress dependencies
+ */
+import { addFilter } from '@wordpress/hooks';
+
+function ConnectedAnalyticsSetup() {
+	return (
+		<Data.RegistryProvider value={ Data }>
+			<AnalyticsSetup />
+		</Data.RegistryProvider>
+	);
+}
+
+addFilter(
+	'googlesitekit.ModuleSetup-analytics',
+	'googlesitekit.AnalyticsModuleSetup',
+	fillFilterWithComponent( ConnectedAnalyticsSetup )
+);
