@@ -107,7 +107,7 @@ const webpackConfig = ( mode ) => {
 			output: {
 				filename: '[name].js',
 				path: __dirname + '/dist/assets/js',
-				chunkFilename: '[name]-[chunkhash].js',
+				chunkFilename: '[name].js',
 				publicPath: '',
 			},
 			performance: {
