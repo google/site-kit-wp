@@ -24,7 +24,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { initializeAction } from 'assets/js/googlesitekit/data/utils';
+import { initializeAction } from '../../data/utils';
 
 // Actions
 const FETCH_RESET = 'FETCH_RESET';
