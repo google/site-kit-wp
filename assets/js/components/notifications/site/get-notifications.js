@@ -1,7 +1,7 @@
 /**
- * External dependencies
+ * Internal dependencies
  */
-import data, { TYPE_CORE } from 'GoogleComponents/data';
+import data, { TYPE_CORE } from '../../data';
 
 /**
  * Gets core site notifications.

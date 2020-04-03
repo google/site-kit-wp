@@ -35,7 +35,7 @@ import {
 } from 'tests/js/utils';
 import {
 	createNotificationsStore,
-} from 'assets/js/googlesitekit/data/create-notifications-store';
+} from '../data/create-notifications-store';
 import { createModuleStore } from './create-module-store';
 
 const SETTING_SLUG = 'testSetting';

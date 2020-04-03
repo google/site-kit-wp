@@ -12,11 +12,11 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Layout from 'GoogleComponents/layout/layout';
-import AnalyticsDashboardWidgetOverview from 'GoogleModules/analytics/dashboard/dashboard-widget-overview';
-import AnalyticsDashboardWidgetSiteStats from 'GoogleModules/analytics/dashboard/dashboard-widget-sitestats';
-import DashboardAcquisitionPieChart from 'GoogleModules/analytics/dashboard/dashboard-widget-acquisition-piechart';
-import AnalyticsDashboardWidgetTopAcquisitionSources from 'GoogleModules/analytics/dashboard/dashboard-widget-top-acquisition-sources-table';
+import Layout from '../assets/js/components/layout/layout';
+import AnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/dashboard/dashboard-widget-overview';
+import AnalyticsDashboardWidgetSiteStats from '../assets/js/modules/analytics/dashboard/dashboard-widget-sitestats';
+import DashboardAcquisitionPieChart from '../assets/js/modules/analytics/dashboard/dashboard-widget-acquisition-piechart';
+import AnalyticsDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/dashboard/dashboard-widget-top-acquisition-sources-table';
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import {
 	AccountSelect,

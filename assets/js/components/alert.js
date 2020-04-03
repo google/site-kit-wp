@@ -19,8 +19,6 @@
 /**
  * External dependencies
  */
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
-import Notification from 'GoogleComponents/notifications/notification';
 import PropTypes from 'prop-types';
 
 /**
@@ -28,6 +26,12 @@ import PropTypes from 'prop-types';
  */
 import { __ } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import data, { TYPE_MODULES } from './data';
+import Notification from './notifications/notification';
 
 class Alert extends Component {
 	constructor( props ) {

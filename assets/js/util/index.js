@@ -25,8 +25,6 @@ import {
 	get,
 	unescape,
 } from 'lodash';
-import data, { TYPE_CORE } from 'GoogleComponents/data';
-import SvgIcon from 'GoogleUtil/svg-icon';
 import React from 'react';
 
 /**
@@ -47,11 +45,13 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import SvgIcon from './svg-icon';
 import { tagMatchers as setupTagMatchers } from '../components/setup/compatibility-checks';
 import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
 import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
 import { tagMatchers as tagmanagerTagMatchers } from '../modules/tagmanager/util';
 import { trackEvent } from './tracking';
+import data, { TYPE_CORE } from '../components/data';
 export { trackEvent };
 export { SvgIcon };
 export * from './sanitize';
@@ -334,6 +334,42 @@ export const refreshAuthentication = async () => {
 };
 
 /**
+ * Gets data for all modules.
+ *
+ * Because googlesitekit.modules contains both module information (legacy) and
+ * API functions (new), we should be using this function and never access
+ * googlesitekit.modules directly to access module data.
+ *
+ * This function should be removed once this object is no longer used to store
+ * legacy module data.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}  _googlesitekit Optional. googlesitekit global; can be replaced for testing.
+ * @return {Object} Object with module data, with each module keyed by its slug.
+ */
+export const getModulesData = ( _googlesitekit = global.googlesitekit ) => {
+	const modulesObj = _googlesitekit.modules;
+	if ( ! modulesObj ) {
+		return {};
+	}
+
+	return Object.keys( modulesObj ).reduce( ( acc, slug ) => {
+		if ( 'object' !== typeof modulesObj[ slug ] ) {
+			return acc;
+		}
+		if (
+			'undefined' === typeof modulesObj[ slug ].slug ||
+			'undefined' === typeof modulesObj[ slug ].name ||
+			modulesObj[ slug ].slug !== slug
+		) {
+			return acc;
+		}
+		return { ...acc, [ slug ]: modulesObj[ slug ] };
+	}, {} );
+};
+
+/**
  * Get the URL needed to initiate a reAuth flow.
  *
  * @param {string}  slug   The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
@@ -349,7 +385,7 @@ export const getReAuthURL = ( slug, status, _googlesitekit = global.googlesiteki
 
 	const { needReauthenticate } = _googlesitekit.setup;
 
-	const { screenID } = _googlesitekit.modules[ slug ];
+	const { screenID } = getModulesData( _googlesitekit )[ slug ];
 
 	// Special case handling for PageSpeed Insights.
 	// TODO: Refactor this out.
@@ -543,9 +579,11 @@ export const extractTag = ( string, module ) => {
  */
 export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) => {
 	return restApiClient.setModuleActive( moduleSlug, status ).then( ( responseData ) => {
+		const modulesData = getModulesData();
+
 		// We should really be using state management. This is terrible.
-		if ( global.googlesitekit.modules && global.googlesitekit.modules[ moduleSlug ] ) {
-			global.googlesitekit.modules[ moduleSlug ].active = responseData.active;
+		if ( modulesData[ moduleSlug ] ) {
+			modulesData[ moduleSlug ].active = responseData.active;
 		}
 
 		trackEvent(
@@ -572,7 +610,7 @@ export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) 
  * @return {(void|boolean)} True if a module has been toggled.
  */
 export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, _googlesitekit = global.googlesitekit ) => {
-	const { settings, setupComplete } = _googlesitekit.modules[ moduleSlug ];
+	const { settings, setupComplete } = getModulesData( _googlesitekit )[ moduleSlug ];
 	const confirm = skipDOM || document.getElementById( `confirm-changes-${ moduleSlug }` );
 
 	if ( ! setupComplete || ! confirm ) {

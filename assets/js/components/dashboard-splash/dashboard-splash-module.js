@@ -20,12 +20,16 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import SvgIcon from 'GoogleUtil/svg-icon';
 
 /**
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import SvgIcon from '../../util/svg-icon';
 
 class DashboardSplashModule extends Component {
 	render() {

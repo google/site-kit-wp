@@ -19,13 +19,17 @@
 /**
  * External dependencies
  */
-import { changeToPercent } from '../../../util';
 import { each } from 'lodash';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { changeToPercent, getModulesData } from '../../../util';
 
 export * from './validation';
 
@@ -478,7 +482,7 @@ export const getTopPagesReportDataDefaults = () => {
 		},
 	];
 
-	if ( global.googlesitekit.modules.analytics.settings.adsenseLinked ) {
+	if ( getModulesData().analytics.settings.adsenseLinked ) {
 		metrics.push(
 			{
 				expression: 'ga:adsenseRevenue',

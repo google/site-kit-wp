@@ -19,20 +19,7 @@
 /**
  * External dependencies
  */
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import PropTypes from 'prop-types';
-import Button from 'GoogleComponents/button';
-import ProgressBar from 'GoogleComponents/progress-bar';
-import Link from 'GoogleComponents/link';
-import Radio from 'GoogleComponents/radio';
-import Switch from 'GoogleComponents/switch';
-import { Select, Option } from 'SiteKitCore/material-components';
-import SvgIcon from 'GoogleUtil/svg-icon';
-import {
-	trackEvent,
-	getExistingTag,
-	toggleConfirmModuleSettings,
-} from 'GoogleUtil';
 import classnames from 'classnames';
 
 /**
@@ -42,11 +29,33 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 import { addFilter, removeFilter } from '@wordpress/hooks';
 
+/**
+ * Internal dependencies
+ */
+import {
+	trackEvent,
+	getExistingTag,
+	toggleConfirmModuleSettings,
+	getModulesData,
+} from '../../util';
+import SvgIcon from '../../util/svg-icon';
+
 const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
 
 const trackingExclusionLabels = {
 	[ TRACKING_LOGGED_IN_USERS ]: __( 'Logged-in users', 'google-site-kit' ),
 };
+
+/**
+ * Internal dependencies
+ */
+import { Select, Option } from '../../material-components';
+import data, { TYPE_MODULES } from '../../components/data';
+import Button from '../../components/button';
+import ProgressBar from '../../components/progress-bar';
+import Link from '../../components/link';
+import Radio from '../../components/radio';
+import Switch from '../../components/switch';
 
 class AnalyticsSetup extends Component {
 	constructor( props ) {
@@ -59,7 +68,7 @@ class AnalyticsSetup extends Component {
 			propertyID,
 			useSnippet,
 			trackingDisabled,
-		} = global.googlesitekit.modules.analytics.settings;
+		} = getModulesData().analytics.settings;
 
 		this.state = {
 			anonymizeIP,
@@ -537,7 +546,7 @@ class AnalyticsSetup extends Component {
 			data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 			await this.getAccounts();
 
-			global.googlesitekit.modules.analytics.settings = savedSettings;
+			getModulesData().analytics.settings = savedSettings;
 
 			trackEvent( 'analytics_setup', 'analytics_configured' );
 
@@ -637,7 +646,7 @@ class AnalyticsSetup extends Component {
 		} = this.props;
 		const disabled = ! isEditing;
 		const { ampMode } = global.googlesitekit.admin;
-		const useSnippetSettings = global.googlesitekit.modules.analytics.settings.useSnippet;
+		const useSnippetSettings = getModulesData().analytics.settings.useSnippet;
 
 		return (
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
@@ -791,7 +800,7 @@ class AnalyticsSetup extends Component {
 		const enableProfileSelect = !! /^UA-/.test( selectedProperty.toString() );
 
 		const { ampMode } = global.googlesitekit.admin;
-		const { setupComplete } = global.googlesitekit.modules.analytics;
+		const { setupComplete } = getModulesData().analytics;
 
 		if ( isLoading ) {
 			return <ProgressBar />;

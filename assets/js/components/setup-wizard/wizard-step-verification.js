@@ -20,12 +20,16 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import SiteVerification from 'GoogleComponents/setup/site-verification';
 
 /**
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import SiteVerification from '../../components/setup/site-verification';
 
 class WizardStepVerification extends Component {
 	render() {
