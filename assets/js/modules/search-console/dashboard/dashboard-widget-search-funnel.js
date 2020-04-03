@@ -30,9 +30,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Layout from '../../../components//layout/layout';
-import DashboardModuleHeader from '../../../components//dashboard/dashboard-module-header';
-import AnalyticsInactiveCTA from '../../../components//analytics-inactive-cta';
+import Layout from '../../../components/layout/layout';
+import DashboardModuleHeader from '../../../components/dashboard/dashboard-module-header';
+import AnalyticsInactiveCTA from '../../../components/analytics-inactive-cta';
 import DashboardSearchFunnelInner from './dashboard-widget-search-funnel-inner';
 
 class DashboardSearchFunnel extends Component {
