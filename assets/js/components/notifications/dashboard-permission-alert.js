@@ -17,14 +17,14 @@
  */
 
 /**
- * External dependencies
- */
-import Notification from 'GoogleComponents/notifications/notification';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Notification from '../../components/notifications/notification';
 
 const DashboardPermissionAlert = () => {
 	return (

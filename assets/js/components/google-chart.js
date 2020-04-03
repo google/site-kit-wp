@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import ProgressBar from 'GoogleComponents/progress-bar';
 import PropTypes from 'prop-types';
 
 /**
@@ -28,6 +27,11 @@ import PropTypes from 'prop-types';
 import { __ } from '@wordpress/i18n';
 import { Component, createRef } from '@wordpress/element';
 import { debounce } from 'lodash';
+
+/**
+ * Internal dependencies
+ */
+import ProgressBar from './progress-bar';
 
 let chartLoadPromise;
 

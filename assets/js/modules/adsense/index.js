@@ -17,12 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { createAddToFilter } from 'GoogleUtil/helpers';
-import { fillFilterWithComponent, getSiteKitAdminURL, getModulesData } from 'GoogleUtil';
-
-/**
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
@@ -30,6 +24,8 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import { createAddToFilter } from '../../util/helpers';
+import { fillFilterWithComponent, getSiteKitAdminURL, getModulesData } from '../../util';
 import AdSenseDashboardWidget from './dashboard/dashboard-widget';
 import DashboardEarnings from './dashboard/dashboard-earnings';
 import AdSenseSettings from './settings/adsense-settings';
@@ -38,7 +34,6 @@ import AdSenseSettingsStatus from './settings/adsense-settings-status';
 import AdSenseSettingsWarning from './settings/adsense-settings-warning';
 
 const slug = 'adsense';
-
 /**
  * Append ad blocker warning.
  */

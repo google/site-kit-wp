@@ -2,7 +2,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import SvgIcon from 'GoogleUtil/svg-icon';
+
 /**
  * WordPress dependencies
  */
@@ -12,7 +12,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getModulesData } from 'GoogleUtil';
+import { getModulesData } from '../../../util';
+import SvgIcon from '../../../util/svg-icon';
 
 class AdSenseSettingsWarning extends Component {
 	render() {

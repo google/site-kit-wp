@@ -25,8 +25,6 @@ import {
 	get,
 	unescape,
 } from 'lodash';
-import data, { TYPE_CORE } from 'GoogleComponents/data';
-import SvgIcon from 'GoogleUtil/svg-icon';
 import React from 'react';
 
 /**
@@ -47,11 +45,13 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import SvgIcon from './svg-icon';
 import { tagMatchers as setupTagMatchers } from '../components/setup/compatibility-checks';
 import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
 import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
 import { tagMatchers as tagmanagerTagMatchers } from '../modules/tagmanager/util';
 import { trackEvent } from './tracking';
+import data, { TYPE_CORE } from '../components/data';
 export { trackEvent };
 export * from './sanitize';
 export * from './stringify';

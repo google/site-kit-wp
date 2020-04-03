@@ -12,11 +12,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Layout from 'GoogleComponents/layout/layout';
+import Layout from '../assets/js/components/layout/layout';
 import AdSenseEstimateEarningsWidget
-	from 'GoogleModules/adsense/dashboard/dashboard-widget-estimate-earnings';
-import AdSensePerformanceWidget from 'GoogleModules/adsense/dashboard/dashboard-widget-performance';
-import AdSenseDashboardOutro from 'GoogleModules/adsense/dashboard/dashboard-outro';
+	from '../assets/js/modules/adsense/dashboard/dashboard-widget-estimate-earnings';
+import AdSensePerformanceWidget from '../assets/js/modules/adsense/dashboard/dashboard-widget-performance';
+import AdSenseDashboardOutro from '../assets/js/modules/adsense/dashboard/dashboard-outro';
 import { googlesitekit as adSenseData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-adsense-googlesitekit';
 
 storiesOf( 'AdSense Module', module )

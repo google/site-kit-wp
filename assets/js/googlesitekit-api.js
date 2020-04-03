@@ -23,7 +23,7 @@
 /**
  * Internal dependencies
  */
-import API from 'assets/js/googlesitekit/api';
+import API from './googlesitekit/api';
 
 if ( global.googlesitekit === undefined ) {
 	global.googlesitekit = {};
