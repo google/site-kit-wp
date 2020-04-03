@@ -17,15 +17,15 @@
  */
 
 /**
- * External dependencies
- */
-import { getTimeInSeconds, readableLargeNumber, getModulesData } from 'GoogleUtil';
-import { calculateOverviewData } from 'GoogleModules/analytics/util';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { getTimeInSeconds, readableLargeNumber, getModulesData } from '../../util';
+import { calculateOverviewData } from '../../modules/analytics/util';
 
 const trafficIncrease = ( data, id ) => {
 	const modulesData = getModulesData();

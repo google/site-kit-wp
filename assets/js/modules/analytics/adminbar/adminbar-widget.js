@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
-
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
@@ -30,7 +25,8 @@ import { Component, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import AnalyticsAdminbarWidgetOverview from './adminbar-widget-overview';
-import { getModulesData } from 'GoogleUtil';
+import AnalyticsInactiveCTA from '../../../components/analytics-inactive-cta';
+import { getModulesData } from '../../../util';
 
 class AnalyticsAdminbarWidget extends Component {
 	render() {

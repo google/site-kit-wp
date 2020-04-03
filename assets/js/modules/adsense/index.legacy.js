@@ -17,13 +17,10 @@
  */
 
 /**
- * External dependencies
- */
-import { createAddToFilter } from 'GoogleUtil/helpers';
-import { fillFilterWithComponent, getSiteKitAdminURL, getModulesData } from 'GoogleUtil';
-/**
  * Internal dependencies
  */
+import { createAddToFilter } from '../../util/helpers';
+import { fillFilterWithComponent, getSiteKitAdminURL, getModulesData } from '../../util';
 import AdSenseDashboardWidget from './dashboard/dashboard-widget';
 import DashboardEarnings from './dashboard/dashboard-earnings';
 import AdSenseSettings from './settings/adsense-settings';

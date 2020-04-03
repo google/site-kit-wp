@@ -17,12 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
-import Layout from 'GoogleComponents/layout/layout';
-
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
@@ -31,6 +25,8 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import DashboardModuleHeader from '../../../components/dashboard/dashboard-module-header';
+import Layout from '../../../components/layout/layout';
 import AnalyticsDashboardWidgetTopAcquisitionSources from '../dashboard/dashboard-widget-top-acquisition-sources-table';
 import DashboardAcquisitionPieChart from '../dashboard/dashboard-widget-acquisition-piechart';
 

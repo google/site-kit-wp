@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import AnalyticsInactiveCTA from 'GoogleComponents/analytics-inactive-cta';
 import classnames from 'classnames';
 
 /**
@@ -31,7 +30,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getModulesData } from 'GoogleUtil';
+import { getModulesData } from '../../util';
+import AnalyticsInactiveCTA from '../analytics-inactive-cta';
 import WPDashboardModule from './wp-dashboard-module';
 import WPDashboardHeader from './wp-dashboard-header';
 

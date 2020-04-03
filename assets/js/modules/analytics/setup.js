@@ -19,21 +19,7 @@
 /**
  * External dependencies
  */
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
 import PropTypes from 'prop-types';
-import Button from 'GoogleComponents/button';
-import ProgressBar from 'GoogleComponents/progress-bar';
-import Link from 'GoogleComponents/link';
-import Radio from 'GoogleComponents/radio';
-import Switch from 'GoogleComponents/switch';
-import { Select, Option } from 'SiteKitCore/material-components';
-import SvgIcon from 'GoogleUtil/svg-icon';
-import {
-	trackEvent,
-	getExistingTag,
-	toggleConfirmModuleSettings,
-	getModulesData,
-} from 'GoogleUtil';
 import classnames from 'classnames';
 
 /**
@@ -43,11 +29,33 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 import { addFilter, removeFilter } from '@wordpress/hooks';
 
+/**
+ * Internal dependencies
+ */
+import {
+	trackEvent,
+	getExistingTag,
+	toggleConfirmModuleSettings,
+	getModulesData,
+} from '../../util';
+import SvgIcon from '../../util/svg-icon';
+
 const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
 
 const trackingExclusionLabels = {
 	[ TRACKING_LOGGED_IN_USERS ]: __( 'Logged-in users', 'google-site-kit' ),
 };
+
+/**
+ * Internal dependencies
+ */
+import { Select, Option } from '../../material-components';
+import data, { TYPE_MODULES } from '../../components/data';
+import Button from '../../components/button';
+import ProgressBar from '../../components/progress-bar';
+import Link from '../../components/link';
+import Radio from '../../components/radio';
+import Switch from '../../components/switch';
 
 class AnalyticsSetup extends Component {
 	constructor( props ) {

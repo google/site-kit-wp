@@ -19,8 +19,6 @@
 /**
  * External dependencies
  */
-import Notification from 'GoogleComponents/notifications/notification';
-import { modulesNotificationsToRequest, getModulesNotifications } from 'GoogleComponents/notifications/util';
 import { each } from 'lodash';
 
 /**
@@ -32,7 +30,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getModulesData } from 'GoogleUtil';
+import { getModulesData } from '../../util';
+import Notification from './notification';
+import { modulesNotificationsToRequest, getModulesNotifications } from './util';
 
 class DashboardModulesAlerts extends Component {
 	constructor( props ) {

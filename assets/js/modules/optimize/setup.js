@@ -19,18 +19,7 @@
 /**
  * External dependencies
  */
-import Button from 'GoogleComponents/button';
-import Link from 'GoogleComponents/link';
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
-import { TextField, Input, HelperText } from 'SiteKitCore/material-components';
-import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
-import {
-	validateJSON,
-	validateOptimizeID,
-	toggleConfirmModuleSettings,
-	getModulesData,
-} from 'GoogleUtil';
 import classnames from 'classnames';
 
 /**
@@ -39,6 +28,21 @@ import classnames from 'classnames';
 import { __, _x } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 import { addFilter, removeFilter } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import {
+	validateJSON,
+	validateOptimizeID,
+	toggleConfirmModuleSettings,
+	getModulesData,
+} from '../../util';
+import SvgIcon from '../../util/svg-icon';
+import Button from '../../components/button';
+import Link from '../../components/link';
+import data, { TYPE_MODULES } from '../../components/data';
+import { TextField, Input, HelperText } from '../../material-components';
 
 class OptimizeSetup extends Component {
 	constructor( props ) {

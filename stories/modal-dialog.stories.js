@@ -2,11 +2,16 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import Dialog from 'GoogleComponents/dialog';
+
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Dialog from '../assets/js/components/dialog';
 
 storiesOf( 'Global', module )
 	.add( 'Modal Dialog', () => {

@@ -17,15 +17,15 @@
  */
 
 /**
- * External dependencies
- */
-import { extractSearchConsoleDashboardData } from 'GoogleModules/search-console/dashboard/util';
-import { getTimeInSeconds, getDaysBetweenDates } from 'GoogleUtil';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { extractSearchConsoleDashboardData } from '../../modules/search-console/dashboard/util';
+import { getTimeInSeconds, getDaysBetweenDates } from '../../util';
 
 const totalStats = ( data, id ) => {
 	if ( 5 >= parseInt( global.googlesitekit.admin.newSitePosts, 10 ) ) {
