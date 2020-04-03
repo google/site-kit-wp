@@ -155,10 +155,11 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 */
 		*saveSettings() {
 			const registry = yield getRegistry();
-			const values = yield registry.select( STORE_NAME ).getSettings();
+			const values = registry.select( STORE_NAME ).getSettings();
 
 			try {
 				const savedValues = yield actions.fetchSaveSettings( values );
+
 				return actions.receiveSaveSettings( savedValues );
 			} catch ( err ) {
 				// TODO: Implement an error handler store or some kind of centralized
