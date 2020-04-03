@@ -40,6 +40,10 @@ export default function PropertySelect() {
 
 	const { setPropertyID, setInternalWebPropertyID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
+		const newPropertyID = item.dataset.value;
+		if ( propertyID === newPropertyID ) {
+			return;
+		}
 		setPropertyID( item.dataset.value );
 		setInternalWebPropertyID( item.dataset.internalWebProperty || '' );
 	}, [ propertyID ] );
