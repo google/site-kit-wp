@@ -822,26 +822,7 @@ final class Analytics extends Module
 				$restore_defer = $this->with_client_defer( false );
 				try {
 					$analytics_service = $this->get_service( 'analyticsprovisioning' );
-
-					$custom_provisioning = new Provisioning(
-						$analytics_service,
-						$analytics_service->serviceName, // phpcs:ignore WordPress.NamingConventions.ValidVariableName
-						'provisioning',
-						array(
-							'methods' => array(
-								'createAccountTicket' => array(
-									'path'       => 'provisioning/createAccountTicket',
-									'httpMethod' => 'POST',
-									'parameters' => array(),
-								),
-							),
-						)
-					);
-
-					// Use a custom provisioning method that accepts site id and secret.
-					$analytics_service->provisioning = $custom_provisioning;
-
-					$account_ticket = $analytics_service->provisioning->createAccountTicket( $account_ticket );
+					$account_ticket    = $analytics_service->provisioning->createAccountTicket( $account_ticket );
 				} catch ( Exception $e ) {
 					$restore_defer();
 					return $this->exception_to_error( $e, $data->datapoint );
@@ -1217,10 +1198,31 @@ final class Analytics extends Module
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		$google_proxy = new Google_Proxy( $this->context );
+
+		// Create an analytics provisioning service that makes requests to the proxy.
+		$analytics_provisioning_service = new Google_Service_Analytics( $client, $google_proxy->url() );
+
+		// Use a custom provisioning method that accepts site id and secret.
+		$custom_provisioning                          = new Provisioning(
+			$analytics_provisioning_service,
+			$analytics_provisioning_service->serviceName, // phpcs:ignore WordPress.NamingConventions.ValidVariableName
+			'provisioning',
+			array(
+				'methods' => array(
+					'createAccountTicket' => array(
+						'path'       => 'provisioning/createAccountTicket',
+						'httpMethod' => 'POST',
+						'parameters' => array(),
+					),
+				),
+			)
+		);
+		$analytics_provisioning_service->provisioning = $custom_provisioning;
+
 		return array(
 			'analytics'             => new Google_Service_Analytics( $client ),
 			'analyticsreporting'    => new Google_Service_AnalyticsReporting( $client ),
-			'analyticsprovisioning' => new Google_Service_Analytics( $client, $google_proxy->url() ), // Send provisioning requests to the proxy.
+			'analyticsprovisioning' => $analytics_provisioning_service,
 		);
 	}
 
