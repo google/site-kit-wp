@@ -15,16 +15,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-	useSelect as useSelectHook,
-	useDispatch as useDispatchHook,
-} from '@wordpress/data';
+
+/**
+ * WordPress dependencies
+ */
 import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import PropTypes from 'prop-types';
-import Switch from '../../../components/switch';
 
-const STORE_NAME = 'modules/analytics'; // temp
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../datastore';
+import Switch from '../../../components/switch';
+const { useSelect, useDispatch } = Data;
 
 const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
 
@@ -32,7 +36,7 @@ export const trackingExclusionLabels = {
 	[ TRACKING_LOGGED_IN_USERS ]: __( 'Logged-in users', 'google-site-kit' ),
 };
 
-export default function TrackingExclusionSwitches( { useSelect, useDispatch } ) {
+export default function TrackingExclusionSwitches() {
 	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getTrackingDisabled() );
 
 	const { setTrackingDisabled } = useDispatch( STORE_NAME );
@@ -62,13 +66,3 @@ export default function TrackingExclusionSwitches( { useSelect, useDispatch } ) 
 		</div>
 	);
 }
-
-TrackingExclusionSwitches.propTypes = {
-	useSelect: PropTypes.func,
-	useDispatch: PropTypes.func,
-};
-
-TrackingExclusionSwitches.defaultProps = {
-	useSelect: useSelectHook,
-	useDispatch: useDispatchHook,
-};
