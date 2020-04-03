@@ -243,6 +243,32 @@ describe( 'modules/analytics setup', () => {
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( createdProperty.id );
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( createdProfile.id );
 			} );
+
+			it( 'dispatches saveSettings', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
+					)
+					.mockResponseOnce(
+						JSON.stringify( validSettings ),
+						{ status: 200 }
+					);
+
+				registry.dispatch( STORE_NAME ).submitChanges();
+
+				await subscribeUntil(
+					registry,
+					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false &&
+					registry.select( STORE_NAME ).isDoingSaveSettings() === false &&
+					registry.stores[ STORE_NAME ].store.getState().savedSettings !== undefined
+				);
+
+				expect( fetch ).toHaveBeenCalled();
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toEqual( validSettings );
+				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
+			} );
 		} );
 	} );
 

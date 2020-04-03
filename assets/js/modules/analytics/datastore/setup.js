@@ -75,6 +75,8 @@ export const actions = {
 			}
 		}
 
+		registry.dispatch( STORE_NAME ).saveSettings();
+
 		onSuccess();
 
 		return actions.finishSubmitChanges();
