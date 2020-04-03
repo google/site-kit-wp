@@ -5,6 +5,6 @@
     "kind":"adsense#account",
     "name":"Test Account",
     "premium":false,
-    "timezone":"Europe\/Berlin"
+    "timezone":"Europe/Berlin"
   }
 ]
