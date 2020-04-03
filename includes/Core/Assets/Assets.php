@@ -429,14 +429,20 @@ final class Assets {
 				'googlesitekit-api',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-api.js',
-					'dependencies' => array( 'googlesitekit-apifetch-data' ),
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-apifetch-data',
+					),
 				)
 			),
 			new Script(
 				'googlesitekit-data',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-data.js',
-					'dependencies' => array( 'googlesitekit-api' ),
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-api',
+					),
 				)
 			),
 			new Script(
@@ -444,6 +450,7 @@ final class Assets {
 				array(
 					'src'          => $base_url . 'js/googlesitekit-datastore-site.js',
 					'dependencies' => array(
+						'googlesitekit-vendor',
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-base-data',
@@ -456,6 +463,7 @@ final class Assets {
 				array(
 					'src'          => $base_url . 'js/googlesitekit-modules.js',
 					'dependencies' => array(
+						'googlesitekit-vendor',
 						'googlesitekit-api',
 						'googlesitekit-data',
 					),
