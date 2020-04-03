@@ -76,6 +76,10 @@ const resolve = {
 	alias: {
 		'@wordpress/api-fetch__non-shim': require.resolve( '@wordpress/api-fetch' ),
 		'@wordpress/api-fetch$': path.resolve( 'assets/js/api-fetch-shim.js' ),
+		'@wordpress/element__non-shim': require.resolve( '@wordpress/element' ),
+		'@wordpress/element$': path.resolve( 'assets/js/element-shim.js' ),
+		'@wordpress/hooks__non-shim': require.resolve( '@wordpress/hooks' ),
+		'@wordpress/hooks$': path.resolve( 'assets/js/hooks-shim.js' ),
 	},
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
