@@ -25,7 +25,7 @@
  * @return {boolean} True if the given account ID is valid, false otherwise.
  */
 export function isValidAccountID( accountID ) {
-	return typeof accountID === 'string' && accountID.match( /^pub-\d+$/ );
+	return typeof accountID === 'string' && !! accountID.match( /^pub-\d+$/ );
 }
 
 /**
@@ -37,5 +37,5 @@ export function isValidAccountID( accountID ) {
  * @return {boolean} True if the given client ID is valid, false otherwise.
  */
 export function isValidClientID( clientID ) {
-	return typeof clientID === 'string' && clientID.match( /^ca-pub-\d+$/ );
+	return typeof clientID === 'string' && !! clientID.match( /^ca-pub-\d+$/ );
 }
