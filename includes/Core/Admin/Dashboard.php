@@ -125,7 +125,6 @@ final class Dashboard {
 	 * @since 1.0.0
 	 */
 	private function render_googlesitekit_wp_dashboard() {
-		do_action( 'googlesitekit_above_wp_dashboard_app' );
 
 		$this->render_noscript_html();
 		?>
