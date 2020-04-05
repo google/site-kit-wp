@@ -192,7 +192,7 @@ export const resolvers = {
 				yield registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id || '' );
 			}
 
-			return yield actions.receiveAccountsPropertiesProfilesCompleted();
+			return actions.receiveAccountsPropertiesProfilesCompleted();
 		} catch ( err ) {
 			// TODO: Implement an error handler store or some kind of centralized
 			// place for error dispatch...
