@@ -109,6 +109,7 @@ describe( 'modules/analytics accounts', () => {
 		describe( 'getAccounts', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( {} );
+				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 				fetch
 					.doMockOnceIf(
 						/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
@@ -238,56 +239,57 @@ describe( 'modules/analytics accounts', () => {
 				);
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 			} );
-		} );
 
-		it( 'sets account, property, and profile IDs in the store, if a matchedProperty is received and an account is not selected yet', async () => {
-			const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
-			const matchedProfile = {
-				...fixtures.profiles[ 0 ],
-				id: '123456',
-				webPropertyId: matchedProperty.id,
-				accountId: matchedProperty.accountId,
-			};
-			const response = {
-				accounts,
-				properties,
-				profiles: [
-					matchedProfile,
-					...profiles,
-				],
-				matchedProperty,
-			};
+			it( 'sets account, property, and profile IDs in the store, if a matchedProperty is received and an account is not selected yet', async () => {
+				const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
+				const matchedProfile = {
+					...fixtures.profiles[ 0 ],
+					id: '123456',
+					webPropertyId: matchedProperty.id,
+					accountId: matchedProperty.accountId,
+				};
+				const response = {
+					accounts,
+					properties,
+					profiles: [
+						matchedProfile,
+						...profiles,
+					],
+					matchedProperty,
+				};
 
-			registry.dispatch( STORE_NAME ).setSettings( {} );
+				registry.dispatch( STORE_NAME ).setSettings( {} );
+				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 
-			fetch
-				.doMockOnceIf(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
-				)
-				.mockResponseOnce(
-					JSON.stringify( response ),
-					{ status: 200 }
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
+					)
+					.mockResponseOnce(
+						JSON.stringify( response ),
+						{ status: 200 }
+					);
+
+				expect( store.getState().matchedProperty ).toBeFalsy();
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBeFalsy();
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBeFalsy();
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBeFalsy();
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBeFalsy();
+
+				registry.select( STORE_NAME ).getAccounts();
+
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getAccounts() !== undefined
+					),
 				);
 
-			expect( store.getState().matchedProperty ).toBeFalsy();
-			expect( registry.select( STORE_NAME ).getAccountID() ).toBeFalsy();
-			expect( registry.select( STORE_NAME ).getPropertyID() ).toBeFalsy();
-			expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBeFalsy();
-			expect( registry.select( STORE_NAME ).getProfileID() ).toBeFalsy();
-
-			registry.select( STORE_NAME ).getAccounts();
-
-			await subscribeUntil( registry,
-				() => (
-					registry.select( STORE_NAME ).getAccounts() !== undefined
-				),
-			);
-
-			expect( store.getState().matchedProperty ).toMatchObject( matchedProperty );
-			expect( registry.select( STORE_NAME ).getAccountID() ).toBe( matchedProperty.accountId );
-			expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( matchedProperty.id );
-			expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( matchedProperty.internalWebPropertyId );
-			expect( registry.select( STORE_NAME ).getProfileID() ).toBe( matchedProfile.id );
+				expect( store.getState().matchedProperty ).toMatchObject( matchedProperty );
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( matchedProperty.accountId );
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( matchedProperty.id );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( matchedProperty.internalWebPropertyId );
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( matchedProfile.id );
+			} );
 		} );
 	} );
 } );
