@@ -354,6 +354,15 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 				return actions.receiveSettingsFailed();
 			}
 		},
+
+		*getSavedSettings() {
+			const registry = yield getRegistry();
+			const existingSettings = registry.select( STORE_NAME ).getSavedSettings();
+
+			if ( ! existingSettings ) {
+				registry.select( STORE_NAME ).getSettings();
+			}
+		},
 	};
 
 	const selectors = {
