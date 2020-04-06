@@ -33,6 +33,7 @@ const FETCH_URLCHANNELS = 'FETCH_URLCHANNELS';
 const RECEIVE_URLCHANNELS = 'RECEIVE_URLCHANNELS';
 const RECEIVE_URLCHANNELS_SUCCEEDED = 'RECEIVE_URLCHANNELS_SUCCEEDED';
 const RECEIVE_URLCHANNELS_FAILED = 'RECEIVE_URLCHANNELS_FAILED';
+const RESET_URLCHANNELS = 'RESET_URLCHANNELS';
 
 export const INITIAL_STATE = {
 	isFetchingURLChannels: {},
@@ -77,6 +78,18 @@ export const actions = {
 			payload: { accountID, error, clientID },
 			type: RECEIVE_URLCHANNELS_FAILED,
 		};
+	},
+
+	*resetURLChannels() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield {
+			payload: {},
+			type: RESET_URLCHANNELS,
+		};
+
+		return registry.stores[ STORE_NAME ].getActions()
+			.invalidateResolutionForStoreSelector( 'getURLChannels' );
 	},
 };
 
@@ -137,6 +150,13 @@ export const reducer = ( state, { type, payload } ) => {
 					...state.isFetchingURLChannels,
 					[ `${ accountID }::${ clientID }` ]: false,
 				},
+			};
+		}
+
+		case RESET_URLCHANNELS: {
+			return {
+				...state,
+				urlchannels: {},
 			};
 		}
 

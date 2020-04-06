@@ -33,6 +33,7 @@ const FETCH_ACCOUNTS = 'FETCH_ACCOUNTS';
 const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
 const RECEIVE_ACCOUNTS_SUCCEEDED = 'RECEIVE_ACCOUNTS_SUCCEEDED';
 const RECEIVE_ACCOUNTS_FAILED = 'RECEIVE_ACCOUNTS_FAILED';
+const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 
 export const INITIAL_STATE = {
 	isFetchingAccounts: false,
@@ -70,6 +71,18 @@ export const actions = {
 			payload: { error },
 			type: RECEIVE_ACCOUNTS_FAILED,
 		};
+	},
+
+	*resetAccounts() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield {
+			payload: {},
+			type: RESET_ACCOUNTS,
+		};
+
+		return registry.stores[ STORE_NAME ].getActions()
+			.invalidateResolutionForStoreSelector( 'getAccounts' );
 	},
 };
 
@@ -111,6 +124,13 @@ export const reducer = ( state, { type, payload } ) => {
 				...state,
 				error,
 				isFetchingAccounts: false,
+			};
+		}
+
+		case RESET_ACCOUNTS: {
+			return {
+				...state,
+				accounts: undefined,
 			};
 		}
 

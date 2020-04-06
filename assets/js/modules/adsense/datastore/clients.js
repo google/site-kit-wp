@@ -35,6 +35,7 @@ const FETCH_CLIENTS = 'FETCH_CLIENTS';
 const RECEIVE_CLIENTS = 'RECEIVE_CLIENTS';
 const RECEIVE_CLIENTS_SUCCEEDED = 'RECEIVE_CLIENTS_SUCCEEDED';
 const RECEIVE_CLIENTS_FAILED = 'RECEIVE_CLIENTS_FAILED';
+const RESET_CLIENTS = 'RESET_CLIENTS';
 
 export const INITIAL_STATE = {
 	isFetchingClients: {},
@@ -86,6 +87,18 @@ export const actions = {
 			payload: { accountID, error },
 			type: RECEIVE_CLIENTS_FAILED,
 		};
+	},
+
+	*resetClients() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield {
+			payload: {},
+			type: RESET_CLIENTS,
+		};
+
+		return registry.stores[ STORE_NAME ].getActions()
+			.invalidateResolutionForStoreSelector( 'getClients' );
 	},
 };
 
@@ -143,6 +156,13 @@ export const reducer = ( state, { type, payload } ) => {
 					...state.isFetchingClients,
 					[ accountID ]: false,
 				},
+			};
+		}
+
+		case RESET_CLIENTS: {
+			return {
+				...state,
+				clients: {},
 			};
 		}
 
