@@ -189,9 +189,6 @@ export const controls = {
 };
 
 export const reducer = ( state, { type, payload } ) => {
-	/* eslint-disable no-console */
-	console.log( type, payload );
-
 	switch ( type ) {
 		case FETCH_ACCOUNTS_PROPERTIES_PROFILES: {
 			return {
