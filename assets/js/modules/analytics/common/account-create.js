@@ -36,6 +36,7 @@ import Button from '../../../components/button';
 import classnames from 'classnames';
 import ProgressBar from '../../../components/progress-bar';
 import { STORE_NAME } from '../datastore';
+import { trackEvent } from '../../../util';
 const { useDispatch } = Data;
 
 // Cache the complicated timezone dropdown.
@@ -45,6 +46,7 @@ const AccountCreate = () => {
 	const { createAccount } = useDispatch( STORE_NAME );
 
 	const handleSubmit = useCallback( ( accountName, propertyName, profileName, timezone ) => {
+		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
 		createAccount( {
 			accountName,
 			propertyName,
