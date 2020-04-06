@@ -117,6 +117,7 @@ storiesOf( 'Analytics Module Setup', module )
 
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveExistingTag( null );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );

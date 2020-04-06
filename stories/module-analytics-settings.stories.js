@@ -109,6 +109,7 @@ storiesOf( 'Analytics Module Settings', module )
 		filterAnalyticsSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveExistingTag( null );
 			dispatch( STORE_NAME ).receiveSettings( {
 				accountID: '1234567890',
 				propertyID: 'UA-1234567890-1',
@@ -127,6 +128,7 @@ storiesOf( 'Analytics Module Settings', module )
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
 		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveExistingTag( null );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
@@ -146,6 +148,7 @@ storiesOf( 'Analytics Module Settings', module )
 		filterAnalyticsSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveExistingTag( null );
 			dispatch( STORE_NAME ).receiveSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( [] );
 		};
