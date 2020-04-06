@@ -29,7 +29,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './index';
 import { actions as profileActions } from './profiles';
-import { isValidAccountID } from '../util';
+import { isValidAccountID, isValidPropertyID } from '../util';
 import { PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 
 // Actions
@@ -156,6 +156,38 @@ export const actions = {
 			payload: { matchedProperty },
 			type: RECEIVE_MATCHED_PROPERTY,
 		};
+	},
+
+	/**
+	 * Applies the given property over current selections.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} args Arguments.
+	 * @param {?string} args.propertyID Property ID.
+	 * @param {?string} [args.accountID] Account ID.
+	 * @param {?string} [args.internalWebPropertyID] Internal web property ID.
+	 */
+	*applyProperty( { propertyID, accountID = '', internalWebPropertyID = '' } = {} ) {
+		invariant( isValidPropertyID( propertyID ), 'A valid propertyID is required.' );
+
+		const registry = yield Data.commonActions.getRegistry();
+
+		registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
+
+		if ( isValidAccountID( accountID ) ) {
+			registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		}
+
+		if ( ! internalWebPropertyID ) {
+			const properties = registry.select( STORE_NAME ).getProperties( accountID ) || [];
+			const property = properties.find( ( p ) => p.id === propertyID ) || {};
+			internalWebPropertyID = property.internalWebPropertyId;
+		}
+
+		registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalWebPropertyID || '' );
+		registry.dispatch( STORE_NAME ).setProfileForProperty( { accountID, propertyID } );
 	},
 
 	/**
