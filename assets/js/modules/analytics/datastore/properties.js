@@ -392,6 +392,18 @@ export const resolvers = {
 
 export const selectors = {
 	/**
+	 * Gets the matched property, if any.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {?Object} Matched property if set, otherwise `undefined`.
+	 */
+	getMatchedProperty( state ) {
+		return state.matchedProperty;
+	},
+	/**
 	 * Get all Google Analytics properties this account can access.
 	 *
 	 * Returns an array of all analytics properties.
