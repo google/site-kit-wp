@@ -155,28 +155,24 @@ storiesOf( 'Analytics Module Settings', module )
 	.add( 'Edit, with existing tag (with access)', () => {
 		filterAnalyticsSettings();
 
-		const { accounts } = fixtures.accountsPropertiesProfiles;
-		const { properties, profiles } = fixtures.propertiesProfiles;
-		const { accountId, webPropertyId, id: profileID } = fixtures.accountsPropertiesProfiles.profiles[ 0 ];
+		const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
 		const existingTag = {
-			accountID: fixtures.propertiesProfiles.profiles[ 0 ].accountId,
-			propertyID: fixtures.propertiesProfiles.profiles[ 0 ].webPropertyId,
+			accountID: matchedProperty.accountId,
+			propertyID: matchedProperty.id,
 		};
-
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveExistingTag( existingTag );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
 			dispatch( STORE_NAME ).receiveSettings( {
-				accountID: accountId,
-				propertyID: webPropertyId,
-				profileID,
+				accountID: '12345',
+				propertyID: 'UA-12345-1',
+				profileID: '99999',
 				anonymizeIP: true,
 				useSnippet: true,
 				trackingDisabled: [ 'loggedinUsers' ],
 			} );
-			dispatch( STORE_NAME ).receiveExistingTag( existingTag );
 			dispatch( STORE_NAME ).receiveTagPermission( {
 				...existingTag,
 				permission: true,
