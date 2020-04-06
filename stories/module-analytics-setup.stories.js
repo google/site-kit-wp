@@ -145,6 +145,7 @@ storiesOf( 'Analytics Module Setup', module )
 				...existingTag,
 				permission: true,
 			} );
+			dispatch( STORE_NAME ).applyProperty( existingTag );
 		};
 
 		return <Setup callback={ setupRegistry } />;

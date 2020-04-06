@@ -177,6 +177,7 @@ storiesOf( 'Analytics Module Settings', module )
 				...existingTag,
 				permission: true,
 			} );
+			dispatch( STORE_NAME ).applyProperty( existingTag );
 		};
 
 		return <Settings isEditing={ true } callback={ setupRegistry } />;
