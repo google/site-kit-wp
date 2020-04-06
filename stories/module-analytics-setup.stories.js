@@ -91,16 +91,12 @@ storiesOf( 'Analytics Module Setup', module )
 
 		const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
 			dispatch( STORE_NAME ).receiveExistingTag( null );
 			dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
-			dispatch( STORE_NAME ).receiveSettings( {
-				accountID: matchedProperty.accountId,
-				propertyID: matchedProperty.id,
-				profileID: profiles[ 0 ].id,
-			} );
 		};
 
 		return <Setup callback={ setupRegistry } />;
