@@ -209,12 +209,8 @@ export const resolvers = {
 			const existingTag = yield actions.fetchExistingTag();
 			yield actions.receiveExistingTag( existingTag !== undefined ? existingTag : null );
 
-			const { accountID, propertyID } = existingTag || {};
-			if ( accountID ) {
-				registry.dispatch( STORE_NAME ).setAccountID( accountID );
-			}
-			if ( propertyID ) {
-				registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
+			if ( existingTag ) {
+				registry.dispatch( STORE_NAME ).applyProperty( existingTag );
 			}
 
 			return;
