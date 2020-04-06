@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-export { default as AccountCreate } from './account-create-legacy';
+export { default as AccountCreate } from './account-create';
 export { default as AccountSelect } from './account-select';
 export { default as AnonymizeIPSwitch } from './anonymize-ip-switch';
 export { default as ExistingTagError } from './existing-tag-error';

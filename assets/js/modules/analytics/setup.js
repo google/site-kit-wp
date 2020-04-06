@@ -21,7 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import AnalyticsSetupNoAccountNotice from './setup/analytics-setup-no-account-notice';
+import AccountCreate from './common/account-create';
 
 /**
  * WordPress dependencies
@@ -819,7 +819,7 @@ class AnalyticsSetup extends Component {
 			}
 			if ( ! setupComplete || isEditing ) {
 				return (
-					<AnalyticsSetupNoAccountNotice />
+					<AccountCreate />
 				);
 			}
 		}

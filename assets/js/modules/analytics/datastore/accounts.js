@@ -34,10 +34,14 @@ const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED';
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
+const FETCH_CREATE_ACCOUNT = 'FETCH_CREATE_ACCOUNT';
+const RECEIVE_CREATE_ACCOUNT = 'RECEIVE_CREATE_ACCOUNT';
+const RECEIVE_CREATE_ACCOUNT_FAILED = 'RECEIVE_CREATE_ACCOUNT_FAILED';
 
 export const INITIAL_STATE = {
 	accounts: undefined,
 	isFetchingAccountsPropertiesProfiles: false,
+	isSubmittingCreateAccount: false,
 };
 
 export const actions = {
@@ -92,20 +96,112 @@ export const actions = {
 		return registry.stores[ STORE_NAME ].getActions()
 			.invalidateResolutionForStoreSelector( 'getAccounts' );
 	},
+
+	/**
+	 * Creates a new Analytics account.
+	 *
+	 * Creates a new Analytics account for a user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} accountName  Google Analytics account name.
+	 * @param {string} propertyName Google Analytics property name.
+	 * @param {string} profileName  Google Analytics profile name.
+	 * @param {string} timezone     Google Analytics timezone.
+	 * @return {Function} Generator function action.
+	 */
+	*createAccount( { accountName, propertyName, profileName, timezone } ) {
+		invariant( accountName, 'accountName is required.' );
+		invariant( propertyName, 'propertyName is required.' );
+		invariant( profileName, 'profileName is required.' );
+		invariant( timezone, 'timezone is required.' );
+
+		try {
+			const createAccountTicket = yield actions.fetchCreateAccount( { accountName, propertyName, profileName, timezone } );
+			return actions.receiveCreateAccount( { accountName, propertyName, profileName, timezone, createAccountTicket } );
+		} catch ( error ) {
+			// TODO: Implement an error handler store or some kind of centralized
+			// place for error dispatch...
+			return actions.receiveCreateAccountFailed( { accountName, error } );
+		}
+	},
+
+	fetchCreateAccount( { accountName, propertyName, profileName, timezone } ) {
+		return {
+			payload: { accountName, propertyName, profileName, timezone },
+			type: FETCH_CREATE_ACCOUNT,
+		};
+	},
+
+	/**
+	 * Adds a account ticket to process.
+	 *
+	 * Adds the newly-created account ticket to the data store.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} args              Argument params.
+	 * @param {Object} args.createAccountTicket  Google Analytics create account ticket object.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveCreateAccount( { createAccountTicket } ) {
+		invariant( createAccountTicket, 'createAccountTicket is required.' );
+
+		return {
+			payload: { createAccountTicket },
+			type: RECEIVE_CREATE_ACCOUNT,
+		};
+	},
+
+	/**
+	 * Logs an error with account creation.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} args            Argument params.
+	 * @param {Object} args.error      Error object.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveCreateAccountFailed( { error } ) {
+		return {
+			payload: { error },
+			type: RECEIVE_CREATE_ACCOUNT_FAILED,
+		};
+	},
 };
 
 export const controls = {
 	[ FETCH_ACCOUNTS_PROPERTIES_PROFILES ]: ( { payload } ) => {
 		return API.get( 'modules', 'analytics', 'accounts-properties-profiles', payload.data );
 	},
+	[ FETCH_CREATE_ACCOUNT ]: ( { payload: { accountName, propertyName, profileName, timezone } } ) => {
+		return API.get( 'modules', 'analytics', 'create-account-ticket', {
+			accountName,
+			propertyName,
+			profileName,
+			timezone,
+		} );
+	},
 };
 
 export const reducer = ( state, { type, payload } ) => {
+	/* eslint-disable no-console */
+	console.log( type, payload );
+
 	switch ( type ) {
 		case FETCH_ACCOUNTS_PROPERTIES_PROFILES: {
 			return {
 				...state,
 				isFetchingAccountsPropertiesProfiles: true,
+			};
+		}
+
+		case FETCH_CREATE_ACCOUNT: {
+			return {
+				...state,
+				isSubmittingCreateAccount: true,
 			};
 		}
 
@@ -148,6 +244,22 @@ export const reducer = ( state, { type, payload } ) => {
 				},
 			};
 		}
+
+		case RECEIVE_CREATE_ACCOUNT:
+			const { createAccountTicket } = payload;
+			return {
+				...state,
+				createAccountTicket,
+				isSubmittingCreateAccount: false,
+			};
+
+		case RECEIVE_CREATE_ACCOUNT_FAILED:
+			const { error } = payload;
+			return {
+				...state,
+				isSubmittingCreateAccount: false,
+				error,
+			};
 
 		default: {
 			return { ...state };
@@ -259,6 +371,19 @@ export const selectors = {
 	 */
 	isFetchingAccounts( state ) {
 		return !! state.isFetchingAccountsPropertiesProfiles;
+	},
+
+	/**
+	 * Checks whether create account is being submitted.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} Whether accounts are currently being fetched or not.
+	 */
+	isSubmittingCreateAccount( state ) {
+		return !! state.isSubmittingCreateAccount;
 	},
 };
 

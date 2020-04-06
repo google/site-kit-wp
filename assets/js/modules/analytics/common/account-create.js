@@ -1,7 +1,7 @@
 /**
  * AnalyticsSetup component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,70 +17,52 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
+ */
+import Data from 'googlesitekit-data';
+import { __ } from '@wordpress/i18n';
+import { useState, Fragment, useCallback } from '@wordpress/element';
+
+/**
+ * Internal dependencies
  */
 import {
 	Select,
 	Option,
 	Input,
 	TextField,
-} from 'SiteKitCore/material-components';
-import Button from 'GoogleComponents/button';
+} from '../../../material-components';
+import Button from '../../../components/button';
 import classnames from 'classnames';
-import ProgressBar from 'GoogleComponents/progress-bar';
+import ProgressBar from '../../../components/progress-bar';
+import { STORE_NAME } from '../datastore';
+const { useDispatch } = Data;
 
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-import { Component, Fragment } from '@wordpress/element';
-class AnalyticsSetupNoAccountNotice extends Component {
-	constructor( props ) {
-		super( props );
+// Cache the complicated timezone dropdown.
+let timezoneData = false;
 
-		const { siteName, siteURL, timezone } = global.googlesitekit.admin;
+const AccountCreate = () => {
+	const { createAccount } = useDispatch( STORE_NAME );
 
-		this.state = {
-			accountName: siteName,
-			propertyName: siteURL,
-			profileName: 'All website traffic',
+	const handleSubmit = useCallback( ( accountName, propertyName, profileName, timezone ) => {
+		createAccount( {
+			accountName,
+			propertyName,
+			profileName,
 			timezone,
-			validationIssues: {},
-			isSubmitting: false,
-		};
-
-		this.handleInputChange = this.handleInputChange.bind( this );
-		this.getTimezoneSelector = this.getTimezoneSelector.bind( this );
-		this.handleSubmit = this.handleSubmit.bind( this );
-	}
-
-	handleInputChange( e, inputName ) {
-		this.setState( { [ inputName ]: e.target.value } );
-		const { validationIssues } = this.state;
-
-		// If the field is empty, it is invalid.
-		validationIssues[ inputName ] = '' === e.target.value;
-
-		this.setState( { validationIssues } );
-	}
-
-	async handleSubmit( e ) {
-		if ( e ) {
-			e.preventDefault();
-		}
-		this.setState( { isSubmitting: true } );
-	}
+		} ).then( () => {
+			setIsSubmitting( false );
+		} );
+	} );
 
 	// Build the timezone selector and cache it for re-renders.
-	getTimezoneSelector() {
-		if ( this.timezoneData ) {
-			return this.timezoneData;
+	const getTimezoneSelector = ( { timezone, setTimezone, validationIssues, setValidationIssues } ) => {
+		if ( timezoneData ) {
+			return timezoneData;
 		}
 		const { timezones } = global.googlesitekit.admin;
-		const {
-			timezone,
-		} = this.state;
-		this.timezoneData = (
+
+		timezoneData = (
 			<Select
 				className="googlesitekit-analytics__select-timezone"
 				name="timezone"
@@ -88,7 +70,9 @@ class AnalyticsSetupNoAccountNotice extends Component {
 				enhanced
 				value={ timezone }
 				onChange={ ( e ) => {
-					this.handleInputChange( e, 'timezone' );
+					validationIssues.timezone = '' === e.target.value;
+					setValidationIssues( validationIssues );
+					setTimezone( e.target.value );
 				} }
 				label={ __( 'Timezone', 'google-site-kit' ) }
 				outlined
@@ -104,34 +88,36 @@ class AnalyticsSetupNoAccountNotice extends Component {
 					) }
 			</Select>
 		);
-		return this.timezoneData;
-	}
+		return timezoneData;
+	};
 
-	render() {
-		const {
-			accountName,
-			propertyName,
-			profileName,
-			validationIssues,
-			isSubmitting,
-		} = this.state;
+	const { siteName, siteURL, timezone: tz } = global.googlesitekit.admin;
 
-		const errorCode = '';
+	const [ accountName, setAccountName ] = useState( siteName );
+	const [ propertyName, setPropertyName ] = useState( siteURL );
+	const [ profileName, setProfileName ] = useState( __( 'All website traffic', 'google-site-kit' ) );
+	const [ validationIssues, setValidationIssues ] = useState( {} );
+	const [ isSubmitting, setIsSubmitting ] = useState( false );
+	const [ timezone, setTimezone ] = useState( tz );
 
-		// Disable the submit button if there are validation errors, and while submission is in progress.
-		const buttonDisabled = validationIssues.accountName || validationIssues.propertyName || validationIssues.profileName || isSubmitting;
+	const errorCode = '';
 
-		return (
-			<Fragment>
-				<div className="googlesitekit-setup-module">
-					<div className="mdc-layout-grid__inner">
-						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-							<h2>
-								{ __( 'Oops...', 'google-site-kit' ) }
-							</h2>
-							<p>
-								{ __( 'Looks like you need to set up an account to use Analytics. Site Kit can provision a new account for you.', 'google-site-kit' ) }
-							</p>
+	// Disable the submit button if there are validation errors, and while submission is in progress.
+	const buttonDisabled = validationIssues.accountName || validationIssues.propertyName || validationIssues.profileName || isSubmitting;
+
+	return (
+		<Fragment>
+			<div className="googlesitekit-setup-module">
+				<div className="mdc-layout-grid__inner">
+					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+						<h2>
+							{ __( 'Set up new Analytics account', 'google-site-kit' ) }
+						</h2>
+						<p>
+							{ __( 'Looks like you need to set up an account to use Analytics. Site Kit can provision a new account for you.', 'google-site-kit' ) }
+						</p>
+						<br />
+						<div>
 							<p>
 								{ __( 'Confirm your account details:', 'google-site-kit' ) }
 							</p>
@@ -148,7 +134,9 @@ class AnalyticsSetupNoAccountNotice extends Component {
 												label={ __( 'Account', 'google-site-kit' ) }
 												name="account"
 												onChange={ ( e ) => {
-													this.handleInputChange( e, 'accountName' );
+													validationIssues.timezone = '' === e.target.value;
+													setValidationIssues( validationIssues );
+													setAccountName( e.target.value );
 												} }
 												outlined
 												required
@@ -168,7 +156,9 @@ class AnalyticsSetupNoAccountNotice extends Component {
 												label={ __( 'Property', 'google-site-kit' ) }
 												name="property"
 												onChange={ ( e ) => {
-													this.handleInputChange( e, 'propertyName' );
+													validationIssues.proper = '' === e.target.value;
+													setValidationIssues( validationIssues );
+													setPropertyName( e.target.value );
 												} }
 												outlined
 												required
@@ -188,7 +178,9 @@ class AnalyticsSetupNoAccountNotice extends Component {
 												label={ __( 'Profile', 'google-site-kit' ) }
 												name="profile"
 												onChange={ ( e ) => {
-													this.handleInputChange( e, 'profileName' );
+													validationIssues.profile = '' === e.target.value;
+													setValidationIssues( validationIssues );
+													setProfileName( e.target.value );
 												} }
 												outlined
 												required
@@ -200,24 +192,27 @@ class AnalyticsSetupNoAccountNotice extends Component {
 											</TextField>
 										</div>
 										<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
-											{ this.getTimezoneSelector() }
+											{ getTimezoneSelector( { timezone, setTimezone, validationIssues, setValidationIssues } ) }
 										</div>
 									</div>
 							}
-							<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
-								<Button
-									disabled={ buttonDisabled }
-									onClick={ this.handleSubmit }
-								>
-									{ __( 'Create Account', 'google-site-kit' ) }
-								</Button>
-							</div>
+						</div>
+						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+							<Button
+								disabled={ buttonDisabled }
+								onClick={ () => {
+									setIsSubmitting( true );
+									handleSubmit( accountName, propertyName, profileName, timezone );
+								} }
+							>
+								{ __( 'Create Account', 'google-site-kit' ) }
+							</Button>
 						</div>
 					</div>
 				</div>
-			</Fragment>
-		);
-	}
-}
+			</div>
+		</Fragment>
+	);
+};
 
-export default AnalyticsSetupNoAccountNotice;
+export default AccountCreate;
