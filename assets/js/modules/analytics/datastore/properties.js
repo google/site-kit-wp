@@ -29,7 +29,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './index';
 import { actions as profileActions } from './profiles';
-import { isValidAccountID, isValidPropertyID } from '../util';
+import { isValidAccountID, isValidPropertyID, parsePropertyID } from '../util';
 import { PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 
 // Actions
@@ -166,19 +166,16 @@ export const actions = {
 	 *
 	 * @param {Object} args Arguments.
 	 * @param {?string} args.propertyID Property ID.
-	 * @param {?string} [args.accountID] Account ID.
 	 * @param {?string} [args.internalWebPropertyID] Internal web property ID.
 	 */
-	*applyProperty( { propertyID, accountID = '', internalWebPropertyID = '' } = {} ) {
+	*applyProperty( { propertyID, internalWebPropertyID = '' } = {} ) {
 		invariant( isValidPropertyID( propertyID ), 'A valid propertyID is required.' );
 
+		const { accountID } = parsePropertyID( propertyID );
 		const registry = yield Data.commonActions.getRegistry();
 
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
-
-		if ( isValidAccountID( accountID ) ) {
-			registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		}
 
 		if ( ! internalWebPropertyID ) {
 			const properties = registry.select( STORE_NAME ).getProperties( accountID ) || [];
