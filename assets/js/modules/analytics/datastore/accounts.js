@@ -161,38 +161,38 @@ export const resolvers = {
 			const registry = yield Data.commonActions.getRegistry();
 
 			const existingAccounts = registry.select( STORE_NAME ).getAccounts();
-
+			let matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
 			// If there are already accounts loaded in state, we don't want to make this request
 			// and consider this resolver fulfilled.
-			if ( existingAccounts ) {
-				return;
-			}
+			if ( ! existingAccounts ) {
+				const existingTag = registry.select( STORE_NAME ).getExistingTag() || {};
+				const response = yield actions.fetchAccountsPropertiesProfiles( {
+					existingAccountID: existingTag.accountID,
+					existingPropertyID: existingTag.propertyID,
+				} );
+				const { accounts, properties, profiles } = response;
+				matchedProperty = response.matchedProperty;
 
-			const existingTag = registry.select( STORE_NAME ).getExistingTag() || {};
-			const response = yield actions.fetchAccountsPropertiesProfiles( {
-				existingAccountID: existingTag.accountID,
-				existingPropertyID: existingTag.propertyID,
-			} );
-			const { accounts, properties, profiles, matchedProperty } = response;
+				yield actions.receiveAccounts( accounts );
+				registry.dispatch( STORE_NAME ).receiveProperties( properties );
+				registry.dispatch( STORE_NAME ).receiveProfiles( profiles );
 
-			yield actions.receiveAccounts( accounts );
-			yield registry.dispatch( STORE_NAME ).receiveProperties( properties );
-			yield registry.dispatch( STORE_NAME ).receiveProfiles( profiles );
+				if ( matchedProperty ) {
+					registry.dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
+				}
 
-			if ( matchedProperty ) {
-				yield registry.dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
+				yield actions.receiveAccountsPropertiesProfilesCompleted();
 			}
 
 			const accountID = registry.select( STORE_NAME ).getAccountID();
+			// Pre-select values from the matched property if no account is selected.
 			if ( matchedProperty && ! accountID ) {
-				yield registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId );
-				yield registry.dispatch( STORE_NAME ).setPropertyID( matchedProperty.id );
-				yield registry.dispatch( STORE_NAME ).setInternalWebPropertyID( matchedProperty.internalWebPropertyId );
-				const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === matchedProperty.id ) || {};
-				yield registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id || '' );
+				registry.dispatch( STORE_NAME ).applyProperty( {
+					accountID: matchedProperty.accountId,
+					propertyID: matchedProperty.id,
+					internalWebPropertyID: matchedProperty.internalWebPropertyId,
+				} );
 			}
-
-			return actions.receiveAccountsPropertiesProfilesCompleted();
 		} catch ( err ) {
 			// TODO: Implement an error handler store or some kind of centralized
 			// place for error dispatch...
