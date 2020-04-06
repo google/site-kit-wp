@@ -39,6 +39,7 @@ const RECEIVE_SETTINGS_FAILED = 'RECEIVE_SETTINGS_FAILED';
 const FETCH_SAVE_SETTINGS = 'FETCH_SAVE_SETTINGS';
 const RECEIVE_SAVE_SETTINGS = 'RECEIVE_SAVE_SETTINGS';
 const RECEIVE_SAVE_SETTINGS_FAILED = 'RECEIVE_SAVE_SETTINGS_FAILED';
+const ROLLBACK_SETTINGS = 'ROLLBACK_SETTINGS';
 
 /**
  * Creates a store object that includes actions and selectors for managing settings.
@@ -144,6 +145,18 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 				payload: {},
 				type: RECEIVE_SETTINGS_FAILED,
 			};
+		},
+
+		/**
+		 * Returns the current settings back to the current saved values.
+		 *
+		 * @since n.e.x.t
+		 * @private
+		 *
+		 * @return {Object} Redux-style action.
+		 */
+		rollbackSettings() {
+			return { type: ROLLBACK_SETTINGS };
 		},
 
 		/**
@@ -304,6 +317,13 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 				return {
 					...state,
 					isFetchingSaveSettings: false,
+				};
+			}
+
+			case ROLLBACK_SETTINGS: {
+				return {
+					...state,
+					settings: state.savedSettings,
 				};
 			}
 

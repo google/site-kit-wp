@@ -242,6 +242,22 @@ describe( 'createSettingsStore store', () => {
 				expect( store.getState().settings ).toMatchObject( { isSkyBlue: value } );
 			} );
 		} );
+
+		describe( 'rollbackSettings', () => {
+			it( 'returns settings back to their saved values', () => {
+				const savedSettings = { isSkyBlue: 'yes' };
+				dispatch.receiveSaveSettings( savedSettings );
+
+				expect( select.getIsSkyBlue() ).toBe( 'yes' );
+
+				dispatch.setIsSkyBlue( 'maybe' );
+				expect( select.getIsSkyBlue() ).toBe( 'maybe' );
+
+				dispatch.rollbackSettings();
+
+				expect( select.getIsSkyBlue() ).toBe( 'yes' );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
