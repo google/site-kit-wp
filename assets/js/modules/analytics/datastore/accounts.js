@@ -174,7 +174,9 @@ export const actions = {
 
 export const controls = {
 	[ FETCH_ACCOUNTS_PROPERTIES_PROFILES ]: ( { payload } ) => {
-		return API.get( 'modules', 'analytics', 'accounts-properties-profiles', payload.data );
+		return API.get( 'modules', 'analytics', 'accounts-properties-profiles', payload.data, {
+			useCache: false,
+		} );
 	},
 	[ FETCH_CREATE_ACCOUNT ]: ( { payload: { accountName, propertyName, profileName, timezone } } ) => {
 		return API.get( 'modules', 'analytics', 'create-account-ticket', {
