@@ -936,12 +936,12 @@ final class Analytics extends Module
 					'profiles'   => array(),
 				);
 
-				if ( ! empty( $data['existingAccountID'] ) && ! empty( $data['existingPropertyID'] ) ) {
+				if ( ! empty( $data['existingPropertyID'] ) ) {
 					// If there is an existing tag, pass it through to ensure only the existing tag is matched.
 					$properties_profiles = $this->get_data(
 						'properties-profiles',
 						array(
-							'accountID'          => $data['existingAccountID'],
+							'accountID'          => $this->parse_account_id( $data['existingPropertyID'] ),
 							'existingPropertyID' => $data['existingPropertyID'],
 						)
 					);
