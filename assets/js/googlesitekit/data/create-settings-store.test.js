@@ -416,6 +416,43 @@ describe( 'createSettingsStore store', () => {
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 			} );
 		} );
+
+		describe( 'getSavedSettings', () => {
+			it( 'is not affected by current selections', async () => {
+				dispatch.receiveSaveSettings( {
+					isSkyBlue: 'yes',
+				} );
+
+				dispatch.setIsSkyBlue( '123' );
+
+				expect( select.getSavedSettings() ).toMatchObject( {
+					isSkyBlue: 'yes',
+				} );
+			} );
+		} );
+	} );
+
+	describe( 'per-setting selectors', () => {
+		it( 'get{SettingSlug}', () => {
+			dispatch.setSettings( { isSkyBlue: 'yes' } );
+
+			expect( select.getIsSkyBlue() ).toBe( 'yes' );
+		} );
+
+		it( 'set{SettingSlug}', () => {
+			dispatch.setSettings( { isSkyBlue: 'yes' } );
+
+			dispatch.setIsSkyBlue( 'not right now' );
+
+			expect( select.getIsSkyBlue() ).toBe( 'not right now' );
+		} );
+
+		it( 'getSaved{SettingSlug}', () => {
+			dispatch.receiveSaveSettings( { isSkyBlue: 'yes' } );
+			dispatch.setSettings( { isSkyBlue: 'no' } );
+
+			expect( select.getSavedIsSkyBlue() ).toBe( 'yes' );
+		} );
 	} );
 
 	describe( 'controls', () => {

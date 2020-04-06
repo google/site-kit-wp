@@ -365,10 +365,25 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @since 1.6.0
 		 *
 		 * @param {Object} state Data store's state.
-		 * @return {Object|undefined} Settings with their values, or undefined.
+		 * @return {?Object} Settings with their values, or undefined.
 		 */
 		getSettings( state ) {
 			return state.settings;
+		},
+
+		/**
+		 * Gets the current saved settings.
+		 *
+		 * Returns `undefined` if notifications are not available/loaded.
+		 *
+		 * @since n.e.x.t
+		 * @private
+		 *
+		 * @param {Object} state Data store's state.
+		 * @return {?Object} Settings with their values, or undefined.
+		 */
+		getSavedSettings( state ) {
+			return state.savedSettings;
 		},
 
 		/**
@@ -440,11 +455,21 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {*} Setting value, or undefined.
 		 */
 		selectors[ `get${ pascalCaseSlug }` ] = createRegistrySelector( ( select ) => () => {
-			const settings = select( STORE_NAME ).getSettings();
+			const settings = select( STORE_NAME ).getSettings() || {};
 
-			if ( 'undefined' === typeof settings ) {
-				return settings;
-			}
+			return settings[ slug ];
+		} );
+
+		/**
+		 * Gets the saved value for the setting indicated by the selector name.
+		 *
+		 * @since n.e.x.t
+		 * @private
+		 *
+		 * @return {*} Setting value, or undefined.
+		 */
+		selectors[ `getSaved${ pascalCaseSlug }` ] = createRegistrySelector( ( select ) => () => {
+			const settings = select( STORE_NAME ).getSavedSettings() || {};
 
 			return settings[ slug ];
 		} );
