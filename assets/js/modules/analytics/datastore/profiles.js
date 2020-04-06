@@ -29,6 +29,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './index';
 import { isValidAccountID, isValidPropertyID } from '../util';
+import { PROFILE_CREATE } from './constants';
 
 // Actions
 const FETCH_CREATE_PROFILE = 'FETCH_CREATE_PROFILE';
@@ -167,6 +168,29 @@ export const actions = {
 			payload: { accountID, error, propertyID },
 			type: RECEIVE_PROFILES_FAILED,
 		};
+	},
+
+	/**
+	 * Sets a profile based on given account and property IDs.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {?Object} args Optional supporting arguments.
+	 * @param {?string} args.accountID Account ID.
+	 * @param {?string} args.property Property ID.
+	 */
+	*setProfileForProperty( { accountID, propertyID } = {} ) {
+		const registry = yield Data.commonActions.getRegistry();
+
+		if ( isValidAccountID( accountID ) && isValidPropertyID( propertyID ) ) {
+			const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID ) || [];
+			const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE };
+
+			registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id );
+		} else {
+			registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
+		}
 	},
 };
 
