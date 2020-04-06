@@ -115,7 +115,9 @@ export const controls = {
 		return getExistingTag( 'analytics' );
 	},
 	[ FETCH_TAG_PERMISSION ]: ( { payload: { propertyID } } ) => {
-		return API.get( 'modules', 'analytics', 'tag-permission', { propertyID } );
+		return API.get( 'modules', 'analytics', 'tag-permission', { propertyID }, {
+			useCache: false,
+		} );
 	},
 };
 

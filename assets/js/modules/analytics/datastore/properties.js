@@ -233,7 +233,9 @@ export const controls = {
 		return API.set( 'modules', 'analytics', 'create-property', { accountID } );
 	},
 	[ FETCH_PROPERTIES_PROFILES ]: ( { payload: { accountID } } ) => {
-		return API.get( 'modules', 'analytics', 'properties-profiles', { accountID } );
+		return API.get( 'modules', 'analytics', 'properties-profiles', { accountID }, {
+			useCache: false,
+		} );
 	},
 };
 

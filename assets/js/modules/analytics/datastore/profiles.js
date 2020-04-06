@@ -205,6 +205,8 @@ export const controls = {
 		return API.get( 'modules', 'analytics', 'profiles', {
 			accountID,
 			propertyID,
+		}, {
+			useCache: false,
 		} );
 	},
 };
