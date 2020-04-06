@@ -30,7 +30,7 @@ const { useSelect } = Data;
 
 export default function ExistingTagNotice() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const { propertyID } = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 
 	if ( ! hasExistingTag ) {
 		return null;

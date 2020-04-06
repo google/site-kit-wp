@@ -206,13 +206,9 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'set passes existing tag IDs when fetching accounts', async () => {
-				const existingAccountID = '12345';
 				const existingPropertyID = 'UA-12345-1';
 
-				registry.dispatch( STORE_NAME ).receiveExistingTag( {
-					accountID: existingAccountID,
-					propertyID: existingPropertyID,
-				} );
+				registry.dispatch( STORE_NAME ).receiveExistingTag( existingPropertyID );
 				registry.dispatch( STORE_NAME ).setSettings( {} );
 
 				fetch
@@ -235,7 +231,6 @@ describe( 'modules/analytics accounts', () => {
 				// Ensure the proper parameters were sent.
 				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
 					{
-						existingAccountID,
 						existingPropertyID,
 					}
 				);

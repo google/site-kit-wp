@@ -271,18 +271,11 @@ export const selectors = {
 	/**
 	 * Get an existing tag on the site, if present.
 	 *
-	 * Returns an object with the shape when successful:
-	 * ```
-	 * {
-	 *   accountID = null,
-	 *   propertyID = null,
-	 * }
-	 * ```
-	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?Object} Site connection info.
+	 * @return {?string} Existing tag, or `null` if none.
+	 *                   Returns `undefined` if not resolved yet.
 	 */
 	getExistingTag( state ) {
 		const { existingTag } = state;

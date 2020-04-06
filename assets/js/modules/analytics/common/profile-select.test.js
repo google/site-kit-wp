@@ -56,7 +56,7 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 	dispatch( modulesAnalyticsStoreName ).setPropertyID( existingTag.propertyID );
 	dispatch( modulesAnalyticsStoreName ).setProfileID( id );
 	dispatch( modulesAnalyticsStoreName ).receiveProfiles( fixtures.accountsPropertiesProfiles.profiles );
-	dispatch( modulesAnalyticsStoreName ).receiveExistingTag( existingTag );
+	dispatch( modulesAnalyticsStoreName ).receiveExistingTag( existingTag.propertyID );
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
@@ -81,7 +81,7 @@ describe( 'ProfileSelect', () => {
 		const { container, getAllByRole, registry } = render( <ProfileSelect />, { setupRegistry: setupRegistryWithExistingTag } );
 
 		const currentPropertyID = registry.select( modulesAnalyticsStoreName ).getPropertyID();
-		const existingTagPropertyID = registry.select( modulesAnalyticsStoreName ).getExistingTag().propertyID;
+		const existingTagPropertyID = registry.select( modulesAnalyticsStoreName ).getExistingTag();
 		expect( existingTagPropertyID ).toEqual( currentPropertyID );
 
 		const existingTagProfiles = fixtures.accountsPropertiesProfiles.profiles

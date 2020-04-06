@@ -29,7 +29,7 @@ import { STORE_NAME } from '../datastore';
 const { useSelect } = Data;
 
 export default function ExistingTagError() {
-	const { propertyID } = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 
 	const message = sprintf(
 		/* translators: %s: Property id of the existing tag */
