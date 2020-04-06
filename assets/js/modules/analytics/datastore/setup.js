@@ -39,7 +39,6 @@ const SUBMIT_PROPERTY_CREATE = 'SUBMIT_PROPERTY_CREATE';
 const SUBMIT_PROFILE_CREATE = 'SUBMIT_PROFILE_CREATE';
 const SUBMIT_SAVE_SETTINGS = 'SUBMIT_SAVE_SETTINGS';
 const SUBMIT_CHANGES_FAILED = 'SUBMIT_CHANGES_FAILED';
-const SUBMIT_ACCOUNT_CREATE = 'SUBMIT_ACCOUNT_CREATE';
 
 export const INITIAL_STATE = {
 	isDoingSubmitChanges: false,
@@ -56,22 +55,6 @@ export const actions = {
 			const accountID = registry.select( STORE_NAME ).getAccountID();
 
 			const { payload } = yield actions.submitPropertyCreate( accountID );
-			const { property, error } = payload;
-
-			if ( property ) {
-				propertyID = property.id;
-			} else if ( error ) {
-				return actions.submitChangesFailed( { error } );
-			}
-		}
-
-		if ( registry.select( STORE_NAME ).getAccountID() === PROPERTY_CREATE ) {
-			const accountName = registry.select( STORE_NAME ).getAccountName();
-			const propertyName = registry.select( STORE_NAME ).getPropertyName();
-			const profileName = registry.select( STORE_NAME ).getProfileName();
-			const timezone = registry.select( STORE_NAME ).getTimezone();
-
-			const { payload } = yield actions.submitAccountCreate( accountName, propertyName, profileName, timezone );
 			const { property, error } = payload;
 
 			if ( property ) {
@@ -108,12 +91,6 @@ export const actions = {
 			type: SUBMIT_PROPERTY_CREATE,
 		};
 	},
-	submitAccountCreate( { accountName, propertyName, profileName, timezone } ) {
-		return {
-			payload: { accountName, propertyName, profileName, timezone },
-			type: SUBMIT_ACCOUNT_CREATE,
-		};
-	},
 	submitProfileCreate( accountID, propertyID ) {
 		return {
 			payload: { accountID, propertyID },
@@ -147,10 +124,6 @@ export const controls = {
 	} ),
 	[ SUBMIT_SAVE_SETTINGS ]: createRegistryControl( ( registry ) => () => {
 		return registry.dispatch( STORE_NAME ).saveSettings();
-	} ),
-	[ SUBMIT_ACCOUNT_CREATE ]: createRegistryControl( ( registry ) => ( { payload } ) => {
-		const { accountName, propertyName, profileName, timezone } = payload;
-		return registry.dispatch( STORE_NAME ).createAccount( { accountName, propertyName, profileName, timezone } );
 	} ),
 };
 
@@ -228,3 +201,4 @@ export default {
 	resolvers,
 	selectors,
 };
+
