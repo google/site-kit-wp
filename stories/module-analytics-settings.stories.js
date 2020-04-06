@@ -164,6 +164,7 @@ storiesOf( 'Analytics Module Settings', module )
 		};
 
 		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveExistingTag( existingTag );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );

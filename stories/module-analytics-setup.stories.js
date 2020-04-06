@@ -66,6 +66,7 @@ storiesOf( 'Analytics Module Setup', module )
 			registry.dispatch( STORE_NAME ).receiveAccounts( [] );
 			registry.dispatch( STORE_NAME ).receiveProperties( [] );
 			registry.dispatch( STORE_NAME ).receiveProfiles( [] );
+			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.stores[ STORE_NAME ].store.dispatch( { type: 'FETCH_ACCOUNTS_PROPERTIES_PROFILES' } );
 		};
 
@@ -80,6 +81,7 @@ storiesOf( 'Analytics Module Setup', module )
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveExistingTag( null );
 		};
 
 		return <Setup callback={ setupRegistry } />;
@@ -93,6 +95,7 @@ storiesOf( 'Analytics Module Setup', module )
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveExistingTag( null );
 			dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
 			dispatch( STORE_NAME ).receiveSettings( {
 				accountID: matchedProperty.accountId,
@@ -109,6 +112,7 @@ storiesOf( 'Analytics Module Setup', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( [] );
+			dispatch( STORE_NAME ).receiveExistingTag( null );
 		};
 
 		return <Setup callback={ setupRegistry } />;
