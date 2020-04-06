@@ -47,6 +47,12 @@ export default function SettingsEdit() {
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
+	// Rollback any temporary selections to saved values on dismount.
+	const { rollbackSettings } = useDispatch( STORE_NAME );
+	useEffect( () => {
+		return () => rollbackSettings();
+	}, [] );
+
 	// Toggle disabled state of legacy confirm changes button.
 	useEffect( () => {
 		const confirm = global.document.getElementById( 'confirm-changes-analytics' );
