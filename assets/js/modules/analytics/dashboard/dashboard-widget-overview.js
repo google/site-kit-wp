@@ -19,25 +19,6 @@
 /**
  * External dependencies
  */
-import DataBlock from 'GoogleComponents/data-block';
-import withData from 'GoogleComponents/higherorder/withdata';
-import { TYPE_MODULES } from 'GoogleComponents/data';
-import {
-	getTimeInSeconds,
-	prepareSecondsForDisplay,
-	readableLargeNumber,
-} from 'GoogleUtil';
-/**
- * Internal dependencies
- */
-import {
-	calculateOverviewData,
-	isDataZeroForReporting,
-	getAnalyticsErrorMessageFromData,
-	overviewReportDataDefaults,
-	userReportDataDefaults,
-} from '../util';
-import PreviewBlock from 'GoogleComponents/preview-block';
 import PropTypes from 'prop-types';
 import { get } from 'lodash';
 
@@ -46,6 +27,26 @@ import { get } from 'lodash';
  */
 import { __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import {
+	getTimeInSeconds,
+	prepareSecondsForDisplay,
+	readableLargeNumber,
+} from '../../../util';
+import DataBlock from '../../../components/data-block';
+import withData from '../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../components/data';
+import {
+	calculateOverviewData,
+	isDataZeroForReporting,
+	getAnalyticsErrorMessageFromData,
+	overviewReportDataDefaults,
+	userReportDataDefaults,
+} from '../util';
+import PreviewBlock from '../../../components/preview-block';
 
 class AnalyticsDashboardWidgetOverview extends Component {
 	constructor( props ) {

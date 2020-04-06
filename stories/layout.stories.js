@@ -2,11 +2,16 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
+
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import Layout from 'GoogleComponents/layout/layout';
+
+/**
+ * Internal dependencies
+ */
+import Layout from '../assets/js/components/layout/layout';
 
 storiesOf( 'Global/Layout', module )
 	.add( 'Layout with Header Footer and CTAs', () => (

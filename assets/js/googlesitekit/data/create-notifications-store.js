@@ -38,7 +38,7 @@ const RECEIVE_NOTIFICATIONS_FAILED = 'RECEIVE_NOTIFICATIONS_FAILED';
  *
  * The three required parameters hook up the store to the respective REST API endpoint.
  *
- * @since n.e.x.t
+ * @since 1.6.0
  * @private
  *
  * @param {string} type              The data to access. One of 'core' or 'modules'.
@@ -71,7 +71,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 		/**
 		 * Adds a notification to the store.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 *
 		 * @param {Object} notification Notification object to add.
 		 * @return {Object} Redux-style action.
@@ -88,7 +88,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 		/**
 		 * Removes a notification from the store.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 *
 		 * @param {string} id ID of the notification to remove.
 		 * @return {Object} Redux-style action.
@@ -105,7 +105,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 		/**
 		 * Dispatches an action that creates an HTTP request to the notifications endpoint.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 * @private
 		 *
 		 * @return {Object} Redux-style action.
@@ -120,7 +120,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 		/**
 		 * Stores notifications received from the REST API.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 * @private
 		 *
 		 * @param {Array} notifications Notifications from the API.
@@ -138,7 +138,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 		/**
 		 * Dispatches an action signifying the `fetchNotifications` side-effect failed.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 * @private
 		 *
 		 * @return {Object} Redux-style action.
@@ -253,7 +253,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 		 *
 		 * Returns `undefined` if notifications are not available/loaded.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.6.0
 		 *
 		 * @param {Object} state Data store's state.
 		 * @return {Array|undefined} Current list of notifications.

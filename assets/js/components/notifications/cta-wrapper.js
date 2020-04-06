@@ -17,14 +17,14 @@
  */
 
 /**
- * External dependencies
- */
-import Layout from 'GoogleComponents/layout/layout';
-
-/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Layout from '../layout/layout';
 
 /**
  * Get CTA html wrapper.

@@ -26,14 +26,10 @@ import { render } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
 
 /**
- * External dependencies
- */
-import { loadTranslations, trackEvent } from 'GoogleUtil';
-import 'GoogleComponents/notifications';
-
-/**
  * Internal dependencies
  */
+import { loadTranslations, trackEvent } from './util';
+import './components/notifications';
 import { ActivationApp } from './components/activation/activation-app';
 
 domReady( () => {

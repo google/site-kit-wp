@@ -25,22 +25,30 @@
  */
 import Data from 'googlesitekit-data';
 import connection from './connection';
+import info from './info';
 import reset from './reset';
 
 export const INITIAL_STATE = Data.collectState(
 	connection.INITIAL_STATE,
+	info.INITIAL_STATE,
 	reset.INITIAL_STATE,
 );
 
 export const STORE_NAME = 'core/site';
 
-export const actions = Data.addInitializeAction( Data.collectActions(
-	connection.actions,
-	reset.actions,
-) );
+export const actions = Data.addInitializeAction(
+	Data.collectActions(
+		Data.commonActions,
+		connection.actions,
+		info.actions,
+		reset.actions,
+	)
+);
 
 export const controls = Data.collectControls(
+	Data.commonControls,
 	connection.controls,
+	info.controls,
 	reset.controls,
 );
 
@@ -48,17 +56,20 @@ export const reducer = Data.addInitializeReducer(
 	INITIAL_STATE,
 	Data.collectReducers(
 		connection.reducer,
+		info.reducer,
 		reset.reducer,
 	)
 );
 
 export const resolvers = Data.collectResolvers(
 	connection.resolvers,
+	info.resolvers,
 	reset.resolvers,
 );
 
 export const selectors = Data.collectSelectors(
 	connection.selectors,
+	info.selectors,
 	reset.selectors,
 );
 

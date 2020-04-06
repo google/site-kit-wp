@@ -19,8 +19,6 @@
 /**
  * External dependencies
  */
-import SvgIcon from 'GoogleUtil/svg-icon';
-import Button from 'GoogleComponents/button';
 import PropTypes from 'prop-types';
 
 /**
@@ -28,6 +26,12 @@ import PropTypes from 'prop-types';
  */
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import SvgIcon from '../../util/svg-icon';
+import Button from '../button';
 
 class DashboardSplashOutro extends Component {
 	render() {

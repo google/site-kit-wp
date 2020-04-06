@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
@@ -148,11 +149,40 @@ final class Modules {
 			}
 		);
 
+		add_filter(
+			'googlesitekit_assets',
+			function( $assets ) use ( $available_modules ) {
+				foreach ( $available_modules as $module ) {
+					if ( $module instanceof Module_With_Assets ) {
+						$assets = array_merge( $assets, $module->get_assets() );
+					}
+				}
+				return $assets;
+			}
+		);
+
 		$active_modules = $this->get_active_modules();
 		array_walk(
 			$active_modules,
 			function( Module $module ) {
 				$module->register();
+			}
+		);
+
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $paths ) use ( $active_modules ) {
+				$settings_routes = array_map(
+					function ( Module $module ) {
+						if ( $module instanceof Module_With_Settings ) {
+							return '/' . REST_Routes::REST_ROOT . "/modules/{$module->slug}/data/settings";
+						}
+						return null;
+					},
+					array_values( $active_modules )
+				);
+
+				return array_merge( $paths, array_filter( $settings_routes ) );
 			}
 		);
 	}
@@ -396,6 +426,23 @@ final class Modules {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Enqueues all module-specific assets.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function enqueue_assets() {
+		$available_modules = $this->get_available_modules();
+		array_walk(
+			$available_modules,
+			function( Module $module ) {
+				if ( $module instanceof Module_With_Assets ) {
+					$module->enqueue_assets();
+				}
+			}
+		);
 	}
 
 	/**
@@ -705,7 +752,7 @@ final class Modules {
 	 * customization. Otherwise this method will ensure every setting is present as a parameter and then update the
 	 * settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.6.0
 	 *
 	 * @param Module $module Module to update settings for. Must implement {@see Module_With_Settings}.
 	 * @param array  $data   Associative array of new settings data to set.
