@@ -41,7 +41,6 @@ const RECEIVE_CREATE_ACCOUNT_FAILED = 'RECEIVE_CREATE_ACCOUNT_FAILED';
 export const INITIAL_STATE = {
 	accounts: undefined,
 	isFetchingAccountsPropertiesProfiles: false,
-	isSubmittingCreateAccount: false,
 };
 
 export const actions = {
@@ -197,13 +196,6 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case FETCH_CREATE_ACCOUNT: {
-			return {
-				...state,
-				isSubmittingCreateAccount: true,
-			};
-		}
-
 		case RECEIVE_ACCOUNTS: {
 			const { accounts } = payload;
 
@@ -249,14 +241,12 @@ export const reducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				createAccountTicket,
-				isSubmittingCreateAccount: false,
 			};
 
 		case RECEIVE_CREATE_ACCOUNT_FAILED:
 			const { error } = payload;
 			return {
 				...state,
-				isSubmittingCreateAccount: false,
 				error,
 			};
 
@@ -370,19 +360,6 @@ export const selectors = {
 	 */
 	isFetchingAccounts( state ) {
 		return !! state.isFetchingAccountsPropertiesProfiles;
-	},
-
-	/**
-	 * Checks whether create account is being submitted.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean} Whether accounts are currently being fetched or not.
-	 */
-	isSubmittingCreateAccount( state ) {
-		return !! state.isSubmittingCreateAccount;
 	},
 };
 
