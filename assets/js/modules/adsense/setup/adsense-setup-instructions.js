@@ -19,23 +19,24 @@
 /**
  * External dependencies
  */
-import SvgIcon from 'GoogleUtil/svg-icon';
-import Link from 'GoogleComponents/link';
-import Button from 'GoogleComponents/button';
-/**
- * Internal dependencies
- */
-import AdSenseSettings from '../settings/adsense-settings';
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
-import Spinner from 'GoogleComponents/spinner';
 import { Fragment } from 'react';
-import { trackEvent } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import SvgIcon from '../../../util/svg-icon';
+import { trackEvent } from '../../../util';
+import AdSenseSettings from '../settings/adsense-settings';
+import data, { TYPE_MODULES } from '../../../components/data';
+import Spinner from '../../../components/spinner';
+import Link from '../../../components/link';
+import Button from '../../../components/button';
 
 class AdSenseSetupInstructions extends Component {
 	constructor( props ) {

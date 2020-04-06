@@ -17,25 +17,26 @@
  */
 
 /**
- * Internal dependencies
- */
-import SettingsModules from './settings-modules';
-/**
  * External dependencies
  */
-import Header from 'GoogleComponents/header';
-import PageHeader from 'GoogleComponents/page-header';
-import Layout from 'GoogleComponents/layout/layout';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
 import SettingsAdmin from './settings-admin';
-import HelpLink from 'GoogleComponents/help-link';
 
 /**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Header from '../header';
+import PageHeader from '../page-header';
+import Layout from '../layout/layout';
+import HelpLink from '../help-link';
+import SettingsModules from './settings-modules';
 
 class SettingsApp extends Component {
 	constructor( props ) {

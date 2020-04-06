@@ -17,15 +17,15 @@
  */
 
 /**
- * External dependencies
- */
-import Notification from 'GoogleComponents/notifications/notification';
-
-/**
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Notification from './notification';
 
 class InvalidCredentialsWarning extends Component {
 	render() {

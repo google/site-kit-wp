@@ -27,10 +27,10 @@ import invariant from 'invariant';
 import Data from 'googlesitekit-data';
 import {
 	createNotificationsStore,
-} from 'assets/js/googlesitekit/data/create-notifications-store';
+} from '../data/create-notifications-store';
 import {
 	createSettingsStore,
-} from 'assets/js/googlesitekit/data/create-settings-store';
+} from '../data/create-settings-store';
 
 /**
  * Creates a base store object for a Site Kit module.
