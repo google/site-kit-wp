@@ -35,13 +35,11 @@ const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_ACCOUNTS_PROPERT
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED';
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 const FETCH_CREATE_ACCOUNT = 'FETCH_CREATE_ACCOUNT';
-const RECEIVE_CREATE_ACCOUNT = 'RECEIVE_CREATE_ACCOUNT';
 const RECEIVE_CREATE_ACCOUNT_FAILED = 'RECEIVE_CREATE_ACCOUNT_FAILED';
 
 export const INITIAL_STATE = {
 	accounts: undefined,
 	isFetchingAccountsPropertiesProfiles: false,
-	createAccountTicket: false,
 };
 
 export const actions = {
@@ -104,10 +102,11 @@ export const actions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {string} accountName  Google Analytics account name.
-	 * @param {string} propertyName Google Analytics property name.
-	 * @param {string} profileName  Google Analytics profile name.
-	 * @param {string} timezone     Google Analytics timezone.
+	 * @param {Object} args              Argument params.
+	 * @param {string} args.accountName  Google Analytics account name.
+	 * @param {string} args.propertyName Google Analytics property name.
+	 * @param {string} args.profileName  Google Analytics profile name.
+	 * @param {string} args.timezone     Google Analytics timezone.
 	 * @return {Function} Generator function action.
 	 */
 	*createAccount( { accountName, propertyName, profileName, timezone } ) {
@@ -118,7 +117,7 @@ export const actions = {
 
 		try {
 			const createAccountTicket = yield actions.fetchCreateAccount( { accountName, propertyName, profileName, timezone } );
-			return actions.receiveCreateAccount( { accountName, propertyName, profileName, timezone, createAccountTicket } );
+			return actions.receiveCreateAccount( { createAccountTicket } );
 		} catch ( error ) {
 			// TODO: Implement an error handler store or some kind of centralized
 			// place for error dispatch...
@@ -143,15 +142,15 @@ export const actions = {
 	 *
 	 * @param {Object} args              Argument params.
 	 * @param {Object} args.createAccountTicket  Google Analytics create account ticket object.
-	 * @return {Object} Redux-style action.
 	 */
 	receiveCreateAccount( { createAccountTicket } ) {
 		invariant( createAccountTicket, 'createAccountTicket is required.' );
 
-		return {
-			payload: { createAccountTicket },
-			type: RECEIVE_CREATE_ACCOUNT,
-		};
+		// Once we have an account ticket, redirect the user to accept the Terms of Service.
+		const { id } = createAccountTicket;
+		if ( id ) {
+			document.location = `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/?api.accountTicketId=${ id }`;
+		}
 	},
 
 	/**
@@ -236,13 +235,6 @@ export const reducer = ( state, { type, payload } ) => {
 				},
 			};
 		}
-
-		case RECEIVE_CREATE_ACCOUNT:
-			const { createAccountTicket } = payload;
-			return {
-				...state,
-				createAccountTicket,
-			};
 
 		case RECEIVE_CREATE_ACCOUNT_FAILED:
 			const { error } = payload;
@@ -361,19 +353,6 @@ export const selectors = {
 	 */
 	isFetchingAccounts( state ) {
 		return !! state.isFetchingAccountsPropertiesProfiles;
-	},
-
-	/**
-	 * Get the current createAccountTicket value.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {object} The createAccountTicket.
-	 */
-	getCreateAccountTicket( state ) {
-		return state.createAccountTicket;
 	},
 };
 

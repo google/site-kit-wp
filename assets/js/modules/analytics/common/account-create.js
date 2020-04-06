@@ -37,20 +37,12 @@ import classnames from 'classnames';
 import ProgressBar from '../../../components/progress-bar';
 import { STORE_NAME } from '../datastore';
 import { trackEvent } from '../../../util';
-const { useDispatch, useSelect } = Data;
+const { useDispatch } = Data;
 
 // Cache the complicated timezone dropdown.
 let timezoneData = false;
 
 const AccountCreate = () => {
-	/* eslint-disable no-console */
-	console.log( useSelect( ( select ) => select( STORE_NAME ).getCreateAccountTicket() ) );
-
-	// Once we have an account ticket, redirect the user to accept the Terms of Service.
-	const { id } = useSelect( ( select ) => select( STORE_NAME ).getCreateAccountTicket() );
-	if ( id ) {
-		document.location = `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/?api.accountTicketId=${ id }`;
-	}
 	const { createAccount } = useDispatch( STORE_NAME );
 
 	const handleSubmit = useCallback( ( accountName, propertyName, profileName, timezone ) => {
@@ -116,7 +108,7 @@ const AccountCreate = () => {
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 						<h2>
-							{ __( 'Set up new Analytics account', 'google-site-kit' ) }
+							{ __( 'Create new Analytics account', 'google-site-kit' ) }
 						</h2>
 						<p>
 							{ __( 'Looks like you need to set up an account to use Analytics. Site Kit can provision a new account for you.', 'google-site-kit' ) }
