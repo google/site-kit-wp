@@ -60,9 +60,13 @@ export default function SettingsEdit() {
 		addFilter(
 			'googlekit.SettingsConfirmed',
 			'googlekit.AnalyticsSettingsConfirmed',
-			( chain, module ) => {
+			async ( chain, module ) => {
 				if ( 'analytics-module' === module ) {
-					return submitChanges();
+					const { error } = await submitChanges() || {};
+					if ( error ) {
+						return Promise.reject( error );
+					}
+					return Promise.resolve();
 				}
 				return chain;
 			}
@@ -74,7 +78,7 @@ export default function SettingsEdit() {
 				'googlekit.AnalyticsSettingsConfirmed',
 			);
 		};
-	} );
+	}, [] );
 
 	const viewComponent = ( () => {
 		switch ( true ) {
