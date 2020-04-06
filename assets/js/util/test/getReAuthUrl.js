@@ -11,9 +11,13 @@ const createSiteKit = () => {
 		},
 		modules: {
 			'search-console': {
+				slug: 'search-console',
+				name: 'Search Console',
 				screenID: 'googlesitekit-module-search-console',
 			},
 			'pagespeed-insights': {
+				slug: 'pagespeed-insights',
+				name: 'PageSpeed Insights',
 				screenID: 'googlesitekit-module-pagespeed-insights',
 			},
 		},

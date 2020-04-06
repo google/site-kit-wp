@@ -21,7 +21,7 @@
 /**
  * Internal dependencies
  */
-import Modules from 'assets/js/googlesitekit/modules';
+import Modules from './googlesitekit/modules';
 
 if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};
@@ -29,6 +29,11 @@ if ( typeof global.googlesitekit === 'undefined' ) {
 
 if ( typeof global.googlesitekit.modules === 'undefined' ) {
 	global.googlesitekit.modules = Modules;
+} else { // TODO: Remove this once the old googlesitekit.modules has been phased out.
+	global.googlesitekit.modules = {
+		...global.googlesitekit.modules,
+		...Modules,
+	};
 }
 
 export default Modules;

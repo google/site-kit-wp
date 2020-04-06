@@ -27,7 +27,6 @@ const path = require( 'path' );
  */
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
-const { CleanWebpackPlugin } = require( 'clean-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 const { ProvidePlugin } = require( 'webpack' );
 
@@ -76,10 +75,6 @@ const resolve = {
 	alias: {
 		'@wordpress/api-fetch__non-shim': require.resolve( '@wordpress/api-fetch' ),
 		'@wordpress/api-fetch$': path.resolve( 'assets/js/api-fetch-shim.js' ),
-		SiteKitCore: path.resolve( 'assets/js/' ),
-		GoogleComponents: path.resolve( 'assets/js/components/' ),
-		GoogleUtil: path.resolve( 'assets/js/util/' ),
-		GoogleModules: path.resolve( './assets/js/modules/' ),
 	},
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
@@ -128,11 +123,6 @@ const webpackConfig = ( mode ) => {
 					name: 'Module Entry Points',
 					color: '#fbbc05',
 				} ),
-				new CleanWebpackPlugin( {
-					// Prevent this build from removing files created by one of the other builds
-					// (eg. Plugin CSS and Test files).
-					cleanOnceBeforeBuildPatterns: [],
-				} ),
 			],
 			optimization: {
 				minimizer: [
@@ -152,6 +142,18 @@ const webpackConfig = ( mode ) => {
 						extractComments: false,
 					} ),
 				],
+				runtimeChunk: false,
+				splitChunks: {
+					cacheGroups: {
+						vendor: {
+							chunks: 'initial',
+							name: 'googlesitekit-vendor',
+							filename: 'googlesitekit-vendor.js',
+							enforce: true,
+							test: /[\\/]node_modules[\\/]/,
+						},
+					},
+				},
 			},
 			resolve,
 		},
@@ -198,11 +200,6 @@ const webpackConfig = ( mode ) => {
 					name: 'Plugin CSS',
 					color: '#4285f4',
 				} ),
-				new CleanWebpackPlugin( {
-					// Prevent this build from removing files created by one of the other builds
-					// (eg. Module Entry Points and Test files).
-					cleanOnceBeforeBuildPatterns: [],
-				} ),
 			],
 		},
 	];
@@ -227,11 +224,6 @@ const testBundle = () => {
 			new WebpackBar( {
 				name: 'Test files',
 				color: '#34a853',
-			} ),
-			new CleanWebpackPlugin( {
-				// Prevent this build from removing files created by one of the other builds
-				// (eg. Module Entry Points and Plugin CSS).
-				cleanOnceBeforeBuildPatterns: [],
 			} ),
 		],
 		externals,

@@ -19,17 +19,7 @@
 /**
  * External dependencies
  */
-import Button from 'GoogleComponents/button';
-import Link from 'GoogleComponents/link';
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
-import { TextField, Input, HelperText } from 'SiteKitCore/material-components';
-import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
-import {
-	validateJSON,
-	validateOptimizeID,
-	toggleConfirmModuleSettings,
-} from 'GoogleUtil';
 import classnames from 'classnames';
 
 /**
@@ -39,23 +29,40 @@ import { __, _x } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
 import { addFilter, removeFilter } from '@wordpress/hooks';
 
+/**
+ * Internal dependencies
+ */
+import {
+	validateJSON,
+	validateOptimizeID,
+	toggleConfirmModuleSettings,
+	getModulesData,
+} from '../../util';
+import SvgIcon from '../../util/svg-icon';
+import Button from '../../components/button';
+import Link from '../../components/link';
+import data, { TYPE_MODULES } from '../../components/data';
+import { TextField, Input, HelperText } from '../../material-components';
+
 class OptimizeSetup extends Component {
 	constructor( props ) {
 		super( props );
 
+		const modulesData = getModulesData();
+
 		const {
 			optimizeID,
 			ampExperimentJSON,
-		} = global.googlesitekit.modules.optimize.settings;
+		} = modulesData.optimize.settings;
 
 		const {
 			settings: analyticsSettings,
-		} = global.googlesitekit.modules.analytics || {};
+		} = modulesData.analytics || {};
 
 		const {
 			active: gtmActive,
 			settings: gtmSettings,
-		} = global.googlesitekit.modules.tagmanager || {};
+		} = modulesData.tagmanager || {};
 
 		const analyticsUseSnippet = analyticsSettings ? analyticsSettings.useSnippet : false;
 		const gtmUseSnippet = gtmActive && gtmSettings ? gtmSettings.useSnippet : false;
@@ -144,7 +151,7 @@ class OptimizeSetup extends Component {
 				finishSetup();
 			}
 
-			global.googlesitekit.modules.optimize.settings.optimizeID = optimizeID;
+			getModulesData().optimize.settings.optimizeID = optimizeID;
 
 			if ( this._isMounted ) {
 				this.setState( {

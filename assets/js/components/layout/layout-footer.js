@@ -20,12 +20,16 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import SourceLink from 'GoogleComponents/source-link';
 
 /**
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import SourceLink from '../source-link';
 
 class LayoutFooter extends Component {
 	render() {

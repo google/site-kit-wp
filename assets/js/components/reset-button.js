@@ -17,15 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import data, { TYPE_CORE } from 'GoogleComponents/data';
-import {
-	clearWebStorage,
-} from 'GoogleUtil';
-import Dialog from 'GoogleComponents/dialog';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -35,6 +26,11 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import {
+	clearWebStorage,
+} from '../util';
+import data, { TYPE_CORE } from './data';
+import Dialog from './dialog';
 import Link from './link';
 import Modal from './modal';
 
