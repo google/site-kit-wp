@@ -39,11 +39,13 @@ apiFetchMock.mockImplementation( ( ...args ) => {
 const setupRegistry = ( registry ) => {
 	registry.dispatch( modulesAnalyticsStoreName ).setSettings( {} );
 	registry.dispatch( modulesAnalyticsStoreName ).receiveAccounts( fixtures.accountsPropertiesProfiles.accounts );
+	registry.dispatch( modulesAnalyticsStoreName ).receiveExistingTag( null );
 };
 
 const setupEmptyRegistry = ( registry ) => {
 	registry.dispatch( modulesAnalyticsStoreName ).setSettings( {} );
 	registry.dispatch( modulesAnalyticsStoreName ).receiveAccounts( [] );
+	registry.dispatch( modulesAnalyticsStoreName ).receiveExistingTag( null );
 };
 
 describe( 'AccountSelect', () => {

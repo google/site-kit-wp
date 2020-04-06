@@ -42,6 +42,7 @@ const setupRegistry = ( { dispatch } ) => {
 	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId;
 	dispatch( modulesAnalyticsStoreName ).setAccountID( accountID );
 	dispatch( modulesAnalyticsStoreName ).receiveProperties( fixtures.accountsPropertiesProfiles.properties );
+	dispatch( modulesAnalyticsStoreName ).receiveExistingTag( null );
 };
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
@@ -55,6 +56,7 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 const setupEmptyRegistry = ( { dispatch } ) => {
 	dispatch( modulesAnalyticsStoreName ).setSettings( {} );
 	dispatch( modulesAnalyticsStoreName ).receiveProperties( [] );
+	dispatch( modulesAnalyticsStoreName ).receiveExistingTag( null );
 };
 
 describe( 'PropertySelect', () => {
