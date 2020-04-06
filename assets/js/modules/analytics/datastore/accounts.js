@@ -41,6 +41,7 @@ const RECEIVE_CREATE_ACCOUNT_FAILED = 'RECEIVE_CREATE_ACCOUNT_FAILED';
 export const INITIAL_STATE = {
 	accounts: undefined,
 	isFetchingAccountsPropertiesProfiles: false,
+	createAccountTicket: false,
 };
 
 export const actions = {
@@ -360,6 +361,19 @@ export const selectors = {
 	 */
 	isFetchingAccounts( state ) {
 		return !! state.isFetchingAccountsPropertiesProfiles;
+	},
+
+	/**
+	 * Get the current createAccountTicket value.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {object} The createAccountTicket.
+	 */
+	getCreateAccountTicket( state ) {
+		return state.createAccountTicket;
 	},
 };
 

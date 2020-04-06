@@ -777,7 +777,6 @@ class AnalyticsSetup extends Component {
 			isLoading,
 			propertiesLoading,
 			profilesLoading,
-			//	accounts,
 			properties,
 			profiles,
 			selectedAccount,
