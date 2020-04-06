@@ -146,6 +146,7 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'does not make a network request if accounts are already present', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {} );
 				registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accountsPropertiesProfiles.accounts );
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
@@ -160,6 +161,7 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'does not make a network request if accounts exist but are empty (this is a valid state)', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {} );
 				registry.dispatch( STORE_NAME ).receiveAccounts( [] );
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
