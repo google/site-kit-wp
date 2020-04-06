@@ -89,9 +89,8 @@ storiesOf( 'Analytics Module Setup', module )
 	.add( 'Start (with matched property)', () => {
 		filterAnalyticsSetup();
 
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
-			const [ matchedProperty ] = properties;
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
