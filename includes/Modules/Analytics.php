@@ -27,6 +27,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Core\Util\Timezones;
 use Google\Site_Kit\Modules\Analytics\Settings;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DateRangeValues;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsResponse;
@@ -121,6 +122,23 @@ final class Analytics extends Module
 			},
 			0
 		);
+
+		// Add the timezone data for users provisioning new accounts.
+		if ( ! $this->is_connected() ) {
+			add_filter(
+				'googlesitekit_admin_data',
+				function( $admin_data ) {
+					$selected_zone = get_option( 'timezone_string' );
+
+					$timezones     = new Timezones();
+					$timezone_data = $timezones->get_timezone_data();
+
+					$admin_data['timezones'] = $timezone_data;
+					$admin_data['timezone']  = $selected_zone;
+					return $admin_data;
+				}
+			);
+		}
 	}
 
 	/**
@@ -157,6 +175,7 @@ final class Analytics extends Module
 			'https://www.googleapis.com/auth/analytics.readonly',
 			'https://www.googleapis.com/auth/analytics.manage.users',
 			'https://www.googleapis.com/auth/analytics.edit',
+			'https://www.googleapis.com/auth/analytics.provision',
 		);
 	}
 

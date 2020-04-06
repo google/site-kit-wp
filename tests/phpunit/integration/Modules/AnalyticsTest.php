@@ -106,6 +106,7 @@ class AnalyticsTest extends TestCase {
 				'https://www.googleapis.com/auth/analytics.readonly',
 				'https://www.googleapis.com/auth/analytics.manage.users',
 				'https://www.googleapis.com/auth/analytics.edit',
+				'https://www.googleapis.com/auth/analytics.provision',
 			),
 			$analytics->get_scopes()
 		);
