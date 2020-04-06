@@ -181,7 +181,6 @@ storiesOf( 'Analytics Module Settings', module )
 
 		return <Settings isEditing={ true } callback={ setupRegistry } />;
 	} )
-	/*
 	.add( 'Edit, with existing tag (no access)', () => {
 		filterAnalyticsSettings();
 
@@ -202,7 +201,6 @@ storiesOf( 'Analytics Module Settings', module )
 			} );
 		};
 
-		return <Settings callback={ setupRegistry } />;
+		return <Settings isEditing={ true } callback={ setupRegistry } />;
 	} )
-	*/
 ;
