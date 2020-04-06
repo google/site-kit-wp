@@ -131,12 +131,20 @@ storiesOf( 'Analytics Module Setup', module )
 		filterAnalyticsSetup();
 
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const existingTag = {
+			accountID: properties[ 0 ].accountId,
+			propertyID: properties[ 0 ].id,
+		};
+
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
-			dispatch( STORE_NAME ).receiveExistingTag( fixtures.getTagPermissionsAccess );
+			dispatch( STORE_NAME ).receiveExistingTag( existingTag );
+			dispatch( STORE_NAME ).receiveTagPermission( {
+				...existingTag,
+				permission: true,
+			} );
 		};
 
 		return <Setup callback={ setupRegistry } />;
