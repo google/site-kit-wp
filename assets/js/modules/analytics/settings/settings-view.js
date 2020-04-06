@@ -28,6 +28,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore';
 // import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site';
 import { trackingExclusionLabels } from '../common/tracking-exclusion-switches';
+import { ExistingTagError, ExistingTagNotice } from '../common';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -38,12 +39,16 @@ export default function SettingsView() {
 	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getSavedAnonymizeIP() );
 	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getSavedTrackingDisabled() ) || [];
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
 
 	// TODO: use selector once available.
 	const ampMode = /* useSelect( ( select ) => select( CORE_SITE ).getAmpMode() ) */ false;
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
+
+			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
+			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
@@ -78,9 +83,8 @@ export default function SettingsView() {
 						{ __( 'Analytics Code Snippet', 'google-site-kit' ) }
 					</p>
 					<h5 className="googlesitekit-settings-module__meta-item-data">
-						{ hasExistingTag && __( 'Inserted by another plugin or theme', 'google-site-kit' ) }
-						{ ( ! hasExistingTag && useSnippet ) && __( 'Snippet is inserted', 'google-site-kit' ) }
-						{ ( ! hasExistingTag && ! useSnippet ) && __( 'Snippet is not inserted', 'google-site-kit' ) }
+						{ useSnippet && __( 'Snippet is inserted', 'google-site-kit' ) }
+						{ ! useSnippet && __( 'Snippet is not inserted', 'google-site-kit' ) }
 					</h5>
 				</div>
 			</div>
