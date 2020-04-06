@@ -286,6 +286,29 @@ export const selectors = {
 	},
 
 	/**
+	 * Checks whther the user has access to the existing Analytics tag.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {?boolean} true or false if tag permission is available,
+	 *                    null if no existing tag,
+	 *                    otherwise undefined if resolution is incomplete.
+	 */
+	hasExistingTagPermission: createRegistrySelector( ( select ) => () => {
+		const hasExistingTag = select( STORE_NAME ).hasExistingTag();
+
+		if ( hasExistingTag === undefined ) {
+			return undefined;
+		} else if ( hasExistingTag ) {
+			const propertyID = select( STORE_NAME ).getExistingTag();
+
+			return select( STORE_NAME ).hasTagPermission( propertyID );
+		}
+
+		return null;
+	} ),
+
+	/**
 	 * Checks whether the user has access to an existing Google Analytics tag / property.
 	 *
 	 * This can be an existing tag found on the site, or any Google Analytics property.

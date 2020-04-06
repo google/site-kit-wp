@@ -291,5 +291,59 @@ describe( 'modules/analytics tags', () => {
 				expect( hasPermission ).toEqual( undefined );
 			} );
 		} );
+
+		describe( 'hasExistingTagPermission', () => {
+			it( 'returns true if an existing tag exists and the user has permission for it', async () => {
+				registry.dispatch( STORE_NAME ).receiveExistingTag( 'UA-12345678-1' );
+				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+					accountID: '12345678',
+					propertyID: 'UA-12345678-1',
+					permission: true,
+				} );
+
+				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
+
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getExistingTag' )
+				);
+
+				expect( hasPermission ).toEqual( true );
+				expect( fetch ).not.toHaveBeenCalled();
+			} );
+
+			it( 'returns false if an existing tag exists and the user does not have permission for it', async () => {
+				registry.dispatch( STORE_NAME ).receiveExistingTag( 'UA-12345678-1' );
+				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+					accountID: '12345678',
+					propertyID: 'UA-12345678-1',
+					permission: false,
+				} );
+
+				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
+
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getExistingTag' )
+				);
+
+				expect( hasPermission ).toEqual( false );
+				expect( fetch ).not.toHaveBeenCalled();
+			} );
+
+			it( 'returns null if no existing tag exists', async () => {
+				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+
+				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
+
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getExistingTag' )
+				);
+
+				expect( hasPermission ).toEqual( null );
+				expect( fetch ).not.toHaveBeenCalled();
+			} );
+		} );
 	} );
 } );
