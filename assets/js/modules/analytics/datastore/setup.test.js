@@ -346,7 +346,7 @@ describe( 'modules/analytics setup', () => {
 					...validSettings,
 					...existingTag, // Set automatically in resolver.
 				} );
-				registry.dispatch( STORE_NAME ).receiveExistingTag( existingTag );
+				registry.dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
 				registry.dispatch( STORE_NAME ).receiveTagPermission( {
 					...existingTag,
 					permission: true,
