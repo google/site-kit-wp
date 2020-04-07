@@ -27,7 +27,6 @@ const path = require( 'path' );
  */
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
-const { CleanWebpackPlugin } = require( 'clean-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
 const { ProvidePlugin } = require( 'webpack' );
 
@@ -89,6 +88,7 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-api': './assets/js/googlesitekit-api.js',
 				'googlesitekit-data': './assets/js/googlesitekit-data.js',
 				'googlesitekit-datastore-site': './assets/js/googlesitekit-datastore-site.js',
+				'googlesitekit-modules-analytics': './assets/js/googlesitekit-modules-analytics.js',
 				'googlesitekit-modules': './assets/js/googlesitekit-modules.js', // TODO: Add external following 1162.
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
@@ -124,11 +124,6 @@ const webpackConfig = ( mode ) => {
 					name: 'Module Entry Points',
 					color: '#fbbc05',
 				} ),
-				new CleanWebpackPlugin( {
-					// Prevent this build from removing files created by one of the other builds
-					// (eg. Plugin CSS and Test files).
-					cleanOnceBeforeBuildPatterns: [],
-				} ),
 			],
 			optimization: {
 				minimizer: [
@@ -148,6 +143,18 @@ const webpackConfig = ( mode ) => {
 						extractComments: false,
 					} ),
 				],
+				runtimeChunk: false,
+				splitChunks: {
+					cacheGroups: {
+						vendor: {
+							chunks: 'initial',
+							name: 'googlesitekit-vendor',
+							filename: 'googlesitekit-vendor.js',
+							enforce: true,
+							test: /[\\/]node_modules[\\/]/,
+						},
+					},
+				},
 			},
 			resolve,
 		},
@@ -194,11 +201,6 @@ const webpackConfig = ( mode ) => {
 					name: 'Plugin CSS',
 					color: '#4285f4',
 				} ),
-				new CleanWebpackPlugin( {
-					// Prevent this build from removing files created by one of the other builds
-					// (eg. Module Entry Points and Test files).
-					cleanOnceBeforeBuildPatterns: [],
-				} ),
 			],
 		},
 	];
@@ -223,11 +225,6 @@ const testBundle = () => {
 			new WebpackBar( {
 				name: 'Test files',
 				color: '#34a853',
-			} ),
-			new CleanWebpackPlugin( {
-				// Prevent this build from removing files created by one of the other builds
-				// (eg. Module Entry Points and Plugin CSS).
-				cleanOnceBeforeBuildPatterns: [],
 			} ),
 		],
 		externals,

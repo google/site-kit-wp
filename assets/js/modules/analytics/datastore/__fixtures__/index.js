@@ -1,5 +1,5 @@
 /**
- * Analytics module initialization.
+ * Analytics Datastore Fixtures.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import './datastore';
+export { default as accountsPropertiesProfiles } from './accounts-properties-profiles';
+export { default as createProfile } from './create-profile';
+export { default as createProperty } from './create-property';
+export { default as profiles } from './profiles';
+export { default as propertiesProfiles } from './properties-profiles';
+export { default as getTagPermissionsAccess } from './tag-permissions-access';
+export { default as getTagPermissionsNoAccess } from './tag-permissions-no-access';

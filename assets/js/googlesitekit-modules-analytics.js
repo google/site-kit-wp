@@ -1,5 +1,5 @@
 /**
- * Analytics module initialization.
+ * Analytics module entrypoint.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,4 +19,4 @@
 /**
  * Internal dependencies
  */
-import './datastore';
+import './modules/analytics';
