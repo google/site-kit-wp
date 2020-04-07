@@ -1295,6 +1295,7 @@ final class Analytics extends Module
 				array(
 					'src'          => $base_url . 'js/googlesitekit-modules-analytics.js',
 					'dependencies' => array(
+						'googlesitekit-vendor',
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-modules',
