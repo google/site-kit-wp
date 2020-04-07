@@ -34,7 +34,9 @@ import { PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 
 // Actions
 const FETCH_CREATE_PROPERTY = 'FETCH_CREATE_PROPERTY';
+const FETCH_CREATE_PROPERTY_STARTED = 'FETCH_CREATE_PROPERTY_STARTED';
 const FETCH_PROPERTIES_PROFILES = 'FETCH_PROPERTIES_PROFILES';
+const FETCH_PROPERTIES_PROFILES_STARTED = 'FETCH_PROPERTIES_PROFILES_STARTED';
 const RECEIVE_CREATE_PROPERTY = 'RECEIVE_CREATE_PROPERTY';
 const RECEIVE_CREATE_PROPERTY_FAILED = 'RECEIVE_CREATE_PROPERTY_FAILED';
 const RECEIVE_MATCHED_PROPERTY = 'RECEIVE_MATCHED_PROPERTY';
@@ -77,8 +79,10 @@ export const actions = {
 		}
 	},
 
-	fetchCreateProperty( accountID ) {
+	*fetchCreateProperty( accountID ) {
 		invariant( accountID, 'accountID is required.' );
+
+		yield { type: FETCH_CREATE_PROPERTY_STARTED };
 
 		return {
 			payload: { accountID },
@@ -86,8 +90,10 @@ export const actions = {
 		};
 	},
 
-	fetchPropertiesProfiles( accountID ) {
+	*fetchPropertiesProfiles( accountID ) {
 		invariant( accountID, 'accountID is required.' );
+
+		yield { type: FETCH_PROPERTIES_PROFILES_STARTED };
 
 		return {
 			payload: { accountID },
@@ -238,7 +244,7 @@ export const controls = {
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case FETCH_CREATE_PROPERTY: {
+		case FETCH_CREATE_PROPERTY_STARTED: {
 			const { accountID } = payload;
 
 			return {
@@ -250,7 +256,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case FETCH_PROPERTIES_PROFILES: {
+		case FETCH_PROPERTIES_PROFILES_STARTED: {
 			const { accountID } = payload;
 
 			return {
