@@ -77,12 +77,10 @@ describe( 'modules/analytics profiles', () => {
 				registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID );
 
 				// Ensure the proper body parameters were sent.
-				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toMatchObject(
 					{
-						data: {
-							accountID,
-							propertyID,
-						},
+						accountID,
+						propertyID,
 					}
 				);
 

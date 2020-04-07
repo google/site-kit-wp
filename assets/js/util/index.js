@@ -110,6 +110,28 @@ export const removeURLParameter = ( url, parameter ) => {
 };
 
 /**
+ * Prepares a number to be used in readableLargeNumber.
+ *
+ * @param {number} number The large number to prepare.
+ *
+ * @return {number} The prepared number
+ */
+export const prepareForReadableLargeNumber = ( number ) => {
+	if ( 1000000 <= number ) {
+		return Math.round( number / 100000 ) / 10;
+	}
+
+	if ( 10000 <= number ) {
+		return Math.round( number / 1000 );
+	}
+
+	if ( 1000 <= number ) {
+		return Math.round( number / 100 ) / 10;
+	}
+	return number;
+};
+
+/**
  * Format a large number for shortened display.
  *
  * @param {number}           number       The large number to format.
@@ -136,28 +158,34 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
 		maximumFractionDigits: 1,
 	};
 
-	switch ( true ) {
-		case 1000000 < number :
-			return sprintf(
-				// translators: %s: an abbreviated number in millions.
-				__( '%sM', 'google-site-kit' ),
-				numberFormat( number / 1000000, withSingleDecimal )
-			);
-		case 99000 < number :
-			return sprintf(
-				// translators: %s: an abbreviated number in thousands.
-				__( '%sK', 'google-site-kit' ),
-				numberFormat( Math.round( number / 1000 ) )
-			);
-		case 1000 < number :
-			return sprintf(
-				// translators: %s: an abbreviated number in thousands.
-				__( '%sK', 'google-site-kit' ),
-				numberFormat( number / 1000, withSingleDecimal )
-			);
-		default:
-			return number.toString();
+	// Numbers over 1,000,000 round normally and display a single decimal unless the decimal is 0.
+	if ( 1000000 <= number ) {
+		return sprintf(
+			// translators: %s: an abbreviated number in millions.
+			__( '%sM', 'google-site-kit' ),
+			numberFormat( prepareForReadableLargeNumber( number ), number % 10 === 0 ? {} : withSingleDecimal )
+		);
 	}
+
+	// Numbers between 10,000 and 1,000,000 round normally and have no decimals
+	if ( 10000 <= number ) {
+		return sprintf(
+			// translators: %s: an abbreviated number in thousands.
+			__( '%sK', 'google-site-kit' ),
+			numberFormat( prepareForReadableLargeNumber( number ) )
+		);
+	}
+
+	// Numbers between 1,000 and 10,000 round normally and display a single decimal unless the decimal is 0.
+	if ( 1000 <= number ) {
+		return sprintf(
+			// translators: %s: an abbreviated number in thousands.
+			__( '%sK', 'google-site-kit' ),
+			numberFormat( prepareForReadableLargeNumber( number ), number % 10 === 0 ? {} : withSingleDecimal )
+		);
+	}
+
+	return number.toString();
 };
 
 /**

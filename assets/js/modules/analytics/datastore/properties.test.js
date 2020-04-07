@@ -75,8 +75,8 @@ describe( 'modules/analytics properties', () => {
 
 				registry.dispatch( STORE_NAME ).createProperty( accountID );
 				// Ensure the proper parameters were passed.
-				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
-					{ data: { accountID } }
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toMatchObject(
+					{ accountID }
 				);
 
 				await subscribeUntil( registry,
