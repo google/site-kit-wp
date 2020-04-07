@@ -345,6 +345,11 @@ export const resolvers = {
 
 			yield actions.receiveProfiles( profiles );
 
+			const profileID = registry.select( STORE_NAME ).getProfileID();
+			if ( ! profileID ) {
+				yield actions.setProfileForProperty( { accountID, propertyID } );
+			}
+
 			return actions.receiveProfilesCompleted( accountID, propertyID );
 		} catch ( error ) {
 			// TODO: Implement an error handler store or some kind of centralized
