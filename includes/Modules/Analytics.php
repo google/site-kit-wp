@@ -22,12 +22,15 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Analytics\Settings;
+use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
+use Google\Site_Kit\Modules\Analytics\Proxy_Provisioning;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DateRangeValues;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_Report;
@@ -50,6 +53,8 @@ use Google\Site_Kit_Dependencies\Google_Service_Analytics_Profile;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
+
+const ANALYTICS_PROVISIONING_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_atid';
 
 /**
  * Class representing the Analytics module.
@@ -487,6 +492,7 @@ final class Analytics extends Module
 			'create-property'              => 'analytics',
 			'create-profile'               => 'analytics',
 			'settings'                     => '',
+			'create-account-ticket'        => 'analyticsprovisioning',
 		);
 	}
 
@@ -906,6 +912,49 @@ final class Analytics extends Module
 					$this->get_settings()->merge( array( 'useSnippet' => $data['useSnippet'] ) );
 					return true;
 				};
+			case 'POST:create-account-ticket':
+				if ( ! isset( $data['accountName'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountName' ), array( 'status' => 400 ) );
+				}
+				if ( ! isset( $data['propertyName'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyName' ), array( 'status' => 400 ) );
+				}
+				if ( ! isset( $data['profileName'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileName' ), array( 'status' => 400 ) );
+				}
+				if ( ! isset( $data['timezone'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'timezone' ), array( 'status' => 400 ) );
+				}
+				$credentials = $this->authentication->credentials();
+
+				$account = new Google_Service_Analytics_Account();
+				$account->setName( $data['accountName'] );
+
+				$property = new Google_Service_Analytics_Webproperty();
+				$property->setName( $data['propertyName'] );
+				$property->setWebsiteUrl( $this->context->get_reference_site_url() );
+
+				$profile = new Google_Service_Analytics_Profile();
+				$profile->setName( $data['profileName'] );
+				$profile->setTimezone( $data['timezone'] );
+
+				$account_ticket = new Proxy_AccountTicket();
+				$account_ticket->setAccount( $account );
+				$account_ticket->setWebproperty( $property );
+				$account_ticket->setProfile( $profile );
+				$account_ticket->setRedirectUri( $this->get_provisioning_redirect_uri() );
+
+				// Add site id and secret.
+				$creds = $credentials->get();
+				$account_ticket->setSiteId( $creds['oauth2_client_id'] );
+				$account_ticket->setSiteSecret( $creds['oauth2_client_secret'] );
+
+				$analytics_service = $this->get_service( 'analyticsprovisioning' );
+				return $analytics_service->provisioning->createAccountTicket( $account_ticket );
 		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
@@ -1052,6 +1101,14 @@ final class Analytics extends Module
 				}
 
 				return $response->getReports();
+			case 'POST:create-account-ticket':
+				// Cache the create ticket id long enough to verify it upon completion of the terms of service.
+				set_transient(
+					$self::ANALYTICS_PROVISIONING_ACCOUNT_TICKET_ID . '::' . get_current_user_id(),
+					$response->getId(),
+					15 * MINUTE_IN_SECONDS
+				);
+				return $response;
 		}
 
 		return $response;
@@ -1165,10 +1222,43 @@ final class Analytics extends Module
 	 *               instance of Google_Service.
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
-		return array(
-			'analytics'          => new Google_Service_Analytics( $client ),
-			'analyticsreporting' => new Google_Service_AnalyticsReporting( $client ),
+		$google_proxy = new Google_Proxy( $this->context );
+
+		// Create an analytics provisioning service that makes requests to the proxy.
+		$analytics_provisioning_service = new Google_Service_Analytics( $client, $google_proxy->url() );
+
+		// Use a custom provisioning method that accepts site id and secret.
+		$analytics_provisioning_service->provisioning = new Proxy_Provisioning(
+			$analytics_provisioning_service,
+			$analytics_provisioning_service->serviceName, // phpcs:ignore WordPress.NamingConventions.ValidVariableName
+			'provisioning',
+			array(
+				'methods' => array(
+					'createAccountTicket' => array(
+						'path'       => 'provisioning/createAccountTicket',
+						'httpMethod' => 'POST',
+						'parameters' => array(),
+					),
+				),
+			)
 		);
+		return array(
+			'analytics'             => new Google_Service_Analytics( $client ),
+			'analyticsreporting'    => new Google_Service_AnalyticsReporting( $client ),
+			'analyticsprovisioning' => $analytics_provisioning_service,
+
+		);
+	}
+
+	/**
+	 * Gets the provisioning redirect URI that listens for the Terms of Service redirect.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Provisioning redirect URI.
+	 */
+	private function get_provisioning_redirect_uri() {
+		return add_query_arg( 'gatoscallback', '1', untrailingslashit( home_url() ) );
 	}
 
 	/**
