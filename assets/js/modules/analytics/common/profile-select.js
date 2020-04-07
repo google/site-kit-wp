@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../material-components';
+import ProgressBar from '../../../components/progress-bar';
 import { STORE_NAME } from '../datastore';
 import { PROFILE_CREATE } from '../datastore/constants';
 import { isValidPropertyID, isValidAccountID } from '../util';
@@ -37,11 +38,17 @@ export default function ProfileSelect() {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const profiles = useSelect( ( select ) => select( STORE_NAME ).getProfiles( accountID, propertyID ) ) || [];
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const isLoadingProperties = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProperties( accountID ) );
+	const isLoadingProfiles = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProfiles( accountID, propertyID ) );
 
 	const { setProfileID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
 		setProfileID( item.dataset.value );
 	}, [ profileID ] );
+
+	if ( isLoadingProperties || isLoadingProfiles ) {
+		return <ProgressBar small />;
+	}
 
 	return (
 		<Select
