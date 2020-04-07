@@ -38,7 +38,7 @@ class Proxy_AccountTicket extends Google_Service_Analytics_AccountTicket {
 	public $site_secret = '';
 
 	/**
-	 * Get the site ID.
+	 * Gets the site ID.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -47,7 +47,7 @@ class Proxy_AccountTicket extends Google_Service_Analytics_AccountTicket {
 	}
 
 	/**
-	 * Set the site ID.
+	 * Sets the site ID.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -58,7 +58,7 @@ class Proxy_AccountTicket extends Google_Service_Analytics_AccountTicket {
 	}
 
 	/**
-	 * Get the site secret.
+	 * Gets the site secret.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -67,7 +67,7 @@ class Proxy_AccountTicket extends Google_Service_Analytics_AccountTicket {
 	}
 
 	/**
-	 * Set the site secret.
+	 * Sets the site secret.
 	 *
 	 * @since n.e.x.t
 	 *
