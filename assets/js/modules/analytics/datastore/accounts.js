@@ -30,6 +30,7 @@ import { STORE_NAME } from '.';
 
 // Actions
 const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
+const FETCH_ACCOUNTS_PROPERTIES_PROFILES_STARTED = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES_STARTED';
 const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED';
@@ -41,7 +42,9 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
-	fetchAccountsPropertiesProfiles( data ) {
+	*fetchAccountsPropertiesProfiles( data ) {
+		yield { type: FETCH_ACCOUNTS_PROPERTIES_PROFILES_STARTED };
+
 		return {
 			payload: {
 				data,
@@ -104,7 +107,7 @@ export const controls = {
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case FETCH_ACCOUNTS_PROPERTIES_PROFILES: {
+		case FETCH_ACCOUNTS_PROPERTIES_PROFILES_STARTED: {
 			return {
 				...state,
 				isFetchingAccountsPropertiesProfiles: true,
