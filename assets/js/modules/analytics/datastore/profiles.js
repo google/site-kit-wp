@@ -80,7 +80,10 @@ export const actions = {
 	},
 
 	*fetchCreateProfile( accountID, propertyID ) {
-		yield { type: FETCH_CREATE_PROFILE_STARTED };
+		yield {
+			payload: { accountID, propertyID },
+			type: FETCH_CREATE_PROFILE_STARTED,
+		};
 
 		return {
 			payload: { accountID, propertyID },
@@ -89,7 +92,10 @@ export const actions = {
 	},
 
 	*fetchProfiles( accountID, propertyID ) {
-		yield { type: FETCH_PROFILES_STARTED };
+		yield {
+			payload: { accountID, propertyID },
+			type: FETCH_PROFILES_STARTED,
+		};
 
 		return {
 			payload: { accountID, propertyID },

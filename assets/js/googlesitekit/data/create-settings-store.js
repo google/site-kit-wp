@@ -34,9 +34,11 @@ const { getRegistry } = commonActions;
 // Actions
 const SET_SETTINGS = 'SET_SETTINGS';
 const FETCH_SETTINGS = 'FETCH_SETTINGS';
+const FETCH_SETTINGS_STARTED = 'FETCH_SETTINGS';
+const FETCH_SAVE_SETTINGS = 'FETCH_SAVE_SETTINGS';
+const FETCH_SAVE_SETTINGS_STARTED = 'FETCH_SAVE_SETTINGS_STARTED';
 const RECEIVE_SETTINGS = 'RECEIVE_SETTINGS';
 const RECEIVE_SETTINGS_FAILED = 'RECEIVE_SETTINGS_FAILED';
-const FETCH_SAVE_SETTINGS = 'FETCH_SAVE_SETTINGS';
 const RECEIVE_SAVE_SETTINGS = 'RECEIVE_SAVE_SETTINGS';
 const RECEIVE_SAVE_SETTINGS_FAILED = 'RECEIVE_SAVE_SETTINGS_FAILED';
 const ROLLBACK_SETTINGS = 'ROLLBACK_SETTINGS';
@@ -107,7 +109,12 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 *
 		 * @return {Object} Redux-style action.
 		 */
-		fetchSettings() {
+		*fetchSettings() {
+			yield {
+				payload: {},
+				type: FETCH_SETTINGS_STARTED,
+			};
+
 			return {
 				payload: {},
 				type: FETCH_SETTINGS,
@@ -190,8 +197,13 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @param {Object} values Settings with their values to save.
 		 * @return {Object} Redux-style action.
 		 */
-		fetchSaveSettings( values ) {
+		*fetchSaveSettings( values ) {
 			invariant( values, 'values is required.' );
+
+			yield {
+				payload: { values },
+				type: FETCH_SAVE_SETTINGS_STARTED,
+			};
 
 			return {
 				payload: { values },
@@ -260,7 +272,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 				};
 			}
 
-			case FETCH_SETTINGS: {
+			case FETCH_SETTINGS_STARTED: {
 				return {
 					...state,
 					isFetchingSettings: true,
@@ -291,7 +303,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 				};
 			}
 
-			case FETCH_SAVE_SETTINGS: {
+			case FETCH_SAVE_SETTINGS_STARTED: {
 				return {
 					...state,
 					isFetchingSaveSettings: true,

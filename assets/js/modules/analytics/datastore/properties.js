@@ -82,7 +82,10 @@ export const actions = {
 	*fetchCreateProperty( accountID ) {
 		invariant( accountID, 'accountID is required.' );
 
-		yield { type: FETCH_CREATE_PROPERTY_STARTED };
+		yield {
+			payload: { accountID },
+			type: FETCH_CREATE_PROPERTY_STARTED,
+		};
 
 		return {
 			payload: { accountID },
@@ -93,7 +96,10 @@ export const actions = {
 	*fetchPropertiesProfiles( accountID ) {
 		invariant( accountID, 'accountID is required.' );
 
-		yield { type: FETCH_PROPERTIES_PROFILES_STARTED };
+		yield {
+			payload: { accountID },
+			type: FETCH_PROPERTIES_PROFILES_STARTED,
+		};
 
 		return {
 			payload: { accountID },

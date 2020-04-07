@@ -43,7 +43,12 @@ export const INITIAL_STATE = {
 
 export const actions = {
 	*fetchAccountsPropertiesProfiles( data ) {
-		yield { type: FETCH_ACCOUNTS_PROPERTIES_PROFILES_STARTED };
+		yield {
+			payload: {
+				data,
+			},
+			type: FETCH_ACCOUNTS_PROPERTIES_PROFILES_STARTED,
+		};
 
 		return {
 			payload: {

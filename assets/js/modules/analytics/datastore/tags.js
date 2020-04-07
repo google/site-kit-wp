@@ -34,7 +34,9 @@ const { commonActions, createRegistrySelector } = Data;
 
 // Actions
 const FETCH_EXISTING_TAG = 'FETCH_EXISTING_TAG';
+const FETCH_EXISTING_TAG_STARTED = 'FETCH_EXISTING_TAG_STARTED';
 const FETCH_TAG_PERMISSION = 'FETCH_TAG_PERMISSION';
+const FETCH_TAG_PERMISSION_STARTED = 'FETCH_TAG_PERMISSION_STARTED';
 const RECEIVE_EXISTING_TAG = 'RECEIVE_EXISTING_TAG';
 const RECEIVE_EXISTING_TAG_FAILED = 'RECEIVE_EXISTING_TAG_FAILED';
 const RECEIVE_TAG_PERMISSION = 'RECEIVE_TAG_PERMISSION';
@@ -48,15 +50,25 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
-	fetchExistingTag() {
+	*fetchExistingTag() {
+		yield {
+			payload: {},
+			type: FETCH_EXISTING_TAG_STARTED,
+		};
+
 		return {
 			payload: {},
 			type: FETCH_EXISTING_TAG,
 		};
 	},
 
-	fetchTagPermission( { propertyID } ) {
+	*fetchTagPermission( { propertyID } ) {
 		invariant( propertyID, 'propertyID is required.' );
+
+		yield {
+			payload: { propertyID },
+			type: FETCH_TAG_PERMISSION_STARTED,
+		};
 
 		return {
 			payload: { propertyID },
@@ -123,14 +135,14 @@ export const controls = {
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case FETCH_EXISTING_TAG: {
+		case FETCH_EXISTING_TAG_STARTED: {
 			return {
 				...state,
 				isFetchingExistingTag: true,
 			};
 		}
 
-		case FETCH_TAG_PERMISSION: {
+		case FETCH_TAG_PERMISSION_STARTED: {
 			const { propertyID } = payload;
 
 			return {
