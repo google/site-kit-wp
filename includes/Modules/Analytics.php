@@ -20,6 +20,10 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Assets;
+use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
@@ -55,8 +59,8 @@ use Exception;
  * @ignore
  */
 final class Analytics extends Module
-	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Admin_Bar, Module_With_Debug_Fields {
-	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait;
+	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Admin_Bar, Module_With_Debug_Fields {
+	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Module_With_Assets_Trait;
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -480,6 +484,8 @@ final class Analytics extends Module
 			'tag-permission'               => '',
 			'report'                       => 'analyticsreporting',
 			// POST.
+			'create-property'              => 'analytics',
+			'create-profile'               => 'analytics',
 			'settings'                     => '',
 		);
 	}
@@ -767,6 +773,39 @@ final class Analytics extends Module
 				$body->setReportRequests( array( $request ) );
 
 				return $this->get_analyticsreporting_service()->reports->batchGet( $body );
+			case 'POST:create-property':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+				$property = new Google_Service_Analytics_Webproperty();
+				$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
+				$property->setWebsiteUrl( $this->context->get_reference_site_url() );
+				return $this->get_service( 'analytics' )->management_webproperties->insert( $data['accountID'], $property );
+			case 'POST:create-profile':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+				if ( ! isset( $data['propertyID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
+						array( 'status' => 400 )
+					);
+				}
+				$profile = new Google_Service_Analytics_Profile();
+				$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
+				return $profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $data['propertyID'], $profile );
 			case 'POST:settings':
 				return function() use ( $data ) {
 					$option          = $data->data;
@@ -824,30 +863,28 @@ final class Analytics extends Module
 				};
 			case 'GET:tag-permission':
 				return function() use ( $data ) {
-					if ( ! isset( $data['tag'] ) ) {
+					if ( ! isset( $data['propertyID'] ) ) {
 						return new WP_Error(
 							'missing_required_param',
 							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'tag' ),
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
 							array( 'status' => 400 )
 						);
 					}
-					$accounts               = $this->get_data( 'accounts-properties-profiles' );
-					$has_access_to_property = $this->has_access_to_property( $data['tag'], $accounts['accounts'] );
-
-					if ( empty( $has_access_to_property ) ) {
+					$property_id = $data['propertyID'];
+					$account_id  = $this->parse_account_id( $property_id );
+					if ( empty( $account_id ) ) {
 						return new WP_Error(
-							'google_analytics_existing_tag_permission',
-							sprintf(
-							/* translators: %s: Property id of the existing tag */
-								__( 'We\'ve detected there\'s already an existing Analytics tag on your site (ID %s), but your account doesn\'t seem to have access to this Analytics property. You can either remove the existing tag and connect to a different account, or request access to this property from your team.', 'google-site-kit' ),
-								$data['tag']
-							),
-							array( 'status' => 403 )
+							'invalid_param',
+							__( 'The propertyID parameter is not a valid Analytics property ID.', 'google-site-kit' ),
+							array( 'status' => 400 )
 						);
 					}
-
-					return $has_access_to_property;
+					return array(
+						'accountID'  => $account_id,
+						'propertyID' => $property_id,
+						'permission' => $this->has_access_to_property( $property_id, $account_id ),
+					);
 				};
 			case 'GET:tracking-disabled':
 				return function() {
@@ -1138,43 +1175,31 @@ final class Analytics extends Module
 	 * Verifies that user has access to the property found in the existing tag.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Simplified to return a boolean and require account ID.
 	 *
-	 * @param string $property_id   Property found in the existing tag.
-	 * @param array  $accounts      List of accounts to loop through properties.
-	 * @return mixed False if user has no access to the existing property or array with account id and property found.
+	 * @param string $property_id Property found in the existing tag.
+	 * @param string $account_id  Account ID the property belongs to.
+	 * @return bool True if the user has access, false otherwise.
 	 */
-	protected function has_access_to_property( $property_id, $accounts ) {
-
-		if ( empty( $property_id ) || empty( $accounts ) ) {
+	protected function has_access_to_property( $property_id, $account_id ) {
+		if ( empty( $property_id ) || empty( $account_id ) ) {
 			return false;
 		}
 
-		$response = false;
-
-		foreach ( $accounts as $account ) {
-			$account_id = $account->getId();
-			$properties = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
-
-			if ( is_wp_error( $properties ) ) {
-				continue;
-			}
-			$existing_property_match = array_filter(
-				$properties['properties'],
-				function( $property ) use ( $property_id ) {
-					return $property->getId() === $property_id;
-				}
-			);
-
-			if ( ! empty( $existing_property_match ) ) {
-				$response = array(
-					'accountID'  => $account_id,
-					'propertyID' => $property_id,
-				);
-				break;
-			}
+		// Try to get properties for that account.
+		$properties = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
+		if ( is_wp_error( $properties ) ) {
+			// No access to the account.
+			return false;
 		}
 
-		return $response;
+		// Ensure there is access to the property.
+		foreach ( $properties['properties'] as $property ) {
+			if ( $property->getId() === $property_id ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -1237,6 +1262,33 @@ final class Analytics extends Module
 	}
 
 	/**
+	 * Sets up the module's assets to register.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Asset[] List of Asset objects.
+	 */
+	protected function setup_assets() {
+		$base_url = $this->context->url( 'dist/assets/' );
+
+		return array(
+			new Script(
+				'googlesitekit-modules-analytics',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-modules-analytics.js',
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-api',
+						'googlesitekit-data',
+						'googlesitekit-modules',
+						'googlesitekit-datastore-site',
+					),
+				)
+			),
+		);
+	}
+
+	/**
 	 * Checks whether Analytics data exists for the given URL.
 	 *
 	 * @since 1.4.0
@@ -1290,5 +1342,20 @@ final class Analytics extends Module
 		}
 
 		return (bool) $has_data;
+	}
+
+	/**
+	 * Determines the Analytics account ID from a given Analytics property ID.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $property_id Analytics property ID.
+	 * @return string Analytics account ID, or empty string if invalid property ID.
+	 */
+	protected function parse_account_id( $property_id ) {
+		if ( ! preg_match( '/^UA-([0-9]+)-[0-9]+$/', $property_id, $matches ) ) {
+			return '';
+		}
+		return $matches[1];
 	}
 }
