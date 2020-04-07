@@ -33,6 +33,8 @@ const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
 const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED';
+const FETCH_CREATE_ACCOUNT = 'FETCH_CREATE_ACCOUNT';
+const RECEIVE_CREATE_ACCOUNT_FAILED = 'RECEIVE_CREATE_ACCOUNT_FAILED';
 
 export const INITIAL_STATE = {
 	accounts: undefined,
@@ -86,6 +88,81 @@ export const controls = {
 	[ FETCH_ACCOUNTS_PROPERTIES_PROFILES ]: () => {
 		return API.get( 'modules', 'analytics', 'accounts-properties-profiles' );
 	},
+
+	/**
+	 * Creates a new Analytics account.
+	 *
+	 * Creates a new Analytics account for a user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} args              Argument params.
+	 * @param {string} args.accountName  Google Analytics account name.
+	 * @param {string} args.propertyName Google Analytics property name.
+	 * @param {string} args.profileName  Google Analytics profile name.
+	 * @param {string} args.timezone     Google Analytics timezone.
+	 * @return {Function} Generator function action.
+	 */
+	*createAccount( { accountName, propertyName, profileName, timezone } ) {
+		invariant( accountName, 'accountName is required.' );
+		invariant( propertyName, 'propertyName is required.' );
+		invariant( profileName, 'profileName is required.' );
+		invariant( timezone, 'timezone is required.' );
+
+		try {
+			const createAccountTicket = yield actions.fetchCreateAccount( { accountName, propertyName, profileName, timezone } );
+			return actions.receiveCreateAccount( { createAccountTicket } );
+		} catch ( error ) {
+			// TODO: Implement an error handler store or some kind of centralized
+			// place for error dispatch...
+			return actions.receiveCreateAccountFailed( { accountName, error } );
+		}
+	},
+
+	fetchCreateAccount( { accountName, propertyName, profileName, timezone } ) {
+		return {
+			payload: { accountName, propertyName, profileName, timezone },
+			type: FETCH_CREATE_ACCOUNT,
+		};
+	},
+
+	/**
+	 * Adds a account ticket to process.
+	 *
+	 * Adds the newly-created account ticket to the data store.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} args              Argument params.
+	 * @param {Object} args.createAccountTicket  Google Analytics create account ticket object.
+	 */
+	receiveCreateAccount( { createAccountTicket } ) {
+		invariant( createAccountTicket, 'createAccountTicket is required.' );
+
+		// Once we have an account ticket, redirect the user to accept the Terms of Service.
+		const { id } = createAccountTicket;
+		if ( id ) {
+			document.location = `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/?api.accountTicketId=${ id }`;
+		}
+	},
+
+	/**
+	 * Logs an error with account creation.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} args            Argument params.
+	 * @param {Object} args.error      Error object.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveCreateAccountFailed( { error } ) {
+		return {
+			payload: { error },
+			type: RECEIVE_CREATE_ACCOUNT_FAILED,
+		};
+	},
 };
 
 export const reducer = ( state, { type, payload } ) => {
@@ -122,6 +199,12 @@ export const reducer = ( state, { type, payload } ) => {
 				isFetchingAccountsPropertiesProfiles: false,
 			};
 		}
+		case RECEIVE_CREATE_ACCOUNT_FAILED:
+			const { error } = payload;
+			return {
+				...state,
+				error,
+			};
 
 		default: {
 			return { ...state };
@@ -159,6 +242,14 @@ export const resolvers = {
 			// place for error dispatch...
 			return actions.receiveAccountsPropertiesProfilesFailed( err );
 		}
+	},
+	[ FETCH_CREATE_ACCOUNT ]: ( { payload: { accountName, propertyName, profileName, timezone } } ) => {
+		return API.get( 'modules', 'analytics', 'create-account-ticket', {
+			accountName,
+			propertyName,
+			profileName,
+			timezone,
+		} );
 	},
 };
 

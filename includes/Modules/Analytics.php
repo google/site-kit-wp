@@ -28,6 +28,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Core\Util\Timezones;
 use Google\Site_Kit\Modules\Analytics\Settings;
 use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
 use Google\Site_Kit\Modules\Analytics\Proxy_Provisioning;
@@ -126,6 +127,23 @@ final class Analytics extends Module
 			},
 			0
 		);
+
+		// Add the timezone data for users provisioning new accounts.
+		if ( ! $this->is_connected() ) {
+			add_filter(
+				'googlesitekit_admin_data',
+				function( $admin_data ) {
+					$selected_zone = get_option( 'timezone_string' );
+
+					$timezones     = new Timezones();
+					$timezone_data = $timezones->get_timezone_data();
+
+					$admin_data['timezones'] = $timezone_data;
+					$admin_data['timezone']  = $selected_zone;
+					return $admin_data;
+				}
+			);
+		}
 	}
 
 	/**

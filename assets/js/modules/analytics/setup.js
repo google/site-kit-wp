@@ -21,6 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import AccountCreate from './account-create';
 
 /**
  * WordPress dependencies
@@ -772,11 +773,11 @@ class AnalyticsSetup extends Component {
 
 	renderForm() {
 		const {
+			accounts,
 			anonymizeIP,
 			isLoading,
 			propertiesLoading,
 			profilesLoading,
-			accounts,
 			properties,
 			profiles,
 			selectedAccount,
@@ -816,21 +817,7 @@ class AnalyticsSetup extends Component {
 			}
 			if ( ! setupComplete || isEditing ) {
 				return (
-					<Fragment>
-						{ '-1' === selectedAccount &&
-							<Fragment>
-								<p>{ __( 'To create a new account, click the button below which will open the Google Analytics account creation screen in a new window.', 'google-site-kit' ) }</p>
-								<p>{ __( 'Once completed, click the link below to re-fetch your accounts to continue.', 'google-site-kit' ) }</p>
-							</Fragment>
-						}
-						<div className="googlesitekit-setup-module__action">
-							<Button onClick={ AnalyticsSetup.createNewAccount }>{ __( 'Create an account', 'google-site-kit' ) }</Button>
-
-							<div className="googlesitekit-setup-module__sub-action">
-								<Link onClick={ this.handleRefetchAccount }>{ __( 'Re-fetch My Account', 'google-site-kit' ) }</Link>
-							</div>
-						</div>
-					</Fragment>
+					<AccountCreate />
 				);
 			}
 		}
