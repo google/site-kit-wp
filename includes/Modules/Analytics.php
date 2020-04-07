@@ -126,6 +126,80 @@ final class Analytics extends Module
 			},
 			0
 		);
+
+		add_action(
+			'admin_init',
+			function() {
+				$this->handle_provisioning_callback();
+			}
+		);
+	}
+
+	/**
+	 * Handles the provisioning callback after the user completes the terms of service.
+	 *
+	 * @since 1.0.0
+	 */
+	private function handle_provisioning_callback() {
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			return;
+		}
+
+		$input = $this->context->input();
+
+		if ( $input->filter( INPUT_GET, 'gatoscallback' ) ) {
+			// The handler should check the received Account Ticket id parameter against the id stored in the provisioning step.
+			$account_ticket_id        = $this->context->input()->filter( INPUT_GET, 'accountTicketId', FILTER_SANITIZE_STRING );
+			$stored_account_ticket_id = get_transient( PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
+			delete_transient( PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
+
+			if ( $stored_account_ticket_id !== $account_ticket_id ) {
+				wp_safe_redirect(
+					$this->context->admin_url(
+						'module-analytics',
+						array(
+							'error_code' => 'account_ticket_id_mismatch',
+						)
+					)
+				);
+				exit;
+			}
+
+			$account_id      = $this->context->input()->filter( INPUT_GET, 'accountId', FILTER_SANITIZE_STRING );
+			$web_property_id = $this->context->input()->filter( INPUT_GET, 'webPropertyId', FILTER_SANITIZE_STRING );
+			$profile_id      = $this->context->input()->filter( INPUT_GET, 'profileId', FILTER_SANITIZE_STRING );
+
+			if ( empty( $account_id ) || empty( $web_property_id ) || empty( $profile_id ) ) {
+				wp_safe_redirect(
+					$this->context->admin_url(
+						'module-analytics',
+						array(
+							'slug'       => 'analytics',
+							'error_code' => 'callback_missing_parameter',
+						)
+					)
+				);
+				exit;
+			}
+
+			$this->get_settings()->merge(
+				array(
+					'accountId'     => $account_id,
+					'webPropertyId' => $web_property_id,
+					'profileID'     => $profile_id,
+				)
+			);
+
+			wp_safe_redirect(
+				$this->context->admin_url(
+					'dashboard',
+					array(
+						'notification' => 'authentication_success',
+					)
+				)
+			);
+			exit;
+		}
 	}
 
 	/**
