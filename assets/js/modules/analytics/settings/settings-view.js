@@ -96,8 +96,8 @@ export default function SettingsView() {
 							{ __( 'IP Address Anonymization', 'google-site-kit' ) }
 						</p>
 						<h5 className="googlesitekit-settings-module__meta-item-data">
-							{ anonymizeIP && __( 'IP addresses are being anonymized.', 'google-site-kit' ) }
-							{ ! anonymizeIP && __( 'IP addresses are not being anonymized.', 'google-site-kit' ) }
+							{ anonymizeIP && __( 'IP addresses are being anonymized', 'google-site-kit' ) }
+							{ ! anonymizeIP && __( 'IP addresses are not being anonymized', 'google-site-kit' ) }
 						</h5>
 					</div>
 				</div>
