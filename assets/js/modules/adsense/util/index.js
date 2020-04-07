@@ -35,6 +35,7 @@ import { analyticsAdsenseReportDataDefaults } from '../../analytics/util';
 import data, { TYPE_MODULES } from '../../../components/data';
 
 export * from './parsing';
+export * from './status';
 export * from './validation';
 
 export function reduceAdSenseData( rows ) {
