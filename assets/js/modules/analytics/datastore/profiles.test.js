@@ -155,6 +155,7 @@ describe( 'modules/analytics profiles', () => {
 	describe( 'selectors', () => {
 		describe( 'getProfiles', () => {
 			it( 'uses a resolver to make a network request', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {} );
 				fetch
 					.doMockOnceIf(
 						/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/
