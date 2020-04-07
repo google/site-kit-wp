@@ -167,22 +167,33 @@ export const selectors = {
 			getInternalWebPropertyID,
 			getProfileID,
 			getPropertyID,
-			hasExistingTag,
-			hasTagPermission,
+			hasExistingTagPermission,
 			haveSettingsChanged,
 			isDoingSubmitChanges,
 		} = select( STORE_NAME );
 
-		switch ( true ) {
-			case isDoingSubmitChanges() : return false;
-			case ! haveSettingsChanged() : return false;
-			case ! isValidAccountID( getAccountID() ) : return false;
-			case ! isValidPropertySelection( getPropertyID() ) : return false;
-			case ! isValidProfileSelection( getProfileID() ) : return false;
-			// If the property ID is valid (non-create) the internal ID must be valid as well.
-			case ( isValidPropertyID( getPropertyID() ) && ! isValidInternalWebPropertyID( getInternalWebPropertyID() ) ) : return false;
-			// Do existing tag checks last.
-			case ( hasExistingTag() && ! hasTagPermission( getPropertyID() ) ) : return false;
+		if ( isDoingSubmitChanges() ) {
+			return false;
+		}
+		if ( ! haveSettingsChanged() ) {
+			return false;
+		}
+		if ( ! isValidAccountID( getAccountID() ) ) {
+			return false;
+		}
+		if ( ! isValidPropertySelection( getPropertyID() ) ) {
+			return false;
+		}
+		if ( ! isValidProfileSelection( getProfileID() ) ) {
+			return false;
+		}
+		// If the property ID is valid (non-create) the internal ID must be valid as well.
+		if ( isValidPropertyID( getPropertyID() ) && ! isValidInternalWebPropertyID( getInternalWebPropertyID() ) ) {
+			return false;
+		}
+		// Do existing tag check last.
+		if ( hasExistingTagPermission() === false ) {
+			return false;
 		}
 
 		return true;
