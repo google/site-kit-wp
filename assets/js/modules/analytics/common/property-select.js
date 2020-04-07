@@ -40,7 +40,7 @@ export default function PropertySelect() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const isLoading = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProperties( accountID ) );
 
-	const { setPropertyID, setInternalWebPropertyID } = useDispatch( STORE_NAME );
+	const { setPropertyID, setInternalWebPropertyID, setProfileID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
 		const newPropertyID = item.dataset.value;
 		if ( propertyID === newPropertyID ) {
@@ -48,6 +48,7 @@ export default function PropertySelect() {
 		}
 		setPropertyID( item.dataset.value );
 		setInternalWebPropertyID( item.dataset.internalWebProperty || '' );
+		setProfileID( '' );
 	}, [ propertyID ] );
 
 	if ( isLoading ) {
