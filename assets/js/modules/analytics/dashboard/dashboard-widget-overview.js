@@ -98,17 +98,11 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			averageSessionDurationChange,
 		} = overviewData;
 
-		const directTotalUsersData = get( directTotalUsers, '[0].data.totals[0].values[0]' );
-
-		if ( ! directTotalUsersData ) {
-			return null;
-		}
-
 		const dataBlocks = [
 			{
 				className: 'googlesitekit-data-block--users googlesitekit-data-block--button-1',
 				title: __( 'Users', 'google-site-kit' ),
-				datapoint: readableLargeNumber( directTotalUsersData ),
+				datapoint: readableLargeNumber( directTotalUsers ),
 				change: totalUsersChange,
 				changeDataUnit: '%',
 				context: 'button',
@@ -219,8 +213,9 @@ export default withData(
 			context: [ 'Single' ],
 			toState( state, { data } ) {
 				if ( ! state.directTotalUsers ) {
+					const directTotalUsers = get( data, '[0].data.totals[0].values[0]' );
 					return {
-						directTotalUsers: data,
+						directTotalUsers,
 					};
 				}
 			},
