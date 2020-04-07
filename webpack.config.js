@@ -164,6 +164,7 @@ const webpackConfig = ( mode ) => {
 				admin: './assets/sass/admin.scss',
 				adminbar: './assets/sass/adminbar.scss',
 				wpdashboard: './assets/sass/wpdashboard.scss',
+				standalone: './assets/sass/standalone.scss',
 			},
 			module: {
 				rules: [
