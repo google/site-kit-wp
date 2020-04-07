@@ -29,7 +29,7 @@ import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../material-components';
 import ProgressBar from '../../../components/progress-bar';
 import { STORE_NAME } from '../datastore';
-import { PROPERTY_CREATE } from '../datastore/constants';
+import { PROPERTY_CREATE, PROFILE_CREATE } from '../datastore/constants';
 import { isValidAccountID } from '../util';
 const { useSelect, useDispatch } = Data;
 
@@ -48,7 +48,11 @@ export default function PropertySelect() {
 		}
 		setPropertyID( item.dataset.value );
 		setInternalWebPropertyID( item.dataset.internalWebProperty || '' );
-		setProfileID( '' );
+		if ( PROPERTY_CREATE === newPropertyID ) {
+			setProfileID( PROFILE_CREATE );
+		} else {
+			setProfileID( '' );
+		}
 	}, [ propertyID ] );
 
 	if ( isLoading ) {
