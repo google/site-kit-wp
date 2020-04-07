@@ -33,7 +33,9 @@ import { PROFILE_CREATE } from './constants';
 
 // Actions
 const FETCH_CREATE_PROFILE = 'FETCH_CREATE_PROFILE';
+const FETCH_CREATE_PROFILE_STARTED = 'FETCH_CREATE_PROFILE_STARTED';
 const FETCH_PROFILES = 'FETCH_PROFILES';
+const FETCH_PROFILES_STARTED = 'FETCH_PROFILES_STARTED';
 const RECEIVE_CREATE_PROFILE = 'RECEIVE_CREATE_PROFILE';
 const RECEIVE_CREATE_PROFILE_FAILED = 'RECEIVE_CREATE_PROFILE_FAILED';
 const RECEIVE_PROFILES = 'RECEIVE_PROFILES';
@@ -77,14 +79,18 @@ export const actions = {
 		}
 	},
 
-	fetchCreateProfile( accountID, propertyID ) {
+	*fetchCreateProfile( accountID, propertyID ) {
+		yield { type: FETCH_CREATE_PROFILE_STARTED };
+
 		return {
 			payload: { accountID, propertyID },
 			type: FETCH_CREATE_PROFILE,
 		};
 	},
 
-	fetchProfiles( accountID, propertyID ) {
+	*fetchProfiles( accountID, propertyID ) {
+		yield { type: FETCH_PROFILES_STARTED };
+
 		return {
 			payload: { accountID, propertyID },
 			type: FETCH_PROFILES,
@@ -213,7 +219,7 @@ export const controls = {
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case FETCH_CREATE_PROFILE: {
+		case FETCH_CREATE_PROFILE_STARTED: {
 			const { accountID, propertyID } = payload;
 
 			return {
@@ -225,7 +231,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case FETCH_PROFILES: {
+		case FETCH_PROFILES_STARTED: {
 			const { accountID, propertyID } = payload;
 
 			return {
