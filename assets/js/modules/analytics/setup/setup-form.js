@@ -44,8 +44,11 @@ export default function SetupForm( { finishSetup } ) {
 	const { submitChanges } = useDispatch( STORE_NAME );
 	const submitForm = useCallback( async ( e ) => {
 		e.preventDefault();
-		submitChanges( finishSetup );
-	}, [ canSubmitChanges ] );
+		const { error } = await submitChanges() || {};
+		if ( ! error ) {
+			finishSetup();
+		}
+	}, [ canSubmitChanges, finishSetup ] );
 
 	return (
 		<form
