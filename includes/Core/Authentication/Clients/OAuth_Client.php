@@ -321,7 +321,7 @@ final class OAuth_Client {
 	public function refresh_token() {
 		$refresh_token = $this->get_refresh_token();
 		if ( empty( $refresh_token ) ) {
-			$this->revoke_token();
+			$this->delete_token();
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'refresh_token_not_exist' );
 			return;
 		}
@@ -863,7 +863,7 @@ final class OAuth_Client {
 		// Revoke and delete user connection data on 'invalid_grant'.
 		// This typically happens during refresh if the refresh token is invalid or expired.
 		if ( 'invalid_grant' === $error_code ) {
-			$this->revoke_token();
+			$this->delete_token();
 		}
 
 		$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
@@ -884,8 +884,6 @@ final class OAuth_Client {
 		$this->user_options->delete( self::OPTION_REFRESH_TOKEN );
 		$this->user_options->delete( self::OPTION_REDIRECT_URL );
 		$this->user_options->delete( self::OPTION_AUTH_SCOPES );
-		$this->user_options->delete( self::OPTION_ERROR_CODE );
-		$this->user_options->delete( self::OPTION_PROXY_ACCESS_CODE );
 	}
 
 	/**
