@@ -219,7 +219,7 @@ class OAuth_ClientTest extends TestCase {
 		 * The redirect URL passed to get_authentication_url is used locally, and the redirect URI here is always the same.
 		 * @see \Google\Site_Kit\Core\Authentication\Authentication::handle_oauth
 		 */
-		$this->assertEquals( add_query_arg( 'oauth2callback', 1, home_url() ), $params['redirect_uri'] );
+		$this->assertEquals( add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ), $params['redirect_uri'] );
 		$this->assertEquals( self::CLIENT_ID, $params['client_id'] );
 	}
 
