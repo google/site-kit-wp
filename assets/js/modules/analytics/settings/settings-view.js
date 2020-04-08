@@ -26,7 +26,7 @@ import { __, _x } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore';
-// import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site';
 import { trackingExclusionLabels } from '../common/tracking-exclusion-switches';
 import { ExistingTagError, ExistingTagNotice } from '../common';
 const { useSelect } = Data;
@@ -40,9 +40,7 @@ export default function SettingsView() {
 	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getSavedTrackingDisabled() ) || [];
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
-
-	// TODO: use selector once available.
-	const ampMode = /* useSelect( ( select ) => select( CORE_SITE ).getAmpMode() ) */ false;
+	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
@@ -89,7 +87,7 @@ export default function SettingsView() {
 				</div>
 			</div>
 
-			{ useSnippet && ampMode !== 'primary' && (
+			{ ( useSnippet && ampMode !== 'primary' ) && (
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
 						<p className="googlesitekit-settings-module__meta-item-type">
