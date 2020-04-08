@@ -19,14 +19,7 @@
 /**
  * External dependencies
  */
-import Header from 'GoogleComponents/header';
-import Button from 'GoogleComponents/button';
-import ResetButton from 'GoogleComponents/reset-button';
-import Layout from 'GoogleComponents/layout/layout';
-import Notification from 'GoogleComponents/notifications/notification';
-import OptIn from 'GoogleComponents/optin';
-import { trackEvent } from 'GoogleUtil';
-import { getSiteKitAdminURL } from 'SiteKitCore/util';
+import punycode from 'punycode';
 import { delay } from 'lodash';
 
 /**
@@ -38,6 +31,13 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { trackEvent, getSiteKitAdminURL } from '../../util';
+import Header from '../header';
+import Button from '../button';
+import ResetButton from '../reset-button';
+import Layout from '../layout/layout';
+import Notification from '../notifications/notification';
+import OptIn from '../optin';
 import CompatibilityChecks from './compatibility-checks';
 
 class SetupUsingProxy extends Component {
@@ -57,7 +57,7 @@ class SetupUsingProxy extends Component {
 			proxySetupURL,
 			resetSuccess: getQueryArg( location.href, 'notification' ) === 'reset_success',
 			context: getQueryArg( location.href, 'googlesitekit_context' ),
-			siteHostname: ( new URL( siteURL ) ).hostname,
+			siteHostname: punycode.toUnicode( ( new URL( siteURL ) ).hostname ),
 		};
 	}
 

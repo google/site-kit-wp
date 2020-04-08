@@ -20,11 +20,6 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import withData from 'GoogleComponents/higherorder/withdata';
-import { TYPE_MODULES } from 'GoogleComponents/data';
-import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
-import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
-import PreviewTable from 'GoogleComponents/preview-table';
 import { map } from 'lodash';
 import PropTypes from 'prop-types';
 
@@ -37,6 +32,11 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { getTimeInSeconds, numberFormat, getModulesData } from '../../../util';
+import withData from '../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../components/data';
+import { getDataTableFromData, TableOverflowContainer } from '../../../components/data-table';
+import PreviewTable from '../../../components/preview-table';
 import { getTopPagesReportDataDefaults } from '../util';
 
 class AnalyticsDashboardWidgetTopPagesTable extends Component {
@@ -52,7 +52,7 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 			accountID,
 			internalWebPropertyID,
 			profileID,
-		} = global.googlesitekit.modules.analytics.settings;
+		} = getModulesData().analytics.settings;
 
 		if ( ! accountID ) {
 			return 'https://analytics.google.com/analytics/web/';

@@ -20,8 +20,7 @@
 /**
  * External dependencies
  */
-import { loadTranslations } from 'GoogleUtil';
-import 'GoogleModules';
+import './modules';
 
 /**
  * WordPress dependencies
@@ -33,10 +32,9 @@ import { Component, render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-// Load the data module.
-// eslint-disable-next-line @wordpress/dependency-group
-import 'GoogleComponents/data';
-import ErrorHandler from 'GoogleComponents/ErrorHandler';
+import { loadTranslations } from './util';
+import './components/data';
+import ErrorHandler from './components/ErrorHandler';
 import WPDashboardMain from './components/wp-dashboard/wp-dashboard-main';
 
 class GoogleSitekitWPDashboard extends Component {

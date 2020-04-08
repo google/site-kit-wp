@@ -338,12 +338,19 @@ final class Assets {
 		$base_url = $this->context->url( 'dist/assets/' );
 
 		$dependencies = array(
+			'googlesitekit-vendor',
 			'googlesitekit-commons',
 			'googlesitekit-base',
 		);
 
 		// Register plugin scripts.
 		$assets = array(
+			new Script(
+				'googlesitekit-vendor',
+				array(
+					'src' => $base_url . 'js/googlesitekit-vendor.js',
+				)
+			),
 			new Script_Data(
 				'googlesitekit-commons',
 				array(
@@ -359,6 +366,15 @@ final class Assets {
 					'global'        => '_googlesitekitBaseData',
 					'data_callback' => function () {
 						return $this->get_inline_base_data();
+					},
+				)
+			),
+			new Script_Data(
+				'googlesitekit-entity-data',
+				array(
+					'global'        => '_googlesitekitEntityData',
+					'data_callback' => function () {
+						return $this->get_inline_entity_data();
 					},
 				)
 			),
@@ -413,28 +429,44 @@ final class Assets {
 				'googlesitekit-api',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-api.js',
-					'dependencies' => array( 'googlesitekit-apifetch-data' ),
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-apifetch-data',
+					),
 				)
 			),
 			new Script(
 				'googlesitekit-data',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-data.js',
-					'dependencies' => array( 'googlesitekit-api' ),
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-api',
+					),
 				)
 			),
 			new Script(
 				'googlesitekit-datastore-site',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-datastore-site.js',
-					'dependencies' => array( 'googlesitekit-api', 'googlesitekit-data' ),
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-api',
+						'googlesitekit-data',
+						'googlesitekit-base-data',
+						'googlesitekit-entity-data',
+					),
 				)
 			),
 			new Script(
 				'googlesitekit-modules',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-modules.js',
-					'dependencies' => array( 'googlesitekit-api', 'googlesitekit-data' ),
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-api',
+						'googlesitekit-data',
+					),
 				)
 			),
 			// End JSR Assets.
@@ -525,6 +557,17 @@ final class Assets {
 			),
 		);
 
+		/**
+		 * Filters the list of assets that Site Kit should register.
+		 *
+		 * This filter covers both scripts and stylesheets.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param Asset[] $assets List of Asset objects.
+		 */
+		$assets = apply_filters( 'googlesitekit_assets', $assets );
+
 		$this->assets = array();
 		foreach ( $assets as $asset ) {
 			$this->assets[ $asset->get_handle() ] = $asset;
@@ -548,12 +591,13 @@ final class Assets {
 		$current_user = wp_get_current_user();
 
 		$inline_data = array(
-			'homeURL'          => home_url(),
-			'referenceSiteURL' => esc_url_raw( $site_url ),
+			'homeURL'          => trailingslashit( home_url() ),
+			'referenceSiteURL' => esc_url_raw( trailingslashit( $site_url ) ),
 			'userIDHash'       => md5( $site_url . $current_user->ID ),
-			'adminRoot'        => esc_url_raw( get_admin_url() . 'admin.php' ),
-			'assetsRoot'       => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
+			'adminURL'         => esc_url_raw( trailingslashit( admin_url() ) ),
+			'assetsURL'        => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
 			'blogPrefix'       => $wpdb->get_blog_prefix(),
+			'ampMode'          => $this->context->get_amp_mode(),
 			'isNetworkMode'    => $this->context->is_network_mode(),
 		);
 
@@ -567,6 +611,24 @@ final class Assets {
 		 * @param array $data Base data.
 		 */
 		return apply_filters( 'googlesitekit_inline_base_data', $inline_data );
+	}
+
+	/**
+	 * Gets the inline data specific to the current entity.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array The site inline data to be output.
+	 */
+	private function get_inline_entity_data() {
+		$current_entity = $this->context->get_reference_entity();
+
+		return array(
+			'currentEntityURL'   => $current_entity ? $current_entity->get_url() : null,
+			'currentEntityType'  => $current_entity ? $current_entity->get_type() : null,
+			'currentEntityTitle' => $current_entity ? $current_entity->get_title() : null,
+			'currentEntityID'    => $current_entity ? $current_entity->get_id() : null,
+		);
 	}
 
 	/**

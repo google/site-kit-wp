@@ -19,25 +19,8 @@
 /**
  * External dependencies
  */
-import DataBlock from 'GoogleComponents/data-block';
-import withData from 'GoogleComponents/higherorder/withdata';
-import { TYPE_MODULES } from 'GoogleComponents/data';
-import {
-	getTimeInSeconds,
-	prepareSecondsForDisplay,
-	readableLargeNumber,
-} from 'GoogleUtil';
-/**
- * Internal dependencies
- */
-import {
-	calculateOverviewData,
-	isDataZeroForReporting,
-	getAnalyticsErrorMessageFromData,
-	overviewReportDataDefaults,
-} from '../util';
-import PreviewBlock from 'GoogleComponents/preview-block';
 import PropTypes from 'prop-types';
+import { get } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -45,22 +28,67 @@ import PropTypes from 'prop-types';
 import { __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 
-class AnalyticsDashboardWidgetOverview extends Component {
-	render() {
-		const { data, selectedStats, handleStatSelection } = this.props;
+/**
+ * Internal dependencies
+ */
+import {
+	getTimeInSeconds,
+	prepareSecondsForDisplay,
+	readableLargeNumber,
+} from '../../../util';
+import DataBlock from '../../../components/data-block';
+import withData from '../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../components/data';
+import {
+	calculateOverviewData,
+	isDataZeroForReporting,
+	getAnalyticsErrorMessageFromData,
+	overviewReportDataDefaults,
+	userReportDataDefaults,
+} from '../util';
+import PreviewBlock from '../../../components/preview-block';
 
-		if ( ! data || ! data.length ) {
+class AnalyticsDashboardWidgetOverview extends Component {
+	constructor( props ) {
+		super( props );
+		this.state = {
+			report: false,
+			directTotalUsers: false,
+		};
+	}
+	// When additional data is returned, componentDidUpdate will fire.
+	componentDidUpdate() {
+		this.processCallbackData();
+	}
+
+	componentDidMount() {
+		this.processCallbackData();
+	}
+
+	/**
+	 * Process callback data received from the API.
+	 */
+	processCallbackData() {
+		const { requestDataToState } = this.props;
+
+		this.setState( requestDataToState );
+	}
+
+	render() {
+		const { selectedStats, handleStatSelection } = this.props;
+		const { report, directTotalUsers } = this.state;
+
+		if ( ! report || ! report.length || ! directTotalUsers ) {
 			return null;
 		}
 
-		const overviewData = calculateOverviewData( data );
+		const overviewData = calculateOverviewData( report );
 
 		if ( ! overviewData ) {
 			return null;
 		}
 
 		const {
-			totalUsers,
 			totalSessions,
 			averageBounceRate,
 			averageSessionDuration,
@@ -74,7 +102,7 @@ class AnalyticsDashboardWidgetOverview extends Component {
 			{
 				className: 'googlesitekit-data-block--users googlesitekit-data-block--button-1',
 				title: __( 'Users', 'google-site-kit' ),
-				datapoint: readableLargeNumber( totalUsers ),
+				datapoint: readableLargeNumber( directTotalUsers ),
 				change: totalUsersChange,
 				changeDataUnit: '%',
 				context: 'button',
@@ -167,6 +195,30 @@ export default withData(
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Single', 'Dashboard' ],
+			toState( state, { data } ) {
+				if ( ! state.report ) {
+					return {
+						report: data,
+					};
+				}
+			},
+		},
+		{
+			type: TYPE_MODULES,
+			identifier: 'analytics',
+			datapoint: 'report',
+			data: userReportDataDefaults,
+			priority: 1,
+			maxAge: getTimeInSeconds( 'day' ),
+			context: [ 'Single' ],
+			toState( state, { data } ) {
+				if ( ! state.directTotalUsers ) {
+					const directTotalUsers = get( data, '[0].data.totals[0].values[0]' );
+					return {
+						directTotalUsers,
+					};
+				}
+			},
 		},
 	],
 	<PreviewBlock width="100%" height="190px" padding />,
