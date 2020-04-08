@@ -45,7 +45,28 @@ export default function SettingsEdit() {
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const isFetchingAccounts = useSelect( ( select ) => select( STORE_NAME ).isFetchingAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
+	const haveSettingsChanged = useSelect( ( select ) => select( STORE_NAME ).haveSettingsChanged() );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
+
+	// Rollback any temporary selections to saved values on dismount.
+	// This is a bit of a hacky solution, as we'd prefer to rollback changes
+	// when the "cancel" button is clicked. But we don't yet have control over
+	// that section of the page, so if the component is unmounted, has changes,
+	// and is not submitting those changes: we rollback.
+	//
+	// Technically this means we rollback right before we receive new settings
+	// when they ARE saved, because the component is unmounted then and meets the
+	// `haveSettingsChanged && ! isDoingSubmitChanges` criteria below.
+	// But that's fine as the new settings are then immediately loaded into state
+	// and there aren't any visual glitches. 🤷🏻‍♂️
+	const { rollbackSettings } = useDispatch( STORE_NAME );
+	useEffect( () => {
+		return () => {
+			if ( haveSettingsChanged && ! isDoingSubmitChanges ) {
+				rollbackSettings();
+			}
+		};
+	}, [ haveSettingsChanged, isDoingSubmitChanges ] );
 
 	// Toggle disabled state of legacy confirm changes button.
 	useEffect( () => {
@@ -80,18 +101,16 @@ export default function SettingsEdit() {
 		};
 	}, [] );
 
-	const viewComponent = ( () => {
-		switch ( true ) {
-			case ( isFetchingAccounts || isDoingSubmitChanges ) :
-				return <ProgressBar />;
-			case ( hasExistingTag && existingTagPermission === false ) :
-				return <ExistingTagError />;
-			case ( ! accounts.length || isCreateAccount ) :
-				return <AccountCreate />;
-			default:
-				return <SettingsForm />;
-		}
-	} )();
+	let viewComponent;
+	if ( isFetchingAccounts || isDoingSubmitChanges ) {
+		viewComponent = <ProgressBar />;
+	} else if ( hasExistingTag && existingTagPermission === false ) {
+		viewComponent = <ExistingTagError />;
+	} else if ( ! accounts.length || isCreateAccount ) {
+		viewComponent = <AccountCreate />;
+	} else {
+		viewComponent = <SettingsForm />;
+	}
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">

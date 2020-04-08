@@ -46,18 +46,16 @@ export default function SetupMain( { finishSetup } ) {
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
-	const viewComponent = ( () => {
-		switch ( true ) {
-			case ( isFetchingAccounts || isDoingSubmitChanges ) :
-				return <ProgressBar />;
-			case ( hasExistingTag && existingTagPermission === false ) :
-				return <ExistingTagError />;
-			case ( ! accounts.length || isCreateAccount ) :
-				return <AccountCreate />;
-			default:
-				return <SetupForm finishSetup={ finishSetup } />;
-		}
-	} )();
+	let viewComponent;
+	if ( isFetchingAccounts || isDoingSubmitChanges ) {
+		viewComponent = <ProgressBar />;
+	} else if ( hasExistingTag && existingTagPermission === false ) {
+		viewComponent = <ExistingTagError />;
+	} else if ( ! accounts.length || isCreateAccount ) {
+		viewComponent = <AccountCreate />;
+	} else {
+		viewComponent = <SetupForm finishSetup={ finishSetup } />;
+	}
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">

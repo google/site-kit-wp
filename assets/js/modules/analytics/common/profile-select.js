@@ -36,7 +36,7 @@ const { useSelect, useDispatch } = Data;
 export default function ProfileSelect() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const profiles = useSelect( ( select ) => select( STORE_NAME ).getProfiles( accountID, propertyID ) ) || [];
+	const profiles = useSelect( ( select ) => select( STORE_NAME ).getProfiles( accountID, propertyID ) );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
 	const isLoadingProperties = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProperties( accountID ) );
 	const isLoadingProfiles = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProfiles( accountID, propertyID ) );
@@ -60,7 +60,7 @@ export default function ProfileSelect() {
 			enhanced
 			outlined
 		>
-			{ profiles
+			{ ( profiles || [] )
 				.concat( {
 					id: PROFILE_CREATE,
 					name: __( 'Set up a new profile', 'google-site-kit' ),

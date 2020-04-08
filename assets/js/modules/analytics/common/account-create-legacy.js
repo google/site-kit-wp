@@ -35,7 +35,7 @@ import { ACCOUNT_CREATE } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreateLegacy() {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
+	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const isFetchingAccounts = useSelect( ( select ) => select( STORE_NAME ).isFetchingAccounts() );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
@@ -57,7 +57,7 @@ export default function AccountCreateLegacy() {
 
 	return (
 		<div>
-			{ ( ! isCreateAccount && ! accounts.length ) && (
+			{ ( ! isCreateAccount && ( accounts && accounts.length === 0 ) ) && (
 				<p>
 					{ __( 'Looks like you don\'t have an Analytics account yet. Once you create it, click on "Re-fetch my account" and Site Kit will locate it.', 'google-site-kit' ) }
 				</p>

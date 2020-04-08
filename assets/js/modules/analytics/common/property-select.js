@@ -36,18 +36,17 @@ const { useSelect, useDispatch } = Data;
 export default function PropertySelect() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties( accountID ) ) || [];
+	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties( accountID ) );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const isLoading = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProperties( accountID ) );
 
 	const { setPropertyID, setInternalWebPropertyID, setProfileID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
 		const newPropertyID = item.dataset.value;
-		if ( propertyID === newPropertyID ) {
-			return;
-		}
-		setPropertyID( item.dataset.value );
+
+		setPropertyID( newPropertyID );
 		setInternalWebPropertyID( item.dataset.internalWebProperty || '' );
+
 		if ( PROPERTY_CREATE === newPropertyID ) {
 			setProfileID( PROFILE_CREATE );
 		} else {
@@ -69,7 +68,7 @@ export default function PropertySelect() {
 			enhanced
 			outlined
 		>
-			{ properties
+			{ ( properties || [] )
 				.concat( {
 					id: PROPERTY_CREATE,
 					name: __( 'Set up a new property', 'google-site-kit' ),
