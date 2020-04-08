@@ -19,9 +19,9 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 const ACCOUNT_ID_A = '100';
 const ACCOUNT_ID_B = '101';
 
-const PROPERTY_ID_X = 'UA-00000001-1';
-const PROPERTY_ID_Y = 'UA-00000002-1';
-const PROPERTY_ID_Z = 'UA-00000003-1';
+const PROPERTY_ID_X = 'UA-100-1';
+const PROPERTY_ID_Y = 'UA-101-1';
+const PROPERTY_ID_Z = 'UA-101-2';
 
 const INTERNAL_PROPERTY_ID_X = '200';
 const INTERNAL_PROPERTY_ID_Y = '201';
@@ -188,7 +188,11 @@ add_action(
 			array(
 				'methods'  => 'GET',
 				'callback' => function () use ( $accounts, $properties, $profiles ) {
-					$response = compact( 'accounts', 'properties', 'profiles' );
+					$response = array(
+						'accounts'   => $accounts,
+						'properties' => filter_by_account_id( $properties, $accounts[0]['id'] ),
+						'profiles'   => filter_by_property_id( $profiles, $properties[0]['id'] ),
+					);
 
 					$matched_property = array_filter(
 						$properties,
@@ -214,9 +218,11 @@ add_action(
 			array(
 				'methods'  => 'GET',
 				'callback' => function ( \WP_REST_Request $request ) use ( $properties, $profiles ) {
+					$filtered_properties = filter_by_account_id( $properties, $request->get_param( 'accountID' ) );
+
 					return array(
-						'properties' => filter_by_account_id( $properties, $request->get_param( 'accountID' ) ),
-						'profiles'   => filter_by_account_id( $profiles, $request->get_param( 'accountID' ) ),
+						'properties' => $filtered_properties,
+						'profiles'   => filter_by_property_id( $profiles, $filtered_properties[0]['id'] ),
 					);
 				},
 			),
@@ -230,7 +236,6 @@ add_action(
 			array(
 				'methods'  => 'GET',
 				'callback' => function ( \WP_REST_Request $request ) use ( $profiles ) {
-					$profiles = filter_by_account_id( $profiles, $request->get_param( 'accountID' ) );
 					$profiles = filter_by_property_id( $profiles, $request->get_param( 'propertyID' ) );
 
 					return $profiles;
