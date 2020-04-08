@@ -87,6 +87,28 @@ describe( 'modules/analytics properties', () => {
 				expect( properties ).toMatchObject( [ fixtures.createProperty ] );
 			} );
 
+			it( 'sets the propertyID and internalWebPropertyID from the new property', async () => {
+				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const newProperty = fixtures.createProperty;
+				fetch
+					.doMockIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/
+					)
+					.mockResponse(
+						JSON.stringify( newProperty ),
+						{ status: 200 }
+					);
+
+				registry.dispatch( STORE_NAME ).createProperty( accountID );
+
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).isDoingCreateProperty( accountID ) === false
+				);
+
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( newProperty.id );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( newProperty.internalWebPropertyId );
+			} );
+
 			it( 'sets isDoingCreateProperty ', async () => {
 				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 

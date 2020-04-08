@@ -70,6 +70,7 @@ export const actions = {
 
 			const registry = yield Data.commonActions.getRegistry();
 			registry.dispatch( STORE_NAME ).setPropertyID( property.id );
+			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId );
 
 			return actions.receiveCreateProperty( { accountID, property } );
 		} catch ( error ) {
