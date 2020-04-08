@@ -24,8 +24,13 @@ export const ACCOUNT_STATUS_NO_CLIENT = 'no-client';
 export const ACCOUNT_STATUS_PENDING = 'pending';
 export const ACCOUNT_STATUS_APPROVED = 'approved';
 
-// TODO: If AdSense API exposes more information, site status can be determined
-// much more accurately than the two statuses below. See also function docs.
+// TODO: Expand the statuses provided here to be more specific in case the
+// AdSense API exposes more of this information.
+// At the moment the AdSense API does not provide endpoints to retrieve the
+// state of a site, whether it is approved, pending review, or whether the
+// user needs to make changes to get it approved. For now, we only have these
+// two constants, as making inferences based on the limited data we get back
+// from the AdSense API has proved problematic in the past.
 export const SITE_STATUS_NONE = 'none';
 export const SITE_STATUS_ADDED = 'added';
 
@@ -37,13 +42,13 @@ export const SITE_STATUS_ADDED = 'added';
  *
  * @since n.e.x.t
  *
- * @param {Object}  data               Input data to determine account status.
- * @param {?Array}  data.accounts      List of account objects retrieved from the API.
- * @param {?Array}  data.clients       List of client objects retrieved from the API.
- * @param {?Array}  data.alerts        List of alert objects retrieved from the API.
- * @param {?Object} data.error         Error object if one of the API requests failed.
- * @param {?string} data.prevAccountID Account ID, if already known from before.
- * @param {?string} data.prevClientID  Client ID, if already known from before.
+ * @param {Object}  data                   Input data to determine account status.
+ * @param {?Array}  data.accounts          List of account objects retrieved from the API.
+ * @param {?Array}  data.clients           List of client objects retrieved from the API.
+ * @param {?Array}  data.alerts            List of alert objects retrieved from the API.
+ * @param {?Object} data.error             Error object if one of the API requests failed.
+ * @param {?string} data.previousAccountID Account ID, if already known from before.
+ * @param {?string} data.previousClientID  Client ID, if already known from before.
  * @return {?string} Account status determined, or undefined if one of the required
  *                   parameters is undefined.
  */
@@ -52,14 +57,14 @@ export const determineAccountStatus = ( {
 	clients,
 	alerts,
 	error,
-	prevAccountID,
-	prevClientID,
+	previousAccountID,
+	previousClientID,
 } ) => {
-	if ( 'undefined' === typeof accounts || 'undefined' === typeof prevAccountID ) {
+	if ( 'undefined' === typeof accounts || 'undefined' === typeof previousAccountID ) {
 		return errorToStatus( error );
 	}
 
-	const accountID = determineAccountID( { accounts, prevAccountID } );
+	const accountID = determineAccountID( { accounts, previousAccountID } );
 	if ( ! accountID ) {
 		// If there are accounts, but the account ID cannot be determined, it
 		// means that there are multiple accounts and the user needs to select
@@ -74,18 +79,18 @@ export const determineAccountStatus = ( {
 		return errorToStatus( error );
 	}
 
-	const hasGraylistedAlert = !! alerts.filter( ( alert ) => {
+	const hasGraylistedAlert = alerts.some( ( alert ) => {
 		return 'GRAYLISTED_PUBLISHER' === alert.type;
-	} ).length;
+	} );
 	if ( hasGraylistedAlert ) {
 		return ACCOUNT_STATUS_GRAYLISTED;
 	}
 
-	if ( 'undefined' === typeof clients || 'undefined' === typeof prevClientID ) {
+	if ( 'undefined' === typeof clients || 'undefined' === typeof previousClientID ) {
 		return errorToStatus( error );
 	}
 
-	const clientID = determineClientID( { clients, prevClientID } );
+	const clientID = determineClientID( { clients, previousClientID } );
 	if ( ! clientID ) {
 		return ACCOUNT_STATUS_NO_CLIENT;
 	}
@@ -121,9 +126,9 @@ export const determineSiteStatus = ( {
 		return undefined;
 	}
 
-	const hasSiteURL = !! urlChannels.filter( ( urlChannel ) => {
+	const hasSiteURL = urlChannels.some( ( urlChannel ) => {
 		return 0 <= siteURL.indexOf( urlChannel.urlPattern );
-	} ).length;
+	} );
 	if ( ! hasSiteURL ) {
 		return SITE_STATUS_NONE;
 	}
@@ -136,13 +141,13 @@ export const determineSiteStatus = ( {
  *
  * @since n.e.x.t
  *
- * @param {Object}  data               Input data to determine account ID.
- * @param {?Array}  data.accounts      List of account objects retrieved from the API.
- * @param {?string} data.prevAccountID Account ID, if already known from before.
+ * @param {Object}  data                   Input data to determine account ID.
+ * @param {?Array}  data.accounts          List of account objects retrieved from the API.
+ * @param {?string} data.previousAccountID Account ID, if already known from before.
  * @return {?string} Account ID, empty string if no account ID could be determined,
  *                   or undefined if one of the required parameters is undefined.
  */
-export const determineAccountID = ( { accounts, prevAccountID } ) => {
+export const determineAccountID = ( { accounts, previousAccountID } ) => {
 	// If loading, nothing to determine.
 	if ( 'undefined' === typeof accounts ) {
 		return undefined;
@@ -156,14 +161,14 @@ export const determineAccountID = ( { accounts, prevAccountID } ) => {
 	// If there are multiple accounts (very rare), we'll need the account ID.
 	if ( accounts.length > 1 ) {
 		// If no ID passed, the user will need to select an account first.
-		if ( ! prevAccountID ) {
+		if ( ! previousAccountID ) {
 			return '';
 		}
 
 		// Ensure the passed account ID is actually available.
 		return accounts.reduce( ( acc, account ) => {
-			if ( account.id === prevAccountID ) {
-				return prevAccountID;
+			if ( account.id === previousAccountID ) {
+				return previousAccountID;
 			}
 			return acc;
 		}, '' );
@@ -178,13 +183,13 @@ export const determineAccountID = ( { accounts, prevAccountID } ) => {
  *
  * @since n.e.x.t
  *
- * @param {Object}  data              Input data to determine client ID.
- * @param {?Array}  data.clients      List of client objects retrieved from the API.
- * @param {?string} data.prevClientID Client ID, if already known from before.
+ * @param {Object}  data                  Input data to determine client ID.
+ * @param {?Array}  data.clients          List of client objects retrieved from the API.
+ * @param {?string} data.previousClientID Client ID, if already known from before.
  * @return {?string} Client ID, empty string if no client ID could be determined,
  *                   or undefined if one of the required parameters is undefined.
  */
-export const determineClientID = ( { clients, prevClientID } ) => {
+export const determineClientID = ( { clients, previousClientID } ) => {
 	// If loading, nothing to determine.
 	if ( 'undefined' === typeof clients ) {
 		return undefined;
@@ -201,10 +206,10 @@ export const determineClientID = ( { clients, prevClientID } ) => {
 	}
 
 	// If multiple AFC clients and client ID was already known, try looking it up.
-	if ( afcClients.length > 1 && prevClientID ) {
+	if ( afcClients.length > 1 && previousClientID ) {
 		const clientID = afcClients.reduce( ( acc, client ) => {
-			if ( client.id === prevClientID ) {
-				return prevClientID;
+			if ( client.id === previousClientID ) {
+				return previousClientID;
 			}
 			return acc;
 		}, '' );

@@ -108,136 +108,139 @@ const otherURLChannelA = {
 };
 
 describe( 'determineAccountStatus', () => {
-	it( 'returns correct status based on parameters', () => {
-		const testCases = [
-			{
-				expectedStatus: ACCOUNT_STATUS_NONE,
-				params: {
-					accounts: [],
-					prevAccountID: '',
-				},
-			},
-			{
-				expectedStatus: ACCOUNT_STATUS_MULTIPLE,
-				params: {
-					accounts: [ accountA, accountB ],
-					prevAccountID: '',
-				},
-			},
-			{
-				// There are multiple accounts here, but by passing prevAccountID
-				// we indicate the user already selected it.
-				expectedStatus: ACCOUNT_STATUS_GRAYLISTED,
-				params: {
-					accounts: [ accountA, accountB ],
-					alerts: [ graylistedAlert ],
-					clients: [],
-					prevAccountID: accountB.id,
-				},
-			},
-			{
-				expectedStatus: ACCOUNT_STATUS_GRAYLISTED,
-				params: {
-					accounts: [ accountA ],
-					alerts: [ graylistedAlert, otherAlert ],
-					clients: [],
-					prevAccountID: '',
-					prevClientID: '',
-				},
-			},
-			{
-				expectedStatus: ACCOUNT_STATUS_NO_CLIENT,
-				params: {
-					accounts: [ accountA ],
-					alerts: [ otherAlert ],
-					clients: [],
-					prevAccountID: '',
-					prevClientID: '',
-				},
-			},
-			{
-				expectedStatus: ACCOUNT_STATUS_NO_CLIENT,
-				params: {
-					accounts: [ accountA ],
-					alerts: [ otherAlert ],
-					clients: [ afsClientA ],
-					prevAccountID: '',
-					prevClientID: '',
-				},
-			},
-			{
-				expectedStatus: ACCOUNT_STATUS_APPROVED,
-				params: {
-					accounts: [ accountA ],
-					alerts: [ otherAlert ],
-					clients: [ afcClientA, afsClientA ],
-					prevAccountID: '',
-					prevClientID: '',
-				},
-			},
-		];
-		testCases.forEach( ( { params, expectedStatus } ) => {
-			expect( determineAccountStatus( params ) ).toEqual( expectedStatus );
-		} );
+	it( 'returns none for no accounts', () => {
+		const params = {
+			accounts: [],
+			previousAccountID: '',
+		};
+		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_NONE );
 	} );
 
-	it( 'handles specific API errors accordingly', () => {
-		const testCases = [
-			{
-				errorReason: 'noAdSenseAccount',
-				expectedStatus: ACCOUNT_STATUS_NONE,
-			},
-			{
-				errorReason: 'disapprovedAccount',
-				expectedStatus: ACCOUNT_STATUS_DISAPPROVED,
-			},
-			{
-				errorReason: 'accountPendingReview',
-				expectedStatus: ACCOUNT_STATUS_PENDING,
-			},
-		];
-		testCases.forEach( ( { errorReason, expectedStatus } ) => {
-			const params = {
-				accounts: undefined,
-				clients: undefined,
-				alerts: undefined,
-				error: {
-					code: '403',
-					message: 'This is an AdSense API error message.',
-					data: {
-						status: 403,
-						reason: errorReason,
-					},
-				},
-			};
-			expect( determineAccountStatus( params ) ).toEqual( expectedStatus );
-		} );
+	it( 'returns multiple for multiple accounts without account ID provided', () => {
+		const params = {
+			accounts: [ accountA, accountB ],
+			previousAccountID: '',
+		};
+		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_MULTIPLE );
 	} );
 
-	it( 'returns undefined for undefined key parameters', () => {
-		const paramGroups = [
-			{},
-			{
-				accounts: [ accountA ],
-				alerts: undefined,
-				clients: undefined,
+	it( 'does not return multiple for multiple accounts with account ID provided', () => {
+		// There are multiple accounts here, but by passing previousAccountID
+		// we indicate the user already selected it.
+		const params = {
+			accounts: [ accountA, accountB ],
+			previousAccountID: accountB.id,
+		};
+		expect( determineAccountStatus( params ) ).not.toEqual( ACCOUNT_STATUS_MULTIPLE );
+	} );
+
+	it( 'returns graylisted when there is a GRAYLISTED_PUBLISHER alert', () => {
+		const params = {
+			accounts: [ accountA ],
+			alerts: [ graylistedAlert, otherAlert ],
+			clients: [],
+			previousAccountID: '',
+			previousClientID: '',
+		};
+		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_GRAYLISTED );
+	} );
+
+	it( 'returns no-client for no clients', () => {
+		const params = {
+			accounts: [ accountA ],
+			alerts: [ otherAlert ],
+			clients: [],
+			previousAccountID: '',
+			previousClientID: '',
+		};
+		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_NO_CLIENT );
+	} );
+
+	it( 'returns no-client for AFS clients only', () => {
+		const params = {
+			accounts: [ accountA ],
+			alerts: [ otherAlert ],
+			clients: [ afsClientA ],
+			previousAccountID: '',
+			previousClientID: '',
+		};
+		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_NO_CLIENT );
+	} );
+
+	it( 'returns approved for single account, no alerts, and AFC client', () => {
+		const params = {
+			accounts: [ accountA ],
+			alerts: [ otherAlert ],
+			clients: [ afcClientA, afsClientA ],
+			previousAccountID: '',
+			previousClientID: '',
+		};
+		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_APPROVED );
+	} );
+
+	it.each(
+		[
+			[
+				ACCOUNT_STATUS_NONE,
+				'noAdSenseAccount',
+			],
+			[
+				ACCOUNT_STATUS_DISAPPROVED,
+				'disapprovedAccount',
+			],
+			[
+				ACCOUNT_STATUS_PENDING,
+				'accountPendingReview',
+			],
+		]
+	)( 'returns %s for missing key parameter and error reason %s', ( expectedStatus, errorReason ) => {
+		const params = {
+			accounts: undefined,
+			clients: undefined,
+			alerts: undefined,
+			error: {
+				code: '403',
+				message: 'This is an AdSense API error message.',
+				data: {
+					status: 403,
+					reason: errorReason,
+				},
 			},
-			{
-				accounts: [ accountA ],
-				alerts: [],
-				clients: undefined,
-			},
-			{
-				accounts: [ accountA ],
-				alerts: [],
-				clients: [],
-				prevAccountID: '',
-				prevClientID: undefined,
-			},
-		];
-		paramGroups.forEach( ( params ) => {
-			expect( determineAccountStatus( params ) ).toEqual( undefined );
-		} );
+		};
+		expect( determineAccountStatus( params ) ).toEqual( expectedStatus );
+	} );
+
+	it.each(
+		[
+			[
+				{},
+			],
+			[
+				{
+					accounts: [ accountA ],
+					alerts: undefined,
+					clients: undefined,
+				},
+			],
+			[
+				{
+					accounts: [ accountA ],
+					alerts: [],
+					clients: undefined,
+				},
+			],
+			[
+				{
+					accounts: [ accountA ],
+					alerts: [],
+					clients: [],
+					previousAccountID: '',
+					previousClientID: undefined,
+				},
+			],
+		]
+	)( 'returns undefined for undefined key parameters', ( params ) => {
+		expect( determineAccountStatus( params ) ).toEqual( undefined );
 	} );
 
 	it( 'does not return undefined for all key parameters defined', () => {
@@ -245,41 +248,66 @@ describe( 'determineAccountStatus', () => {
 			accounts: [],
 			alerts: [],
 			clients: [],
-			prevAccountID: '',
-			prevClientID: '',
+			previousAccountID: '',
+			previousClientID: '',
 		};
 		expect( determineAccountStatus( params ) ).not.toEqual( undefined );
 	} );
 } );
 
 describe( 'determineSiteStatus', () => {
-	it( 'returns correct status based on parameters', () => {
-		const testCases = [
-			{
-				expectedStatus: SITE_STATUS_NONE,
-				params: {
+	it( 'returns none for no URL channels', () => {
+		const params = {
+			urlChannels: [],
+			siteURL: 'https://example.com',
+		};
+		expect( determineSiteStatus( params ) ).toEqual( SITE_STATUS_NONE );
+	} );
+
+	it( 'returns none for URL channels without the site URL', () => {
+		const params = {
+			urlChannels: [ otherURLChannelA ],
+			siteURL: 'https://example.com',
+		};
+		expect( determineSiteStatus( params ) ).toEqual( SITE_STATUS_NONE );
+	} );
+
+	it( 'returns added for URL channels including the site URL', () => {
+		const params = {
+			urlChannels: [ otherURLChannelA, exampleURLChannelA ],
+			siteURL: 'https://example.com',
+		};
+		expect( determineSiteStatus( params ) ).toEqual( SITE_STATUS_ADDED );
+	} );
+
+	it.each(
+		[
+			[
+				{},
+			],
+			[
+				{
 					urlChannels: [],
+					siteURL: undefined,
+				},
+			],
+			[
+				{
+					urlChannels: undefined,
 					siteURL: 'https://example.com',
 				},
-			},
-			{
-				expectedStatus: SITE_STATUS_NONE,
-				params: {
-					urlChannels: [ otherURLChannelA ],
-					siteURL: 'https://example.com',
-				},
-			},
-			{
-				expectedStatus: SITE_STATUS_ADDED,
-				params: {
-					urlChannels: [ otherURLChannelA, exampleURLChannelA ],
-					siteURL: 'https://example.com',
-				},
-			},
-		];
-		testCases.forEach( ( { params, expectedStatus } ) => {
-			expect( determineSiteStatus( params ) ).toEqual( expectedStatus );
-		} );
+			],
+		]
+	)( 'returns undefined for undefined key parameters', ( params ) => {
+		expect( determineSiteStatus( params ) ).toEqual( undefined );
+	} );
+
+	it( 'does not return undefined for all key parameters defined', () => {
+		const params = {
+			urlChannels: [],
+			siteURL: 'https://example.com',
+		};
+		expect( determineSiteStatus( params ) ).not.toEqual( undefined );
 	} );
 } );
 
@@ -315,7 +343,7 @@ describe( 'determineAccountID', () => {
 	it( 'looks up correct account through ID parameter', () => {
 		const params = {
 			accounts: [ accountA, accountB ],
-			prevAccountID: accountB.id,
+			previousAccountID: accountB.id,
 		};
 		expect( determineAccountID( params ) ).toEqual( accountB.id );
 	} );
@@ -323,7 +351,7 @@ describe( 'determineAccountID', () => {
 	it( 'fails for multiple accounts and ID parameter without access', () => {
 		const params = {
 			accounts: [ accountA, accountB ],
-			prevAccountID: 'pub-1234567890',
+			previousAccountID: 'pub-1234567890',
 		};
 		expect( determineAccountID( params ) ).toEqual( '' );
 	} );
@@ -375,7 +403,7 @@ describe( 'determineClientID', () => {
 	it( 'looks up correct client through ID parameter', () => {
 		const params = {
 			clients: [ afcClientA, afcClientB ],
-			prevClientID: afcClientB.id,
+			previousClientID: afcClientB.id,
 		};
 		expect( determineClientID( params ) ).toEqual( afcClientB.id );
 	} );
@@ -383,7 +411,7 @@ describe( 'determineClientID', () => {
 	it( 'falls back to first client for multiple accounts and ID parameter without access', () => {
 		const params = {
 			clients: [ afcClientA, accountB ],
-			prevClientID: 'ca-pub-1234567890',
+			previousClientID: 'ca-pub-1234567890',
 		};
 		expect( determineClientID( params ) ).toEqual( afcClientA.id );
 	} );
