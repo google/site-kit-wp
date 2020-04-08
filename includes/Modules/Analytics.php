@@ -54,8 +54,6 @@ use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
 
-const ANALYTICS_PROVISIONING_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_atid';
-
 /**
  * Class representing the Analytics module.
  *
@@ -66,6 +64,8 @@ const ANALYTICS_PROVISIONING_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provis
 final class Analytics extends Module
 	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Admin_Bar, Module_With_Debug_Fields {
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Module_With_Assets_Trait;
+
+	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -1104,7 +1104,7 @@ final class Analytics extends Module
 			case 'POST:create-account-ticket':
 				// Cache the create ticket id long enough to verify it upon completion of the terms of service.
 				set_transient(
-					$self::ANALYTICS_PROVISIONING_ACCOUNT_TICKET_ID . '::' . get_current_user_id(),
+					$self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id(),
 					$response->getId(),
 					15 * MINUTE_IN_SECONDS
 				);

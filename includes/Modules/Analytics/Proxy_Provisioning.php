@@ -32,7 +32,7 @@ class Proxy_Provisioning extends Google_Service_Resource {
 	 */
 	public function createAccountTicket( Proxy_AccountTicket $post_body, $opt_params = array() ) {
 		$params = array( 'postBody' => $post_body );
-		$params = \array_merge( $params, $opt_params );
+		$params = array_merge( $params, $opt_params );
 		return $this->call( 'createAccountTicket', array( $params ), 'Google_Service_Analytics_AccountTicket' );
 	}
 }
