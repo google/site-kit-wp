@@ -215,8 +215,8 @@ export const numberFormat = ( number, options = {} ) => {
 export const getLocale = ( _global = global ) => {
 	const siteKitLocale = get( _global, [ 'googlesitekit', 'locale', '', 'lang' ] );
 	if ( siteKitLocale ) {
-		const matches = siteKitLocale.match( /(\w{2})?(_)?(\w{2})/ );
-		if ( matches[ 0 ] ) {
+		const matches = siteKitLocale.match( /^(\w{2})?(_)?(\w{2})/ );
+		if ( matches && matches[ 0 ] ) {
 			return matches[ 0 ].replace( /_/g, '-' );
 		}
 	}
