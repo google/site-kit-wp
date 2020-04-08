@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site';
 import Switch from '../../../components/switch';
 import Link from '../../../components/link';
 
@@ -34,11 +35,17 @@ const { useSelect, useDispatch } = Data;
 
 export default function AnonymizeIPSwitch() {
 	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getAnonymizeIP() );
+	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
+	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 
 	const { setAnonymizeIP } = useDispatch( STORE_NAME );
 	const onChange = useCallback( () => {
 		setAnonymizeIP( ! anonymizeIP );
 	}, [ anonymizeIP ] );
+
+	if ( ! useSnippet || ampMode === 'primary' ) {
+		return null;
+	}
 
 	return (
 		<div className="googlesitekit-analytics-anonymizeip">
