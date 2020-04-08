@@ -374,7 +374,7 @@ export const refreshAuthentication = async () => {
  * This function should be removed once this object is no longer used to store
  * legacy module data.
  *
- * @since n.e.x.t
+ * @since 1.7.0
  *
  * @param {Object}  _googlesitekit Optional. googlesitekit global; can be replaced for testing.
  * @return {Object} Object with module data, with each module keyed by its slug.

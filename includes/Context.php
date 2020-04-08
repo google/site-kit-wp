@@ -171,7 +171,7 @@ final class Context {
 	 *
 	 * An entity may also have a type, a title, and an ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @return Entity|null The current entity, or null if none could be determined.
 	 */
@@ -333,7 +333,7 @@ final class Context {
 	/**
 	 * Creates the entity for a given post object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @param \WP_Post $post A WordPress post object.
 	 * @return Entity The entity for the post.
@@ -362,7 +362,7 @@ final class Context {
 	 * If the site reference URL differs from the home URL (e.g. via filters),
 	 * this method performs the necessary replacement.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @param string $url Optional. Input URL. If not provided, returns the plain reference site URL.
 	 * @return string URL that starts with the reference site URL.
