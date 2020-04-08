@@ -239,29 +239,6 @@ add_action(
 			true
 		);
 
-		// Called when creating a new property
-		register_rest_route(
-			REST_Routes::REST_ROOT,
-			'modules/analytics/data/settings',
-			array(
-				'methods'  => 'POST',
-				'callback' => function ( \WP_REST_Request $request ) use ( $profiles ) {
-					$option = array(
-						'accountID'             => $request['accountID'],
-						'propertyID'            => $request['propertyID'] ?: time(), // fake a new property ID if empty
-						'internalWebPropertyID' => $request['internalWebPropertyID'],
-						'profileID'             => $request['profileID'] ?: time(),  // fake a new profile ID if empty
-						'useSnippet'            => ! empty( $request['useSnippet'] ),
-						'anonymizeIP'           => isset( $request['anonymizeIP'] ) ? (bool) $request['anonymizeIP'] : true,
-					);
-					update_option( 'googlesitekit_analytics_settings', $option );
-
-					return $option;
-				},
-			),
-			true
-		);
-
 		register_rest_route(
 			REST_Routes::REST_ROOT,
 			'e2e/reference-url',
