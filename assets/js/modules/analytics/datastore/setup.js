@@ -98,13 +98,22 @@ export const actions = {
 		};
 	},
 	submitSaveSettings() {
-		return { type: SUBMIT_SAVE_SETTINGS };
+		return {
+			payload: {},
+			type: SUBMIT_SAVE_SETTINGS,
+		};
 	},
 	startSubmitChanges() {
-		return { type: SUBMIT_CHANGES_START };
+		return {
+			payload: {},
+			type: SUBMIT_CHANGES_START,
+		};
 	},
 	finishSubmitChanges() {
-		return { type: SUBMIT_CHANGES_COMPLETED };
+		return {
+			payload: {},
+			type: SUBMIT_CHANGES_COMPLETED,
+		};
 	},
 	submitChangesFailed( { error } ) {
 		return {

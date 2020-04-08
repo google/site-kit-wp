@@ -163,7 +163,10 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {Object} Redux-style action.
 		 */
 		rollbackSettings() {
-			return { type: ROLLBACK_SETTINGS };
+			return {
+				payload: {},
+				type: ROLLBACK_SETTINGS,
+			};
 		},
 
 		/**
