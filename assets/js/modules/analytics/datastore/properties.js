@@ -359,33 +359,26 @@ export const resolvers = {
 		try {
 			const registry = yield Data.commonActions.getRegistry();
 
-			const existingProperties = registry.select( STORE_NAME ).getProperties( accountID );
+			let properties = registry.select( STORE_NAME ).getProperties( accountID );
+			let matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
 
-			// If there are already properties loaded in state for this request; consider it fulfilled
-			// and don't make an API request.
-			if ( existingProperties ) {
-				return;
+			// Only fetch properties if there are none in the store for the given account.
+			if ( ! properties ) {
+				const { profiles, ...response } = yield actions.fetchPropertiesProfiles( accountID );
+				( { properties, matchedProperty } = response );
+
+				yield actions.receiveProperties( properties );
+				yield profileActions.receiveProfiles( profiles );
+
+				if ( matchedProperty ) {
+					yield actions.receiveMatchedProperty( matchedProperty );
+				}
 			}
 
-			const { properties, profiles, matchedProperty } = yield actions.fetchPropertiesProfiles( accountID );
-
-			yield actions.receiveProperties( properties );
-			yield profileActions.receiveProfiles( profiles );
-
-			if ( matchedProperty ) {
-				yield actions.receiveMatchedProperty( matchedProperty );
-			}
-
-			let propertyID = registry.select( STORE_NAME ).getPropertyID();
+			const propertyID = registry.select( STORE_NAME ).getPropertyID();
 			if ( ! propertyID ) {
 				const property = matchedProperty || properties[ 0 ] || { id: PROPERTY_CREATE };
-				propertyID = property.id;
-				registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
-				registry.dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId || '' );
-			}
-			const profileID = registry.select( STORE_NAME ).getProfileID();
-			if ( ! profileID ) {
-				registry.dispatch( STORE_NAME ).setProfileForProperty( propertyID );
+				yield actions.selectProperty( property.id, property.internalWebPropertyId );
 			}
 
 			return actions.receivePropertiesProfilesCompleted( accountID );

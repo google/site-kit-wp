@@ -210,7 +210,12 @@ describe( 'modules/analytics properties', () => {
 					.hasFinishedResolution( 'getProperties', [ testAccountID ] )
 				);
 
-				expect( fetch ).not.toHaveBeenCalled();
+				// It _may_ make a request for profiles internally if not loaded,
+				// so we only care that it did not fetch properties here.
+				expect( fetch ).not.toHaveBeenCalledWith(
+					expect.stringContaining( '/google-site-kit/v1/modules/analytics/data/properties-profiles?' ),
+					expect.any( Object )
+				);
 				expect( properties ).toEqual( fixtures.propertiesProfiles.properties );
 				expect( properties ).toHaveLength( 17 );
 			} );
