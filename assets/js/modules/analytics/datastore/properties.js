@@ -407,6 +407,24 @@ export const resolvers = {
 
 export const selectors = {
 	/**
+	 * Gets the property object by the property ID.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} propertyID Property ID.
+	 * @return {?Object} Property object, or undefined if not present in store.
+	 */
+	getPropertyByID( state, propertyID ) {
+		if ( ! isValidPropertyID( propertyID ) ) {
+			return undefined;
+		}
+		const { accountID } = parsePropertyID( propertyID );
+
+		return ( state.properties[ accountID ] || [] ).find( ( p ) => p.id === propertyID );
+	},
+	/**
 	 * Gets the matched property, if any.
 	 *
 	 * @since n.e.x.t
