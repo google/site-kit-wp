@@ -196,13 +196,19 @@ export const actions = {
 
 		if ( PROPERTY_CREATE === propertyID ) {
 			registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
-		} else {
-			const { accountID } = parsePropertyID( propertyID );
-			const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID ) || [];
-			const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE };
-
-			registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id );
+			return;
 		}
+		// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
+		registry.dispatch( STORE_NAME ).setProfileID( '' );
+		const { accountID } = parsePropertyID( propertyID );
+		const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
+		if ( profiles === undefined ) {
+			return; // Selection will happen in in getProfiles resolver.
+		}
+
+		const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE };
+
+		registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id );
 	},
 };
 
@@ -333,17 +339,13 @@ export const resolvers = {
 		try {
 			const registry = yield Data.commonActions.getRegistry();
 
-			const existingProfiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
+			let profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 
-			// If there are already profiles loaded in state for this request; consider it fulfilled
-			// and don't make an API request.
-			if ( existingProfiles ) {
-				return;
+			// Only fetch profiles if there are none received for the given account and property.
+			if ( ! profiles ) {
+				profiles = yield actions.fetchProfiles( accountID, propertyID );
+				yield actions.receiveProfiles( profiles );
 			}
-
-			const profiles = yield actions.fetchProfiles( accountID, propertyID );
-
-			yield actions.receiveProfiles( profiles );
 
 			const profileID = registry.select( STORE_NAME ).getProfileID();
 			if ( ! profileID ) {
