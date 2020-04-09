@@ -28,7 +28,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { getExistingTag } from '../../../util';
 import { STORE_NAME } from './index';
-import { isValidPropertyID } from '../util';
+import { isValidPropertyID, parsePropertyID } from '../util';
 
 const { commonActions, createRegistrySelector } = Data;
 
@@ -224,9 +224,9 @@ export const resolvers = {
 			yield actions.receiveExistingTag( existingTag !== undefined ? existingTag : null );
 
 			if ( isValidPropertyID( existingTag ) ) {
-				registry.dispatch( STORE_NAME ).applyProperty( {
-					propertyID: existingTag,
-				} );
+				const { accountID } = parsePropertyID( existingTag );
+				registry.dispatch( STORE_NAME ).setAccountID( accountID );
+				registry.dispatch( STORE_NAME ).selectProperty( existingTag );
 			}
 
 			return;

@@ -220,11 +220,8 @@ export const resolvers = {
 			const accountID = registry.select( STORE_NAME ).getAccountID();
 			// Pre-select values from the matched property if no account is selected.
 			if ( matchedProperty && ! accountID ) {
-				registry.dispatch( STORE_NAME ).applyProperty( {
-					accountID: matchedProperty.accountId,
-					propertyID: matchedProperty.id,
-					internalWebPropertyID: matchedProperty.internalWebPropertyId,
-				} );
+				registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId );
+				registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId );
 			}
 		} catch ( err ) {
 			// TODO: Implement an error handler store or some kind of centralized

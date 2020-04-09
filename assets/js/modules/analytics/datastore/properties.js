@@ -29,7 +29,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './index';
 import { actions as profileActions } from './profiles';
-import { isValidAccountID, isValidPropertyID, parsePropertyID } from '../util';
+import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySelection } from '../util';
 import { PROPERTY_CREATE } from './constants';
 
 // Actions
@@ -171,33 +171,25 @@ export const actions = {
 		};
 	},
 
-	/**
-	 * Applies the given property over current selections.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Object} args Arguments.
-	 * @param {?string} args.propertyID Property ID.
-	 * @param {?string} [args.internalWebPropertyID] Internal web property ID.
-	 */
-	*applyProperty( { propertyID, internalWebPropertyID = '' } = {} ) {
-		invariant( isValidPropertyID( propertyID ), 'A valid propertyID is required.' );
+	*selectProperty( propertyID, internalPropertyID = '' ) {
+		invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
 
-		const { accountID } = parsePropertyID( propertyID );
 		const registry = yield Data.commonActions.getRegistry();
-
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
 
-		if ( ! internalWebPropertyID ) {
-			const properties = registry.select( STORE_NAME ).getProperties( accountID ) || [];
-			const property = properties.find( ( p ) => p.id === propertyID ) || {};
-			internalWebPropertyID = property.internalWebPropertyId;
+		if ( PROPERTY_CREATE === propertyID ) {
+			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( '' );
+			registry.dispatch( STORE_NAME ).setProfileID( '' );
+			return;
 		}
+		if ( ! internalPropertyID ) {
+			const property = registry.select( STORE_NAME ).getPropertyByID( propertyID ) || {};
+			internalPropertyID = property.internalWebPropertyId;
+		}
+		registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
 
-		registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalWebPropertyID || '' );
-		registry.dispatch( STORE_NAME ).setProfileForProperty( { accountID, propertyID } );
+		// Cascading selection.
+		registry.dispatch( STORE_NAME ).setProfileForProperty( propertyID );
 	},
 
 	/**
