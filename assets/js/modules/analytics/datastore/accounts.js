@@ -196,8 +196,8 @@ export const resolvers = {
 
 			const existingAccounts = registry.select( STORE_NAME ).getAccounts();
 			let matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
-			// If there are already accounts loaded in state, we don't want to make this request
-			// and consider this resolver fulfilled.
+
+			// Only fetch accounts if there are none in the store.
 			if ( ! existingAccounts ) {
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
 				const response = yield actions.fetchAccountsPropertiesProfiles( {
