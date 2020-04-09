@@ -27,6 +27,8 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '.';
+import { isValidAccountSelection } from '../util';
+import { ACCOUNT_CREATE, PROPERTY_CREATE } from './constants';
 
 // Actions
 const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
@@ -99,6 +101,28 @@ export const actions = {
 
 		return registry.stores[ STORE_NAME ].getActions()
 			.invalidateResolutionForStoreSelector( 'getAccounts' );
+	},
+
+	*selectAccount( accountID ) {
+		invariant( isValidAccountSelection( accountID ), 'A valid accountID is required to select.' );
+
+		const registry = yield Data.commonActions.getRegistry();
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+
+		if ( ACCOUNT_CREATE === accountID ) {
+			registry.dispatch( STORE_NAME ).setPropertyID( '' );
+			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( '' );
+			registry.dispatch( STORE_NAME ).setProfileID( '' );
+			return;
+		}
+
+		// Trigger cascading selections.
+		const properties = registry.select( STORE_NAME ).getProperties( accountID );
+		if ( properties === undefined ) {
+			return; // Selection will happen in resolver.
+		}
+		const property = properties[ 0 ] || { id: PROPERTY_CREATE };
+		registry.dispatch( STORE_NAME ).selectProperty( property.id );
 	},
 };
 
