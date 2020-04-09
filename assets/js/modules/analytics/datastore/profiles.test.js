@@ -193,6 +193,7 @@ describe( 'modules/analytics profiles', () => {
 			} );
 
 			it( 'does not make a network request if profiles for this account + property are already present', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {} );
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 
