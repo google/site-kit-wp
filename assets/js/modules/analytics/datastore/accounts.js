@@ -223,6 +223,13 @@ export const resolvers = {
 				registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId );
 			}
 		} catch ( err ) {
+			// Not the best check here, but this message comes from the API.
+			// err.data.reason is also 'insufficientPermissions' but that isn't as clear,
+			// and may not be "no accounts".
+			if ( err.message && err.message === 'User does not have any Google Analytics account.' ) {
+				yield actions.receiveAccounts( [] );
+			}
+
 			// TODO: Implement an error handler store or some kind of centralized
 			// place for error dispatch...
 			return actions.receiveAccountsPropertiesProfilesFailed( err );
