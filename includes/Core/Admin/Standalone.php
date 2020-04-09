@@ -26,6 +26,7 @@ final class Standalone {
 	 * Plugin context.
 	 *
 	 * @since NEXT
+	 *
 	 * @var Context
 	 */
 	private $context;
@@ -95,6 +96,8 @@ final class Standalone {
 	/**
 	 * Detect if we are in Google Site Kit standalone mode
 	 *
+	 * @since NEXT
+	 *
 	 * @return boolean True when in standalone mode, else false.
 	 */
 	public function is_standalone() {
@@ -104,7 +107,7 @@ final class Standalone {
 		$page       = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
 		$standalone = filter_input( INPUT_GET, 'googlesitekit-standalone', FILTER_VALIDATE_BOOLEAN );
 
-		return ( 'admin.php' === $pagenow && false !== strpos( $page, 'googlesitekit' ) && $standalone );
+		return ( 'admin.php' === $pagenow && ( '' !== $page && false !== strpos( $page, 'googlesitekit' ) ) && $standalone );
 
 	}
 
