@@ -29,7 +29,7 @@ import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../material-components';
 import ProgressBar from '../../../components/progress-bar';
 import { STORE_NAME } from '../datastore';
-import { PROPERTY_CREATE, PROFILE_CREATE } from '../datastore/constants';
+import { PROPERTY_CREATE } from '../datastore/constants';
 import { isValidAccountID } from '../util';
 const { useSelect, useDispatch } = Data;
 
@@ -40,17 +40,11 @@ export default function PropertySelect() {
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const isLoading = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProperties( accountID ) );
 
-	const { setPropertyID, setInternalWebPropertyID, setProfileID } = useDispatch( STORE_NAME );
+	const { selectProperty } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
 		const newPropertyID = item.dataset.value;
-
-		setPropertyID( newPropertyID );
-		setInternalWebPropertyID( item.dataset.internalWebProperty || '' );
-
-		if ( PROPERTY_CREATE === newPropertyID ) {
-			setProfileID( PROFILE_CREATE );
-		} else {
-			setProfileID( '' );
+		if ( propertyID !== newPropertyID ) {
+			selectProperty( newPropertyID, item.dataset.internalId );
 		}
 	}, [ propertyID ] );
 
@@ -77,7 +71,7 @@ export default function PropertySelect() {
 					<Option
 						key={ index }
 						value={ id }
-						data-internal-web-property={ internalWebPropertyId }
+						data-internal-id={ internalWebPropertyId }
 					>
 						{ name }
 					</Option>
