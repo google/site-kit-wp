@@ -140,11 +140,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new property/i } );
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new profile/i } );
 
-		await page.waitFor( 500 );
-		await expect( page ).toClick( 'button', { text: /configure analytics/i } );
-
-		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
-		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
+		// Intentionally does not submit to trigger property & profile creation requests.
 	} );
 
 	it( 'includes an option to setup a new account', async () => {
