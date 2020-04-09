@@ -25,8 +25,8 @@ async function proceedToSetUpAnalytics() {
 	] );
 }
 
-const EXISTING_PROPERTY_ID = 'UA-00000001-1';
 const EXISTING_ACCOUNT_ID = '100';
+const EXISTING_PROPERTY_ID = `UA-${ EXISTING_ACCOUNT_ID }-1`;
 
 let getAccountsRequestHandler;
 let tagPermissionRequestHandler;
