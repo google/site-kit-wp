@@ -110,5 +110,4 @@ final class Standalone {
 		return ( 'admin.php' === $pagenow && ( '' !== $page && false !== strpos( $page, 'googlesitekit' ) ) && $standalone );
 
 	}
-
 }
