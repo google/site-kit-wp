@@ -140,6 +140,8 @@ final class Analytics extends Module
 
 					$admin_data['timezones'] = $timezone_data;
 					$admin_data['timezone']  = $selected_zone;
+
+					$admin_data['errorcode'] = $this->context->input()->filter( INPUT_GET, 'error_code', FILTER_SANITIZE_STRING );
 					return $admin_data;
 				}
 			);

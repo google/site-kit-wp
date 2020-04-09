@@ -82,12 +82,6 @@ export const actions = {
 			type: RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED,
 		};
 	},
-};
-
-export const controls = {
-	[ FETCH_ACCOUNTS_PROPERTIES_PROFILES ]: () => {
-		return API.get( 'modules', 'analytics', 'accounts-properties-profiles' );
-	},
 
 	/**
 	 * Creates a new Analytics account.
@@ -162,6 +156,20 @@ export const controls = {
 			payload: { error },
 			type: RECEIVE_CREATE_ACCOUNT_FAILED,
 		};
+	},
+};
+
+export const controls = {
+	[ FETCH_ACCOUNTS_PROPERTIES_PROFILES ]: () => {
+		return API.get( 'modules', 'analytics', 'accounts-properties-profiles' );
+	},
+	[ FETCH_CREATE_ACCOUNT ]: ( { payload: { accountName, propertyName, profileName, timezone } } ) => {
+		return API.set( 'modules', 'analytics', 'create-account-ticket', {
+			accountName,
+			propertyName,
+			profileName,
+			timezone,
+		} );
 	},
 };
 
@@ -242,14 +250,6 @@ export const resolvers = {
 			// place for error dispatch...
 			return actions.receiveAccountsPropertiesProfilesFailed( err );
 		}
-	},
-	[ FETCH_CREATE_ACCOUNT ]: ( { payload: { accountName, propertyName, profileName, timezone } } ) => {
-		return API.get( 'modules', 'analytics', 'create-account-ticket', {
-			accountName,
-			propertyName,
-			profileName,
-			timezone,
-		} );
 	},
 };
 

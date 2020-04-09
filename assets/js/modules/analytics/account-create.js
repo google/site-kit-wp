@@ -37,13 +37,15 @@ import classnames from 'classnames';
 import ProgressBar from '../../components/progress-bar';
 import { STORE_NAME } from './datastore/index';
 import { trackEvent } from '../../util';
-const { useDispatch } = Data;
+const { dispatch } = Data;
 
 // Cache the complicated timezone dropdown.
 let timezoneData = false;
 
 const AccountCreate = () => {
-	const { createAccount } = useDispatch( STORE_NAME );
+	const { createAccount } = dispatch( STORE_NAME );
+	const { siteName, siteURL, timezone: tz, errorcode } = global.googlesitekit.admin;
+	const [ error, setError ] = useState( errorcode );
 
 	const handleSubmit = useCallback( ( accountName, propertyName, profileName, timezone ) => {
 		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
@@ -52,8 +54,12 @@ const AccountCreate = () => {
 			propertyName,
 			profileName,
 			timezone,
-		} ).then( () => {
+		} ).then( ( e ) => {
 			setIsSubmitting( false );
+			const { error: err } = e.payload;
+			if ( err ) {
+				setError( err.message ? err.message : __( 'Unknown error.', 'google-site-kit' ) );
+			}
 		} );
 	} );
 
@@ -91,7 +97,6 @@ const AccountCreate = () => {
 		return timezoneData;
 	};
 
-	const { siteName, siteURL, timezone: tz } = global.googlesitekit.admin;
 	const [ accountName, setAccountName ] = useState( siteName );
 	const [ propertyName, setPropertyName ] = useState( siteURL );
 	const [ profileName, setProfileName ] = useState( __( 'All website traffic', 'google-site-kit' ) );
@@ -110,9 +115,18 @@ const AccountCreate = () => {
 						<h2>
 							{ __( 'Create new Analytics account', 'google-site-kit' ) }
 						</h2>
+						{
+							error &&
+							<div className="error">
+								<p>
+									{ error }
+								</p>
+							</div>
+						}
 						<p>
-							{ __( 'Looks like you need to set up an account to use Analytics. Site Kit can provision a new account for you.', 'google-site-kit' ) }
+							{ __( 'Looks like you need to set up an account to use Analytics.', 'google-site-kit' ) }
 						</p>
+
 						<div>
 							{
 								isSubmitting
