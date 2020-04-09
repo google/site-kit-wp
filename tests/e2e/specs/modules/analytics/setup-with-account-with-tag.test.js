@@ -21,7 +21,7 @@ async function proceedToSetUpAnalytics() {
 	await Promise.all( [
 		expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } ),
 		page.waitForSelector( '.googlesitekit-setup-module--analytics' ),
-		page.waitForResponse( ( res ) => res.url().match( 'analytics/data' ) ),
+		page.waitForResponse( ( res ) => res.url().match( 'analytics/data/accounts-properties-profiles' ) ),
 	] );
 }
 
@@ -86,7 +86,6 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await setAnalyticsExistingPropertyID( EXISTING_PROPERTY_ID );
 		await proceedToSetUpAnalytics();
 
-		await page.waitForResponse( ( res ) => res.url().match( 'modules/analytics/data/accounts-properties-profiles' ) );
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module--analytics p', { text: new RegExp( `An existing analytics tag was found on your site with the id ${ EXISTING_PROPERTY_ID }`, 'i' ) } );
 
 		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-account .mdc-select__selected-text', { text: /test account a/i } );
