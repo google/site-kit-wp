@@ -25,19 +25,14 @@ async function proceedToSetUpAnalytics() {
 	] );
 }
 
-const EXISTING_ACCOUNT_ID = '100';
-const EXISTING_PROPERTY_ID = `UA-${ EXISTING_ACCOUNT_ID }-1`;
-
-let getAccountsRequestHandler;
-let tagPermissionRequestHandler;
+// eslint-disable-next-line no-console
+let tagPermissionRequestHandler = ( request ) => console.warn( 'Unhandled tag permission!', request.continue() );
 
 describe( 'setting up the Analytics module with an existing account and existing tag', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( 'modules/analytics/data/accounts-properties-profiles' ) && getAccountsRequestHandler ) {
-				getAccountsRequestHandler( request );
-			} else if ( request.url().match( 'modules/analytics/data/tag-permission' ) && tagPermissionRequestHandler ) {
+			if ( request.url().match( 'modules/analytics/data/tag-permission' ) && tagPermissionRequestHandler ) {
 				tagPermissionRequestHandler( request );
 			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
 				request.respond( {
@@ -73,20 +68,25 @@ describe( 'setting up the Analytics module with an existing account and existing
 	} );
 
 	it( 'pre-selects account and property if an existing tag is found that matches one belonging to the user and prevents them from being changed', async () => {
+		const existingTag = {
+			accountID: '100',
+			propertyID: 'UA-100-1',
+		};
 		tagPermissionRequestHandler = ( request ) => {
 			request.respond( {
 				status: 200,
 				body: JSON.stringify( {
-					accountID: EXISTING_ACCOUNT_ID,
-					propertyID: EXISTING_PROPERTY_ID,
+					...existingTag,
 					permission: true,
 				} ),
 			} );
 		};
-		await setAnalyticsExistingPropertyID( EXISTING_PROPERTY_ID );
+		await setAnalyticsExistingPropertyID( existingTag.propertyID );
 		await proceedToSetUpAnalytics();
 
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module--analytics p', { text: new RegExp( `An existing analytics tag was found on your site with the id ${ EXISTING_PROPERTY_ID }`, 'i' ) } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module--analytics p', {
+			text: new RegExp( `An existing analytics tag was found on your site with the id ${ existingTag.propertyID }`, 'i' ),
+		} );
 
 		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-account .mdc-select__selected-text', { text: /test account a/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-property .mdc-select__selected-text', { text: /test property x/i } );
@@ -103,19 +103,24 @@ describe( 'setting up the Analytics module with an existing account and existing
 	} );
 
 	it( 'does not allow Analytics to be set up with an existing tag that does not match a property of the user', async () => {
-		getAccountsRequestHandler = ( request ) => {
+		const existingTag = {
+			accountID: '999',
+			propertyID: 'UA-999-9',
+		};
+		tagPermissionRequestHandler = ( request ) => {
 			request.respond( {
-				status: 500,
+				status: 200,
 				body: JSON.stringify( {
-					code: 'google_analytics_existing_tag_permission',
-					message: 'google_analytics_existing_tag_permission',
+					...existingTag,
+					permission: false,
 				} ),
 			} );
 		};
 
+		await setAnalyticsExistingPropertyID( existingTag.propertyID );
 		await proceedToSetUpAnalytics();
 
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module--analytics p', { text: /google_analytics_existing_tag_permission/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-error-text', { text: /your account doesn't seem to have access to this Analytics property/i } );
 		await expect( page ).not.toMatchElement( '.googlesitekit-setup-module--analytics button', { text: /create an account/i } );
 		await expect( page ).not.toMatchElement( '.googlesitekit-setup-module--analytics button', { text: /re-fetch my account/i } );
 	} );
