@@ -17,10 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
@@ -32,7 +28,6 @@ import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
 import {
 	INITIAL_STATE,
 	STORE_NAME,
-	actions,
 } from './index';
 
 describe( 'core/site store', () => {
@@ -57,19 +52,6 @@ describe( 'core/site store', () => {
 			const state = store.getState();
 
 			expect( state ).toEqual( INITIAL_STATE );
-		} );
-	} );
-
-	describe( 'notifications', () => {
-		it( 'has appropriate notification methods', () => {
-			const actionsToExpect = [
-				'addNotification',
-				'removeNotification',
-				'fetchNotifications',
-				'receiveNotifications',
-				'receiveNotificationsFailed',
-			];
-			expect( Object.keys( actions ) ).toEqual( expect.arrayContaining( actionsToExpect ) );
 		} );
 	} );
 } );
