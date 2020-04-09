@@ -108,11 +108,11 @@ export const actions = {
 
 		const registry = yield Data.commonActions.getRegistry();
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).setPropertyID( '' );
+		registry.dispatch( STORE_NAME ).setInternalWebPropertyID( '' );
+		registry.dispatch( STORE_NAME ).setProfileID( '' );
 
 		if ( ACCOUNT_CREATE === accountID ) {
-			registry.dispatch( STORE_NAME ).setPropertyID( '' );
-			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( '' );
-			registry.dispatch( STORE_NAME ).setProfileID( '' );
 			return;
 		}
 
@@ -200,11 +200,10 @@ export const resolvers = {
 			// Only fetch accounts if there are none in the store.
 			if ( ! existingAccounts ) {
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
-				const response = yield actions.fetchAccountsPropertiesProfiles( {
+				const { accounts, properties, profiles, ...response } = yield actions.fetchAccountsPropertiesProfiles( {
 					existingPropertyID: existingTag,
 				} );
-				const { accounts, properties, profiles } = response;
-				matchedProperty = response.matchedProperty;
+				( { matchedProperty } = response );
 
 				yield actions.receiveAccounts( accounts );
 				registry.dispatch( STORE_NAME ).receiveProperties( properties );
