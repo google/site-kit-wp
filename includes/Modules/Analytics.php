@@ -1104,7 +1104,7 @@ final class Analytics extends Module
 			case 'POST:create-account-ticket':
 				// Cache the create ticket id long enough to verify it upon completion of the terms of service.
 				set_transient(
-					$self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id(),
+					self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id(),
 					$response->getId(),
 					15 * MINUTE_IN_SECONDS
 				);
