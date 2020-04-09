@@ -25,7 +25,10 @@ async function proceedToSetUpAnalytics() {
 	] );
 }
 
-const EXISTING_PROPERTY_ID = 'UA-00000001-1';
+const existingTag = {
+	accountID: '999',
+	propertyID: 'UA-999-9',
+};
 
 describe( 'setting up the Analytics module with no existing account and with an existing tag', () => {
 	beforeAll( async () => {
@@ -35,8 +38,8 @@ describe( 'setting up the Analytics module with no existing account and with an 
 				request.respond( {
 					status: 403,
 					body: JSON.stringify( {
-						code: 'google_analytics_existing_tag_permission',
-						message: 'google_analytics_existing_tag_permission',
+						...existingTag,
+						permission: false,
 					} ),
 				} );
 			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
@@ -71,13 +74,12 @@ describe( 'setting up the Analytics module with no existing account and with an 
 	} );
 
 	it( 'does not allow Analytics to be set up with an existing tag that does not match a property of the user', async () => {
-		await setAnalyticsExistingPropertyID( EXISTING_PROPERTY_ID );
+		await setAnalyticsExistingPropertyID( existingTag.propertyID );
 
 		await proceedToSetUpAnalytics();
 
-		// The specific message comes from the datapoint which we've mocked to return the error code instead.
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module--analytics p', { text: /google_analytics_existing_tag_permission/i } );
 		// Buttons to proceed are not displayed; the user is blocked from completing setup.
+		await expect( page ).not.toMatchElement( '.googlesitekit-setup-module--analytics button', { text: /configure analytics/i } );
 		await expect( page ).not.toMatchElement( '.googlesitekit-setup-module--analytics button', { text: /create an account/i } );
 		await expect( page ).not.toMatchElement( '.googlesitekit-setup-module--analytics button', { text: /re-fetch my account/i } );
 	} );
