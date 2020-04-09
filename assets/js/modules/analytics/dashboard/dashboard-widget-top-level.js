@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { isEmpty } from 'lodash';
+import { isEmpty, get } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -43,6 +43,7 @@ import {
 	siteAnalyticsReportDataDefaults,
 	overviewReportDataDefaults,
 	isDataZeroForReporting,
+	userReportDataDefaults,
 } from '../util';
 import DataBlock from '../../../components/data-block';
 import withData from '../../../components/higherorder/withdata';
@@ -57,6 +58,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 		this.state = {
 			accounts: false,
 			goals: false,
+			directTotalUsers: false,
 		};
 	}
 
@@ -88,6 +90,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 			overview,
 			extractedAnalytics,
 			goals,
+			directTotalUsers,
 		} = this.state;
 
 		const { permaLink } = global.googlesitekit;
@@ -95,15 +98,13 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 		const href = getSiteKitAdminURL( 'googlesitekit-module-analytics', {} );
 		const goalURL = 'https://support.google.com/analytics/answer/1032415?hl=en#create_or_edit_goals';
 
-		let totalUsers = '',
-			totalUsersChange = '',
+		let totalUsersChange = '',
 			goalCompletions = '',
 			goalCompletionsChange = '',
 			averageBounceRate = '',
 			averageBounceRateChange = '';
 
 		if ( overview ) {
-			totalUsers = overview.totalUsers;
 			totalUsersChange = overview.totalUsersChange;
 			goalCompletions = overview.goalCompletions;
 			goalCompletionsChange = overview.goalCompletionsChange;
@@ -123,7 +124,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 					<DataBlock
 						className="overview-total-users"
 						title={ __( 'Unique Visitors from Search', 'google-site-kit' ) }
-						datapoint={ readableLargeNumber( totalUsers ) }
+						datapoint={ readableLargeNumber( directTotalUsers ) }
 						change={ totalUsersChange }
 						changeDataUnit="%"
 						source={ {
@@ -243,6 +244,23 @@ export default withData(
 				if ( ! state.overview ) {
 					return {
 						overview: calculateOverviewData( data ),
+					};
+				}
+			},
+		},
+		{
+			type: TYPE_MODULES,
+			identifier: 'analytics',
+			datapoint: 'report',
+			data: userReportDataDefaults,
+			priority: 1,
+			maxAge: getTimeInSeconds( 'day' ),
+			context: [ 'Dashboard' ],
+			toState( state, { data } ) {
+				if ( ! state.directTotalUsers ) {
+					const directTotalUsers = get( data, '[0].data.totals[0].values[0]' );
+					return {
+						directTotalUsers,
 					};
 				}
 			},
