@@ -171,18 +171,22 @@ export const actions = {
 		};
 	},
 
+	/**
+	 * Sets the given property and related fields in the store.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {string} propertyID Property ID to select.
+	 * @param {string} [internalPropertyID] Internal property ID (if available).
+	 */
 	*selectProperty( propertyID, internalPropertyID = '' ) {
 		invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
 
 		const registry = yield Data.commonActions.getRegistry();
 		registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
 
-		if ( PROPERTY_CREATE === propertyID ) {
-			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( '' );
-			registry.dispatch( STORE_NAME ).setProfileID( '' );
-			return;
-		}
-		if ( ! internalPropertyID ) {
+		if ( PROPERTY_CREATE !== propertyID && ! internalPropertyID ) {
 			const property = registry.select( STORE_NAME ).getPropertyByID( propertyID ) || {};
 			internalPropertyID = property.internalWebPropertyId;
 		}
