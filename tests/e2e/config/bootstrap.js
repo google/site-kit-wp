@@ -42,6 +42,7 @@ const OBSERVED_CONSOLE_MESSAGE_TYPES = {
 	warning: 'warn',
 	error: 'error',
 	log: 'log',
+	info: 'log',
 };
 
 /**
@@ -129,7 +130,9 @@ function observeConsoleLogging() {
 		// See: https://core.trac.wordpress.org/ticket/47183
 		if (
 			text.startsWith( 'Failed to decode downloaded font:' ) ||
-			text.startsWith( 'OTS parsing error:' )
+			text.startsWith( 'OTS parsing error:' ) ||
+			text.includes( 'Download the React DevTools for a better development experience' ) ||
+			text.includes( 'https://fb.me/react-unsafe-component-lifecycles' )
 		) {
 			return;
 		}
