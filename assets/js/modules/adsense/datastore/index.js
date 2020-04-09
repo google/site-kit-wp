@@ -105,6 +105,14 @@ export const selectors = Data.collectSelectors(
 	report.selectors,
 	tags.selectors,
 	urlchannels.selectors,
+	{
+		// TODO: Revisit better way to handle and retrieve errors.
+		getError( state ) {
+			const { error } = state;
+
+			return error;
+		},
+	},
 );
 
 const store = {

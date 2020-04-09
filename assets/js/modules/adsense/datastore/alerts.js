@@ -34,6 +34,7 @@ const FETCH_ALERTS = 'FETCH_ALERTS';
 const RECEIVE_ALERTS = 'RECEIVE_ALERTS';
 const RECEIVE_ALERTS_SUCCEEDED = 'RECEIVE_ALERTS_SUCCEEDED';
 const RECEIVE_ALERTS_FAILED = 'RECEIVE_ALERTS_FAILED';
+const RESET_ALERTS = 'RESET_ALERTS';
 
 export const INITIAL_STATE = {
 	isFetchingAlerts: {},
@@ -86,6 +87,18 @@ export const actions = {
 			payload: { accountID, error },
 			type: RECEIVE_ALERTS_FAILED,
 		};
+	},
+
+	*resetAlerts() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield {
+			payload: {},
+			type: RESET_ALERTS,
+		};
+
+		return registry.stores[ STORE_NAME ].getActions()
+			.invalidateResolutionForStoreSelector( 'getAlerts' );
 	},
 };
 
@@ -143,6 +156,13 @@ export const reducer = ( state, { type, payload } ) => {
 					...state.isFetchingAlerts,
 					[ accountID ]: false,
 				},
+			};
+		}
+
+		case RESET_ALERTS: {
+			return {
+				...state,
+				alerts: {},
 			};
 		}
 
