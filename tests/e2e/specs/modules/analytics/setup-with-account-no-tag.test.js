@@ -164,8 +164,8 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		] );
 
 		// Dropdowns are revealed and reset on refetch.
-		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-account .mdc-select__selected-text', { text: /select one.../i } );
-		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-property .mdc-select__selected-text', { text: /select an account/i } );
-		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-profile .mdc-select__selected-text', { text: /select an account/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-account .mdc-select__selected-text', { text: '' } );
+		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-property .mdc-select__selected-text', { text: '' } );
+		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-profile .mdc-select__selected-text', { text: '' } );
 	} );
 } );
