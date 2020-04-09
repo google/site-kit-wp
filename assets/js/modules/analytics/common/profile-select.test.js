@@ -35,7 +35,6 @@ jest.mock( '@wordpress/api-fetch' );
 apiFetchMock.mockImplementation( ( ...args ) => {
 	// eslint-disable-next-line no-console
 	console.warn( 'apiFetch', ...args );
-	throw new Error( 'Unexpected apiFetch call' );
 } );
 
 const setupRegistry = ( { dispatch } ) => {
