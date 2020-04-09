@@ -411,7 +411,7 @@ export const selectors = {
 		}
 		const { accountID } = parsePropertyID( propertyID );
 
-		return ( state.properties[ accountID ] || [] ).find( ( p ) => p.id === propertyID );
+		return ( state.properties[ accountID ] || [] ).find( ( { id } ) => id === propertyID );
 	},
 	/**
 	 * Gets the matched property, if any.

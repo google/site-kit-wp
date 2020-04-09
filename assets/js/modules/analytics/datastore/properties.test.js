@@ -250,5 +250,26 @@ describe( 'modules/analytics properties', () => {
 				expect( properties ).toEqual( undefined );
 			} );
 		} );
+		describe( 'getPropertyByID', () => {
+			it( 'returns the property object by its ID when present in the store', () => {
+				const { properties } = fixtures.propertiesProfiles;
+				registry.dispatch( STORE_NAME ).receiveProperties( properties );
+
+				const findProperty = properties[ 1 ];
+				const foundProperty = registry.select( STORE_NAME ).getPropertyByID( findProperty.id );
+
+				expect( foundProperty ).toEqual( findProperty );
+			} );
+
+			it( 'returns undefined when the property is not present in the store', () => {
+				const { properties } = fixtures.propertiesProfiles;
+				registry.dispatch( STORE_NAME ).receiveProperties( [] );
+
+				const findProperty = properties[ 1 ];
+				const foundProperty = registry.select( STORE_NAME ).getPropertyByID( findProperty.id );
+
+				expect( foundProperty ).toEqual( undefined );
+			} );
+		} );
 	} );
 } );
