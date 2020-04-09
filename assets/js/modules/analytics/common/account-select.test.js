@@ -26,7 +26,7 @@ import apiFetchMock from '@wordpress/api-fetch';
  */
 import AccountSelect from './account-select';
 import { fireEvent, render } from '../../../../../tests/js/test-utils';
-import { STORE_NAME as modulesAnalyticsStoreName } from '../datastore';
+import { STORE_NAME as modulesAnalyticsStoreName, STORE_NAME } from '../datastore';
 import * as fixtures from '../datastore/__fixtures__';
 
 // Mock apiFetch so we know if it's called.
@@ -100,26 +100,27 @@ describe( 'AccountSelect', () => {
 		const newAccountID = registry.select( modulesAnalyticsStoreName ).getAccountID();
 		expect( originalAccountID ).not.toEqual( newAccountID );
 		expect( newAccountID ).toEqual( fixtures.accountsPropertiesProfiles.accounts[ 1 ].id );
-		expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 
-	it( 'should unset the chosen property and profile IDs when changed', () => {
-		const { getAllByRole, container, registry } = render( <AccountSelect />, { setupRegistry } );
-		registry.dispatch( modulesAnalyticsStoreName ).setPropertyID( 'UA-12345-1' );
-		registry.dispatch( modulesAnalyticsStoreName ).setInternalWebPropertyID( '987654' );
-		registry.dispatch( modulesAnalyticsStoreName ).setProfileID( '123987654' );
+	it( 'should pre-select the property and profile IDs when changed', () => {
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const { getByText, container, registry } = render( <AccountSelect />, { setupRegistry } );
+
+		registry.dispatch( STORE_NAME ).receiveProperties( properties );
+		registry.dispatch( STORE_NAME ).receiveProfiles( profiles );
 
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 		// Click this element to select it and fire the onChange event.
-		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
+		const account = accounts.find( ( acct ) => acct.id === properties[ 0 ].accountId );
+		fireEvent.click( getByText( account.name ) );
 
 		const newPropertyID = registry.select( modulesAnalyticsStoreName ).getPropertyID();
 		const newWebPropertyID = registry.select( modulesAnalyticsStoreName ).getInternalWebPropertyID();
 		const newProfileID = registry.select( modulesAnalyticsStoreName ).getProfileID();
-		expect( newPropertyID ).toBeFalsy();
-		expect( newWebPropertyID ).toBeFalsy();
-		expect( newProfileID ).toBeFalsy();
-		expect( apiFetchMock ).not.toHaveBeenCalled();
+		expect( newPropertyID ).not.toBeFalsy();
+		expect( newWebPropertyID ).not.toBeFalsy();
+		expect( newProfileID ).not.toBeFalsy();
+		// expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 } );
