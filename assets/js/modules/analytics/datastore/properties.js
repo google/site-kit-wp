@@ -393,7 +393,7 @@ export const resolvers = {
 			}
 			const profileID = registry.select( STORE_NAME ).getProfileID();
 			if ( ! profileID ) {
-				registry.dispatch( STORE_NAME ).setProfileForProperty( { accountID, propertyID } );
+				registry.dispatch( STORE_NAME ).setProfileForProperty( propertyID );
 			}
 
 			return actions.receivePropertiesProfilesCompleted( accountID );

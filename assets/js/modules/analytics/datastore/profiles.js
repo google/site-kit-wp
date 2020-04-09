@@ -28,8 +28,8 @@ import { groupBy } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './index';
-import { isValidAccountID, isValidPropertyID } from '../util';
-import { PROFILE_CREATE } from './constants';
+import { isValidAccountID, isValidPropertyID, isValidPropertySelection, parsePropertyID } from '../util';
+import { PROFILE_CREATE, PROPERTY_CREATE } from './constants';
 
 // Actions
 const FETCH_CREATE_PROFILE = 'FETCH_CREATE_PROFILE';
@@ -188,20 +188,20 @@ export const actions = {
 	 * @since n.e.x.t
 	 * @private
 	 *
-	 * @param {?Object} args Optional supporting arguments.
-	 * @param {?string} args.accountID Account ID.
-	 * @param {?string} args.property Property ID.
+	 * @param {string} propertyID Property ID.
 	 */
-	*setProfileForProperty( { accountID, propertyID } = {} ) {
+	*setProfileForProperty( propertyID ) {
+		invariant( isValidPropertySelection( propertyID ), 'A valid property selection is required to set profile.' );
 		const registry = yield Data.commonActions.getRegistry();
 
-		if ( isValidAccountID( accountID ) && isValidPropertyID( propertyID ) ) {
+		if ( PROPERTY_CREATE === propertyID ) {
+			registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
+		} else {
+			const { accountID } = parsePropertyID( propertyID );
 			const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID ) || [];
 			const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE };
 
 			registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id );
-		} else {
-			registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
 		}
 	},
 };
@@ -347,7 +347,7 @@ export const resolvers = {
 
 			const profileID = registry.select( STORE_NAME ).getProfileID();
 			if ( ! profileID ) {
-				yield actions.setProfileForProperty( { accountID, propertyID } );
+				yield actions.setProfileForProperty( propertyID );
 			}
 
 			return actions.receiveProfilesCompleted( accountID, propertyID );
