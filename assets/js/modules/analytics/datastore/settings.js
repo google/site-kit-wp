@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '.';
 import {
 	isValidAccountID,
 	isValidInternalWebPropertyID,
@@ -28,7 +27,7 @@ import {
 	isValidProfileSelection,
 	isValidPropertyID,
 } from '../util';
-import { PROPERTY_CREATE, PROFILE_CREATE } from './constants';
+import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 
 const { createRegistrySelector, createRegistryControl } = Data;
 

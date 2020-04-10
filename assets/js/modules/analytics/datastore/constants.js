@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+export const STORE_NAME = 'modules/analytics';
+
 export const ACCOUNT_CREATE = 'account_create';
 export const PROPERTY_CREATE = 'property_create';
 export const PROFILE_CREATE = 'profile_create';

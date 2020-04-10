@@ -26,9 +26,8 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '.';
 import { isValidAccountSelection } from '../util';
-import { ACCOUNT_CREATE, PROPERTY_CREATE } from './constants';
+import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE } from './constants';
 import { actions as tagActions } from './tags';
 
 // Actions

@@ -27,10 +27,9 @@ import { groupBy } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './index';
 import { actions as profileActions } from './profiles';
 import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySelection } from '../util';
-import { PROPERTY_CREATE } from './constants';
+import { STORE_NAME, PROPERTY_CREATE } from './constants';
 const { createRegistryControl } = Data;
 
 // Actions

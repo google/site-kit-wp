@@ -27,9 +27,8 @@ import { groupBy } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './index';
 import { isValidAccountID, isValidPropertyID, isValidPropertySelection, parsePropertyID } from '../util';
-import { PROFILE_CREATE, PROPERTY_CREATE } from './constants';
+import { STORE_NAME, PROFILE_CREATE, PROPERTY_CREATE } from './constants';
 
 // Actions
 const FETCH_CREATE_PROFILE = 'FETCH_CREATE_PROFILE';
