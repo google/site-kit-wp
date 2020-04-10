@@ -25,6 +25,7 @@ const path = require( 'path' );
 /**
  * External dependencies
  */
+const CircularDependencyPlugin = require( 'circular-dependency-plugin' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
@@ -122,6 +123,12 @@ const webpackConfig = ( mode ) => {
 				new WebpackBar( {
 					name: 'Module Entry Points',
 					color: '#fbbc05',
+				} ),
+				new CircularDependencyPlugin( {
+					exclude: /node_modules/,
+					failOnError: true,
+					allowAsyncCycles: false,
+					cwd: process.cwd(),
 				} ),
 			],
 			optimization: {
