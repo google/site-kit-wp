@@ -31,6 +31,7 @@ import { STORE_NAME } from './index';
 import { actions as profileActions } from './profiles';
 import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySelection } from '../util';
 import { PROPERTY_CREATE } from './constants';
+const { createRegistryControl } = Data;
 
 // Actions
 const FETCH_CREATE_PROPERTY = 'FETCH_CREATE_PROPERTY';
@@ -43,6 +44,7 @@ const RECEIVE_MATCHED_PROPERTY = 'RECEIVE_MATCHED_PROPERTY';
 const RECEIVE_PROPERTIES = 'RECEIVE_PROPERTIES';
 const RECEIVE_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_PROPERTIES_PROFILES_COMPLETED';
 const RECEIVE_PROPERTIES_PROFILES_FAILED = 'RECEIVE_PROPERTIES_PROFILES_FAILED';
+const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
 
 export const INITIAL_STATE = {
 	isFetchingCreateProperty: {},
@@ -187,9 +189,12 @@ export const actions = {
 		registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
 
 		if ( PROPERTY_CREATE !== propertyID && ! internalPropertyID ) {
+			const { accountID } = parsePropertyID( propertyID );
+			yield actions.waitForProperties( accountID );
 			const property = registry.select( STORE_NAME ).getPropertyByID( propertyID ) || {};
 			internalPropertyID = property.internalWebPropertyId;
 		}
+
 		registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
 
 		// Cascading selection.
@@ -232,6 +237,13 @@ export const actions = {
 			type: RECEIVE_PROPERTIES_PROFILES_FAILED,
 		};
 	},
+
+	waitForProperties( accountID ) {
+		return {
+			payload: { accountID },
+			type: WAIT_FOR_PROPERTIES,
+		};
+	},
 };
 
 export const controls = {
@@ -243,6 +255,22 @@ export const controls = {
 			useCache: false,
 		} );
 	},
+	[ WAIT_FOR_PROPERTIES ]: createRegistryControl( ( registry ) => ( { payload: { accountID } } ) => {
+		const arePropertiesLoaded = () => registry.select( STORE_NAME ).getProperties( accountID ) !== undefined;
+
+		if ( arePropertiesLoaded() ) {
+			return true;
+		}
+
+		return new Promise( ( resolve ) => {
+			const unsubscribe = registry.subscribe( () => {
+				if ( arePropertiesLoaded() ) {
+					unsubscribe();
+					resolve();
+				}
+			} );
+		} );
+	} ),
 };
 
 export const reducer = ( state, { type, payload } ) => {
