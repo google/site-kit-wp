@@ -40,7 +40,12 @@ function createLoggerMiddleware() {
 		const { type, ..._action } = action;
 
 		// Objects must be stringified to be inspectable from the console during E2E tests.
-		global.console.debug( 'DISPATCH', type, JSON.stringify( _action ) );
+		// Not all structures can be stringified so errors must be caught.
+		try {
+			global.console.debug( 'DISPATCH', type, JSON.stringify( _action ) );
+		} catch ( e ) {
+			global.console.debug( 'DISPATCH', type, 'JSON ERROR' );
+		}
 
 		return next( action );
 	};
