@@ -29,6 +29,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '.';
 import { isValidAccountSelection } from '../util';
 import { ACCOUNT_CREATE, PROPERTY_CREATE } from './constants';
+import { actions as tagActions } from './tags';
 
 // Actions
 const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
@@ -199,6 +200,7 @@ export const resolvers = {
 
 			// Only fetch accounts if there are none in the store.
 			if ( ! existingAccounts ) {
+				yield tagActions.waitForExistingTag();
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
 				const { accounts, properties, profiles, ...response } = yield actions.fetchAccountsPropertiesProfiles( {
 					existingPropertyID: existingTag,
