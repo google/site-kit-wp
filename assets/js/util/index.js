@@ -208,17 +208,21 @@ export const numberFormat = ( number, options = {} ) => {
 /**
  * Gets the current locale for use with browser APIs.
  *
+ * @param {Object} _global The global window object.
+ *
  * @return {string} Current Site Kit locale if set, otherwise the current language set by the browser.
  *                  E.g. `en-US` or `de-DE`
  */
-export const getLocale = () => {
-	const siteKitLocale = get( global, [ 'googlesitekit', 'locale', '', 'lang' ] );
-
+export const getLocale = ( _global = global ) => {
+	const siteKitLocale = get( _global, [ 'googlesitekit', 'locale', '', 'lang' ] );
 	if ( siteKitLocale ) {
-		return siteKitLocale.replace( '_', '-' );
+		const matches = siteKitLocale.match( /^(\w{2})?(_)?(\w{2})/ );
+		if ( matches && matches[ 0 ] ) {
+			return matches[ 0 ].replace( /_/g, '-' );
+		}
 	}
 
-	return global.navigator.language;
+	return _global.navigator.language;
 };
 
 /**
@@ -371,7 +375,7 @@ export const refreshAuthentication = async () => {
  * This function should be removed once this object is no longer used to store
  * legacy module data.
  *
- * @since n.e.x.t
+ * @since 1.7.0
  *
  * @param {Object}  _googlesitekit Optional. googlesitekit global; can be replaced for testing.
  * @return {Object} Object with module data, with each module keyed by its slug.
