@@ -32,6 +32,7 @@ import { STORE_NAME } from '../datastore';
 import { ACCOUNT_CREATE } from '../datastore/constants';
 import {
 	AccountCreate,
+	ErrorNotice,
 	ExistingTagError,
 } from '../common';
 const { useSelect } = Data;
@@ -66,6 +67,8 @@ export default function SetupMain( { finishSetup } ) {
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
 				{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 			</h2>
+
+			<ErrorNotice />
 
 			{ viewComponent }
 		</div>

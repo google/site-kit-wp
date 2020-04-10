@@ -32,6 +32,7 @@ import SettingsForm from './settings-form';
 import ProgressBar from '../../../components/progress-bar';
 import {
 	AccountCreate,
+	ErrorNotice,
 	ExistingTagError,
 } from '../common';
 const { useSelect, useDispatch } = Data;
@@ -114,6 +115,8 @@ export default function SettingsEdit() {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
+			<ErrorNotice />
+
 			{ viewComponent }
 		</div>
 	);
