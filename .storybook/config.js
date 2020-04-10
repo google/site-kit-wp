@@ -95,7 +95,7 @@ global._googlesitekitBaseData = {
 	splashURL: 'http://example.com/wp-admin/admin.php?page=googlesitekit-splash',
 	proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/?scope=openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fsiteverification%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fwebmasters%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fanalytics%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fanalytics.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fanalytics.manage.users%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fanalytics.edit&supports=credentials_retrieval%20short_verification_token%20file_verification&nonce=&site_id=storybooksiteid.apps.sitekit.withgoogle.com',
 	proxyPermissionsURL: 'https://sitekit.withgoogle.com/site-management/permissions/?token=storybooktoken&site_id=storybooksiteid.apps.sitekit.withgoogle.com',
-	trackingEnabled: true,
+	trackingEnabled: false,
 	trackingID: 'UA-000000000-1',
 };
 global._googlesitekitEntityData = {
