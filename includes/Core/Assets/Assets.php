@@ -388,7 +388,7 @@ final class Assets {
 						 *
 						 * Filters the array of paths that will be preloaded.
 						 *
-						 * @since n.e.x.t
+						 * @since 1.7.0
 						 *
 						 * @param array $preload_paths Array of paths to preload.
 						 */
@@ -562,7 +562,7 @@ final class Assets {
 		 *
 		 * This filter covers both scripts and stylesheets.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.7.0
 		 *
 		 * @param Asset[] $assets List of Asset objects.
 		 */
@@ -616,7 +616,7 @@ final class Assets {
 	/**
 	 * Gets the inline data specific to the current entity.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @return array The site inline data to be output.
 	 */
