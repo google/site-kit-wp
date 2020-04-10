@@ -30,7 +30,7 @@ import { getExistingTag } from '../../../util';
 import { STORE_NAME } from './index';
 import { isValidPropertyID, parsePropertyID } from '../util';
 
-const { commonActions, createRegistrySelector } = Data;
+const { commonActions, createRegistrySelector, createRegistryControl } = Data;
 
 // Actions
 const FETCH_EXISTING_TAG = 'FETCH_EXISTING_TAG';
@@ -41,6 +41,7 @@ const RECEIVE_EXISTING_TAG = 'RECEIVE_EXISTING_TAG';
 const RECEIVE_EXISTING_TAG_FAILED = 'RECEIVE_EXISTING_TAG_FAILED';
 const RECEIVE_TAG_PERMISSION = 'RECEIVE_TAG_PERMISSION';
 const RECEIVE_TAG_PERMISSION_FAILED = 'RECEIVE_TAG_PERMISSION_FAILED';
+const WAIT_FOR_EXISTING_TAG = 'WAIT_FOR_EXISTING_TAG';
 
 export const INITIAL_STATE = {
 	existingTag: undefined,
@@ -114,6 +115,13 @@ export const actions = {
 			type: RECEIVE_TAG_PERMISSION_FAILED,
 		};
 	},
+
+	waitForExistingTag() {
+		return {
+			payload: {},
+			type: WAIT_FOR_EXISTING_TAG,
+		};
+	},
 };
 
 export const controls = {
@@ -131,6 +139,21 @@ export const controls = {
 			useCache: false,
 		} );
 	},
+	[ WAIT_FOR_EXISTING_TAG ]: createRegistryControl( ( registry ) => () => {
+		const isExistingTagLoaded = () => registry.select( STORE_NAME ).getExistingTag() !== undefined;
+		if ( isExistingTagLoaded() ) {
+			return true;
+		}
+
+		return new Promise( ( resolve ) => {
+			const unsubscribe = registry.subscribe( () => {
+				if ( isExistingTagLoaded() ) {
+					unsubscribe();
+					resolve();
+				}
+			} );
+		} );
+	} ),
 };
 
 export const reducer = ( state, { type, payload } ) => {
