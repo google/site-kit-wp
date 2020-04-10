@@ -21,7 +21,7 @@ async function proceedToSetUpAnalytics() {
 	await Promise.all( [
 		expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } ),
 		page.waitForSelector( '.googlesitekit-setup-module--analytics' ),
-		page.waitForResponse( ( res ) => res.url().match( 'analytics/data' ) ),
+		page.waitForResponse( ( res ) => res.url().match( 'analytics/data/accounts-properties-profiles' ) ),
 	] );
 }
 
@@ -78,6 +78,7 @@ describe( 'setting up the Analytics module with no existing account and with an 
 
 		await proceedToSetUpAnalytics();
 
+		await expect( page ).toMatchElement( '.googlesitekit-error-text', { text: /your account doesn't seem to have access to this Analytics property/i } );
 		// Buttons to proceed are not displayed; the user is blocked from completing setup.
 		await expect( page ).not.toMatchElement( '.googlesitekit-setup-module--analytics button', { text: /configure analytics/i } );
 		await expect( page ).not.toMatchElement( '.googlesitekit-setup-module--analytics button', { text: /create an account/i } );
