@@ -20,13 +20,6 @@
  * Internal dependencies
  */
 import { actions } from './index';
-import {
-	ADD_NOTIFICATION,
-	REMOVE_NOTIFICATION,
-	FETCH_NOTIFICATIONS,
-	RECEIVE_NOTIFICATIONS,
-	RECEIVE_NOTIFICATIONS_FAILED,
-} from '../../data/create-notifications-store';
 
 describe( 'core/site notifications', () => {
 	it( 'has appropriate notification methods', () => {
@@ -38,48 +31,5 @@ describe( 'core/site notifications', () => {
 			'receiveNotificationsFailed',
 		];
 		expect( Object.keys( actions ) ).toEqual( expect.arrayContaining( actionsToExpect ) );
-	} );
-
-	it( 'Dispatches addNotification', () => {
-		const notification = {};
-		const expectedAction = {
-			payload: { notification },
-			type: ADD_NOTIFICATION,
-		};
-		expect( actions.addNotification( notification ) ).toEqual( expectedAction );
-	} );
-
-	it( 'Dispatches removeNotification', () => {
-		const notificationID = 1337;
-		const expectedAction = {
-			payload: { id: notificationID },
-			type: REMOVE_NOTIFICATION,
-		};
-		expect( actions.removeNotification( notificationID ) ).toEqual( expectedAction );
-	} );
-
-	it( 'Dispatches fetchNotifications', () => {
-		const expectedAction = {
-			payload: {},
-			type: FETCH_NOTIFICATIONS,
-		};
-		expect( actions.fetchNotifications() ).toEqual( expectedAction );
-	} );
-
-	it( 'Dispatches receiveNotifications', () => {
-		const notifications = [ {}, {}, {}, {} ];
-		const expectedAction = {
-			payload: { notifications },
-			type: RECEIVE_NOTIFICATIONS,
-		};
-		expect( actions.receiveNotifications( notifications ) ).toEqual( expectedAction );
-	} );
-
-	it( 'Dispatches receiveNotificationsFailed', () => {
-		const expectedAction = {
-			payload: {},
-			type: RECEIVE_NOTIFICATIONS_FAILED,
-		};
-		expect( actions.receiveNotificationsFailed() ).toEqual( expectedAction );
 	} );
 } );
