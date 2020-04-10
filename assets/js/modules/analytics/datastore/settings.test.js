@@ -1,5 +1,5 @@
 /**
- * modules/analytics data store: setup tests.
+ * modules/analytics data store: settings tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -26,7 +26,7 @@ import apiFetch from '@wordpress/api-fetch';
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME } from '.';
-import { ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from '../datastore/constants';
+import { ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 import * as fixtures from './__fixtures__';
 import {
 	createTestRegistry,
@@ -34,7 +34,7 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 
-describe( 'modules/analytics setup', () => {
+describe( 'modules/analytics settings', () => {
 	let apiFetchSpy;
 	let registry;
 

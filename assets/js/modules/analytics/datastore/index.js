@@ -24,7 +24,7 @@ import Modules from 'googlesitekit-modules';
 import accounts from './accounts';
 import properties from './properties';
 import profiles from './profiles';
-import setup from './setup';
+import settings from './settings';
 import tags from './tags';
 
 export const STORE_NAME = 'modules/analytics';
@@ -46,7 +46,7 @@ export const INITIAL_STATE = Data.collectState(
 	accounts.INITIAL_STATE,
 	properties.INITIAL_STATE,
 	profiles.INITIAL_STATE,
-	setup.INITIAL_STATE,
+	settings.INITIAL_STATE,
 	tags.INITIAL_STATE,
 );
 
@@ -55,7 +55,7 @@ export const actions = Data.collectActions(
 	accounts.actions,
 	properties.actions,
 	profiles.actions,
-	setup.actions,
+	settings.actions,
 	tags.actions,
 );
 
@@ -64,7 +64,7 @@ export const controls = Data.collectControls(
 	accounts.controls,
 	properties.controls,
 	profiles.controls,
-	setup.controls,
+	settings.controls,
 	tags.controls,
 );
 
@@ -75,7 +75,7 @@ export const reducer = Data.addInitializeReducer(
 		accounts.reducer,
 		properties.reducer,
 		profiles.reducer,
-		setup.reducer,
+		settings.reducer,
 		tags.reducer,
 	)
 );
@@ -85,7 +85,7 @@ export const resolvers = Data.collectResolvers(
 	accounts.resolvers,
 	properties.resolvers,
 	profiles.resolvers,
-	setup.resolvers,
+	settings.resolvers,
 	tags.resolvers,
 );
 
@@ -94,7 +94,7 @@ export const selectors = Data.collectSelectors(
 	accounts.selectors,
 	properties.selectors,
 	profiles.selectors,
-	setup.selectors,
+	settings.selectors,
 	tags.selectors,
 );
 
