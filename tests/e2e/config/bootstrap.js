@@ -248,6 +248,12 @@ beforeAll( async () => {
 		page.on( 'request', observeRestRequest );
 		page.on( 'response', observeRestResponse );
 	}
+	// There's no good way to otherwise conditionally enable this logging
+	// since the code needs to be built into the e2e-utilities.js.
+	if ( '1' === process.env.DEBUG_REDUX ) {
+		OBSERVED_CONSOLE_MESSAGE_TYPES.debug = 'debug';
+	}
+
 	await setBrowserViewport( 'large' );
 
 	await deactivateUtilityPlugins();
