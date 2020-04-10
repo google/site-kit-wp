@@ -36,7 +36,7 @@ describe( 'setting up the Analytics module with no existing account and with an 
 		useRequestInterception( ( request ) => {
 			if ( request.url().match( 'modules/analytics/data/tag-permission' ) ) {
 				request.respond( {
-					status: 403,
+					status: 200,
 					body: JSON.stringify( {
 						...existingTag,
 						permission: false,
