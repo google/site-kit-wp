@@ -4,11 +4,6 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { addFilter } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
 import SettingsModules from '../assets/js/components/settings/settings-modules';
