@@ -32,9 +32,9 @@ import { actions as tagActions } from './tags';
 
 // Actions
 const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
-const FETCH_ACCOUNTS_PROPERTIES_PROFILES_STARTED = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES_STARTED';
+const START_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'START_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
+const FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
 const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
-const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED';
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 
@@ -49,15 +49,22 @@ export const actions = {
 			payload: {
 				data,
 			},
-			type: FETCH_ACCOUNTS_PROPERTIES_PROFILES_STARTED,
+			type: START_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
 		};
 
-		return {
+		const response = yield {
 			payload: {
 				data,
 			},
 			type: FETCH_ACCOUNTS_PROPERTIES_PROFILES,
 		};
+
+		yield {
+			payload: {},
+			type: FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
+		};
+
+		return response;
 	},
 
 	/**
@@ -75,13 +82,6 @@ export const actions = {
 		return {
 			payload: { accounts },
 			type: RECEIVE_ACCOUNTS,
-		};
-	},
-
-	receiveAccountsPropertiesProfilesCompleted() {
-		return {
-			payload: {},
-			type: RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED,
 		};
 	},
 
@@ -136,7 +136,7 @@ export const controls = {
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case FETCH_ACCOUNTS_PROPERTIES_PROFILES_STARTED: {
+		case START_FETCH_ACCOUNTS_PROPERTIES_PROFILES: {
 			return {
 				...state,
 				isFetchingAccountsPropertiesProfiles: true,
@@ -152,7 +152,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED: {
+		case FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES: {
 			return {
 				...state,
 				isFetchingAccountsPropertiesProfiles: false,
@@ -213,8 +213,6 @@ export const resolvers = {
 				if ( matchedProperty ) {
 					registry.dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
 				}
-
-				yield actions.receiveAccountsPropertiesProfilesCompleted();
 			}
 
 			const accountID = registry.select( STORE_NAME ).getAccountID();
