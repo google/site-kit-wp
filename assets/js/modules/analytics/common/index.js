@@ -19,6 +19,7 @@
 export { default as AccountCreate } from './account-create-legacy';
 export { default as AccountSelect } from './account-select';
 export { default as AnonymizeIPSwitch } from './anonymize-ip-switch';
+export { default as ErrorNotice } from './error-notice';
 export { default as ExistingTagError } from './existing-tag-error';
 export { default as ExistingTagNotice } from './existing-tag-notice';
 export { default as ProfileSelect } from './profile-select';
