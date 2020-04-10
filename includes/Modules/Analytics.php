@@ -1278,7 +1278,7 @@ final class Analytics extends Module
 	 * @return string Provisioning redirect URI.
 	 */
 	private function get_provisioning_redirect_uri() {
-		return add_query_arg( 'gatoscallback', '1', untrailingslashit( home_url() ) );
+		return add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) );
 	}
 
 	/**
