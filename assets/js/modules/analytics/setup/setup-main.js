@@ -38,20 +38,21 @@ import {
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
+	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
 	const isFetchingAccounts = useSelect( ( select ) => select( STORE_NAME ).isFetchingAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	let viewComponent;
-	if ( isFetchingAccounts || isDoingSubmitChanges ) {
+	if ( isFetchingAccounts || isDoingSubmitChanges || ! hasResolvedAccounts ) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && existingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
-	} else if ( ! accounts.length || isCreateAccount ) {
+	} else if ( isCreateAccount || ( Array.isArray( accounts ) && ! accounts.length ) ) {
 		viewComponent = <AccountCreate />;
 	} else {
 		viewComponent = <SetupForm finishSetup={ finishSetup } />;
