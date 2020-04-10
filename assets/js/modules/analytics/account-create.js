@@ -25,7 +25,6 @@ import { useState, Fragment, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from '../../googlesitekit-data';
 import {
 	Select,
 	Option,
@@ -37,6 +36,8 @@ import classnames from 'classnames';
 import ProgressBar from '../../components/progress-bar';
 import { STORE_NAME } from './datastore/index';
 import { trackEvent } from '../../util';
+import Data from 'googlesitekit-data';
+
 const { dispatch } = Data;
 
 // Cache the complicated timezone dropdown.
