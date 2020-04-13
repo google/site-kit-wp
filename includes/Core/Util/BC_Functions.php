@@ -16,7 +16,7 @@ use WP_REST_Request;
 /**
  * Class for providing backwards compatible core functions, without polyfilling.
  *
- * @since n.e.x.t
+ * @since 1.7.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class BC_Functions {
 	/**
 	 * Proxies calls to global functions, while falling back to the internal method by the same name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @param string $function_name Function name to call.
 	 * @param array  $arguments     Arguments passed to function.
@@ -48,7 +48,7 @@ class BC_Functions {
 	 * Append result of internal request to REST API for purpose of preloading data to be attached to a page.
 	 * Expected to be called in the context of `array_reduce`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 * @since WP 5.0.0
 	 *
 	 * @param  array  $memo Reduce accumulator.

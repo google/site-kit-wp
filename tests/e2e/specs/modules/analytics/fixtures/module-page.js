@@ -1671,6 +1671,62 @@ export const last28Days = {
 			},
 		},
 	],
+	'modules::analytics::report::e98d03e3b85edf5e16ea07512e530a1d': [
+		{
+			nextPageToken: null,
+			columnHeader: {
+				dimensions: null,
+				metricHeader: {
+					metricHeaderEntries: [
+						{
+							name: 'Total Users',
+							type: 'INTEGER',
+						},
+					],
+				},
+			},
+			data: {
+				dataLastRefreshed: null,
+				isDataGolden: null,
+				rowCount: 1,
+				samplesReadCounts: null,
+				samplingSpaceSizes: null,
+				rows: [
+					{
+						dimensions: null,
+						metrics: [
+							{
+								values: [
+									'2049',
+								],
+							},
+						],
+					},
+				],
+				totals: [
+					{
+						values: [
+							'2049',
+						],
+					},
+				],
+				minimums: [
+					{
+						values: [
+							'2049',
+						],
+					},
+				],
+				maximums: [
+					{
+						values: [
+							'2049',
+						],
+					},
+				],
+			},
+		},
+	],
 };
 export const last14Days = {
 	'modules::analytics::report::d2337aaed07ae876ce366e36b2bdcb69': [
@@ -2891,6 +2947,62 @@ export const last14Days = {
 							'454',
 							'328',
 							'275',
+						],
+					},
+				],
+			},
+		},
+	],
+	'modules::analytics::report::ff39d8522facf3ee6632187603c706ef': [
+		{
+			nextPageToken: null,
+			columnHeader: {
+				dimensions: null,
+				metricHeader: {
+					metricHeaderEntries: [
+						{
+							name: 'Total Users',
+							type: 'INTEGER',
+						},
+					],
+				},
+			},
+			data: {
+				dataLastRefreshed: null,
+				isDataGolden: null,
+				rowCount: 1,
+				samplesReadCounts: null,
+				samplingSpaceSizes: null,
+				rows: [
+					{
+						dimensions: null,
+						metrics: [
+							{
+								values: [
+									'1156',
+								],
+							},
+						],
+					},
+				],
+				totals: [
+					{
+						values: [
+							'1156',
+						],
+					},
+				],
+				minimums: [
+					{
+						values: [
+							'1156',
+						],
+					},
+				],
+				maximums: [
+					{
+						values: [
+							'1156',
 						],
 					},
 				],

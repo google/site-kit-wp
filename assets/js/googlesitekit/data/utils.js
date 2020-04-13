@@ -215,7 +215,7 @@ export const collectName = ( ...args ) => {
 /**
  * An object of common actions most stores will use.
  *
- * @since n.e.x.t
+ * @since 1.7.0
  *
  * @return {Object} key/value list of common actions most stores will want.
  */
@@ -226,7 +226,7 @@ export const commonActions = {
 	 * Useful for controls and resolvers that wish to dispatch actions/use selectors
 	 * on the current data registry.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @return {Object} FSA-compatible action.
 	 */
@@ -238,7 +238,7 @@ export const commonActions = {
 /**
  * An object of common controls most stores will use.
  *
- * @since n.e.x.t
+ * @since 1.7.0
  *
  * @return {Object} key/value list of common controls most stores will want.
  */
@@ -249,7 +249,7 @@ export const commonControls = {
 	 * Useful for controls and resolvers that wish to dispatch actions/use selectors
 	 * on the current data registry.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @return {Object} FSA-compatible action.
 	 */

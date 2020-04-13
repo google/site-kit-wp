@@ -57,7 +57,7 @@ class OAuth_ClientTest extends TestCase {
 		// If the request completely fails (cURL error), ignore that.
 		$http_error = (string) get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id );
 		if ( 0 !== strpos( $http_error, 'cURL error' ) ) {
-			$this->assertEquals( 'invalid_client', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+			$this->assertEquals( 'refresh_token_not_exist', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
 		}
 
 		$client->get_client()->setHttpClient( new FakeHttpClient() );
@@ -219,7 +219,7 @@ class OAuth_ClientTest extends TestCase {
 		 * The redirect URL passed to get_authentication_url is used locally, and the redirect URI here is always the same.
 		 * @see \Google\Site_Kit\Core\Authentication\Authentication::handle_oauth
 		 */
-		$this->assertEquals( add_query_arg( 'oauth2callback', 1, home_url() ), $params['redirect_uri'] );
+		$this->assertEquals( add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ), $params['redirect_uri'] );
 		$this->assertEquals( self::CLIENT_ID, $params['client_id'] );
 	}
 
@@ -446,7 +446,6 @@ class OAuth_ClientTest extends TestCase {
 			OAuth_Client::OPTION_ACCESS_TOKEN_CREATED,
 			OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN,
 			OAuth_Client::OPTION_AUTH_SCOPES,
-			OAuth_Client::OPTION_ERROR_CODE,
 			OAuth_Client::OPTION_REDIRECT_URL,
 			OAuth_Client::OPTION_REFRESH_TOKEN,
 		);

@@ -431,7 +431,7 @@ final class Modules {
 	/**
 	 * Enqueues all module-specific assets.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 */
 	public function enqueue_assets() {
 		$available_modules = $this->get_available_modules();
