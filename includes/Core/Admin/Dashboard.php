@@ -45,7 +45,7 @@ final class Dashboard {
 	/**
 	 * Modules instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 * @var Modules
 	 */
 	private $modules;

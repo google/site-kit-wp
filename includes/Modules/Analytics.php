@@ -1246,7 +1246,6 @@ final class Analytics extends Module
 			'analytics'             => new Google_Service_Analytics( $client ),
 			'analyticsreporting'    => new Google_Service_AnalyticsReporting( $client ),
 			'analyticsprovisioning' => $analytics_provisioning_service,
-
 		);
 	}
 
