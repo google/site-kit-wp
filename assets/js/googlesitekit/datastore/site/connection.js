@@ -31,9 +31,12 @@ import { STORE_NAME } from './index';
 const { createRegistrySelector } = Data;
 
 // Actions
+const START_FETCH_CONNECTION = 'START_FETCH_CONNECTION';
 const FETCH_CONNECTION = 'FETCH_CONNECTION';
+const FINISH_FETCH_CONNECTION = 'FINISH_FETCH_CONNECTION';
+const CATCH_FETCH_CONNECTION = 'CATCH_FETCH_CONNECTION';
+
 const RECEIVE_CONNECTION = 'RECEIVE_CONNECTION';
-const RECEIVE_CONNECTION_FAILED = 'RECEIVE_CONNECTION_FAILED';
 
 export const INITIAL_STATE = {
 	connection: undefined,
@@ -49,13 +52,38 @@ export const actions = {
 	 * @since 1.5.0
 	 * @private
 	 *
-	 * @return {Object} Redux-style action.
+	 * @return {Object} Object with {response, error}
 	 */
-	fetchConnection() {
-		return {
+	*fetchConnection() {
+		let response, error;
+
+		yield {
 			payload: {},
-			type: FETCH_CONNECTION,
+			type: START_FETCH_CONNECTION,
 		};
+
+		try {
+			response = yield {
+				payload: {},
+				type: FETCH_CONNECTION,
+			};
+
+			yield actions.receiveConnection( response );
+
+			yield {
+				payload: {},
+				type: FINISH_FETCH_CONNECTION,
+			};
+		} catch ( e ) {
+			error = e;
+
+			yield {
+				payload: {},
+				type: CATCH_FETCH_CONNECTION,
+			};
+		}
+
+		return { response, error };
 	},
 
 	/**
@@ -87,7 +115,7 @@ export const actions = {
 	receiveConnectionFailed() {
 		return {
 			payload: {},
-			type: RECEIVE_CONNECTION_FAILED,
+			type: CATCH_FETCH_CONNECTION,
 		};
 	},
 };
@@ -100,7 +128,7 @@ export const controls = {
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case FETCH_CONNECTION: {
+		case START_FETCH_CONNECTION: {
 			return {
 				...state,
 				isFetchingConnection: true,
@@ -117,9 +145,17 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_CONNECTION_FAILED: {
+		case FINISH_FETCH_CONNECTION: {
 			return {
 				...state,
+				isFetchingConnection: false,
+			};
+		}
+
+		case CATCH_FETCH_CONNECTION: {
+			return {
+				...state,
+				error: payload.error,
 				isFetchingConnection: false,
 			};
 		}
@@ -132,23 +168,12 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getConnection() {
-		try {
-			const registry = yield Data.commonActions.getRegistry();
+		const registry = yield Data.commonActions.getRegistry();
 
-			const existingConnection = registry.select( STORE_NAME ).getConnection();
+		const existingConnection = registry.select( STORE_NAME ).getConnection();
 
-			// If there is already connection data loaded in state, don't make this request
-			// and consider this resolver fulfilled.
-			if ( existingConnection ) {
-				return;
-			}
-
-			const connection = yield actions.fetchConnection();
-			return actions.receiveConnection( connection );
-		} catch ( err ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveConnectionFailed();
+		if ( ! existingConnection ) {
+			yield actions.fetchConnection();
 		}
 	},
 };
