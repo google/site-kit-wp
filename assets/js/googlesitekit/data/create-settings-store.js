@@ -310,6 +310,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			case CATCH_FETCH_SETTINGS: {
 				return {
 					...state,
+					error: payload.error,
 					isFetchingSettings: false,
 				};
 			}
@@ -345,6 +346,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			case CATCH_FETCH_SAVE_SETTINGS: {
 				return {
 					...state,
+					error: payload.error,
 					isFetchingSaveSettings: false,
 				};
 			}

@@ -114,7 +114,7 @@ export const controls = {
 	},
 };
 
-export const reducer = ( state, { type } ) => {
+export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case START_FETCH_RESET: {
 			return {
@@ -133,6 +133,7 @@ export const reducer = ( state, { type } ) => {
 		case CATCH_FETCH_RESET: {
 			return {
 				...state,
+				error: payload.error,
 				isFetchingReset: false,
 			};
 		}

@@ -246,6 +246,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 			case CATCH_FETCH_NOTIFICATIONS: {
 				return {
 					...state,
+					error: payload.error,
 					isFetchingNotifications: false,
 				};
 			}
