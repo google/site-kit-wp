@@ -103,21 +103,6 @@ export const actions = {
 			type: RECEIVE_CONNECTION,
 		};
 	},
-
-	/**
-	 * Dispatches an action signifying the `fetchConnection` side-effect failed.
-	 *
-	 * @since 1.5.0
-	 * @private
-	 *
-	 * @return {Object} Redux-style action.
-	 */
-	receiveConnectionFailed() {
-		return {
-			payload: {},
-			type: CATCH_FETCH_CONNECTION,
-		};
-	},
 };
 
 export const controls = {
@@ -140,7 +125,6 @@ export const reducer = ( state, { type, payload } ) => {
 
 			return {
 				...state,
-				isFetchingConnection: false,
 				connection,
 			};
 		}
