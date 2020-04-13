@@ -191,6 +191,7 @@ describe( 'modules/analytics accounts', () => {
 					);
 
 				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+				registry.dispatch( STORE_NAME ).setSettings( {} );
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAccounts();
 				await subscribeUntil( registry,

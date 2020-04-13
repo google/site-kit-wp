@@ -34,8 +34,9 @@ import { actions as tagActions } from './tags';
 const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
 const START_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'START_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
 const FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
+const CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
+
 const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
-const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED';
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 
 export const INITIAL_STATE = {
@@ -45,26 +46,45 @@ export const INITIAL_STATE = {
 
 export const actions = {
 	*fetchAccountsPropertiesProfiles( data ) {
+		let response, error;
+
 		yield {
-			payload: {
-				data,
-			},
+			payload: { data },
 			type: START_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
 		};
 
-		const response = yield {
-			payload: {
-				data,
-			},
-			type: FETCH_ACCOUNTS_PROPERTIES_PROFILES,
-		};
+		try {
+			response = yield {
+				payload: { data },
+				type: FETCH_ACCOUNTS_PROPERTIES_PROFILES,
+			};
 
-		yield {
-			payload: {},
-			type: FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
-		};
+			const { dispatch } = yield Data.commonActions.getRegistry();
+			yield actions.receiveAccounts( response.accounts );
+			dispatch( STORE_NAME ).receiveProperties( response.properties );
+			dispatch( STORE_NAME ).receiveProfiles( response.profiles );
 
-		return response;
+			if ( response.matchedProperty ) {
+				dispatch( STORE_NAME ).receiveMatchedProperty( response.matchedProperty );
+			}
+
+			yield {
+				payload: { data },
+				type: FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
+			};
+		} catch ( e ) {
+			error = e;
+
+			yield {
+				payload: {
+					data,
+					error,
+				},
+				type: CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
+			};
+		}
+
+		return { response, error };
 	},
 
 	/**
@@ -82,15 +102,6 @@ export const actions = {
 		return {
 			payload: { accounts },
 			type: RECEIVE_ACCOUNTS,
-		};
-	},
-
-	receiveAccountsPropertiesProfilesFailed( error ) {
-		invariant( error, 'error is required.' );
-
-		return {
-			payload: { error },
-			type: RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED,
 		};
 	},
 
@@ -159,7 +170,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED: {
+		case CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES: {
 			const { error } = payload;
 
 			return {
@@ -191,47 +202,39 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getAccounts() {
-		try {
-			const registry = yield Data.commonActions.getRegistry();
+		const registry = yield Data.commonActions.getRegistry();
+		const existingAccounts = registry.select( STORE_NAME ).getAccounts();
+		let matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
 
-			const existingAccounts = registry.select( STORE_NAME ).getAccounts();
-			let matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
+		// Only fetch accounts if there are none in the store.
+		if ( ! existingAccounts ) {
+			yield tagActions.waitForExistingTag();
+			const existingTag = registry.select( STORE_NAME ).getExistingTag();
+			const { response, error } = yield actions.fetchAccountsPropertiesProfiles( {
+				existingPropertyID: existingTag,
+			} );
 
-			// Only fetch accounts if there are none in the store.
-			if ( ! existingAccounts ) {
-				yield tagActions.waitForExistingTag();
-				const existingTag = registry.select( STORE_NAME ).getExistingTag();
-				const { accounts, properties, profiles, ...response } = yield actions.fetchAccountsPropertiesProfiles( {
-					existingPropertyID: existingTag,
-				} );
+			if ( response ) {
 				( { matchedProperty } = response );
-
-				yield actions.receiveAccounts( accounts );
-				registry.dispatch( STORE_NAME ).receiveProperties( properties );
-				registry.dispatch( STORE_NAME ).receiveProfiles( profiles );
-
-				if ( matchedProperty ) {
-					registry.dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
+			} else if ( error ) {
+				/**
+				 * Not the best check here, but this message comes from the Google API.
+				 * err.data.reason is also 'insufficientPermissions' but that isn't as clear,
+				 * and may not be "no accounts".
+				 *
+				 * @see {@link https://github.com/google/site-kit-wp/issues/1368}
+				 */
+				if ( error.message && error.message === 'User does not have any Google Analytics account.' ) {
+					yield actions.receiveAccounts( [] );
 				}
 			}
+		}
 
-			const accountID = registry.select( STORE_NAME ).getAccountID();
-			// Pre-select values from the matched property if no account is selected.
-			if ( matchedProperty && ! accountID ) {
-				registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId );
-				registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId );
-			}
-		} catch ( err ) {
-			// Not the best check here, but this message comes from the API.
-			// err.data.reason is also 'insufficientPermissions' but that isn't as clear,
-			// and may not be "no accounts".
-			if ( err.message && err.message === 'User does not have any Google Analytics account.' ) {
-				yield actions.receiveAccounts( [] );
-			}
-
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveAccountsPropertiesProfilesFailed( err );
+		const accountID = registry.select( STORE_NAME ).getAccountID();
+		// Pre-select values from the matched property if no account is selected.
+		if ( matchedProperty && ! accountID ) {
+			registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId );
+			registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId );
 		}
 	},
 };
