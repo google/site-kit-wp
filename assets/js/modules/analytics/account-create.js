@@ -124,10 +124,6 @@ const AccountCreate = () => {
 								</p>
 							</div>
 						}
-						<p>
-							{ __( 'Looks like you need to set up an account to use Analytics.', 'google-site-kit' ) }
-						</p>
-
 						<div>
 							{
 								isSubmitting
