@@ -34,7 +34,7 @@ branches:
   only:
     - master
     - develop
-    - feature/auth-proxy
+    - feature/ga-gtm-separation
 
 # Before install, failures in this section will result in build status 'errored'
 before_install:
