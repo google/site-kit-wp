@@ -229,11 +229,33 @@ describe( 'createSettingsStore store', () => {
 				} ).toThrow( 'value is required.' );
 			} );
 
+			it( 'supports setting falsy values', () => {
+				expect( () => {
+					dispatch.setIsSkyBlue( false );
+				} ).not.toThrow( 'value is required.' );
+			} );
+
 			it( 'updates the respective setting', () => {
 				const value = 'new';
 
 				dispatch.setIsSkyBlue( value );
 				expect( store.getState().settings ).toMatchObject( { isSkyBlue: value } );
+			} );
+		} );
+
+		describe( 'rollbackSettings', () => {
+			it( 'returns settings back to their saved values', () => {
+				const savedSettings = { isSkyBlue: 'yes' };
+				dispatch.receiveSaveSettings( savedSettings );
+
+				expect( select.getIsSkyBlue() ).toBe( 'yes' );
+
+				dispatch.setIsSkyBlue( 'maybe' );
+				expect( select.getIsSkyBlue() ).toBe( 'maybe' );
+
+				dispatch.rollbackSettings();
+
+				expect( select.getIsSkyBlue() ).toBe( 'yes' );
 			} );
 		} );
 	} );
@@ -393,6 +415,43 @@ describe( 'createSettingsStore store', () => {
 				expect( select.getIsSkyBlue() ).toEqual( value );
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 			} );
+		} );
+
+		describe( 'getSavedSettings', () => {
+			it( 'is not affected by current selections', async () => {
+				dispatch.receiveSaveSettings( {
+					isSkyBlue: 'yes',
+				} );
+
+				dispatch.setIsSkyBlue( '123' );
+
+				expect( select.getSavedSettings() ).toMatchObject( {
+					isSkyBlue: 'yes',
+				} );
+			} );
+		} );
+	} );
+
+	describe( 'per-setting selectors', () => {
+		it( 'get{SettingSlug}', () => {
+			dispatch.setSettings( { isSkyBlue: 'yes' } );
+
+			expect( select.getIsSkyBlue() ).toBe( 'yes' );
+		} );
+
+		it( 'set{SettingSlug}', () => {
+			dispatch.setSettings( { isSkyBlue: 'yes' } );
+
+			dispatch.setIsSkyBlue( 'not right now' );
+
+			expect( select.getIsSkyBlue() ).toBe( 'not right now' );
+		} );
+
+		it( 'getSaved{SettingSlug}', () => {
+			dispatch.receiveSaveSettings( { isSkyBlue: 'yes' } );
+			dispatch.setSettings( { isSkyBlue: 'no' } );
+
+			expect( select.getSavedIsSkyBlue() ).toBe( 'yes' );
 		} );
 	} );
 

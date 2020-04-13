@@ -34,11 +34,14 @@ const { getRegistry } = commonActions;
 // Actions
 const SET_SETTINGS = 'SET_SETTINGS';
 const FETCH_SETTINGS = 'FETCH_SETTINGS';
+const FETCH_SETTINGS_STARTED = 'FETCH_SETTINGS_STARTED';
+const FETCH_SAVE_SETTINGS = 'FETCH_SAVE_SETTINGS';
+const FETCH_SAVE_SETTINGS_STARTED = 'FETCH_SAVE_SETTINGS_STARTED';
 const RECEIVE_SETTINGS = 'RECEIVE_SETTINGS';
 const RECEIVE_SETTINGS_FAILED = 'RECEIVE_SETTINGS_FAILED';
-const FETCH_SAVE_SETTINGS = 'FETCH_SAVE_SETTINGS';
 const RECEIVE_SAVE_SETTINGS = 'RECEIVE_SAVE_SETTINGS';
 const RECEIVE_SAVE_SETTINGS_FAILED = 'RECEIVE_SAVE_SETTINGS_FAILED';
+const ROLLBACK_SETTINGS = 'ROLLBACK_SETTINGS';
 
 /**
  * Creates a store object that includes actions and selectors for managing settings.
@@ -106,7 +109,12 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 *
 		 * @return {Object} Redux-style action.
 		 */
-		fetchSettings() {
+		*fetchSettings() {
+			yield {
+				payload: {},
+				type: FETCH_SETTINGS_STARTED,
+			};
+
 			return {
 				payload: {},
 				type: FETCH_SETTINGS,
@@ -147,6 +155,21 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		},
 
 		/**
+		 * Returns the current settings back to the current saved values.
+		 *
+		 * @since n.e.x.t
+		 * @private
+		 *
+		 * @return {Object} Redux-style action.
+		 */
+		rollbackSettings() {
+			return {
+				payload: {},
+				type: ROLLBACK_SETTINGS,
+			};
+		},
+
+		/**
 		 * Saves all current settings to the server.
 		 *
 		 * @since 1.6.0
@@ -155,15 +178,16 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 */
 		*saveSettings() {
 			const registry = yield getRegistry();
-			const values = yield registry.select( STORE_NAME ).getSettings();
+			const values = registry.select( STORE_NAME ).getSettings();
 
 			try {
 				const savedValues = yield actions.fetchSaveSettings( values );
+
 				return actions.receiveSaveSettings( savedValues );
-			} catch ( err ) {
+			} catch ( error ) {
 				// TODO: Implement an error handler store or some kind of centralized
 				// place for error dispatch...
-				return actions.receiveSaveSettingsFailed();
+				return actions.receiveSaveSettingsFailed( { error } );
 			}
 		},
 
@@ -176,8 +200,13 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @param {Object} values Settings with their values to save.
 		 * @return {Object} Redux-style action.
 		 */
-		fetchSaveSettings( values ) {
+		*fetchSaveSettings( values ) {
 			invariant( values, 'values is required.' );
+
+			yield {
+				payload: { values },
+				type: FETCH_SAVE_SETTINGS_STARTED,
+			};
 
 			return {
 				payload: { values },
@@ -209,11 +238,13 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @since 1.6.0
 		 * @private
 		 *
+		 * @param {Object} args       Argument params.
+		 * @param {Object} args.error Error object.
 		 * @return {Object} Redux-style action.
 		 */
-		receiveSaveSettingsFailed() {
+		receiveSaveSettingsFailed( { error } ) {
 			return {
-				payload: {},
+				payload: { error },
 				type: RECEIVE_SAVE_SETTINGS_FAILED,
 			};
 		},
@@ -244,7 +275,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 				};
 			}
 
-			case FETCH_SETTINGS: {
+			case FETCH_SETTINGS_STARTED: {
 				return {
 					...state,
 					isFetchingSettings: true,
@@ -275,7 +306,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 				};
 			}
 
-			case FETCH_SAVE_SETTINGS: {
+			case FETCH_SAVE_SETTINGS_STARTED: {
 				return {
 					...state,
 					isFetchingSaveSettings: true,
@@ -301,6 +332,13 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 				return {
 					...state,
 					isFetchingSaveSettings: false,
+				};
+			}
+
+			case ROLLBACK_SETTINGS: {
+				return {
+					...state,
+					settings: state.savedSettings,
 				};
 			}
 
@@ -331,6 +369,15 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 				return actions.receiveSettingsFailed();
 			}
 		},
+
+		*getSavedSettings() {
+			const registry = yield getRegistry();
+			const existingSettings = registry.select( STORE_NAME ).getSavedSettings();
+
+			if ( ! existingSettings ) {
+				registry.select( STORE_NAME ).getSettings();
+			}
+		},
 	};
 
 	const selectors = {
@@ -342,10 +389,25 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @since 1.6.0
 		 *
 		 * @param {Object} state Data store's state.
-		 * @return {Object|undefined} Settings with their values, or undefined.
+		 * @return {?Object} Settings with their values, or undefined.
 		 */
 		getSettings( state ) {
 			return state.settings;
+		},
+
+		/**
+		 * Gets the current saved settings.
+		 *
+		 * Returns `undefined` if notifications are not available/loaded.
+		 *
+		 * @since n.e.x.t
+		 * @private
+		 *
+		 * @param {Object} state Data store's state.
+		 * @return {?Object} Settings with their values, or undefined.
+		 */
+		getSavedSettings( state ) {
+			return state.savedSettings;
 		},
 
 		/**
@@ -389,7 +451,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {Object} Redux-style action.
 		 */
 		actions[ `set${ pascalCaseSlug }` ] = ( value ) => {
-			invariant( value, 'value is required.' );
+			invariant( typeof value !== 'undefined', 'value is required.' );
 
 			return {
 				payload: { value },
@@ -417,11 +479,21 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {*} Setting value, or undefined.
 		 */
 		selectors[ `get${ pascalCaseSlug }` ] = createRegistrySelector( ( select ) => () => {
-			const settings = select( STORE_NAME ).getSettings();
+			const settings = select( STORE_NAME ).getSettings() || {};
 
-			if ( 'undefined' === typeof settings ) {
-				return settings;
-			}
+			return settings[ slug ];
+		} );
+
+		/**
+		 * Gets the saved value for the setting indicated by the selector name.
+		 *
+		 * @since n.e.x.t
+		 * @private
+		 *
+		 * @return {*} Setting value, or undefined.
+		 */
+		selectors[ `getSaved${ pascalCaseSlug }` ] = createRegistrySelector( ( select ) => () => {
+			const settings = select( STORE_NAME ).getSavedSettings() || {};
 
 			return settings[ slug ];
 		} );
