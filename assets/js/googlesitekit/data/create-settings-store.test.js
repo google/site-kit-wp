@@ -145,7 +145,7 @@ describe( 'createSettingsStore store', () => {
 			} );
 
 			it( 'updates settings from server', async () => {
-				const response = { setting1: 'serverside' };
+				const response = { isSkyBlue: 'yes' };
 				fetch
 					.doMockIf(
 						/^\/google-site-kit\/v1\/core\/site\/data\/settings/
@@ -157,12 +157,14 @@ describe( 'createSettingsStore store', () => {
 
 				// The server is the authority. So because this won't be part of the response
 				// (see above), it will be disregarded.
-				dispatch.setSettings( { setting2: 'clientside' } );
+				dispatch.setSettings( { isSkyBlue: 'no' } );
 
-				await dispatch.saveSettings();
+				dispatch.saveSettings();
+
+				await subscribeUntil( registry, () => select.isDoingSaveSettings() === false );
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
-
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toMatchObject( { isSkyBlue: 'no' } );
 				expect( store.getState().settings ).toMatchObject( response );
 			} );
 		} );
@@ -416,20 +418,6 @@ describe( 'createSettingsStore store', () => {
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 			} );
 		} );
-
-		describe( 'getSavedSettings', () => {
-			it( 'is not affected by current selections', async () => {
-				dispatch.receiveSaveSettings( {
-					isSkyBlue: 'yes',
-				} );
-
-				dispatch.setIsSkyBlue( '123' );
-
-				expect( select.getSavedSettings() ).toMatchObject( {
-					isSkyBlue: 'yes',
-				} );
-			} );
-		} );
 	} );
 
 	describe( 'per-setting selectors', () => {
@@ -445,13 +433,6 @@ describe( 'createSettingsStore store', () => {
 			dispatch.setIsSkyBlue( 'not right now' );
 
 			expect( select.getIsSkyBlue() ).toBe( 'not right now' );
-		} );
-
-		it( 'getSaved{SettingSlug}', () => {
-			dispatch.receiveSaveSettings( { isSkyBlue: 'yes' } );
-			dispatch.setSettings( { isSkyBlue: 'no' } );
-
-			expect( select.getSavedIsSkyBlue() ).toBe( 'yes' );
 		} );
 	} );
 
