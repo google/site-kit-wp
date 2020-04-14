@@ -25,15 +25,13 @@ import { useState, Fragment, useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import {
-	Input,
-	TextField,
-} from '../../../material-components';
 import Button from '../../../components/button';
-import classnames from 'classnames';
 import ProgressBar from '../../../components/progress-bar';
 import { trackEvent } from '../../../util';
 import TimezoneSelect from './timzezone-select';
+import AccountField from './account-field';
+import PropertyField from './property-field';
+import ProfileField from './profile-field';
 
 // import Data from 'googlesitekit-data';
 // const { dispatch } = Data;
@@ -96,70 +94,28 @@ const AccountCreate = () => {
 										</p>
 										<div className="googlesitekit-setup-module__inputs">
 											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
-												<TextField
-													className={ classnames(
-														'mdc-text-field',
-														{ 'mdc-text-field--error': validationIssues.accountName }
-													) }
-													label={ __( 'Account', 'google-site-kit' ) }
-													name="account"
-													onChange={ ( e ) => {
-														validationIssues.accountName = '' === e.target.value;
-														setValidationIssues( validationIssues );
-														setAccountName( e.target.value );
-													} }
-													outlined
-													required
-												>
-													<Input
-														name="account"
-														value={ accountName }
-													/>
-												</TextField>
+												<AccountField
+													validationIssues={ validationIssues }
+													setValidationIssues={ setValidationIssues }
+													accountName={ accountName }
+													setAccountName={ setAccountName }
+												/>
 											</div>
 											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
-												<TextField
-													className={ classnames(
-														'mdc-text-field',
-														{ 'mdc-text-field--error': validationIssues.propertyName }
-													) }
-													label={ __( 'Property', 'google-site-kit' ) }
-													name="property"
-													onChange={ ( e ) => {
-														validationIssues.propertyName = '' === e.target.value;
-														setValidationIssues( validationIssues );
-														setPropertyName( e.target.value );
-													} }
-													outlined
-													required
-												>
-													<Input
-														name="property"
-														value={ propertyName }
-													/>
-												</TextField>
+												<PropertyField
+													validationIssues={ validationIssues }
+													setValidationIssues={ setValidationIssues }
+													propertyName={ propertyName }
+													setPropertyName={ setPropertyName }
+												/>
 											</div>
 											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
-												<TextField
-													className={ classnames(
-														'mdc-text-field',
-														{ 'mdc-text-field--error': validationIssues.profileName }
-													) }
-													label={ __( 'Profile', 'google-site-kit' ) }
-													name="profile"
-													onChange={ ( e ) => {
-														validationIssues.profileName = '' === e.target.value;
-														setValidationIssues( validationIssues );
-														setProfileName( e.target.value );
-													} }
-													outlined
-													required
-												>
-													<Input
-														name="profile"
-														value={ profileName }
-													/>
-												</TextField>
+												<ProfileField
+													validationIssues={ validationIssues }
+													setValidationIssues={ setValidationIssues }
+													profileName={ profileName }
+													setProfileName={ setProfileName }
+												/>
 											</div>
 											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
 												<TimezoneSelect
