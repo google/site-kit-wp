@@ -35,6 +35,7 @@ const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_ACCOUNTS_PROPERT
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED';
 const FETCH_CREATE_ACCOUNT = 'FETCH_CREATE_ACCOUNT';
 const RECEIVE_CREATE_ACCOUNT_FAILED = 'RECEIVE_CREATE_ACCOUNT_FAILED';
+const CREATE_ACCOUNT_STARTED = 'CREATE_ACCOUNT_STARTED';
 
 export const INITIAL_STATE = {
 	accounts: undefined,
@@ -113,7 +114,11 @@ export const actions = {
 		}
 	},
 
-	fetchCreateAccount( { accountName, propertyName, profileName, timezone } ) {
+	*fetchCreateAccount( { accountName, propertyName, profileName, timezone } ) {
+		yield {
+			type: CREATE_ACCOUNT_STARTED,
+		};
+
 		return {
 			payload: { accountName, propertyName, profileName, timezone },
 			type: FETCH_CREATE_ACCOUNT,
@@ -212,7 +217,15 @@ export const reducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				error,
+				isCreatingAccount: false,
 			};
+
+		case CREATE_ACCOUNT_STARTED: {
+			return {
+				...state,
+				isCreatingAccount: true,
+			};
+		}
 
 		default: {
 			return { ...state };
