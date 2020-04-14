@@ -145,7 +145,7 @@ describe( 'createSettingsStore store', () => {
 			} );
 
 			it( 'updates settings from server', async () => {
-				const response = { setting1: 'serverside' };
+				const response = { isSkyBlue: 'yes' };
 				fetch
 					.doMockIf(
 						/^\/google-site-kit\/v1\/core\/site\/data\/settings/
@@ -157,12 +157,14 @@ describe( 'createSettingsStore store', () => {
 
 				// The server is the authority. So because this won't be part of the response
 				// (see above), it will be disregarded.
-				dispatch.setSettings( { setting2: 'clientside' } );
+				dispatch.setSettings( { isSkyBlue: 'no' } );
 
-				await dispatch.saveSettings();
+				dispatch.saveSettings();
+
+				await subscribeUntil( registry, () => select.isDoingSaveSettings() === false );
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
-
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toMatchObject( { isSkyBlue: 'no' } );
 				expect( store.getState().settings ).toMatchObject( response );
 			} );
 		} );
@@ -229,11 +231,33 @@ describe( 'createSettingsStore store', () => {
 				} ).toThrow( 'value is required.' );
 			} );
 
+			it( 'supports setting falsy values', () => {
+				expect( () => {
+					dispatch.setIsSkyBlue( false );
+				} ).not.toThrow( 'value is required.' );
+			} );
+
 			it( 'updates the respective setting', () => {
 				const value = 'new';
 
 				dispatch.setIsSkyBlue( value );
 				expect( store.getState().settings ).toMatchObject( { isSkyBlue: value } );
+			} );
+		} );
+
+		describe( 'rollbackSettings', () => {
+			it( 'returns settings back to their saved values', () => {
+				const savedSettings = { isSkyBlue: 'yes' };
+				dispatch.receiveSaveSettings( savedSettings );
+
+				expect( select.getIsSkyBlue() ).toBe( 'yes' );
+
+				dispatch.setIsSkyBlue( 'maybe' );
+				expect( select.getIsSkyBlue() ).toBe( 'maybe' );
+
+				dispatch.rollbackSettings();
+
+				expect( select.getIsSkyBlue() ).toBe( 'yes' );
 			} );
 		} );
 	} );
@@ -393,6 +417,22 @@ describe( 'createSettingsStore store', () => {
 				expect( select.getIsSkyBlue() ).toEqual( value );
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 			} );
+		} );
+	} );
+
+	describe( 'per-setting selectors', () => {
+		it( 'get{SettingSlug}', () => {
+			dispatch.setSettings( { isSkyBlue: 'yes' } );
+
+			expect( select.getIsSkyBlue() ).toBe( 'yes' );
+		} );
+
+		it( 'set{SettingSlug}', () => {
+			dispatch.setSettings( { isSkyBlue: 'yes' } );
+
+			dispatch.setIsSkyBlue( 'not right now' );
+
+			expect( select.getIsSkyBlue() ).toBe( 'not right now' );
 		} );
 	} );
 
