@@ -33,14 +33,19 @@ const { getRegistry } = commonActions;
 
 // Actions
 const SET_SETTINGS = 'SET_SETTINGS';
+
 const FETCH_SETTINGS = 'FETCH_SETTINGS';
-const FETCH_SETTINGS_STARTED = 'FETCH_SETTINGS_STARTED';
+const START_FETCH_SETTINGS = 'START_FETCH_SETTINGS';
+const FINISH_FETCH_SETTINGS = 'FINISH_FETCH_SETTINGS';
+const CATCH_FETCH_SETTINGS = 'CATCH_FETCH_SETTINGS';
+
 const FETCH_SAVE_SETTINGS = 'FETCH_SAVE_SETTINGS';
-const FETCH_SAVE_SETTINGS_STARTED = 'FETCH_SAVE_SETTINGS_STARTED';
+const START_FETCH_SAVE_SETTINGS = 'START_FETCH_SAVE_SETTINGS';
+const FINISH_FETCH_SAVE_SETTINGS = 'FINISH_FETCH_SAVE_SETTINGS';
+const CATCH_FETCH_SAVE_SETTINGS = 'CATCH_FETCH_SAVE_SETTINGS';
+
 const RECEIVE_SETTINGS = 'RECEIVE_SETTINGS';
-const RECEIVE_SETTINGS_FAILED = 'RECEIVE_SETTINGS_FAILED';
 const RECEIVE_SAVE_SETTINGS = 'RECEIVE_SAVE_SETTINGS';
-const RECEIVE_SAVE_SETTINGS_FAILED = 'RECEIVE_SAVE_SETTINGS_FAILED';
 const ROLLBACK_SETTINGS = 'ROLLBACK_SETTINGS';
 
 /**
@@ -110,15 +115,34 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {Object} Redux-style action.
 		 */
 		*fetchSettings() {
+			let response, error;
+
 			yield {
 				payload: {},
-				type: FETCH_SETTINGS_STARTED,
+				type: START_FETCH_SETTINGS,
 			};
 
-			return {
-				payload: {},
-				type: FETCH_SETTINGS,
-			};
+			try {
+				response = yield {
+					payload: {},
+					type: FETCH_SETTINGS,
+				};
+
+				yield actions.receiveSettings( response );
+
+				yield {
+					payload: {},
+					type: FINISH_FETCH_SETTINGS,
+				};
+			} catch ( e ) {
+				error = e;
+				yield {
+					payload: { error },
+					type: CATCH_FETCH_SETTINGS,
+				};
+			}
+
+			return { response, error };
 		},
 
 		/**
@@ -136,21 +160,6 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			return {
 				payload: { values },
 				type: RECEIVE_SETTINGS,
-			};
-		},
-
-		/**
-		 * Dispatches an action signifying the `fetchSettings` side-effect failed.
-		 *
-		 * @since 1.6.0
-		 * @private
-		 *
-		 * @return {Object} Redux-style action.
-		 */
-		receiveSettingsFailed() {
-			return {
-				payload: {},
-				type: RECEIVE_SETTINGS_FAILED,
 			};
 		},
 
@@ -180,15 +189,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			const registry = yield getRegistry();
 			const values = registry.select( STORE_NAME ).getSettings();
 
-			try {
-				const savedValues = yield actions.fetchSaveSettings( values );
-
-				return actions.receiveSaveSettings( savedValues );
-			} catch ( error ) {
-				// TODO: Implement an error handler store or some kind of centralized
-				// place for error dispatch...
-				return actions.receiveSaveSettingsFailed( { error } );
-			}
+			return yield actions.fetchSaveSettings( values );
 		},
 
 		/**
@@ -202,16 +203,34 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 */
 		*fetchSaveSettings( values ) {
 			invariant( values, 'values is required.' );
+			let response, error;
 
 			yield {
-				payload: { values },
-				type: FETCH_SAVE_SETTINGS_STARTED,
+				payload: {},
+				type: START_FETCH_SAVE_SETTINGS,
 			};
 
-			return {
-				payload: { values },
-				type: FETCH_SAVE_SETTINGS,
-			};
+			try {
+				response = yield {
+					payload: { values },
+					type: FETCH_SAVE_SETTINGS,
+				};
+
+				yield actions.receiveSaveSettings( response );
+
+				yield {
+					payload: {},
+					type: FINISH_FETCH_SAVE_SETTINGS,
+				};
+			} catch ( e ) {
+				error = e;
+				yield {
+					payload: { error },
+					type: CATCH_FETCH_SAVE_SETTINGS,
+				};
+			}
+
+			return { response, error };
 		},
 
 		/**
@@ -229,23 +248,6 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			return {
 				payload: { values },
 				type: RECEIVE_SAVE_SETTINGS,
-			};
-		},
-
-		/**
-		 * Dispatches an action signifying the `fetchSaveSettings` side-effect failed.
-		 *
-		 * @since 1.6.0
-		 * @private
-		 *
-		 * @param {Object} args       Argument params.
-		 * @param {Object} args.error Error object.
-		 * @return {Object} Redux-style action.
-		 */
-		receiveSaveSettingsFailed( { error } ) {
-			return {
-				payload: { error },
-				type: RECEIVE_SAVE_SETTINGS_FAILED,
 			};
 		},
 	};
@@ -275,7 +277,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 				};
 			}
 
-			case FETCH_SETTINGS_STARTED: {
+			case START_FETCH_SETTINGS: {
 				return {
 					...state,
 					isFetchingSettings: true,
@@ -287,7 +289,6 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 				return {
 					...state,
-					isFetchingSettings: false,
 					savedSettings: {
 						...values,
 					},
@@ -299,17 +300,32 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 				};
 			}
 
-			case RECEIVE_SETTINGS_FAILED: {
+			case FINISH_FETCH_SETTINGS: {
 				return {
 					...state,
 					isFetchingSettings: false,
 				};
 			}
 
-			case FETCH_SAVE_SETTINGS_STARTED: {
+			case CATCH_FETCH_SETTINGS: {
+				return {
+					...state,
+					error: payload.error,
+					isFetchingSettings: false,
+				};
+			}
+
+			case START_FETCH_SAVE_SETTINGS: {
 				return {
 					...state,
 					isFetchingSaveSettings: true,
+				};
+			}
+
+			case FINISH_FETCH_SAVE_SETTINGS: {
+				return {
+					...state,
+					isFetchingSaveSettings: false,
 				};
 			}
 
@@ -318,7 +334,6 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 				return {
 					...state,
-					isFetchingSaveSettings: false,
 					savedSettings: {
 						...values,
 					},
@@ -328,9 +343,10 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 				};
 			}
 
-			case RECEIVE_SAVE_SETTINGS_FAILED: {
+			case CATCH_FETCH_SAVE_SETTINGS: {
 				return {
 					...state,
+					error: payload.error,
 					isFetchingSaveSettings: false,
 				};
 			}
@@ -358,24 +374,8 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 			const registry = yield getRegistry();
 			const existingSettings = registry.select( STORE_NAME ).getSettings();
 			// If settings are already present, don't fetch them.
-			if ( existingSettings ) {
-				return;
-			}
-
-			try {
-				const values = yield actions.fetchSettings();
-				return actions.receiveSettings( values );
-			} catch ( err ) {
-				return actions.receiveSettingsFailed();
-			}
-		},
-
-		*getSavedSettings() {
-			const registry = yield getRegistry();
-			const existingSettings = registry.select( STORE_NAME ).getSavedSettings();
-
 			if ( ! existingSettings ) {
-				registry.select( STORE_NAME ).getSettings();
+				yield actions.fetchSettings();
 			}
 		},
 	};
@@ -393,21 +393,6 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 */
 		getSettings( state ) {
 			return state.settings;
-		},
-
-		/**
-		 * Gets the current saved settings.
-		 *
-		 * Returns `undefined` if notifications are not available/loaded.
-		 *
-		 * @since n.e.x.t
-		 * @private
-		 *
-		 * @param {Object} state Data store's state.
-		 * @return {?Object} Settings with their values, or undefined.
-		 */
-		getSavedSettings( state ) {
-			return state.savedSettings;
 		},
 
 		/**
@@ -480,20 +465,6 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 */
 		selectors[ `get${ pascalCaseSlug }` ] = createRegistrySelector( ( select ) => () => {
 			const settings = select( STORE_NAME ).getSettings() || {};
-
-			return settings[ slug ];
-		} );
-
-		/**
-		 * Gets the saved value for the setting indicated by the selector name.
-		 *
-		 * @since n.e.x.t
-		 * @private
-		 *
-		 * @return {*} Setting value, or undefined.
-		 */
-		selectors[ `getSaved${ pascalCaseSlug }` ] = createRegistrySelector( ( select ) => () => {
-			const settings = select( STORE_NAME ).getSavedSettings() || {};
 
 			return settings[ slug ];
 		} );

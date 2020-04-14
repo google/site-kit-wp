@@ -29,9 +29,13 @@ import API from 'googlesitekit-api';
 // Actions
 const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
 const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION';
+
 const FETCH_NOTIFICATIONS = 'FETCH_NOTIFICATIONS';
+const START_FETCH_NOTIFICATIONS = 'START_FETCH_NOTIFICATIONS';
+const FINISH_FETCH_NOTIFICATIONS = 'FINISH_FETCH_NOTIFICATIONS';
+const CATCH_FETCH_NOTIFICATIONS = 'CATCH_FETCH_NOTIFICATIONS';
+
 const RECEIVE_NOTIFICATIONS = 'RECEIVE_NOTIFICATIONS';
-const RECEIVE_NOTIFICATIONS_FAILED = 'RECEIVE_NOTIFICATIONS_FAILED';
 
 /**
  * Creates a store object that includes actions and selectors for managing notifications.
@@ -108,13 +112,37 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 		 * @since 1.6.0
 		 * @private
 		 *
-		 * @return {Object} Redux-style action.
+		 * @return {Object} {response, error}
 		 */
-		fetchNotifications() {
-			return {
+		*fetchNotifications() {
+			let response, error;
+
+			yield {
 				payload: {},
-				type: FETCH_NOTIFICATIONS,
+				type: START_FETCH_NOTIFICATIONS,
 			};
+
+			try {
+				response = yield {
+					payload: {},
+					type: FETCH_NOTIFICATIONS,
+				};
+
+				yield actions.receiveNotifications( response );
+
+				yield {
+					payload: {},
+					type: FINISH_FETCH_NOTIFICATIONS,
+				};
+			} catch ( e ) {
+				error = e;
+				yield {
+					payload: { error },
+					type: CATCH_FETCH_NOTIFICATIONS,
+				};
+			}
+
+			return { response, error };
 		},
 
 		/**
@@ -132,21 +160,6 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 			return {
 				payload: { notifications },
 				type: RECEIVE_NOTIFICATIONS,
-			};
-		},
-
-		/**
-		 * Dispatches an action signifying the `fetchNotifications` side-effect failed.
-		 *
-		 * @since 1.6.0
-		 * @private
-		 *
-		 * @return {Object} Redux-style action.
-		 */
-		receiveNotificationsFailed() {
-			return {
-				payload: {},
-				type: RECEIVE_NOTIFICATIONS_FAILED,
 			};
 		},
 	};
@@ -198,7 +211,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 				};
 			}
 
-			case FETCH_NOTIFICATIONS: {
+			case START_FETCH_NOTIFICATIONS: {
 				return {
 					...state,
 					isFetchingNotifications: true,
@@ -223,9 +236,17 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 				};
 			}
 
-			case RECEIVE_NOTIFICATIONS_FAILED: {
+			case FINISH_FETCH_NOTIFICATIONS: {
 				return {
 					...state,
+					isFetchingNotifications: false,
+				};
+			}
+
+			case CATCH_FETCH_NOTIFICATIONS: {
+				return {
+					...state,
+					error: payload.error,
 					isFetchingNotifications: false,
 				};
 			}
@@ -238,12 +259,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 
 	const resolvers = {
 		*getNotifications() {
-			try {
-				const notifications = yield actions.fetchNotifications();
-				return actions.receiveNotifications( notifications );
-			} catch ( err ) {
-				return actions.receiveNotificationsFailed();
-			}
+			yield actions.fetchNotifications();
 		},
 	};
 
