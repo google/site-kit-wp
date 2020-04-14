@@ -200,9 +200,9 @@ final class Analytics extends Module
 
 		$this->get_settings()->merge(
 			array(
-				'accountId'     => $account_id,
-				'webPropertyId' => $web_property_id,
-				'profileID'     => $profile_id,
+				'accountId'  => $account_id,
+				'propertyId' => $web_property_id,
+				'profileID'  => $profile_id,
 			)
 		);
 
