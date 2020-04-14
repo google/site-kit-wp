@@ -5,6 +5,11 @@ import { render } from '@testing-library/react';
 import invariant from 'invariant';
 
 /**
+ * WordPress dependencies
+ */
+import { RegistryProvider } from '@wordpress/data';
+
+/**
  * Internal dependencies
  */
 import { createTestRegistry } from './utils';
