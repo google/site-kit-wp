@@ -75,9 +75,9 @@ export const actions = {
 			}
 		}
 
-		const { payload } = yield actions.submitSaveSettings();
-		if ( payload.error ) {
-			return actions.submitChangesFailed( { error: payload.error } );
+		const { error } = yield actions.submitSaveSettings();
+		if ( error ) {
+			return actions.submitChangesFailed( { error } );
 		}
 
 		return actions.finishSubmitChanges();
