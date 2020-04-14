@@ -212,7 +212,6 @@ const webpackConfig = ( mode ) => {
 const testBundle = () => {
 	return {
 		entry: {
-			'googlesitekit-tests': './assets/js/googlesitekit-tests.js',
 			'e2e-utilities': './tests/e2e/e2e-utilities.js',
 		},
 		output: {
