@@ -34,17 +34,18 @@ import {
 import Button from '../../components/button';
 import classnames from 'classnames';
 import ProgressBar from '../../components/progress-bar';
-import { STORE_NAME } from './datastore/index';
+// import { STORE_NAME } from './datastore/index';
 import { trackEvent } from '../../util';
-import Data from 'googlesitekit-data';
+// import Data from 'googlesitekit-data';
 
-const { dispatch } = Data;
+// const { dispatch } = Data;
 
 // Cache the complicated timezone dropdown.
 let timezoneData = false;
 
 const AccountCreate = () => {
-	const { createAccount } = dispatch( STORE_NAME );
+	// const { createAccount } = dispatch( STORE_NAME );
+	const { createAccount } = () => {};
 	const { siteName, siteURL, timezone: tz, errorcode } = global.googlesitekit.admin;
 	const [ error, setError ] = useState( errorcode );
 
