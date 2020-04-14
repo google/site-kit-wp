@@ -76,9 +76,8 @@ export const actions = {
 			};
 		} catch ( e ) {
 			error = e;
-
 			yield {
-				payload: {},
+				payload: { error },
 				type: CATCH_FETCH_CONNECTION,
 			};
 		}

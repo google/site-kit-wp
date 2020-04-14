@@ -137,7 +137,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 			} catch ( e ) {
 				error = e;
 				yield {
-					payload: {},
+					payload: { error },
 					type: CATCH_FETCH_NOTIFICATIONS,
 				};
 			}
