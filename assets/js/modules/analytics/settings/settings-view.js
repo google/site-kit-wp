@@ -32,12 +32,12 @@ import { ExistingTagError, ExistingTagNotice } from '../common';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getSavedAccountID() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getSavedPropertyID() );
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getSavedProfileID() );
-	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getSavedUseSnippet() );
-	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getSavedAnonymizeIP() );
-	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getSavedTrackingDisabled() ) || [];
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
+	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getAnonymizeIP() );
+	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getTrackingDisabled() ) || [];
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
