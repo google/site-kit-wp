@@ -131,8 +131,8 @@ export const actions = {
 	 * @since n.e.x.t
 	 * @private
 	 *
-	 * @param {Object} args              Argument params.
-	 * @param {Object} args.accountTicket  Google Analytics create account ticket object.
+	 * @param {Object} args               Argument params.
+	 * @param {Object} args.accountTicket Google Analytics create account ticket object.
 	 */
 	receiveCreateAccount( { accountTicket } ) {
 		invariant( accountTicket, 'accountTicket is required.' );
@@ -150,8 +150,8 @@ export const actions = {
 	 * @since n.e.x.t
 	 * @private
 	 *
-	 * @param {Object} args            Argument params.
-	 * @param {Object} args.error      Error object.
+	 * @param {Object} args       Argument params.
+	 * @param {Object} args.error Error object.
 	 * @return {Object} Redux-style action.
 	 */
 	receiveCreateAccountFailed( { error } ) {
