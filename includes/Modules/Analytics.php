@@ -158,12 +158,7 @@ final class Analytics extends Module
 
 		if ( $stored_account_ticket_id !== $account_ticket_id ) {
 			wp_safe_redirect(
-				$this->context->admin_url(
-					'module-analytics',
-					array(
-						'error_code' => 'account_ticket_id_mismatch',
-					)
-				)
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'account_ticket_id_mismatch' ) )
 			);
 			exit;
 		}
@@ -172,12 +167,7 @@ final class Analytics extends Module
 		$error = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
 		if ( ! empty( $error ) ) {
 			wp_safe_redirect(
-				$this->context->admin_url(
-					'module-analytics',
-					array(
-						'error_code' => $error,
-					)
-				)
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => $error ) )
 			);
 			exit;
 		}
@@ -188,31 +178,32 @@ final class Analytics extends Module
 
 		if ( empty( $account_id ) || empty( $web_property_id ) || empty( $profile_id ) ) {
 			wp_safe_redirect(
-				$this->context->admin_url(
-					'module-analytics',
-					array(
-						'error_code' => 'callback_missing_parameter',
-					)
-				)
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'callback_missing_parameter' ) )
+			);
+			exit;
+		}
+
+		// Retrieve the internal web property id.
+		try {
+			$web_property = $this->get_service( 'analytics' )->management_webproperties->get( $account_id, $property_id );
+		} catch ( Exception $e ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'property_not_found' ) )
 			);
 			exit;
 		}
 
 		$this->get_settings()->merge(
 			array(
-				'accountId'  => $account_id,
-				'propertyId' => $web_property_id,
-				'profileID'  => $profile_id,
+				'accountID'             => $account_id,
+				'propertyID'            => $web_property_id,
+				'profileID'             => $profile_id,
+				'internalWebPropertyID' => $web_property->getInternalWebPropertyId(),
 			)
 		);
 
 		wp_safe_redirect(
-			$this->context->admin_url(
-				'dashboard',
-				array(
-					'notification' => 'authentication_success',
-				)
-			)
+			$this->context->admin_url( 'dashboard', array( 'notification' => 'authentication_success' ) )
 		);
 		exit;
 	}
