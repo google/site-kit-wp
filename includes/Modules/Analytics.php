@@ -188,7 +188,6 @@ final class Analytics extends Module
 					$this->context->admin_url(
 						'module-analytics',
 						array(
-							'slug'       => 'analytics',
 							'error_code' => 'callback_missing_parameter',
 						)
 					)
