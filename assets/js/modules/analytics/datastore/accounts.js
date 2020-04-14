@@ -103,8 +103,8 @@ export const actions = {
 		invariant( timezone, 'timezone is required.' );
 
 		try {
-			const createAccountTicket = yield actions.fetchCreateAccount( { accountName, propertyName, profileName, timezone } );
-			return actions.receiveCreateAccount( { createAccountTicket } );
+			const accountTicket = yield actions.fetchCreateAccount( { accountName, propertyName, profileName, timezone } );
+			return actions.receiveCreateAccount( { accountTicket } );
 		} catch ( error ) {
 			// TODO: Implement an error handler store or some kind of centralized
 			// place for error dispatch...
@@ -132,13 +132,13 @@ export const actions = {
 	 * @private
 	 *
 	 * @param {Object} args              Argument params.
-	 * @param {Object} args.createAccountTicket  Google Analytics create account ticket object.
+	 * @param {Object} args.accountTicket  Google Analytics create account ticket object.
 	 */
-	receiveCreateAccount( { createAccountTicket } ) {
-		invariant( createAccountTicket, 'createAccountTicket is required.' );
+	receiveCreateAccount( { accountTicket } ) {
+		invariant( accountTicket, 'accountTicket is required.' );
 
 		// Once we have an account ticket, redirect the user to accept the Terms of Service.
-		const { id } = createAccountTicket;
+		const { id } = accountTicket;
 		if ( id ) {
 			document.location = `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/?api.accountTicketId=${ id }`;
 		}
