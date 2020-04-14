@@ -310,6 +310,16 @@ export const selectors = {
 
 		return error || null;
 	},
+
+	/**
+	 * Indicates whether account creation is currently in progress.
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if an account is being created, false otherwise.
+	 */
+	isDoingCreateAccount( state ) {
+		return state.isCreatingAccount;
+	},
 };
 
 export default {
