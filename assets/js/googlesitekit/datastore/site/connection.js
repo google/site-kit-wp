@@ -186,7 +186,7 @@ export const selectors = {
 	 * Returns `true` if the site is connected to Site Kit, `false` if
 	 * not. Returns `undefined` if the connection info is not available/loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} Site connection status.
@@ -204,7 +204,7 @@ export const selectors = {
 	 * the connection can be reset, `false` if reset is not available.
 	 * Returns `undefined` if the connection info is not available/loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} Site reset status.
@@ -222,7 +222,7 @@ export const selectors = {
 	 * the connection can be reset, `false` if reset is not available.
 	 * Returns `undefined` if the connection info is not available/loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} Site setup completion status.

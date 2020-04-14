@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Assets\Asset;
 /**
  * Interface for a module that includes assets.
  *
- * @since n.e.x.t
+ * @since 1.7.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ interface Module_With_Assets {
 	/**
 	 * Gets the assets to register for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */
@@ -33,7 +33,7 @@ interface Module_With_Assets {
 	/**
 	 * Enqueues all assets necessary for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 */
 	public function enqueue_assets();
 }
