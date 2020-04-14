@@ -150,8 +150,8 @@ final class Analytics extends Module
 		if ( $input->filter( INPUT_GET, 'gatoscallback' ) ) {
 			// The handler should check the received Account Ticket id parameter against the id stored in the provisioning step.
 			$account_ticket_id        = $this->context->input()->filter( INPUT_GET, 'accountTicketId', FILTER_SANITIZE_STRING );
-			$stored_account_ticket_id = get_transient( PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
-			delete_transient( PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
+			$stored_account_ticket_id = get_transient( self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
+			delete_transient( self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
 
 			if ( $stored_account_ticket_id !== $account_ticket_id ) {
 				wp_safe_redirect(
