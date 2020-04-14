@@ -35,7 +35,7 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
-import { STORE_NAME } from './index';
+import { STORE_NAME } from './constants';
 
 describe( 'core/site connection', () => {
 	const responseConnected = { connected: true, resettable: true, setupCompleted: true };
