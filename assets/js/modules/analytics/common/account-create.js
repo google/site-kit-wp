@@ -1,5 +1,5 @@
 /**
- * AnalyticsSetup component.
+ * AccountCreate component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -26,22 +26,17 @@ import { useState, Fragment, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import {
-	Select,
-	Option,
 	Input,
 	TextField,
-} from '../../material-components';
-import Button from '../../components/button';
+} from '../../../material-components';
+import Button from '../../../components/button';
 import classnames from 'classnames';
-import ProgressBar from '../../components/progress-bar';
-// import { STORE_NAME } from './datastore/index';
-import { trackEvent } from '../../util';
+import ProgressBar from '../../../components/progress-bar';
+import { trackEvent } from '../../../util';
+import TimezoneSelect from './timzezone-select';
+
 // import Data from 'googlesitekit-data';
-
 // const { dispatch } = Data;
-
-// Cache the complicated timezone dropdown.
-let timezoneData = false;
 
 const AccountCreate = () => {
 	// const { createAccount } = dispatch( STORE_NAME );
@@ -64,40 +59,6 @@ const AccountCreate = () => {
 			}
 		} );
 	} );
-
-	// Build the timezone selector and cache it for re-renders.
-	const getTimezoneSelector = ( { timezone, setTimezone } ) => {
-		if ( timezoneData ) {
-			return timezoneData;
-		}
-		const { timezones } = global.googlesitekit.admin;
-
-		timezoneData = (
-			<Select
-				className="googlesitekit-analytics__select-timezone"
-				name="timezone"
-				style={ { minWidth: '240px' } /*todo: move to css */ }
-				enhanced
-				value={ timezone }
-				onChange={ ( e ) => {
-					setTimezone( e.target.value );
-				} }
-				label={ __( 'Timezone', 'google-site-kit' ) }
-				outlined
-			>
-				{ timezones && timezones
-					.map( ( aTimezone, index ) =>
-						<Option
-							key={ index }
-							value={ aTimezone.value }
-						>
-							{ aTimezone.name }
-						</Option>
-					) }
-			</Select>
-		);
-		return timezoneData;
-	};
 
 	const [ accountName, setAccountName ] = useState( siteName );
 	const [ propertyName, setPropertyName ] = useState( siteURL );
@@ -201,7 +162,10 @@ const AccountCreate = () => {
 												</TextField>
 											</div>
 											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
-												{ getTimezoneSelector( { timezone, setTimezone } ) }
+												<TimezoneSelect
+													timezone={ timezone }
+													setTimezone={ setTimezone }
+												/>
 											</div>
 										</div>
 									</div>
