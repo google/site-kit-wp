@@ -165,6 +165,20 @@ final class Analytics extends Module
 				exit;
 			}
 
+			// Check for a returned error.
+			$error = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
+			if ( ! empty( $error ) ) {
+				wp_safe_redirect(
+					$this->context->admin_url(
+						'module-analytics',
+						array(
+							'error_code' => $error,
+						)
+					)
+				);
+				exit;
+			}
+
 			$account_id      = $this->context->input()->filter( INPUT_GET, 'accountId', FILTER_SANITIZE_STRING );
 			$web_property_id = $this->context->input()->filter( INPUT_GET, 'webPropertyId', FILTER_SANITIZE_STRING );
 			$profile_id      = $this->context->input()->filter( INPUT_GET, 'profileId', FILTER_SANITIZE_STRING );
