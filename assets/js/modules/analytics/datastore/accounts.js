@@ -87,8 +87,6 @@ export const actions = {
 	/**
 	 * Creates a new Analytics account.
 	 *
-	 * Creates a new Analytics account for a user.
-	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} args              Argument params.
