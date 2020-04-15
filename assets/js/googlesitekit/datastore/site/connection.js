@@ -17,151 +17,66 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
+import { createFetchInfrastructure } from '../../data/create-fetch-infrastructure';
 
 const { createRegistrySelector } = Data;
-
-// Actions
-const START_FETCH_CONNECTION = 'START_FETCH_CONNECTION';
-const FETCH_CONNECTION = 'FETCH_CONNECTION';
-const FINISH_FETCH_CONNECTION = 'FINISH_FETCH_CONNECTION';
-const CATCH_FETCH_CONNECTION = 'CATCH_FETCH_CONNECTION';
-
-const RECEIVE_CONNECTION = 'RECEIVE_CONNECTION';
 
 export const INITIAL_STATE = {
 	connection: undefined,
 	isFetchingConnection: false,
 };
 
-export const actions = {
-	/**
-	 * Dispatches an action that creates an HTTP request.
-	 *
-	 * Requests the `core/site/connection` endpoint.
-	 *
-	 * @since 1.5.0
-	 * @private
-	 *
-	 * @return {Object} Object with {response, error}
-	 */
-	*fetchConnection() {
-		let response, error;
-
-		yield {
-			payload: {},
-			type: START_FETCH_CONNECTION,
-		};
-
-		try {
-			response = yield {
-				payload: {},
-				type: FETCH_CONNECTION,
-			};
-
-			yield actions.receiveConnection( response );
-
-			yield {
-				payload: {},
-				type: FINISH_FETCH_CONNECTION,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: { error },
-				type: CATCH_FETCH_CONNECTION,
-			};
-		}
-
-		return { response, error };
+const fetchConnectionInfrastructure = createFetchInfrastructure( {
+	baseName: 'getConnection',
+	apiCallback: () => {
+		return API.get( 'core', 'site', 'connection' );
 	},
-
-	/**
-	 * Stores connection info received from the REST API.
-	 *
-	 * @since 1.5.0
-	 * @private
-	 *
-	 * @param {Object} connection Connection info from the API.
-	 * @return {Object} Redux-style action.
-	 */
-	receiveConnection( connection ) {
-		invariant( connection, 'connection is required.' );
-
+	receiveCallback: ( state, connection ) => {
 		return {
-			payload: { connection },
-			type: RECEIVE_CONNECTION,
+			...state,
+			connection,
 		};
 	},
+} );
+
+export const actions = {
+	...fetchConnectionInfrastructure.actions,
 };
 
 export const controls = {
-	[ FETCH_CONNECTION ]: () => {
-		return API.get( 'core', 'site', 'connection' );
-	},
+	...fetchConnectionInfrastructure.controls,
 };
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case START_FETCH_CONNECTION: {
-			return {
-				...state,
-				isFetchingConnection: true,
-			};
-		}
-
-		case RECEIVE_CONNECTION: {
-			const { connection } = payload;
-
-			return {
-				...state,
-				connection,
-			};
-		}
-
-		case FINISH_FETCH_CONNECTION: {
-			return {
-				...state,
-				isFetchingConnection: false,
-			};
-		}
-
-		case CATCH_FETCH_CONNECTION: {
-			return {
-				...state,
-				error: payload.error,
-				isFetchingConnection: false,
-			};
-		}
-
 		default: {
-			return { ...state };
+			return fetchConnectionInfrastructure.reducer( state, { type, payload } );
 		}
 	}
 };
 
 export const resolvers = {
+	...fetchConnectionInfrastructure.resolvers,
+
 	*getConnection() {
 		const registry = yield Data.commonActions.getRegistry();
 
 		const existingConnection = registry.select( STORE_NAME ).getConnection();
 
 		if ( ! existingConnection ) {
-			yield actions.fetchConnection();
+			yield actions.fetchGetConnection();
 		}
 	},
 };
 
 export const selectors = {
+	...fetchConnectionInfrastructure.selectors,
+
 	/**
 	 * Gets the connection info for this site.
 	 *

@@ -60,24 +60,24 @@ describe( 'core/site connection', () => {
 	} );
 
 	describe( 'actions', () => {
-		describe( 'fetchConnection', () => {
+		describe( 'fetchGetConnection', () => {
 			it( 'does not require any params', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).fetchConnection();
+					registry.dispatch( STORE_NAME ).fetchGetConnection();
 				} ).not.toThrow();
 			} );
 		} );
 
-		describe( 'receiveConnection', () => {
-			it( 'requires the connection param', () => {
+		describe( 'receiveGetConnection', () => {
+			it( 'requires the response param', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).receiveConnection();
-				} ).toThrow( 'connection is required.' );
+					registry.dispatch( STORE_NAME ).receiveGetConnection();
+				} ).toThrow( 'response is required.' );
 			} );
 
 			it( 'receives and sets connection ', async () => {
 				const connection = { coolSite: true };
-				await registry.dispatch( STORE_NAME ).receiveConnection( connection );
+				await registry.dispatch( STORE_NAME ).receiveGetConnection( connection );
 
 				const state = store.getState();
 
@@ -119,7 +119,7 @@ describe( 'core/site connection', () => {
 			} );
 
 			it( 'does not make a network request if data is already in state', async () => {
-				registry.dispatch( STORE_NAME ).receiveConnection( responseConnected );
+				registry.dispatch( STORE_NAME ).receiveGetConnection( responseConnected );
 
 				const connection = registry.select( STORE_NAME ).getConnection();
 
