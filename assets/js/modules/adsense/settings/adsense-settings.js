@@ -224,11 +224,8 @@ class AdSenseSettings extends Component {
 										{ __( 'AdSense Code', 'google-site-kit' ) }
 									</p>
 									<h5 className="googlesitekit-settings-module__meta-item-data">
-										{	__( 'The AdSense code has', 'google-site-kit' ) } {
-											useSnippet
-												? __( 'been placed on your site.', 'google-site-kit' )
-												: __( 'not been placed on your site.', 'google-site-kit' )
-										}
+										{ useSnippet && __( 'The AdSense code has been placed on your site.', 'google-site-kit' ) }
+										{ ! useSnippet && __( 'The AdSense code has not been placed on your site.', 'google-site-kit' ) }
 									</h5>
 								</div>
 								<div className="googlesitekit-settings-module__meta-item">
