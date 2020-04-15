@@ -42,7 +42,23 @@ const AccountCreate = () => {
 	const isDoingCreateAccount = false;
 	const { createAccount } = () => {};
 	const { siteName, siteURL, timezone: tz, errorcode } = global.googlesitekit.admin;
-	const [ error, setError ] = useState( errorcode );
+
+	// Handle expected provisioning flow error codes.
+	let errorMessage = false;
+	switch ( errorcode ) {
+		case 'user_cancel':
+			errorMessage = __( 'The Terms of Service were not accepted.', 'google-site-kit' );
+			break;
+
+		case 'max_accounts_reached':
+			errorMessage = __( 'The Google Analytics account limit has been reached.', 'google-site-kit' );
+			break;
+
+		case 'backend_error':
+			errorMessage = __( 'Unknown service error.', 'google-site-kit' );
+			break;
+	}
+	const [ error, setError ] = useState( errorMessage );
 
 	const handleSubmit = useCallback( ( accountName, propertyName, profileName, timezone ) => {
 		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
