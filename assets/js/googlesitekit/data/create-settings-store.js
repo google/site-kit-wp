@@ -27,25 +27,12 @@ import { isEqual } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { createFetchInfrastructure } from './create-fetch-infrastructure';
 
 const { commonActions, commonControls, createRegistrySelector } = Data;
-const { getRegistry } = commonActions;
 
 // Actions
 const SET_SETTINGS = 'SET_SETTINGS';
-
-const FETCH_SETTINGS = 'FETCH_SETTINGS';
-const START_FETCH_SETTINGS = 'START_FETCH_SETTINGS';
-const FINISH_FETCH_SETTINGS = 'FINISH_FETCH_SETTINGS';
-const CATCH_FETCH_SETTINGS = 'CATCH_FETCH_SETTINGS';
-
-const FETCH_SAVE_SETTINGS = 'FETCH_SAVE_SETTINGS';
-const START_FETCH_SAVE_SETTINGS = 'START_FETCH_SAVE_SETTINGS';
-const FINISH_FETCH_SAVE_SETTINGS = 'FINISH_FETCH_SAVE_SETTINGS';
-const CATCH_FETCH_SAVE_SETTINGS = 'CATCH_FETCH_SAVE_SETTINGS';
-
-const RECEIVE_SETTINGS = 'RECEIVE_SETTINGS';
-const RECEIVE_SAVE_SETTINGS = 'RECEIVE_SAVE_SETTINGS';
 const ROLLBACK_SETTINGS = 'ROLLBACK_SETTINGS';
 
 /**
@@ -83,11 +70,56 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		isFetchingSaveSettings: false,
 	};
 
+	const fetchSettingsInfrastructure = createFetchInfrastructure( {
+		baseName: 'getSettings',
+		apiCallback: () => {
+			return API.get( type, identifier, datapoint );
+		},
+		receiveCallback: ( state, values ) => {
+			return {
+				...state,
+				savedSettings: {
+					...values,
+				},
+				settings: {
+					...values,
+					// In case settings were already changed, they should take precedence.
+					...( state.settings || {} ),
+				},
+			};
+		},
+	} );
+
+	const fetchSaveSettingsInfrastructure = createFetchInfrastructure( {
+		baseName: 'saveSettings',
+		apiCallback: ( params ) => {
+			const { values } = params;
+			return API.set( type, identifier, datapoint, values );
+		},
+		receiveCallback: ( state, values ) => {
+			return {
+				...state,
+				savedSettings: {
+					...values,
+				},
+				settings: {
+					// Ensure client settings are refreshed from server.
+					...values,
+				},
+			};
+		},
+		keyParams: {
+			values: ( value ) => 'object' === typeof value,
+		},
+	} );
+
 	// This will be populated further down with reducer functions for individual settings.
 	const settingReducers = {};
 
 	const actions = {
 		...commonActions,
+		...fetchSettingsInfrastructure.actions,
+		...fetchSaveSettingsInfrastructure.actions,
 
 		/**
 		 * Sets settings for the given values.
@@ -98,68 +130,11 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {Object} Redux-style action.
 		 */
 		setSettings( values ) {
-			invariant( values, 'values is required.' );
+			invariant( 'object' === typeof values, 'values is required.' );
 
 			return {
 				payload: { values },
 				type: SET_SETTINGS,
-			};
-		},
-
-		/**
-		 * Dispatches an action that creates an HTTP request to the settings endpoint.
-		 *
-		 * @since 1.6.0
-		 * @private
-		 *
-		 * @return {Object} Redux-style action.
-		 */
-		*fetchSettings() {
-			let response, error;
-
-			yield {
-				payload: {},
-				type: START_FETCH_SETTINGS,
-			};
-
-			try {
-				response = yield {
-					payload: {},
-					type: FETCH_SETTINGS,
-				};
-
-				yield actions.receiveSettings( response );
-
-				yield {
-					payload: {},
-					type: FINISH_FETCH_SETTINGS,
-				};
-			} catch ( e ) {
-				error = e;
-				yield {
-					payload: { error },
-					type: CATCH_FETCH_SETTINGS,
-				};
-			}
-
-			return { response, error };
-		},
-
-		/**
-		 * Stores settings received from the REST API.
-		 *
-		 * @since 1.6.0
-		 * @private
-		 *
-		 * @param {Array} values Settings with their values from the API.
-		 * @return {Object} Redux-style action.
-		 */
-		receiveSettings( values ) {
-			invariant( values, 'values is required.' );
-
-			return {
-				payload: { values },
-				type: RECEIVE_SETTINGS,
 			};
 		},
 
@@ -186,81 +161,17 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {Object} Redux-style action.
 		 */
 		*saveSettings() {
-			const registry = yield getRegistry();
+			const registry = yield commonActions.getRegistry();
 			const values = registry.select( STORE_NAME ).getSettings();
 
 			return yield actions.fetchSaveSettings( values );
-		},
-
-		/**
-		 * Dispatches an action that creates an HTTP request to save settings.
-		 *
-		 * @since 1.6.0
-		 * @private
-		 *
-		 * @param {Object} values Settings with their values to save.
-		 * @return {Object} Redux-style action.
-		 */
-		*fetchSaveSettings( values ) {
-			invariant( values, 'values is required.' );
-			let response, error;
-
-			yield {
-				payload: {},
-				type: START_FETCH_SAVE_SETTINGS,
-			};
-
-			try {
-				response = yield {
-					payload: { values },
-					type: FETCH_SAVE_SETTINGS,
-				};
-
-				yield actions.receiveSaveSettings( response );
-
-				yield {
-					payload: {},
-					type: FINISH_FETCH_SAVE_SETTINGS,
-				};
-			} catch ( e ) {
-				error = e;
-				yield {
-					payload: { error },
-					type: CATCH_FETCH_SAVE_SETTINGS,
-				};
-			}
-
-			return { response, error };
-		},
-
-		/**
-		 * Dispatches that settings were saved via the REST API.
-		 *
-		 * @since 1.6.0
-		 * @private
-		 *
-		 * @param {Array} values Settings with their values from the API.
-		 * @return {Object} Redux-style action.
-		 */
-		receiveSaveSettings( values ) {
-			invariant( values, 'values is required.' );
-
-			return {
-				payload: { values },
-				type: RECEIVE_SAVE_SETTINGS,
-			};
 		},
 	};
 
 	const controls = {
 		...commonControls,
-		[ FETCH_SETTINGS ]: () => {
-			return API.get( type, identifier, datapoint );
-		},
-		[ FETCH_SAVE_SETTINGS ]: ( { payload } ) => {
-			const { values } = payload;
-			return API.set( type, identifier, datapoint, values );
-		},
+		...fetchSettingsInfrastructure.controls,
+		...fetchSaveSettingsInfrastructure.controls,
 	};
 
 	const reducer = ( state = INITIAL_STATE, { type, payload } ) => { // eslint-disable-line no-shadow
@@ -277,80 +188,6 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 				};
 			}
 
-			case START_FETCH_SETTINGS: {
-				return {
-					...state,
-					isFetchingSettings: true,
-				};
-			}
-
-			case RECEIVE_SETTINGS: {
-				const { values } = payload;
-
-				return {
-					...state,
-					savedSettings: {
-						...values,
-					},
-					settings: {
-						...values,
-						// In case settings were already changed, they should take precedence.
-						...( state.settings || {} ),
-					},
-				};
-			}
-
-			case FINISH_FETCH_SETTINGS: {
-				return {
-					...state,
-					isFetchingSettings: false,
-				};
-			}
-
-			case CATCH_FETCH_SETTINGS: {
-				return {
-					...state,
-					error: payload.error,
-					isFetchingSettings: false,
-				};
-			}
-
-			case START_FETCH_SAVE_SETTINGS: {
-				return {
-					...state,
-					isFetchingSaveSettings: true,
-				};
-			}
-
-			case FINISH_FETCH_SAVE_SETTINGS: {
-				return {
-					...state,
-					isFetchingSaveSettings: false,
-				};
-			}
-
-			case RECEIVE_SAVE_SETTINGS: {
-				const { values } = payload;
-
-				return {
-					...state,
-					savedSettings: {
-						...values,
-					},
-					settings: {
-						...values,
-					},
-				};
-			}
-
-			case CATCH_FETCH_SAVE_SETTINGS: {
-				return {
-					...state,
-					error: payload.error,
-					isFetchingSaveSettings: false,
-				};
-			}
-
 			case ROLLBACK_SETTINGS: {
 				return {
 					...state,
@@ -364,23 +201,35 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 					return settingReducers[ type ]( state, { type, payload } );
 				}
 
-				return { ...state };
+				return fetchSettingsInfrastructure.reducer(
+					fetchSaveSettingsInfrastructure.reducer(
+						state,
+						{ type, payload }
+					),
+					{ type, payload }
+				);
 			}
 		}
 	};
 
 	const resolvers = {
+		...fetchSettingsInfrastructure.resolvers,
+		...fetchSaveSettingsInfrastructure.resolvers,
+
 		*getSettings() {
-			const registry = yield getRegistry();
+			const registry = yield commonActions.getRegistry();
 			const existingSettings = registry.select( STORE_NAME ).getSettings();
 			// If settings are already present, don't fetch them.
 			if ( ! existingSettings ) {
-				yield actions.fetchSettings();
+				yield actions.fetchGetSettings();
 			}
 		},
 	};
 
 	const selectors = {
+		...fetchSettingsInfrastructure.selectors,
+		...fetchSaveSettingsInfrastructure.selectors,
+
 		/**
 		 * Gets the current settings.
 		 *
@@ -418,7 +267,10 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {boolean} True if the settings are being saved, false otherwise.
 		 */
 		isDoingSaveSettings( state ) {
-			return state.isFetchingSaveSettings;
+			// Since isFetchingSaveSettings holds information based on specific
+			// values but we only need generic information here, we need to
+			// check whether ANY such request is in progress.
+			return Object.values( state.isFetchingSaveSettings ).some( ( value ) => value );
 		},
 	};
 

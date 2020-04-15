@@ -101,19 +101,20 @@ describe( 'createSettingsStore store', () => {
 			} );
 		} );
 
-		describe( 'fetchSettings', () => {
+		describe( 'fetchGetSettings', () => {
 			it( 'does not require any params', () => {
+				muteConsole( 'error' ); // Ignore the API fetch failure here.
 				expect( () => {
-					dispatch.fetchSettings();
+					dispatch.fetchGetSettings();
 				} ).not.toThrow();
 			} );
 		} );
 
-		describe( 'receiveSettings', () => {
-			it( 'requires the values param', () => {
+		describe( 'receiveGetSettings', () => {
+			it( 'requires the response param', () => {
 				expect( () => {
-					dispatch.receiveSettings();
-				} ).toThrow( 'values is required.' );
+					dispatch.receiveGetSettings();
+				} ).toThrow( 'response is required.' );
 			} );
 
 			it( 'receives and sets values', () => {
@@ -121,7 +122,7 @@ describe( 'createSettingsStore store', () => {
 				const clientValues = { setting1: 'clientside' };
 
 				dispatch.setSettings( clientValues );
-				dispatch.receiveSettings( serverValues );
+				dispatch.receiveGetSettings( serverValues );
 
 				// Client values take precedence if they were already modified before receiving from the server.
 				expect( store.getState().settings ).toMatchObject( { ...serverValues, ...clientValues } );
@@ -155,6 +156,9 @@ describe( 'createSettingsStore store', () => {
 						{ status: 200 }
 					);
 
+				// Set initial settings so that they are considered loaded.
+				dispatch.receiveGetSettings( response );
+
 				// The server is the authority. So because this won't be part of the response
 				// (see above), it will be disregarded.
 				dispatch.setSettings( { isSkyBlue: 'no' } );
@@ -172,7 +176,7 @@ describe( 'createSettingsStore store', () => {
 		describe( 'fetchSaveSettings', () => {
 			it( 'requires the values param', () => {
 				expect( () => {
-					dispatch.receiveSaveSettings();
+					dispatch.fetchSaveSettings();
 				} ).toThrow( 'values is required.' );
 			} );
 
@@ -192,10 +196,10 @@ describe( 'createSettingsStore store', () => {
 		} );
 
 		describe( 'receiveSaveSettings', () => {
-			it( 'requires the values param', () => {
+			it( 'requires the response param', () => {
 				expect( () => {
 					dispatch.receiveSaveSettings();
-				} ).toThrow( 'values is required.' );
+				} ).toThrow( 'response is required.' );
 			} );
 
 			it( 'receives and sets values', () => {
@@ -203,7 +207,7 @@ describe( 'createSettingsStore store', () => {
 				const clientValues = { setting1: 'clientside', setting3: 'clientside' };
 
 				dispatch.setSettings( clientValues );
-				dispatch.receiveSaveSettings( serverValues );
+				dispatch.receiveSaveSettings( serverValues, { values: {} } );
 
 				// Client values are ignored here, server values replace them.
 				expect( store.getState().settings ).toMatchObject( { ...serverValues } );
@@ -248,7 +252,7 @@ describe( 'createSettingsStore store', () => {
 		describe( 'rollbackSettings', () => {
 			it( 'returns settings back to their saved values', () => {
 				const savedSettings = { isSkyBlue: 'yes' };
-				dispatch.receiveSaveSettings( savedSettings );
+				dispatch.receiveSaveSettings( savedSettings, { values: {} } );
 
 				expect( select.getIsSkyBlue() ).toBe( 'yes' );
 
@@ -296,7 +300,7 @@ describe( 'createSettingsStore store', () => {
 			it( 'does not make a network request if settings are already set', async () => {
 				const value = 'serverside';
 
-				dispatch.receiveSettings( { isSkyBlue: value } );
+				dispatch.receiveGetSettings( { isSkyBlue: value } );
 
 				expect( select.getIsSkyBlue() ).toEqual( value );
 
@@ -437,7 +441,7 @@ describe( 'createSettingsStore store', () => {
 	} );
 
 	describe( 'controls', () => {
-		describe( 'FETCH_SETTINGS', () => {
+		describe( 'FETCH_GET_SETTINGS', () => {
 			it( 'requests from the correct API endpoint', async () => {
 				const [ type, identifier, datapoint ] = STORE_ARGS;
 				const response = { type, identifier, datapoint };
@@ -460,7 +464,10 @@ describe( 'createSettingsStore store', () => {
 						};
 					} );
 
-				const result = await storeDefinition.controls.FETCH_SETTINGS();
+				const result = await storeDefinition.controls.FETCH_GET_SETTINGS( {
+					type: 'FETCH_GET_SETTINGS',
+					payload: { params: {} },
+				} );
 				expect( result ).toEqual( response );
 				// Ensure `console.error()` wasn't called, which will happen if the API
 				// request fails.
@@ -493,7 +500,7 @@ describe( 'createSettingsStore store', () => {
 
 				const result = await storeDefinition.controls.FETCH_SAVE_SETTINGS( {
 					type: 'FETCH_SAVE_SETTINGS',
-					payload: { values: {} },
+					payload: { params: { values: {} } },
 				} );
 				expect( result ).toEqual( response );
 				// Ensure `console.error()` wasn't called, which will happen if the API
