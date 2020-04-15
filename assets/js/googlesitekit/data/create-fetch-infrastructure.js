@@ -1,5 +1,5 @@
 /**
- * Provides an API function to create a fetch action to reduce boilerplate code.
+ * API function to create fetch infrastructure.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -100,7 +100,7 @@ export const createFetchInfrastructure = ( {
 
 	const actions = {
 		[ fetchCreator ]: function*( ...args ) { // eslint-disable-line object-shorthand
-			const params = argsToParamsObject( args, keyParams );
+			const params = argsToParamsObject( args, keyParams, true );
 
 			let response, error;
 
@@ -200,7 +200,11 @@ export const createFetchInfrastructure = ( {
 				return false;
 			}
 
-			const params = argsToParamsObject( args, keyParams );
+			const params = argsToParamsObject( args, keyParams, false );
+			if ( 'undefined' === typeof params ) {
+				return false;
+			}
+
 			return !! state[ isFetching ][ stringifyObject( params ) ];
 		},
 	};
@@ -221,15 +225,18 @@ export const createFetchInfrastructure = ( {
  * @since n.e.x.t
  * @private
  *
- * @param {Array}  args      Arguments passed to the original function.
- * @param {Object} keyParams Object with arguments definition to require for the fetch action
- *                           and the selector to check for active API requests. Argument names should
- *                           be used as keys, and a callback to be passed to invariant should be used
- *                           as values. If no callback is provided for an argument, the default will be
- *                           accepting any value other than undefined.
- * @return {Object}          Arguments keyed by their name.
+ * @param {Array}   args      Arguments passed to the original function.
+ * @param {Object}  keyParams Object with arguments definition to require for the fetch action
+ *                            and the selector to check for active API requests. Argument names should
+ *                            be used as keys, and a callback to be passed to invariant should be used
+ *                            as values. If no callback is provided for an argument, the default will be
+ *                            accepting any value other than undefined.
+ * @param {boolean} throwErr  Optional. Whether to throw validation errors (via invariant). If false,
+ *                            the function will just return undefined in case of an error.
+ * @return {?Object} Arguments keyed by their name, or undefined if an error occurred and throwErr is
+ *                   false.
  */
-const argsToParamsObject = ( args, keyParams ) => {
+const argsToParamsObject = ( args, keyParams, throwErr = false ) => {
 	const paramNames = Object.keys( keyParams );
 
 	const params = {};
@@ -244,7 +251,12 @@ const argsToParamsObject = ( args, keyParams ) => {
 			paramCallback = ( value ) => 'undefined' !== typeof value;
 		}
 
-		invariant( paramCallback( paramValue ), `${ paramName } is required.` );
+		if ( throwErr ) {
+			invariant( paramCallback( paramValue ), `${ paramName } is required.` );
+		} else if ( ! paramCallback( paramValue ) ) {
+			return undefined;
+		}
+
 		params[ paramName ] = paramValue;
 	}
 
