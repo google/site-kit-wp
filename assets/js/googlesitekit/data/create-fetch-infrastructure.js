@@ -247,10 +247,37 @@ export const createFetchInfrastructure = ( {
  *                   false.
  */
 const argsToParamsObject = ( args, keyParams, throwErr = false ) => {
-	const paramNames = Object.keys( keyParams );
+	if ( throwErr ) {
+		return argsToParamsObjectWithValidation( args, keyParams );
+	}
 
+	try {
+		const params = argsToParamsObjectWithValidation( args, keyParams );
+		return params;
+	} catch ( err ) {
+		return undefined;
+	}
+};
+
+/**
+ * Validates arguments against a parameter definition and returns a params
+ * object with all arguments keyed by their name.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param {Array}  args      Arguments passed to the original function.
+ * @param {Object} keyParams Object with arguments definition to require for the fetch action
+ *                           and the selector to check for active API requests. Argument names should
+ *                           be used as keys, and a callback to be passed to invariant should be used
+ *                           as values. If no callback is provided for an argument, the default will be
+ *                           accepting any value other than undefined.
+ * @return {Object} Arguments keyed by their name.
+ */
+const argsToParamsObjectWithValidation = ( args, keyParams ) => {
 	const params = {};
 
+	const paramNames = Object.keys( keyParams );
 	let i = 0;
 	for ( i = 0; i < paramNames.length; i++ ) {
 		const paramName = paramNames[ i ];
@@ -261,11 +288,7 @@ const argsToParamsObject = ( args, keyParams, throwErr = false ) => {
 			paramCallback = ( value ) => 'undefined' !== typeof value;
 		}
 
-		if ( throwErr ) {
-			invariant( paramCallback( paramValue ), `${ paramName } is required.` );
-		} else if ( ! paramCallback( paramValue ) ) {
-			return undefined;
-		}
+		invariant( paramCallback( paramValue ), `${ paramName } is required.` );
 
 		params[ paramName ] = paramValue;
 	}
