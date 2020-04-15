@@ -53,8 +53,7 @@ export const actions = {
 		if ( propertyID === PROPERTY_CREATE ) {
 			const accountID = registry.select( STORE_NAME ).getAccountID();
 
-			const { payload } = yield actions.submitPropertyCreate( accountID );
-			const { property, error } = payload;
+			const { response: property, error } = yield actions.submitPropertyCreate( accountID );
 
 			if ( property ) {
 				propertyID = property.id;
