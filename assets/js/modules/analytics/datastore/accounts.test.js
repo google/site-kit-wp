@@ -206,10 +206,15 @@ describe( 'modules/analytics accounts', () => {
 				expect( accounts ).toEqual( undefined );
 			} );
 
-			it( 'set passes existing tag IDs when fetching accounts', async () => {
+			it( 'passes existing tag ID when fetching accounts', async () => {
 				const existingPropertyID = 'UA-12345-1';
 
 				registry.dispatch( STORE_NAME ).receiveExistingTag( existingPropertyID );
+				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+					accountID: '12345',
+					propertyID: existingPropertyID,
+					permission: true,
+				} );
 				registry.dispatch( STORE_NAME ).setSettings( {} );
 
 				fetch
@@ -224,9 +229,8 @@ describe( 'modules/analytics accounts', () => {
 				registry.select( STORE_NAME ).getAccounts();
 
 				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getAccounts() !== undefined
-					),
+					() => registry.select( STORE_NAME ).getAccounts() !== undefined ||
+					registry.select( STORE_NAME ).getError()
 				);
 
 				// Ensure the proper parameters were sent.
