@@ -25,10 +25,8 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
-import {
-	INITIAL_STATE,
-	STORE_NAME,
-} from './index';
+import { STORE_NAME } from './constants';
+import { INITIAL_STATE } from './index';
 
 describe( 'core/site store', () => {
 	let apiFetchSpy;

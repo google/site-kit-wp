@@ -17,10 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -36,7 +32,8 @@ export const INITIAL_STATE = Data.collectState(
 	notifications.INITIAL_STATE,
 );
 
-export const STORE_NAME = 'core/site';
+import { STORE_NAME } from './constants';
+export { STORE_NAME };
 
 export const actions = Data.addInitializeAction(
 	Data.collectActions(
