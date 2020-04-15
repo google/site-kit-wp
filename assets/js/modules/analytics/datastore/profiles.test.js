@@ -108,7 +108,7 @@ describe( 'modules/analytics profiles', () => {
 						{ status: 200 }
 					);
 
-				registry.dispatch( STORE_NAME ).fetchCreateProfile( accountID, propertyID );
+				registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID );
 				expect( registry.select( STORE_NAME ).isDoingCreateProfile( accountID, propertyID ) ).toEqual( true );
 			} );
 
@@ -214,6 +214,7 @@ describe( 'modules/analytics profiles', () => {
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {} );
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
