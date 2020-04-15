@@ -20,52 +20,116 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-
 import {
 	Select,
 	Option,
 } from '../../../material-components';
+import { countries } from './countries';
+const { default: { country: allCountries } } = countries;
 
 // Cache the complicated timezone dropdown.
-let timezoneData = false;
-let lastTimezone = false;
+let timezoneSelectorCache = false;
+
+// Store current selections.
+let timezoneSelection = false;
+let countrySelection = false;
+let selectedTimezoneString = false;
 
 const TimezoneSelect = ( { timezone, setTimezone } ) => {
-	if ( timezoneData && timezone === lastTimezone ) {
-		return timezoneData;
-	}
-	const { timezones } = global.googlesitekit.admin;
-	lastTimezone = timezone;
+	const [ selectedCountry, setSelectedCountry ] = useState( timezone );
+	const [ selectedTimezoneID, setSelectedTimezoneID ] = useState( '' );
 
-	timezoneData = (
-		<Select
-			className="googlesitekit-analytics__select-timezone"
-			name="timezone"
-			style={ { minWidth: '240px' } /*todo: move to css */ }
-			enhanced
-			value={ timezone }
-			onEnhancedChange={ ( i, item ) => {
-				setTimezone( item.dataset.value );
-			} }
-			label={ __( 'Timezone', 'google-site-kit' ) }
-			outlined
-		>
-			{ timezones && timezones
-				.map( ( aTimezone, index ) =>
-					<Option
-						key={ index }
-						value={ aTimezone.value }
+	// Return the cached selector until the selected timezone changes.
+	if ( timezoneSelectorCache && timezone === timezoneSelection && selectedCountry === countrySelection && selectedTimezoneString === selectedTimezoneID ) {
+		return timezoneSelectorCache;
+	}
+
+	timezoneSelection = timezone;
+	countrySelection = selectedCountry;
+	selectedTimezoneString = selectedTimezoneID;
+	/* eslint-disable no-console */
+	console.log( multiTimezone );
+	let multiTimezone = false;
+
+	timezoneSelectorCache = (
+		<div>
+			<Select
+				className="googlesitekit-analytics__select-timezone"
+				name="country"
+				style={ { minWidth: '240px' } /*todo: move to css */ }
+				enhanced
+				value={ selectedCountry }
+				onEnhancedChange={ ( i, item ) => {
+					setTimezone( item.dataset.value );
+					setSelectedCountry( item.dataset.value );
+				} }
+				label={ __( 'Country', 'google-site-kit' ) }
+				outlined
+			>
+				{
+					allCountries && allCountries
+						.map( ( aCountry ) => {
+							// If the selected timezone is in this country, the country should be selected.
+							let value = aCountry.defaultTimeZoneId;
+							const timezoneMatch = aCountry.timeZone.find( ( tz ) => tz.timeZoneId === timezone );
+							if ( timezoneMatch ) {
+								value = timezoneMatch.timeZoneId;
+								if ( aCountry.timeZone.length > 1 ) {
+									multiTimezone = aCountry.timeZone;
+								} else {
+									setSelectedTimezoneID( aCountry.timeZone[ 0 ].displayName );
+								}
+								setSelectedCountry( timezoneMatch.timeZoneId );
+							}
+
+							return (
+								<Option
+									key={ aCountry.displayName }
+									value={ value }
+								>
+									{ aCountry.displayName }
+								</Option>
+							);
+						} ) }
+			</Select> {
+				multiTimezone
+					? <Select
+						className="googlesitekit-analytics__select-timezone"
+						name="timezone2"
+						style={ { minWidth: '240px' } /*todo: move to css */ }
+						enhanced
+						value={ timezone }
+						onEnhancedChange={ ( i, item ) => {
+							setTimezone( item.dataset.value );
+						} }
+						label={ __( 'Timezone', 'google-site-kit' ) }
+						outlined
 					>
-						{ aTimezone.name }
-					</Option>
-				) }
-		</Select>
+						{
+							multiTimezone
+								.map( ( aTimezone ) => {
+									return (
+										<Option
+											key={ aTimezone.displayName }
+											value={ aTimezone.timeZoneId }
+										>
+											{ aTimezone.displayName }
+										</Option>
+									);
+								} )
+
+						}
+					</Select>
+					: selectedTimezoneID
+			}
+		</div>
 	);
-	return timezoneData;
+	return timezoneSelectorCache;
 };
 
 export default TimezoneSelect;
