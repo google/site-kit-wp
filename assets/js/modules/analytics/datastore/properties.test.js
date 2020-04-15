@@ -221,6 +221,7 @@ describe( 'modules/analytics properties', () => {
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {} );
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
