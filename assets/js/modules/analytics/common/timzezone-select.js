@@ -52,52 +52,54 @@ const TimezoneSelect = ( { timezone, setTimezone } ) => {
 	timezoneSelection = timezone;
 	countrySelection = selectedCountry;
 	selectedTimezoneString = selectedTimezoneID;
-	/* eslint-disable no-console */
-	console.log( multiTimezone );
+
+	// Track whether the selected country has more than one timezone.
 	let multiTimezone = false;
 
 	timezoneSelectorCache = (
-		<div>
-			<Select
-				className="googlesitekit-analytics__select-timezone"
-				name="country"
-				style={ { minWidth: '240px' } /*todo: move to css */ }
-				enhanced
-				value={ selectedCountry }
-				onEnhancedChange={ ( i, item ) => {
-					setTimezone( item.dataset.value );
-					setSelectedCountry( item.dataset.value );
-				} }
-				label={ __( 'Country', 'google-site-kit' ) }
-				outlined
-			>
-				{
-					allCountries && allCountries
-						.map( ( aCountry ) => {
-							// If the selected timezone is in this country, the country should be selected.
-							let value = aCountry.defaultTimeZoneId;
-							const timezoneMatch = aCountry.timeZone.find( ( tz ) => tz.timeZoneId === timezone );
-							if ( timezoneMatch ) {
-								value = timezoneMatch.timeZoneId;
-								if ( aCountry.timeZone.length > 1 ) {
-									multiTimezone = aCountry.timeZone;
-								} else {
-									setSelectedTimezoneID( aCountry.timeZone[ 0 ].displayName );
+		<div >
+			<span style={ { minWidth: '240px', margin: '0 5px 0 0' } /*todo: move to css */ } >
+				<Select
+					className="googlesitekit-analytics__select-timezone"
+					name="country"
+					enhanced
+					value={ selectedCountry }
+					onEnhancedChange={ ( i, item ) => {
+						setTimezone( item.dataset.value );
+						setSelectedCountry( item.dataset.value );
+					} }
+					label={ __( 'Country', 'google-site-kit' ) }
+					outlined
+				>
+					{
+						allCountries && allCountries
+							.map( ( aCountry ) => {
+								// If the selected timezone is in this country, the country should be selected.
+								let value = aCountry.defaultTimeZoneId;
+								const timezoneMatch = aCountry.timeZone.find( ( tz ) => tz.timeZoneId === timezone );
+								if ( timezoneMatch ) {
+									value = timezoneMatch.timeZoneId;
+									if ( aCountry.timeZone.length > 1 ) {
+										multiTimezone = aCountry.timeZone;
+									} else {
+										setSelectedTimezoneID( aCountry.timeZone[ 0 ].displayName );
+									}
+									setSelectedCountry( timezoneMatch.timeZoneId );
 								}
-								setSelectedCountry( timezoneMatch.timeZoneId );
-							}
 
-							return (
-								<Option
-									key={ aCountry.displayName }
-									value={ value }
-								>
-									{ aCountry.displayName }
-								</Option>
-							);
-						} ) }
-			</Select> {
-				multiTimezone
+								return (
+									<Option
+										key={ aCountry.displayName }
+										value={ value }
+									>
+										{ aCountry.displayName }
+									</Option>
+								);
+							} ) }
+				</Select>
+			</span>
+			<span style={ { minWidth: '240px', margin: '5px 5px 0 0' } /*todo: move to css */ } >
+				{ multiTimezone
 					? <Select
 						className="googlesitekit-analytics__select-timezone"
 						name="timezone2"
@@ -122,11 +124,11 @@ const TimezoneSelect = ( { timezone, setTimezone } ) => {
 										</Option>
 									);
 								} )
-
 						}
 					</Select>
 					: selectedTimezoneID
-			}
+				}
+			</span>
 		</div>
 	);
 	return timezoneSelectorCache;

@@ -88,7 +88,7 @@ const AccountCreate = () => {
 		<Fragment>
 			<div className="googlesitekit-setup-module">
 				<div className="mdc-layout-grid__inner">
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+					<div className="mdc-layout-grid__cell--span-12">
 						<h2>
 							{ __( 'Create new Analytics account', 'google-site-kit' ) }
 						</h2>
@@ -100,7 +100,7 @@ const AccountCreate = () => {
 								</p>
 							</div>
 						}
-						<div>
+						<div className="mdc-layout-grid">
 							{
 								isDoingCreateAccount
 									? <ProgressBar />
@@ -109,7 +109,7 @@ const AccountCreate = () => {
 											{ __( 'Confirm your account details:', 'google-site-kit' ) }
 										</p>
 										<div className="googlesitekit-setup-module__inputs">
-											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 												<AccountField
 													validationIssues={ validationIssues }
 													setValidationIssues={ setValidationIssues }
@@ -117,7 +117,7 @@ const AccountCreate = () => {
 													setAccountName={ setAccountName }
 												/>
 											</div>
-											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 												<PropertyField
 													validationIssues={ validationIssues }
 													setValidationIssues={ setValidationIssues }
@@ -125,7 +125,7 @@ const AccountCreate = () => {
 													setPropertyName={ setPropertyName }
 												/>
 											</div>
-											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 												<ProfileField
 													validationIssues={ validationIssues }
 													setValidationIssues={ setValidationIssues }
@@ -133,7 +133,7 @@ const AccountCreate = () => {
 													setProfileName={ setProfileName }
 												/>
 											</div>
-											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 												<TimezoneSelect
 													timezone={ timezone }
 													setTimezone={ setTimezone }
@@ -143,7 +143,7 @@ const AccountCreate = () => {
 									</div>
 							}
 						</div>
-						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-2">
+						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 							<Button
 								disabled={ buttonDisabled }
 								onClick={ () => {
