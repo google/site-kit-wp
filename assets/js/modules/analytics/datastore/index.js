@@ -27,7 +27,7 @@ import profiles from './profiles';
 import settings from './settings';
 import tags from './tags';
 import { STORE_NAME } from './constants';
-export { STORE_NAME } from './constants';
+export { STORE_NAME };
 
 const baseModuleStore = Modules.createModuleStore( 'analytics', {
 	settingSlugs: [
