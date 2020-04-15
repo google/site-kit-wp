@@ -136,79 +136,6 @@ final class Analytics extends Module
 	}
 
 	/**
-	 * Handles the provisioning callback after the user completes the terms of service.
-	 *
-	 * @since 1.0.0
-	 */
-	private function handle_provisioning_callback() {
-		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			return;
-		}
-
-		$input = $this->context->input();
-
-		if ( ! $input->filter( INPUT_GET, 'gatoscallback' ) ) {
-			return;
-		}
-
-		// The handler should check the received Account Ticket id parameter against the id stored in the provisioning step.
-		$account_ticket_id        = $this->context->input()->filter( INPUT_GET, 'accountTicketId', FILTER_SANITIZE_STRING );
-		$stored_account_ticket_id = get_transient( self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
-		delete_transient( self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
-
-		if ( $stored_account_ticket_id !== $account_ticket_id ) {
-			wp_safe_redirect(
-				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'account_ticket_id_mismatch' ) )
-			);
-			exit;
-		}
-
-		// Check for a returned error.
-		$error = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
-		if ( ! empty( $error ) ) {
-			wp_safe_redirect(
-				$this->context->admin_url( 'module-analytics', array( 'error_code' => $error ) )
-			);
-			exit;
-		}
-
-		$account_id      = $this->context->input()->filter( INPUT_GET, 'accountId', FILTER_SANITIZE_STRING );
-		$web_property_id = $this->context->input()->filter( INPUT_GET, 'webPropertyId', FILTER_SANITIZE_STRING );
-		$profile_id      = $this->context->input()->filter( INPUT_GET, 'profileId', FILTER_SANITIZE_STRING );
-
-		if ( empty( $account_id ) || empty( $web_property_id ) || empty( $profile_id ) ) {
-			wp_safe_redirect(
-				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'callback_missing_parameter' ) )
-			);
-			exit;
-		}
-
-		// Retrieve the internal web property id.
-		try {
-			$web_property = $this->get_service( 'analytics' )->management_webproperties->get( $account_id, $property_id );
-		} catch ( Exception $e ) {
-			wp_safe_redirect(
-				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'property_not_found' ) )
-			);
-			exit;
-		}
-
-		$this->get_settings()->merge(
-			array(
-				'accountID'             => $account_id,
-				'propertyID'            => $web_property_id,
-				'profileID'             => $profile_id,
-				'internalWebPropertyID' => $web_property->getInternalWebPropertyId(),
-			)
-		);
-
-		wp_safe_redirect(
-			$this->context->admin_url( 'dashboard', array( 'notification' => 'authentication_success' ) )
-		);
-		exit;
-	}
-
-	/**
 	 * Checks whether or not tracking snippet should be contextually disabled for this request.
 	 *
 	 * @since 1.1.0
@@ -541,6 +468,79 @@ final class Analytics extends Module
 
 		$data['amp_component_scripts']['amp-analytics'] = 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js';
 		return $data;
+	}
+
+	/**
+	 * Handles the provisioning callback after the user completes the terms of service.
+	 *
+	 * @since n.e.x.t
+	 */
+	protected function handle_provisioning_callback() {
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			return;
+		}
+
+		$input = $this->context->input();
+
+		if ( ! $input->filter( INPUT_GET, 'gatoscallback' ) ) {
+			return;
+		}
+
+		// The handler should check the received Account Ticket id parameter against the id stored in the provisioning step.
+		$account_ticket_id        = $this->context->input()->filter( INPUT_GET, 'accountTicketId', FILTER_SANITIZE_STRING );
+		$stored_account_ticket_id = get_transient( self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
+		delete_transient( self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
+
+		if ( $stored_account_ticket_id !== $account_ticket_id ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'account_ticket_id_mismatch' ) )
+			);
+			exit;
+		}
+
+		// Check for a returned error.
+		$error = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
+		if ( ! empty( $error ) ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => $error ) )
+			);
+			exit;
+		}
+
+		$account_id      = $this->context->input()->filter( INPUT_GET, 'accountId', FILTER_SANITIZE_STRING );
+		$web_property_id = $this->context->input()->filter( INPUT_GET, 'webPropertyId', FILTER_SANITIZE_STRING );
+		$profile_id      = $this->context->input()->filter( INPUT_GET, 'profileId', FILTER_SANITIZE_STRING );
+
+		if ( empty( $account_id ) || empty( $web_property_id ) || empty( $profile_id ) ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'callback_missing_parameter' ) )
+			);
+			exit;
+		}
+
+		// Retrieve the internal web property id.
+		try {
+			$web_property = $this->get_service( 'analytics' )->management_webproperties->get( $account_id, $property_id );
+		} catch ( Exception $e ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'property_not_found' ) )
+			);
+			exit;
+		}
+
+		$this->get_settings()->merge(
+			array(
+				'accountID'             => $account_id,
+				'propertyID'            => $web_property_id,
+				'profileID'             => $profile_id,
+				'internalWebPropertyID' => $web_property->getInternalWebPropertyId(),
+			)
+		);
+
+		wp_safe_redirect(
+			$this->context->admin_url( 'dashboard', array( 'notification' => 'authentication_success' ) )
+		);
+		exit;
 	}
 
 	/**
