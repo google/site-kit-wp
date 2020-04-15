@@ -34,10 +34,12 @@ import PropertyField from './property-field';
 import ProfileField from './profile-field';
 
 // import Data from 'googlesitekit-data';
-// const { dispatch } = Data;
+// const { dispatch, select } = Data;
 
 const AccountCreate = () => {
 	// const { createAccount } = dispatch( STORE_NAME );
+	// const isDoingCreateAccount = select( STORE_NAME ).isDoingCreateAccount();
+	const isDoingCreateAccount = false;
 	const { createAccount } = () => {};
 	const { siteName, siteURL, timezone: tz, errorcode } = global.googlesitekit.admin;
 	const [ error, setError ] = useState( errorcode );
@@ -50,7 +52,6 @@ const AccountCreate = () => {
 			profileName,
 			timezone,
 		} ).then( ( e ) => {
-			setIsSubmitting( false );
 			const { error: err } = e.payload;
 			if ( err ) {
 				setError( err.message ? err.message : __( 'Unknown error.', 'google-site-kit' ) );
@@ -62,11 +63,10 @@ const AccountCreate = () => {
 	const [ propertyName, setPropertyName ] = useState( siteURL );
 	const [ profileName, setProfileName ] = useState( __( 'All website traffic', 'google-site-kit' ) );
 	const [ validationIssues, setValidationIssues ] = useState( {} );
-	const [ isSubmitting, setIsSubmitting ] = useState( false );
 	const [ timezone, setTimezone ] = useState( tz );
 
 	// Disable the submit button if there are validation errors, and while submission is in progress.
-	const buttonDisabled = validationIssues.accountName || validationIssues.propertyName || validationIssues.profileName || isSubmitting;
+	const buttonDisabled = validationIssues.accountName || validationIssues.propertyName || validationIssues.profileName || isDoingCreateAccount;
 
 	return (
 		<Fragment>
@@ -86,7 +86,7 @@ const AccountCreate = () => {
 						}
 						<div>
 							{
-								isSubmitting
+								isDoingCreateAccount
 									? <ProgressBar />
 									: <div>
 										<p>
@@ -131,7 +131,6 @@ const AccountCreate = () => {
 							<Button
 								disabled={ buttonDisabled }
 								onClick={ () => {
-									setIsSubmitting( true );
 									handleSubmit( accountName, propertyName, profileName, timezone );
 								} }
 							>
