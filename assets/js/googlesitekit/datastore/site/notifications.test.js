@@ -28,7 +28,6 @@ describe( 'core/site notifications', () => {
 			'removeNotification',
 			'fetchNotifications',
 			'receiveNotifications',
-			'receiveNotificationsFailed',
 		];
 		expect( Object.keys( actions ) ).toEqual( expect.arrayContaining( actionsToExpect ) );
 	} );
