@@ -66,8 +66,7 @@ export const actions = {
 		if ( profileID === PROFILE_CREATE ) {
 			const accountID = registry.select( STORE_NAME ).getAccountID();
 
-			const { payload } = yield actions.submitProfileCreate( accountID, propertyID );
-			const { error } = payload;
+			const { error } = yield actions.submitProfileCreate( accountID, propertyID );
 
 			if ( error ) {
 				return actions.submitChangesFailed( { error } );

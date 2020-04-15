@@ -32,14 +32,17 @@ import { STORE_NAME, PROFILE_CREATE, PROPERTY_CREATE } from './constants';
 
 // Actions
 const FETCH_CREATE_PROFILE = 'FETCH_CREATE_PROFILE';
-const FETCH_CREATE_PROFILE_STARTED = 'FETCH_CREATE_PROFILE_STARTED';
+const START_FETCH_CREATE_PROFILE = 'START_FETCH_CREATE_PROFILE';
+const FINISH_FETCH_CREATE_PROFILE = 'FINISH_FETCH_CREATE_PROFILE';
+const CATCH_FETCH_CREATE_PROFILE = 'CATCH_FETCH_CREATE_PROFILE';
+
 const FETCH_PROFILES = 'FETCH_PROFILES';
-const FETCH_PROFILES_STARTED = 'FETCH_PROFILES_STARTED';
+const START_FETCH_PROFILES = 'START_FETCH_PROFILES';
+const FINISH_FETCH_PROFILES = 'FINISH_FETCH_PROFILES';
+const CATCH_FETCH_PROFILES = 'CATCH_FETCH_PROFILES';
+
 const RECEIVE_CREATE_PROFILE = 'RECEIVE_CREATE_PROFILE';
-const RECEIVE_CREATE_PROFILE_FAILED = 'RECEIVE_CREATE_PROFILE_FAILED';
 const RECEIVE_PROFILES = 'RECEIVE_PROFILES';
-const RECEIVE_PROFILES_COMPLETED = 'RECEIVE_PROFILES_COMPLETED';
-const RECEIVE_PROFILES_FAILED = 'RECEIVE_PROFILES_FAILED';
 
 export const INITIAL_STATE = {
 	isFetchingCreateProfile: {},
@@ -58,48 +61,96 @@ export const actions = {
 	 *
 	 * @param {string} accountID  Google Analytics account ID.
 	 * @param {string} propertyID Google Analytics property ID.
-	 * @return {Function} Generator function action.
+	 * @return {Object} Response and error objects.
 	 */
 	*createProfile( accountID, propertyID ) {
 		invariant( accountID, 'accountID is required.' );
 		invariant( propertyID, 'propertyID is required.' );
+		let response, error;
+
+		yield {
+			payload: {
+				accountID,
+				propertyID,
+			},
+			type: START_FETCH_CREATE_PROFILE,
+		};
 
 		try {
-			const profile = yield actions.fetchCreateProfile( accountID, propertyID );
+			response = yield {
+				payload: {
+					accountID,
+					propertyID,
+				},
+				type: FETCH_CREATE_PROFILE,
+			};
+			const profile = response;
 
 			const registry = yield Data.commonActions.getRegistry();
 			registry.dispatch( STORE_NAME ).setProfileID( profile.id );
+			yield actions.receiveCreateProfile( { accountID, propertyID, profile } );
 
-			return actions.receiveCreateProfile( { accountID, propertyID, profile } );
-		} catch ( error ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveCreateProfileFailed( { accountID, error, propertyID } );
+			yield {
+				payload: {
+					accountID,
+					propertyID,
+				},
+				type: FINISH_FETCH_CREATE_PROFILE,
+			};
+		} catch ( e ) {
+			error = e;
+			yield {
+				payload: {
+					accountID,
+					propertyID,
+					error,
+				},
+				type: CATCH_FETCH_CREATE_PROFILE,
+			};
 		}
+
+		return { response, error };
 	},
-
-	*fetchCreateProfile( accountID, propertyID ) {
-		yield {
-			payload: { accountID, propertyID },
-			type: FETCH_CREATE_PROFILE_STARTED,
-		};
-
-		return {
-			payload: { accountID, propertyID },
-			type: FETCH_CREATE_PROFILE,
-		};
-	},
-
+	/**
+	 * Fetches profiles from the server and add them to the store.
+	 *
+	 * @param {string} accountID  Google Analytics account ID.
+	 * @param {string} propertyID Google Analytics property ID.
+	 * @return {Object} Response and error objects.
+	 */
 	*fetchProfiles( accountID, propertyID ) {
+		let response, error;
+
 		yield {
 			payload: { accountID, propertyID },
-			type: FETCH_PROFILES_STARTED,
+			type: START_FETCH_PROFILES,
 		};
 
-		return {
-			payload: { accountID, propertyID },
-			type: FETCH_PROFILES,
-		};
+		try {
+			response = yield {
+				payload: { accountID, propertyID },
+				type: FETCH_PROFILES,
+			};
+
+			yield actions.receiveProfiles( response );
+
+			yield {
+				payload: { accountID, propertyID },
+				type: FINISH_FETCH_PROFILES,
+			};
+		} catch ( e ) {
+			error = e;
+			yield {
+				payload: {
+					accountID,
+					propertyID,
+					error,
+				},
+				type: CATCH_FETCH_PROFILES,
+			};
+		}
+
+		return { response, error };
 	},
 
 	/**
@@ -128,56 +179,12 @@ export const actions = {
 		};
 	},
 
-	/**
-	 * Logs an error with profile creation.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Object} args            Argument params.
-	 * @param {string} args.accountID  Google Analytics account ID.
-	 * @param {string} args.propertyID Google Analytics property ID.
-	 * @param {Object} args.error      Error object.
-	 * @return {Object} Redux-style action.
-	 */
-	receiveCreateProfileFailed( { accountID, propertyID, error } ) {
-		invariant( accountID, 'accountID is required.' );
-		invariant( propertyID, 'propertyID is required.' );
-		invariant( error, 'error is required.' );
-
-		return {
-			payload: { accountID, error, propertyID },
-			type: RECEIVE_CREATE_PROFILE_FAILED,
-		};
-	},
-
 	receiveProfiles( profiles ) {
 		invariant( Array.isArray( profiles ), 'profiles must be an array.' );
 
 		return {
 			payload: { profiles },
 			type: RECEIVE_PROFILES,
-		};
-	},
-
-	receiveProfilesCompleted( accountID, propertyID ) {
-		invariant( accountID, 'accountID is required.' );
-		invariant( propertyID, 'propertyID is required.' );
-
-		return {
-			payload: { accountID, propertyID },
-			type: RECEIVE_PROFILES_COMPLETED,
-		};
-	},
-
-	receiveProfilesFailed( { accountID, error, propertyID } ) {
-		invariant( accountID, 'accountID is required.' );
-		invariant( error, 'error is required.' );
-		invariant( propertyID, 'propertyID is required.' );
-
-		return {
-			payload: { accountID, error, propertyID },
-			type: RECEIVE_PROFILES_FAILED,
 		};
 	},
 
@@ -230,7 +237,7 @@ export const controls = {
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case FETCH_CREATE_PROFILE_STARTED: {
+		case START_FETCH_CREATE_PROFILE: {
 			const { accountID, propertyID } = payload;
 
 			return {
@@ -242,7 +249,32 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case FETCH_PROFILES_STARTED: {
+		case FINISH_FETCH_CREATE_PROFILE: {
+			const { accountID, propertyID } = payload;
+
+			return {
+				...state,
+				isFetchingCreateProfile: {
+					...state.isFetchingCreateProfile,
+					[ `${ accountID }::${ propertyID }` ]: false,
+				},
+			};
+		}
+
+		case CATCH_FETCH_CREATE_PROFILE: {
+			const { accountID, error, propertyID } = payload;
+
+			return {
+				...state,
+				error,
+				isFetchingCreateProfile: {
+					...state.isFetchingCreateProfile,
+					[ `${ accountID }::${ propertyID }` ]: false,
+				},
+			};
+		}
+
+		case START_FETCH_PROFILES: {
 			const { accountID, propertyID } = payload;
 
 			return {
@@ -254,34 +286,42 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case FINISH_FETCH_PROFILES: {
+			const { accountID, propertyID } = payload;
+
+			return {
+				...state,
+				isFetchingProfiles: {
+					...state.isFetchingProfiles,
+					[ `${ accountID }::${ propertyID }` ]: false,
+				},
+			};
+		}
+
+		case CATCH_FETCH_PROFILES: {
+			const { accountID, error, propertyID } = payload;
+
+			return {
+				...state,
+				error,
+				isFetchingProfiles: {
+					...state.isFetchingProfiles,
+					[ `${ accountID }::${ propertyID }` ]: false,
+				},
+			};
+		}
+
 		case RECEIVE_CREATE_PROFILE: {
 			const { accountID, propertyID, profile } = payload;
 
 			return {
 				...state,
-				isFetchingCreateProfile: {
-					...state.isFetchingCreateProfile,
-					[ `${ accountID }::${ propertyID }` ]: false,
-				},
 				profiles: {
 					...state.profiles,
 					[ `${ accountID }::${ propertyID }` ]: [
 						...( state.profiles[ `${ accountID }::${ propertyID }` ] || [] ),
 						profile,
 					],
-				},
-			};
-		}
-
-		case RECEIVE_CREATE_PROFILE_FAILED: {
-			const { accountID, error, propertyID } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingCreateProfile: {
-					...state.isFetchingCreateProfile,
-					[ `${ accountID }::${ propertyID }` ]: false,
 				},
 			};
 		}
@@ -298,31 +338,6 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_PROFILES_COMPLETED: {
-			const { accountID, propertyID } = payload;
-
-			return {
-				...state,
-				isFetchingProfiles: {
-					...state.isFetchingProfiles,
-					[ `${ accountID }::${ propertyID }` ]: false,
-				},
-			};
-		}
-
-		case RECEIVE_PROFILES_FAILED: {
-			const { accountID, error, propertyID } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingProfiles: {
-					...state.isFetchingProfiles,
-					[ `${ accountID }::${ propertyID }` ]: false,
-				},
-			};
-		}
-
 		default: {
 			return { ...state };
 		}
@@ -335,27 +350,18 @@ export const resolvers = {
 			return;
 		}
 
-		try {
-			const registry = yield Data.commonActions.getRegistry();
+		const registry = yield Data.commonActions.getRegistry();
 
-			let profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
+		const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 
-			// Only fetch profiles if there are none received for the given account and property.
-			if ( ! profiles ) {
-				profiles = yield actions.fetchProfiles( accountID, propertyID );
-				yield actions.receiveProfiles( profiles );
-			}
+		// Only fetch profiles if there are none received for the given account and property.
+		if ( ! profiles ) {
+			yield actions.fetchProfiles( accountID, propertyID );
+		}
 
-			const profileID = registry.select( STORE_NAME ).getProfileID();
-			if ( ! profileID ) {
-				yield actions.setProfileForProperty( propertyID );
-			}
-
-			return actions.receiveProfilesCompleted( accountID, propertyID );
-		} catch ( error ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveProfilesFailed( { accountID, propertyID, error } );
+		const profileID = registry.select( STORE_NAME ).getProfileID();
+		if ( ! profileID ) {
+			yield actions.setProfileForProperty( propertyID );
 		}
 	},
 };
