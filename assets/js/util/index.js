@@ -53,6 +53,7 @@ import { tagMatchers as tagmanagerTagMatchers } from '../modules/tagmanager/util
 import { trackEvent } from './tracking';
 import data, { TYPE_CORE } from '../components/data';
 export { trackEvent };
+export { SvgIcon };
 export * from './sanitize';
 export * from './stringify';
 export * from './standalone';
