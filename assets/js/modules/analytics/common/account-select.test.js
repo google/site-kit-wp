@@ -123,6 +123,5 @@ describe( 'AccountSelect', () => {
 		expect( newPropertyID ).not.toBeFalsy();
 		expect( newWebPropertyID ).not.toBeFalsy();
 		expect( newProfileID ).not.toBeFalsy();
-		// expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 } );
