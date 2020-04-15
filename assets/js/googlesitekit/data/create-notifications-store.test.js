@@ -178,24 +178,24 @@ describe( 'createNotificationsStore store', () => {
 			} );
 		} );
 
-		describe( 'fetchNotifications', () => {
+		describe( 'fetchGetNotifications', () => {
 			it( 'does not require any params', () => {
 				expect( () => {
-					dispatch.fetchNotifications();
+					dispatch.fetchGetNotifications();
 				} ).not.toThrow();
 			} );
 		} );
 
-		describe( 'receiveNotifications', () => {
-			it( 'requires the notifications param', () => {
+		describe( 'receiveGetNotifications', () => {
+			it( 'requires the response param', () => {
 				expect( () => {
-					dispatch.receiveNotifications();
-				} ).toThrow( 'notifications is required.' );
+					dispatch.receiveGetNotifications();
+				} ).toThrow( 'response is required.' );
 			} );
 
 			it( 'receives and sets notifications', () => {
 				const notifications = [ { id: 'test_notification' } ];
-				dispatch.receiveNotifications( notifications );
+				dispatch.receiveGetNotifications( notifications );
 
 				const state = store.getState();
 
@@ -283,7 +283,7 @@ describe( 'createNotificationsStore store', () => {
 	} );
 
 	describe( 'controls', () => {
-		describe( 'FETCH_NOTIFICATIONS', () => {
+		describe( 'FETCH_GET_NOTIFICATIONS', () => {
 			it( 'requests from the correct API endpoint', async () => {
 				const [ type, identifier, datapoint ] = STORE_ARGS;
 				const response = { type, identifier, datapoint };
@@ -306,7 +306,10 @@ describe( 'createNotificationsStore store', () => {
 						};
 					} );
 
-				const result = await storeDefinition.controls.FETCH_NOTIFICATIONS();
+				const result = await storeDefinition.controls.FETCH_GET_NOTIFICATIONS( {
+					payload: { params: {} },
+					type: 'FETCH_GET_NOTIFICATIONS',
+				} );
 				expect( result ).toEqual( response );
 				// Ensure `console.error()` wasn't called, which will happen if the API
 				// request fails.

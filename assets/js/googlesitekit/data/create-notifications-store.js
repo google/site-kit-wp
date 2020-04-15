@@ -25,17 +25,11 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { createFetchInfrastructure } from './create-fetch-infrastructure';
 
 // Actions
 const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
 const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION';
-
-const FETCH_NOTIFICATIONS = 'FETCH_NOTIFICATIONS';
-const START_FETCH_NOTIFICATIONS = 'START_FETCH_NOTIFICATIONS';
-const FINISH_FETCH_NOTIFICATIONS = 'FINISH_FETCH_NOTIFICATIONS';
-const CATCH_FETCH_NOTIFICATIONS = 'CATCH_FETCH_NOTIFICATIONS';
-
-const RECEIVE_NOTIFICATIONS = 'RECEIVE_NOTIFICATIONS';
 
 /**
  * Creates a store object that includes actions and selectors for managing notifications.
@@ -71,7 +65,30 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 		isFetchingNotifications: false,
 	};
 
+	const fetchNotificationsInfrastructure = createFetchInfrastructure( {
+		baseName: 'getNotifications',
+		apiCallback: () => {
+			return API.get( type, identifier, datapoint );
+		},
+		receiveCallback: ( state, notifications ) => {
+			return {
+				...state,
+				serverNotifications: notifications.reduce(
+					( acc, notification ) => {
+						return {
+							...acc,
+							[ notification.id ]: notification,
+						};
+					},
+					{}
+				),
+			};
+		},
+	} );
+
 	const actions = {
+		...fetchNotificationsInfrastructure.actions,
+
 		/**
 		 * Adds a notification to the store.
 		 *
@@ -105,69 +122,10 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 				type: REMOVE_NOTIFICATION,
 			};
 		},
-
-		/**
-		 * Dispatches an action that creates an HTTP request to the notifications endpoint.
-		 *
-		 * @since 1.6.0
-		 * @private
-		 *
-		 * @return {Object} {response, error}
-		 */
-		*fetchNotifications() {
-			let response, error;
-
-			yield {
-				payload: {},
-				type: START_FETCH_NOTIFICATIONS,
-			};
-
-			try {
-				response = yield {
-					payload: {},
-					type: FETCH_NOTIFICATIONS,
-				};
-
-				yield actions.receiveNotifications( response );
-
-				yield {
-					payload: {},
-					type: FINISH_FETCH_NOTIFICATIONS,
-				};
-			} catch ( e ) {
-				error = e;
-				yield {
-					payload: { error },
-					type: CATCH_FETCH_NOTIFICATIONS,
-				};
-			}
-
-			return { response, error };
-		},
-
-		/**
-		 * Stores notifications received from the REST API.
-		 *
-		 * @since 1.6.0
-		 * @private
-		 *
-		 * @param {Array} notifications Notifications from the API.
-		 * @return {Object} Redux-style action.
-		 */
-		receiveNotifications( notifications ) {
-			invariant( notifications, 'notifications is required.' );
-
-			return {
-				payload: { notifications },
-				type: RECEIVE_NOTIFICATIONS,
-			};
-		},
 	};
 
 	const controls = {
-		[ FETCH_NOTIFICATIONS ]: () => {
-			return API.get( type, identifier, datapoint );
-		},
+		...fetchNotificationsInfrastructure.controls,
 	};
 
 	const reducer = ( state = INITIAL_STATE, { type, payload } ) => { // eslint-disable-line no-shadow
@@ -211,59 +169,23 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 				};
 			}
 
-			case START_FETCH_NOTIFICATIONS: {
-				return {
-					...state,
-					isFetchingNotifications: true,
-				};
-			}
-
-			case RECEIVE_NOTIFICATIONS: {
-				const { notifications } = payload;
-
-				return {
-					...state,
-					isFetchingNotifications: false,
-					serverNotifications: notifications.reduce(
-						( acc, notification ) => {
-							return {
-								...acc,
-								[ notification.id ]: notification,
-							};
-						},
-						{}
-					),
-				};
-			}
-
-			case FINISH_FETCH_NOTIFICATIONS: {
-				return {
-					...state,
-					isFetchingNotifications: false,
-				};
-			}
-
-			case CATCH_FETCH_NOTIFICATIONS: {
-				return {
-					...state,
-					error: payload.error,
-					isFetchingNotifications: false,
-				};
-			}
-
 			default: {
-				return { ...state };
+				return fetchNotificationsInfrastructure.reducer( state, { type, payload } );
 			}
 		}
 	};
 
 	const resolvers = {
+		...fetchNotificationsInfrastructure.resolvers,
+
 		*getNotifications() {
-			yield actions.fetchNotifications();
+			yield actions.fetchGetNotifications();
 		},
 	};
 
 	const selectors = {
+		...fetchNotificationsInfrastructure.selectors,
+
 		/**
 		 * Gets the current notifications.
 		 *
