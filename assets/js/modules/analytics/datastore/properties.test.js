@@ -112,7 +112,7 @@ describe( 'modules/analytics properties', () => {
 			it( 'sets isDoingCreateProperty ', async () => {
 				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 
-				registry.dispatch( STORE_NAME ).fetchCreateProperty( accountID );
+				registry.dispatch( STORE_NAME ).createProperty( accountID );
 				expect( registry.select( STORE_NAME ).isDoingCreateProperty( accountID ) ).toEqual( true );
 			} );
 
