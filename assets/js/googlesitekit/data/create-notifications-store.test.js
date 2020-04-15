@@ -269,9 +269,7 @@ describe( 'createNotificationsStore store', () => {
 				muteConsole( 'error' );
 				select.getNotifications();
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingNotifications === false,
+					() => select.isFetchingGetNotifications() === false,
 				);
 
 				const notifications = select.getNotifications();

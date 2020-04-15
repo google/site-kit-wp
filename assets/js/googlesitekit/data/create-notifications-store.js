@@ -62,7 +62,6 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 		// object so we can know if a client notification was added and then
 		// removed from state.
 		clientNotifications: undefined,
-		isFetchingNotifications: false,
 	};
 
 	const fetchNotificationsInfrastructure = createFetchInfrastructure( {

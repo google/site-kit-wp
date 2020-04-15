@@ -66,8 +66,6 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 	const INITIAL_STATE = {
 		settings: undefined,
 		savedSettings: undefined,
-		isFetchingSettings: false,
-		isFetchingSaveSettings: false,
 	};
 
 	const fetchSettingsInfrastructure = createFetchInfrastructure( {
@@ -267,9 +265,13 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {boolean} True if the settings are being saved, false otherwise.
 		 */
 		isDoingSaveSettings( state ) {
-			// Since isFetchingSaveSettings holds information based on specific
-			// values but we only need generic information here, we need to
-			// check whether ANY such request is in progress.
+			// Since isFetchingSaveSettings (via createFetchInfrastructure)
+			// holds information based on specific values but we only need
+			// generic information here, we need to check whether ANY such
+			// request is in progress.
+			if ( 'object' !== typeof state.isFetchingSaveSettings ) {
+				return false;
+			}
 			return Object.values( state.isFetchingSaveSettings ).some( ( value ) => value );
 		},
 	};

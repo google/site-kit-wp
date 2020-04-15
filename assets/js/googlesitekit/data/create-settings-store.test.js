@@ -339,7 +339,7 @@ describe( 'createSettingsStore store', () => {
 				await subscribeUntil( registry,
 					// TODO: We may want a selector for this, but for now this is fine
 					// because it's internal-only.
-					() => store.getState().isFetchingSettings === false,
+					() => select.isFetchingGetSettings() === false,
 				);
 
 				const settings = select.getSettings();

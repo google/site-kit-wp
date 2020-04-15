@@ -28,7 +28,6 @@ const { createRegistrySelector } = Data;
 
 export const INITIAL_STATE = {
 	connection: undefined,
-	isFetchingConnection: false,
 };
 
 const fetchConnectionInfrastructure = createFetchInfrastructure( {
