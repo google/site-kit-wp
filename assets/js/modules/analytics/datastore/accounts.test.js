@@ -60,7 +60,94 @@ describe( 'modules/analytics accounts', () => {
 	} );
 
 	describe( 'actions', () => {
+		describe( 'createAccount', () => {
+			it( 'creates an account and adds it to the store ', async () => {
+				const accountName = fixtures.createAccount.accountName;
+				const propertyName = fixtures.createAccount.propertyName;
+				const profileName = fixtures.createAccount.profileName;
+				const timezone = fixtures.createAccount.timezone;
 
+				fetch
+					.doMockIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/
+					)
+					.mockResponse(
+						JSON.stringify( fixtures.createAccount ),
+						{ status: 200 }
+					);
+
+				registry.dispatch( STORE_NAME ).createAccount( { accountName, propertyName, profileName, timezone } );
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).isDoingCreateAccount() !== true
+					),
+				);
+
+				// Ensure the proper body parameters were sent.
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toMatchObject(
+					{ accountName, propertyName, profileName, timezone }
+				);
+			} );
+
+			it( 'sets isDoingCreateAccount ', async () => {
+				const accountName = fixtures.createAccount.accountName;
+				const propertyName = fixtures.createAccount.propertyName;
+				const profileName = fixtures.createAccount.profileName;
+				const timezone = fixtures.createAccount.timezone;
+
+				fetch
+					.doMockIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/
+					)
+					.mockResponse(
+						JSON.stringify( fixtures.createAccount ),
+						{ status: 200 }
+					);
+
+				registry.dispatch( STORE_NAME ).fetchCreateAccount( { accountName, propertyName, profileName, timezone } );
+				expect( registry.select( STORE_NAME ).isDoingCreateAccount() ).toEqual( true );
+			} );
+
+			it( 'dispatches an error if the request fails ', async () => {
+				const accountName = fixtures.createAccount.accountName;
+				const propertyName = fixtures.createAccount.propertyName;
+				const profileName = fixtures.createAccount.profileName;
+				const timezone = fixtures.createAccount.timezone;
+
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetch
+					.doMockIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/
+					)
+					.mockResponse(
+						JSON.stringify( response ),
+						{ status: 500 }
+					);
+
+				muteConsole( 'error' );
+				registry.dispatch( STORE_NAME ).createAccount( { accountName, propertyName, profileName, timezone } );
+
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getError()
+					),
+				);
+
+				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( response );
+
+				// Ignore the request fired by the `getAccounts` selector.
+				muteConsole( 'error' );
+				const accounts = registry.select( STORE_NAME ).getAccounts();
+				// No accounts should have been added yet, as the property creation
+				// failed.
+				expect( accounts ).toEqual( undefined );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {

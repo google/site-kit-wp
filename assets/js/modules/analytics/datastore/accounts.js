@@ -34,6 +34,7 @@ const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED';
 const FETCH_CREATE_ACCOUNT = 'FETCH_CREATE_ACCOUNT';
+const RECEIVE_CREATE_ACCOUNT = 'RECEIVE_CREATE_ACCOUNT';
 const RECEIVE_CREATE_ACCOUNT_FAILED = 'RECEIVE_CREATE_ACCOUNT_FAILED';
 const CREATE_ACCOUNT_STARTED = 'CREATE_ACCOUNT_STARTED';
 
@@ -104,6 +105,10 @@ export const actions = {
 
 		try {
 			const accountTicket = yield actions.fetchCreateAccount( { accountName, propertyName, profileName, timezone } );
+			yield {
+				type: RECEIVE_CREATE_ACCOUNT,
+			};
+
 			return actions.receiveCreateAccount( { accountTicket } );
 		} catch ( error ) {
 			// TODO: Implement an error handler store or some kind of centralized
@@ -210,6 +215,13 @@ export const reducer = ( state, { type, payload } ) => {
 				isFetchingAccountsPropertiesProfiles: false,
 			};
 		}
+
+		case RECEIVE_CREATE_ACCOUNT:
+			return {
+				...state,
+				isCreatingAccount: false,
+			};
+
 		case RECEIVE_CREATE_ACCOUNT_FAILED:
 			const { error } = payload;
 			return {
