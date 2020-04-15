@@ -135,7 +135,14 @@ export const createFetchInfrastructure = ( {
 
 		[ receiveCreator ]: function( response, params ) { // eslint-disable-line object-shorthand
 			invariant( 'undefined' !== typeof response, 'response is required.' );
-			invariant( 'object' === typeof params, 'params is required.' );
+
+			// If params are required, ensure they are passed, otherwise use
+			// default empty object.
+			if ( Object.keys( keyParams ).length ) {
+				invariant( 'object' === typeof params, 'params is required.' );
+			} else {
+				params = {};
+			}
 
 			return {
 				payload: { response, params },
