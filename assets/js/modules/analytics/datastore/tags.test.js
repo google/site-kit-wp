@@ -177,14 +177,12 @@ describe( 'modules/analytics tags', () => {
 
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
-				// Ensure the proper parameters were sent.
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
 					.hasFinishedResolution( 'getExistingTag' )
 				);
 
 				expect( hasExistingTag ).toEqual( true );
-				expect( fetch ).not.toHaveBeenCalled();
 			} );
 
 			it( 'returns false if no existing tag exists', async () => {
@@ -309,7 +307,6 @@ describe( 'modules/analytics tags', () => {
 				);
 
 				expect( hasPermission ).toEqual( true );
-				expect( fetch ).not.toHaveBeenCalled();
 			} );
 
 			it( 'returns false if an existing tag exists and the user does not have permission for it', async () => {
@@ -328,7 +325,6 @@ describe( 'modules/analytics tags', () => {
 				);
 
 				expect( hasPermission ).toEqual( false );
-				expect( fetch ).not.toHaveBeenCalled();
 			} );
 
 			it( 'returns null if no existing tag exists', async () => {

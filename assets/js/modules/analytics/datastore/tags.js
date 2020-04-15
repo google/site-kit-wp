@@ -28,19 +28,23 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { getExistingTag } from '../../../util';
 import { STORE_NAME } from './constants';
-import { isValidPropertyID, parsePropertyID } from '../util';
+import { isValidPropertyID } from '../util';
 
 const { commonActions, createRegistrySelector, createRegistryControl } = Data;
 
 // Actions
 const FETCH_EXISTING_TAG = 'FETCH_EXISTING_TAG';
-const FETCH_EXISTING_TAG_STARTED = 'FETCH_EXISTING_TAG_STARTED';
+const START_FETCH_EXISTING_TAG = 'START_FETCH_EXISTING_TAG';
+const FINISH_FETCH_EXISTING_TAG = 'FINISH_FETCH_EXISTING_TAG';
+const CATCH_FETCH_EXISTING_TAG = 'CATCH_FETCH_EXISTING_TAG';
+
 const FETCH_TAG_PERMISSION = 'FETCH_TAG_PERMISSION';
-const FETCH_TAG_PERMISSION_STARTED = 'FETCH_TAG_PERMISSION_STARTED';
+const START_FETCH_TAG_PERMISSION = 'START_FETCH_TAG_PERMISSION';
+const FINISH_FETCH_TAG_PERMISSION = 'FINISH_FETCH_TAG_PERMISSION';
+const CATCH_FETCH_TAG_PERMISSION = 'CATCH_FETCH_TAG_PERMISSION';
+
 const RECEIVE_EXISTING_TAG = 'RECEIVE_EXISTING_TAG';
-const RECEIVE_EXISTING_TAG_FAILED = 'RECEIVE_EXISTING_TAG_FAILED';
 const RECEIVE_TAG_PERMISSION = 'RECEIVE_TAG_PERMISSION';
-const RECEIVE_TAG_PERMISSION_FAILED = 'RECEIVE_TAG_PERMISSION_FAILED';
 const WAIT_FOR_EXISTING_TAG = 'WAIT_FOR_EXISTING_TAG';
 
 export const INITIAL_STATE = {
@@ -52,29 +56,72 @@ export const INITIAL_STATE = {
 
 export const actions = {
 	*fetchExistingTag() {
+		let response, error;
+
 		yield {
 			payload: {},
-			type: FETCH_EXISTING_TAG_STARTED,
+			type: START_FETCH_EXISTING_TAG,
 		};
 
-		return {
-			payload: {},
-			type: FETCH_EXISTING_TAG,
-		};
+		try {
+			response = yield {
+				payload: {},
+				type: FETCH_EXISTING_TAG,
+			};
+
+			yield actions.receiveExistingTag( response !== undefined ? response : null );
+
+			yield {
+				payload: {},
+				type: FINISH_FETCH_EXISTING_TAG,
+			};
+		} catch ( e ) {
+			error = e;
+			yield {
+				payload: { error },
+				type: CATCH_FETCH_EXISTING_TAG,
+			};
+		}
+
+		return { response, error };
 	},
 
-	*fetchTagPermission( { propertyID } ) {
+	*fetchTagPermission( propertyID ) {
 		invariant( propertyID, 'propertyID is required.' );
+		let response, error;
 
 		yield {
 			payload: { propertyID },
-			type: FETCH_TAG_PERMISSION_STARTED,
+			type: START_FETCH_TAG_PERMISSION,
 		};
 
-		return {
-			payload: { propertyID },
-			type: FETCH_TAG_PERMISSION,
-		};
+		try {
+			response = yield {
+				payload: { propertyID },
+				type: FETCH_TAG_PERMISSION,
+			};
+
+			yield actions.receiveTagPermission( {
+				propertyID,
+				...response,
+			} );
+
+			yield {
+				payload: { propertyID },
+				type: FINISH_FETCH_TAG_PERMISSION,
+			};
+		} catch ( e ) {
+			error = e;
+			yield {
+				payload: {
+					propertyID,
+					error,
+				},
+				type: CATCH_FETCH_TAG_PERMISSION,
+			};
+		}
+
+		return { response, error };
 	},
 
 	receiveExistingTag( existingTag ) {
@@ -86,15 +133,6 @@ export const actions = {
 		};
 	},
 
-	receiveExistingTagFailed( error ) {
-		invariant( error, 'error is required.' );
-
-		return {
-			payload: { error },
-			type: RECEIVE_EXISTING_TAG_FAILED,
-		};
-	},
-
 	receiveTagPermission( { propertyID, accountID, permission } ) {
 		invariant( propertyID, 'propertyID is required.' );
 		invariant( accountID, 'accountID is required.' );
@@ -103,16 +141,6 @@ export const actions = {
 		return {
 			payload: { propertyID, accountID, permission },
 			type: RECEIVE_TAG_PERMISSION,
-		};
-	},
-
-	receiveTagPermissionFailed( { propertyID, error } ) {
-		invariant( propertyID, 'propertyID is required.' );
-		invariant( error, 'error is required.' );
-
-		return {
-			payload: { error, propertyID },
-			type: RECEIVE_TAG_PERMISSION_FAILED,
 		};
 	},
 
@@ -158,14 +186,31 @@ export const controls = {
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case FETCH_EXISTING_TAG_STARTED: {
+		case START_FETCH_EXISTING_TAG: {
 			return {
 				...state,
 				isFetchingExistingTag: true,
 			};
 		}
 
-		case FETCH_TAG_PERMISSION_STARTED: {
+		case FINISH_FETCH_EXISTING_TAG: {
+			return {
+				...state,
+				isFetchingExistingTag: false,
+			};
+		}
+
+		case CATCH_FETCH_EXISTING_TAG: {
+			const { error } = payload;
+
+			return {
+				...state,
+				error,
+				isFetchingExistingTag: false,
+			};
+		}
+
+		case START_FETCH_TAG_PERMISSION: {
 			const { propertyID } = payload;
 
 			return {
@@ -177,28 +222,8 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_EXISTING_TAG: {
-			const { existingTag } = payload;
-
-			return {
-				...state,
-				existingTag,
-				isFetchingExistingTag: false,
-			};
-		}
-
-		case RECEIVE_EXISTING_TAG_FAILED: {
-			const { error } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingExistingTag: false,
-			};
-		}
-
-		case RECEIVE_TAG_PERMISSION: {
-			const { propertyID, accountID, permission } = payload;
+		case FINISH_FETCH_TAG_PERMISSION: {
+			const { propertyID } = payload;
 
 			return {
 				...state,
@@ -206,14 +231,10 @@ export const reducer = ( state, { type, payload } ) => {
 					...state.isFetchingTagPermission,
 					[ propertyID ]: false,
 				},
-				tagPermissions: {
-					...state.tagPermissions || {},
-					[ propertyID ]: { accountID, permission },
-				},
 			};
 		}
 
-		case RECEIVE_TAG_PERMISSION_FAILED: {
+		case CATCH_FETCH_TAG_PERMISSION: {
 			const { propertyID, error } = payload;
 
 			return {
@@ -226,6 +247,27 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case RECEIVE_EXISTING_TAG: {
+			const { existingTag } = payload;
+
+			return {
+				...state,
+				existingTag,
+			};
+		}
+
+		case RECEIVE_TAG_PERMISSION: {
+			const { propertyID, accountID, permission } = payload;
+
+			return {
+				...state,
+				tagPermissions: {
+					...state.tagPermissions || {},
+					[ propertyID ]: { accountID, permission },
+				},
+			};
+		}
+
 		default: {
 			return { ...state };
 		}
@@ -234,29 +276,12 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getExistingTag() {
-		try {
-			const registry = yield Data.commonActions.getRegistry();
+		const registry = yield Data.commonActions.getRegistry();
 
-			// If an existing tag was already loaded; return early and don't
-			// dispatch the fetch action.
-			if ( registry.select( STORE_NAME ).getExistingTag() !== undefined ) {
-				return;
-			}
+		const existingTag = registry.select( STORE_NAME ).getExistingTag();
 
-			const existingTag = yield actions.fetchExistingTag();
-			yield actions.receiveExistingTag( existingTag !== undefined ? existingTag : null );
-
-			if ( isValidPropertyID( existingTag ) ) {
-				const { accountID } = parsePropertyID( existingTag );
-				registry.dispatch( STORE_NAME ).setAccountID( accountID );
-				registry.dispatch( STORE_NAME ).selectProperty( existingTag );
-			}
-
-			return;
-		} catch ( err ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveExistingTagFailed( err );
+		if ( existingTag === undefined ) {
+			yield actions.fetchExistingTag();
 		}
 	},
 
@@ -265,28 +290,14 @@ export const resolvers = {
 			return;
 		}
 
-		try {
-			const registry = yield commonActions.getRegistry();
+		const registry = yield commonActions.getRegistry();
 
-			// If these permissions are already available, don't make a request.
-			if ( registry.select( STORE_NAME ).getTagPermission( propertyID ) !== undefined ) {
-				return;
-			}
-
-			const response = yield actions.fetchTagPermission( { propertyID } );
-
-			yield actions.receiveTagPermission( {
-				accountID: response.accountID,
-				propertyID,
-				permission: response.permission,
-			} );
-
+		// If these permissions are already available, don't make a request.
+		if ( registry.select( STORE_NAME ).getTagPermission( propertyID ) !== undefined ) {
 			return;
-		} catch ( error ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveTagPermissionFailed( { error, propertyID } );
 		}
+
+		yield actions.fetchTagPermission( propertyID );
 	},
 };
 
