@@ -27,22 +27,24 @@ import { groupBy } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { actions as profileActions } from './profiles';
 import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySelection } from '../util';
 import { STORE_NAME, PROPERTY_CREATE } from './constants';
 const { createRegistryControl } = Data;
 
 // Actions
 const FETCH_CREATE_PROPERTY = 'FETCH_CREATE_PROPERTY';
-const FETCH_CREATE_PROPERTY_STARTED = 'FETCH_CREATE_PROPERTY_STARTED';
+const START_FETCH_CREATE_PROPERTY = 'START_FETCH_CREATE_PROPERTY';
+const FINISH_FETCH_CREATE_PROPERTY = 'FINISH_FETCH_CREATE_PROPERTY';
+const CATCH_FETCH_CREATE_PROPERTY = 'CATCH_FETCH_CREATE_PROPERTY';
+
 const FETCH_PROPERTIES_PROFILES = 'FETCH_PROPERTIES_PROFILES';
-const FETCH_PROPERTIES_PROFILES_STARTED = 'FETCH_PROPERTIES_PROFILES_STARTED';
+const START_FETCH_PROPERTIES_PROFILES = 'START_FETCH_PROPERTIES_PROFILES';
+const FINISH_FETCH_PROPERTIES_PROFILES = 'FINISH_FETCH_PROPERTIES_PROFILES';
+const CATCH_FETCH_PROPERTIES_PROFILES = 'CATCH_FETCH_PROPERTIES_PROFILES';
+
 const RECEIVE_CREATE_PROPERTY = 'RECEIVE_CREATE_PROPERTY';
-const RECEIVE_CREATE_PROPERTY_FAILED = 'RECEIVE_CREATE_PROPERTY_FAILED';
 const RECEIVE_MATCHED_PROPERTY = 'RECEIVE_MATCHED_PROPERTY';
 const RECEIVE_PROPERTIES = 'RECEIVE_PROPERTIES';
-const RECEIVE_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_PROPERTIES_PROFILES_COMPLETED';
-const RECEIVE_PROPERTIES_PROFILES_FAILED = 'RECEIVE_PROPERTIES_PROFILES_FAILED';
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
 
 export const INITIAL_STATE = {
@@ -65,48 +67,81 @@ export const actions = {
 	 */
 	*createProperty( accountID ) {
 		invariant( accountID, 'accountID is required.' );
-
-		try {
-			const property = yield actions.fetchCreateProperty( accountID );
-
-			const registry = yield Data.commonActions.getRegistry();
-			registry.dispatch( STORE_NAME ).setPropertyID( property.id );
-			registry.dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId );
-
-			return actions.receiveCreateProperty( { accountID, property } );
-		} catch ( error ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveCreatePropertyFailed( { accountID, error } );
-		}
-	},
-
-	*fetchCreateProperty( accountID ) {
-		invariant( accountID, 'accountID is required.' );
+		let response, error;
 
 		yield {
 			payload: { accountID },
-			type: FETCH_CREATE_PROPERTY_STARTED,
+			type: START_FETCH_CREATE_PROPERTY,
 		};
 
-		return {
-			payload: { accountID },
-			type: FETCH_CREATE_PROPERTY,
-		};
+		try {
+			response = yield {
+				payload: { accountID },
+				type: FETCH_CREATE_PROPERTY,
+			};
+			const property = response;
+			const { dispatch } = yield Data.commonActions.getRegistry();
+			dispatch( STORE_NAME ).setPropertyID( property.id );
+			dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId );
+			yield actions.receiveCreateProperty( { accountID, property } );
+
+			yield {
+				payload: { accountID },
+				type: FINISH_FETCH_CREATE_PROPERTY,
+			};
+		} catch ( e ) {
+			error = e;
+			yield {
+				payload: {
+					accountID,
+					error,
+				},
+				type: CATCH_FETCH_CREATE_PROPERTY,
+			};
+		}
+
+		return { response, error };
 	},
 
 	*fetchPropertiesProfiles( accountID ) {
 		invariant( accountID, 'accountID is required.' );
+		let response, error;
 
 		yield {
 			payload: { accountID },
-			type: FETCH_PROPERTIES_PROFILES_STARTED,
+			type: START_FETCH_PROPERTIES_PROFILES,
 		};
 
-		return {
-			payload: { accountID },
-			type: FETCH_PROPERTIES_PROFILES,
-		};
+		try {
+			response = yield {
+				payload: { accountID },
+				type: FETCH_PROPERTIES_PROFILES,
+			};
+			const { properties, profiles, matchedProperty } = response;
+			const { dispatch } = yield Data.commonActions.getRegistry();
+			yield actions.receiveProperties( properties );
+			dispatch( STORE_NAME ).receiveProfiles( profiles );
+
+			if ( matchedProperty ) {
+				yield actions.receiveMatchedProperty( matchedProperty );
+			}
+
+			yield {
+				payload: { accountID },
+				type: FINISH_FETCH_PROPERTIES_PROFILES,
+			};
+		} catch ( e ) {
+			error = e;
+			yield {
+				payload: {
+					accountID,
+					error,
+				},
+				type: CATCH_FETCH_PROPERTIES_PROFILES,
+			};
+		}
+
+		return { response, error };
 	},
 
 	/**
@@ -130,27 +165,6 @@ export const actions = {
 		return {
 			payload: { accountID, property },
 			type: RECEIVE_CREATE_PROPERTY,
-		};
-	},
-
-	/**
-	 * Logs an error with property creation.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Object} args           Argument params.
-	 * @param {string} args.accountID Google Analytics account ID.
-	 * @param {Object} args.error     Error object.
-	 * @return {Object} Redux-style action.
-	 */
-	receiveCreatePropertyFailed( { accountID, error } ) {
-		invariant( accountID, 'accountID is required.' );
-		invariant( error, 'error is required.' );
-
-		return {
-			payload: { accountID, error },
-			type: RECEIVE_CREATE_PROPERTY_FAILED,
 		};
 	},
 
@@ -218,25 +232,6 @@ export const actions = {
 		};
 	},
 
-	receivePropertiesProfilesCompleted( accountID ) {
-		invariant( accountID, 'accountID is required.' );
-
-		return {
-			payload: { accountID },
-			type: RECEIVE_PROPERTIES_PROFILES_COMPLETED,
-		};
-	},
-
-	receivePropertiesProfilesFailed( { accountID, error } ) {
-		invariant( accountID, 'accountID is required.' );
-		invariant( error, 'error is required.' );
-
-		return {
-			payload: { accountID, error },
-			type: RECEIVE_PROPERTIES_PROFILES_FAILED,
-		};
-	},
-
 	waitForProperties( accountID ) {
 		return {
 			payload: { accountID },
@@ -274,7 +269,7 @@ export const controls = {
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case FETCH_CREATE_PROPERTY_STARTED: {
+		case START_FETCH_CREATE_PROPERTY: {
 			const { accountID } = payload;
 
 			return {
@@ -286,7 +281,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case FETCH_PROPERTIES_PROFILES_STARTED: {
+		case START_FETCH_PROPERTIES_PROFILES: {
 			const { accountID } = payload;
 
 			return {
@@ -298,8 +293,8 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_CREATE_PROPERTY: {
-			const { accountID, property } = payload;
+		case FINISH_FETCH_CREATE_PROPERTY: {
+			const { accountID } = payload;
 
 			return {
 				...state,
@@ -307,6 +302,14 @@ export const reducer = ( state, { type, payload } ) => {
 					...state.isFetchingCreateProperty,
 					[ accountID ]: false,
 				},
+			};
+		}
+
+		case RECEIVE_CREATE_PROPERTY: {
+			const { accountID, property } = payload;
+
+			return {
+				...state,
 				properties: {
 					...state.properties || {},
 					[ accountID ]: [
@@ -317,7 +320,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_CREATE_PROPERTY_FAILED: {
+		case CATCH_FETCH_CREATE_PROPERTY: {
 			const { accountID, error } = payload;
 
 			return {
@@ -351,7 +354,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_PROPERTIES_PROFILES_COMPLETED: {
+		case FINISH_FETCH_PROPERTIES_PROFILES: {
 			const { accountID } = payload;
 
 			return {
@@ -363,7 +366,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_PROPERTIES_PROFILES_FAILED: {
+		case CATCH_FETCH_PROPERTIES_PROFILES: {
 			const { accountID, error } = payload;
 
 			return {
@@ -387,36 +390,23 @@ export const resolvers = {
 		if ( ! isValidAccountID( accountID ) ) {
 			return undefined;
 		}
-		try {
-			const registry = yield Data.commonActions.getRegistry();
 
-			let properties = registry.select( STORE_NAME ).getProperties( accountID );
-			let matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
+		const registry = yield Data.commonActions.getRegistry();
+		let properties = registry.select( STORE_NAME ).getProperties( accountID );
 
-			// Only fetch properties if there are none in the store for the given account.
-			if ( ! properties ) {
-				const { profiles, ...response } = yield actions.fetchPropertiesProfiles( accountID );
-				( { properties, matchedProperty } = response );
-
-				yield actions.receiveProperties( properties );
-				yield profileActions.receiveProfiles( profiles );
-
-				if ( matchedProperty ) {
-					yield actions.receiveMatchedProperty( matchedProperty );
-				}
+		// Only fetch properties if there are none in the store for the given account.
+		if ( ! properties ) {
+			const { response } = yield actions.fetchPropertiesProfiles( accountID );
+			if ( response && response.properties ) {
+				( { properties } = response );
 			}
+		}
 
-			const propertyID = registry.select( STORE_NAME ).getPropertyID();
-			if ( ! propertyID ) {
-				const property = matchedProperty || properties[ 0 ] || { id: PROPERTY_CREATE };
-				yield actions.selectProperty( property.id, property.internalWebPropertyId );
-			}
-
-			return actions.receivePropertiesProfilesCompleted( accountID );
-		} catch ( error ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receivePropertiesProfilesFailed( { accountID, error } );
+		const propertyID = registry.select( STORE_NAME ).getPropertyID();
+		if ( ! propertyID ) {
+			const matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
+			const property = matchedProperty || properties[ 0 ] || { id: PROPERTY_CREATE };
+			yield actions.selectProperty( property.id, property.internalWebPropertyId );
 		}
 	},
 };
