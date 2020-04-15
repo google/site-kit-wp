@@ -265,9 +265,8 @@ storiesOf( 'Settings', module )
 	.add( 'Admin Settings', () => {
 		global.googlesitekit = settingsData;
 		global.googlesitekit.modules.analytics.setupComplete = false;
-		global.googlesitekit.admin.clientID = '26521001426-xxx1234ffghrrro6hofusq2b8.apps..com';
+		global.googlesitekit.admin.clientID = '123456789-xxx1234ffghrrro6hofusq2b8.apps..com';
 		global.googlesitekit.admin.clientSecret = '••••••••••••••••••••••••••••';
-		global.googlesitekit.admin.apikey = 'AIzaSyAi7c63e21001ESQsrtIfdIY3IcyQVyiw4o';
 
 		return (
 			<div className="mdc-layout-grid">
