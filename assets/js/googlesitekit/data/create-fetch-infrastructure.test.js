@@ -106,131 +106,133 @@ describe( 'createFetchInfrastructure store', () => {
 			] );
 		} );
 
-		it( 'yields the expected actions for a success request', () => {
-			const fetchStoreDefinition = createFetchInfrastructure( {
-				baseName: 'SaveSomeData',
-				apiCallback: async () => true,
-				receiveCallback: ( state ) => state,
+		describe( 'fetch', () => {
+			it( 'yields the expected actions for a success request', () => {
+				const fetchStoreDefinition = createFetchInfrastructure( {
+					baseName: 'SaveSomeData',
+					apiCallback: async () => true,
+					receiveCallback: ( state ) => state,
+				} );
+
+				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
+
+				expect( action.next().value.type ).toEqual( 'START_FETCH_SAVE_SOME_DATA' );
+				expect( action.next().value.type ).toEqual( 'FETCH_SAVE_SOME_DATA' );
+				expect( action.next( 42 ).value.type ).toEqual( 'RECEIVE_SAVE_SOME_DATA' );
+				expect( action.next().value.type ).toEqual( 'FINISH_FETCH_SAVE_SOME_DATA' );
+				expect( action.next().value ).toEqual( {
+					response: 42,
+					error: undefined,
+				} );
 			} );
 
-			const action = fetchStoreDefinition.actions.fetchSaveSomeData();
+			it( 'yields the expected actions for an error request', () => {
+				const fetchStoreDefinition = createFetchInfrastructure( {
+					baseName: 'SaveSomeData',
+					apiCallback: async () => true,
+					receiveCallback: ( state ) => state,
+				} );
 
-			expect( action.next().value.type ).toEqual( 'START_FETCH_SAVE_SOME_DATA' );
-			expect( action.next().value.type ).toEqual( 'FETCH_SAVE_SOME_DATA' );
-			expect( action.next( 42 ).value.type ).toEqual( 'RECEIVE_SAVE_SOME_DATA' );
-			expect( action.next().value.type ).toEqual( 'FINISH_FETCH_SAVE_SOME_DATA' );
-			expect( action.next().value ).toEqual( {
-				response: 42,
-				error: undefined,
+				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
+
+				const error = { code: 'this-went-wrong' };
+
+				expect( action.next().value.type ).toEqual( 'START_FETCH_SAVE_SOME_DATA' );
+				expect( action.next().value.type ).toEqual( 'FETCH_SAVE_SOME_DATA' );
+				expect( action.throw( error ).value.type ).toEqual( 'CATCH_FETCH_SAVE_SOME_DATA' );
+				expect( action.next().value ).toEqual( {
+					response: undefined,
+					error,
+				} );
 			} );
-		} );
 
-		it( 'yields the expected actions for an error request', () => {
-			const fetchStoreDefinition = createFetchInfrastructure( {
-				baseName: 'SaveSomeData',
-				apiCallback: async () => true,
-				receiveCallback: ( state ) => state,
+			it( 'validates parameters based on keyParams', () => {
+				expect( () => {
+					dispatch.fetchGetSomeData();
+				} ).toThrow( 'objParam is required.' );
+
+				expect( () => {
+					dispatch.fetchGetSomeData( 123 );
+				} ).toThrow( 'objParam is required.' );
+
+				expect( () => {
+					dispatch.fetchGetSomeData( {} );
+				} ).toThrow( 'aParam is required.' );
 			} );
 
-			const action = fetchStoreDefinition.actions.fetchSaveSomeData();
+			it( 'makes a network request based on apiCallback', async () => {
+				const expectedResponse = 'response-value';
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/core\/test\/data\/some-data/
+					)
+					.mockResponseOnce(
+						JSON.stringify( expectedResponse ),
+						{ status: 200 }
+					);
 
-			const error = { code: 'this-went-wrong' };
+				const { response, error } = await dispatch.fetchGetSomeData( {}, 'value-to-key-response-by' );
 
-			expect( action.next().value.type ).toEqual( 'START_FETCH_SAVE_SOME_DATA' );
-			expect( action.next().value.type ).toEqual( 'FETCH_SAVE_SOME_DATA' );
-			expect( action.throw( error ).value.type ).toEqual( 'CATCH_FETCH_SAVE_SOME_DATA' );
-			expect( action.next().value ).toEqual( {
-				response: undefined,
-				error,
+				expect( error ).toEqual( undefined );
+				expect( response ).toEqual( expectedResponse );
+				expect( store.getState().data ).toEqual( {
+					'value-to-key-response-by': expectedResponse,
+				} );
 			} );
-		} );
 
-		it( 'validates parameters based on keyParams', () => {
-			expect( () => {
-				dispatch.fetchGetSomeData();
-			} ).toThrow( 'objParam is required.' );
+			it( 'dispatches an error if the request fails', async () => {
+				const errorResponse = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/core\/test\/data\/some-data/
+					)
+					.mockResponseOnce(
+						JSON.stringify( errorResponse ),
+						{ status: 500 }
+					);
 
-			expect( () => {
-				dispatch.fetchGetSomeData( 123 );
-			} ).toThrow( 'objParam is required.' );
+				muteConsole( 'error' );
+				const { response, error } = await dispatch.fetchGetSomeData( {}, 'value-to-key-response-by' );
 
-			expect( () => {
-				dispatch.fetchGetSomeData( {} );
-			} ).toThrow( 'aParam is required.' );
-		} );
+				expect( error ).toEqual( errorResponse );
+				expect( response ).toEqual( undefined );
+				expect( store.getState().data ).toEqual( undefined );
+			} );
 
-		it( 'makes a network request based on apiCallback', async () => {
-			const expectedResponse = 'response-value';
-			fetch
-				.doMockOnceIf(
-					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/
-				)
-				.mockResponseOnce(
-					JSON.stringify( expectedResponse ),
-					{ status: 200 }
+			it( 'sets flag for request being in progress', async () => {
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/core\/test\/data\/some-data/
+					)
+					.mockResponseOnce(
+						JSON.stringify( { someValue: 42 } ),
+						{ status: 200 }
+					);
+
+				const requestArgs = [ {}, 'aValue' ];
+
+				// Initially the request is not in progress..
+				expect( select.isFetchingGetSomeData( ...requestArgs ) ).toEqual( false );
+
+				dispatch.fetchGetSomeData( ...requestArgs );
+
+				// Now it should be in progress.
+				expect( select.isFetchingGetSomeData( ...requestArgs ) ).toEqual( true );
+
+				// A request for other arguments however is not in progress.
+				expect( select.isFetchingGetSomeData( {}, 'anotherValue' ) ).toEqual( false );
+
+				await subscribeUntil( registry,
+					() => store.getState().data !== undefined,
 				);
 
-			const { response, error } = await dispatch.fetchGetSomeData( {}, 'value-to-key-response-by' );
-
-			expect( error ).toEqual( undefined );
-			expect( response ).toEqual( expectedResponse );
-			expect( store.getState().data ).toEqual( {
-				'value-to-key-response-by': expectedResponse,
+				// As the data has been received, the request is now no longer in progress.
+				expect( select.isFetchingGetSomeData( ...requestArgs ) ).toEqual( false );
 			} );
-		} );
-
-		it( 'dispatches an error if the request fails', async () => {
-			const errorResponse = {
-				code: 'internal_server_error',
-				message: 'Internal server error',
-				data: { status: 500 },
-			};
-			fetch
-				.doMockOnceIf(
-					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/
-				)
-				.mockResponseOnce(
-					JSON.stringify( errorResponse ),
-					{ status: 500 }
-				);
-
-			muteConsole( 'error' );
-			const { response, error } = await dispatch.fetchGetSomeData( {}, 'value-to-key-response-by' );
-
-			expect( error ).toEqual( errorResponse );
-			expect( response ).toEqual( undefined );
-			expect( store.getState().data ).toEqual( undefined );
-		} );
-
-		it( 'sets flag for request being in progress', async () => {
-			fetch
-				.doMockOnceIf(
-					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/
-				)
-				.mockResponseOnce(
-					JSON.stringify( { someValue: 42 } ),
-					{ status: 200 }
-				);
-
-			const requestArgs = [ {}, 'aValue' ];
-
-			// Initially the request is not in progress..
-			expect( select.isFetchingGetSomeData( ...requestArgs ) ).toEqual( false );
-
-			dispatch.fetchGetSomeData( ...requestArgs );
-
-			// Now it should be in progress.
-			expect( select.isFetchingGetSomeData( ...requestArgs ) ).toEqual( true );
-
-			// A request for other arguments however is not in progress.
-			expect( select.isFetchingGetSomeData( {}, 'anotherValue' ) ).toEqual( false );
-
-			await subscribeUntil( registry,
-				() => store.getState().data !== undefined,
-			);
-
-			// As the data has been received, the request is now no longer in progress.
-			expect( select.isFetchingGetSomeData( ...requestArgs ) ).toEqual( false );
 		} );
 	} );
 
