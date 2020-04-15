@@ -28,8 +28,7 @@ import Data from 'googlesitekit-data';
 import SetupForm from './setup-form';
 import ProgressBar from '../../../components/progress-bar';
 import { SvgIcon } from '../../../util';
-import { STORE_NAME } from '../datastore';
-import { ACCOUNT_CREATE } from '../datastore/constants';
+import { STORE_NAME, ACCOUNT_CREATE } from '../datastore/constants';
 import {
 	AccountCreate,
 	ErrorNotice,

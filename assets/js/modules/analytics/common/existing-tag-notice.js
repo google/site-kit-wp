@@ -25,7 +25,7 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../datastore';
+import { STORE_NAME } from '../datastore/constants';
 const { useSelect } = Data;
 
 export default function ExistingTagNotice() {

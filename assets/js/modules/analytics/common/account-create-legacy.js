@@ -30,8 +30,7 @@ import Button from '../../../components/button';
 import Link from '../../../components/link';
 import ProgressBar from '../../../components/progress-bar';
 import { trackEvent } from '../../../util';
-import { STORE_NAME } from '../datastore';
-import { ACCOUNT_CREATE } from '../datastore/constants';
+import { STORE_NAME, ACCOUNT_CREATE } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreateLegacy() {

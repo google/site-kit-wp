@@ -28,8 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../material-components';
 import ProgressBar from '../../../components/progress-bar';
-import { STORE_NAME } from '../datastore';
-import { PROPERTY_CREATE } from '../datastore/constants';
+import { STORE_NAME, PROPERTY_CREATE } from '../datastore/constants';
 import { isValidAccountID } from '../util';
 const { useSelect, useDispatch } = Data;
 

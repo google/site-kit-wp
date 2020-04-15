@@ -26,7 +26,7 @@ import apiFetchMock from '@wordpress/api-fetch';
  */
 import AccountSelect from './account-select';
 import { fireEvent, render } from '../../../../../tests/js/test-utils';
-import { STORE_NAME as modulesAnalyticsStoreName, STORE_NAME } from '../datastore';
+import { STORE_NAME as modulesAnalyticsStoreName } from '../datastore/constants';
 import * as fixtures from '../datastore/__fixtures__';
 
 // Mock apiFetch so we know if it's called.
@@ -106,8 +106,8 @@ describe( 'AccountSelect', () => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const { getByText, container, registry } = render( <AccountSelect />, { setupRegistry } );
 
-		registry.dispatch( STORE_NAME ).receiveProperties( properties );
-		registry.dispatch( STORE_NAME ).receiveProfiles( profiles );
+		registry.dispatch( modulesAnalyticsStoreName ).receiveProperties( properties );
+		registry.dispatch( modulesAnalyticsStoreName ).receiveProfiles( profiles );
 
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );

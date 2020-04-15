@@ -27,8 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../material-components';
-import { STORE_NAME } from '../datastore';
-import { ACCOUNT_CREATE } from '../datastore/constants';
+import { STORE_NAME, ACCOUNT_CREATE } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
