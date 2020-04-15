@@ -26,7 +26,7 @@ import apiFetchMock from '@wordpress/api-fetch';
  */
 import AccountSelect from './account-select';
 import { fireEvent, render } from '../../../../../tests/js/test-utils';
-import { STORE_NAME as modulesAnalyticsStoreName } from '../datastore/constants';
+import { STORE_NAME as modulesAnalyticsStoreName, ACCOUNT_CREATE } from '../datastore/constants';
 import * as fixtures from '../datastore/__fixtures__';
 
 // Mock apiFetch so we know if it's called.
@@ -89,17 +89,19 @@ describe( 'AccountSelect', () => {
 	} );
 
 	it( 'should update accountID in the store when a new item is clicked', async () => {
-		const { getAllByRole, container, registry } = render( <AccountSelect />, { setupRegistry } );
+		const { getByText, container, registry } = render( <AccountSelect />, { setupRegistry } );
 		const originalAccountID = registry.select( modulesAnalyticsStoreName ).getAccountID();
 
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 		// Click this element to select it and fire the onChange event.
-		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
+		fireEvent.click( getByText( /set up a new account/i ) );
+		// Note: we use the new account option here to avoid querying properties profiles,
+		// as these are pre-selected when this changed (see next test).
 
 		const newAccountID = registry.select( modulesAnalyticsStoreName ).getAccountID();
 		expect( originalAccountID ).not.toEqual( newAccountID );
-		expect( newAccountID ).toEqual( fixtures.accountsPropertiesProfiles.accounts[ 1 ].id );
+		expect( newAccountID ).toEqual( ACCOUNT_CREATE );
 	} );
 
 	it( 'should pre-select the property and profile IDs when changed', () => {
