@@ -146,7 +146,7 @@ class AdSenseSettings extends Component {
 				return __( 'Your account has been approved.', 'google-site-kit' );
 
 			case 'account-pending-review':
-				return __( 'We\'re getting your site ready for ads. This usually takes less than a day, but it can sometimes take a bit longer.', 'google-site-kit' );
+				return __( 'We’re getting your site ready for ads. This usually takes less than a day, but it can sometimes take a bit longer.', 'google-site-kit' );
 
 			case 'account-required-action':
 				return __( 'You need to fix some issues before your account is approved. Go to AdSense to find out how to fix it.', 'google-site-kit' );
