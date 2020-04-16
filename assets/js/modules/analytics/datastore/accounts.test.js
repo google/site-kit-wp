@@ -36,8 +36,15 @@ import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics accounts', () => {
 	let apiFetchSpy;
+	let windowLocationSpy;
 	let registry;
 	let store;
+	let redirect;
+
+	const accountName = 'Test Account';
+	const propertyName = 'Test Property';
+	const profileName = 'Test Profile';
+	const timezone = 'Test Timezone.';
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -48,6 +55,15 @@ describe( 'modules/analytics accounts', () => {
 		store = registry.stores[ STORE_NAME ].store;
 
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
+
+		/* eslint-disable no-restricted-globals */
+		windowLocationSpy = jest.spyOn( window.location, 'assign' );
+		/* eslint-enable no-restricted-globals */
+
+		windowLocationSpy.mockImplementation( ( location ) => {
+			redirect = location;
+		} );
+		redirect = '';
 	} );
 
 	afterAll( () => {
@@ -57,24 +73,22 @@ describe( 'modules/analytics accounts', () => {
 	afterEach( () => {
 		unsubscribeFromAll( registry );
 		apiFetchSpy.mockRestore();
+		windowLocationSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
 		describe( 'createAccount', () => {
-			it( 'creates an account and adds it to the store ', async () => {
-				const accountName = fixtures.createAccount.accountName;
-				const propertyName = fixtures.createAccount.propertyName;
-				const profileName = fixtures.createAccount.profileName;
-				const timezone = fixtures.createAccount.timezone;
-
+			it( 'creates an account ticket and redirects to the Terms of Service', async () => {
 				fetch
 					.doMockIf(
 						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/
 					)
 					.mockResponse(
-						JSON.stringify( fixtures.createAccount ),
+						JSON.stringify( fixtures.accountTicket ),
 						{ status: 200 }
 					);
+
+				muteConsole( 'error' );
 
 				registry.dispatch( STORE_NAME ).createAccount( { accountName, propertyName, profileName, timezone } );
 				await subscribeUntil( registry,
@@ -87,20 +101,17 @@ describe( 'modules/analytics accounts', () => {
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toMatchObject(
 					{ accountName, propertyName, profileName, timezone }
 				);
+
+				expect( redirect ).toEqual( 'https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/?api.accountTicketId=abc123' );
 			} );
 
 			it( 'sets isDoingCreateAccount ', async () => {
-				const accountName = fixtures.createAccount.accountName;
-				const propertyName = fixtures.createAccount.propertyName;
-				const profileName = fixtures.createAccount.profileName;
-				const timezone = fixtures.createAccount.timezone;
-
 				fetch
 					.doMockIf(
 						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/
 					)
 					.mockResponse(
-						JSON.stringify( fixtures.createAccount ),
+						JSON.stringify( fixtures.accountTicket ),
 						{ status: 200 }
 					);
 
@@ -109,11 +120,6 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'dispatches an error if the request fails ', async () => {
-				const accountName = fixtures.createAccount.accountName;
-				const propertyName = fixtures.createAccount.propertyName;
-				const profileName = fixtures.createAccount.profileName;
-				const timezone = fixtures.createAccount.timezone;
-
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -130,22 +136,18 @@ describe( 'modules/analytics accounts', () => {
 					);
 
 				muteConsole( 'error' );
+
 				registry.dispatch( STORE_NAME ).createAccount( { accountName, propertyName, profileName, timezone } );
 
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getError()
+						registry.select( STORE_NAME ).isDoingCreateAccount() === false
 					),
 				);
 
 				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( response );
 
-				// Ignore the request fired by the `getAccounts` selector.
-				muteConsole( 'error' );
-				const accounts = registry.select( STORE_NAME ).getAccounts();
-				// No accounts should have been added yet, as the property creation
-				// failed.
-				expect( accounts ).toEqual( undefined );
+				expect( redirect ).toEqual( '' );
 			} );
 		} );
 	} );
