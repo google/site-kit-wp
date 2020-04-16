@@ -252,7 +252,10 @@ export default withData(
 			type: TYPE_MODULES,
 			identifier: 'analytics',
 			datapoint: 'report',
-			data: userReportDataDefaults,
+			data: {
+				...userReportDataDefaults,
+				url: global.googlesitekit.permaLink,
+			},
 			priority: 1,
 			maxAge: getTimeInSeconds( 'day' ),
 			context: [ 'Dashboard' ],
