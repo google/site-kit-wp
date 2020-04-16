@@ -31,10 +31,10 @@ export const INITIAL_STATE = {};
 
 const fetchResetInfrastructure = createFetchInfrastructure( {
 	baseName: 'reset',
-	apiCallback: () => {
+	controlCallback: () => {
 		return API.set( 'core', 'site', 'reset' );
 	},
-	receiveCallback: () => {
+	reducerCallback: () => {
 		return {
 			...INITIAL_STATE,
 		};

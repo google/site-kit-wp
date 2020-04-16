@@ -70,10 +70,10 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 	const fetchSettingsInfrastructure = createFetchInfrastructure( {
 		baseName: 'getSettings',
-		apiCallback: () => {
+		controlCallback: () => {
 			return API.get( type, identifier, datapoint );
 		},
-		receiveCallback: ( state, values ) => {
+		reducerCallback: ( state, values ) => {
 			return {
 				...state,
 				savedSettings: {
@@ -90,11 +90,11 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 	const fetchSaveSettingsInfrastructure = createFetchInfrastructure( {
 		baseName: 'saveSettings',
-		apiCallback: ( params ) => {
+		controlCallback: ( params ) => {
 			const { values } = params;
 			return API.set( type, identifier, datapoint, values );
 		},
-		receiveCallback: ( state, values ) => {
+		reducerCallback: ( state, values ) => {
 			return {
 				...state,
 				savedSettings: {

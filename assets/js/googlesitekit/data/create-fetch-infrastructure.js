@@ -61,10 +61,10 @@ import { stringifyObject } from '../../util';
  *
  * @param {Object}   options                 Options for creating the fetch infrastructure.
  * @param {string}   options.baseName        The base name to use for all the created infrastructure.
- * @param {Function} options.apiCallback     Callback function to issue the API request. Will be used inside the
+ * @param {Function} options.controlCallback Callback function to issue the API request. Will be used inside the
  *                                           control. The function receives a params object with the same keys
  *                                           specified in keyParams, and the respective values passed to the action.
- * @param {Function} options.receiveCallback Callback function to modify state based on the API response. Will be used
+ * @param {Function} options.reducerCallback Callback function to modify state based on the API response. Will be used
  *                                           inside the reducer. The  function receives the store's state object as
  *                                           first parameter, the API response as second parameter, and the params
  *                                           object for the request (see above) as third parameter.
@@ -77,13 +77,13 @@ import { stringifyObject } from '../../util';
  */
 export const createFetchInfrastructure = ( {
 	baseName,
-	apiCallback,
-	receiveCallback,
+	controlCallback,
+	reducerCallback,
 	keyParams = {},
 } ) => {
 	invariant( baseName, 'baseName is required.' );
-	invariant( 'function' === typeof apiCallback, 'apiCallback is required.' );
-	invariant( 'function' === typeof receiveCallback, 'receiveCallback is required.' );
+	invariant( 'function' === typeof controlCallback, 'controlCallback is required.' );
+	invariant( 'function' === typeof reducerCallback, 'reducerCallback is required.' );
 
 	const pascalCaseBaseName = baseName.charAt( 0 ).toUpperCase() + baseName.slice( 1 );
 	const constantBaseName = baseName.replace( /([a-z0-9]{1})([A-Z]{1})/g, '$1_$2' ).toUpperCase();
@@ -161,7 +161,7 @@ export const createFetchInfrastructure = ( {
 
 	const controls = {
 		[ FETCH ]: ( { payload } ) => {
-			return apiCallback( payload.params );
+			return controlCallback( payload.params );
 		},
 	};
 
@@ -180,7 +180,7 @@ export const createFetchInfrastructure = ( {
 
 			case RECEIVE: {
 				const { response, params } = payload;
-				return receiveCallback( state, response, params );
+				return reducerCallback( state, response, params );
 			}
 
 			case FINISH_FETCH: {

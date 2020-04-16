@@ -32,10 +32,10 @@ export const INITIAL_STATE = {
 
 const fetchConnectionInfrastructure = createFetchInfrastructure( {
 	baseName: 'getConnection',
-	apiCallback: () => {
+	controlCallback: () => {
 		return API.get( 'core', 'site', 'connection' );
 	},
-	receiveCallback: ( state, connection ) => {
+	reducerCallback: ( state, connection ) => {
 		return {
 			...state,
 			connection,

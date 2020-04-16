@@ -41,14 +41,14 @@ import { createFetchInfrastructure } from './create-fetch-infrastructure';
 const STORE_NAME = 'test/some-data';
 const STORE_PARAMS = {
 	baseName: 'getSomeData',
-	apiCallback: ( params ) => {
+	controlCallback: ( params ) => {
 		const { aParam, objParam } = params;
 		return API.get( 'core', 'test', 'some-data', {
 			aParam,
 			objParam,
 		} );
 	},
-	receiveCallback: ( state, response, params ) => {
+	reducerCallback: ( state, response, params ) => {
 		const { aParam } = params;
 		return {
 			...state,
@@ -101,8 +101,8 @@ describe( 'createFetchInfrastructure store', () => {
 		it( 'includes the expected actions', () => {
 			const fetchStoreDefinition = createFetchInfrastructure( {
 				baseName: 'SaveSomeData',
-				apiCallback: async () => true,
-				receiveCallback: ( state ) => state,
+				controlCallback: async () => true,
+				reducerCallback: ( state ) => state,
 			} );
 
 			expect( Object.keys( fetchStoreDefinition.actions ) ).toEqual( [
@@ -130,8 +130,8 @@ describe( 'createFetchInfrastructure store', () => {
 			it( 'yields the expected actions for an arguments error', () => {
 				const fetchStoreDefinition = createFetchInfrastructure( {
 					baseName: 'SaveSomeData',
-					apiCallback: async () => true,
-					receiveCallback: ( state ) => state,
+					controlCallback: async () => true,
+					reducerCallback: ( state ) => state,
 					keyParams: { requiredParam: ( value ) => value },
 				} );
 
@@ -154,8 +154,8 @@ describe( 'createFetchInfrastructure store', () => {
 			it( 'yields the expected actions for a success request', () => {
 				const fetchStoreDefinition = createFetchInfrastructure( {
 					baseName: 'SaveSomeData',
-					apiCallback: async () => true,
-					receiveCallback: ( state ) => state,
+					controlCallback: async () => true,
+					reducerCallback: ( state ) => state,
 				} );
 
 				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
@@ -173,8 +173,8 @@ describe( 'createFetchInfrastructure store', () => {
 			it( 'yields the expected actions for an error request', () => {
 				const fetchStoreDefinition = createFetchInfrastructure( {
 					baseName: 'SaveSomeData',
-					apiCallback: async () => true,
-					receiveCallback: ( state ) => state,
+					controlCallback: async () => true,
+					reducerCallback: ( state ) => state,
 				} );
 
 				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
@@ -193,7 +193,7 @@ describe( 'createFetchInfrastructure store', () => {
 				} );
 			} );
 
-			it( 'makes a network request based on apiCallback', async () => {
+			it( 'makes a network request based on controlCallback', async () => {
 				const expectedResponse = 'response-value';
 				fetch
 					.doMockOnceIf(
@@ -273,8 +273,8 @@ describe( 'createFetchInfrastructure store', () => {
 		it( 'includes the expected selectors', () => {
 			const fetchStoreDefinition = createFetchInfrastructure( {
 				baseName: 'SaveSomeData',
-				apiCallback: async () => true,
-				receiveCallback: ( state ) => state,
+				controlCallback: async () => true,
+				reducerCallback: ( state ) => state,
 			} );
 
 			expect( Object.keys( fetchStoreDefinition.selectors ) ).toEqual( [

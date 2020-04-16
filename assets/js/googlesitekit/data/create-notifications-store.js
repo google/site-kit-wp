@@ -66,10 +66,10 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 
 	const fetchNotificationsInfrastructure = createFetchInfrastructure( {
 		baseName: 'getNotifications',
-		apiCallback: () => {
+		controlCallback: () => {
 			return API.get( type, identifier, datapoint );
 		},
-		receiveCallback: ( state, notifications ) => {
+		reducerCallback: ( state, notifications ) => {
 			return {
 				...state,
 				serverNotifications: notifications.reduce(
