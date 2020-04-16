@@ -19,16 +19,21 @@
 /**
  * Internal dependencies
  */
-import { actions } from './index';
+import { actions, selectors } from './index';
 
 describe( 'core/site notifications', () => {
-	it( 'has appropriate notification methods', () => {
+	it( 'has appropriate notification actions', () => {
 		const actionsToExpect = [
 			'addNotification',
 			'removeNotification',
-			'fetchNotifications',
-			'receiveNotifications',
 		];
 		expect( Object.keys( actions ) ).toEqual( expect.arrayContaining( actionsToExpect ) );
+	} );
+
+	it( 'has appropriate notification selectors', () => {
+		const selectorsToExpect = [
+			'getNotifications',
+		];
+		expect( Object.keys( selectors ) ).toEqual( expect.arrayContaining( selectorsToExpect ) );
 	} );
 } );
