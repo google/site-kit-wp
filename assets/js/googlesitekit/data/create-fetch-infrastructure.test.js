@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
@@ -107,6 +112,45 @@ describe( 'createFetchInfrastructure store', () => {
 		} );
 
 		describe( 'fetch', () => {
+			it( 'validates parameters based on keyParams', () => {
+				const consoleErrorSpy = jest.spyOn( global.console, 'error' );
+
+				dispatch.fetchGetSomeData();
+				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'objParam is required.' );
+
+				dispatch.fetchGetSomeData( 123 );
+				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'objParam is required.' );
+
+				dispatch.fetchGetSomeData( {} );
+				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'aParam is required.' );
+
+				consoleErrorSpy.mockClear();
+			} );
+
+			it( 'yields the expected actions for an arguments error', () => {
+				const fetchStoreDefinition = createFetchInfrastructure( {
+					baseName: 'SaveSomeData',
+					apiCallback: async () => true,
+					receiveCallback: ( state ) => state,
+					keyParams: { requiredParam: ( value ) => value },
+				} );
+
+				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
+
+				// Catch invariant to get exactly the error we expect.
+				let error;
+				try {
+					invariant( false, 'requiredParam is required.' );
+				} catch ( err ) {
+					error = err;
+				}
+
+				expect( action.next().value ).toEqual( {
+					response: undefined,
+					error,
+				} );
+			} );
+
 			it( 'yields the expected actions for a success request', () => {
 				const fetchStoreDefinition = createFetchInfrastructure( {
 					baseName: 'SaveSomeData',
@@ -135,7 +179,10 @@ describe( 'createFetchInfrastructure store', () => {
 
 				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
 
-				const error = { code: 'this-went-wrong' };
+				const error = {
+					code: 'this-went-wrong',
+					message: 'This went wrong.',
+				};
 
 				expect( action.next().value.type ).toEqual( 'START_FETCH_SAVE_SOME_DATA' );
 				expect( action.next().value.type ).toEqual( 'FETCH_SAVE_SOME_DATA' );
@@ -144,20 +191,6 @@ describe( 'createFetchInfrastructure store', () => {
 					response: undefined,
 					error,
 				} );
-			} );
-
-			it( 'validates parameters based on keyParams', () => {
-				expect( () => {
-					dispatch.fetchGetSomeData();
-				} ).toThrow( 'objParam is required.' );
-
-				expect( () => {
-					dispatch.fetchGetSomeData( 123 );
-				} ).toThrow( 'objParam is required.' );
-
-				expect( () => {
-					dispatch.fetchGetSomeData( {} );
-				} ).toThrow( 'aParam is required.' );
 			} );
 
 			it( 'makes a network request based on apiCallback', async () => {

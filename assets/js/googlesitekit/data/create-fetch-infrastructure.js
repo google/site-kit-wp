@@ -100,9 +100,17 @@ export const createFetchInfrastructure = ( {
 
 	const actions = {
 		[ fetchCreator ]: function*( ...args ) { // eslint-disable-line object-shorthand
-			const params = argsToParamsObject( args, keyParams, true );
+			let response, error, params;
 
-			let response, error;
+			try {
+				params = argsToParamsObject( args, keyParams );
+			} catch ( err ) {
+				// Parameters should never be invalid here, this needs to be
+				// strict and inform the developer of the issue.
+				global.console.error( err.message );
+				error = err;
+				return { response, error };
+			}
 
 			yield {
 				payload: { params },
@@ -210,8 +218,12 @@ export const createFetchInfrastructure = ( {
 				return false;
 			}
 
-			const params = argsToParamsObject( args, keyParams, false );
-			if ( 'undefined' === typeof params ) {
+			let params;
+			try {
+				params = argsToParamsObject( args, keyParams );
+			} catch ( err ) {
+				// If parameters are invalid, fail silently here. It likely is
+				// because some dependency selector is still resolving.
 				return false;
 			}
 
@@ -232,36 +244,7 @@ export const createFetchInfrastructure = ( {
  * Validates arguments against a parameter definition and returns a params
  * object with all arguments keyed by their name.
  *
- * @since n.e.x.t
- * @private
- *
- * @param {Array}   args      Arguments passed to the original function.
- * @param {Object}  keyParams Object with arguments definition to require for the fetch action
- *                            and the selector to check for active API requests. Argument names should
- *                            be used as keys, and a callback to be passed to invariant should be used
- *                            as values. If no callback is provided for an argument, the default will be
- *                            accepting any value other than undefined.
- * @param {boolean} throwErr  Optional. Whether to throw validation errors (via invariant). If false,
- *                            the function will just return undefined in case of an error.
- * @return {?Object} Arguments keyed by their name, or undefined if an error occurred and throwErr is
- *                   false.
- */
-const argsToParamsObject = ( args, keyParams, throwErr = false ) => {
-	if ( throwErr ) {
-		return argsToParamsObjectWithValidation( args, keyParams );
-	}
-
-	try {
-		const params = argsToParamsObjectWithValidation( args, keyParams );
-		return params;
-	} catch ( err ) {
-		return undefined;
-	}
-};
-
-/**
- * Validates arguments against a parameter definition and returns a params
- * object with all arguments keyed by their name.
+ * Throws an error if any argument is invalid.
  *
  * @since n.e.x.t
  * @private
@@ -274,7 +257,7 @@ const argsToParamsObject = ( args, keyParams, throwErr = false ) => {
  *                           accepting any value other than undefined.
  * @return {Object} Arguments keyed by their name.
  */
-const argsToParamsObjectWithValidation = ( args, keyParams ) => {
+const argsToParamsObject = ( args, keyParams ) => {
 	const params = {};
 
 	const paramNames = Object.keys( keyParams );

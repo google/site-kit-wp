@@ -175,9 +175,12 @@ describe( 'createSettingsStore store', () => {
 
 		describe( 'fetchSaveSettings', () => {
 			it( 'requires the values param', () => {
-				expect( () => {
-					dispatch.fetchSaveSettings();
-				} ).toThrow( 'values is required.' );
+				const consoleErrorSpy = jest.spyOn( global.console, 'error' );
+
+				dispatch.fetchSaveSettings();
+				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'values is required.' );
+
+				consoleErrorSpy.mockClear();
 			} );
 
 			it( 'sets isDoingSaveSettings', () => {
