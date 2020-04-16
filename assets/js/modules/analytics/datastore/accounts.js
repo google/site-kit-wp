@@ -34,7 +34,7 @@ const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED';
 const FETCH_CREATE_ACCOUNT = 'FETCH_CREATE_ACCOUNT';
-const RECEIVE_CREATE_ACCOUNT = 'RECEIVE_CREATE_ACCOUNT';
+const CREATE_ACCOUNT_FINISHED = 'CREATE_ACCOUNT_FINISHED';
 const RECEIVE_CREATE_ACCOUNT_FAILED = 'RECEIVE_CREATE_ACCOUNT_FAILED';
 const CREATE_ACCOUNT_STARTED = 'CREATE_ACCOUNT_STARTED';
 
@@ -106,7 +106,8 @@ export const actions = {
 		try {
 			const accountTicket = yield actions.fetchCreateAccount( { accountName, propertyName, profileName, timezone } );
 			yield {
-				type: RECEIVE_CREATE_ACCOUNT,
+				payload: {},
+				type: CREATE_ACCOUNT_FINISHED,
 			};
 
 			return actions.receiveCreateAccount( { accountTicket } );
@@ -119,6 +120,7 @@ export const actions = {
 
 	*fetchCreateAccount( { accountName, propertyName, profileName, timezone } ) {
 		yield {
+			payload: {},
 			type: CREATE_ACCOUNT_STARTED,
 		};
 
@@ -216,7 +218,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_CREATE_ACCOUNT:
+		case CREATE_ACCOUNT_FINISHED:
 			return {
 				...state,
 				isCreatingAccount: false,
@@ -325,6 +327,8 @@ export const selectors = {
 
 	/**
 	 * Indicates whether account creation is currently in progress.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if an account is being created, false otherwise.
