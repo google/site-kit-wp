@@ -32,12 +32,9 @@ import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 const { createRegistrySelector, createRegistryControl } = Data;
 
 // Actions
-const SUBMIT_CHANGES_START = 'SUBMIT_CHANGES_START';
-const SUBMIT_CHANGES_COMPLETED = 'SUBMIT_CHANGES_COMPLETED';
-const SUBMIT_PROPERTY_CREATE = 'SUBMIT_PROPERTY_CREATE';
-const SUBMIT_PROFILE_CREATE = 'SUBMIT_PROFILE_CREATE';
-const SUBMIT_SAVE_SETTINGS = 'SUBMIT_SAVE_SETTINGS';
-const SUBMIT_CHANGES_FAILED = 'SUBMIT_CHANGES_FAILED';
+const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
+const START_SUBMIT_CHANGES = 'START_SUBMIT_CHANGES';
+const FINISH_SUBMIT_CHANGES = 'FINISH_SUBMIT_CHANGES';
 
 export const INITIAL_STATE = {
 	isDoingSubmitChanges: false,
@@ -45,20 +42,37 @@ export const INITIAL_STATE = {
 
 export const actions = {
 	*submitChanges() {
-		yield actions.startSubmitChanges();
+		yield {
+			payload: {},
+			type: START_SUBMIT_CHANGES,
+		};
 
-		const registry = yield Data.commonActions.getRegistry();
+		yield {
+			payload: {},
+			type: SUBMIT_CHANGES,
+		};
+
+		yield {
+			payload: {},
+			type: FINISH_SUBMIT_CHANGES,
+		};
+	},
+};
+
+export const controls = {
+	[ SUBMIT_CHANGES ]: createRegistryControl( ( registry ) => async () => {
 		let propertyID = registry.select( STORE_NAME ).getPropertyID();
 
 		if ( propertyID === PROPERTY_CREATE ) {
 			const accountID = registry.select( STORE_NAME ).getAccountID();
 
-			const { response: property, error } = yield actions.submitPropertyCreate( accountID );
+			const { response: property, error } = await registry.dispatch( STORE_NAME ).createProperty( accountID );
 
+			if ( error ) {
+				return;
+			}
 			if ( property ) {
 				propertyID = property.id;
-			} else if ( error ) {
-				return actions.submitChangesFailed( { error } );
 			}
 		}
 
@@ -66,91 +80,33 @@ export const actions = {
 		if ( profileID === PROFILE_CREATE ) {
 			const accountID = registry.select( STORE_NAME ).getAccountID();
 
-			const { error } = yield actions.submitProfileCreate( accountID, propertyID );
+			const { error } = await registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID );
 
 			if ( error ) {
-				return actions.submitChangesFailed( { error } );
+				return;
 			}
 		}
 
-		const { error } = yield actions.submitSaveSettings();
-		if ( error ) {
-			return actions.submitChangesFailed( { error } );
+		// This action shouldn't be called if settings haven't changed,
+		// but this prevents errors in tests.
+		if ( registry.select( STORE_NAME ).haveSettingsChanged() ) {
+			await registry.dispatch( STORE_NAME ).saveSettings();
 		}
-
-		return actions.finishSubmitChanges();
-	},
-	submitPropertyCreate( accountID ) {
-		return {
-			payload: { accountID },
-			type: SUBMIT_PROPERTY_CREATE,
-		};
-	},
-	submitProfileCreate( accountID, propertyID ) {
-		return {
-			payload: { accountID, propertyID },
-			type: SUBMIT_PROFILE_CREATE,
-		};
-	},
-	submitSaveSettings() {
-		return {
-			payload: {},
-			type: SUBMIT_SAVE_SETTINGS,
-		};
-	},
-	startSubmitChanges() {
-		return {
-			payload: {},
-			type: SUBMIT_CHANGES_START,
-		};
-	},
-	finishSubmitChanges() {
-		return {
-			payload: {},
-			type: SUBMIT_CHANGES_COMPLETED,
-		};
-	},
-	submitChangesFailed( { error } ) {
-		return {
-			payload: { error },
-			type: SUBMIT_CHANGES_FAILED,
-		};
-	},
-};
-
-export const controls = {
-	[ SUBMIT_PROPERTY_CREATE ]: createRegistryControl( ( registry ) => ( { payload } ) => {
-		return registry.dispatch( STORE_NAME ).createProperty( payload.accountID );
-	} ),
-	[ SUBMIT_PROFILE_CREATE ]: createRegistryControl( ( registry ) => ( { payload } ) => {
-		const { accountID, propertyID } = payload;
-		return registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID );
-	} ),
-	[ SUBMIT_SAVE_SETTINGS ]: createRegistryControl( ( registry ) => () => {
-		return registry.dispatch( STORE_NAME ).saveSettings();
 	} ),
 };
 
-export const reducer = ( state, { type, payload } ) => {
+export const reducer = ( state, { type } ) => {
 	switch ( type ) {
-		case SUBMIT_CHANGES_START: {
+		case START_SUBMIT_CHANGES: {
 			return {
 				...state,
 				isDoingSubmitChanges: true,
 			};
 		}
 
-		case SUBMIT_CHANGES_COMPLETED: {
+		case FINISH_SUBMIT_CHANGES: {
 			return {
 				...state,
-				isDoingSubmitChanges: false,
-			};
-		}
-
-		case SUBMIT_CHANGES_FAILED: {
-			return {
-				...state,
-				error: payload.error,
 				isDoingSubmitChanges: false,
 			};
 		}

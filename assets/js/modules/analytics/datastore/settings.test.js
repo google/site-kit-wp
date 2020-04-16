@@ -286,17 +286,19 @@ describe( 'modules/analytics settings', () => {
 			it( 'sets internal state while submitting changes', () => {
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
 
-				registry.dispatch( STORE_NAME ).startSubmitChanges();
+				registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
 			} );
 
-			it( 'toggles the internal state again once submission is completed', () => {
-				registry.dispatch( STORE_NAME ).startSubmitChanges();
+			it( 'toggles the internal state again once submission is completed', async () => {
+				registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
 
-				registry.dispatch( STORE_NAME ).finishSubmitChanges();
+				await subscribeUntil( registry,
+					() => registry.stores[ STORE_NAME ].store.getState().isDoingSubmitChanges === false
+				);
 
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
 			} );
