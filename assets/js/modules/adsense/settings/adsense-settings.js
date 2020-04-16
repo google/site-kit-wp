@@ -221,11 +221,10 @@ class AdSenseSettings extends Component {
 								</div>
 								<div className="googlesitekit-settings-module__meta-item">
 									<p className="googlesitekit-settings-module__meta-item-type">
-										{ __( 'AdSense Code', 'google-site-kit' ) }
+										{ __( 'Account Status', 'google-site-kit' ) }
 									</p>
 									<h5 className="googlesitekit-settings-module__meta-item-data">
-										{ useSnippet && __( 'The AdSense code has been placed on your site.', 'google-site-kit' ) }
-										{ ! useSnippet && __( 'The AdSense code has not been placed on your site.', 'google-site-kit' ) }
+										{ this.generateAccountStatusLabel() }
 									</h5>
 								</div>
 								<div className="googlesitekit-settings-module__meta-item">
@@ -242,12 +241,15 @@ class AdSenseSettings extends Component {
 										}>
 									</h5>
 								</div>
+							</div>
+							<div className="googlesitekit-settings-module__meta-items">
 								<div className="googlesitekit-settings-module__meta-item">
 									<p className="googlesitekit-settings-module__meta-item-type">
-										{ __( 'Account Status', 'google-site-kit' ) }
+										{ __( 'AdSense Code', 'google-site-kit' ) }
 									</p>
 									<h5 className="googlesitekit-settings-module__meta-item-data">
-										{ this.generateAccountStatusLabel() }
+										{ useSnippet && __( 'The AdSense code has been placed on your site.', 'google-site-kit' ) }
+										{ ! useSnippet && __( 'The AdSense code has not been placed on your site.', 'google-site-kit' ) }
 									</h5>
 								</div>
 							</div>
