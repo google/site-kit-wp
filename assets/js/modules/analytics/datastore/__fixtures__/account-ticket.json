@@ -1,0 +1,15 @@
+{
+  "id": "abc123",
+  "kind": "analytics#accountTicket",
+  "account": {
+    "name": "Test Account"
+  },
+  "webproperty": {
+    "name": "Test Property"
+  },
+  "profile": {
+    "name": "Test Profile"
+
+  },
+  "redirectUri": "https://redirect.com?gatoscllback"
+}
