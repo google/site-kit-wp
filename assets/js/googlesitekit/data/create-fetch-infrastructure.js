@@ -59,20 +59,21 @@ import { stringifyObject } from '../../util';
  * @since n.e.x.t
  * @private
  *
- * @param {Object}   options                 Options for creating the fetch infrastructure.
- * @param {string}   options.baseName        The base name to use for all the created infrastructure.
- * @param {Function} options.controlCallback Callback function to issue the API request. Will be used inside the
- *                                           control. The function receives a params object with the same keys
- *                                           specified in keyParams, and the respective values passed to the action.
- * @param {Function} options.reducerCallback Callback function to modify state based on the API response. Will be used
- *                                           inside the reducer. The  function receives the store's state object as
- *                                           first parameter, the API response as second parameter, and the params
- *                                           object for the request (see above) as third parameter.
- * @param {?Object}  options.keyParams       Optional. Object with arguments definition to require for the fetch action
- *                                           and the selector to check for active API requests. Argument names should
- *                                           be used as keys, and a callback to be passed to invariant should be used
- *                                           as values. If no callback is provided for an argument, the default will be
- *                                           accepting any value other than undefined.
+ * @param {Object}   options                  Options for creating the fetch infrastructure.
+ * @param {string}   options.baseName         The base name to use for all the created infrastructure.
+ * @param {Function} options.controlCallback  Callback function to issue the API request. Will be used inside the
+ *                                            control. The function receives a params object with the same keys
+ *                                            specified in keyParams, and the respective values passed to the action.
+ * @param {?Function} options.reducerCallback Optional. Callback function to modify state based on the API response.
+ *                                            Will be used inside the reducer. The  function receives the store's state
+ *                                            object as first parameter, the API response as second parameter, and the
+ *                                            params object for the request (see above) as third parameter. If not
+ *                                            provided, the default will return the unmodified state.
+ * @param {?Object}  options.keyParams        Optional. Object with arguments definition to require for the fetch action
+ *                                            and the selector to check for active API requests. Argument names should
+ *                                            be used as keys, and a callback to be passed to invariant should be used
+ *                                            as values. If no callback is provided for an argument, the default will be
+ *                                            accepting any value other than undefined.
  * @return {Object} Partial store object with properties 'actions', 'controls', 'reducer', 'resolvers', and 'selectors'.
  */
 export const createFetchInfrastructure = ( {
@@ -84,6 +85,12 @@ export const createFetchInfrastructure = ( {
 	invariant( baseName, 'baseName is required.' );
 	invariant( 'function' === typeof controlCallback, 'controlCallback is required.' );
 	invariant( 'function' === typeof reducerCallback, 'reducerCallback is required.' );
+
+	if ( 'function' !== typeof reducerCallback ) {
+		reducerCallback = ( state ) => {
+			return { ...state };
+		};
+	}
 
 	const pascalCaseBaseName = baseName.charAt( 0 ).toUpperCase() + baseName.slice( 1 );
 	const constantBaseName = baseName.replace( /([a-z0-9]{1})([A-Z]{1})/g, '$1_$2' ).toUpperCase();
