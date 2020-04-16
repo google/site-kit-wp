@@ -25,7 +25,7 @@ import apiFetchMock from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import AccountSelect from './account-select';
-import { fireEvent, render } from '../../../../../tests/js/test-utils';
+import { fireEvent, muteConsole, render } from '../../../../../tests/js/test-utils';
 import { STORE_NAME as modulesAnalyticsStoreName, ACCOUNT_CREATE } from '../datastore/constants';
 import * as fixtures from '../datastore/__fixtures__';
 
@@ -76,12 +76,15 @@ describe( 'AccountSelect', () => {
 	} );
 
 	it( 'should render a select box with only setup when accounts are undefined', async () => {
+		muteConsole( 'warn' );
 		const { getAllByRole } = render( <AccountSelect />, { setupRegistry: setupLoadingRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( 1 );
 		expect( listItems[ listItems.length - 1 ].textContent ).toMatch( /set up a new account/i );
-		expect( apiFetchMock ).not.toHaveBeenCalled();
+
+		// If accounts are `undefined`, we'll make a request to fetch them.
+		expect( apiFetchMock ).toHaveBeenCalled();
 	} );
 
 	it( 'should render a select box with only setup when no accounts exist', async () => {
