@@ -404,8 +404,7 @@ export const resolvers = {
 
 		const propertyID = registry.select( STORE_NAME ).getPropertyID();
 		if ( ! propertyID ) {
-			const matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
-			const property = matchedProperty || properties[ 0 ] || { id: PROPERTY_CREATE };
+			const property = properties[ 0 ] || { id: PROPERTY_CREATE };
 			yield actions.selectProperty( property.id, property.internalWebPropertyId );
 		}
 	},
