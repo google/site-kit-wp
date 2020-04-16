@@ -42,6 +42,11 @@ const setupRegistry = ( registry ) => {
 	registry.dispatch( modulesAnalyticsStoreName ).receiveExistingTag( null );
 };
 
+const setupLoadingRegistry = ( registry ) => {
+	registry.dispatch( modulesAnalyticsStoreName ).setSettings( {} );
+	registry.dispatch( modulesAnalyticsStoreName ).receiveExistingTag( null );
+};
+
 const setupEmptyRegistry = ( registry ) => {
 	registry.dispatch( modulesAnalyticsStoreName ).setSettings( {} );
 	registry.dispatch( modulesAnalyticsStoreName ).receiveAccounts( [] );
@@ -71,7 +76,7 @@ describe( 'AccountSelect', () => {
 	} );
 
 	it( 'should render a select box with only setup when accounts are undefined', async () => {
-		const { getAllByRole } = render( <AccountSelect />, { setupRegistry: setupEmptyRegistry } );
+		const { getAllByRole } = render( <AccountSelect />, { setupRegistry: setupLoadingRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( 1 );
