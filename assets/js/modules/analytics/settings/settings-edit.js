@@ -34,6 +34,7 @@ import {
 	ErrorNotice,
 	ExistingTagError,
 } from '../common';
+import { parsePropertyID } from '../util';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsEdit() {
@@ -67,6 +68,18 @@ export default function SettingsEdit() {
 			}
 		};
 	}, [ haveSettingsChanged, isDoingSubmitChanges ] );
+
+	// Set the accountID and property if there is an existing tag.
+	// This only applies to the edit view, so we apply it here rather than in the datastore.
+	// These selections will be rolled back by the above hook if the user exits the edit view.
+	const { setAccountID, selectProperty } = useDispatch( STORE_NAME );
+	useEffect( () => {
+		if ( hasExistingTag ) {
+			const { accountID: existingTagAccountID } = parsePropertyID( existingTag );
+			setAccountID( existingTagAccountID );
+			selectProperty( existingTag );
+		}
+	}, [ hasExistingTag, existingTag ] );
 
 	// Toggle disabled state of legacy confirm changes button.
 	useEffect( () => {
