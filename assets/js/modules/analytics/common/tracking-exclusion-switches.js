@@ -37,7 +37,8 @@ export const trackingExclusionLabels = {
 };
 
 export default function TrackingExclusionSwitches() {
-	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getTrackingDisabled() );
+	const defaultValue = [ TRACKING_LOGGED_IN_USERS ];
+	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getTrackingDisabled() ) || defaultValue;
 
 	const { setTrackingDisabled } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( e ) => {
