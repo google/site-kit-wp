@@ -147,7 +147,9 @@ export const actions = {
 		// Once we have an account ticket, redirect the user to accept the Terms of Service.
 		const { id } = accountTicket;
 		if ( id ) {
-			document.location = `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/?api.accountTicketId=${ id }`;
+			/* eslint-disable no-restricted-globals */
+			window.location.assign( `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/?api.accountTicketId=${ id }` );
+			/* eslint-enable no-restricted-globals */
 		}
 	},
 
