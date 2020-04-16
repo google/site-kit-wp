@@ -183,7 +183,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 *
 		 * @since 1.6.0
 		 *
-		 * @return {Object} Redux-style action.
+		 * @return {Object} Response and error, if any.
 		 */
 		*saveSettings() {
 			const registry = yield getRegistry();
