@@ -30,6 +30,7 @@ import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import Switch from '../../../components/switch';
 import Link from '../../../components/link';
+import { sanitizeHTML } from '../../../util';
 
 const { useSelect, useDispatch } = Data;
 
@@ -65,11 +66,14 @@ export default function AnonymizeIPSwitch() {
 					href="https://support.google.com/analytics/answer/2763052"
 					external
 					inherit
-					dangerouslySetInnerHTML={
+					dangerouslySetInnerHTML={ sanitizeHTML(
+						__( 'Learn more<span class="screen-reader-text"> about IP anonymization.</span>', 'google-site-kit' ),
 						{
-							__html: __( 'Learn more<span class="screen-reader-text"> about IP anonymization.</span>', 'google-site-kit' ),
+							ALLOWED_TAGS: [ 'span' ],
+							ALLOWED_ATTR: [ 'class' ],
 						}
-					} />
+					) }
+				/>
 			</p>
 		</div>
 	);
