@@ -82,7 +82,7 @@ export const actions = {
 			const property = response;
 			const { dispatch } = yield Data.commonActions.getRegistry();
 			dispatch( STORE_NAME ).setPropertyID( property.id );
-			dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId );
+			dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // Capitalization rule exception: internalWebPropertyId
 			yield actions.receiveCreateProperty( { accountID, property } );
 
 			yield {
@@ -223,7 +223,7 @@ export const actions = {
 			return; // Selection will happen in in getProfiles resolver.
 		}
 
-		const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE };
+		const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE }; // Capitalization rule exception: webPropertyId
 
 		registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id );
 	},
@@ -419,7 +419,7 @@ export const resolvers = {
 		const propertyID = registry.select( STORE_NAME ).getPropertyID();
 		if ( ! propertyID ) {
 			const property = properties[ 0 ] || { id: PROPERTY_CREATE };
-			yield actions.selectProperty( property.id, property.internalWebPropertyId );
+			yield actions.selectProperty( property.id, property.internalWebPropertyId ); // Capitalization rule exception: internalWebPropertyId
 		}
 	},
 };
