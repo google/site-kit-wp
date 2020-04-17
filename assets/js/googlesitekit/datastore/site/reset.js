@@ -23,13 +23,13 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { initializeAction } from '../../data/utils';
-import { createFetchInfrastructure } from '../../data/create-fetch-infrastructure';
+import { createFetchStore } from '../../data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
 
 export const INITIAL_STATE = {};
 
-const fetchResetInfrastructure = createFetchInfrastructure( {
+const fetchResetInfrastructure = createFetchStore( {
 	baseName: 'reset',
 	controlCallback: () => {
 		return API.set( 'core', 'site', 'reset' );

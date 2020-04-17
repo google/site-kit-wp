@@ -27,7 +27,7 @@ import { isEqual } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { createFetchInfrastructure } from './create-fetch-infrastructure';
+import { createFetchStore } from './create-fetch-store';
 
 const { commonActions, commonControls, createRegistrySelector } = Data;
 
@@ -68,7 +68,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		savedSettings: undefined,
 	};
 
-	const fetchSettingsInfrastructure = createFetchInfrastructure( {
+	const fetchSettingsInfrastructure = createFetchStore( {
 		baseName: 'getSettings',
 		controlCallback: () => {
 			return API.get( type, identifier, datapoint );
@@ -88,7 +88,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		},
 	} );
 
-	const fetchSaveSettingsInfrastructure = createFetchInfrastructure( {
+	const fetchSaveSettingsInfrastructure = createFetchStore( {
 		baseName: 'saveSettings',
 		controlCallback: ( params ) => {
 			const { values } = params;
@@ -265,7 +265,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {boolean} True if the settings are being saved, false otherwise.
 		 */
 		isDoingSaveSettings( state ) {
-			// Since isFetchingSaveSettings (via createFetchInfrastructure)
+			// Since isFetchingSaveSettings (via createFetchStore)
 			// holds information based on specific values but we only need
 			// generic information here, we need to check whether ANY such
 			// request is in progress.

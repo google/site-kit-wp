@@ -1,5 +1,5 @@
 /**
- * API function to create fetch infrastructure tests.
+ * API function to create fetch store tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -36,7 +36,7 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
-import { createFetchInfrastructure } from './create-fetch-infrastructure';
+import { createFetchStore } from './create-fetch-store';
 
 const STORE_NAME = 'test/some-data';
 const STORE_PARAMS = {
@@ -64,7 +64,7 @@ const STORE_PARAMS = {
 	},
 };
 
-describe( 'createFetchInfrastructure store', () => {
+describe( 'createFetchStore store', () => {
 	let apiFetchSpy;
 	let dispatch;
 	let registry;
@@ -79,7 +79,7 @@ describe( 'createFetchInfrastructure store', () => {
 	beforeEach( () => {
 		registry = createRegistry();
 
-		storeDefinition = createFetchInfrastructure( STORE_PARAMS );
+		storeDefinition = createFetchStore( STORE_PARAMS );
 		registry.registerStore( STORE_NAME, storeDefinition );
 		dispatch = registry.dispatch( STORE_NAME );
 		store = registry.stores[ STORE_NAME ].store;
@@ -99,7 +99,7 @@ describe( 'createFetchInfrastructure store', () => {
 
 	describe( 'actions', () => {
 		it( 'includes the expected actions', () => {
-			const fetchStoreDefinition = createFetchInfrastructure( {
+			const fetchStoreDefinition = createFetchStore( {
 				baseName: 'SaveSomeData',
 				controlCallback: async () => true,
 				reducerCallback: ( state ) => state,
@@ -128,7 +128,7 @@ describe( 'createFetchInfrastructure store', () => {
 			} );
 
 			it( 'yields the expected actions for an arguments error', () => {
-				const fetchStoreDefinition = createFetchInfrastructure( {
+				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
 					controlCallback: async () => true,
 					reducerCallback: ( state ) => state,
@@ -152,7 +152,7 @@ describe( 'createFetchInfrastructure store', () => {
 			} );
 
 			it( 'yields the expected actions for a success request', () => {
-				const fetchStoreDefinition = createFetchInfrastructure( {
+				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
 					controlCallback: async () => true,
 					reducerCallback: ( state ) => state,
@@ -171,7 +171,7 @@ describe( 'createFetchInfrastructure store', () => {
 			} );
 
 			it( 'yields the expected actions for an error request', () => {
-				const fetchStoreDefinition = createFetchInfrastructure( {
+				const fetchStoreDefinition = createFetchStore( {
 					baseName: 'SaveSomeData',
 					controlCallback: async () => true,
 					reducerCallback: ( state ) => state,
@@ -271,7 +271,7 @@ describe( 'createFetchInfrastructure store', () => {
 
 	describe( 'selectors', () => {
 		it( 'includes the expected selectors', () => {
-			const fetchStoreDefinition = createFetchInfrastructure( {
+			const fetchStoreDefinition = createFetchStore( {
 				baseName: 'SaveSomeData',
 				controlCallback: async () => true,
 				reducerCallback: ( state ) => state,

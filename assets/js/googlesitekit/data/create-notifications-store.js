@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { createFetchInfrastructure } from './create-fetch-infrastructure';
+import { createFetchStore } from './create-fetch-store';
 
 // Actions
 const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
@@ -64,7 +64,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 		clientNotifications: undefined,
 	};
 
-	const fetchNotificationsInfrastructure = createFetchInfrastructure( {
+	const fetchNotificationsInfrastructure = createFetchStore( {
 		baseName: 'getNotifications',
 		controlCallback: () => {
 			return API.get( type, identifier, datapoint );

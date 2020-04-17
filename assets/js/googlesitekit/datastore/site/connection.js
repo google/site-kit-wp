@@ -22,7 +22,7 @@
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { createFetchInfrastructure } from '../../data/create-fetch-infrastructure';
+import { createFetchStore } from '../../data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
 
@@ -30,7 +30,7 @@ export const INITIAL_STATE = {
 	connection: undefined,
 };
 
-const fetchConnectionInfrastructure = createFetchInfrastructure( {
+const fetchConnectionInfrastructure = createFetchStore( {
 	baseName: 'getConnection',
 	controlCallback: () => {
 		return API.get( 'core', 'site', 'connection' );

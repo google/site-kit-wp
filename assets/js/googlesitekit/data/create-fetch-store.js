@@ -1,5 +1,5 @@
 /**
- * API function to create fetch infrastructure.
+ * API function to create fetch store.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -46,12 +46,12 @@ import { stringifyObject } from '../../util';
  * public action or selector should be implemented to actually call the
  * fetch action included in the returned store object.
  *
- * For example, if the fetch infrastructure is intended for an API-based
+ * For example, if the fetch store is intended for an API-based
  * action 'storeMySetting':
  * * The basename passed should be 'storeMySetting'.
  * * The action 'storeMySetting' should call 'fetchStoreMySetting'.
  *
- * Or, if the fetch infrastructure is intended for an API-based selector
+ * Or, if the fetch store is intended for an API-based selector
  * 'getSomeData':
  * * The baseName passed should be 'getSomeData'.
  * * The resolver for 'getSomeData' should call 'fetchGetSomeData'.
@@ -59,7 +59,7 @@ import { stringifyObject } from '../../util';
  * @since n.e.x.t
  * @private
  *
- * @param {Object}   options                  Options for creating the fetch infrastructure.
+ * @param {Object}   options                  Options for creating the fetch store.
  * @param {string}   options.baseName         The base name to use for all the created infrastructure.
  * @param {Function} options.controlCallback  Callback function to issue the API request. Will be used inside the
  *                                            control. The function receives a params object with the same keys
@@ -76,7 +76,7 @@ import { stringifyObject } from '../../util';
  *                                            accepting any value other than undefined.
  * @return {Object} Partial store object with properties 'actions', 'controls', 'reducer', 'resolvers', and 'selectors'.
  */
-export const createFetchInfrastructure = ( {
+export const createFetchStore = ( {
 	baseName,
 	controlCallback,
 	reducerCallback,
