@@ -37,8 +37,7 @@ export const trackingExclusionLabels = {
 };
 
 export default function TrackingExclusionSwitches() {
-	const defaultValue = [ TRACKING_LOGGED_IN_USERS ];
-	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getTrackingDisabled() ) || defaultValue;
+	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getTrackingDisabled() );
 
 	const { setTrackingDisabled } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( event ) => {
@@ -46,6 +45,10 @@ export default function TrackingExclusionSwitches() {
 		const exclusions = checked ? [ TRACKING_LOGGED_IN_USERS ] : [];
 		setTrackingDisabled( exclusions );
 	}, [ trackingDisabled ] );
+
+	if ( ! Array.isArray( trackingDisabled ) ) {
+		return null;
+	}
 
 	return (
 		<div className="googlesitekit-analytics-trackingdisabled">
