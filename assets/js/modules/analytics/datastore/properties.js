@@ -388,7 +388,7 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {
 	*getProperties( accountID ) {
 		if ( ! isValidAccountID( accountID ) ) {
-			return undefined;
+			return;
 		}
 
 		const registry = yield Data.commonActions.getRegistry();
