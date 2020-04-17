@@ -69,7 +69,7 @@ export const controls = {
 			const { response: property, error } = await registry.dispatch( STORE_NAME ).createProperty( accountID );
 
 			if ( error ) {
-				return;
+				return { error };
 			}
 			if ( property ) {
 				propertyID = property.id;
@@ -83,14 +83,18 @@ export const controls = {
 			const { error } = await registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID );
 
 			if ( error ) {
-				return;
+				return { error };
 			}
 		}
 
 		// This action shouldn't be called if settings haven't changed,
 		// but this prevents errors in tests.
 		if ( registry.select( STORE_NAME ).haveSettingsChanged() ) {
-			await registry.dispatch( STORE_NAME ).saveSettings();
+			const { error } = await registry.dispatch( STORE_NAME ).saveSettings();
+
+			if ( error ) {
+				return { error };
+			}
 		}
 	} ),
 };
