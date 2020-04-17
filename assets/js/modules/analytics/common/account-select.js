@@ -31,7 +31,7 @@ import { STORE_NAME, ACCOUNT_CREATE } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
+	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 
@@ -54,7 +54,7 @@ export default function AccountSelect() {
 			disabled={ hasExistingTag }
 			outlined
 		>
-			{ accounts
+			{ ( accounts || [] )
 				.concat( {
 					id: ACCOUNT_CREATE,
 					name: __( 'Set up a new account', 'google-site-kit' ),
