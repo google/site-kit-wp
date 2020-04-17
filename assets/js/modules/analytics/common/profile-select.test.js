@@ -25,7 +25,7 @@ import apiFetchMock from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import ProfileSelect from './profile-select';
-import { STORE_NAME as modulesAnalyticsStoreName, PROFILE_CREATE } from '../datastore/constants';
+import { STORE_NAME, PROFILE_CREATE } from '../datastore/constants';
 import * as fixtures from '../datastore/__fixtures__';
 import { fireEvent, render, act } from '../../../../../tests/js/test-utils';
 
@@ -38,10 +38,10 @@ apiFetchMock.mockImplementation( ( ...args ) => {
 
 const setupRegistry = ( { dispatch } ) => {
 	const { id, webPropertyId, accountId } = fixtures.propertiesProfiles.profiles[ 0 ];
-	dispatch( modulesAnalyticsStoreName ).setAccountID( accountId );
-	dispatch( modulesAnalyticsStoreName ).setPropertyID( webPropertyId );
-	dispatch( modulesAnalyticsStoreName ).setProfileID( id );
-	dispatch( modulesAnalyticsStoreName ).receiveProfiles( fixtures.propertiesProfiles.profiles );
+	dispatch( STORE_NAME ).setAccountID( accountId );
+	dispatch( STORE_NAME ).setPropertyID( webPropertyId );
+	dispatch( STORE_NAME ).setProfileID( id );
+	dispatch( STORE_NAME ).receiveProfiles( fixtures.propertiesProfiles.profiles );
 };
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
@@ -50,16 +50,16 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 		propertyID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId,
 	};
 	const { id } = fixtures.propertiesProfiles.profiles[ 0 ];
-	dispatch( modulesAnalyticsStoreName ).setAccountID( existingTag.accountID );
-	dispatch( modulesAnalyticsStoreName ).setPropertyID( existingTag.propertyID );
-	dispatch( modulesAnalyticsStoreName ).setProfileID( id );
-	dispatch( modulesAnalyticsStoreName ).receiveProfiles( fixtures.accountsPropertiesProfiles.profiles );
-	dispatch( modulesAnalyticsStoreName ).receiveExistingTag( existingTag.propertyID );
+	dispatch( STORE_NAME ).setAccountID( existingTag.accountID );
+	dispatch( STORE_NAME ).setPropertyID( existingTag.propertyID );
+	dispatch( STORE_NAME ).setProfileID( id );
+	dispatch( STORE_NAME ).receiveProfiles( fixtures.accountsPropertiesProfiles.profiles );
+	dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
-	dispatch( modulesAnalyticsStoreName ).setSettings( {} );
-	dispatch( modulesAnalyticsStoreName ).receiveProfiles( [] );
+	dispatch( STORE_NAME ).setSettings( {} );
+	dispatch( STORE_NAME ).receiveProfiles( [] );
 };
 
 describe( 'ProfileSelect', () => {
@@ -78,8 +78,8 @@ describe( 'ProfileSelect', () => {
 	it( 'should display profile options of an existing account when present, and not be disabled.', async () => {
 		const { container, getAllByRole, registry } = render( <ProfileSelect />, { setupRegistry: setupRegistryWithExistingTag } );
 
-		const currentPropertyID = registry.select( modulesAnalyticsStoreName ).getPropertyID();
-		const existingTagPropertyID = registry.select( modulesAnalyticsStoreName ).getExistingTag();
+		const currentPropertyID = registry.select( STORE_NAME ).getPropertyID();
+		const existingTagPropertyID = registry.select( STORE_NAME ).getExistingTag();
 		expect( existingTagPropertyID ).toEqual( currentPropertyID );
 
 		const existingTagProfiles = fixtures.accountsPropertiesProfiles.profiles
@@ -97,20 +97,20 @@ describe( 'ProfileSelect', () => {
 
 	it( 'should be disabled when in the absence of an valid account or property ID.', async () => {
 		const { container, registry } = render( <ProfileSelect />, { setupRegistry } );
-		const validAccountID = registry.select( modulesAnalyticsStoreName ).getAccountID();
+		const validAccountID = registry.select( STORE_NAME ).getAccountID();
 
 		// A valid accountID is provided, so ensure it is not currently disabled.
 		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) )
 			.not.toHaveClass( 'mdc-select--disabled' );
 
-		await act( () => registry.dispatch( modulesAnalyticsStoreName ).setAccountID( '0' ) );
+		await act( () => registry.dispatch( STORE_NAME ).setAccountID( '0' ) );
 
 		// An empty accountID is invalid, so ensure the select IS currently disabled.
 		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) )
 			.toHaveClass( 'mdc-select--disabled' );
 
-		await act( () => registry.dispatch( modulesAnalyticsStoreName ).setAccountID( validAccountID ) );
-		await act( () => registry.dispatch( modulesAnalyticsStoreName ).setPropertyID( '0' ) );
+		await act( () => registry.dispatch( STORE_NAME ).setAccountID( validAccountID ) );
+		await act( () => registry.dispatch( STORE_NAME ).setPropertyID( '0' ) );
 
 		// The accountID is valid, but an empty propertyID is invalid, so ensure the select IS currently disabled.
 		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) )
@@ -127,14 +127,14 @@ describe( 'ProfileSelect', () => {
 
 	it( 'should update profileID in the store when a new item is selected', async () => {
 		const { getByText, container, registry } = render( <ProfileSelect />, { setupRegistry } );
-		const originalProfileID = registry.select( modulesAnalyticsStoreName ).getProfileID();
+		const originalProfileID = registry.select( STORE_NAME ).getProfileID();
 
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 		// Click this element to select it and fire the onChange event.
 		fireEvent.click( getByText( /set up a new profile/i ) );
 
-		const newProfileID = registry.select( modulesAnalyticsStoreName ).getProfileID();
+		const newProfileID = registry.select( STORE_NAME ).getProfileID();
 		expect( originalProfileID ).not.toEqual( newProfileID );
 		expect( newProfileID ).toEqual( PROFILE_CREATE );
 	} );

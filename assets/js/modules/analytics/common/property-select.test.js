@@ -25,7 +25,7 @@ import apiFetchMock from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import PropertySelect from './property-select';
-import { STORE_NAME as modulesAnalyticsStoreName, ACCOUNT_CREATE } from '../datastore/constants';
+import { STORE_NAME, ACCOUNT_CREATE } from '../datastore/constants';
 import * as fixtures from '../datastore/__fixtures__';
 import { fireEvent, render, act } from '../../../../../tests/js/test-utils';
 
@@ -38,23 +38,23 @@ apiFetchMock.mockImplementation( ( ...args ) => {
 
 const setupRegistry = ( { dispatch } ) => {
 	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId;
-	dispatch( modulesAnalyticsStoreName ).setAccountID( accountID );
-	dispatch( modulesAnalyticsStoreName ).receiveProperties( fixtures.accountsPropertiesProfiles.properties );
-	dispatch( modulesAnalyticsStoreName ).receiveExistingTag( null );
+	dispatch( STORE_NAME ).setAccountID( accountID );
+	dispatch( STORE_NAME ).receiveProperties( fixtures.accountsPropertiesProfiles.properties );
+	dispatch( STORE_NAME ).receiveExistingTag( null );
 };
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
-	dispatch( modulesAnalyticsStoreName ).receiveProperties( fixtures.accountsPropertiesProfiles.properties );
-	dispatch( modulesAnalyticsStoreName ).receiveExistingTag( fixtures.getTagPermissionsAccess );
+	dispatch( STORE_NAME ).receiveProperties( fixtures.accountsPropertiesProfiles.properties );
+	dispatch( STORE_NAME ).receiveExistingTag( fixtures.getTagPermissionsAccess );
 	// Existing tag IDs are set in the resolver so we have to fill those here.
-	dispatch( modulesAnalyticsStoreName ).setAccountID( fixtures.getTagPermissionsAccess.accountID );
-	dispatch( modulesAnalyticsStoreName ).setPropertyID( fixtures.getTagPermissionsAccess.propertyID );
+	dispatch( STORE_NAME ).setAccountID( fixtures.getTagPermissionsAccess.accountID );
+	dispatch( STORE_NAME ).setPropertyID( fixtures.getTagPermissionsAccess.propertyID );
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
-	dispatch( modulesAnalyticsStoreName ).setSettings( {} );
-	dispatch( modulesAnalyticsStoreName ).receiveProperties( [] );
-	dispatch( modulesAnalyticsStoreName ).receiveExistingTag( null );
+	dispatch( STORE_NAME ).setSettings( {} );
+	dispatch( STORE_NAME ).receiveProperties( [] );
+	dispatch( STORE_NAME ).receiveExistingTag( null );
 };
 
 describe( 'PropertySelect', () => {
@@ -91,7 +91,7 @@ describe( 'PropertySelect', () => {
 		expect( selectWrapper ).not.toHaveClass( 'mdc-select--disabled' );
 		expect( selectedText ).not.toHaveAttribute( 'aria-disabled', 'true' );
 
-		await act( () => registry.dispatch( modulesAnalyticsStoreName ).setAccountID( ACCOUNT_CREATE ) );
+		await act( () => registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE ) );
 
 		// An empty accountID is invalid, so ensure the select IS currently disabled.
 		expect( selectWrapper ).toHaveClass( 'mdc-select--disabled' );
@@ -108,14 +108,14 @@ describe( 'PropertySelect', () => {
 
 	it( 'should update propertyID in the store when a new item is selected', async () => {
 		const { getAllByRole, container, registry } = render( <PropertySelect />, { setupRegistry } );
-		const originalPropertyID = registry.select( modulesAnalyticsStoreName ).getPropertyID();
+		const originalPropertyID = registry.select( STORE_NAME ).getPropertyID();
 
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 		// Click this element to select it and fire the onChange event.
 		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
 
-		const newPropertyID = registry.select( modulesAnalyticsStoreName ).getPropertyID();
+		const newPropertyID = registry.select( STORE_NAME ).getPropertyID();
 		expect( originalPropertyID ).not.toEqual( newPropertyID );
 		expect( newPropertyID ).toEqual( fixtures.accountsPropertiesProfiles.properties[ 1 ].id );
 	} );
@@ -123,8 +123,8 @@ describe( 'PropertySelect', () => {
 	it( 'should update internalWebPropertyID in the store when an item is selected', () => {
 		const { getAllByRole, container, registry } = render( <PropertySelect />, { setupRegistry } );
 		const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId;
-		const originalID = registry.select( modulesAnalyticsStoreName ).getInternalWebPropertyID();
-		const properties = registry.select( modulesAnalyticsStoreName ).getProperties( accountID );
+		const originalID = registry.select( STORE_NAME ).getInternalWebPropertyID();
+		const properties = registry.select( STORE_NAME ).getProperties( accountID );
 		const targetProperty = properties[ 1 ];
 
 		// Click the label to expose the elements in the menu.
@@ -132,9 +132,9 @@ describe( 'PropertySelect', () => {
 		// Click this element to select it and fire the onChange event.
 		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
 
-		const newPropertyID = registry.select( modulesAnalyticsStoreName ).getPropertyID();
+		const newPropertyID = registry.select( STORE_NAME ).getPropertyID();
 		expect( targetProperty.id ).toEqual( newPropertyID );
-		const newID = registry.select( modulesAnalyticsStoreName ).getInternalWebPropertyID();
+		const newID = registry.select( STORE_NAME ).getInternalWebPropertyID();
 		expect( originalID ).not.toEqual( newID );
 		expect( newID ).toEqual( targetProperty.internalWebPropertyId );
 	} );
