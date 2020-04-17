@@ -58,7 +58,7 @@ const STORE_PARAMS = {
 			},
 		};
 	},
-	keyParams: {
+	argsToParams: {
 		objParam: ( value ) => 'object' === typeof value,
 		aParam: ( value ) => 'undefined' !== typeof value,
 	},
@@ -112,7 +112,7 @@ describe( 'createFetchStore store', () => {
 		} );
 
 		describe( 'fetch', () => {
-			it( 'validates parameters based on keyParams', () => {
+			it( 'validates parameters based on argsToParams', () => {
 				const consoleErrorSpy = jest.spyOn( global.console, 'error' );
 
 				dispatch.fetchGetSomeData();
@@ -132,7 +132,7 @@ describe( 'createFetchStore store', () => {
 					baseName: 'SaveSomeData',
 					controlCallback: async () => true,
 					reducerCallback: ( state ) => state,
-					keyParams: { requiredParam: ( value ) => value },
+					argsToParams: { requiredParam: ( value ) => value },
 				} );
 
 				const action = fetchStoreDefinition.actions.fetchSaveSomeData();

@@ -63,13 +63,13 @@ import { stringifyObject } from '../../util';
  * @param {string}   options.baseName         The base name to use for all the created infrastructure.
  * @param {Function} options.controlCallback  Callback function to issue the API request. Will be used inside the
  *                                            control. The function receives a params object with the same keys
- *                                            specified in keyParams, and the respective values passed to the action.
+ *                                            specified in argsToParams, and the respective values passed to the action.
  * @param {?Function} options.reducerCallback Optional. Callback function to modify state based on the API response.
  *                                            Will be used inside the reducer. The  function receives the store's state
  *                                            object as first parameter, the API response as second parameter, and the
  *                                            params object for the request (see above) as third parameter. If not
  *                                            provided, the default will return the unmodified state.
- * @param {?Object}  options.keyParams        Optional. Object with arguments definition to require for the fetch action
+ * @param {?Object}  options.argsToParams     Optional. Object with arguments definition to require for the fetch action
  *                                            and the selector to check for active API requests. Argument names should
  *                                            be used as keys, and a callback to be passed to invariant should be used
  *                                            as values. If no callback is provided for an argument, the default will be
@@ -80,7 +80,7 @@ export const createFetchStore = ( {
 	baseName,
 	controlCallback,
 	reducerCallback,
-	keyParams = {},
+	argsToParams = {},
 } ) => {
 	invariant( baseName, 'baseName is required.' );
 	invariant( 'function' === typeof controlCallback, 'controlCallback is required.' );
@@ -110,7 +110,7 @@ export const createFetchStore = ( {
 			let response, error, params;
 
 			try {
-				params = argsToParamsObject( args, keyParams );
+				params = argsToParamsObject( args, argsToParams );
 			} catch ( err ) {
 				// Parameters should never be invalid here, this needs to be
 				// strict and inform the developer of the issue.
@@ -153,7 +153,7 @@ export const createFetchStore = ( {
 
 			// If params are required, ensure they are passed, otherwise use
 			// default empty object.
-			if ( Object.keys( keyParams ).length ) {
+			if ( Object.keys( argsToParams ).length ) {
 				invariant( 'object' === typeof params, 'params is required.' );
 			} else {
 				params = {};
@@ -227,7 +227,7 @@ export const createFetchStore = ( {
 
 			let params;
 			try {
-				params = argsToParamsObject( args, keyParams );
+				params = argsToParamsObject( args, argsToParams );
 			} catch ( err ) {
 				// If parameters are invalid, fail silently here. It likely is
 				// because some dependency selector is still resolving.
@@ -256,24 +256,24 @@ export const createFetchStore = ( {
  * @since n.e.x.t
  * @private
  *
- * @param {Array}  args      Arguments passed to the original function.
- * @param {Object} keyParams Object with arguments definition to require for the fetch action
- *                           and the selector to check for active API requests. Argument names should
- *                           be used as keys, and a callback to be passed to invariant should be used
- *                           as values. If no callback is provided for an argument, the default will be
- *                           accepting any value other than undefined.
+ * @param {Array}  args         Arguments passed to the original function.
+ * @param {Object} argsToParams Object with arguments definition to require for the fetch action
+ *                              and the selector to check for active API requests. Argument names should
+ *                              be used as keys, and a callback to be passed to invariant should be used
+ *                              as values. If no callback is provided for an argument, the default will be
+ *                              accepting any value other than undefined.
  * @return {Object} Arguments keyed by their name.
  */
-const argsToParamsObject = ( args, keyParams ) => {
+const argsToParamsObject = ( args, argsToParams ) => {
 	const params = {};
 
-	const paramNames = Object.keys( keyParams );
+	const paramNames = Object.keys( argsToParams );
 	let i = 0;
 	for ( i = 0; i < paramNames.length; i++ ) {
 		const paramName = paramNames[ i ];
 		const paramValue = args[ i ];
 
-		let paramCallback = keyParams[ paramName ];
+		let paramCallback = argsToParams[ paramName ];
 		if ( 'function' !== typeof paramCallback ) {
 			paramCallback = ( value ) => 'undefined' !== typeof value;
 		}
