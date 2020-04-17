@@ -18,6 +18,9 @@
 
 export const STORE_NAME = 'modules/analytics';
 
+// A special Account ID value used for the "Set up a new account" option.
 export const ACCOUNT_CREATE = 'account_create';
+// A special Property ID value used for the "Set up a new property" option.
 export const PROPERTY_CREATE = 'property_create';
+// A special Profile ID value used for the "Set up a new profile" option.
 export const PROFILE_CREATE = 'profile_create';
