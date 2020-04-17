@@ -47,10 +47,8 @@ export default function UseSnippetSwitch() {
 				hideLabel={ false }
 			/>
 			<p>
-				{ useSnippet
-					? __( 'Site Kit will add the code automatically.', 'google-site-kit' )
-					: __( 'Site Kit will not add the code to your site.', 'google-site-kit' )
-				}
+				{ useSnippet && __( 'Site Kit will add the code automatically.', 'google-site-kit' ) }
+				{ ! useSnippet && __( 'Site Kit will not add the code to your site.', 'google-site-kit' ) }
 			</p>
 		</div>
 	);
