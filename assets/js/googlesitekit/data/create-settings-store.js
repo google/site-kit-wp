@@ -255,7 +255,9 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 	const controls = {
 		...commonControls,
 		[ FETCH_SETTINGS ]: () => {
-			return API.get( type, identifier, datapoint );
+			return API.get( type, identifier, datapoint, {}, {
+				useCache: false,
+			} );
 		},
 		[ FETCH_SAVE_SETTINGS ]: ( { payload } ) => {
 			const { values } = payload;
