@@ -42,8 +42,8 @@ export default function SetupForm( { finishSetup } ) {
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 
 	const { submitChanges } = useDispatch( STORE_NAME );
-	const submitForm = useCallback( async ( e ) => {
-		e.preventDefault();
+	const submitForm = useCallback( async ( event ) => {
+		event.preventDefault();
 		const { error } = await submitChanges() || {};
 		if ( ! error ) {
 			finishSetup();

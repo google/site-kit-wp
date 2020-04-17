@@ -39,8 +39,8 @@ export default function AccountCreateLegacy() {
 	const isFetchingAccounts = useSelect( ( select ) => select( STORE_NAME ).isFetchingAccounts() );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
-	const createAccountHandler = ( e ) => {
-		e.preventDefault();
+	const createAccountHandler = ( event ) => {
+		event.preventDefault();
 		trackEvent( 'analytics_setup', 'new_analytics_account' );
 		global.open( 'https://analytics.google.com/analytics/web/?#/provision/SignUp', '_blank' );
 	};
