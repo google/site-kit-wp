@@ -71,12 +71,11 @@ export const controls = {
 			if ( error ) {
 				return { error };
 			}
-			if ( property ) {
-				propertyID = property.id;
-			}
+			propertyID = property.id;
 		}
 
 		const profileID = registry.select( STORE_NAME ).getProfileID();
+
 		if ( profileID === PROFILE_CREATE ) {
 			const accountID = registry.select( STORE_NAME ).getAccountID();
 
