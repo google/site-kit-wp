@@ -26,6 +26,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
+import ErrorText from '../../../components/error-text';
 const { useSelect } = Data;
 
 export default function ExistingTagError() {
@@ -37,17 +38,5 @@ export default function ExistingTagError() {
 		propertyID
 	);
 
-	return (
-		<div className="googlesitekit-error-text">
-			<p>
-				{
-					sprintf(
-						/* translators: %s: Error message */
-						__( 'Error: %s', 'google-site-kit' ),
-						message
-					)
-				}
-			</p>
-		</div>
-	);
+	return <ErrorText message={ message } />;
 }

@@ -17,15 +17,11 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __, sprintf } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
+import ErrorText from '../../../components/error-text';
 const { useSelect } = Data;
 
 export default function ErrorNotice() {
@@ -35,17 +31,5 @@ export default function ErrorNotice() {
 		return null;
 	}
 
-	return (
-		<div className="googlesitekit-error-text">
-			<p>
-				{
-					sprintf(
-						/* translators: %s: Error message */
-						__( 'Error: %s', 'google-site-kit' ),
-						error.message
-					)
-				}
-			</p>
-		</div>
-	);
+	return <ErrorText message={ error.message } />;
 }
