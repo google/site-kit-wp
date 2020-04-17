@@ -30,13 +30,11 @@ import { addAction, applyFilters, doAction, addFilter, removeFilter } from '@wor
 /**
  * Internal dependencies
  */
-import {
-	getStorage,
-	getCurrentDateRangeSlug,
-	fillFilterWithComponent,
-	getQueryParameter,
-	stringifyObject,
-} from '../../util';
+import { getStorage } from '../../util/storage';
+import { getCurrentDateRangeSlug } from '../../util/date-range';
+import { fillFilterWithComponent } from '../../util/helpers';
+import { getQueryParameter } from '../../util/standalone';
+import { stringifyObject } from '../../util/stringify';
 import DashboardAuthAlert from '../notifications/dashboard-auth-alert';
 import DashboardPermissionAlert from '../notifications/dashboard-permission-alert';
 

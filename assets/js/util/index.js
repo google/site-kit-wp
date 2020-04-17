@@ -33,10 +33,8 @@ import React from 'react';
  */
 import {
 	addFilter,
-	applyFilters,
 } from '@wordpress/hooks';
 import {
-	_n,
 	__,
 	sprintf,
 } from '@wordpress/i18n';
@@ -48,6 +46,7 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
 import SvgIcon from './svg-icon';
 import { trackEvent } from './tracking';
 import data, { TYPE_CORE } from '../components/data';
+import { fillFilterWithComponent } from './helpers';
 export { trackEvent };
 export * from './sanitize';
 export * from './stringify';
@@ -55,6 +54,8 @@ export * from './standalone';
 export * from './storage';
 export * from './i18n';
 export * from './tag';
+export * from './date-range';
+export * from './helpers';
 
 /**
  * Remove a parameter from a URL string.
@@ -451,34 +452,6 @@ export const getReAuthURL = ( slug, status, _googlesitekit = global.googlesiteki
 };
 
 /**
- * Replace a filtered component with the passed component and merge their props.
- *
- * Components wrapped in the 'withFilters' higher order component have a filter applied to them (wp.hooks.applyFilters).
- * This helper is used to replace (or "Fill") a filtered component with a passed component. To use, pass as the third
- * argument to an addFilter call, eg:
- *
- * 	addFilter( `googlesitekit.ModuleSettingsDetails-${slug}`,
- * 		'googlesitekit.AdSenseModuleSettingsDetails',
- * 		fillFilterWithComponent( AdSenseSettings, {
- * 			onSettingsPage: true,
- * 		} ) );
- *
- * @param {WPElement} NewComponent The component to render in place of the filtered component.
- * @param {Object}    newProps     The props to pass down to the new component.
- *
- * @return {WPElement} React Component after overriding filtered component with NewComponent.
- */
-export const fillFilterWithComponent = ( NewComponent, newProps ) => {
-	return ( OriginalComponent ) => {
-		return function InnerComponent( props ) {
-			return (
-				<NewComponent { ...props } { ...newProps } OriginalComponent={ OriginalComponent } />
-			);
-		};
-	};
-};
-
-/**
  * Get Site Kit Admin URL Helper
  *
  * @param {string} page The page slug. Optional. Default is 'googlesitekit-dashboard'.
@@ -617,39 +590,6 @@ export const decodeHtmlEntity = ( str ) => {
 
 	return unescape( decoded );
 };
-
-/**
- * Gets the current dateRange string.
- *
- * @return {string} the date range string.
- */
-export function getCurrentDateRange() {
-	/**
-	 * Filter the date range used for queries.
-	 *
-	 * @param String The selected date range. Default 'Last 28 days'.
-	 */
-	const dateRange = applyFilters( 'googlesitekit.dateRange', 'last-28-days' );
-	const daysMatch = dateRange.match( /last-(\d+)-days/ );
-
-	if ( daysMatch && daysMatch[ 1 ] ) {
-		return sprintf(
-			_n( '%s day', '%s days', parseInt( daysMatch[ 1 ], 10 ), 'google-site-kit' ),
-			daysMatch[ 1 ]
-		);
-	}
-
-	throw new Error( 'Unrecognized date range slug used in `googlesitekit.dateRange`.' );
-}
-
-/**
- * Gets the current dateRange slug.
- *
- * @return {string} the date range slug.
- */
-export function getCurrentDateRangeSlug() {
-	return applyFilters( 'googlesitekit.dateRange', 'last-28-days' );
-}
 
 /**
  * Get the icon for a module.
