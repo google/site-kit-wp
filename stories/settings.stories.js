@@ -50,6 +50,9 @@ storiesOf( 'Settings', module )
 		global.googlesitekit.setupComplete = true;
 		global.googlesitekit.modules.analytics.setupComplete = true;
 		global.googlesitekit.modules[ 'search-console' ].setupComplete = true;
+		global.googlesitekit.modules.adsense.setupComplete = true;
+		global.googlesitekit.modules.adsense.active = true;
+		global.googlesitekit.modules.adsense.settings.accountID = 'pub-XXXXXXXXXXXXXXXX';
 
 		return (
 			<div className="mdc-layout-grid__inner">
