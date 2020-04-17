@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import {
@@ -52,9 +47,6 @@ export default function SettingsForm() {
 
 				<AnonymizeIPSwitch />
 
-				<p className="googlesitekit-setup-module__text">
-					{ __( 'Exclude from Analytics', 'google-site-kit' ) }
-				</p>
 				<TrackingExclusionSwitches />
 			</div>
 		</div>

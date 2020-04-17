@@ -51,7 +51,11 @@ export default function TrackingExclusionSwitches() {
 	}
 
 	return (
-		<div className="googlesitekit-analytics-trackingdisabled">
+		<fieldset className="googlesitekit-analytics-trackingdisabled">
+			<legend className="googlesitekit-setup-module__text">
+				{ __( 'Exclude from Analytics', 'google-site-kit' ) }
+			</legend>
+
 			<div className="mdc-form-field">
 				<Switch
 					label={ trackingExclusionLabels[ TRACKING_LOGGED_IN_USERS ] }
@@ -65,6 +69,6 @@ export default function TrackingExclusionSwitches() {
 				{ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) && __( 'Logged-in users will be excluded from Analytics tracking.', 'google-site-kit' ) }
 				{ ! trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) && __( 'Logged-in users will be included in Analytics tracking.', 'google-site-kit' ) }
 			</p>
-		</div>
+		</fieldset>
 	);
 }
