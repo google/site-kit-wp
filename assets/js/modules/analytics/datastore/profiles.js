@@ -27,8 +27,8 @@ import { groupBy } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { isValidAccountID, isValidPropertyID, isValidPropertySelection, parsePropertyID } from '../util';
-import { STORE_NAME, PROFILE_CREATE, PROPERTY_CREATE } from './constants';
+import { isValidAccountID, isValidPropertyID } from '../util';
+import { STORE_NAME, PROFILE_CREATE } from './constants';
 
 // Actions
 const FETCH_CREATE_PROFILE = 'FETCH_CREATE_PROFILE';
@@ -187,35 +187,6 @@ export const actions = {
 			type: RECEIVE_PROFILES,
 		};
 	},
-
-	/**
-	 * Sets a profile based on given account and property IDs.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {string} propertyID Property ID.
-	 */
-	*setProfileForProperty( propertyID ) {
-		invariant( isValidPropertySelection( propertyID ), 'A valid property selection is required to set profile.' );
-		const registry = yield Data.commonActions.getRegistry();
-
-		if ( PROPERTY_CREATE === propertyID ) {
-			registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
-			return;
-		}
-		// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
-		registry.dispatch( STORE_NAME ).setProfileID( '' );
-		const { accountID } = parsePropertyID( propertyID );
-		const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
-		if ( profiles === undefined ) {
-			return; // Selection will happen in in getProfiles resolver.
-		}
-
-		const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE };
-
-		registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id );
-	},
 };
 
 export const controls = {
@@ -352,16 +323,17 @@ export const resolvers = {
 
 		const registry = yield Data.commonActions.getRegistry();
 
-		const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
+		let profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
 
 		// Only fetch profiles if there are none received for the given account and property.
 		if ( ! profiles ) {
-			yield actions.fetchProfiles( accountID, propertyID );
+			( { response: profiles } = yield actions.fetchProfiles( accountID, propertyID ) );
 		}
 
 		const profileID = registry.select( STORE_NAME ).getProfileID();
-		if ( ! profileID ) {
-			yield actions.setProfileForProperty( propertyID );
+		if ( profiles && ! profileID ) {
+			const profile = profiles[ 0 ] || { id: PROFILE_CREATE };
+			registry.dispatch( STORE_NAME ).setProfileID( profile.id );
 		}
 	},
 };

@@ -28,7 +28,7 @@ import { groupBy } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySelection } from '../util';
-import { STORE_NAME, PROPERTY_CREATE } from './constants';
+import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 const { createRegistryControl } = Data;
 
 // Actions
@@ -201,8 +201,14 @@ export const actions = {
 		const registry = yield Data.commonActions.getRegistry();
 		registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
 
-		if ( PROPERTY_CREATE !== propertyID && ! internalPropertyID ) {
-			const { accountID } = parsePropertyID( propertyID );
+		if ( PROPERTY_CREATE === propertyID ) {
+			registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
+			return;
+		}
+
+		const { accountID } = parsePropertyID( propertyID );
+
+		if ( ! internalPropertyID ) {
 			yield actions.waitForProperties( accountID );
 			const property = registry.select( STORE_NAME ).getPropertyByID( propertyID ) || {};
 			internalPropertyID = property.internalWebPropertyId;
@@ -210,8 +216,16 @@ export const actions = {
 
 		registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
 
-		// Cascading selection.
-		registry.dispatch( STORE_NAME ).setProfileForProperty( propertyID );
+		// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
+		registry.dispatch( STORE_NAME ).setProfileID( '' );
+		const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
+		if ( profiles === undefined ) {
+			return; // Selection will happen in in getProfiles resolver.
+		}
+
+		const matchedProfile = profiles.find( ( { webPropertyId } ) => webPropertyId === propertyID ) || { id: PROFILE_CREATE };
+
+		registry.dispatch( STORE_NAME ).setProfileID( matchedProfile.id );
 	},
 
 	/**
