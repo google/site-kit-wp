@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import { _x } from '@wordpress/i18n';
 
 /**
@@ -28,7 +28,7 @@ import { _x } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import SetupForm from './setup-form';
 import ProgressBar from '../../../components/progress-bar';
-import { SvgIcon } from '../../../util';
+import { SvgIcon, trackEvent } from '../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../datastore/constants';
 import {
 	AccountCreate,
@@ -53,6 +53,10 @@ export default function SetupMain( { finishSetup } ) {
 		finishSetup( ...args );
 		setIsNavigating( true );
 	};
+
+	useEffect( () => {
+		trackEvent( 'analytics_setup', 'configure_analytics_screen' );
+	}, [] );
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below

@@ -34,6 +34,7 @@ import {
 	ProfileSelect,
 	PropertySelect,
 } from '../common/';
+import { trackEvent } from '../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -47,6 +48,7 @@ export default function SetupForm( { finishSetup } ) {
 		const { error } = await submitChanges() || {};
 		if ( ! error ) {
 			finishSetup();
+			trackEvent( 'analytics_setup', 'analytics_configured' );
 		}
 	}, [ canSubmitChanges, finishSetup ] );
 

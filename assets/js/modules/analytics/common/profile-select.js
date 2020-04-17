@@ -30,6 +30,7 @@ import { Select, Option } from '../../../material-components';
 import ProgressBar from '../../../components/progress-bar';
 import { STORE_NAME, PROFILE_CREATE } from '../datastore/constants';
 import { isValidPropertyID, isValidAccountID } from '../util';
+import { trackEvent } from '../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function ProfileSelect() {
@@ -42,7 +43,11 @@ export default function ProfileSelect() {
 
 	const { setProfileID } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
-		setProfileID( item.dataset.value );
+		const newProfileID = item.dataset.value;
+		if ( profileID !== newProfileID ) {
+			setProfileID( item.dataset.value );
+			trackEvent( 'analytics_setup', 'profile_change', item.dataset.value );
+		}
 	}, [ profileID ] );
 
 	if ( isLoadingProperties || isLoadingProfiles ) {

@@ -28,6 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
 import Switch from '../../../components/switch';
+import { trackEvent } from '../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch() {
@@ -36,6 +37,7 @@ export default function UseSnippetSwitch() {
 	const { setUseSnippet } = useDispatch( STORE_NAME );
 	const onChange = useCallback( () => {
 		setUseSnippet( ! useSnippet );
+		trackEvent( 'analytics_setup', useSnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled' );
 	}, [ useSnippet ] );
 
 	return (

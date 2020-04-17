@@ -30,6 +30,7 @@ import { Select, Option } from '../../../material-components';
 import ProgressBar from '../../../components/progress-bar';
 import { STORE_NAME, PROPERTY_CREATE } from '../datastore/constants';
 import { isValidAccountID } from '../util';
+import { trackEvent } from '../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
@@ -44,6 +45,7 @@ export default function PropertySelect() {
 		const newPropertyID = item.dataset.value;
 		if ( propertyID !== newPropertyID ) {
 			selectProperty( newPropertyID, item.dataset.internalId ); // Capitalization rule exception: internalId
+			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
 		}
 	}, [ propertyID ] );
 
