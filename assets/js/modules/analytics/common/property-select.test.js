@@ -74,7 +74,7 @@ describe( 'PropertySelect', () => {
 		const { container } = render( <PropertySelect />, { setupRegistry: setupRegistryWithExistingTag } );
 
 		const existingTagPropertyID = fixtures.getTagPermissionsAccess.propertyID;
-		const existingTagProperty = fixtures.accountsPropertiesProfiles.properties.find( ( p ) => p.id === existingTagPropertyID );
+		const existingTagProperty = fixtures.accountsPropertiesProfiles.properties.find( ( { id } ) => id === existingTagPropertyID );
 		const selectedText = container.querySelector( '.mdc-select__selected-text' );
 		expect( selectedText.textContent ).toEqual( existingTagProperty.name );
 		expect( selectedText ).toHaveAttribute( 'aria-disabled', 'true' );

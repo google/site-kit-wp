@@ -83,7 +83,7 @@ describe( 'ProfileSelect', () => {
 		expect( existingTagPropertyID ).toEqual( currentPropertyID );
 
 		const existingTagProfiles = fixtures.accountsPropertiesProfiles.profiles
-			.filter( ( p ) => p.webPropertyId === existingTagPropertyID );
+			.filter( ( { webPropertyId } ) => webPropertyId === existingTagPropertyID );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( existingTagProfiles.length + 1 );
