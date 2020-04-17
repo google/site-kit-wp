@@ -47,6 +47,8 @@ export default function SetupMain( { finishSetup } ) {
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	let viewComponent;
+	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
+	// when the component initially loads and has yet to start fetching accounts.
 	if ( isFetchingAccounts || isDoingSubmitChanges || ! hasResolvedAccounts ) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && existingTagPermission === false ) {
