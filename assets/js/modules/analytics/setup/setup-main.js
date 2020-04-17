@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useState } from '@wordpress/element';
 import { _x } from '@wordpress/i18n';
 
 /**
@@ -46,17 +47,24 @@ export default function SetupMain( { finishSetup } ) {
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
+	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
+	const [ isNavigating, setIsNavigating ] = useState( false );
+	const finishSetupAndNavigate = ( ...args ) => {
+		finishSetup( ...args );
+		setIsNavigating( true );
+	};
+
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
-	if ( isFetchingAccounts || isDoingSubmitChanges || ! hasResolvedAccounts ) {
+	if ( isFetchingAccounts || isDoingSubmitChanges || ! hasResolvedAccounts || isNavigating ) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && existingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
 	} else if ( isCreateAccount || ( Array.isArray( accounts ) && ! accounts.length ) ) {
 		viewComponent = <AccountCreate />;
 	} else {
-		viewComponent = <SetupForm finishSetup={ finishSetup } />;
+		viewComponent = <SetupForm finishSetup={ finishSetupAndNavigate } />;
 	}
 
 	return (
