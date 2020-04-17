@@ -76,7 +76,7 @@ describe( 'PropertySelect', () => {
 		const existingTagPropertyID = fixtures.getTagPermissionsAccess.propertyID;
 		const existingTagProperty = fixtures.accountsPropertiesProfiles.properties.find( ( { id } ) => id === existingTagPropertyID );
 		const selectedText = container.querySelector( '.mdc-select__selected-text' );
-		expect( selectedText.textContent ).toEqual( existingTagProperty.name );
+		expect( selectedText ).toHaveTextContent( existingTagProperty.name );
 		expect( selectedText ).toHaveAttribute( 'aria-disabled', 'true' );
 		expect( container.querySelector( '.googlesitekit-analytics__select-property' ) )
 			.toHaveClass( 'mdc-select--disabled' );
@@ -86,14 +86,16 @@ describe( 'PropertySelect', () => {
 		const { container, registry } = render( <PropertySelect />, { setupRegistry } );
 
 		// A valid accountID is provided, so ensure it is not currently disabled.
-		expect( container.querySelector( '.googlesitekit-analytics__select-property' ) )
-			.not.toHaveClass( 'mdc-select--disabled' );
+		const selectWrapper = container.querySelector( '.googlesitekit-analytics__select-property' );
+		const selectedText = container.querySelector( '.mdc-select__selected-text' );
+		expect( selectWrapper ).not.toHaveClass( 'mdc-select--disabled' );
+		expect( selectedText ).not.toHaveAttribute( 'aria-disabled', 'true' );
 
 		await act( () => registry.dispatch( modulesAnalyticsStoreName ).setAccountID( ACCOUNT_CREATE ) );
 
 		// An empty accountID is invalid, so ensure the select IS currently disabled.
-		expect( container.querySelector( '.googlesitekit-analytics__select-property' ) )
-			.toHaveClass( 'mdc-select--disabled' );
+		expect( selectWrapper ).toHaveClass( 'mdc-select--disabled' );
+		expect( selectedText ).toHaveAttribute( 'aria-disabled', 'true' );
 	} );
 
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {
