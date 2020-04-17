@@ -46,12 +46,11 @@ export default function AccountSelect() {
 	return (
 		<Select
 			className="googlesitekit-analytics__select-account"
-			enhanced
-			name="accounts"
+			label={ __( 'Account', 'google-site-kit' ) }
 			value={ accountID }
 			onEnhancedChange={ onChange }
-			label={ __( 'Account', 'google-site-kit' ) }
 			disabled={ hasExistingTag }
+			enhanced
 			outlined
 		>
 			{ ( accounts || [] )
