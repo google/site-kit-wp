@@ -22,7 +22,7 @@
 import Data from 'googlesitekit-data';
 import './datastore';
 import { fillFilterWithComponent } from '../../util';
-import { SetupMain as AnalyticsSetup } from './setup/index';
+import { SetupMain as AnalyticsSetup } from './setup';
 import { SettingsMain as AnalyticsSettings } from './settings';
 
 /**
