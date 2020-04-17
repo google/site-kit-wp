@@ -2,7 +2,11 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import Setup from 'GoogleComponents/setup';
+
+/**
+ * Internal dependencies
+ */
+import Setup from '../assets/js/components/setup';
 
 storiesOf( 'Setup', module )
 	.add( 'Step one', () => {

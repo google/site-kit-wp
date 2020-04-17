@@ -18,16 +18,6 @@
 /**
  * External dependencies
  */
-import DashboardAuthAlert from 'GoogleComponents/notifications/dashboard-auth-alert';
-import DashboardPermissionAlert from 'GoogleComponents/notifications/dashboard-permission-alert';
-import md5 from 'md5';
-import {
-	getStorage,
-	getCurrentDateRangeSlug,
-	fillFilterWithComponent,
-	getQueryParameter,
-	sortObjectProperties,
-} from 'SiteKitCore/util';
 import { cloneDeep, each, intersection, isEqual, sortBy } from 'lodash';
 
 /**
@@ -36,6 +26,19 @@ import { cloneDeep, each, intersection, isEqual, sortBy } from 'lodash';
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
 import { addAction, applyFilters, doAction, addFilter, removeFilter } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import {
+	getStorage,
+	getCurrentDateRangeSlug,
+	fillFilterWithComponent,
+	getQueryParameter,
+	stringifyObject,
+} from '../../util';
+import DashboardAuthAlert from '../notifications/dashboard-auth-alert';
+import DashboardPermissionAlert from '../notifications/dashboard-permission-alert';
 
 export const TYPE_CORE = 'core';
 export const TYPE_MODULES = 'modules';
@@ -493,7 +496,7 @@ const dataAPI = {
 		}
 
 		if ( 3 === key.length && data && 'object' === typeof data && Object.keys( data ).length ) {
-			key.push( md5( JSON.stringify( sortObjectProperties( data ) ) ) );
+			key.push( stringifyObject( data ) );
 		}
 
 		return key.join( '::' );

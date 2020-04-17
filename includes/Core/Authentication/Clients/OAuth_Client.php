@@ -321,7 +321,7 @@ final class OAuth_Client {
 	public function refresh_token() {
 		$refresh_token = $this->get_refresh_token();
 		if ( empty( $refresh_token ) ) {
-			$this->revoke_token();
+			$this->delete_token();
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'refresh_token_not_exist' );
 			return;
 		}
@@ -332,21 +332,21 @@ final class OAuth_Client {
 		}
 
 		try {
-			$authentication_token = $this->google_client->fetchAccessTokenWithRefreshToken( $refresh_token );
+			$token_response = $this->google_client->fetchAccessTokenWithRefreshToken( $refresh_token );
 		} catch ( \Exception $e ) {
 			$this->handle_fetch_token_exception( $e );
 			return;
 		}
 
-		if ( ! isset( $authentication_token['access_token'] ) ) {
+		if ( ! isset( $token_response['access_token'] ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'access_token_not_received' );
 			return;
 		}
 
 		$this->set_access_token(
-			$authentication_token['access_token'],
-			isset( $authentication_token['expires_in'] ) ? $authentication_token['expires_in'] : '',
-			isset( $authentication_token['created'] ) ? $authentication_token['created'] : 0
+			$token_response['access_token'],
+			isset( $token_response['expires_in'] ) ? $token_response['expires_in'] : '',
+			isset( $token_response['created'] ) ? $token_response['created'] : 0
 		);
 	}
 
@@ -567,7 +567,7 @@ final class OAuth_Client {
 		}
 
 		try {
-			$authentication_token = $this->get_client()->fetchAccessTokenWithAuthCode( $code );
+			$token_response = $this->get_client()->fetchAccessTokenWithAuthCode( $code );
 		} catch ( Google_Proxy_Code_Exception $e ) {
 			// Redirect back to proxy immediately with the access code.
 			wp_safe_redirect( $this->get_proxy_setup_url( $e->getAccessCode(), $e->getMessage() ) );
@@ -578,16 +578,16 @@ final class OAuth_Client {
 			exit();
 		}
 
-		if ( ! isset( $authentication_token['access_token'] ) ) {
+		if ( ! isset( $token_response['access_token'] ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'access_token_not_received' );
 			wp_safe_redirect( admin_url() );
 			exit();
 		}
 
 		$this->set_access_token(
-			$authentication_token['access_token'],
-			isset( $authentication_token['expires_in'] ) ? $authentication_token['expires_in'] : '',
-			isset( $authentication_token['created'] ) ? $authentication_token['created'] : 0
+			$token_response['access_token'],
+			isset( $token_response['expires_in'] ) ? $token_response['expires_in'] : '',
+			isset( $token_response['created'] ) ? $token_response['created'] : 0
 		);
 
 		// Update the site refresh token.
@@ -595,8 +595,8 @@ final class OAuth_Client {
 		$this->set_refresh_token( $refresh_token );
 
 		// Update granted scopes.
-		if ( isset( $authentication_token['scope'] ) ) {
-			$scopes = explode( ' ', sanitize_text_field( $authentication_token['scope'] ) );
+		if ( isset( $token_response['scope'] ) ) {
+			$scopes = explode( ' ', sanitize_text_field( $token_response['scope'] ) );
 		} elseif ( $this->context->input()->filter( INPUT_GET, 'scope' ) ) {
 			$scope  = $this->context->input()->filter( INPUT_GET, 'scope', FILTER_SANITIZE_STRING );
 			$scopes = explode( ' ', $scope );
@@ -630,8 +630,11 @@ final class OAuth_Client {
 			 * access to further scopes.
 			 *
 			 * @since 1.3.0
+			 * @since 1.6.0 The $token_response parameter was added.
+			 *
+			 * @param array $token_response Token response data.
 			 */
-			do_action( 'googlesitekit_authorize_user' );
+			do_action( 'googlesitekit_authorize_user', $token_response );
 		}
 
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
@@ -828,6 +831,8 @@ final class OAuth_Client {
 				return __( 'Unable to receive access token because of an empty authorization code.', 'google-site-kit' );
 			case 'access_token_not_received':
 				return __( 'Unable to receive access token because of an unknown error.', 'google-site-kit' );
+			case 'access_denied':
+				return __( 'The Site Kit setup was interrupted because you did not grant the necessary permissions.', 'google-site-kit' );
 			// The following messages are based on https://tools.ietf.org/html/rfc6749#section-5.2.
 			case 'invalid_request':
 				return __( 'Unable to receive access token because of an invalid OAuth request.', 'google-site-kit' );
@@ -858,7 +863,7 @@ final class OAuth_Client {
 		// Revoke and delete user connection data on 'invalid_grant'.
 		// This typically happens during refresh if the refresh token is invalid or expired.
 		if ( 'invalid_grant' === $error_code ) {
-			$this->revoke_token();
+			$this->delete_token();
 		}
 
 		$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
@@ -879,8 +884,6 @@ final class OAuth_Client {
 		$this->user_options->delete( self::OPTION_REFRESH_TOKEN );
 		$this->user_options->delete( self::OPTION_REDIRECT_URL );
 		$this->user_options->delete( self::OPTION_AUTH_SCOPES );
-		$this->user_options->delete( self::OPTION_ERROR_CODE );
-		$this->user_options->delete( self::OPTION_PROXY_ACCESS_CODE );
 	}
 
 	/**
@@ -891,7 +894,7 @@ final class OAuth_Client {
 	 * @return string OAuth redirect URI.
 	 */
 	private function get_redirect_uri() {
-		return add_query_arg( 'oauth2callback', '1', untrailingslashit( home_url() ) );
+		return add_query_arg( 'oauth2callback', '1', admin_url( 'index.php' ) );
 	}
 
 	/**

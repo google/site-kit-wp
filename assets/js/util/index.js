@@ -25,8 +25,6 @@ import {
 	get,
 	unescape,
 } from 'lodash';
-import data, { TYPE_CORE } from 'GoogleComponents/data';
-import SvgIcon from 'GoogleUtil/svg-icon';
 import React from 'react';
 
 /**
@@ -47,13 +45,17 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import SvgIcon from './svg-icon';
 import { tagMatchers as setupTagMatchers } from '../components/setup/compatibility-checks';
 import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
 import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
 import { tagMatchers as tagmanagerTagMatchers } from '../modules/tagmanager/util';
 import { trackEvent } from './tracking';
+import data, { TYPE_CORE } from '../components/data';
 export { trackEvent };
+export { SvgIcon };
 export * from './sanitize';
+export * from './stringify';
 export * from './standalone';
 export * from './storage';
 export * from './i18n';
@@ -108,6 +110,28 @@ export const removeURLParameter = ( url, parameter ) => {
 };
 
 /**
+ * Prepares a number to be used in readableLargeNumber.
+ *
+ * @param {number} number The large number to prepare.
+ *
+ * @return {number} The prepared number
+ */
+export const prepareForReadableLargeNumber = ( number ) => {
+	if ( 1000000 <= number ) {
+		return Math.round( number / 100000 ) / 10;
+	}
+
+	if ( 10000 <= number ) {
+		return Math.round( number / 1000 );
+	}
+
+	if ( 1000 <= number ) {
+		return Math.round( number / 100 ) / 10;
+	}
+	return number;
+};
+
+/**
  * Format a large number for shortened display.
  *
  * @param {number}           number       The large number to format.
@@ -134,28 +158,34 @@ export const readableLargeNumber = ( number, currencyCode = false ) => {
 		maximumFractionDigits: 1,
 	};
 
-	switch ( true ) {
-		case 1000000 < number :
-			return sprintf(
-				// translators: %s: an abbreviated number in millions.
-				__( '%sM', 'google-site-kit' ),
-				numberFormat( number / 1000000, withSingleDecimal )
-			);
-		case 99000 < number :
-			return sprintf(
-				// translators: %s: an abbreviated number in thousands.
-				__( '%sK', 'google-site-kit' ),
-				numberFormat( Math.round( number / 1000 ) )
-			);
-		case 1000 < number :
-			return sprintf(
-				// translators: %s: an abbreviated number in thousands.
-				__( '%sK', 'google-site-kit' ),
-				numberFormat( number / 1000, withSingleDecimal )
-			);
-		default:
-			return number.toString();
+	// Numbers over 1,000,000 round normally and display a single decimal unless the decimal is 0.
+	if ( 1000000 <= number ) {
+		return sprintf(
+			// translators: %s: an abbreviated number in millions.
+			__( '%sM', 'google-site-kit' ),
+			numberFormat( prepareForReadableLargeNumber( number ), number % 10 === 0 ? {} : withSingleDecimal )
+		);
 	}
+
+	// Numbers between 10,000 and 1,000,000 round normally and have no decimals
+	if ( 10000 <= number ) {
+		return sprintf(
+			// translators: %s: an abbreviated number in thousands.
+			__( '%sK', 'google-site-kit' ),
+			numberFormat( prepareForReadableLargeNumber( number ) )
+		);
+	}
+
+	// Numbers between 1,000 and 10,000 round normally and display a single decimal unless the decimal is 0.
+	if ( 1000 <= number ) {
+		return sprintf(
+			// translators: %s: an abbreviated number in thousands.
+			__( '%sK', 'google-site-kit' ),
+			numberFormat( prepareForReadableLargeNumber( number ), number % 10 === 0 ? {} : withSingleDecimal )
+		);
+	}
+
+	return number.toString();
 };
 
 /**
@@ -178,17 +208,21 @@ export const numberFormat = ( number, options = {} ) => {
 /**
  * Gets the current locale for use with browser APIs.
  *
+ * @param {Object} _global The global window object.
+ *
  * @return {string} Current Site Kit locale if set, otherwise the current language set by the browser.
  *                  E.g. `en-US` or `de-DE`
  */
-export const getLocale = () => {
-	const siteKitLocale = get( global, [ 'googlesitekit', 'locale', '', 'lang' ] );
-
+export const getLocale = ( _global = global ) => {
+	const siteKitLocale = get( _global, [ 'googlesitekit', 'locale', '', 'lang' ] );
 	if ( siteKitLocale ) {
-		return siteKitLocale.replace( '_', '-' );
+		const matches = siteKitLocale.match( /^(\w{2})?(_)?(\w{2})/ );
+		if ( matches && matches[ 0 ] ) {
+			return matches[ 0 ].replace( /_/g, '-' );
+		}
 	}
 
-	return global.navigator.language;
+	return _global.navigator.language;
 };
 
 /**
@@ -332,6 +366,42 @@ export const refreshAuthentication = async () => {
 };
 
 /**
+ * Gets data for all modules.
+ *
+ * Because googlesitekit.modules contains both module information (legacy) and
+ * API functions (new), we should be using this function and never access
+ * googlesitekit.modules directly to access module data.
+ *
+ * This function should be removed once this object is no longer used to store
+ * legacy module data.
+ *
+ * @since 1.7.0
+ *
+ * @param {Object}  _googlesitekit Optional. googlesitekit global; can be replaced for testing.
+ * @return {Object} Object with module data, with each module keyed by its slug.
+ */
+export const getModulesData = ( _googlesitekit = global.googlesitekit ) => {
+	const modulesObj = _googlesitekit.modules;
+	if ( ! modulesObj ) {
+		return {};
+	}
+
+	return Object.keys( modulesObj ).reduce( ( acc, slug ) => {
+		if ( 'object' !== typeof modulesObj[ slug ] ) {
+			return acc;
+		}
+		if (
+			'undefined' === typeof modulesObj[ slug ].slug ||
+			'undefined' === typeof modulesObj[ slug ].name ||
+			modulesObj[ slug ].slug !== slug
+		) {
+			return acc;
+		}
+		return { ...acc, [ slug ]: modulesObj[ slug ] };
+	}, {} );
+};
+
+/**
  * Get the URL needed to initiate a reAuth flow.
  *
  * @param {string}  slug   The module slug. If included redirect URL will include page: page={ `googlesitekit-${slug}`}.
@@ -347,7 +417,7 @@ export const getReAuthURL = ( slug, status, _googlesitekit = global.googlesiteki
 
 	const { needReauthenticate } = _googlesitekit.setup;
 
-	const { screenID } = _googlesitekit.modules[ slug ];
+	const { screenID } = getModulesData( _googlesitekit )[ slug ];
 
 	// Special case handling for PageSpeed Insights.
 	// TODO: Refactor this out.
@@ -541,9 +611,11 @@ export const extractTag = ( string, module ) => {
  */
 export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) => {
 	return restApiClient.setModuleActive( moduleSlug, status ).then( ( responseData ) => {
+		const modulesData = getModulesData();
+
 		// We should really be using state management. This is terrible.
-		if ( global.googlesitekit.modules && global.googlesitekit.modules[ moduleSlug ] ) {
-			global.googlesitekit.modules[ moduleSlug ].active = responseData.active;
+		if ( modulesData[ moduleSlug ] ) {
+			modulesData[ moduleSlug ].active = responseData.active;
 		}
 
 		trackEvent(
@@ -570,7 +642,7 @@ export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) 
  * @return {(void|boolean)} True if a module has been toggled.
  */
 export const toggleConfirmModuleSettings = ( moduleSlug, settingsMapping, settingsState, skipDOM = false, _googlesitekit = global.googlesitekit ) => {
-	const { settings, setupComplete } = _googlesitekit.modules[ moduleSlug ];
+	const { settings, setupComplete } = getModulesData( _googlesitekit )[ moduleSlug ];
 	const confirm = skipDOM || document.getElementById( `confirm-changes-${ moduleSlug }` );
 
 	if ( ! setupComplete || ! confirm ) {
@@ -683,27 +755,6 @@ export function moduleIcon( module, blockedByParentModule, width = '33', height 
 	}
 
 	return iconComponent;
-}
-
-/**
- * Sorts an object by its keys.
- *
- * The returned value will be a sorted copy of the input object.
- * Any inner objects will also be sorted recursively.
- *
- * @param {Object} obj The data object to sort.
- * @return {Object} The sorted data object.
- */
-export function sortObjectProperties( obj ) {
-	const orderedData = {};
-	Object.keys( obj ).sort().forEach( ( key ) => {
-		let val = obj[ key ];
-		if ( val && 'object' === typeof val && ! Array.isArray( val ) ) {
-			val = sortObjectProperties( val );
-		}
-		orderedData[ key ] = val;
-	} );
-	return orderedData;
 }
 
 /**

@@ -135,6 +135,7 @@ class AnalyticsTest extends TestCase {
 				'profile-id',
 				'internal-web-property-id',
 				'use-snippet',
+				'create-account-ticket',
 				'goals',
 				'accounts-properties-profiles',
 				'properties-profiles',
@@ -144,6 +145,8 @@ class AnalyticsTest extends TestCase {
 				'settings',
 				'tracking-disabled',
 				'anonymize-ip',
+				'create-property',
+				'create-profile',
 			),
 			$analytics->get_datapoints()
 		);
@@ -254,6 +257,46 @@ class AnalyticsTest extends TestCase {
 				array_merge( $base_settings, array( 'trackingDisabled' => array( 'loggedinUsers' ) ) ),
 				false,
 				$assert_not_contains_opt_out,
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_parse_account_id
+	 */
+	public function test_parse_account_id( $property_id, $expected ) {
+		$class  = new \ReflectionClass( Analytics::class );
+		$method = $class->getMethod( 'parse_account_id' );
+		$method->setAccessible( true );
+
+		$result = $method->invokeArgs(
+			new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ),
+			array( $property_id )
+		);
+		$this->assertSame( $expected, $result );
+	}
+
+	public function data_parse_account_id() {
+		return array(
+			array(
+				'UA-2358017-2',
+				'2358017',
+			),
+			array(
+				'UA-13572468-4',
+				'13572468',
+			),
+			array(
+				'UA-13572468',
+				'',
+			),
+			array(
+				'GTM-13572468',
+				'',
+			),
+			array(
+				'13572468',
+				'',
 			),
 		);
 	}

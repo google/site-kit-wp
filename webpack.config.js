@@ -75,10 +75,10 @@ const resolve = {
 	alias: {
 		'@wordpress/api-fetch__non-shim': require.resolve( '@wordpress/api-fetch' ),
 		'@wordpress/api-fetch$': path.resolve( 'assets/js/api-fetch-shim.js' ),
-		SiteKitCore: path.resolve( 'assets/js/' ),
-		GoogleComponents: path.resolve( 'assets/js/components/' ),
-		GoogleUtil: path.resolve( 'assets/js/util/' ),
-		GoogleModules: path.resolve( './assets/js/modules/' ),
+		'@wordpress/element__non-shim': require.resolve( '@wordpress/element' ),
+		'@wordpress/element$': path.resolve( 'assets/js/element-shim.js' ),
+		'@wordpress/hooks__non-shim': require.resolve( '@wordpress/hooks' ),
+		'@wordpress/hooks$': path.resolve( 'assets/js/hooks-shim.js' ),
 	},
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
@@ -92,6 +92,7 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-api': './assets/js/googlesitekit-api.js',
 				'googlesitekit-data': './assets/js/googlesitekit-data.js',
 				'googlesitekit-datastore-site': './assets/js/googlesitekit-datastore-site.js',
+				'googlesitekit-modules-analytics': './assets/js/googlesitekit-modules-analytics.js',
 				'googlesitekit-modules': './assets/js/googlesitekit-modules.js', // TODO: Add external following 1162.
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
@@ -146,6 +147,18 @@ const webpackConfig = ( mode ) => {
 						extractComments: false,
 					} ),
 				],
+				runtimeChunk: false,
+				splitChunks: {
+					cacheGroups: {
+						vendor: {
+							chunks: 'initial',
+							name: 'googlesitekit-vendor',
+							filename: 'googlesitekit-vendor.js',
+							enforce: true,
+							test: /[\\/]node_modules[\\/]/,
+						},
+					},
+				},
 			},
 			resolve,
 		},
@@ -200,7 +213,6 @@ const webpackConfig = ( mode ) => {
 const testBundle = () => {
 	return {
 		entry: {
-			'googlesitekit-tests': './assets/js/googlesitekit-tests.js',
 			'e2e-utilities': './tests/e2e/e2e-utilities.js',
 		},
 		output: {
@@ -223,7 +235,16 @@ const testBundle = () => {
 	};
 };
 
-module.exports = ( ...args ) => {
+module.exports = {
+	externals,
+	noAMDParserRule,
+	projectPath,
+	resolve,
+	rules,
+	siteKitExternals,
+};
+
+module.exports.default = ( ...args ) => {
 	const { includeTests, mode } = args[ 1 ];
 	const config = webpackConfig( mode );
 

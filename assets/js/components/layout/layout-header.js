@@ -20,13 +20,17 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import Link from 'GoogleComponents/link';
 import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Link from '../link';
 
 class LayoutHeader extends Component {
 	render() {

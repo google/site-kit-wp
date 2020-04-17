@@ -26,11 +26,13 @@ class Google_ProxyTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'url'        => home_url(),
-				'action_uri' => admin_url( 'index.php' ),
-				'name'       => get_bloginfo( 'name' ),
-				'return_uri' => $context->admin_url( 'splash' ),
-				'admin_root' => parse_url( admin_url( '/' ), PHP_URL_PATH ),
+				'url'                    => home_url(),
+				'action_uri'             => admin_url( 'index.php' ),
+				'name'                   => get_bloginfo( 'name' ),
+				'return_uri'             => $context->admin_url( 'splash' ),
+				'admin_root'             => parse_url( admin_url( '/' ), PHP_URL_PATH ),
+				'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
+				'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, untrailingslashit( home_url() ) ),
 			),
 			$google_proxy->get_site_fields()
 		);
@@ -74,8 +76,10 @@ class Google_ProxyTest extends TestCase {
 				'url',
 				'name',
 				'admin_root',
+				'redirect_uri',
 				'return_uri',
 				'action_uri',
+				'analytics_redirect_uri',
 			),
 			array_keys( $args['body'] )
 		);

@@ -425,6 +425,34 @@ final class Authentication {
 	}
 
 	/**
+	 * Checks whether the Site Kit setup is considered complete.
+	 *
+	 * If this is not the case, most permissions will be force-prevented to ensure that only permissions required for
+	 * initial setup are granted.
+	 *
+	 * @since 1.0.0
+	 * @since 1.7.0 Moved from `Permissions` class.
+	 *
+	 * @return bool True if setup is completed, false otherwise.
+	 */
+	public function is_setup_completed() {
+		if ( ! $this->credentials->has() ) {
+			return false;
+		}
+
+		/**
+		 * Filters whether the Site Kit plugin should consider its setup to be completed.
+		 *
+		 * This can be used by essential auto-activated modules to amend the result of this check.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param bool $complete Whether the setup is completed.
+		 */
+		return (bool) apply_filters( 'googlesitekit_setup_complete', true );
+	}
+
+	/**
 	 * Handles receiving a temporary OAuth code.
 	 *
 	 * @since 1.0.0
@@ -653,8 +681,9 @@ final class Authentication {
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function( WP_REST_Request $request ) {
 							$data = array(
-								'connected'  => $this->credentials->has(),
-								'resettable' => $this->options->has( Credentials::OPTION ),
+								'connected'      => $this->credentials->has(),
+								'resettable'     => $this->options->has( Credentials::OPTION ),
+								'setupCompleted' => $this->is_setup_completed(),
 							);
 
 							return new WP_REST_Response( $data );
@@ -773,7 +802,6 @@ final class Authentication {
 	 * @return Notice Notice object.
 	 */
 	private function get_authentication_oauth_error_notice() {
-
 		return new Notice(
 			'oauth_error',
 			array(
@@ -803,7 +831,12 @@ final class Authentication {
 						);
 						$this->user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 					} else {
-						$message = $auth_client->get_error_message( $error_code );
+						$message  = $auth_client->get_error_message( $error_code );
+						$message .= ' ' . sprintf(
+							/* translators: %s: setup screen URL */
+							__( 'To resume setup, <a href="%s">start here</a>.', 'google-site-kit' ),
+							$this->context->admin_url( 'splash' )
+						);
 					}
 
 					$message = wp_kses(

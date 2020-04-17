@@ -25,13 +25,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * External dependencies
  */
-import ProgressBar from 'GoogleComponents/progress-bar';
 import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
 import Warning from '../notifications/warning';
+import ProgressBar from '../../components/progress-bar';
 
 /**
  * Internal dependencies
