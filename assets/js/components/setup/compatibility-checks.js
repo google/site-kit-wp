@@ -36,7 +36,7 @@ import ProgressBar from '../../components/progress-bar';
 /**
  * Internal dependencies
  */
-import { getExistingTag } from '../../util';
+import { getExistingTag } from '../../util/tag';
 import data, { TYPE_CORE } from '../data';
 import Link from '../link';
 
