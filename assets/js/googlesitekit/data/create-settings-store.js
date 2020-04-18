@@ -106,8 +106,11 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 				},
 			};
 		},
-		argsToParams: {
-			values: ( value ) => 'object' === typeof value,
+		argsToParams: ( values ) => {
+			invariant( 'object' === typeof values, 'values is required.' );
+			return {
+				values,
+			};
 		},
 	} );
 

@@ -195,7 +195,7 @@ describe( 'createNotificationsStore store', () => {
 
 			it( 'receives and sets notifications', () => {
 				const notifications = [ { id: 'test_notification' } ];
-				dispatch.receiveGetNotifications( notifications );
+				dispatch.receiveGetNotifications( notifications, {} );
 
 				const state = store.getState();
 

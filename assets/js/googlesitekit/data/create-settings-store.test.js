@@ -122,7 +122,7 @@ describe( 'createSettingsStore store', () => {
 				const clientValues = { setting1: 'clientside' };
 
 				dispatch.setSettings( clientValues );
-				dispatch.receiveGetSettings( serverValues );
+				dispatch.receiveGetSettings( serverValues, {} );
 
 				// Client values take precedence if they were already modified before receiving from the server.
 				expect( store.getState().settings ).toMatchObject( { ...serverValues, ...clientValues } );
@@ -157,7 +157,7 @@ describe( 'createSettingsStore store', () => {
 					);
 
 				// Set initial settings so that they are considered loaded.
-				dispatch.receiveGetSettings( response );
+				dispatch.receiveGetSettings( response, {} );
 
 				// The server is the authority. So because this won't be part of the response
 				// (see above), it will be disregarded.
@@ -303,7 +303,7 @@ describe( 'createSettingsStore store', () => {
 			it( 'does not make a network request if settings are already set', async () => {
 				const value = 'serverside';
 
-				dispatch.receiveGetSettings( { isSkyBlue: value } );
+				dispatch.receiveGetSettings( { isSkyBlue: value }, {} );
 
 				expect( select.getIsSkyBlue() ).toEqual( value );
 

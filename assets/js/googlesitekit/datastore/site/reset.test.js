@@ -95,7 +95,7 @@ describe( 'core/site reset', () => {
 
 				registry
 					.dispatch( STORE_NAME )
-					.receiveGetConnection( { connected: true, resettable: true } );
+					.receiveGetConnection( { connected: true, resettable: true }, {} );
 
 				await registry.dispatch( STORE_NAME ).reset();
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
@@ -118,7 +118,8 @@ describe( 'core/site reset', () => {
 				// Make sure there is existing data in the store so we can ensure
 				// it isn't reset.
 				registry.dispatch( STORE_NAME ).receiveGetConnection(
-					{ connected: true, resettable: true }
+					{ connected: true, resettable: true },
+					{}
 				);
 
 				const response = {

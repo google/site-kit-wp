@@ -79,7 +79,7 @@ describe( 'core/site connection', () => {
 
 			it( 'receives and sets connection ', async () => {
 				const connection = { coolSite: true };
-				await registry.dispatch( STORE_NAME ).receiveGetConnection( connection );
+				await registry.dispatch( STORE_NAME ).receiveGetConnection( connection, {} );
 
 				const state = store.getState();
 
@@ -121,7 +121,7 @@ describe( 'core/site connection', () => {
 			} );
 
 			it( 'does not make a network request if data is already in state', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetConnection( responseConnected );
+				registry.dispatch( STORE_NAME ).receiveGetConnection( responseConnected, {} );
 
 				const connection = select.getConnection();
 

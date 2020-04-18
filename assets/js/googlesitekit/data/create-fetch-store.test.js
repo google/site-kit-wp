@@ -58,9 +58,13 @@ const STORE_PARAMS = {
 			},
 		};
 	},
-	argsToParams: {
-		objParam: ( value ) => 'object' === typeof value,
-		aParam: ( value ) => 'undefined' !== typeof value,
+	argsToParams: ( objParam, aParam ) => {
+		invariant( 'object' === typeof objParam, 'objParam is required.' );
+		invariant( 'undefined' !== typeof aParam, 'aParam is required.' );
+		return {
+			objParam,
+			aParam,
+		};
 	},
 };
 
@@ -132,7 +136,12 @@ describe( 'createFetchStore store', () => {
 					baseName: 'SaveSomeData',
 					controlCallback: async () => true,
 					reducerCallback: ( state ) => state,
-					argsToParams: { requiredParam: ( value ) => value },
+					argsToParams: ( requiredParam ) => {
+						invariant( requiredParam, 'requiredParam is required.' );
+						return {
+							requiredParam,
+						};
+					},
 				} );
 
 				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
