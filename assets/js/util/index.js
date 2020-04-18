@@ -46,7 +46,7 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
  * Internal dependencies
  */
 import SvgIcon from './svg-icon';
-import { tagMatchers as setupTagMatchers } from '../components/setup/compatibility-checks';
+import { default as setupTagMatchers } from '../components/setup/tag-matchers';
 import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
 import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
 import { tagMatchers as tagmanagerTagMatchers } from '../modules/tagmanager/util';
