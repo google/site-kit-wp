@@ -25,7 +25,7 @@ import { cloneDeep, each, intersection, isEqual, sortBy } from 'lodash';
  */
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
-import { addAction, applyFilters, doAction, addFilter, removeFilter } from '@wordpress/hooks';
+import { addAction, applyFilters, doAction, addFilter, removeFilter, hasAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -78,14 +78,6 @@ const requestWithDateRange = ( originalRequest, dateRange ) => {
 const dataAPI = {
 
 	maxRequests: 10,
-
-	init() {
-		addAction(
-			'googlesitekit.moduleLoaded',
-			'googlesitekit.collectModuleListingData',
-			this.collectModuleData.bind( this )
-		);
-	},
 
 	/**
 	 * Gets data for multiple requests from the cache in a single batch process.
@@ -516,6 +508,12 @@ const dataAPI = {
 };
 
 // Init data module once.
-dataAPI.init();
+if ( ! hasAction( 'googlesitekit.moduleLoaded', 'googlesitekit.collectModuleData' ) ) {
+	addAction(
+		'googlesitekit.moduleLoaded',
+		'googlesitekit.collectModuleData',
+		dataAPI.collectModuleData.bind( dataAPI )
+	);
+}
 
 export default dataAPI;
