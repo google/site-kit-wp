@@ -51,7 +51,6 @@ import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatche
 import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
 import { tagMatchers as tagmanagerTagMatchers } from '../modules/tagmanager/util';
 import { trackEvent } from './tracking';
-import data, { TYPE_CORE } from '../components/data';
 export { trackEvent };
 export { SvgIcon };
 export * from './sanitize';
@@ -345,24 +344,6 @@ export const extractForSparkline = ( rowData, column ) => {
 			row[ column ] || ( 0 === i ? '' : 0 ), // the data for the sparkline.
 		];
 	} );
-};
-
-export const refreshAuthentication = async () => {
-	try {
-		const response = await data.get( TYPE_CORE, 'user', 'authentication' );
-
-		const requiredAndGrantedScopes = response.grantedScopes.filter( ( scope ) => {
-			return -1 !== response.requiredScopes.indexOf( scope );
-		} );
-
-		// We should really be using state management. This is terrible.
-		global.googlesitekit.setup = global.googlesitekit.setup || {};
-		global.googlesitekit.setup.isAuthenticated = response.isAuthenticated;
-		global.googlesitekit.setup.requiredScopes = response.requiredScopes;
-		global.googlesitekit.setup.grantedScopes = response.grantedScopes;
-		global.googlesitekit.setup.needReauthenticate = requiredAndGrantedScopes.length < response.requiredScopes.length;
-	} catch ( e ) { // eslint-disable-line no-empty
-	}
 };
 
 /**
