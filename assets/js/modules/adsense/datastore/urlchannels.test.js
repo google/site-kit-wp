@@ -75,37 +75,35 @@ describe( 'modules/adsense URL channels', () => {
 						{ status: 200 }
 					);
 
-				const accountID = fixtures.accounts[ 0 ].id;
 				const clientID = fixtures.clients[ 0 ].id;
 
-				const initialURLChannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
+				const initialURLChannels = registry.select( STORE_NAME ).getURLChannels( clientID );
 
 				expect( initialURLChannels ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getURLChannels( accountID, clientID ) !== undefined
+						registry.select( STORE_NAME ).getURLChannels( clientID ) !== undefined
 					),
 				);
 
-				const urlchannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
+				const urlchannels = registry.select( STORE_NAME ).getURLChannels( clientID );
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( urlchannels ).toEqual( fixtures.urlchannels );
 			} );
 
 			it( 'does not make a network request if urlchannels for this account + client are already present', async () => {
-				const accountID = fixtures.accounts[ 0 ].id;
 				const clientID = fixtures.clients[ 0 ].id;
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveURLChannels( { accountID, clientID, urlchannels: fixtures.urlchannels } );
+				registry.dispatch( STORE_NAME ).receiveURLChannels( { clientID, urlchannels: fixtures.urlchannels } );
 
-				const urlchannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
+				const urlchannels = registry.select( STORE_NAME ).getURLChannels( clientID );
 
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getURLChannels', [ accountID, clientID ] )
+					.hasFinishedResolution( 'getURLChannels', [ clientID ] )
 				);
 
 				expect( fetch ).not.toHaveBeenCalled();
@@ -127,21 +125,43 @@ describe( 'modules/adsense URL channels', () => {
 						{ status: 500 }
 					);
 
-				const fakeAccountID = 'pub-777888999';
 				const fakeClientID = 'ca-pub-777888999';
 
 				muteConsole( 'error' );
-				registry.select( STORE_NAME ).getURLChannels( fakeAccountID, fakeClientID );
+				registry.select( STORE_NAME ).getURLChannels( fakeClientID );
 				await subscribeUntil( registry,
 					// TODO: We may want a selector for this, but for now this is fine
 					// because it's internal-only.
-					() => store.getState().isFetchingURLChannels[ `${ fakeAccountID }::${ fakeClientID }` ] === false,
+					() => store.getState().isFetchingURLChannels[ fakeClientID ] === false,
 				);
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
-				const urlchannels = registry.select( STORE_NAME ).getURLChannels( fakeAccountID, fakeClientID );
+				const urlchannels = registry.select( STORE_NAME ).getURLChannels( fakeClientID );
 				expect( urlchannels ).toEqual( undefined );
+			} );
+
+			it( 'dispatches an error when account ID cannot be parsed from client ID', async () => {
+				const clientResponse = {
+					code: 'invalid_param',
+					message: 'The clientID parameter is not a valid AdSense client ID.',
+					data: { status: 400 },
+				};
+
+				const invalidClientID = 'invalid-client-id';
+
+				registry.select( STORE_NAME ).getURLChannels( invalidClientID );
+				await subscribeUntil( registry,
+					// TODO: We may want a selector for this, but for now this is fine
+					// because it's internal-only.
+					() => store.getState().isFetchingURLChannels[ invalidClientID ] === false,
+				);
+
+				expect( fetch ).toHaveBeenCalledTimes( 0 );
+
+				const urlchannels = registry.select( STORE_NAME ).getURLChannels( invalidClientID );
+				expect( urlchannels ).toEqual( undefined );
+				expect( store.getState().error ).toEqual( clientResponse );
 			} );
 		} );
 	} );
