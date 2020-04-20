@@ -1350,9 +1350,10 @@ final class Analytics extends Module
 	 * @return string Provisioning redirect URI.
 	 */
 	private function get_provisioning_redirect_uri() {
-		return add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) );
+		$google_proxy = new Google_Proxy( $this->context );
+		return $google_proxy->get_site_fields()['analytics_redirect_uri'];
 	}
-
+ 
 	/**
 	 * Verifies that user has access to the property found in the existing tag.
 	 *
