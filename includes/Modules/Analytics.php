@@ -138,9 +138,8 @@ final class Analytics extends Module
 		add_filter(
 			'googlesitekit_admin_data',
 			function( $admin_data ) {
-				$selected_zone           = get_option( 'timezone_string' );
-				$admin_data['timezone']  = $selected_zone;
-				$admin_data['errorcode'] = $this->context->input()->filter( INPUT_GET, 'error_code', FILTER_SANITIZE_STRING );
+				$selected_zone          = get_option( 'timezone_string' );
+				$admin_data['timezone'] = $selected_zone;
 				return $admin_data;
 			}
 		);
@@ -1351,7 +1350,7 @@ final class Analytics extends Module
 		$google_proxy = new Google_Proxy( $this->context );
 		return $google_proxy->get_site_fields()['analytics_redirect_uri'];
 	}
- 
+
 	/**
 	 * Verifies that user has access to the property found in the existing tag.
 	 *

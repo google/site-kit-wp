@@ -21,6 +21,7 @@
  */
 import { __ } from '@wordpress/i18n';
 import { useState, Fragment, useCallback } from '@wordpress/element';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -37,7 +38,7 @@ import ProfileField from './profile-field';
 // const { dispatch, select } = Data;
 
 const AccountCreate = () => {
-	// const { createAccount } = dispatch( STORE_NAME );
+	// Uncomment this section after 1311 is merged.
 	/*
 	const isDoingCreateAccount = useSelect(
 		( select ) => {
@@ -50,11 +51,12 @@ const AccountCreate = () => {
 
 	const isDoingCreateAccount = false;
 	const { createAccount } = () => {};
-	const { siteName, siteURL, timezone: tz, errorcode } = global.googlesitekit.admin;
+	const { siteName, siteURL, timezone: tz } = global.googlesitekit.admin;
+	const errorCode = getQueryArg( location.href, 'error_code' );
 
 	// Handle expected provisioning flow error codes.
 	let errorMessage = false;
-	switch ( errorcode ) {
+	switch ( errorCode ) {
 		case 'user_cancel':
 			errorMessage = __( 'The Terms of Service were not accepted.', 'google-site-kit' );
 			break;
