@@ -34,10 +34,9 @@ import { getStorage } from '../../util/storage';
 import { getCurrentDateRangeSlug } from '../../util/date-range';
 import { fillFilterWithComponent } from '../../util/helpers';
 import { getQueryParameter } from '../../util/standalone';
-import { stringifyObject } from '../../util/stringify';
 import DashboardAuthAlert from '../notifications/dashboard-auth-alert';
 import DashboardPermissionAlert from '../notifications/dashboard-permission-alert';
-import { lazilySetupLocalCache } from './cache';
+import { getCacheKey, getCache, lazilySetupLocalCache, setCache } from './cache';
 
 export const TYPE_CORE = 'core';
 export const TYPE_MODULES = 'modules';
@@ -89,8 +88,8 @@ const dataAPI = {
 				const dateRange = getCurrentDateRangeSlug();
 				each( combinedRequest, ( originalRequest ) => {
 					const request = requestWithDateRange( originalRequest, dateRange );
-					request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
-					const cache = this.getCache( request.key, request.maxAge );
+					request.key = getCacheKey( request.type, request.identifier, request.datapoint, request.data );
+					const cache = getCache( request.key, request.maxAge );
 
 					if ( 'undefined' !== typeof cache ) {
 						responseData[ request.key ] = cache;
@@ -121,8 +120,8 @@ const dataAPI = {
 		const dateRange = getCurrentDateRangeSlug();
 		each( combinedRequest, ( originalRequest ) => {
 			const request = requestWithDateRange( originalRequest, dateRange );
-			request.key = this.getCacheKey( request.type, request.identifier, request.datapoint, request.data );
-			const cache = this.getCache( request.key, request.maxAge );
+			request.key = getCacheKey( request.type, request.identifier, request.datapoint, request.data );
+			const cache = getCache( request.key, request.maxAge );
 
 			if ( 'undefined' !== typeof cache ) {
 				setTimeout( () => {
@@ -195,7 +194,7 @@ const dataAPI = {
 				each( keyIndexesMap[ key ], ( index ) => {
 					const request = dataRequest[ index ];
 
-					this.setCache( request.key, result );
+					setCache( request.key, result );
 					this.resolve( request, result );
 				} );
 
@@ -276,7 +275,7 @@ const dataAPI = {
 	 * @param {string} datapoint  The datapoint.
 	 */
 	invalidateCacheGroup( type, identifier, datapoint ) {
-		const groupPrefix = this.getCacheKey( type, identifier, datapoint );
+		const groupPrefix = getCacheKey( type, identifier, datapoint );
 
 		lazilySetupLocalCache();
 
@@ -328,10 +327,10 @@ const dataAPI = {
 	 * @return {Promise} A promise for the fetch request.
 	 */
 	get( type, identifier, datapoint, data = {}, nocache = true ) {
-		const cacheKey = this.getCacheKey( type, identifier, datapoint, data );
+		const cacheKey = getCacheKey( type, identifier, datapoint, data );
 
 		if ( ! nocache ) {
-			const cache = this.getCache( cacheKey, 3600 );
+			const cache = getCache( cacheKey, 3600 );
 
 			if ( 'undefined' !== typeof cache ) {
 				return new Promise( ( resolve ) => {
@@ -345,7 +344,7 @@ const dataAPI = {
 			path: addQueryArgs( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`, data ),
 		} ).then( ( results ) => {
 			if ( ! nocache ) {
-				this.setCache( cacheKey, results );
+				setCache( cacheKey, results );
 			}
 
 			return Promise.resolve( results );
@@ -382,34 +381,6 @@ const dataAPI = {
 			} );
 		} );
 	},
-
-	/**
-	 * Returns a consistent cache key for the given arguments.
-	 *
-	 * @param {string}  type       The data type. Either 'core' or 'modules'.
-	 * @param {string}  identifier The data identifier, for example a module slug.
-	 * @param {string}  datapoint  The datapoint.
-	 * @param {Object?} data       Optional arguments to pass along.
-	 * @return {string} The cache key to use.
-	 */
-	getCacheKey( type, identifier, datapoint, data = null ) {
-		const key = [];
-		const pieces = [ type, identifier, datapoint ];
-
-		for ( const piece of pieces ) {
-			if ( ! piece || ! piece.length ) {
-				break;
-			}
-			key.push( piece );
-		}
-
-		if ( 3 === key.length && data && 'object' === typeof data && Object.keys( data ).length ) {
-			key.push( stringifyObject( data ) );
-		}
-
-		return key.join( '::' );
-	},
-
 	/**
 	 * Sets a module to activated or deactivated using the REST API.
 	 *

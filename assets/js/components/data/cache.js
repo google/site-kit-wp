@@ -24,6 +24,7 @@ import { cloneDeep } from 'lodash';
  * Internal dependencies
  */
 import { getStorage } from '../../util/storage';
+import { stringifyObject } from '../../util/stringify';
 
 /**
  * Ensures that the local datacache object is properly set up.
@@ -114,4 +115,31 @@ export const deleteCache = ( key ) => {
 	delete global.googlesitekit.admin.datacache[ key ];
 
 	getStorage().removeItem( 'googlesitekit_' + key );
+};
+
+/**
+ * Returns a consistent cache key for the given arguments.
+ *
+ * @param {string}  type       The data type. Either 'core' or 'modules'.
+ * @param {string}  identifier The data identifier, for example a module slug.
+ * @param {string}  datapoint  The datapoint.
+ * @param {Object?} data       Optional arguments to pass along.
+ * @return {string} The cache key to use.
+ */
+export const getCacheKey = ( type, identifier, datapoint, data = null ) => {
+	const key = [];
+	const pieces = [ type, identifier, datapoint ];
+
+	for ( const piece of pieces ) {
+		if ( ! piece || ! piece.length ) {
+			break;
+		}
+		key.push( piece );
+	}
+
+	if ( 3 === key.length && data && 'object' === typeof data && Object.keys( data ).length ) {
+		key.push( stringifyObject( data ) );
+	}
+
+	return key.join( '::' );
 };
