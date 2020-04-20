@@ -28,7 +28,7 @@ import { camelCase } from 'lodash';
 import { getDaysBetweenDates } from '../../util';
 import WinsWithData from './wins-withdata';
 import data, { TYPE_MODULES } from '../data';
-
+import { getCache, deleteCache } from '../data/cache';
 export const wincallbacks = applyFilters( 'googlesitekit.winCallbacks', {} );
 
 export const winsNotificationsToRequest = () => {
@@ -93,7 +93,7 @@ const removeDismissed = ( notifications ) => {
 	}
 
 	return notifications.filter( ( notification ) => {
-		const dismissed = data.getCache( `notification::dismissed::${ notification.id }` );
+		const dismissed = getCache( `notification::dismissed::${ notification.id }` );
 		return ! dismissed;
 	} );
 };
@@ -120,7 +120,7 @@ const removeDisplayedWins = ( wins ) => {
 
 	// Get only the wins that haven't been displayed yet.
 	const notDisplayed = Object.values( wins ).filter( ( win ) => {
-		const displayed = data.getCache( `notification::displayed::${ win[ 0 ].id }` );
+		const displayed = getCache( `notification::displayed::${ win[ 0 ].id }` );
 
 		if ( displayed ) {
 			const displayedDate = new Date( displayed );
@@ -137,7 +137,7 @@ const removeDisplayedWins = ( wins ) => {
 			// Remove the displayed storage if it has been displayed a week ago.
 			const days = getDaysBetweenDates( displayedDate, today );
 			if ( 7 <= days ) {
-				data.deleteCache( `notification::displayed::${ win[ 0 ].id }` );
+				deleteCache( `notification::displayed::${ win[ 0 ].id }` );
 			}
 		}
 
