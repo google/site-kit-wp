@@ -134,18 +134,16 @@ final class Analytics extends Module
 			}
 		);
 
-		// Add the timezone and errorcode data for users provisioning new accounts.
-		if ( ! $this->is_connected() ) {
-			add_filter(
-				'googlesitekit_admin_data',
-				function( $admin_data ) {
-					$selected_zone           = get_option( 'timezone_string' );
-					$admin_data['timezone']  = $selected_zone;
-					$admin_data['errorcode'] = $this->context->input()->filter( INPUT_GET, 'error_code', FILTER_SANITIZE_STRING );
-					return $admin_data;
-				}
-			);
-		}
+		// Add the timezone data for users provisioning new accounts.
+		add_filter(
+			'googlesitekit_admin_data',
+			function( $admin_data ) {
+				$selected_zone           = get_option( 'timezone_string' );
+				$admin_data['timezone']  = $selected_zone;
+				$admin_data['errorcode'] = $this->context->input()->filter( INPUT_GET, 'error_code', FILTER_SANITIZE_STRING );
+				return $admin_data;
+			}
+		);
 	}
 
 	/**
