@@ -38,7 +38,16 @@ import ProfileField from './profile-field';
 
 const AccountCreate = () => {
 	// const { createAccount } = dispatch( STORE_NAME );
-	// const isDoingCreateAccount = select( STORE_NAME ).isDoingCreateAccount();
+	/*
+	const isDoingCreateAccount = useSelect(
+		( select ) => {
+			return select( STORE_NAME ).isDoingCreateAccount();
+		},
+		[]
+	);
+	*/
+	//const { createAccount } = useDispatch( STORE_NAME );
+
 	const isDoingCreateAccount = false;
 	const { createAccount } = () => {};
 	const { siteName, siteURL, timezone: tz, errorcode } = global.googlesitekit.admin;
