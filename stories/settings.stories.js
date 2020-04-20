@@ -17,6 +17,7 @@ import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin
 import { fillFilterWithComponent } from '../assets/js/util';
 import AnalyticsSetup from '../assets/js/modules/analytics/setup';
 import SearchConsoleSettingStatus from '../assets/js/modules/search-console/settings/search-console-settings-status';
+import AdSenseSettings from '../assets/js/modules/adsense/settings/adsense-settings';
 import SettingsAdmin from '../assets/js/components/settings/settings-admin';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
@@ -187,6 +188,9 @@ storiesOf( 'Settings', module )
 		global.googlesitekit.setupComplete = true;
 		global.googlesitekit.modules.analytics.setupComplete = true;
 		global.googlesitekit.modules[ 'search-console' ].setupComplete = true;
+		global.googlesitekit.modules.adsense.setupComplete = true;
+		global.googlesitekit.modules.adsense.active = true;
+		global.googlesitekit.modules.adsense.settings.accountID = 'pub-XXXXXXXXXXXXXXXX';
 		// Load the datacache with data.
 		setTimeout( () => {
 			setupSettings();
@@ -198,6 +202,11 @@ storiesOf( 'Settings', module )
 			addFilter( 'googlesitekit.ModuleSettingsDetails-search-console',
 				'googlesitekit.SearchConsoleModuleSettingsDetails',
 				fillFilterWithComponent( SearchConsoleSettingStatus, {
+					onSettingsPage: true,
+				} ) );
+			addFilter( 'googlesitekit.ModuleSettingsDetails-adsense',
+				'googlesitekit.AdSenseModuleSettingsDetails',
+				fillFilterWithComponent( AdSenseSettings, {
 					onSettingsPage: true,
 				} ) );
 		}, 2500 );
@@ -256,9 +265,8 @@ storiesOf( 'Settings', module )
 	.add( 'Admin Settings', () => {
 		global.googlesitekit = settingsData;
 		global.googlesitekit.modules.analytics.setupComplete = false;
-		global.googlesitekit.admin.clientID = '26521001426-xxx1234ffghrrro6hofusq2b8.apps..com';
+		global.googlesitekit.admin.clientID = '123456789-xxx1234ffghrrro6hofusq2b8.apps..com';
 		global.googlesitekit.admin.clientSecret = '••••••••••••••••••••••••••••';
-		global.googlesitekit.admin.apikey = 'AIzaSyAi7c63e21001ESQsrtIfdIY3IcyQVyiw4o';
 
 		return (
 			<div className="mdc-layout-grid">
