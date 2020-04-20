@@ -40,10 +40,6 @@ import { getExistingTag } from '../../util/tag';
 import data, { TYPE_CORE } from '../data';
 import Link from '../link';
 
-export const tagMatchers = [
-	/<meta name="googlesitekit-setup" content="([a-z0-9-]+)"/,
-];
-
 const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
 const ERROR_FETCH_FAIL = 'tag_fetch_failed';
 const ERROR_TOKEN_MISMATCH = 'setup_token_mismatch';

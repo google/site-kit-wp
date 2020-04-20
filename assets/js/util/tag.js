@@ -25,7 +25,7 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { tagMatchers as setupTagMatchers } from '../components/setup/compatibility-checks';
+import { tagMatchers as setupTagMatchers } from '../components/setup/constants';
 import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
 import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
 import { tagMatchers as tagmanagerTagMatchers } from '../modules/tagmanager/util';
