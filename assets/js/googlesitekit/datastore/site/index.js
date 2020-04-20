@@ -27,14 +27,13 @@ import Data from 'googlesitekit-data';
 import connection from './connection';
 import info from './info';
 import reset from './reset';
+import { STORE_NAME } from './constants';
 
 export const INITIAL_STATE = Data.collectState(
 	connection.INITIAL_STATE,
 	info.INITIAL_STATE,
 	reset.INITIAL_STATE,
 );
-
-export const STORE_NAME = 'core/site';
 
 export const actions = Data.addInitializeAction(
 	Data.collectActions(
