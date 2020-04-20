@@ -1,5 +1,5 @@
 /**
- * core/site data store: constants.
+ * Setup Tag Matchers.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,4 +16,6 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'core/site';
+export default [
+	/<meta name="googlesitekit-setup" content="([a-z0-9-]+)"/,
+];

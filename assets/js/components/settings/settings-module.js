@@ -37,12 +37,12 @@ import { applyFilters } from '@wordpress/hooks';
 import SvgIcon from '../../util/svg-icon';
 import {
 	activateOrDeactivateModule,
-	refreshAuthentication,
 	getReAuthURL,
 	moduleIcon,
 	showErrorNotification,
 	getModulesData,
 } from '../../util';
+import { refreshAuthentication } from '../../util/refresh-authentication';
 import Link from '../../components/link';
 import Button from '../../components/button';
 import data, { TYPE_MODULES } from '../../components/data';

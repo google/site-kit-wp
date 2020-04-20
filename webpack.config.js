@@ -76,6 +76,10 @@ const resolve = {
 	alias: {
 		'@wordpress/api-fetch__non-shim': require.resolve( '@wordpress/api-fetch' ),
 		'@wordpress/api-fetch$': path.resolve( 'assets/js/api-fetch-shim.js' ),
+		'@wordpress/element__non-shim': require.resolve( '@wordpress/element' ),
+		'@wordpress/element$': path.resolve( 'assets/js/element-shim.js' ),
+		'@wordpress/hooks__non-shim': require.resolve( '@wordpress/hooks' ),
+		'@wordpress/hooks$': path.resolve( 'assets/js/hooks-shim.js' ),
 	},
 	modules: [ projectPath( '.' ), 'node_modules' ],
 };
@@ -215,7 +219,6 @@ const webpackConfig = ( mode ) => {
 const testBundle = () => {
 	return {
 		entry: {
-			'googlesitekit-tests': './assets/js/googlesitekit-tests.js',
 			'e2e-utilities': './tests/e2e/e2e-utilities.js',
 		},
 		output: {
@@ -238,7 +241,16 @@ const testBundle = () => {
 	};
 };
 
-module.exports = ( ...args ) => {
+module.exports = {
+	externals,
+	noAMDParserRule,
+	projectPath,
+	resolve,
+	rules,
+	siteKitExternals,
+};
+
+module.exports.default = ( ...args ) => {
 	const { includeTests, mode } = args[ 1 ];
 	const config = webpackConfig( mode );
 

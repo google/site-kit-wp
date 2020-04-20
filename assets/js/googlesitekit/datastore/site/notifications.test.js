@@ -1,5 +1,5 @@
 /**
- * core/site data store: constants.
+ * core/site data store: notifications.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,4 +16,19 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'core/site';
+/**
+ * Internal dependencies
+ */
+import { actions } from './index';
+
+describe( 'core/site notifications', () => {
+	it( 'has appropriate notification methods', () => {
+		const actionsToExpect = [
+			'addNotification',
+			'removeNotification',
+			'fetchNotifications',
+			'receiveNotifications',
+		];
+		expect( Object.keys( actions ) ).toEqual( expect.arrayContaining( actionsToExpect ) );
+	} );
+} );
