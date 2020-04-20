@@ -125,7 +125,7 @@ const webpackConfig = ( mode ) => {
 					color: '#fbbc05',
 				} ),
 				new CircularDependencyPlugin( {
-					exclude: /node_modules/,
+					exclude: /data\/index.js|node_modules/,
 					failOnError: true,
 					allowAsyncCycles: false,
 					cwd: process.cwd(),
