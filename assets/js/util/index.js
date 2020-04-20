@@ -53,7 +53,6 @@ export * from './stringify';
 export * from './standalone';
 export * from './storage';
 export * from './i18n';
-export * from './tag';
 export * from './date-range';
 export * from './helpers';
 

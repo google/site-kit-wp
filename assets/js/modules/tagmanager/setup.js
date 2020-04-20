@@ -34,7 +34,8 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import SvgIcon from '../../util/svg-icon';
-import { getExistingTag, toggleConfirmModuleSettings, getModulesData } from '../../util';
+import { getExistingTag } from '../../util/tag';
+import { toggleConfirmModuleSettings, getModulesData } from '../../util';
 import {
 	getContainers,
 	isValidAccountID,

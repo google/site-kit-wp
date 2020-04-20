@@ -42,11 +42,11 @@ import {
 	validateOptimizeID,
 	appendNotificationsCount,
 	storageAvailable,
-	extractTag,
 	activateOrDeactivateModule,
 	toggleConfirmModuleSettings,
 	showErrorNotification,
 } from './util';
+import { extractTag } from './util/tag';
 import data from './components/data';
 
 const { setCache, getCache, deleteCache, invalidateCacheGroup, getCacheKey } = data;
