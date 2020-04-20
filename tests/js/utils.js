@@ -11,7 +11,8 @@ import { createRegistry } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import siteStore, { STORE_NAME as siteStoreName } from '../../assets/js/googlesitekit/datastore/site';
+import siteStore from '../../assets/js/googlesitekit/datastore/site';
+import { STORE_NAME as siteStoreName } from '../../assets/js/googlesitekit/datastore/site/constants';
 
 /**
  * Create a registry with all available stores.

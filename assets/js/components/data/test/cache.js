@@ -1,9 +1,7 @@
 /**
  * Internal dependencies
  */
-import data from '../';
-
-const { setCache, getCache, deleteCache } = data;
+import { setCache, getCache, deleteCache } from '../cache';
 
 const nativeSessionStorage = global.sessionStorage;
 const nativeLocalStorage = global.localStorage;

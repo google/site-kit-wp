@@ -32,7 +32,7 @@ import { Component, Fragment, createRef, isValidElement } from '@wordpress/eleme
  */
 import SvgIcon from '../../util/svg-icon';
 import { sanitizeHTML } from '../../util/sanitize';
-import data from '../data';
+import { setCache, getCache, deleteCache } from '../data/cache';
 import DataBlock from '../data-block';
 import Button from '../button';
 import Warning from '../notifications/warning';
@@ -57,7 +57,7 @@ class Notification extends Component {
 		}
 
 		if ( this.props.showOnce ) {
-			data.setCache( `notification::displayed::${ this.props.id }`, new Date() );
+			setCache( `notification::displayed::${ this.props.id }`, new Date() );
 		}
 	}
 
@@ -82,7 +82,7 @@ class Notification extends Component {
 		} );
 
 		setTimeout( () => {
-			data.setCache( `notification::dismissed::${ this.props.id }`, new Date() );
+			setCache( `notification::dismissed::${ this.props.id }`, new Date() );
 			card.style.display = 'none';
 
 			const event = new Event( 'notificationDismissed' );
@@ -110,14 +110,14 @@ class Notification extends Component {
 			dismissExpires,
 		} = this.props;
 
-		const dismissed = data.getCache( `notification::dismissed::${ id }` );
+		const dismissed = getCache( `notification::dismissed::${ id }` );
 
 		if ( dismissed ) {
 			const expiration = new Date( dismissed );
 			expiration.setSeconds( expiration.getSeconds() + parseInt( dismissExpires, 10 ) );
 
 			if ( expiration < new Date() ) {
-				data.deleteCache( `notification::dismissed::${ id }` );
+				deleteCache( `notification::dismissed::${ id }` );
 			}
 		}
 	}
@@ -148,7 +148,7 @@ class Notification extends Component {
 			pageIndex,
 		} = this.props;
 
-		if ( data.getCache( `notification::dismissed::${ id }` ) ) {
+		if ( getCache( `notification::dismissed::${ id }` ) ) {
 			return null;
 		}
 

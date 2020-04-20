@@ -18,7 +18,7 @@
 /**
  * External dependencies
  */
-import { cloneDeep, each, intersection, isEqual, sortBy } from 'lodash';
+import { each, intersection, isEqual, sortBy } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -37,24 +37,10 @@ import { getQueryParameter } from '../../util/standalone';
 import { stringifyObject } from '../../util/stringify';
 import DashboardAuthAlert from '../notifications/dashboard-auth-alert';
 import DashboardPermissionAlert from '../notifications/dashboard-permission-alert';
+import { lazilySetupLocalCache } from './cache';
 
 export const TYPE_CORE = 'core';
 export const TYPE_MODULES = 'modules';
-
-/**
- * Ensures that the local datacache object is properly set up.
- */
-const lazilySetupLocalCache = () => {
-	global.googlesitekit.admin = global.googlesitekit.admin || {};
-
-	if ( 'string' === typeof global.googlesitekit.admin.datacache ) {
-		global.googlesitekit.admin.datacache = JSON.parse( global.googlesitekit.admin.datacache );
-	}
-
-	if ( 'object' !== typeof global.googlesitekit.admin.datacache ) {
-		global.googlesitekit.admin.datacache = {};
-	}
-};
 
 /**
  * Gets a copy of the given data request object with the data.dateRange populated via filter, if not set.
@@ -280,82 +266,6 @@ const dataAPI = {
 		if ( request && 'function' === typeof request.callback ) {
 			request.callback( result, request.datapoint );
 		}
-	},
-
-	/**
-	 * Sets data in the cache.
-	 *
-	 * @param {string} key  The cache key.
-	 * @param {Object} data The data to cache.
-	 */
-	setCache( key, data ) {
-		if ( 'undefined' === typeof data ) {
-			return;
-		}
-
-		// Specific workaround to ensure no error responses are cached.
-		if ( data && 'object' === typeof data && ( data.error || data.errors ) ) {
-			return;
-		}
-
-		lazilySetupLocalCache();
-
-		global.googlesitekit.admin.datacache[ key ] = cloneDeep( data );
-
-		const toStore = {
-			value: data,
-			date: Date.now() / 1000,
-		};
-		getStorage().setItem( 'googlesitekit_' + key, JSON.stringify( toStore ) );
-	},
-
-	/**
-	 * Gets data from the cache.
-	 *
-	 * @param {string} key    The cache key.
-	 * @param {number} maxAge The cache TTL in seconds. If not provided, no TTL will be checked.
-	 *
-	 * @return {(Object|undefined)} Cached data, or undefined if lookup failed.
-	 */
-	getCache( key, maxAge ) {
-		// Skip if js caching is disabled.
-		if ( global.googlesitekit.admin.nojscache ) {
-			return undefined;
-		}
-
-		lazilySetupLocalCache();
-
-		// Check variable cache first.
-		if ( 'undefined' !== typeof global.googlesitekit.admin.datacache[ key ] ) {
-			return global.googlesitekit.admin.datacache[ key ];
-		}
-
-		// Check persistent cache.
-		const cache = JSON.parse( getStorage().getItem( 'googlesitekit_' + key ) );
-		if ( cache && 'object' === typeof cache && cache.date ) {
-			// Only return value if no maximum age given or if cache age is less than the maximum.
-			if ( ! maxAge || ( Date.now() / 1000 ) - cache.date < maxAge ) {
-				// Set variable cache.
-				global.googlesitekit.admin.datacache[ key ] = cloneDeep( cache.value );
-
-				return cloneDeep( global.googlesitekit.admin.datacache[ key ] );
-			}
-		}
-
-		return undefined;
-	},
-
-	/**
-	 * Removes data from the cache.
-	 *
-	 * @param {string} key The cache key.
-	 */
-	deleteCache( key ) {
-		lazilySetupLocalCache();
-
-		delete global.googlesitekit.admin.datacache[ key ];
-
-		getStorage().removeItem( 'googlesitekit_' + key );
 	},
 
 	/**

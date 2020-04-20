@@ -36,7 +36,7 @@ import {
 } from 'tests/js/utils';
 import {
 	STORE_NAME,
-} from './index';
+} from './constants';
 
 describe( 'core/site reset', () => {
 	let apiFetchSpy;
