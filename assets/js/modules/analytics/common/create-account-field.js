@@ -42,8 +42,10 @@ const CreateAccountField = ( {
 			label={ label }
 			name={ name }
 			onChange={ ( e ) => {
-				validationIssues[ name ] = '' === e.target.value;
-				setValidationIssues( validationIssues );
+				setValidationIssues( {
+					...validationIssues,
+					[ name ]: '' === e.target.value,
+				} );
 				objectSetter( e.target.value );
 			} }
 			outlined
