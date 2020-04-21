@@ -62,6 +62,14 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	);
 
 	/**
+	 * Internal flag set after print_gtm_no_js invoked for the first time.
+	 *
+	 * @since n.e.x.t
+	 * @var bool
+	 */
+	private $did_gtm_no_js;
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -76,12 +84,14 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			}
 		);
 
-		add_action( // For non-AMP.
-			'wp_footer',
-			function() {
-				$this->print_gtm_no_js();
-			}
-		);
+		$print_gtm_no_js = function() {
+			$this->print_gtm_no_js();
+		};
+
+		// For non-AMP. WP >=5.2.
+		add_action( 'wp_body_open', $print_gtm_no_js, -9999 );
+		// For non-AMP.
+		add_action( 'wp_footer', $print_gtm_no_js );
 
 		$print_amp_gtm = function() {
 			// This hook is only available in AMP plugin version >=1.3, so if it
@@ -261,6 +271,13 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 		if ( is_wp_error( $container_id ) || ! $container_id ) {
 			return;
 		}
+
+		// Bail if this has already been run.
+		if ( $this->did_gtm_no_js ) {
+			return;
+		}
+
+		$this->did_gtm_no_js = true;
 
 		?>
 		<!-- Google Tag Manager (noscript) added by Site Kit -->
