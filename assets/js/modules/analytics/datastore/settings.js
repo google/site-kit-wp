@@ -72,6 +72,8 @@ export const controls = {
 				return { error };
 			}
 			propertyID = property.id;
+			await registry.dispatch( STORE_NAME ).setPropertyID( property.id );
+			await registry.dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // Capitalization rule exception: internalWebPropertyId
 		}
 
 		const profileID = registry.select( STORE_NAME ).getProfileID();

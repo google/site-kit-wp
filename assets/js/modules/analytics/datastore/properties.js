@@ -80,9 +80,7 @@ export const actions = {
 				type: FETCH_CREATE_PROPERTY,
 			};
 			const property = response;
-			const { dispatch } = yield Data.commonActions.getRegistry();
-			dispatch( STORE_NAME ).setPropertyID( property.id );
-			dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // Capitalization rule exception: internalWebPropertyId
+
 			yield actions.receiveCreateProperty( { accountID, property } );
 
 			yield {
