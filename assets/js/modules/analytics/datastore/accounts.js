@@ -103,33 +103,32 @@ export const actions = {
 		invariant( profileName, 'profileName is required.' );
 		invariant( timezone, 'timezone is required.' );
 
-		try {
-			const accountTicket = yield actions.fetchCreateAccount( { accountName, propertyName, profileName, timezone } );
+		const accountTicket = yield actions.fetchCreateAccount( { accountName, propertyName, profileName, timezone } );
 
-			return actions.receiveCreateAccount( { accountTicket } );
-		} catch ( error ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveCreateAccountFailed( { accountName, error } );
-		}
+		return actions.receiveCreateAccount( { accountTicket } );
 	},
 
 	*fetchCreateAccount( { accountName, propertyName, profileName, timezone } ) {
+		let response;
+
 		yield {
 			payload: {},
 			type: CREATE_ACCOUNT_STARTED,
 		};
 
-		const response = yield {
-			payload: { accountName, propertyName, profileName, timezone },
-			type: FETCH_CREATE_ACCOUNT,
-		};
+		try {
+			response = yield {
+				payload: { accountName, propertyName, profileName, timezone },
+				type: FETCH_CREATE_ACCOUNT,
+			};
 
-		yield {
-			payload: {},
-			type: CREATE_ACCOUNT_FINISHED,
-		};
-
+			yield {
+				payload: {},
+				type: CREATE_ACCOUNT_FINISHED,
+			};
+		} catch ( error ) {
+			return actions.receiveCreateAccountFailed( { accountName, error } );
+		}
 		return response;
 	},
 
