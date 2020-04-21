@@ -97,7 +97,7 @@ describe( 'modules/adsense alerts', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveAlerts( { accountID, alerts: fixtures.alerts } );
+				registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID } );
 
 				const alerts = registry.select( STORE_NAME ).getAlerts( accountID );
 

@@ -32,9 +32,11 @@ import { parseAccountID } from '../util';
 
 // Actions
 const FETCH_URLCHANNELS = 'FETCH_URLCHANNELS';
+const START_FETCH_URLCHANNELS = 'START_FETCH_URLCHANNELS';
+const FINISH_FETCH_URLCHANNELS = 'FINISH_FETCH_URLCHANNELS';
+const CATCH_FETCH_URLCHANNELS = 'CATCH_FETCH_URLCHANNELS';
+
 const RECEIVE_URLCHANNELS = 'RECEIVE_URLCHANNELS';
-const RECEIVE_URLCHANNELS_SUCCEEDED = 'RECEIVE_URLCHANNELS_SUCCEEDED';
-const RECEIVE_URLCHANNELS_FAILED = 'RECEIVE_URLCHANNELS_FAILED';
 const RESET_URLCHANNELS = 'RESET_URLCHANNELS';
 
 export const INITIAL_STATE = {
@@ -43,39 +45,47 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
-	fetchURLChannels( clientID ) {
-		return {
+	*fetchURLChannels( clientID ) {
+		invariant( clientID, 'clientID is required.' );
+
+		let response, error;
+
+		yield {
 			payload: { clientID },
-			type: FETCH_URLCHANNELS,
+			type: START_FETCH_URLCHANNELS,
 		};
+
+		try {
+			response = yield {
+				payload: { clientID },
+				type: FETCH_URLCHANNELS,
+			};
+
+			yield actions.receiveURLChannels( response, { clientID } );
+
+			yield {
+				payload: { clientID },
+				type: FINISH_FETCH_URLCHANNELS,
+			};
+		} catch ( err ) {
+			error = err;
+
+			yield {
+				payload: { error, clientID },
+				type: CATCH_FETCH_URLCHANNELS,
+			};
+		}
+
+		return { response, error };
 	},
 
-	receiveURLChannels( { clientID, urlchannels } ) {
+	receiveURLChannels( urlchannels, { clientID } ) {
 		invariant( Array.isArray( urlchannels ), 'urlchannels must be an array.' );
 		invariant( clientID, 'clientID is required.' );
 
 		return {
 			payload: { clientID, urlchannels },
 			type: RECEIVE_URLCHANNELS,
-		};
-	},
-
-	receiveURLChannelsSucceeded( clientID ) {
-		invariant( clientID, 'clientID is required.' );
-
-		return {
-			payload: { clientID },
-			type: RECEIVE_URLCHANNELS_SUCCEEDED,
-		};
-	},
-
-	receiveURLChannelsFailed( { error, clientID } ) {
-		invariant( error, 'error is required.' );
-		invariant( clientID, 'clientID is required.' );
-
-		return {
-			payload: { error, clientID },
-			type: RECEIVE_URLCHANNELS_FAILED,
 		};
 	},
 
@@ -106,16 +116,15 @@ export const controls = {
 			} );
 		}
 
-		return API.get( 'modules', 'adsense', 'urlchannels', {
-			accountID,
-			clientID,
+		return API.get( 'modules', 'adsense', 'urlchannels', { accountID, clientID }, {
+			useCache: false,
 		} );
 	},
 };
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case FETCH_URLCHANNELS: {
+		case START_FETCH_URLCHANNELS: {
 			const { clientID } = payload;
 
 			return {
@@ -139,7 +148,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_URLCHANNELS_SUCCEEDED: {
+		case FINISH_FETCH_URLCHANNELS: {
 			const { clientID } = payload;
 
 			return {
@@ -151,7 +160,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_URLCHANNELS_FAILED: {
+		case CATCH_FETCH_URLCHANNELS: {
 			const { error, clientID } = payload;
 
 			return {
@@ -183,27 +192,13 @@ export const resolvers = {
 			return;
 		}
 
-		try {
-			const registry = yield Data.commonActions.getRegistry();
-
-			const existingURLChannels = registry.select( STORE_NAME ).getURLChannels( clientID );
-
-			// If there are already URL channels loaded in state, consider it fulfilled
-			// and don't make an API request.
-			if ( existingURLChannels ) {
-				return;
-			}
-
-			const urlchannels = yield actions.fetchURLChannels( clientID );
-
-			yield actions.receiveURLChannels( { clientID, urlchannels } );
-
-			return actions.receiveURLChannelsSucceeded( clientID );
-		} catch ( error ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveURLChannelsFailed( { clientID, error } );
+		const registry = yield Data.commonActions.getRegistry();
+		const existingURLChannels = registry.select( STORE_NAME ).getURLChannels( clientID );
+		if ( existingURLChannels ) {
+			return;
 		}
+
+		yield actions.fetchURLChannels( clientID );
 	},
 };
 
