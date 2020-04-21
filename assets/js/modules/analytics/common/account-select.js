@@ -62,7 +62,7 @@ export default function AccountSelect() {
 			enhanced
 			outlined
 		>
-			{ ( accounts || [] )
+			{ accounts
 				.concat( {
 					id: ACCOUNT_CREATE,
 					name: __( 'Set up a new account', 'google-site-kit' ),
