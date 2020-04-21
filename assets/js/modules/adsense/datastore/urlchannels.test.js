@@ -97,7 +97,7 @@ describe( 'modules/adsense URL channels', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveURLChannels( { clientID, urlchannels: fixtures.urlchannels } );
+				registry.dispatch( STORE_NAME ).receiveURLChannels( fixtures.urlchannels, { clientID } );
 
 				const urlchannels = registry.select( STORE_NAME ).getURLChannels( clientID );
 
