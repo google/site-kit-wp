@@ -75,14 +75,13 @@ describe( 'AccountSelect', () => {
 		expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 
-	it( 'should render a select box with only setup when accounts are undefined', async () => {
+	it( 'should render a loading state when accounts are undefined', async () => {
 		muteConsole( 'warn' );
-		const { getAllByRole } = render( <AccountSelect />, { setupRegistry: setupLoadingRegistry } );
+		const { queryAllByRole, queryByRole } = render( <AccountSelect />, { setupRegistry: setupLoadingRegistry } );
 
-		const listItems = getAllByRole( 'menuitem', { hidden: true } );
-		expect( listItems ).toHaveLength( 1 );
-		expect( listItems[ listItems.length - 1 ].textContent ).toMatch( /set up a new account/i );
+		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
 
+		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 		// If accounts are `undefined`, we'll make a request to fetch them.
 		expect( apiFetchMock ).toHaveBeenCalled();
 	} );
