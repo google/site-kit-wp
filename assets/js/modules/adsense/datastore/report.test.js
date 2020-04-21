@@ -97,7 +97,7 @@ describe( 'modules/adsense report', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveReport( { options, report: fixtures.report } );
+				registry.dispatch( STORE_NAME ).receiveReport( fixtures.report, { options } );
 
 				const report = registry.select( STORE_NAME ).getReport( options );
 
