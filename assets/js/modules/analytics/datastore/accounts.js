@@ -41,6 +41,7 @@ const CATCH_FETCH_CREATE_ACCOUNT = 'CATCH_FETCH_CREATE_ACCOUNT';
 export const INITIAL_STATE = {
 	accounts: undefined,
 	isFetchingAccountsPropertiesProfiles: false,
+	isCreatingAccount: false,
 };
 
 export const actions = {
@@ -224,7 +225,7 @@ export const reducer = ( state, { type, payload } ) => {
 		case FINISH_FETCH_CREATE_ACCOUNT:
 			return {
 				...state,
-				isCreatingAccount: false,
+				isFetchingCreateAccount: false,
 			};
 
 		case CATCH_FETCH_CREATE_ACCOUNT:
@@ -232,13 +233,13 @@ export const reducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				error,
-				isCreatingAccount: false,
+				isFetchingCreateAccount: false,
 			};
 
 		case START_FETCH_CREATE_ACCOUNT: {
 			return {
 				...state,
-				isCreatingAccount: true,
+				isFetchingCreateAccount: true,
 			};
 		}
 
@@ -337,7 +338,7 @@ export const selectors = {
 	 * @return {boolean} True if an account is being created, false otherwise.
 	 */
 	isDoingCreateAccount( state ) {
-		return state.isCreatingAccount;
+		return !! state.isFetchingCreateAccount;
 	},
 };
 
