@@ -37,7 +37,6 @@ export default function AccountSelect() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
-	const isLoading = accounts === undefined || isDoingGetAccounts;
 
 	const { selectAccount } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -48,7 +47,7 @@ export default function AccountSelect() {
 		}
 	}, [ accountID ] );
 
-	if ( isLoading ) {
+	if ( accounts === undefined || isDoingGetAccounts ) {
 		return <ProgressBar small />;
 	}
 
