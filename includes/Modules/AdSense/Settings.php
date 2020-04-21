@@ -61,6 +61,12 @@ class Settings extends Module_Settings {
 					$option['accountID'] = $account_id;
 				}
 
+				if ( $option['setupComplete'] ) {
+					$option['accountSetupComplete'] = $option['setupComplete'];
+					$option['siteSetupComplete']    = $option['setupComplete'];
+				}
+				unset( $option['setupComplete'] );
+
 				return $option;
 			}
 		);
@@ -75,11 +81,13 @@ class Settings extends Module_Settings {
 	 */
 	protected function get_default() {
 		return array(
-			'accountID'     => '',
-			'accountStatus' => '',
-			'clientID'      => '',
-			'setupComplete' => false,
-			'useSnippet'    => true,
+			'accountID'            => '',
+			'clientID'             => '',
+			'accountStatus'        => '',
+			'siteStatus'           => '',
+			'accountSetupComplete' => false,
+			'siteSetupComplete'    => false,
+			'useSnippet'           => true,
 		);
 	}
 
@@ -93,6 +101,12 @@ class Settings extends Module_Settings {
 	protected function get_sanitize_callback() {
 		return function( $option ) {
 			if ( is_array( $option ) ) {
+				if ( isset( $option['accountSetupComplete'] ) ) {
+					$option['accountSetupComplete'] = (bool) $option['accountSetupComplete'];
+				}
+				if ( isset( $option['siteStatusComplete'] ) ) {
+					$option['siteStatusComplete'] = (bool) $option['siteStatusComplete'];
+				}
 				if ( isset( $option['useSnippet'] ) ) {
 					$option['useSnippet'] = (bool) $option['useSnippet'];
 				}

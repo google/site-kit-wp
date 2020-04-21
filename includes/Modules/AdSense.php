@@ -150,7 +150,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 	public function is_connected() {
 		$settings = $this->get_settings()->get();
 
-		if ( empty( $settings['setupComplete'] ) ) {
+		if ( empty( $settings['accountSetupComplete'] ) || empty( $settings['siteSetupComplete'] ) ) {
 			return false;
 		}
 
@@ -572,9 +572,10 @@ tag_partner: "site_kit"
 				return function() use ( $data ) {
 					$this->get_settings()->merge(
 						array(
-							'setupComplete' => true,
-							'clientID'      => $data['clientID'],
-							'useSnippet'    => $data['useSnippet'],
+							'accountSetupComplete' => true,
+							'siteSetupComplete'    => true,
+							'clientID'             => $data['clientID'],
+							'useSnippet'           => $data['useSnippet'],
 						)
 					);
 

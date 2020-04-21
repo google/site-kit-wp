@@ -95,10 +95,17 @@ class AdSenseTest extends TestCase {
 		$options  = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$settings = $options->get( Settings::OPTION );
 
-		$this->assertFalse( $settings['setupComplete'] );
+		$this->assertFalse( $settings['accountSetupComplete'] );
+		$this->assertFalse( $settings['siteSetupComplete'] );
 		$this->assertFalse( $adsense->is_connected() );
 
-		$options->set( Settings::OPTION, array( 'setupComplete' => true ) );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountSetupComplete' => true,
+				'siteSetupComplete'    => true,
+			)
+		);
 		$this->assertTrue( $adsense->is_connected() );
 	}
 
