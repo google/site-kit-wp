@@ -98,7 +98,7 @@ describe( 'modules/analytics accounts', () => {
 					{ accountName, propertyName, profileName, timezone }
 				);
 
-				expect( redirect ).toEqual( 'https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/?api.accountTicketId=abc123' );
+				expect( redirect ).toEqual( `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/?api.accountTicketId=${ fixtures.accountTicket.id }` );
 			} );
 
 			it( 'sets isDoingCreateAccount ', async () => {
