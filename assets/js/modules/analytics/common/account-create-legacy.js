@@ -36,7 +36,7 @@ const { useSelect, useDispatch } = Data;
 export default function AccountCreateLegacy() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const isFetchingAccounts = useSelect( ( select ) => select( STORE_NAME ).isFetchingAccounts() );
+	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	const createAccountHandler = ( event ) => {
@@ -50,7 +50,7 @@ export default function AccountCreateLegacy() {
 		resetAccounts();
 	} );
 
-	if ( isFetchingAccounts ) {
+	if ( isDoingGetAccounts ) {
 		return <ProgressBar />;
 	}
 

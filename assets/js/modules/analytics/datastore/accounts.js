@@ -295,7 +295,7 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} Whether accounts are currently being fetched or not.
 	 */
-	isFetchingAccounts( state ) {
+	isDoingGetAccounts( state ) {
 		return !! state.isFetchingAccountsPropertiesProfiles;
 	},
 };

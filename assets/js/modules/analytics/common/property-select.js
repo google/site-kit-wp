@@ -38,7 +38,7 @@ export default function PropertySelect() {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties( accountID ) );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const isLoadingAccounts = useSelect( ( select ) => select( STORE_NAME ).isFetchingAccounts() );
+	const isLoadingAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isLoadingProperties = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProperties( accountID ) );
 
 	const { selectProperty } = useDispatch( STORE_NAME );
