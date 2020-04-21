@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './index';
+import { STORE_NAME } from './constants';
 import { parseAccountID } from '../util';
 
 // Actions

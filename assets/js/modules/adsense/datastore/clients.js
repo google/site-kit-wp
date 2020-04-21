@@ -27,7 +27,7 @@ import { groupBy } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './index';
+import { STORE_NAME } from './constants';
 import { isValidAccountID, parseAccountID } from '../util';
 
 // Actions
