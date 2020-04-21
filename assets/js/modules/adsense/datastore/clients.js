@@ -32,9 +32,11 @@ import { isValidAccountID, parseAccountID } from '../util';
 
 // Actions
 const FETCH_CLIENTS = 'FETCH_CLIENTS';
+const START_FETCH_CLIENTS = 'START_FETCH_CLIENTS';
+const FINISH_FETCH_CLIENTS = 'FINISH_FETCH_CLIENTS';
+const CATCH_FETCH_CLIENTS = 'CATCH_FETCH_CLIENTS';
+
 const RECEIVE_CLIENTS = 'RECEIVE_CLIENTS';
-const RECEIVE_CLIENTS_SUCCEEDED = 'RECEIVE_CLIENTS_SUCCEEDED';
-const RECEIVE_CLIENTS_FAILED = 'RECEIVE_CLIENTS_FAILED';
 const RESET_CLIENTS = 'RESET_CLIENTS';
 
 export const INITIAL_STATE = {
@@ -43,49 +45,46 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
-	fetchClients( accountID ) {
+	*fetchClients( accountID ) {
 		invariant( accountID, 'accountID is required.' );
 
-		return {
+		let response, error;
+
+		yield {
 			payload: { accountID },
-			type: FETCH_CLIENTS,
+			type: START_FETCH_CLIENTS,
 		};
+
+		try {
+			response = yield {
+				payload: { accountID },
+				type: FETCH_CLIENTS,
+			};
+
+			yield actions.receiveClients( response );
+
+			yield {
+				payload: { accountID },
+				type: FINISH_FETCH_CLIENTS,
+			};
+		} catch ( err ) {
+			error = err;
+
+			yield {
+				payload: { error, accountID },
+				type: CATCH_FETCH_CLIENTS,
+			};
+		}
+
+		return { response, error };
 	},
 
-	/**
-	 * Adds clients to the store.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Array} clients Clients to add.
-	 * @return {Object} Redux-style action.
-	 */
 	receiveClients( clients ) {
 		invariant( Array.isArray( clients ), 'clients must be an array.' );
 
 		return {
 			payload: { clients },
 			type: RECEIVE_CLIENTS,
-		};
-	},
-
-	receiveClientsSucceeded( accountID ) {
-		invariant( accountID, 'accountID is required.' );
-
-		return {
-			payload: { accountID },
-			type: RECEIVE_CLIENTS_SUCCEEDED,
-		};
-	},
-
-	receiveClientsFailed( { accountID, error } ) {
-		invariant( accountID, 'accountID is required.' );
-		invariant( error, 'error is required.' );
-
-		return {
-			payload: { accountID, error },
-			type: RECEIVE_CLIENTS_FAILED,
 		};
 	},
 
@@ -104,7 +103,9 @@ export const actions = {
 
 export const controls = {
 	[ FETCH_CLIENTS ]: ( { payload: { accountID } } ) => {
-		return API.get( 'modules', 'adsense', 'clients', { accountID } );
+		return API.get( 'modules', 'adsense', 'clients', { accountID }, {
+			useCache: false,
+		} );
 	},
 };
 
@@ -134,7 +135,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_CLIENTS_SUCCEEDED: {
+		case FINISH_FETCH_CLIENTS: {
 			const { accountID } = payload;
 
 			return {
@@ -146,7 +147,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_CLIENTS_FAILED: {
+		case CATCH_FETCH_CLIENTS: {
 			const { accountID, error } = payload;
 
 			return {
@@ -175,28 +176,19 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {
 	*getClients( accountID ) {
 		if ( 'undefined' === typeof accountID || ! isValidAccountID( accountID ) ) {
-			return undefined;
+			return;
 		}
-		try {
-			const registry = yield Data.commonActions.getRegistry();
-			const existingClients = registry.select( STORE_NAME ).getClients( accountID );
 
-			// If there are already clients loaded in state, consider it fulfilled
-			// and don't make an API request.
-			if ( existingClients ) {
-				return;
-			}
+		const registry = yield Data.commonActions.getRegistry();
+		const existingClients = registry.select( STORE_NAME ).getClients( accountID );
 
-			const clients = yield actions.fetchClients( accountID );
-
-			yield actions.receiveClients( clients );
-
-			return yield actions.receiveClientsSucceeded( accountID );
-		} catch ( error ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveClientsFailed( { accountID, error } );
+		// If there are already clients loaded in state, consider it fulfilled
+		// and don't make an API request.
+		if ( existingClients ) {
+			return;
 		}
+
+		yield actions.fetchClients( accountID );
 	},
 };
 
