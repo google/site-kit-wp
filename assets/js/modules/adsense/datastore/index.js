@@ -39,6 +39,8 @@ const baseModuleStore = Modules.createModuleStore( 'adsense', {
 		'useSnippet',
 		'accountStatus',
 		'siteStatus',
+		'accountSetupComplete',
+		'siteStatusComplete',
 	],
 } );
 
