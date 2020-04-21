@@ -20,14 +20,20 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
-export default function SettingsNotice( { message } ) {
+export default function SettingsNotice( { message, isSuggestion } ) {
 	if ( ! message ) {
 		return null;
 	}
 
 	return (
-		<div className="googlesitekit-settings-notice">
+		<div
+			className={ classnames(
+				'googlesitekit-settings-notice',
+				{ 'googlesitekit-settings-notice--suggestion': isSuggestion }
+			) }
+		>
 			<div className="googlesitekit-settings-notice__text">
 				{ message }
 			</div>
@@ -37,4 +43,5 @@ export default function SettingsNotice( { message } ) {
 
 SettingsNotice.propTypes = {
 	message: PropTypes.string.isRequired,
+	isSuggestion: PropTypes.bool,
 };
