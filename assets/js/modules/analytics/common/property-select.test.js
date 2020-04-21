@@ -93,7 +93,7 @@ describe( 'PropertySelect', () => {
 
 		await act( () => registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE ) );
 
-		// An empty accountID is invalid, so ensure the select IS currently disabled.
+		// ACCOUNT_CREATE is an invalid (but valid selection), so ensure the select IS currently disabled.
 		expect( selectWrapper ).toHaveClass( 'mdc-select--disabled' );
 		expect( selectedText ).toHaveAttribute( 'aria-disabled', 'true' );
 	} );
