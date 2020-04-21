@@ -81,11 +81,12 @@ export const controls = {
 		if ( profileID === PROFILE_CREATE ) {
 			const accountID = registry.select( STORE_NAME ).getAccountID();
 
-			const { error } = await registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID );
+			const { response: profile, error } = await registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID );
 
 			if ( error ) {
 				return { error };
 			}
+			await registry.dispatch( STORE_NAME ).setProfileID( profile.id );
 		}
 
 		// This action shouldn't be called if settings haven't changed,

@@ -86,8 +86,6 @@ export const actions = {
 			};
 			const profile = response;
 
-			const registry = yield Data.commonActions.getRegistry();
-			registry.dispatch( STORE_NAME ).setProfileID( profile.id );
 			yield actions.receiveCreateProfile( { accountID, propertyID, profile } );
 
 			yield {
