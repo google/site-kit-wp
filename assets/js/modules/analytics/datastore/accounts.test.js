@@ -89,7 +89,7 @@ describe( 'modules/analytics accounts', () => {
 				registry.dispatch( STORE_NAME ).createAccount( { accountName, propertyName, profileName, timezone } );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).isDoingCreateAccount() !== true
+						registry.select( STORE_NAME ).isDoingCreateAccount() === false
 					),
 				);
 
