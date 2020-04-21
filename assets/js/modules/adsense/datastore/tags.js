@@ -29,55 +29,106 @@ import Data from 'googlesitekit-data';
 import { getExistingTag } from '../../../util';
 import { STORE_NAME } from './index';
 
-const { createRegistrySelector } = Data;
+const { commonActions, createRegistrySelector } = Data;
 
 // Actions
 const FETCH_EXISTING_TAG = 'FETCH_EXISTING_TAG';
+const START_FETCH_EXISTING_TAG = 'START_FETCH_EXISTING_TAG';
+const FINISH_FETCH_EXISTING_TAG = 'FINISH_FETCH_EXISTING_TAG';
+const CATCH_FETCH_EXISTING_TAG = 'CATCH_FETCH_EXISTING_TAG';
+
 const FETCH_TAG_PERMISSION = 'FETCH_TAG_PERMISSION';
+const START_FETCH_TAG_PERMISSION = 'START_FETCH_TAG_PERMISSION';
+const FINISH_FETCH_TAG_PERMISSION = 'FINISH_FETCH_TAG_PERMISSION';
+const CATCH_FETCH_TAG_PERMISSION = 'CATCH_FETCH_TAG_PERMISSION';
+
 const RECEIVE_EXISTING_TAG = 'RECEIVE_EXISTING_TAG';
-const RECEIVE_EXISTING_TAG_FAILED = 'RECEIVE_EXISTING_TAG_FAILED';
 const RECEIVE_TAG_PERMISSION = 'RECEIVE_TAG_PERMISSION';
-const RECEIVE_TAG_PERMISSION_FAILED = 'RECEIVE_TAG_PERMISSION_FAILED';
 
 export const INITIAL_STATE = {
 	existingTag: undefined,
 	isFetchingExistingTag: false,
 	isFetchingTagPermission: {},
-	tagPermissions: undefined,
+	tagPermissions: {},
 };
 
 export const actions = {
-	fetchExistingTag() {
-		return {
+	*fetchExistingTag() {
+		let response, error;
+
+		yield {
 			payload: {},
-			type: FETCH_EXISTING_TAG,
+			type: START_FETCH_EXISTING_TAG,
 		};
+
+		try {
+			response = yield {
+				payload: {},
+				type: FETCH_EXISTING_TAG,
+			};
+
+			yield actions.receiveExistingTag( response !== undefined ? response : null );
+
+			yield {
+				payload: {},
+				type: FINISH_FETCH_EXISTING_TAG,
+			};
+		} catch ( e ) {
+			error = e;
+			yield {
+				payload: { error },
+				type: CATCH_FETCH_EXISTING_TAG,
+			};
+		}
+
+		return { response, error };
 	},
 
-	fetchTagPermission( { clientID } ) {
+	*fetchTagPermission( clientID ) {
 		invariant( clientID, 'clientID is required.' );
 
-		return {
+		let response, error;
+
+		yield {
 			payload: { clientID },
-			type: FETCH_TAG_PERMISSION,
+			type: START_FETCH_TAG_PERMISSION,
 		};
+
+		try {
+			response = yield {
+				payload: { clientID },
+				type: FETCH_TAG_PERMISSION,
+			};
+
+			yield actions.receiveTagPermission( {
+				clientID,
+				...response,
+			} );
+
+			yield {
+				payload: { clientID },
+				type: FINISH_FETCH_TAG_PERMISSION,
+			};
+		} catch ( e ) {
+			error = e;
+			yield {
+				payload: {
+					clientID,
+					error,
+				},
+				type: CATCH_FETCH_TAG_PERMISSION,
+			};
+		}
+
+		return { response, error };
 	},
 
 	receiveExistingTag( existingTag ) {
-		invariant( existingTag, 'existingTag is required.' );
+		invariant( existingTag !== undefined, 'existingTag is required.' );
 
 		return {
 			payload: { existingTag },
 			type: RECEIVE_EXISTING_TAG,
-		};
-	},
-
-	receiveExistingTagFailed( error ) {
-		invariant( error, 'error is required.' );
-
-		return {
-			payload: { error },
-			type: RECEIVE_EXISTING_TAG_FAILED,
 		};
 	},
 
@@ -89,16 +140,6 @@ export const actions = {
 		return {
 			payload: { clientID, accountID, permission },
 			type: RECEIVE_TAG_PERMISSION,
-		};
-	},
-
-	receiveTagPermissionFailed( { clientID, error } ) {
-		invariant( clientID, 'clientID is required.' );
-		invariant( error, 'error is required.' );
-
-		return {
-			payload: { clientID, error },
-			type: RECEIVE_TAG_PERMISSION_FAILED,
 		};
 	},
 };
@@ -114,7 +155,9 @@ export const controls = {
 		return getExistingTag( 'adsense' );
 	},
 	[ FETCH_TAG_PERMISSION ]: ( { payload: { clientID } } ) => {
-		return API.get( 'modules', 'adsense', 'tag-permission', { clientID } );
+		return API.get( 'modules', 'adsense', 'tag-permission', { clientID }, {
+			useCache: false,
+		} );
 	},
 };
 
@@ -124,6 +167,32 @@ export const reducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				isFetchingExistingTag: true,
+			};
+		}
+
+		case RECEIVE_EXISTING_TAG: {
+			const { existingTag } = payload;
+
+			return {
+				...state,
+				existingTag,
+			};
+		}
+
+		case FINISH_FETCH_EXISTING_TAG: {
+			return {
+				...state,
+				isFetchingExistingTag: false,
+			};
+		}
+
+		case CATCH_FETCH_EXISTING_TAG: {
+			const { error } = payload;
+
+			return {
+				...state,
+				error,
+				isFetchingExistingTag: false,
 			};
 		}
 
@@ -139,35 +208,11 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_EXISTING_TAG: {
-			const { existingTag } = payload;
-
-			return {
-				...state,
-				existingTag,
-				isFetchingExistingTag: false,
-			};
-		}
-
-		case RECEIVE_EXISTING_TAG_FAILED: {
-			const { error } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingExistingTag: false,
-			};
-		}
-
 		case RECEIVE_TAG_PERMISSION: {
 			const { clientID, accountID, permission } = payload;
 
 			return {
 				...state,
-				isFetchingTagPermission: {
-					...state.isFetchingTagPermission,
-					[ clientID ]: false,
-				},
 				tagPermissions: {
 					...state.tagPermissions || {},
 					[ clientID ]: { accountID, permission },
@@ -175,7 +220,19 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_TAG_PERMISSION_FAILED: {
+		case FINISH_FETCH_TAG_PERMISSION: {
+			const { clientID } = payload;
+
+			return {
+				...state,
+				isFetchingTagPermission: {
+					...state.isFetchingTagPermission,
+					[ clientID ]: false,
+				},
+			};
+		}
+
+		case CATCH_FETCH_TAG_PERMISSION: {
 			const { clientID, error } = payload;
 
 			return {
@@ -196,42 +253,27 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getExistingTag() {
-		try {
-			const registry = yield actions.getRegistry();
-			const existingTag = yield actions.fetchExistingTag();
-			yield actions.receiveExistingTag( existingTag );
-
-			// Invalidate this resolver so it will run again.
-			yield registry.getActions().invalidateResolutionForStoreSelector( 'getExistingTag' );
-
+		const registry = yield commonActions.getRegistry();
+		const existingTag = registry.select( STORE_NAME ).getExistingTag();
+		if ( existingTag !== undefined ) {
 			return;
-		} catch ( err ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveExistingTagFailed( err );
 		}
+
+		yield actions.fetchExistingTag();
 	},
 
 	*getTagPermission( clientID ) {
 		if ( 'undefined' === typeof clientID ) {
-			return undefined;
-		}
-
-		try {
-			const response = yield actions.fetchTagPermission( { clientID } );
-
-			yield actions.receiveTagPermission( {
-				accountID: response.accountID,
-				clientID,
-				permission: response.permission,
-			} );
-
 			return;
-		} catch ( error ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveTagPermissionFailed( { error, clientID } );
 		}
+
+		const registry = yield commonActions.getRegistry();
+		const existingPermission = registry.select( STORE_NAME ).getTagPermission( clientID );
+		if ( existingPermission !== undefined ) {
+			return;
+		}
+
+		yield actions.fetchTagPermission( clientID );
 	},
 };
 
@@ -307,15 +349,7 @@ export const selectors = {
 	 * @return {?Object} Object with string `accountID` and boolean `permission` properties; `undefined` if not loaded.
 	 */
 	getTagPermission( state, clientID ) {
-		if ( 'undefined' === typeof clientID ) {
-			return undefined;
-		}
-
 		const { tagPermissions } = state;
-
-		if ( 'undefined' === typeof tagPermissions || 'undefined' === typeof tagPermissions[ clientID ] ) {
-			return undefined;
-		}
 
 		return tagPermissions[ clientID ];
 	},
