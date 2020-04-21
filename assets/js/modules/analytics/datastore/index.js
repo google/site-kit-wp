@@ -30,6 +30,7 @@ import { STORE_NAME } from './constants';
 export { STORE_NAME };
 
 const baseModuleStore = Modules.createModuleStore( 'analytics', {
+	storeName: STORE_NAME,
 	settingSlugs: [
 		'anonymizeIP',
 		'accountID',
