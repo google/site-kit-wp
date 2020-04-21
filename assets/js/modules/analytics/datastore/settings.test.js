@@ -98,12 +98,7 @@ describe( 'modules/analytics settings', () => {
 						{ status: 200 }
 					);
 
-				registry.dispatch( STORE_NAME ).submitChanges();
-
-				await subscribeUntil(
-					registry,
-					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
-				);
+				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject( {
 					data: { accountID: '12345' },
@@ -129,12 +124,7 @@ describe( 'modules/analytics settings', () => {
 						{ status: 500 }
 					);
 
-				registry.dispatch( STORE_NAME ).submitChanges();
-
-				await subscribeUntil(
-					registry,
-					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
-				);
+				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
 					{
@@ -169,12 +159,7 @@ describe( 'modules/analytics settings', () => {
 						{ status: 200 }
 					);
 
-				registry.dispatch( STORE_NAME ).submitChanges();
-
-				await subscribeUntil(
-					registry,
-					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
-				);
+				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
 					{
@@ -205,12 +190,7 @@ describe( 'modules/analytics settings', () => {
 						{ status: 500 }
 					);
 
-				registry.dispatch( STORE_NAME ).submitChanges();
-
-				await subscribeUntil(
-					registry,
-					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
-				);
+				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
 					{
@@ -246,12 +226,7 @@ describe( 'modules/analytics settings', () => {
 					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/ )
 					.mockResponseOnce( JSON.stringify( createdProfile ), { status: 200 } );
 
-				registry.dispatch( STORE_NAME ).submitChanges();
-
-				await subscribeUntil(
-					registry,
-					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
-				);
+				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( createdProperty.id );
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( createdProfile.id );
@@ -269,12 +244,7 @@ describe( 'modules/analytics settings', () => {
 						{ status: 200 }
 					);
 
-				registry.dispatch( STORE_NAME ).submitChanges();
-
-				await subscribeUntil(
-					registry,
-					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
-				);
+				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( fetch ).toHaveBeenCalled();
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
