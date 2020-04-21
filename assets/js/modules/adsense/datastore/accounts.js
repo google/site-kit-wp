@@ -30,9 +30,11 @@ import { STORE_NAME } from './index';
 
 // Actions
 const FETCH_ACCOUNTS = 'FETCH_ACCOUNTS';
+const START_FETCH_ACCOUNTS = 'START_FETCH_ACCOUNTS';
+const FINISH_FETCH_ACCOUNTS = 'FINISH_FETCH_ACCOUNTS';
+const CATCH_FETCH_ACCOUNTS = 'CATCH_FETCH_ACCOUNTS';
+
 const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
-const RECEIVE_ACCOUNTS_SUCCEEDED = 'RECEIVE_ACCOUNTS_SUCCEEDED';
-const RECEIVE_ACCOUNTS_FAILED = 'RECEIVE_ACCOUNTS_FAILED';
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 
 export const INITIAL_STATE = {
@@ -41,11 +43,36 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
-	fetchAccounts() {
-		return {
+	*fetchAccounts() {
+		let response, error;
+
+		yield {
 			payload: {},
-			type: FETCH_ACCOUNTS,
+			type: START_FETCH_ACCOUNTS,
 		};
+
+		try {
+			response = yield {
+				payload: {},
+				type: FETCH_ACCOUNTS,
+			};
+
+			yield actions.receiveAccounts( response );
+
+			yield {
+				payload: {},
+				type: FINISH_FETCH_ACCOUNTS,
+			};
+		} catch ( err ) {
+			error = err;
+
+			yield {
+				payload: { error },
+				type: CATCH_FETCH_ACCOUNTS,
+			};
+		}
+
+		return { response, error };
 	},
 
 	receiveAccounts( accounts ) {
@@ -54,22 +81,6 @@ export const actions = {
 		return {
 			payload: { accounts },
 			type: RECEIVE_ACCOUNTS,
-		};
-	},
-
-	receiveAccountsSucceeded() {
-		return {
-			payload: {},
-			type: RECEIVE_ACCOUNTS_SUCCEEDED,
-		};
-	},
-
-	receiveAccountsFailed( error ) {
-		invariant( error, 'error is required.' );
-
-		return {
-			payload: { error },
-			type: RECEIVE_ACCOUNTS_FAILED,
 		};
 	},
 
@@ -88,13 +99,15 @@ export const actions = {
 
 export const controls = {
 	[ FETCH_ACCOUNTS ]: () => {
-		return API.get( 'modules', 'adsense', 'accounts' );
+		return API.get( 'modules', 'adsense', 'accounts', undefined, {
+			useCache: false,
+		} );
 	},
 };
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case FETCH_ACCOUNTS: {
+		case START_FETCH_ACCOUNTS: {
 			return {
 				...state,
 				isFetchingAccounts: true,
@@ -110,14 +123,14 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_ACCOUNTS_SUCCEEDED: {
+		case FINISH_FETCH_ACCOUNTS: {
 			return {
 				...state,
 				isFetchingAccounts: false,
 			};
 		}
 
-		case RECEIVE_ACCOUNTS_FAILED: {
+		case CATCH_FETCH_ACCOUNTS: {
 			const { error } = payload;
 
 			return {
@@ -142,26 +155,16 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getAccounts() {
-		try {
-			const registry = yield Data.commonActions.getRegistry();
-			const existingAccounts = registry.select( STORE_NAME ).getAccounts();
+		const registry = yield Data.commonActions.getRegistry();
+		const existingAccounts = registry.select( STORE_NAME ).getAccounts();
 
-			// If there are already accounts loaded in state, consider it fulfilled
-			// and don't make an API request.
-			if ( existingAccounts ) {
-				return;
-			}
-
-			const accounts = yield actions.fetchAccounts();
-
-			yield actions.receiveAccounts( accounts );
-
-			return actions.receiveAccountsSucceeded();
-		} catch ( error ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveAccountsFailed( error );
+		// If there are already accounts loaded in state, consider it fulfilled
+		// and don't make an API request.
+		if ( existingAccounts ) {
+			return;
 		}
+
+		yield actions.fetchAccounts();
 	},
 };
 
