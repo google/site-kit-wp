@@ -38,7 +38,8 @@ export default function PropertySelect() {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties( accountID ) );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const isLoading = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProperties( accountID ) );
+	const isLoadingAccounts = useSelect( ( select ) => select( STORE_NAME ).isFetchingAccounts() );
+	const isLoadingProperties = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProperties( accountID ) );
 
 	const { selectProperty } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -49,7 +50,7 @@ export default function PropertySelect() {
 		}
 	}, [ propertyID ] );
 
-	if ( isLoading ) {
+	if ( isLoadingAccounts || isLoadingProperties ) {
 		return <ProgressBar small />;
 	}
 
