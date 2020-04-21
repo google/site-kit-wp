@@ -32,6 +32,10 @@ const { useSelect } = Data;
 export default function ExistingTagError() {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 
+	if ( ! propertyID ) {
+		return null;
+	}
+
 	const message = sprintf(
 		/* translators: %s: Property id of the existing tag */
 		__( 'We\'ve detected there\'s already an existing Analytics tag on your site (ID %s), but your account doesn\'t seem to have access to this Analytics property. You can either remove the existing tag and connect to a different account, or request access to this property from your team.', 'google-site-kit' ),
