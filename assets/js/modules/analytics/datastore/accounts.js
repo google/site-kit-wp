@@ -34,9 +34,9 @@ const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED';
 const FETCH_CREATE_ACCOUNT = 'FETCH_CREATE_ACCOUNT';
-const CREATE_ACCOUNT_FINISHED = 'CREATE_ACCOUNT_FINISHED';
-const RECEIVE_CREATE_ACCOUNT_FAILED = 'RECEIVE_CREATE_ACCOUNT_FAILED';
-const CREATE_ACCOUNT_STARTED = 'CREATE_ACCOUNT_STARTED';
+const START_FETCH_CREATE_ACCOUNT = 'START_FETCH_CREATE_ACCOUNT';
+const FINISH_FETCH_CREATE_ACCOUNT = 'FINISH_FETCH_CREATE_ACCOUNT';
+const CATCH_FETCH_CREATE_ACCOUNT = 'CATCH_FETCH_CREATE_ACCOUNT';
 
 export const INITIAL_STATE = {
 	accounts: undefined,
@@ -113,7 +113,7 @@ export const actions = {
 
 		yield {
 			payload: {},
-			type: CREATE_ACCOUNT_STARTED,
+			type: START_FETCH_CREATE_ACCOUNT,
 		};
 
 		try {
@@ -124,7 +124,7 @@ export const actions = {
 
 			yield {
 				payload: {},
-				type: CREATE_ACCOUNT_FINISHED,
+				type: FINISH_FETCH_CREATE_ACCOUNT,
 			};
 		} catch ( error ) {
 			return actions.receiveCreateAccountFailed( { accountName, error } );
@@ -167,7 +167,7 @@ export const actions = {
 	receiveCreateAccountFailed( { error } ) {
 		return {
 			payload: { error },
-			type: RECEIVE_CREATE_ACCOUNT_FAILED,
+			type: CATCH_FETCH_CREATE_ACCOUNT,
 		};
 	},
 };
@@ -221,13 +221,13 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case CREATE_ACCOUNT_FINISHED:
+		case FINISH_FETCH_CREATE_ACCOUNT:
 			return {
 				...state,
 				isCreatingAccount: false,
 			};
 
-		case RECEIVE_CREATE_ACCOUNT_FAILED:
+		case CATCH_FETCH_CREATE_ACCOUNT:
 			const { error } = payload;
 			return {
 				...state,
@@ -235,7 +235,7 @@ export const reducer = ( state, { type, payload } ) => {
 				isCreatingAccount: false,
 			};
 
-		case CREATE_ACCOUNT_STARTED: {
+		case START_FETCH_CREATE_ACCOUNT: {
 			return {
 				...state,
 				isCreatingAccount: true,
