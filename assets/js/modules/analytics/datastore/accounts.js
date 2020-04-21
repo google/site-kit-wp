@@ -151,7 +151,7 @@ export const actions = {
 		const { id } = accountTicket;
 		if ( id ) {
 			// Use `location.assign` so we can test this action in Jest.
-			location.assign( `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/?api.accountTicketId=${ id }` );
+			location.assign( `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/&api.accountTicketId=${ id }` );
 		}
 	},
 
