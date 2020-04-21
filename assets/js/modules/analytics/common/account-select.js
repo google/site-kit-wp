@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import ProgressBar from '../../../components/progress-bar';
 import { Select, Option } from '../../../material-components';
 import { STORE_NAME, ACCOUNT_CREATE } from '../datastore/constants';
 import { trackEvent } from '../../../util';
@@ -35,6 +36,8 @@ export default function AccountSelect() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const isFetchingAccounts = useSelect( ( select ) => select( STORE_NAME ).isFetchingAccounts() );
+	const isLoading = accounts === undefined || isFetchingAccounts;
 
 	const { selectAccount } = useDispatch( STORE_NAME );
 	const onChange = useCallback( ( index, item ) => {
@@ -44,6 +47,10 @@ export default function AccountSelect() {
 			trackEvent( 'analytics_setup', 'account_change', newAccountID );
 		}
 	}, [ accountID ] );
+
+	if ( isLoading ) {
+		return <ProgressBar small />;
+	}
 
 	return (
 		<Select
