@@ -163,7 +163,7 @@ export const controls = {
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case FETCH_EXISTING_TAG: {
+		case START_FETCH_EXISTING_TAG: {
 			return {
 				...state,
 				isFetchingExistingTag: true,
@@ -196,7 +196,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case FETCH_TAG_PERMISSION: {
+		case START_FETCH_TAG_PERMISSION: {
 			const { clientID } = payload;
 
 			return {
