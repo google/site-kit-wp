@@ -23,4 +23,4 @@ export { default as profiles } from './profiles';
 export { default as propertiesProfiles } from './properties-profiles';
 export { default as getTagPermissionsAccess } from './tag-permissions-access';
 export { default as getTagPermissionsNoAccess } from './tag-permissions-no-access';
-export { default as accountTicket } from './account-ticket';
+export { default as createAccount } from './create-account';

@@ -41,10 +41,10 @@ describe( 'modules/analytics accounts', () => {
 	let store;
 	let redirect;
 
-	const accountName = fixtures.accountTicket.account.name;
-	const propertyName = fixtures.accountTicket.webproperty.name;
-	const profileName = fixtures.accountTicket.profile.name;
-	const timezone = fixtures.accountTicket.profile.timezone;
+	const accountName = fixtures.createAccount.account.name;
+	const propertyName = fixtures.createAccount.webproperty.name;
+	const profileName = fixtures.createAccount.profile.name;
+	const timezone = fixtures.createAccount.profile.timezone;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -80,7 +80,7 @@ describe( 'modules/analytics accounts', () => {
 						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/
 					)
 					.mockResponse(
-						JSON.stringify( fixtures.accountTicket ),
+						JSON.stringify( fixtures.createAccount ),
 						{ status: 200 }
 					);
 
@@ -98,7 +98,7 @@ describe( 'modules/analytics accounts', () => {
 					{ accountName, propertyName, profileName, timezone }
 				);
 
-				expect( redirect ).toEqual( `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/&api.accountTicketId=${ fixtures.accountTicket.id }` );
+				expect( redirect ).toEqual( `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/&api.accountTicketId=${ fixtures.createAccount.id }` );
 			} );
 
 			it( 'sets isDoingCreateAccount ', async () => {
@@ -107,7 +107,7 @@ describe( 'modules/analytics accounts', () => {
 						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/
 					)
 					.mockResponse(
-						JSON.stringify( fixtures.accountTicket ),
+						JSON.stringify( fixtures.createAccount ),
 						{ status: 200 }
 					);
 
