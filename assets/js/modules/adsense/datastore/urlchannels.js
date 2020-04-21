@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -27,6 +28,7 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './index';
+import { parseAccountID } from '../util';
 
 // Actions
 const FETCH_URLCHANNELS = 'FETCH_URLCHANNELS';
@@ -41,41 +43,38 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
-	fetchURLChannels( accountID, clientID ) {
+	fetchURLChannels( clientID ) {
 		return {
-			payload: { accountID, clientID },
+			payload: { clientID },
 			type: FETCH_URLCHANNELS,
 		};
 	},
 
-	receiveURLChannels( { accountID, clientID, urlchannels } ) {
+	receiveURLChannels( { clientID, urlchannels } ) {
 		invariant( Array.isArray( urlchannels ), 'urlchannels must be an array.' );
-		invariant( accountID, 'accountID is required.' );
 		invariant( clientID, 'clientID is required.' );
 
 		return {
-			payload: { accountID, clientID, urlchannels },
+			payload: { clientID, urlchannels },
 			type: RECEIVE_URLCHANNELS,
 		};
 	},
 
-	receiveURLChannelsSucceeded( accountID, clientID ) {
-		invariant( accountID, 'accountID is required.' );
+	receiveURLChannelsSucceeded( clientID ) {
 		invariant( clientID, 'clientID is required.' );
 
 		return {
-			payload: { accountID, clientID },
+			payload: { clientID },
 			type: RECEIVE_URLCHANNELS_SUCCEEDED,
 		};
 	},
 
-	receiveURLChannelsFailed( { accountID, error, clientID } ) {
-		invariant( accountID, 'accountID is required.' );
+	receiveURLChannelsFailed( { error, clientID } ) {
 		invariant( error, 'error is required.' );
 		invariant( clientID, 'clientID is required.' );
 
 		return {
-			payload: { accountID, error, clientID },
+			payload: { error, clientID },
 			type: RECEIVE_URLCHANNELS_FAILED,
 		};
 	},
@@ -94,7 +93,19 @@ export const actions = {
 };
 
 export const controls = {
-	[ FETCH_URLCHANNELS ]: ( { payload: { accountID, clientID } } ) => {
+	[ FETCH_URLCHANNELS ]: ( { payload: { clientID } } ) => {
+		const accountID = parseAccountID( clientID );
+		if ( 'undefined' === typeof accountID ) {
+			// Mirror the API response that would happen for an invalid client ID.
+			return new Promise( () => {
+				throw {
+					code: 'invalid_param',
+					message: __( 'The clientID parameter is not a valid AdSense client ID.', 'google-site-kit' ),
+					data: { status: 400 },
+				};
+			} );
+		}
+
 		return API.get( 'modules', 'adsense', 'urlchannels', {
 			accountID,
 			clientID,
@@ -105,50 +116,50 @@ export const controls = {
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case FETCH_URLCHANNELS: {
-			const { accountID, clientID } = payload;
+			const { clientID } = payload;
 
 			return {
 				...state,
 				isFetchingURLChannels: {
 					...state.isFetchingURLChannels,
-					[ `${ accountID }::${ clientID }` ]: true,
+					[ clientID ]: true,
 				},
 			};
 		}
 
 		case RECEIVE_URLCHANNELS: {
-			const { accountID, clientID, urlchannels } = payload;
+			const { clientID, urlchannels } = payload;
 
 			return {
 				...state,
 				urlchannels: {
 					...state.urlchannels,
-					[ `${ accountID }::${ clientID }` ]: [ ...urlchannels ],
+					[ clientID ]: [ ...urlchannels ],
 				},
 			};
 		}
 
 		case RECEIVE_URLCHANNELS_SUCCEEDED: {
-			const { accountID, clientID } = payload;
+			const { clientID } = payload;
 
 			return {
 				...state,
 				isFetchingURLChannels: {
 					...state.isFetchingURLChannels,
-					[ `${ accountID }::${ clientID }` ]: false,
+					[ clientID ]: false,
 				},
 			};
 		}
 
 		case RECEIVE_URLCHANNELS_FAILED: {
-			const { accountID, error, clientID } = payload;
+			const { error, clientID } = payload;
 
 			return {
 				...state,
 				error,
 				isFetchingURLChannels: {
 					...state.isFetchingURLChannels,
-					[ `${ accountID }::${ clientID }` ]: false,
+					[ clientID ]: false,
 				},
 			};
 		}
@@ -167,15 +178,15 @@ export const reducer = ( state, { type, payload } ) => {
 };
 
 export const resolvers = {
-	*getURLChannels( accountID, clientID ) {
-		if ( 'undefined' === typeof accountID || 'undefined' === typeof clientID ) {
-			return undefined;
+	*getURLChannels( clientID ) {
+		if ( 'undefined' === typeof clientID ) {
+			return;
 		}
 
 		try {
 			const registry = yield Data.commonActions.getRegistry();
 
-			const existingURLChannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
+			const existingURLChannels = registry.select( STORE_NAME ).getURLChannels( clientID );
 
 			// If there are already URL channels loaded in state, consider it fulfilled
 			// and don't make an API request.
@@ -183,15 +194,15 @@ export const resolvers = {
 				return;
 			}
 
-			const urlchannels = yield actions.fetchURLChannels( accountID, clientID );
+			const urlchannels = yield actions.fetchURLChannels( clientID );
 
-			yield actions.receiveURLChannels( { accountID, clientID, urlchannels } );
+			yield actions.receiveURLChannels( { clientID, urlchannels } );
 
-			return actions.receiveURLChannelsSucceeded( accountID, clientID );
+			return actions.receiveURLChannelsSucceeded( clientID );
 		} catch ( error ) {
 			// TODO: Implement an error handler store or some kind of centralized
 			// place for error dispatch...
-			return actions.receiveURLChannelsFailed( { accountID, clientID, error } );
+			return actions.receiveURLChannelsFailed( { clientID, error } );
 		}
 	},
 };
@@ -202,19 +213,18 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state     Data store's state.
-	 * @param {string} accountID The AdSense Account ID to fetch URL channels for.
-	 * @param {string} clientID  The AdSense Client ID to fetch URL channels for.
+	 * @param {Object} state    Data store's state.
+	 * @param {string} clientID The AdSense Client ID to fetch URL channels for.
 	 * @return {?Array.<Object>} An array of AdSense URL channels; `undefined` if not loaded.
 	 */
-	getURLChannels( state, accountID, clientID ) {
-		if ( 'undefined' === typeof accountID || 'undefined' === typeof clientID ) {
+	getURLChannels( state, clientID ) {
+		if ( 'undefined' === typeof clientID ) {
 			return undefined;
 		}
 
 		const { urlchannels } = state;
 
-		return urlchannels[ `${ accountID }::${ clientID }` ];
+		return urlchannels[ clientID ];
 	},
 };
 
