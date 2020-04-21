@@ -32,6 +32,8 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
+import { getItem, setItem } from '../../../googlesitekit/api/cache';
+import { createCacheKey } from '../../../googlesitekit/api';
 
 describe( 'modules/analytics settings', () => {
 	let apiFetchSpy;
@@ -249,6 +251,27 @@ describe( 'modules/analytics settings', () => {
 				expect( fetch ).toHaveBeenCalled();
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
 				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
+			} );
+
+			it( 'invalidates Analytics API cache on success', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
+					)
+					.mockResponseOnce(
+						JSON.stringify( validSettings ),
+						{ status: 200 }
+					);
+
+				const cacheKey = createCacheKey( 'modules', 'analytics', 'arbitrary-datapoint' );
+				expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );
+				expect( ( await getItem( cacheKey ) ).value ).not.toBeFalsy();
+
+				await registry.dispatch( STORE_NAME ).submitChanges();
+
+				expect( ( await getItem( cacheKey ) ).value ).toBeFalsy();
 			} );
 		} );
 	} );

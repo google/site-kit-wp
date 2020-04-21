@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import {
 	isValidAccountID,
@@ -98,6 +99,8 @@ export const controls = {
 				return { error };
 			}
 		}
+
+		await API.invalidateCache( 'modules', 'analytics' );
 	} ),
 };
 
