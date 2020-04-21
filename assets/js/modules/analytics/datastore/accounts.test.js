@@ -41,10 +41,10 @@ describe( 'modules/analytics accounts', () => {
 	let store;
 	let redirect;
 
-	const accountName = 'Test Account';
-	const propertyName = 'Test Property';
-	const profileName = 'Test Profile';
-	const timezone = 'Test Timezone.';
+	const accountName = fixtures.accountTicket.account.name;
+	const propertyName = fixtures.accountTicket.webproperty.name;
+	const profileName = fixtures.accountTicket.profile.name;
+	const timezone = fixtures.accountTicket.profile.timezone;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
