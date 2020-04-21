@@ -38,6 +38,7 @@ export default function ProfileSelect() {
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 	const profiles = useSelect( ( select ) => select( STORE_NAME ).getProfiles( accountID, propertyID ) );
 	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const isLoadingAccounts = useSelect( ( select ) => select( STORE_NAME ).isFetchingAccounts() );
 	const isLoadingProperties = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProperties( accountID ) );
 	const isLoadingProfiles = useSelect( ( select ) => select( STORE_NAME ).isDoingGetProfiles( accountID, propertyID ) );
 
@@ -50,7 +51,7 @@ export default function ProfileSelect() {
 		}
 	}, [ profileID ] );
 
-	if ( isLoadingProperties || isLoadingProfiles ) {
+	if ( isLoadingAccounts || isLoadingProperties || isLoadingProfiles ) {
 		return <ProgressBar small />;
 	}
 
