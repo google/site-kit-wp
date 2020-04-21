@@ -31,9 +31,11 @@ import { isValidAccountID } from '../util';
 
 // Actions
 const FETCH_ALERTS = 'FETCH_ALERTS';
+const START_FETCH_ALERTS = 'START_FETCH_ALERTS';
+const FINISH_FETCH_ALERTS = 'FINISH_FETCH_ALERTS';
+const CATCH_FETCH_ALERTS = 'CATCH_FETCH_ALERTS';
+
 const RECEIVE_ALERTS = 'RECEIVE_ALERTS';
-const RECEIVE_ALERTS_SUCCEEDED = 'RECEIVE_ALERTS_SUCCEEDED';
-const RECEIVE_ALERTS_FAILED = 'RECEIVE_ALERTS_FAILED';
 const RESET_ALERTS = 'RESET_ALERTS';
 
 export const INITIAL_STATE = {
@@ -42,50 +44,47 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
-	fetchAlerts( accountID ) {
+	*fetchAlerts( accountID ) {
 		invariant( accountID, 'accountID is required.' );
 
-		return {
+		let response, error;
+
+		yield {
 			payload: { accountID },
-			type: FETCH_ALERTS,
+			type: START_FETCH_ALERTS,
 		};
+
+		try {
+			response = yield {
+				payload: { accountID },
+				type: FETCH_ALERTS,
+			};
+
+			yield actions.receiveAlerts( response, { accountID } );
+
+			yield {
+				payload: { accountID },
+				type: FINISH_FETCH_ALERTS,
+			};
+		} catch ( err ) {
+			error = err;
+
+			yield {
+				payload: { error, accountID },
+				type: CATCH_FETCH_ALERTS,
+			};
+		}
+
+		return { response, error };
 	},
 
-	/**
-	 * Adds alerts to the store.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Array} alerts Alerts to add.
-	 * @return {Object} Redux-style action.
-	 */
-	receiveAlerts( { accountID, alerts } ) {
+	receiveAlerts( alerts, { accountID } ) {
 		invariant( Array.isArray( alerts ), 'alerts must be an array.' );
 		invariant( accountID, 'accountID is required.' );
 
 		return {
 			payload: { accountID, alerts },
 			type: RECEIVE_ALERTS,
-		};
-	},
-
-	receiveAlertsSucceeded( accountID ) {
-		invariant( accountID, 'accountID is required.' );
-
-		return {
-			payload: { accountID },
-			type: RECEIVE_ALERTS_SUCCEEDED,
-		};
-	},
-
-	receiveAlertsFailed( { accountID, error } ) {
-		invariant( accountID, 'accountID is required.' );
-		invariant( error, 'error is required.' );
-
-		return {
-			payload: { accountID, error },
-			type: RECEIVE_ALERTS_FAILED,
 		};
 	},
 
@@ -104,13 +103,15 @@ export const actions = {
 
 export const controls = {
 	[ FETCH_ALERTS ]: ( { payload: { accountID } } ) => {
-		return API.get( 'modules', 'adsense', 'alerts', { accountID } );
+		return API.get( 'modules', 'adsense', 'alerts', { accountID }, {
+			useCache: false,
+		} );
 	},
 };
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case FETCH_ALERTS: {
+		case START_FETCH_ALERTS: {
 			const { accountID } = payload;
 
 			return {
@@ -134,7 +135,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_ALERTS_SUCCEEDED: {
+		case FINISH_FETCH_ALERTS: {
 			const { accountID } = payload;
 
 			return {
@@ -146,7 +147,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_ALERTS_FAILED: {
+		case CATCH_FETCH_ALERTS: {
 			const { accountID, error } = payload;
 
 			return {
@@ -175,28 +176,19 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {
 	*getAlerts( accountID ) {
 		if ( 'undefined' === typeof accountID || ! isValidAccountID( accountID ) ) {
-			return undefined;
+			return;
 		}
-		try {
-			const registry = yield Data.commonActions.getRegistry();
-			const existingAlerts = registry.select( STORE_NAME ).getAlerts( accountID );
 
-			// If there are already alerts loaded in state, consider it fulfilled
-			// and don't make an API request.
-			if ( existingAlerts ) {
-				return;
-			}
+		const registry = yield Data.commonActions.getRegistry();
+		const existingAlerts = registry.select( STORE_NAME ).getAlerts( accountID );
 
-			const alerts = yield actions.fetchAlerts( accountID );
-
-			yield actions.receiveAlerts( { accountID, alerts } );
-
-			return yield actions.receiveAlertsSucceeded( accountID );
-		} catch ( error ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveAlertsFailed( { accountID, error } );
+		// If there are already alerts loaded in state, consider it fulfilled
+		// and don't make an API request.
+		if ( existingAlerts ) {
+			return;
 		}
+
+		yield actions.fetchAlerts( accountID );
 	},
 };
 

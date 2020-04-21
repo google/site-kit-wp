@@ -31,9 +31,11 @@ import { stringifyObject } from '../../../util';
 
 // Actions
 const FETCH_REPORT = 'FETCH_REPORT';
+const START_FETCH_REPORT = 'START_FETCH_REPORT';
+const FINISH_FETCH_REPORT = 'FINISH_FETCH_REPORT';
+const CATCH_FETCH_REPORT = 'CATCH_FETCH_REPORT';
+
 const RECEIVE_REPORT = 'RECEIVE_REPORT';
-const RECEIVE_REPORT_SUCCEEDED = 'RECEIVE_REPORT_SUCCEEDED';
-const RECEIVE_REPORT_FAILED = 'RECEIVE_REPORT_FAILED';
 
 export const INITIAL_STATE = {
 	isFetchingReport: {},
@@ -41,41 +43,47 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
-	fetchReport( options ) {
+	*fetchReport( options ) {
 		invariant( 'object' === typeof options, 'options must be an object.' );
 
-		return {
+		let response, error;
+
+		yield {
 			payload: { options },
-			type: FETCH_REPORT,
+			type: START_FETCH_REPORT,
 		};
+
+		try {
+			response = yield {
+				payload: { options },
+				type: FETCH_REPORT,
+			};
+
+			yield actions.receiveReport( response, { options } );
+
+			yield {
+				payload: { options },
+				type: FINISH_FETCH_REPORT,
+			};
+		} catch ( err ) {
+			error = err;
+
+			yield {
+				payload: { error, options },
+				type: CATCH_FETCH_REPORT,
+			};
+		}
+
+		return { response, error };
 	},
 
-	receiveReport( { options, report } ) {
-		invariant( 'object' === typeof options, 'options must be an object.' );
+	receiveReport( report, { options } ) {
 		invariant( 'object' === typeof report, 'report must be an array.' );
+		invariant( 'object' === typeof options, 'options must be an object.' );
 
 		return {
 			payload: { options, report },
 			type: RECEIVE_REPORT,
-		};
-	},
-
-	receiveReportSucceeded( options ) {
-		invariant( 'object' === typeof options, 'options must be an object.' );
-
-		return {
-			payload: { options },
-			type: RECEIVE_REPORT_SUCCEEDED,
-		};
-	},
-
-	receiveReportFailed( { options, error } ) {
-		invariant( 'object' === typeof options, 'options must be an object.' );
-		invariant( error, 'error is required.' );
-
-		return {
-			payload: { options, error },
-			type: RECEIVE_REPORT_FAILED,
 		};
 	},
 };
@@ -112,7 +120,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_REPORT_SUCCEEDED: {
+		case FINISH_FETCH_REPORT: {
 			const { options } = payload;
 
 			return {
@@ -124,7 +132,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_REPORT_FAILED: {
+		case CATCH_FETCH_REPORT: {
 			const { options, error } = payload;
 
 			return {
@@ -154,17 +162,7 @@ export const resolvers = {
 			return;
 		}
 
-		try {
-			const report = yield actions.fetchReport( options );
-
-			yield actions.receiveReport( { options, report } );
-
-			return yield actions.receiveReportSucceeded( options );
-		} catch ( error ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveReportFailed( { options, error } );
-		}
+		yield actions.fetchReport( options );
 	},
 };
 

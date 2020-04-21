@@ -163,5 +163,127 @@ describe( 'modules/adsense tags', () => {
 				expect( permissionForTag ).toEqual( undefined );
 			} );
 		} );
+
+		describe( 'hasExistingTag', () => {
+			it( 'returns true if an existing tag exists', async () => {
+				registry.dispatch( STORE_NAME ).receiveExistingTag( 'ca-pub-12345678' );
+
+				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
+
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getExistingTag' )
+				);
+
+				expect( hasExistingTag ).toEqual( true );
+			} );
+
+			it( 'returns false if no existing tag exists', async () => {
+				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+
+				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
+
+				// Ensure the proper parameters were sent.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getExistingTag' )
+				);
+
+				expect( hasExistingTag ).toEqual( false );
+				expect( fetch ).not.toHaveBeenCalled();
+			} );
+
+			it( 'returns undefined if existing tag has not been loaded yet', async () => {
+				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
+
+				expect( hasExistingTag ).toEqual( undefined );
+
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getExistingTag' )
+				);
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+			} );
+		} );
+
+		describe( 'hasTagPermission', () => {
+			it( 'makes a request via the getTagPermission selector if no tag has been loaded ', async () => {
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/
+					)
+					.mockResponseOnce(
+						JSON.stringify( fixtures.tagPermissionAccess ),
+						{ status: 200 }
+					);
+
+				const { clientID } = fixtures.tagPermissionAccess;
+
+				registry.select( STORE_NAME ).hasTagPermission( clientID );
+
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getTagPermission( clientID ) !== undefined
+					),
+				);
+
+				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( clientID );
+
+				expect( hasPermission ).toEqual( true );
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+			} );
+
+			it( "returns true if this user has permission to access this client's tag", async () => {
+				const { accountID, permission, clientID } = fixtures.tagPermissionAccess;
+
+				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+					accountID,
+					clientID,
+					permission,
+				} );
+
+				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( clientID );
+
+				// Ensure the proper parameters were sent.
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getTagPermission( clientID ) !== undefined
+					),
+				);
+
+				expect( hasPermission ).toEqual( true );
+				expect( fetch ).not.toHaveBeenCalled();
+			} );
+
+			it( 'returns false if no existing tag exists', async () => {
+				const { accountID, permission, clientID } = fixtures.tagPermissionNoAccess;
+
+				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+					accountID,
+					clientID,
+					permission,
+				} );
+
+				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( clientID );
+
+				// Ensure the proper parameters were sent.
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getTagPermission( clientID ) !== undefined
+					),
+				);
+
+				expect( hasPermission ).toEqual( false );
+				expect( fetch ).not.toHaveBeenCalled();
+			} );
+
+			it( 'returns undefined if existing tag has not been loaded yet', async () => {
+				muteConsole( 'error' );
+				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( fixtures.tagPermissionNoAccess.clientID );
+
+				expect( hasPermission ).toEqual( undefined );
+			} );
+		} );
 	} );
 } );
