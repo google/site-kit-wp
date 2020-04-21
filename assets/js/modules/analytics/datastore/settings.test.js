@@ -86,6 +86,7 @@ describe( 'modules/analytics settings', () => {
 				const createdProperty = {
 					...fixtures.propertiesProfiles.properties[ 0 ],
 					id: 'UA-12345-1',
+					internalWebPropertyId: '123456789',
 				};
 
 				fetch
@@ -109,6 +110,7 @@ describe( 'modules/analytics settings', () => {
 				} );
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( createdProperty.id );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( createdProperty.internalWebPropertyId );
 			} );
 
 			it( 'handles an error if set while creating a property', async () => {
