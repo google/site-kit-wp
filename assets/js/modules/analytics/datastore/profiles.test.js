@@ -25,7 +25,7 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './index';
+import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	muteConsole,
@@ -108,7 +108,7 @@ describe( 'modules/analytics profiles', () => {
 						{ status: 200 }
 					);
 
-				registry.dispatch( STORE_NAME ).fetchCreateProfile( accountID, propertyID );
+				registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID );
 				expect( registry.select( STORE_NAME ).isDoingCreateProfile( accountID, propertyID ) ).toEqual( true );
 			} );
 
@@ -155,6 +155,7 @@ describe( 'modules/analytics profiles', () => {
 	describe( 'selectors', () => {
 		describe( 'getProfiles', () => {
 			it( 'uses a resolver to make a network request', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {} );
 				fetch
 					.doMockOnceIf(
 						/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/
@@ -192,6 +193,7 @@ describe( 'modules/analytics profiles', () => {
 			} );
 
 			it( 'does not make a network request if profiles for this account + property are already present', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {} );
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 
@@ -212,6 +214,7 @@ describe( 'modules/analytics profiles', () => {
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {} );
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -227,7 +230,7 @@ describe( 'modules/analytics profiles', () => {
 					);
 
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
-				const testPropertyID = fixtures.profiles[ 0 ].id;
+				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );

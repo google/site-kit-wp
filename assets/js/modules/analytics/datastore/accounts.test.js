@@ -25,7 +25,7 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './index';
+import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	muteConsole,
@@ -60,12 +60,56 @@ describe( 'modules/analytics accounts', () => {
 	} );
 
 	describe( 'actions', () => {
+		describe( 'resetAccounts', () => {
+			it( 'sets accounts and related values back to their initial values', () => {
+				registry.dispatch( STORE_NAME ).setSettings( {
+					accountID: '12345',
+					propertyID: 'UA-12345-1',
+					internalWebPropertyID: '23245',
+					profileID: '54321',
+					useSnippet: true,
+					trackingDisabled: [],
+					anonymizeIP: true,
+				} );
+				registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accountsPropertiesProfiles.accounts );
+				registry.dispatch( STORE_NAME ).receiveProperties( fixtures.accountsPropertiesProfiles.properties );
+				registry.dispatch( STORE_NAME ).receiveProfiles( fixtures.accountsPropertiesProfiles.profiles );
 
+				registry.dispatch( STORE_NAME ).resetAccounts();
+
+				expect( registry.select( STORE_NAME ).getAccountID() ).toStrictEqual( undefined );
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toStrictEqual( undefined );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toStrictEqual( undefined );
+				expect( registry.select( STORE_NAME ).getProfileID() ).toStrictEqual( undefined );
+				muteConsole( 'error' ); // getAccounts() will trigger a request again.
+				expect( registry.select( STORE_NAME ).getAccounts() ).toStrictEqual( undefined );
+				// Other settings are left untouched.
+				expect( registry.select( STORE_NAME ).getUseSnippet() ).toStrictEqual( true );
+				expect( registry.select( STORE_NAME ).getTrackingDisabled() ).toStrictEqual( [] );
+				expect( registry.select( STORE_NAME ).getAnonymizeIP() ).toStrictEqual( true );
+			} );
+
+			it( 'invalidates the resolver for getAccounts', async () => {
+				registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accountsPropertiesProfiles.accounts );
+				registry.select( STORE_NAME ).getAccounts();
+
+				await subscribeUntil(
+					registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getAccounts' )
+				);
+
+				registry.dispatch( STORE_NAME ).resetAccounts();
+
+				expect( registry.select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) ).toStrictEqual( false );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
 		describe( 'getAccounts', () => {
 			it( 'uses a resolver to make a network request', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {} );
+				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 				fetch
 					.doMockOnceIf(
 						/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
@@ -79,8 +123,7 @@ describe( 'modules/analytics accounts', () => {
 				const propertyID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 
 				const initialAccounts = registry.select( STORE_NAME ).getAccounts();
-				// The connection info will be its initial value while the connection
-				// info is fetched.
+
 				expect( initialAccounts ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
@@ -103,6 +146,7 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'does not make a network request if accounts are already present', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {} );
 				registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accountsPropertiesProfiles.accounts );
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
@@ -113,6 +157,21 @@ describe( 'modules/analytics accounts', () => {
 				);
 
 				expect( accounts ).toEqual( fixtures.accountsPropertiesProfiles.accounts );
+				expect( fetch ).not.toHaveBeenCalled();
+			} );
+
+			it( 'does not make a network request if accounts exist but are empty (this is a valid state)', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {} );
+				registry.dispatch( STORE_NAME ).receiveAccounts( [] );
+
+				const accounts = registry.select( STORE_NAME ).getAccounts();
+
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getAccounts' )
+				);
+
+				expect( accounts ).toEqual( [] );
 				expect( fetch ).not.toHaveBeenCalled();
 			} );
 
@@ -131,6 +190,8 @@ describe( 'modules/analytics accounts', () => {
 						{ status: 500 }
 					);
 
+				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+				registry.dispatch( STORE_NAME ).setSettings( {} );
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAccounts();
 				await subscribeUntil( registry,
@@ -143,6 +204,93 @@ describe( 'modules/analytics accounts', () => {
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
 				expect( accounts ).toEqual( undefined );
+			} );
+
+			it( 'passes existing tag ID when fetching accounts', async () => {
+				const existingPropertyID = 'UA-12345-1';
+
+				registry.dispatch( STORE_NAME ).receiveExistingTag( existingPropertyID );
+				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+					accountID: '12345',
+					propertyID: existingPropertyID,
+					permission: true,
+				} );
+				registry.dispatch( STORE_NAME ).setSettings( {} );
+
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
+					)
+					.mockResponseOnce(
+						JSON.stringify( fixtures.accountsPropertiesProfiles ),
+						{ status: 200 }
+					);
+
+				registry.select( STORE_NAME ).getAccounts();
+
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).getAccounts() !== undefined ||
+					registry.select( STORE_NAME ).getError()
+				);
+
+				// Ensure the proper parameters were sent.
+				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
+					{
+						existingPropertyID,
+					}
+				);
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+			} );
+
+			it( 'sets account, property, and profile IDs in the store, if a matchedProperty is received and an account is not selected yet', async () => {
+				const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
+				const matchedProfile = {
+					...fixtures.profiles[ 0 ],
+					id: '123456',
+					webPropertyId: matchedProperty.id,
+					accountId: matchedProperty.accountId,
+				};
+				const response = {
+					accounts,
+					properties,
+					profiles: [
+						matchedProfile,
+						...profiles,
+					],
+					matchedProperty,
+				};
+
+				registry.dispatch( STORE_NAME ).setSettings( {} );
+				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
+					)
+					.mockResponseOnce(
+						JSON.stringify( response ),
+						{ status: 200 }
+					);
+
+				expect( store.getState().matchedProperty ).toBeFalsy();
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBeFalsy();
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBeFalsy();
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBeFalsy();
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBeFalsy();
+
+				registry.select( STORE_NAME ).getAccounts();
+
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getAccounts() !== undefined
+					),
+				);
+
+				expect( store.getState().matchedProperty ).toMatchObject( matchedProperty );
+				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( matchedProperty.accountId );
+				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( matchedProperty.id );
+				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( matchedProperty.internalWebPropertyId );
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( matchedProfile.id );
 			} );
 		} );
 	} );

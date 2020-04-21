@@ -25,7 +25,7 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './index';
+import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	muteConsole,
@@ -79,11 +79,8 @@ describe( 'modules/analytics properties', () => {
 					{ accountID }
 				);
 
-				muteConsole( 'error' );
 				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getProperties( accountID )
-					),
+					() => registry.select( STORE_NAME ).isDoingCreateProperty( accountID ) === false
 				);
 
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
@@ -93,7 +90,7 @@ describe( 'modules/analytics properties', () => {
 			it( 'sets isDoingCreateProperty ', async () => {
 				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 
-				registry.dispatch( STORE_NAME ).fetchCreateProperty( accountID );
+				registry.dispatch( STORE_NAME ).createProperty( accountID );
 				expect( registry.select( STORE_NAME ).isDoingCreateProperty( accountID ) ).toEqual( true );
 			} );
 
@@ -149,7 +146,7 @@ describe( 'modules/analytics properties', () => {
 
 				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const propertyID = fixtures.propertiesProfiles.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
-
+				registry.dispatch( STORE_NAME ).setSettings( {} );
 				const initialProperties = registry.select( STORE_NAME ).getProperties( accountID );
 
 				// Ensure the proper parameters were passed.
@@ -191,12 +188,18 @@ describe( 'modules/analytics properties', () => {
 					.hasFinishedResolution( 'getProperties', [ testAccountID ] )
 				);
 
-				expect( fetch ).not.toHaveBeenCalled();
+				// It _may_ make a request for profiles internally if not loaded,
+				// so we only care that it did not fetch properties here.
+				expect( fetch ).not.toHaveBeenCalledWith(
+					expect.stringContaining( '/google-site-kit/v1/modules/analytics/data/properties-profiles?' ),
+					expect.any( Object )
+				);
 				expect( properties ).toEqual( fixtures.propertiesProfiles.properties );
 				expect( properties ).toHaveLength( 17 );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( {} );
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
@@ -224,6 +227,27 @@ describe( 'modules/analytics properties', () => {
 
 				const properties = registry.select( STORE_NAME ).getProperties( fakeAccountID );
 				expect( properties ).toEqual( undefined );
+			} );
+		} );
+		describe( 'getPropertyByID', () => {
+			it( 'returns the property object by its ID when present in the store', () => {
+				const { properties } = fixtures.propertiesProfiles;
+				registry.dispatch( STORE_NAME ).receiveProperties( properties );
+
+				const findProperty = properties[ 1 ];
+				const foundProperty = registry.select( STORE_NAME ).getPropertyByID( findProperty.id );
+
+				expect( foundProperty ).toEqual( findProperty );
+			} );
+
+			it( 'returns undefined when the property is not present in the store', () => {
+				const { properties } = fixtures.propertiesProfiles;
+				registry.dispatch( STORE_NAME ).receiveProperties( [] );
+
+				const findProperty = properties[ 1 ];
+				const foundProperty = registry.select( STORE_NAME ).getPropertyByID( findProperty.id );
+
+				expect( foundProperty ).toEqual( undefined );
 			} );
 		} );
 	} );

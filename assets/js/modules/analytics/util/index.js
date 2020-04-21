@@ -31,6 +31,9 @@ import { __ } from '@wordpress/i18n';
  */
 import { changeToPercent, getModulesData } from '../../../util';
 
+export { default as parsePropertyID } from './parse-property-id';
+export * from './validation';
+
 export const extractAnalyticsDataForTrafficChart = ( reports ) => {
 	if ( ! reports || ! reports.length ) {
 		return null;

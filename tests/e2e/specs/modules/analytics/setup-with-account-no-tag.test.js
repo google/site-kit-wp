@@ -120,16 +120,14 @@ describe( 'setting up the Analytics module with an existing account and no exist
 
 		await proceedToSetUpAnalytics();
 
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /select one\.\.\./i } );
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /select an account/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-account .mdc-select__selected-text', { text: '' } );
+		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-property .mdc-select__selected-text', { text: '' } );
+		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-profile .mdc-select__selected-text', { text: '' } );
 		await expect( page ).toMatchElement( 'button[disabled]', { text: /configure analytics/i } );
 
 		// Select Test Account A
-		await expect( page ).toClick( '.mdc-select', { text: /select one\.\.\./i } );
-		await Promise.all( [
-			expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test account a/i } ),
-			page.waitForResponse( ( res ) => res.url().match( 'modules/analytics/data' ) ),
-		] );
+		await expect( page ).toClick( '.googlesitekit-analytics__select-account .mdc-select__selected-text' );
+		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test account a/i } );
 
 		// See the selects populate
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test account a/i } );
@@ -137,16 +135,12 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /test profile x/i } );
 
 		await expect( page ).toClick( '.mdc-select', { text: /test property x/i } );
-		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /setup a new property/i } );
+		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /set up a new property/i } );
 
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /setup a new property/i } );
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /setup a new profile/i } );
+		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new property/i } );
+		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new profile/i } );
 
-		await page.waitFor( 500 );
-		await expect( page ).toClick( 'button', { text: /configure analytics/i } );
-
-		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
-		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
+		// Intentionally does not submit to trigger property & profile creation requests.
 	} );
 
 	it( 'includes an option to setup a new account', async () => {
@@ -170,8 +164,8 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		] );
 
 		// Dropdowns are revealed and reset on refetch.
-		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-account .mdc-select__selected-text', { text: /select one.../i } );
-		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-property .mdc-select__selected-text', { text: /select an account/i } );
-		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-profile .mdc-select__selected-text', { text: /select an account/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-account .mdc-select__selected-text', { text: '' } );
+		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-property .mdc-select__selected-text', { text: '' } );
+		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-profile .mdc-select__selected-text', { text: '' } );
 	} );
 } );
