@@ -105,10 +105,6 @@ export const actions = {
 
 		try {
 			const accountTicket = yield actions.fetchCreateAccount( { accountName, propertyName, profileName, timezone } );
-			yield {
-				payload: {},
-				type: CREATE_ACCOUNT_FINISHED,
-			};
 
 			return actions.receiveCreateAccount( { accountTicket } );
 		} catch ( error ) {
@@ -124,10 +120,17 @@ export const actions = {
 			type: CREATE_ACCOUNT_STARTED,
 		};
 
-		return {
+		const response = yield {
 			payload: { accountName, propertyName, profileName, timezone },
 			type: FETCH_CREATE_ACCOUNT,
 		};
+
+		yield {
+			payload: {},
+			type: CREATE_ACCOUNT_FINISHED,
+		};
+
+		return response;
 	},
 
 	/**
