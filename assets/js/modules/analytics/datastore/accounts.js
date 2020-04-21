@@ -147,6 +147,7 @@ export const actions = {
 		// Once we have an account ticket, redirect the user to accept the Terms of Service.
 		const { id } = accountTicket;
 		if ( id ) {
+			// Use `location.assign` so we can test this action in Jest.
 			location.assign( `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/?api.accountTicketId=${ id }` );
 		}
 	},
