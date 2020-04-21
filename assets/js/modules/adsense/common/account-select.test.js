@@ -25,7 +25,7 @@ import apiFetchMock from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import AccountSelect from './account-select';
-import { fireEvent, render } from '../../../../../tests/js/test-utils';
+import { fireEvent, muteConsole, render } from '../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../datastore/constants';
 import * as fixtures from '../datastore/__fixtures__';
 
@@ -41,6 +41,10 @@ const setupRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accountsMultiple );
 };
 
+const setupLoadingRegistry = ( registry ) => {
+	registry.dispatch( STORE_NAME ).setSettings( {} );
+};
+
 describe( 'AccountSelect', () => {
 	afterEach( () => apiFetchMock.mockClear() );
 	afterAll( () => jest.restoreAllMocks() );
@@ -51,6 +55,17 @@ describe( 'AccountSelect', () => {
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( fixtures.accountsMultiple.length );
 		expect( apiFetchMock ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should render a loading state when accounts are undefined', async () => {
+		muteConsole( 'warn' );
+		const { queryAllByRole, queryByRole } = render( <AccountSelect />, { setupRegistry: setupLoadingRegistry } );
+
+		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
+		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
+
+		// If accounts are `undefined`, we'll make a request to fetch them.
+		expect( apiFetchMock ).toHaveBeenCalled();
 	} );
 
 	it( 'should update accountID in the store when a new item is clicked', async () => {
