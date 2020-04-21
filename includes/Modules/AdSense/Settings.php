@@ -61,6 +61,7 @@ class Settings extends Module_Settings {
 					$option['accountID'] = $account_id;
 				}
 
+				// Migration of legacy setting.
 				if ( ! empty( $option['setupComplete'] ) ) {
 					$option['accountSetupComplete'] = $option['setupComplete'];
 					$option['siteSetupComplete']    = $option['setupComplete'];
