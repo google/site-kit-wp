@@ -40,6 +40,10 @@ export default function UseSnippetSwitch() {
 		trackEvent( 'analytics_setup', useSnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled' );
 	}, [ useSnippet ] );
 
+	if ( useSnippet === undefined ) {
+		return null;
+	}
+
 	return (
 		<div className="googlesitekit-analytics-usesnippet">
 			<Switch
