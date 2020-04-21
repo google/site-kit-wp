@@ -1,5 +1,5 @@
 /**
- * Constants related to even tracking.
+ * Constants related to event tracking.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *

@@ -26,7 +26,6 @@ import {
 	get,
 	unescape,
 } from 'lodash';
-import React from 'react';
 
 /**
  * WordPress dependencies
