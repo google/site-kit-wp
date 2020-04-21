@@ -53,12 +53,8 @@ describe( 'modules/analytics accounts', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
-
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
-
-		/* eslint-disable no-restricted-globals */
-		windowLocationSpy = jest.spyOn( window.location, 'assign' );
-		/* eslint-enable no-restricted-globals */
+		windowLocationSpy = jest.spyOn( location, 'assign' );
 
 		windowLocationSpy.mockImplementation( ( location ) => {
 			redirect = location;
