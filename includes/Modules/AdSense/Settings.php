@@ -61,7 +61,7 @@ class Settings extends Module_Settings {
 					$option['accountID'] = $account_id;
 				}
 
-				if ( $option['setupComplete'] ) {
+				if ( ! empty( $option['setupComplete'] ) ) {
 					$option['accountSetupComplete'] = $option['setupComplete'];
 					$option['siteSetupComplete']    = $option['setupComplete'];
 				}
