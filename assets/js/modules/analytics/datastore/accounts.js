@@ -134,9 +134,7 @@ export const actions = {
 	},
 
 	/**
-	 * Adds a account ticket to process.
-	 *
-	 * Adds the newly-created account ticket to the data store.
+	 * Adds an account ticket to process.
 	 *
 	 * @since n.e.x.t
 	 * @private
