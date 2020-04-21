@@ -31,8 +31,12 @@ import clients from './clients';
 import report from './report';
 import tags from './tags';
 import urlchannels from './urlchannels';
+import settings from './settings';
+import { STORE_NAME } from './constants';
+export { STORE_NAME };
 
 const baseModuleStore = Modules.createModuleStore( 'adsense', {
+	storeName: STORE_NAME,
 	settingSlugs: [
 		'accountID',
 		'clientID',
@@ -44,8 +48,6 @@ const baseModuleStore = Modules.createModuleStore( 'adsense', {
 	],
 } );
 
-export const STORE_NAME = baseModuleStore.STORE_NAME;
-
 export const INITIAL_STATE = Data.collectState(
 	baseModuleStore.INITIAL_STATE,
 	accounts.INITIAL_STATE,
@@ -54,6 +56,7 @@ export const INITIAL_STATE = Data.collectState(
 	report.INITIAL_STATE,
 	tags.INITIAL_STATE,
 	urlchannels.INITIAL_STATE,
+	settings.INITIAL_STATE,
 );
 
 export const actions = Data.addInitializeAction( Data.collectActions(
@@ -64,6 +67,7 @@ export const actions = Data.addInitializeAction( Data.collectActions(
 	report.actions,
 	tags.actions,
 	urlchannels.actions,
+	settings.actions,
 ) );
 
 export const controls = Data.collectControls(
@@ -74,6 +78,7 @@ export const controls = Data.collectControls(
 	report.controls,
 	tags.controls,
 	urlchannels.controls,
+	settings.controls,
 );
 
 export const reducer = Data.addInitializeReducer(
@@ -86,6 +91,7 @@ export const reducer = Data.addInitializeReducer(
 		report.reducer,
 		tags.reducer,
 		urlchannels.reducer,
+		settings.reducer,
 	)
 );
 
@@ -97,6 +103,7 @@ export const resolvers = Data.collectResolvers(
 	report.resolvers,
 	tags.resolvers,
 	urlchannels.resolvers,
+	settings.resolvers,
 );
 
 export const selectors = Data.collectSelectors(
@@ -107,6 +114,7 @@ export const selectors = Data.collectSelectors(
 	report.selectors,
 	tags.selectors,
 	urlchannels.selectors,
+	settings.selectors,
 	{
 		// TODO: Revisit better way to handle and retrieve errors.
 		getError( state ) {
