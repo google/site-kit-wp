@@ -36,7 +36,7 @@ import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics accounts', () => {
 	let apiFetchSpy;
-	let windowLocationSpy;
+	let locationAssignSpy;
 	let registry;
 	let store;
 	let redirect;
@@ -54,9 +54,9 @@ describe( 'modules/analytics accounts', () => {
 		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
-		windowLocationSpy = jest.spyOn( location, 'assign' );
+		locationAssignSpy = jest.spyOn( location, 'assign' );
 
-		windowLocationSpy.mockImplementation( ( location ) => {
+		locationAssignSpy.mockImplementation( ( location ) => {
 			redirect = location;
 		} );
 		redirect = '';
@@ -69,7 +69,7 @@ describe( 'modules/analytics accounts', () => {
 	afterEach( () => {
 		unsubscribeFromAll( registry );
 		apiFetchSpy.mockRestore();
-		windowLocationSpy.mockRestore();
+		locationAssignSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
