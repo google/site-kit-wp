@@ -210,23 +210,12 @@ export const resolvers = {
 		if ( ! existingAccounts ) {
 			yield tagActions.waitForExistingTag();
 			const existingTag = registry.select( STORE_NAME ).getExistingTag();
-			const { response, error } = yield actions.fetchAccountsPropertiesProfiles( {
+			const { response } = yield actions.fetchAccountsPropertiesProfiles( {
 				existingPropertyID: existingTag,
 			} );
 
 			if ( response ) {
 				( { matchedProperty } = response );
-			} else if ( error ) {
-				/**
-				 * Not the best check here, but this message comes from the Google API.
-				 * err.data.reason is also 'insufficientPermissions' but that isn't as clear,
-				 * and may not be "no accounts".
-				 *
-				 * @see {@link https://github.com/google/site-kit-wp/issues/1368}
-				 */
-				if ( error.message && error.message === 'User does not have any Google Analytics account.' ) {
-					yield actions.receiveAccounts( [] );
-				}
 			}
 		}
 
