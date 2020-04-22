@@ -31,6 +31,11 @@ import { STORE_NAME } from './constants';
 const { createRegistrySelector } = Data;
 
 // Actions
+const START_FETCH_SET_MODULE_STATUS = 'START_FETCH_SET_MODULE_STATUS';
+const FETCH_SET_MODULE_STATUS = 'FETCH_SET_MODULE_STATUS';
+const FINISH_FETCH_SET_MODULE_STATUS = 'FINISH_FETCH_SET_MODULE_STATUS';
+const CATCH_FETCH_SET_MODULE_STATUS = 'CATCH_FETCH_SET_MODULE_STATUS';
+const RECEIVE_SET_MODULE_STATUS = 'RECEIVE_SET_MODULE_STATUS';
 const START_FETCH_MODULES = 'START_FETCH_MODULES';
 const FETCH_MODULES = 'FETCH_MODULES';
 const FINISH_FETCH_MODULES = 'FINISH_FETCH_MODULES';
@@ -39,10 +44,91 @@ const RECEIVE_MODULES = 'RECEIVE_MODULES';
 
 export const INITIAL_STATE = {
 	modules: undefined,
+	isFetchingSetModuleStatus: {},
 	isFetchingModules: false,
 };
 
 export const actions = {
+	/**
+	 * Activate a module on the server.
+	 *
+	 * Activate a module (based on the slug provided).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  {string} slug Slug of the module to activate.
+	 * @return {Object}      Object with {response, error}
+	 */
+	*activateModule( slug ) {
+		const { response, error } = yield actions.setModuleStatus( slug, true );
+		return { response, error };
+	},
+
+	/**
+	 * Dectivate a module on the server.
+	 *
+	 * Dectivate a module (based on the slug provided).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  {string} slug Slug of the module to activate.
+	 * @return {Object}      Object with {response, error}
+	 */
+	*deactivateModule( slug ) {
+		const { response, error } = yield actions.setModuleStatus( slug, false );
+		return { response, error };
+	},
+
+	/**
+	 * (De)activate a module on the server.
+	 *
+	 * POSTs to the `core/modules/activation` endpoint to set the `active` status
+	 * supplied for the give `slug`.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param  {string}  slug   Slug of the module to activate/deactivate.
+	 * @param  {boolean} active `true` to activate; `false` to deactivate.
+	 * @return {Object}         Object with {response, error}
+	 */
+	*setModuleStatus( slug, active ) {
+		invariant( slug, 'slug is required.' );
+		invariant( active !== undefined, 'active is required.' );
+
+		let response, error;
+
+		yield {
+			payload: { active, slug },
+			type: START_FETCH_SET_MODULE_STATUS,
+		};
+
+		try {
+			response = yield {
+				payload: { active, slug },
+				type: FETCH_SET_MODULE_STATUS,
+			};
+
+			if ( response.success === true ) {
+				// Fetch (or re-fetch) all modules, with their updated status.
+				yield actions.fetchModules();
+			}
+
+			yield {
+				payload: { active, slug },
+				type: FINISH_FETCH_SET_MODULE_STATUS,
+			};
+		} catch ( e ) {
+			error = e;
+			yield {
+				payload: { active, slug, error },
+				type: CATCH_FETCH_SET_MODULE_STATUS,
+			};
+		}
+
+		return { response, error };
+	},
+
 	/**
 	 * Dispatches an action that creates an HTTP request.
 	 *
@@ -85,6 +171,26 @@ export const actions = {
 	},
 
 	/**
+	 * Receive the API respond for module (de)activation.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param  {string}  slug    Name of slug to activate/deactivate.
+	 * @param  {boolean} active  `true` to activate; `false` to deactivate.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveSetModuleStatus( slug, active ) {
+		invariant( slug, 'slug is required.' );
+		invariant( active, 'active is required.' );
+
+		return {
+			payload: { active, slug },
+			type: RECEIVE_SET_MODULE_STATUS,
+		};
+	},
+
+	/**
 	 * Stores modules received from the REST API.
 	 *
 	 * @since 1.5.0
@@ -104,13 +210,53 @@ export const actions = {
 };
 
 export const controls = {
+	[ FETCH_SET_MODULE_STATUS ]: ( { payload: { active, slug } } ) => {
+		return API.set( 'core', 'modules', 'activation', { active, slug } );
+	},
 	[ FETCH_MODULES ]: () => {
-		return API.get( 'core', 'modules', 'list' );
+		return API.get( 'core', 'modules', 'list', null, { useCache: false } );
 	},
 };
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
+		case START_FETCH_SET_MODULE_STATUS: {
+			const { slug } = payload;
+
+			return {
+				...state,
+				isFetchingSetModuleStatus: {
+					...state.isFetchingSetModuleStatus,
+					[ slug ]: true,
+				},
+			};
+		}
+
+		case FINISH_FETCH_SET_MODULE_STATUS: {
+			const { slug } = payload;
+
+			return {
+				...state,
+				isFetchingSetModuleStatus: {
+					...state.isFetchingSetModuleStatus,
+					[ slug ]: false,
+				},
+			};
+		}
+
+		case CATCH_FETCH_SET_MODULE_STATUS: {
+			const { slug } = payload;
+
+			return {
+				...state,
+				error: payload.error,
+				isFetchingSetModuleStatus: {
+					...state.isFetchingSetModuleStatus,
+					[ slug ]: false,
+				},
+			};
+		}
+
 		case START_FETCH_MODULES: {
 			return {
 				...state,
@@ -209,6 +355,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
 	 * @return {Object|undefined} A specific module object.
 	 */
 	getModule: createRegistrySelector( ( select ) => ( state, slug ) => {
@@ -227,17 +374,31 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
 	 * @return {Object|undefined} A specific module object.
 	 */
 	isModuleActive: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const module = select( STORE_NAME ).getModule( slug );
-
-		if ( typeof module === 'undefined' ) {
-			return undefined;
-		}
+		const module = select( STORE_NAME ).getModule( slug ) || {};
 
 		return module.active;
 	} ),
+
+	/**
+	 * Check if a module's status is changing.
+	 *
+	 * Returns `true` if the module exists and is changing its `active` flag.
+	 * Returns `false` if the module exists but is not changing its `active` flag.
+	 * Returns `undefined` if state is still loading or if no module with that slug exists.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {boolean|undefined} Activation change status.
+	 */
+	isChangingModuleActivation: ( state, slug ) => {
+		return state.isFetchingSetModuleStatus[ slug ];
+	},
 };
 
 export default {
