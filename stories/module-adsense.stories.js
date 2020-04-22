@@ -21,6 +21,7 @@ import { googlesitekit as adSenseData } from '../.storybook/data/wp-admin-admin.
 import {
 	AccountSelect,
 	UseSnippetSwitch,
+	AdBlockerWarning,
 } from '../assets/js/modules/adsense/common';
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
@@ -100,6 +101,21 @@ storiesOf( 'AdSense Module', module )
 				<SetupWrap>
 					<div className="googlesitekit-setup-module__inputs">
 						<UseSnippetSwitch />
+					</div>
+				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'AdBlocker Warning', () => {
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveIsAdBlockerActive( true );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<div className="googlesitekit-setup-module__inputs">
+						<AdBlockerWarning />
 					</div>
 				</SetupWrap>
 			</WithTestRegistry>
