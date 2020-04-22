@@ -25,31 +25,31 @@ import { render } from '../../../tests/js/test-utils';
 describe( 'DisplaySetting', () => {
 	it( 'returns non-empty string unchanged', () => {
 		const { container } = render( <DisplaySetting value="Test Value" /> );
-		expect( container.textContent ).toBe( 'Test Value' );
+		expect( container ).toHaveTextContent( 'Test Value' );
 	} );
 
 	it( 'returns unicode value for &nbsp; if no value prop provided', () => {
 		const { container } = render( <DisplaySetting /> );
-		expect( container.textContent ).toBe( '\u00A0' );
+		expect( container.textContent ).toBe( '\u00A0' ); // Use toBe() matcher instead of toHaveTextContent() to preserve &nbsp;
 	} );
 
 	it( 'returns unicode value for &nbsp; if value prop is undefined', () => {
 		const { container } = render( <DisplaySetting value={ undefined } /> );
-		expect( container.textContent ).toBe( '\u00A0' );
+		expect( container.textContent ).toBe( '\u00A0' ); // Use toBe() matcher instead of toHaveTextContent() to preserve &nbsp;
 	} );
 
 	it( 'returns unicode value for &nbsp; if value prop is null', () => {
 		const { container } = render( <DisplaySetting value={ null } /> );
-		expect( container.textContent ).toBe( '\u00A0' );
+		expect( container.textContent ).toBe( '\u00A0' ); // Use toBe() matcher instead of toHaveTextContent() to preserve &nbsp;
 	} );
 
 	it( 'returns unicode value for &nbsp; if value prop is false', () => {
 		const { container } = render( <DisplaySetting value={ false } /> );
-		expect( container.textContent ).toBe( '\u00A0' );
+		expect( container.textContent ).toBe( '\u00A0' ); // Use toBe() matcher instead of toHaveTextContent() to preserve &nbsp;
 	} );
 
 	it( 'returns unicode value for &nbsp; if value prop is empty string', () => {
 		const { container } = render( <DisplaySetting value={ '' } /> );
-		expect( container.textContent ).toBe( '\u00A0' );
+		expect( container.textContent ).toBe( '\u00A0' ); // Use toBe() matcher instead of toHaveTextContent() to preserve &nbsp;
 	} );
 } );
