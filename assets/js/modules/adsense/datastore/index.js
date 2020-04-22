@@ -32,6 +32,7 @@ import report from './report';
 import tags from './tags';
 import urlchannels from './urlchannels';
 import settings from './settings';
+import adblocker from './adblocker';
 import { STORE_NAME } from './constants';
 export { STORE_NAME };
 
@@ -57,6 +58,7 @@ export const INITIAL_STATE = Data.collectState(
 	tags.INITIAL_STATE,
 	urlchannels.INITIAL_STATE,
 	settings.INITIAL_STATE,
+	adblocker.INITIAL_STATE,
 );
 
 export const actions = Data.addInitializeAction( Data.collectActions(
@@ -68,6 +70,7 @@ export const actions = Data.addInitializeAction( Data.collectActions(
 	tags.actions,
 	urlchannels.actions,
 	settings.actions,
+	adblocker.actions,
 ) );
 
 export const controls = Data.collectControls(
@@ -79,6 +82,7 @@ export const controls = Data.collectControls(
 	tags.controls,
 	urlchannels.controls,
 	settings.controls,
+	adblocker.controls,
 );
 
 export const reducer = Data.addInitializeReducer(
@@ -92,6 +96,7 @@ export const reducer = Data.addInitializeReducer(
 		tags.reducer,
 		urlchannels.reducer,
 		settings.reducer,
+		adblocker.reducer,
 	)
 );
 
@@ -104,6 +109,7 @@ export const resolvers = Data.collectResolvers(
 	tags.resolvers,
 	urlchannels.resolvers,
 	settings.resolvers,
+	adblocker.resolvers,
 );
 
 export const selectors = Data.collectSelectors(
@@ -115,6 +121,7 @@ export const selectors = Data.collectSelectors(
 	tags.selectors,
 	urlchannels.selectors,
 	settings.selectors,
+	adblocker.selectors,
 	{
 		// TODO: Revisit better way to handle and retrieve errors.
 		getError( state ) {
