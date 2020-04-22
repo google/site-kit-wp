@@ -12,6 +12,8 @@ npm-debug.log
 /dist
 /languages
 google-site-kit*.zip
+package.json
+package-lock.json
 
 # Editors
 *.esproj
