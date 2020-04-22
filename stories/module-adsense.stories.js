@@ -18,8 +18,93 @@ import AdSenseEstimateEarningsWidget
 import AdSensePerformanceWidget from '../assets/js/modules/adsense/dashboard/dashboard-widget-performance';
 import AdSenseDashboardOutro from '../assets/js/modules/adsense/dashboard/dashboard-outro';
 import { googlesitekit as adSenseData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-adsense-googlesitekit';
+import {
+	AccountSelect,
+	UseSnippetSwitch,
+} from '../assets/js/modules/adsense/common';
+import { WithTestRegistry } from '../tests/js/utils';
+import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
+import { STORE_NAME } from '../assets/js/modules/adsense/datastore';
+
+function SetupWrap( { children } ) {
+	return (
+		<div className="googlesitekit-setup">
+			<section className="googlesitekit-setup__wrapper">
+				<div className="googlesitekit-setup-module">
+					{ children }
+				</div>
+			</section>
+		</div>
+	);
+}
 
 storiesOf( 'AdSense Module', module )
+	.add( 'Account Select, none selected', () => {
+		const accounts = fixtures.accountsMultiple;
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveAccounts( accounts );
+			dispatch( STORE_NAME ).receiveSettings( {} );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<div className="googlesitekit-setup-module__inputs">
+						<AccountSelect />
+					</div>
+				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Account Select, selected', () => {
+		const accounts = fixtures.accountsMultiple;
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveAccounts( accounts );
+			dispatch( STORE_NAME ).receiveSettings( {
+				accountID: accounts[ 0 ].id,
+			} );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<div className="googlesitekit-setup-module__inputs">
+						<AccountSelect />
+					</div>
+				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Use Snippet Switch, toggled on (default)', () => {
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setUseSnippet( true );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<div className="googlesitekit-setup-module__inputs">
+						<UseSnippetSwitch />
+					</div>
+				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Use Snippet Switch, toggled off', () => {
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setUseSnippet( false );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<div className="googlesitekit-setup-module__inputs">
+						<UseSnippetSwitch />
+					</div>
+				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
 	.add( 'Estimate Earnings', () => {
 		global.googlesitekit = adSenseData;
 
