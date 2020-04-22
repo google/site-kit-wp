@@ -64,7 +64,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	/**
 	 * Internal flag set after print_gtm_no_js invoked for the first time.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.1
 	 * @var bool
 	 */
 	private $did_gtm_no_js;
