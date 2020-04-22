@@ -69,8 +69,7 @@ describe( 'AccountSelect', () => {
 	} );
 
 	it( 'should update accountID in the store when a new item is clicked', async () => {
-		const tt = render( <AccountSelect />, { setupRegistry } );
-		const { getByText, container, registry } = tt;
+		const { getByText, container, registry } = render( <AccountSelect />, { setupRegistry } );
 		const originalAccountID = registry.select( STORE_NAME ).getAccountID();
 		const selectedAccount = fixtures.accountsMultiple[ 0 ];
 
