@@ -359,8 +359,20 @@ export const selectors = {
 	 * @return {Object|undefined} A specific module object.
 	 */
 	getModule: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const modules = select( STORE_NAME ).getModules() || {};
+		const modules = select( STORE_NAME ).getModules();
 
+		// Return `undefined` if modules haven't been loaded yet.
+		if ( modules === undefined ) {
+			return undefined;
+		}
+
+		// A module with this slug couldn't be found; return `null` to signify the
+		// "not found" state.
+		if ( modules[ slug ] === undefined ) {
+			return null;
+		}
+
+		// This module exists, so let's return it.
 		return modules[ slug ];
 	} ),
 
@@ -378,7 +390,18 @@ export const selectors = {
 	 * @return {Object|undefined} A specific module object.
 	 */
 	isModuleActive: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const module = select( STORE_NAME ).getModule( slug ) || {};
+		const module = select( STORE_NAME ).getModule( slug );
+
+		// Return `undefined` if modules haven't been loaded yet.
+		if ( module === undefined ) {
+			return undefined;
+		}
+
+		// A module with this slug couldn't be found; return `null` to signify the
+		// "not found" state.
+		if ( module === null ) {
+			return null;
+		}
 
 		return module.active;
 	} ),

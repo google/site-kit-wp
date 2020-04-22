@@ -498,6 +498,33 @@ describe( 'core/modules modules', () => {
 
 				expect( module ).toEqual( undefined );
 			} );
+
+			it( 'returns null if the module does not exist', async () => {
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/core\/modules\/data\/list/
+					)
+					.mockResponseOnce(
+						JSON.stringify( FIXTURES ),
+						{ status: 200 }
+					);
+
+				const slug = 'analytics';
+				const module = registry.select( STORE_NAME ).getModule( slug );
+				// The modules will be undefined whilst loading.
+				expect( module ).toEqual( undefined );
+
+				// Wait for loading to complete.
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getModules' )
+				);
+
+				const moduleLoaded = registry.select( STORE_NAME ).getModule( 'not-a-real-module' );
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( moduleLoaded ).toEqual( null );
+			} );
 		} );
 
 		describe( 'isModuleActive', () => {
@@ -550,7 +577,7 @@ describe( 'core/modules modules', () => {
 				expect( isActiveLoaded ).toEqual( false );
 			} );
 
-			it( 'returns undefined if a module does not exist', async () => {
+			it( 'returns null if a module does not exist', async () => {
 				const slug = 'not-a-real-module';
 				const isActive = registry.select( STORE_NAME ).isModuleActive( slug );
 				// The modules will be undefined whilst loading, so this will return `undefined`.
@@ -565,7 +592,7 @@ describe( 'core/modules modules', () => {
 				const isActiveLoaded = registry.select( STORE_NAME ).isModuleActive( slug );
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
-				expect( isActiveLoaded ).toEqual( undefined );
+				expect( isActiveLoaded ).toEqual( null );
 			} );
 
 			it( 'returns undefined if modules is not yet available', async () => {
