@@ -166,7 +166,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		/**
 		 * Returns the current settings back to the current saved values.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.7.1
 		 * @private
 		 *
 		 * @return {Object} Redux-style action.
