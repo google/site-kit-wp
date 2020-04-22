@@ -41,6 +41,8 @@ import { createCacheKey } from '../../../googlesitekit/api';
 describe( 'modules/adsense settings', () => {
 	let apiFetchSpy;
 	let registry;
+	let dispatch;
+	let select;
 
 	const validSettings = {
 		accountID: 'pub-12345678',
@@ -61,6 +63,8 @@ describe( 'modules/adsense settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		dispatch = registry.dispatch( STORE_NAME );
+		select = registry.select( STORE_NAME );
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
@@ -74,9 +78,104 @@ describe( 'modules/adsense settings', () => {
 	} );
 
 	describe( 'actions', () => {
+		describe( 'saveUseSnippet', () => {
+			it( 'does not require any params', () => {
+				expect( async () => {
+					fetch
+						.doMockOnceIf(
+							/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/
+						)
+						.mockResponseOnce(
+							JSON.stringify( true ),
+							{ status: 200 }
+						);
+
+					// Ensure initial settings from server are present.
+					dispatch.receiveSettings( { useSnippet: false } );
+
+					dispatch.setUseSnippet( true );
+					await dispatch.saveUseSnippet();
+				} ).not.toThrow();
+			} );
+
+			it( 'updates useSnippet setting from server', async () => {
+				fetch
+					.doMockIf(
+						/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/
+					)
+					.mockResponse(
+						JSON.stringify( true ),
+						{ status: 200 }
+					);
+
+				// Update setting and ensure this flags a settings change.
+				dispatch.setUseSnippet( true );
+				expect( select.haveSettingsChanged() ).toBe( true );
+
+				dispatch.saveUseSnippet();
+
+				await subscribeUntil( registry, () => select.isDoingSaveUseSnippet() === false );
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+
+				// Ensure settings now no longer need to be updated because
+				// server-side and client-side settings now match.
+				expect( select.haveSettingsChanged() ).toBe( false );
+			} );
+		} );
+
+		describe( 'fetchSaveUseSnippet', () => {
+			it( 'requires the useSnippet param', () => {
+				const consoleErrorSpy = jest.spyOn( global.console, 'error' );
+
+				dispatch.fetchSaveUseSnippet();
+				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'useSnippet is required.' );
+
+				consoleErrorSpy.mockClear();
+			} );
+
+			it( 'sets isDoingSaveUseSnippet', () => {
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/
+					)
+					.mockResponseOnce(
+						JSON.stringify( true ),
+						{ status: 200 }
+					);
+
+				dispatch.fetchSaveUseSnippet( true );
+				expect( select.isDoingSaveUseSnippet() ).toEqual( true );
+			} );
+		} );
+
+		describe( 'receiveSaveUseSnippet', () => {
+			it( 'requires the response param', () => {
+				expect( () => {
+					dispatch.receiveSaveUseSnippet();
+				} ).toThrow( 'response is required.' );
+			} );
+
+			it( 'requires the params param', () => {
+				expect( () => {
+					dispatch.receiveSaveUseSnippet( true );
+				} ).toThrow( 'params is required.' );
+			} );
+
+			it( 'receives and sets useSnippet from parameter', () => {
+				dispatch.setUseSnippet( true );
+
+				// Fake a request saving the useSnippet as false.
+				dispatch.receiveSaveUseSnippet( true, { useSnippet: false } );
+
+				// Make sure the saved false is now in place.
+				expect( select.getUseSnippet() ).toBe( false );
+			} );
+		} );
+
 		describe( 'submitChanges', () => {
 			it( 'dispatches saveSettings', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				dispatch.setSettings( validSettings );
 
 				fetch
 					.doMockOnceIf(
@@ -87,20 +186,20 @@ describe( 'modules/adsense settings', () => {
 						{ status: 200 }
 					);
 
-				registry.dispatch( STORE_NAME ).submitChanges();
+				dispatch.submitChanges();
 
 				await subscribeUntil(
 					registry,
-					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
+					() => select.isDoingSubmitChanges() === false
 				);
 
 				expect( fetch ).toHaveBeenCalled();
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
-				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
+				expect( select.haveSettingsChanged() ).toBe( false );
 			} );
 
 			it( 'handles an error if set while saving settings', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				dispatch.setSettings( validSettings );
 
 				fetch
 					.doMockOnceIf(
@@ -111,19 +210,19 @@ describe( 'modules/adsense settings', () => {
 						{ status: 500 }
 					);
 
-				registry.dispatch( STORE_NAME ).submitChanges();
+				dispatch.submitChanges();
 
 				await subscribeUntil(
 					registry,
-					() => registry.select( STORE_NAME ).isDoingSubmitChanges() === false
+					() => select.isDoingSubmitChanges() === false
 				);
 
-				expect( registry.select( STORE_NAME ).getSettings() ).toEqual( validSettings );
-				expect( registry.select( STORE_NAME ).getError() ).toEqual( error );
+				expect( select.getSettings() ).toEqual( validSettings );
+				expect( select.getError() ).toEqual( error );
 			} );
 
 			it( 'invalidates AdSense API cache on success', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				dispatch.setSettings( validSettings );
 
 				fetch
 					.doMockOnceIf(
@@ -138,7 +237,7 @@ describe( 'modules/adsense settings', () => {
 				expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );
 				expect( ( await getItem( cacheKey ) ).value ).not.toBeFalsy();
 
-				await registry.dispatch( STORE_NAME ).submitChanges();
+				await dispatch.submitChanges();
 
 				expect( ( await getItem( cacheKey ) ).value ).toBeFalsy();
 			} );
@@ -148,39 +247,39 @@ describe( 'modules/adsense settings', () => {
 	describe( 'selectors', () => {
 		describe( 'isDoingSubmitChanges', () => {
 			it( 'sets internal state while submitting changes', () => {
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
+				expect( select.isDoingSubmitChanges() ).toBe( false );
 
-				registry.dispatch( STORE_NAME ).submitChanges();
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
+				dispatch.submitChanges();
+				expect( select.isDoingSubmitChanges() ).toBe( true );
 			} );
 
 			it( 'toggles the internal state again once submission is completed', async () => {
-				registry.dispatch( STORE_NAME ).submitChanges();
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
+				dispatch.submitChanges();
+				expect( select.isDoingSubmitChanges() ).toBe( true );
 
 				await subscribeUntil( registry,
 					() => registry.stores[ STORE_NAME ].store.getState().isDoingSubmitChanges === false
 				);
 
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
+				expect( select.isDoingSubmitChanges() ).toBe( false );
 			} );
 		} );
 
 		describe( 'canSubmitChanges', () => {
 			it( 'requires a valid accountID', () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				dispatch.setSettings( validSettings );
+				expect( select.canSubmitChanges() ).toBe( true );
 
-				registry.dispatch( STORE_NAME ).setAccountID( '0' );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				dispatch.setAccountID( '0' );
+				expect( select.canSubmitChanges() ).toBe( false );
 			} );
 
 			it( 'requires a valid clientID', () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				dispatch.setSettings( validSettings );
+				expect( select.canSubmitChanges() ).toBe( true );
 
-				registry.dispatch( STORE_NAME ).setClientID( '0' );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
+				dispatch.setClientID( '0' );
+				expect( select.canSubmitChanges() ).toBe( false );
 			} );
 		} );
 	} );

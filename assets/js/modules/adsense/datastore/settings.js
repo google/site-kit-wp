@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -27,18 +32,100 @@ import {
 } from '../util';
 import { STORE_NAME } from './constants';
 
-const { createRegistrySelector, createRegistryControl } = Data;
+const { commonActions, createRegistrySelector, createRegistryControl } = Data;
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
 const START_SUBMIT_CHANGES = 'START_SUBMIT_CHANGES';
 const FINISH_SUBMIT_CHANGES = 'FINISH_SUBMIT_CHANGES';
 
+const FETCH_SAVE_USE_SNIPPET = 'FETCH_SAVE_USE_SNIPPET';
+const START_FETCH_SAVE_USE_SNIPPET = 'START_FETCH_SAVE_USE_SNIPPET';
+const FINISH_FETCH_SAVE_USE_SNIPPET = 'FINISH_FETCH_SAVE_USE_SNIPPET';
+const CATCH_FETCH_SAVE_USE_SNIPPET = 'CATCH_FETCH_SAVE_USE_SNIPPET';
+
+const RECEIVE_SAVE_USE_SNIPPET = 'RECEIVE_SAVE_USE_SNIPPET';
+
 export const INITIAL_STATE = {
 	isDoingSubmitChanges: false,
+	isFetchingSaveUseSnippet: false,
 };
 
 export const actions = {
+	*fetchSaveUseSnippet( useSnippet ) {
+		let response, error;
+
+		if ( 'undefined' === typeof useSnippet ) {
+			error = {
+				message: 'useSnippet is required.',
+			};
+			global.console.error( error.message );
+			return { response, error };
+		}
+
+		yield {
+			payload: {},
+			type: START_FETCH_SAVE_USE_SNIPPET,
+		};
+
+		try {
+			response = yield {
+				payload: { useSnippet },
+				type: FETCH_SAVE_USE_SNIPPET,
+			};
+
+			yield actions.receiveSaveUseSnippet( response, { useSnippet } );
+
+			yield {
+				payload: {},
+				type: FINISH_FETCH_SAVE_USE_SNIPPET,
+			};
+		} catch ( e ) {
+			error = e;
+			yield {
+				payload: { error },
+				type: CATCH_FETCH_SAVE_USE_SNIPPET,
+			};
+		}
+
+		return { response, error };
+	},
+
+	receiveSaveUseSnippet( response, params ) {
+		invariant( response, 'response is required.' );
+		invariant( params, 'params is required.' );
+
+		return {
+			payload: { response, params },
+			type: RECEIVE_SAVE_USE_SNIPPET,
+		};
+	},
+
+	/**
+	 * Saves the current value of the 'useSnippet' setting.
+	 *
+	 * While the saveSettings action should typically be used for this, there
+	 * is a use-case where the 'useSnippet' setting (and nothing else) needs to
+	 * be saved right away when being toggled, which is what this action is
+	 * intended for.
+	 *
+	 * @since n.e.x.t
+	 */
+	*saveUseSnippet() {
+		const registry = yield commonActions.getRegistry();
+		const useSnippet = registry.select( STORE_NAME ).getUseSnippet();
+		if ( 'undefined' === typeof useSnippet ) {
+			return;
+		}
+
+		yield actions.fetchSaveUseSnippet( useSnippet );
+	},
+
+	/**
+	 * Submits all changes currently present in the client, persisting them on the server.
+	 *
+	 * @since n.e.x.t
+	 */
 	*submitChanges() {
 		yield {
 			payload: {},
@@ -58,6 +145,10 @@ export const actions = {
 };
 
 export const controls = {
+	[ FETCH_SAVE_USE_SNIPPET ]: ( { payload } ) => {
+		const { useSnippet } = payload;
+		return API.set( 'modules', 'adsense', 'use-snippet', { useSnippet } );
+	},
 	[ SUBMIT_CHANGES ]: createRegistryControl( ( registry ) => async () => {
 		// This action shouldn't be called if settings haven't changed,
 		// but this prevents errors in tests.
@@ -73,8 +164,54 @@ export const controls = {
 	} ),
 };
 
-export const reducer = ( state, { type } ) => {
+export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
+		case START_FETCH_SAVE_USE_SNIPPET: {
+			return {
+				...state,
+				isFetchingSaveUseSnippet: true,
+			};
+		}
+
+		case FINISH_FETCH_SAVE_USE_SNIPPET: {
+			return {
+				...state,
+				isFetchingSaveUseSnippet: false,
+			};
+		}
+
+		case RECEIVE_SAVE_USE_SNIPPET: {
+			// The server response in this case is just a non-helpful true,
+			// so this value is actually the one passed as parameter, assumed
+			// to be the saved value from the successful request.
+			const { params } = payload;
+			const { useSnippet } = params;
+
+			return {
+				...state,
+				// Update saved settings.
+				savedSettings: {
+					...( state.savedSettings || {} ),
+					useSnippet,
+				},
+				// Also update client settings to ensure they're in sync.
+				settings: {
+					...( state.settings || {} ),
+					useSnippet,
+				},
+			};
+		}
+
+		case CATCH_FETCH_SAVE_USE_SNIPPET: {
+			const { error } = payload;
+
+			return {
+				...state,
+				error,
+				isFetchingSaveUseSnippet: false,
+			};
+		}
+
 		case START_SUBMIT_CHANGES: {
 			return {
 				...state,
@@ -125,6 +262,10 @@ export const selectors = {
 
 	isDoingSubmitChanges( state ) {
 		return !! state.isDoingSubmitChanges;
+	},
+
+	isDoingSaveUseSnippet( state ) {
+		return state.isFetchingSaveUseSnippet;
 	},
 };
 
