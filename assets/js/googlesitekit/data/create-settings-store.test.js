@@ -34,7 +34,7 @@ import {
 	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../tests/js/utils';
 import { createSettingsStore } from './create-settings-store';
 
 const STORE_ARGS = [ 'core', 'site', 'settings' ];
