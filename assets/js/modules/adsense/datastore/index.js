@@ -45,7 +45,7 @@ const baseModuleStore = Modules.createModuleStore( 'adsense', {
 		'accountStatus',
 		'siteStatus',
 		'accountSetupComplete',
-		'siteStatusComplete',
+		'siteSetupComplete',
 	],
 } );
 
