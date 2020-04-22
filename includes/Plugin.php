@@ -178,6 +178,15 @@ final class Plugin {
 			-999
 		);
 
+		// Register _gl parameter to be removed from the URL.
+		add_filter(
+			'removable_query_args',
+			function ( $args ) {
+				$args[] = '_gl';
+				return $args;
+			}
+		);
+
 		( new Core\Util\Activation( $this->context, $options, $assets ) )->register();
 		( new Core\Util\Migration_1_3_0( $this->context, $options ) )->register();
 		( new Core\Util\Reset( $this->context ) )->register();
