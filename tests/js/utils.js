@@ -11,6 +11,7 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
 /**
  * Internal dependencies
  */
+import modulesStore, { STORE_NAME as modulesStoreName } from '../../assets/js/googlesitekit/datastore/modules';
 import siteStore, { STORE_NAME as siteStoreName } from '../../assets/js/googlesitekit/datastore/site';
 
 /**
@@ -81,6 +82,7 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
  * @param {wp.data.registry} registry Registry to register each store on.
  */
 export const registerAllStoresOn = ( registry ) => {
+	registry.registerStore( modulesStoreName, modulesStore );
 	registry.registerStore( siteStoreName, siteStore );
 };
 
