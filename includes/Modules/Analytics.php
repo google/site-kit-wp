@@ -519,9 +519,9 @@ final class Analytics extends Module
 					return true;
 				};
 			case 'GET:accounts-properties-profiles':
-				$restore = $this->with_client_defer( false );
+				return function () use ( $data ) {
+					$restore_defer = $this->with_client_defer( false );
 
-				return function () use ( $data, $restore ) {
 					try {
 						return $this->get_service( 'analytics' )->management_accounts->listManagementAccounts();
 					} catch ( Google_Service_Exception $exception ) {
@@ -534,7 +534,7 @@ final class Analytics extends Module
 						// If any other exception was caught, re-throw it.
 						throw $exception;
 					} finally {
-						$restore(); // Will be called before returning in all cases.
+						$restore_defer(); // Will be called before returning in all cases.
 					}
 				};
 			case 'GET:anonymize-ip':
