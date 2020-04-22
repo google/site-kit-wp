@@ -155,14 +155,14 @@ export const determineAccountID = ( { accounts, previousAccountID } ) => {
 
 	// If no accounts, the user needs to create one.
 	if ( ! accounts.length ) {
-		return '';
+		return undefined;
 	}
 
 	// If there are multiple accounts (very rare), we'll need the account ID.
 	if ( accounts.length > 1 ) {
 		// If no ID passed, the user will need to select an account first.
 		if ( ! previousAccountID ) {
-			return '';
+			return undefined;
 		}
 
 		// Ensure the passed account ID is actually available.
@@ -171,7 +171,7 @@ export const determineAccountID = ( { accounts, previousAccountID } ) => {
 				return previousAccountID;
 			}
 			return acc;
-		}, '' );
+		}, undefined );
 	}
 
 	// Choose the only account that the user has.
@@ -202,7 +202,7 @@ export const determineClientID = ( { clients, previousClientID } ) => {
 
 	// If no AFC clients, the user needs to create one.
 	if ( ! afcClients.length ) {
-		return '';
+		return undefined;
 	}
 
 	// If multiple AFC clients and client ID was already known, try looking it up.

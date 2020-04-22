@@ -326,18 +326,18 @@ describe( 'determineAccountID', () => {
 		expect( determineAccountID( params ) ).toEqual( undefined );
 	} );
 
-	it( 'returns empty string for empty accounts', () => {
+	it( 'returns undefined for empty accounts', () => {
 		const params = {
 			accounts: [],
 		};
-		expect( determineAccountID( params ) ).toEqual( '' );
+		expect( determineAccountID( params ) ).toEqual( undefined );
 	} );
 
-	it( 'returns empty string for multiple accounts', () => {
+	it( 'returns undefined for multiple accounts', () => {
 		const params = {
 			accounts: [ accountA, accountB ],
 		};
-		expect( determineAccountID( params ) ).toEqual( '' );
+		expect( determineAccountID( params ) ).toEqual( undefined );
 	} );
 
 	it( 'looks up correct account through ID parameter', () => {
@@ -353,7 +353,7 @@ describe( 'determineAccountID', () => {
 			accounts: [ accountA, accountB ],
 			previousAccountID: 'pub-1234567890',
 		};
-		expect( determineAccountID( params ) ).toEqual( '' );
+		expect( determineAccountID( params ) ).toEqual( undefined );
 	} );
 } );
 
@@ -379,18 +379,18 @@ describe( 'determineClientID', () => {
 		expect( determineClientID( params ) ).toEqual( undefined );
 	} );
 
-	it( 'returns empty string for empty clients', () => {
+	it( 'returns undefined for empty clients', () => {
 		const params = {
 			clients: [],
 		};
-		expect( determineClientID( params ) ).toEqual( '' );
+		expect( determineClientID( params ) ).toEqual( undefined );
 	} );
 
-	it( 'returns empty string for no AFC clients', () => {
+	it( 'returns undefined for no AFC clients', () => {
 		const params = {
 			clients: [ afsClientA ],
 		};
-		expect( determineClientID( params ) ).toEqual( '' );
+		expect( determineClientID( params ) ).toEqual( undefined );
 	} );
 
 	it( 'returns first client ID for multiple clients', () => {
