@@ -34,6 +34,7 @@ const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED';
 const FETCH_CREATE_ACCOUNT = 'FETCH_CREATE_ACCOUNT';
+const RECEIVE_CREATE_ACCOUNT = 'RECEIVE_CREATE_ACCOUNT';
 const START_FETCH_CREATE_ACCOUNT = 'START_FETCH_CREATE_ACCOUNT';
 const FINISH_FETCH_CREATE_ACCOUNT = 'FINISH_FETCH_CREATE_ACCOUNT';
 const CATCH_FETCH_CREATE_ACCOUNT = 'CATCH_FETCH_CREATE_ACCOUNT';
@@ -41,7 +42,8 @@ const CATCH_FETCH_CREATE_ACCOUNT = 'CATCH_FETCH_CREATE_ACCOUNT';
 export const INITIAL_STATE = {
 	accounts: undefined,
 	isFetchingAccountsPropertiesProfiles: false,
-	isCreatingAccount: false,
+	isFetchingCreateAccount: false,
+	accountTicketTermsOfServiceURL: false,
 };
 
 export const actions = {
@@ -136,23 +138,13 @@ export const actions = {
 		return accountTicket;
 	},
 
-	/**
-	 * Adds an account ticket to process.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Object} accountTicket Google Analytics create account ticket object.
-	 */
 	receiveCreateAccount( accountTicket ) {
 		invariant( accountTicket, 'accountTicket is required.' );
 
-		// Once we have an account ticket, redirect the user to accept the Terms of Service.
-		const { id } = accountTicket;
-		if ( id ) {
-			// Use `location.assign` so we can test this action in Jest.
-			location.assign( `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/&api.accountTicketId=${ id }` );
-		}
+		return {
+			payload: { accountTicket },
+			type: RECEIVE_CREATE_ACCOUNT,
+		};
 	},
 };
 
@@ -223,6 +215,14 @@ export const reducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				isFetchingCreateAccount: true,
+			};
+		}
+
+		case RECEIVE_CREATE_ACCOUNT: {
+			const { id } = payload;
+			return {
+				...state,
+				accountTicketTermsOfServiceURL: `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/&api.accountTicketId=${ id }`,
 			};
 		}
 
@@ -322,6 +322,18 @@ export const selectors = {
 	 */
 	isDoingCreateAccount( state ) {
 		return !! state.isFetchingCreateAccount;
+	},
+
+	/**
+	 * Get the terms of service URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} The terms of service URL.
+	 */
+	getAccountTicketTermsOfServiceURL( state ) {
+		return state.accountTicketTermsOfServiceURL;
 	},
 };
 
