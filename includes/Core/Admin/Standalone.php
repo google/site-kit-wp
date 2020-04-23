@@ -57,7 +57,7 @@ final class Standalone {
 	}
 
 	/**
-	 * Detects if we are in Google Site Kit standalone mode
+	 * Detects if we are in Google Site Kit standalone mode.
 	 *
 	 * @since n.e.x.t
 	 *
