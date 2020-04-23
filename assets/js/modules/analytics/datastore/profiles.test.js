@@ -74,7 +74,7 @@ describe( 'modules/analytics profiles', () => {
 						{ status: 200 }
 					);
 
-				registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID );
+				registry.dispatch( STORE_NAME ).createProfile( propertyID );
 
 				// Ensure the proper body parameters were sent.
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toMatchObject(
@@ -108,7 +108,7 @@ describe( 'modules/analytics profiles', () => {
 						{ status: 200 }
 					);
 
-				registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID );
+				registry.dispatch( STORE_NAME ).createProfile( propertyID );
 				expect( registry.select( STORE_NAME ).isDoingCreateProfile( accountID, propertyID ) ).toEqual( true );
 			} );
 
@@ -132,7 +132,7 @@ describe( 'modules/analytics profiles', () => {
 					);
 
 				muteConsole( 'error' );
-				registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID );
+				registry.dispatch( STORE_NAME ).createProfile( propertyID );
 
 				await subscribeUntil( registry,
 					() => (

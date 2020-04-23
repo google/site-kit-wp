@@ -59,47 +59,35 @@ export const actions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {string} accountID  Google Analytics account ID.
 	 * @param {string} propertyID Google Analytics property ID.
 	 * @return {Object} Response and error objects.
 	 */
-	*createProfile( accountID, propertyID ) {
-		invariant( accountID, 'accountID is required.' );
-		invariant( propertyID, 'propertyID is required.' );
+	*createProfile( propertyID ) {
+		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to create a profile.' );
 		let response, error;
 
 		yield {
-			payload: {
-				accountID,
-				propertyID,
-			},
+			payload: { propertyID },
 			type: START_FETCH_CREATE_PROFILE,
 		};
 
 		try {
 			response = yield {
-				payload: {
-					accountID,
-					propertyID,
-				},
+				payload: { propertyID },
 				type: FETCH_CREATE_PROFILE,
 			};
 			const profile = response;
 
-			yield actions.receiveCreateProfile( { accountID, propertyID, profile } );
+			yield actions.receiveCreateProfile( { propertyID, profile } );
 
 			yield {
-				payload: {
-					accountID,
-					propertyID,
-				},
+				payload: { propertyID },
 				type: FINISH_FETCH_CREATE_PROFILE,
 			};
 		} catch ( e ) {
 			error = e;
 			yield {
 				payload: {
-					accountID,
 					propertyID,
 					error,
 				},
@@ -160,18 +148,16 @@ export const actions = {
 	 * @private
 	 *
 	 * @param {Object} args            Argument params.
-	 * @param {string} args.accountID  Google Analytics account ID.
 	 * @param {string} args.propertyID Google Analytics profile ID.
 	 * @param {Object} args.profile    Google Analytics profile object.
 	 * @return {Object} Redux-style action.
 	 */
-	receiveCreateProfile( { accountID, propertyID, profile } ) {
-		invariant( accountID, 'accountID is required.' );
+	receiveCreateProfile( { propertyID, profile } ) {
 		invariant( propertyID, 'propertyID is required.' );
 		invariant( profile, 'profile is required.' );
 
 		return {
-			payload: { accountID, propertyID, profile },
+			payload: { propertyID, profile },
 			type: RECEIVE_CREATE_PROFILE,
 		};
 	},
@@ -187,7 +173,9 @@ export const actions = {
 };
 
 export const controls = {
-	[ FETCH_CREATE_PROFILE ]: ( { payload: { accountID, propertyID } } ) => {
+	[ FETCH_CREATE_PROFILE ]: ( { payload: { propertyID } } ) => {
+		const { accountID } = parsePropertyID( propertyID );
+
 		return API.set( 'modules', 'analytics', 'create-profile', {
 			accountID,
 			propertyID,
