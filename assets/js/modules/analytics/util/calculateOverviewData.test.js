@@ -25,10 +25,10 @@ describe( 'calculateOverviewData', () => {
 			[
 				'11.5',
 				'-1.0',
-				'-8.5',
-				'94.0',
+				'9.3',
+				'-48.5',
 				'',
-				'23.0',
+				'-18.6',
 			],
 		],
 		[
@@ -52,7 +52,7 @@ describe( 'calculateOverviewData', () => {
 			],
 		],
 	];
-	it.each( rangeData )( 'given %d and %d should return %s', ( data, expected ) => {
+	it.each( rangeData )( 'calculating data overview', ( data, expected ) => {
 		const overviewData = calculateOverviewData( data );
 		expect( overviewData.totalUsersChange ).toEqual( expected[ 0 ] );
 		expect( overviewData.totalSessionsChange ).toEqual( expected[ 1 ] );
