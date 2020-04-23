@@ -352,11 +352,10 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state      Data store's state.
-	 * @param {string} accountID  The Analytics Account ID to check for profile creation.
 	 * @param {string} propertyID The Analytics Property ID to check for profile creation.
 	 * @return {boolean} `true` if creating a profile, `false` if not.
 	 */
-	isDoingCreateProfile( state, accountID, propertyID ) {
+	isDoingCreateProfile( state, propertyID ) {
 		const { isFetchingCreateProfile } = state;
 
 		return !! isFetchingCreateProfile[ propertyID ];

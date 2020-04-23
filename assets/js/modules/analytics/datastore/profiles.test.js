@@ -96,7 +96,6 @@ describe( 'modules/analytics profiles', () => {
 			} );
 
 			it( 'sets isDoingCreateProfile ', async () => {
-				const accountID = fixtures.createProfile.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const propertyID = fixtures.createProfile.webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 
 				fetch
@@ -109,7 +108,7 @@ describe( 'modules/analytics profiles', () => {
 					);
 
 				registry.dispatch( STORE_NAME ).createProfile( propertyID );
-				expect( registry.select( STORE_NAME ).isDoingCreateProfile( accountID, propertyID ) ).toEqual( true );
+				expect( registry.select( STORE_NAME ).isDoingCreateProfile( propertyID ) ).toEqual( true );
 			} );
 
 			it( 'dispatches an error if the request fails ', async () => {
