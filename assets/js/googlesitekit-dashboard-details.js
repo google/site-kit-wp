@@ -20,9 +20,7 @@
 /**
  * External dependencies
  */
-import 'GoogleComponents/notifications';
-import { loadTranslations } from 'GoogleUtil';
-import 'GoogleModules';
+import './modules';
 
 /**
  * WordPress dependencies
@@ -34,9 +32,10 @@ import { Component, render } from '@wordpress/element';
 /**
  * Internal dependencies.
  */
-// eslint-disable-next-line @wordpress/dependency-group
-import DashboardDetailsApp from 'GoogleComponents/dashboard-details/dashboard-details-app';
-import ErrorHandler from 'GoogleComponents/ErrorHandler';
+import { loadTranslations } from './util';
+import './components/notifications';
+import DashboardDetailsApp from './components/dashboard-details/dashboard-details-app';
+import ErrorHandler from './components/ErrorHandler';
 
 class GoogleSitekitDashboardDetails extends Component {
 	render() {

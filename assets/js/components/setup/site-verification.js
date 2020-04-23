@@ -19,22 +19,26 @@
 /**
  * External dependencies
  */
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
-import Button from 'GoogleComponents/button';
-import ProgressBar from 'GoogleComponents/progress-bar';
-import { TextField, Input } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
-import {
-	validateJSON,
-	trackEvent,
-} from 'GoogleUtil';
-import HelpLink from 'GoogleComponents/help-link';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import {
+	validateJSON,
+	trackEvent,
+} from '../../util';
+import { TextField, Input } from '../../material-components';
+import data, { TYPE_MODULES } from '../data';
+import Button from '../button';
+import ProgressBar from '../progress-bar';
+import HelpLink from '../help-link';
 
 class SiteVerification extends Component {
 	constructor( props ) {

@@ -20,14 +20,18 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import LayoutHeader from 'GoogleComponents/layout/layout-header';
-import LayoutFooter from 'GoogleComponents/layout/layout-footer';
 import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import LayoutHeader from './layout-header';
+import LayoutFooter from './layout-footer';
 
 class Layout extends Component {
 	render() {

@@ -2,8 +2,6 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import SvgIcon from 'GoogleUtil/svg-icon';
-import WPDashboardMain from 'GoogleComponents/wp-dashboard/wp-dashboard-main';
 
 /**
  * WordPress dependencies
@@ -13,11 +11,13 @@ import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import SvgIcon from '../assets/js/util/svg-icon';
+import WPDashboardMain from '../assets/js/components/wp-dashboard/wp-dashboard-main';
 import { googlesitekit as wpDashboardData } from '../.storybook/data/wp-admin-index.php--googlesitekit';
-import WPSearchConsoleDashboardWidget from 'GoogleModules/search-console/wp-dashboard/wp-dashboard-widget';
-import { createAddToFilter } from 'GoogleUtil/helpers';
-import WPAnalyticsDashboardWidgetOverview from 'GoogleModules/analytics/wp-dashboard/wp-dashboard-widget-overview';
-import WPAnalyticsDashboardWidgetTopPagesTable from 'GoogleModules/analytics/wp-dashboard/wp-dashboard-widget-top-pages-table';
+import WPSearchConsoleDashboardWidget from '../assets/js/modules/search-console/wp-dashboard/wp-dashboard-widget';
+import { createAddToFilter } from '../assets/js/util/helpers';
+import WPAnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/wp-dashboard/wp-dashboard-widget-overview';
+import WPAnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/wp-dashboard/wp-dashboard-widget-top-pages-table';
 
 storiesOf( 'WordPress', module )
 	.add( 'WordPress Dashboard', () => {

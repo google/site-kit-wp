@@ -18,16 +18,6 @@
 /**
  * External dependencies
  */
-import DashboardAuthAlert from 'GoogleComponents/notifications/dashboard-auth-alert';
-import DashboardPermissionAlert from 'GoogleComponents/notifications/dashboard-permission-alert';
-import md5 from 'md5';
-import {
-	getStorage,
-	getCurrentDateRangeSlug,
-	fillFilterWithComponent,
-	getQueryParameter,
-	sortObjectProperties,
-} from 'SiteKitCore/util';
 import { cloneDeep, each, intersection, isEqual, sortBy } from 'lodash';
 
 /**
@@ -35,7 +25,20 @@ import { cloneDeep, each, intersection, isEqual, sortBy } from 'lodash';
  */
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
-import { addAction, applyFilters, doAction, addFilter, removeFilter } from '@wordpress/hooks';
+import { addAction, applyFilters, doAction, addFilter, removeFilter, hasAction } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import {
+	getStorage,
+	getCurrentDateRangeSlug,
+	fillFilterWithComponent,
+	getQueryParameter,
+	stringifyObject,
+} from '../../util';
+import DashboardAuthAlert from '../notifications/dashboard-auth-alert';
+import DashboardPermissionAlert from '../notifications/dashboard-permission-alert';
 
 export const TYPE_CORE = 'core';
 export const TYPE_MODULES = 'modules';
@@ -75,14 +78,6 @@ const requestWithDateRange = ( originalRequest, dateRange ) => {
 const dataAPI = {
 
 	maxRequests: 10,
-
-	init() {
-		addAction(
-			'googlesitekit.moduleLoaded',
-			'googlesitekit.collectModuleListingData',
-			this.collectModuleData.bind( this )
-		);
-	},
 
 	/**
 	 * Gets data for multiple requests from the cache in a single batch process.
@@ -493,7 +488,7 @@ const dataAPI = {
 		}
 
 		if ( 3 === key.length && data && 'object' === typeof data && Object.keys( data ).length ) {
-			key.push( md5( JSON.stringify( sortObjectProperties( data ) ) ) );
+			key.push( stringifyObject( data ) );
 		}
 
 		return key.join( '::' );
@@ -513,6 +508,12 @@ const dataAPI = {
 };
 
 // Init data module once.
-dataAPI.init();
+if ( ! hasAction( 'googlesitekit.moduleLoaded', 'googlesitekit.collectModuleData' ) ) {
+	addAction(
+		'googlesitekit.moduleLoaded',
+		'googlesitekit.collectModuleData',
+		dataAPI.collectModuleData.bind( dataAPI )
+	);
+}
 
 export default dataAPI;

@@ -17,21 +17,18 @@
  */
 
 /**
- * External dependencies
- */
-import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
-/**
- * Internal dependencies
- */
-import DashboardAdSenseTopEarningPagesSmall from './dashboard-adsense-top-pages-small';
-import AdSenseDashboardMainSummary from './dashboard-widget-main-summary';
-import ModuleSettingsWarning from 'GoogleComponents/notifications/module-settings-warning';
-
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import DashboardModuleHeader from '../../../components/dashboard/dashboard-module-header';
+import DashboardAdSenseTopEarningPagesSmall from './dashboard-adsense-top-pages-small';
+import AdSenseDashboardMainSummary from './dashboard-widget-main-summary';
+import ModuleSettingsWarning from '../../../components/notifications/module-settings-warning';
 
 class DashboardEarnings extends Component {
 	render() {

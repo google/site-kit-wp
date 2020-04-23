@@ -17,15 +17,16 @@
  */
 
 /**
- * External dependencies
- */
-import Button from 'GoogleComponents/button';
-
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { getModulesData } from '../../../util';
+import Button from '../../../components/button';
 
 class AdSenseSetupAuthFlowWidget extends Component {
 	constructor( props ) {
@@ -37,7 +38,7 @@ class AdSenseSetupAuthFlowWidget extends Component {
 	static createNewAccount( e ) {
 		e.preventDefault();
 
-		const { signupURL } = global.googlesitekit.modules.adsense;
+		const { signupURL } = getModulesData().adsense;
 
 		global.open( signupURL, '_blank' );
 	}

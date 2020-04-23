@@ -2,11 +2,15 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import PageHeader from 'GoogleComponents/page-header';
 /**
  * WordPress dependencies
  */
 import { removeAllFilters } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import PageHeader from '../assets/js/components/page-header';
 
 storiesOf( 'Global', module )
 	.add( 'Page Headers', () => {

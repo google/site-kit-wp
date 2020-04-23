@@ -17,10 +17,9 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
-import DashboardAcquisitionPieChart from './dashboard-widget-acquisition-piechart';
-import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from './dashboard-alltraffic-widget-top-acquisition-sources-table';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -29,14 +28,16 @@ import { Component, Fragment } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
 /**
- * External dependencies
+ * Internal dependencies
  */
-import Layout from 'GoogleComponents/layout/layout';
-import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
-import getNoDataComponent from 'GoogleComponents/notifications/nodata';
-import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
-import getSetupIncompleteComponent from 'GoogleComponents/notifications/setup-incomplete';
-import classnames from 'classnames';
+import Layout from '../../../components/layout/layout';
+import DashboardModuleHeader from '../../../components/dashboard/dashboard-module-header';
+import getNoDataComponent from '../../../components/notifications/nodata';
+import getDataErrorComponent from '../../../components/notifications/data-error';
+import getSetupIncompleteComponent from '../../../components/notifications/setup-incomplete';
+import DashboardAcquisitionPieChart from './dashboard-widget-acquisition-piechart';
+import AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources from './dashboard-alltraffic-widget-top-acquisition-sources-table';
+import { getModulesData } from '../../../util';
 
 class AnalyticsAllTraffic extends Component {
 	constructor( props ) {
@@ -76,7 +77,7 @@ class AnalyticsAllTraffic extends Component {
 		const {
 			active,
 			setupComplete,
-		} = global.googlesitekit.modules.analytics;
+		} = getModulesData().analytics;
 
 		const {
 			error,

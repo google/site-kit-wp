@@ -2,12 +2,18 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import SvgIcon from 'GoogleUtil/svg-icon';
+
 /**
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { getModulesData } from '../../../util';
+import SvgIcon from '../../../util/svg-icon';
 
 class AdSenseSettingsWarning extends Component {
 	render() {
@@ -21,7 +27,7 @@ class AdSenseSettingsWarning extends Component {
 			return <OriginalComponent { ...this.props } />;
 		}
 
-		const { active, setupComplete } = global.googlesitekit.modules.adsense;
+		const { active, setupComplete } = getModulesData().adsense;
 		let message = __( 'Ad blocker detected, you need to disable it in order to setup AdSense.', 'google-site-kit' );
 		if ( active && setupComplete ) {
 			message = __( 'Ad blocker detected, You need to disable it to get the AdSense latest data.', 'google-site-kit' );

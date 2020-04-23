@@ -19,13 +19,16 @@
 /**
  * External dependencies
  */
-import { MDCRipple } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
 import { Component, createRef } from '@wordpress/element';
+/**
+ * Internal dependencies
+ */
+import { MDCRipple } from '../material-components';
 
 class Button extends Component {
 	constructor( props ) {

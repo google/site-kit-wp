@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Admin;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Util\Requires_Javascript_Trait;
 
@@ -42,20 +43,30 @@ final class Dashboard {
 	private $assets;
 
 	/**
+	 * Modules instance.
+	 *
+	 * @since 1.7.0
+	 * @var Modules
+	 */
+	private $modules;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @param Assets  $assets  Optional. Assets API instance. Default is a new instance.
+	 * @param Modules $modules Optional. Modules instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, Assets $assets = null ) {
+	public function __construct(
+		Context $context,
+		Assets $assets = null,
+		Modules $modules = null
+	) {
 		$this->context = $context;
-
-		if ( ! $assets ) {
-			$assets = new Assets( $this->context );
-		}
-		$this->assets = $assets;
+		$this->assets  = $assets ?: new Assets( $this->context );
+		$this->modules = $modules ?: new Modules( $this->context );
 	}
 
 	/**
@@ -81,6 +92,7 @@ final class Dashboard {
 
 				// Enqueue scripts.
 				$this->assets->enqueue_asset( 'googlesitekit-wp-dashboard' );
+				$this->modules->enqueue_assets();
 			}
 		};
 
@@ -113,7 +125,6 @@ final class Dashboard {
 	 * @since 1.0.0
 	 */
 	private function render_googlesitekit_wp_dashboard() {
-		do_action( 'googlesitekit_above_wp_dashboard_app' );
 
 		$this->render_noscript_html();
 		?>

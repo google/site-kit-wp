@@ -27,10 +27,10 @@ import invariant from 'invariant';
 import Data from 'googlesitekit-data';
 import {
 	createNotificationsStore,
-} from 'assets/js/googlesitekit/data/create-notifications-store';
+} from '../data/create-notifications-store';
 import {
 	createSettingsStore,
-} from 'assets/js/googlesitekit/data/create-settings-store';
+} from '../data/create-settings-store';
 
 /**
  * Creates a base store object for a Site Kit module.
@@ -42,7 +42,7 @@ import {
  * The return object of this function also includes a `STORE_NAME` property,
  * the value of which must be used as the name when registering the store.
  *
- * @since n.e.x.t
+ * @since 1.6.0
  *
  * @param {string} slug                 Slug of the module that the store is for.
  * @param {Object} options              Optional. Options to consider for the store.
@@ -59,13 +59,11 @@ import {
 export const createModuleStore = ( slug, {
 	storeName = undefined,
 	settingSlugs = undefined,
-	registry = Data,
 } = {} ) => {
 	invariant( slug, 'slug is required.' );
 
 	const notificationsStore = createNotificationsStore( 'modules', slug, 'notifications', {
 		storeName,
-		registry,
 	} );
 
 	const STORE_NAME = [ notificationsStore.STORE_NAME ];
@@ -81,7 +79,6 @@ export const createModuleStore = ( slug, {
 		const settingsStore = createSettingsStore( 'modules', slug, 'settings', {
 			storeName,
 			settingSlugs,
-			registry,
 		} );
 
 		STORE_NAME.push( settingsStore.STORE_NAME );

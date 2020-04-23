@@ -1,17 +1,26 @@
 const path = require( 'path' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
+const mainConfig = require( '../webpack.config' );
+const mapValues = require( 'lodash/mapValues' );
 
 module.exports = async ( { config } ) => {
+	// Site Kit loads its API packages as externals,
+	// so we need to convert those to aliases for Storybook to be able to resolve them.
+	const siteKitPackageAliases = mapValues(
+		mainConfig.siteKitExternals,
+		( [ global, api ] ) => {
+			return path.resolve( `assets/js/${ global }-${ api }.js` );
+		}
+	);
+
 	config.resolve = {
 		...config.resolve,
 		alias: {
 			...config.resolve.alias,
+			...siteKitPackageAliases,
 			'@wordpress/api-fetch$': path.resolve( __dirname, 'wp-api-fetch-mock.js' ),
-			SiteKitCore: path.resolve( __dirname, '../assets/js/' ),
-			GoogleComponents: path.resolve( __dirname, '../assets/js/components/' ),
-			GoogleUtil: path.resolve( __dirname, '../assets/js/util/' ),
-			GoogleModules: path.resolve( __dirname, '../assets/js/modules/' ),
 		},
+		modules: [ path.resolve( __dirname, '..' ), 'node_modules' ],
 	};
 
 	config.plugins = [

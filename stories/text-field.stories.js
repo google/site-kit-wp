@@ -2,7 +2,7 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import { TextField, Input } from 'SiteKitCore/material-components';
+import { TextField, Input } from '../assets/js/material-components';
 /**
  * WordPress dependencies
  */

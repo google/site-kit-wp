@@ -152,9 +152,9 @@ final class Plugin {
 				( new Core\Util\Tracking( $this->context, $user_options ) )->register();
 				( new Core\REST_API\REST_Routes( $this->context, $authentication, $modules ) )->register();
 				( new Core\Admin_Bar\Admin_Bar( $this->context, $assets, $modules ) )->register();
-				( new Core\Admin\Screens( $this->context, $assets ) )->register();
+				( new Core\Admin\Screens( $this->context, $assets, $modules ) )->register();
 				( new Core\Admin\Notices() )->register();
-				( new Core\Admin\Dashboard( $this->context, $assets ) )->register();
+				( new Core\Admin\Dashboard( $this->context, $assets, $modules ) )->register();
 				( new Core\Notifications\Notifications( $this->context, $options ) )->register();
 				( new Core\Util\Debug_Data( $this->context, $options, $user_options, $authentication, $modules ) )->register();
 
@@ -176,6 +176,15 @@ final class Plugin {
 				do_action( 'googlesitekit_init' );
 			},
 			-999
+		);
+
+		// Register _gl parameter to be removed from the URL.
+		add_filter(
+			'removable_query_args',
+			function ( $args ) {
+				$args[] = '_gl';
+				return $args;
+			}
 		);
 
 		( new Core\Util\Activation( $this->context, $options, $assets ) )->register();

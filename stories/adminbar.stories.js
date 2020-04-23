@@ -2,7 +2,6 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import { GoogleSitekitAdminbar } from 'SiteKitCore/googlesitekit-adminbar';
 
 /**
  * WordPress dependencies
@@ -12,10 +11,11 @@ import { addFilter, doAction, removeAllFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import { GoogleSitekitAdminbar } from '../assets/js/googlesitekit-adminbar';
 import { googlesitekit as wpAdminBarData } from '../.storybook/data/blog---googlesitekit';
-import AnalyticsAdminbarWidget from 'GoogleModules/analytics/adminbar/adminbar-widget';
-import GoogleSitekitSearchConsoleAdminbarWidget from 'GoogleModules/search-console/adminbar/adminbar-widget';
-import { createAddToFilter } from 'GoogleUtil/helpers';
+import AnalyticsAdminbarWidget from '../assets/js/modules/analytics/adminbar/adminbar-widget';
+import GoogleSitekitSearchConsoleAdminbarWidget from '../assets/js/modules/search-console/adminbar/adminbar-widget';
+import { createAddToFilter } from '../assets/js/util/helpers';
 
 storiesOf( 'Global', module )
 	.add( 'Admin Bar', () => {

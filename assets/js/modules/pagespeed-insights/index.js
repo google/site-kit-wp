@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { createAddToFilter } from 'GoogleUtil/helpers';
 
 /**
  * WordPress dependencies
@@ -29,17 +28,19 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import { createAddToFilter } from '../../util/helpers';
 import DashboardSpeed from './dashboard/dashboard-widget-speed';
 import PageSpeedInsightsDashboardWidgetHomepageSpeed from './dashboard/dashboard-widget-homepage-speed';
 import PageSpeedInsightsCTA from './dashboard/dashboard-cta';
 import { settingsDetails as SettingsDetails } from './settings';
+import { getModulesData } from '../../util';
 
 const slug = 'pagespeed-insights';
 
 const {
 	active,
 	setupComplete,
-} = global.googlesitekit.modules[ slug ];
+} = getModulesData()[ slug ];
 
 if ( active && setupComplete ) {
 	const addDashboardSpeed = createAddToFilter( <DashboardSpeed /> );

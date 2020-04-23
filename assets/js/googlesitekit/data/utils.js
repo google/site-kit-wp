@@ -21,6 +21,12 @@
  */
 import invariant from 'invariant';
 
+/**
+ * WordPress dependencies
+ */
+import { createRegistryControl } from '@wordpress/data';
+
+const GET_REGISTRY = 'GET_REGISTRY';
 const INITIALIZE = 'INITIALIZE';
 
 /**
@@ -192,7 +198,7 @@ export const collectState = collect;
  *
  * This function's main purpose is to ensure generated store names for a single store match.
  *
- * @since n.e.x.t
+ * @since 1.6.0
  *
  * @param {...string} args A list of store names, all of which must be equal.
  * @return {string} The single store name.
@@ -204,6 +210,53 @@ export const collectName = ( ...args ) => {
 	invariant( duplicates.length === names.length - 1, 'collectName() must not receive different names.' );
 
 	return names.shift();
+};
+
+/**
+ * An object of common actions most stores will use.
+ *
+ * @since 1.7.0
+ *
+ * @return {Object} key/value list of common actions most stores will want.
+ */
+export const commonActions = {
+	/**
+	 * Dispatches an action and calls a control to get the current data registry.
+	 *
+	 * Useful for controls and resolvers that wish to dispatch actions/use selectors
+	 * on the current data registry.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @return {Object} FSA-compatible action.
+	 */
+	getRegistry() {
+		return {
+			payload: {},
+			type: GET_REGISTRY,
+		};
+	},
+};
+
+/**
+ * An object of common controls most stores will use.
+ *
+ * @since 1.7.0
+ *
+ * @return {Object} key/value list of common controls most stores will want.
+ */
+export const commonControls = {
+	/**
+	 * Returns the current registry.
+	 *
+	 * Useful for controls and resolvers that wish to dispatch actions/use selectors
+	 * on the current data registry.
+	 *
+	 * @since 1.7.0
+	 *
+	 * @return {Object} FSA-compatible action.
+	 */
+	[ GET_REGISTRY ]: createRegistryControl( ( registry ) => () => registry ),
 };
 
 /**

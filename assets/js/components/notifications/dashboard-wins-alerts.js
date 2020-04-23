@@ -19,8 +19,6 @@
 /**
  * External dependencies
  */
-import Notification from 'GoogleComponents/notifications/notification';
-import { winsNotificationsToRequest, getWinsNotifications } from 'GoogleComponents/notifications/util';
 import { each } from 'lodash';
 
 /**
@@ -29,6 +27,12 @@ import { each } from 'lodash';
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addAction, removeAction } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import Notification from './notification';
+import { winsNotificationsToRequest, getWinsNotifications } from './util';
 
 class DashboardWinsAlerts extends Component {
 	constructor( props ) {

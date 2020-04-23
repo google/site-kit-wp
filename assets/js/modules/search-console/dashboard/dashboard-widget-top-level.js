@@ -17,13 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import DataBlock from 'GoogleComponents/data-block';
-import withData from 'GoogleComponents/higherorder/withdata';
-import { TYPE_MODULES } from 'GoogleComponents/data';
-
-/**
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
@@ -32,19 +25,22 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import DataBlock from '../../../components/data-block';
+import withData from '../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../components/data';
 import {
 	extractSearchConsoleDashboardData,
 	isDataZeroSearchConsole,
 } from './util';
-import Sparkline from 'GoogleComponents/sparkline';
-import PreviewBlock from 'GoogleComponents/preview-block';
+import Sparkline from '../../../components/sparkline';
+import PreviewBlock from '../../../components/preview-block';
 import {
 	getTimeInSeconds,
 	extractForSparkline,
 	getSiteKitAdminURL,
 	trackEvent,
-} from 'GoogleUtil';
-import CTA from 'GoogleComponents/notifications/cta';
+} from '../../../util';
+import CTA from '../../../components/notifications/cta';
 
 class SearchConsoleDashboardWidgetTopLevel extends Component {
 	render() {

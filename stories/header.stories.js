@@ -2,10 +2,10 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import Header from 'GoogleComponents/header';
 /**
  * Internal dependencies
  */
+import Header from '../assets/js/components/header';
 import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
 
 storiesOf( 'Global', module )

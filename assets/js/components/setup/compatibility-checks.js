@@ -25,13 +25,13 @@ import { __ } from '@wordpress/i18n';
 /**
  * External dependencies
  */
-import ProgressBar from 'GoogleComponents/progress-bar';
 import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
 import Warning from '../notifications/warning';
+import ProgressBar from '../../components/progress-bar';
 
 /**
  * Internal dependencies
@@ -39,10 +39,6 @@ import Warning from '../notifications/warning';
 import { getExistingTag } from '../../util';
 import data, { TYPE_CORE } from '../data';
 import Link from '../link';
-
-export const tagMatchers = [
-	/<meta name="googlesitekit-setup" content="([a-z0-9-]+)"/,
-];
 
 const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
 const ERROR_FETCH_FAIL = 'tag_fetch_failed';

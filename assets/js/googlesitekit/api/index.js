@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import md5 from 'md5';
 
 /**
  * WordPress dependencies
@@ -36,8 +35,8 @@ import {
 	getItem,
 	getKeys,
 	setItem,
-} from 'assets/js/googlesitekit/api/cache';
-import { sortObjectProperties } from 'assets/js/util';
+} from './cache';
+import { stringifyObject } from '../../util';
 
 // Caching is enabled by default.
 let cachingEnabled = true;
@@ -67,7 +66,7 @@ export const createCacheKey = ( type, identifier, datapoint, queryParams = {} ) 
 		Object.keys( queryParams ).length
 	) {
 		keySections.push(
-			md5( JSON.stringify( sortObjectProperties( queryParams ) ) )
+			stringifyObject( queryParams )
 		);
 	}
 
@@ -202,7 +201,7 @@ export const set = async (
 	{ method = 'POST', queryParams = {} } = {}
 ) => {
 	const response = await siteKitRequest( type, identifier, datapoint, {
-		bodyParams: data,
+		bodyParams: { data },
 		method,
 		queryParams,
 		useCache: false,

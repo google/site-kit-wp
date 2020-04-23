@@ -17,20 +17,17 @@
  */
 
 /**
- * External dependencies
- */
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
-import { getDaysBetweenDates } from 'GoogleUtil';
-/**
- * Internal dependencies
- */
-import WinsWithData from './wins-withdata';
-
-/**
  * WordPress dependencies
  */
 import { applyFilters } from '@wordpress/hooks';
 import { camelCase } from 'lodash';
+
+/**
+ * Internal dependencies
+ */
+import { getDaysBetweenDates } from '../../util';
+import WinsWithData from './wins-withdata';
+import data, { TYPE_MODULES } from '../data';
 
 export const wincallbacks = applyFilters( 'googlesitekit.winCallbacks', {} );
 

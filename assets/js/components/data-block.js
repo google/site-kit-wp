@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import SourceLink from 'GoogleComponents/source-link';
 import classnames from 'classnames';
 
 /**
@@ -33,6 +32,7 @@ import { Component, Fragment, cloneElement } from '@wordpress/element';
  */
 import ChangeArrow from './change-arrow';
 import { numberFormat } from '../util';
+import SourceLink from '../components/source-link';
 
 class DataBlock extends Component {
 	constructor( props ) {

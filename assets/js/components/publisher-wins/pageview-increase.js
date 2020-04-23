@@ -17,18 +17,20 @@
  */
 
 /**
- * External dependencies
- */
-import { numberFormat, getTimeInSeconds } from 'GoogleUtil';
-import { calculateOverviewData } from 'GoogleModules/analytics/util';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import { numberFormat, getTimeInSeconds, getModulesData } from '../../util';
+import { calculateOverviewData } from '../../modules/analytics/util';
+
 const pageviewIncrease = ( data, id ) => {
-	if ( ! global.googlesitekit.modules.analytics || ! global.googlesitekit.modules.analytics.active ) {
+	const modulesData = getModulesData();
+
+	if ( ! modulesData.analytics || ! modulesData.analytics.active ) {
 		return false;
 	}
 

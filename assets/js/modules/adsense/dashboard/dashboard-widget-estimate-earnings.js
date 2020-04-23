@@ -17,26 +17,23 @@
  */
 
 /**
- * External dependencies
- */
-import DataBlock from 'GoogleComponents/data-block';
-import PreviewBlock from 'GoogleComponents/preview-block';
-import {
-	getTimeInSeconds,
-	readableLargeNumber,
-} from 'GoogleUtil';
-import withData from 'GoogleComponents/higherorder/withdata';
-import { TYPE_MODULES } from 'GoogleComponents/data';
-/**
- * Internal dependencies
- */
-import { isDataZeroAdSense } from '../util';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import {
+	getTimeInSeconds,
+	readableLargeNumber,
+} from '../../../util';
+import DataBlock from '../../../components/data-block';
+import PreviewBlock from '../../../components/preview-block';
+import withData from '../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../components/data';
+import { isDataZeroAdSense } from '../util';
 
 class AdSenseEstimateEarningsWidget extends Component {
 	constructor( props ) {

@@ -17,19 +17,16 @@
  */
 
 /**
- * Internal dependencies
- */
-import DashboardPopularityInner from './dashboard-widget-popularity-inner';
-/**
- * External dependencies
- */
-import DashboardModuleHeader from 'GoogleComponents/dashboard/dashboard-module-header';
-
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import DashboardPopularityInner from './dashboard-widget-popularity-inner';
+import DashboardModuleHeader from '../../../components/dashboard/dashboard-module-header';
 
 class DashboardPopularity extends Component {
 	render() {

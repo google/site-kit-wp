@@ -6,8 +6,12 @@ import { storiesOf } from '@storybook/react';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import Notification from 'GoogleComponents/notifications/notification';
-import ModulesList from 'GoogleComponents/modules-list';
+
+/**
+ * Internal dependencies
+ */
+import Notification from '../assets/js/components/notifications/notification';
+import ModulesList from '../assets/js/components/modules-list';
 
 global.googlesitekit.canAdsRun = true;
 

@@ -19,19 +19,7 @@
 /**
  * External dependencies
  */
-import DataBlock from 'GoogleComponents/data-block';
-import withData from 'GoogleComponents/higherorder/withdata';
-import { TYPE_MODULES } from 'GoogleComponents/data';
-import Sparkline from 'GoogleComponents/sparkline';
-import CTA from 'GoogleComponents/notifications/cta';
-import PreviewBlock from 'GoogleComponents/preview-block';
-import {
-	getTimeInSeconds,
-	readableLargeNumber,
-	extractForSparkline,
-	getSiteKitAdminURL,
-} from 'GoogleUtil';
-import { isEmpty } from 'lodash';
+import { isEmpty, get } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -43,13 +31,26 @@ import { Component, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import {
+	getTimeInSeconds,
+	readableLargeNumber,
+	extractForSparkline,
+	getSiteKitAdminURL,
+} from '../../../util';
+import {
 	calculateOverviewData,
 	extractAnalyticsDashboardSparklineData,
 	getAnalyticsErrorMessageFromData,
 	siteAnalyticsReportDataDefaults,
 	overviewReportDataDefaults,
 	isDataZeroForReporting,
+	userReportDataDefaults,
 } from '../util';
+import DataBlock from '../../../components/data-block';
+import withData from '../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../components/data';
+import Sparkline from '../../../components/sparkline';
+import CTA from '../../../components/notifications/cta';
+import PreviewBlock from '../../../components/preview-block';
 
 class AnalyticsDashboardWidgetTopLevel extends Component {
 	constructor( props ) {
@@ -57,6 +58,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 		this.state = {
 			accounts: false,
 			goals: false,
+			directTotalUsers: false,
 		};
 	}
 
@@ -88,6 +90,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 			overview,
 			extractedAnalytics,
 			goals,
+			directTotalUsers,
 		} = this.state;
 
 		const { permaLink } = global.googlesitekit;
@@ -95,15 +98,13 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 		const href = getSiteKitAdminURL( 'googlesitekit-module-analytics', {} );
 		const goalURL = 'https://support.google.com/analytics/answer/1032415?hl=en#create_or_edit_goals';
 
-		let totalUsers = '',
-			totalUsersChange = '',
+		let totalUsersChange = '',
 			goalCompletions = '',
 			goalCompletionsChange = '',
 			averageBounceRate = '',
 			averageBounceRateChange = '';
 
 		if ( overview ) {
-			totalUsers = overview.totalUsers;
 			totalUsersChange = overview.totalUsersChange;
 			goalCompletions = overview.goalCompletions;
 			goalCompletionsChange = overview.goalCompletionsChange;
@@ -123,7 +124,7 @@ class AnalyticsDashboardWidgetTopLevel extends Component {
 					<DataBlock
 						className="overview-total-users"
 						title={ __( 'Unique Visitors from Search', 'google-site-kit' ) }
-						datapoint={ readableLargeNumber( totalUsers ) }
+						datapoint={ readableLargeNumber( directTotalUsers ) }
 						change={ totalUsersChange }
 						changeDataUnit="%"
 						source={ {
@@ -243,6 +244,26 @@ export default withData(
 				if ( ! state.overview ) {
 					return {
 						overview: calculateOverviewData( data ),
+					};
+				}
+			},
+		},
+		{
+			type: TYPE_MODULES,
+			identifier: 'analytics',
+			datapoint: 'report',
+			data: {
+				...userReportDataDefaults,
+				url: global.googlesitekit.permaLink,
+			},
+			priority: 1,
+			maxAge: getTimeInSeconds( 'day' ),
+			context: [ 'Dashboard' ],
+			toState( state, { data } ) {
+				if ( ! state.directTotalUsers ) {
+					const directTotalUsers = get( data, '[0].data.totals[0].values[0]' );
+					return {
+						directTotalUsers,
 					};
 				}
 			},

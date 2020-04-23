@@ -19,14 +19,19 @@
 /**
  * External dependencies
  */
-import { MDCSwitch } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
  * WordPress dependencies
  */
+import { withInstanceId } from '@wordpress/compose';
 import { Component, Fragment, createRef } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { MDCSwitch } from '../material-components';
 
 class Switch extends Component {
 	constructor( props ) {
@@ -39,7 +44,13 @@ class Switch extends Component {
 	}
 
 	render() {
-		const { id, onClick, label, checked, hideLabel } = this.props;
+		const {
+			id = `googlesitekit-switch-${ this.props.instanceId }`,
+			onClick,
+			label,
+			checked,
+			hideLabel,
+		} = this.props;
 
 		const onKeyPress = ( event ) => {
 			if ( typeof onClick === 'function' && event.code === 'Enter' ) {
@@ -86,11 +97,12 @@ class Switch extends Component {
 }
 
 Switch.propTypes = {
-	id: PropTypes.string.isRequired,
+	id: PropTypes.string,
 	onClick: PropTypes.func,
 	label: PropTypes.string.isRequired,
 	checked: PropTypes.bool,
 	hideLabel: PropTypes.bool,
+	instanceId: PropTypes.number.isRequired,
 };
 
 Switch.defaultProps = {
@@ -98,4 +110,4 @@ Switch.defaultProps = {
 	hideLabel: true,
 };
 
-export default Switch;
+export default withInstanceId( Switch );

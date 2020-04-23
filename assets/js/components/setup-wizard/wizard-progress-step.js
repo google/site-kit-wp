@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import SvgIcon from 'GoogleUtil/svg-icon';
 import React from 'react';
 import classnames from 'classnames';
 
@@ -28,6 +27,11 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import SvgIcon from '../../util/svg-icon';
 
 class WizardProgressStep extends Component {
 	render() {

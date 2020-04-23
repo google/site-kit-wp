@@ -19,18 +19,6 @@
 /**
  * External dependencies
  */
-import { TYPE_MODULES } from 'GoogleComponents/data';
-import DataBlock from 'GoogleComponents/data-block.js';
-import PreviewBlock from 'GoogleComponents/preview-block';
-import {
-	getTimeInSeconds,
-	readableLargeNumber,
-} from 'GoogleUtil';
-/**
- * Internal dependencies
- */
-import { isDataZeroAdSense } from '../util';
-import withData from '../../../components/higherorder/withdata';
 
 /**
  * WordPress dependencies
@@ -38,6 +26,19 @@ import withData from '../../../components/higherorder/withdata';
 import { __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 import { isUndefined } from 'lodash';
+
+/**
+ * Internal dependencies
+ */
+import {
+	getTimeInSeconds,
+	readableLargeNumber,
+} from '../../../util';
+import { TYPE_MODULES } from '../../../components/data';
+import DataBlock from '../../../components/data-block.js';
+import PreviewBlock from '../../../components/preview-block';
+import { isDataZeroAdSense } from '../util';
+import withData from '../../../components/higherorder/withdata';
 
 class AdSensePerformanceWidget extends Component {
 	constructor( props ) {

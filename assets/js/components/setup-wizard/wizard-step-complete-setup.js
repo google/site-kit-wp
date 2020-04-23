@@ -20,14 +20,18 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import Button from 'GoogleComponents/button';
-import { trackEvent } from 'GoogleUtil';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { trackEvent } from '../../util';
+import Button from '../button';
 
 class WizardStepCompleteSetup extends Component {
 	constructor( props ) {

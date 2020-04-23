@@ -17,13 +17,14 @@
  */
 
 /**
- * External dependencies
- */
-import SvgIcon from 'GoogleUtil/svg-icon';
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import SvgIcon from '../util/svg-icon';
 
 const Logo = () => {
 	return (

@@ -17,10 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
@@ -35,9 +31,10 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
-import { STORE_NAME } from './index';
+import { STORE_NAME } from './constants';
 
 describe( 'core/site connection', () => {
+	const responseConnected = { connected: true, resettable: true, setupCompleted: true };
 	let apiFetchSpy;
 	let registry;
 	let store;
@@ -92,13 +89,12 @@ describe( 'core/site connection', () => {
 	describe( 'selectors', () => {
 		describe( 'getConnection', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				const response = { connected: true, resettable: true };
 				fetch
 					.doMockOnceIf(
 						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
 					)
 					.mockResponseOnce(
-						JSON.stringify( response ),
+						JSON.stringify( responseConnected ),
 						{ status: 200 }
 					);
 
@@ -115,11 +111,25 @@ describe( 'core/site connection', () => {
 				const connection = registry.select( STORE_NAME ).getConnection();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
-				expect( connection ).toEqual( response );
+				expect( connection ).toEqual( responseConnected );
 
 				const connectionSelect = registry.select( STORE_NAME ).getConnection();
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( connectionSelect ).toEqual( connection );
+			} );
+
+			it( 'does not make a network request if data is already in state', async () => {
+				registry.dispatch( STORE_NAME ).receiveConnection( responseConnected );
+
+				const connection = registry.select( STORE_NAME ).getConnection();
+
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getConnection' )
+				);
+
+				expect( fetch ).not.toHaveBeenCalled();
+				expect( connection ).toEqual( responseConnected );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -149,6 +159,201 @@ describe( 'core/site connection', () => {
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( connection ).toEqual( undefined );
+			} );
+		} );
+
+		describe( 'isConnected', () => {
+			it( 'uses a resolver get all connection info', async () => {
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
+					)
+					.mockResponseOnce(
+						JSON.stringify( responseConnected ),
+						{ status: 200 }
+					);
+
+				const initialIsConnected = registry.select( STORE_NAME ).isConnected();
+				// The connection info will be its initial value while the connection
+				// info is fetched.
+				expect( initialIsConnected ).toEqual( undefined );
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).isConnected() !== undefined
+					),
+				);
+
+				const isConnected = registry.select( STORE_NAME ).isConnected();
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( isConnected ).toEqual( responseConnected.connected );
+			} );
+
+			it( 'dispatches an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
+					)
+					.mockResponseOnce(
+						JSON.stringify( response ),
+						{ status: 500 }
+					);
+
+				muteConsole( 'error' );
+				registry.select( STORE_NAME ).isConnected();
+				await subscribeUntil( registry,
+					// TODO: We may want a selector for this, but for now this is fine
+					// because it's internal-only.
+					() => store.getState().isFetchingConnection === false,
+				);
+
+				const isConnected = registry.select( STORE_NAME ).isConnected();
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( isConnected ).toEqual( undefined );
+			} );
+
+			it( 'returns undefined if connection info is not available', async () => {
+				// This triggers a network request, so ignore the error.
+				muteConsole( 'error' );
+				const isConnected = registry.select( STORE_NAME ).isConnected();
+
+				expect( isConnected ).toEqual( undefined );
+			} );
+		} );
+
+		describe( 'isResettable', () => {
+			it( 'uses a resolver get all connection info', async () => {
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
+					)
+					.mockResponseOnce(
+						JSON.stringify( responseConnected ),
+						{ status: 200 }
+					);
+
+				const initialIsResettable = registry.select( STORE_NAME ).isResettable();
+				// The connection info will be its initial value while the connection
+				// info is fetched.
+				expect( initialIsResettable ).toEqual( undefined );
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).isResettable() !== undefined
+					),
+				);
+
+				const isResettable = registry.select( STORE_NAME ).isResettable();
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( isResettable ).toEqual( responseConnected.resettable );
+			} );
+
+			it( 'dispatches an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
+					)
+					.mockResponseOnce(
+						JSON.stringify( response ),
+						{ status: 500 }
+					);
+
+				muteConsole( 'error' );
+				registry.select( STORE_NAME ).isResettable();
+				await subscribeUntil( registry,
+					// TODO: We may want a selector for this, but for now this is fine
+					// because it's internal-only.
+					() => store.getState().isFetchingConnection === false,
+				);
+
+				const isResettable = registry.select( STORE_NAME ).isResettable();
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( isResettable ).toEqual( undefined );
+			} );
+
+			it( 'returns undefined if connection info is not available', async () => {
+				// This triggers a network request, so ignore the error.
+				muteConsole( 'error' );
+				const isResettable = registry.select( STORE_NAME ).isResettable();
+
+				expect( isResettable ).toEqual( undefined );
+			} );
+		} );
+
+		describe( 'isSetupCompleted', () => {
+			it( 'uses a resolver get all connection info', async () => {
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
+					)
+					.mockResponseOnce(
+						JSON.stringify( responseConnected ),
+						{ status: 200 }
+					);
+
+				const initialIsSetupCompleted = registry.select( STORE_NAME ).isSetupCompleted();
+				// The connection info will be its initial value while the connection
+				// info is fetched.
+				expect( initialIsSetupCompleted ).toEqual( undefined );
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).isSetupCompleted() !== undefined
+					),
+				);
+
+				const isSetupCompleted = registry.select( STORE_NAME ).isSetupCompleted();
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( isSetupCompleted ).toEqual( responseConnected.setupCompleted );
+			} );
+
+			it( 'dispatches an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/core\/site\/data\/connection/
+					)
+					.mockResponseOnce(
+						JSON.stringify( response ),
+						{ status: 500 }
+					);
+
+				muteConsole( 'error' );
+				registry.select( STORE_NAME ).isSetupCompleted();
+				await subscribeUntil( registry,
+					// TODO: We may want a selector for this, but for now this is fine
+					// because it's internal-only.
+					() => store.getState().isFetchingConnection === false,
+				);
+
+				const isSetupCompleted = registry.select( STORE_NAME ).isSetupCompleted();
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( isSetupCompleted ).toEqual( undefined );
+			} );
+
+			it( 'returns undefined if connection info is not available', async () => {
+				// This triggers a network request, so ignore the error.
+				muteConsole( 'error' );
+				const isSetupCompleted = registry.select( STORE_NAME ).isSetupCompleted();
+
+				expect( isSetupCompleted ).toEqual( undefined );
 			} );
 		} );
 	} );

@@ -11,7 +11,7 @@ import { fillFilterWithComponent } from '../';
 /**
  * External dependencies
  */
-import { render } from 'test-utils';
+import { render } from '../../../../tests/js/test-utils';
 
 describe( 'fillFilterWithComponent', () => {
 	it( 'fills filtered component', () => {

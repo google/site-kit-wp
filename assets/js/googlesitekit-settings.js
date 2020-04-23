@@ -20,9 +20,7 @@
 /**
  * External dependencies
  */
-import 'GoogleComponents/notifications';
-import { loadTranslations } from 'GoogleUtil';
-import 'GoogleModules';
+import './modules';
 
 /**
  * WordPress dependencies
@@ -34,9 +32,10 @@ import { Component, render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-// eslint-disable-next-line @wordpress/dependency-group
-import ErrorHandler from 'GoogleComponents/ErrorHandler';
-import SettingsApp from 'GoogleComponents/settings/settings-app';
+import { loadTranslations } from './util';
+import './components/notifications';
+import ErrorHandler from './components/ErrorHandler';
+import SettingsApp from './components/settings/settings-app';
 
 class GoogleSitekitSettings extends Component {
 	render() {

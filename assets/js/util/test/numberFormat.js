@@ -3,6 +3,19 @@
  */
 import { numberFormat } from '../';
 
+/**
+ * Helper to set Site Kit locale
+ *
+ * @param {string} langCode The locale to set Site Kit to use. E.g. `en-US` or `de-DE`
+ *
+ * @return {Object} Site Kit configuration object.
+ */
+const setupGoogleSiteKit = ( langCode ) => {
+	return global.googlesitekit = {
+		locale: { '': { lang: langCode } },
+	};
+};
+
 describe( 'numberFormat', () => {
 	it( 'formats numbers correctly according to the locale provided', () => {
 		expect(
@@ -60,5 +73,33 @@ describe( 'numberFormat', () => {
 		expect(
 			numberFormat( 123456789.87, { locale: 'de-DE' } )
 		).toStrictEqual( '123.456.789,87' );
+	} );
+
+	afterEach( () => {
+		global.googlesitekit = null;
+	} );
+
+	const siteKitLocales = [
+		[
+			'de_DE_formal',
+			123.87,
+			'123,87',
+
+		],
+		[
+			'de_CH_informal',
+			123.87,
+			'123.87',
+		],
+		[
+			'pt_PT_ao90',
+			123.87,
+			'123,87',
+		],
+	];
+
+	it.each( siteKitLocales )( 'formats numbers correctly with locale variant %s', ( locale, value, expected ) => {
+		setupGoogleSiteKit( locale );
+		expect( numberFormat( value ) ).toStrictEqual( expected );
 	} );
 } );

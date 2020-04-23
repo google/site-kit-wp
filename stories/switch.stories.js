@@ -2,7 +2,11 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import Switch from 'GoogleComponents/switch';
+
+/**
+ * Internal dependencies
+ */
+import Switch from '../assets/js/components/switch';
 
 storiesOf( 'Global', module )
 	.add( 'Switches', () => (

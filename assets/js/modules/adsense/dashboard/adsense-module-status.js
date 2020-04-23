@@ -20,7 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import SvgIcon from 'GoogleUtil/svg-icon';
 
 /**
  * WordPress dependencies
@@ -31,9 +30,10 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import SvgIcon from '../../../util/svg-icon';
 import AdSenseSetupInstructions from '../setup/adsense-setup-instructions';
 import AdSenseInProcessStatus from './adsense-in-process-status';
-import { getExistingTag } from 'GoogleUtil';
+import { getExistingTag, getModulesData } from '../../../util';
 import { getAdSenseAccountStatus, propsFromAccountStatus } from '../util';
 
 class AdSenseModuleStatus extends Component {
@@ -97,9 +97,10 @@ class AdSenseModuleStatus extends Component {
 	}
 
 	render() {
+		const modulesData = getModulesData();
 		const { accountStatus, clientID, loadingMessage, instructionProps } = this.state;
 
-		const showInProcess = ! accountStatus || ! global.googlesitekit.modules.adsense.setupComplete || [
+		const showInProcess = ! accountStatus || ! modulesData.adsense.setupComplete || [
 			'ads-display-pending',
 			'account-pending-review',
 			'account-required-action',
@@ -119,7 +120,7 @@ class AdSenseModuleStatus extends Component {
 					</h2>
 				</div>
 				<div className="googlesitekit-setup-module__step">
-					{ ! global.googlesitekit.canAdsRun && ! global.googlesitekit.modules.adsense.setupComplete && (
+					{ ! global.googlesitekit.canAdsRun && ! modulesData.adsense.setupComplete && (
 						<div className="googlesitekit-settings-module-warning">
 							<SvgIcon id="error" height="20" width="23" />
 							{ __( 'Ad blocker detected, you need to disable it in order to setup AdSense.', 'google-site-kit' ) }
@@ -138,7 +139,7 @@ class AdSenseModuleStatus extends Component {
 						/>
 					) }
 
-					{ global.googlesitekit.canAdsRun && accountStatus && ( global.googlesitekit.modules.adsense.setupComplete || 'account-connected' === accountStatus ) && (
+					{ global.googlesitekit.canAdsRun && accountStatus && ( modulesData.adsense.setupComplete || 'account-connected' === accountStatus ) && (
 						<AdSenseSetupInstructions
 							{ ...instructionProps }
 							accountStatus={ accountStatus }

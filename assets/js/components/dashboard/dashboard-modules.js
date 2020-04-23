@@ -17,18 +17,20 @@
  */
 
 /**
- * Internal dependencies
- */
-import DashboardModule from './dashboard-module';
-/**
  * External dependencies
  */
-import HelpLink from 'GoogleComponents/help-link';
 import { Fragment } from 'react';
+
 /**
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import HelpLink from '../help-link';
+import DashboardModule from './dashboard-module';
 
 class DashboardModules extends Component {
 	render() {

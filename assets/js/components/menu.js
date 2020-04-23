@@ -19,13 +19,17 @@
 /**
  * External dependencies
  */
-import { MDCMenu } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
 import { Component, createRef } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { MDCMenu } from '../material-components';
 
 class Menu extends Component {
 	constructor( props ) {

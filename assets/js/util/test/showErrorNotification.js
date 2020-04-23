@@ -7,11 +7,7 @@ import { applyFilters } from '@wordpress/hooks';
  * Internal dependencies
  */
 import { showErrorNotification } from '../';
-
-/**
- * External dependencies
- */
-import { render } from 'test-utils';
+import { render } from '../../../../tests/js/test-utils';
 
 describe( 'showErrorNotification', () => {
 	it( 'returns null if nothing is passed', () => {

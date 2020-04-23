@@ -8,6 +8,8 @@ describe( 'toggleConfirmModuleSettings', () => {
 		const googlesitekit = {
 			modules: {
 				analytics: {
+					slug: 'analytics',
+					name: 'Analytics',
 					settings: { accountID: '12345678' },
 					setupComplete: true,
 					confirm: true,
@@ -34,6 +36,8 @@ describe( 'toggleConfirmModuleSettings', () => {
 		const googlesitekit = {
 			modules: {
 				analytics: {
+					slug: 'analytics',
+					name: 'Analytics',
 					settings: { accountID: '12345678' },
 					setupComplete: true,
 					confirm: true,
@@ -60,11 +64,15 @@ describe( 'toggleConfirmModuleSettings', () => {
 		const googlesitekit = {
 			modules: {
 				adsense: {
+					slug: 'adsense',
+					name: 'AdSense',
 					settings: { accountID: '99999999' },
 					setupComplete: false,
 					confirm: true,
 				},
 				analytics: {
+					slug: 'analytics',
+					name: 'Analytics',
 					settings: { accountID: '12345678' },
 					setupComplete: true,
 					confirm: true,

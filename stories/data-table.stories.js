@@ -12,8 +12,8 @@ import { __, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Layout from 'GoogleComponents/layout/layout';
-import AnalyticsDashboardWidgetTopPagesTable from 'GoogleModules/analytics/dashboard/dashboard-widget-top-pages-table';
+import Layout from '../assets/js/components/layout/layout';
+import AnalyticsDashboardWidgetTopPagesTable from '../assets/js/modules/analytics/dashboard/dashboard-widget-top-pages-table';
 import { googlesitekit as analyticsDashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 
 storiesOf( 'Global', module )

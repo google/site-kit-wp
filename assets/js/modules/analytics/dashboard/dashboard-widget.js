@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import Header from 'GoogleComponents/header';
 import classnames from 'classnames';
 
 /**
@@ -31,21 +30,22 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Header from '../../../components/header';
 import AnalyticsDashboardWidgetSiteStats from './dashboard-widget-sitestats';
 import AnalyticsDashboardWidgetTopPagesTable from './dashboard-widget-top-pages-table';
 import AnalyticsDashboardWidgetOverview from './dashboard-widget-overview';
 import AnalyticsDashboardWidgetTopAcquisitionSources from './dashboard-widget-top-acquisition-sources-table';
-import Layout from 'GoogleComponents/layout/layout';
-import PageHeader from 'GoogleComponents/page-header';
+import Layout from '../../../components/layout/layout';
+import PageHeader from '../../../components/page-header';
 import DashboardAcquisitionPieChart from './dashboard-widget-acquisition-piechart';
-import Alert from 'GoogleComponents/alert';
-import ProgressBar from 'GoogleComponents/progress-bar';
-import getNoDataComponent from 'GoogleComponents/notifications/nodata';
-import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
-import AdSenseDashboardOutro from 'GoogleModules/adsense/dashboard/dashboard-outro';
-import { isAdsenseConnectedAnalytics } from 'GoogleModules/adsense/util';
-import { getCurrentDateRange, getCurrentDateRangeSlug } from 'GoogleUtil';
-import HelpLink from 'GoogleComponents/help-link';
+import Alert from '../../../components/alert';
+import ProgressBar from '../../../components/progress-bar';
+import getNoDataComponent from '../../../components/notifications/nodata';
+import getDataErrorComponent from '../../../components/notifications/data-error';
+import AdSenseDashboardOutro from '../../../modules/adsense/dashboard/dashboard-outro';
+import { isAdsenseConnectedAnalytics } from '../../../modules/adsense/util';
+import { getCurrentDateRange, getCurrentDateRangeSlug } from '../../../util';
+import HelpLink from '../../../components/help-link';
 
 class AnalyticsDashboardWidget extends Component {
 	constructor( props ) {

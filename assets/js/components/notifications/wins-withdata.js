@@ -19,9 +19,12 @@
 /**
  * External dependencies
  */
-import data from 'GoogleComponents/data';
-
 import { filter } from 'lodash';
+
+/**
+ * Internal dependencies
+ */
+import data from '../data';
 
 class WinsWithData {
 	constructor( wins ) {

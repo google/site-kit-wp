@@ -17,9 +17,10 @@
  */
 
 /**
- * External dependencies
+ * WordPress dependencies
  */
-import Notification from 'GoogleComponents/notifications/notification';
+import { Component } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -29,12 +30,7 @@ import {
 	acceptNotification,
 	dismissNotification,
 } from './site';
-
-/**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import Notification from './notification';
 
 class DashboardCoreSiteAlerts extends Component {
 	constructor( props ) {

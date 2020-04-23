@@ -17,21 +17,17 @@
  */
 
 /**
- * External dependencies
- */
-import Layout from 'GoogleComponents/layout/layout';
-import OptIn from 'GoogleComponents/optin';
-
-/**
- * Internal dependencies
- */
-import ResetButton from '../reset-button';
-
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Layout from '../layout/layout';
+import OptIn from '../optin';
+import ResetButton from '../reset-button';
 
 class SettingsAdmin extends Component {
 	constructor() {

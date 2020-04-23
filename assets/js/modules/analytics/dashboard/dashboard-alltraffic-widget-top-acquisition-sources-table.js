@@ -19,12 +19,6 @@
 /**
  * External dependencies
  */
-import withData from 'GoogleComponents/higherorder/withdata';
-import { TYPE_MODULES } from 'GoogleComponents/data';
-import { getTimeInSeconds } from 'GoogleUtil';
-import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
-import MiniChart from 'GoogleComponents/mini-chart';
-import PreviewTable from 'GoogleComponents/preview-table';
 import { map } from 'lodash';
 
 /**
@@ -36,6 +30,12 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { getTimeInSeconds } from '../../../util';
+import withData from '../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../components/data';
+import { getDataTableFromData, TableOverflowContainer } from '../../../components/data-table';
+import MiniChart from '../../../components/mini-chart';
+import PreviewTable from '../../../components/preview-table';
 import { trafficSourcesReportDataDefaults } from '../util';
 
 class AnalyticsAllTrafficDashboardWidgetTopAcquisitionSources extends Component {

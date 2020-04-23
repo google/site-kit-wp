@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import PreviewBlock from 'GoogleComponents/preview-block';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
@@ -27,6 +26,11 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import PreviewBlock from './preview-block';
 
 class PreviewTable extends Component {
 	render() {

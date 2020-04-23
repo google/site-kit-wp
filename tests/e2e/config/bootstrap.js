@@ -41,6 +41,8 @@ const { PUPPETEER_TIMEOUT, EXPECT_PUPPETEER_TIMEOUT } = process.env;
 const OBSERVED_CONSOLE_MESSAGE_TYPES = {
 	warning: 'warn',
 	error: 'error',
+	log: 'log',
+	info: 'log',
 };
 
 /**
@@ -128,7 +130,9 @@ function observeConsoleLogging() {
 		// See: https://core.trac.wordpress.org/ticket/47183
 		if (
 			text.startsWith( 'Failed to decode downloaded font:' ) ||
-			text.startsWith( 'OTS parsing error:' )
+			text.startsWith( 'OTS parsing error:' ) ||
+			text.includes( 'Download the React DevTools for a better development experience' ) ||
+			text.includes( 'https://fb.me/react-unsafe-component-lifecycles' )
 		) {
 			return;
 		}
@@ -244,6 +248,12 @@ beforeAll( async () => {
 		page.on( 'request', observeRestRequest );
 		page.on( 'response', observeRestResponse );
 	}
+	// There's no good way to otherwise conditionally enable this logging
+	// since the code needs to be built into the e2e-utilities.js.
+	if ( '1' === process.env.DEBUG_REDUX ) {
+		OBSERVED_CONSOLE_MESSAGE_TYPES.debug = 'debug';
+	}
+
 	await setBrowserViewport( 'large' );
 
 	await deactivateUtilityPlugins();

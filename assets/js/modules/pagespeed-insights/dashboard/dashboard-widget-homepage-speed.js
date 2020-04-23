@@ -17,13 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import SourceLink from 'GoogleComponents/source-link';
-import ProgressBar from 'GoogleComponents/progress-bar';
-import getDataErrorComponent from 'GoogleComponents/notifications/data-error';
-
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
@@ -37,6 +30,9 @@ import {
 	PageSpeedInsightsDashboardWidgetHomepageSpeedMobile,
 } from './dashboard-widget-homepage-speed-column';
 import { PageSpeedReportScale } from './util';
+import SourceLink from '../../../components/source-link';
+import ProgressBar from '../../../components/progress-bar';
+import getDataErrorComponent from '../../../components/notifications/data-error';
 
 class PageSpeedInsightsDashboardWidgetHomepageSpeed extends Component {
 	constructor( props ) {

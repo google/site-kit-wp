@@ -19,12 +19,6 @@
 /**
  * External dependencies
  */
-import withData from 'GoogleComponents/higherorder/withdata';
-import { TYPE_MODULES } from 'GoogleComponents/data';
-import { getTimeInSeconds, numberFormat } from 'GoogleUtil';
-import { getDataTableFromData, TableOverflowContainer } from 'GoogleComponents/data-table';
-import Layout from 'GoogleComponents/layout/layout';
-import PreviewTable from 'GoogleComponents/preview-table';
 import { map } from 'lodash';
 
 /**
@@ -36,11 +30,17 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { getTimeInSeconds, numberFormat, getModulesData } from '../../../util';
+import withData from '../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../components/data';
+import { getDataTableFromData, TableOverflowContainer } from '../../../components/data-table';
+import Layout from '../../../components/layout/layout';
+import PreviewTable from '../../../components/preview-table';
 import { analyticsAdsenseReportDataDefaults } from '../util';
 
 class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
 	static renderLayout( component ) {
-		const { accountURL } = global.googlesitekit.modules.adsense;
+		const { accountURL } = getModulesData().adsense;
 		return (
 			<Layout
 				header
@@ -101,7 +101,7 @@ class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
 			accountID,
 			internalWebPropertyID,
 			profileID,
-		} = global.googlesitekit.modules.analytics.settings;
+		} = getModulesData().analytics.settings;
 
 		// Construct a deep link.
 		const adsenseDeepLink = `https://analytics.google.com/analytics/web/?pli=1#/report/content-pages/a${ accountID }w${ internalWebPropertyID }p${ profileID }/explorer-table.plotKeys=%5B%5D&_r.drilldown=analytics.pagePath:~2F`;
@@ -151,7 +151,7 @@ const getDataError = ( data ) => {
 	}
 
 	// We don't want to show error as AdsenseDashboardOutro will be rendered for this case.
-	if ( 400 === data.error.code && 'INVALID_ARGUMENT' === data.error.status && global.googlesitekit.modules.analytics.active ) {
+	if ( 400 === data.error.code && 'INVALID_ARGUMENT' === data.error.status && getModulesData().analytics.active ) {
 		return null;
 	}
 

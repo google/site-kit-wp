@@ -6,8 +6,7 @@ import { useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-// eslint-disable-next-line @wordpress/dependency-group
-import Button from 'GoogleComponents/button';
+import Button from '../button';
 
 export const ThrowError = ( event ) => {
 	if ( event ) {

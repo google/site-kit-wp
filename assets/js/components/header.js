@@ -17,18 +17,16 @@
  */
 
 /**
- * External dependencies
- */
-import ErrorNotification from 'SiteKitCore/components/notifications/error-notification';
-import Logo from 'GoogleComponents/logo';
-/**
- * Internal dependencies
- */
-import UserMenu from './user-menu';
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Logo from './logo';
+import UserMenu from './user-menu';
+import ErrorNotification from '../components/notifications/error-notification';
 
 class Header extends Component {
 	render() {

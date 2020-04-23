@@ -19,17 +19,10 @@
 /**
  * External dependencies
  */
-import Button from 'GoogleComponents/button';
-import Link from 'GoogleComponents/link';
-import Switch from 'GoogleComponents/switch';
-import data, { TYPE_MODULES } from 'GoogleComponents/data';
-import ProgressBar from 'GoogleComponents/progress-bar';
-import { Select, Option } from 'SiteKitCore/material-components';
-import SvgIcon from 'GoogleUtil/svg-icon';
 import PropTypes from 'prop-types';
-import { getExistingTag, toggleConfirmModuleSettings } from 'GoogleUtil';
 import { get } from 'lodash';
 import classnames from 'classnames';
+
 /**
  * WordPress dependencies
  */
@@ -40,11 +33,20 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
+import SvgIcon from '../../util/svg-icon';
+import { getExistingTag, toggleConfirmModuleSettings, getModulesData } from '../../util';
 import {
 	getContainers,
 	isValidAccountID,
 	isValidContainerID,
 } from './util';
+import { Select, Option } from '../../material-components';
+import Button from '../../components/button';
+import DisplaySetting from '../../components/display-setting';
+import Link from '../../components/link';
+import Switch from '../../components/switch';
+import data, { TYPE_MODULES } from '../../components/data';
+import ProgressBar from '../../components/progress-bar';
 
 const ACCOUNT_CREATE = 'account_create';
 const CONTAINER_CREATE = 'container_create';
@@ -56,7 +58,7 @@ class TagmanagerSetup extends Component {
 		super( props );
 
 		const { ampEnabled, ampMode } = global.googlesitekit.admin;
-		const { settings } = global.googlesitekit.modules.tagmanager;
+		const { settings } = getModulesData().tagmanager;
 		const ampUsageContext = ampMode === 'primary' ? USAGE_CONTEXT_AMP : [ USAGE_CONTEXT_WEB, USAGE_CONTEXT_AMP ];
 
 		this.state = {
@@ -363,7 +365,7 @@ class TagmanagerSetup extends Component {
 				finishSetup();
 			}
 
-			global.googlesitekit.modules.tagmanager.settings = savedSettings;
+			getModulesData().tagmanager.settings = savedSettings;
 
 			this.setState( {
 				isSaving: false,
@@ -424,7 +426,7 @@ class TagmanagerSetup extends Component {
 	}
 
 	renderSettingsInfo() {
-		const { settings } = global.googlesitekit.modules.tagmanager;
+		const { settings } = getModulesData().tagmanager;
 		const {
 			ampEnabled,
 			isSecondaryAMP,
@@ -448,7 +450,7 @@ class TagmanagerSetup extends Component {
 							{ __( 'Account', 'google-site-kit' ) }
 						</p>
 						<h5 className="googlesitekit-settings-module__meta-item-data">
-							{ accountID || false }
+							<DisplaySetting value={ accountID } />
 						</h5>
 					</div>
 
@@ -459,7 +461,7 @@ class TagmanagerSetup extends Component {
 								{ ! ampEnabled && __( 'Container ID', 'google-site-kit' ) }
 							</p>
 							<h5 className="googlesitekit-settings-module__meta-item-data">
-								{ settings.containerID || false }
+								<DisplaySetting value={ settings.containerID } />
 							</h5>
 						</div>
 					) }
@@ -471,7 +473,7 @@ class TagmanagerSetup extends Component {
 								{ ! isSecondaryAMP && __( 'Container ID', 'google-site-kit' ) }
 							</p>
 							<h5 className="googlesitekit-settings-module__meta-item-data">
-								{ settings.ampContainerID || false }
+								<DisplaySetting value={ settings.ampContainerID } />
 							</h5>
 						</div>
 					) }

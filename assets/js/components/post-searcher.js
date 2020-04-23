@@ -26,18 +26,22 @@ import {
 	trim,
 } from 'lodash';
 import Autocomplete from 'accessible-autocomplete/react';
-import data, { TYPE_CORE } from 'GoogleComponents/data';
-import Button from 'GoogleComponents/button';
-import Layout from 'GoogleComponents/layout/layout';
-import {
-	getSiteKitAdminURL,
-} from 'GoogleUtil';
 
 /**
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import {
+	getSiteKitAdminURL,
+} from '../util';
+import data, { TYPE_CORE } from './data';
+import Button from './button';
+import Layout from './layout/layout';
 
 class PostSearcher extends Component {
 	constructor( props ) {

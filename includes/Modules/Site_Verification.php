@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Util\Exit_Handler;
+use Google\Site_Kit\Core\Util\Google_URL_Matcher_Trait;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google_Service_SiteVerification;
 use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequest;
@@ -40,7 +41,7 @@ use Exception;
  * @ignore
  */
 final class Site_Verification extends Module implements Module_With_Scopes {
-	use Module_With_Scopes_Trait;
+	use Module_With_Scopes_Trait, Google_URL_Matcher_Trait;
 
 	/**
 	 * Meta site verification type.
@@ -275,37 +276,28 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:verification':
 				if ( $data['siteURL'] ) {
-					$current_url = trailingslashit( $data['siteURL'] );
+					$current_url = $data['siteURL'];
 				} else {
-					$current_url = trailingslashit( $this->context->get_reference_site_url() );
+					$current_url = $this->context->get_reference_site_url();
 				}
 
 				$items = $response->getItems();
-
 				foreach ( $items as $item ) {
 					$site = $item->getSite();
-					$url  = trailingslashit( $site->getIdentifier() );
 
-					if ( 'SITE' === $site->getType() && $current_url === $url ) {
+					$match = false;
+					if ( 'INET_DOMAIN' === $site->getType() ) {
+						$match = $this->is_domain_match( $site->getIdentifier(), $current_url );
+					} elseif ( 'SITE' === $site->getType() ) {
+						$match = $this->is_url_match( $site->getIdentifier(), $current_url );
+					}
+
+					if ( $match ) {
 						return array(
 							'identifier' => $site->getIdentifier(),
 							'type'       => $site->getType(),
 							'verified'   => true,
 						);
-					}
-
-					if ( 'INET_DOMAIN' === $site->getType() ) {
-						$host = str_replace( array( 'http://', 'https://' ), '', $site->getIdentifier() );
-
-						if ( ! empty( $host ) && false !== strpos( trailingslashit( $current_url ), trailingslashit( $host ) ) ) {
-							$response = array(
-								'identifier' => $site->getIdentifier(),
-								'type'       => $site->getType(),
-								'verified'   => true,
-							);
-
-							return $response;
-						}
 					}
 				}
 

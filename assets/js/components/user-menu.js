@@ -15,21 +15,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * External dependencies
- */
-import Dialog from 'GoogleComponents/dialog';
-import Button from 'GoogleComponents/button';
-import Menu from 'GoogleComponents/menu';
-import Modal from 'GoogleComponents/modal';
-import { clearWebStorage } from 'GoogleUtil';
-import { getSiteKitAdminURL } from 'SiteKitCore/util';
 
 /**
  * WordPress dependencies
  */
 import { Component, Fragment, createRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { getSiteKitAdminURL, clearWebStorage } from '../util';
+import Dialog from './dialog';
+import Button from './button';
+import Menu from './menu';
+import Modal from './modal';
 
 class UserMenu extends Component {
 	constructor( props ) {

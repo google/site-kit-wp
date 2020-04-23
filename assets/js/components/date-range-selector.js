@@ -1,9 +1,4 @@
 /**
- * External dependencies
- */
-import { Option, Select } from 'SiteKitCore/material-components';
-
-/**
  * WordPress dependencies
  */
 import { _n, sprintf } from '@wordpress/i18n';
@@ -16,6 +11,11 @@ import {
 	addFilter,
 	doAction,
 } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
+import { Option, Select } from '../material-components';
 
 class DateRangeSelector extends Component {
 	constructor( props ) {

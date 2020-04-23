@@ -17,25 +17,22 @@
  */
 
 /**
- * External dependencies
- */
-import GoogleChart from 'GoogleComponents/google-chart';
-import {
-	getTimeInSeconds,
-} from 'GoogleUtil';
-import withData from 'GoogleComponents/higherorder/withdata';
-import { TYPE_MODULES } from 'GoogleComponents/data';
-/**
- * Internal dependencies
- */
-import { extractAnalyticsDashboardData, siteAnalyticsReportDataDefaults } from '../util';
-import PreviewBlock from 'GoogleComponents/preview-block';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import {
+	getTimeInSeconds,
+} from '../../../util';
+import GoogleChart from '../../../components/google-chart';
+import withData from '../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../components/data';
+import { extractAnalyticsDashboardData, siteAnalyticsReportDataDefaults } from '../util';
+import PreviewBlock from '../../../components/preview-block';
 
 class AnalyticsDashboardWidgetSiteStats extends Component {
 	constructor( props ) {

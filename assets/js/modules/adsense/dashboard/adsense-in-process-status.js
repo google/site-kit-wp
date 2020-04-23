@@ -17,17 +17,17 @@
  */
 
 /**
- * External dependencies
- */
-import Link from 'GoogleComponents/link';
-import Error from 'GoogleComponents/notifications/error';
-import ProgressBar from 'GoogleComponents/progress-bar';
-
-/**
  * WordPress dependencies
  */
 import { Component, Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Link from '../../../components/link';
+import Error from '../../../components/notifications/error';
+import ProgressBar from '../../../components/progress-bar';
 
 class AdSenseInProcessStatus extends Component {
 	render() {

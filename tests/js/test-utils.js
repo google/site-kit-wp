@@ -2,32 +2,51 @@
  * External dependencies
  */
 import { render } from '@testing-library/react';
-import PropTypes from 'prop-types';
+import invariant from 'invariant';
 
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { createTestRegistry } from './utils';
+import { RegistryProvider } from '@wordpress/data';
 
-const TestProviders = ( { children } ) => {
-	return (
-		<Fragment>
-			{ children }
-		</Fragment>
-	);
-};
+// Override `@testing-library/react`'s render method with one that includes
+// our data store.
 
-TestProviders.defaultProps = {
-	children: undefined,
-};
+/**
+ * Renders the given UI into a container to make assertions.
+ *
+ * @see {@link https://testing-library.com/docs/react-testing-library/api#render}
+ *
+ * @param {*} ui Any valid React child element.
+ * @param {Object} options Render options.
+ * @param {Function} options.setupRegistry A function which accepts the registry instance to configure it.
+ * @param {Function} options.registry A specific registry instance to use. Defaults to a fresh test registry with all stores.
+ * @return {Object} An object containing all of {@link https://testing-library.com/docs/react-testing-library/api#render-result}
+ *                 as well as the `registry`.
+ */
+const customRender = ( ui, options = {} ) => {
+	const {
+		setupRegistry = ( r ) => r,
+		registry = createTestRegistry(),
+		...renderOptions
+	} = options;
 
-TestProviders.propTypes = {
-	children: PropTypes.node,
-};
+	invariant( typeof setupRegistry === 'function', 'options.setupRegistry must be a function.' );
+	setupRegistry( registry );
 
-// custom render with the test provider component
-const customRender = ( ui, options ) => {
-	return render( ui, { wrapper: TestProviders, ...options } );
+	function Wrapper( { children } ) {
+		return (
+			<RegistryProvider value={ registry }>
+				{ children }
+			</RegistryProvider>
+		);
+	}
+
+	return {
+		...render( ui, { wrapper: Wrapper, ...renderOptions } ),
+		registry,
+	};
 };
 
 // Export our own test utils from this file.

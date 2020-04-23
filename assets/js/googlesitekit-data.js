@@ -23,7 +23,7 @@
 /**
  * Internal dependencies
  */
-import Data from 'assets/js/googlesitekit/data';
+import Data from './googlesitekit/data';
 
 if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};

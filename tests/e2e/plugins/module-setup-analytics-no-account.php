@@ -15,7 +15,6 @@
 namespace Google\Site_Kit\Tests\E2E\Modules\AnalyticsNoAccount;
 
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use WP_Error;
 
 add_action(
 	'rest_api_init',
@@ -27,16 +26,10 @@ add_action(
 			array(
 				'methods'  => 'GET',
 				'callback' => function () {
-					/**
-					 * Returned by \Google\Site_Kit\Core\Modules\Module::exception_to_error
-					 */
-					return new WP_Error(
-						403,
-						'User does not have any Google Analytics account.',
-						array(
-							'status' => 500,
-							'reason' => 'insufficientPermissions',
-						)
+					return array(
+						'accounts'   => array(),
+						'properties' => array(),
+						'profiles'   => array(),
 					);
 				},
 			),
@@ -60,5 +53,5 @@ add_action(
 		);
 
 	},
-	0 
+	0
 );

@@ -1,25 +1,26 @@
 /**
- * External dependencies
+ * WordPress dependencies
  */
-import CTA from 'GoogleComponents/notifications/cta';
-import data from 'GoogleComponents/data';
-import GenericError from 'GoogleComponents/notifications/generic-error';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
 import {
 	activateOrDeactivateModule,
 	getReAuthURL,
 	showErrorNotification,
-} from 'GoogleUtil';
-
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
+	getModulesData,
+} from '../../../util';
+import CTA from '../../../components/notifications/cta';
+import data from '../../../components/data';
+import GenericError from '../../../components/notifications/generic-error';
 
 const PageSpeedInsightsCTA = () => {
 	const {
 		active,
 		setupComplete,
-	} = global.googlesitekit.modules[ 'pagespeed-insights' ];
+	} = getModulesData()[ 'pagespeed-insights' ];
 
 	const { canManageOptions } = global.googlesitekit.permissions;
 

@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { MDCFormField, MDCRadio } from 'SiteKitCore/material-components';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
@@ -27,6 +26,11 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { Component, createRef } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { MDCFormField, MDCRadio } from '../material-components';
 
 class Radio extends Component {
 	constructor( props ) {

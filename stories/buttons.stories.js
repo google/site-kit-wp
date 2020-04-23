@@ -2,7 +2,11 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-import Button from 'GoogleComponents/button';
+
+/**
+ * Internal dependencies
+ */
+import Button from '../assets/js/components/button';
 
 storiesOf( 'Global', module )
 	.add( 'Buttons', () => {

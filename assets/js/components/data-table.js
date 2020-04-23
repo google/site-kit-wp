@@ -20,8 +20,6 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import SourceLink from 'GoogleComponents/source-link';
-import Link from 'GoogleComponents/link';
 import classnames from 'classnames';
 import {
 	each,
@@ -33,6 +31,12 @@ import {
  * WordPress dependencies
  */
 import { Component, createRef } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import SourceLink from './source-link';
+import Link from './link';
 
 // Construct a table component from a data object.
 export const getDataTableFromData = ( data, headers, options ) => {

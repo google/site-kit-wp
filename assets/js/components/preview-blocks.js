@@ -19,13 +19,17 @@
 /**
  * External dependencies
  */
-import PreviewBlock from 'GoogleComponents/preview-block';
 import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
 import { Component } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import PreviewBlock from './preview-block';
 
 class PreviewBlocks extends Component {
 	render() {

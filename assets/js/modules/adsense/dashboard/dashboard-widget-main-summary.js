@@ -17,21 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import withData from 'GoogleComponents/higherorder/withdata';
-import { TYPE_MODULES } from 'GoogleComponents/data';
-import PreviewBlock from 'GoogleComponents/preview-block';
-import {
-	getTimeInSeconds,
-	readableLargeNumber,
-	extractForSparkline,
-	getSiteKitAdminURL,
-} from 'GoogleUtil';
-import DataBlock from 'GoogleComponents/data-block';
-import Sparkline from 'GoogleComponents/sparkline';
-
-/**
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
@@ -44,7 +29,18 @@ import {
 	reduceAdSenseData,
 	isDataZeroAdSense,
 } from '../util';
-import Layout from 'GoogleComponents/layout/layout';
+import Layout from '../../../components/layout/layout';
+import withData from '../../../components/higherorder/withdata';
+import { TYPE_MODULES } from '../../../components/data';
+import PreviewBlock from '../../../components/preview-block';
+import {
+	getTimeInSeconds,
+	readableLargeNumber,
+	extractForSparkline,
+	getSiteKitAdminURL,
+} from '../../../util';
+import DataBlock from '../../../components/data-block';
+import Sparkline from '../../../components/sparkline';
 
 class AdSenseDashboardMainSummary extends Component {
 	constructor( props ) {
