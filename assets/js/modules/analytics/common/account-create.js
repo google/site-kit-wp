@@ -46,8 +46,22 @@ const AccountCreate = () => {
 		},
 		[]
 	);
+	const accountTicketTermsOfServiceURL = useSelect(
+		( select ) => {
+			return select( STORE_NAME ).getAccountTicketTermsOfServiceURL();
+		},
+		[]
+	);
+
 	*/
 	//const { createAccount } = useDispatch( STORE_NAME );
+
+	/*
+	// Redirect if the accountTicketTermsOfServiceURL is set.
+	if ( accountTicketTermsOfServiceURL ) {
+		location = accountTicketTermsOfServiceURL;
+	}
+	*/
 
 	const isDoingCreateAccount = false;
 	const { createAccount } = () => {};
