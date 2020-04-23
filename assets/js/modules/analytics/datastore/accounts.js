@@ -161,12 +161,7 @@ export const actions = {
 		invariant( profileName, 'profileName is required.' );
 		invariant( timezone, 'timezone is required.' );
 
-		return actions.fetchCreateAccount( { accountName, propertyName, profileName, timezone } );
-	},
-
-	*fetchCreateAccount( { accountName, propertyName, profileName, timezone } ) {
 		let accountTicket;
-
 		yield {
 			payload: {},
 			type: START_FETCH_CREATE_ACCOUNT,
