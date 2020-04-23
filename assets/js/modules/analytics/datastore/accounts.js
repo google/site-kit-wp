@@ -104,13 +104,11 @@ export const actions = {
 		invariant( profileName, 'profileName is required.' );
 		invariant( timezone, 'timezone is required.' );
 
-		const accountTicket = yield actions.fetchCreateAccount( { accountName, propertyName, profileName, timezone } );
-
-		return actions.receiveCreateAccount( { accountTicket } );
+		return actions.fetchCreateAccount( { accountName, propertyName, profileName, timezone } );
 	},
 
 	*fetchCreateAccount( { accountName, propertyName, profileName, timezone } ) {
-		let response;
+		let accountTicket;
 
 		yield {
 			payload: {},
@@ -118,10 +116,12 @@ export const actions = {
 		};
 
 		try {
-			response = yield {
+			accountTicket = yield {
 				payload: { accountName, propertyName, profileName, timezone },
 				type: FETCH_CREATE_ACCOUNT,
 			};
+
+			yield actions.receiveCreateAccount( { accountTicket } );
 
 			yield {
 				payload: {},
@@ -130,7 +130,7 @@ export const actions = {
 		} catch ( error ) {
 			return actions.receiveCreateAccountFailed( { accountName, error } );
 		}
-		return response;
+		return accountTicket;
 	},
 
 	/**
