@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Assets\Stylesheet;
 /**
  * Class managing standalone mode.
  *
- * @since 1.0.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
