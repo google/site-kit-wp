@@ -29,7 +29,7 @@ import md5 from 'md5';
  * different order, the hash will match. The function furthermore supports
  * nested objects.
  *
- * @since n.e.x.t
+ * @since 1.7.0
  *
  * @param {Object} obj The object to stringify.
  * @return {string} Hash for the object.

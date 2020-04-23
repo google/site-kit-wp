@@ -894,7 +894,7 @@ final class OAuth_Client {
 	 * @return string OAuth redirect URI.
 	 */
 	private function get_redirect_uri() {
-		return add_query_arg( 'oauth2callback', '1', untrailingslashit( home_url() ) );
+		return add_query_arg( 'oauth2callback', '1', admin_url( 'index.php' ) );
 	}
 
 	/**

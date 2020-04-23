@@ -431,7 +431,7 @@ final class Authentication {
 	 * initial setup are granted.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Moved from `Permissions` class.
+	 * @since 1.7.0 Moved from `Permissions` class.
 	 *
 	 * @return bool True if setup is completed, false otherwise.
 	 */

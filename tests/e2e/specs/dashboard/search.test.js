@@ -6,13 +6,24 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
 /**
  * Internal dependencies
  */
-import { setSiteVerification, setSearchConsoleProperty } from '../../utils';
+import { setSiteVerification, setSearchConsoleProperty, useRequestInterception } from '../../utils';
 
 describe( 'Site Kit dashboard post search', () => {
 	beforeAll( async () => {
 		await activatePlugin( 'e2e-tests-auth-plugin' );
 		await setSiteVerification();
 		await setSearchConsoleProperty();
+
+		await page.setRequestInterception( true );
+		useRequestInterception( ( request ) => {
+			if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
+				request.respond( {
+					status: 200,
+				} );
+			} else {
+				request.continue();
+			}
+		} );
 	} );
 
 	beforeEach( async () => {

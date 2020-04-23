@@ -17,19 +17,17 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import { initializeAction } from '../../data/utils';
 
 // Actions
+const START_FETCH_RESET = 'START_FETCH_RESET';
 const FETCH_RESET = 'FETCH_RESET';
+const FINISH_FETCH_RESET = 'FINISH_FETCH_RESET';
+const CATCH_FETCH_RESET = 'CATCH_FETCH_RESET';
 const RECEIVE_RESET = 'RECEIVE_RESET';
-const RECEIVE_RESET_FAILURE = 'RECEIVE_RESET_FAILURE';
 
 export const INITIAL_STATE = {
 	isFetchingReset: false,
@@ -46,11 +44,35 @@ export const actions = {
 	 *
 	 * @return {Object} Redux-style action.
 	 */
-	fetchReset() {
-		return {
+	*fetchReset() {
+		let response, error;
+
+		yield {
 			payload: {},
-			type: FETCH_RESET,
+			type: START_FETCH_RESET,
 		};
+
+		try {
+			response = yield {
+				payload: {},
+				type: FETCH_RESET,
+			};
+
+			yield actions.receiveReset();
+
+			yield {
+				payload: {},
+				type: FINISH_FETCH_RESET,
+			};
+		} catch ( e ) {
+			error = e;
+			yield {
+				payload: { error },
+				type: CATCH_FETCH_RESET,
+			};
+		}
+
+		return { response, error };
 	},
 
 	/**
@@ -69,21 +91,6 @@ export const actions = {
 	},
 
 	/**
-	 * Dispatches an action signifying the `fetchReset` side-effect failed.
-	 *
-	 * @since 1.5.0
-	 * @private
-	 *
-	 * @return {Object} Redux-style action.
-	 */
-	receiveResetFailed() {
-		return {
-			payload: {},
-			type: RECEIVE_RESET_FAILURE,
-		};
-	},
-
-	/**
 	 * Resets the website's connection info to Site Kit.
 	 *
 	 * WARNING: This causes the website's connection with Google Site Kit to be
@@ -91,18 +98,12 @@ export const actions = {
 	 * and always request user confirmation before dispatching.
 	 *
 	 * @since 1.5.0
-	 *
-	 * @return {Object} Redux-style action.
 	 */
 	*reset() {
-		try {
-			yield actions.fetchReset();
-			yield actions.receiveReset();
-			return initializeAction();
-		} catch ( err ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveResetFailed();
+		const { error } = yield actions.fetchReset();
+
+		if ( ! error ) {
+			yield initializeAction();
 		}
 	},
 };
@@ -113,18 +114,26 @@ export const controls = {
 	},
 };
 
-export const reducer = ( state, { type } ) => {
+export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case FETCH_RESET: {
+		case START_FETCH_RESET: {
 			return {
 				...state,
 				isFetchingReset: true,
 			};
 		}
 
-		case RECEIVE_RESET_FAILURE: {
+		case FINISH_FETCH_RESET: {
 			return {
 				...state,
+				isFetchingReset: false,
+			};
+		}
+
+		case CATCH_FETCH_RESET: {
+			return {
+				...state,
+				error: payload.error,
 				isFetchingReset: false,
 			};
 		}

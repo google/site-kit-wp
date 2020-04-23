@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Assets\Asset;
 /**
  * Trait for a module that includes assets.
  *
- * @since n.e.x.t
+ * @since 1.7.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ trait Module_With_Assets_Trait {
 	/**
 	 * List of the module's Asset objects to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 * @var array
 	 */
 	protected $registerable_assets;
@@ -32,7 +32,7 @@ trait Module_With_Assets_Trait {
 	/**
 	 * Gets the assets to register for the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */
@@ -50,7 +50,7 @@ trait Module_With_Assets_Trait {
 	 * This default implementation simply enqueues all assets that the module
 	 * has registered.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 */
 	public function enqueue_assets() {
 		$assets = $this->get_assets();
@@ -65,7 +65,7 @@ trait Module_With_Assets_Trait {
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */

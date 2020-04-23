@@ -32,7 +32,7 @@ use Google\Site_Kit\Context;
  * * For a type of 'date', there will be no entity ID, but the entity title
  *   will be the title of the date-based archive.
  *
- * @since n.e.x.t
+ * @since 1.7.0
  * @access private
  * @ignore
  */
@@ -41,7 +41,7 @@ final class Entity {
 	/**
 	 * The entity URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 * @var string
 	 */
 	private $url;
@@ -49,7 +49,7 @@ final class Entity {
 	/**
 	 * The entity type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 * @var string
 	 */
 	private $type;
@@ -57,7 +57,7 @@ final class Entity {
 	/**
 	 * The entity title.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 * @var string
 	 */
 	private $title;
@@ -65,7 +65,7 @@ final class Entity {
 	/**
 	 * The entity ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 * @var int
 	 */
 	private $id;
@@ -73,7 +73,7 @@ final class Entity {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @param string $url  The entity URL.
 	 * @param array  $args {
@@ -103,7 +103,7 @@ final class Entity {
 	/**
 	 * Gets the entity URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @return string The entity URL.
 	 */
@@ -114,7 +114,7 @@ final class Entity {
 	/**
 	 * Gets the entity type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @return string The entity type, or empty string if unknown.
 	 */
@@ -125,7 +125,7 @@ final class Entity {
 	/**
 	 * Gets the entity title.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @return string The entity title, or empty string if unknown.
 	 */
@@ -136,7 +136,7 @@ final class Entity {
 	/**
 	 * Gets the entity ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @return int The entity ID, or 0 if unknown.
 	 */

@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './index';
+import { STORE_NAME } from './constants';
 
 const { createRegistrySelector } = Data;
 
@@ -53,7 +53,7 @@ export const actions = {
 	 * from a global variable (`_googlesitekitSiteData`), set by PHP
 	 * in the `before_print` callback for `googlesitekit-datastore-site`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 * @private
 	 *
 	 * @param {Object} siteInfo Site info, usually supplied via a global variable from PHP.
@@ -146,7 +146,7 @@ export const selectors = {
 	 * Not intended to be used publicly; this is largely here so other selectors can
 	 * request data using the selector/resolver pattern.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
@@ -179,7 +179,7 @@ export const selectors = {
 	/**
 	 * Gets a site's admin URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {?string} This site's admin URL.
@@ -193,7 +193,7 @@ export const selectors = {
 	/**
 	 * Gets a site's AMP mode.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {?string} AMP Mode.
@@ -207,7 +207,7 @@ export const selectors = {
 	/**
 	 * Gets the current entity's ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {?number} Current entity's ID.
@@ -221,7 +221,7 @@ export const selectors = {
 	/**
 	 * Gets the current entity's title.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {?string} Current entity's title.
@@ -235,7 +235,7 @@ export const selectors = {
 	/**
 	 * Gets the current entity's title.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {?string} Current entity's type.
@@ -249,7 +249,7 @@ export const selectors = {
 	/**
 	 * Gets the current entity's reference URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {?string} Current entity's reference URL.
@@ -263,7 +263,7 @@ export const selectors = {
 	/**
 	 * Gets a site's homepage URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {?string} This site's home URL.
@@ -277,7 +277,7 @@ export const selectors = {
 	/**
 	 * Gets a site's reference site URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {?string} The reference site URL.
@@ -291,7 +291,7 @@ export const selectors = {
 	/**
 	 * Returns true if this site supports AMP.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {?string} `true` if AMP support is enabled, `false` if not. Returns `undefined` if not loaded.
