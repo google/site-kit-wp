@@ -367,11 +367,10 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state     Data store's state.
-	 * @param {string} accountID  The Analytics Account ID to check for profile fetching.
 	 * @param {string} propertyID The Analytics Property ID to check for profile fetching.
 	 * @return {boolean} `true` if fetching a profiles, `false` if not.
 	 */
-	isDoingGetProfiles( state, accountID, propertyID ) {
+	isDoingGetProfiles( state, propertyID ) {
 		const { isFetchingProfiles } = state;
 
 		return !! isFetchingProfiles[ propertyID ];
