@@ -128,7 +128,10 @@ export const actions = {
 				type: FINISH_FETCH_CREATE_ACCOUNT,
 			};
 		} catch ( error ) {
-			return actions.receiveCreateAccountFailed( { accountName, error } );
+			return {
+				payload: { error },
+				type: CATCH_FETCH_CREATE_ACCOUNT,
+			};
 		}
 		return accountTicket;
 	},
@@ -151,23 +154,6 @@ export const actions = {
 			// Use `location.assign` so we can test this action in Jest.
 			location.assign( `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/&api.accountTicketId=${ id }` );
 		}
-	},
-
-	/**
-	 * Logs an error with account creation.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Object} args       Argument params.
-	 * @param {Object} args.error Error object.
-	 * @return {Object} Redux-style action.
-	 */
-	receiveCreateAccountFailed( { error } ) {
-		return {
-			payload: { error },
-			type: CATCH_FETCH_CREATE_ACCOUNT,
-		};
 	},
 };
 
