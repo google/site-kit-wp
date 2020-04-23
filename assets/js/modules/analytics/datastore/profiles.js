@@ -281,14 +281,14 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_CREATE_PROFILE: {
-			const { accountID, propertyID, profile } = payload;
+			const { propertyID, profile } = payload;
 
 			return {
 				...state,
 				profiles: {
 					...state.profiles,
-					[ `${ accountID }::${ propertyID }` ]: [
-						...( state.profiles[ `${ accountID }::${ propertyID }` ] || [] ),
+					[ propertyID ]: [
+						...( state.profiles[ propertyID ] || [] ),
 						profile,
 					],
 				},
@@ -302,7 +302,7 @@ export const reducer = ( state, { type, payload } ) => {
 				...state,
 				profiles: {
 					...state.profiles,
-					...groupBy( profiles, ( { accountId, webPropertyId } ) => `${ accountId }::${ webPropertyId }` ), // Capitalization rule exception: `accountId` and `webPropertyId` are properties of an API returned value.
+					...groupBy( profiles, 'webPropertyId' ), // Capitalization rule exception: `webPropertyId`
 				},
 			};
 		}
@@ -354,7 +354,7 @@ export const selectors = {
 	getProfiles( state, accountID, propertyID ) {
 		const { profiles } = state;
 
-		return profiles[ `${ accountID }::${ propertyID }` ];
+		return profiles[ propertyID ];
 	},
 
 	/**
