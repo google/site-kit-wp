@@ -50,6 +50,7 @@ use Google\Site_Kit_Dependencies\Google_Service_Analytics_Account;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Webproperties;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Webproperty;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Profile;
+use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
@@ -621,7 +622,24 @@ final class Analytics extends Module
 					return true;
 				};
 			case 'GET:accounts-properties-profiles':
-				return $this->get_service( 'analytics' )->management_accounts->listManagementAccounts();
+				return function () use ( $data ) {
+					$restore_defer = $this->with_client_defer( false );
+
+					try {
+						return $this->get_service( 'analytics' )->management_accounts->listManagementAccounts();
+					} catch ( Google_Service_Exception $exception ) {
+						// The exception message is a JSON object of all errors, so we'll convert it to our WP Error first.
+						$wp_error = $this->exception_to_error( $exception, $data->datapoint );
+						// Unfortunately there isn't a better way to identify this without checking the message.
+						if ( 'User does not have any Google Analytics account.' === $wp_error->get_error_message() ) {
+							return new Google_Service_Analytics_Accounts();
+						}
+						// If any other exception was caught, re-throw it.
+						throw $exception;
+					} finally {
+						$restore_defer(); // Will be called before returning in all cases.
+					}
+				};
 			case 'GET:anonymize-ip':
 				return function() {
 					$option = $this->get_settings()->get();
@@ -1076,12 +1094,16 @@ final class Analytics extends Module
 					'profiles'   => array(),
 				);
 
-				if ( ! empty( $data['existingAccountID'] ) && ! empty( $data['existingPropertyID'] ) ) {
+				if ( empty( $accounts ) ) {
+					return array_merge( compact( 'accounts' ), $properties_profiles );
+				}
+
+				if ( ! empty( $data['existingPropertyID'] ) ) {
 					// If there is an existing tag, pass it through to ensure only the existing tag is matched.
 					$properties_profiles = $this->get_data(
 						'properties-profiles',
 						array(
-							'accountID'          => $data['existingAccountID'],
+							'accountID'          => $this->parse_account_id( $data['existingPropertyID'] ),
 							'existingPropertyID' => $data['existingPropertyID'],
 						)
 					);

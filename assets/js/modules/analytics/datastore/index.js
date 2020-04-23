@@ -17,22 +17,20 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { createModuleStore } from 'assets/js/googlesitekit/modules/create-module-store';
+import Modules from 'googlesitekit-modules';
 import accounts from './accounts';
 import properties from './properties';
 import profiles from './profiles';
+import settings from './settings';
 import tags from './tags';
+import { STORE_NAME } from './constants';
+export { STORE_NAME };
 
-export const STORE_NAME = 'modules/analytics';
-
-const baseModuleStore = createModuleStore( 'analytics', {
+const baseModuleStore = Modules.createModuleStore( 'analytics', {
+	storeName: STORE_NAME,
 	settingSlugs: [
 		'anonymizeIP',
 		'accountID',
@@ -49,6 +47,7 @@ export const INITIAL_STATE = Data.collectState(
 	accounts.INITIAL_STATE,
 	properties.INITIAL_STATE,
 	profiles.INITIAL_STATE,
+	settings.INITIAL_STATE,
 	tags.INITIAL_STATE,
 );
 
@@ -57,6 +56,7 @@ export const actions = Data.collectActions(
 	accounts.actions,
 	properties.actions,
 	profiles.actions,
+	settings.actions,
 	tags.actions,
 );
 
@@ -65,6 +65,7 @@ export const controls = Data.collectControls(
 	accounts.controls,
 	properties.controls,
 	profiles.controls,
+	settings.controls,
 	tags.controls,
 );
 
@@ -75,6 +76,7 @@ export const reducer = Data.addInitializeReducer(
 		accounts.reducer,
 		properties.reducer,
 		profiles.reducer,
+		settings.reducer,
 		tags.reducer,
 	)
 );
@@ -84,6 +86,7 @@ export const resolvers = Data.collectResolvers(
 	accounts.resolvers,
 	properties.resolvers,
 	profiles.resolvers,
+	settings.resolvers,
 	tags.resolvers,
 );
 
@@ -92,6 +95,7 @@ export const selectors = Data.collectSelectors(
 	accounts.selectors,
 	properties.selectors,
 	profiles.selectors,
+	settings.selectors,
 	tags.selectors,
 );
 

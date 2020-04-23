@@ -37,19 +37,23 @@ import {
 	getModulesData,
 } from '../../../util';
 import Switch from '../../../components/switch';
+import Link from '../../../components/link';
 import data, { TYPE_MODULES } from '../../../components/data';
 
 class AdSenseSettings extends Component {
 	constructor( props ) {
 		super( props );
-		const { useSnippet = true } = getModulesData().adsense.settings;
+		const { useSnippet = true, accountID, accountStatus } = getModulesData().adsense.settings;
 
 		this.state = {
 			useSnippet: !! useSnippet,
 			disabled: false,
+			accountID,
+			accountStatus,
 		};
 
 		this.handleUseSnippetSwitch = this.handleUseSnippetSwitch.bind( this );
+		this.generateAccountStatusLabel = this.generateAccountStatusLabel.bind( this );
 	}
 
 	componentDidMount() {
@@ -135,9 +139,34 @@ class AdSenseSettings extends Component {
 		toggleConfirmModuleSettings( 'adsense', settingsMapping, this.state );
 	}
 
+	generateAccountStatusLabel() {
+		const { accountStatus } = this.state;
+		switch ( accountStatus ) {
+			case 'account-connected':
+				return __( 'Your account has been approved', 'google-site-kit' );
+
+			case 'account-pending-review':
+				return __( 'We’re getting your site ready for ads. This usually takes less than a day, but it can sometimes take a bit longer', 'google-site-kit' );
+
+			case 'account-required-action':
+				return __( 'You need to fix some issues before your account is approved. Go to AdSense to find out how to fix it', 'google-site-kit' );
+
+			case 'account-connected-nonmatching':
+			case 'ads-display-pending':
+			case 'disapproved-account':
+			case 'disapproved-account-afc':
+			case 'no-account':
+			case 'no-account-tag-found':
+			case 'account-connected-no-data':
+			default:
+				return __( 'Your site isn’t ready to show ads yet', 'google-site-kit' );
+		}
+	}
+
 	render() {
 		const {
 			useSnippet,
+			accountID,
 		} = this.state;
 		const {
 			isEditing,
@@ -145,7 +174,6 @@ class AdSenseSettings extends Component {
 			switchOnMessage,
 			switchOffMessage,
 		} = this.props;
-
 		return (
 			<Fragment>
 				{
@@ -179,11 +207,50 @@ class AdSenseSettings extends Component {
 							}
 						</Fragment>
 						: <Fragment>
-							{	__( 'The AdSense code has', 'google-site-kit' ) } {
-								useSnippet
-									? __( 'been placed on your site.', 'google-site-kit' )
-									: __( 'not been placed on your site.', 'google-site-kit' )
-							}
+							<div className="googlesitekit-settings-module__meta-items">
+								<div className="googlesitekit-settings-module__meta-item">
+									<p className="googlesitekit-settings-module__meta-item-type">
+										{ __( 'Publisher ID', 'google-site-kit' ) }
+									</p>
+									<h5 className="googlesitekit-settings-module__meta-item-data">
+										{ accountID }
+									</h5>
+								</div>
+								<div className="googlesitekit-settings-module__meta-item">
+									<p className="googlesitekit-settings-module__meta-item-type">
+										{ __( 'Account Status', 'google-site-kit' ) }
+									</p>
+									<h5 className="googlesitekit-settings-module__meta-item-data">
+										{ this.generateAccountStatusLabel() }
+									</h5>
+								</div>
+								<div className="googlesitekit-settings-module__meta-item">
+									<p className="googlesitekit-settings-module__meta-item-type">
+										{ __( 'Site Status', 'google-site-kit' ) }
+									</p>
+									<h5 className="googlesitekit-settings-module__meta-item-data">
+										<Link
+											href="https://www.google.com/adsense/new/sites/my-sites"
+											className="googlesitekit-settings-module__cta-button"
+											inherit
+											external
+										>
+											{ __( 'Check your site status', 'google-site-kit' ) }
+										</Link>
+									</h5>
+								</div>
+							</div>
+							<div className="googlesitekit-settings-module__meta-items">
+								<div className="googlesitekit-settings-module__meta-item">
+									<p className="googlesitekit-settings-module__meta-item-type">
+										{ __( 'AdSense Code', 'google-site-kit' ) }
+									</p>
+									<h5 className="googlesitekit-settings-module__meta-item-data">
+										{ useSnippet && __( 'The AdSense code has been placed on your site', 'google-site-kit' ) }
+										{ ! useSnippet && __( 'The AdSense code has not been placed on your site', 'google-site-kit' ) }
+									</h5>
+								</div>
+							</div>
 						</Fragment>
 				}
 			</Fragment>
