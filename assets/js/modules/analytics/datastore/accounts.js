@@ -26,13 +26,18 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '.';
+import { isValidAccountSelection } from '../util';
+import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE } from './constants';
+import { actions as tagActions } from './tags';
 
 // Actions
 const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
+const START_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'START_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
+const FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
+const CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
+
 const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
-const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED';
-const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED';
+const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 
 export const INITIAL_STATE = {
 	accounts: undefined,
@@ -40,11 +45,46 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
-	fetchAccountsPropertiesProfiles() {
-		return {
-			payload: {},
-			type: FETCH_ACCOUNTS_PROPERTIES_PROFILES,
+	*fetchAccountsPropertiesProfiles( data ) {
+		let response, error;
+
+		yield {
+			payload: { data },
+			type: START_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
 		};
+
+		try {
+			response = yield {
+				payload: { data },
+				type: FETCH_ACCOUNTS_PROPERTIES_PROFILES,
+			};
+
+			const { dispatch } = yield Data.commonActions.getRegistry();
+			yield actions.receiveAccounts( response.accounts );
+			dispatch( STORE_NAME ).receiveProperties( response.properties );
+			dispatch( STORE_NAME ).receiveProfiles( response.profiles );
+
+			if ( response.matchedProperty ) {
+				dispatch( STORE_NAME ).receiveMatchedProperty( response.matchedProperty );
+			}
+
+			yield {
+				payload: { data },
+				type: FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
+			};
+		} catch ( e ) {
+			error = e;
+
+			yield {
+				payload: {
+					data,
+					error,
+				},
+				type: CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
+			};
+		}
+
+		return { response, error };
 	},
 
 	/**
@@ -65,32 +105,49 @@ export const actions = {
 		};
 	},
 
-	receiveAccountsPropertiesProfilesCompleted() {
-		return {
-			payload: {},
-			type: RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED,
-		};
+	*resetAccounts() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield { type: RESET_ACCOUNTS };
+
+		return registry.stores[ STORE_NAME ].getActions()
+			.invalidateResolutionForStoreSelector( 'getAccounts' );
 	},
 
-	receiveAccountsPropertiesProfilesFailed( error ) {
-		invariant( error, 'error is required.' );
+	*selectAccount( accountID ) {
+		invariant( isValidAccountSelection( accountID ), 'A valid accountID is required to select.' );
 
-		return {
-			payload: { error },
-			type: RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED,
-		};
+		const registry = yield Data.commonActions.getRegistry();
+		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( STORE_NAME ).setPropertyID( '' );
+		registry.dispatch( STORE_NAME ).setInternalWebPropertyID( '' );
+		registry.dispatch( STORE_NAME ).setProfileID( '' );
+
+		if ( ACCOUNT_CREATE === accountID ) {
+			return;
+		}
+
+		// Trigger cascading selections.
+		const properties = registry.select( STORE_NAME ).getProperties( accountID );
+		if ( properties === undefined ) {
+			return; // Selection will happen in resolver.
+		}
+		const property = properties[ 0 ] || { id: PROPERTY_CREATE };
+		registry.dispatch( STORE_NAME ).selectProperty( property.id );
 	},
 };
 
 export const controls = {
-	[ FETCH_ACCOUNTS_PROPERTIES_PROFILES ]: () => {
-		return API.get( 'modules', 'analytics', 'accounts-properties-profiles' );
+	[ FETCH_ACCOUNTS_PROPERTIES_PROFILES ]: ( { payload } ) => {
+		return API.get( 'modules', 'analytics', 'accounts-properties-profiles', payload.data, {
+			useCache: false,
+		} );
 	},
 };
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case FETCH_ACCOUNTS_PROPERTIES_PROFILES: {
+		case START_FETCH_ACCOUNTS_PROPERTIES_PROFILES: {
 			return {
 				...state,
 				isFetchingAccountsPropertiesProfiles: true,
@@ -106,20 +163,34 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETED: {
+		case FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES: {
 			return {
 				...state,
 				isFetchingAccountsPropertiesProfiles: false,
 			};
 		}
 
-		case RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_FAILED: {
+		case CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES: {
 			const { error } = payload;
 
 			return {
 				...state,
 				error,
 				isFetchingAccountsPropertiesProfiles: false,
+			};
+		}
+
+		case RESET_ACCOUNTS: {
+			return {
+				...state,
+				accounts: undefined,
+				settings: {
+					...state.settings,
+					accountID: undefined,
+					propertyID: undefined,
+					internalWebPropertyID: undefined,
+					profileID: undefined,
+				},
 			};
 		}
 
@@ -131,33 +202,28 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getAccounts() {
-		try {
-			const registry = yield Data.commonActions.getRegistry();
+		const registry = yield Data.commonActions.getRegistry();
+		const existingAccounts = registry.select( STORE_NAME ).getAccounts();
+		let matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
 
-			const existingAccounts = registry.select( STORE_NAME ).getAccounts();
+		// Only fetch accounts if there are none in the store.
+		if ( ! existingAccounts ) {
+			yield tagActions.waitForExistingTag();
+			const existingTag = registry.select( STORE_NAME ).getExistingTag();
+			const { response } = yield actions.fetchAccountsPropertiesProfiles( {
+				existingPropertyID: existingTag,
+			} );
 
-			// If there are already accounts loaded in state, we don't want to make this request
-			// and consider this resolver fulfilled.
-			if ( existingAccounts && existingAccounts.length ) {
-				return;
+			if ( response ) {
+				( { matchedProperty } = response );
 			}
+		}
 
-			const response = yield actions.fetchAccountsPropertiesProfiles();
-			const { accounts, properties, profiles, matchedProperty } = response;
-
-			yield actions.receiveAccounts( accounts );
-			yield registry.dispatch( STORE_NAME ).receiveProperties( properties );
-			yield registry.dispatch( STORE_NAME ).receiveProfiles( profiles );
-
-			if ( matchedProperty ) {
-				yield registry.dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
-			}
-
-			return yield actions.receiveAccountsPropertiesProfilesCompleted();
-		} catch ( err ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveAccountsPropertiesProfilesFailed( err );
+		const accountID = registry.select( STORE_NAME ).getAccountID();
+		// Pre-select values from the matched property if no account is selected.
+		if ( matchedProperty && ! accountID ) {
+			registry.dispatch( STORE_NAME ).setAccountID( matchedProperty.accountId ); // Capitalization rule exception: accountId
+			registry.dispatch( STORE_NAME ).selectProperty( matchedProperty.id, matchedProperty.internalWebPropertyId ); // Capitalization rule exception: internalWebPropertyId
 		}
 	},
 };
@@ -207,6 +273,19 @@ export const selectors = {
 		const { error } = state;
 
 		return error || null;
+	},
+
+	/**
+	 * Checks whether accounts are currently being fetched.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} Whether accounts are currently being fetched or not.
+	 */
+	isDoingGetAccounts( state ) {
+		return !! state.isFetchingAccountsPropertiesProfiles;
 	},
 };
 
