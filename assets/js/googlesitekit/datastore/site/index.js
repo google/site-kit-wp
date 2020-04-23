@@ -17,24 +17,23 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import connection from './connection';
 import info from './info';
 import reset from './reset';
+import notifications from './notifications';
 
 export const INITIAL_STATE = Data.collectState(
 	connection.INITIAL_STATE,
 	info.INITIAL_STATE,
 	reset.INITIAL_STATE,
+	notifications.INITIAL_STATE,
 );
 
-export const STORE_NAME = 'core/site';
+import { STORE_NAME } from './constants';
+export { STORE_NAME };
 
 export const actions = Data.addInitializeAction(
 	Data.collectActions(
@@ -42,6 +41,7 @@ export const actions = Data.addInitializeAction(
 		connection.actions,
 		info.actions,
 		reset.actions,
+		notifications.actions,
 	)
 );
 
@@ -50,6 +50,7 @@ export const controls = Data.collectControls(
 	connection.controls,
 	info.controls,
 	reset.controls,
+	notifications.controls,
 );
 
 export const reducer = Data.addInitializeReducer(
@@ -58,6 +59,7 @@ export const reducer = Data.addInitializeReducer(
 		connection.reducer,
 		info.reducer,
 		reset.reducer,
+		notifications.reducer,
 	)
 );
 
@@ -65,6 +67,7 @@ export const resolvers = Data.collectResolvers(
 	connection.resolvers,
 	info.resolvers,
 	reset.resolvers,
+	notifications.resolvers,
 );
 
 export const selectors = Data.collectSelectors(

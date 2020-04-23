@@ -50,6 +50,7 @@ use Google\Site_Kit_Dependencies\Google_Service_Analytics_Account;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Webproperties;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Webproperty;
 use Google\Site_Kit_Dependencies\Google_Service_Analytics_Profile;
+use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
@@ -125,6 +126,13 @@ final class Analytics extends Module
 				}
 			},
 			0
+		);
+
+		add_action(
+			'admin_init',
+			function() {
+				$this->handle_provisioning_callback();
+			}
 		);
 	}
 
@@ -464,6 +472,79 @@ final class Analytics extends Module
 	}
 
 	/**
+	 * Handles the provisioning callback after the user completes the terms of service.
+	 *
+	 * @since n.e.x.t
+	 */
+	protected function handle_provisioning_callback() {
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			return;
+		}
+
+		$input = $this->context->input();
+
+		if ( ! $input->filter( INPUT_GET, 'gatoscallback' ) ) {
+			return;
+		}
+
+		// The handler should check the received Account Ticket id parameter against the id stored in the provisioning step.
+		$account_ticket_id        = $this->context->input()->filter( INPUT_GET, 'accountTicketId', FILTER_SANITIZE_STRING );
+		$stored_account_ticket_id = get_transient( self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
+		delete_transient( self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
+
+		if ( $stored_account_ticket_id !== $account_ticket_id ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'account_ticket_id_mismatch' ) )
+			);
+			exit;
+		}
+
+		// Check for a returned error.
+		$error = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
+		if ( ! empty( $error ) ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => $error ) )
+			);
+			exit;
+		}
+
+		$account_id      = $this->context->input()->filter( INPUT_GET, 'accountId', FILTER_SANITIZE_STRING );
+		$web_property_id = $this->context->input()->filter( INPUT_GET, 'webPropertyId', FILTER_SANITIZE_STRING );
+		$profile_id      = $this->context->input()->filter( INPUT_GET, 'profileId', FILTER_SANITIZE_STRING );
+
+		if ( empty( $account_id ) || empty( $web_property_id ) || empty( $profile_id ) ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'callback_missing_parameter' ) )
+			);
+			exit;
+		}
+
+		// Retrieve the internal web property id.
+		try {
+			$web_property = $this->get_service( 'analytics' )->management_webproperties->get( $account_id, $property_id );
+		} catch ( Exception $e ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'property_not_found' ) )
+			);
+			exit;
+		}
+
+		$this->get_settings()->merge(
+			array(
+				'accountID'             => $account_id,
+				'propertyID'            => $web_property_id,
+				'profileID'             => $profile_id,
+				'internalWebPropertyID' => $web_property->getInternalWebPropertyId(),
+			)
+		);
+
+		wp_safe_redirect(
+			$this->context->admin_url( 'dashboard', array( 'notification' => 'authentication_success' ) )
+		);
+		exit;
+	}
+
+	/**
 	 * Returns the mapping between available datapoints and their services.
 	 *
 	 * @since 1.0.0
@@ -531,7 +612,24 @@ final class Analytics extends Module
 					return true;
 				};
 			case 'GET:accounts-properties-profiles':
-				return $this->get_service( 'analytics' )->management_accounts->listManagementAccounts();
+				return function () use ( $data ) {
+					$restore_defer = $this->with_client_defer( false );
+
+					try {
+						return $this->get_service( 'analytics' )->management_accounts->listManagementAccounts();
+					} catch ( Google_Service_Exception $exception ) {
+						// The exception message is a JSON object of all errors, so we'll convert it to our WP Error first.
+						$wp_error = $this->exception_to_error( $exception, $data->datapoint );
+						// Unfortunately there isn't a better way to identify this without checking the message.
+						if ( 'User does not have any Google Analytics account.' === $wp_error->get_error_message() ) {
+							return new Google_Service_Analytics_Accounts();
+						}
+						// If any other exception was caught, re-throw it.
+						throw $exception;
+					} finally {
+						$restore_defer(); // Will be called before returning in all cases.
+					}
+				};
 			case 'GET:anonymize-ip':
 				return function() {
 					$option = $this->get_settings()->get();
@@ -986,12 +1084,16 @@ final class Analytics extends Module
 					'profiles'   => array(),
 				);
 
-				if ( ! empty( $data['existingAccountID'] ) && ! empty( $data['existingPropertyID'] ) ) {
+				if ( empty( $accounts ) ) {
+					return array_merge( compact( 'accounts' ), $properties_profiles );
+				}
+
+				if ( ! empty( $data['existingPropertyID'] ) ) {
 					// If there is an existing tag, pass it through to ensure only the existing tag is matched.
 					$properties_profiles = $this->get_data(
 						'properties-profiles',
 						array(
-							'accountID'          => $data['existingAccountID'],
+							'accountID'          => $this->parse_account_id( $data['existingPropertyID'] ),
 							'existingPropertyID' => $data['existingPropertyID'],
 						)
 					);
@@ -1257,9 +1359,10 @@ final class Analytics extends Module
 	 * @return string Provisioning redirect URI.
 	 */
 	private function get_provisioning_redirect_uri() {
-		return add_query_arg( 'gatoscallback', '1', untrailingslashit( home_url() ) );
+		$google_proxy = new Google_Proxy( $this->context );
+		return $google_proxy->get_site_fields()['analytics_redirect_uri'];
 	}
-
+ 
 	/**
 	 * Verifies that user has access to the property found in the existing tag.
 	 *

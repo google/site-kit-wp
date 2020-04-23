@@ -34,11 +34,11 @@ import { applyFilters } from '@wordpress/hooks';
  */
 import {
 	activateOrDeactivateModule,
-	refreshAuthentication,
 	getReAuthURL,
 	showErrorNotification,
 	moduleIcon,
 } from '../util';
+import { refreshAuthentication } from '../util/refresh-authentication';
 import data from '../components/data';
 import Spinner from '../components/spinner';
 import Link from '../components/link';

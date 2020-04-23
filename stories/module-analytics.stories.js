@@ -18,8 +18,157 @@ import AnalyticsDashboardWidgetSiteStats from '../assets/js/modules/analytics/da
 import DashboardAcquisitionPieChart from '../assets/js/modules/analytics/dashboard/dashboard-widget-acquisition-piechart';
 import AnalyticsDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/dashboard/dashboard-widget-top-acquisition-sources-table';
 import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
+import {
+	AccountSelect,
+	PropertySelect,
+	ProfileSelect,
+	AnonymizeIPSwitch,
+	UseSnippetSwitch,
+	TrackingExclusionSwitches,
+} from '../assets/js/modules/analytics/common';
+import { WithTestRegistry } from '../tests/js/utils';
+
+import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
+import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
+
+function SetupWrap( { children } ) {
+	return (
+		<div className="googlesitekit-setup">
+			<section className="googlesitekit-setup__wrapper">
+				<div className="googlesitekit-setup-module">
+					{ children }
+				</div>
+			</section>
+		</div>
+	);
+}
 
 storiesOf( 'Analytics Module', module )
+	.add( 'Account Property Profile Select (none selected)', () => {
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveSettings( {} );
+			dispatch( STORE_NAME ).receiveAccounts( accounts );
+			dispatch( STORE_NAME ).receiveProperties( properties );
+			dispatch( STORE_NAME ).receiveProfiles( profiles );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<div className="googlesitekit-setup-module__inputs">
+						<AccountSelect />
+						<PropertySelect />
+						<ProfileSelect />
+					</div>
+				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Account Property Profile Select (all selected)', () => {
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveAccounts( accounts );
+			dispatch( STORE_NAME ).receiveProperties( properties );
+			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveSettings( {
+				accountID: profiles[ 0 ].accountId,
+				propertyID: profiles[ 0 ].webPropertyId,
+				internalWebPropertyID: profiles[ 0 ].internalWebPropertyId,
+				profileID: profiles[ 0 ].id,
+			} );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<div className="googlesitekit-setup-module__inputs">
+						<AccountSelect />
+						<PropertySelect />
+						<ProfileSelect />
+					</div>
+				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Anonymize IP switch, toggled on', () => {
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setAnonymizeIP( true );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<AnonymizeIPSwitch />
+				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Anonymize IP switch, toggled off', () => {
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setAnonymizeIP( false );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<AnonymizeIPSwitch />
+				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Use Snippet switch, toggled on (default)', () => {
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setUseSnippet( true );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<UseSnippetSwitch />
+				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Use Snippet switch, toggled off', () => {
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setUseSnippet( false );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<UseSnippetSwitch />
+				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Tracking exclusions (default)', () => {
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setTrackingDisabled( [ 'loggedinUsers' ] );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<TrackingExclusionSwitches />
+				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Tracking exclusions (including loggedinUsers)', () => {
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setTrackingDisabled( [] );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<TrackingExclusionSwitches />
+				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
 	.add( 'Audience Overview Chart', () => {
 		global.googlesitekit = analyticsData;
 

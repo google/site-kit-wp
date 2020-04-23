@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './index';
+import { STORE_NAME } from './constants';
 
 const { createRegistrySelector } = Data;
 
