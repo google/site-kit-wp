@@ -27,7 +27,7 @@ import { groupBy } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { isValidAccountID, isValidPropertyID, parsePropertyID } from '../util';
+import { isValidPropertyID, parsePropertyID } from '../util';
 import { STORE_NAME, PROFILE_CREATE } from './constants';
 
 // Actions
@@ -303,14 +303,14 @@ export const reducer = ( state, { type, payload } ) => {
 };
 
 export const resolvers = {
-	*getProfiles( accountID, propertyID ) {
-		if ( ! isValidAccountID( accountID ) || ! isValidPropertyID( propertyID ) ) {
+	*getProfiles( propertyID ) {
+		if ( ! isValidPropertyID( propertyID ) ) {
 			return;
 		}
 
 		const registry = yield Data.commonActions.getRegistry();
 
-		let profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
+		let profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
 
 		// Only fetch profiles if there are none received for the given account and property.
 		if ( ! profiles ) {
@@ -336,11 +336,10 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state      Data store's state.
-	 * @param {string} accountID  The Analytics Account ID to fetch profiles for.
 	 * @param {string} propertyID The Analytics Property ID to fetch profiles for.
 	 * @return {?Array.<Object>} An array of Analytics profiles; `undefined` if not loaded.
 	 */
-	getProfiles( state, accountID, propertyID ) {
+	getProfiles( state, propertyID ) {
 		const { profiles } = state;
 
 		return profiles[ propertyID ];

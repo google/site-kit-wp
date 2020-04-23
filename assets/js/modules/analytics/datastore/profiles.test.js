@@ -87,11 +87,11 @@ describe( 'modules/analytics profiles', () => {
 				muteConsole( 'error' );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getProfiles( accountID, propertyID )
+						registry.select( STORE_NAME ).getProfiles( propertyID )
 					),
 				);
 
-				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
+				const profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
 				expect( profiles ).toMatchObject( [ fixtures.createProfile ] );
 			} );
 
@@ -167,7 +167,7 @@ describe( 'modules/analytics profiles', () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 
-				const initialProfiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
+				const initialProfiles = registry.select( STORE_NAME ).getProfiles( testPropertyID );
 
 				// Ensure the proper parameters were sent.
 				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
@@ -180,11 +180,11 @@ describe( 'modules/analytics profiles', () => {
 				expect( initialProfiles ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID ) !== undefined
+						registry.select( STORE_NAME ).getProfiles( testPropertyID ) !== undefined
 					),
 				);
 
-				const profiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
+				const profiles = registry.select( STORE_NAME ).getProfiles( testPropertyID );
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( profiles ).toEqual( fixtures.profiles );
@@ -193,18 +193,17 @@ describe( 'modules/analytics profiles', () => {
 
 			it( 'does not make a network request if profiles for this account + property are already present', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( {} );
-				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
 				registry.dispatch( STORE_NAME ).receiveProfiles( fixtures.profiles );
 
-				const profiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
+				const profiles = registry.select( STORE_NAME ).getProfiles( testPropertyID );
 
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.hasFinishedResolution( 'getProfiles', [ testAccountID, testPropertyID ] )
+					.hasFinishedResolution( 'getProfiles', [ testPropertyID ] )
 				);
 
 				expect( fetch ).not.toHaveBeenCalled();
@@ -228,11 +227,10 @@ describe( 'modules/analytics profiles', () => {
 						{ status: 500 }
 					);
 
-				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
 				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 
 				muteConsole( 'error' );
-				registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
+				registry.select( STORE_NAME ).getProfiles( testPropertyID );
 				await subscribeUntil( registry,
 					// TODO: We may want a selector for this, but for now this is fine
 					// because it's internal-only.
@@ -241,7 +239,7 @@ describe( 'modules/analytics profiles', () => {
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
-				const profiles = registry.select( STORE_NAME ).getProfiles( testAccountID, testPropertyID );
+				const profiles = registry.select( STORE_NAME ).getProfiles( testPropertyID );
 				expect( profiles ).toEqual( undefined );
 			} );
 		} );
