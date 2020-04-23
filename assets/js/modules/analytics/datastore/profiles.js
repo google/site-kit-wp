@@ -116,6 +116,7 @@ export const actions = {
 	 * @return {Object} Response and error objects.
 	 */
 	*fetchProfiles( propertyID ) {
+		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to fetch profiles for.' );
 		let response, error;
 
 		yield {
