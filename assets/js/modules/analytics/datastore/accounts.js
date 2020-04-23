@@ -121,7 +121,7 @@ export const actions = {
 				type: FETCH_CREATE_ACCOUNT,
 			};
 
-			yield actions.receiveCreateAccount( { accountTicket } );
+			yield actions.receiveCreateAccount( accountTicket );
 
 			yield {
 				payload: {},
@@ -142,10 +142,9 @@ export const actions = {
 	 * @since n.e.x.t
 	 * @private
 	 *
-	 * @param {Object} args               Argument params.
-	 * @param {Object} args.accountTicket Google Analytics create account ticket object.
+	 * @param {Object} accountTicket Google Analytics create account ticket object.
 	 */
-	receiveCreateAccount( { accountTicket } ) {
+	receiveCreateAccount( accountTicket ) {
 		invariant( accountTicket, 'accountTicket is required.' );
 
 		// Once we have an account ticket, redirect the user to accept the Terms of Service.
