@@ -207,75 +207,75 @@ export const controls = {
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case START_FETCH_CREATE_PROFILE: {
-			const { accountID, propertyID } = payload;
+			const { propertyID } = payload;
 
 			return {
 				...state,
 				isFetchingCreateProfile: {
 					...state.isFetchingCreateProfile,
-					[ `${ accountID }::${ propertyID }` ]: true,
+					[ propertyID ]: true,
 				},
 			};
 		}
 
 		case FINISH_FETCH_CREATE_PROFILE: {
-			const { accountID, propertyID } = payload;
+			const { propertyID } = payload;
 
 			return {
 				...state,
 				isFetchingCreateProfile: {
 					...state.isFetchingCreateProfile,
-					[ `${ accountID }::${ propertyID }` ]: false,
+					[ propertyID ]: false,
 				},
 			};
 		}
 
 		case CATCH_FETCH_CREATE_PROFILE: {
-			const { accountID, error, propertyID } = payload;
+			const { error, propertyID } = payload;
 
 			return {
 				...state,
 				error,
 				isFetchingCreateProfile: {
 					...state.isFetchingCreateProfile,
-					[ `${ accountID }::${ propertyID }` ]: false,
+					[ propertyID ]: false,
 				},
 			};
 		}
 
 		case START_FETCH_PROFILES: {
-			const { accountID, propertyID } = payload;
+			const { propertyID } = payload;
 
 			return {
 				...state,
 				isFetchingProfiles: {
 					...state.isFetchingProfiles,
-					[ `${ accountID }::${ propertyID }` ]: true,
+					[ propertyID ]: true,
 				},
 			};
 		}
 
 		case FINISH_FETCH_PROFILES: {
-			const { accountID, propertyID } = payload;
+			const { propertyID } = payload;
 
 			return {
 				...state,
 				isFetchingProfiles: {
 					...state.isFetchingProfiles,
-					[ `${ accountID }::${ propertyID }` ]: false,
+					[ propertyID ]: false,
 				},
 			};
 		}
 
 		case CATCH_FETCH_PROFILES: {
-			const { accountID, error, propertyID } = payload;
+			const { error, propertyID } = payload;
 
 			return {
 				...state,
 				error,
 				isFetchingProfiles: {
 					...state.isFetchingProfiles,
-					[ `${ accountID }::${ propertyID }` ]: false,
+					[ propertyID ]: false,
 				},
 			};
 		}
@@ -370,7 +370,7 @@ export const selectors = {
 	isDoingCreateProfile( state, accountID, propertyID ) {
 		const { isFetchingCreateProfile } = state;
 
-		return !! isFetchingCreateProfile[ `${ accountID }::${ propertyID }` ];
+		return !! isFetchingCreateProfile[ propertyID ];
 	},
 
 	/**
@@ -386,7 +386,7 @@ export const selectors = {
 	isDoingGetProfiles( state, accountID, propertyID ) {
 		const { isFetchingProfiles } = state;
 
-		return !! isFetchingProfiles[ `${ accountID }::${ propertyID }` ];
+		return !! isFetchingProfiles[ propertyID ];
 	},
 };
 

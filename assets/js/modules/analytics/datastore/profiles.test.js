@@ -237,7 +237,7 @@ describe( 'modules/analytics profiles', () => {
 				await subscribeUntil( registry,
 					// TODO: We may want a selector for this, but for now this is fine
 					// because it's internal-only.
-					() => store.getState().isFetchingProfiles[ `${ testAccountID }::${ testPropertyID }` ] === false,
+					() => store.getState().isFetchingProfiles[ testPropertyID ] === false
 				);
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
