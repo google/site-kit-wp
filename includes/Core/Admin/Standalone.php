@@ -23,6 +23,28 @@ use Google\Site_Kit\Core\Assets\Stylesheet;
 final class Standalone {
 
 	/**
+	 * Plugin context.
+	 *
+	 * @since NEXT
+	 *
+	 * @var Context
+	 */
+	private $context;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since NEXT
+	 *
+	 * @param Context $context Plugin context.
+	 */
+	public function __construct( Context $context ) {
+
+		$this->context = $context;
+
+	}
+
+	/**
 	 * Standalone mode
 	 *
 	 * @since n.e.x.t
@@ -38,7 +60,6 @@ final class Standalone {
 		 * @since n.e.x.t
 		 *
 		 * @param string $admin_body_classes Admin body classes.
-		 *
 		 * @return string Filtered admin body classes.
 		 */
 		add_filter(
@@ -53,7 +74,12 @@ final class Standalone {
 		add_filter( 'admin_footer_text', '__return_empty_string', PHP_INT_MAX );
 		add_filter( 'update_footer', '__return_empty_string', PHP_INT_MAX );
 
-		add_action( 'admin_head', array( $this, 'standalone_styles' ) );
+		add_action(
+			'admin_head',
+			function() {
+				$this->print_standalone_styles();
+			}
+		);
 	}
 
 	/**
@@ -66,8 +92,8 @@ final class Standalone {
 	public function is_standalone() {
 		global $pagenow;
 
-		$page       = filter_input( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
-		$standalone = filter_input( INPUT_GET, 'googlesitekit-standalone', FILTER_VALIDATE_BOOLEAN );
+		$page       = $this->context->input()->filter( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
+		$standalone = $this->context->input()->filter( INPUT_GET, 'googlesitekit-standalone', FILTER_VALIDATE_BOOLEAN );
 
 		return ( 'admin.php' === $pagenow && false !== strpos( $page, 'googlesitekit' ) && $standalone );
 	}
@@ -76,21 +102,19 @@ final class Standalone {
 	 * Enqueues styles for standalone mode.
 	 *
 	 * @since n.e.x.t
-	 *
-	 * @return void
 	 */
-	public function standalone_styles() {
+	private function print_standalone_styles() {
 		?>
 		<style type="text/css">
 		html {
 			padding-top: 0 !important;
 		}
 
-		body.site-kit_page_googlesitekit-splash.googlesitekit-standalone #adminmenumain {
+		body.googlesitekit-standalone #adminmenumain {
 			display: none;
 		}
 
-		body.site-kit_page_googlesitekit-splash.googlesitekit-standalone #wpcontent {
+		body.googlesitekit-standalone #wpcontent {
 			margin-left: 0;
 		}
 		</style>
