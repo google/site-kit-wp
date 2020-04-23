@@ -27,7 +27,7 @@ import { groupBy } from 'lodash';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { isValidAccountID, isValidPropertyID } from '../util';
+import { isValidAccountID, isValidPropertyID, parsePropertyID } from '../util';
 import { STORE_NAME, PROFILE_CREATE } from './constants';
 
 // Actions
@@ -112,35 +112,33 @@ export const actions = {
 	/**
 	 * Fetches profiles from the server and add them to the store.
 	 *
-	 * @param {string} accountID  Google Analytics account ID.
 	 * @param {string} propertyID Google Analytics property ID.
 	 * @return {Object} Response and error objects.
 	 */
-	*fetchProfiles( accountID, propertyID ) {
+	*fetchProfiles( propertyID ) {
 		let response, error;
 
 		yield {
-			payload: { accountID, propertyID },
+			payload: { propertyID },
 			type: START_FETCH_PROFILES,
 		};
 
 		try {
 			response = yield {
-				payload: { accountID, propertyID },
+				payload: { propertyID },
 				type: FETCH_PROFILES,
 			};
 
 			yield actions.receiveProfiles( response );
 
 			yield {
-				payload: { accountID, propertyID },
+				payload: { propertyID },
 				type: FINISH_FETCH_PROFILES,
 			};
 		} catch ( e ) {
 			error = e;
 			yield {
 				payload: {
-					accountID,
 					propertyID,
 					error,
 				},
@@ -194,7 +192,9 @@ export const controls = {
 			propertyID,
 		} );
 	},
-	[ FETCH_PROFILES ]: ( { payload: { accountID, propertyID } } ) => {
+	[ FETCH_PROFILES ]: ( { payload: { propertyID } } ) => {
+		const { accountID } = parsePropertyID( propertyID );
+
 		return API.get( 'modules', 'analytics', 'profiles', {
 			accountID,
 			propertyID,
@@ -325,7 +325,7 @@ export const resolvers = {
 
 		// Only fetch profiles if there are none received for the given account and property.
 		if ( ! profiles ) {
-			( { response: profiles } = yield actions.fetchProfiles( accountID, propertyID ) );
+			( { response: profiles } = yield actions.fetchProfiles( propertyID ) );
 		}
 
 		const profileID = registry.select( STORE_NAME ).getProfileID();
