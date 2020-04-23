@@ -39,7 +39,7 @@ final class Standalone {
 		 *
 		 * @param string $admin_body_classes Admin body classes.
 		 *
-		 * @return array Filtered array of query arguments.
+		 * @return string Filtered admin body classes.
 		 */
 		add_filter(
 			'admin_body_class',
