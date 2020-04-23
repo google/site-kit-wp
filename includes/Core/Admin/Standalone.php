@@ -25,7 +25,7 @@ final class Standalone {
 	/**
 	 * Plugin context.
 	 *
-	 * @since NEXT
+	 * @since n.e.x.t
 	 *
 	 * @var Context
 	 */
@@ -34,7 +34,7 @@ final class Standalone {
 	/**
 	 * Constructor.
 	 *
-	 * @since NEXT
+	 * @since n.e.x.t
 	 *
 	 * @param Context $context Plugin context.
 	 */
