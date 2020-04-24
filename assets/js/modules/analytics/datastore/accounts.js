@@ -164,7 +164,7 @@ export const actions = {
 		let response,
 			error;
 		yield {
-			payload: {},
+			payload: { accountName, propertyName, profileName, timezone },
 			type: START_FETCH_CREATE_ACCOUNT,
 		};
 
@@ -177,13 +177,13 @@ export const actions = {
 			yield actions.receiveCreateAccount( response );
 
 			yield {
-				payload: {},
+				payload: { accountName, propertyName, profileName, timezone },
 				type: FINISH_FETCH_CREATE_ACCOUNT,
 			};
 		} catch ( e ) {
 			error = e;
 			yield {
-				payload: { error },
+				payload: { accountName, propertyName, profileName, timezone, error },
 				type: CATCH_FETCH_CREATE_ACCOUNT,
 			};
 		}
