@@ -11,5 +11,5 @@
     "name": "Test Profile",
     "timezone": "America/Los Angeles"
   },
-  "redirectUri": "https://redirect.com/wp-admin?gatoscallback"
+  "redirectUri": "https://redirect.com/wp-admin?gatoscallback=1"
 }

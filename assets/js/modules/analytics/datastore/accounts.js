@@ -156,15 +156,15 @@ export const actions = {
 	 * @return {Function} Generator function action.
 	 */
 	*createAccount( { accountName, propertyName, profileName, timezone } ) {
-		invariant( accountName, 'accountName is required.' );
-		invariant( propertyName, 'propertyName is required.' );
-		invariant( profileName, 'profileName is required.' );
-		invariant( timezone, 'timezone is required.' );
+		invariant( accountName, 'accountName is required to create an account.' );
+		invariant( propertyName, 'propertyName is required to create an account.' );
+		invariant( profileName, 'profileName is required to create an account.' );
+		invariant( timezone, 'timezone is required to create an account.' );
 
 		let response,
 			error;
 		yield {
-			payload: {},
+			payload: { accountName, propertyName, profileName, timezone },
 			type: START_FETCH_CREATE_ACCOUNT,
 		};
 
@@ -177,13 +177,13 @@ export const actions = {
 			yield actions.receiveCreateAccount( response );
 
 			yield {
-				payload: {},
+				payload: { accountName, propertyName, profileName, timezone },
 				type: FINISH_FETCH_CREATE_ACCOUNT,
 			};
 		} catch ( e ) {
 			error = e;
 			yield {
-				payload: { error },
+				payload: { accountName, propertyName, profileName, timezone, error },
 				type: CATCH_FETCH_CREATE_ACCOUNT,
 			};
 		}
