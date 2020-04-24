@@ -161,31 +161,33 @@ export const actions = {
 		invariant( profileName, 'profileName is required.' );
 		invariant( timezone, 'timezone is required.' );
 
-		let accountTicket;
+		let response,
+			error;
 		yield {
 			payload: {},
 			type: START_FETCH_CREATE_ACCOUNT,
 		};
 
 		try {
-			accountTicket = yield {
+			response = yield {
 				payload: { accountName, propertyName, profileName, timezone },
 				type: FETCH_CREATE_ACCOUNT,
 			};
-
+			const { accountTicket } = response;
 			yield actions.receiveCreateAccount( accountTicket );
 
 			yield {
 				payload: {},
 				type: FINISH_FETCH_CREATE_ACCOUNT,
 			};
-		} catch ( error ) {
-			return {
+		} catch ( e ) {
+			error = e;
+			yield {
 				payload: { error },
 				type: CATCH_FETCH_CREATE_ACCOUNT,
 			};
 		}
-		return accountTicket;
+		return { response, error };
 	},
 
 	receiveCreateAccount( accountTicket ) {
