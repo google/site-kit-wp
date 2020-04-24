@@ -13,7 +13,8 @@ namespace Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Storage\Setting_With_Legacy_Keys_Trait;
 use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
-use \Google\Site_Kit_Dependencies\Google_Service_Resource;
+use Google\Site_Kit_Dependencies\Google_Service_Resource;
+use Google\Site_Kit_Dependencies\Google_Service_Analytics_AccountTicket;
 
 /**
  * Class for Analytics provisioning.
