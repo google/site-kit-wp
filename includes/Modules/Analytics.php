@@ -134,6 +134,16 @@ final class Analytics extends Module
 				$this->handle_provisioning_callback();
 			}
 		);
+
+		// Add the timezone data for users provisioning new accounts.
+		add_filter(
+			'googlesitekit_admin_data',
+			function( $admin_data ) {
+				$selected_zone          = get_option( 'timezone_string' );
+				$admin_data['timezone'] = $selected_zone;
+				return $admin_data;
+			}
+		);
 	}
 
 	/**
@@ -1362,7 +1372,7 @@ final class Analytics extends Module
 		$google_proxy = new Google_Proxy( $this->context );
 		return $google_proxy->get_site_fields()['analytics_redirect_uri'];
 	}
- 
+
 	/**
 	 * Verifies that user has access to the property found in the existing tag.
 	 *
