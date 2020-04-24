@@ -14,7 +14,6 @@ use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Storage\Setting_With_Legacy_Keys_Trait;
 use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
 use Google\Site_Kit_Dependencies\Google_Service_Resource;
-use Google\Site_Kit_Dependencies\Google_Service_Analytics_AccountTicket;
 
 /**
  * Class for Analytics provisioning.
@@ -34,6 +33,6 @@ class Proxy_Provisioning extends Google_Service_Resource {
 	public function createAccountTicket( Proxy_AccountTicket $post_body, $opt_params = array() ) {
 		$params = array( 'postBody' => $post_body );
 		$params = array_merge( $params, $opt_params );
-		return $this->call( 'createAccountTicket', array( $params ), 'Google_Service_Analytics_AccountTicket' );
+		return $this->call( 'createAccountTicket', array( $params ), 'Google\Site_Kit_Dependencies\Google_Service_Analytics_AccountTicket' );
 	}
 }
