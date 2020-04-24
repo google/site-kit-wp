@@ -138,7 +138,7 @@ describe( 'modules/analytics accounts', () => {
 				// this action.
 				muteConsole( 'error', 2 );
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
-				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
+				const profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
 
 				expect( accounts ).toEqual( fixtures.accountsPropertiesProfiles.accounts );
 				expect( properties ).toEqual( fixtures.accountsPropertiesProfiles.properties );
