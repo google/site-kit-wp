@@ -73,6 +73,7 @@ class AnalyticsDashboardWidgetSiteStats extends Component {
 					color: '#616161',
 					fontSize: 12,
 				},
+				viewWindowMode: 'pretty',
 			},
 			vAxis: {
 				gridlines: {
