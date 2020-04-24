@@ -107,7 +107,7 @@ const AccountCreate = () => {
 	} );
 
 	// Disable the submit button if there are validation errors, and while submission is in progress.
-	const buttonDisabled = validationIssues.accountName || validationIssues.propertyName || validationIssues.profileName || isDoingCreateAccount;
+	const buttonDisabled = validationIssues.accountName || validationIssues.propertyName || validationIssues.profileName || validationIssues.timezone || isDoingCreateAccount;
 
 	return (
 		<Fragment>
