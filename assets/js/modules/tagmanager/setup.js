@@ -43,6 +43,7 @@ import {
 } from './util';
 import { Select, Option } from '../../material-components';
 import Button from '../../components/button';
+import DisplaySetting from '../../components/display-setting';
 import Link from '../../components/link';
 import Switch from '../../components/switch';
 import data, { TYPE_MODULES } from '../../components/data';
@@ -450,7 +451,7 @@ class TagmanagerSetup extends Component {
 							{ __( 'Account', 'google-site-kit' ) }
 						</p>
 						<h5 className="googlesitekit-settings-module__meta-item-data">
-							{ accountID || false }
+							<DisplaySetting value={ accountID } />
 						</h5>
 					</div>
 
@@ -461,7 +462,7 @@ class TagmanagerSetup extends Component {
 								{ ! ampEnabled && __( 'Container ID', 'google-site-kit' ) }
 							</p>
 							<h5 className="googlesitekit-settings-module__meta-item-data">
-								{ settings.containerID || false }
+								<DisplaySetting value={ settings.containerID } />
 							</h5>
 						</div>
 					) }
@@ -473,7 +474,7 @@ class TagmanagerSetup extends Component {
 								{ ! isSecondaryAMP && __( 'Container ID', 'google-site-kit' ) }
 							</p>
 							<h5 className="googlesitekit-settings-module__meta-item-data">
-								{ settings.ampContainerID || false }
+								<DisplaySetting value={ settings.ampContainerID } />
 							</h5>
 						</div>
 					) }

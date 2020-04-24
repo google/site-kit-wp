@@ -49,6 +49,16 @@ const valuesToTest = [
 		110,
 		'-9.1',
 	],
+	[
+		322,
+		359,
+		'11.5',
+	],
+	[
+		4531,
+		4921,
+		'8.6',
+	],
 ];
 
 describe( 'changeToPercent', () => {
