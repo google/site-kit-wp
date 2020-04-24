@@ -44,7 +44,7 @@ import getNoDataComponent from '../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../components/notifications/data-error';
 import AdSenseDashboardOutro from '../../../modules/adsense/dashboard/dashboard-outro';
 import { isAdsenseConnectedAnalytics } from '../../../modules/adsense/util';
-import { getCurrentDateRange, getCurrentDateRangeSlug } from '../../../util';
+import { getCurrentDateRange, getCurrentDateRangeSlug } from '../../../util/date-range';
 import HelpLink from '../../../components/help-link';
 
 class AnalyticsDashboardWidget extends Component {
