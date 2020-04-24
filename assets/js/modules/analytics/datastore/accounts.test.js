@@ -90,7 +90,7 @@ describe( 'modules/analytics accounts', () => {
 					{ accountName, propertyName, profileName, timezone }
 				);
 
-				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toEqual( `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/&api.accountTicketId=${ fixtures.createAccount.id }` );
+				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toEqual( `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/?api.accountTicketId=${ fixtures.createAccount.id }` );
 			} );
 
 			it( 'sets isDoingCreateAccount ', async () => {
