@@ -23,6 +23,7 @@ import Data from 'googlesitekit-data';
 import connection from './connection';
 import info from './info';
 import reset from './reset';
+import { STORE_NAME } from './constants';
 import notifications from './notifications';
 
 export const INITIAL_STATE = Data.collectState(
@@ -32,7 +33,6 @@ export const INITIAL_STATE = Data.collectState(
 	notifications.INITIAL_STATE,
 );
 
-import { STORE_NAME } from './constants';
 export { STORE_NAME };
 
 export const actions = Data.addInitializeAction(

@@ -2,8 +2,9 @@
  * Internal dependencies
  */
 import data from '../';
+import { setCache, getCache } from '../cache';
 
-const { setCache, getCache, invalidateCacheGroup } = data;
+const { invalidateCacheGroup } = data;
 
 const nativeSessionStorage = global.sessionStorage;
 const nativeLocalStorage = global.localStorage;
