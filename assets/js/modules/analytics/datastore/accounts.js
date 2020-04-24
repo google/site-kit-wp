@@ -173,8 +173,8 @@ export const actions = {
 				payload: { accountName, propertyName, profileName, timezone },
 				type: FETCH_CREATE_ACCOUNT,
 			};
-			const { accountTicket } = response;
-			yield actions.receiveCreateAccount( accountTicket );
+
+			yield actions.receiveCreateAccount( response );
 
 			yield {
 				payload: {},
