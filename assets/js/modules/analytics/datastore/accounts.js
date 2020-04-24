@@ -48,7 +48,7 @@ export const INITIAL_STATE = {
 	accounts: undefined,
 	isFetchingAccountsPropertiesProfiles: false,
 	isFetchingCreateAccount: false,
-	accountTicketTermsOfServiceURL: false,
+	accountTicketTermsOfServiceURL: undefined,
 };
 
 export const actions = {
