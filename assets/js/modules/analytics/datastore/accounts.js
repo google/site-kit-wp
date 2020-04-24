@@ -290,7 +290,7 @@ export const reducer = ( state, { type, payload } ) => {
 			const { accountTicket: { id } } = payload;
 			return {
 				...state,
-				accountTicketTermsOfServiceURL: `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/&api.accountTicketId=${ id }`,
+				accountTicketTermsOfServiceURL: `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/?api.accountTicketId=${ id }`,
 			};
 		}
 
