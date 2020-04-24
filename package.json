@@ -135,6 +135,7 @@
     "backstopjs": "3.8.8",
     "browser-sync": "^2.26.3",
     "bundlesize": "^0.17.1",
+    "circular-dependency-plugin": "^5.2.0",
     "classnames": "^2.2.6",
     "core-js": "^3.1.4",
     "css-loader": "^1.0.1",
