@@ -321,21 +321,21 @@ class AnalyticsSetup extends Component {
 				} else {
 					responseData.accounts.unshift( {
 						id: 0,
-						name: __( 'Select one...', 'google-site-kit' ),
+						name: __( 'Select one…', 'google-site-kit' ),
 					} );
 				}
 			} else if ( '0' === selectedAccount ) {
 				// Accounts were just refreshed.
 				responseData.accounts.unshift( {
 					id: 0,
-					name: __( 'Select one...', 'google-site-kit' ),
+					name: __( 'Select one…', 'google-site-kit' ),
 				} );
 			} else if ( selectedAccount && ! responseData.accounts.find( ( account ) => account.id === selectedAccount ) ) {
 				data.invalidateCacheGroup( TYPE_MODULES, 'analytics', 'accounts-properties-profiles' );
 
 				responseData.accounts.unshift( {
 					id: 0,
-					name: __( 'Select one...', 'google-site-kit' ),
+					name: __( 'Select one…', 'google-site-kit' ),
 				} );
 
 				if ( isEditing ) {
@@ -1050,9 +1050,11 @@ class AnalyticsSetup extends Component {
 			<div className={ classnames( { 'googlesitekit-error-text': showErrorFormat } ) }>
 				<p>{
 					showErrorFormat
-
-						/* translators: %s: Error message */
-						? sprintf( __( 'Error: %s', 'google-site-kit' ), message )
+						? sprintf(
+							/* translators: %s: Error message */
+							__( 'Error: %s', 'google-site-kit' ),
+							message
+						)
 						: message
 				}</p>
 			</div>
