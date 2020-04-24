@@ -34,12 +34,12 @@ import AccountField from './account-field';
 import PropertyField from './property-field';
 import ProfileField from './profile-field';
 
-// import Data from 'googlesitekit-data';
-// const { dispatch, select } = Data;
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../datastore/constants';
+
+const { useSelect, useDispatch } = Data;
 
 const AccountCreate = () => {
-	// Uncomment this section after 1311 is merged.
-	/*
 	const isDoingCreateAccount = useSelect(
 		( select ) => {
 			return select( STORE_NAME ).isDoingCreateAccount();
@@ -53,18 +53,13 @@ const AccountCreate = () => {
 		[]
 	);
 
-	*/
-	//const { createAccount } = useDispatch( STORE_NAME );
+	const { createAccount } = useDispatch( STORE_NAME );
 
-	/*
 	// Redirect if the accountTicketTermsOfServiceURL is set.
 	if ( accountTicketTermsOfServiceURL ) {
 		location = accountTicketTermsOfServiceURL;
 	}
-	*/
 
-	const isDoingCreateAccount = false;
-	const { createAccount } = () => {};
 	const { siteName, siteURL, timezone: tz } = global.googlesitekit.admin;
 	const errorCode = getQueryArg( location.href, 'error_code' );
 
@@ -93,7 +88,7 @@ const AccountCreate = () => {
 			profileName,
 			timezone,
 		} ).then( ( e ) => {
-			const { error: err } = e.payload;
+			const { error: err } = e;
 			if ( err ) {
 				setError( err.message ? err.message : __( 'Unknown error.', 'google-site-kit' ) );
 			}
