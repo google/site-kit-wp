@@ -30,20 +30,26 @@ import {
 	Option,
 } from '../../../material-components';
 import { countries } from './countries';
+import classnames from 'classnames';
+
 const { default: { country: allCountries } } = countries;
 
-const TimezoneSelect = ( { timezone, setTimezone } ) => {
+const TimezoneSelect = ( { timezone, setTimezone, validationIssues, setValidationIssues } ) => {
 	const [ selectedCountry, setSelectedCountry ] = useState( timezone );
 	const [ selectedTimezoneID, setSelectedTimezoneID ] = useState( '' );
 	let multiTimezone,
 		selectedTimezoneDisplay = selectedTimezoneID;
 
 	const getTimezoneSelector = () => {
-		return (
+		let foundTimezone = false;
+		const response = (
 			<div >
 				<span style={ { minWidth: '240px', margin: '0 5px 0 0' } /*todo: move to css */ } >
 					<Select
-						className="googlesitekit-analytics__select-timezone"
+						className={ classnames(
+							'googlesitekit-analytics__select-timezone',
+							{ 'mdc-text-field--error': validationIssues.timezone }
+						) }
 						name="country"
 						enhanced
 						value={ selectedCountry }
@@ -61,6 +67,7 @@ const TimezoneSelect = ( { timezone, setTimezone } ) => {
 									let value = aCountry.defaultTimeZoneId;
 									const timezoneMatch = aCountry.timeZone.find( ( tz ) => tz.timeZoneId === timezone );
 									if ( timezoneMatch ) {
+										foundTimezone = true;
 										value = timezoneMatch.timeZoneId;
 										if ( aCountry.timeZone.length > 1 ) {
 											multiTimezone = aCountry.timeZone;
@@ -116,9 +123,16 @@ const TimezoneSelect = ( { timezone, setTimezone } ) => {
 				</span>
 			</div>
 		);
+
+		setValidationIssues( {
+			...validationIssues,
+			timezone: ! foundTimezone,
+		} );
+
+		return response;
 	};
 
-	const timezoneSelector = useMemo( () => getTimezoneSelector(), [ selectedCountry, timezone ] );
+	const timezoneSelector = useMemo( () => getTimezoneSelector(), [ selectedCountry, timezone, validationIssues.timezone ] );
 
 	return timezoneSelector;
 };

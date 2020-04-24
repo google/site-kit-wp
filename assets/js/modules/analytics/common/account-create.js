@@ -103,8 +103,13 @@ const AccountCreate = () => {
 	const [ accountName, setAccountName ] = useState( siteName );
 	const [ propertyName, setPropertyName ] = useState( siteURL );
 	const [ profileName, setProfileName ] = useState( __( 'All website traffic', 'google-site-kit' ) );
-	const [ validationIssues, setValidationIssues ] = useState( {} );
 	const [ timezone, setTimezone ] = useState( tz );
+	const [ validationIssues, setValidationIssues ] = useState( {
+		accountName: accountName === '',
+		propertyName: propertyName === '',
+		profileName: profileName === '',
+		timezone: timezone === '',
+	} );
 
 	// Disable the submit button if there are validation errors, and while submission is in progress.
 	const buttonDisabled = validationIssues.accountName || validationIssues.propertyName || validationIssues.profileName || isDoingCreateAccount;
@@ -160,6 +165,8 @@ const AccountCreate = () => {
 											</div>
 											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 												<TimezoneSelect
+													validationIssues={ validationIssues }
+													setValidationIssues={ setValidationIssues }
 													timezone={ timezone }
 													setTimezone={ setTimezone }
 												/>
