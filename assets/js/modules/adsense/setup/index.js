@@ -17,3 +17,11 @@
  */
 
 export { default as SetupMain } from './setup-main';
+export { default as SetupAccountCreate } from './setup-account-create';
+export { default as SetupAccountSelect } from './setup-account-select';
+export { default as SetupAccountDisapproved } from './setup-account-disapproved';
+export { default as SetupAccountPending } from './setup-account-pending';
+export { default as SetupAccountNoClient } from './setup-account-no-client';
+export { default as SetupAccountApproved } from './setup-account-approved';
+export { default as SetupSiteAdd } from './setup-site-add';
+export { default as SetupSiteAdded } from './setup-site-added';

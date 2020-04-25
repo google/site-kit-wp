@@ -17,11 +17,11 @@
  */
 
 export const ACCOUNT_STATUS_NONE = 'none';
+export const ACCOUNT_STATUS_MULTIPLE = 'multiple';
 export const ACCOUNT_STATUS_DISAPPROVED = 'disapproved';
 export const ACCOUNT_STATUS_GRAYLISTED = 'graylisted';
-export const ACCOUNT_STATUS_MULTIPLE = 'multiple';
-export const ACCOUNT_STATUS_NO_CLIENT = 'no-client';
 export const ACCOUNT_STATUS_PENDING = 'pending';
+export const ACCOUNT_STATUS_NO_CLIENT = 'no-client';
 export const ACCOUNT_STATUS_APPROVED = 'approved';
 
 // TODO: Expand the statuses provided here to be more specific in case the

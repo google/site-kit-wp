@@ -20,24 +20,40 @@
  * WordPress dependencies
  */
 import { useEffect } from '@wordpress/element';
-import { _x } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import ProgressBar from '../../../components/progress-bar';
+import ErrorText from '../../../components/error-text';
 import { SvgIcon } from '../../../util';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as siteStoreName } from '../../../googlesitekit/datastore/site/constants';
 import {
+	ACCOUNT_STATUS_NONE,
+	ACCOUNT_STATUS_MULTIPLE,
+	ACCOUNT_STATUS_DISAPPROVED,
+	ACCOUNT_STATUS_GRAYLISTED,
+	ACCOUNT_STATUS_PENDING,
+	ACCOUNT_STATUS_NO_CLIENT,
 	ACCOUNT_STATUS_APPROVED,
+	SITE_STATUS_NONE,
 	SITE_STATUS_ADDED,
 	determineAccountID,
 	determineClientID,
 	determineAccountStatus,
 	determineSiteStatus,
 } from '../util/status';
+import SetupAccountCreate from './setup-account-create';
+import SetupAccountSelect from './setup-account-select';
+import SetupAccountDisapproved from './setup-account-disapproved';
+import SetupAccountPending from './setup-account-pending';
+import SetupAccountNoClient from './setup-account-no-client';
+import SetupAccountApproved from './setup-account-approved';
+import SetupSiteAdd from './setup-site-add';
+import SetupSiteAdded from './setup-site-added';
 import {
 	AdBlockerWarning,
 } from '../common';
@@ -138,13 +154,62 @@ export default function SetupMain() {
 	}, [ siteStatus ] );
 
 	const isAdBlockerActive = useSelect( ( select ) => select( STORE_NAME ).isAdBlockerActive() );
-	const isLoading = 'undefined' === typeof accountStatus || 'undefined' === typeof siteStatus;
 
 	let viewComponent;
-	if ( isLoading ) {
+	if ( 'undefined' === typeof accountStatus ) {
+		// Show loading indicator if account status not determined yet.
 		viewComponent = <ProgressBar />;
+	} else if ( accountStatus !== ACCOUNT_STATUS_APPROVED || ! accountSetupComplete ) {
+		// Show relevant account status component.
+		switch ( accountStatus ) {
+			case ACCOUNT_STATUS_NONE:
+				viewComponent = <SetupAccountCreate />;
+				break;
+			case ACCOUNT_STATUS_MULTIPLE:
+				viewComponent = <SetupAccountSelect />;
+				break;
+			case ACCOUNT_STATUS_DISAPPROVED:
+				viewComponent = <SetupAccountDisapproved />;
+				break;
+			case ACCOUNT_STATUS_GRAYLISTED:
+			case ACCOUNT_STATUS_PENDING:
+				viewComponent = <SetupAccountPending />;
+				break;
+			case ACCOUNT_STATUS_NO_CLIENT:
+				viewComponent = <SetupAccountNoClient />;
+				break;
+			case ACCOUNT_STATUS_APPROVED:
+				viewComponent = <SetupAccountApproved />;
+				break;
+			default:
+				viewComponent = <ErrorText message={ sprintf(
+					__( 'Invalid account status: %s', 'google-site-kit' ),
+					accountStatus
+				) } />;
+		}
+	} else if ( 'undefined' === typeof siteStatus ) {
+		// Show loading indicator if site status not determined yet.
+		viewComponent = <ProgressBar />;
+	} else if ( siteStatus !== SITE_STATUS_ADDED || ! siteSetupComplete ) {
+		// Show relevant site status component.
+		switch ( siteStatus ) {
+			case SITE_STATUS_NONE:
+				viewComponent = <SetupSiteAdd />;
+				break;
+			case SITE_STATUS_ADDED:
+				viewComponent = <SetupSiteAdded />;
+				break;
+			default:
+				viewComponent = <ErrorText message={ sprintf(
+					__( 'Invalid site status: %s', 'google-site-kit' ),
+					siteStatus
+				) } />;
+		}
 	} else {
-		viewComponent = <div>{ accountStatus } / { siteStatus }</div>;
+		// This should never be reached because the setup is not accessible
+		// under these circumstances due to related PHP+/JS logic. But at
+		// least in theory it should show the last step, just in case.
+		viewComponent = <SetupSiteAdded />;
 	}
 
 	return (
