@@ -16,8 +16,42 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Link from '../../../components/link';
+import { sanitizeHTML } from '../../../util/sanitize';
+
 export default function SetupAccountNoClient() {
 	return (
-		<div>Create an AdMob client</div>
+		<Fragment>
+			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
+				{ __( 'Looks like you have an AdMob account', 'google-site-kit' ) }
+			</h3>
+
+			<p>
+				{ __( 'To start using AdSense, you need to update your account so that you can connect your site to AdSense.', 'google-site-kit' ) }
+			</p>
+
+			<div className="googlesitekit-setup-module__action">
+				<Link
+					href="https://support.google.com/adsense/answer/6023158"
+					external
+					dangerouslySetInnerHTML={ sanitizeHTML(
+						__( 'Learn more<span class="screen-reader-text"> about updating your AdSense account</span>', 'google-site-kit' ),
+						{
+							ALLOWED_TAGS: [ 'span' ],
+							ALLOWED_ATTR: [ 'class' ],
+						}
+					) }
+				/>
+			</div>
+		</Fragment>
 	);
 }

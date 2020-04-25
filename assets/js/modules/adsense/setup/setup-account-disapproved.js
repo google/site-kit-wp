@@ -16,8 +16,45 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import Link from '../../../components/link';
+import { getAccountURL } from '../util/url';
+import { STORE_NAME } from '../datastore/constants';
+const { useSelect } = Data;
+
 export default function SetupAccountDisapproved() {
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const userEmail = 'temporarytest@gmail.com'; // TODO: Replace with core/user store access once available.
+
+	const accountURL = getAccountURL( { accountID, userEmail } );
+
 	return (
-		<div>Fix your account</div>
+		<Fragment>
+			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
+				{ __( 'Your site isn’t ready to show ads yet', 'google-site-kit' ) }
+			</h3>
+
+			<p>
+				{ __( 'You need to fix some things before we can connect Site Kit to your AdSense account.', 'google-site-kit' ) }
+			</p>
+
+			<div className="googlesitekit-setup-module__action">
+				<Link
+					href={ accountURL }
+					external
+				>
+					{ __( 'Go to AdSense to find out how to fix the issue', 'google-site-kit' ) }
+				</Link>
+			</div>
+		</Fragment>
 	);
 }

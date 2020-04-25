@@ -16,8 +16,53 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import Link from '../../../components/link';
+import { getAccountSiteURL } from '../util/url';
+import { STORE_NAME } from '../datastore/constants';
+import { STORE_NAME as siteStoreName } from '../../../googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
+
 export default function SetupAccountPending() {
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
+	const userEmail = 'temporarytest@gmail.com'; // TODO: Replace with core/user store access once available.
+
+	const accountSiteURL = getAccountSiteURL( { accountID, siteURL, userEmail } );
+
+	if ( ! siteURL ) {
+		return null;
+	}
+
 	return (
-		<div>Your account is being reviewed</div>
+		<Fragment>
+			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
+				{ __( 'Let’s get your site ready for ads', 'google-site-kit' ) }
+			</h3>
+
+			<p>
+				{ __( 'Site Kit has placed AdSense code on every page across your site.', 'google-site-kit' ) }
+				{ ' ' }
+				{ __( 'After you’ve finished setting up your account, we’ll let you know when your site is ready to show ads. This usually takes less than a day, but it can sometimes take a bit longer.', 'google-site-kit' ) }
+			</p>
+
+			<div className="googlesitekit-setup-module__action">
+				<Link
+					href={ accountSiteURL }
+					external
+				>
+					{ __( 'Go to your AdSense account to check on your site’s status or to complete setting up', 'google-site-kit' ) }
+				</Link>
+			</div>
+		</Fragment>
 	);
 }

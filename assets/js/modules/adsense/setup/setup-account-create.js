@@ -16,8 +16,89 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { Fragment, useCallback } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import Button from '../../../components/button';
+import Link from '../../../components/link';
+import { trackEvent } from '../../../util';
+import { sanitizeHTML } from '../../../util/sanitize';
+import { parseAccountID } from '../util/parsing';
+import { getCreateAccountURL } from '../util/url';
+import { STORE_NAME } from '../datastore/constants';
+import { STORE_NAME as siteStoreName } from '../../../googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
+
 export default function SetupAccountCreate() {
+	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
+	const userEmail = 'temporarytest@gmail.com'; // TODO: Replace with core/user store access once available.
+	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
+
+	const signUpURL = getCreateAccountURL( { siteURL } );
+
+	const createAccountHandler = useCallback( ( event ) => {
+		event.preventDefault();
+		trackEvent( 'adsense_setup', 'create_adsense_account' );
+		global.open( signUpURL, '_blank' );
+	} );
+
+	if ( ! siteURL || 'undefined' === typeof existingTag ) {
+		return null;
+	}
+
+	// TODO: Display user picture circle and email address above button.
 	return (
-		<div>Create an account</div>
+		<Fragment>
+			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
+				{ __( 'Create your AdSense account', 'google-site-kit' ) }
+			</h3>
+
+			<p>
+				{ __( 'Site Kit will place AdSense code on every page across your site. This means Google will automatically place ads for you in all the best places.', 'google-site-kit' ) }
+			</p>
+
+			<div className="googlesitekit-setup-module__action">
+				<Button
+					onClick={ createAccountHandler }
+					href={ signUpURL }
+				>
+					{ __( 'Create AdSense Account', 'google-site-kit' ) }
+				</Button>
+			</div>
+
+			<p className="googlesitekit-setup-module__footer-text">
+				{ existingTag && sprintf(
+					__( 'Site Kit detected AdSense code %1$s on your page. We recommend you remove that code or add %2$s as a user to the AdSense account %3$s.', 'google-site-kit' ),
+					existingTag,
+					userEmail,
+					parseAccountID( existingTag )
+				) }
+				{ ! existingTag && sprintf(
+					/* translators: %s: user email address */
+					__( 'Already use AdSense? Add %s as a user to an existing AdSense account.', 'google-site-kit' ),
+					userEmail
+				) }
+				{ ' ' }
+				<Link
+					href="https://support.google.com/adsense/answer/2659101"
+					inherit
+					external
+					dangerouslySetInnerHTML={ sanitizeHTML(
+						__( 'Learn more<span class="screen-reader-text"> about adding a user to an existing AdSense account</span>', 'google-site-kit' ),
+						{
+							ALLOWED_TAGS: [ 'span' ],
+							ALLOWED_ATTR: [ 'class' ],
+						}
+					) }
+				/>
+			</p>
+		</Fragment>
 	);
 }
