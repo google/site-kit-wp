@@ -121,6 +121,24 @@ storiesOf( 'AdSense Module/Setup', module )
 
 		return <Setup callback={ setupRegistry } />;
 	} )
+	.add( 'No account (with existing tag)', () => {
+		filterAdSenseSetup();
+
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).setSettings( emptySettings );
+			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
+			registry.dispatch( STORE_NAME ).receiveExistingTag( 'ca-pub-123456789' );
+			registry.dispatch( STORE_NAME ).receiveError( {
+				// Typically thrown when fetching accounts.
+				message: 'No account.',
+				data: {
+					reason: 'noAdSenseAccount',
+				},
+			} );
+		};
+
+		return <Setup callback={ setupRegistry } />;
+	} )
 	.add( 'Multiple accounts', () => {
 		filterAdSenseSetup();
 
@@ -181,6 +199,20 @@ storiesOf( 'AdSense Module/Setup', module )
 					reason: 'accountPendingReview',
 				},
 			} );
+		};
+
+		return <Setup callback={ setupRegistry } />;
+	} )
+	.add( 'Account without AFC client (AdMob)', () => {
+		filterAdSenseSetup();
+
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).setSettings( emptySettings );
+			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
+			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
+			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clientsNoAFC );
+			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
 		};
 
 		return <Setup callback={ setupRegistry } />;
