@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { getExistingTag } from '../../../util';
+import { getExistingTag } from '../../../util/tag';
 import { STORE_NAME } from './constants';
 
 const { commonActions, createRegistrySelector } = Data;
