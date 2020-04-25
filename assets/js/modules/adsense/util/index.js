@@ -37,6 +37,7 @@ import data, { TYPE_MODULES } from '../../../components/data';
 export * from './parsing';
 export * from './status';
 export * from './validation';
+export * from './url';
 
 export function reduceAdSenseData( rows ) {
 	const dataMap = [
