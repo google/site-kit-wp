@@ -71,6 +71,15 @@ export const actions = Data.addInitializeAction( Data.collectActions(
 	urlchannels.actions,
 	settings.actions,
 	adblocker.actions,
+	{
+		// TODO: Revisit better way to handle and retrieve errors.
+		receiveError( error ) {
+			return {
+				type: 'RECEIVE_ERROR',
+				payload: { error },
+			};
+		},
+	},
 ) );
 
 export const controls = Data.collectControls(
@@ -97,6 +106,17 @@ export const reducer = Data.addInitializeReducer(
 		urlchannels.reducer,
 		settings.reducer,
 		adblocker.reducer,
+		// TODO: Revisit better way to handle and retrieve errors.
+		( state, { type, payload } ) => {
+			if ( 'RECEIVE_ERROR' === type ) {
+				const { error } = payload;
+				return {
+					...state,
+					error,
+				};
+			}
+			return { ...state };
+		},
 	)
 );
 
