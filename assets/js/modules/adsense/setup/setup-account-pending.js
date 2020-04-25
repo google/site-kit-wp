@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -30,14 +30,25 @@ import Link from '../../../components/link';
 import { getAccountSiteURL } from '../util/url';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as siteStoreName } from '../../../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SetupAccountPending() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
 	const userEmail = 'temporarytest@gmail.com'; // TODO: Replace with core/user store access once available.
 
 	const accountSiteURL = getAccountSiteURL( { accountID, siteURL, userEmail } );
+
+	// Enforce snippet to be placed.
+	const { setUseSnippet } = useDispatch( STORE_NAME );
+	useEffect( () => {
+		// Don't do anything if setting has not loaded yet.
+		if ( 'undefined' === typeof useSnippet ) {
+			return;
+		}
+		setUseSnippet( true );
+	}, [ useSnippet ] );
 
 	if ( ! siteURL ) {
 		return null;
