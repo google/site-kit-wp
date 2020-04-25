@@ -141,9 +141,26 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RESET_ACCOUNTS: {
+			const {
+				accountID,
+				clientID,
+				accountStatus,
+				siteStatus,
+				accountSetupComplete,
+				siteSetupComplete,
+			} = state.savedSettings || {};
 			return {
 				...state,
 				accounts: undefined,
+				settings: {
+					...( state.settings || {} ),
+					accountID,
+					clientID,
+					accountStatus,
+					siteStatus,
+					accountSetupComplete,
+					siteSetupComplete,
+				},
 			};
 		}
 

@@ -161,9 +161,22 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RESET_ALERTS: {
+			const {
+				accountStatus,
+				siteStatus,
+				accountSetupComplete,
+				siteSetupComplete,
+			} = state.savedSettings || {};
 			return {
 				...state,
 				alerts: {},
+				settings: {
+					...( state.settings || {} ),
+					accountStatus,
+					siteStatus,
+					accountSetupComplete,
+					siteSetupComplete,
+				},
 			};
 		}
 

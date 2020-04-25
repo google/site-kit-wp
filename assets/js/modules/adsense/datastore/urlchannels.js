@@ -174,9 +174,18 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RESET_URLCHANNELS: {
+			const {
+				siteStatus,
+				siteSetupComplete,
+			} = state.savedSettings || {};
 			return {
 				...state,
 				urlchannels: {},
+				settings: {
+					...( state.settings || {} ),
+					siteStatus,
+					siteSetupComplete,
+				},
 			};
 		}
 
