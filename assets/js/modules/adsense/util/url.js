@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { parse as pslParse } from 'psl';
+
+/**
  * WordPress dependencies
  */
 import { addQueryArgs } from '@wordpress/url';
@@ -72,11 +77,11 @@ export const getAccountURL = ( { accountID, userEmail } = {} ) => {
  *                                    for users with multiple Google accounts.
  * @return {string} AdSense account site overview URL.
  */
-export const getSiteURL = ( { accountID, siteURL, userEmail } = {} ) => {
+export const getAccountSiteURL = ( { accountID, siteURL, userEmail } = {} ) => {
 	const baseURL = getAccountBaseURL( { accountID, userEmail, path: '/sites/my-sites' } );
 	const queryParams = { source: 'site-kit' };
 	if ( siteURL ) {
-		queryParams.url = siteURL;
+		queryParams.url = parseDomain( siteURL ) || siteURL;
 	}
 	return addQueryArgs( baseURL, queryParams );
 };
@@ -93,11 +98,11 @@ export const getSiteURL = ( { accountID, siteURL, userEmail } = {} ) => {
  *                                    for users with multiple Google accounts.
  * @return {string} AdSense account site ads preview URL.
  */
-export const getSiteAdsPreviewURL = ( { accountID, siteURL, userEmail } = {} ) => {
+export const getAccountSiteAdsPreviewURL = ( { accountID, siteURL, userEmail } = {} ) => {
 	const baseURL = getAccountBaseURL( { accountID, userEmail, path: '/myads/sites/preview' } );
 	const queryParams = { source: 'site-kit' };
 	if ( siteURL ) {
-		queryParams.url = siteURL;
+		queryParams.url = parseDomain( siteURL ) || siteURL;
 	}
 	return addQueryArgs( baseURL, queryParams );
 };
@@ -127,4 +132,10 @@ const getAccountBaseURL = ( { accountID, userEmail, path = '/home' } = {} ) => {
 		}
 	}
 	return baseURL;
+};
+
+const parseDomain = ( url ) => {
+	const urlObj = new URL( url );
+	const { domain } = pslParse( urlObj.hostname );
+	return domain;
 };
