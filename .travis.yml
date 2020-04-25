@@ -111,10 +111,10 @@ jobs:
       env: WP_VERSION=latest JS=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
     - name: Visual Regression
       env: VRT=1
-    - name: PHP Tests (PHP nightly, WordPress trunk)
+    - name: PHP Tests (PHP nightly, WordPress nightly)
       stage: test
       php: nightly
-      env: WP_VERSION=master PHP=1
+      env: WP_VERSION=nightly PHP=1
     - stage: test
       name: E2E Tests (WordPress latest)
       env: E2E=1
