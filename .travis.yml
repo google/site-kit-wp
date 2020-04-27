@@ -39,7 +39,7 @@ branches:
 # Before install, failures in this section will result in build status 'errored'
 before_install:
   - |
-    if [[ "$JS" == "1" ]] || [[ "$VRT" == "1" ]] || [[ "$E2E" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
+    if [[ "$JS" == "1" ]] || [[ "$VRT" == "1" ]] || [[ "$E2E" == "1" ]] || [[ "$SNIFF" == "1" ]] || [[ "$STORYBOOK" == "1" ]]; then
       nvm install
       npm ci
     fi
@@ -134,6 +134,7 @@ jobs:
     - stage: deploy
       name: Deploy Storybook
       php: 7.4
+      env: STORYBOOK=1
       before_deploy:
         - npm run build:storybook --  -o storybook-static/$TRAVIS_BRANCH
       deploy:
