@@ -24,6 +24,7 @@ import {
 	find,
 	debounce,
 	trim,
+	isUndefined,
 } from 'lodash';
 import Autocomplete from 'accessible-autocomplete/react';
 
@@ -125,15 +126,18 @@ class PostSearcher extends Component {
 				return result.post_title === selection;
 			}
 		);
-
-		document.location = getSiteKitAdminURL(
-			'googlesitekit-dashboard',
-			{
-				id: match.id,
-				permaLink: match.permalink,
-				pageTitle: selection,
-			}
-		);
+		if ( ! isUndefined( match ) ) {
+			document.location = getSiteKitAdminURL(
+				'googlesitekit-dashboard',
+				{
+					id: match.id,
+					permaLink: match.permalink,
+					pageTitle: selection,
+				}
+			);
+		} else {
+			this.setState( { message: __( 'Please check that the Title or URL is correct', 'google-site-kit' ) } );
+		}
 	}
 
 	render() {
@@ -173,6 +177,7 @@ class PostSearcher extends Component {
 										</Button>
 									</div>
 								</div>
+								{ 0 < this.state.message.length && <p>{ this.state.message }</p> }
 							</div>
 						</div>
 					</div>
