@@ -39,7 +39,7 @@ branches:
 # Before install, failures in this section will result in build status 'errored'
 before_install:
   - |
-    if [[ "$JS" == "1" ]] || [[ "$VRT" == "1" ]] || [[ "$E2E" == "1" ]] || [[ "$SNIFF" == "1" ]] || [[ "$STORYBOOK" == "1" ]]; then
+    if [[ "$JS" == "1" ]] || [[ "$VRT" == "1" ]] || [[ "$E2E" == "1" ]] || [[ "$SNIFF" == "1" ]]; then
       nvm install
       npm ci
     fi
@@ -48,7 +48,7 @@ before_install:
       docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer install
     fi
   - |
-    if [[ "$VRT" == "1" ]] || [[ "$STORYBOOK" == "1" ]]; then
+    if [[ "$VRT" == "1" ]]; then
       docker run --rm -v "$PWD:/app" -v "$HOME/.cache/composer:/tmp/cache" composer install --no-scripts
     fi
   - |
@@ -97,22 +97,40 @@ jobs:
     - php: nightly
     - env: E2E=1 WP_VERSION=nightly
   include:
-    - stage: deploy
-      name: Deploy Storybook
+    - stage: test
+      name: Lint
       php: 7.4
-      env: STORYBOOK=1
-      before_deploy:
-        - npm run build:storybook --  -o storybook-static/$TRAVIS_BRANCH
-      deploy:
-        - provider: pages
-          edge: true
-          github_token: $GITHUB_PERSONAL_ACCESS_TOKEN
-          keep_history: true
-          local_dir: storybook-static
-          on:
-            all_branches: true
-            condition: $TRAVIS_BRANCH =~ ^(master|develop)$
-
+      env: WP_VERSION=4.7 SNIFF=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+    - name: PHP Tests (PHP 5.6, WordPress latest)
+      php: 5.6
+      env: WP_VERSION=latest PHP=1
+    - name: PHP Tests (PHP 7.4, WordPress latest)
+      php: 7.4
+      env: WP_VERSION=latest PHP=1
+    - name: PHP Tests (PHP 7.4, WordPress Multisite latest)
+      php: 7.4
+      env: WP_VERSION=latest WP_MULTISITE=1 PHP=1
+    - name: JS Tests
+      php: 7.4
+      env: WP_VERSION=latest JS=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+    - name: Visual Regression
+      env: VRT=1
+    - name: PHP Tests (PHP nightly, WordPress trunk)
+      stage: test
+      php: nightly
+      env: WP_VERSION=master PHP=1
+    - stage: test
+      name: E2E Tests (WordPress latest)
+      env: E2E=1
+    - stage: test
+      name: E2E Tests (WordPress nightly)
+      env: E2E=1 WP_VERSION=nightly
+    - stage: test
+      name: E2E Tests (WordPress 4.7)
+      env: E2E=1 WP_VERSION=4.7.13
+    - stage: test
+      name: E2E Tests (WordPress 4.9, Gutenberg 4.9)
+      env: E2E=1 WP_VERSION=4.9.10 GUTENBERG_VERSION=4.9.0
 
 services:
   - docker
