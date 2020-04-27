@@ -56,6 +56,8 @@ jobs:
     needs: build-storybook
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: gh-pages
       - name: Download artifacts
         uses: actions/download-artifact@v1
         with:
@@ -63,7 +65,6 @@ jobs:
           path: storybook-static
       - name: Commit updates
         run: |
-          git checkout gh-pages
           rm -rf ${{ github.ref }}
           mv storybook-static ${{ github.ref }}
           git add .
