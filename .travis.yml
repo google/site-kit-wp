@@ -131,6 +131,17 @@ jobs:
     - stage: test
       name: E2E Tests (WordPress 4.9, Gutenberg 4.9)
       env: E2E=1 WP_VERSION=4.9.10 GUTENBERG_VERSION=4.9.0
+    - stage: deploy
+      name: Deploy Storybook
+      php: 7.4
+      before_deploy:
+        - npm run build:storybook --  -o storybook-static/$TRAVIS_BRANCH
+      deploy:
+        - provider: pages
+          edge: true
+          github_token: $GITHUB_PERSONAL_ACCESS_TOKEN
+          keep_history: true
+          local_dir: storybook-static
 
 services:
   - docker
