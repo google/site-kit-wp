@@ -109,6 +109,10 @@ jobs:
           github_token: $GITHUB_PERSONAL_ACCESS_TOKEN
           keep_history: true
           local_dir: storybook-static
+          on:
+            all_branches: true
+            condition: $TRAVIS_BRANCH =~ ^(master|develop)$
+
 
 services:
   - docker
