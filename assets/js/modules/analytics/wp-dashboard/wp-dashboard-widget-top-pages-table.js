@@ -40,7 +40,6 @@ import { isDataZeroForReporting, getTopPagesReportDataDefaults } from '../util';
 class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 	render() {
 		const { data } = this.props;
-		const { siteURL } = global.googlesitekit.admin;
 
 		if ( isDataZeroForReporting( data ) ) {
 			return null;
@@ -49,7 +48,7 @@ class WPAnalyticsDashboardWidgetTopPagesTable extends Component {
 		const links = [];
 		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
 			const [ title, url ] = row.dimensions;
-			links[ i ] = siteURL + url;
+			links[ i ] = url;
 
 			return [
 				title,
