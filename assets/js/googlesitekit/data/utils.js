@@ -213,6 +213,55 @@ export const collectName = ( ...args ) => {
 };
 
 /**
+ * Combines multiple stores.
+ *
+ * @since n.e.x.t
+ *
+ * @param {...Object} args A list of objects, each a store containing one or more of the following keys: INITIAL_STATE, actions, controls, reducer, resolvers, selectors
+ * @return {Object} The combined store.
+ */
+export const combineStores = ( ...args ) => {
+	const combined = {};
+
+	const defaultReducer = ( state, action ) => { // eslint-disable-line no-unused-vars
+		return { ...state };
+	};
+
+	// Combine INITIAL_STATES
+	combined.INITIAL_STATE = collectState(
+		...args.map( ( store ) => ( store.INITIAL_STATE || {} ) )
+	);
+
+	// Combine actions
+	combined.actions = collectActions(
+		...args.map( ( store ) => ( store.actions || {} ) )
+	);
+
+	// Combine controls
+	combined.controls = collectControls(
+		...args.map( ( store ) => ( store.controls || {} ) )
+	);
+
+	// Combine reducers
+	combined.reducer = collectReducers(
+		combined.INITIAL_STATE,
+		...args.map( ( store ) => ( store.reducer || defaultReducer ) )
+	);
+
+	// Combine resolvers
+	combined.resolvers = collectResolvers(
+		...args.map( ( store ) => ( store.resolvers || {} ) )
+	);
+
+	// Combine selectors
+	combined.selectors = collectSelectors(
+		...args.map( ( store ) => ( store.selectors || {} ) )
+	);
+
+	return combined;
+};
+
+/**
  * An object of common actions most stores will use.
  *
  * @since 1.7.0

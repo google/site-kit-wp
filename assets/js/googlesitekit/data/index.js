@@ -42,6 +42,7 @@ import {
 	collectSelectors,
 	collectState,
 	collectName,
+	combineStores,
 	commonActions,
 	commonControls,
 } from './utils';
@@ -59,6 +60,7 @@ Data.collectResolvers = collectResolvers;
 Data.collectSelectors = collectSelectors;
 Data.collectState = collectState;
 Data.collectName = collectName;
+Data.combineStores = combineStores;
 Data.commonActions = commonActions;
 Data.commonControls = commonControls;
 Data.createRegistryControl = createRegistryControl;
