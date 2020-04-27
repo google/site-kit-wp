@@ -601,10 +601,10 @@ final class Authentication {
 
 		$data['isSiteKitConnected'] = $this->credentials->has();
 		$data['isResettable']       = $this->options->has( Credentials::OPTION );
-		$data['isAuthenticated']    = ! empty( $access_token );
+		$data['authenticated']      = ! empty( $access_token );
 		$data['requiredScopes']     = $auth_client->get_required_scopes();
 		$data['grantedScopes']      = ! empty( $access_token ) ? $auth_client->get_granted_scopes() : array();
-		$data['needReauthenticate'] = $data['isAuthenticated'] && $this->need_reauthenticate();
+		$data['needReauthenticate'] = $data['authenticated'] && $this->need_reauthenticate();
 
 		if ( $auth_client->using_proxy() ) {
 			$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
@@ -702,9 +702,9 @@ final class Authentication {
 							$access_token = $oauth_client->get_access_token();
 
 							$data = array(
-								'isAuthenticated' => ! empty( $access_token ),
-								'requiredScopes'  => $oauth_client->get_required_scopes(),
-								'grantedScopes'   => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
+								'authenticated'  => ! empty( $access_token ),
+								'requiredScopes' => $oauth_client->get_required_scopes(),
+								'grantedScopes'  => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
 							);
 
 							return new WP_REST_Response( $data );
