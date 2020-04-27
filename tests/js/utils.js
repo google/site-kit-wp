@@ -12,6 +12,7 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
  * Internal dependencies
  */
 import siteStore, { STORE_NAME as siteStoreName } from '../../assets/js/googlesitekit/datastore/site';
+import userStore, { STORE_NAME as userStoreName } from '../../assets/js/googlesitekit/datastore/user';
 
 /**
  * Create a registry with all available stores.
@@ -82,6 +83,7 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
  */
 export const registerAllStoresOn = ( registry ) => {
 	registry.registerStore( siteStoreName, siteStore );
+	registry.registerStore( userStoreName, userStore );
 };
 
 const unsubscribes = [];
