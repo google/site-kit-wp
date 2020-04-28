@@ -34,6 +34,9 @@ import calculateOverviewData from './calculateOverviewData';
 
 export { calculateOverviewData };
 
+export { default as parsePropertyID } from './parse-property-id';
+export * from './validation';
+
 export const extractAnalyticsDataForTrafficChart = ( reports ) => {
 	if ( ! reports || ! reports.length ) {
 		return null;
