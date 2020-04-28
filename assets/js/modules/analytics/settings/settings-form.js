@@ -22,6 +22,7 @@
 import {
 	AccountSelect,
 	AnonymizeIPSwitch,
+	ErrorNotice,
 	ExistingTagNotice,
 	ProfileSelect,
 	PropertySelect,
@@ -32,6 +33,8 @@ import {
 export default function SettingsForm() {
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
+			<ErrorNotice />
+
 			<ExistingTagNotice />
 
 			<div className="googlesitekit-setup-module__inputs">
