@@ -149,7 +149,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 		[
 			{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
 			{ type: 'number', label: dataLabels[ selectedStats ] },
-			{ type: 'number', label: __( 'Previous month', 'google-site-kit' ) },
+			{ type: 'number', label: __( 'Previous period', 'google-site-kit' ) },
 		],
 	];
 
@@ -158,9 +158,7 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 	const previousMonthRows = rows.slice( 0, rows.length - days );
 	//correct to here
 	const lastMonthData = reduceAnalyticsRowsData( lastMonthRows, selectedStats );
-	//console.log( lastMonthData );
 	const previousMonthData = reduceAnalyticsRowsData( previousMonthRows, selectedStats );
-	//console.log( previousMonthData );
 	each( lastMonthData, ( row, i ) => {
 		if ( row[ 0 ] && row[ 1 ] && previousMonthData[ i ] ) {
 			dataMap.push( [
