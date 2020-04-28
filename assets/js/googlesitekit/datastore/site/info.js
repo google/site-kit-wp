@@ -147,30 +147,10 @@ export const selectors = {
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object} Site connection info.
+	 * @return {?Object} Site connection info.
 	 */
 	getSiteInfo( state ) {
-		const {
-			adminURL,
-			ampMode,
-			currentEntityURL,
-			currentEntityID,
-			currentEntityTitle,
-			currentEntityType,
-			homeURL,
-			referenceSiteURL,
-		} = state.siteInfo || {};
-
-		return {
-			adminURL,
-			ampMode,
-			currentEntityURL,
-			currentEntityID,
-			currentEntityTitle,
-			currentEntityType,
-			homeURL,
-			referenceSiteURL,
-		};
+		return state.siteInfo;
 	},
 
 	/**
@@ -182,7 +162,7 @@ export const selectors = {
 	 * @return {?string} This site's admin URL.
 	 */
 	getAdminURL: createRegistrySelector( ( select ) => () => {
-		const { adminURL } = select( STORE_NAME ).getSiteInfo();
+		const { adminURL } = select( STORE_NAME ).getSiteInfo() || {};
 
 		return adminURL;
 	} ),
@@ -196,7 +176,7 @@ export const selectors = {
 	 * @return {?string} AMP Mode.
 	 */
 	getAMPMode: createRegistrySelector( ( select ) => () => {
-		const { ampMode } = select( STORE_NAME ).getSiteInfo();
+		const { ampMode } = select( STORE_NAME ).getSiteInfo() || {};
 
 		return ampMode;
 	} ),
@@ -210,7 +190,7 @@ export const selectors = {
 	 * @return {?number} Current entity's ID.
 	 */
 	getCurrentEntityID: createRegistrySelector( ( select ) => () => {
-		const { currentEntityID } = select( STORE_NAME ).getSiteInfo();
+		const { currentEntityID } = select( STORE_NAME ).getSiteInfo() || {};
 
 		return currentEntityID;
 	} ),
@@ -224,7 +204,7 @@ export const selectors = {
 	 * @return {?string} Current entity's title.
 	 */
 	getCurrentEntityTitle: createRegistrySelector( ( select ) => () => {
-		const { currentEntityTitle } = select( STORE_NAME ).getSiteInfo();
+		const { currentEntityTitle } = select( STORE_NAME ).getSiteInfo() || {};
 
 		return currentEntityTitle;
 	} ),
@@ -238,7 +218,7 @@ export const selectors = {
 	 * @return {?string} Current entity's type.
 	 */
 	getCurrentEntityType: createRegistrySelector( ( select ) => () => {
-		const { currentEntityType } = select( STORE_NAME ).getSiteInfo();
+		const { currentEntityType } = select( STORE_NAME ).getSiteInfo() || {};
 
 		return currentEntityType;
 	} ),
@@ -252,7 +232,7 @@ export const selectors = {
 	 * @return {?string} Current entity's reference URL.
 	 */
 	getCurrentEntityURL: createRegistrySelector( ( select ) => () => {
-		const { currentEntityURL } = select( STORE_NAME ).getSiteInfo();
+		const { currentEntityURL } = select( STORE_NAME ).getSiteInfo() || {};
 
 		return currentEntityURL;
 	} ),
@@ -266,7 +246,7 @@ export const selectors = {
 	 * @return {?string} This site's home URL.
 	 */
 	getHomeURL: createRegistrySelector( ( select ) => () => {
-		const { homeURL } = select( STORE_NAME ).getSiteInfo();
+		const { homeURL } = select( STORE_NAME ).getSiteInfo() || {};
 
 		return homeURL;
 	} ),
@@ -280,7 +260,7 @@ export const selectors = {
 	 * @return {?string} The reference site URL.
 	 */
 	getReferenceSiteURL: createRegistrySelector( ( select ) => () => {
-		const { referenceSiteURL } = select( STORE_NAME ).getSiteInfo();
+		const { referenceSiteURL } = select( STORE_NAME ).getSiteInfo() || {};
 
 		return referenceSiteURL;
 	} ),
