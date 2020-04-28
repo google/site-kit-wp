@@ -33,16 +33,7 @@ const { createRegistrySelector } = Data;
 const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 
 export const INITIAL_STATE = {
-	siteInfo: {
-		adminURL: undefined,
-		ampMode: undefined,
-		currentEntityURL: undefined,
-		currentEntityID: undefined,
-		currentEntityTitle: undefined,
-		currentEntityType: undefined,
-		homeURL: undefined,
-		referenceSiteURL: undefined,
-	},
+	siteInfo: undefined,
 };
 
 export const actions = {
@@ -108,6 +99,12 @@ export const reducer = ( state, { payload, type } ) => {
 
 export const resolvers = {
 	*getSiteInfo() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		if ( registry.select( STORE_NAME ).getSiteInfo() ) {
+			return;
+		}
+
 		if ( ! global._googlesitekitBaseData || ! global._googlesitekitEntityData ) {
 			global.console.error( 'Could not load core/site info.' );
 			return;
