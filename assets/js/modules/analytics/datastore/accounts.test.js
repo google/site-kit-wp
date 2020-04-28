@@ -76,6 +76,7 @@ describe( 'modules/analytics accounts', () => {
 						{ status: 200 }
 					);
 
+				// Silence expected API errors.
 				muteConsole( 'error' );
 
 				registry.dispatch( STORE_NAME ).createAccount( { accountName, propertyName, profileName, timezone } );
