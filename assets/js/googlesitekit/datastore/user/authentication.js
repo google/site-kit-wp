@@ -146,6 +146,8 @@ export const selectors = {
 	 * ```
 	 * {
 	 *   authenticated: <Boolean>,
+	 *   grantedScopes: <Array>,
+	 *   requiredScopes: <Array>
 	 * }
 	 * ```
 	 *
@@ -162,8 +164,8 @@ export const selectors = {
 	/**
 	 * Gets the Site Kit authentication status for this user.
 	 *
-	 * Returns `true` if the site is connected to Site Kit, `false` if
-	 * not. Returns `undefined` if the connection info is not available/loaded.
+	 * Returns `true` if the user is authenticated, `false` if
+	 * not. Returns `undefined` if the authentication info is not available/loaded.
 	 *
 	 * @since 1.8.0
 	 *
@@ -174,6 +176,40 @@ export const selectors = {
 		const authentication = select( STORE_NAME ).getAuthentication();
 
 		return typeof authentication !== 'undefined' ? authentication.authenticated : authentication;
+	} ),
+
+	/**
+	 * Gets the granted scopes for the user.
+	 *
+	 * Returns an array of granted scopes or undefined
+	 * if authentication info is not available/loaded.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Array|undefined} Array of granted scopes
+	 */
+	getGrantedScopes: createRegistrySelector( ( select ) => () => {
+		const authentication = select( STORE_NAME ).getAuthentication();
+
+		return typeof authentication !== 'undefined' ? authentication.grantedScopes : authentication;
+	} ),
+
+	/**
+	 * Gets the required scopes for the user.
+	 *
+	 * Returns an array of required scopes or undefined
+	 * if authentication info is not available/loaded.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Array|undefined} Array of granted scopes
+	 */
+	getRequiredScopes: createRegistrySelector( ( select ) => () => {
+		const authentication = select( STORE_NAME ).getAuthentication();
+
+		return typeof authentication !== 'undefined' ? authentication.requiredScopes : authentication;
 	} ),
 };
 

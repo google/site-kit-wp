@@ -35,7 +35,8 @@ import { STORE_NAME } from './constants';
 import './index';
 
 describe( 'core/user authentication', () => {
-	const responseAuthenticated = { authenticated: true };
+	const responseAuthenticated = { authenticated: true, requiredScopes: [], grantedScopes: [] };
+	const apiEndpoint = /^\/google-site-kit\/v1\/core\/user\/data\/authentication/;
 	let apiFetchSpy;
 	let registry;
 	let store;
@@ -81,9 +82,7 @@ describe( 'core/user authentication', () => {
 		describe( 'getAuthentication', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/user\/data\/authentication/
-					)
+					.doMockOnceIf( apiEndpoint )
 					.mockResponseOnce(
 						JSON.stringify( responseAuthenticated ),
 						{ status: 200 }
@@ -130,9 +129,7 @@ describe( 'core/user authentication', () => {
 					data: { status: 500 },
 				};
 				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/user\/data\/authentication/
-					)
+					.doMockOnceIf( apiEndpoint )
 					.mockResponseOnce(
 						JSON.stringify( response ),
 						{ status: 500 }
@@ -152,12 +149,11 @@ describe( 'core/user authentication', () => {
 				expect( connection ).toEqual( undefined );
 			} );
 		} );
+
 		describe( 'isAuthenticated', () => {
 			it( 'uses a resolver get all authentication info', async () => {
 				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/user\/data\/authentication/
-					)
+					.doMockOnceIf( apiEndpoint )
 					.mockResponseOnce(
 						JSON.stringify( responseAuthenticated ),
 						{ status: 200 }
@@ -186,9 +182,7 @@ describe( 'core/user authentication', () => {
 					data: { status: 500 },
 				};
 				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/user\/data\/authentication/
-					)
+					.doMockOnceIf( apiEndpoint )
 					.mockResponseOnce(
 						JSON.stringify( response ),
 						{ status: 500 }
@@ -214,6 +208,127 @@ describe( 'core/user authentication', () => {
 				const isAuthenticated = registry.select( STORE_NAME ).isAuthenticated();
 
 				expect( isAuthenticated ).toEqual( undefined );
+			} );
+		} );
+
+		describe( 'getGrantedScopes', () => {
+			it( 'uses a resolver get all authentication info', async () => {
+				fetch
+					.doMockOnceIf( apiEndpoint )
+					.mockResponseOnce(
+						JSON.stringify( responseAuthenticated ),
+						{ status: 200 }
+					);
+
+				const initialIsAuthenticated = registry.select( STORE_NAME ).getGrantedScopes();
+				// The autentication info will be its initial value while the authentication
+				// info is fetched.
+				expect( initialIsAuthenticated ).toEqual( undefined );
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getGrantedScopes() !== undefined
+					),
+				);
+
+				const grantedScopes = registry.select( STORE_NAME ).getGrantedScopes();
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( grantedScopes ).toEqual( responseAuthenticated.grantedScopes );
+			} );
+
+			it( 'dispatches an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetch
+					.doMockOnceIf( apiEndpoint )
+					.mockResponseOnce(
+						JSON.stringify( response ),
+						{ status: 500 }
+					);
+
+				muteConsole( 'error' );
+				registry.select( STORE_NAME ).getGrantedScopes();
+				await subscribeUntil( registry,
+					// TODO: We may want a selector for this, but for now this is fine
+					// because it's internal-only.
+					() => store.getState().isFetchingAuthentication === false,
+				);
+
+				const grantedScopes = registry.select( STORE_NAME ).getGrantedScopes();
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( grantedScopes ).toEqual( undefined );
+			} );
+
+			it( 'returns undefined if connection info is not available', async () => {
+				// This triggers a network request, so ignore the error.
+				muteConsole( 'error' );
+				const grantedScopes = registry.select( STORE_NAME ).getGrantedScopes();
+
+				expect( grantedScopes ).toEqual( undefined );
+			} );
+		} );
+		describe( 'getRequiredScopes', () => {
+			it( 'uses a resolver get all authentication info', async () => {
+				fetch
+					.doMockOnceIf( apiEndpoint )
+					.mockResponseOnce(
+						JSON.stringify( responseAuthenticated ),
+						{ status: 200 }
+					);
+
+				const initialIsAuthenticated = registry.select( STORE_NAME ).getRequiredScopes();
+				// The autentication info will be its initial value while the authentication
+				// info is fetched.
+				expect( initialIsAuthenticated ).toEqual( undefined );
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getRequiredScopes() !== undefined
+					),
+				);
+
+				const requiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( requiredScopes ).toEqual( responseAuthenticated.requiredScopes );
+			} );
+
+			it( 'dispatches an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetch
+					.doMockOnceIf( apiEndpoint )
+					.mockResponseOnce(
+						JSON.stringify( response ),
+						{ status: 500 }
+					);
+
+				muteConsole( 'error' );
+				registry.select( STORE_NAME ).getRequiredScopes();
+				await subscribeUntil( registry,
+					// TODO: We may want a selector for this, but for now this is fine
+					// because it's internal-only.
+					() => store.getState().isFetchingAuthentication === false,
+				);
+
+				const requiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( requiredScopes ).toEqual( undefined );
+			} );
+
+			it( 'returns undefined if connection info is not available', async () => {
+				// This triggers a network request, so ignore the error.
+				muteConsole( 'error' );
+				const requiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
+
+				expect( requiredScopes ).toEqual( undefined );
 			} );
 		} );
 	} );
