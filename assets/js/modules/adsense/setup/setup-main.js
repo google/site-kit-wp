@@ -64,8 +64,13 @@ export default function SetupMain() {
 	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
 	const previousAccountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const previousClientID = useSelect( ( select ) => select( STORE_NAME ).getClientID() );
+	const previousAccountStatus = useSelect( ( select ) => select( STORE_NAME ).getAccountStatus() );
+	const previousSiteStatus = useSelect( ( select ) => select( STORE_NAME ).getSiteStatus() );
 	const accountSetupComplete = useSelect( ( select ) => select( STORE_NAME ).getAccountSetupComplete() );
 	const siteSetupComplete = useSelect( ( select ) => select( STORE_NAME ).getSiteSetupComplete() );
+
+	// Check whether settings differ from server and are valid.
+	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 
 	// Determine account.
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
@@ -107,6 +112,8 @@ export default function SetupMain() {
 		setSiteStatus,
 		setAccountSetupComplete,
 		setSiteSetupComplete,
+		setUseSnippet,
+		submitChanges,
 	} = useDispatch( STORE_NAME );
 
 	// Update current account ID setting on-the-fly.
@@ -133,11 +140,16 @@ export default function SetupMain() {
 		if ( 'undefined' === typeof accountStatus ) {
 			return;
 		}
-		setAccountStatus( accountStatus );
-		// Force setup completion flag to false in case it had been set before.
+		// Force setup completion flags to false in case it had been set before.
 		if ( accountStatus !== ACCOUNT_STATUS_APPROVED ) {
 			setAccountSetupComplete( false );
+			setSiteSetupComplete( false );
 		}
+		// Force snippet placement to true when account is graylisted or pending.
+		if ( accountStatus === ACCOUNT_STATUS_GRAYLISTED || accountStatus === ACCOUNT_STATUS_PENDING ) {
+			setUseSnippet( true );
+		}
+		setAccountStatus( accountStatus );
 	}, [ accountStatus ] );
 
 	// Update site status setting on-the-fly.
@@ -146,12 +158,21 @@ export default function SetupMain() {
 		if ( 'undefined' === typeof siteStatus ) {
 			return;
 		}
-		setSiteStatus( siteStatus );
-		// Force setup completion flag to false in case it had been set before.
+		// Force site setup completion flag to false in case it had been set before.
 		if ( siteStatus !== SITE_STATUS_ADDED ) {
 			setSiteSetupComplete( false );
 		}
+		setSiteStatus( siteStatus );
 	}, [ siteStatus ] );
+
+	// Submit changes for determined parameters in the background when they are valid.
+	useEffect( () => {
+		// Only submit changes if valid (plus temporary hack to avoid saving in Storybook).
+		if ( ! canSubmitChanges || global.__STORYBOOK_ADDONS ) {
+			return;
+		}
+		submitChanges();
+	}, [ previousAccountID, previousClientID, previousAccountStatus, previousSiteStatus ] );
 
 	const isAdBlockerActive = useSelect( ( select ) => select( STORE_NAME ).isAdBlockerActive() );
 

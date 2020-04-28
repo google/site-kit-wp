@@ -302,6 +302,7 @@ export const selectors = {
 		const {
 			getAccountID,
 			getClientID,
+			getAccountStatus,
 			haveSettingsChanged,
 			isDoingSubmitChanges,
 		} = select( STORE_NAME );
@@ -312,10 +313,20 @@ export const selectors = {
 		if ( ! haveSettingsChanged() ) {
 			return false;
 		}
-		if ( ! isValidAccountID( getAccountID() ) ) {
+		// Require an account status to be present.
+		if ( ! getAccountStatus() ) {
 			return false;
 		}
-		if ( ! isValidClientID( getClientID() ) ) {
+		// Require account ID to be either empty (if impossible to determine)
+		// or valid.
+		const accountID = getAccountID();
+		if ( '' !== accountID && ! isValidAccountID( accountID ) ) {
+			return false;
+		}
+		// Require client ID to be either empty (if impossible to determine)
+		// or valid.
+		const clientID = getClientID();
+		if ( '' !== clientID && ! isValidClientID( clientID ) ) {
 			return false;
 		}
 
