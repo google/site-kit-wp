@@ -79,7 +79,7 @@ class AnalyticsDashboardWidgetPopularPagesTable extends Component {
 		const links = [];
 		const dataMapped = map( data[ 0 ].data.rows, ( row, i ) => {
 			const [ title, url ] = row.dimensions;
-			links[ i ] = url;
+			links[ i ] = url.startsWith( '/' ) ? url : '/' + url;
 
 			return [
 				title,
