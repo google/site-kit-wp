@@ -27,6 +27,7 @@ use Google\Site_Kit_Dependencies\Google_Service_TagManager_Account;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListAccountsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListContainersResponse;
+use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListTagsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListWorkspacesResponse;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -423,6 +424,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			'accounts-containers' => 'tagmanager',
 			'containers'          => 'tagmanager',
 			'tag-permission'      => 'tagmanager',
+			'tags'                => 'tagmanager',
 			'workspaces'          => 'tagmanager',
 			// POST.
 			'create-container'    => 'tagmanager',
@@ -640,6 +642,37 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 						);
 					}
 				};
+			case 'GET:tags':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! isset( $data['internalContainerID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalContainerID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! isset( $data['workspaceID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'workspaceID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				return $this->get_tagmanager_service()->accounts_containers_workspaces_tags->listAccountsContainersWorkspacesTags(
+					"accounts/{$data['accountID']}/containers/{$data['internalContainerID']}/workspaces/{$data['workspaceID']}"
+				);
 			case 'GET:workspaces':
 				if ( ! isset( $data['accountID'] ) ) {
 					return new WP_Error(
@@ -760,6 +793,9 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				);
 
 				return array_values( $containers );
+			case 'GET:tags':
+				/* @var Google_Service_TagManager_ListTagsResponse $response Response object */
+				return $response->getTag();
 			case 'GET:workspaces':
 				/* @var Google_Service_TagManager_ListWorkspacesResponse $response Response object. */
 				return $response->getWorkspace();
