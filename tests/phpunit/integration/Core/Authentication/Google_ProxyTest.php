@@ -57,7 +57,7 @@ class Google_ProxyTest extends TestCase {
 		$pre_args = null;
 		$pre_url  = null;
 
-		// Use pre_http_request to support WP < 5.3
+		// Use pre_http_request for backwards compatibility as http_api_debug is not fired for blocked requests before WP 5.3
 		add_filter( 
 			'pre_http_request', 
 			function ( $false, $args, $url ) use ( &$pre_args, &$pre_url ) {
