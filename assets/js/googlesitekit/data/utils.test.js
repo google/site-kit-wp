@@ -27,6 +27,7 @@ import {
 	collectControls,
 	collectReducers,
 	collectResolvers,
+	collectState,
 	collectSelectors,
 	collectName,
 	combineStores,
@@ -266,7 +267,7 @@ describe( 'data utils', () => {
 
 		it( 'should combine multiple stores into one', () => {
 			const expectedCombinedStore = {
-				INITIAL_STATE: collect( storeOne.INITIAL_STATE, storeTwo.INITIAL_STATE ),
+				INITIAL_STATE: collectState( storeOne.INITIAL_STATE, storeTwo.INITIAL_STATE ),
 				actions: collectActions( storeOne.actions, storeTwo.actions ),
 				controls: collectControls( storeOne.controls, storeTwo.controls ),
 				reducer: collectReducers( storeOne.reducer, storeTwo.reducer ),
@@ -292,7 +293,7 @@ describe( 'data utils', () => {
 
 		it( 'should combine stores missing any of the keys', () => {
 			const combinedStoreMissing = {
-				INITIAL_STATE: collect( storeOne.INITIAL_STATE, storeTwo.INITIAL_STATE, storeThree.INITIAL_STATE ),
+				INITIAL_STATE: collectState( storeOne.INITIAL_STATE, storeTwo.INITIAL_STATE, storeThree.INITIAL_STATE ),
 				actions: collectActions( storeOne.actions, storeTwo.actions ),
 				controls: collectControls( storeOne.controls, storeTwo.controls ),
 				reducer: collectReducers( storeOne.reducer, storeTwo.reducer ),
@@ -302,7 +303,7 @@ describe( 'data utils', () => {
 			expect( JSON.stringify( combineStores( storeOne, storeTwo, storeThree ) ) ).toBe( JSON.stringify( combinedStoreMissing ) );
 
 			const combinedStoreMissingTwo = {
-				INITIAL_STATE: collect( storeOne.INITIAL_STATE, storeTwo.INITIAL_STATE ),
+				INITIAL_STATE: collectState( storeOne.INITIAL_STATE, storeTwo.INITIAL_STATE ),
 				actions: collectActions( storeOne.actions, storeTwo.actions ),
 				controls: collectControls( storeOne.controls, storeTwo.controls ),
 				reducer: collectReducers( storeOne.reducer, storeTwo.reducer, storeFour.reducer ),
