@@ -39,11 +39,6 @@ describe( 'modules/analytics accounts', () => {
 	let registry;
 	let store;
 
-	const accountName = fixtures.createAccount.account.name;
-	const propertyName = fixtures.createAccount.webproperty.name;
-	const profileName = fixtures.createAccount.profile.name;
-	const timezone = fixtures.createAccount.profile.timezone;
-
 	beforeAll( () => {
 		API.setUsingCache( false );
 	} );
@@ -66,6 +61,11 @@ describe( 'modules/analytics accounts', () => {
 
 	describe( 'actions', () => {
 		describe( 'createAccount', () => {
+			const accountName = fixtures.createAccount.account.name;
+			const propertyName = fixtures.createAccount.webproperty.name;
+			const profileName = fixtures.createAccount.profile.name;
+			const timezone = fixtures.createAccount.profile.timezone;
+
 			it( 'creates an account ticket and sets the Terms of Service URL', async () => {
 				fetch
 					.doMockIf(
