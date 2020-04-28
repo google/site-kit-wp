@@ -77,7 +77,7 @@ describe( 'modules/analytics accounts', () => {
 					);
 
 				// Silence expected API errors.
-				muteConsole( 'error' );
+				muteConsole( 'error' ); // Request will log an error.
 
 				registry.dispatch( STORE_NAME ).createAccount( { accountName, propertyName, profileName, timezone } );
 				await subscribeUntil( registry,
@@ -124,7 +124,7 @@ describe( 'modules/analytics accounts', () => {
 						{ status: 500 }
 					);
 
-				muteConsole( 'error' );
+				muteConsole( 'error' ); // Request will log an error.
 
 				registry.dispatch( STORE_NAME ).createAccount( { accountName, propertyName, profileName, timezone } );
 
