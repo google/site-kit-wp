@@ -556,15 +556,6 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 					);
 				}
 
-				if ( ! isset( $data['name'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'name' ),
-						array( 'status' => 400 )
-					);
-				}
-
 				$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
 
 				if ( empty( $this->context_map[ $usage_context ] ) ) {
@@ -580,11 +571,21 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 					);
 				}
 
-				$account_id     = $data['accountID'];
-				$container_name = self::sanitize_container_name( $data['name'] );
+				$account_id = $data['accountID'];
+
+				if ( $data['name'] ) {
+					$container_name = $data['name'];
+				} else {
+					// Use site name for container, fallback to domain of reference URL.
+					$container_name = get_bloginfo( 'name' ) ?: wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
+					// Prevent naming conflict (Tag Manager does not allow more than one with same name).
+					if ( self::USAGE_CONTEXT_AMP === $usage_context ) {
+						$container_name .= ' AMP';
+					}
+				}
 
 				$container = new Google_Service_TagManager_Container();
-				$container->setName( $container_name );
+				$container->setName( self::sanitize_container_name( $container_name ) );
 				$container->setUsageContext( (array) $usage_context );
 
 				return $this->get_tagmanager_service()->accounts_containers->create( "accounts/{$account_id}", $container );
