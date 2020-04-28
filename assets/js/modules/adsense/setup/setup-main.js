@@ -129,7 +129,7 @@ export default function SetupMain() {
 
 	// Update account status setting on-the-fly.
 	useEffect( () => {
-		// Don't do anything if account status cannot be determined (because of parts .
+		// Don't do anything if account status cannot be determined (because of arguments not loaded yet).
 		if ( 'undefined' === typeof accountStatus ) {
 			return;
 		}
@@ -142,7 +142,7 @@ export default function SetupMain() {
 
 	// Update site status setting on-the-fly.
 	useEffect( () => {
-		// Don't do anything if site status cannot be determined (because of parts .
+		// Don't do anything if site status cannot be determined (because of arguments not loaded yet).
 		if ( 'undefined' === typeof siteStatus ) {
 			return;
 		}
