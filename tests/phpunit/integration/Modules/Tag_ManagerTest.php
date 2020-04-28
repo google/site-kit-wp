@@ -111,6 +111,7 @@ class Tag_ManagerTest extends TestCase {
 				'settings',
 				'tag-permission',
 				'accounts',
+				'create-container',
 			),
 			$tagmanager->get_datapoints()
 		);

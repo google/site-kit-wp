@@ -423,6 +423,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			'containers'          => 'tagmanager',
 			'tag-permission'      => 'tagmanager',
 			// POST.
+			'create-container'    => 'tagmanager',
 			'settings'            => '',
 		);
 	}
@@ -545,6 +546,48 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ), array( 'status' => 400 ) );
 				}
 				return $this->get_tagmanager_service()->accounts_containers->listAccountsContainers( "accounts/{$data['accountID']}" );
+			case 'POST:create-container':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! isset( $data['name'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'name' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
+
+				if ( empty( $this->context_map[ $usage_context ] ) ) {
+					return new WP_Error(
+						'invalid_param',
+						sprintf(
+						/* translators: 1: Invalid parameter name, 2: list of valid values */
+							__( 'Request parameter %1$s is not one of %2$s', 'google-site-kit' ),
+							'usageContext',
+							implode( ', ', array_keys( $this->context_map ) )
+						),
+						array( 'status' => 400 )
+					);
+				}
+
+				$account_id     = $data['accountID'];
+				$container_name = self::sanitize_container_name( $data['name'] );
+
+				$container = new Google_Service_TagManager_Container();
+				$container->setName( $container_name );
+				$container->setUsageContext( (array) $usage_context );
+
+				return $this->get_tagmanager_service()->accounts_containers->create( "accounts/{$account_id}", $container );
 			case 'POST:settings':
 				return function() use ( $data ) {
 					$option = $data->data;
