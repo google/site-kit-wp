@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import './adsense/index.legacy';
-import './analytics';
+import './analytics/index.legacy';
 import './optimize';
 import './pagespeed-insights';
 import './search-console';
