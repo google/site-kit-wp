@@ -220,45 +220,35 @@ export const collectName = ( ...args ) => {
  * @param {...Object} args A list of objects, each a store containing one or more of the following keys: INITIAL_STATE, actions, controls, reducer, resolvers, selectors
  * @return {Object} The combined store.
  */
-export const combineStores = ( ...args ) => {
-	const combined = {};
-
-	const defaultReducer = ( state, action ) => { // eslint-disable-line no-unused-vars
+export const combineStores = ( ...stores ) => {
+	const defaultReducer = ( state ) => {
 		return { ...state };
 	};
 
 	// Combine INITIAL_STATES
-	combined.INITIAL_STATE = collectState(
-		...args.map( ( store ) => ( store.INITIAL_STATE || {} ) )
+	const combinedInitialState = collectState(
+		...stores.map( ( store ) => ( store.INITIAL_STATE || {} ) )
 	);
 
-	// Combine actions
-	combined.actions = collectActions(
-		...args.map( ( store ) => ( store.actions || {} ) )
-	);
-
-	// Combine controls
-	combined.controls = collectControls(
-		...args.map( ( store ) => ( store.controls || {} ) )
-	);
-
-	// Combine reducers
-	combined.reducer = collectReducers(
-		combined.INITIAL_STATE,
-		...args.map( ( store ) => ( store.reducer || defaultReducer ) )
-	);
-
-	// Combine resolvers
-	combined.resolvers = collectResolvers(
-		...args.map( ( store ) => ( store.resolvers || {} ) )
-	);
-
-	// Combine selectors
-	combined.selectors = collectSelectors(
-		...args.map( ( store ) => ( store.selectors || {} ) )
-	);
-
-	return combined;
+	return {
+		INITIAL_STATE: combinedInitialState,
+		controls: collectControls(
+			...stores.map( ( store ) => ( store.controls || {} ) )
+		),
+		actions: collectActions(
+			...stores.map( ( store ) => ( store.actions || {} ) )
+		),
+		reducers: collectReducers(
+			combinedInitialState,
+			...stores.map( ( store ) => ( store.reducer || defaultReducer ) )
+		),
+		resolvers: collectResolvers(
+			...stores.map( ( store ) => ( store.resolvers || {} ) )
+		),
+		selectors: collectSelectors(
+			...stores.map( ( store ) => ( store.selectors || {} ) )
+		),
+	};
 };
 
 /**
