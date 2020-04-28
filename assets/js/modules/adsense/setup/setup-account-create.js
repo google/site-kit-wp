@@ -39,6 +39,7 @@ const { useSelect } = Data;
 export default function SetupAccountCreate() {
 	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
 	const userEmail = 'temporarytest@gmail.com'; // TODO: Replace with core/user store access once available.
+	const userPicture = 'http://1.gravatar.com/avatar/311f5b078f20df54be55cbe1a5a45f1e'; // TODO: Replace with core/user store access once available.
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 
 	const signUpURL = getCreateAccountURL( { siteURL } );
@@ -49,11 +50,10 @@ export default function SetupAccountCreate() {
 		global.open( signUpURL, '_blank' );
 	} );
 
-	if ( ! siteURL || 'undefined' === typeof existingTag ) {
+	if ( ! siteURL || 'undefined' === typeof userEmail || 'undefined' === typeof userPicture || 'undefined' === typeof existingTag ) {
 		return null;
 	}
 
-	// TODO: Display user picture circle and email address above button.
 	return (
 		<Fragment>
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
@@ -62,6 +62,17 @@ export default function SetupAccountCreate() {
 
 			<p>
 				{ __( 'Site Kit will place AdSense code on every page across your site. This means Google will automatically place ads for you in all the best places.', 'google-site-kit' ) }
+			</p>
+
+			<p className="googlesitekit-setup-module__user">
+				<img
+					className="googlesitekit-setup-module__user-image"
+					src={ userPicture }
+					alt={ __( 'User Avatar', 'google-site-kit' ) }
+				/>
+				<span className="googlesitekit-setup-module__user-email">
+					{ userEmail }
+				</span>
 			</p>
 
 			<div className="googlesitekit-setup-module__action">
@@ -75,6 +86,7 @@ export default function SetupAccountCreate() {
 
 			<p className="googlesitekit-setup-module__footer-text">
 				{ existingTag && sprintf(
+					/* translators: 1: client ID, 2: user email address, 3: account ID */
 					__( 'Site Kit detected AdSense code %1$s on your page. We recommend you remove that code or add %2$s as a user to the AdSense account %3$s.', 'google-site-kit' ),
 					existingTag,
 					userEmail,
