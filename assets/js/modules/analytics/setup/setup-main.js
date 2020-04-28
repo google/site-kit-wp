@@ -32,7 +32,6 @@ import { SvgIcon, trackEvent } from '../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../datastore/constants';
 import {
 	AccountCreate,
-	ErrorNotice,
 	ExistingTagError,
 } from '../common';
 import { parsePropertyID } from '../util';
@@ -93,8 +92,6 @@ export default function SetupMain( { finishSetup } ) {
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
 				{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 			</h2>
-
-			<ErrorNotice />
 
 			{ viewComponent }
 		</div>

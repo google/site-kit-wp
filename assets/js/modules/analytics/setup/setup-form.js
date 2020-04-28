@@ -30,6 +30,7 @@ import Button from '../../../components/button';
 import { STORE_NAME } from '../datastore/constants';
 import {
 	AccountSelect,
+	ErrorNotice,
 	ExistingTagNotice,
 	ProfileSelect,
 	PropertySelect,
@@ -57,6 +58,8 @@ export default function SetupForm( { finishSetup } ) {
 			className="googlesitekit-analytics-setup__form"
 			onSubmit={ submitForm }
 		>
+			<ErrorNotice />
+
 			{ ( !! accounts.length && ! hasExistingTag ) && (
 				<p>
 					{ __( 'Please select the account information below. You can change this view later in your settings.', 'google-site-kit' ) }
