@@ -120,12 +120,12 @@ describe( 'setting up the Analytics module with an existing account and no exist
 
 		await proceedToSetUpAnalytics();
 
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /select one\.\.\./i } );
+		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /select one…/i } );
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /select an account/i } );
 		await expect( page ).toMatchElement( 'button[disabled]', { text: /configure analytics/i } );
 
 		// Select Test Account A
-		await expect( page ).toClick( '.mdc-select', { text: /select one\.\.\./i } );
+		await expect( page ).toClick( '.mdc-select', { text: /select one…/i } );
 		await Promise.all( [
 			expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test account a/i } ),
 			page.waitForResponse( ( res ) => res.url().match( 'modules/analytics/data' ) ),
@@ -170,7 +170,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		] );
 
 		// Dropdowns are revealed and reset on refetch.
-		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-account .mdc-select__selected-text', { text: /select one.../i } );
+		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-account .mdc-select__selected-text', { text: /select one…/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-property .mdc-select__selected-text', { text: /select an account/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-profile .mdc-select__selected-text', { text: /select an account/i } );
 	} );
