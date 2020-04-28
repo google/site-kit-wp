@@ -60,8 +60,15 @@ export const determineAccountStatus = ( {
 	previousAccountID,
 	previousClientID,
 } ) => {
+	if ( error ) {
+		const errorStatus = errorToStatus( error );
+		if ( errorStatus ) {
+			return errorStatus;
+		}
+	}
+
 	if ( 'undefined' === typeof accounts || 'undefined' === typeof previousAccountID ) {
-		return errorToStatus( error );
+		return undefined;
 	}
 
 	const accountID = determineAccountID( { accounts, previousAccountID } );
@@ -76,7 +83,7 @@ export const determineAccountStatus = ( {
 	}
 
 	if ( 'undefined' === typeof alerts ) {
-		return errorToStatus( error );
+		return undefined;
 	}
 
 	const hasGraylistedAlert = alerts.some( ( alert ) => {
@@ -87,7 +94,7 @@ export const determineAccountStatus = ( {
 	}
 
 	if ( 'undefined' === typeof clients || 'undefined' === typeof previousClientID ) {
-		return errorToStatus( error );
+		return undefined;
 	}
 
 	const clientID = determineClientID( { clients, previousClientID } );
@@ -232,7 +239,7 @@ export const determineClientID = ( { clients, previousClientID } ) => {
  * @return {?string} Status based on error, or undefined if no relevant error.
  */
 const errorToStatus = ( error ) => {
-	if ( ! error ) {
+	if ( ! error || ! error.data ) {
 		return undefined;
 	}
 

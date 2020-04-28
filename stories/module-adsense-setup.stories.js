@@ -35,7 +35,6 @@ import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore';
-import { STORE_NAME as siteStoreName } from '../assets/js/googlesitekit/datastore/site/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 
 function filterAdSenseSetup() {
@@ -62,7 +61,7 @@ const emptySettings = {
 	clientID: '',
 	accountStatus: '',
 	siteStatus: '',
-	useSnippet: false,
+	useSnippet: true,
 	accountSetupComplete: false,
 	siteSetupComplete: false,
 };
@@ -110,6 +109,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry.dispatch( STORE_NAME ).setSettings( emptySettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+			registry.dispatch( STORE_NAME ).receiveAccounts( [] );
 			registry.dispatch( STORE_NAME ).receiveError( {
 				// Typically thrown when fetching accounts.
 				message: 'No account.',
@@ -128,6 +128,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry.dispatch( STORE_NAME ).setSettings( emptySettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( 'ca-pub-123456789' );
+			registry.dispatch( STORE_NAME ).receiveAccounts( [] );
 			registry.dispatch( STORE_NAME ).receiveError( {
 				// Typically thrown when fetching accounts.
 				message: 'No account.',
@@ -158,6 +159,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry.dispatch( STORE_NAME ).setSettings( emptySettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+			registry.dispatch( STORE_NAME ).receiveAccounts( [] );
 			registry.dispatch( STORE_NAME ).receiveError( {
 				// Typically thrown when fetching accounts.
 				message: 'Disapproved account.',
@@ -179,6 +181,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
 			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients );
 			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alertsGraylisted, { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
 		};
 
 		return <Setup callback={ setupRegistry } />;
@@ -192,6 +195,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
 			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients );
+			registry.dispatch( STORE_NAME ).receiveAlerts( [], { accountID: fixtures.accounts[ 0 ].id } );
 			registry.dispatch( STORE_NAME ).receiveError( {
 				// Typically thrown when fetching alerts.
 				message: 'Account pending review.',
@@ -199,6 +203,7 @@ storiesOf( 'AdSense Module/Setup', module )
 					reason: 'accountPendingReview',
 				},
 			} );
+			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
 		};
 
 		return <Setup callback={ setupRegistry } />;
@@ -227,6 +232,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
 			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients );
 			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
 		};
 
 		return <Setup callback={ setupRegistry } />;
