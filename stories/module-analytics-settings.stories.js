@@ -164,14 +164,14 @@ storiesOf( 'Analytics Module/Settings', module )
 			propertyID: matchedProperty.id,
 		};
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveExistingTag( existingTag );
+			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
-			dispatch( STORE_NAME ).receiveSettings( {
-				accountID: '12345',
-				propertyID: 'UA-12345-1',
-				profileID: '99999',
+			dispatch( STORE_NAME ).setSettings( {
+				accountID: '',
+				propertyID: '',
+				profileID: '',
 				anonymizeIP: true,
 				useSnippet: true,
 				trackingDisabled: [ 'loggedinUsers' ],
@@ -180,7 +180,6 @@ storiesOf( 'Analytics Module/Settings', module )
 				...existingTag,
 				permission: true,
 			} );
-			dispatch( STORE_NAME ).applyProperty( existingTag );
 		};
 
 		return <Settings isEditing={ true } callback={ setupRegistry } />;
