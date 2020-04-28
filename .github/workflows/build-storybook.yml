@@ -65,8 +65,9 @@ jobs:
           path: storybook-static
       - name: Commit updates
         run: |
-          rm -rf ${GITHUB_REF##*/}
-          mv storybook-static ${GITHUB_REF##*/}
+          mkdir -p storybook
+          rm -rf storybook/${GITHUB_REF##*/}
+          mv storybook-static storybook/${GITHUB_REF##*/}
           git add .
           git status
           git commit -m "Deploy storybook for ${GITHUB_REF##*/}."
