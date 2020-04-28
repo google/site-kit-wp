@@ -27,6 +27,7 @@ use Google\Site_Kit_Dependencies\Google_Service_TagManager_Account;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListAccountsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListContainersResponse;
+use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListWorkspacesResponse;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
@@ -422,6 +423,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			'accounts-containers' => 'tagmanager',
 			'containers'          => 'tagmanager',
 			'tag-permission'      => 'tagmanager',
+			'workspaces'          => 'tagmanager',
 			// POST.
 			'create-container'    => 'tagmanager',
 			'settings'            => '',
@@ -638,7 +640,28 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 						);
 					}
 				};
+			case 'GET:workspaces':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
 
+				if ( ! isset( $data['internalContainerID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalContainerID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				return $this->get_tagmanager_service()->accounts_containers_workspaces->listAccountsContainersWorkspaces(
+					"accounts/{$data['accountID']}/containers/{$data['internalContainerID']}"
+				);
 		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
@@ -737,6 +760,9 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 				);
 
 				return array_values( $containers );
+			case 'GET:workspaces':
+				/* @var Google_Service_TagManager_ListWorkspacesResponse $response Response object. */
+				return $response->getWorkspace();
 		}
 
 		return $response;
