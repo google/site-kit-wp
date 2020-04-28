@@ -242,6 +242,19 @@ describe( 'modules/adsense settings', () => {
 				expect( ( await getItem( cacheKey ) ).value ).toBeFalsy();
 			} );
 		} );
+
+		describe( 'receiveOriginalAccountStatus', () => {
+			it( 'requires the originalAccountStatus param', () => {
+				expect( () => {
+					dispatch.receiveOriginalAccountStatus();
+				} ).toThrow( 'originalAccountStatus is required.' );
+			} );
+
+			it( 'receives and sets originalAccountStatus from parameter', () => {
+				dispatch.receiveOriginalAccountStatus( 'something' );
+				expect( select.getOriginalAccountStatus() ).toEqual( 'something' );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -280,6 +293,58 @@ describe( 'modules/adsense settings', () => {
 
 				dispatch.setClientID( '0' );
 				expect( select.canSubmitChanges() ).toBe( false );
+			} );
+		} );
+
+		describe( 'getOriginalAccountStatus', () => {
+			it( 'uses a resolver to make a network request via getSettings', async () => {
+				const response = { accountStatus: 'some-status' };
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/
+					)
+					.mockResponseOnce(
+						JSON.stringify( response ),
+						{ status: 200 }
+					);
+
+				const initialOriginalAccountStatus = select.getOriginalAccountStatus();
+				// Settings will be their initial value while being fetched.
+				expect( initialOriginalAccountStatus ).toEqual( undefined );
+				await subscribeUntil( registry,
+					() => (
+						select.getOriginalAccountStatus() !== undefined
+					),
+				);
+
+				const originalAccountStatus = select.getOriginalAccountStatus();
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( originalAccountStatus ).toEqual( response.accountStatus );
+			} );
+
+			it( 'does not make a network request if original account status is already set', async () => {
+				const value = 'a-status';
+				dispatch.receiveOriginalAccountStatus( value );
+
+				expect( select.getOriginalAccountStatus() ).toEqual( value );
+
+				await subscribeUntil( registry, () => select.hasFinishedResolution( 'getOriginalAccountStatus' ) );
+
+				expect( fetch ).not.toHaveBeenCalled();
+			} );
+
+			it( 'does not override original account status when receiving settings again', async () => {
+				// Set original value.
+				const value = 'a-status';
+				dispatch.receiveOriginalAccountStatus( value );
+
+				expect( select.getOriginalAccountStatus() ).toEqual( value );
+
+				// Despite receiving settings, the value should not be updated
+				// as it was already set.
+				dispatch.receiveSettings( { accountStatus: 'another-status' } );
+				expect( select.getOriginalAccountStatus() ).toEqual( value );
 			} );
 		} );
 	} );

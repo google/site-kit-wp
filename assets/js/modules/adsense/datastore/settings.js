@@ -46,9 +46,14 @@ const CATCH_FETCH_SAVE_USE_SNIPPET = 'CATCH_FETCH_SAVE_USE_SNIPPET';
 
 const RECEIVE_SAVE_USE_SNIPPET = 'RECEIVE_SAVE_USE_SNIPPET';
 
+// The original account status on pageload is a specific requirement for
+// certain parts of the AdSense setup flow.
+const RECEIVE_ORIGINAL_ACCOUNT_STATUS = 'RECEIVE_ORIGINAL_ACCOUNT_STATUS';
+
 export const INITIAL_STATE = {
 	isDoingSubmitChanges: false,
 	isFetchingSaveUseSnippet: false,
+	originalAccountStatus: undefined,
 };
 
 export const actions = {
@@ -142,6 +147,15 @@ export const actions = {
 			type: FINISH_SUBMIT_CHANGES,
 		};
 	},
+
+	receiveOriginalAccountStatus( originalAccountStatus ) {
+		invariant( originalAccountStatus, 'originalAccountStatus is required.' );
+
+		return {
+			payload: { originalAccountStatus },
+			type: RECEIVE_ORIGINAL_ACCOUNT_STATUS,
+		};
+	},
 };
 
 export const controls = {
@@ -226,15 +240,63 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		default: return state;
+		// This action is purely for testing, the value is typically handled
+		// as a side-effect from 'RECEIVE_SETTINGS' (see below).
+		case RECEIVE_ORIGINAL_ACCOUNT_STATUS: {
+			const { originalAccountStatus } = payload;
+			return {
+				...state,
+				originalAccountStatus,
+			};
+		}
+
+		// This action is mainly handled via createSettingsStore, but here we
+		// need it to have the side effect of storing the original account
+		// status.
+		case 'RECEIVE_SETTINGS': {
+			const { values } = payload;
+			const { accountStatus } = values;
+
+			// Only set original account status when it is really the first
+			// time that we load the settings on this pageload.
+			if ( 'undefined' === typeof state.originalAccountStatus ) {
+				return {
+					...state,
+					originalAccountStatus: accountStatus,
+				};
+			}
+
+			return { ...state };
+		}
+
+		default: {
+			return { ...state };
+		}
 	}
 };
 
-export const resolvers = {};
+export const resolvers = {
+	*getOriginalAccountStatus() {
+		const registry = yield commonActions.getRegistry();
+
+		// Do not do anything if original account status already known.
+		const existingOriginalAccountStatus = registry.select( STORE_NAME ).getOriginalAccountStatus();
+		if ( 'undefined' !== typeof existingOriginalAccountStatus ) {
+			return;
+		}
+
+		// Ensure settings are being fetched if not yet in progress.
+		registry.select( STORE_NAME ).getSettings();
+	},
+};
 
 export const selectors = {
 	/**
 	 * Checks if changes can be submitted.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean} True if changes can be submitted, false otherwise.
 	 */
 	canSubmitChanges: createRegistrySelector( ( select ) => () => {
 		const {
@@ -266,6 +328,20 @@ export const selectors = {
 
 	isDoingSaveUseSnippet( state ) {
 		return state.isFetchingSaveUseSnippet;
+	},
+
+	/**
+	 * Gets the original account status stored before the current pageload.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {?string} Original account status (may be an empty string), or
+	 *                   undefined if not loaded yet.
+	 */
+	getOriginalAccountStatus( state ) {
+		return state.originalAccountStatus;
 	},
 };
 
