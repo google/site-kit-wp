@@ -293,26 +293,42 @@ export const selectors = {
 	} ),
 
 	/**
-	 * Get an existing tag on the site, if present.
-	 *
-	 * Returns an object with the shape when successful:
-	 * ```
-	 * {
-	 *   accountID = null,
-	 *   clientID = null,
-	 * }
-	 * ```
+	 * Gets an existing tag on the site, if present.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?Object} Site connection info.
+	 * @return {?string} Existing tag, or `null` if none.
+	 *                   Returns `undefined` if not resolved yet.
 	 */
 	getExistingTag( state ) {
 		const { existingTag } = state;
 
 		return existingTag;
 	},
+
+	/**
+	 * Checks whther the user has access to the existing AdSense tag.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {?boolean} true or false if tag permission is available,
+	 *                    null if no existing tag,
+	 *                    otherwise undefined if resolution is incomplete.
+	 */
+	hasExistingTagPermission: createRegistrySelector( ( select ) => () => {
+		const hasExistingTag = select( STORE_NAME ).hasExistingTag();
+
+		if ( hasExistingTag === undefined ) {
+			return undefined;
+		} else if ( hasExistingTag ) {
+			const clientID = select( STORE_NAME ).getExistingTag();
+
+			return select( STORE_NAME ).hasTagPermission( clientID );
+		}
+
+		return null;
+	} ),
 
 	/**
 	 * Checks whether the user has access to an existing Google AdSense tag / client.
