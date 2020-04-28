@@ -173,7 +173,7 @@ export const selectors = {
 	isAuthenticated: createRegistrySelector( ( select ) => () => {
 		const authentication = select( STORE_NAME ).getAuthentication();
 
-		return typeof authentication !== 'undefined' ? authentication.connected : authentication;
+		return typeof authentication !== 'undefined' ? authentication.authenticated : authentication;
 	} ),
 };
 

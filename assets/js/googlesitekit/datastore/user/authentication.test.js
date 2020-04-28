@@ -152,5 +152,69 @@ describe( 'core/user authentication', () => {
 				expect( connection ).toEqual( undefined );
 			} );
 		} );
+		describe( 'isAuthenticated', () => {
+			it( 'uses a resolver get all authentication info', async () => {
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/core\/user\/data\/authentication/
+					)
+					.mockResponseOnce(
+						JSON.stringify( responseAuthenticated ),
+						{ status: 200 }
+					);
+
+				const initialIsAuthenticated = registry.select( STORE_NAME ).isAuthenticated();
+				// The autentication info will be its initial value while the authentication
+				// info is fetched.
+				expect( initialIsAuthenticated ).toEqual( undefined );
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).isAuthenticated() !== undefined
+					),
+				);
+
+				const isAuthenticated = registry.select( STORE_NAME ).isAuthenticated();
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( isAuthenticated ).toEqual( responseAuthenticated.authenticated );
+			} );
+
+			it( 'dispatches an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/core\/user\/data\/authentication/
+					)
+					.mockResponseOnce(
+						JSON.stringify( response ),
+						{ status: 500 }
+					);
+
+				muteConsole( 'error' );
+				registry.select( STORE_NAME ).isAuthenticated();
+				await subscribeUntil( registry,
+					// TODO: We may want a selector for this, but for now this is fine
+					// because it's internal-only.
+					() => store.getState().isFetchingAuthentication === false,
+				);
+
+				const isAuthenticated = registry.select( STORE_NAME ).isAuthenticated();
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( isAuthenticated ).toEqual( undefined );
+			} );
+
+			it( 'returns undefined if connection info is not available', async () => {
+				// This triggers a network request, so ignore the error.
+				muteConsole( 'error' );
+				const isAuthenticated = registry.select( STORE_NAME ).isAuthenticated();
+
+				expect( isAuthenticated ).toEqual( undefined );
+			} );
+		} );
 	} );
 } );
