@@ -57,7 +57,7 @@ function Setup( props ) {
 	);
 }
 
-storiesOf( 'Analytics Module Setup', module )
+storiesOf( 'Analytics Module/Setup', module )
 	.add( 'Loading', () => {
 		filterAnalyticsSetup();
 

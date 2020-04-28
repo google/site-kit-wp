@@ -95,7 +95,7 @@ function Settings( props ) {
 	);
 }
 
-storiesOf( 'Analytics Module Settings', module )
+storiesOf( 'Analytics Module/Settings', module )
 	.add( 'View, closed', () => {
 		filterAnalyticsSettings();
 
