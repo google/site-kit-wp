@@ -187,21 +187,21 @@ storiesOf( 'Analytics Module/Settings', module )
 	.add( 'Edit, with existing tag (no access)', () => {
 		filterAnalyticsSettings();
 
+		const existingTag = {
+			accountID: '12345678',
+			propertyID: 'UA-12345678-1',
+		};
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveSettings( {} );
+			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
+			dispatch( STORE_NAME ).receiveTagPermission( {
+				...existingTag,
+				permission: false,
+			} );
+			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
-			dispatch( STORE_NAME ).receiveExistingTag( {
-				accountID: '12345678',
-				propertyID: 'UA-12345678-1',
-			} );
-			dispatch( STORE_NAME ).receiveTagPermission( {
-				accountID: '12345678',
-				propertyID: 'UA-12345678-1',
-				permission: false,
-			} );
 		};
 
 		return <Settings isEditing={ true } callback={ setupRegistry } />;
