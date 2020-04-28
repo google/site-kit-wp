@@ -152,19 +152,19 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add( 'Existing Tag (no access)', () => {
 		filterAnalyticsSetup();
 
+		const existingTag = {
+			accountID: '12345678',
+			propertyID: 'UA-12345678-1',
+		};
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
-			dispatch( STORE_NAME ).receiveExistingTag( {
-				accountID: '12345678',
-				propertyID: 'UA-12345678-1',
-			} );
+			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
 			dispatch( STORE_NAME ).receiveTagPermission( {
-				accountID: '12345678',
-				propertyID: 'UA-12345678-1',
+				...existingTag,
 				permission: false,
 			} );
 		};
