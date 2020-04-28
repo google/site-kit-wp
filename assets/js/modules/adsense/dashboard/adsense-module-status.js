@@ -33,7 +33,8 @@ import { __, _x } from '@wordpress/i18n';
 import SvgIcon from '../../../util/svg-icon';
 import AdSenseSetupInstructions from '../setup/adsense-setup-instructions';
 import AdSenseInProcessStatus from './adsense-in-process-status';
-import { getExistingTag, getModulesData } from '../../../util';
+import { getExistingTag } from '../../../util/tag';
+import { getModulesData } from '../../../util';
 import { getAdSenseAccountStatus, propsFromAccountStatus } from '../util';
 
 class AdSenseModuleStatus extends Component {
