@@ -183,7 +183,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 *
 		 * @since 1.6.0
 		 *
-		 * @return {Object} Redux-style action.
+		 * @return {Object} Response and error, if any.
 		 */
 		*saveSettings() {
 			const registry = yield getRegistry();
@@ -262,7 +262,9 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 	const controls = {
 		...commonControls,
 		[ FETCH_SETTINGS ]: () => {
-			return API.get( type, identifier, datapoint );
+			return API.get( type, identifier, datapoint, {}, {
+				useCache: false,
+			} );
 		},
 		[ FETCH_SAVE_SETTINGS ]: ( { payload } ) => {
 			const { values } = payload;
