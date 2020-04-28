@@ -136,15 +136,15 @@ storiesOf( 'Analytics Module/Setup', module )
 		};
 
 		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
-			dispatch( STORE_NAME ).receiveExistingTag( existingTag );
+			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
 			dispatch( STORE_NAME ).receiveTagPermission( {
 				...existingTag,
 				permission: true,
 			} );
-			dispatch( STORE_NAME ).applyProperty( existingTag );
 		};
 
 		return <Setup callback={ setupRegistry } />;
