@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import { extractTag } from '../';
+import { extractTag } from '../tag';
 
 const valuesToTest = [
 	[

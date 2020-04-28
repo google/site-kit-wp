@@ -34,10 +34,10 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
  */
 import {
 	trackEvent,
-	getExistingTag,
 	toggleConfirmModuleSettings,
 	getModulesData,
 } from '../../util';
+import { getExistingTag } from '../../util/tag';
 import SvgIcon from '../../util/svg-icon';
 
 const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';

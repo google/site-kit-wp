@@ -25,8 +25,8 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
-import { STORE_NAME } from './constants';
 import { INITIAL_STATE } from './index';
+import { STORE_NAME } from './constants';
 
 describe( 'core/site site info', () => {
 	const baseInfoVar = '_googlesitekitBaseData';
