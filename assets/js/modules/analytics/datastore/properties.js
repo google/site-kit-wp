@@ -206,16 +206,25 @@ export const actions = {
 
 		const { accountID } = parsePropertyID( propertyID );
 
+		yield actions.waitForProperties( accountID );
+		const property = registry.select( STORE_NAME ).getPropertyByID( propertyID ) || {};
+
 		if ( ! internalPropertyID ) {
-			yield actions.waitForProperties( accountID );
-			const property = registry.select( STORE_NAME ).getPropertyByID( propertyID ) || {};
 			internalPropertyID = property.internalWebPropertyId;
 		}
 
 		registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
 
+		// If defaultProfileId is set then set the	 profileID and return
+		if ( property.defaultProfileId ) {
+			const profileID = property.defaultProfileId;
+			registry.dispatch( STORE_NAME ).setProfileID( profileID );
+			return;
+		}
+
 		// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
 		registry.dispatch( STORE_NAME ).setProfileID( '' );
+
 		const profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
 		if ( profiles === undefined ) {
 			return; // Selection will happen in in getProfiles resolver.
