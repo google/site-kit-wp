@@ -6,9 +6,7 @@ import md5 from 'md5';
 /**
  * Internal dependencies
  */
-import data from '../';
-
-const { getCacheKey } = data;
+import { getCacheKey } from '../cache';
 
 const simpleObject = { bKey: 'value', aKey: 'value' };
 const simpleObjectSorted = { aKey: 'value', bKey: 'value' };
