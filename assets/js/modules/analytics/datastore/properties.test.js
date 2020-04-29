@@ -167,7 +167,7 @@ describe( 'modules/analytics properties', () => {
 
 				// Profiles should also have been received by this action.
 				muteConsole( 'error' );
-				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
+				const profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
 
 				expect( properties ).toEqual( fixtures.propertiesProfiles.properties );
 				expect( properties ).toHaveLength( 17 );

@@ -31,7 +31,7 @@ import { Component, Fragment, cloneElement } from '@wordpress/element';
  * Internal dependencies
  */
 import ChangeArrow from './change-arrow';
-import { numberFormat } from '../util';
+import { numberFormat } from '../util/i18n';
 import SourceLink from '../components/source-link';
 
 class DataBlock extends Component {

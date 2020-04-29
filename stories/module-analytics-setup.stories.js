@@ -57,17 +57,15 @@ function Setup( props ) {
 	);
 }
 
-storiesOf( 'Analytics Module Setup', module )
+storiesOf( 'Analytics Module/Setup', module )
 	.add( 'Loading', () => {
 		filterAnalyticsSetup();
 
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( STORE_NAME ).setSettings( {} );
 			registry.dispatch( STORE_NAME ).receiveAccounts( [] );
-			registry.dispatch( STORE_NAME ).receiveProperties( [] );
-			registry.dispatch( STORE_NAME ).receiveProfiles( [] );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
-			registry.stores[ STORE_NAME ].store.dispatch( { type: 'FETCH_ACCOUNTS_PROPERTIES_PROFILES' } );
+			registry.stores[ STORE_NAME ].store.dispatch( { type: 'START_FETCH_ACCOUNTS_PROPERTIES_PROFILES' } );
 		};
 
 		return <Setup callback={ setupRegistry } />;
@@ -138,15 +136,15 @@ storiesOf( 'Analytics Module Setup', module )
 		};
 
 		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
-			dispatch( STORE_NAME ).receiveExistingTag( existingTag );
+			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
 			dispatch( STORE_NAME ).receiveTagPermission( {
 				...existingTag,
 				permission: true,
 			} );
-			dispatch( STORE_NAME ).applyProperty( existingTag );
 		};
 
 		return <Setup callback={ setupRegistry } />;
@@ -154,19 +152,19 @@ storiesOf( 'Analytics Module Setup', module )
 	.add( 'Existing Tag (no access)', () => {
 		filterAnalyticsSetup();
 
+		const existingTag = {
+			accountID: '12345678',
+			propertyID: 'UA-12345678-1',
+		};
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
-			dispatch( STORE_NAME ).receiveExistingTag( {
-				accountID: '12345678',
-				propertyID: 'UA-12345678-1',
-			} );
+			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
 			dispatch( STORE_NAME ).receiveTagPermission( {
-				accountID: '12345678',
-				propertyID: 'UA-12345678-1',
+				...existingTag,
 				permission: false,
 			} );
 		};

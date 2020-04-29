@@ -39,11 +39,6 @@ describe( 'modules/analytics accounts', () => {
 	let registry;
 	let store;
 
-	const accountName = fixtures.createAccount.account.name;
-	const propertyName = fixtures.createAccount.webproperty.name;
-	const profileName = fixtures.createAccount.profile.name;
-	const timezone = fixtures.createAccount.profile.timezone;
-
 	beforeAll( () => {
 		API.setUsingCache( false );
 	} );
@@ -66,6 +61,11 @@ describe( 'modules/analytics accounts', () => {
 
 	describe( 'actions', () => {
 		describe( 'createAccount', () => {
+			const accountName = fixtures.createAccount.account.name;
+			const propertyName = fixtures.createAccount.webproperty.name;
+			const profileName = fixtures.createAccount.profile.name;
+			const timezone = fixtures.createAccount.profile.timezone;
+
 			it( 'creates an account ticket and sets the Terms of Service URL', async () => {
 				fetch
 					.doMockIf(
@@ -76,7 +76,8 @@ describe( 'modules/analytics accounts', () => {
 						{ status: 200 }
 					);
 
-				muteConsole( 'error' );
+				// Silence expected API errors.
+				muteConsole( 'error' ); // Request will log an error.
 
 				registry.dispatch( STORE_NAME ).createAccount( { accountName, propertyName, profileName, timezone } );
 				await subscribeUntil( registry,
@@ -123,7 +124,7 @@ describe( 'modules/analytics accounts', () => {
 						{ status: 500 }
 					);
 
-				muteConsole( 'error' );
+				muteConsole( 'error' ); // Request will log an error.
 
 				registry.dispatch( STORE_NAME ).createAccount( { accountName, propertyName, profileName, timezone } );
 
@@ -215,7 +216,7 @@ describe( 'modules/analytics accounts', () => {
 				// this action.
 				muteConsole( 'error', 2 );
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
-				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
+				const profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
 
 				expect( accounts ).toEqual( fixtures.accountsPropertiesProfiles.accounts );
 				expect( properties ).toEqual( fixtures.accountsPropertiesProfiles.properties );

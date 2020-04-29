@@ -31,6 +31,7 @@ import Link from '../../../components/link';
 import ProgressBar from '../../../components/progress-bar';
 import { trackEvent } from '../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../datastore/constants';
+import ErrorNotice from './error-notice';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreateLegacy() {
@@ -56,6 +57,8 @@ export default function AccountCreateLegacy() {
 
 	return (
 		<div>
+			<ErrorNotice />
+
 			{ ( ! isCreateAccount && ( accounts && accounts.length === 0 ) ) && (
 				<p>
 					{ __( 'Looks like you don\'t have an Analytics account yet. Once you create it, click on "Re-fetch my account" and Site Kit will locate it.', 'google-site-kit' ) }

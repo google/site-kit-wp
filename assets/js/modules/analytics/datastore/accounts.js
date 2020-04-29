@@ -161,8 +161,8 @@ export const actions = {
 		invariant( profileName, 'profileName is required to create an account.' );
 		invariant( timezone, 'timezone is required to create an account.' );
 
-		let response,
-			error;
+		let response, error;
+
 		yield {
 			payload: { accountName, propertyName, profileName, timezone },
 			type: START_FETCH_CREATE_ACCOUNT,
