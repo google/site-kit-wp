@@ -18,7 +18,6 @@ module.exports = async ( { config } ) => {
 		alias: {
 			...config.resolve.alias,
 			...siteKitPackageAliases,
-			'@wordpress/api-fetch$': path.resolve( __dirname, 'wp-api-fetch-mock.js' ),
 		},
 		modules: [ path.resolve( __dirname, '..' ), 'node_modules' ],
 	};

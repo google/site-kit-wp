@@ -43,7 +43,7 @@ class DashboardWinsAlerts extends Component {
 		};
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		// Wait until data is fully loaded before requesting wins data.
 		addAction(
 			'googlesitekit.dataLoaded',
