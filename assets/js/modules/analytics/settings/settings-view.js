@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { trackingExclusionLabels } from '../common/tracking-exclusion-switches';
-import { ExistingTagError, ExistingTagNotice } from '../common';
+import { ExistingTagError, ExistingTagNotice, ErrorNotice } from '../common';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -45,6 +45,7 @@ export default function SettingsView() {
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 
+			<ErrorNotice />
 			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
 			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
 
