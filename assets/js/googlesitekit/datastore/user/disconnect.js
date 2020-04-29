@@ -67,7 +67,7 @@ export const actions = {
 	},
 
 	receiveDisconnect( disconnect ) {
-		invariant( disconnect, 'disconnect  is required.' );
+		invariant( disconnect, 'disconnect is required.' );
 
 		return {
 			payload: { disconnect },
