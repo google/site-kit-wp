@@ -13,6 +13,7 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
  */
 import siteStore, { STORE_NAME as siteStoreName } from '../../assets/js/googlesitekit/datastore/site';
 import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore';
+import modulesTagManagerStore, { STORE_NAME as modulesTagManagerStoreName } from '../../assets/js/modules/tagmanager/datastore';
 
 /**
  * Create a registry with all available stores.
@@ -84,6 +85,7 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
 export const registerAllStoresOn = ( registry ) => {
 	registry.registerStore( siteStoreName, siteStore );
 	registry.registerStore( modulesAnalyticsStoreName, modulesAnalyticsStore );
+	registry.registerStore( modulesTagManagerStoreName, modulesTagManagerStore );
 };
 
 const unsubscribes = [];
