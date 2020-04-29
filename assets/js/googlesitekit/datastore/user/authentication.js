@@ -76,7 +76,7 @@ export const actions = {
 	/**
 	 * Stores connection info received from the REST API.
 	 *
-	 * @since 1.5.0
+	 * @since n.e.x.t
 	 * @private
 	 * @param {Object} authentication Authentication info from the API.
 	 * @return {Object} Redux-style action.
@@ -89,6 +89,7 @@ export const actions = {
 			type: RECEIVE_AUTHENTICATION,
 		};
 	},
+
 };
 
 export const controls = {
@@ -152,7 +153,7 @@ export const selectors = {
 	 * ```
 	 *
 	 * @private
-	 * @since 1.8.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object|undefined} User authentication info.
@@ -167,7 +168,7 @@ export const selectors = {
 	 * Returns `true` if the user is authenticated, `false` if
 	 * not. Returns `undefined` if the authentication info is not available/loaded.
 	 *
-	 * @since 1.8.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} Site connection status.
@@ -184,7 +185,7 @@ export const selectors = {
 	 * Returns an array of granted scopes or undefined
 	 * if authentication info is not available/loaded.
 	 *
-	 * @since 1.8.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Array|undefined} Array of granted scopes
@@ -201,7 +202,7 @@ export const selectors = {
 	 * Returns an array of required scopes or undefined
 	 * if authentication info is not available/loaded.
 	 *
-	 * @since 1.8.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Array|undefined} Array of granted scopes
