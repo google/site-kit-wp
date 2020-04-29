@@ -25,17 +25,35 @@ import { STORE_NAME } from './constants';
 import accounts from './accounts';
 export { STORE_NAME };
 
-const baseModuleStore = Modules.createModuleStore( 'tagmanager', {
+let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
 	storeName: STORE_NAME,
 	settingSlugs: [
 		'accountID',
-		'AMPContainerID', // Capitalization rule exception: becomes `getAMPContainerID` which is correct.
+		'ampContainerID',
 		'containerID',
 		'internalContainerID',
 		'internalAMPContainerID',
 		'useSnippet',
 	],
 } );
+
+// Rename generated pieces to adhere to our convention.
+baseModuleStore = ( ( { actions, selectors, ...store } ) => {
+	const { setAmpContainerID, ...restActions } = actions;
+	const { getAmpContainerID, ...restSelectors } = selectors;
+
+	return {
+		...store,
+		actions: {
+			...restActions,
+			setAMPContainerID: setAmpContainerID,
+		},
+		selectors: {
+			...restSelectors,
+			getAMPContainerID: getAmpContainerID,
+		},
+	};
+} )( baseModuleStore );
 
 export const INITIAL_STATE = Data.collectState(
 	baseModuleStore.INITIAL_STATE,
