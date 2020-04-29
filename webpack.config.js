@@ -94,6 +94,7 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-data': './assets/js/googlesitekit-data.js',
 				'googlesitekit-datastore-site': './assets/js/googlesitekit-datastore-site.js',
 				'googlesitekit-modules-analytics': './assets/js/googlesitekit-modules-analytics.js',
+				'googlesitekit-modules-tagmanager': './assets/js/googlesitekit-modules-tagmanager.js',
 				'googlesitekit-modules': './assets/js/googlesitekit-modules.js', // TODO: Add external following 1162.
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
