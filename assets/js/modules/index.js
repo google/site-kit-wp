@@ -24,4 +24,4 @@ import './analytics/index.legacy';
 import './optimize';
 import './pagespeed-insights';
 import './search-console';
-import './tagmanager';
+import './tagmanager/index.legacy';
