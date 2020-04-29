@@ -265,6 +265,7 @@ final class Authentication {
 		};
 		add_action( 'update_option_home', $option_updated );
 		add_action( 'update_option_siteurl', $option_updated );
+		add_action( 'update_option_blogname', $option_updated );
 		add_action( 'update_option_googlesitekit_db_version', $option_updated );
 	}
 
