@@ -35,6 +35,11 @@ const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
 const START_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'START_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
 const FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
 const CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
+const FETCH_CREATE_ACCOUNT = 'FETCH_CREATE_ACCOUNT';
+const RECEIVE_CREATE_ACCOUNT = 'RECEIVE_CREATE_ACCOUNT';
+const START_FETCH_CREATE_ACCOUNT = 'START_FETCH_CREATE_ACCOUNT';
+const FINISH_FETCH_CREATE_ACCOUNT = 'FINISH_FETCH_CREATE_ACCOUNT';
+const CATCH_FETCH_CREATE_ACCOUNT = 'CATCH_FETCH_CREATE_ACCOUNT';
 
 const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
@@ -42,6 +47,8 @@ const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 export const INITIAL_STATE = {
 	accounts: undefined,
 	isFetchingAccountsPropertiesProfiles: false,
+	isFetchingCreateAccount: false,
+	accountTicketTermsOfServiceURL: undefined,
 };
 
 export const actions = {
@@ -135,12 +142,76 @@ export const actions = {
 		const property = properties[ 0 ] || { id: PROPERTY_CREATE };
 		registry.dispatch( STORE_NAME ).selectProperty( property.id );
 	},
+
+	/**
+	 * Creates a new Analytics account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} args              Argument params.
+	 * @param {string} args.accountName  Google Analytics account name.
+	 * @param {string} args.propertyName Google Analytics property name.
+	 * @param {string} args.profileName  Google Analytics profile name.
+	 * @param {string} args.timezone     Google Analytics timezone.
+	 * @return {Function} Generator function action.
+	 */
+	*createAccount( { accountName, propertyName, profileName, timezone } ) {
+		invariant( accountName, 'accountName is required to create an account.' );
+		invariant( propertyName, 'propertyName is required to create an account.' );
+		invariant( profileName, 'profileName is required to create an account.' );
+		invariant( timezone, 'timezone is required to create an account.' );
+
+		let response, error;
+
+		yield {
+			payload: { accountName, propertyName, profileName, timezone },
+			type: START_FETCH_CREATE_ACCOUNT,
+		};
+
+		try {
+			response = yield {
+				payload: { accountName, propertyName, profileName, timezone },
+				type: FETCH_CREATE_ACCOUNT,
+			};
+
+			yield actions.receiveCreateAccount( response );
+
+			yield {
+				payload: { accountName, propertyName, profileName, timezone },
+				type: FINISH_FETCH_CREATE_ACCOUNT,
+			};
+		} catch ( e ) {
+			error = e;
+			yield {
+				payload: { accountName, propertyName, profileName, timezone, error },
+				type: CATCH_FETCH_CREATE_ACCOUNT,
+			};
+		}
+		return { response, error };
+	},
+
+	receiveCreateAccount( accountTicket ) {
+		invariant( accountTicket, 'accountTicket is required.' );
+
+		return {
+			payload: { accountTicket },
+			type: RECEIVE_CREATE_ACCOUNT,
+		};
+	},
 };
 
 export const controls = {
 	[ FETCH_ACCOUNTS_PROPERTIES_PROFILES ]: ( { payload } ) => {
 		return API.get( 'modules', 'analytics', 'accounts-properties-profiles', payload.data, {
 			useCache: false,
+		} );
+	},
+	[ FETCH_CREATE_ACCOUNT ]: ( { payload: { accountName, propertyName, profileName, timezone } } ) => {
+		return API.set( 'modules', 'analytics', 'create-account-ticket', {
+			accountName,
+			propertyName,
+			profileName,
+			timezone,
 		} );
 	},
 };
@@ -191,6 +262,35 @@ export const reducer = ( state, { type, payload } ) => {
 					internalWebPropertyID: undefined,
 					profileID: undefined,
 				},
+			};
+		}
+
+		case FINISH_FETCH_CREATE_ACCOUNT:
+			return {
+				...state,
+				isFetchingCreateAccount: false,
+			};
+
+		case CATCH_FETCH_CREATE_ACCOUNT:
+			const { error } = payload;
+			return {
+				...state,
+				error,
+				isFetchingCreateAccount: false,
+			};
+
+		case START_FETCH_CREATE_ACCOUNT: {
+			return {
+				...state,
+				isFetchingCreateAccount: true,
+			};
+		}
+
+		case RECEIVE_CREATE_ACCOUNT: {
+			const { accountTicket: { id } } = payload;
+			return {
+				...state,
+				accountTicketTermsOfServiceURL: `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/?api.accountTicketId=${ id }`,
 			};
 		}
 
@@ -286,6 +386,30 @@ export const selectors = {
 	 */
 	isDoingGetAccounts( state ) {
 		return !! state.isFetchingAccountsPropertiesProfiles;
+	},
+
+	/**
+	 * Indicates whether account creation is currently in progress.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if an account is being created, false otherwise.
+	 */
+	isDoingCreateAccount( state ) {
+		return !! state.isFetchingCreateAccount;
+	},
+
+	/**
+	 * Get the terms of service URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} The terms of service URL.
+	 */
+	getAccountTicketTermsOfServiceURL( state ) {
+		return state.accountTicketTermsOfServiceURL;
 	},
 };
 

@@ -60,6 +60,84 @@ describe( 'modules/analytics accounts', () => {
 	} );
 
 	describe( 'actions', () => {
+		describe( 'createAccount', () => {
+			const accountName = fixtures.createAccount.account.name;
+			const propertyName = fixtures.createAccount.webproperty.name;
+			const profileName = fixtures.createAccount.profile.name;
+			const timezone = fixtures.createAccount.profile.timezone;
+
+			it( 'creates an account ticket and sets the Terms of Service URL', async () => {
+				fetch
+					.doMockIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/
+					)
+					.mockResponse(
+						JSON.stringify( fixtures.createAccount ),
+						{ status: 200 }
+					);
+
+				// Silence expected API errors.
+				muteConsole( 'error' ); // Request will log an error.
+
+				registry.dispatch( STORE_NAME ).createAccount( { accountName, propertyName, profileName, timezone } );
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).isDoingCreateAccount() === false
+					),
+				);
+
+				// Ensure the proper body parameters were sent.
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toMatchObject(
+					{ accountName, propertyName, profileName, timezone }
+				);
+
+				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toEqual( `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/?api.accountTicketId=${ fixtures.createAccount.id }` );
+			} );
+
+			it( 'sets isDoingCreateAccount ', async () => {
+				fetch
+					.doMockIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/
+					)
+					.mockResponse(
+						JSON.stringify( fixtures.createAccount ),
+						{ status: 200 }
+					);
+
+				registry.dispatch( STORE_NAME ).createAccount( { accountName, propertyName, profileName, timezone } );
+				expect( registry.select( STORE_NAME ).isDoingCreateAccount() ).toEqual( true );
+			} );
+
+			it( 'dispatches an error if the request fails ', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetch
+					.doMockIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/
+					)
+					.mockResponse(
+						JSON.stringify( response ),
+						{ status: 500 }
+					);
+
+				muteConsole( 'error' ); // Request will log an error.
+
+				registry.dispatch( STORE_NAME ).createAccount( { accountName, propertyName, profileName, timezone } );
+
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).isDoingCreateAccount() === false
+					),
+				);
+
+				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( response );
+			} );
+		} );
+
 		describe( 'resetAccounts', () => {
 			it( 'sets accounts and related values back to their initial values', () => {
 				registry.dispatch( STORE_NAME ).setSettings( {
