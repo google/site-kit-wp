@@ -60,13 +60,13 @@ export default function SetupForm( { finishSetup } ) {
 		>
 			<ErrorNotice />
 
+			<ExistingTagNotice />
+
 			{ ( !! accounts.length && ! hasExistingTag ) && (
 				<p>
 					{ __( 'Please select the account information below. You can change this view later in your settings.', 'google-site-kit' ) }
 				</p>
 			) }
-
-			<ExistingTagNotice />
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
