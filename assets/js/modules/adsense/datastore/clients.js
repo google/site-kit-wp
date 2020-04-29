@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { groupBy } from 'lodash';
 
 /**
  * Internal dependencies
@@ -28,7 +27,7 @@ import { groupBy } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { isValidAccountID, parseAccountID } from '../util';
+import { isValidAccountID } from '../util';
 
 // Actions
 const FETCH_CLIENTS = 'FETCH_CLIENTS';
@@ -61,7 +60,7 @@ export const actions = {
 				type: FETCH_CLIENTS,
 			};
 
-			yield actions.receiveClients( response );
+			yield actions.receiveClients( response, { accountID } );
 
 			yield {
 				payload: { accountID },
@@ -79,11 +78,12 @@ export const actions = {
 		return { response, error };
 	},
 
-	receiveClients( clients ) {
+	receiveClients( clients, { accountID } ) {
 		invariant( Array.isArray( clients ), 'clients must be an array.' );
+		invariant( accountID, 'accountID is required.' );
 
 		return {
-			payload: { clients },
+			payload: { accountID, clients },
 			type: RECEIVE_CLIENTS,
 		};
 	},
@@ -124,13 +124,13 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_CLIENTS: {
-			const { clients } = payload;
+			const { accountID, clients } = payload;
 
 			return {
 				...state,
 				clients: {
 					...state.clients,
-					...groupBy( clients, ( client ) => parseAccountID( client.id ) ),
+					[ accountID ]: [ ...clients ],
 				},
 			};
 		}
