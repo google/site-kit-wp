@@ -17,6 +17,7 @@
  */
 
 export default function SetupSiteAdded() {
+	// TODO: Send tracking event 'complete_adsense_setup'.
 	return (
 		<div>Your site has been added</div>
 	);

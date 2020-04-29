@@ -81,7 +81,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setSettings( emptySettings );
+			registry.dispatch( STORE_NAME ).receiveSettings( emptySettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		};
 
@@ -91,7 +91,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setSettings( emptySettings );
+			registry.dispatch( STORE_NAME ).receiveSettings( emptySettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( true );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
@@ -106,7 +106,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setSettings( emptySettings );
+			registry.dispatch( STORE_NAME ).receiveSettings( emptySettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( [] );
@@ -121,11 +121,11 @@ storiesOf( 'AdSense Module/Setup', module )
 
 		return <Setup callback={ setupRegistry } />;
 	} )
-	.add( 'No account (with existing tag)', () => {
+	.add( 'No account (existing tag)', () => {
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setSettings( emptySettings );
+			registry.dispatch( STORE_NAME ).receiveSettings( emptySettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( 'ca-pub-123456789' );
 			registry.dispatch( STORE_NAME ).receiveAccounts( [] );
@@ -144,10 +144,19 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setSettings( emptySettings );
+			registry.dispatch( STORE_NAME ).receiveSettings( emptySettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accountsMultiple );
+			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients );
+			registry.dispatch( STORE_NAME ).receiveClients( [ {
+				...fixtures.clients[ 0 ],
+				id: `ca-${ fixtures.accountsMultiple[ 1 ].id }`,
+			} ] );
+			registry.dispatch( STORE_NAME ).receiveAlerts( [], { accountID: fixtures.accountsMultiple[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveAlerts( [], { accountID: fixtures.accountsMultiple[ 1 ].id } );
+			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: `ca-${ fixtures.accountsMultiple[ 1 ].id }` } );
 		};
 
 		return <Setup callback={ setupRegistry } />;
@@ -156,7 +165,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setSettings( emptySettings );
+			registry.dispatch( STORE_NAME ).receiveSettings( emptySettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( [] );
@@ -175,7 +184,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setSettings( emptySettings );
+			registry.dispatch( STORE_NAME ).receiveSettings( emptySettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
@@ -190,7 +199,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setSettings( emptySettings );
+			registry.dispatch( STORE_NAME ).receiveSettings( emptySettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
@@ -212,7 +221,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setSettings( emptySettings );
+			registry.dispatch( STORE_NAME ).receiveSettings( emptySettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
@@ -222,13 +231,123 @@ storiesOf( 'AdSense Module/Setup', module )
 
 		return <Setup callback={ setupRegistry } />;
 	} )
-	.add( 'Approved account', () => {
+	.add( 'Newly approved account', () => {
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setSettings( emptySettings );
+			registry.dispatch( STORE_NAME ).receiveSettings( {
+				...emptySettings,
+				// Previous status needs to be something other than
+				// '' or 'approved'.
+				accountStatus: 'pending',
+			} );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
+			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients );
+			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
+		};
+
+		return <Setup callback={ setupRegistry } />;
+	} )
+	.add( 'Newly approved account (existing tag with permission)', () => {
+		filterAdSenseSetup();
+
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).receiveSettings( {
+				...emptySettings,
+				// Previous status needs to be something other than
+				// '' or 'approved'.
+				accountStatus: 'pending',
+			} );
+			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
+			registry.dispatch( STORE_NAME ).receiveExistingTag( fixtures.clients[ 0 ].id );
+			registry.dispatch( STORE_NAME ).receiveTagPermission( {
+				accountID: fixtures.accounts[ 0 ].id,
+				clientID: fixtures.clients[ 0 ].id,
+				permission: true,
+			} );
+			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
+			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients );
+			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
+		};
+
+		return <Setup callback={ setupRegistry } />;
+	} )
+	.add( 'Newly approved account (existing tag without permission)', () => {
+		filterAdSenseSetup();
+
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).receiveSettings( {
+				...emptySettings,
+				// Previous status needs to be something other than
+				// '' or 'approved'.
+				accountStatus: 'pending',
+			} );
+			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
+			registry.dispatch( STORE_NAME ).receiveExistingTag( 'ca-pub-123456789' );
+			registry.dispatch( STORE_NAME ).receiveTagPermission( {
+				accountID: 'pub-123456789',
+				clientID: 'ca-pub-123456789',
+				permission: false,
+			} );
+			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
+			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients );
+			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
+		};
+
+		return <Setup callback={ setupRegistry } />;
+	} )
+	.add( 'Already approved account', () => {
+		filterAdSenseSetup();
+
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).receiveSettings( emptySettings );
+			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
+			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
+			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients );
+			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
+		};
+
+		return <Setup callback={ setupRegistry } />;
+	} )
+	.add( 'Already approved account (existing tag with permission)', () => {
+		filterAdSenseSetup();
+
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).receiveSettings( emptySettings );
+			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
+			registry.dispatch( STORE_NAME ).receiveExistingTag( fixtures.clients[ 0 ].id );
+			registry.dispatch( STORE_NAME ).receiveTagPermission( {
+				accountID: fixtures.accounts[ 0 ].id,
+				clientID: fixtures.clients[ 0 ].id,
+				permission: true,
+			} );
+			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
+			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients );
+			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
+		};
+
+		return <Setup callback={ setupRegistry } />;
+	} )
+	.add( 'Already approved account (existing tag without permission)', () => {
+		filterAdSenseSetup();
+
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).receiveSettings( emptySettings );
+			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
+			registry.dispatch( STORE_NAME ).receiveExistingTag( 'ca-pub-123456789' );
+			registry.dispatch( STORE_NAME ).receiveTagPermission( {
+				accountID: 'pub-123456789',
+				clientID: 'ca-pub-123456789',
+				permission: false,
+			} );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
 			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients );
 			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
@@ -241,7 +360,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setSettings( accountCompleteSettings );
+			registry.dispatch( STORE_NAME ).receiveSettings( accountCompleteSettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
@@ -256,7 +375,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setSettings( accountCompleteSettings );
+			registry.dispatch( STORE_NAME ).receiveSettings( accountCompleteSettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );

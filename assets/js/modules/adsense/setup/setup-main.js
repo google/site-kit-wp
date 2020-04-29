@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -68,6 +68,9 @@ export default function SetupMain() {
 	const previousSiteStatus = useSelect( ( select ) => select( STORE_NAME ).getSiteStatus() );
 	const accountSetupComplete = useSelect( ( select ) => select( STORE_NAME ).getAccountSetupComplete() );
 	const siteSetupComplete = useSelect( ( select ) => select( STORE_NAME ).getSiteSetupComplete() );
+
+	// Check whether a change submission is in progress.
+	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 
 	// Check whether settings differ from server and are valid.
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
@@ -166,19 +169,27 @@ export default function SetupMain() {
 	}, [ siteStatus ] );
 
 	// Submit changes for determined parameters in the background when they are valid.
+	const [ isSubmittingInBackground, setIsSubmittingInBackground ] = useState( false );
 	useEffect( () => {
 		// Only submit changes if valid (plus temporary hack to avoid saving in Storybook).
 		if ( ! canSubmitChanges || global.__STORYBOOK_ADDONS ) {
 			return;
 		}
-		submitChanges();
+		// Set internal state for submitting in background to avoid sudden
+		// rendering of a progress bar.
+		( async () => {
+			setIsSubmittingInBackground( true );
+			await submitChanges();
+			setIsSubmittingInBackground( false );
+		} )();
 	}, [ previousAccountID, previousClientID, previousAccountStatus, previousSiteStatus ] );
 
 	const isAdBlockerActive = useSelect( ( select ) => select( STORE_NAME ).isAdBlockerActive() );
 
 	let viewComponent;
-	if ( 'undefined' === typeof accountStatus ) {
-		// Show loading indicator if account status not determined yet.
+	if ( 'undefined' === typeof accountStatus || ( isDoingSubmitChanges && ! isSubmittingInBackground ) ) {
+		// Show loading indicator if account status not determined yet or if
+		// a submission is in progress that is not happening in background.
 		viewComponent = <ProgressBar />;
 	} else if ( accountStatus !== ACCOUNT_STATUS_APPROVED || ! accountSetupComplete ) {
 		// Show relevant account status component.

@@ -75,7 +75,6 @@ export default function UseSnippetSwitch( props ) {
 			{ useSnippet && checkedMessage &&
 				<SettingsNotice
 					message={ checkedMessage }
-					isSuggestion={ true }
 				/>
 			}
 			{ ! useSnippet && uncheckedMessage &&
