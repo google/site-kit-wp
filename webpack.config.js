@@ -92,7 +92,7 @@ const webpackConfig = ( mode ) => {
 				// New Modules (Post-JSR).
 				'googlesitekit-api': './assets/js/googlesitekit-api.js',
 				'googlesitekit-data': './assets/js/googlesitekit-data.js',
-				'googlesitekit-user': './assets/js/googlesitekit-user.js',
+				'googlesitekit-datastore-user': './assets/js/googlesitekit-user.js',
 				'googlesitekit-datastore-site': './assets/js/googlesitekit-datastore-site.js',
 				'googlesitekit-modules': './assets/js/googlesitekit-modules.js', // TODO: Add external following 1162.
 				// Old Modules

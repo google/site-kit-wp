@@ -446,9 +446,9 @@ final class Assets {
 				)
 			),
 			new Script(
-				'googlesitekit-user',
+				'googlesitekit-datastore-site',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-user.js',
+					'src'          => $base_url . 'js/googlesitekit-datastore-site.js',
 					'dependencies' => array(
 						'googlesitekit-data',
 						'googlesitekit-api',

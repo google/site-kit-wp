@@ -32,7 +32,6 @@ import {
 	unsubscribeFromAll,
 } from 'tests/js/utils';
 import { STORE_NAME } from './constants';
-import './index';
 
 describe( 'core/user authentication', () => {
 	const responseAuthenticated = { authenticated: true, requiredScopes: [], grantedScopes: [] };
@@ -69,7 +68,7 @@ describe( 'core/user authentication', () => {
 				} ).not.toThrow();
 			} );
 		} );
-		describe( 'receiveConnection', () => {
+		describe( 'receiveAuthentication', () => {
 			it( 'requires the authentication param', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).receiveAuthentication();
@@ -151,7 +150,7 @@ describe( 'core/user authentication', () => {
 		} );
 
 		describe( 'isAuthenticated', () => {
-			it( 'uses a resolver get all authentication info', async () => {
+			it( 'uses a resolver to to load the authenticated value if not yet set.', async () => {
 				fetch
 					.doMockOnceIf( apiEndpoint )
 					.mockResponseOnce(
@@ -202,7 +201,7 @@ describe( 'core/user authentication', () => {
 				expect( isAuthenticated ).toEqual( undefined );
 			} );
 
-			it( 'returns undefined if connection info is not available', async () => {
+			it( 'returns undefined if authentication info is not available', async () => {
 				// This triggers a network request, so ignore the error.
 				muteConsole( 'error' );
 				const isAuthenticated = registry.select( STORE_NAME ).isAuthenticated();
@@ -263,7 +262,7 @@ describe( 'core/user authentication', () => {
 				expect( grantedScopes ).toEqual( undefined );
 			} );
 
-			it( 'returns undefined if connection info is not available', async () => {
+			it( 'returns undefined if authentication info is not available', async () => {
 				// This triggers a network request, so ignore the error.
 				muteConsole( 'error' );
 				const grantedScopes = registry.select( STORE_NAME ).getGrantedScopes();
@@ -323,7 +322,7 @@ describe( 'core/user authentication', () => {
 				expect( requiredScopes ).toEqual( undefined );
 			} );
 
-			it( 'returns undefined if connection info is not available', async () => {
+			it( 'returns undefined if authentication info is not available', async () => {
 				// This triggers a network request, so ignore the error.
 				muteConsole( 'error' );
 				const requiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
