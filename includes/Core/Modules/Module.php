@@ -719,13 +719,11 @@ abstract class Module {
 
 		if ( $e instanceof Google_Service_Exception ) {
 			$errors = $e->getErrors();
-			if ( isset( $errors[0] ) ) {
-				if ( isset( $errors[0]['message'] ) ) {
-					$message = $errors[0]['message'];
-				}
-				if ( isset( $errors[0]['reason'] ) ) {
-					$reason = $errors[0]['reason'];
-				}
+			if ( isset( $errors[0]['message'] ) ) {
+				$message = $errors[0]['message'];
+			}
+			if ( isset( $errors[0]['reason'] ) ) {
+				$reason = $errors[0]['reason'];
 			}
 		}
 
