@@ -33,21 +33,21 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import SvgIcon from '../../util/svg-icon';
-import { getExistingTag } from '../../util/tag';
-import { toggleConfirmModuleSettings, getModulesData } from '../../util';
+import SvgIcon from '../../../util/svg-icon';
+import { getExistingTag } from '../../../util/tag';
+import { toggleConfirmModuleSettings, getModulesData } from '../../../util';
 import {
 	getContainers,
 	isValidAccountID,
 	isValidContainerID,
-} from './util';
-import { Select, Option } from '../../material-components';
-import Button from '../../components/button';
-import DisplaySetting from '../../components/display-setting';
-import Link from '../../components/link';
-import Switch from '../../components/switch';
-import data, { TYPE_MODULES } from '../../components/data';
-import ProgressBar from '../../components/progress-bar';
+} from '../util';
+import { Select, Option } from '../../../material-components';
+import Button from '../../../components/button';
+import DisplaySetting from '../../../components/display-setting';
+import Link from '../../../components/link';
+import Switch from '../../../components/switch';
+import data, { TYPE_MODULES } from '../../../components/data';
+import ProgressBar from '../../../components/progress-bar';
 
 const ACCOUNT_CREATE = 'account_create';
 const CONTAINER_CREATE = 'container_create';

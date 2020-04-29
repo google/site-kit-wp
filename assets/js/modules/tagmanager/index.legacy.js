@@ -24,7 +24,7 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import TagmanagerSetup from '../../modules/tagmanager/setup';
+import TagmanagerSetup from './setup/setup.legacy';
 import { fillFilterWithComponent, getModulesData } from '../../util';
 
 const slug = 'tagmanager';
