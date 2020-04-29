@@ -156,7 +156,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object|undefined} User authentication info.
+	 * @return {(Object|undefined)} User authentication info.
 	 */
 	getAuthentication( state ) {
 		const { authentication } = state;
@@ -171,12 +171,11 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|undefined} Site connection status.
+	 * @return {(boolean|undefined)} Site connection status.
 	 */
 	isAuthenticated: createRegistrySelector( ( select ) => () => {
-		const authentication = select( STORE_NAME ).getAuthentication();
-
-		return typeof authentication !== 'undefined' ? authentication.authenticated : authentication;
+		const { authenticated } = select( STORE_NAME ).getAuthentication() || {};
+		return authenticated;
 	} ),
 
 	/**
@@ -188,12 +187,11 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Array|undefined} Array of granted scopes
+	 * @return {(Array|undefined)} Array of granted scopes
 	 */
 	getGrantedScopes: createRegistrySelector( ( select ) => () => {
-		const authentication = select( STORE_NAME ).getAuthentication();
-
-		return typeof authentication !== 'undefined' ? authentication.grantedScopes : authentication;
+		const { grantedScopes } = select( STORE_NAME ).getAuthentication() || {};
+		return grantedScopes;
 	} ),
 
 	/**
@@ -205,12 +203,11 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Array|undefined} Array of granted scopes
+	 * @return {(Array|undefined)} Array of granted scopes
 	 */
 	getRequiredScopes: createRegistrySelector( ( select ) => () => {
-		const authentication = select( STORE_NAME ).getAuthentication();
-
-		return typeof authentication !== 'undefined' ? authentication.requiredScopes : authentication;
+		const { requiredScopes } = select( STORE_NAME ).getAuthentication() || {};
+		return requiredScopes;
 	} ),
 };
 
