@@ -34,12 +34,12 @@ import { parseAccountID } from '../util/parsing';
 import { getCreateAccountURL } from '../util/url';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as siteStoreName } from '../../../googlesitekit/datastore/site/constants';
+import UserProfile from '../common/user-profile';
 const { useSelect } = Data;
 
 export default function SetupAccountCreate() {
 	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
 	const userEmail = 'temporarytest@gmail.com'; // TODO: Replace with core/user store access once available.
-	const userPicture = 'http://1.gravatar.com/avatar/311f5b078f20df54be55cbe1a5a45f1e'; // TODO: Replace with core/user store access once available.
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 
 	const signUpURL = getCreateAccountURL( { siteURL } );
@@ -50,7 +50,7 @@ export default function SetupAccountCreate() {
 		global.open( signUpURL, '_blank' );
 	} );
 
-	if ( ! siteURL || 'undefined' === typeof userEmail || 'undefined' === typeof userPicture || 'undefined' === typeof existingTag ) {
+	if ( ! siteURL || 'undefined' === typeof userEmail || 'undefined' === typeof existingTag ) {
 		return null;
 	}
 
@@ -64,16 +64,7 @@ export default function SetupAccountCreate() {
 				{ __( 'Site Kit will place AdSense code on every page across your site. This means Google will automatically place ads for you in all the best places.', 'google-site-kit' ) }
 			</p>
 
-			<p className="googlesitekit-setup-module__user">
-				<img
-					className="googlesitekit-setup-module__user-image"
-					src={ userPicture }
-					alt={ __( 'User Avatar', 'google-site-kit' ) }
-				/>
-				<span className="googlesitekit-setup-module__user-email">
-					{ userEmail }
-				</span>
-			</p>
+			<UserProfile />
 
 			<div className="googlesitekit-setup-module__action">
 				<Button

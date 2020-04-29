@@ -30,12 +30,11 @@ import Button from '../../../components/button';
 import { STORE_NAME } from '../datastore/constants';
 import { parseAccountID } from '../util/parsing';
 import { ACCOUNT_STATUS_APPROVED } from '../util/status';
+import UserProfile from '../common/user-profile';
 import UseSnippetSwitch from '../common/use-snippet-switch';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupAccountApproved() {
-	const userEmail = 'temporarytest@gmail.com'; // TODO: Replace with core/user store access once available.
-	const userPicture = 'http://1.gravatar.com/avatar/311f5b078f20df54be55cbe1a5a45f1e'; // TODO: Replace with core/user store access once available.
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
 	const originalAccountStatus = useSelect( ( select ) => select( STORE_NAME ).getOriginalAccountStatus() );
@@ -60,7 +59,7 @@ export default function SetupAccountApproved() {
 		submitChanges();
 	} );
 
-	if ( 'undefined' === typeof userEmail || 'undefined' === typeof userPicture || 'undefined' === typeof existingTag || 'undefined' === typeof originalAccountStatus ) {
+	if ( 'undefined' === typeof existingTag || 'undefined' === typeof originalAccountStatus ) {
 		return null;
 	}
 
@@ -115,16 +114,7 @@ export default function SetupAccountApproved() {
 			</p>
 
 			{ showProfile &&
-				<p className="googlesitekit-setup-module__user">
-					<img
-						className="googlesitekit-setup-module__user-image"
-						src={ userPicture }
-						alt={ __( 'User Avatar', 'google-site-kit' ) }
-					/>
-					<span className="googlesitekit-setup-module__user-email">
-						{ userEmail }
-					</span>
-				</p>
+				<UserProfile />
 			}
 
 			<UseSnippetSwitch
