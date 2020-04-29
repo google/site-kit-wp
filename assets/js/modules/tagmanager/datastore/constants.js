@@ -17,3 +17,8 @@
  */
 
 export const STORE_NAME = 'modules/tagmanager';
+
+// A special Account ID value used for the "Set up a new account" option.
+export const ACCOUNT_CREATE = 'account_create';
+// A special Container ID value used for the "Set up a new container" option.
+export const CONTAINER_CREATE = 'container_create';
