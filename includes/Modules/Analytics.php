@@ -134,16 +134,6 @@ final class Analytics extends Module
 				$this->handle_provisioning_callback();
 			}
 		);
-
-		// Add the timezone data for users provisioning new accounts.
-		add_filter(
-			'googlesitekit_admin_data',
-			function( $admin_data ) {
-				$selected_zone          = get_option( 'timezone_string' );
-				$admin_data['timezone'] = $selected_zone;
-				return $admin_data;
-			}
-		);
 	}
 
 	/**

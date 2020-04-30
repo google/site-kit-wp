@@ -20,8 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useState, Fragment, useCallback } from '@wordpress/element';
-import { getQueryArg } from '@wordpress/url';
+import { useState, Fragment, useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,70 +32,50 @@ import TimezoneSelect from './timzezone-select';
 import AccountField from './account-field';
 import PropertyField from './property-field';
 import ProfileField from './profile-field';
-
-import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
 
-const { useSelect, useDispatch } = Data;
+import Data from 'googlesitekit-data';
+const { useDispatch, useSelect, select: directSelect } = Data;
 
 const AccountCreate = () => {
-	const isDoingCreateAccount = useSelect(
-		( select ) => {
-			return select( STORE_NAME ).isDoingCreateAccount();
-		},
-		[]
-	);
+	const { siteName, siteURL } = global.googlesitekit.admin;
+	let tz = directSelect( 'core/site' ).getTimezone();
+	const url = new URL( siteURL );
+	const { createAccount } = useDispatch( STORE_NAME );
 	const accountTicketTermsOfServiceURL = useSelect(
 		( select ) => {
 			return select( STORE_NAME ).getAccountTicketTermsOfServiceURL();
 		},
 		[]
 	);
-
-	const { createAccount } = useDispatch( STORE_NAME );
-
-	// Redirect if the accountTicketTermsOfServiceURL is set.
-	if ( accountTicketTermsOfServiceURL ) {
-		location = accountTicketTermsOfServiceURL;
-	}
-
-	const { siteName, siteURL, timezone: tz } = global.googlesitekit.admin;
-	const errorCode = getQueryArg( location.href, 'error_code' );
-
-	// Handle expected provisioning flow error codes.
-	let errorMessage = false;
-	switch ( errorCode ) {
-		case 'user_cancel':
-			errorMessage = __( 'The Terms of Service were not accepted.', 'google-site-kit' );
-			break;
-
-		case 'max_accounts_reached':
-			errorMessage = __( 'The Google Analytics account limit has been reached.', 'google-site-kit' );
-			break;
-
-		case 'backend_error':
-			errorMessage = __( 'Unknown service error.', 'google-site-kit' );
-			break;
-	}
-	const [ error, setError ] = useState( errorMessage );
-
+	const [ isNavigating, setIsNavigating ] = useState( false );
 	const handleSubmit = useCallback( ( accountName, propertyName, profileName, timezone ) => {
 		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
-		createAccount( {
-			accountName,
-			propertyName,
-			profileName,
-			timezone,
-		} ).then( ( e ) => {
-			const { error: err } = e;
-			if ( err ) {
-				setError( err.message ? err.message : __( 'Unknown error.', 'google-site-kit' ) );
+		setIsNavigating( true );
+		async function send() {
+			await createAccount( {
+				accountName,
+				propertyName,
+				profileName,
+				timezone,
+			} );
+
+			// Redirect if the accountTicketTermsOfServiceURL is set.
+			if ( accountTicketTermsOfServiceURL ) {
+				location = accountTicketTermsOfServiceURL;
 			}
-		} );
+			setIsNavigating( false );
+		}
+		send();
 	} );
 
+	// Fall back to the browser timezone if the WordPress timezone was not set.
+	if ( ! tz || '' === tz || 'UTC' === tz ) {
+		tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	}
+
 	const [ accountName, setAccountName ] = useState( siteName );
-	const [ propertyName, setPropertyName ] = useState( siteURL );
+	const [ propertyName, setPropertyName ] = useState( url.hostname );
 	const [ profileName, setProfileName ] = useState( __( 'All website traffic', 'google-site-kit' ) );
 	const [ timezone, setTimezone ] = useState( tz );
 	const [ validationIssues, setValidationIssues ] = useState( {
@@ -106,69 +85,71 @@ const AccountCreate = () => {
 		timezone: timezone === '',
 	} );
 
+	const validationHasIssues = Object.values( validationIssues ).some( ( check ) => check );
+
+	useEffect( () => {
+		setValidationIssues( {
+			accountName: accountName === '',
+			propertyName: propertyName === '',
+			profileName: profileName === '',
+			timezone: timezone === '' || timezone === 'UTC', //An unset timezone in WordPress is reported as "UTC".
+		} );
+	}, [ accountName, propertyName, profileName, timezone ] );
+
+	// Connect to the data store.
+	const isDoingCreateAccount = useSelect(
+		( select ) => {
+			return select( STORE_NAME ).isDoingCreateAccount();
+		},
+		[]
+	);
+
+	if ( isDoingCreateAccount || isNavigating ) {
+		return <ProgressBar />;
+	}
+
 	// Disable the submit button if there are validation errors, and while submission is in progress.
-	const buttonDisabled = validationIssues.accountName || validationIssues.propertyName || validationIssues.profileName || validationIssues.timezone || isDoingCreateAccount;
+	const buttonDisabled = validationHasIssues;
 
 	return (
 		<Fragment>
 			<div className="googlesitekit-setup-module">
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell--span-12">
-						<h2>
-							{ __( 'Create new Analytics account', 'google-site-kit' ) }
-						</h2>
-						{
-							error &&
-							<div className="error">
-								<p>
-									{ error }
-								</p>
-							</div>
-						}
 						<div className="mdc-layout-grid">
-							{
-								isDoingCreateAccount
-									? <ProgressBar />
-									: <div>
-										<p>
-											{ __( 'Confirm your account details:', 'google-site-kit' ) }
-										</p>
-										<div className="googlesitekit-setup-module__inputs">
-											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-												<AccountField
-													validationIssues={ validationIssues }
-													setValidationIssues={ setValidationIssues }
-													accountName={ accountName }
-													setAccountName={ setAccountName }
-												/>
-											</div>
-											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-												<PropertyField
-													validationIssues={ validationIssues }
-													setValidationIssues={ setValidationIssues }
-													propertyName={ propertyName }
-													setPropertyName={ setPropertyName }
-												/>
-											</div>
-											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-												<ProfileField
-													validationIssues={ validationIssues }
-													setValidationIssues={ setValidationIssues }
-													profileName={ profileName }
-													setProfileName={ setProfileName }
-												/>
-											</div>
-											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-												<TimezoneSelect
-													validationIssues={ validationIssues }
-													setValidationIssues={ setValidationIssues }
-													timezone={ timezone }
-													setTimezone={ setTimezone }
-												/>
-											</div>
-										</div>
-									</div>
-							}
+							<h3 className="googlesitekit-heading-4">
+								{ __( 'Create new Analytics account', 'google-site-kit' ) }
+							</h3>
+							<div className="googlesitekit-setup-module__inputs">
+								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+									<AccountField
+										hasError={ validationIssues.accountName }
+										accountName={ accountName }
+										setAccountName={ setAccountName }
+									/>
+								</div>
+								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+									<PropertyField
+										hasError={ validationIssues.propertyName }
+										propertyName={ propertyName }
+										setPropertyName={ setPropertyName }
+									/>
+								</div>
+								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+									<ProfileField
+										hasError={ validationIssues.profileName }
+										profileName={ profileName }
+										setProfileName={ setProfileName }
+									/>
+								</div>
+								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+									<TimezoneSelect
+										hasError={ validationIssues.timezone }
+										timezone={ timezone }
+										setTimezone={ setTimezone.validationIssues }
+									/>
+								</div>
+							</div>
 						</div>
 						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 							<Button

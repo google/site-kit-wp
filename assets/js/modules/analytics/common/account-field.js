@@ -26,13 +26,12 @@ import { __ } from '@wordpress/i18n';
  */
 import CreateAccountField from './create-account-field';
 
-const AccountField = ( { validationIssues, setValidationIssues, accountName, setAccountName } ) => {
+const AccountField = ( { hasError, accountName, setAccountName } ) => {
 	return (
 		<CreateAccountField
-			validationIssues={ validationIssues }
-			setValidationIssues={ setValidationIssues }
-			objectValue={ accountName }
-			objectSetter={ setAccountName }
+			hasError={ hasError }
+			value={ accountName }
+			setValue={ setAccountName }
 			label={ __( 'Account', 'google-site-kit' ) }
 			name="account"
 		/>
