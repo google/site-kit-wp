@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
@@ -59,7 +64,7 @@ import {
 } from '../common';
 const { useSelect, useDispatch } = Data;
 
-export default function SetupMain() {
+export default function SetupMain( { finishSetup } ) {
 	// Get settings.
 	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
 	const previousAccountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
@@ -186,8 +191,15 @@ export default function SetupMain() {
 
 	const isAdBlockerActive = useSelect( ( select ) => select( STORE_NAME ).isAdBlockerActive() );
 
+	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
+	const [ isNavigating, setIsNavigating ] = useState( false );
+	const finishSetupAndNavigate = ( ...args ) => {
+		finishSetup( ...args );
+		setIsNavigating( true );
+	};
+
 	let viewComponent;
-	if ( 'undefined' === typeof accountStatus || ( isDoingSubmitChanges && ! isSubmittingInBackground ) ) {
+	if ( 'undefined' === typeof accountStatus || ( isDoingSubmitChanges && ! isSubmittingInBackground ) || isNavigating ) {
 		// Show loading indicator if account status not determined yet or if
 		// a submission is in progress that is not happening in background.
 		viewComponent = <ProgressBar />;
@@ -230,7 +242,7 @@ export default function SetupMain() {
 				viewComponent = <SetupSiteAdd />;
 				break;
 			case SITE_STATUS_ADDED:
-				viewComponent = <SetupSiteAdded />;
+				viewComponent = <SetupSiteAdded finishSetup={ finishSetupAndNavigate } />;
 				break;
 			default:
 				viewComponent = <ErrorText message={ sprintf(
@@ -243,7 +255,7 @@ export default function SetupMain() {
 		// This should never be reached because the setup is not accessible
 		// under these circumstances due to related PHP+/JS logic. But at
 		// least in theory it should show the last step, just in case.
-		viewComponent = <SetupSiteAdded />;
+		viewComponent = <SetupSiteAdded finishSetup={ finishSetupAndNavigate } />;
 	}
 
 	return (
@@ -270,3 +282,11 @@ export default function SetupMain() {
 		</div>
 	);
 }
+
+SetupMain.propTypes = {
+	finishSetup: PropTypes.func,
+};
+
+SetupMain.defaultProps = {
+	finishSetup: () => {},
+};

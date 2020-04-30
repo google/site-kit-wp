@@ -57,7 +57,7 @@ export default function SetupAccountApproved() {
 			return;
 		}
 		submitChanges();
-	} );
+	}, [ isDoingSubmitChanges, canSubmitChanges ] );
 
 	if ( 'undefined' === typeof existingTag || 'undefined' === typeof originalAccountStatus ) {
 		return null;

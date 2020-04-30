@@ -23,6 +23,7 @@ import {
 	UseSnippetSwitch,
 	AdBlockerWarning,
 	UserProfile,
+	SiteSteps,
 } from '../assets/js/modules/adsense/common';
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
@@ -131,6 +132,19 @@ storiesOf( 'AdSense Module', module )
 					<div className="googlesitekit-setup-module__inputs">
 						<UserProfile />
 					</div>
+				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Site Steps', () => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).setAccountID( fixtures.accounts[ 0 ].id );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<SetupWrap>
+					<SiteSteps />
 				</SetupWrap>
 			</WithTestRegistry>
 		);
