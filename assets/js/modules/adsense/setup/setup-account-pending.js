@@ -30,6 +30,7 @@ import Link from '../../../components/link';
 import { getAccountSiteURL } from '../util/url';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as siteStoreName } from '../../../googlesitekit/datastore/site/constants';
+import { ErrorNotice } from '../common';
 const { useSelect } = Data;
 
 export default function SetupAccountPending() {
@@ -37,17 +38,19 @@ export default function SetupAccountPending() {
 	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
 	const userEmail = 'temporarytest@gmail.com'; // TODO: Replace with core/user store access once available.
 
-	const accountSiteURL = getAccountSiteURL( { accountID, siteURL, userEmail } );
-
 	if ( ! siteURL ) {
 		return null;
 	}
+
+	const accountSiteURL = getAccountSiteURL( { accountID, siteURL, userEmail } );
 
 	return (
 		<Fragment>
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
 				{ __( 'Let’s get your site ready for ads', 'google-site-kit' ) }
 			</h3>
+
+			<ErrorNotice />
 
 			<p>
 				{ __( 'Site Kit has placed AdSense code on every page across your site.', 'google-site-kit' ) }

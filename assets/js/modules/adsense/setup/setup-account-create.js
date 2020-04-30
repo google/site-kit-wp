@@ -34,7 +34,10 @@ import { parseAccountID } from '../util/parsing';
 import { getCreateAccountURL } from '../util/url';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as siteStoreName } from '../../../googlesitekit/datastore/site/constants';
-import UserProfile from '../common/user-profile';
+import {
+	ErrorNotice,
+	UserProfile,
+} from '../common';
 const { useSelect } = Data;
 
 export default function SetupAccountCreate() {
@@ -59,6 +62,8 @@ export default function SetupAccountCreate() {
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
 				{ __( 'Create your AdSense account', 'google-site-kit' ) }
 			</h3>
+
+			<ErrorNotice />
 
 			<p>
 				{ __( 'Site Kit will place AdSense code on every page across your site. This means Google will automatically place ads for you in all the best places.', 'google-site-kit' ) }

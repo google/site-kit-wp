@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Link from '../../../components/link';
 import { sanitizeHTML } from '../../../util/sanitize';
+import { ErrorNotice } from '../common';
 
 export default function SetupAccountNoClient() {
 	return (
@@ -34,6 +35,8 @@ export default function SetupAccountNoClient() {
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
 				{ __( 'Looks like you have an AdMob account', 'google-site-kit' ) }
 			</h3>
+
+			<ErrorNotice />
 
 			<p>
 				{ __( 'To start using AdSense, you need to update your account so that you can connect your site to AdSense.', 'google-site-kit' ) }

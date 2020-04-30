@@ -30,8 +30,11 @@ import Button from '../../../components/button';
 import { STORE_NAME } from '../datastore/constants';
 import { parseAccountID } from '../util/parsing';
 import { ACCOUNT_STATUS_APPROVED } from '../util/status';
-import UserProfile from '../common/user-profile';
-import UseSnippetSwitch from '../common/use-snippet-switch';
+import {
+	ErrorNotice,
+	UserProfile,
+	UseSnippetSwitch,
+} from '../common';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupAccountApproved() {
@@ -104,6 +107,8 @@ export default function SetupAccountApproved() {
 					__( 'Your account is ready to use AdSense', 'google-site-kit' )
 				}
 			</h3>
+
+			<ErrorNotice />
 
 			<p>
 				{ isApprovedFromVeryBeginning &&

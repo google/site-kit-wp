@@ -30,6 +30,7 @@ import Button from '../../../components/button';
 import { getAccountSiteURL } from '../util/url';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as siteStoreName } from '../../../googlesitekit/datastore/site/constants';
+import { ErrorNotice } from '../common';
 const { useSelect } = Data;
 
 export default function SetupSiteAdd() {
@@ -53,6 +54,8 @@ export default function SetupSiteAdd() {
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
 				{ __( 'Add site to your AdSense account', 'google-site-kit' ) }
 			</h3>
+
+			<ErrorNotice />
 
 			<p>
 				{ __( 'We’ve detected that you haven’t added this site to your AdSense account yet.', 'google-site-kit' ) }

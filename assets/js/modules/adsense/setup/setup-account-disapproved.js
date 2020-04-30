@@ -29,6 +29,7 @@ import Data from 'googlesitekit-data';
 import Link from '../../../components/link';
 import { getAccountURL } from '../util/url';
 import { STORE_NAME } from '../datastore/constants';
+import { ErrorNotice } from '../common';
 const { useSelect } = Data;
 
 export default function SetupAccountDisapproved() {
@@ -42,6 +43,8 @@ export default function SetupAccountDisapproved() {
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
 				{ __( 'Your site isn’t ready to show ads yet', 'google-site-kit' ) }
 			</h3>
+
+			<ErrorNotice />
 
 			<p>
 				{ __( 'You need to fix some things before we can connect Site Kit to your AdSense account.', 'google-site-kit' ) }

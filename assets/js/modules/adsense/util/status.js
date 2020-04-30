@@ -238,7 +238,7 @@ export const determineClientID = ( { clients, previousClientID } ) => {
  * @param {?Object} error Error object or undefined.
  * @return {?string} Status based on error, or undefined if no relevant error.
  */
-const errorToStatus = ( error ) => {
+export const errorToStatus = ( error ) => {
 	if ( ! error || ! error.data ) {
 		return undefined;
 	}

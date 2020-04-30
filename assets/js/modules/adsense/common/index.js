@@ -18,6 +18,7 @@
 
 export { default as AccountSelect } from './account-select';
 export { default as AdBlockerWarning } from './ad-blocker-warning';
+export { default as ErrorNotice } from './error-notice';
 export { default as SiteSteps } from './site-steps';
 export { default as UserProfile } from './user-profile';
 export { default as UseSnippetSwitch } from './use-snippet-switch';
