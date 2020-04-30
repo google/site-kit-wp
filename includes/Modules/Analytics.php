@@ -531,7 +531,7 @@ final class Analytics extends Module
 
 		// Retrieve the internal web property id.
 		try {
-			$web_property = $this->get_service( 'analytics' )->management_webproperties->get( $account_id, $property_id );
+			$web_property = $this->get_service( 'analytics' )->management_webproperties->get( $account_id, $web_property_id );
 		} catch ( Exception $e ) {
 			wp_safe_redirect(
 				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'property_not_found' ) )
