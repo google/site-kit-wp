@@ -63,7 +63,7 @@ export default function SetupForm( { finishSetup } ) {
 			<ExistingTagNotice />
 
 			{ ( !! accounts.length && ! hasExistingTag ) && (
-				<p style={ { marginBottom: 0 } }>
+				<p className="googlesitekit-mb-0">
 					{ __( 'Please select the account information below. You can change this view later in your settings.', 'google-site-kit' ) }
 				</p>
 			) }
