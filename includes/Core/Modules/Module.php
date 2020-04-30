@@ -708,30 +708,30 @@ abstract class Module {
 	 */
 	protected function exception_to_error( Exception $e, $datapoint ) {
 		$code = $e->getCode();
+
+		$message = $e->getMessage();
+		$status  = is_numeric( $code ) && $code ? (int) $code : 500;
+		$reason  = '';
+
 		if ( empty( $code ) ) {
 			$code = 'unknown';
 		}
 
-		$reason = '';
-
 		if ( $e instanceof Google_Service_Exception ) {
-			$message = $e->getErrors();
-			if ( isset( $message[0] ) && isset( $message[0]['message'] ) ) {
-				$message = $message[0]['message'];
-				$errors  = json_decode( $e->getMessage() );
-				if ( isset( $errors->error->errors[0]->reason ) ) {
-					$reason = $errors->error->errors[0]->reason;
-				}
+			$errors = $e->getErrors();
+			if ( isset( $errors[0]['message'] ) ) {
+				$message = $errors[0]['message'];
 			}
-		} else {
-			$message = $e->getMessage();
+			if ( isset( $errors[0]['reason'] ) ) {
+				$reason = $errors[0]['reason'];
+			}
 		}
 
 		return new WP_Error(
 			$code,
 			$message,
 			array(
-				'status' => 500,
+				'status' => $status,
 				'reason' => $reason,
 			)
 		);
