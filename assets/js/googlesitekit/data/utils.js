@@ -217,7 +217,7 @@ export const collectName = ( ...args ) => {
  *
  * @since n.e.x.t
  *
- * @param {...Object} args A list of objects, each a store containing one or more of the following keys: INITIAL_STATE, actions, controls, reducer, resolvers, selectors
+ * @param {...Object} stores A list of objects, each a store containing one or more of the following keys: INITIAL_STATE, actions, controls, reducer, resolvers, selectors
  * @return {Object} The combined store.
  */
 export const combineStores = ( ...stores ) => {
@@ -225,7 +225,6 @@ export const combineStores = ( ...stores ) => {
 		return { ...state };
 	};
 
-	// Combine INITIAL_STATES
 	const combinedInitialState = collectState(
 		...stores.map( ( store ) => ( store.INITIAL_STATE || {} ) )
 	);
@@ -238,7 +237,7 @@ export const combineStores = ( ...stores ) => {
 		actions: collectActions(
 			...stores.map( ( store ) => ( store.actions || {} ) )
 		),
-		reducers: collectReducers(
+		reducer: collectReducers(
 			combinedInitialState,
 			...stores.map( ( store ) => ( store.reducer || defaultReducer ) )
 		),
