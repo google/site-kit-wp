@@ -28,8 +28,8 @@ import classnames from 'classnames';
 const CreateAccountField = ( {
 	validationIssues,
 	setValidationIssues,
-	objectValue,
-	objectSetter,
+	value,
+	setValue,
 	name,
 	label,
 } ) => {
@@ -46,14 +46,14 @@ const CreateAccountField = ( {
 					...validationIssues,
 					[ name ]: '' === e.target.value,
 				} );
-				objectSetter( e.target.value );
+				setValue( e.target.value );
 			} }
 			outlined
 			required
 		>
 			<Input
 				name={ name }
-				value={ objectValue }
+				value={ value }
 			/>
 		</TextField>
 	);

@@ -31,8 +31,8 @@ const ProfileField = ( { validationIssues, setValidationIssues, profileName, set
 		<CreateAccountField
 			validationIssues={ validationIssues }
 			setValidationIssues={ setValidationIssues }
-			objectValue={ profileName }
-			objectSetter={ setProfileName }
+			value={ profileName }
+			setValue={ setProfileName }
 			label={ __( 'Profile', 'google-site-kit' ) }
 			name="profile"
 		/>
