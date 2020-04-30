@@ -45,9 +45,10 @@ export default function SettingsView() {
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 
-			<ErrorNotice />
-			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
+			{ /* Prevent showing ExistingTagError and general ErrorNotice at the same time. */ }
+			{ ( ! hasExistingTag || hasExistingTagPermission ) && <ErrorNotice /> }
 			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
+			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
