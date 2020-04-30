@@ -24,11 +24,7 @@ import {
 	addInitializeReducer,
 	collect,
 	collectActions,
-	collectControls,
 	collectReducers,
-	collectResolvers,
-	collectState,
-	collectSelectors,
 	collectName,
 	combineStores,
 	initializeAction,
@@ -130,226 +126,525 @@ describe( 'data utils', () => {
 	} );
 
 	describe( 'combineStores()', () => {
-		const combineStoresFakeActionOne = {
-			fakeActionOne() {
-				return { type: 'ACTION_ONE', payload: {} };
-			},
-		};
-
-		const combineStoresFakeActionTwo = {
-			fakeActionTwo() {
-				return { type: 'ACTION_TWO', payload: {} };
-			},
-		};
-
-		const combineStoresFakeReducerOne = ( state, action ) => {
-			switch ( action.type ) {
-				case 'ACTION_ONE':
-					return { ...state, one: true };
-				default: {
-					return { ...state };
-				}
-			}
-		};
-
-		const combineStoresFakeReducerTwo = ( state, action ) => {
-			switch ( action.type ) {
-				case 'ACTION_TWO':
-					return { ...state, two: 2 };
-				default: {
-					return { ...state };
-				}
-			}
-		};
-
-		const combineStoresFakeReducerFour = ( state, action ) => {
-			switch ( action.type ) {
-				case 'ACTION_FOUR':
-					return { ...state, four: 4 };
-				default: {
-					return { ...state };
-				}
-			}
-		};
-
-		const combineStoresFakeControlsOne = {
-			FAKE_CONTROL_ONE: () => {
-				return null;
-			},
-		};
-
-		const combineStoresFakeControlsTwo = {
-			FAKE_CONTROL_TWO: () => {
-				return null;
-			},
-		};
-
-		const combineStoresFakeResolversOne = {
-			*getFakeActionOne() {
-				yield combineStoresFakeActionOne.fakeActionOne();
-			},
-		};
-
-		const combineStoresFakeResolversTwo = {
-			*getFakeActionTwo() {
-				yield combineStoresFakeActionTwo.fakeActionTwo();
-			},
-		};
-
-		const combineStoresFakeSelectorsOne = {
-			getOne: ( state ) => {
-				return state.one;
-			},
-		};
-		const combineStoresFakeSelectorsTwo = {
-			getTwo: ( state ) => {
-				return state.two;
-			},
-		};
-
-		const storeOne = {
-			INITIAL_STATE: { one: 1 },
-			actions: combineStoresFakeActionOne,
-			controls: combineStoresFakeControlsOne,
-			reducer: combineStoresFakeReducerOne,
-			resolvers: combineStoresFakeResolversOne,
-			selectors: combineStoresFakeSelectorsOne,
-		};
-
-		const storeTwo = {
-			INITIAL_STATE: { two: 2 },
-			actions: combineStoresFakeActionTwo,
-			controls: combineStoresFakeControlsTwo,
-			reducer: combineStoresFakeReducerTwo,
-			resolvers: combineStoresFakeResolversTwo,
-			selectors: combineStoresFakeSelectorsTwo,
-		};
-
-		const storeThree = {
-			INITIAL_STATE: { three: 3 },
-		};
-
-		const storeFour = {
-			reducer: combineStoresFakeReducerFour,
-		};
-
-		const storeFive = {
-			actions: {
-				fakeActionOne() {
-					return { type: 'ACTION_ONE', payload: {} };
-				},
-			},
-		};
-
-		const storeSix = {
-			controls: {
-				FAKE_CONTROL_ONE: () => {
-					return null;
-				},
-			},
-		};
-
-		const storeSeven = {
-			resolvers: {
-				*getFakeActionOne() {
-					yield combineStoresFakeActionOne.fakeActionOne();
-				},
-			},
-		};
-
-		const storeEight = {
-			selectors: {
-				getOne: ( state ) => {
-					return state.one;
-				},
-			},
-		};
-
 		it( 'should combine multiple stores into one', () => {
-			const expectedCombinedStore = {
-				INITIAL_STATE: collectState( storeOne.INITIAL_STATE, storeTwo.INITIAL_STATE ),
-				actions: collectActions( storeOne.actions, storeTwo.actions ),
-				controls: collectControls( storeOne.controls, storeTwo.controls ),
-				reducer: collectReducers( storeOne.reducer, storeTwo.reducer ),
-				resolvers: collectResolvers( storeOne.resolvers, storeTwo.resolvers ),
-				selectors: collectSelectors( storeOne.selectors, storeTwo.selectors ),
-			};
-			expect( JSON.stringify( combineStores( storeOne, storeTwo ) ) ).toBe( JSON.stringify( expectedCombinedStore ) );
+			const actionOne = () => ( { type: 'ACTION_ONE', payload: {} } );
+			const actionTwo = () => ( { type: 'ACTION_TWO', payload: {} } );
+			const CONTROL_ONE = () => null;
+			const CONTROL_TWO = () => null;
+			const getOne = ( state ) => state.one;
+			const getTwo = ( state ) => state.two;
+			function* getActionOne() {
+				yield actionOne();
+			}
+			function* getActionTwo() {
+				yield actionTwo();
+			}
+
+			const combinedStore = combineStores(
+				{
+					INITIAL_STATE: { one: 1 },
+					actions: {
+						actionOne,
+					},
+					controls: {
+						CONTROL_ONE,
+					},
+					reducer: ( state, action ) => {
+						switch ( action.type ) {
+							case 'ACTION_ONE':
+								return { ...state, one: true };
+							default: {
+								return { ...state };
+							}
+						}
+					},
+					resolvers: {
+						getActionOne,
+					},
+					selectors: {
+						getOne,
+					},
+				},
+				{
+					INITIAL_STATE: { two: 2 },
+					actions: {
+						actionTwo,
+					},
+					controls: {
+						CONTROL_TWO,
+					},
+					reducer: ( state, action ) => {
+						switch ( action.type ) {
+							case 'ACTION_TWO':
+								return { ...state, two: 2 };
+							default: {
+								return { ...state };
+							}
+						}
+					},
+					resolvers: {
+						getActionTwo,
+					},
+					selectors: {
+						getTwo,
+					},
+				},
+			);
+
+			// Initial state should contain both one and two
+			expect( combinedStore.INITIAL_STATE ).toMatchObject( { one: 1, two: 2 } );
+
+			// Actions should contain both actions
+			expect( combinedStore.actions ).toMatchObject( { actionOne, actionTwo } );
+
+			// Controls should contain both actions
+			expect( combinedStore.controls ).toMatchObject( { CONTROL_ONE, CONTROL_TWO } );
+
+			// Reducer should return combined INITIAL_STATE
+			expect( combinedStore.reducer() ).toMatchObject( { one: 1, two: 2 } );
+
+			// Resolvers should contain both resolvers
+			expect( combinedStore.resolvers ).toMatchObject( { getActionOne, getActionTwo } );
+
+			// Selectors should contain both selectors
+			expect( combinedStore.selectors ).toMatchObject( { getOne, getTwo } );
 		} );
 
 		it( 'should modify combined state', () => {
-			const combinedStore = combineStores( storeOne, storeTwo );
-			let state = combinedStore.reducer();
+			const actionOne = () => ( { type: 'ACTION_ONE', payload: {} } );
+			const actionTwo = () => ( { type: 'ACTION_TWO', payload: {} } );
+			const CONTROL_ONE = () => null;
+			const CONTROL_TWO = () => null;
+			const getOne = ( state ) => state.one;
+			const getTwo = ( state ) => state.two;
+			function* getActionOne() {
+				yield actionOne();
+			}
+			function* getActionTwo() {
+				yield actionTwo();
+			}
 
+			const combinedStore = combineStores(
+				{
+					INITIAL_STATE: { one: 1 },
+					actions: {
+						actionOne,
+					},
+					controls: {
+						CONTROL_ONE,
+					},
+					reducer: ( state, action ) => {
+						switch ( action.type ) {
+							case 'ACTION_ONE':
+								return { ...state, one: true };
+							default: {
+								return { ...state };
+							}
+						}
+					},
+					resolvers: {
+						getActionOne,
+					},
+					selectors: {
+						getOne,
+					},
+				},
+				{
+					INITIAL_STATE: { two: 2 },
+					actions: {
+						actionTwo,
+					},
+					controls: {
+						CONTROL_TWO,
+					},
+					reducer: ( state, action ) => {
+						switch ( action.type ) {
+							case 'ACTION_TWO':
+								return { ...state, two: 2 };
+							default: {
+								return { ...state };
+							}
+						}
+					},
+					resolvers: {
+						getActionTwo,
+					},
+					selectors: {
+						getTwo,
+					},
+				},
+			);
+
+			// Should have correct initial state
+			let state = combinedStore.reducer();
 			expect( state ).toEqual( { one: 1, two: 2 } );
 
-			// It should still respond to the original actions.
-			state = combinedStore.reducer( state, combinedStore.actions.fakeActionOne() );
+			// It should respond to the original actions.
+			state = combinedStore.reducer( state, actionOne() );
 			expect( state ).toEqual( { one: true, two: 2 } );
 
-			state = combinedStore.reducer( state, combinedStore.actions.fakeActionTwo() );
+			state = combinedStore.reducer( state, actionTwo() );
 			expect( state ).toEqual( { one: true, two: 2 } );
+
+			// Selector should get value
+			expect( combinedStore.selectors.getOne( state ) ).toBe( true );
 		} );
 
-		it( 'should combine stores missing any of the keys', () => {
-			const combinedStoreMissing = {
-				INITIAL_STATE: collectState( storeOne.INITIAL_STATE, storeTwo.INITIAL_STATE, storeThree.INITIAL_STATE ),
-				actions: collectActions( storeOne.actions, storeTwo.actions ),
-				controls: collectControls( storeOne.controls, storeTwo.controls ),
-				reducer: collectReducers( storeOne.reducer, storeTwo.reducer ),
-				resolvers: collectResolvers( storeOne.resolvers, storeTwo.resolvers ),
-				selectors: collectSelectors( storeOne.selectors, storeTwo.selectors ),
-			};
-			expect( JSON.stringify( combineStores( storeOne, storeTwo, storeThree ) ) ).toBe( JSON.stringify( combinedStoreMissing ) );
-
-			const combinedStoreMissingTwo = {
-				INITIAL_STATE: collectState( storeOne.INITIAL_STATE, storeTwo.INITIAL_STATE ),
-				actions: collectActions( storeOne.actions, storeTwo.actions ),
-				controls: collectControls( storeOne.controls, storeTwo.controls ),
-				reducer: collectReducers( storeOne.reducer, storeTwo.reducer, storeFour.reducer ),
-				resolvers: collectResolvers( storeOne.resolvers, storeTwo.resolvers ),
-				selectors: collectSelectors( storeOne.selectors, storeTwo.selectors ),
-			};
-			expect( JSON.stringify( combineStores( storeOne, storeTwo, storeFour ) ) ).toBe( JSON.stringify( combinedStoreMissingTwo ) );
+		it( 'should not error if no INITIAL_STATE is provided', () => {
+			expect( () => {
+				combineStores(
+					{
+						INITIAL_STATE: undefined,
+						actions: {},
+						controls: {},
+						reducer: {},
+						resolvers: {},
+						selectors: {},
+					}
+				);
+			} ).not.toThrow();
 		} );
 
-		it( 'INITIAL_STATEs, reducers, and actions should all work together even if provided by separate incomplete stores', () => {
+		it( 'should not error if no actions are provided', () => {
+			expect( () => {
+				combineStores(
+					{
+						INITIAL_STATE: {},
+						actions: undefined,
+						controls: {},
+						reducer: {},
+						resolvers: {},
+						selectors: {},
+					}
+				);
+			} ).not.toThrow();
+		} );
+
+		it( 'should not error if no controls are provided', () => {
+			expect( () => {
+				combineStores(
+					{
+						INITIAL_STATE: {},
+						actions: {},
+						controls: undefined,
+						reducer: {},
+						resolvers: {},
+						selectors: {},
+					}
+				);
+			} ).not.toThrow();
+		} );
+
+		it( 'should not error if no reducer is provided', () => {
+			expect( () => {
+				combineStores(
+					{
+						INITIAL_STATE: {},
+						actions: {},
+						controls: {},
+						reducer: undefined,
+						resolvers: {},
+						selectors: {},
+					}
+				);
+			} ).not.toThrow();
+		} );
+
+		it( 'should not error if no resolvers are provided', () => {
+			expect( () => {
+				combineStores(
+					{
+						INITIAL_STATE: {},
+						actions: {},
+						controls: {},
+						reducer: {},
+						resolvers: undefined,
+						selectors: {},
+					}
+				);
+			} ).not.toThrow();
+		} );
+
+		it( 'should not error if no selectors are provided', () => {
+			expect( () => {
+				combineStores(
+					{
+						INITIAL_STATE: {},
+						actions: {},
+						controls: {},
+						reducer: {},
+						resolvers: {},
+						selectors: undefined,
+					}
+				);
+			} ).not.toThrow();
+		} );
+
+		it( 'should not error if no keys are provided', () => {
+			expect( () => {
+				combineStores(
+					{
+						INITIAL_STATE: undefined,
+						actions: undefined,
+						controls: undefined,
+						reducer: undefined,
+						resolvers: undefined,
+						selectors: undefined,
+					}
+				);
+			} ).not.toThrow();
+		} );
+
+		it( 'should combine several stores that each contain values for only one key', () => {
+			// Define actions, controls, resolvers and selectors
+			const actionOne = () => ( { type: 'ACTION_ONE', payload: {} } );
+			const actionTwo = () => ( { type: 'ACTION_TWO', payload: {} } );
+			const CONTROL_ONE = () => null;
+			const CONTROL_TWO = () => null;
+			const getOne = ( state ) => state.one;
+			const getTwo = ( state ) => state.two;
+			function* getActionOne() {
+				yield actionOne();
+			}
+			function* getActionTwo() {
+				yield actionTwo();
+			}
+
+			// Create combined store from several stores which each contain values for only one key
 			const combinedStore = combineStores(
 				{ INITIAL_STATE: { one: 1 } },
-				{ reducer: combineStoresFakeReducerOne },
-				storeTwo,
-				storeFive
+				{ INITIAL_STATE: { two: 2 } },
+				{
+					reducer: ( state, action ) => {
+						switch ( action.type ) {
+							case 'ACTION_ONE':
+								return { ...state, one: true };
+							default: {
+								return { ...state };
+							}
+						}
+					},
+				},
+				{
+					reducer: ( state, action ) => {
+						switch ( action.type ) {
+							case 'ACTION_TWO':
+								return { ...state, two: 2 };
+							default: {
+								return { ...state };
+							}
+						}
+					},
+				},
+				{
+					actions: {
+						actionOne,
+					},
+				},
+				{
+					actions: {
+						actionTwo,
+					},
+				},
+				{
+					controls: {
+						CONTROL_ONE,
+					},
+				},
+				{
+					controls: {
+						CONTROL_TWO,
+					},
+				},
+				{
+					resolvers: {
+						getActionOne,
+					},
+				},
+				{
+					resolvers: {
+						getActionTwo,
+					},
+				},
+				{
+					selectors: {
+						getOne,
+					},
+				},
+				{
+					selectors: {
+						getTwo,
+					},
+				},
 			);
+
+			// Initial state should contain both one and two
+			expect( combinedStore.INITIAL_STATE ).toMatchObject( { one: 1, two: 2 } );
+
+			// Actions should contain both actions
+			expect( combinedStore.actions ).toMatchObject( { actionOne, actionTwo } );
+
+			// Controls should contain both actions
+			expect( combinedStore.controls ).toMatchObject( { CONTROL_ONE, CONTROL_TWO } );
+
+			// Reducer should return combined INITIAL_STATE
+			expect( combinedStore.reducer() ).toMatchObject( { one: 1, two: 2 } );
+
+			// Resolvers should contain both resolvers
+			expect( combinedStore.resolvers ).toMatchObject( { getActionOne, getActionTwo } );
+
+			// Selectors should contain both selectors
+			expect( combinedStore.selectors ).toMatchObject( { getOne, getTwo } );
+		} );
+
+		it( 'INITIAL_STATEs, reducers, actions, and selectors should work together when provided by separate stores', () => {
+			// Define actions, controls, resolvers and selectors
+			const actionOne = () => ( { type: 'ACTION_ONE', payload: {} } );
+			const actionTwo = () => ( { type: 'ACTION_TWO', payload: {} } );
+			const getOne = ( state ) => state.one;
+			const getTwo = ( state ) => state.two;
+
+			// Create combined store from several stores which each contain values for only one key
+			const combinedStore = combineStores(
+				{ INITIAL_STATE: { one: 1 } },
+				{ INITIAL_STATE: { two: 2 } },
+				{
+					reducer: ( state, action ) => {
+						switch ( action.type ) {
+							case 'ACTION_ONE':
+								return { ...state, one: true };
+							default: {
+								return { ...state };
+							}
+						}
+					},
+				},
+				{
+					reducer: ( state, action ) => {
+						switch ( action.type ) {
+							case 'ACTION_TWO':
+								return { ...state, two: 'two' };
+							default: {
+								return { ...state };
+							}
+						}
+					},
+				},
+				{
+					actions: {
+						actionOne,
+					},
+				},
+				{
+					actions: {
+						actionTwo,
+					},
+				},
+				{
+					selectors: {
+						getOne,
+					},
+				},
+				{
+					selectors: {
+						getTwo,
+					},
+				},
+			);
+
+			// Reducer should return correct initial state containing one and two
 			let state = combinedStore.reducer();
+			expect( state ).toMatchObject( { one: 1, two: 2 } );
 
-			expect( state ).toEqual( { one: 1, two: 2 } );
-
-			// Reducer from one incomplete store responds to an action added by a different incomplete store.
-			state = combinedStore.reducer( state, combinedStore.actions.fakeActionOne() );
+			// Reducer from one store responds to an action that was provided by a different store.
+			state = combinedStore.reducer( state, actionOne() );
 			expect( state ).toEqual( { one: true, two: 2 } );
+
+			// Selector from one store should properly get state that was provided by a different store
+			expect( combinedStore.selectors.getOne( state ) ).toBe( true );
 		} );
 
 		it( 'should error if action keys are duplicated', () => {
 			expect( () => {
-				combineStores( storeOne, storeFive );
-			} ).toThrow( /collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: fakeActionOne./ );
+				combineStores(
+					{
+						actions: {
+							actionOne() {
+								return { type: 'ACTION_ONE', payload: {} };
+							},
+						},
+					},
+					{
+						actions: {
+							actionOne() {
+								return { type: 'ACTION_ONE', payload: {} };
+							},
+						},
+					},
+				);
+			} ).toThrow( /collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: actionOne./ );
 		} );
 
 		it( 'should error if control keys are duplicated', () => {
 			expect( () => {
-				combineStores( storeOne, storeSix );
-			} ).toThrow( /collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: FAKE_CONTROL_ONE./ );
+				combineStores(
+					{
+						controls: {
+							CONTROL_ONE: () => {
+								return null;
+							},
+						},
+					},
+					{
+						controls: {
+							CONTROL_ONE: () => {
+								return null;
+							},
+						},
+					}
+				);
+			} ).toThrow( /collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: CONTROL_ONE./ );
 		} );
 
 		it( 'should error if selector keys are duplicated', () => {
 			expect( () => {
-				combineStores( storeOne, storeSeven );
-			} ).toThrow( /collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: getFakeActionOne./ );
+				combineStores(
+					{
+						resolvers: {
+							*getActionOne() {
+								yield () => {};
+							},
+						},
+					},
+					{
+						resolvers: {
+							*getActionOne() {
+								yield () => {};
+							},
+						},
+					}
+				);
+			} ).toThrow( /collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: getActionOne./ );
 		} );
 
 		it( 'should error if resolver keys are duplicated', () => {
 			expect( () => {
-				combineStores( storeOne, storeEight );
+				combineStores(
+					{
+						selectors: {
+							getOne: ( state ) => {
+								return state.one;
+							},
+						},
+					},
+					{
+						selectors: {
+							getOne: ( state ) => {
+								return state.one;
+							},
+						},
+					}
+				);
 			} ).toThrow( /collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: getOne./ );
 		} );
 	} );
