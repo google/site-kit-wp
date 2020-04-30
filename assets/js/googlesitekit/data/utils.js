@@ -213,6 +213,19 @@ export const collectName = ( ...args ) => {
 };
 
 /**
+ * An empty reducer.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param  {Object} state A store's state.
+ * @return {Object} The same state data as passed in `state`.
+ */
+const passthroughReducer = ( state ) => {
+	return { ...state };
+};
+
+/**
  * Combines multiple stores.
  *
  * @since n.e.x.t
@@ -221,10 +234,6 @@ export const collectName = ( ...args ) => {
  * @return {Object} The combined store.
  */
 export const combineStores = ( ...stores ) => {
-	const defaultReducer = ( state ) => {
-		return { ...state };
-	};
-
 	const combinedInitialState = collectState(
 		...stores.map( ( store ) => ( store.INITIAL_STATE || {} ) )
 	);
@@ -239,7 +248,7 @@ export const combineStores = ( ...stores ) => {
 		),
 		reducer: collectReducers(
 			combinedInitialState,
-			...stores.map( ( store ) => ( store.reducer || defaultReducer ) )
+			...stores.map( ( store ) => ( store.reducer || passthroughReducer ) )
 		),
 		resolvers: collectResolvers(
 			...stores.map( ( store ) => ( store.resolvers || {} ) )
