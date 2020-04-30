@@ -32,20 +32,31 @@ import { SvgIcon, trackEvent } from '../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../datastore/constants';
 import {
 	AccountCreate,
-	ErrorNotice,
 	ExistingTagError,
 } from '../common';
-const { useSelect } = Data;
+import { parsePropertyID } from '../util';
+const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() ) || {};
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const existingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
+
+	// Set the accountID and property if there is an existing tag.
+	const { setAccountID, selectProperty } = useDispatch( STORE_NAME );
+	useEffect( () => {
+		if ( hasExistingTag ) {
+			const { accountID: existingTagAccountID } = parsePropertyID( existingTag );
+			setAccountID( existingTagAccountID );
+			selectProperty( existingTag );
+		}
+	}, [ hasExistingTag, existingTag ] );
 
 	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
 	const [ isNavigating, setIsNavigating ] = useState( false );
@@ -81,8 +92,6 @@ export default function SetupMain( { finishSetup } ) {
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
 				{ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
 			</h2>
-
-			<ErrorNotice />
 
 			{ viewComponent }
 		</div>

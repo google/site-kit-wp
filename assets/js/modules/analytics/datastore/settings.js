@@ -80,9 +80,7 @@ export const controls = {
 		const profileID = registry.select( STORE_NAME ).getProfileID();
 
 		if ( profileID === PROFILE_CREATE ) {
-			const accountID = registry.select( STORE_NAME ).getAccountID();
-
-			const { response: profile, error } = await registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID );
+			const { response: profile, error } = await registry.dispatch( STORE_NAME ).createProfile( propertyID );
 
 			if ( error ) {
 				return { error };

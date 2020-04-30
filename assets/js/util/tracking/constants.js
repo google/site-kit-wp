@@ -1,5 +1,5 @@
 /**
- * Analytics Datastore Fixtures.
+ * Constants related to event tracking.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,11 +16,16 @@
  * limitations under the License.
  */
 
-export { default as accountsPropertiesProfiles } from './accounts-properties-profiles';
-export { default as createProfile } from './create-profile';
-export { default as createProperty } from './create-property';
-export { default as profiles } from './profiles';
-export { default as propertiesProfiles } from './properties-profiles';
-export { default as getTagPermissionsAccess } from './tag-permissions-access';
-export { default as getTagPermissionsNoAccess } from './tag-permissions-no-access';
-export { default as createAccount } from './create-account';
+/**
+ * Data layer global used for internal/private Site Kit data.
+ *
+ * @private
+ */
+export const DATA_LAYER = '_googlesitekitDataLayer';
+
+/**
+ * gtag script identifier.
+ *
+ * @private
+ */
+export const SCRIPT_IDENTIFIER = 'data-googlesitekit-gtag';

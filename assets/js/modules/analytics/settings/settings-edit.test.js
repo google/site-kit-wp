@@ -44,15 +44,13 @@ describe( 'SettingsEdit', () => {
 	it( 'sets the account ID and property ID of an existing tag when present', () => {
 		const existingTag = {};
 		const setupRegistry = ( { dispatch } ) => {
-			const { accounts, matchedProperty } = fixtures.accountsPropertiesProfiles;
-			const { properties, profiles } = fixtures.propertiesProfiles;
+			const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 			existingTag.accountID = profiles[ 0 ].accountId;
 			existingTag.propertyID = profiles[ 0 ].webPropertyId;
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
-			dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
 			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
 			dispatch( STORE_NAME ).receiveTagPermission( {
 				...existingTag,
@@ -62,8 +60,6 @@ describe( 'SettingsEdit', () => {
 		};
 		const { registry } = render( <SettingsEdit />, { setupRegistry } );
 
-		const matchedProperty = registry.select( STORE_NAME ).getMatchedProperty();
-		expect( matchedProperty.id ).not.toBe( existingTag.propertyID );
 		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( existingTag.accountID );
 		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( existingTag.propertyID );
 		expect( registry.select( STORE_NAME ).getError() ).toBeFalsy();

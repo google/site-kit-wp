@@ -95,7 +95,7 @@ function Settings( props ) {
 	);
 }
 
-storiesOf( 'Analytics Module Settings', module )
+storiesOf( 'Analytics Module/Settings', module )
 	.add( 'View, closed', () => {
 		filterAnalyticsSettings();
 
@@ -164,14 +164,14 @@ storiesOf( 'Analytics Module Settings', module )
 			propertyID: matchedProperty.id,
 		};
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveExistingTag( existingTag );
+			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
-			dispatch( STORE_NAME ).receiveSettings( {
-				accountID: '12345',
-				propertyID: 'UA-12345-1',
-				profileID: '99999',
+			dispatch( STORE_NAME ).setSettings( {
+				accountID: '',
+				propertyID: '',
+				profileID: '',
 				anonymizeIP: true,
 				useSnippet: true,
 				trackingDisabled: [ 'loggedinUsers' ],
@@ -180,7 +180,6 @@ storiesOf( 'Analytics Module Settings', module )
 				...existingTag,
 				permission: true,
 			} );
-			dispatch( STORE_NAME ).applyProperty( existingTag );
 		};
 
 		return <Settings isEditing={ true } callback={ setupRegistry } />;
@@ -188,21 +187,21 @@ storiesOf( 'Analytics Module Settings', module )
 	.add( 'Edit, with existing tag (no access)', () => {
 		filterAnalyticsSettings();
 
+		const existingTag = {
+			accountID: '12345678',
+			propertyID: 'UA-12345678-1',
+		};
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveSettings( {} );
+			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
+			dispatch( STORE_NAME ).receiveTagPermission( {
+				...existingTag,
+				permission: false,
+			} );
+			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties );
 			dispatch( STORE_NAME ).receiveProfiles( profiles );
-			dispatch( STORE_NAME ).receiveExistingTag( {
-				accountID: '12345678',
-				propertyID: 'UA-12345678-1',
-			} );
-			dispatch( STORE_NAME ).receiveTagPermission( {
-				accountID: '12345678',
-				propertyID: 'UA-12345678-1',
-				permission: false,
-			} );
 		};
 
 		return <Settings isEditing={ true } callback={ setupRegistry } />;

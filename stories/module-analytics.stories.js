@@ -93,6 +93,7 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Anonymize IP switch, toggled on', () => {
 		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setUseSnippet( true );
 			dispatch( STORE_NAME ).setAnonymizeIP( true );
 		};
 
@@ -106,6 +107,7 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Anonymize IP switch, toggled off', () => {
 		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setUseSnippet( true );
 			dispatch( STORE_NAME ).setAnonymizeIP( false );
 		};
 
