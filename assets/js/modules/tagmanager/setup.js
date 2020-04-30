@@ -34,7 +34,8 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import SvgIcon from '../../util/svg-icon';
-import { getExistingTag, toggleConfirmModuleSettings, getModulesData } from '../../util';
+import { getExistingTag } from '../../util/tag';
+import { toggleConfirmModuleSettings, getModulesData } from '../../util';
 import {
 	getContainers,
 	isValidAccountID,
@@ -42,6 +43,7 @@ import {
 } from './util';
 import { Select, Option } from '../../material-components';
 import Button from '../../components/button';
+import DisplaySetting from '../../components/display-setting';
 import Link from '../../components/link';
 import Switch from '../../components/switch';
 import data, { TYPE_MODULES } from '../../components/data';
@@ -449,7 +451,7 @@ class TagmanagerSetup extends Component {
 							{ __( 'Account', 'google-site-kit' ) }
 						</p>
 						<h5 className="googlesitekit-settings-module__meta-item-data">
-							{ accountID || false }
+							<DisplaySetting value={ accountID } />
 						</h5>
 					</div>
 
@@ -460,7 +462,7 @@ class TagmanagerSetup extends Component {
 								{ ! ampEnabled && __( 'Container ID', 'google-site-kit' ) }
 							</p>
 							<h5 className="googlesitekit-settings-module__meta-item-data">
-								{ settings.containerID || false }
+								<DisplaySetting value={ settings.containerID } />
 							</h5>
 						</div>
 					) }
@@ -472,7 +474,7 @@ class TagmanagerSetup extends Component {
 								{ ! isSecondaryAMP && __( 'Container ID', 'google-site-kit' ) }
 							</p>
 							<h5 className="googlesitekit-settings-module__meta-item-data">
-								{ settings.ampContainerID || false }
+								<DisplaySetting value={ settings.ampContainerID } />
 							</h5>
 						</div>
 					) }
@@ -770,9 +772,11 @@ class TagmanagerSetup extends Component {
 			<div className={ classnames( { 'googlesitekit-error-text': showErrorFormat } ) }>
 				<p>{
 					showErrorFormat
-
-						/* translators: %s: Error message */
-						? sprintf( __( 'Error: %s', 'google-site-kit' ), errorMsg )
+						? sprintf(
+							/* translators: %s: Error message */
+							__( 'Error: %s', 'google-site-kit' ),
+							errorMsg
+						)
 						: errorMsg
 				}</p>
 			</div>

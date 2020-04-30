@@ -2,20 +2,7 @@
  * Internal dependencies
  */
 import createDataLayerPush from './createDataLayerPush';
-
-/**
- * Data layer global used for internal/private Site Kit data.
- *
- * @private
- */
-export const DATA_LAYER = '_googlesitekitDataLayer';
-
-/**
- * gtag script identifier.
- *
- * @private
- */
-export const SCRIPT_IDENTIFIER = 'data-googlesitekit-gtag';
+import { SCRIPT_IDENTIFIER, DATA_LAYER } from './constants';
 
 /**
  * Returns a function which, when invoked enables tracking and injects the gtag script if necessary.

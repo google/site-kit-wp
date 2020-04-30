@@ -13,6 +13,7 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
  */
 import modulesStore, { STORE_NAME as modulesStoreName } from '../../assets/js/googlesitekit/datastore/modules';
 import siteStore, { STORE_NAME as siteStoreName } from '../../assets/js/googlesitekit/datastore/site';
+import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore';
 
 /**
  * Create a registry with all available stores.
@@ -33,7 +34,7 @@ export const createTestRegistry = () => {
  * Wraps children components with a fresh test registry,
  * which can be configured by its callback prop.
  *
- * @since n.e.x.t
+ * @since 1.7.1
  *
  * @param {?Object}   props          Component props.
  * @param {?Function} props.callback Function which receives the registry instance.
@@ -84,6 +85,7 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
 export const registerAllStoresOn = ( registry ) => {
 	registry.registerStore( modulesStoreName, modulesStore );
 	registry.registerStore( siteStoreName, siteStore );
+	registry.registerStore( modulesAnalyticsStoreName, modulesAnalyticsStore );
 };
 
 const unsubscribes = [];

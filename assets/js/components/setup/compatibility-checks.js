@@ -36,7 +36,7 @@ import ProgressBar from '../../components/progress-bar';
 /**
  * Internal dependencies
  */
-import { getExistingTag } from '../../util';
+import { getExistingTag } from '../../util/tag';
 import data, { TYPE_CORE } from '../data';
 import Link from '../link';
 
@@ -171,7 +171,7 @@ export default class CompatibilityChecks extends Component {
 
 		if ( ! complete ) {
 			inProgressFeedback = <div style={ { alignSelf: 'center', marginLeft: '1rem' } }>
-				<small>{ __( 'Checking Compatibility...', 'google-site-kit' ) }</small>
+				<small>{ __( 'Checking Compatibility…', 'google-site-kit' ) }</small>
 				<ProgressBar small compress />
 			</div>;
 		}
