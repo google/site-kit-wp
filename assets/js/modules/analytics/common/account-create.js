@@ -68,6 +68,7 @@ const AccountCreate = () => {
 		}
 		send();
 	} );
+
 	// Fall back to the browser timezone if the WordPress timezone was not set.
 	if ( ! tz || '' === tz || 'UTC' === tz ) {
 		tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -115,43 +116,38 @@ const AccountCreate = () => {
 			<div className="googlesitekit-setup-module">
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell--span-12">
-						<h2>
-							{ __( 'Create new Analytics account', 'google-site-kit' ) }
-						</h2>
 						<div className="mdc-layout-grid">
-							<div>
-								<p>
-									{ __( 'Confirm your account details:', 'google-site-kit' ) }
-								</p>
-								<div className="googlesitekit-setup-module__inputs">
-									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-										<AccountField
-											hasError={ validationIssues.accountName }
-											accountName={ accountName }
-											setAccountName={ setAccountName }
-										/>
-									</div>
-									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-										<PropertyField
-											hasError={ validationIssues.propertyName }
-											propertyName={ propertyName }
-											setPropertyName={ setPropertyName }
-										/>
-									</div>
-									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-										<ProfileField
-											hasError={ validationIssues.profileName }
-											profileName={ profileName }
-											setProfileName={ setProfileName }
-										/>
-									</div>
-									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-										<TimezoneSelect
-											hasError={ validationIssues.timezone }
-											timezone={ timezone }
-											setTimezone={ setTimezone.validationIssues }
-										/>
-									</div>
+							<h3 className="googlesitekit-heading-4">
+								{ __( 'Create new Analytics account', 'google-site-kit' ) }
+							</h3>
+							<div className="googlesitekit-setup-module__inputs">
+								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+									<AccountField
+										hasError={ validationIssues.accountName }
+										accountName={ accountName }
+										setAccountName={ setAccountName }
+									/>
+								</div>
+								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+									<PropertyField
+										hasError={ validationIssues.propertyName }
+										propertyName={ propertyName }
+										setPropertyName={ setPropertyName }
+									/>
+								</div>
+								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+									<ProfileField
+										hasError={ validationIssues.profileName }
+										profileName={ profileName }
+										setProfileName={ setProfileName }
+									/>
+								</div>
+								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+									<TimezoneSelect
+										hasError={ validationIssues.timezone }
+										timezone={ timezone }
+										setTimezone={ setTimezone.validationIssues }
+									/>
 								</div>
 							</div>
 						</div>
