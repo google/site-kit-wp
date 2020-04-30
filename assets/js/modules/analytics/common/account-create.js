@@ -35,11 +35,11 @@ import ProfileField from './profile-field';
 import { STORE_NAME } from '../datastore/constants';
 
 import Data from 'googlesitekit-data';
-const { useDispatch, useSelect } = Data;
+const { useDispatch, useSelect, select: directSelect } = Data;
 
 const AccountCreate = () => {
 	const { siteName, siteURL } = global.googlesitekit.admin;
-	let { timezone: tz } = global.googlesitekit.admin;
+	let tz = directSelect( 'core/site' ).getTimezone();
 	const url = new URL( siteURL );
 	const { createAccount } = useDispatch( STORE_NAME );
 	const accountTicketTermsOfServiceURL = useSelect(

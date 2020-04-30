@@ -74,6 +74,7 @@ export const reducer = ( state, { payload, type } ) => {
 				currentEntityType,
 				homeURL,
 				referenceSiteURL,
+				timezone,
 			} = payload.siteInfo;
 
 			return {
@@ -87,6 +88,7 @@ export const reducer = ( state, { payload, type } ) => {
 					currentEntityType,
 					homeURL,
 					referenceSiteURL,
+					timezone,
 				},
 			};
 		}
@@ -115,6 +117,7 @@ export const resolvers = {
 			ampMode,
 			homeURL,
 			referenceSiteURL,
+			timezone,
 		} = global._googlesitekitBaseData;
 		const {
 			currentEntityURL,
@@ -132,6 +135,7 @@ export const resolvers = {
 			currentEntityType,
 			homeURL,
 			referenceSiteURL,
+			timezone,
 		} );
 	},
 };
@@ -277,6 +281,20 @@ export const selectors = {
 		const ampMode = select( STORE_NAME ).getAMPMode();
 
 		return ampMode !== undefined ? !! ampMode : ampMode;
+	} ),
+
+	/**
+	 * Gets a site's timezone.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {?string} The timezone.
+	 */
+	getTimezone: createRegistrySelector( ( select ) => () => {
+		const { timezone } = select( STORE_NAME ).getSiteInfo() || {};
+
+		return timezone;
 	} ),
 };
 
