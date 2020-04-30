@@ -40,21 +40,34 @@ const { useDispatch, useSelect } = Data;
 const AccountCreate = () => {
 	const { siteName, siteURL, timezone: tz } = global.googlesitekit.admin;
 	const url = new URL( siteURL );
+	const { createAccount } = useDispatch( STORE_NAME );
+	const accountTicketTermsOfServiceURL = useSelect(
+		( select ) => {
+			return select( STORE_NAME ).getAccountTicketTermsOfServiceURL();
+		},
+		[]
+	);
+	const [ isNavigating, setIsNavigating ] = useState( false );
 	const handleSubmit = useCallback( ( accountName, propertyName, profileName, timezone ) => {
 		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
 		setIsNavigating( true );
-		createAccount( {
-			accountName,
-			propertyName,
-			profileName,
-			timezone,
-		} ).then( () => {
-			// Log error message?
+		async function send() {
+			await createAccount( {
+				accountName,
+				propertyName,
+				profileName,
+				timezone,
+			} );
+
+			// Redirect if the accountTicketTermsOfServiceURL is set.
+			if ( accountTicketTermsOfServiceURL ) {
+				location = accountTicketTermsOfServiceURL;
+			}
 			setIsNavigating( false );
-		} );
+		}
+		send();
 	} );
 
-	const [ isNavigating, setIsNavigating ] = useState( false );
 	const [ accountName, setAccountName ] = useState( siteName );
 	const [ propertyName, setPropertyName ] = useState( url.hostname );
 	const [ profileName, setProfileName ] = useState( __( 'All website traffic', 'google-site-kit' ) );
@@ -73,20 +86,6 @@ const AccountCreate = () => {
 		},
 		[]
 	);
-
-	const accountTicketTermsOfServiceURL = useSelect(
-		( select ) => {
-			return select( STORE_NAME ).getAccountTicketTermsOfServiceURL();
-		},
-		[]
-	);
-
-	const { createAccount } = useDispatch( STORE_NAME );
-
-	// Redirect if the accountTicketTermsOfServiceURL is set.
-	if ( accountTicketTermsOfServiceURL ) {
-		location = accountTicketTermsOfServiceURL;
-	}
 
 	if ( isDoingCreateAccount || isNavigating ) {
 		return <ProgressBar />;
