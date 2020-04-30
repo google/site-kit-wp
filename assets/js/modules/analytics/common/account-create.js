@@ -38,28 +38,8 @@ import Data from 'googlesitekit-data';
 const { useDispatch, useSelect } = Data;
 
 const AccountCreate = () => {
-	const isDoingCreateAccount = useSelect(
-		( select ) => {
-			return select( STORE_NAME ).isDoingCreateAccount();
-		},
-		[]
-	);
-	const accountTicketTermsOfServiceURL = useSelect(
-		( select ) => {
-			return select( STORE_NAME ).getAccountTicketTermsOfServiceURL();
-		},
-		[]
-	);
-
-	const { createAccount } = useDispatch( STORE_NAME );
-
-	// Redirect if the accountTicketTermsOfServiceURL is set.
-	if ( accountTicketTermsOfServiceURL ) {
-		location = accountTicketTermsOfServiceURL;
-	}
-
 	const { siteName, siteURL, timezone: tz } = global.googlesitekit.admin;
-
+	const url = new URL( siteURL );
 	const handleSubmit = useCallback( ( accountName, propertyName, profileName, timezone ) => {
 		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
 		setIsNavigating( true );
@@ -74,8 +54,6 @@ const AccountCreate = () => {
 		} );
 	} );
 
-	const url = new URL( siteURL );
-
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const [ accountName, setAccountName ] = useState( siteName );
 	const [ propertyName, setPropertyName ] = useState( url.hostname );
@@ -87,6 +65,32 @@ const AccountCreate = () => {
 		profileName: profileName === '',
 		timezone: timezone === '',
 	} );
+
+	// Connect to the data store.
+	const isDoingCreateAccount = useSelect(
+		( select ) => {
+			return select( STORE_NAME ).isDoingCreateAccount();
+		},
+		[]
+	);
+
+	const accountTicketTermsOfServiceURL = useSelect(
+		( select ) => {
+			return select( STORE_NAME ).getAccountTicketTermsOfServiceURL();
+		},
+		[]
+	);
+
+	const { createAccount } = useDispatch( STORE_NAME );
+
+	// Redirect if the accountTicketTermsOfServiceURL is set.
+	if ( accountTicketTermsOfServiceURL ) {
+		location = accountTicketTermsOfServiceURL;
+	}
+
+	if ( isDoingCreateAccount || isNavigating ) {
+		return <ProgressBar />;
+	}
 
 	// Disable the submit button if there are validation errors, and while submission is in progress.
 	const buttonDisabled = Object.values( validationIssues ).some( ( check ) => check ) ||
@@ -102,49 +106,45 @@ const AccountCreate = () => {
 							{ __( 'Create new Analytics account', 'google-site-kit' ) }
 						</h2>
 						<div className="mdc-layout-grid">
-							{
-								isDoingCreateAccount
-									? <ProgressBar />
-									: <div>
-										<p>
-											{ __( 'Confirm your account details:', 'google-site-kit' ) }
-										</p>
-										<div className="googlesitekit-setup-module__inputs">
-											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-												<AccountField
-													validationIssues={ validationIssues }
-													setValidationIssues={ setValidationIssues }
-													accountName={ accountName }
-													setAccountName={ setAccountName }
-												/>
-											</div>
-											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-												<PropertyField
-													validationIssues={ validationIssues }
-													setValidationIssues={ setValidationIssues }
-													propertyName={ propertyName }
-													setPropertyName={ setPropertyName }
-												/>
-											</div>
-											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-												<ProfileField
-													validationIssues={ validationIssues }
-													setValidationIssues={ setValidationIssues }
-													profileName={ profileName }
-													setProfileName={ setProfileName }
-												/>
-											</div>
-											<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-												<TimezoneSelect
-													validationIssues={ validationIssues }
-													setValidationIssues={ setValidationIssues }
-													timezone={ timezone }
-													setTimezone={ setTimezone }
-												/>
-											</div>
-										</div>
+							<div>
+								<p>
+									{ __( 'Confirm your account details:', 'google-site-kit' ) }
+								</p>
+								<div className="googlesitekit-setup-module__inputs">
+									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+										<AccountField
+											validationIssues={ validationIssues }
+											setValidationIssues={ setValidationIssues }
+											accountName={ accountName }
+											setAccountName={ setAccountName }
+										/>
 									</div>
-							}
+									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+										<PropertyField
+											validationIssues={ validationIssues }
+											setValidationIssues={ setValidationIssues }
+											propertyName={ propertyName }
+											setPropertyName={ setPropertyName }
+										/>
+									</div>
+									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+										<ProfileField
+											validationIssues={ validationIssues }
+											setValidationIssues={ setValidationIssues }
+											profileName={ profileName }
+											setProfileName={ setProfileName }
+										/>
+									</div>
+									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+										<TimezoneSelect
+											validationIssues={ validationIssues }
+											setValidationIssues={ setValidationIssues }
+											timezone={ timezone }
+											setTimezone={ setTimezone }
+										/>
+									</div>
+								</div>
+							</div>
 						</div>
 						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 							<Button
