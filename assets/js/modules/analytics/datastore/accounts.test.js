@@ -290,7 +290,7 @@ describe( 'modules/analytics accounts', () => {
 				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( matchedProperty.accountId );
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( matchedProperty.id );
 				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( matchedProperty.internalWebPropertyId );
-				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( matchedProfile.id );
+				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( matchedProperty.defaultProfileId );
 			} );
 		} );
 	} );
