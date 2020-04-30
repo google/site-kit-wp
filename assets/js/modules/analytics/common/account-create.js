@@ -21,7 +21,6 @@
  */
 import { __ } from '@wordpress/i18n';
 import { useState, Fragment, useCallback } from '@wordpress/element';
-import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -33,13 +32,12 @@ import TimezoneSelect from './timzezone-select';
 import AccountField from './account-field';
 import PropertyField from './property-field';
 import ProfileField from './profile-field';
+import { STORE_NAME } from '../datastore/constants';
 
-// import Data from 'googlesitekit-data';
-// const { dispatch, select } = Data;
+import Data from 'googlesitekit-data';
+const { useDispatch, useSelect } = Data;
 
 const AccountCreate = () => {
-	// Uncomment this section after 1311 is merged.
-	/*
 	const isDoingCreateAccount = useSelect(
 		( select ) => {
 			return select( STORE_NAME ).isDoingCreateAccount();
@@ -53,37 +51,14 @@ const AccountCreate = () => {
 		[]
 	);
 
-	*/
-	//const { createAccount } = useDispatch( STORE_NAME );
+	const { createAccount } = useDispatch( STORE_NAME );
 
-	/*
 	// Redirect if the accountTicketTermsOfServiceURL is set.
 	if ( accountTicketTermsOfServiceURL ) {
 		location = accountTicketTermsOfServiceURL;
 	}
-	*/
 
-	const isDoingCreateAccount = false;
-	const { createAccount } = () => {};
 	const { siteName, siteURL, timezone: tz } = global.googlesitekit.admin;
-	const errorCode = getQueryArg( location.href, 'error_code' );
-
-	// Handle expected provisioning flow error codes.
-	let errorMessage = false;
-	switch ( errorCode ) {
-		case 'user_cancel':
-			errorMessage = __( 'The Terms of Service were not accepted.', 'google-site-kit' );
-			break;
-
-		case 'max_accounts_reached':
-			errorMessage = __( 'The Google Analytics account limit has been reached.', 'google-site-kit' );
-			break;
-
-		case 'backend_error':
-			errorMessage = __( 'Unknown service error.', 'google-site-kit' );
-			break;
-	}
-	const [ error, setError ] = useState( errorMessage );
 
 	const handleSubmit = useCallback( ( accountName, propertyName, profileName, timezone ) => {
 		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
@@ -92,11 +67,8 @@ const AccountCreate = () => {
 			propertyName,
 			profileName,
 			timezone,
-		} ).then( ( e ) => {
-			const { error: err } = e.payload;
-			if ( err ) {
-				setError( err.message ? err.message : __( 'Unknown error.', 'google-site-kit' ) );
-			}
+		} ).then( () => {
+			// Log error message?
 		} );
 	} );
 
@@ -122,14 +94,6 @@ const AccountCreate = () => {
 						<h2>
 							{ __( 'Create new Analytics account', 'google-site-kit' ) }
 						</h2>
-						{
-							error &&
-							<div className="error">
-								<p>
-									{ error }
-								</p>
-							</div>
-						}
 						<div className="mdc-layout-grid">
 							{
 								isDoingCreateAccount
