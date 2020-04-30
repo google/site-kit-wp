@@ -98,14 +98,14 @@ describe( 'core/site site info', () => {
 				expect( global[ entityInfoVar ] ).not.toEqual( undefined );
 			} );
 
-			it( 'will return initial state (undefined values) when no data is available', async () => {
+			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ baseInfoVar ] ).toEqual( undefined );
 				expect( global[ entityInfoVar ] ).toEqual( undefined );
 
 				muteConsole( 'error' );
 				const info = registry.select( STORE_NAME ).getSiteInfo();
 
-				expect( info ).toMatchObject( INITIAL_STATE.siteInfo );
+				expect( info ).toBe( INITIAL_STATE.siteInfo );
 			} );
 		} );
 
