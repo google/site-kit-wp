@@ -197,7 +197,7 @@ describe( 'data utils', () => {
 			// Actions should contain both actions
 			expect( combinedStore.actions ).toMatchObject( { actionOne, actionTwo } );
 
-			// Controls should contain both actions
+			// Controls should contain both controls
 			expect( combinedStore.controls ).toMatchObject( { CONTROL_ONE, CONTROL_TWO } );
 
 			// Reducer should return combined INITIAL_STATE
@@ -484,7 +484,7 @@ describe( 'data utils', () => {
 			// Actions should contain both actions
 			expect( combinedStore.actions ).toMatchObject( { actionOne, actionTwo } );
 
-			// Controls should contain both actions
+			// Controls should contain both controls
 			expect( combinedStore.controls ).toMatchObject( { CONTROL_ONE, CONTROL_TWO } );
 
 			// Reducer should return combined INITIAL_STATE
