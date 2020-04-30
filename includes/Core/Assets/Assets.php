@@ -587,8 +587,9 @@ final class Assets {
 	 */
 	private function get_inline_base_data() {
 		global $wpdb;
-		$site_url     = $this->context->get_reference_site_url();
-		$current_user = wp_get_current_user();
+		$site_url      = $this->context->get_reference_site_url();
+		$current_user  = wp_get_current_user();
+		$selected_zone = get_option( 'timezone_string' );
 
 		$inline_data = array(
 			'homeURL'          => trailingslashit( home_url() ),
@@ -599,6 +600,7 @@ final class Assets {
 			'blogPrefix'       => $wpdb->get_blog_prefix(),
 			'ampMode'          => $this->context->get_amp_mode(),
 			'isNetworkMode'    => $this->context->is_network_mode(),
+			'timezone'         => $selected_zone,
 		);
 
 		/**
