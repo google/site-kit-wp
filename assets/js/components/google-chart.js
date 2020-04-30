@@ -194,7 +194,7 @@ class GoogleChart extends Component {
 				>
 					<div className="googlesitekit-chart-loading">
 						{ loading && <div className="googlesitekit-chart-loading__wrapper">
-							{ loadText && <p>{ __( 'Loading chart...', 'google-site-kit' ) }</p> }
+							{ loadText && <p>{ __( 'Loading chart…', 'google-site-kit' ) }</p> }
 							<ProgressBar
 								className={ className }
 								small={ loadSmall }
