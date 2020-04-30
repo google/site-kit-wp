@@ -62,7 +62,7 @@ const AccountCreate = () => {
 
 	const handleSubmit = useCallback( ( accountName, propertyName, profileName, timezone ) => {
 		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
-		setIsSubmitting( true );
+		setIsNavigating( true );
 		createAccount( {
 			accountName,
 			propertyName,
@@ -70,13 +70,13 @@ const AccountCreate = () => {
 			timezone,
 		} ).then( () => {
 			// Log error message?
-			setIsSubmitting( false );
+			setIsNavigating( false );
 		} );
 	} );
 
 	const url = new URL( siteURL );
 
-	const [ isSubmitting, setIsSubmitting ] = useState( false );
+	const [ isNavigating, setIsNavigating ] = useState( false );
 	const [ accountName, setAccountName ] = useState( siteName );
 	const [ propertyName, setPropertyName ] = useState( url.hostname );
 	const [ profileName, setProfileName ] = useState( __( 'All website traffic', 'google-site-kit' ) );
@@ -91,7 +91,7 @@ const AccountCreate = () => {
 	// Disable the submit button if there are validation errors, and while submission is in progress.
 	const buttonDisabled = Object.values( validationIssues ).some( ( check ) => check ) ||
 		isDoingCreateAccount ||
-		isSubmitting;
+		isNavigating;
 
 	return (
 		<Fragment>
