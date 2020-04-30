@@ -54,7 +54,14 @@ export default function SetupSiteAdded( { finishSetup } ) {
 		// is currently in progress, the button itself must not rely on
 		// canSubmitChanges, since that may only become true due to the above
 		// modification of the 'accountSetupComplete' setting.
-		if ( ! canSubmitChanges || global.__STORYBOOK_ADDONS ) {
+		if ( ! canSubmitChanges ) {
+			return;
+		}
+
+		// TODO: Remove temporary hack to avoid saving in Storybook.
+		if ( global.__STORYBOOK_ADDONS ) {
+			finishSetup();
+			trackEvent( 'adsense_setup', 'complete_adsense_setup' );
 			return;
 		}
 

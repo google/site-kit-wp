@@ -176,7 +176,8 @@ export default function SetupMain( { finishSetup } ) {
 	// Submit changes for determined parameters in the background when they are valid.
 	const [ isSubmittingInBackground, setIsSubmittingInBackground ] = useState( false );
 	useEffect( () => {
-		// Only submit changes if valid (plus temporary hack to avoid saving in Storybook).
+		// Only submit changes if valid.
+		// TODO: Remove temporary hack to avoid saving in Storybook.
 		if ( ! canSubmitChanges || global.__STORYBOOK_ADDONS ) {
 			return;
 		}

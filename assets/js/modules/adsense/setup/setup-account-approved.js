@@ -53,6 +53,7 @@ export default function SetupAccountApproved() {
 		// is currently in progress, the button itself must not rely on
 		// canSubmitChanges, since that may only become true due to the above
 		// modification of the 'accountSetupComplete' setting.
+		// TODO: Remove temporary hack to avoid saving in Storybook.
 		if ( ! canSubmitChanges || global.__STORYBOOK_ADDONS ) {
 			return;
 		}
