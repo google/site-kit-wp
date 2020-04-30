@@ -74,9 +74,11 @@ const AccountCreate = () => {
 		} );
 	} );
 
+	const url = new URL( siteURL );
+
 	const [ isSubmitting, setIsSubmitting ] = useState( false );
 	const [ accountName, setAccountName ] = useState( siteName );
-	const [ propertyName, setPropertyName ] = useState( siteURL );
+	const [ propertyName, setPropertyName ] = useState( url.hostname );
 	const [ profileName, setProfileName ] = useState( __( 'All website traffic', 'google-site-kit' ) );
 	const [ timezone, setTimezone ] = useState( tz );
 	const [ validationIssues, setValidationIssues ] = useState( {
