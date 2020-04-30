@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { ACCOUNT_CREATE, CONTAINER_CREATE } from '../datastore/constants';
+import { ACCOUNT_CREATE, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP } from '../datastore/constants';
 
 /**
  * Checks the given value to see if it is a positive integer.
@@ -86,3 +86,13 @@ export function isValidContainerSelection( value ) {
  * @return {boolean} Whether or not the given ID is valid.
  */
 export { isValidNumericID as isValidInternalContainerID };
+
+/**
+ * Checks if the given context is a valid container usage context.
+ *
+ * @param {string} context A usage context to check.
+ * @return {boolean} Whether or not the given context is valid.
+ */
+export function isValidUsageContext( context ) {
+	return [ CONTEXT_WEB, CONTEXT_AMP ].includes( context );
+}
