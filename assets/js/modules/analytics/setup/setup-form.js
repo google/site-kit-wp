@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -84,3 +89,11 @@ export default function SetupForm( { finishSetup } ) {
 		</form>
 	);
 }
+
+SetupForm.propTypes = {
+	finishSetup: PropTypes.func,
+};
+
+SetupForm.defaultProps = {
+	finishSetup: () => {},
+};
