@@ -17,6 +17,7 @@ import AdSenseEstimateEarningsWidget
 	from '../assets/js/modules/adsense/dashboard/dashboard-widget-estimate-earnings';
 import AdSensePerformanceWidget from '../assets/js/modules/adsense/dashboard/dashboard-widget-performance';
 import AdSenseDashboardOutro from '../assets/js/modules/adsense/dashboard/dashboard-outro';
+import DashboardZeroData from '../assets/js/modules/adsense/dashboard/dashboard-zero-data';
 import { googlesitekit as adSenseData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-adsense-googlesitekit';
 import {
 	AccountSelect,
@@ -146,6 +147,19 @@ storiesOf( 'AdSense Module', module )
 				<SetupWrap>
 					<SiteSteps />
 				</SetupWrap>
+			</WithTestRegistry>
+		);
+	} )
+	.add( 'Dashboard Zero Data', () => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( STORE_NAME ).setAccountID( fixtures.accounts[ 0 ].id );
+		};
+
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<Layout fill>
+					<DashboardZeroData />
+				</Layout>
 			</WithTestRegistry>
 		);
 	} )
