@@ -22,7 +22,7 @@ HOST_PORT=$(dc port $CONTAINER 80 | awk -F : '{printf $2}')
 status_message "Attempting to connect to WordPress..."
 until $(curl -L http://localhost:$HOST_PORT -so - 2>&1 | grep -q "WordPress"); do
     echo -n '.'
-    sleep 5
+    sleep 1
 done
 echo ''
 
