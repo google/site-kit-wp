@@ -290,6 +290,26 @@ describe( 'data utils', () => {
 			expect( combinedStore.selectors.getOne( state ) ).toBe( true );
 		} );
 
+		it( 'should return an empty store by default', () => {
+			expect( () => {
+				combineStores();
+			} ).not.toThrow();
+
+			const newStore = combineStores();
+
+			expect( newStore ).toMatchObject( {
+				INITIAL_STATE: {},
+				actions: {},
+				controls: {},
+				resolvers: {},
+				selectors: {},
+			} );
+
+			// Reducer should be present, and pass through data.
+			const state = { hello: 'world', cool: [ 'beans' ] };
+			expect( newStore.reducer( state ) ).toEqual( state );
+		} );
+
 		it( 'should not error if no INITIAL_STATE is provided', () => {
 			expect( () => {
 				combineStores(
