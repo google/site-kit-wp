@@ -26,7 +26,7 @@ import {
 import classnames from 'classnames';
 
 const CreateAccountField = ( {
-	validationIssues,
+	hasError,
 	value,
 	setValue,
 	name,
@@ -36,7 +36,7 @@ const CreateAccountField = ( {
 		<TextField
 			className={ classnames(
 				'mdc-text-field',
-				{ 'mdc-text-field--error': validationIssues }
+				{ 'mdc-text-field--error': hasError }
 			) }
 			label={ label }
 			name={ name }

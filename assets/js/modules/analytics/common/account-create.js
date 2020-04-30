@@ -126,28 +126,28 @@ const AccountCreate = () => {
 								<div className="googlesitekit-setup-module__inputs">
 									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 										<AccountField
-											validationIssues={ validationIssues.accountName }
+											hasError={ validationIssues.accountName }
 											accountName={ accountName }
 											setAccountName={ setAccountName }
 										/>
 									</div>
 									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 										<PropertyField
-											validationIssues={ validationIssues.propertyName }
+											hasError={ validationIssues.propertyName }
 											propertyName={ propertyName }
 											setPropertyName={ setPropertyName }
 										/>
 									</div>
 									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 										<ProfileField
-											validationIssues={ validationIssues.profileName }
+											hasError={ validationIssues.profileName }
 											profileName={ profileName }
 											setProfileName={ setProfileName }
 										/>
 									</div>
 									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 										<TimezoneSelect
-											validationIssues={ validationIssues.timezone }
+											hasError={ validationIssues.timezone }
 											timezone={ timezone }
 											setTimezone={ setTimezone.validationIssues }
 										/>

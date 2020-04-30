@@ -34,7 +34,7 @@ import classnames from 'classnames';
 
 const { default: { country: allCountries } } = countries;
 
-const TimezoneSelect = ( { timezone, setTimezone, validationIssues } ) => {
+const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
 	const [ selectedCountry, setSelectedCountry ] = useState( timezone );
 	const [ selectedTimezoneID, setSelectedTimezoneID ] = useState( '' );
 	let multiTimezone,
@@ -47,7 +47,7 @@ const TimezoneSelect = ( { timezone, setTimezone, validationIssues } ) => {
 					<Select
 						className={ classnames(
 							'googlesitekit-analytics__select-timezone',
-							{ 'mdc-text-field--error': validationIssues }
+							{ 'mdc-text-field--error': hasError }
 						) }
 						name="country"
 						enhanced
@@ -125,7 +125,7 @@ const TimezoneSelect = ( { timezone, setTimezone, validationIssues } ) => {
 		return response;
 	};
 
-	const timezoneSelector = useMemo( () => getTimezoneSelector(), [ selectedCountry, timezone, validationIssues.timezone ] );
+	const timezoneSelector = useMemo( () => getTimezoneSelector(), [ selectedCountry, timezone, hasError ] );
 
 	return timezoneSelector;
 };
