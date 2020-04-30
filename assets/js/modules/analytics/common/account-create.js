@@ -38,7 +38,8 @@ import Data from 'googlesitekit-data';
 const { useDispatch, useSelect } = Data;
 
 const AccountCreate = () => {
-	const { siteName, siteURL, timezone: tz } = global.googlesitekit.admin;
+	const { siteName, siteURL } = global.googlesitekit.admin;
+	let { timezone: tz } = global.googlesitekit.admin;
 	const url = new URL( siteURL );
 	const { createAccount } = useDispatch( STORE_NAME );
 	const accountTicketTermsOfServiceURL = useSelect(
@@ -67,6 +68,10 @@ const AccountCreate = () => {
 		}
 		send();
 	} );
+	// Fall back to the browser timezone if the WordPress timezone was not set.
+	if ( ! tz || '' === tz || 'UTC' === tz ) {
+		tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	}
 
 	const [ accountName, setAccountName ] = useState( siteName );
 	const [ propertyName, setPropertyName ] = useState( url.hostname );
