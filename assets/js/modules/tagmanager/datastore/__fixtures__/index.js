@@ -17,3 +17,4 @@
  */
 
 export { default as accounts } from './accounts';
+export { default as createContainer } from './create-container';
