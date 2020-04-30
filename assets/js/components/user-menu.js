@@ -173,7 +173,7 @@ class UserMenu extends Component {
 								__( 'Disconnect', 'google-site-kit' ),
 							].concat(
 								proxyPermissionsURL ? [
-									__( 'Manage sites...', 'google-site-kit' ),
+									__( 'Manage sites…', 'google-site-kit' ),
 								] : []
 							)
 						}

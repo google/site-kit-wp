@@ -131,6 +131,7 @@
 		display: none;
 	}
 
+	legend,
 	p {
 		font-size: 1rem;
 	}
@@ -164,6 +165,11 @@
 			outline: 1px dashed $c-cornflower-blue;
 			outline-offset: 3px;
 		}
+	}
+
+	legend {
+		line-height: 1.5;
+		margin: 1em 0;
 	}
 
 	.screen-reader-only {
