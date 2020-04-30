@@ -59,9 +59,9 @@ class SearchConsole extends Component {
 	}
 
 	async componentDidMount() {
-		const { isAuthenticated, shouldSetup } = this.props;
+		const { authenticated, shouldSetup } = this.props;
 
-		if ( ! isAuthenticated || ! shouldSetup ) {
+		if ( ! authenticated || ! shouldSetup ) {
 			return;
 		}
 
@@ -270,7 +270,7 @@ class SearchConsole extends Component {
 
 	render() {
 		const {
-			isAuthenticated,
+			authenticated,
 			shouldSetup,
 		} = this.props;
 		const {
@@ -298,7 +298,7 @@ class SearchConsole extends Component {
 					</p>
 				}
 
-				{ isAuthenticated && shouldSetup && this.renderForm() }
+				{ authenticated && shouldSetup && this.renderForm() }
 
 			</section>
 		);
@@ -306,7 +306,7 @@ class SearchConsole extends Component {
 }
 
 SearchConsole.propTypes = {
-	isAuthenticated: PropTypes.bool.isRequired,
+	authenticated: PropTypes.bool.isRequired,
 	shouldSetup: PropTypes.bool.isRequired,
 	searchConsoleSetup: PropTypes.func.isRequired,
 	setErrorMessage: PropTypes.func.isRequired,

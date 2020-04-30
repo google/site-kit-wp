@@ -45,7 +45,7 @@ class Setup extends Component {
 		const { connectURL } = global.googlesitekit.admin;
 
 		const {
-			isAuthenticated,
+			authenticated,
 			hasSearchConsoleProperty,
 			isSiteKitConnected,
 			isVerified,
@@ -56,7 +56,7 @@ class Setup extends Component {
 
 		this.state = {
 			canSetup,
-			isAuthenticated,
+			authenticated,
 			isVerified,
 			needReauthenticate,
 			hasSearchConsoleProperty,
@@ -81,7 +81,7 @@ class Setup extends Component {
 
 		this.setState( {
 			isSiteKitConnected: false,
-			isAuthenticated: false,
+			authenticated: false,
 			isVerified: false,
 			hasSearchConsoleProperty: false,
 			completeSetup: false,
@@ -116,13 +116,13 @@ class Setup extends Component {
 	isSetupFinished() {
 		const {
 			isSiteKitConnected,
-			isAuthenticated,
+			authenticated,
 			isVerified,
 			hasSearchConsoleProperty,
 			completeSetup,
 		} = this.state;
 
-		return isSiteKitConnected && isAuthenticated && isVerified && hasSearchConsoleProperty && completeSetup;
+		return isSiteKitConnected && authenticated && isVerified && hasSearchConsoleProperty && completeSetup;
 	}
 
 	setErrorMessage( errorMsg ) {
@@ -177,7 +177,7 @@ class Setup extends Component {
 	render() {
 		const {
 			canSetup,
-			isAuthenticated,
+			authenticated,
 			isVerified,
 			needReauthenticate,
 			hasSearchConsoleProperty,
@@ -209,7 +209,7 @@ class Setup extends Component {
 			searchConsoleSetup={ this.searchConsoleSetup }
 			completeSetup={ this.completeSetup }
 			isSiteKitConnected={ isSiteKitConnected }
-			isAuthenticated={ isAuthenticated }
+			authenticated={ authenticated }
 			isVerified={ isVerified }
 			needReauthenticate={ needReauthenticate }
 			hasSearchConsoleProperty={ hasSearchConsoleProperty }
@@ -218,7 +218,7 @@ class Setup extends Component {
 		/>;
 
 		const showVerificationSteps = canSetup;
-		const showAuthenticateButton = ! showVerificationSteps && ! isAuthenticated;
+		const showAuthenticateButton = ! showVerificationSteps && ! authenticated;
 
 		return (
 			<Fragment>

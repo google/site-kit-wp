@@ -102,9 +102,9 @@ describe( 'core/user authentication', () => {
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( authentication ).toEqual( responseAuthenticated );
 
-				const connectionSelect = registry.select( STORE_NAME ).getAuthentication();
+				const authenticationSelect = registry.select( STORE_NAME ).getAuthentication();
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
-				expect( connectionSelect ).toEqual( authentication );
+				expect( authenticationSelect ).toEqual( authentication );
 			} );
 
 			it( 'does not make a network request if data is already in state', async () => {
