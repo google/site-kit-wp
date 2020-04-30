@@ -9,6 +9,7 @@
     "build:test": "npm run build:production -- --include-tests",
     "build:dev": "npm run remove-dist && webpack --mode=development --debug --devtool cheap-source-map --output-pathinfo && npm run build:static",
     "build:static": "gulp svg imagemin",
+    "build:storybook": "build-storybook -c .storybook",
     "remove-dist": "rimraf ./dist",
     "dev": "npm run build:dev && npm run build:static",
     "dev-zip": "npm run build:dev && gulp release",
