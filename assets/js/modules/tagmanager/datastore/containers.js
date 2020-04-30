@@ -50,6 +50,15 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
+	/**
+	 * Creates a new container in the given account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} accountID Account ID to create the container in.
+	 * @param {string} usageContext Container usage context for the new container.
+	 * @return {Object} An object with both `response` and `error` keys.
+	 */
 	*createContainer( accountID, usageContext ) {
 		invariant( isValidAccountID( accountID ), 'a valid accountID is required to create a container.' );
 		invariant( isValidUsageContext( usageContext ), 'a valid usageContext is required to create a container.' );
@@ -269,6 +278,8 @@ export const selectors = {
 	/**
 	 * Gets the containers for a given account.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} accountID Account ID to get containers for.
 	 * @param {string} [usageContext] Usage context of containers to filter by.
@@ -283,6 +294,15 @@ export const selectors = {
 
 		return containers;
 	},
+	/**
+	 * Checks if the request for creating a container is in progress.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} accountID Account ID to get containers for.
+	 * @return {boolean} True if the request for create-container is in progress, otherwise false.
+	 */
 	isDoingCreateContainer( state, accountID ) {
 		return !! state.isFetchingCreateContainer[ accountID ];
 	},
