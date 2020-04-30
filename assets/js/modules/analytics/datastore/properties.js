@@ -215,10 +215,8 @@ export const actions = {
 
 		registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
 
-		// If defaultProfileId is set then set the	 profileID and return
 		if ( property.defaultProfileId ) {
-			const profileID = property.defaultProfileId;
-			registry.dispatch( STORE_NAME ).setProfileID( profileID );
+			registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // Capitalization rule exception: defaultProfileId
 			return;
 		}
 
