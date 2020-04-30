@@ -27,7 +27,6 @@ import classnames from 'classnames';
 
 const CreateAccountField = ( {
 	validationIssues,
-	setValidationIssues,
 	value,
 	setValue,
 	name,
@@ -37,16 +36,12 @@ const CreateAccountField = ( {
 		<TextField
 			className={ classnames(
 				'mdc-text-field',
-				{ 'mdc-text-field--error': validationIssues[ name ] }
+				{ 'mdc-text-field--error': validationIssues }
 			) }
 			label={ label }
 			name={ name }
 			onChange={ ( e ) => {
-				setValidationIssues( {
-					...validationIssues,
-					[ name ]: '' === e.target.value,
-				} );
-				setValue( e.target.value );
+				setValue( e.target.value, name );
 			} }
 			outlined
 			required

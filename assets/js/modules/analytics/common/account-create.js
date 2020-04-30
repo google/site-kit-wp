@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useState, Fragment, useCallback } from '@wordpress/element';
+import { useState, Fragment, useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -84,6 +84,17 @@ const AccountCreate = () => {
 		timezone: timezone === '',
 	} );
 
+	const validationHasIssues = Object.values( validationIssues ).some( ( check ) => check );
+
+	useEffect( () => {
+		setValidationIssues( {
+			accountName: accountName === '',
+			propertyName: propertyName === '',
+			profileName: profileName === '',
+			timezone: timezone === '' || timezone === 'UTC', //An unset timezone in WordPress is reported as "UTC".
+		} );
+	}, [ accountName, propertyName, profileName, timezone ] );
+
 	// Connect to the data store.
 	const isDoingCreateAccount = useSelect(
 		( select ) => {
@@ -97,9 +108,7 @@ const AccountCreate = () => {
 	}
 
 	// Disable the submit button if there are validation errors, and while submission is in progress.
-	const buttonDisabled = Object.values( validationIssues ).some( ( check ) => check ) ||
-		isDoingCreateAccount ||
-		isNavigating;
+	const buttonDisabled = validationHasIssues;
 
 	return (
 		<Fragment>
@@ -117,34 +126,30 @@ const AccountCreate = () => {
 								<div className="googlesitekit-setup-module__inputs">
 									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 										<AccountField
-											validationIssues={ validationIssues }
-											setValidationIssues={ setValidationIssues }
+											validationIssues={ validationIssues.accountName }
 											accountName={ accountName }
 											setAccountName={ setAccountName }
 										/>
 									</div>
 									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 										<PropertyField
-											validationIssues={ validationIssues }
-											setValidationIssues={ setValidationIssues }
+											validationIssues={ validationIssues.propertyName }
 											propertyName={ propertyName }
 											setPropertyName={ setPropertyName }
 										/>
 									</div>
 									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 										<ProfileField
-											validationIssues={ validationIssues }
-											setValidationIssues={ setValidationIssues }
+											validationIssues={ validationIssues.profileName }
 											profileName={ profileName }
 											setProfileName={ setProfileName }
 										/>
 									</div>
 									<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 										<TimezoneSelect
-											validationIssues={ validationIssues }
-											setValidationIssues={ setValidationIssues }
+											validationIssues={ validationIssues.timezone }
 											timezone={ timezone }
-											setTimezone={ setTimezone }
+											setTimezone={ setTimezone.validationIssues }
 										/>
 									</div>
 								</div>

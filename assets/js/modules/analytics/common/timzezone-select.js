@@ -34,21 +34,20 @@ import classnames from 'classnames';
 
 const { default: { country: allCountries } } = countries;
 
-const TimezoneSelect = ( { timezone, setTimezone, validationIssues, setValidationIssues } ) => {
+const TimezoneSelect = ( { timezone, setTimezone, validationIssues } ) => {
 	const [ selectedCountry, setSelectedCountry ] = useState( timezone );
 	const [ selectedTimezoneID, setSelectedTimezoneID ] = useState( '' );
 	let multiTimezone,
 		selectedTimezoneDisplay = selectedTimezoneID;
 
 	const getTimezoneSelector = () => {
-		let foundTimezone = false;
 		const response = (
 			<div >
 				<span style={ { minWidth: '240px', margin: '0 5px 0 0' } /*todo: move to css */ } >
 					<Select
 						className={ classnames(
 							'googlesitekit-analytics__select-timezone',
-							{ 'mdc-text-field--error': validationIssues.timezone }
+							{ 'mdc-text-field--error': validationIssues }
 						) }
 						name="country"
 						enhanced
@@ -67,7 +66,6 @@ const TimezoneSelect = ( { timezone, setTimezone, validationIssues, setValidatio
 									let value = aCountry.defaultTimeZoneId;
 									const timezoneMatch = aCountry.timeZone.find( ( tz ) => tz.timeZoneId === timezone );
 									if ( timezoneMatch ) {
-										foundTimezone = true;
 										value = timezoneMatch.timeZoneId;
 										if ( aCountry.timeZone.length > 1 ) {
 											multiTimezone = aCountry.timeZone;
@@ -123,11 +121,6 @@ const TimezoneSelect = ( { timezone, setTimezone, validationIssues, setValidatio
 				</span>
 			</div>
 		);
-
-		setValidationIssues( {
-			...validationIssues,
-			timezone: ! foundTimezone,
-		} );
 
 		return response;
 	};
