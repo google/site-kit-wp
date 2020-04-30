@@ -24,6 +24,7 @@ import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
 import accounts from './accounts';
 import containers from './containers';
+import existingTag from './existing-tag';
 export { STORE_NAME };
 
 let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
@@ -60,18 +61,21 @@ export const INITIAL_STATE = Data.collectState(
 	baseModuleStore.INITIAL_STATE,
 	accounts.INITIAL_STATE,
 	containers.INITIAL_STATE,
+	existingTag.INITIAL_STATE,
 );
 
 export const actions = Data.collectActions(
 	baseModuleStore.actions,
 	accounts.actions,
 	containers.actions,
+	existingTag.actions,
 );
 
 export const controls = Data.collectControls(
 	baseModuleStore.controls,
 	accounts.controls,
 	containers.controls,
+	existingTag.controls,
 );
 
 export const reducer = Data.addInitializeReducer(
@@ -80,6 +84,7 @@ export const reducer = Data.addInitializeReducer(
 		baseModuleStore.reducer,
 		accounts.reducer,
 		containers.reducer,
+		existingTag.reducer,
 	)
 );
 
@@ -87,12 +92,14 @@ export const resolvers = Data.collectResolvers(
 	baseModuleStore.resolvers,
 	accounts.resolvers,
 	containers.resolvers,
+	existingTag.resolvers,
 );
 
 export const selectors = Data.collectSelectors(
 	baseModuleStore.selectors,
 	accounts.selectors,
 	containers.selectors,
+	existingTag.selectors,
 );
 
 const store = {
