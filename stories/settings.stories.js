@@ -22,6 +22,10 @@ import { __ } from '@wordpress/i18n';
  */
 storiesOf( 'Settings', module )
 	.add( 'Settings Tabs', () => {
+		global.googlesitekit = settingsData;
+		global.googlesitekit.modules.adsense.active = false;
+		global.googlesitekit.modules.adsense.setupComplete = false;
+
 		return (
 			<Layout>
 				<TabBar
@@ -47,12 +51,11 @@ storiesOf( 'Settings', module )
 	} )
 	.add( 'Connected Services', () => {
 		global.googlesitekit = settingsData;
-		global.googlesitekit.setupComplete = true;
-		global.googlesitekit.modules.analytics.setupComplete = true;
-		global.googlesitekit.modules[ 'search-console' ].setupComplete = true;
-		global.googlesitekit.modules.adsense.setupComplete = true;
-		global.googlesitekit.modules.adsense.active = true;
 		global.googlesitekit.modules.adsense.settings.accountID = 'pub-XXXXXXXXXXXXXXXX';
+		global.googlesitekit.modules.optimize.active = false;
+		global.googlesitekit.modules.optimize.setupComplete = false;
+		global.googlesitekit.modules.tagmanager.active = false;
+		global.googlesitekit.modules.tagmanager.setupComplete = false;
 
 		return (
 			<div className="mdc-layout-grid__inner">
@@ -68,6 +71,12 @@ storiesOf( 'Settings', module )
 		global.googlesitekit = settingsData;
 		global.googlesitekit.canAdsRun = true;
 		global.googlesitekit.modules.analytics.setupComplete = false;
+		global.googlesitekit.modules.adsense.active = false;
+		global.googlesitekit.modules.adsense.setupComplete = false;
+		global.googlesitekit.modules.optimize.active = false;
+		global.googlesitekit.modules.optimize.setupComplete = false;
+		global.googlesitekit.modules.tagmanager.active = false;
+		global.googlesitekit.modules.tagmanager.setupComplete = false;
 		return (
 			<SettingsModules activeTab={ 1 } />
 		);
