@@ -301,15 +301,12 @@ describe( 'modules/analytics settings', () => {
 
 	describe( 'selectors', () => {
 		describe( 'isDoingSubmitChanges', () => {
-			it( 'sets internal state while submitting changes', () => {
+			it( 'sets internal state while submitting changes', async () => {
+				registry.dispatch( STORE_NAME ).receiveSettings( validSettings );
+				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
+
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
 
-				registry.dispatch( STORE_NAME ).submitChanges();
-
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
-			} );
-
-			it( 'toggles the internal state again once submission is completed', async () => {
 				registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
