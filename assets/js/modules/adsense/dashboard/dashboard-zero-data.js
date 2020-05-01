@@ -39,11 +39,11 @@ export default function DashboardZeroData() {
 			<div className="mdc-layout-grid__inner">
 				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 					<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
-						{ __( 'We’re getting your site ready for ads', 'google-site-kit' ) }
+						{ __( 'No ad impressions yet', 'google-site-kit' ) }
 					</h3>
 
 					<p>
-						{ __( 'AdSense is reviewing your site. Meanwhile, make sure you’ve completed these steps in AdSense.', 'google-site-kit' ) }
+						{ __( 'You don’t have any ad impressions yet. Meanwhile, make sure you’ve completed these steps in AdSense.', 'google-site-kit' ) }
 					</p>
 
 					<SiteSteps />
