@@ -1,5 +1,5 @@
 /**
- * core/site data store: connection info.
+ * core/modules data store: module info.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -299,7 +299,7 @@ export const selectors = {
 	 * or both (eg. Analytics, which can install Analytics <script> tags in the
 	 * frontend, and show dashboards in the WordPress Admin).
 	 *
-	 * Returns a hash of objects with the shape, keyed by slug, when successful:
+	 * Returns an Object/map of objects, keyed by slug, with the following shape when successful:
 	 * ```
 	 * slug: {
 	 *   "slug": "tagmanager",
@@ -319,7 +319,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object|undefined} Modules available on the site.
+	 * @return {(Object|undefined)} Modules available on the site.
 	 */
 	getModules( state ) {
 		const { modules } = state;
@@ -337,7 +337,7 @@ export const selectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
-	 * @return {Object|undefined} A specific module object.
+	 * @return {(Object|undefined)} A specific module object; `undefined` if state is still loading or if said module doesn't exist.
 	 */
 	getModule: createRegistrySelector( ( select ) => ( state, slug ) => {
 		const modules = select( STORE_NAME ).getModules();
@@ -368,7 +368,7 @@ export const selectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
-	 * @return {Object|undefined} A specific module object.
+	 * @return {(Object|undefined)} A specific module object; `undefined` if state is still loading or if said module doesn't exist.
 	 */
 	isModuleActive: createRegistrySelector( ( select ) => ( state, slug ) => {
 		const module = select( STORE_NAME ).getModule( slug );
@@ -398,9 +398,9 @@ export const selectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
-	 * @return {boolean|undefined} Activation change status.
+	 * @return {(boolean|undefined)} Activation change status; `undefined` if state is still loading or if no module with that slug exists.
 	 */
-	isChangingModuleActivation: ( state, slug ) => {
+	isSettingModuleActivation: ( state, slug ) => {
 		return state.isFetchingSetModuleStatus[ slug ];
 	},
 };

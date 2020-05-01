@@ -1,5 +1,5 @@
 /**
- * core/site data store: modules info tests.
+ * core/modules data store: modules tests.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -114,7 +114,7 @@ describe( 'core/modules modules', () => {
 				// Wait until this activation action has completed.
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.isChangingModuleActivation( slug ) === false
+					.isSettingModuleActivation( slug ) === false
 				);
 
 				// Ensure the proper body parameters were sent.
@@ -176,7 +176,7 @@ describe( 'core/modules modules', () => {
 				// Wait until this activation action has completed.
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.isChangingModuleActivation( slug ) === false
+					.isSettingModuleActivation( slug ) === false
 				);
 
 				// Ensure the proper body parameters were sent.
@@ -252,7 +252,7 @@ describe( 'core/modules modules', () => {
 				// Wait until this activation action has completed.
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.isChangingModuleActivation( slug ) === false
+					.isSettingModuleActivation( slug ) === false
 				);
 
 				// Ensure the proper body parameters were sent.
@@ -314,7 +314,7 @@ describe( 'core/modules modules', () => {
 				// Wait until this deactivation action has completed.
 				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.isChangingModuleActivation( slug ) === false
+					.isSettingModuleActivation( slug ) === false
 				);
 
 				// Ensure the proper body parameters were sent.
