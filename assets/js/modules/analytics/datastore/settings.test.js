@@ -104,7 +104,14 @@ describe( 'modules/analytics settings', () => {
 					.mockResponseOnce(
 						JSON.stringify( createdProperty ),
 						{ status: 200 }
-					);
+					)
+					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ )
+					.mockResponseOnce( async ( req ) => {
+						const { data } = await req.json();
+						// Return the same settings passed to the API.
+						return JSON.stringify( data );
+					} )
+				;
 
 				const result = await registry.dispatch( STORE_NAME ).submitChanges();
 
@@ -167,7 +174,14 @@ describe( 'modules/analytics settings', () => {
 					.mockResponseOnce(
 						JSON.stringify( createdProfile ),
 						{ status: 200 }
-					);
+					)
+					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ )
+					.mockResponseOnce( async ( req ) => {
+						const { data } = await req.json();
+						// Return the same settings passed to the API.
+						return JSON.stringify( data );
+					} )
+				;
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
@@ -236,7 +250,14 @@ describe( 'modules/analytics settings', () => {
 					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/ )
 					.mockResponseOnce( JSON.stringify( createdProperty ), { status: 200 } )
 					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/ )
-					.mockResponseOnce( JSON.stringify( createdProfile ), { status: 200 } );
+					.mockResponseOnce( JSON.stringify( createdProfile ), { status: 200 } )
+					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ )
+					.mockResponseOnce( async ( req ) => {
+						const { data } = await req.json();
+						// Return the same settings passed to the API.
+						return JSON.stringify( data );
+					} )
+				;
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
