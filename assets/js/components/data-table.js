@@ -24,7 +24,6 @@ import classnames from 'classnames';
 import {
 	each,
 	debounce,
-	trim,
 } from 'lodash';
 
 /**
@@ -71,14 +70,14 @@ export const getDataTableFromData = ( data, headers, options ) => {
 								{ cell }
 							</Link>
 
-							{ showURLs && '' !== trim( link, '/' ) &&
+							{ showURLs &&
 								<Link
 									className="googlesitekit-table__body-item-url"
 									href={ link }
 									inherit
 									external
 								>
-									{ trim( link, '/' ) }
+									{ link }
 								</Link>
 							}
 						</div>

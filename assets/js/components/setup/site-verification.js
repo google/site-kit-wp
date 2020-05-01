@@ -48,7 +48,7 @@ class SiteVerification extends Component {
 
 		this.state = {
 			loading: authenticated && shouldSetup,
-			loadingMsg: __( 'Getting your verified sites...', 'google-site-kit' ),
+			loadingMsg: __( 'Getting your verified sites…', 'google-site-kit' ),
 			siteURL: ' ', // Space allows TextField label to look right.
 			selectedURL: '',
 			errorCode: false,
@@ -127,7 +127,7 @@ class SiteVerification extends Component {
 
 		this.setState( {
 			loading: true,
-			loadingMsg: __( 'Verifying...', 'google-site-kit' ),
+			loadingMsg: __( 'Verifying…', 'google-site-kit' ),
 			errorCode: false,
 			errorMsg: '',
 		} );
