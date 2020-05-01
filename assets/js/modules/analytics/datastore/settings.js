@@ -101,6 +101,8 @@ export const controls = {
 		}
 
 		await API.invalidateCache( 'modules', 'analytics' );
+
+		return {};
 	} ),
 };
 
