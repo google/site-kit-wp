@@ -24,6 +24,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
+import { withFilters } from '@wordpress/components';
 import { Component, Fragment } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
@@ -40,12 +41,14 @@ import ProgressBar from '../../../components/progress-bar';
 import AdSenseDashboardOutro from './dashboard-outro';
 import { isAdsenseConnectedAnalytics } from '../util';
 import ModuleSettingsWarning from '../../../components/notifications/module-settings-warning';
-import DashboardZeroData from './dashboard-zero-data';
 import { getModulesData } from '../../../util';
 import HelpLink from '../../../components/help-link';
 import Header from '../../../components/header';
 import PageHeader from '../../../components/page-header';
 import Layout from '../../../components/layout/layout';
+
+// Empty component to allow filtering in refactored version.
+const AdSenseDashboardZeroData = withFilters( 'googlesitekit.AdSenseDashboardZeroData' )( () => null );
 
 class AdSenseDashboardWidget extends Component {
 	constructor( props ) {
@@ -163,7 +166,7 @@ class AdSenseDashboardWidget extends Component {
 									mdc-layout-grid__cell--span-12
 								">
 									<Layout fill>
-										<DashboardZeroData />
+										<AdSenseDashboardZeroData />
 									</Layout>
 								</div>
 							}

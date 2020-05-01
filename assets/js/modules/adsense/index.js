@@ -17,6 +17,28 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { addFilter } from '@wordpress/hooks';
+
+/**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import './datastore';
+import { fillFilterWithComponent } from '../../util';
+import { DashboardZeroData as AdSenseDashboardZeroData } from './dashboard';
+
+function ConnectedAdSenseDashboardZeroData( props ) {
+	return (
+		<Data.RegistryProvider value={ Data }>
+			<AdSenseDashboardZeroData { ...props } />
+		</Data.RegistryProvider>
+	);
+}
+
+addFilter(
+	'googlesitekit.AdSenseDashboardZeroData',
+	'googlesitekit.AdSenseDashboardZeroDataRefactored',
+	fillFilterWithComponent( ConnectedAdSenseDashboardZeroData )
+);
