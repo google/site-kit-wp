@@ -97,28 +97,28 @@ jobs:
     - php: nightly
     - env: E2E=1 WP_VERSION=nightly
   include:
-    - stage: test
-      name: Lint
-      php: 7.4
-      env: WP_VERSION=4.7 SNIFF=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-    - name: PHP Tests (PHP 5.6, WordPress 4.7)
-      php: 5.6
-      env: WP_VERSION=4.7 PHP=1
-    - name: PHP Tests (PHP 7.4, WordPress latest)
-      php: 7.4
-      env: WP_VERSION=latest PHP=1
-    - name: PHP Tests (PHP 7.4, WordPress Multisite latest)
-      php: 7.4
-      env: WP_VERSION=latest WP_MULTISITE=1 PHP=1
-    - name: JS Tests
-      php: 7.4
-      env: WP_VERSION=latest JS=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-    - name: Visual Regression
-      env: VRT=1
-    - name: PHP Tests (PHP nightly, WordPress trunk)
-      stage: test
-      php: nightly
-      env: WP_VERSION=master PHP=1
+    # - stage: test
+    #   name: Lint
+    #   php: 7.4
+    #   env: WP_VERSION=4.7 SNIFF=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+    # - name: PHP Tests (PHP 5.6, WordPress 4.7)
+    #   php: 5.6
+    #   env: WP_VERSION=4.7 PHP=1
+    # - name: PHP Tests (PHP 7.4, WordPress latest)
+    #   php: 7.4
+    #   env: WP_VERSION=latest PHP=1
+    # - name: PHP Tests (PHP 7.4, WordPress Multisite latest)
+    #   php: 7.4
+    #   env: WP_VERSION=latest WP_MULTISITE=1 PHP=1
+    # - name: JS Tests
+    #   php: 7.4
+    #   env: WP_VERSION=latest JS=1 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+    # - name: Visual Regression
+    #   env: VRT=1
+    # - name: PHP Tests (PHP nightly, WordPress trunk)
+    #   stage: test
+    #   php: nightly
+    #   env: WP_VERSION=master PHP=1
     - stage: test
       name: E2E Tests (WordPress latest)
       env: E2E=1
