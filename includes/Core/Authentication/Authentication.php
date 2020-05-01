@@ -576,7 +576,7 @@ final class Authentication {
 
 		add_filter(
 			'googlesitekit_user_data',
-			function( $data ) {
+			function( $user ) use ( $data ) {
 				$current_user = wp_get_current_user();
 				$new_data     = array(
 					'id'      => $current_user->ID,
@@ -584,8 +584,8 @@ final class Authentication {
 					'name'    => $current_user->display_name,
 					'picture' => $data['userData']['picture'],
 				);
-				$data['user'] = $new_data;
-				return $data;
+				$user['user'] = $new_data;
+				return $user;
 			}
 		);
 
@@ -638,9 +638,9 @@ final class Authentication {
 
 		add_filter(
 			'googlesitekit_user_data',
-			function( $data ) {
-				$data['verified'] = $data['isVerified'];
-				return $data;
+			function( $user ) use ( $data ) {
+				$user['verified'] = $data['isVerified'];
+				return $user;
 			}
 		);
 

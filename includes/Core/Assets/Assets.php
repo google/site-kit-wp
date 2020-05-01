@@ -381,7 +381,7 @@ final class Assets {
 			new Script_Data(
 				'googlesitekit-user-data',
 				array(
-					'global'        => '__googlesitekitUserData',
+					'global'        => '_googlesitekitUserData',
 					'data_callback' => function() {
 						return $this->get_inline_user_data();
 					},
@@ -461,6 +461,7 @@ final class Assets {
 					'dependencies' => array(
 						'googlesitekit-data',
 						'googlesitekit-api',
+						'googlesitekit-user-data',
 					),
 				)
 			),
