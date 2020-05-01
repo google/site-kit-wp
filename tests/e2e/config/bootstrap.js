@@ -122,6 +122,12 @@ function observeConsoleLogging() {
 			return;
 		}
 
+		// We log this separately now in a way which includes the URL
+		// which is much more useful than this message.
+		if ( text.startsWith( 'Failed to load resource: the server responded with a status of' ) ) {
+			return;
+		}
+
 		// A bug present in WordPress 5.2 will produce console warnings when
 		// loading the Dashicons font. These can be safely ignored, as they do
 		// not otherwise regress on application behavior. This logic should be
