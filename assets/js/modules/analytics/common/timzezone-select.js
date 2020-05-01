@@ -43,10 +43,10 @@ const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
 	const getTimezoneSelector = () => {
 		const response = (
 			<div >
-				<span style={ { minWidth: '240px', margin: '0 5px 0 0' } /*todo: move to css */ } >
+				<span>
 					<Select
 						className={ classnames(
-							'googlesitekit-analytics__select-timezone',
+							'googlesitekit-analytics__select-timezone first',
 							{ 'mdc-text-field--error': hasError }
 						) }
 						name="country"
@@ -88,7 +88,7 @@ const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
 								} ) }
 					</Select>
 				</span>
-				<span style={ { minWidth: '240px', margin: '5px 5px 0 0' } /*todo: move to css */ } >
+				<span>
 					{ multiTimezone
 						? <Select
 							className="googlesitekit-analytics__select-timezone"
