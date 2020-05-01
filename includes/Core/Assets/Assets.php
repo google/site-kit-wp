@@ -659,12 +659,26 @@ final class Assets {
 	 */
 	private function get_inline_user_data() {
 		$current_user = wp_get_current_user();
-		return array(
-			'id'      => $current_user->ID,
-			'email'   => $current_user->user_email,
-			'name'    => $current_user->display_name,
-			'picture' => get_avatar_url( $current_user->user_email ),
+
+		$inline_data = array(
+			'user' => array(
+				'id'      => $current_user->ID,
+				'email'   => $current_user->user_email,
+				'name'    => $current_user->display_name,
+				'picture' => get_avatar_url( $current_user->user_email ),
+			),
 		);
+
+		/**
+		 * Filters the user inline data to pass to JS.
+		 *
+		 * This should not include anything remotely expensive to compute.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param array $data User data.
+		 */
+		return apply_filters( 'googlesitekit_user_data', $inline_data );
 	}
 
 	/**

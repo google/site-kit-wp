@@ -574,6 +574,21 @@ final class Authentication {
 			$data['userData']['picture'] = $profile_data['photo'];
 		}
 
+		add_filter(
+			'googlesitekit_user_data',
+			function( $data ) {
+				$current_user = wp_get_current_user();
+				$new_data     = array(
+					'id'      => $current_user->ID,
+					'email'   => $data['userData']['email'],
+					'name'    => $current_user->display_name,
+					'picture' => $data['userData']['picture'],
+				);
+				$data['user'] = $new_data;
+				return $data;
+			}
+		);
+
 		$auth_client = $this->get_oauth_client();
 		if ( $auth_client->using_proxy() ) {
 			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
@@ -620,6 +635,15 @@ final class Authentication {
 		} else {
 			$data['isVerified'] = false;
 		}
+
+		add_filter(
+			'googlesitekit_user_data',
+			function( $data ) {
+				$data['verified'] = $data['isVerified'];
+				return $data;
+			}
+		);
+
 
 		// Flag the first admin user.
 		$first_admin_id  = (int) $this->first_admin->get();
