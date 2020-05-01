@@ -106,12 +106,13 @@ describe( 'modules/analytics settings', () => {
 						{ status: 200 }
 					);
 
-				await registry.dispatch( STORE_NAME ).submitChanges();
+				const result = await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject( {
 					data: { accountID: '12345' },
 				} );
 
+				expect( result.error ).toBeFalsy();
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( createdProperty.id );
 				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( createdProperty.internalWebPropertyId );
 			} );
