@@ -161,7 +161,6 @@ describe( 'modules/analytics profiles', () => {
 	describe( 'selectors', () => {
 		describe( 'getProfiles', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( {} );
 				fetch
 					.doMockOnceIf(
 						/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/
@@ -199,7 +198,6 @@ describe( 'modules/analytics profiles', () => {
 			} );
 
 			it( 'does not make a network request if profiles for this account + property are already present', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( {} );
 				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
 
 				// Load data into this store so there are matches for the data we're about to select,
@@ -219,7 +217,6 @@ describe( 'modules/analytics profiles', () => {
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( {} );
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
