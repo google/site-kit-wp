@@ -105,7 +105,7 @@ class Settings extends Module_Settings {
 				}
 
 				// Migrate legacy account statuses (now split into account status and site status).
-				if ( isset( $this->legacy_account_statuses[ $option['accountStatus'] ] ) ) {
+				if ( ! empty( $option['accountStatus'] ) && isset( $this->legacy_account_statuses[ $option['accountStatus'] ] ) ) {
 					foreach ( $this->legacy_account_statuses[ $option['accountStatus'] ] as $key => $value ) {
 						$option[ $key ] = $value;
 					}
