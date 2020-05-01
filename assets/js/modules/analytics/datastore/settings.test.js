@@ -79,6 +79,11 @@ describe( 'modules/analytics settings', () => {
 	} );
 
 	describe( 'actions', () => {
+		beforeEach( () => {
+			// Receive empty settings to prevent unexpected fetch by resolver.
+			registry.dispatch( STORE_NAME ).receiveSettings( {} );
+		} );
+
 		describe( 'submitChanges', () => {
 			it( 'dispatches createProperty if the "set up a new property" option is chosen', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( {
