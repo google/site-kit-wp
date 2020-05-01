@@ -48,6 +48,8 @@ describe( 'modules/analytics profiles', () => {
 		store = registry.stores[ STORE_NAME ].store;
 
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
+		// Receive empty settings to prevent unexpected fetch by resolver.
+		registry.dispatch( STORE_NAME ).receiveSettings( {} );
 	} );
 
 	afterAll( () => {
@@ -142,10 +144,15 @@ describe( 'modules/analytics profiles', () => {
 				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( response );
 
 				// Ignore the request fired by the `getProperties` selector.
-				muteConsole( 'error' );
+				fetch
+					.doMockIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/
+					)
+					.mockResponse( JSON.stringify( {} ) );
+
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
-				// No properties should have been added yet, as the property creation
-				// failed.
+
+				// No properties should have been added yet, as the property creation failed.
 				expect( properties ).toEqual( undefined );
 			} );
 		} );
