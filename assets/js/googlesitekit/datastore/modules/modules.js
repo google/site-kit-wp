@@ -35,7 +35,6 @@ const START_FETCH_SET_MODULE_STATUS = 'START_FETCH_SET_MODULE_STATUS';
 const FETCH_SET_MODULE_STATUS = 'FETCH_SET_MODULE_STATUS';
 const FINISH_FETCH_SET_MODULE_STATUS = 'FINISH_FETCH_SET_MODULE_STATUS';
 const CATCH_FETCH_SET_MODULE_STATUS = 'CATCH_FETCH_SET_MODULE_STATUS';
-const RECEIVE_SET_MODULE_STATUS = 'RECEIVE_SET_MODULE_STATUS';
 const START_FETCH_MODULES = 'START_FETCH_MODULES';
 const FETCH_MODULES = 'FETCH_MODULES';
 const FINISH_FETCH_MODULES = 'FINISH_FETCH_MODULES';
@@ -98,14 +97,16 @@ export const actions = {
 
 		let response, error;
 
+		const params = { active, slug };
+
 		yield {
-			payload: { active, slug },
+			payload: { params },
 			type: START_FETCH_SET_MODULE_STATUS,
 		};
 
 		try {
 			response = yield {
-				payload: { active, slug },
+				payload: { params },
 				type: FETCH_SET_MODULE_STATUS,
 			};
 
@@ -115,13 +116,13 @@ export const actions = {
 			}
 
 			yield {
-				payload: { active, slug },
+				payload: { params },
 				type: FINISH_FETCH_SET_MODULE_STATUS,
 			};
 		} catch ( e ) {
 			error = e;
 			yield {
-				payload: { active, slug, error },
+				payload: { params, error },
 				type: CATCH_FETCH_SET_MODULE_STATUS,
 			};
 		}
@@ -171,26 +172,6 @@ export const actions = {
 	},
 
 	/**
-	 * Receive the API respond for module (de)activation.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param  {string}  slug    Name of slug to activate/deactivate.
-	 * @param  {boolean} active  `true` to activate; `false` to deactivate.
-	 * @return {Object} Redux-style action.
-	 */
-	receiveSetModuleStatus( slug, active ) {
-		invariant( slug, 'slug is required.' );
-		invariant( active, 'active is required.' );
-
-		return {
-			payload: { active, slug },
-			type: RECEIVE_SET_MODULE_STATUS,
-		};
-	},
-
-	/**
 	 * Stores modules received from the REST API.
 	 *
 	 * @since 1.5.0
@@ -210,8 +191,8 @@ export const actions = {
 };
 
 export const controls = {
-	[ FETCH_SET_MODULE_STATUS ]: ( { payload: { active, slug } } ) => {
-		return API.set( 'core', 'modules', 'activation', { active, slug } );
+	[ FETCH_SET_MODULE_STATUS ]: ( { payload: { params } } ) => {
+		return API.set( 'core', 'modules', 'activation', params );
 	},
 	[ FETCH_MODULES ]: () => {
 		return API.get( 'core', 'modules', 'list', null, { useCache: false } );
@@ -221,7 +202,7 @@ export const controls = {
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case START_FETCH_SET_MODULE_STATUS: {
-			const { slug } = payload;
+			const { slug } = payload.params;
 
 			return {
 				...state,
@@ -233,7 +214,7 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case FINISH_FETCH_SET_MODULE_STATUS: {
-			const { slug } = payload;
+			const { slug } = payload.params;
 
 			return {
 				...state,
@@ -245,7 +226,7 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case CATCH_FETCH_SET_MODULE_STATUS: {
-			const { slug } = payload;
+			const { slug } = payload.params;
 
 			return {
 				...state,
