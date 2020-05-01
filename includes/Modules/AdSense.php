@@ -852,6 +852,7 @@ tag_partner: "site_kit"
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-modules',
+						'googlesitekit-datastore-site',
 					),
 				)
 			),
