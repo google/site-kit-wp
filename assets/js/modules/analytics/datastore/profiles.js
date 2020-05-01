@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { groupBy } from 'lodash';
 
 /**
  * Internal dependencies
@@ -118,7 +117,7 @@ export const actions = {
 				type: FETCH_PROFILES,
 			};
 
-			yield actions.receiveProfiles( response );
+			yield actions.receiveProfiles( response, { propertyID } );
 
 			yield {
 				payload: { propertyID },
@@ -162,11 +161,12 @@ export const actions = {
 		};
 	},
 
-	receiveProfiles( profiles ) {
+	receiveProfiles( profiles, { propertyID } ) {
 		invariant( Array.isArray( profiles ), 'profiles must be an array.' );
+		invariant( propertyID, 'propertyID is required.' );
 
 		return {
-			payload: { profiles },
+			payload: { profiles, propertyID },
 			type: RECEIVE_PROFILES,
 		};
 	},
@@ -285,13 +285,13 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_PROFILES: {
-			const { profiles } = payload;
+			const { profiles, propertyID } = payload;
 
 			return {
 				...state,
 				profiles: {
 					...state.profiles,
-					...groupBy( profiles, 'webPropertyId' ), // Capitalization rule exception: `webPropertyId`
+					[ propertyID ]: [ ...profiles ],
 				},
 			};
 		}

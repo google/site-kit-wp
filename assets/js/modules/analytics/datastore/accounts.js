@@ -61,8 +61,14 @@ export const actions = {
 
 			const { dispatch } = yield Data.commonActions.getRegistry();
 			yield actions.receiveAccounts( response.accounts );
-			dispatch( STORE_NAME ).receiveProperties( response.properties );
-			dispatch( STORE_NAME ).receiveProfiles( response.profiles );
+			// Remove this line
+			const accountID = '';
+			// response.properties - pick first account ID
+			dispatch( STORE_NAME ).receiveProperties( response.properties, { accountID } );
+			// Remove this line
+			const propertyID = '';
+			// response.profiles.webpropertyid
+			dispatch( STORE_NAME ).receiveProfiles( response.profiles, { propertyID } );
 
 			if ( response.matchedProperty ) {
 				dispatch( STORE_NAME ).receiveMatchedProperty( response.matchedProperty );
