@@ -42,26 +42,15 @@ export default function SetupAccountApproved() {
 	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
 	const originalAccountStatus = useSelect( ( select ) => select( STORE_NAME ).getOriginalAccountStatus() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
-	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 
-	const {
-		setAccountSetupComplete,
-		submitChanges,
-	} = useDispatch( STORE_NAME );
-
-	const continueHandler = useCallback( () => {
-		setAccountSetupComplete( true );
-
-		// While the button is already disabled based on whether a submission
-		// is currently in progress, the button itself must not rely on
-		// canSubmitChanges, since that may only become true due to the above
-		// modification of the 'accountSetupComplete' setting.
+	const { completeAccountSetup } = useDispatch( STORE_NAME );
+	const continueHandler = useCallback( async () => {
 		// TODO: Remove temporary hack to avoid saving in Storybook.
-		if ( ! canSubmitChanges || global.__STORYBOOK_ADDONS ) {
+		if ( isDoingSubmitChanges || global.__STORYBOOK_ADDONS ) {
 			return;
 		}
-		submitChanges();
-	}, [ isDoingSubmitChanges, canSubmitChanges ] );
+		await completeAccountSetup();
+	}, [ isDoingSubmitChanges ] );
 
 	if ( 'undefined' === typeof existingTag || 'undefined' === typeof originalAccountStatus ) {
 		return null;

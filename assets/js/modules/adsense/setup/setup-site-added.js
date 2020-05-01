@@ -40,22 +40,10 @@ const { useSelect, useDispatch } = Data;
 
 export default function SetupSiteAdded( { finishSetup } ) {
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
-	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 
-	const {
-		setSiteSetupComplete,
-		submitChanges,
-	} = useDispatch( STORE_NAME );
-
-	const continueHandler = useCallback( async ( event ) => {
-		event.preventDefault();
-		setSiteSetupComplete( true );
-
-		// While the button is already disabled based on whether a submission
-		// is currently in progress, the button itself must not rely on
-		// canSubmitChanges, since that may only become true due to the above
-		// modification of the 'accountSetupComplete' setting.
-		if ( ! canSubmitChanges ) {
+	const { completeSiteSetup } = useDispatch( STORE_NAME );
+	const continueHandler = useCallback( async () => {
+		if ( isDoingSubmitChanges ) {
 			return;
 		}
 
@@ -66,12 +54,12 @@ export default function SetupSiteAdded( { finishSetup } ) {
 			return;
 		}
 
-		const { error } = await submitChanges() || {};
-		if ( ! error ) {
+		const success = await completeSiteSetup();
+		if ( success ) {
 			finishSetup();
 			trackEvent( 'adsense_setup', 'complete_adsense_setup' );
 		}
-	}, [ isDoingSubmitChanges, canSubmitChanges, finishSetup ] );
+	}, [ isDoingSubmitChanges, finishSetup ] );
 
 	return (
 		<Fragment>

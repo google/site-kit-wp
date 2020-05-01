@@ -46,6 +46,9 @@ const CATCH_FETCH_SAVE_USE_SNIPPET = 'CATCH_FETCH_SAVE_USE_SNIPPET';
 
 const RECEIVE_SAVE_USE_SNIPPET = 'RECEIVE_SAVE_USE_SNIPPET';
 
+const COMPLETE_ACCOUNT_SETUP = 'COMPLETE_ACCOUNT_SETUP';
+const COMPLETE_SITE_SETUP = 'COMPLETE_SITE_SETUP';
+
 // The original account status on pageload is a specific requirement for
 // certain parts of the AdSense setup flow.
 const RECEIVE_ORIGINAL_ACCOUNT_STATUS = 'RECEIVE_ORIGINAL_ACCOUNT_STATUS';
@@ -130,6 +133,8 @@ export const actions = {
 	 * Submits all changes currently present in the client, persisting them on the server.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @return {Object} Empty object on success, object with `error` property on failure.
 	 */
 	*submitChanges() {
 		yield {
@@ -137,7 +142,7 @@ export const actions = {
 			type: START_SUBMIT_CHANGES,
 		};
 
-		yield {
+		const { error } = yield {
 			payload: {},
 			type: SUBMIT_CHANGES,
 		};
@@ -146,6 +151,44 @@ export const actions = {
 			payload: {},
 			type: FINISH_SUBMIT_CHANGES,
 		};
+
+		return { error };
+	},
+
+	/**
+	 * Sets the accountSetupComplete flag to true and submits all changes.
+	 *
+	 * This asynchronous action is used to couple setting of the flag with the
+	 * submission of the data, to avoid getting the value out of sync.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean} True on success, false on failure.
+	 */
+	*completeAccountSetup() {
+		const success = yield {
+			payload: {},
+			type: COMPLETE_ACCOUNT_SETUP,
+		};
+		return success;
+	},
+
+	/**
+	 * Sets the siteSetupComplete flag to true and submits all changes.
+	 *
+	 * This asynchronous action is used to couple setting of the flag with the
+	 * submission of the data, to avoid getting the value out of sync.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean} True on success, false on failure.
+	 */
+	*completeSiteSetup() {
+		const success = yield {
+			payload: {},
+			type: COMPLETE_SITE_SETUP,
+		};
+		return success;
 	},
 
 	receiveOriginalAccountStatus( originalAccountStatus ) {
@@ -175,6 +218,41 @@ export const controls = {
 		}
 
 		await API.invalidateCache( 'modules', 'adsense' );
+		return {};
+	} ),
+	[ COMPLETE_ACCOUNT_SETUP ]: createRegistryControl( ( registry ) => async () => {
+		await registry.dispatch( STORE_NAME ).setAccountSetupComplete( true );
+		// canSubmitChanges cannot be checked before here because the settings
+		// won't have changed yet.
+		if ( ! registry.select( STORE_NAME ).canSubmitChanges() ) {
+			// Unset flag again.
+			await registry.dispatch( STORE_NAME ).setAccountSetupComplete( false );
+			return false;
+		}
+		const { error } = await registry.dispatch( STORE_NAME ).submitChanges();
+		if ( error ) {
+			// Unset flag again.
+			await registry.dispatch( STORE_NAME ).setAccountSetupComplete( false );
+			return false;
+		}
+		return true;
+	} ),
+	[ COMPLETE_SITE_SETUP ]: createRegistryControl( ( registry ) => async () => {
+		await registry.dispatch( STORE_NAME ).setSiteSetupComplete( true );
+		// canSubmitChanges cannot be checked before here because the settings
+		// won't have changed yet.
+		if ( ! registry.select( STORE_NAME ).canSubmitChanges() ) {
+			// Unset flag again.
+			await registry.dispatch( STORE_NAME ).setSiteSetupComplete( false );
+			return false;
+		}
+		const { error } = await registry.dispatch( STORE_NAME ).submitChanges();
+		if ( error ) {
+			// Unset flag again.
+			await registry.dispatch( STORE_NAME ).setSiteSetupComplete( false );
+			return false;
+		}
+		return true;
 	} ),
 };
 
