@@ -283,7 +283,14 @@ describe( 'modules/analytics tags', () => {
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
-				muteConsole( 'error' );
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/
+					)
+					.mockResponseOnce(
+						JSON.stringify( fixtures.getTagPermissionsAccess ),
+						{ status: 200 }
+					);
 				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( fixtures.getTagPermissionsNoAccess.propertyID );
 
 				expect( hasPermission ).toEqual( undefined );
