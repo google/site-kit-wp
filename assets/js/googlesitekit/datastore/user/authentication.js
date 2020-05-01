@@ -136,6 +136,19 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 	}
 };
+
+export const resolvers = {
+	*getAuthentication() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const authenticationInfo = registry.select( STORE_NAME ).getAuthentication();
+
+		if ( ! authenticationInfo ) {
+			yield actions.fetchAuthentication();
+		}
+	},
+};
+
 export const selectors = {
 
 	/**
@@ -209,18 +222,6 @@ export const selectors = {
 		const { requiredScopes } = select( STORE_NAME ).getAuthentication() || {};
 		return requiredScopes;
 	} ),
-};
-
-export const resolvers = {
-	*getAuthentication() {
-		const registry = yield Data.commonActions.getRegistry();
-
-		const authenticationInfo = registry.select( STORE_NAME ).getAuthentication();
-
-		if ( ! authenticationInfo ) {
-			yield actions.fetchAuthentication();
-		}
-	},
 };
 
 export default {

@@ -59,7 +59,7 @@ if ( 'authentication_success' === notification || 'authentication_failure' === n
 	addFilter( 'googlesitekit.DashboardNotifications',
 		'googlesitekit.SetupNotification',
 		addSetupNotifications, 1 );
-} else if ( setup.authenticated && setup.isVerified ) {
+} else if ( setup.isAuthenticated && setup.isVerified ) {
 	addFilter( 'googlesitekit.DashboardNotifications',
 		'googlesitekit.ModulesNotification',
 		addModulesNotifications, 1 );

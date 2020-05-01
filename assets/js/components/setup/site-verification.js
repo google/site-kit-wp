@@ -44,10 +44,10 @@ class SiteVerification extends Component {
 	constructor( props ) {
 		super( props );
 
-		const { authenticated, shouldSetup } = this.props;
+		const { isAuthenticated, shouldSetup } = this.props;
 
 		this.state = {
-			loading: authenticated && shouldSetup,
+			loading: isAuthenticated && shouldSetup,
 			loadingMsg: __( 'Getting your verified sites…', 'google-site-kit' ),
 			siteURL: ' ', // Space allows TextField label to look right.
 			selectedURL: '',
@@ -59,9 +59,9 @@ class SiteVerification extends Component {
 	}
 
 	componentDidMount() {
-		const { authenticated, shouldSetup } = this.props;
+		const { isAuthenticated, shouldSetup } = this.props;
 
-		if ( ! authenticated || ! shouldSetup ) {
+		if ( ! isAuthenticated || ! shouldSetup ) {
 			return;
 		}
 
@@ -215,7 +215,7 @@ class SiteVerification extends Component {
 	}
 
 	render() {
-		const { authenticated, shouldSetup } = this.props;
+		const { isAuthenticated, shouldSetup } = this.props;
 		const { errorMsg } = this.state;
 
 		if ( ! shouldSetup ) {
@@ -240,7 +240,7 @@ class SiteVerification extends Component {
 					</p>
 				}
 
-				{ authenticated && this.renderForm() }
+				{ isAuthenticated && this.renderForm() }
 
 			</Fragment>
 		);
@@ -248,7 +248,7 @@ class SiteVerification extends Component {
 }
 
 SiteVerification.propTypes = {
-	authenticated: PropTypes.bool.isRequired,
+	isAuthenticated: PropTypes.bool.isRequired,
 	shouldSetup: PropTypes.bool.isRequired,
 	siteVerificationSetup: PropTypes.func.isRequired,
 	completeSetup: PropTypes.func,

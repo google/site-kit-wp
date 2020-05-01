@@ -30,7 +30,7 @@ import ErrorNotification from '../components/notifications/error-notification';
 
 class Header extends Component {
 	render() {
-		const { authenticated } = global.googlesitekit.setup;
+		const { isAuthenticated } = global.googlesitekit.setup;
 
 		return (
 			<Fragment>
@@ -54,7 +54,7 @@ class Header extends Component {
 								mdc-layout-grid__cell--span-4-tablet
 								mdc-layout-grid__cell--span-6-desktop
 							">
-								{ authenticated && <UserMenu /> }
+								{ isAuthenticated && <UserMenu /> }
 							</div>
 						</div>
 					</section>

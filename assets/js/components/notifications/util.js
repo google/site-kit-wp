@@ -48,7 +48,7 @@ export async function getTotalNotifications() {
 
 	if (
 		! setup.isSiteKitConnected ||
-		( ! setup.authenticated && ! setup.isVerified )
+		( ! setup.isAuthenticated && ! setup.isVerified )
 	) {
 		return 0;
 	}

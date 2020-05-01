@@ -42,7 +42,7 @@ class DashboardSplashApp extends Component {
 
 		const {
 			showModuleSetupWizard,
-			authenticated,
+			isAuthenticated,
 			isVerified,
 			hasSearchConsoleProperty,
 		} = global.googlesitekit.setup; /*eslint camelcase: 0*/
@@ -55,7 +55,7 @@ class DashboardSplashApp extends Component {
 		} = global.googlesitekit.permissions;
 
 		this.state = {
-			showAuthenticationSetupWizard: canSetup && ( ! authenticated || ! isVerified || ! hasSearchConsoleProperty ),
+			showAuthenticationSetupWizard: canSetup && ( ! isAuthenticated || ! isVerified || ! hasSearchConsoleProperty ),
 			showModuleSetupWizard,
 			canViewDashboard,
 			canPublishPosts,
@@ -63,10 +63,10 @@ class DashboardSplashApp extends Component {
 			connectURL,
 		};
 
-		if ( canAuthenticate && ! authenticated ) {
+		if ( canAuthenticate && ! isAuthenticated ) {
 			this.state.buttonMode = AUTHENTICATION;
 		}
-		if ( canSetup && ( ! authenticated || ! isVerified || ! hasSearchConsoleProperty ) ) {
+		if ( canSetup && ( ! isAuthenticated || ! isVerified || ! hasSearchConsoleProperty ) ) {
 			this.state.buttonMode = SETUP;
 		}
 

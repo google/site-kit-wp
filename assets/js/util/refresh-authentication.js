@@ -31,7 +31,7 @@ export const refreshAuthentication = async () => {
 
 		// We should really be using state management. This is terrible.
 		global.googlesitekit.setup = global.googlesitekit.setup || {};
-		global.googlesitekit.setup.authenticated = response.authenticated;
+		global.googlesitekit.setup.isAuthenticated = response.authenticated;
 		global.googlesitekit.setup.requiredScopes = response.requiredScopes;
 		global.googlesitekit.setup.grantedScopes = response.grantedScopes;
 		global.googlesitekit.setup.needReauthenticate = requiredAndGrantedScopes.length < response.requiredScopes.length;
