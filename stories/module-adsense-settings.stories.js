@@ -30,12 +30,16 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import SettingsModule from '../assets/js/components/settings/settings-module';
-import { SettingsMain } from '../assets/js/modules/adsense/settings';
+import {
+	SettingsMain,
+	SettingsSetupIncomplete,
+} from '../assets/js/modules/adsense/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 
 import { STORE_NAME } from '../assets/js/modules/adsense/datastore';
 import {
+	ACCOUNT_STATUS_PENDING,
 	ACCOUNT_STATUS_APPROVED,
 	SITE_STATUS_ADDED,
 } from '../assets/js/modules/adsense/util/status';
@@ -47,6 +51,28 @@ function filterAdSenseSettings() {
 		'googlesitekit.ModuleSettingsDetails-adsense',
 		'googlesitekit.AdSenseModuleSettings',
 		fillFilterWithComponent( SettingsMain )
+	);
+}
+
+function filterAdSenseSettingsSetupIncomplete() {
+	removeAllFilters( 'googlesitekit.ModuleSetupIncomplete' );
+	addFilter(
+		'googlesitekit.ModuleSetupIncomplete',
+		'googlesitekit.AdSenseModuleSettingsSetupIncomplete',
+		fillFilterWithComponent( ( props ) => {
+			const {
+				slug,
+				OriginalComponent,
+			} = props;
+			if ( 'adsense' !== slug ) {
+				return <OriginalComponent { ...props } />;
+			}
+			return (
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+					<SettingsSetupIncomplete />
+				</div>
+			);
+		} )
 	);
 }
 
@@ -68,6 +94,7 @@ function Settings( props ) {
 		isOpen = true,
 		isSaving = false,
 		error = false,
+		forceSetupIncomplete = false,
 		// eslint-disable-next-line no-console
 		handleAccordion = ( ...args ) => console.log( 'handleAccordion', ...args ),
 		// eslint-disable-next-line no-console
@@ -89,7 +116,7 @@ function Settings( props ) {
 					homepage={ module.homepage }
 					learnmore={ module.learnMore }
 					active={ module.active }
-					setupComplete={ module.setupComplete }
+					setupComplete={ ! forceSetupIncomplete && module.setupComplete }
 					hasSettings={ true }
 					autoActivate={ module.autoActivate }
 					updateModulesList={ updateModulesList }
@@ -118,6 +145,22 @@ storiesOf( 'AdSense Module/Settings', module )
 		};
 
 		return <Settings isOpen={ false } callback={ setupRegistry } />;
+	} )
+	.add( 'View, open with setup incomplete', () => {
+		filterAdSenseSettingsSetupIncomplete();
+
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
+			dispatch( STORE_NAME ).receiveExistingTag( null );
+			dispatch( STORE_NAME ).receiveSettings( {
+				...completeSettings,
+				accountStatus: ACCOUNT_STATUS_PENDING,
+				accountSetupComplete: false,
+				siteSetupComplete: false,
+			} );
+		};
+
+		return <Settings callback={ setupRegistry } forceSetupIncomplete={ true } />;
 	} )
 	.add( 'View, open with all settings', () => {
 		filterAdSenseSettings();

@@ -16,4 +16,8 @@
  * limitations under the License.
  */
 
+export { default as SettingsEdit } from './settings-edit';
+export { default as SettingsForm } from './settings-form';
 export { default as SettingsMain } from './settings-main';
+export { default as SettingsSetupIncomplete } from './settings-setup-incomplete';
+export { default as SettingsView } from './settings-view';
