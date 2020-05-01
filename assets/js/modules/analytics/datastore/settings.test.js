@@ -127,6 +127,7 @@ describe( 'modules/analytics settings', () => {
 						{ status: 500 }
 					);
 
+				muteConsole( 'error' );
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
