@@ -27,18 +27,95 @@ import { addFilter } from '@wordpress/hooks';
 import Data from 'googlesitekit-data';
 import './datastore';
 import { fillFilterWithComponent } from '../../util';
-import { DashboardZeroData as AdSenseDashboardZeroData } from './dashboard';
+import { SetupMain } from './setup';
+import {
+	SettingsMain,
+	SettingsSetupIncomplete,
+} from './settings';
+import { AdBlockerWarning } from './common';
+import { DashboardZeroData } from './dashboard';
 
-function ConnectedAdSenseDashboardZeroData( props ) {
+function ConnectedSetupMain( props ) {
 	return (
 		<Data.RegistryProvider value={ Data }>
-			<AdSenseDashboardZeroData { ...props } />
+			<SetupMain { ...props } />
+		</Data.RegistryProvider>
+	);
+}
+
+function ConnectedSettingsMain( props ) {
+	return (
+		<Data.RegistryProvider value={ Data }>
+			<SettingsMain { ...props } />
+		</Data.RegistryProvider>
+	);
+}
+
+function ConnectedSettingsSetupIncomplete( props ) {
+	return (
+		<Data.RegistryProvider value={ Data }>
+			<SettingsSetupIncomplete { ...props } />
+		</Data.RegistryProvider>
+	);
+}
+
+function ConnectedAdBlockerWarning( props ) {
+	return (
+		<Data.RegistryProvider value={ Data }>
+			<AdBlockerWarning { ...props } />
+		</Data.RegistryProvider>
+	);
+}
+
+function ConnectedDashboardZeroData( props ) {
+	return (
+		<Data.RegistryProvider value={ Data }>
+			<DashboardZeroData { ...props } />
 		</Data.RegistryProvider>
 	);
 }
 
 addFilter(
+	'googlesitekit.ModuleSetup-adsense',
+	'googlesitekit.AdSenseModuleSetup',
+	fillFilterWithComponent( ConnectedSetupMain )
+);
+
+addFilter(
+	'googlesitekit.ModuleSettingsDetails-adsense',
+	'googlesitekit.AdSenseModuleSettings',
+	fillFilterWithComponent( ConnectedSettingsMain )
+);
+
+addFilter(
+	'googlesitekit.ModuleSetupIncomplete',
+	'googlesitekit.AdSenseModuleSettingsSetupIncomplete',
+	fillFilterWithComponent( ( props ) => {
+		const { slug, OriginalComponent } = props;
+		if ( 'adsense' !== slug ) {
+			return <OriginalComponent { ...props } />;
+		}
+		return (
+			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+				<ConnectedSettingsSetupIncomplete />
+			</div>
+		);
+	} )
+);
+
+addFilter( 'googlesitekit.ModuleSettingsWarning',
+	'googlesitekit.adsenseSettingsWarning',
+	fillFilterWithComponent( ( props ) => {
+		const { slug, context, OriginalComponent } = props;
+		if ( 'adsense' !== slug ) {
+			return <OriginalComponent { ...props } />;
+		}
+		return <ConnectedAdBlockerWarning context={ context } />;
+	} )
+);
+
+addFilter(
 	'googlesitekit.AdSenseDashboardZeroData',
 	'googlesitekit.AdSenseDashboardZeroDataRefactored',
-	fillFilterWithComponent( ConnectedAdSenseDashboardZeroData )
+	fillFilterWithComponent( ConnectedDashboardZeroData )
 );
