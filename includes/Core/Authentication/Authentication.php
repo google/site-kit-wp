@@ -605,7 +605,7 @@ final class Authentication {
 		$data['isAuthenticated']    = ! empty( $access_token );
 		$data['requiredScopes']     = $auth_client->get_required_scopes();
 		$data['grantedScopes']      = ! empty( $access_token ) ? $auth_client->get_granted_scopes() : array();
-		$data['needReauthenticate'] = $data['authenticated'] && $this->need_reauthenticate();
+		$data['needReauthenticate'] = $data['isAuthenticated'] && $this->need_reauthenticate();
 
 		if ( $auth_client->using_proxy() ) {
 			$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
