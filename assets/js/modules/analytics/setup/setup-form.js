@@ -46,7 +46,7 @@ export default function SetupForm( { finishSetup } ) {
 	const { submitChanges } = useDispatch( STORE_NAME );
 	const submitForm = useCallback( async ( event ) => {
 		event.preventDefault();
-		const { error } = await submitChanges() || {};
+		const { error } = await submitChanges();
 		if ( ! error ) {
 			finishSetup();
 			trackEvent( 'analytics_setup', 'analytics_configured' );
