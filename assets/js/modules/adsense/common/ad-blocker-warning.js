@@ -17,6 +17,12 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -29,17 +35,39 @@ import { SvgIcon } from '../../../util';
 import { STORE_NAME } from '../datastore';
 const { useSelect } = Data;
 
-export default function AdBlockerWarning() {
+export default function AdBlockerWarning( { context } ) {
 	const isAdBlockerActive = useSelect( ( select ) => select( STORE_NAME ).isAdBlockerActive() );
+	const isAccountSetupComplete = useSelect( ( select ) => select( STORE_NAME ).getAccountSetupComplete() );
+	const isSiteSetupComplete = useSelect( ( select ) => select( STORE_NAME ).getSiteSetupComplete() );
 
 	// Return nothing if loading or if everything is fine.
 	if ( ! isAdBlockerActive ) {
 		return null;
 	}
 
+	let message;
+	if ( isAccountSetupComplete && isSiteSetupComplete ) {
+		message = __( 'Ad blocker detected, you need to disable it to get the AdSense latest data.', 'google-site-kit' );
+	} else {
+		message = __( 'Ad blocker detected, you need to disable it in order to setup AdSense.', 'google-site-kit' );
+	}
+
 	return (
-		<div className="googlesitekit-settings-module-warning">
-			<SvgIcon id="error" height="20" width="23" /> { __( 'Ad blocker detected, you need to disable it in order to setup AdSense.', 'google-site-kit' ) }
+		<div
+			className={ classnames(
+				'googlesitekit-settings-module-warning',
+				{ [ `googlesitekit-settings-module-warning--${ context }` ]: context }
+			) }
+		>
+			<SvgIcon id="error" height="20" width="23" /> { message }
 		</div>
 	);
 }
+
+AdBlockerWarning.propTypes = {
+	context: PropTypes.string,
+};
+
+AdBlockerWarning.defaultProps = {
+	context: '',
+};
