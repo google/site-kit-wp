@@ -415,9 +415,12 @@ export const resolvers = {
 
 		// Only fetch properties if there are none in the store for the given account.
 		if ( ! properties ) {
-			const { response } = yield actions.fetchPropertiesProfiles( accountID );
+			const { response, error } = yield actions.fetchPropertiesProfiles( accountID );
 			if ( response && response.properties ) {
 				( { properties } = response );
+			}
+			if ( error ) {
+				return;
 			}
 		}
 
