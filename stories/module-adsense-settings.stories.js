@@ -30,7 +30,7 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import SettingsModule from '../assets/js/components/settings/settings-module';
-import { SettingsMain as AdSenseSettings } from '../assets/js/modules/adsense/settings';
+import { SettingsMain } from '../assets/js/modules/adsense/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
 
@@ -42,12 +42,11 @@ import {
 import { WithTestRegistry } from '../tests/js/utils';
 
 function filterAdSenseSettings() {
-	// set( global, 'googlesitekit.modules.adsense.setupComplete', true );
 	removeAllFilters( 'googlesitekit.ModuleSettingsDetails-adsense' );
 	addFilter(
 		'googlesitekit.ModuleSettingsDetails-adsense',
 		'googlesitekit.AdSenseModuleSettings',
-		fillFilterWithComponent( AdSenseSettings )
+		fillFilterWithComponent( SettingsMain )
 	);
 }
 
@@ -90,6 +89,7 @@ function Settings( props ) {
 					homepage={ module.homepage }
 					learnmore={ module.learnMore }
 					active={ module.active }
+					setupComplete={ module.setupComplete }
 					hasSettings={ true }
 					autoActivate={ module.autoActivate }
 					updateModulesList={ updateModulesList }

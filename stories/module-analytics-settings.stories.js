@@ -76,6 +76,7 @@ function Settings( props ) {
 					homepage={ module.homepage }
 					learnmore={ module.learnMore }
 					active={ module.active }
+					setupComplete={ module.setupComplete }
 					hasSettings={ true }
 					autoActivate={ module.autoActivate }
 					updateModulesList={ updateModulesList }
