@@ -379,6 +379,15 @@ final class Assets {
 				)
 			),
 			new Script_Data(
+				'googlesitekit-user-data',
+				array(
+					'global'        => '__googlesitekitUserData',
+					'data_callback' => function() {
+						return $this->get_inline_user_data();
+					},
+				)
+			),
+			new Script_Data(
 				'googlesitekit-apifetch-data',
 				array(
 					'global'        => '_googlesitekitAPIFetchData',
@@ -638,6 +647,23 @@ final class Assets {
 			'currentEntityType'  => $current_entity ? $current_entity->get_type() : null,
 			'currentEntityTitle' => $current_entity ? $current_entity->get_title() : null,
 			'currentEntityID'    => $current_entity ? $current_entity->get_id() : null,
+		);
+	}
+
+	/**
+	 * Gets the inline data specific to the current user
+	 *
+	 * @since n.e.x.t
+	 * 
+	 * @return array The user inline data to be output.
+	 */
+	private function get_inline_user_data() {
+		$current_user = wp_get_current_user();
+		return array(
+			'id'      => $current_user->ID,
+			'email'   => $current_user->user_email,
+			'name'    => $current_user->display_name,
+			'picture' => get_avatar_url( $current_user->user_email ),
 		);
 	}
 
