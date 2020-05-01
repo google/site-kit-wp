@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { actions } from './index';
+import store from './index';
 
 describe( 'core/site notifications', () => {
 	it( 'has appropriate notification methods', () => {
@@ -29,6 +29,6 @@ describe( 'core/site notifications', () => {
 			'fetchNotifications',
 			'receiveNotifications',
 		];
-		expect( Object.keys( actions ) ).toEqual( expect.arrayContaining( actionsToExpect ) );
+		expect( Object.keys( store.actions ) ).toEqual( expect.arrayContaining( actionsToExpect ) );
 	} );
 } );
