@@ -46,8 +46,9 @@ describe( 'modules/analytics accounts', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
-
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
+		// Receive empty settings to prevent unexpected fetch by resolver.
+		registry.dispatch( STORE_NAME ).receiveSettings( {} );
 	} );
 
 	afterAll( () => {
@@ -108,7 +109,6 @@ describe( 'modules/analytics accounts', () => {
 	describe( 'selectors', () => {
 		describe( 'getAccounts', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( {} );
 				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 				fetch
 					.doMockOnceIf(
@@ -146,7 +146,6 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'does not make a network request if accounts are already present', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( {} );
 				registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accountsPropertiesProfiles.accounts );
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
@@ -161,7 +160,6 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'does not make a network request if accounts exist but are empty (this is a valid state)', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( {} );
 				registry.dispatch( STORE_NAME ).receiveAccounts( [] );
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
@@ -191,7 +189,7 @@ describe( 'modules/analytics accounts', () => {
 					);
 
 				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
-				registry.dispatch( STORE_NAME ).setSettings( {} );
+
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAccounts();
 				await subscribeUntil( registry,
@@ -215,7 +213,6 @@ describe( 'modules/analytics accounts', () => {
 					propertyID: existingPropertyID,
 					permission: true,
 				} );
-				registry.dispatch( STORE_NAME ).setSettings( {} );
 
 				fetch
 					.doMockOnceIf(
@@ -260,7 +257,6 @@ describe( 'modules/analytics accounts', () => {
 					matchedProperty,
 				};
 
-				registry.dispatch( STORE_NAME ).setSettings( {} );
 				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 
 				fetch
