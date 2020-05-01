@@ -26,6 +26,49 @@ class Settings extends Module_Settings {
 	const OPTION = 'googlesitekit_adsense_settings';
 
 	/**
+	 * Legacy account statuses to be migrated on-the-fly.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	protected $legacy_account_statuses = array(
+		'account-connected'             => array(
+			'accountStatus' => 'approved',
+			'siteStatus'    => 'added',
+		),
+		'account-connected-nonmatching' => array(
+			'accountStatus' => 'approved',
+			'siteStatus'    => 'added',
+		),
+		'account-connected-no-data'     => array(
+			'accountStatus' => 'approved',
+			'siteStatus'    => 'added',
+		),
+		'account-pending-review'        => array(
+			'accountStatus' => 'approved',
+			'siteStatus'    => 'none',
+		),
+		'account-required-action'       => array(
+			'accountStatus' => 'no-client',
+		),
+		'disapproved-account-afc'       => array(
+			'accountStatus' => 'no-client',
+		),
+		'ads-display-pending'           => array(
+			'accountStatus' => 'pending',
+		),
+		'disapproved-account'           => array(
+			'accountStatus' => 'disapproved',
+		),
+		'no-account'                    => array(
+			'accountStatus' => 'none',
+		),
+		'no-account-tag-found'          => array(
+			'accountStatus' => 'none',
+		),
+	);
+
+	/**
 	 * Registers the setting in WordPress.
 	 *
 	 * @since 1.2.0
@@ -59,6 +102,13 @@ class Settings extends Module_Settings {
 
 				if ( $account_id ) {
 					$option['accountID'] = $account_id;
+				}
+
+				// Migrate legacy account statuses (now split into account status and site status).
+				if ( isset( $this->legacy_account_statuses[ $option['accountStatus'] ] ) ) {
+					foreach ( $this->legacy_account_statuses[ $option['accountStatus'] ] as $key => $value ) {
+						$option[ $key ] = $value;
+					}
 				}
 
 				// Migration of legacy setting.

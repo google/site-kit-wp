@@ -28,6 +28,13 @@ import Data from 'googlesitekit-data';
 import Link from '../../../components/link';
 import { getAccountSiteURL } from '../util/url';
 import { STORE_NAME } from '../datastore/constants';
+import {
+	ACCOUNT_STATUS_DISAPPROVED,
+	ACCOUNT_STATUS_GRAYLISTED,
+	ACCOUNT_STATUS_PENDING,
+	ACCOUNT_STATUS_NO_CLIENT,
+	ACCOUNT_STATUS_APPROVED,
+} from '../util/status';
 import { ErrorNotice } from '../common';
 const { useSelect } = Data;
 
@@ -44,22 +51,17 @@ export default function SettingsView() {
 
 	let accountStatusLabel;
 	switch ( accountStatus ) {
-		case 'account-connected':
+		case ACCOUNT_STATUS_APPROVED:
 			accountStatusLabel = __( 'Your account has been approved', 'google-site-kit' );
 			break;
-		case 'account-pending-review':
+		case ACCOUNT_STATUS_PENDING:
+		case ACCOUNT_STATUS_GRAYLISTED:
 			accountStatusLabel = __( 'We’re getting your site ready for ads. This usually takes less than a day, but it can sometimes take a bit longer', 'google-site-kit' );
 			break;
-		case 'account-required-action':
+		case ACCOUNT_STATUS_NO_CLIENT:
+		case ACCOUNT_STATUS_DISAPPROVED:
 			accountStatusLabel = __( 'You need to fix some issues before your account is approved. Go to AdSense to find out how to fix it', 'google-site-kit' );
 			break;
-		case 'account-connected-nonmatching':
-		case 'ads-display-pending':
-		case 'disapproved-account':
-		case 'disapproved-account-afc':
-		case 'no-account':
-		case 'no-account-tag-found':
-		case 'account-connected-no-data':
 		default:
 			accountStatusLabel = __( 'Your site isn’t ready to show ads yet', 'google-site-kit' );
 	}
