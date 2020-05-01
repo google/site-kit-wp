@@ -20,14 +20,10 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { createNotificationsStore } from '../../data/create-notifications-store';
 import modules from './modules';
-
-const notifications = createNotificationsStore( 'core', 'modules', 'notifications' );
 
 export const INITIAL_STATE = Data.collectState(
 	modules.INITIAL_STATE,
-	notifications.INITIAL_STATE,
 );
 
 import { STORE_NAME } from './constants';
@@ -37,27 +33,23 @@ export const actions = Data.addInitializeAction(
 	Data.collectActions(
 		Data.commonActions,
 		modules.actions,
-		notifications.actions,
 	)
 );
 
 export const controls = Data.collectControls(
 	Data.commonControls,
 	modules.controls,
-	notifications.controls,
 );
 
 export const reducer = Data.addInitializeReducer(
 	INITIAL_STATE,
 	Data.collectReducers(
 		modules.reducer,
-		notifications.reducer,
 	)
 );
 
 export const resolvers = Data.collectResolvers(
 	modules.resolvers,
-	notifications.resolvers,
 );
 
 export const selectors = Data.collectSelectors(
