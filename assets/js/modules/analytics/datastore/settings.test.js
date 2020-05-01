@@ -31,6 +31,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
+	muteConsole,
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
@@ -192,7 +193,8 @@ describe( 'modules/analytics settings', () => {
 						{ status: 500 }
 					);
 
-				await registry.dispatch( STORE_NAME ).submitChanges();
+				muteConsole( 'error' );
+				const result = await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
 					{
@@ -202,6 +204,7 @@ describe( 'modules/analytics settings', () => {
 					}
 				);
 
+				expect( result.error ).toEqual( error );
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( PROFILE_CREATE );
 				expect( registry.select( STORE_NAME ).getError() ).toEqual( error );
 			} );
@@ -251,6 +254,25 @@ describe( 'modules/analytics settings', () => {
 				expect( fetch ).toHaveBeenCalled();
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
 				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
+			} );
+
+			it( 'returns an error if saveSettings fails', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
+					)
+					.mockResponseOnce(
+						JSON.stringify( error ),
+						{ status: 500 }
+					);
+
+				muteConsole( 'error' );
+				const result = await registry.dispatch( STORE_NAME ).submitChanges();
+
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
+				expect( result.error ).toEqual( error );
 			} );
 
 			it( 'invalidates Analytics API cache on success', async () => {
