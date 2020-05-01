@@ -78,11 +78,20 @@ describe( 'modules/analytics accounts', () => {
 
 				registry.dispatch( STORE_NAME ).resetAccounts();
 
+				// getAccounts() will trigger a request again.
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
+					)
+					.mockResponse(
+						JSON.stringify( fixtures.accountsPropertiesProfiles ),
+						{ status: 200 }
+					);
+
 				expect( registry.select( STORE_NAME ).getAccountID() ).toStrictEqual( undefined );
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toStrictEqual( undefined );
 				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toStrictEqual( undefined );
 				expect( registry.select( STORE_NAME ).getProfileID() ).toStrictEqual( undefined );
-				muteConsole( 'error' ); // getAccounts() will trigger a request again.
 				expect( registry.select( STORE_NAME ).getAccounts() ).toStrictEqual( undefined );
 				// Other settings are left untouched.
 				expect( registry.select( STORE_NAME ).getUseSnippet() ).toStrictEqual( true );
@@ -136,7 +145,6 @@ describe( 'modules/analytics accounts', () => {
 
 				// Properties and profiles should also have been received by
 				// this action.
-				muteConsole( 'error', 2 );
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
 				const profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
 

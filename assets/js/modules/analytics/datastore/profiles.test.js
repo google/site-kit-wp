@@ -86,7 +86,6 @@ describe( 'modules/analytics profiles', () => {
 					}
 				);
 
-				muteConsole( 'error' );
 				await subscribeUntil( registry,
 					() => (
 						registry.select( STORE_NAME ).getProfiles( propertyID )
