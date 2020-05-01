@@ -117,7 +117,7 @@ class AuthenticationTest extends TestCase {
 			array(
 				'grantedScopes',
 				'hasSearchConsoleProperty',
-				'authenticated',
+				'isAuthenticated',
 				'isFirstAdmin',
 				'isSiteKitConnected',
 				'isVerified',
