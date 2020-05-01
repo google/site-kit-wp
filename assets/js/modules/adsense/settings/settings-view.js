@@ -44,7 +44,7 @@ export default function SettingsView() {
 	const accountStatus = useSelect( ( select ) => select( STORE_NAME ).getAccountStatus() );
 	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-	const userEmail = 'temporarytest@gmail.com'; // TODO: Replace with core/user store access once available.
+	const userEmail = global.googlesitekit.admin && global.googlesitekit.admin.userData.email; // TODO: Replace with core/user store access once available.
 
 	// Site status is only displayed in sites list view, so do not pass siteURL here.
 	const siteStatusURL = getAccountSiteURL( { accountID, userEmail } );

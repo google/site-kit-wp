@@ -31,8 +31,8 @@ import ProgressBar from '../../../components/progress-bar';
 // const { useSelect } = Data;
 
 export default function UserProfile() {
-	const userEmail = 'temporarytest@gmail.com'; // TODO: Replace with core/user store access once available.
-	const userPicture = 'http://1.gravatar.com/avatar/311f5b078f20df54be55cbe1a5a45f1e'; // TODO: Replace with core/user store access once available.
+	const userEmail = global.googlesitekit.admin && global.googlesitekit.admin.userData.email; // TODO: Replace with core/user store access once available.
+	const userPicture = global.googlesitekit.admin && global.googlesitekit.admin.userData.picture; // TODO: Replace with core/user store access once available.
 
 	if ( 'undefined' === typeof userEmail || 'undefined' === typeof userPicture ) {
 		return <ProgressBar small />;

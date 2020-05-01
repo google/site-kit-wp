@@ -42,7 +42,7 @@ const { useSelect } = Data;
 
 export default function SetupAccountCreate() {
 	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
-	const userEmail = 'temporarytest@gmail.com'; // TODO: Replace with core/user store access once available.
+	const userEmail = global.googlesitekit.admin && global.googlesitekit.admin.userData.email; // TODO: Replace with core/user store access once available.
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 
 	const signUpURL = getCreateAccountURL( { siteURL } );

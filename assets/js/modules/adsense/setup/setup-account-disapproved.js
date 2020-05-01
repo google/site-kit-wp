@@ -34,7 +34,7 @@ const { useSelect } = Data;
 
 export default function SetupAccountDisapproved() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const userEmail = 'temporarytest@gmail.com'; // TODO: Replace with core/user store access once available.
+	const userEmail = global.googlesitekit.admin && global.googlesitekit.admin.userData.email; // TODO: Replace with core/user store access once available.
 
 	const accountURL = getAccountURL( { accountID, userEmail } );
 
