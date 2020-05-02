@@ -66,37 +66,21 @@ export const createModuleStore = ( slug, {
 		storeName,
 	} );
 
-	const STORE_NAME = [ notificationsStore.STORE_NAME ];
-	const INITIAL_STATE = [ notificationsStore.INITIAL_STATE ];
-
-	const actions = [ notificationsStore.actions ];
-	const controls = [ notificationsStore.controls ];
-	const reducer = [ notificationsStore.reducer ];
-	const resolvers = [ notificationsStore.resolvers ];
-	const selectors = [ notificationsStore.selectors ];
-
-	if ( 'undefined' !== typeof settingSlugs ) {
-		const settingsStore = createSettingsStore( 'modules', slug, 'settings', {
+	const settingsStore = ( 'undefined' !== typeof settingSlugs )
+		? createSettingsStore( 'modules', slug, 'settings', {
 			storeName,
 			settingSlugs,
-		} );
+		} )
+		: {};
 
-		STORE_NAME.push( settingsStore.STORE_NAME );
-		INITIAL_STATE.push( settingsStore.INITIAL_STATE );
-		actions.push( settingsStore.actions );
-		controls.push( settingsStore.controls );
-		reducer.push( settingsStore.reducer );
-		resolvers.push( settingsStore.resolvers );
-		selectors.push( settingsStore.selectors );
-	}
+	const combinedStore = Data.combineStores(
+		notificationsStore,
+		settingsStore,
+	);
 
-	return {
-		STORE_NAME: Data.collectName( ...STORE_NAME ),
-		INITIAL_STATE: Data.collectState( ...INITIAL_STATE ),
-		actions: Data.collectActions( ...actions ),
-		controls: Data.collectControls( ...controls ),
-		reducer: Data.collectReducers( ...reducer ),
-		resolvers: Data.collectResolvers( ...resolvers ),
-		selectors: Data.collectSelectors( ...selectors ),
-	};
+	const STORE_NAME = settingsStore.STORE_NAME ? [ notificationsStore.STORE_NAME ] : [ notificationsStore.STORE_NAME, settingsStore.STORE_NAME ];
+
+	combinedStore.STORE_NAME = Data.collectName( ...STORE_NAME );
+
+	return combinedStore;
 };
