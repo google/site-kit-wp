@@ -31,6 +31,7 @@ import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
+	muteConsole,
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
@@ -78,6 +79,11 @@ describe( 'modules/analytics settings', () => {
 	} );
 
 	describe( 'actions', () => {
+		beforeEach( () => {
+			// Receive empty settings to prevent unexpected fetch by resolver.
+			registry.dispatch( STORE_NAME ).receiveSettings( {} );
+		} );
+
 		describe( 'submitChanges', () => {
 			it( 'dispatches createProperty if the "set up a new property" option is chosen', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( {
@@ -98,14 +104,22 @@ describe( 'modules/analytics settings', () => {
 					.mockResponseOnce(
 						JSON.stringify( createdProperty ),
 						{ status: 200 }
-					);
+					)
+					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ )
+					.mockResponseOnce( async ( req ) => {
+						const { data } = await req.json();
+						// Return the same settings passed to the API.
+						return JSON.stringify( data );
+					} )
+				;
 
-				await registry.dispatch( STORE_NAME ).submitChanges();
+				const result = await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject( {
 					data: { accountID: '12345' },
 				} );
 
+				expect( result.error ).toBeFalsy();
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( createdProperty.id );
 				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( createdProperty.internalWebPropertyId );
 			} );
@@ -126,6 +140,7 @@ describe( 'modules/analytics settings', () => {
 						{ status: 500 }
 					);
 
+				muteConsole( 'error' );
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
@@ -159,7 +174,14 @@ describe( 'modules/analytics settings', () => {
 					.mockResponseOnce(
 						JSON.stringify( createdProfile ),
 						{ status: 200 }
-					);
+					)
+					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ )
+					.mockResponseOnce( async ( req ) => {
+						const { data } = await req.json();
+						// Return the same settings passed to the API.
+						return JSON.stringify( data );
+					} )
+				;
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
@@ -192,7 +214,8 @@ describe( 'modules/analytics settings', () => {
 						{ status: 500 }
 					);
 
-				await registry.dispatch( STORE_NAME ).submitChanges();
+				muteConsole( 'error' );
+				const result = await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
 					{
@@ -202,6 +225,7 @@ describe( 'modules/analytics settings', () => {
 					}
 				);
 
+				expect( result.error ).toEqual( error );
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( PROFILE_CREATE );
 				expect( registry.select( STORE_NAME ).getError() ).toEqual( error );
 			} );
@@ -226,7 +250,14 @@ describe( 'modules/analytics settings', () => {
 					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/ )
 					.mockResponseOnce( JSON.stringify( createdProperty ), { status: 200 } )
 					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/ )
-					.mockResponseOnce( JSON.stringify( createdProfile ), { status: 200 } );
+					.mockResponseOnce( JSON.stringify( createdProfile ), { status: 200 } )
+					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ )
+					.mockResponseOnce( async ( req ) => {
+						const { data } = await req.json();
+						// Return the same settings passed to the API.
+						return JSON.stringify( data );
+					} )
+				;
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
@@ -251,6 +282,25 @@ describe( 'modules/analytics settings', () => {
 				expect( fetch ).toHaveBeenCalled();
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
 				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
+			} );
+
+			it( 'returns an error if saveSettings fails', async () => {
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
+					)
+					.mockResponseOnce(
+						JSON.stringify( error ),
+						{ status: 500 }
+					);
+
+				muteConsole( 'error' );
+				const result = await registry.dispatch( STORE_NAME ).submitChanges();
+
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
+				expect( result.error ).toEqual( error );
 			} );
 
 			it( 'invalidates Analytics API cache on success', async () => {
@@ -278,15 +328,12 @@ describe( 'modules/analytics settings', () => {
 
 	describe( 'selectors', () => {
 		describe( 'isDoingSubmitChanges', () => {
-			it( 'sets internal state while submitting changes', () => {
+			it( 'sets internal state while submitting changes', async () => {
+				registry.dispatch( STORE_NAME ).receiveSettings( validSettings );
+				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
+
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
 
-				registry.dispatch( STORE_NAME ).submitChanges();
-
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
-			} );
-
-			it( 'toggles the internal state again once submission is completed', async () => {
 				registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
