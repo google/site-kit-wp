@@ -27,14 +27,15 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 
 // Actions
-const START_DISCONNECT = 'START_DISCONNECT';
+const START_FETCH_DISCONNECT = 'START_FETCH_DISCONNECT';
 const FETCH_DISCONNECT = 'FETCH_DISCONNECT';
 const FINISH_DISCONNECT = 'FINISH_DISCONNET';
 const CATCH_FETCH_DISCONNECT = 'CATCH_FETCH_DISCONNECT';
 const RECEIVE_DISCONNECT = 'RECEIVE_DISCONNECT';
 
 export const INITIAL_STATE = {
-	isDisconnecting: false,
+	isFetchingDisconnecting: false,
+	disconnected: undefined,
 };
 
 export const actions = {
@@ -42,7 +43,7 @@ export const actions = {
 		let response, error;
 		yield {
 			payload: {},
-			type: START_DISCONNECT,
+			type: START_FETCH_DISCONNECT,
 		};
 
 		try {
@@ -50,6 +51,7 @@ export const actions = {
 				payload: {},
 				type: FETCH_DISCONNECT,
 			};
+
 			yield actions.receiveDisconnect( response );
 
 			yield {
@@ -66,6 +68,15 @@ export const actions = {
 		return { response, error };
 	},
 
+	/**
+	 * Stores the disconnection info received from the REST API.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} disconnect Disconnection info from the API.
+	 * @return {Object} Redux-style action.
+	 */
 	receiveDisconnect( disconnect ) {
 		invariant( disconnect, 'disconnect is required.' );
 
@@ -84,18 +95,19 @@ export const controls = {
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case START_DISCONNECT: {
+		case START_FETCH_DISCONNECT: {
 			return {
 				...state,
 				isDisconnecting: true,
 			};
 		}
+
 		case RECEIVE_DISCONNECT: {
-			const { disconnect } = payload;
+			const { disconnect: disconnected } = payload;
 
 			return {
 				...state,
-				disconnect,
+				disconnected,
 			};
 		}
 
@@ -119,9 +131,8 @@ export const reducer = ( state, { type, payload } ) => {
 	}
 };
 
-export const selectors = {};
-
 export const resolvers = {};
+export const selectors = {};
 
 export default {
 	INITIAL_STATE,

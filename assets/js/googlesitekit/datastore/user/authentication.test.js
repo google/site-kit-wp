@@ -30,12 +30,12 @@ import {
 	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
 describe( 'core/user authentication', () => {
-	const responseAuthenticated = { authenticated: true, requiredScopes: [], grantedScopes: [] };
-	const apiEndpoint = /^\/google-site-kit\/v1\/core\/user\/data\/authentication/;
+	const coreUserDataExpectedResponse = { authenticated: true, requiredScopes: [], grantedScopes: [] };
+	const coreUserDataEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/authentication/;
 	let apiFetchSpy;
 	let registry;
 	let store;
@@ -81,14 +81,14 @@ describe( 'core/user authentication', () => {
 		describe( 'getAuthentication', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetch
-					.doMockOnceIf( apiEndpoint )
+					.doMockOnceIf( coreUserDataEndpointRegExp )
 					.mockResponseOnce(
-						JSON.stringify( responseAuthenticated ),
+						JSON.stringify( coreUserDataExpectedResponse ),
 						{ status: 200 }
 					);
 
 				const initialConnection = registry.select( STORE_NAME ).getAuthentication();
-				// The connection info will be its initial value while the connection
+				// The authentication info will be its initial value while the authentication
 				// info is fetched.
 				expect( initialConnection ).toEqual( undefined );
 				await subscribeUntil( registry,
@@ -100,7 +100,7 @@ describe( 'core/user authentication', () => {
 				const authentication = registry.select( STORE_NAME ).getAuthentication();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
-				expect( authentication ).toEqual( responseAuthenticated );
+				expect( authentication ).toEqual( coreUserDataExpectedResponse );
 
 				const authenticationSelect = registry.select( STORE_NAME ).getAuthentication();
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
@@ -108,7 +108,7 @@ describe( 'core/user authentication', () => {
 			} );
 
 			it( 'does not make a network request if data is already in state', async () => {
-				registry.dispatch( STORE_NAME ).receiveAuthentication( responseAuthenticated );
+				registry.dispatch( STORE_NAME ).receiveAuthentication( coreUserDataExpectedResponse );
 
 				const authentication = registry.select( STORE_NAME ).getAuthentication();
 
@@ -118,7 +118,7 @@ describe( 'core/user authentication', () => {
 				);
 
 				expect( fetch ).not.toHaveBeenCalled();
-				expect( authentication ).toEqual( responseAuthenticated );
+				expect( authentication ).toEqual( coreUserDataExpectedResponse );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -128,7 +128,7 @@ describe( 'core/user authentication', () => {
 					data: { status: 500 },
 				};
 				fetch
-					.doMockOnceIf( apiEndpoint )
+					.doMockOnceIf( coreUserDataEndpointRegExp )
 					.mockResponseOnce(
 						JSON.stringify( response ),
 						{ status: 500 }
@@ -152,9 +152,9 @@ describe( 'core/user authentication', () => {
 		describe( 'isAuthenticated', () => {
 			it( 'uses a resolver to to load the authenticated value if not yet set.', async () => {
 				fetch
-					.doMockOnceIf( apiEndpoint )
+					.doMockOnceIf( coreUserDataEndpointRegExp )
 					.mockResponseOnce(
-						JSON.stringify( responseAuthenticated ),
+						JSON.stringify( coreUserDataExpectedResponse ),
 						{ status: 200 }
 					);
 
@@ -171,7 +171,7 @@ describe( 'core/user authentication', () => {
 				const isAuthenticated = registry.select( STORE_NAME ).isAuthenticated();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
-				expect( isAuthenticated ).toEqual( responseAuthenticated.authenticated );
+				expect( isAuthenticated ).toEqual( coreUserDataExpectedResponse.authenticated );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -181,7 +181,7 @@ describe( 'core/user authentication', () => {
 					data: { status: 500 },
 				};
 				fetch
-					.doMockOnceIf( apiEndpoint )
+					.doMockOnceIf( coreUserDataEndpointRegExp )
 					.mockResponseOnce(
 						JSON.stringify( response ),
 						{ status: 500 }
@@ -196,14 +196,22 @@ describe( 'core/user authentication', () => {
 				);
 
 				const isAuthenticated = registry.select( STORE_NAME ).isAuthenticated();
+				const error = registry.select( STORE_NAME ).getError();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( isAuthenticated ).toEqual( undefined );
+				expect( error ).toEqual( response );
 			} );
 
 			it( 'returns undefined if authentication info is not available', async () => {
-				// This triggers a network request, so ignore the error.
-				muteConsole( 'error' );
+				// Create a mock to avoid triggering a network request error.
+				// The return value is irrelevant to the test.
+				fetch
+					.doMockOnceIf( coreUserDataEndpointRegExp )
+					.mockResponseOnce(
+						JSON.stringify( {} ),
+						{ status: 200 }
+					);
 				const isAuthenticated = registry.select( STORE_NAME ).isAuthenticated();
 
 				expect( isAuthenticated ).toEqual( undefined );
@@ -213,16 +221,16 @@ describe( 'core/user authentication', () => {
 		describe( 'getGrantedScopes', () => {
 			it( 'uses a resolver get all authentication info', async () => {
 				fetch
-					.doMockOnceIf( apiEndpoint )
+					.doMockOnceIf( coreUserDataEndpointRegExp )
 					.mockResponseOnce(
-						JSON.stringify( responseAuthenticated ),
+						JSON.stringify( coreUserDataExpectedResponse ),
 						{ status: 200 }
 					);
 
-				const initialIsAuthenticated = registry.select( STORE_NAME ).getGrantedScopes();
-				// The autentication info will be its initial value while the authentication
+				const initialIsGrantedScopes = registry.select( STORE_NAME ).getGrantedScopes();
+				// The granted scope info will be its initial value while the granted scope
 				// info is fetched.
-				expect( initialIsAuthenticated ).toEqual( undefined );
+				expect( initialIsGrantedScopes ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
 						registry.select( STORE_NAME ).getGrantedScopes() !== undefined
@@ -232,7 +240,7 @@ describe( 'core/user authentication', () => {
 				const grantedScopes = registry.select( STORE_NAME ).getGrantedScopes();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
-				expect( grantedScopes ).toEqual( responseAuthenticated.grantedScopes );
+				expect( grantedScopes ).toEqual( coreUserDataExpectedResponse.grantedScopes );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -242,7 +250,7 @@ describe( 'core/user authentication', () => {
 					data: { status: 500 },
 				};
 				fetch
-					.doMockOnceIf( apiEndpoint )
+					.doMockOnceIf( coreUserDataEndpointRegExp )
 					.mockResponseOnce(
 						JSON.stringify( response ),
 						{ status: 500 }
@@ -257,14 +265,22 @@ describe( 'core/user authentication', () => {
 				);
 
 				const grantedScopes = registry.select( STORE_NAME ).getGrantedScopes();
+				const error = registry.select( STORE_NAME ).getError();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( grantedScopes ).toEqual( undefined );
+				expect( error ).toEqual( response );
 			} );
 
 			it( 'returns undefined if authentication info is not available', async () => {
-				// This triggers a network request, so ignore the error.
-				muteConsole( 'error' );
+				// Create a mock to avoid triggering a network request error.
+				// The return value is irrelevant to the test.
+				fetch
+					.doMockOnceIf( coreUserDataEndpointRegExp )
+					.mockResponseOnce(
+						JSON.stringify( {} ),
+						{ status: 200 }
+					);
 				const grantedScopes = registry.select( STORE_NAME ).getGrantedScopes();
 
 				expect( grantedScopes ).toEqual( undefined );
@@ -273,16 +289,16 @@ describe( 'core/user authentication', () => {
 		describe( 'getRequiredScopes', () => {
 			it( 'uses a resolver get all authentication info', async () => {
 				fetch
-					.doMockOnceIf( apiEndpoint )
+					.doMockOnceIf( coreUserDataEndpointRegExp )
 					.mockResponseOnce(
-						JSON.stringify( responseAuthenticated ),
+						JSON.stringify( coreUserDataExpectedResponse ),
 						{ status: 200 }
 					);
 
-				const initialIsAuthenticated = registry.select( STORE_NAME ).getRequiredScopes();
-				// The autentication info will be its initial value while the authentication
+				const initialIRequiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
+				// The required scope info will be its initial value while the required scope
 				// info is fetched.
-				expect( initialIsAuthenticated ).toEqual( undefined );
+				expect( initialIRequiredScopes ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
 						registry.select( STORE_NAME ).getRequiredScopes() !== undefined
@@ -292,7 +308,7 @@ describe( 'core/user authentication', () => {
 				const requiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
-				expect( requiredScopes ).toEqual( responseAuthenticated.requiredScopes );
+				expect( requiredScopes ).toEqual( coreUserDataExpectedResponse.requiredScopes );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -302,7 +318,7 @@ describe( 'core/user authentication', () => {
 					data: { status: 500 },
 				};
 				fetch
-					.doMockOnceIf( apiEndpoint )
+					.doMockOnceIf( coreUserDataEndpointRegExp )
 					.mockResponseOnce(
 						JSON.stringify( response ),
 						{ status: 500 }
@@ -317,14 +333,22 @@ describe( 'core/user authentication', () => {
 				);
 
 				const requiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
+				const error = registry.select( STORE_NAME ).getError();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( requiredScopes ).toEqual( undefined );
+				expect( error ).toEqual( response );
 			} );
 
 			it( 'returns undefined if authentication info is not available', async () => {
-				// This triggers a network request, so ignore the error.
-				muteConsole( 'error' );
+				// Create a mock to avoid triggering a network request error.
+				// The return value is irrelevant to the test.
+				fetch
+					.doMockOnceIf( coreUserDataEndpointRegExp )
+					.mockResponseOnce(
+						JSON.stringify( {} ),
+						{ status: 200 }
+					);
 				const requiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
 
 				expect( requiredScopes ).toEqual( undefined );

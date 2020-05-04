@@ -19,4 +19,4 @@
 /**
  * Internal dependencies
  */
-import 'assets/js/googlesitekit/datastore/user';
+import './googlesitekit/datastore/user';
