@@ -35,7 +35,23 @@ describe( 'core/user disconnect', () => {
 	} );
 
 	describe( 'disconnect', () => {
+		// Create a mock to avoid triggering a network request error.
+		// The return value is irrelevant to the test.
+		fetch
+			.doMockOnceIf( coreUserDataDisconnectEndpointRegExp )
+			.mockResponseOnce(
+				JSON.stringify( {} ),
+				{ status: 200 }
+			);
 		it( 'does not require any params', () => {
+			expect( () => {
+				registry.dispatch( STORE_NAME ).disconnect();
+			} ).not.toThrow();
+		} );
+	} );
+
+	describe( 'receiveDisconnect', () => {
+		it( 'requires the disconnect param', () => {
 			// Create a mock to avoid triggering a network request error.
 			// The return value is irrelevant to the test.
 			fetch
@@ -45,8 +61,8 @@ describe( 'core/user disconnect', () => {
 					{ status: 200 }
 				);
 			expect( () => {
-				registry.dispatch( STORE_NAME ).disconnect();
-			} ).not.toThrow();
+				registry.dispatch( STORE_NAME ).receiveDisconnect();
+			} ).toThrow( 'disconnect is required.' );
 		} );
 	} );
 } );
