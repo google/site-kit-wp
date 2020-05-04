@@ -305,6 +305,11 @@ tag_partner: "site_kit"
 			return $content;
 		}
 
+		// Bail early if we are checking for the tag presence from the back end.
+		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
+			return $content;
+		}
+
 		if ( ! $this->is_connected() ) {
 			return $content;
 		}
