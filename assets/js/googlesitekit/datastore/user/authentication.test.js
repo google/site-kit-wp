@@ -225,10 +225,10 @@ describe( 'core/user authentication', () => {
 						{ status: 200 }
 					);
 
-				const initialIsAuthenticated = registry.select( STORE_NAME ).getGrantedScopes();
+				const initialIsGrantedScopes = registry.select( STORE_NAME ).getGrantedScopes();
 				// The granted scope info will be its initial value while the granted scope
 				// info is fetched.
-				expect( initialIsAuthenticated ).toEqual( undefined );
+				expect( initialIsGrantedScopes ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
 						registry.select( STORE_NAME ).getGrantedScopes() !== undefined
@@ -291,10 +291,10 @@ describe( 'core/user authentication', () => {
 						{ status: 200 }
 					);
 
-				const initialIsAuthenticated = registry.select( STORE_NAME ).getRequiredScopes();
-				// The required scope info will be its initial value while the require scope
+				const initialIRequiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
+				// The required scope info will be its initial value while the required scope
 				// info is fetched.
-				expect( initialIsAuthenticated ).toEqual( undefined );
+				expect( initialIRequiredScopes ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
 						registry.select( STORE_NAME ).getRequiredScopes() !== undefined
