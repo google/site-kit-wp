@@ -197,7 +197,7 @@ describe( 'modules/analytics profiles', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveProfiles( fixtures.profiles );
+				registry.dispatch( STORE_NAME ).receiveProfiles( fixtures.profiles, { testPropertyID } );
 
 				const profiles = registry.select( STORE_NAME ).getProfiles( testPropertyID );
 

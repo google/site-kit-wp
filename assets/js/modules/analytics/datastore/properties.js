@@ -122,9 +122,9 @@ export const actions = {
 				yield actions.receiveMatchedProperty( matchedProperty );
 			}
 
-			if ( properties.length ) {
-				// grab first one
-				dispatch( STORE_NAME ).receiveProfiles( profiles, { properties } );
+			if ( properties.length && properties[ 0 ] && properties[ 0 ].id ) {
+				const propertyID = properties[ 0 ].id;
+				dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID } );
 			}
 
 			yield {
@@ -236,9 +236,10 @@ export const actions = {
 	 * @private
 	 *
 	 * @param {Array} properties Properties to add.
+	 * @param {Object} accountID Account ID to add.
 	 * @return {Object} Redux-style action.
 	 */
-	receiveProperties( properties, { accountID } ) {
+	receiveProperties( properties, accountID ) {
 		invariant( Array.isArray( properties ), 'properties must be an array.' );
 		invariant( accountID, 'accountID is required.' );
 

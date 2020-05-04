@@ -61,21 +61,25 @@ export const actions = {
 
 			const { dispatch } = yield Data.commonActions.getRegistry();
 			yield actions.receiveAccounts( response.accounts );
-			// Remove this line
-			const accountID = '';
-			// response.properties - pick first account ID
-			dispatch( STORE_NAME ).receiveProperties( response.properties, { accountID } );
-			// Remove this line
-			const propertyID = '';
-			// response.profiles.webpropertyid
-			dispatch( STORE_NAME ).receiveProfiles( response.profiles, { propertyID } );
+
+			if ( response.accounts.length && response.accounts[ 0 ] && response.accounts[ 0 ].id ) {
+				const accountID = response.accounts[ 0 ].id;
+				dispatch( STORE_NAME ).receiveProperties( response.properties, { accountID } );
+			}
+
+			if ( response.profiles.length && response.properties[ 0 ] && response.properties[ 0 ].internalWebPropertyId ) {
+				const propertyID = response.profiles[ 0 ].internalWebPropertyId;
+				dispatch( STORE_NAME ).receiveProfiles( response.profiles, { propertyID } );
+			}
 
 			if ( response.matchedProperty ) {
 				dispatch( STORE_NAME ).receiveMatchedProperty( response.matchedProperty );
 			}
 
+			const test = response.properties[ 0 ].internalWebPropertyId;
+
 			yield {
-				payload: { data },
+				payload: { test },
 				type: FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
 			};
 		} catch ( e ) {
