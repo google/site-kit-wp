@@ -31,10 +31,10 @@ import { STORE_NAME } from './constants';
 const { createRegistrySelector } = Data;
 
 // Actions
-const START_FETCH_SET_MODULE_STATUS = 'START_FETCH_SET_MODULE_STATUS';
-const FETCH_SET_MODULE_STATUS = 'FETCH_SET_MODULE_STATUS';
-const FINISH_FETCH_SET_MODULE_STATUS = 'FINISH_FETCH_SET_MODULE_STATUS';
-const CATCH_FETCH_SET_MODULE_STATUS = 'CATCH_FETCH_SET_MODULE_STATUS';
+const START_FETCH_SET_MODULE_ACTIVATION = 'START_FETCH_SET_MODULE_ACTIVATION';
+const FETCH_SET_MODULE_ACTIVATION = 'FETCH_SET_MODULE_ACTIVATION';
+const FINISH_FETCH_SET_MODULE_ACTIVATION = 'FINISH_FETCH_SET_MODULE_ACTIVATION';
+const CATCH_FETCH_SET_MODULE_ACTIVATION = 'CATCH_FETCH_SET_MODULE_ACTIVATION';
 const START_FETCH_MODULES = 'START_FETCH_MODULES';
 const FETCH_MODULES = 'FETCH_MODULES';
 const FINISH_FETCH_MODULES = 'FINISH_FETCH_MODULES';
@@ -43,7 +43,7 @@ const RECEIVE_MODULES = 'RECEIVE_MODULES';
 
 export const INITIAL_STATE = {
 	modules: undefined,
-	isFetchingSetModuleStatus: {},
+	isFetchingSetModuleActivation: {},
 	isFetchingModules: false,
 };
 
@@ -59,7 +59,7 @@ export const actions = {
 	 * @return {Object}      Object with {response, error}
 	 */
 	*activateModule( slug ) {
-		const { response, error } = yield actions.setModuleStatus( slug, true );
+		const { response, error } = yield actions.setModuleActivation( slug, true );
 		return { response, error };
 	},
 
@@ -74,7 +74,7 @@ export const actions = {
 	 * @return {Object}      Object with {response, error}
 	 */
 	*deactivateModule( slug ) {
-		const { response, error } = yield actions.setModuleStatus( slug, false );
+		const { response, error } = yield actions.setModuleActivation( slug, false );
 		return { response, error };
 	},
 
@@ -91,7 +91,7 @@ export const actions = {
 	 * @param  {boolean} active `true` to activate; `false` to deactivate.
 	 * @return {Object}         Object with {response, error}
 	 */
-	*setModuleStatus( slug, active ) {
+	*setModuleActivation( slug, active ) {
 		invariant( slug, 'slug is required.' );
 		invariant( active !== undefined, 'active is required.' );
 
@@ -101,13 +101,13 @@ export const actions = {
 
 		yield {
 			payload: { params },
-			type: START_FETCH_SET_MODULE_STATUS,
+			type: START_FETCH_SET_MODULE_ACTIVATION,
 		};
 
 		try {
 			response = yield {
 				payload: { params },
-				type: FETCH_SET_MODULE_STATUS,
+				type: FETCH_SET_MODULE_ACTIVATION,
 			};
 
 			if ( response.success === true ) {
@@ -117,13 +117,13 @@ export const actions = {
 
 			yield {
 				payload: { params },
-				type: FINISH_FETCH_SET_MODULE_STATUS,
+				type: FINISH_FETCH_SET_MODULE_ACTIVATION,
 			};
 		} catch ( e ) {
 			error = e;
 			yield {
 				payload: { params, error },
-				type: CATCH_FETCH_SET_MODULE_STATUS,
+				type: CATCH_FETCH_SET_MODULE_ACTIVATION,
 			};
 		}
 
@@ -191,7 +191,7 @@ export const actions = {
 };
 
 export const controls = {
-	[ FETCH_SET_MODULE_STATUS ]: ( { payload: { params } } ) => {
+	[ FETCH_SET_MODULE_ACTIVATION ]: ( { payload: { params } } ) => {
 		return API.set( 'core', 'modules', 'activation', params );
 	},
 	[ FETCH_MODULES ]: () => {
@@ -201,38 +201,38 @@ export const controls = {
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case START_FETCH_SET_MODULE_STATUS: {
+		case START_FETCH_SET_MODULE_ACTIVATION: {
 			const { slug } = payload.params;
 
 			return {
 				...state,
-				isFetchingSetModuleStatus: {
-					...state.isFetchingSetModuleStatus,
+				isFetchingSetModuleActivation: {
+					...state.isFetchingSetModuleActivation,
 					[ slug ]: true,
 				},
 			};
 		}
 
-		case FINISH_FETCH_SET_MODULE_STATUS: {
+		case FINISH_FETCH_SET_MODULE_ACTIVATION: {
 			const { slug } = payload.params;
 
 			return {
 				...state,
-				isFetchingSetModuleStatus: {
-					...state.isFetchingSetModuleStatus,
+				isFetchingSetModuleActivation: {
+					...state.isFetchingSetModuleActivation,
 					[ slug ]: false,
 				},
 			};
 		}
 
-		case CATCH_FETCH_SET_MODULE_STATUS: {
+		case CATCH_FETCH_SET_MODULE_ACTIVATION: {
 			const { slug } = payload.params;
 
 			return {
 				...state,
 				error: payload.error,
-				isFetchingSetModuleStatus: {
-					...state.isFetchingSetModuleStatus,
+				isFetchingSetModuleActivation: {
+					...state.isFetchingSetModuleActivation,
 					[ slug ]: false,
 				},
 			};
@@ -401,7 +401,7 @@ export const selectors = {
 	 * @return {(boolean|undefined)} Activation change status; `undefined` if state is still loading or if no module with that slug exists.
 	 */
 	isSettingModuleActivation: ( state, slug ) => {
-		return state.isFetchingSetModuleStatus[ slug ];
+		return state.isFetchingSetModuleActivation[ slug ];
 	},
 };
 
