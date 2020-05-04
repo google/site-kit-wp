@@ -29,7 +29,7 @@ import { STORE_NAME } from './constants';
 
 const { createRegistrySelector } = Data;
 
-const RECEIVE_USER_DATA = 'RECEIVE_USER_DATA';
+const RECEIVE_USER_INFO = 'RECEIVE_USER_INFO';
 
 const INITIAL_STATE = {
 	user: undefined,
@@ -50,7 +50,7 @@ export const actions = {
 	 * @param {Object} userInfo User info, usually supplied via a global variable from PHP.
 	 * @return {Object} Redux-style action.
 	 */
-	receiveUserData( userInfo ) {
+	receiveUserInfo( userInfo ) {
 		invariant( userInfo, 'userInfo is required.' );
 		const { user, verified } = userInfo;
 		return {
@@ -58,7 +58,7 @@ export const actions = {
 				user,
 				verified,
 			},
-			type: RECEIVE_USER_DATA,
+			type: RECEIVE_USER_INFO,
 		};
 	},
 };
@@ -67,7 +67,7 @@ export const controls = {};
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case RECEIVE_USER_DATA: {
+		case RECEIVE_USER_INFO: {
 			const { user, verified } = payload;
 			return {
 				...state,
@@ -96,7 +96,7 @@ export const resolvers = {
 			return;
 		}
 
-		yield actions.receiveUserData( { ...global._googlesitekitUserData } );
+		yield actions.receiveUserInfo( { ...global._googlesitekitUserData } );
 	},
 };
 
@@ -136,8 +136,8 @@ export const selectors = {
 	 * @return {(number|undefined)} The user ID.
 	 */
 	getID: createRegistrySelector( ( select ) => () => {
-		const { user: { id } } = select( STORE_NAME ).getUser() || {};
-		return id;
+		const { user } = select( STORE_NAME ).getUser();
+		return user !== undefined ? user.id : user;
 	} ),
 
 	/**
@@ -151,8 +151,8 @@ export const selectors = {
 	 * @return {(string|undefined)} The user ID.
 	 */
 	getName: createRegistrySelector( ( select ) => () => {
-		const { user: { name } } = select( STORE_NAME ).getUser() || {};
-		return name;
+		const { user } = select( STORE_NAME ).getUser();
+		return user !== undefined ? user.name : user;
 	} ),
 
 	/**
@@ -166,8 +166,8 @@ export const selectors = {
 	 * @return {(string|undefined)} The user ID.
 	 */
 	getEmail: createRegistrySelector( ( select ) => () => {
-		const { user: { email } } = select( STORE_NAME ).getUser() || {};
-		return email;
+		const { user } = select( STORE_NAME ).getUser();
+		return user !== undefined ? user.email : user;
 	} ),
 
 	/**
@@ -181,8 +181,8 @@ export const selectors = {
 	 * @return {(string|undefined)} The user ID.
 	 */
 	getPicture: createRegistrySelector( ( select ) => () => {
-		const { user: { picture } } = select( STORE_NAME ).getUser() || {};
-		return picture;
+		const { user } = select( STORE_NAME ).getUser();
+		return user !== undefined ? user.picture : user;
 	} ),
 
 	/**
