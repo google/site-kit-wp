@@ -239,7 +239,7 @@ export const actions = {
 	 * @param {Object} accountID Account ID to add.
 	 * @return {Object} Redux-style action.
 	 */
-	receiveProperties( properties, accountID ) {
+	receiveProperties( properties, { accountID } ) {
 		invariant( Array.isArray( properties ), 'properties must be an array.' );
 		invariant( accountID, 'accountID is required.' );
 

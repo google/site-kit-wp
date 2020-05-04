@@ -41,7 +41,7 @@ const setupRegistry = ( { dispatch } ) => {
 	dispatch( STORE_NAME ).setAccountID( accountId );
 	dispatch( STORE_NAME ).setPropertyID( webPropertyId );
 	dispatch( STORE_NAME ).setProfileID( id );
-	dispatch( STORE_NAME ).receiveProfiles( fixtures.propertiesProfiles.profiles );
+	dispatch( STORE_NAME ).receiveProfiles( fixtures.propertiesProfiles.profiles, { webPropertyId } );
 };
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
@@ -49,17 +49,18 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 		accountID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId,
 		propertyID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId,
 	};
+	const propertyID = existingTag.propertyID;
 	const { id } = fixtures.propertiesProfiles.profiles[ 0 ];
 	dispatch( STORE_NAME ).setAccountID( existingTag.accountID );
 	dispatch( STORE_NAME ).setPropertyID( existingTag.propertyID );
 	dispatch( STORE_NAME ).setProfileID( id );
-	dispatch( STORE_NAME ).receiveProfiles( fixtures.accountsPropertiesProfiles.profiles );
+	dispatch( STORE_NAME ).receiveProfiles( fixtures.accountsPropertiesProfiles.profiles, { propertyID } );
 	dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
 	dispatch( STORE_NAME ).setSettings( {} );
-	dispatch( STORE_NAME ).receiveProfiles( [] );
+	dispatch( STORE_NAME ).receiveProfiles( [], {} );
 };
 
 describe( 'ProfileSelect', () => {
