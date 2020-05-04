@@ -23,13 +23,12 @@ import Data from 'googlesitekit-data';
 import authentication from './authentication';
 import disconnect from './disconnect';
 import { STORE_NAME } from './constants';
+export { STORE_NAME };
 
 export const INITIAL_STATE = Data.collectState(
 	authentication.INITIAL_STATE,
 	disconnect.INITIAL_STATE
 );
-
-export { STORE_NAME };
 
 export const actions = Data.addInitializeAction(
 	Data.collectActions(

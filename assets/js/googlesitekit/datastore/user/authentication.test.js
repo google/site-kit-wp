@@ -30,12 +30,12 @@ import {
 	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
 describe( 'core/user authentication', () => {
 	const responseAuthenticated = { authenticated: true, requiredScopes: [], grantedScopes: [] };
-	const apiEndpoint = /^\/google-site-kit\/v1\/core\/user\/data\/authentication/;
+	const coreUserDataEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/authentication/;
 	let apiFetchSpy;
 	let registry;
 	let store;
@@ -81,14 +81,14 @@ describe( 'core/user authentication', () => {
 		describe( 'getAuthentication', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetch
-					.doMockOnceIf( apiEndpoint )
+					.doMockOnceIf( coreUserDataEndpointRegExp )
 					.mockResponseOnce(
 						JSON.stringify( responseAuthenticated ),
 						{ status: 200 }
 					);
 
 				const initialConnection = registry.select( STORE_NAME ).getAuthentication();
-				// The connection info will be its initial value while the connection
+				// The authentication info will be its initial value while the authentication
 				// info is fetched.
 				expect( initialConnection ).toEqual( undefined );
 				await subscribeUntil( registry,
@@ -128,7 +128,7 @@ describe( 'core/user authentication', () => {
 					data: { status: 500 },
 				};
 				fetch
-					.doMockOnceIf( apiEndpoint )
+					.doMockOnceIf( coreUserDataEndpointRegExp )
 					.mockResponseOnce(
 						JSON.stringify( response ),
 						{ status: 500 }
@@ -152,7 +152,7 @@ describe( 'core/user authentication', () => {
 		describe( 'isAuthenticated', () => {
 			it( 'uses a resolver to to load the authenticated value if not yet set.', async () => {
 				fetch
-					.doMockOnceIf( apiEndpoint )
+					.doMockOnceIf( coreUserDataEndpointRegExp )
 					.mockResponseOnce(
 						JSON.stringify( responseAuthenticated ),
 						{ status: 200 }
@@ -181,7 +181,7 @@ describe( 'core/user authentication', () => {
 					data: { status: 500 },
 				};
 				fetch
-					.doMockOnceIf( apiEndpoint )
+					.doMockOnceIf( coreUserDataEndpointRegExp )
 					.mockResponseOnce(
 						JSON.stringify( response ),
 						{ status: 500 }
@@ -213,14 +213,14 @@ describe( 'core/user authentication', () => {
 		describe( 'getGrantedScopes', () => {
 			it( 'uses a resolver get all authentication info', async () => {
 				fetch
-					.doMockOnceIf( apiEndpoint )
+					.doMockOnceIf( coreUserDataEndpointRegExp )
 					.mockResponseOnce(
 						JSON.stringify( responseAuthenticated ),
 						{ status: 200 }
 					);
 
 				const initialIsAuthenticated = registry.select( STORE_NAME ).getGrantedScopes();
-				// The autentication info will be its initial value while the authentication
+				// The granted scope info will be its initial value while the granted scope
 				// info is fetched.
 				expect( initialIsAuthenticated ).toEqual( undefined );
 				await subscribeUntil( registry,
@@ -242,7 +242,7 @@ describe( 'core/user authentication', () => {
 					data: { status: 500 },
 				};
 				fetch
-					.doMockOnceIf( apiEndpoint )
+					.doMockOnceIf( coreUserDataEndpointRegExp )
 					.mockResponseOnce(
 						JSON.stringify( response ),
 						{ status: 500 }
@@ -273,14 +273,14 @@ describe( 'core/user authentication', () => {
 		describe( 'getRequiredScopes', () => {
 			it( 'uses a resolver get all authentication info', async () => {
 				fetch
-					.doMockOnceIf( apiEndpoint )
+					.doMockOnceIf( coreUserDataEndpointRegExp )
 					.mockResponseOnce(
 						JSON.stringify( responseAuthenticated ),
 						{ status: 200 }
 					);
 
 				const initialIsAuthenticated = registry.select( STORE_NAME ).getRequiredScopes();
-				// The autentication info will be its initial value while the authentication
+				// The required scope info will be its initial value while the require scope
 				// info is fetched.
 				expect( initialIsAuthenticated ).toEqual( undefined );
 				await subscribeUntil( registry,
@@ -302,7 +302,7 @@ describe( 'core/user authentication', () => {
 					data: { status: 500 },
 				};
 				fetch
-					.doMockOnceIf( apiEndpoint )
+					.doMockOnceIf( coreUserDataEndpointRegExp )
 					.mockResponseOnce(
 						JSON.stringify( response ),
 						{ status: 500 }

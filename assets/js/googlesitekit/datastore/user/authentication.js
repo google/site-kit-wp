@@ -78,6 +78,7 @@ export const actions = {
 	 *
 	 * @since n.e.x.t
 	 * @private
+	 *
 	 * @param {Object} authentication Authentication info from the API.
 	 * @return {Object} Redux-style action.
 	 */
@@ -139,11 +140,9 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getAuthentication() {
-		const registry = yield Data.commonActions.getRegistry();
+		const { select } = yield Data.commonActions.getRegistry();
 
-		const authenticationInfo = registry.select( STORE_NAME ).getAuthentication();
-
-		if ( ! authenticationInfo ) {
+		if ( ! select( STORE_NAME ).getAuthentication() ) {
 			yield actions.fetchAuthentication();
 		}
 	},
@@ -184,7 +183,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} Site connection status.
+	 * @return {(boolean|undefined)} User authentication status.
 	 */
 	isAuthenticated: createRegistrySelector( ( select ) => () => {
 		const { authenticated } = select( STORE_NAME ).getAuthentication() || {};
@@ -216,7 +215,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Array|undefined)} Array of granted scopes
+	 * @return {(Array|undefined)} Array of required scopes
 	 */
 	getRequiredScopes: createRegistrySelector( ( select ) => () => {
 		const { requiredScopes } = select( STORE_NAME ).getAuthentication() || {};
