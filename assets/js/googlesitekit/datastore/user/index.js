@@ -22,44 +22,51 @@
 import Data from 'googlesitekit-data';
 import authentication from './authentication';
 import disconnect from './disconnect';
+import error from './error';
 import { STORE_NAME } from './constants';
 export { STORE_NAME };
 
 export const INITIAL_STATE = Data.collectState(
 	authentication.INITIAL_STATE,
-	disconnect.INITIAL_STATE
+	disconnect.INITIAL_STATE,
+	error.INITIAL_STATE
 );
 
 export const actions = Data.addInitializeAction(
 	Data.collectActions(
 		Data.commonActions,
 		authentication.actions,
-		disconnect.actions
+		disconnect.actions,
+		error.actions
 	)
 );
 
 export const controls = Data.collectControls(
 	Data.commonControls,
 	authentication.controls,
-	disconnect.controls
+	disconnect.controls,
+	error.controls
 );
 
 export const reducer = Data.addInitializeReducer(
 	INITIAL_STATE,
 	Data.collectReducers(
 		authentication.reducer,
-		disconnect.reducer
+		disconnect.reducer,
+		error.reducer
 	)
 );
 
 export const resolvers = Data.collectResolvers(
 	authentication.resolvers,
-	disconnect.resolvers
+	disconnect.resolvers,
+	error.resolvers
 );
 
 export const selectors = Data.collectSelectors(
 	authentication.selectors,
-	disconnect.selectors
+	disconnect.selectors,
+	error.selectors
 );
 
 const store = {

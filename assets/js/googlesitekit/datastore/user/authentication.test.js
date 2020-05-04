@@ -196,9 +196,11 @@ describe( 'core/user authentication', () => {
 				);
 
 				const isAuthenticated = registry.select( STORE_NAME ).isAuthenticated();
+				const error = registry.select( STORE_NAME ).getError();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( isAuthenticated ).toEqual( undefined );
+				expect( error ).toEqual( response );
 			} );
 
 			it( 'returns undefined if authentication info is not available', async () => {
@@ -263,9 +265,11 @@ describe( 'core/user authentication', () => {
 				);
 
 				const grantedScopes = registry.select( STORE_NAME ).getGrantedScopes();
+				const error = registry.select( STORE_NAME ).getError();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( grantedScopes ).toEqual( undefined );
+				expect( error ).toEqual( response );
 			} );
 
 			it( 'returns undefined if authentication info is not available', async () => {
@@ -329,9 +333,11 @@ describe( 'core/user authentication', () => {
 				);
 
 				const requiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
+				const error = registry.select( STORE_NAME ).getError();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( requiredScopes ).toEqual( undefined );
+				expect( error ).toEqual( response );
 			} );
 
 			it( 'returns undefined if authentication info is not available', async () => {
