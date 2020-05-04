@@ -279,10 +279,6 @@ tag_partner: "site_kit"
 			return $data;
 		}
 
-		if ( ! $this->is_connected() ) {
-			return $data;
-		}
-
 		$tag_enabled = $this->get_data( 'use-snippet' );
 		if ( is_wp_error( $tag_enabled ) || ! $tag_enabled ) {
 			return $data;
@@ -312,10 +308,6 @@ tag_partner: "site_kit"
 
 		// Bail early if we are checking for the tag presence from the back end.
 		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
-			return $content;
-		}
-
-		if ( ! $this->is_connected() ) {
 			return $content;
 		}
 
