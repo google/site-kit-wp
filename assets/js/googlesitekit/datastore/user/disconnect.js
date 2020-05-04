@@ -17,24 +17,19 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 
 // Actions
-const START_DISCONNECT = 'START_DISCONNECT';
+const START_FETCH_DISCONNECT = 'START_FETCH_DISCONNECT';
 const FETCH_DISCONNECT = 'FETCH_DISCONNECT';
 const FINISH_DISCONNECT = 'FINISH_DISCONNET';
 const CATCH_FETCH_DISCONNECT = 'CATCH_FETCH_DISCONNECT';
 const RECEIVE_DISCONNECT = 'RECEIVE_DISCONNECT';
 
 export const INITIAL_STATE = {
-	isDisconnecting: false,
+	isFetchingDisconnecting: false,
 };
 
 export const actions = {
@@ -42,7 +37,7 @@ export const actions = {
 		let response, error;
 		yield {
 			payload: {},
-			type: START_DISCONNECT,
+			type: START_FETCH_DISCONNECT,
 		};
 
 		try {
@@ -50,7 +45,6 @@ export const actions = {
 				payload: {},
 				type: FETCH_DISCONNECT,
 			};
-			yield actions.receiveDisconnect( response );
 
 			yield {
 				payload: {},
@@ -65,15 +59,6 @@ export const actions = {
 		}
 		return { response, error };
 	},
-
-	receiveDisconnect( disconnect ) {
-		invariant( disconnect, 'disconnect is required.' );
-
-		return {
-			payload: { disconnect },
-			type: RECEIVE_DISCONNECT,
-		};
-	},
 };
 
 export const controls = {
@@ -84,7 +69,7 @@ export const controls = {
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case START_DISCONNECT: {
+		case START_FETCH_DISCONNECT: {
 			return {
 				...state,
 				isDisconnecting: true,

@@ -24,6 +24,7 @@ import { STORE_NAME } from './constants';
 
 describe( 'core/user disconnect', () => {
 	let registry;
+	const coreUserDataDisconnectEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/disconnect/;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -35,16 +36,17 @@ describe( 'core/user disconnect', () => {
 
 	describe( 'disconnect', () => {
 		it( 'does not require any params', () => {
+			// Create a mock to avoid triggering a network request error.
+			// The return value is irrelevant to the test.
+			fetch
+				.doMockOnceIf( coreUserDataDisconnectEndpointRegExp )
+				.mockResponseOnce(
+					JSON.stringify( {} ),
+					{ status: 200 }
+				);
 			expect( () => {
 				registry.dispatch( STORE_NAME ).disconnect();
 			} ).not.toThrow();
-		} );
-	} );
-	describe( 'receiveDisconnect', () => {
-		it( 'requires the disconnect param', () => {
-			expect( () => {
-				registry.dispatch( STORE_NAME ).receiveDisconnect();
-			} ).toThrow( 'disconnect is required.' );
 		} );
 	} );
 } );
