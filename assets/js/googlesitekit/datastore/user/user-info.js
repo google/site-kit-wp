@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-// import invariant from 'invariant';
+import invariant from 'invariant';
 
 /**
  * Internal dependencies
@@ -36,13 +36,39 @@ const INITIAL_STATE = {
 	verified: undefined,
 };
 
-export const actions = {};
+export const actions = {
+	/**
+	 * Stores user info in the datastore.
+	 *
+	 * Because this is frequently-accessed data, this is usually sourced
+	 * from a global variable (`_googlesitekitUserData`), set by PHP
+	 * in the `before_print` callback for `googlesitekit-datastore-user`.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} userInfo User info, usually supplied via a global variable from PHP.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveUserData( userInfo ) {
+		invariant( userInfo, 'userInfo is required.' );
+		const { user, verified } = userInfo;
+		return {
+			payload: {
+				user,
+				verified,
+			},
+			type: RECEIVE_USER_DATA,
+		};
+	},
+};
+
 export const controls = {};
+
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case RECEIVE_USER_DATA: {
 			const { user, verified } = payload;
-
 			return {
 				...state,
 				user,
@@ -57,13 +83,20 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getUser() {
-		let error;
+		const { select } = yield Data.commonActions.getRegistry();
 
-		const response = yield {
-			payload: { ...global._googlesitekitUserData },
-			type: RECEIVE_USER_DATA,
-		};
-		return { response, error };
+		const { user, verified } = select( STORE_NAME ).getUser();
+
+		if ( user !== undefined && verified !== undefined ) {
+			return;
+		}
+
+		if ( ! global._googlesitekitUserData ) {
+			global.console.error( 'Could not load core/user info.' );
+			return;
+		}
+
+		yield actions.receiveUserData( { ...global._googlesitekitUserData } );
 	},
 };
 
@@ -76,8 +109,8 @@ export const selectors = {
 	 * Returns an object with the shape when successful:
 	 * ```
 	 * {
-	 * user: <Object>,
-	 * verified: <Boolean>,
+	 *   user: <Object>,
+	 *   verified: <Boolean>,
 	 * }
 	 * ```
 	 *
