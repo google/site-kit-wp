@@ -146,7 +146,7 @@ const AccountCreate = () => {
 									<TimezoneSelect
 										hasError={ validationIssues.timezone }
 										timezone={ timezone }
-										setTimezone={ setTimezone.validationIssues }
+										setTimezone={ setTimezone }
 									/>
 								</div>
 							</div>

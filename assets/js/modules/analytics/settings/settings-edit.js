@@ -32,9 +32,10 @@ import ProgressBar from '../../../components/progress-bar';
 import {
 	AccountCreate,
 	ExistingTagError,
+	AccountCreateLegacy,
 } from '../common';
 import { parsePropertyID } from '../util';
-const { useSelect, useDispatch } = Data;
+const { useSelect, useDispatch, select: directSelect } = Data;
 
 export default function SettingsEdit() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
@@ -113,13 +114,15 @@ export default function SettingsEdit() {
 		};
 	}, [] );
 
+	const usingProxy = directSelect( 'core/site' ).isUsingProxy();
+
 	let viewComponent;
 	if ( isDoingGetAccounts || isDoingSubmitChanges ) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && existingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
 	} else if ( ! accounts.length || isCreateAccount ) {
-		viewComponent = <AccountCreate />;
+		viewComponent = usingProxy ? <AccountCreate /> : <AccountCreateLegacy />;
 	} else {
 		viewComponent = <SettingsForm />;
 	}

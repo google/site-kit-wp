@@ -32,10 +32,11 @@ import { SvgIcon, trackEvent } from '../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../datastore/constants';
 import {
 	AccountCreate,
+	AccountCreateLegacy,
 	ExistingTagError,
 } from '../common';
 import { parsePropertyID } from '../util';
-const { useSelect, useDispatch } = Data;
+const { useSelect, useDispatch, select: directSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
@@ -69,6 +70,8 @@ export default function SetupMain( { finishSetup } ) {
 		trackEvent( 'analytics_setup', 'configure_analytics_screen' );
 	}, [] );
 
+	const usingProxy = directSelect( 'core/site' ).isUsingProxy();
+
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
@@ -77,7 +80,7 @@ export default function SetupMain( { finishSetup } ) {
 	} else if ( hasExistingTag && existingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
 	} else if ( isCreateAccount || ( Array.isArray( accounts ) && ! accounts.length ) ) {
-		viewComponent = <AccountCreate />;
+		viewComponent = usingProxy ? <AccountCreate /> : <AccountCreateLegacy />;
 	} else {
 		viewComponent = <SetupForm finishSetup={ finishSetupAndNavigate } />;
 	}
