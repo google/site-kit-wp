@@ -25,6 +25,8 @@
     "test:e2e": "WP_BASE_URL=http://localhost:9002 wp-scripts test-e2e --config=tests/e2e/jest.config.js",
     "test:e2e:interactive": "npm run test:e2e -- --puppeteer-interactive",
     "test:e2e:ci": "npm run test:e2e -- --runInBand",
+    "test:e2e:watch": "npm run test:e2e -- --watch",
+    "test:e2e:watch:interactive": "npm run test:e2e -- --watch --puppeteer-interactive",
     "storybook": "start-storybook -s ./dist -p 9001 -c .storybook",
     "backstopjs": "backstop test --config=tests/backstop/config.js --docker",
     "screenshot": "storybook-chrome-screenshot -p 9001 -c .storybook",
