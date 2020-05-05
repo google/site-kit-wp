@@ -94,7 +94,7 @@ const AccountCreate = () => {
 		timezone: timezone === '',
 	} );
 
-	const validationHasIssues = Object.values( validationIssues ).some( ( check ) => check );
+	const validationHasIssues = Object.values( validationIssues ).some( Boolean );
 
 	useEffect( () => {
 		setValidationIssues( {
