@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useState, Fragment, useCallback, useEffect } from '@wordpress/element';
+import { useState, Fragment, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -58,25 +58,22 @@ const AccountCreate = () => {
 		[ isDoingCreateAccount ]
 	);
 	const [ isNavigating, setIsNavigating ] = useState( false );
-	const handleSubmit = useCallback( ( accountName, propertyName, profileName, timezone ) => {
+	const handleSubmit = async function( accountName, propertyName, profileName, timezone ) {
 		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
 		setIsNavigating( true );
-		async function send() {
-			await createAccount( {
-				accountName,
-				propertyName,
-				profileName,
-				timezone,
-			} );
+		await createAccount( {
+			accountName,
+			propertyName,
+			profileName,
+			timezone,
+		} );
 
-			// Redirect if the accountTicketTermsOfServiceURL is set.
-			if ( accountTicketTermsOfServiceURL ) {
-				global.location.assign( accountTicketTermsOfServiceURL );
-			}
-			setIsNavigating( false );
+		// Redirect if the accountTicketTermsOfServiceURL is set.
+		if ( accountTicketTermsOfServiceURL ) {
+			global.location.assign( accountTicketTermsOfServiceURL );
 		}
-		send();
-	}, [ accountTicketTermsOfServiceURL ] );
+		setIsNavigating( false );
+	};
 
 	const [ accountName, setAccountName ] = useState( siteName );
 	const [ propertyName, setPropertyName ] = useState( url.hostname );
