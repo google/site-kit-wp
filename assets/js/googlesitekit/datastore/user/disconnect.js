@@ -34,7 +34,7 @@ const CATCH_FETCH_DISCONNECT = 'CATCH_FETCH_DISCONNECT';
 const RECEIVE_DISCONNECT = 'RECEIVE_DISCONNECT';
 
 export const INITIAL_STATE = {
-	isFetchingDisconnecting: false,
+	isFetchingDisconnect: false,
 	disconnected: undefined,
 };
 
@@ -89,7 +89,7 @@ export const actions = {
 
 export const controls = {
 	[ FETCH_DISCONNECT ]: () => {
-		return API.get( 'core', 'user', 'disconnect' );
+		return API.set( 'core', 'user', 'disconnect' );
 	},
 };
 
@@ -98,7 +98,7 @@ export const reducer = ( state, { type, payload } ) => {
 		case START_FETCH_DISCONNECT: {
 			return {
 				...state,
-				isDisconnecting: true,
+				isFetchingDisconnect: true,
 			};
 		}
 
@@ -114,7 +114,7 @@ export const reducer = ( state, { type, payload } ) => {
 		case FINISH_DISCONNECT: {
 			return {
 				...state,
-				isDisconnecting: false,
+				isFetchingDisconnect: false,
 			};
 		}
 
@@ -122,7 +122,7 @@ export const reducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				error: payload.error,
-				isDisconnecting: false,
+				isFetchingDisconnect: false,
 			};
 		}
 		default: {
@@ -132,7 +132,20 @@ export const reducer = ( state, { type, payload } ) => {
 };
 
 export const resolvers = {};
-export const selectors = {};
+export const selectors = {
+	/**
+	 * Returns whether a disconnect is occuring.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} Is a disconnect ocurring or not.
+	 */
+	isDoingDisconnect( state ) {
+		const { isDoingDisconnect } = state;
+		return isDoingDisconnect;
+	},
+};
 
 export default {
 	INITIAL_STATE,
