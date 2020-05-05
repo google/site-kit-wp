@@ -50,12 +50,7 @@ const AccountCreate = () => {
 		}
 	);
 
-	const accountTicketTermsOfServiceURL = useSelect(
-		( select ) => {
-			return select( STORE_NAME ).getAccountTicketTermsOfServiceURL();
-		},
-		[ isDoingCreateAccount ]
-	);
+	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( STORE_NAME ).getAccountTicketTermsOfServiceURL() );
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const handleSubmit = async function( accountName, propertyName, profileName, timezone ) {
 		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
