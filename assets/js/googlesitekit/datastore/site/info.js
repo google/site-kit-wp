@@ -321,7 +321,7 @@ export const selectors = {
 	/**
 	 * Gets a site's name.
 	 *
-	 * @since 1.7.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {?string} The site name.
