@@ -35,7 +35,7 @@ import {
 	AccountCreateLegacy,
 } from '../common';
 import { parsePropertyID } from '../util';
-const { useSelect, useDispatch, select: directSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SettingsEdit() {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
@@ -48,6 +48,7 @@ export default function SettingsEdit() {
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const haveSettingsChanged = useSelect( ( select ) => select( STORE_NAME ).haveSettingsChanged() );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
+	const usingProxy = useSelect( ( select ) => select( 'core/site' ).isUsingProxy() );
 
 	// Rollback any temporary selections to saved values on dismount.
 	// This is a bit of a hacky solution, as we'd prefer to rollback changes
@@ -113,8 +114,6 @@ export default function SettingsEdit() {
 			);
 		};
 	}, [] );
-
-	const usingProxy = directSelect( 'core/site' ).isUsingProxy();
 
 	let viewComponent;
 	if ( isDoingGetAccounts || isDoingSubmitChanges ) {
