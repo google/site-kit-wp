@@ -200,7 +200,7 @@ final class Authentication {
 			function( $routes ) {
 				$authentication_routes = array(
 					'/' . REST_Routes::REST_ROOT . '/core/site/data/connection',
-					'/' . REST_Routes::REST_ROOT . 'core/user/data/authentication',
+					'/' . REST_Routes::REST_ROOT . '/core/user/data/authentication',
 				);
 				return array_merge( $routes, $authentication_routes );
 			}
