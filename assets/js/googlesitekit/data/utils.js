@@ -307,19 +307,6 @@ export const commonControls = {
 };
 
 /**
- * A store containing the common actions, controls and reducer that all stores will use.
- *
- * @since n.e.x.t
- *
- * @return {Object} Object with common actions, controls and reducer.
- */
-export const commonStore = {
-	actions: addInitializeAction( commonActions ),
-	controls: commonControls,
-	reducer: addInitializeReducer( passthroughReducer ),
-};
-
-/**
  * Finds all duplicate items in an array and return them.
  *
  * @since 1.5.0
@@ -341,4 +328,17 @@ const findDuplicates = ( array ) => {
 	}
 
 	return duplicates;
+};
+
+/**
+ * A store containing the common actions, controls and reducer that all stores will use.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Object} Object with common actions, controls and reducer.
+ */
+export const commonStore = {
+	actions: addInitializeAction( commonActions ),
+	controls: commonControls,
+	reducer: addInitializeReducer( {}, passthroughReducer ),
 };
