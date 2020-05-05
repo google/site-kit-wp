@@ -11,6 +11,6 @@ HOST_PORT=$(dc port $CONTAINER 80 | awk -F : '{printf $2}')
 
 # Check for the site status
 if [[ -z $(curl -s --head --fail http://localhost:$HOST_PORT) ]]; then
-	echo -e $(status_message 'E2E environment is not running, starting it now...')
+	status_message "E2E environment is not running, starting it now..."
 	npm run env:start
 fi

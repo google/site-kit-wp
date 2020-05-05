@@ -48,7 +48,7 @@ export const actions = {
 			type: START_SUBMIT_CHANGES,
 		};
 
-		yield {
+		const result = yield {
 			payload: {},
 			type: SUBMIT_CHANGES,
 		};
@@ -57,6 +57,8 @@ export const actions = {
 			payload: {},
 			type: FINISH_SUBMIT_CHANGES,
 		};
+
+		return result;
 	},
 };
 
@@ -99,6 +101,8 @@ export const controls = {
 		}
 
 		await API.invalidateCache( 'modules', 'analytics' );
+
+		return {};
 	} ),
 };
 

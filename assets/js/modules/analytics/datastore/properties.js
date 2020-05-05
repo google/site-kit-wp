@@ -415,9 +415,12 @@ export const resolvers = {
 
 		// Only fetch properties if there are none in the store for the given account.
 		if ( ! properties ) {
-			const { response } = yield actions.fetchPropertiesProfiles( accountID );
+			const { response, error } = yield actions.fetchPropertiesProfiles( accountID );
 			if ( response && response.properties ) {
 				( { properties } = response );
+			}
+			if ( error ) {
+				return;
 			}
 		}
 
@@ -438,7 +441,7 @@ export const selectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} propertyID Property ID.
-	 * @return {?Object} Property object, or undefined if not present in store.
+	 * @return {(Object|undefined)} Property object, or undefined if not present in store.
 	 */
 	getPropertyByID( state, propertyID ) {
 		if ( ! isValidPropertyID( propertyID ) ) {
@@ -455,7 +458,7 @@ export const selectors = {
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?Object} Matched property if set, otherwise `undefined`.
+	 * @return {(Object|undefined)} Matched property if set, otherwise `undefined`.
 	 */
 	getMatchedProperty( state ) {
 		return state.matchedProperty;
@@ -471,7 +474,7 @@ export const selectors = {
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The Analytics Account ID to fetch properties for.
-	 * @return {?Array.<Object>} An array of Analytics properties; `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} An array of Analytics properties; `undefined` if not loaded.
 	 */
 	getProperties( state, accountID ) {
 		const { properties } = state;
