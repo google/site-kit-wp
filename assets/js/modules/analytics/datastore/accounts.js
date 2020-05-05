@@ -62,13 +62,13 @@ export const actions = {
 			const { dispatch } = yield Data.commonActions.getRegistry();
 			yield actions.receiveAccounts( response.accounts );
 
-			if ( response.accounts.length && response.accounts[ 0 ] && response.accounts[ 0 ].id ) {
-				const accountID = response.accounts[ 0 ].id;
+			if ( response.properties.length && response.properties[ 0 ] && response.properties[ 0 ].accountId ) {
+				const accountID = response.properties[ 0 ].accountId;
 				dispatch( STORE_NAME ).receiveProperties( response.properties, { accountID } );
 			}
 
-			if ( response.properties.length && response.properties[ 0 ] && response.properties[ 0 ].internalWebPropertyId ) {
-				const propertyID = response.properties[ 0 ].internalWebPropertyId;
+			if ( response.properties.length && response.properties[ 0 ] && response.properties[ 0 ].id ) {
+				const propertyID = response.properties[ 0 ].id;
 				dispatch( STORE_NAME ).receiveProfiles( response.profiles, { propertyID } );
 			}
 
@@ -77,7 +77,7 @@ export const actions = {
 			}
 
 			yield {
-				payload: { data },
+				payload: { response },
 				type: FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
 			};
 		} catch ( e ) {

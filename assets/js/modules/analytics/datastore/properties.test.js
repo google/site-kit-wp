@@ -257,7 +257,9 @@ describe( 'modules/analytics properties', () => {
 
 			it( 'returns undefined when the property is not present in the store', () => {
 				const { properties } = fixtures.propertiesProfiles;
-				registry.dispatch( STORE_NAME ).receiveProperties( [], {} );
+				const accountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+
+				registry.dispatch( STORE_NAME ).receiveProperties( [], { accountID } );
 
 				const findProperty = properties[ 1 ];
 				const foundProperty = registry.select( STORE_NAME ).getPropertyByID( findProperty.id );

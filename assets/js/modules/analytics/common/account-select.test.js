@@ -114,8 +114,8 @@ describe( 'AccountSelect', () => {
 	it( 'should pre-select the property and profile IDs when changed', () => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const { getByText, container, registry } = render( <AccountSelect />, { setupRegistry } );
-		const propertyID = fixtures.accountsPropertiesProfiles.properties[ 0 ].internalWebPropertyId;
-		const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
+		const propertyID = fixtures.accountsPropertiesProfiles.properties[ 0 ].id;
+		const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId;
 
 		registry.dispatch( STORE_NAME ).receiveProperties( properties, { accountID } );
 		registry.dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID } );
