@@ -122,6 +122,28 @@ storiesOf( 'Analytics Module/Settings', module )
 
 		return <Settings callback={ setupRegistry } />;
 	} )
+	.add( 'View, open with all settings, no snippet with existing tag', () => {
+		filterAnalyticsSettings();
+
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveExistingTag( 'UA-1234567890-1' );
+			dispatch( STORE_NAME ).receiveTagPermission( {
+				accountID: '1234567890',
+				propertyID: 'UA-1234567890-1',
+				permission: true,
+			} );
+			dispatch( STORE_NAME ).receiveSettings( {
+				accountID: '1234567890',
+				propertyID: 'UA-1234567890-1',
+				profileID: '9999999',
+				anonymizeIP: true,
+				useSnippet: false,
+				trackingDisabled: [ 'loggedinUsers' ],
+			} );
+		};
+
+		return <Settings callback={ setupRegistry } />;
+	} )
 	.add( 'Edit, open with all settings', () => {
 		filterAnalyticsSettings();
 
