@@ -34,12 +34,11 @@ import classnames from 'classnames';
 
 const { default: { country: allCountries } } = countries;
 
-const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
-	const [ selectedCountry, setSelectedCountry ] = useState( timezone );
-	const [ selectedTimezoneID, setSelectedTimezoneID ] = useState( '' );
+const TimezoneSelect = ( { timezone, setTimezone, hasError, initiallySelectedCountry, initiallySelectedTimezoneID } ) => {
+	const [ selectedCountry, setSelectedCountry ] = useState( initiallySelectedCountry );
+	const [ selectedTimezoneID, setSelectedTimezoneID ] = useState( initiallySelectedTimezoneID );
 	let multiTimezone,
-		selectedTimezoneDisplay = selectedTimezoneID,
-		foundTimezone = false;
+		selectedTimezoneDisplay = selectedTimezoneID;
 	const getTimezoneSelector = () => {
 		const response = (
 			<div >
@@ -67,18 +66,14 @@ const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
 									let value = aCountry.defaultTimeZoneId;
 									const timezoneMatch = aCountry.timeZone.find( ( tz ) => tz.timeZoneId === timezone );
 									if ( timezoneMatch ) {
-										foundTimezone = true;
 										value = timezoneMatch.timeZoneId;
 										if ( aCountry.timeZone.length > 1 ) {
 											multiTimezone = aCountry.timeZone;
 										} else {
-											setSelectedTimezoneID( aCountry.timeZone[ 0 ].displayName );
 											selectedTimezoneDisplay = aCountry.timeZone[ 0 ].displayName;
 											multiTimezone = false;
 										}
-										setSelectedCountry( timezoneMatch.timeZoneId );
 									}
-
 									return (
 										<Option
 											key={ aCountry.displayName }
@@ -106,9 +101,6 @@ const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
 							{
 								multiTimezone
 									.map( ( aTimezone ) => {
-										if ( aTimezone.timeZoneId === timezone ) {
-											foundTimezone = true;
-										}
 										return (
 											<Option
 												key={ aTimezone.displayName }
@@ -125,11 +117,7 @@ const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
 				</span>
 			</div>
 		);
-		// Fallback to the browser timezone if the WordPress timezone was not found.
-		if ( ! foundTimezone ) {
-			setSelectedTimezoneID( Intl.DateTimeFormat().resolvedOptions().timeZone );
-			setTimezone( Intl.DateTimeFormat().resolvedOptions().timeZone );
-		}
+
 		return response;
 	};
 

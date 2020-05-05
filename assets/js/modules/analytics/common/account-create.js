@@ -15,6 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/**
+ * External dependencies
+ */
+import { each } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -33,14 +37,51 @@ import AccountField from './account-field';
 import PropertyField from './property-field';
 import ProfileField from './profile-field';
 import { STORE_NAME } from '../datastore/constants';
+import { countries } from './countries';
 
 import Data from 'googlesitekit-data';
 const { useDispatch, useSelect } = Data;
+const timezoneData = [];
+
+// Recursively search thru countries and their timezones to find a match for country/timezone.
+const findTimezone = ( timezone ) => {
+	// Store a cache so the search only happens once per
+	if ( timezoneData[ timezone ] ) {
+		return timezoneData[ timezone ];
+	}
+	let multiTimezone = false;
+	let selectedCountry = false;
+	let selectedTimezoneID = false;
+	each( countries.default.country, ( country ) => {
+		const timezoneMatch = country.timeZone.find( ( tz ) => tz.timeZoneId === timezone );
+		if ( timezoneMatch ) {
+			selectedCountry = timezoneMatch.timeZoneId;
+			if ( country.timeZone.length > 1 ) {
+				multiTimezone = country.timeZone;
+			} else {
+				selectedTimezoneID = country.timeZone[ 0 ].displayName;
+				multiTimezone = false;
+			}
+		}
+	} );
+	timezoneData[ timezone ] = { selectedCountry, selectedTimezoneID, multiTimezone };
+	return ( { selectedCountry, selectedTimezoneID, multiTimezone } );
+};
 
 const AccountCreate = () => {
 	const siteURL = useSelect( ( select ) => select( 'core/site' ).getReferenceSiteURL() );
 	const siteName = useSelect( ( select ) => select( 'core/site' ).getSiteName() );
-	const tz = useSelect( ( select ) => select( 'core/site' ).getTimezone() );
+	let tz = useSelect( ( select ) => select( 'core/site' ).getTimezone() );
+	let { selectedTimezoneID, selectedCountry, multiTimezone } = findTimezone( tz );
+	// Fallback to the browser timezone if the WordPress timezone was not found.
+	if ( ! selectedTimezoneID ) {
+		selectedTimezoneID = Intl.DateTimeFormat().resolvedOptions().timeZone;
+		tz = selectedTimezoneID;
+		const found = findTimezone( tz );
+		selectedTimezoneID = found.selectedTimezoneID;
+		selectedCountry = found.selectedCountry;
+		multiTimezone = found.multiTimezone;
+	}
 	const url = new URL( siteURL );
 	const { createAccount } = useDispatch( STORE_NAME );
 
@@ -129,6 +170,9 @@ const AccountCreate = () => {
 										hasError={ validationIssues.timezone }
 										timezone={ timezone }
 										setTimezone={ setTimezone }
+										initiallySelectedCountry={ selectedCountry }
+										initiallySelectedTimezoneID={ selectedTimezoneID }
+										multiTimezone={ multiTimezone }
 									/>
 								</div>
 							</div>
