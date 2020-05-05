@@ -206,16 +206,23 @@ export const actions = {
 
 		const { accountID } = parsePropertyID( propertyID );
 
+		yield actions.waitForProperties( accountID );
+		const property = registry.select( STORE_NAME ).getPropertyByID( propertyID ) || {};
+
 		if ( ! internalPropertyID ) {
-			yield actions.waitForProperties( accountID );
-			const property = registry.select( STORE_NAME ).getPropertyByID( propertyID ) || {};
 			internalPropertyID = property.internalWebPropertyId;
 		}
 
 		registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
 
+		if ( property.defaultProfileId ) {
+			registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // Capitalization rule exception: defaultProfileId
+			return;
+		}
+
 		// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
 		registry.dispatch( STORE_NAME ).setProfileID( '' );
+
 		const profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
 		if ( profiles === undefined ) {
 			return; // Selection will happen in in getProfiles resolver.
@@ -408,9 +415,12 @@ export const resolvers = {
 
 		// Only fetch properties if there are none in the store for the given account.
 		if ( ! properties ) {
-			const { response } = yield actions.fetchPropertiesProfiles( accountID );
+			const { response, error } = yield actions.fetchPropertiesProfiles( accountID );
 			if ( response && response.properties ) {
 				( { properties } = response );
+			}
+			if ( error ) {
+				return;
 			}
 		}
 

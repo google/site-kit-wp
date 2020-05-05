@@ -171,7 +171,7 @@ export default class CompatibilityChecks extends Component {
 
 		if ( ! complete ) {
 			inProgressFeedback = <div style={ { alignSelf: 'center', marginLeft: '1rem' } }>
-				<small>{ __( 'Checking Compatibility...', 'google-site-kit' ) }</small>
+				<small>{ __( 'Checking Compatibility…', 'google-site-kit' ) }</small>
 				<ProgressBar small compress />
 			</div>;
 		}

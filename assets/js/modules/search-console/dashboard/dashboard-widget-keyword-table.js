@@ -60,7 +60,7 @@ class SearchConsoleDashboardWidgetKeywordTable extends Component {
 		const dataMapped = map( data, ( row, i ) => {
 			const query = row.keys[ 0 ];
 			links[ i ] = sprintf(
-				'https://search.google.com/search-console/performance/search-analytics?resource_id=%s&query=!%s&num_of_days=28',
+				'https://search.google.com/search-console/performance/search-analytics?resource_id=%1$s&query=!%2$s&num_of_days=28',
 				domain,
 				query
 			);
