@@ -194,10 +194,11 @@ describe( 'modules/analytics profiles', () => {
 			it( 'does not make a network request if profiles for this account + property are already present', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( {} );
 				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
+				const propertyID = testPropertyID;
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveProfiles( fixtures.profiles, { testPropertyID } );
+				registry.dispatch( STORE_NAME ).receiveProfiles( fixtures.profiles, { propertyID } );
 
 				const profiles = registry.select( STORE_NAME ).getProfiles( testPropertyID );
 

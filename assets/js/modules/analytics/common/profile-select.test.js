@@ -38,10 +38,11 @@ apiFetchMock.mockImplementation( ( ...args ) => {
 
 const setupRegistry = ( { dispatch } ) => {
 	const { id, webPropertyId, accountId } = fixtures.propertiesProfiles.profiles[ 0 ];
+	const propertyID = webPropertyId;
 	dispatch( STORE_NAME ).setAccountID( accountId );
 	dispatch( STORE_NAME ).setPropertyID( webPropertyId );
 	dispatch( STORE_NAME ).setProfileID( id );
-	dispatch( STORE_NAME ).receiveProfiles( fixtures.propertiesProfiles.profiles, { webPropertyId } );
+	dispatch( STORE_NAME ).receiveProfiles( fixtures.propertiesProfiles.profiles, { propertyID } );
 };
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
