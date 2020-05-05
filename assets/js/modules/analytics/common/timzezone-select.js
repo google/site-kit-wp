@@ -93,7 +93,6 @@ const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
 						? <Select
 							className="googlesitekit-analytics__select-timezone"
 							name="timezone2"
-							style={ { minWidth: '240px' } /*todo: move to css */ }
 							enhanced
 							value={ timezone }
 							onEnhancedChange={ ( i, item ) => {
@@ -121,7 +120,9 @@ const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
 				</span>
 			</div>
 		);
-
+		if ( '' === selectedTimezoneID ) {
+			setTimezone( Intl.DateTimeFormat().resolvedOptions().timeZone );
+		}
 		return response;
 	};
 

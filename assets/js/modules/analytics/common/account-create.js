@@ -39,7 +39,7 @@ const { useDispatch, useSelect, select: directSelect } = Data;
 
 const AccountCreate = () => {
 	const { siteName, siteURL } = global.googlesitekit.admin;
-	let tz = directSelect( 'core/site' ).getTimezone();
+	const tz = directSelect( 'core/site' ).getTimezone();
 	const url = new URL( siteURL );
 	const { createAccount } = useDispatch( STORE_NAME );
 
@@ -78,11 +78,6 @@ const AccountCreate = () => {
 		send();
 	}, [ accountTicketTermsOfServiceURL ] );
 
-	// Fall back to the browser timezone if the WordPress timezone was not set.
-	if ( ! tz || '' === tz || 'UTC' === tz ) {
-		tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-	}
-
 	const [ accountName, setAccountName ] = useState( siteName );
 	const [ propertyName, setPropertyName ] = useState( url.hostname );
 	const [ profileName, setProfileName ] = useState( __( 'All website traffic', 'google-site-kit' ) );
@@ -94,23 +89,20 @@ const AccountCreate = () => {
 		timezone: timezone === '',
 	} );
 
-	const validationHasIssues = Object.values( validationIssues ).some( Boolean );
+	const validationHasIssues = Object.values( validationIssues ).some( ( check ) => check );
 
 	useEffect( () => {
 		setValidationIssues( {
 			accountName: accountName === '',
 			propertyName: propertyName === '',
 			profileName: profileName === '',
-			timezone: timezone === '' || timezone === 'UTC', //An unset timezone in WordPress is reported as "UTC".
+			timezone: timezone === '',
 		} );
 	}, [ accountName, propertyName, profileName, timezone ] );
 
 	if ( isDoingCreateAccount || isNavigating ) {
 		return <ProgressBar />;
 	}
-
-	// Disable the submit button if there are validation errors, and while submission is in progress.
-	const buttonDisabled = validationHasIssues;
 
 	return (
 		<Fragment>
@@ -121,6 +113,7 @@ const AccountCreate = () => {
 							<h3 className="googlesitekit-heading-4">
 								{ __( 'Create new Analytics account', 'google-site-kit' ) }
 							</h3>
+							{ __( 'We’ve pre-filled the required information for your new account. Confirm or edit any details:', 'google-site-kit' ) }
 							<div className="googlesitekit-setup-module__inputs">
 								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 									<AccountField
@@ -151,16 +144,19 @@ const AccountCreate = () => {
 									/>
 								</div>
 							</div>
-						</div>
-						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-							<Button
-								disabled={ buttonDisabled }
-								onClick={ () => {
-									handleSubmit( accountName, propertyName, profileName, timezone );
-								} }
-							>
-								{ __( 'Create Account', 'google-site-kit' ) }
-							</Button>
+							<p>
+								{ __( 'You will be redirected to Google Analytics to accept the Terms of Service and create your new account.', 'google-site-kit' ) }
+							</p>
+							<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+								<Button
+									disabled={ validationHasIssues }
+									onClick={ () => {
+										handleSubmit( accountName, propertyName, profileName, timezone );
+									} }
+								>
+									{ __( 'Create Account', 'google-site-kit' ) }
+								</Button>
+							</div>
 						</div>
 					</div>
 				</div>

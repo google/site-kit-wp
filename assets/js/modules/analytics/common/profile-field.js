@@ -32,7 +32,7 @@ const ProfileField = ( { hasError, profileName, setProfileName } ) => {
 			hasError={ hasError }
 			value={ profileName }
 			setValue={ setProfileName }
-			label={ __( 'Profile', 'google-site-kit' ) }
+			label={ __( 'View', 'google-site-kit' ) } // Profiles are now called views.
 			name="profile"
 		/>
 	);
