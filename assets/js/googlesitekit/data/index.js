@@ -35,16 +35,11 @@ import {
 import {
 	addInitializeAction,
 	addInitializeReducer,
-	collectActions,
-	collectControls,
-	collectReducers,
-	collectResolvers,
-	collectSelectors,
-	collectState,
 	collectName,
 	combineStores,
 	commonActions,
 	commonControls,
+	commonStore,
 } from './utils';
 
 const Data = createRegistry();
@@ -53,16 +48,11 @@ const Data = createRegistry();
 // developers can use them.
 Data.addInitializeAction = addInitializeAction;
 Data.addInitializeReducer = addInitializeReducer;
-Data.collectActions = collectActions;
-Data.collectControls = collectControls;
-Data.collectReducers = collectReducers;
-Data.collectResolvers = collectResolvers;
-Data.collectSelectors = collectSelectors;
-Data.collectState = collectState;
 Data.collectName = collectName;
 Data.combineStores = combineStores;
 Data.commonActions = commonActions;
 Data.commonControls = commonControls;
+Data.commonStore = commonStore;
 Data.createRegistryControl = createRegistryControl;
 Data.createRegistrySelector = createRegistrySelector;
 Data.useSelect = useSelect;
