@@ -239,7 +239,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?Array.<Object>} An array of Analytics accounts; `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} An array of Analytics accounts; `undefined` if not loaded.
 	 */
 	getAccounts( state ) {
 		const { accounts } = state;
@@ -267,7 +267,7 @@ export const selectors = {
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?Object} Any error encountered with requests in state.
+	 * @return {(Object|undefined)} Any error encountered with requests in state.
 	 */
 	getError( state ) {
 		const { error } = state;
