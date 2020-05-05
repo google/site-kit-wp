@@ -42,11 +42,20 @@ const AccountCreate = () => {
 	let tz = directSelect( 'core/site' ).getTimezone();
 	const url = new URL( siteURL );
 	const { createAccount } = useDispatch( STORE_NAME );
+
+	// Connect to the data store.
+	const isDoingCreateAccount = useSelect(
+		( select ) => {
+			return select( STORE_NAME ).isDoingCreateAccount();
+		},
+		[]
+	);
+
 	const accountTicketTermsOfServiceURL = useSelect(
 		( select ) => {
 			return select( STORE_NAME ).getAccountTicketTermsOfServiceURL();
 		},
-		[]
+		[ isDoingCreateAccount ]
 	);
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const handleSubmit = useCallback( ( accountName, propertyName, profileName, timezone ) => {
@@ -67,7 +76,7 @@ const AccountCreate = () => {
 			setIsNavigating( false );
 		}
 		send();
-	} );
+	}, [ accountTicketTermsOfServiceURL ] );
 
 	// Fall back to the browser timezone if the WordPress timezone was not set.
 	if ( ! tz || '' === tz || 'UTC' === tz ) {
@@ -95,14 +104,6 @@ const AccountCreate = () => {
 			timezone: timezone === '' || timezone === 'UTC', //An unset timezone in WordPress is reported as "UTC".
 		} );
 	}, [ accountName, propertyName, profileName, timezone ] );
-
-	// Connect to the data store.
-	const isDoingCreateAccount = useSelect(
-		( select ) => {
-			return select( STORE_NAME ).isDoingCreateAccount();
-		},
-		[]
-	);
 
 	if ( isDoingCreateAccount || isNavigating ) {
 		return <ProgressBar />;
