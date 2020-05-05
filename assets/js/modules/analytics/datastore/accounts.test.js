@@ -288,8 +288,6 @@ describe( 'modules/analytics accounts', () => {
 					),
 				);
 
-				// expect( matchedProperty ).toEqual( undefined );
-
 				expect( store.getState().matchedProperty ).toMatchObject( matchedProperty );
 				expect( registry.select( STORE_NAME ).getAccountID() ).toBe( matchedProperty.accountId );
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( matchedProperty.id );
