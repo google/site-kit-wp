@@ -33,16 +33,7 @@ const { createRegistrySelector } = Data;
 const RECEIVE_SITE_INFO = 'RECEIVE_SITE_INFO';
 
 export const INITIAL_STATE = {
-	siteInfo: {
-		adminURL: undefined,
-		ampMode: undefined,
-		currentEntityURL: undefined,
-		currentEntityID: undefined,
-		currentEntityTitle: undefined,
-		currentEntityType: undefined,
-		homeURL: undefined,
-		referenceSiteURL: undefined,
-	},
+	siteInfo: undefined,
 };
 
 export const actions = {
@@ -108,6 +99,12 @@ export const reducer = ( state, { payload, type } ) => {
 
 export const resolvers = {
 	*getSiteInfo() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		if ( registry.select( STORE_NAME ).getSiteInfo() ) {
+			return;
+		}
+
 		if ( ! global._googlesitekitBaseData || ! global._googlesitekitEntityData ) {
 			global.console.error( 'Could not load core/site info.' );
 			return;
@@ -150,30 +147,10 @@ export const selectors = {
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object} Site connection info.
+	 * @return {(Object|undefined)} Site connection info.
 	 */
 	getSiteInfo( state ) {
-		const {
-			adminURL,
-			ampMode,
-			currentEntityURL,
-			currentEntityID,
-			currentEntityTitle,
-			currentEntityType,
-			homeURL,
-			referenceSiteURL,
-		} = state.siteInfo || {};
-
-		return {
-			adminURL,
-			ampMode,
-			currentEntityURL,
-			currentEntityID,
-			currentEntityTitle,
-			currentEntityType,
-			homeURL,
-			referenceSiteURL,
-		};
+		return state.siteInfo;
 	},
 
 	/**
@@ -182,10 +159,10 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} This site's admin URL.
+	 * @return {(string|undefined)} This site's admin URL.
 	 */
 	getAdminURL: createRegistrySelector( ( select ) => () => {
-		const { adminURL } = select( STORE_NAME ).getSiteInfo();
+		const { adminURL } = select( STORE_NAME ).getSiteInfo() || {};
 
 		return adminURL;
 	} ),
@@ -196,10 +173,10 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} AMP Mode.
+	 * @return {(string|undefined)} AMP Mode.
 	 */
 	getAMPMode: createRegistrySelector( ( select ) => () => {
-		const { ampMode } = select( STORE_NAME ).getSiteInfo();
+		const { ampMode } = select( STORE_NAME ).getSiteInfo() || {};
 
 		return ampMode;
 	} ),
@@ -210,10 +187,10 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?number} Current entity's ID.
+	 * @return {(number|undefined)} Current entity's ID.
 	 */
 	getCurrentEntityID: createRegistrySelector( ( select ) => () => {
-		const { currentEntityID } = select( STORE_NAME ).getSiteInfo();
+		const { currentEntityID } = select( STORE_NAME ).getSiteInfo() || {};
 
 		return currentEntityID;
 	} ),
@@ -224,10 +201,10 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} Current entity's title.
+	 * @return {(string|undefined)} Current entity's title.
 	 */
 	getCurrentEntityTitle: createRegistrySelector( ( select ) => () => {
-		const { currentEntityTitle } = select( STORE_NAME ).getSiteInfo();
+		const { currentEntityTitle } = select( STORE_NAME ).getSiteInfo() || {};
 
 		return currentEntityTitle;
 	} ),
@@ -238,10 +215,10 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} Current entity's type.
+	 * @return {(string|undefined)} Current entity's type.
 	 */
 	getCurrentEntityType: createRegistrySelector( ( select ) => () => {
-		const { currentEntityType } = select( STORE_NAME ).getSiteInfo();
+		const { currentEntityType } = select( STORE_NAME ).getSiteInfo() || {};
 
 		return currentEntityType;
 	} ),
@@ -252,10 +229,10 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} Current entity's reference URL.
+	 * @return {(string|undefined)} Current entity's reference URL.
 	 */
 	getCurrentEntityURL: createRegistrySelector( ( select ) => () => {
-		const { currentEntityURL } = select( STORE_NAME ).getSiteInfo();
+		const { currentEntityURL } = select( STORE_NAME ).getSiteInfo() || {};
 
 		return currentEntityURL;
 	} ),
@@ -266,10 +243,10 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} This site's home URL.
+	 * @return {(string|undefined)} This site's home URL.
 	 */
 	getHomeURL: createRegistrySelector( ( select ) => () => {
-		const { homeURL } = select( STORE_NAME ).getSiteInfo();
+		const { homeURL } = select( STORE_NAME ).getSiteInfo() || {};
 
 		return homeURL;
 	} ),
@@ -280,10 +257,10 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} The reference site URL.
+	 * @return {(string|undefined)} The reference site URL.
 	 */
 	getReferenceSiteURL: createRegistrySelector( ( select ) => () => {
-		const { referenceSiteURL } = select( STORE_NAME ).getSiteInfo();
+		const { referenceSiteURL } = select( STORE_NAME ).getSiteInfo() || {};
 
 		return referenceSiteURL;
 	} ),
@@ -294,7 +271,7 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} `true` if AMP support is enabled, `false` if not. Returns `undefined` if not loaded.
+	 * @return {(string|undefined)} `true` if AMP support is enabled, `false` if not. Returns `undefined` if not loaded.
 	 */
 	isAmp: createRegistrySelector( ( select ) => () => {
 		const ampMode = select( STORE_NAME ).getAMPMode();
