@@ -126,6 +126,7 @@ const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
 		return response;
 	};
 
+	// Cache the selector as it is complex to construct.
 	const timezoneSelector = useMemo( () => getTimezoneSelector(), [ selectedCountry, timezone, hasError ] );
 
 	return timezoneSelector;
