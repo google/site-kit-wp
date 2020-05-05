@@ -481,6 +481,10 @@ final class Analytics extends Module
 			return;
 		}
 
+		if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
+			return;
+		}
+
 		$input = $this->context->input();
 
 		if ( ! $input->filter( INPUT_GET, 'gatoscallback' ) ) {
