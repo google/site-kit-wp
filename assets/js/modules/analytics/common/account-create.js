@@ -47,8 +47,7 @@ const AccountCreate = () => {
 	const isDoingCreateAccount = useSelect(
 		( select ) => {
 			return select( STORE_NAME ).isDoingCreateAccount();
-		},
-		[]
+		}
 	);
 
 	const accountTicketTermsOfServiceURL = useSelect(
