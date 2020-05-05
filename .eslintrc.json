@@ -24,6 +24,12 @@
       {
         "requireReturn": false
       }
+    ],
+    "@wordpress/i18n-text-domain": [
+      "error",
+      {
+        "allowedTextDomain":  "google-site-kit"
+      }
     ]
   },
   "overrides": [

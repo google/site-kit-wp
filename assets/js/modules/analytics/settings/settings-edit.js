@@ -95,7 +95,7 @@ export default function SettingsEdit() {
 			'googlekit.AnalyticsSettingsConfirmed',
 			async ( chain, module ) => {
 				if ( 'analytics-module' === module ) {
-					const { error } = await submitChanges() || {};
+					const { error } = await submitChanges();
 					if ( error ) {
 						return Promise.reject( error );
 					}
