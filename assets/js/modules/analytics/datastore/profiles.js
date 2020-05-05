@@ -163,7 +163,6 @@ export const actions = {
 
 	receiveProfiles( profiles, { propertyID } ) {
 		invariant( Array.isArray( profiles ), 'profiles must be an array.' );
-		invariant( propertyID, 'propertyID is required.' );
 
 		return {
 			payload: { profiles, propertyID },

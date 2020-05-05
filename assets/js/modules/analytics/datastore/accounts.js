@@ -67,8 +67,8 @@ export const actions = {
 				dispatch( STORE_NAME ).receiveProperties( response.properties, { accountID } );
 			}
 
-			if ( response.profiles.length && response.properties[ 0 ] && response.properties[ 0 ].internalWebPropertyId ) {
-				const propertyID = response.profiles[ 0 ].internalWebPropertyId;
+			if ( response.properties.length && response.properties[ 0 ] && response.properties[ 0 ].internalWebPropertyId ) {
+				const propertyID = response.properties[ 0 ].internalWebPropertyId;
 				dispatch( STORE_NAME ).receiveProfiles( response.profiles, { propertyID } );
 			}
 
@@ -76,10 +76,8 @@ export const actions = {
 				dispatch( STORE_NAME ).receiveMatchedProperty( response.matchedProperty );
 			}
 
-			const test = response.properties[ 0 ].internalWebPropertyId;
-
 			yield {
-				payload: { test },
+				payload: { data },
 				type: FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
 			};
 		} catch ( e ) {

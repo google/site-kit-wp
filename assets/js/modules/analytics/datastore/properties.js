@@ -241,7 +241,6 @@ export const actions = {
 	 */
 	receiveProperties( properties, { accountID } ) {
 		invariant( Array.isArray( properties ), 'properties must be an array.' );
-		invariant( accountID, 'accountID is required.' );
 
 		return {
 			payload: { properties, accountID },
