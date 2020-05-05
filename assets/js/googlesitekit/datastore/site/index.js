@@ -29,11 +29,7 @@ import notifications from './notifications';
 export { STORE_NAME };
 
 const store = Data.combineStores(
-	{
-		actions: Data.addInitializeAction( Data.commonActions ),
-		controls: Data.commonControls,
-		reducer: Data.addInitializeReducer( {}, ( state ) => ( { ...state } ) ),
-	},
+	Data.commonStore,
 	connection,
 	info,
 	reset,
