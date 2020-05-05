@@ -118,22 +118,22 @@ const AccountCreate = () => {
 								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 									<AccountField
 										hasError={ validationIssues.accountName }
-										accountName={ accountName }
-										setAccountName={ setAccountName }
+										value={ accountName }
+										setValue={ setAccountName }
 									/>
 								</div>
 								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 									<PropertyField
 										hasError={ validationIssues.propertyName }
-										propertyName={ propertyName }
-										setPropertyName={ setPropertyName }
+										value={ propertyName }
+										setValue={ setPropertyName }
 									/>
 								</div>
 								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 									<ProfileField
 										hasError={ validationIssues.profileName }
-										profileName={ profileName }
-										setProfileName={ setProfileName }
+										value={ profileName }
+										setValue={ setProfileName }
 									/>
 								</div>
 								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
