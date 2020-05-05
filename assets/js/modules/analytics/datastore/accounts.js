@@ -77,7 +77,7 @@ export const actions = {
 			}
 
 			yield {
-				payload: { response },
+				payload: { data },
 				type: FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
 			};
 		} catch ( e ) {
