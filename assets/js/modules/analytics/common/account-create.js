@@ -38,7 +38,7 @@ import PropertyField from './property-field';
 import ProfileField from './profile-field';
 import { STORE_NAME } from '../datastore/constants';
 import { countries } from './countries';
-
+import { STORE_NAME as CORE_STORE_NAME } from '../../../googlesitekit/datastore/site/constants';
 import Data from 'googlesitekit-data';
 const { useDispatch, useSelect } = Data;
 const timezoneData = [];
@@ -69,9 +69,9 @@ const findTimezone = ( timezone ) => {
 };
 
 const AccountCreate = () => {
-	const siteURL = useSelect( ( select ) => select( 'core/site' ).getReferenceSiteURL() );
-	const siteName = useSelect( ( select ) => select( 'core/site' ).getSiteName() );
-	let tz = useSelect( ( select ) => select( 'core/site' ).getTimezone() );
+	const siteURL = useSelect( ( select ) => select( CORE_STORE_NAME ).getReferenceSiteURL() );
+	const siteName = useSelect( ( select ) => select( CORE_STORE_NAME ).getSiteName() );
+	let tz = useSelect( ( select ) => select( CORE_STORE_NAME ).getTimezone() );
 	let { selectedTimezoneID, selectedCountry, multiTimezone } = findTimezone( tz );
 	// Fallback to the browser timezone if the WordPress timezone was not found.
 	if ( ! selectedTimezoneID ) {
