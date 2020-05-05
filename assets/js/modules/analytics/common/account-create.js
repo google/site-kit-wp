@@ -71,7 +71,7 @@ const AccountCreate = () => {
 
 			// Redirect if the accountTicketTermsOfServiceURL is set.
 			if ( accountTicketTermsOfServiceURL ) {
-				location = accountTicketTermsOfServiceURL;
+				global.location.assign( accountTicketTermsOfServiceURL );
 			}
 			setIsNavigating( false );
 		}
