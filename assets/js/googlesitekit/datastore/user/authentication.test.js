@@ -144,10 +144,9 @@ describe( 'core/user authentication', () => {
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAuthentication();
-				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingAuthentication === false,
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getAuthentication' )
 				);
 
 				const authentication = registry.select( STORE_NAME ).getAuthentication();
