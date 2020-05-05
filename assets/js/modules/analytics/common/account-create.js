@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useState, Fragment, useCallback, useEffect } from '@wordpress/element';
+import { useState, Fragment, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -35,44 +35,44 @@ import ProfileField from './profile-field';
 import { STORE_NAME } from '../datastore/constants';
 
 import Data from 'googlesitekit-data';
-const { useDispatch, useSelect, select: directSelect } = Data;
+const { useDispatch, useSelect } = Data;
 
 const AccountCreate = () => {
-	const { siteName, siteURL } = global.googlesitekit.admin;
-	let tz = directSelect( 'core/site' ).getTimezone();
+	const siteURL = useSelect( ( select ) => select( 'core/site' ).getReferenceSiteURL() );
+	const siteName = useSelect( ( select ) => select( 'core/site' ).getSiteName() );
+	const tz = useSelect( ( select ) => select( 'core/site' ).getTimezone() );
 	const url = new URL( siteURL );
 	const { createAccount } = useDispatch( STORE_NAME );
+
+	const isDoingCreateAccount = useSelect(
+		( select ) => {
+			return select( STORE_NAME ).isDoingCreateAccount();
+		}
+	);
+
 	const accountTicketTermsOfServiceURL = useSelect(
 		( select ) => {
 			return select( STORE_NAME ).getAccountTicketTermsOfServiceURL();
 		},
-		[]
+		[ isDoingCreateAccount ]
 	);
 	const [ isNavigating, setIsNavigating ] = useState( false );
-	const handleSubmit = useCallback( ( accountName, propertyName, profileName, timezone ) => {
+	const handleSubmit = async function( accountName, propertyName, profileName, timezone ) {
 		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
 		setIsNavigating( true );
-		async function send() {
-			await createAccount( {
-				accountName,
-				propertyName,
-				profileName,
-				timezone,
-			} );
+		await createAccount( {
+			accountName,
+			propertyName,
+			profileName,
+			timezone,
+		} );
 
-			// Redirect if the accountTicketTermsOfServiceURL is set.
-			if ( accountTicketTermsOfServiceURL ) {
-				location = accountTicketTermsOfServiceURL;
-			}
-			setIsNavigating( false );
+		// Redirect if the accountTicketTermsOfServiceURL is set.
+		if ( accountTicketTermsOfServiceURL ) {
+			global.location.assign( accountTicketTermsOfServiceURL );
 		}
-		send();
-	} );
-
-	// Fall back to the browser timezone if the WordPress timezone was not set.
-	if ( ! tz || '' === tz || 'UTC' === tz ) {
-		tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-	}
+		setIsNavigating( false );
+	};
 
 	const [ accountName, setAccountName ] = useState( siteName );
 	const [ propertyName, setPropertyName ] = useState( url.hostname );
@@ -92,24 +92,13 @@ const AccountCreate = () => {
 			accountName: accountName === '',
 			propertyName: propertyName === '',
 			profileName: profileName === '',
-			timezone: timezone === '' || timezone === 'UTC', //An unset timezone in WordPress is reported as "UTC".
+			timezone: timezone === '',
 		} );
 	}, [ accountName, propertyName, profileName, timezone ] );
-
-	// Connect to the data store.
-	const isDoingCreateAccount = useSelect(
-		( select ) => {
-			return select( STORE_NAME ).isDoingCreateAccount();
-		},
-		[]
-	);
 
 	if ( isDoingCreateAccount || isNavigating ) {
 		return <ProgressBar />;
 	}
-
-	// Disable the submit button if there are validation errors, and while submission is in progress.
-	const buttonDisabled = validationHasIssues;
 
 	return (
 		<Fragment>
@@ -120,26 +109,27 @@ const AccountCreate = () => {
 							<h3 className="googlesitekit-heading-4">
 								{ __( 'Create new Analytics account', 'google-site-kit' ) }
 							</h3>
+							{ __( 'We’ve pre-filled the required information for your new account. Confirm or edit any details:', 'google-site-kit' ) }
 							<div className="googlesitekit-setup-module__inputs">
 								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 									<AccountField
 										hasError={ validationIssues.accountName }
-										accountName={ accountName }
-										setAccountName={ setAccountName }
+										value={ accountName }
+										setValue={ setAccountName }
 									/>
 								</div>
 								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 									<PropertyField
 										hasError={ validationIssues.propertyName }
-										propertyName={ propertyName }
-										setPropertyName={ setPropertyName }
+										value={ propertyName }
+										setValue={ setPropertyName }
 									/>
 								</div>
 								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 									<ProfileField
 										hasError={ validationIssues.profileName }
-										profileName={ profileName }
-										setProfileName={ setProfileName }
+										value={ profileName }
+										setValue={ setProfileName }
 									/>
 								</div>
 								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
@@ -150,16 +140,19 @@ const AccountCreate = () => {
 									/>
 								</div>
 							</div>
-						</div>
-						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-							<Button
-								disabled={ buttonDisabled }
-								onClick={ () => {
-									handleSubmit( accountName, propertyName, profileName, timezone );
-								} }
-							>
-								{ __( 'Create Account', 'google-site-kit' ) }
-							</Button>
+							<p>
+								{ __( 'You will be redirected to Google Analytics to accept the Terms of Service and create your new account.', 'google-site-kit' ) }
+							</p>
+							<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+								<Button
+									disabled={ validationHasIssues }
+									onClick={ () => {
+										handleSubmit( accountName, propertyName, profileName, timezone );
+									} }
+								>
+									{ __( 'Create Account', 'google-site-kit' ) }
+								</Button>
+							</div>
 						</div>
 					</div>
 				</div>

@@ -26,13 +26,13 @@ import { __ } from '@wordpress/i18n';
  */
 import CreateAccountField from './create-account-field';
 
-const ProfileField = ( { hasError, profileName, setProfileName } ) => {
+const ProfileField = ( { hasError, value, setValue } ) => {
 	return (
 		<CreateAccountField
 			hasError={ hasError }
-			value={ profileName }
-			setValue={ setProfileName }
-			label={ __( 'Profile', 'google-site-kit' ) }
+			value={ value }
+			setValue={ setValue }
+			label={ __( 'View', 'google-site-kit' ) } // Profiles are now called views.
 			name="profile"
 		/>
 	);

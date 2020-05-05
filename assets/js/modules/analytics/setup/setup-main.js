@@ -36,7 +36,7 @@ import {
 	ExistingTagError,
 } from '../common';
 import { parsePropertyID } from '../util';
-const { useSelect, useDispatch, select: directSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
@@ -48,6 +48,7 @@ export default function SetupMain( { finishSetup } ) {
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
+	const usingProxy = useSelect( ( select ) => select( 'core/site' ).isUsingProxy() );
 
 	// Set the accountID and property if there is an existing tag.
 	const { setAccountID, selectProperty } = useDispatch( STORE_NAME );
@@ -69,8 +70,6 @@ export default function SetupMain( { finishSetup } ) {
 	useEffect( () => {
 		trackEvent( 'analytics_setup', 'configure_analytics_screen' );
 	}, [] );
-
-	const usingProxy = directSelect( 'core/site' ).isUsingProxy();
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below

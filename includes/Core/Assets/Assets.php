@@ -601,6 +601,7 @@ final class Assets {
 			'ampMode'          => $this->context->get_amp_mode(),
 			'isNetworkMode'    => $this->context->is_network_mode(),
 			'timezone'         => $selected_zone,
+			'siteName'         => get_bloginfo( 'name' ),
 		);
 
 		/**
