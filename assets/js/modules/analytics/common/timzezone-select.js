@@ -38,8 +38,8 @@ const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
 	const [ selectedCountry, setSelectedCountry ] = useState( timezone );
 	const [ selectedTimezoneID, setSelectedTimezoneID ] = useState( '' );
 	let multiTimezone,
-		selectedTimezoneDisplay = selectedTimezoneID;
-
+		selectedTimezoneDisplay = selectedTimezoneID,
+		foundTimezone = false;
 	const getTimezoneSelector = () => {
 		const response = (
 			<div >
@@ -55,6 +55,7 @@ const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
 						onEnhancedChange={ ( i, item ) => {
 							setTimezone( item.dataset.value );
 							setSelectedCountry( item.dataset.value );
+							setSelectedTimezoneID( item.dataset.value );
 						} }
 						label={ __( 'Country', 'google-site-kit' ) }
 						outlined
@@ -66,6 +67,7 @@ const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
 									let value = aCountry.defaultTimeZoneId;
 									const timezoneMatch = aCountry.timeZone.find( ( tz ) => tz.timeZoneId === timezone );
 									if ( timezoneMatch ) {
+										foundTimezone = true;
 										value = timezoneMatch.timeZoneId;
 										if ( aCountry.timeZone.length > 1 ) {
 											multiTimezone = aCountry.timeZone;
@@ -104,6 +106,9 @@ const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
 							{
 								multiTimezone
 									.map( ( aTimezone ) => {
+										if ( aTimezone.timeZoneId === timezone ) {
+											foundTimezone = true;
+										}
 										return (
 											<Option
 												key={ aTimezone.displayName }
@@ -120,7 +125,9 @@ const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
 				</span>
 			</div>
 		);
-		if ( '' === selectedTimezoneID ) {
+		// Fallback to the browser timezone if the WordPress timezone was not found.
+		if ( ! foundTimezone ) {
+			setSelectedTimezoneID( Intl.DateTimeFormat().resolvedOptions().timeZone );
 			setTimezone( Intl.DateTimeFormat().resolvedOptions().timeZone );
 		}
 		return response;
