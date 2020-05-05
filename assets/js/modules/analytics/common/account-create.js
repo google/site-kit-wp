@@ -44,18 +44,9 @@ const AccountCreate = () => {
 	const url = new URL( siteURL );
 	const { createAccount } = useDispatch( STORE_NAME );
 
-	const isDoingCreateAccount = useSelect(
-		( select ) => {
-			return select( STORE_NAME ).isDoingCreateAccount();
-		}
-	);
+	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
 
-	const accountTicketTermsOfServiceURL = useSelect(
-		( select ) => {
-			return select( STORE_NAME ).getAccountTicketTermsOfServiceURL();
-		},
-		[ isDoingCreateAccount ]
-	);
+	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( STORE_NAME ).getAccountTicketTermsOfServiceURL() );
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const handleSubmit = async function( accountName, propertyName, profileName, timezone ) {
 		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
