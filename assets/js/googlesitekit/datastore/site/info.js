@@ -310,7 +310,7 @@ export const selectors = {
 	 * @return {?string} `true` if the proxy service is in use, `false` if not. Returns `undefined` if not loaded.
 	 */
 	isUsingProxy: createRegistrySelector( ( select ) => () => {
-		const { usingProxy } = select( STORE_NAME ).getSiteInfo() || false;
+		const { usingProxy } = select( STORE_NAME ).getSiteInfo() || {};
 		return !! usingProxy;
 	} ),
 
