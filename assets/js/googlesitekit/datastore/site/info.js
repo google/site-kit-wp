@@ -293,7 +293,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} The timezone.
+	 * @return {(string|undefined)} The timezone.
 	 */
 	getTimezone: createRegistrySelector( ( select ) => () => {
 		const { timezone } = select( STORE_NAME ).getSiteInfo() || {};
