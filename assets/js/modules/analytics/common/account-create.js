@@ -51,20 +51,21 @@ const AccountCreate = () => {
 	const handleSubmit = async function( accountName, propertyName, profileName, timezone ) {
 		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
 		setIsNavigating( true );
-		await createAccount( {
+		const result = await createAccount( {
 			accountName,
 			propertyName,
 			profileName,
 			timezone,
 		} );
 
-		// Redirect if the accountTicketTermsOfServiceURL is set.
-		if ( accountTicketTermsOfServiceURL ) {
-			global.location.assign( accountTicketTermsOfServiceURL );
+		if ( result.error ) {
+			setIsNavigating( false ); // Silently fail for server errors.
 		}
-		setIsNavigating( false );
 	};
-
+	// Redirect if the accountTicketTermsOfServiceURL is set.
+	if ( accountTicketTermsOfServiceURL ) {
+		global.location.assign( accountTicketTermsOfServiceURL );
+	}
 	const [ accountName, setAccountName ] = useState( siteName );
 	const [ propertyName, setPropertyName ] = useState( url.hostname );
 	const [ profileName, setProfileName ] = useState( __( 'All website traffic', 'google-site-kit' ) );
