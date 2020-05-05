@@ -84,7 +84,8 @@ export default function SettingsView() {
 					</p>
 					<h5 className="googlesitekit-settings-module__meta-item-data">
 						{ useSnippet && __( 'Snippet is inserted', 'google-site-kit' ) }
-						{ ! useSnippet && __( 'Snippet is not inserted', 'google-site-kit' ) }
+						{ ( ! useSnippet && ! hasExistingTag ) && __( 'Snippet is not inserted', 'google-site-kit' ) }
+						{ ( ! useSnippet && hasExistingTag ) && __( 'Inserted by another plugin or theme', 'google-site-kit' ) }
 					</h5>
 				</div>
 			</div>

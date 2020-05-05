@@ -100,6 +100,9 @@ final class Assets {
 		add_action(
 			'admin_enqueue_scripts',
 			function() {
+				if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
+					return;
+				}
 				$this->enqueue_minimal_admin_script();
 			}
 		);
