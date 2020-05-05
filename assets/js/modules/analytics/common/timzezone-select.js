@@ -60,7 +60,7 @@ const TimezoneSelect = ( { timezone, setTimezone, hasError, initiallySelectedCou
 						outlined
 					>
 						{
-							allCountries && allCountries
+							allCountries
 								.map( ( aCountry ) => {
 									// If the selected timezone is in this country, the country should be selected.
 									let value = aCountry.defaultTimeZoneId;
