@@ -25,7 +25,7 @@ import { isValidPropertyID } from './validation';
  *
  * @see {@link https://support.google.com/analytics/answer/7372977}
  * @param {string} propertyID Property ID to parse.
- * @return {?Object} Object of property ID components if valid, otherwise false.
+ * @return {(Object|undefined)} Object of property ID components if valid, otherwise false.
  */
 export default function parsePropertyID( propertyID ) {
 	if ( ! isValidPropertyID( propertyID ) ) {
