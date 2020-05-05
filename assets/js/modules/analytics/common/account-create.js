@@ -38,12 +38,12 @@ import Data from 'googlesitekit-data';
 const { useDispatch, useSelect } = Data;
 
 const AccountCreate = () => {
-	const { siteName, siteURL } = global.googlesitekit.admin;
+	const siteURL = useSelect( ( select ) => select( 'core/site' ).getReferenceSiteURL() );
+	const siteName = useSelect( ( select ) => select( 'core/site' ).getSiteName() );
 	const tz = useSelect( ( select ) => select( 'core/site' ).getTimezone() );
 	const url = new URL( siteURL );
 	const { createAccount } = useDispatch( STORE_NAME );
 
-	// Connect to the data store.
 	const isDoingCreateAccount = useSelect(
 		( select ) => {
 			return select( STORE_NAME ).isDoingCreateAccount();
