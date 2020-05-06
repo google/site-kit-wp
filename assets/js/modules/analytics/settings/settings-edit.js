@@ -27,6 +27,7 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME, ACCOUNT_CREATE } from '../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import SettingsForm from './settings-form';
 import ProgressBar from '../../../components/progress-bar';
 import {
@@ -48,7 +49,7 @@ export default function SettingsEdit() {
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const haveSettingsChanged = useSelect( ( select ) => select( STORE_NAME ).haveSettingsChanged() );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
-	const usingProxy = useSelect( ( select ) => select( 'core/site' ).isUsingProxy() );
+	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
 
 	// Rollback any temporary selections to saved values on dismount.
 	// This is a bit of a hacky solution, as we'd prefer to rollback changes
