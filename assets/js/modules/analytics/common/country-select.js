@@ -1,5 +1,5 @@
 /**
- * TimezoneSelect component.
+ * CountrySelect component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -28,34 +33,34 @@ import {
 	Select,
 	Option,
 } from '../../../material-components';
-import { timeZonesByCountryCode } from '../util/countries-timezones';
-import classnames from 'classnames';
+import { allCountries } from '../util/countries-timezones';
 
-export default function TimezoneSelect( { countryCode, hasError, ...props } ) {
+export default function CountrySelect( props ) {
 	return (
 		<Select
-			className={ classnames(
-				'googlesitekit-analytics__select-timezone',
-				{ 'mdc-text-field--error': hasError }
-			) }
-			label={ __( 'Timezone', 'google-site-kit' ) }
-			disabled={ ! countryCode }
+			className="googlesitekit-analytics__select-country"
+			label={ __( 'Country', 'google-site-kit' ) }
 			enhanced
 			outlined
 			{ ...props }
 		>
 			{
-				( timeZonesByCountryCode[ countryCode ] || [] ).map(
-					( { timeZoneId, displayName }, i ) => (
-						<Option
-							key={ i }
-							value={ timeZoneId }
-						>
-							{ displayName }
-						</Option>
-					)
-				)
+				allCountries.map( ( { countryCode, displayName }, i ) => (
+					<Option
+						key={ i }
+						value={ countryCode }
+						data-country-code={ countryCode }
+						data-name={ displayName }
+					>
+						{ displayName }
+					</Option>
+				) )
 			}
 		</Select>
 	);
 }
+
+CountrySelect.propTypes = {
+	value: PropTypes.string.required,
+	onEnhancedChange: PropTypes.func.required,
+};

@@ -36,6 +36,8 @@ import { STORE_NAME } from '../datastore/constants';
 import { countries } from '../util/countries-data';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import Data from 'googlesitekit-data';
+import CountrySelect from './country-select';
+import { countriesByCode } from '../util/countries-timezones';
 const { useDispatch, useSelect } = Data;
 const allCountries = countries.default.country;
 const countriesByTimeZone = allCountries.reduce( ( map, country ) => {
@@ -78,6 +80,7 @@ export default function AccountCreate() {
 	const [ propertyName, setPropertyName ] = useState( url.hostname );
 	const [ profileName, setProfileName ] = useState( __( 'All website traffic', 'google-site-kit' ) );
 	const [ timezone, setTimezone ] = useState( tz );
+	const [ countryCode, setCountryCode ] = useState( '' );
 	const [ validationIssues, setValidationIssues ] = useState( {} );
 
 	const validationHasIssues = Object.values( validationIssues ).some( Boolean );
@@ -134,10 +137,24 @@ export default function AccountCreate() {
 					/>
 				</div>
 				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+					<CountrySelect
+						hasError={ validationIssues.country }
+						value={ countryCode }
+						onEnhancedChange={ ( i, item ) => {
+							const newCountryCode = item.dataset.value;
+							if ( newCountryCode !== countryCode ) {
+								setCountryCode( newCountryCode );
+								setTimezone( countriesByCode[ newCountryCode ].defaultTimeZoneId );
+							}
+						} }
+					/>
+				</div>
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 					<TimezoneSelect
+						countryCode={ countryCode }
 						hasError={ validationIssues.timezone }
-						timezone={ timezone }
-						setTimezone={ setTimezone }
+						value={ timezone }
+						onEnhancedChange={ ( i, item ) => setTimezone( item.dataset.value ) }
 					/>
 				</div>
 			</div>
