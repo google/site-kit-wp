@@ -62,6 +62,8 @@ export const createModuleStore = ( slug, {
 } = {} ) => {
 	invariant( slug, 'slug is required.' );
 
+	storeName = storeName || `modules/${ slug }`;
+
 	const notificationsStore = createNotificationsStore( 'modules', slug, 'notifications', {
 		storeName,
 	} );
@@ -78,9 +80,7 @@ export const createModuleStore = ( slug, {
 		settingsStore,
 	);
 
-	const STORE_NAME = ! settingsStore.STORE_NAME ? [ notificationsStore.STORE_NAME ] : [ notificationsStore.STORE_NAME, settingsStore.STORE_NAME ];
-
-	combinedStore.STORE_NAME = Data.collectName( ...STORE_NAME );
+	combinedStore.STORE_NAME = storeName;
 
 	return combinedStore;
 };
