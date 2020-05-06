@@ -324,7 +324,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} The site name.
+	 * @return {(string|undefined)} The site name.
 	 */
 	getSiteName: createRegistrySelector( ( select ) => () => {
 		const { siteName } = select( STORE_NAME ).getSiteInfo() || {};
