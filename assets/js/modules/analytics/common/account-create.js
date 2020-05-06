@@ -56,9 +56,9 @@ const timezoneInCountries = ( timezone ) => {
 let timezoneChecked = false;
 
 const AccountCreate = () => {
-	const siteURL = useSelect( ( select ) => select( CORE_STORE_NAME ).getReferenceSiteURL() );
-	const siteName = useSelect( ( select ) => select( CORE_STORE_NAME ).getSiteName() );
-	let tz = useSelect( ( select ) => select( CORE_STORE_NAME ).getTimezone() );
+	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
+	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
+	let tz = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
 
 	// Check timezone on initial load: fall back to the browser timezone if the WordPress timezone was not found.
 	if ( ! timezoneChecked && ! timezoneInCountries( tz ) ) {
