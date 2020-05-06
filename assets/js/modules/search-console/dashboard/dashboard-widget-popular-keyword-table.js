@@ -30,7 +30,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { getTimeInSeconds, numberFormat } from '../../../util';
+import { getTimeInSeconds, numberFormat, getModulesData } from '../../../util';
 import withData from '../../../components/higherorder/withdata';
 import { TYPE_MODULES } from '../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../components/data-table';
@@ -53,7 +53,7 @@ class DashboardWidgetPopularKeywordsTable extends Component {
 					footer
 					footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 					footerCtaLink={
-						sprintf( 'https://search.google.com/u/1/search-console?resource_id=%s', global.googlesitekit.admin.siteURL )
+						sprintf( 'https://search.google.com/search-console?resource_id=%s', getModulesData()[ 'search-console' ].settings.propertyID )
 					}
 					fill
 				>
