@@ -338,7 +338,7 @@ const findDuplicates = ( array ) => {
  * @return {Object} Object with common actions, controls and reducer.
  */
 export const commonStore = {
-	actions: addInitializeAction( commonActions ),
+	actions: commonActions,
 	controls: commonControls,
-	reducer: addInitializeReducer( {}, passthroughReducer ),
+	reducer: passthroughReducer,
 };
