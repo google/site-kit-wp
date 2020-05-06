@@ -44,7 +44,17 @@ import ErrorNotice from './error-notice';
 
 const { useDispatch, useSelect } = Data;
 
-// Recursively search thru countries and their timezones to find a match for country/timezone.
+/**
+ * Checks to see if the passed timezone is in the countries timezone data.
+ *
+ * Recursively searches thru countries and their timezones to find a match for country/timezone.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} timezone The timezone string passed from WordPress.
+ *
+ * @return {boolean} Whether the timezone is found.
+ */
 const timezoneInCountries = ( timezone ) => {
 	let matched = false;
 	each( countries.default.country, ( country ) => {
@@ -55,6 +65,7 @@ const timezoneInCountries = ( timezone ) => {
 	} );
 	return matched;
 };
+
 let timezoneChecked = false;
 
 const AccountCreate = () => {
