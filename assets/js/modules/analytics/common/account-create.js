@@ -93,7 +93,6 @@ const AccountCreate = () => {
 
 	const handleSubmit = async function( submittedAccountName, submittedPropertyName, submittedProfileName, submittedTimezone ) {
 		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
-		setIsNavigating( true );
 		const result = await createAccount( {
 			accountName: submittedAccountName,
 			propertyName: submittedPropertyName,
@@ -101,8 +100,8 @@ const AccountCreate = () => {
 			timezone: submittedTimezone,
 		} );
 
-		if ( result.error ) {
-			setIsNavigating( false ); // Silently fail for server errors.
+		if ( ! result.error ) {
+			setIsNavigating( true );
 		}
 	};
 
