@@ -49,8 +49,6 @@ export default function CountrySelect( props ) {
 					<Option
 						key={ i }
 						value={ countryCode }
-						data-country-code={ countryCode }
-						data-name={ displayName }
 					>
 						{ displayName }
 					</Option>
