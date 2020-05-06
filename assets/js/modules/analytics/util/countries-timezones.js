@@ -35,3 +35,9 @@ export const timeZonesByCountryCode = allCountries.reduce( ( map, country ) => {
 }, {} );
 
 export const countriesByCode = keyBy( allCountries, 'countryCode' );
+
+export const countryCodesByTimezone = allCountries.reduce( ( map, country ) => {
+	country.timeZone.forEach( ( { timeZoneId } ) => map[ timeZoneId ] = country.countryCode );
+
+	return map;
+}, {} );
