@@ -93,12 +93,7 @@ const AccountCreate = () => {
 	const [ propertyName, setPropertyName ] = useState( url.hostname );
 	const [ profileName, setProfileName ] = useState( __( 'All website traffic', 'google-site-kit' ) );
 	const [ timezone, setTimezone ] = useState( tz );
-	const [ validationIssues, setValidationIssues ] = useState( {
-		accountName: accountName === '',
-		propertyName: propertyName === '',
-		profileName: profileName === '',
-		timezone: timezone === '',
-	} );
+	const [ validationIssues, setValidationIssues ] = useState( {} );
 
 	const validationHasIssues = Object.values( validationIssues ).some( Boolean );
 
