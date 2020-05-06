@@ -122,8 +122,8 @@ export const actions = {
 				yield actions.receiveMatchedProperty( matchedProperty );
 			}
 
-			if ( properties.length && properties[ 0 ] && properties[ 0 ].id ) {
-				const propertyID = properties[ 0 ].id;
+			if ( profiles.length && profiles[ 0 ] && profiles[ 0 ].webPropertyId ) {
+				const propertyID = profiles[ 0 ].webPropertyId;
 				dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID } );
 			}
 

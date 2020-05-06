@@ -67,8 +67,8 @@ export const actions = {
 				dispatch( STORE_NAME ).receiveProperties( response.properties, { accountID } );
 			}
 
-			if ( response.properties.length && response.properties[ 0 ] && response.properties[ 0 ].id ) {
-				const propertyID = response.properties[ 0 ].id;
+			if ( response.profiles.length && response.profiles[ 0 ] && response.profiles[ 0 ].webPropertyId ) {
+				const propertyID = response.profiles[ 0 ].webPropertyId;
 				dispatch( STORE_NAME ).receiveProfiles( response.profiles, { propertyID } );
 			}
 
