@@ -40,6 +40,8 @@ import { STORE_NAME } from '../datastore/constants';
 import { countries } from './countries';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import Data from 'googlesitekit-data';
+import ErrorNotice from './error-notice';
+
 const { useDispatch, useSelect } = Data;
 
 // Recursively search thru countries and their timezones to find a match for country/timezone.
@@ -122,6 +124,7 @@ const AccountCreate = () => {
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell--span-12">
 						<div className="mdc-layout-grid">
+							<ErrorNotice />
 							<h3 className="googlesitekit-heading-4">
 								{ __( 'Create new Analytics account', 'google-site-kit' ) }
 							</h3>
