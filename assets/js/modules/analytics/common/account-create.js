@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useState, useEffect } from '@wordpress/element';
+import { useCallback, useState, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -50,20 +50,7 @@ export default function AccountCreate() {
 	const { createAccount } = useDispatch( STORE_NAME );
 
 	const [ isNavigating, setIsNavigating ] = useState( false );
-	const handleSubmit = async function( accountName, propertyName, profileName, timezone ) {
-		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
-		setIsNavigating( true );
-		const result = await createAccount( {
-			accountName,
-			propertyName,
-			profileName,
-			timezone,
-		} );
 
-		if ( result.error ) {
-			setIsNavigating( false ); // Silently fail for server errors.
-		}
-	};
 	// Redirect if the accountTicketTermsOfServiceURL is set.
 	if ( accountTicketTermsOfServiceURL ) {
 		global.location.assign( accountTicketTermsOfServiceURL );
@@ -84,6 +71,23 @@ export default function AccountCreate() {
 			setTimezone( browserTimeZone );
 		}
 	}, [ timezone ] );
+
+	const handleSubmit = useCallback(
+		async () => {
+			trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
+			const result = await createAccount( {
+				accountName,
+				propertyName,
+				profileName,
+				timezone,
+			} );
+
+			if ( ! result.error ) {
+				setIsNavigating( true );
+			}
+		},
+		[ setIsNavigating, accountName, propertyName, profileName, timezone ]
+	);
 
 	useEffect( () => {
 		setValidationIssues( {
@@ -158,9 +162,7 @@ export default function AccountCreate() {
 			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
 				<Button
 					disabled={ validationHasIssues }
-					onClick={ () => {
-						handleSubmit( accountName, propertyName, profileName, timezone );
-					} }
+					onClick={ handleSubmit }
 				>
 					{ __( 'Create Account', 'google-site-kit' ) }
 				</Button>
