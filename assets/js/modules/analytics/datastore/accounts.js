@@ -98,7 +98,7 @@ export const actions = {
 	/**
 	 * Creates an action for receiving accounts.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @param {Array} accounts Accounts to receive.
@@ -244,7 +244,7 @@ export const selectors = {
 	 *
 	 * Returns `undefined` if accounts have not yet loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array.<Object>|undefined)} An array of Analytics accounts; `undefined` if not loaded.
@@ -271,7 +271,7 @@ export const selectors = {
 	 * Marked as private, because in the future we'll have more robust error
 	 * handling.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
@@ -286,7 +286,7 @@ export const selectors = {
 	/**
 	 * Checks whether accounts are currently being fetched.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.

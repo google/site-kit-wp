@@ -56,7 +56,7 @@ export const actions = {
 	 * Creates a new Analytics profile for an existing Google Analytics
 	 * account + property combination.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {string} propertyID Google Analytics property ID.
 	 * @return {Object} Response and error objects.
@@ -143,7 +143,7 @@ export const actions = {
 	 * Adds the newly-created property to the existing properties in
 	 * the data store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @param {Object} args            Argument params.
@@ -333,7 +333,7 @@ export const selectors = {
 	 *
 	 * Returns `undefined` if accounts have not yet loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID The Analytics Property ID to fetch profiles for.
@@ -348,7 +348,7 @@ export const selectors = {
 	/**
 	 * Check if a profile is being created for an account and property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID The Analytics Property ID to check for profile creation.
@@ -363,7 +363,7 @@ export const selectors = {
 	/**
 	 * Checks if profiles are being fetched for the given account and property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} propertyID The Analytics Property ID to check for profile fetching.

@@ -59,7 +59,7 @@ export const actions = {
 	 *
 	 * Creates a new Analytics property for an existing Google Analytics account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} accountID Google Analytics account ID.
 	 * @return {Object} Redux-style action.
@@ -151,7 +151,7 @@ export const actions = {
 	 * Adds the newly-created property to the existing properties in
 	 * the data store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @param {Object} args           Argument params.
@@ -172,7 +172,7 @@ export const actions = {
 	/**
 	 * Adds a matchedProperty to the store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @param {Object} matchedProperty Property object.
@@ -190,7 +190,7 @@ export const actions = {
 	/**
 	 * Sets the given property and related fields in the store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @param {string} propertyID Property ID to select.
@@ -239,7 +239,7 @@ export const actions = {
 	/**
 	 * Adds properties to the store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @param {Array} properties Properties to add.
@@ -441,7 +441,7 @@ export const selectors = {
 	/**
 	 * Gets the property object by the property ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
@@ -459,7 +459,7 @@ export const selectors = {
 	/**
 	 * Gets the matched property, if any.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
@@ -475,7 +475,7 @@ export const selectors = {
 	 *
 	 * Returns `undefined` if accounts have not yet loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The Analytics Account ID to fetch properties for.
@@ -490,7 +490,7 @@ export const selectors = {
 	/**
 	 * Checks if a property is being created for an account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The Analytics Account ID to check for property creation.
@@ -505,7 +505,7 @@ export const selectors = {
 	/**
 	 * Checks if properties are being fetched for the given account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The Analytics Account ID to check for property creation.
