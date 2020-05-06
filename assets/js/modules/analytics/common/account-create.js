@@ -59,41 +59,13 @@ const AccountCreate = () => {
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
 	let tz = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
-
-	// Check timezone on initial load: fall back to the browser timezone if the WordPress timezone was not found.
-	if ( ! timezoneChecked && ! timezoneInCountries( tz ) ) {
-		tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-	}
-	timezoneChecked = true;
-	const url = new URL( siteURL );
-	const { createAccount } = useDispatch( STORE_NAME );
-
-	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
-
 	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( STORE_NAME ).getAccountTicketTermsOfServiceURL() );
-	const [ isNavigating, setIsNavigating ] = useState( false );
-	const handleSubmit = async function( accountName, propertyName, profileName, timezone ) {
-		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
-		setIsNavigating( true );
-		const result = await createAccount( {
-			accountName,
-			propertyName,
-			profileName,
-			timezone,
-		} );
-
-		if ( result.error ) {
-			setIsNavigating( false ); // Silently fail for server errors.
-		}
-	};
-	// Redirect if the accountTicketTermsOfServiceURL is set.
-	if ( accountTicketTermsOfServiceURL ) {
-		global.location.assign( accountTicketTermsOfServiceURL );
-	}
+	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
+	const url = new URL( siteURL );
 	const [ accountName, setAccountName ] = useState( siteName );
 	const [ propertyName, setPropertyName ] = useState( url.hostname );
 	const [ profileName, setProfileName ] = useState( __( 'All website traffic', 'google-site-kit' ) );
-	const [ timezone, setTimezone ] = useState( tz );
+	const [ isNavigating, setIsNavigating ] = useState( false );
 	const [ validationIssues, setValidationIssues ] = useState( {
 		accountName: accountName === '',
 		propertyName: propertyName === '',
@@ -101,7 +73,14 @@ const AccountCreate = () => {
 		timezone: timezone === '',
 	} );
 
-	const validationHasIssues = Object.values( validationIssues ).some( ( check ) => check );
+	// Check timezone on initial load: fall back to the browser timezone if the WordPress timezone was not found.
+	if ( ! timezoneChecked && ! timezoneInCountries( tz ) ) {
+		tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	}
+	timezoneChecked = true;
+	const [ timezone, setTimezone ] = useState( tz );
+
+	const { createAccount } = useDispatch( STORE_NAME );
 
 	useEffect( () => {
 		setValidationIssues( {
@@ -111,6 +90,28 @@ const AccountCreate = () => {
 			timezone: timezone === '',
 		} );
 	}, [ accountName, propertyName, profileName, timezone ] );
+
+	const handleSubmit = async function( submittedAccountName, submittedPropertyName, submittedProfileName, submittedTimezone ) {
+		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
+		setIsNavigating( true );
+		const result = await createAccount( {
+			accountName: submittedAccountName,
+			propertyName: submittedPropertyName,
+			profileName: submittedProfileName,
+			timezone: submittedTimezone,
+		} );
+
+		if ( result.error ) {
+			setIsNavigating( false ); // Silently fail for server errors.
+		}
+	};
+
+	// Redirect if the accountTicketTermsOfServiceURL is set.
+	if ( accountTicketTermsOfServiceURL ) {
+		global.location.assign( accountTicketTermsOfServiceURL );
+	}
+
+	const validationHasIssues = Object.values( validationIssues ).some( ( check ) => check );
 
 	if ( isDoingCreateAccount || isNavigating ) {
 		return <ProgressBar />;
