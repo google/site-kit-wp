@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useState, useMemo } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -29,114 +28,34 @@ import {
 	Select,
 	Option,
 } from '../../../material-components';
-import { countries } from './countries';
+import { timeZonesByCountryCode } from '../util/countries-timezones';
 import classnames from 'classnames';
 
-const { default: { country: allCountries } } = countries;
-
-const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
-	const [ selectedCountry, setSelectedCountry ] = useState( timezone );
-	const [ selectedTimezoneID, setSelectedTimezoneID ] = useState( '' );
-	let multiTimezone,
-		selectedTimezoneDisplay = selectedTimezoneID,
-		foundTimezone = false;
-	const getTimezoneSelector = () => {
-		const response = (
-			<div >
-				<span>
-					<Select
-						className={ classnames(
-							'googlesitekit-analytics__select-timezone first',
-							{ 'mdc-text-field--error': hasError }
-						) }
-						name="country"
-						enhanced
-						value={ selectedCountry }
-						onEnhancedChange={ ( i, item ) => {
-							setTimezone( item.dataset.value );
-							setSelectedCountry( item.dataset.value );
-							setSelectedTimezoneID( item.dataset.value );
-						} }
-						label={ __( 'Country', 'google-site-kit' ) }
-						outlined
-					>
-						{
-							allCountries && allCountries
-								.map( ( aCountry ) => {
-									// If the selected timezone is in this country, the country should be selected.
-									let value = aCountry.defaultTimeZoneId;
-									const timezoneMatch = aCountry.timeZone.find( ( tz ) => tz.timeZoneId === timezone );
-									if ( timezoneMatch ) {
-										foundTimezone = true;
-										value = timezoneMatch.timeZoneId;
-										if ( aCountry.timeZone.length > 1 ) {
-											multiTimezone = aCountry.timeZone;
-										} else {
-											setSelectedTimezoneID( aCountry.timeZone[ 0 ].displayName );
-											selectedTimezoneDisplay = aCountry.timeZone[ 0 ].displayName;
-											multiTimezone = false;
-										}
-										setSelectedCountry( timezoneMatch.timeZoneId );
-									}
-
-									return (
-										<Option
-											key={ aCountry.displayName }
-											value={ value }
-										>
-											{ aCountry.displayName }
-										</Option>
-									);
-								} ) }
-					</Select>
-				</span>
-				<span>
-					{ multiTimezone
-						? <Select
-							className="googlesitekit-analytics__select-timezone"
-							name="timezone2"
-							enhanced
-							value={ timezone }
-							onEnhancedChange={ ( i, item ) => {
-								setTimezone( item.dataset.value );
-							} }
-							label={ __( 'Timezone', 'google-site-kit' ) }
-							outlined
+export default function TimezoneSelect( { countryCode, hasError, ...props } ) {
+	return (
+		<Select
+			className={ classnames(
+				'googlesitekit-analytics__select-timezone',
+				{ 'mdc-text-field--error': hasError }
+			) }
+			label={ __( 'Timezone', 'google-site-kit' ) }
+			disabled={ ! countryCode }
+			enhanced
+			outlined
+			{ ...props }
+		>
+			{
+				( timeZonesByCountryCode[ countryCode ] || [] ).map(
+					( { timeZoneId, displayName }, i ) => (
+						<Option
+							key={ i }
+							value={ timeZoneId }
 						>
-							{
-								multiTimezone
-									.map( ( aTimezone ) => {
-										if ( aTimezone.timeZoneId === timezone ) {
-											foundTimezone = true;
-										}
-										return (
-											<Option
-												key={ aTimezone.displayName }
-												value={ aTimezone.timeZoneId }
-											>
-												{ aTimezone.displayName }
-											</Option>
-										);
-									} )
-							}
-						</Select>
-						: selectedTimezoneDisplay
-					}
-				</span>
-			</div>
-		);
-		// Fallback to the browser timezone if the WordPress timezone was not found.
-		if ( ! foundTimezone ) {
-			setSelectedTimezoneID( Intl.DateTimeFormat().resolvedOptions().timeZone );
-			setTimezone( Intl.DateTimeFormat().resolvedOptions().timeZone );
-		}
-		return response;
-	};
-
-	// Cache the selector as it is complex to construct.
-	const timezoneSelector = useMemo( () => getTimezoneSelector(), [ selectedCountry, timezone, hasError ] );
-
-	return timezoneSelector;
-};
-
-export default TimezoneSelect;
+							{ displayName }
+						</Option>
+					)
+				)
+			}
+		</Select>
+	);
+}

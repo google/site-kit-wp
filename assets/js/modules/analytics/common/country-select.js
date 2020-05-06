@@ -1,5 +1,5 @@
 /**
- * ProfileField component.
+ * CountrySelect component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -24,16 +29,36 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import CreateAccountField from './create-account-field';
+import {
+	Select,
+	Option,
+} from '../../../material-components';
+import { allCountries } from '../util/countries-timezones';
 
-export default function ProfileField( { hasError, value, setValue } ) {
+export default function CountrySelect( props ) {
 	return (
-		<CreateAccountField
-			hasError={ hasError }
-			value={ value }
-			setValue={ setValue }
-			label={ __( 'View', 'google-site-kit' ) } // Profiles are now called views.
-			name="profile"
-		/>
+		<Select
+			className="googlesitekit-analytics__select-country"
+			label={ __( 'Country', 'google-site-kit' ) }
+			enhanced
+			outlined
+			{ ...props }
+		>
+			{
+				allCountries.map( ( { countryCode, displayName }, i ) => (
+					<Option
+						key={ i }
+						value={ countryCode }
+					>
+						{ displayName }
+					</Option>
+				) )
+			}
+		</Select>
 	);
 }
+
+CountrySelect.propTypes = {
+	value: PropTypes.string.required,
+	onEnhancedChange: PropTypes.func.required,
+};

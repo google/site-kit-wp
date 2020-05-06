@@ -30,6 +30,7 @@ import SetupForm from './setup-form';
 import ProgressBar from '../../../components/progress-bar';
 import { SvgIcon, trackEvent } from '../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	AccountCreate,
 	AccountCreateLegacy,
@@ -48,7 +49,7 @@ export default function SetupMain( { finishSetup } ) {
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
-	const usingProxy = useSelect( ( select ) => select( 'core/site' ).isUsingProxy() );
+	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
 
 	// Set the accountID and property if there is an existing tag.
 	const { setAccountID, selectProperty } = useDispatch( STORE_NAME );

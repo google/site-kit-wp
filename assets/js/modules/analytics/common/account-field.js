@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import CreateAccountField from './create-account-field';
 
-const AccountField = ( { hasError, value, setValue } ) => {
+export default function AccountField( { hasError, value, setValue } ) {
 	return (
 		<CreateAccountField
 			hasError={ hasError }
@@ -36,6 +36,4 @@ const AccountField = ( { hasError, value, setValue } ) => {
 			name="account"
 		/>
 	);
-};
-
-export default AccountField;
+}

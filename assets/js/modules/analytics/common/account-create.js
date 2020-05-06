@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useState, Fragment, useEffect } from '@wordpress/element';
+import { useCallback, useState, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,50 +33,61 @@ import AccountField from './account-field';
 import PropertyField from './property-field';
 import ProfileField from './profile-field';
 import { STORE_NAME } from '../datastore/constants';
-
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import Data from 'googlesitekit-data';
+import CountrySelect from './country-select';
+import { countriesByCode, countryCodesByTimezone, countriesByTimeZone } from '../util/countries-timezones';
 const { useDispatch, useSelect } = Data;
 
-const AccountCreate = () => {
-	const siteURL = useSelect( ( select ) => select( 'core/site' ).getReferenceSiteURL() );
-	const siteName = useSelect( ( select ) => select( 'core/site' ).getSiteName() );
-	const tz = useSelect( ( select ) => select( 'core/site' ).getTimezone() );
+export default function AccountCreate() {
+	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( STORE_NAME ).getAccountTicketTermsOfServiceURL() );
+	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
+	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
+	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
+	const tz = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
+
 	const url = new URL( siteURL );
 	const { createAccount } = useDispatch( STORE_NAME );
 
-	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
-
-	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( STORE_NAME ).getAccountTicketTermsOfServiceURL() );
 	const [ isNavigating, setIsNavigating ] = useState( false );
-	const handleSubmit = async function( accountName, propertyName, profileName, timezone ) {
-		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
-		setIsNavigating( true );
-		await createAccount( {
-			accountName,
-			propertyName,
-			profileName,
-			timezone,
-		} );
 
-		// Redirect if the accountTicketTermsOfServiceURL is set.
-		if ( accountTicketTermsOfServiceURL ) {
-			global.location.assign( accountTicketTermsOfServiceURL );
-		}
-		setIsNavigating( false );
-	};
-
+	// Redirect if the accountTicketTermsOfServiceURL is set.
+	if ( accountTicketTermsOfServiceURL ) {
+		global.location.assign( accountTicketTermsOfServiceURL );
+	}
 	const [ accountName, setAccountName ] = useState( siteName );
 	const [ propertyName, setPropertyName ] = useState( url.hostname );
 	const [ profileName, setProfileName ] = useState( __( 'All website traffic', 'google-site-kit' ) );
 	const [ timezone, setTimezone ] = useState( tz );
-	const [ validationIssues, setValidationIssues ] = useState( {
-		accountName: accountName === '',
-		propertyName: propertyName === '',
-		profileName: profileName === '',
-		timezone: timezone === '',
-	} );
+	const [ countryCode, setCountryCode ] = useState( countryCodesByTimezone[ tz ] );
+	const [ validationIssues, setValidationIssues ] = useState( {} );
 
-	const validationHasIssues = Object.values( validationIssues ).some( ( check ) => check );
+	const validationHasIssues = Object.values( validationIssues ).some( Boolean );
+
+	// Check timezone on initial load: fall back to the browser timezone if the WordPress timezone was not found.
+	useEffect( () => {
+		const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+		if ( timezone && timezone !== browserTimeZone && ! countriesByTimeZone[ timezone ] ) {
+			setTimezone( browserTimeZone );
+		}
+	}, [ timezone ] );
+
+	const handleSubmit = useCallback(
+		async () => {
+			trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
+			const result = await createAccount( {
+				accountName,
+				propertyName,
+				profileName,
+				timezone,
+			} );
+
+			if ( ! result.error ) {
+				setIsNavigating( true );
+			}
+		},
+		[ setIsNavigating, accountName, propertyName, profileName, timezone ]
+	);
 
 	useEffect( () => {
 		setValidationIssues( {
@@ -92,64 +103,70 @@ const AccountCreate = () => {
 	}
 
 	return (
-		<Fragment>
-			<div className="googlesitekit-setup-module">
-				<div className="mdc-layout-grid__inner">
-					<div className="mdc-layout-grid__cell--span-12">
-						<div className="mdc-layout-grid">
-							<h3 className="googlesitekit-heading-4">
-								{ __( 'Create new Analytics account', 'google-site-kit' ) }
-							</h3>
-							{ __( 'We’ve pre-filled the required information for your new account. Confirm or edit any details:', 'google-site-kit' ) }
-							<div className="googlesitekit-setup-module__inputs">
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-									<AccountField
-										hasError={ validationIssues.accountName }
-										value={ accountName }
-										setValue={ setAccountName }
-									/>
-								</div>
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-									<PropertyField
-										hasError={ validationIssues.propertyName }
-										value={ propertyName }
-										setValue={ setPropertyName }
-									/>
-								</div>
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-									<ProfileField
-										hasError={ validationIssues.profileName }
-										value={ profileName }
-										setValue={ setProfileName }
-									/>
-								</div>
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-									<TimezoneSelect
-										hasError={ validationIssues.timezone }
-										timezone={ timezone }
-										setTimezone={ setTimezone }
-									/>
-								</div>
-							</div>
-							<p>
-								{ __( 'You will be redirected to Google Analytics to accept the Terms of Service and create your new account.', 'google-site-kit' ) }
-							</p>
-							<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-								<Button
-									disabled={ validationHasIssues }
-									onClick={ () => {
-										handleSubmit( accountName, propertyName, profileName, timezone );
-									} }
-								>
-									{ __( 'Create Account', 'google-site-kit' ) }
-								</Button>
-							</div>
-						</div>
-					</div>
+		<div>
+			<h3 className="googlesitekit-heading-4">
+				{ __( 'Create new Analytics account', 'google-site-kit' ) }
+			</h3>
+
+			{ __( 'We’ve pre-filled the required information for your new account. Confirm or edit any details:', 'google-site-kit' ) }
+
+			<div className="googlesitekit-setup-module__inputs">
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+					<AccountField
+						hasError={ validationIssues.accountName }
+						value={ accountName }
+						setValue={ setAccountName }
+					/>
+				</div>
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+					<PropertyField
+						hasError={ validationIssues.propertyName }
+						value={ propertyName }
+						setValue={ setPropertyName }
+					/>
+				</div>
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+					<ProfileField
+						hasError={ validationIssues.profileName }
+						value={ profileName }
+						setValue={ setProfileName }
+					/>
+				</div>
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+					<CountrySelect
+						hasError={ validationIssues.country }
+						value={ countryCode }
+						onEnhancedChange={ ( i, item ) => {
+							const newCountryCode = item.dataset.value;
+							if ( newCountryCode !== countryCode ) {
+								setCountryCode( newCountryCode );
+								setTimezone( countriesByCode[ newCountryCode ].defaultTimeZoneId );
+							}
+						} }
+					/>
+				</div>
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+					<TimezoneSelect
+						countryCode={ countryCode }
+						hasError={ validationIssues.timezone }
+						value={ timezone }
+						onEnhancedChange={ ( i, item ) => setTimezone( item.dataset.value ) }
+					/>
 				</div>
 			</div>
-		</Fragment>
-	);
-};
 
-export default AccountCreate;
+			<p>
+				{ __( 'You will be redirected to Google Analytics to accept the Terms of Service and create your new account.', 'google-site-kit' ) }
+			</p>
+
+			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+				<Button
+					disabled={ validationHasIssues }
+					onClick={ handleSubmit }
+				>
+					{ __( 'Create Account', 'google-site-kit' ) }
+				</Button>
+			</div>
+		</div>
+	);
+}

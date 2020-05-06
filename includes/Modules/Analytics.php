@@ -545,7 +545,13 @@ final class Analytics extends Module
 		);
 
 		wp_safe_redirect(
-			$this->context->admin_url( 'dashboard', array( 'notification' => 'authentication_success' ) )
+			$this->context->admin_url(
+				'dashboard',
+				array(
+					'notification' => 'authentication_success',
+					'slug'         => 'analytics',
+				)
+			)
 		);
 		exit;
 	}
