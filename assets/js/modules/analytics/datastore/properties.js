@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { groupBy } from 'lodash';
 
 /**
  * Internal dependencies
@@ -117,11 +116,15 @@ export const actions = {
 			};
 			const { properties, profiles, matchedProperty } = response;
 			const { dispatch } = yield Data.commonActions.getRegistry();
-			yield actions.receiveProperties( properties );
-			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			yield actions.receiveProperties( properties, { accountID } );
 
 			if ( matchedProperty ) {
 				yield actions.receiveMatchedProperty( matchedProperty );
+			}
+
+			if ( profiles.length && profiles[ 0 ] && profiles[ 0 ].webPropertyId ) {
+				const propertyID = profiles[ 0 ].webPropertyId;
+				dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID } );
 			}
 
 			yield {
@@ -240,13 +243,15 @@ export const actions = {
 	 * @private
 	 *
 	 * @param {Array} properties Properties to add.
+	 * @param {Object} accountID Account ID to add.
 	 * @return {Object} Redux-style action.
 	 */
-	receiveProperties( properties ) {
+	receiveProperties( properties, { accountID } ) {
 		invariant( Array.isArray( properties ), 'properties must be an array.' );
+		invariant( accountID, 'accountID is required.' );
 
 		return {
-			payload: { properties },
+			payload: { properties, accountID },
 			type: RECEIVE_PROPERTIES,
 		};
 	},
@@ -362,13 +367,13 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_PROPERTIES: {
-			const { properties } = payload;
+			const { properties, accountID } = payload;
 
 			return {
 				...state,
 				properties: {
 					...state.properties,
-					...groupBy( properties, 'accountId' ), // Capitalization rule exception: `accountId` is a property of an API returned value.
+					[ accountID ]: [ ...properties ],
 				},
 			};
 		}
