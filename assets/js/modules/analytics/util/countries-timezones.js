@@ -16,6 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * External dependencies
+ */
+import { keyBy } from 'lodash';
+
+/**
+ * Internal dependencies
+ */
 import { countries } from './countries-data';
 
 export const allCountries = countries.default.country;
@@ -25,3 +33,5 @@ export const timeZonesByCountryCode = allCountries.reduce( ( map, country ) => {
 
 	return map;
 }, {} );
+
+export const countriesByCode = keyBy( allCountries, 'countryCode' );
