@@ -25,15 +25,15 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
-import { default as datastore } from './index';
+import store from './index';
 import { STORE_NAME } from './constants';
 
-const { INITIAL_STATE } = datastore;
+const { INITIAL_STATE } = store;
 
 describe( 'core/site store', () => {
 	let apiFetchSpy;
 	let registry;
-	let store;
+	let store; // eslint-disable-line no-shadow
 
 	beforeEach( () => {
 		registry = createTestRegistry();

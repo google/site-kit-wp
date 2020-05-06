@@ -25,7 +25,6 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from 'tests/js/utils';
-// import { INITIAL_STATE } from './index';
 import store from './index';
 import { STORE_NAME } from './constants';
 

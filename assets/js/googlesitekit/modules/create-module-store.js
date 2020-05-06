@@ -78,7 +78,7 @@ export const createModuleStore = ( slug, {
 		settingsStore,
 	);
 
-	const STORE_NAME = settingsStore.STORE_NAME ? [ notificationsStore.STORE_NAME ] : [ notificationsStore.STORE_NAME, settingsStore.STORE_NAME ];
+	const STORE_NAME = ! settingsStore.STORE_NAME ? [ notificationsStore.STORE_NAME ] : [ notificationsStore.STORE_NAME, settingsStore.STORE_NAME ];
 
 	combinedStore.STORE_NAME = Data.collectName( ...STORE_NAME );
 
