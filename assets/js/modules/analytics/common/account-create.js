@@ -38,7 +38,7 @@ import PropertyField from './property-field';
 import ProfileField from './profile-field';
 import { STORE_NAME } from '../datastore/constants';
 import { countries } from './countries';
-import { STORE_NAME as CORE_STORE_NAME } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import Data from 'googlesitekit-data';
 const { useDispatch, useSelect } = Data;
 
