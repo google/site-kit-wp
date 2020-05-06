@@ -48,7 +48,6 @@ export default function AccountCreate() {
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
 	const tz = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
 
-	const { createAccount } = useDispatch( STORE_NAME );
 	const [ isNavigating, setIsNavigating ] = useState( false );
 
 	// Redirect if the accountTicketTermsOfServiceURL is set.
@@ -74,6 +73,7 @@ export default function AccountCreate() {
 		} );
 	}, [ siteName, siteURL, tz ] );
 
+	const { createAccount } = useDispatch( STORE_NAME );
 	const handleSubmit = useCallback(
 		async () => {
 			trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
