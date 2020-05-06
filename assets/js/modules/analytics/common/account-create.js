@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useState, Fragment, useEffect } from '@wordpress/element';
+import { useState, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -104,62 +104,58 @@ export default function AccountCreate() {
 	}
 
 	return (
-		<Fragment>
-			<div className="googlesitekit-setup-module">
-				<div className="mdc-layout-grid__inner">
-					<div className="mdc-layout-grid__cell--span-12">
-						<div className="mdc-layout-grid">
-							<h3 className="googlesitekit-heading-4">
-								{ __( 'Create new Analytics account', 'google-site-kit' ) }
-							</h3>
-							{ __( 'We’ve pre-filled the required information for your new account. Confirm or edit any details:', 'google-site-kit' ) }
-							<div className="googlesitekit-setup-module__inputs">
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-									<AccountField
-										hasError={ validationIssues.accountName }
-										value={ accountName }
-										setValue={ setAccountName }
-									/>
-								</div>
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-									<PropertyField
-										hasError={ validationIssues.propertyName }
-										value={ propertyName }
-										setValue={ setPropertyName }
-									/>
-								</div>
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-									<ProfileField
-										hasError={ validationIssues.profileName }
-										value={ profileName }
-										setValue={ setProfileName }
-									/>
-								</div>
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-									<TimezoneSelect
-										hasError={ validationIssues.timezone }
-										timezone={ timezone }
-										setTimezone={ setTimezone }
-									/>
-								</div>
-							</div>
-							<p>
-								{ __( 'You will be redirected to Google Analytics to accept the Terms of Service and create your new account.', 'google-site-kit' ) }
-							</p>
-							<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
-								<Button
-									disabled={ validationHasIssues }
-									onClick={ () => {
-										handleSubmit( accountName, propertyName, profileName, timezone );
-									} }
-								>
-									{ __( 'Create Account', 'google-site-kit' ) }
-								</Button>
-							</div>
-						</div>
-					</div>
+		<div>
+			<h3 className="googlesitekit-heading-4">
+				{ __( 'Create new Analytics account', 'google-site-kit' ) }
+			</h3>
+
+			{ __( 'We’ve pre-filled the required information for your new account. Confirm or edit any details:', 'google-site-kit' ) }
+
+			<div className="googlesitekit-setup-module__inputs">
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+					<AccountField
+						hasError={ validationIssues.accountName }
+						value={ accountName }
+						setValue={ setAccountName }
+					/>
+				</div>
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+					<PropertyField
+						hasError={ validationIssues.propertyName }
+						value={ propertyName }
+						setValue={ setPropertyName }
+					/>
+				</div>
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+					<ProfileField
+						hasError={ validationIssues.profileName }
+						value={ profileName }
+						setValue={ setProfileName }
+					/>
+				</div>
+				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+					<TimezoneSelect
+						hasError={ validationIssues.timezone }
+						timezone={ timezone }
+						setTimezone={ setTimezone }
+					/>
 				</div>
 			</div>
-		</Fragment>
+
+			<p>
+				{ __( 'You will be redirected to Google Analytics to accept the Terms of Service and create your new account.', 'google-site-kit' ) }
+			</p>
+
+			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+				<Button
+					disabled={ validationHasIssues }
+					onClick={ () => {
+						handleSubmit( accountName, propertyName, profileName, timezone );
+					} }
+				>
+					{ __( 'Create Account', 'google-site-kit' ) }
+				</Button>
+			</div>
+		</div>
 	);
 }
