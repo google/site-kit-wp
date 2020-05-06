@@ -29,7 +29,7 @@ import {
 	Select,
 	Option,
 } from '../../../material-components';
-import { countries } from './countries';
+import { countries } from '../util/countries-data';
 import classnames from 'classnames';
 
 const { default: { country: allCountries } } = countries;
