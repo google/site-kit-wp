@@ -33,19 +33,11 @@ import AccountField from './account-field';
 import PropertyField from './property-field';
 import ProfileField from './profile-field';
 import { STORE_NAME } from '../datastore/constants';
-import { countries } from '../util/countries-data';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import Data from 'googlesitekit-data';
 import CountrySelect from './country-select';
-import { countriesByCode, countryCodesByTimezone } from '../util/countries-timezones';
+import { countriesByCode, countryCodesByTimezone, countriesByTimeZone } from '../util/countries-timezones';
 const { useDispatch, useSelect } = Data;
-const allCountries = countries.default.country;
-const countriesByTimeZone = allCountries.reduce( ( map, country ) => {
-	country.timeZone.forEach( ( { timeZoneId } ) => {
-		map[ timeZoneId ] = country;
-	} );
-	return map;
-}, {} );
 
 export default function AccountCreate() {
 	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( STORE_NAME ).getAccountTicketTermsOfServiceURL() );

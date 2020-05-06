@@ -41,3 +41,10 @@ export const countryCodesByTimezone = allCountries.reduce( ( map, country ) => {
 
 	return map;
 }, {} );
+
+export const countriesByTimeZone = allCountries.reduce( ( map, country ) => {
+	country.timeZone.forEach( ( { timeZoneId } ) => {
+		map[ timeZoneId ] = country;
+	} );
+	return map;
+}, {} );
