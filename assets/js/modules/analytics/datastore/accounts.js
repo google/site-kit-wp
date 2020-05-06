@@ -27,8 +27,9 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { isValidAccountSelection } from '../util';
-import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE } from './constants';
+import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from './constants';
 import { actions as tagActions } from './tags';
+const { createRegistrySelector } = Data;
 
 // Actions
 const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
@@ -406,11 +407,33 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean} The terms of service URL.
+	 * @return {(string|undefined)} The terms of service URL.
 	 */
 	getAccountTicketTermsOfServiceURL( state ) {
 		return state.accountTicketTermsOfServiceURL;
 	},
+	/**
+	 * Whether or not the account create form is valid to submit.
+	 *
+	 * @return {boolean} True if valid, otherwise false.
+	 */
+	canSubmitAccountCreate: createRegistrySelector( ( select ) => () => {
+		const { getForm } = select( STORE_NAME );
+
+		if ( ! getForm( FORM_ACCOUNT_CREATE, 'accountName' ) ) {
+			return false;
+		}
+		if ( ! getForm( FORM_ACCOUNT_CREATE, 'propertyName' ) ) {
+			return false;
+		}
+		if ( ! getForm( FORM_ACCOUNT_CREATE, 'profileName' ) ) {
+			return false;
+		}
+		if ( ! getForm( FORM_ACCOUNT_CREATE, 'timezone' ) ) {
+			return false;
+		}
+		return true;
+	} ),
 };
 
 export default {
