@@ -56,6 +56,8 @@ const timezoneInCountries = ( timezone ) => {
 let timezoneChecked = false;
 
 const AccountCreate = () => {
+	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( STORE_NAME ).getAccountTicketTermsOfServiceURL() );
+	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
 	let tz = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
@@ -68,9 +70,6 @@ const AccountCreate = () => {
 	const url = new URL( siteURL );
 	const { createAccount } = useDispatch( STORE_NAME );
 
-	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
-
-	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( STORE_NAME ).getAccountTicketTermsOfServiceURL() );
 	const [ isNavigating, setIsNavigating ] = useState( false );
 	const handleSubmit = async function( accountName, propertyName, profileName, timezone ) {
 		trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
