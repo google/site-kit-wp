@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import CreateAccountField from '../create-account-field';
+import CreateAccountField from './create-account-field';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, FORM_ACCOUNT_CREATE } from '../../datastore/constants';
 

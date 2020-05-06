@@ -22,7 +22,7 @@
 import {
 	Input,
 	TextField,
-} from '../../../material-components';
+} from '../../../../material-components';
 import classnames from 'classnames';
 
 export default function CreateAccountField( {
