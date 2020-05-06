@@ -34,7 +34,7 @@ import classnames from 'classnames';
 
 const { default: { country: allCountries } } = countries;
 
-const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
+export default function TimezoneSelect( { timezone, setTimezone, hasError } ) {
 	const [ selectedCountry, setSelectedCountry ] = useState( timezone );
 	const [ selectedTimezoneID, setSelectedTimezoneID ] = useState( timezone );
 	let multiTimezone,
@@ -125,6 +125,4 @@ const TimezoneSelect = ( { timezone, setTimezone, hasError } ) => {
 	const timezoneSelector = useMemo( () => getTimezoneSelector(), [ selectedCountry, timezone, hasError ] );
 
 	return timezoneSelector;
-};
-
-export default TimezoneSelect;
+}

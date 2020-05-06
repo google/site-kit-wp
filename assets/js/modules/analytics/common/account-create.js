@@ -45,7 +45,7 @@ const countriesByTimeZone = allCountries.reduce( ( map, country ) => {
 	return map;
 }, {} );
 
-const AccountCreate = () => {
+export default function AccountCreate() {
 	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( STORE_NAME ).getAccountTicketTermsOfServiceURL() );
 	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
@@ -162,6 +162,4 @@ const AccountCreate = () => {
 			</div>
 		</Fragment>
 	);
-};
-
-export default AccountCreate;
+}
