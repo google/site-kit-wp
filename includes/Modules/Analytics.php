@@ -28,6 +28,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Modules\Analytics\Google_Service_AnalyticsProvisioning;
 use Google\Site_Kit\Modules\Analytics\Settings;
 use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
 use Google\Site_Kit\Modules\Analytics\Proxy_Provisioning;
@@ -1325,29 +1326,10 @@ final class Analytics extends Module
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		$google_proxy = new Google_Proxy( $this->context );
-
-		// Create an analytics provisioning service that makes requests to the proxy.
-		$analytics_provisioning_service = new Google_Service_Analytics( $client, $google_proxy->url() );
-
-		// Use a custom provisioning method that accepts site id and secret.
-		$analytics_provisioning_service->provisioning = new Proxy_Provisioning(
-			$analytics_provisioning_service,
-			$analytics_provisioning_service->serviceName, // phpcs:ignore WordPress.NamingConventions.ValidVariableName
-			'provisioning',
-			array(
-				'methods' => array(
-					'createAccountTicket' => array(
-						'path'       => 'provisioning/createAccountTicket',
-						'httpMethod' => 'POST',
-						'parameters' => array(),
-					),
-				),
-			)
-		);
 		return array(
 			'analytics'             => new Google_Service_Analytics( $client ),
 			'analyticsreporting'    => new Google_Service_AnalyticsReporting( $client ),
-			'analyticsprovisioning' => $analytics_provisioning_service,
+			'analyticsprovisioning' => new Google_Service_AnalyticsProvisioning( $client, $google_proxy->url() ),
 		);
 	}
 
