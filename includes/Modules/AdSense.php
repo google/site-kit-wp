@@ -278,7 +278,8 @@ tag_partner: "site_kit"
 	 * @return array Filtered $data.
 	 */
 	protected function amp_data_load_auto_ads_component( $data ) {
-		if ( ! $this->is_connected() ) {
+		// Bail early if we are checking for the tag presence from the back end.
+		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
 			return $data;
 		}
 
@@ -309,7 +310,8 @@ tag_partner: "site_kit"
 			return $content;
 		}
 
-		if ( ! $this->is_connected() ) {
+		// Bail early if we are checking for the tag presence from the back end.
+		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
 			return $content;
 		}
 

@@ -99,7 +99,7 @@ download() {
 # @param {string} message The string to add formatting to.
 ##
 error_message() {
-	echo -en "\033[31mERROR\033[0m: $1"
+	echo -e "\033[31mERROR\033[0m: $1"
 }
 
 ##
@@ -108,7 +108,7 @@ error_message() {
 # @param {string} message The string to add formatting to.
 ##
 warning_message() {
-	echo -en "\033[33mWARNING\033[0m: $1"
+	echo -e "\033[33mWARNING\033[0m: $1"
 }
 
 ##
@@ -117,7 +117,7 @@ warning_message() {
 # @param {string} message The string to add formatting to.
 ##
 status_message() {
-	echo -en "\033[32mSTATUS\033[0m: $1"
+	echo -e "\033[32mSTATUS\033[0m: $1"
 }
 
 ##
