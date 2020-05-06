@@ -21,10 +21,20 @@
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { createModuleStore } from './create-module-store';
+// This import has a side-effect: it automatically registers the "core/modules"
+// store on `googlesitekit.data`.
+import { STORE_NAME } from './datastore';
 
 const Modules = {
 	createModuleStore,
+	activateModule: ( ...args ) => {
+		return Data.dispatch( STORE_NAME ).activateModule( ...args );
+	},
+	deactivateModule: ( ...args ) => {
+		return Data.dispatch( STORE_NAME ).deactivateModule( ...args );
+	},
 };
 
 export default Modules;

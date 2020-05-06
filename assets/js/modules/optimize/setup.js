@@ -302,7 +302,7 @@ class OptimizeSetup extends Component {
 						label={ __( 'Optimize Container ID', 'google-site-kit' ) }
 						name="optimizeID"
 						onChange={ this.handleOptimizeIDEntry }
-						helperText={ <HelperText>{ __( 'Format: GTM-XXXXXXX.', 'google-site-kit' ) }</HelperText> }
+						helperText={ <HelperText>{ __( 'Format: GTM-XXXXXXX or OPT-XXXXXXX', 'google-site-kit' ) }</HelperText> }
 						outlined
 						required
 					>
