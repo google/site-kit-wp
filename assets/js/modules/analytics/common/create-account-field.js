@@ -25,13 +25,13 @@ import {
 } from '../../../material-components';
 import classnames from 'classnames';
 
-const CreateAccountField = ( {
+export default function CreateAccountField( {
 	hasError,
 	value,
 	setValue,
 	name,
 	label,
-} ) => {
+} ) {
 	return (
 		<TextField
 			className={ classnames(
@@ -52,6 +52,4 @@ const CreateAccountField = ( {
 			/>
 		</TextField>
 	);
-};
-
-export default CreateAccountField;
+}
