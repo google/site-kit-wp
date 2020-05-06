@@ -398,7 +398,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @since 1.6.0
 		 *
 		 * @param {Object} state Data store's state.
-		 * @return {?Object} Settings with their values, or undefined.
+		 * @return {(Object|undefined)} Settings with their values, or undefined.
 		 */
 		getSettings( state ) {
 			return state.settings;
