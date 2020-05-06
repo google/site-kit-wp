@@ -15,10 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * External dependencies
- */
-import { each } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -41,32 +37,21 @@ import { countries } from './countries';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import Data from 'googlesitekit-data';
 const { useDispatch, useSelect } = Data;
-
-// Recursively search thru countries and their timezones to find a match for country/timezone.
-const timezoneInCountries = ( timezone ) => {
-	let matched = false;
-	each( countries.default.country, ( country ) => {
-		const timezoneMatch = country.timeZone.find( ( tz ) => tz.timeZoneId === timezone );
-		if ( timezoneMatch ) {
-			matched = true;
-		}
+const allCountries = countries.default.country;
+const countriesByTimeZone = allCountries.reduce( ( map, country ) => {
+	country.timeZone.forEach( ( { timeZoneId } ) => {
+		map[ timeZoneId ] = country;
 	} );
-	return matched;
-};
-let timezoneChecked = false;
+	return map;
+}, {} );
 
 const AccountCreate = () => {
 	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( STORE_NAME ).getAccountTicketTermsOfServiceURL() );
 	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
-	let tz = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
+	const tz = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
 
-	// Check timezone on initial load: fall back to the browser timezone if the WordPress timezone was not found.
-	if ( ! timezoneChecked && ! timezoneInCountries( tz ) ) {
-		tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-	}
-	timezoneChecked = true;
 	const url = new URL( siteURL );
 	const { createAccount } = useDispatch( STORE_NAME );
 
@@ -96,6 +81,14 @@ const AccountCreate = () => {
 	const [ validationIssues, setValidationIssues ] = useState( {} );
 
 	const validationHasIssues = Object.values( validationIssues ).some( Boolean );
+
+	// Check timezone on initial load: fall back to the browser timezone if the WordPress timezone was not found.
+	useEffect( () => {
+		const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+		if ( timezone && timezone !== browserTimeZone && ! countriesByTimeZone[ timezone ] ) {
+			setTimezone( browserTimeZone );
+		}
+	}, [ timezone ] );
 
 	useEffect( () => {
 		setValidationIssues( {
