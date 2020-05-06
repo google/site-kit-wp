@@ -19,20 +19,32 @@
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import CreateAccountField from './create-account-field';
+import Data from 'googlesitekit-data';
+import { STORE_NAME, FORM_ACCOUNT_CREATE } from '../datastore/constants';
 
-export default function AccountField( { hasError, value, setValue } ) {
+const { useSelect, useDispatch } = Data;
+
+export default function AccountField() {
+	const value = useSelect( ( select ) => select( STORE_NAME ).getForm( FORM_ACCOUNT_CREATE, 'accountName' ) );
+
+	const { setForm } = useDispatch( STORE_NAME );
+	const setValue = useCallback( ( accountName ) => {
+		setForm( FORM_ACCOUNT_CREATE, { accountName } );
+	}, [ setForm ] );
+
 	return (
 		<CreateAccountField
-			hasError={ hasError }
+			label={ __( 'Account', 'google-site-kit' ) }
+			hasError={ ! value }
 			value={ value }
 			setValue={ setValue }
-			label={ __( 'Account', 'google-site-kit' ) }
 			name="account"
 		/>
 	);

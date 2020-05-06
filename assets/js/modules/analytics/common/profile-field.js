@@ -19,20 +19,32 @@
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import CreateAccountField from './create-account-field';
+import Data from 'googlesitekit-data';
+import { STORE_NAME, FORM_ACCOUNT_CREATE } from '../datastore/constants';
 
-export default function ProfileField( { hasError, value, setValue } ) {
+const { useSelect, useDispatch } = Data;
+
+export default function ProfileField() {
+	const value = useSelect( ( select ) => select( STORE_NAME ).getForm( FORM_ACCOUNT_CREATE, 'profileName' ) );
+	const { setForm } = useDispatch( STORE_NAME );
+
+	const setValue = useCallback( ( profileName ) => {
+		setForm( FORM_ACCOUNT_CREATE, { profileName } );
+	}, [ setForm ] );
+
 	return (
 		<CreateAccountField
-			hasError={ hasError }
-			value={ value }
-			setValue={ setValue }
 			label={ __( 'View', 'google-site-kit' ) } // Profiles are now called views.
+			value={ value }
+			hasError={ ! value }
+			setValue={ setValue }
 			name="profile"
 		/>
 	);

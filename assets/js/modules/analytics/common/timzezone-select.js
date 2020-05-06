@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -29,20 +30,29 @@ import {
 	Option,
 } from '../../../material-components';
 import { timeZonesByCountryCode } from '../util/countries-timezones';
-import classnames from 'classnames';
+import Data from 'googlesitekit-data';
+import { STORE_NAME, FORM_ACCOUNT_CREATE } from '../datastore/constants';
 
-export default function TimezoneSelect( { countryCode, hasError, ...props } ) {
+const { useSelect, useDispatch } = Data;
+
+export default function TimezoneSelect() {
+	const countryCode = useSelect( ( select ) => select( STORE_NAME ).getForm( FORM_ACCOUNT_CREATE, 'countryCode' ) );
+	const value = useSelect( ( select ) => select( STORE_NAME ).getForm( FORM_ACCOUNT_CREATE, 'timezone' ) );
+
+	const { setForm } = useDispatch( STORE_NAME );
+	const onEnhancedChange = useCallback( ( i, item ) => {
+		setForm( FORM_ACCOUNT_CREATE, { timezone: item.dataset.value } );
+	}, [ setForm ] );
+
 	return (
 		<Select
-			className={ classnames(
-				'googlesitekit-analytics__select-timezone',
-				{ 'mdc-text-field--error': hasError }
-			) }
+			className="googlesitekit-analytics__select-timezone"
 			label={ __( 'Timezone', 'google-site-kit' ) }
+			value={ value }
+			onEnhancedChange={ onEnhancedChange }
 			disabled={ ! countryCode }
 			enhanced
 			outlined
-			{ ...props }
 		>
 			{
 				( timeZonesByCountryCode[ countryCode ] || [] ).map(

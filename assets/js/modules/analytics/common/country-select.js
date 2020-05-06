@@ -17,13 +17,9 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,16 +29,33 @@ import {
 	Select,
 	Option,
 } from '../../../material-components';
-import { allCountries } from '../util/countries-timezones';
+import { allCountries, countriesByCode } from '../util/countries-timezones';
+import Data from 'googlesitekit-data';
+import { STORE_NAME, FORM_ACCOUNT_CREATE } from '../datastore/constants';
+const { useSelect, useDispatch } = Data;
 
-export default function CountrySelect( props ) {
+export default function CountrySelect() {
+	const value = useSelect( ( select ) => select( STORE_NAME ).getForm( FORM_ACCOUNT_CREATE, 'countryCode' ) );
+
+	const { setForm } = useDispatch( STORE_NAME );
+	const onEnhancedChange = useCallback( ( i, item ) => {
+		const newCountryCode = item.dataset.value;
+		if ( newCountryCode !== value ) {
+			setForm( FORM_ACCOUNT_CREATE, {
+				countryCode: newCountryCode,
+				timezone: countriesByCode[ newCountryCode ].defaultTimeZoneId,
+			} );
+		}
+	}, [ setForm ] );
+
 	return (
 		<Select
 			className="googlesitekit-analytics__select-country"
 			label={ __( 'Country', 'google-site-kit' ) }
+			value={ value }
+			onEnhancedChange={ onEnhancedChange }
 			enhanced
 			outlined
-			{ ...props }
 		>
 			{
 				allCountries.map( ( { countryCode, displayName }, i ) => (
@@ -58,7 +71,3 @@ export default function CountrySelect( props ) {
 	);
 }
 
-CountrySelect.propTypes = {
-	value: PropTypes.string.required,
-	onEnhancedChange: PropTypes.func.required,
-};
