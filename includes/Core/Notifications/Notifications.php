@@ -51,7 +51,7 @@ class Notifications {
 	/**
 	 * Authentication instance.
 	 *
-	 * @since 1.4.0
+	 * @since n.e.x.t
 	 * @var Authentication
 	 */
 	private $authentication;
