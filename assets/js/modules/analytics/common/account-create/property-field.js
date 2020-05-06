@@ -1,5 +1,5 @@
 /**
- * ProfileField component.
+ * PropertyField component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -25,27 +25,27 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import CreateAccountField from './create-account-field';
+import CreateAccountField from '../create-account-field';
 import Data from 'googlesitekit-data';
-import { STORE_NAME, FORM_ACCOUNT_CREATE } from '../datastore/constants';
+import { STORE_NAME, FORM_ACCOUNT_CREATE } from '../../datastore/constants';
 
 const { useSelect, useDispatch } = Data;
 
-export default function ProfileField() {
-	const value = useSelect( ( select ) => select( STORE_NAME ).getForm( FORM_ACCOUNT_CREATE, 'profileName' ) );
+export default function PropertyField() {
+	const value = useSelect( ( select ) => select( STORE_NAME ).getForm( FORM_ACCOUNT_CREATE, 'propertyName' ) );
 	const { setForm } = useDispatch( STORE_NAME );
 
-	const setValue = useCallback( ( profileName ) => {
-		setForm( FORM_ACCOUNT_CREATE, { profileName } );
+	const setValue = useCallback( ( propertyName ) => {
+		setForm( FORM_ACCOUNT_CREATE, { propertyName } );
 	}, [ setForm ] );
 
 	return (
 		<CreateAccountField
-			label={ __( 'View', 'google-site-kit' ) } // Profiles are now called views.
+			label={ __( 'Property', 'google-site-kit' ) }
 			value={ value }
 			hasError={ ! value }
 			setValue={ setValue }
-			name="profile"
+			name="property"
 		/>
 	);
 }

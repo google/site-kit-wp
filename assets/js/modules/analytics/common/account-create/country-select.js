@@ -28,10 +28,10 @@ import { __ } from '@wordpress/i18n';
 import {
 	Select,
 	Option,
-} from '../../../material-components';
-import { allCountries, countriesByCode } from '../util/countries-timezones';
+} from '../../../../material-components';
+import { allCountries, countriesByCode } from '../../util/countries-timezones';
 import Data from 'googlesitekit-data';
-import { STORE_NAME, FORM_ACCOUNT_CREATE } from '../datastore/constants';
+import { STORE_NAME, FORM_ACCOUNT_CREATE } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function CountrySelect() {

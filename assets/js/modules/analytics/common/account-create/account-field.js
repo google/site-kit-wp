@@ -1,5 +1,5 @@
 /**
- * PropertyField component.
+ * AccountField component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -25,27 +25,27 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import CreateAccountField from './create-account-field';
+import CreateAccountField from '../create-account-field';
 import Data from 'googlesitekit-data';
-import { STORE_NAME, FORM_ACCOUNT_CREATE } from '../datastore/constants';
+import { STORE_NAME, FORM_ACCOUNT_CREATE } from '../../datastore/constants';
 
 const { useSelect, useDispatch } = Data;
 
-export default function PropertyField() {
-	const value = useSelect( ( select ) => select( STORE_NAME ).getForm( FORM_ACCOUNT_CREATE, 'propertyName' ) );
-	const { setForm } = useDispatch( STORE_NAME );
+export default function AccountField() {
+	const value = useSelect( ( select ) => select( STORE_NAME ).getForm( FORM_ACCOUNT_CREATE, 'accountName' ) );
 
-	const setValue = useCallback( ( propertyName ) => {
-		setForm( FORM_ACCOUNT_CREATE, { propertyName } );
+	const { setForm } = useDispatch( STORE_NAME );
+	const setValue = useCallback( ( accountName ) => {
+		setForm( FORM_ACCOUNT_CREATE, { accountName } );
 	}, [ setForm ] );
 
 	return (
 		<CreateAccountField
-			label={ __( 'Property', 'google-site-kit' ) }
-			value={ value }
+			label={ __( 'Account', 'google-site-kit' ) }
 			hasError={ ! value }
+			value={ value }
 			setValue={ setValue }
-			name="property"
+			name="account"
 		/>
 	);
 }
