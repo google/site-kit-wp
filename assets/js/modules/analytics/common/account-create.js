@@ -41,47 +41,30 @@ import { countries } from './countries';
 import { STORE_NAME as CORE_STORE_NAME } from '../../../googlesitekit/datastore/site/constants';
 import Data from 'googlesitekit-data';
 const { useDispatch, useSelect } = Data;
-const timezoneData = [];
 
 // Recursively search thru countries and their timezones to find a match for country/timezone.
-const findTimezone = ( timezone ) => {
-	// Store a cache so the search only happens once per
-	if ( timezoneData[ timezone ] ) {
-		return timezoneData[ timezone ];
-	}
-	let multiTimezone = false;
-	let selectedCountry = false;
-	let selectedTimezoneID = false;
+const timezoneInCountries = ( timezone ) => {
+	let matched = false;
 	each( countries.default.country, ( country ) => {
 		const timezoneMatch = country.timeZone.find( ( tz ) => tz.timeZoneId === timezone );
 		if ( timezoneMatch ) {
-			selectedCountry = timezoneMatch.timeZoneId;
-			if ( country.timeZone.length > 1 ) {
-				multiTimezone = country.timeZone;
-			} else {
-				selectedTimezoneID = country.timeZone[ 0 ].displayName;
-				multiTimezone = false;
-			}
+			matched = true;
 		}
 	} );
-	timezoneData[ timezone ] = { selectedCountry, selectedTimezoneID, multiTimezone };
-	return ( { selectedCountry, selectedTimezoneID, multiTimezone } );
+	return matched;
 };
+let timezoneChecked = false;
 
 const AccountCreate = () => {
 	const siteURL = useSelect( ( select ) => select( CORE_STORE_NAME ).getReferenceSiteURL() );
 	const siteName = useSelect( ( select ) => select( CORE_STORE_NAME ).getSiteName() );
 	let tz = useSelect( ( select ) => select( CORE_STORE_NAME ).getTimezone() );
-	let { selectedTimezoneID, selectedCountry, multiTimezone } = findTimezone( tz );
-	// Fallback to the browser timezone if the WordPress timezone was not found.
-	if ( ! selectedTimezoneID ) {
-		selectedTimezoneID = Intl.DateTimeFormat().resolvedOptions().timeZone;
-		tz = selectedTimezoneID;
-		const found = findTimezone( tz );
-		selectedTimezoneID = found.selectedTimezoneID;
-		selectedCountry = found.selectedCountry;
-		multiTimezone = found.multiTimezone;
+
+	// Check timezone on initial load: fall back to the browser timezone if the WordPress timezone was not found.
+	if ( ! timezoneChecked && ! timezoneInCountries( tz ) ) {
+		tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 	}
+	timezoneChecked = true;
 	const url = new URL( siteURL );
 	const { createAccount } = useDispatch( STORE_NAME );
 
@@ -170,9 +153,6 @@ const AccountCreate = () => {
 										hasError={ validationIssues.timezone }
 										timezone={ timezone }
 										setTimezone={ setTimezone }
-										initiallySelectedCountry={ selectedCountry }
-										initiallySelectedTimezoneID={ selectedTimezoneID }
-										multiTimezone={ multiTimezone }
 									/>
 								</div>
 							</div>
