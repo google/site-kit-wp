@@ -47,8 +47,7 @@ describe( 'SettingsEdit', () => {
 			const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 			existingTag.accountID = profiles[ 0 ].accountId;
 			existingTag.propertyID = profiles[ 0 ].webPropertyId;
-			const accountID = existingTag.accountID;
-			const propertyID = existingTag.propertyID;
+			const { accountID, propertyID } = existingTag;
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties, { accountID } );

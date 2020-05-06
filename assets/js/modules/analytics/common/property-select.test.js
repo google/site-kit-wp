@@ -53,8 +53,9 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
+	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId;
 	dispatch( STORE_NAME ).setSettings( {} );
-	dispatch( STORE_NAME ).receiveProperties( [], {} );
+	dispatch( STORE_NAME ).receiveProperties( [], { accountID } );
 	dispatch( STORE_NAME ).receiveExistingTag( null );
 };
 
