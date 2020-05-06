@@ -662,6 +662,49 @@ final class Analytics extends Module
 					);
 					return true;
 				};
+			case 'POST:create-account-ticket':
+				if ( ! isset( $data['accountName'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountName' ), array( 'status' => 400 ) );
+				}
+				if ( ! isset( $data['propertyName'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyName' ), array( 'status' => 400 ) );
+				}
+				if ( ! isset( $data['profileName'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileName' ), array( 'status' => 400 ) );
+				}
+				if ( ! isset( $data['timezone'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'timezone' ), array( 'status' => 400 ) );
+				}
+				$credentials = $this->authentication->credentials();
+
+				$account = new Google_Service_Analytics_Account();
+				$account->setName( $data['accountName'] );
+
+				$property = new Google_Service_Analytics_Webproperty();
+				$property->setName( $data['propertyName'] );
+				$property->setWebsiteUrl( $this->context->get_reference_site_url() );
+
+				$profile = new Google_Service_Analytics_Profile();
+				$profile->setName( $data['profileName'] );
+				$profile->setTimezone( $data['timezone'] );
+
+				$account_ticket = new Proxy_AccountTicket();
+				$account_ticket->setAccount( $account );
+				$account_ticket->setWebproperty( $property );
+				$account_ticket->setProfile( $profile );
+				$account_ticket->setRedirectUri( $this->get_provisioning_redirect_uri() );
+
+				// Add site id and secret.
+				$creds = $credentials->get();
+				$account_ticket->setSiteId( $creds['oauth2_client_id'] );
+				$account_ticket->setSiteSecret( $creds['oauth2_client_secret'] );
+
+				$analytics_service = $this->get_service( 'analyticsprovisioning' );
+				return $analytics_service->provisioning->createAccountTicket( $account_ticket );
 			case 'GET:goals':
 				$connection = $this->get_data( 'connection' );
 				if (
@@ -1010,49 +1053,6 @@ final class Analytics extends Module
 					$this->get_settings()->merge( array( 'useSnippet' => $data['useSnippet'] ) );
 					return true;
 				};
-			case 'POST:create-account-ticket':
-				if ( ! isset( $data['accountName'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountName' ), array( 'status' => 400 ) );
-				}
-				if ( ! isset( $data['propertyName'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyName' ), array( 'status' => 400 ) );
-				}
-				if ( ! isset( $data['profileName'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileName' ), array( 'status' => 400 ) );
-				}
-				if ( ! isset( $data['timezone'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'timezone' ), array( 'status' => 400 ) );
-				}
-				$credentials = $this->authentication->credentials();
-
-				$account = new Google_Service_Analytics_Account();
-				$account->setName( $data['accountName'] );
-
-				$property = new Google_Service_Analytics_Webproperty();
-				$property->setName( $data['propertyName'] );
-				$property->setWebsiteUrl( $this->context->get_reference_site_url() );
-
-				$profile = new Google_Service_Analytics_Profile();
-				$profile->setName( $data['profileName'] );
-				$profile->setTimezone( $data['timezone'] );
-
-				$account_ticket = new Proxy_AccountTicket();
-				$account_ticket->setAccount( $account );
-				$account_ticket->setWebproperty( $property );
-				$account_ticket->setProfile( $profile );
-				$account_ticket->setRedirectUri( $this->get_provisioning_redirect_uri() );
-
-				// Add site id and secret.
-				$creds = $credentials->get();
-				$account_ticket->setSiteId( $creds['oauth2_client_id'] );
-				$account_ticket->setSiteSecret( $creds['oauth2_client_secret'] );
-
-				$analytics_service = $this->get_service( 'analyticsprovisioning' );
-				return $analytics_service->provisioning->createAccountTicket( $account_ticket );
 		}
 
 		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
@@ -1362,7 +1362,7 @@ final class Analytics extends Module
 		$google_proxy = new Google_Proxy( $this->context );
 		return $google_proxy->get_site_fields()['analytics_redirect_uri'];
 	}
- 
+
 	/**
 	 * Verifies that user has access to the property found in the existing tag.
 	 *
