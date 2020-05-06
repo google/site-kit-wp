@@ -24,3 +24,5 @@ export const ACCOUNT_CREATE = 'account_create';
 export const PROPERTY_CREATE = 'property_create';
 // A special Profile ID value used for the "Set up a new profile" option.
 export const PROFILE_CREATE = 'profile_create';
+// Form ID for the account creation form.
+export const FORM_ACCOUNT_CREATE = 'accountCreate';
