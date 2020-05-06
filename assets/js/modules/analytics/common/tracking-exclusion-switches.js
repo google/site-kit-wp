@@ -56,7 +56,7 @@ export default function TrackingExclusionSwitches() {
 				{ __( 'Exclude from Analytics', 'google-site-kit' ) }
 			</legend>
 
-			<div className="mdc-form-field">
+			<div>
 				<Switch
 					label={ trackingExclusionLabels[ TRACKING_LOGGED_IN_USERS ] }
 					checked={ trackingDisabled.includes( TRACKING_LOGGED_IN_USERS ) }

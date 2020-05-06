@@ -153,8 +153,8 @@ storiesOf( 'Analytics Module/Settings', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveExistingTag( null );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties );
-			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 			dispatch( STORE_NAME ).receiveSettings( {
 				accountID: accountId,
 				propertyID: webPropertyId,
@@ -189,8 +189,8 @@ storiesOf( 'Analytics Module/Settings', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties );
-			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 			dispatch( STORE_NAME ).setSettings( {
 				accountID: '',
 				propertyID: '',
@@ -223,8 +223,8 @@ storiesOf( 'Analytics Module/Settings', module )
 			} );
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties );
-			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 		};
 
 		return <Settings isEditing={ true } callback={ setupRegistry } />;
