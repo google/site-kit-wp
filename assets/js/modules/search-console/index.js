@@ -1,7 +1,7 @@
 /**
- * Search Console module initialization.
+ * Search console module initialization.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,109 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import SearchConsoleSettingStatus from './settings/search-console-settings-status';
-
-/**
- * WordPress dependencies
- */
-import { addFilter } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
-import { createAddToFilter } from '../../util/helpers';
-import { fillFilterWithComponent } from '../../util';
-
-const slug = 'search-console';
-
-const addGoogleSitekitSearchConsoleDashboardWidget = createAddToFilter( <GoogleSitekitSearchConsoleDashboardWidget /> );
-const addGoogleSitekitSearchConsoleAdminbarWidget = createAddToFilter( <GoogleSitekitSearchConsoleAdminbarWidget /> );
-const addWPSearchConsoleDashboardWidget = createAddToFilter( <WPSearchConsoleDashboardWidget /> );
-const addDashboardSearchFunnel = createAddToFilter( <DashboardSearchFunnel /> );
-const addSearchConsoleDashboardWidgetTopLevel = createAddToFilter( <SearchConsoleDashboardWidgetTopLevel /> );
-
-const addDashboardDetailsSearchFunnel = createAddToFilter( <DashboardDetailsWidgetSearchFunnel /> );
-const addDashboardDetailsKeywords = createAddToFilter( <DashboardDetailsWidgetKeywordsTable /> );
-const addDashboardPopularKeywords = createAddToFilter( <DashboardWidgetPopularKeywordsTable /> );
-const addDashboardPopularity = createAddToFilter( <DashboardPopularity /> );
-const addPostSearcher = createAddToFilter( <PostSearcher /> );
-
-/**
- * Internal dependencies
- */
-import PostSearcher from '../../components/post-searcher';
-import GoogleSitekitSearchConsoleDashboardWidget from './dashboard/dashboard-widget';
-import GoogleSitekitSearchConsoleAdminbarWidget from './adminbar/adminbar-widget';
-import WPSearchConsoleDashboardWidget from './wp-dashboard/wp-dashboard-widget';
-import DashboardSearchFunnel from './dashboard/dashboard-widget-search-funnel.js';
-import SearchConsoleDashboardWidgetTopLevel from './dashboard/dashboard-widget-top-level';
-import DashboardDetailsWidgetKeywordsTable from './dashboard-details/dashboard-details-widget-keyword-table';
-import DashboardWidgetPopularKeywordsTable from './dashboard/dashboard-widget-popular-keyword-table';
-import DashboardDetailsWidgetSearchFunnel from './dashboard-details/dashboard-details-widget-search-funnel';
-import DashboardPopularity from './dashboard/dashboard-widget-popularity';
-
-/**
- * Add components to the settings page.
- */
-addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
-	'googlesitekit.SearchConsoleModuleSettingsDetails',
-	fillFilterWithComponent( SearchConsoleSettingStatus, {
-		onSettingsPage: true,
-	} ) );
-
-/**
- * Add components to the Site Kit Dashboard.
- */
-addFilter( 'googlesitekit.DashboardModule',
-	'googlesitekit.SearchConsole',
-	addDashboardSearchFunnel, 11 );
-addFilter( 'googlesitekit.DashboardModule',
-	'googlesitekit.DashboardPopularityModule',
-	addDashboardPopularity, 40 );
-addFilter( 'googlesitekit.DashboardSearchFunnel',
-	'googlesitekit.SearchConsoleSearchFunnel',
-	addSearchConsoleDashboardWidgetTopLevel );
-
-/**
- * Add components to the Site Kit URL Details Dashboard.
- */
-addFilter( 'googlesitekit.DashboardDetailsModule',
-	'googlesitekit.SearchConsole',
-	addDashboardDetailsSearchFunnel );
-addFilter( 'googlesitekit.DashboardDetailsModule',
-	'googlesitekit.SearchConsole',
-	addDashboardDetailsKeywords, 40 );
-
-addFilter( 'googlesitekit.DashboardPopularity',
-	'googlesitekit.SearchConsoleDashboardPopularity',
-	addDashboardPopularKeywords );
-addFilter( 'googlesitekit.DashboardPopularity',
-	'googlesitekit.DashboardPPostSearcherModule',
-	addPostSearcher, 30 );
-
-/**
- * Add components to the WordPress Dashboard widget.
- */
-addFilter( 'googlesitekit.WPDashboardHeader',
-	'googlesitekit.SearchConsole',
-	addWPSearchConsoleDashboardWidget, 11 );
-
-/**
- * Add components to the module detail page.
- */
-addFilter( 'googlesitekit.ModuleApp-' + slug,
-	'googlesitekit.ModuleApp',
-	addGoogleSitekitSearchConsoleDashboardWidget );
-
-addFilter( `googlesitekit.showDateRangeSelector-${ slug }`,
-	'googlesitekit.searchConsoleShowDateRangeSelector',
-	() => true );
-
-/**
- * Add components to the adminbar.
- */
-addFilter( 'googlesitekit.AdminbarModules',
-	'googlesitekit.SearchConsole',
-	addGoogleSitekitSearchConsoleAdminbarWidget );
+import './datastore';
