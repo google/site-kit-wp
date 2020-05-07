@@ -80,8 +80,7 @@ describe( 'SettingsMain', () => {
 		rerender( <SettingsMain isOpen={ true } isEditing={ true } /> );
 
 		await wait( () => container.querySelector( '.googlesitekit-analytics-usesnippet' ) );
-		const useSnippetEl = container.querySelector( '.googlesitekit-analytics-usesnippet' );
-		fireEvent.click( useSnippetEl.querySelector( '[role="switch"]' ) );
+		fireEvent.click( container.querySelector( '.googlesitekit-analytics-usesnippet [role="switch"]' ) );
 		await wait( () => select( STORE_NAME ).haveSettingsChanged() === true );
 
 		// Rendering with isOpen: false and isEditing: true is not really possible but necessary to update.
