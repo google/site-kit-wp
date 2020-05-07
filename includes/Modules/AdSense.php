@@ -89,7 +89,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 			 * @see \Google\Site_Kit\Modules\Analytics\Settings::register()
 			 */
 			add_action(
-				'init',
+				'googlesitekit_init',
 				function () {
 					remove_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
 				}
