@@ -44,7 +44,7 @@ jobs:
         npm install
     - name: Build Storybook
       run: |
-        npm run build:storybook -- -o storybook-static
+        npm run build:storybook
     - name: Upload artifacts
       uses: actions/upload-artifact@v1
       with:
