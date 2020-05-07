@@ -262,15 +262,23 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 	};
 
 	const resolvers = {
-		getNotifications: server ? function *() {
+		*getNotifications() {
 			try {
 				const notifications = yield actions.fetchNotifications();
 				return actions.receiveNotifications( notifications );
 			} catch ( err ) {
 				return actions.receiveNotificationsFailed();
 			}
-		} : undefined,
+		},
 	};
+
+	// If server notifications are disabled, we should remove the getNotifications
+	// resolver. If we set it as `undefined` we'll encounter issues with an `undefined`
+	// resolver, because @wordpress/data will still try to register the resolver because
+	// it sees a key. And this is nicer than a no-op resolver.
+	if ( ! server ) {
+		delete resolvers.getNotifications;
+	}
 
 	const selectors = {
 		/**
