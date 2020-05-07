@@ -29,7 +29,7 @@ import API from 'googlesitekit-api';
 // Actions
 const START_FETCH_DISCONNECT = 'START_FETCH_DISCONNECT';
 const FETCH_DISCONNECT = 'FETCH_DISCONNECT';
-const FINISH_FETCH_DISCONNECT = 'FINISH_DISCONNET';
+const FINISH_FETCH_DISCONNECT = 'FINISH_FETCH_DISCONNECT';
 const CATCH_FETCH_DISCONNECT = 'CATCH_FETCH_DISCONNECT';
 const RECEIVE_DISCONNECT = 'RECEIVE_DISCONNECT';
 
@@ -74,14 +74,14 @@ export const actions = {
 	 * @since n.e.x.t
 	 * @private
 	 *
-	 * @param {Object} disconnect Disconnection info from the API.
+	 * @param {Object} disconnected Disconnection response from the API.
 	 * @return {Object} Redux-style action.
 	 */
-	receiveDisconnected( disconnect ) {
-		invariant( disconnect, 'disconnect is required.' );
+	receiveDisconnected( disconnected ) {
+		invariant( disconnected !== undefined, 'disconnect is required.' );
 
 		return {
-			payload: { disconnect },
+			payload: { disconnected },
 			type: RECEIVE_DISCONNECT,
 		};
 	},
