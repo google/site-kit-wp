@@ -14,11 +14,13 @@ jobs:
       - name: Prune PR files
         run: |
           rm -rf "refs/pull/${{ github.event.pull_request.number }}"
-          git add .
-          git status
-          git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
-          git commit -m "Prune refs/pull/${{ github.event.pull_request.number }}"
-          git push origin master
+          if [[ `git status --porcelain` ]]; then
+            git add .
+            git status
+            git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
+            git commit -m "Prune refs/pull/${{ github.event.pull_request.number }}"
+            git push origin master
+          fi
         env:
           GIT_AUTHOR_EMAIL: ${{ github.actor }}@users.noreply.github.com
           GIT_AUTHOR_NAME: ${{ github.actor }}
