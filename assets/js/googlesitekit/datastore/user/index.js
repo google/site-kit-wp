@@ -24,20 +24,24 @@ import authentication from './authentication';
 import disconnect from './disconnect';
 import error from './error';
 import { STORE_NAME } from './constants';
-export { STORE_NAME };
+import notifications from './notifications';
 
 export const INITIAL_STATE = Data.collectState(
 	authentication.INITIAL_STATE,
 	disconnect.INITIAL_STATE,
-	error.INITIAL_STATE
+	error.INITIAL_STATE,
+	notifications.INITIAL_STATE,
 );
+
+export { STORE_NAME };
 
 export const actions = Data.addInitializeAction(
 	Data.collectActions(
 		Data.commonActions,
 		authentication.actions,
 		disconnect.actions,
-		error.actions
+		error.actions,
+		notifications.actions,
 	)
 );
 
@@ -45,7 +49,8 @@ export const controls = Data.collectControls(
 	Data.commonControls,
 	authentication.controls,
 	disconnect.controls,
-	error.controls
+	error.controls,
+	notifications.controls,
 );
 
 export const reducer = Data.addInitializeReducer(
@@ -53,14 +58,16 @@ export const reducer = Data.addInitializeReducer(
 	Data.collectReducers(
 		authentication.reducer,
 		disconnect.reducer,
-		error.reducer
+		error.reducer,
+		notifications.reducer,
 	)
 );
 
 export const resolvers = Data.collectResolvers(
 	authentication.resolvers,
 	disconnect.resolvers,
-	error.resolvers
+	error.resolvers,
+	notifications.resolvers,
 );
 
 export const selectors = Data.collectSelectors(
