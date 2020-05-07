@@ -305,7 +305,7 @@ export const selectors = {
 	/**
 	 * Check to see if an existing tag is available on the site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} True if a tag exists, false if not; undefined if not loaded.
@@ -319,7 +319,7 @@ export const selectors = {
 	/**
 	 * Get an existing tag on the site, if present.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} Existing tag, or `null` if none.
@@ -334,7 +334,7 @@ export const selectors = {
 	/**
 	 * Checks whther the user has access to the existing Analytics tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @return {(boolean|undefined)} true or false if tag permission is available,
 	 *                    null if no existing tag,
@@ -362,7 +362,7 @@ export const selectors = {
 	 *
 	 * Returns `undefined` if the permission check has not yet loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID The Analytics Property ID to check permissions for.
@@ -381,7 +381,7 @@ export const selectors = {
 	 *
 	 * Returns `undefined` if the permission check has not yet loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID The Analytics Property ID to check permissions for.

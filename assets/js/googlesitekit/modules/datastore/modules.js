@@ -53,7 +53,7 @@ export const actions = {
 	 *
 	 * Activate a module (based on the slug provided).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param  {string} slug Slug of the module to activate.
 	 * @return {Object}      Object with {response, error}
@@ -68,7 +68,7 @@ export const actions = {
 	 *
 	 * Dectivate a module (based on the slug provided).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param  {string} slug Slug of the module to activate.
 	 * @return {Object}      Object with {response, error}
@@ -84,7 +84,7 @@ export const actions = {
 	 * POSTs to the `core/modules/activation` endpoint to set the `active` status
 	 * supplied for the give `slug`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @param  {string}  slug   Slug of the module to activate/deactivate.
@@ -135,7 +135,7 @@ export const actions = {
 	 *
 	 * Requests the `core/modules/list` endpoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @return {Object} Object with {response, error}
@@ -316,7 +316,7 @@ export const selectors = {
 	 * }
 	 * ```
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Modules available on the site.
@@ -333,7 +333,7 @@ export const selectors = {
 	 * Returns a specific module by its slug.
 	 * Returns `undefined` if state is still loading or if said module doesn't exist.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
@@ -364,7 +364,7 @@ export const selectors = {
 	 * Returns `false` if the module exists but is not active.
 	 * Returns `undefined` if state is still loading or if no module with that slug exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
@@ -394,7 +394,7 @@ export const selectors = {
 	 * Returns `false` if the module exists but is not changing its `active` flag.
 	 * Returns `undefined` if state is still loading or if no module with that slug exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.

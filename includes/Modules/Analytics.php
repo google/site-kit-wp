@@ -1196,7 +1196,7 @@ final class Analytics extends Module
 	 * Verifies that user has access to the property found in the existing tag.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Simplified to return a boolean and require account ID.
+	 * @since 1.8.0 Simplified to return a boolean and require account ID.
 	 *
 	 * @param string $property_id Property found in the existing tag.
 	 * @param string $account_id  Account ID the property belongs to.
@@ -1285,7 +1285,7 @@ final class Analytics extends Module
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */
@@ -1368,7 +1368,7 @@ final class Analytics extends Module
 	/**
 	 * Determines the Analytics account ID from a given Analytics property ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param string $property_id Analytics property ID.
 	 * @return string Analytics account ID, or empty string if invalid property ID.
