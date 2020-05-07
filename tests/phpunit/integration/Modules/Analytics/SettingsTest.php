@@ -214,8 +214,7 @@ class SettingsTest extends SettingsTestCase {
 			'report',
 			array(
 				'metrics' => array(
-					// Metrics are expected to be objects (json_decode).
-					(object) array(
+					array(
 						'alias'      => 'Earnings',
 						'expression' => 'ga:adsenseRevenue',
 					),
