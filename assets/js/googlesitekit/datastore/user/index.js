@@ -73,7 +73,8 @@ export const resolvers = Data.collectResolvers(
 export const selectors = Data.collectSelectors(
 	authentication.selectors,
 	disconnect.selectors,
-	error.selectors
+	error.selectors,
+	notifications.selectors,
 );
 
 const store = {
