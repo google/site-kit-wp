@@ -85,7 +85,7 @@ class DashboardWidgetPopularKeywordsTable extends Component {
 				tooltip: __( 'Counted each time your content appears in search results', 'google-site-kit' ),
 			},
 		];
-		const domain = global.googlesitekit.admin.siteURL;
+		const domain = getModulesData()[ 'search-console' ].settings.propertyID;
 		const links = [];
 		const dataMapped = map( data, ( row, i ) => {
 			const query = row.keys[ 0 ];
