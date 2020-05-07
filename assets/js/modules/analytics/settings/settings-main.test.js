@@ -83,7 +83,8 @@ describe( 'SettingsMain', () => {
 		fireEvent.click( container.querySelector( '.googlesitekit-analytics-usesnippet [role="switch"]' ) );
 		await wait( () => select( STORE_NAME ).haveSettingsChanged() === true );
 
-		// Rendering with isOpen: false and isEditing: true is not really possible but necessary to update.
+		// Rendering with isOpen: false and isEditing: true is possible by clicking the module header.
+		// Rerendering here manually for clarity.
 		rerender( <SettingsMain isOpen={ false } isEditing={ true } /> );
 
 		expect( select( STORE_NAME ).getSettings() ).toEqual( {
