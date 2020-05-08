@@ -263,6 +263,13 @@ final class Authentication {
 		add_filter(
 			'googlesitekit_user_data',
 			function( $user ) {
+				$profile_data = $this->profile->get();
+				if ( $profile_data ) {
+					if ( $profile_data ) {
+						$user['user']['email']   = $profile_data['email'];
+						$user['user']['picture'] = $profile_data['photo'];
+					}
+				}
 				$user['verified'] = $this->verification->has();
 				return $user;
 			}
