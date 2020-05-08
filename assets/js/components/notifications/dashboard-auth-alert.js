@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -28,19 +28,17 @@ import Notification from '../notifications/notification';
 
 const DashboardAuthAlert = () => {
 	const { admin: { connectURL } } = global.googlesitekit;
-	const { currentAdminPage } = global.googlesitekit.admin;
 	return (
 		<Notification
 			id="authentication error"
-			title={ __( "Site Kit can't access necessary data", 'google-site-kit' ) }
-			/* translators: %1$s: Product name */
-			description={ sprintf( __( "Site Kit can't access the relevant data from %1$s because you haven't granted all API scopes requested during setup. To use Site Kit, you'll need to redo the setup for %1$s – make sure to approve all API scopes at the authentication stage. ", 'google-site-kit' ), currentAdminPage ) }
+			title={ __( 'Issue accessing data', 'google-site-kit' ) }
+			description={ __( 'You need to reauthenticate your Google account.', 'google-site-kit' ) }
 			handleDismiss={ () => {} }
 			format="small"
 			type="win-error"
 			isDismissable={ true }
 			ctaLink={ connectURL }
-			ctaLabel={ __( 'Redo setup', 'google-site-kit' ) }
+			ctaLabel={ __( 'Click here', 'google-site-kit' ) }
 		/>
 	);
 };
