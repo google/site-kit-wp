@@ -1264,7 +1264,7 @@ final class Analytics extends Module
 	/**
 	 * Determines whether the given metric expression is for an AdSense metric.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param string $metric Metric expression.
 	 * @return bool True if AdSense metric, false otherwise.
