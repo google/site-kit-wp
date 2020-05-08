@@ -33,13 +33,6 @@ import {
  * Internal dependencies
  */
 import {
-	collectActions,
-	collectControls,
-	collectReducers,
-	collectResolvers,
-	collectSelectors,
-	collectState,
-	collectName,
 	combineStores,
 	commonActions,
 	commonControls,
@@ -50,13 +43,6 @@ const Data = createRegistry();
 
 // Attach some of our utility functions to the registry so third-party
 // developers can use them.
-Data.collectActions = collectActions;
-Data.collectControls = collectControls;
-Data.collectReducers = collectReducers;
-Data.collectResolvers = collectResolvers;
-Data.collectSelectors = collectSelectors;
-Data.collectState = collectState;
-Data.collectName = collectName;
 Data.combineStores = combineStores;
 Data.commonActions = commonActions;
 Data.commonControls = commonControls;

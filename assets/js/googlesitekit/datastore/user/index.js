@@ -26,56 +26,12 @@ import error from './error';
 import { STORE_NAME } from './constants';
 export { STORE_NAME };
 
-export const INITIAL_STATE = Data.collectState(
-	authentication.INITIAL_STATE,
-	disconnect.INITIAL_STATE,
-	error.INITIAL_STATE
+const store = Data.combineStores(
+	Data.commonStore,
+	authentication,
+	disconnect,
+	error,
 );
-
-export const actions = Data.addInitializeAction(
-	Data.collectActions(
-		Data.commonActions,
-		authentication.actions,
-		disconnect.actions,
-		error.actions
-	)
-);
-
-export const controls = Data.collectControls(
-	Data.commonControls,
-	authentication.controls,
-	disconnect.controls,
-	error.controls
-);
-
-export const reducer = Data.addInitializeReducer(
-	INITIAL_STATE,
-	Data.collectReducers(
-		authentication.reducer,
-		disconnect.reducer,
-		error.reducer
-	)
-);
-
-export const resolvers = Data.collectResolvers(
-	authentication.resolvers,
-	disconnect.resolvers,
-	error.resolvers
-);
-
-export const selectors = Data.collectSelectors(
-	authentication.selectors,
-	disconnect.selectors,
-	error.selectors
-);
-
-const store = {
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
 
 // Register this store on the global registry.
 Data.registerStore( STORE_NAME, store );
