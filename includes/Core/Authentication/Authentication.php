@@ -260,6 +260,14 @@ final class Authentication {
 			}
 		);
 
+		add_filter(
+			'googlesitekit_user_data',
+			function( $user ) {
+				$user['verified'] = $this->verification->has();
+				return $user;
+			}
+		);
+
 		// Synchronize site fields on shutdown when select options change.
 		$option_updated = function () {
 			$sync_site_fields = function () {
@@ -586,21 +594,6 @@ final class Authentication {
 			$data['userData']['picture'] = $profile_data['photo'];
 		}
 
-		add_filter(
-			'googlesitekit_user_data',
-			function( $user ) use ( $data ) {
-				$current_user = wp_get_current_user();
-				$new_data     = array(
-					'id'      => $current_user->ID,
-					'email'   => $data['userData']['email'],
-					'name'    => $current_user->display_name,
-					'picture' => $data['userData']['picture'],
-				);
-				$user['user'] = $new_data;
-				return $user;
-			}
-		);
-
 		$auth_client = $this->get_oauth_client();
 		if ( $auth_client->using_proxy() ) {
 			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
@@ -647,15 +640,6 @@ final class Authentication {
 		} else {
 			$data['isVerified'] = false;
 		}
-
-		add_filter(
-			'googlesitekit_user_data',
-			function( $user ) use ( $data ) {
-				$user['verified'] = $data['isVerified'];
-				return $user;
-			}
-		);
-
 
 		// Flag the first admin user.
 		$first_admin_id  = (int) $this->first_admin->get();
