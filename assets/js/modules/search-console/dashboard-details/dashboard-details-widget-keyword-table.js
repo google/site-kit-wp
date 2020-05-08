@@ -28,6 +28,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 import SearchConsoleDashboardWidgetKeywordTable from '../dashboard/dashboard-widget-keyword-table';
 import DashboardModuleHeader from '../../../components/dashboard/dashboard-module-header';
 import Layout from '../../../components/layout/layout';
+import { getModulesData } from '../../../util';
 
 class DashboardDetailsWidgetKeywordsTable extends Component {
 	render() {
@@ -50,7 +51,7 @@ class DashboardDetailsWidgetKeywordsTable extends Component {
 						footer
 						footerCtaLabel={ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
 						footerCtaLink={
-							sprintf( 'https://search.google.com/u/1/search-console?resource_id=%s', global.googlesitekit.admin.siteURL )
+							sprintf( 'https://search.google.com/search-console?resource_id=%s', getModulesData()[ 'search-console' ].settings.propertyID )
 						}
 					>
 						<SearchConsoleDashboardWidgetKeywordTable />

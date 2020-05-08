@@ -188,10 +188,11 @@ describe( 'modules/analytics properties', () => {
 
 			it( 'does not make a network request if properties for this account are already present', async () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const accountID = testAccountID;
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveProperties( fixtures.propertiesProfiles.properties );
+				registry.dispatch( STORE_NAME ).receiveProperties( fixtures.propertiesProfiles.properties, { accountID } );
 
 				const properties = registry.select( STORE_NAME ).getProperties( testAccountID );
 
@@ -243,7 +244,10 @@ describe( 'modules/analytics properties', () => {
 		describe( 'getPropertyByID', () => {
 			it( 'returns the property object by its ID when present in the store', () => {
 				const { properties } = fixtures.propertiesProfiles;
-				registry.dispatch( STORE_NAME ).receiveProperties( properties );
+				const testAccountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+				const accountID = testAccountID;
+
+				registry.dispatch( STORE_NAME ).receiveProperties( properties, { accountID } );
 
 				const findProperty = properties[ 1 ];
 				const foundProperty = registry.select( STORE_NAME ).getPropertyByID( findProperty.id );
@@ -253,7 +257,9 @@ describe( 'modules/analytics properties', () => {
 
 			it( 'returns undefined when the property is not present in the store', () => {
 				const { properties } = fixtures.propertiesProfiles;
-				registry.dispatch( STORE_NAME ).receiveProperties( [] );
+				const accountID = fixtures.profiles[ 0 ].accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
+
+				registry.dispatch( STORE_NAME ).receiveProperties( [], { accountID } );
 
 				const findProperty = properties[ 1 ];
 				const foundProperty = registry.select( STORE_NAME ).getPropertyByID( findProperty.id );
