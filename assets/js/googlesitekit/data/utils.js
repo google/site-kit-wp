@@ -215,7 +215,7 @@ export const collectName = ( ...args ) => {
 /**
  * An empty reducer.
  *
- * @since n.e.x.t
+ * @since 1.8.0
  * @private
  *
  * @param  {Object} state A store's state.
@@ -228,7 +228,7 @@ const passthroughReducer = ( state ) => {
 /**
  * Combines multiple stores.
  *
- * @since n.e.x.t
+ * @since 1.8.0
  *
  * @param {...Object} stores A list of objects, each a store containing one or more of the following keys: INITIAL_STATE, actions, controls, reducer, resolvers, selectors
  * @return {Object} The combined store.
@@ -333,12 +333,12 @@ const findDuplicates = ( array ) => {
 /**
  * A store containing the common actions, controls and reducer that all stores will use.
  *
- * @since n.e.x.t
+ * @since 1.8.0
  *
  * @return {Object} Object with common actions, controls and reducer.
  */
 export const commonStore = {
-	actions: addInitializeAction( commonActions ),
+	actions: commonActions,
 	controls: commonControls,
-	reducer: addInitializeReducer( {}, passthroughReducer ),
+	reducer: passthroughReducer,
 };
