@@ -53,11 +53,9 @@ export const actions = {
 	 */
 	receiveUserInfo( userInfo ) {
 		invariant( userInfo, 'userInfo is required.' );
-		const { user, verified } = userInfo;
 		return {
 			payload: {
-				user,
-				verified,
+				user: userInfo,
 			},
 			type: RECEIVE_USER_INFO,
 		};
@@ -73,15 +71,14 @@ export const actions = {
 	 * @since n.e.x.t
 	 * @private
 	 *
-	 * @param {Object} userIsVerified User verification status, usually supplied via a global variable from PHP.
+	 * @param {boolean} userIsVerified User verification status, usually supplied via a global variable from PHP.
 	 * @return {Object} Redux-style action.
 	 */
 	receiveUserIsVerified( userIsVerified ) {
-		invariant( userIsVerified, 'userIsVerified is required.' );
-		const { verified } = userIsVerified;
+		invariant( userIsVerified !== undefined, 'userIsVerified is required.' );
 		return {
 			payload: {
-				verified,
+				verified: userIsVerified,
 			},
 			type: RECEIVE_USER_IS_VERIFIED,
 		};
@@ -124,8 +121,8 @@ export const resolvers = {
 			global.console.error( 'Could not load core/user info.' );
 			return;
 		}
-
-		yield actions.receiveUserInfo( { ...global._googlesitekitUserData } );
+		const { user } = global._googlesitekitUserData;
+		yield actions.receiveUserInfo( user );
 	},
 
 	*isVerified() {
@@ -139,8 +136,8 @@ export const resolvers = {
 			global.console.error( 'Could not load core/user info.' );
 			return;
 		}
-
-		yield actions.receiveUserIsVerified( { ...global._googlesitekitUserData } );
+		const { verified } = global._googlesitekitUserData;
+		yield actions.receiveUserIsVerified( verified );
 	},
 };
 

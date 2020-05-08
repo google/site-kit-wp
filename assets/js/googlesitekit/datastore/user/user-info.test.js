@@ -61,7 +61,7 @@ describe( 'core/user userInfo', () => {
 
 			it( 'receives and sets userInfo', async () => {
 				const { user } = userData;
-				await registry.dispatch( STORE_NAME ).receiveUserInfo( { user } );
+				await registry.dispatch( STORE_NAME ).receiveUserInfo( user );
 				expect( registry.select( STORE_NAME ).getUser() ).toMatchObject( user );
 			} );
 		} );
@@ -73,7 +73,7 @@ describe( 'core/user userInfo', () => {
 			} );
 			it( 'receives and sets userIsVerified', async () => {
 				const { verified } = userData;
-				await registry.dispatch( STORE_NAME ).receiveUserIsVerified( { verified } );
+				await registry.dispatch( STORE_NAME ).receiveUserIsVerified( verified );
 				expect( registry.select( STORE_NAME ).isVerified() ).toEqual( verified );
 			} );
 		} );
@@ -145,7 +145,7 @@ describe( 'core/user userInfo', () => {
 			[ 'getPicture' ],
 		] )( `%s()`, ( selector ) => {
 			it( 'uses a resolver to load user info then returns the info when this specific selector is used', async () => {
-				// Set up the global
+			// Set up the global
 				global[ userDataGlobal ] = userData;
 
 				registry.select( STORE_NAME )[ selector ]();
