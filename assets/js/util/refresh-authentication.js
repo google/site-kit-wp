@@ -23,7 +23,9 @@ import data, { TYPE_CORE } from '../components/data';
 
 export const refreshAuthentication = async () => {
 	try {
-		const response = await data.get( TYPE_CORE, 'user', 'authentication' );
+		// `timestamp` added to ensure this request is always made as it is preloaded
+		// using apiFetch's preloading middleware.
+		const response = await data.get( TYPE_CORE, 'user', 'authentication', { timestamp: Date.now() } );
 
 		const requiredAndGrantedScopes = response.grantedScopes.filter( ( scope ) => {
 			return -1 !== response.requiredScopes.indexOf( scope );

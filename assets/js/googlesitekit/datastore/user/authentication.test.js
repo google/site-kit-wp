@@ -63,6 +63,14 @@ describe( 'core/user authentication', () => {
 	describe( 'actions', () => {
 		describe( 'fetchAuthentication', () => {
 			it( 'does not require any params', () => {
+				// Create a mock to avoid triggering a network request error.
+				// The return value is irrelevant to the test.
+				fetch
+					.doMockOnceIf( coreUserDataEndpointRegExp )
+					.mockResponseOnce(
+						JSON.stringify( {} ),
+						{ status: 200 }
+					);
 				expect( () => {
 					registry.dispatch( STORE_NAME ).fetchAuthentication();
 				} ).not.toThrow();
@@ -87,10 +95,10 @@ describe( 'core/user authentication', () => {
 						{ status: 200 }
 					);
 
-				const initialConnection = registry.select( STORE_NAME ).getAuthentication();
+				const initialAuthentication = registry.select( STORE_NAME ).getAuthentication();
 				// The authentication info will be its initial value while the authentication
 				// info is fetched.
-				expect( initialConnection ).toEqual( undefined );
+				expect( initialAuthentication ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
 						registry.select( STORE_NAME ).getAuthentication() !== undefined
@@ -136,16 +144,15 @@ describe( 'core/user authentication', () => {
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAuthentication();
-				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingAuthentication === false,
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getAuthentication' )
 				);
 
-				const connection = registry.select( STORE_NAME ).getAuthentication();
+				const authentication = registry.select( STORE_NAME ).getAuthentication();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
-				expect( connection ).toEqual( undefined );
+				expect( authentication ).toEqual( undefined );
 			} );
 		} );
 
@@ -227,10 +234,10 @@ describe( 'core/user authentication', () => {
 						{ status: 200 }
 					);
 
-				const initialIsGrantedScopes = registry.select( STORE_NAME ).getGrantedScopes();
+				const initialGrantedScopes = registry.select( STORE_NAME ).getGrantedScopes();
 				// The granted scope info will be its initial value while the granted scope
 				// info is fetched.
-				expect( initialIsGrantedScopes ).toEqual( undefined );
+				expect( initialGrantedScopes ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
 						registry.select( STORE_NAME ).getGrantedScopes() !== undefined
@@ -295,10 +302,10 @@ describe( 'core/user authentication', () => {
 						{ status: 200 }
 					);
 
-				const initialIRequiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
+				const initialRequiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
 				// The required scope info will be its initial value while the required scope
 				// info is fetched.
-				expect( initialIRequiredScopes ).toEqual( undefined );
+				expect( initialRequiredScopes ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
 						registry.select( STORE_NAME ).getRequiredScopes() !== undefined

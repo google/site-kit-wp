@@ -17,12 +17,30 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useEffect } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import SettingsEdit from './settings-edit';
 import SettingsView from './settings-view';
+import { STORE_NAME } from '../datastore/constants';
+const { useSelect, useDispatch } = Data;
 
 export default function SettingsMain( { isOpen, isEditing } ) {
+	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
+	const haveSettingsChanged = useSelect( ( select ) => select( STORE_NAME ).haveSettingsChanged() );
+	// Rollback any temporary selections to saved values if settings have changed and no longer editing.
+	const { rollbackSettings } = useDispatch( STORE_NAME );
+	useEffect( () => {
+		if ( haveSettingsChanged && ! isDoingSubmitChanges && ! isEditing ) {
+			rollbackSettings();
+		}
+	}, [ haveSettingsChanged, isDoingSubmitChanges, isEditing ] );
+
 	if ( ! isOpen ) {
 		return null;
 	}
