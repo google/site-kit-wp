@@ -82,9 +82,18 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 			/**
 			 * Release filter forcing unlinked state.
 			 *
-			 * @see \Google\Site_Kit\Modules\Analytics\Settings::register
+			 * This is hooked into 'init' (default priority of 10), so that it
+			 * runs after the original filter is added.
+			 *
+			 * @see \Google\Site_Kit\Modules\Analytics::register()
+			 * @see \Google\Site_Kit\Modules\Analytics\Settings::register()
 			 */
-			remove_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
+			add_action(
+				'googlesitekit_init',
+				function () {
+					remove_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
+				}
+			);
 		}
 	}
 
@@ -274,7 +283,8 @@ tag_partner: "site_kit"
 	 * @return array Filtered $data.
 	 */
 	protected function amp_data_load_auto_ads_component( $data ) {
-		if ( ! $this->is_connected() ) {
+		// Bail early if we are checking for the tag presence from the back end.
+		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
 			return $data;
 		}
 
@@ -305,7 +315,8 @@ tag_partner: "site_kit"
 			return $content;
 		}
 
-		if ( ! $this->is_connected() ) {
+		// Bail early if we are checking for the tag presence from the back end.
+		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
 			return $content;
 		}
 
