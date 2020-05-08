@@ -49,7 +49,7 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: storybook-files
-        path: storybook-static
+        path: dist
 
   deploy-storybook:
     runs-on: ubuntu-latest
@@ -62,14 +62,15 @@ jobs:
         uses: actions/download-artifact@v1
         with:
           name: storybook-files
-          path: storybook-static
+          path: dist
       - name: Commit updates
         run: |
           mkdir -p storybook
           rm -rf storybook/${GITHUB_REF##*/}
-          mv storybook-static storybook/${GITHUB_REF##*/}
+          mv dist storybook/${GITHUB_REF##*/}
           git add .
           git status
+          git diff --staged --quiet && echo 'No changes to commit; exiting!' && exit 0
           git commit -m "Deploy storybook for ${GITHUB_REF##*/}."
           git pull --no-edit --quiet
           git push origin gh-pages
