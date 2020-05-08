@@ -30,6 +30,7 @@ import { STORE_NAME } from './constants';
 const { createRegistrySelector } = Data;
 
 const RECEIVE_USER_INFO = 'RECEIVE_USER_INFO';
+const RECEIVE_USER_IS_VERIFIED = 'RECEIVE_USER_IS_VERIFIED';
 
 const INITIAL_STATE = {
 	user: undefined,
@@ -61,6 +62,30 @@ export const actions = {
 			type: RECEIVE_USER_INFO,
 		};
 	},
+
+	/**
+	 * Stores user verification status in the datastore.
+	 *
+	 * Because this is frequently-accessed data, this is usually sourced
+	 * from a global variable (`_googlesitekitUserData`), set by PHP
+	 * in the `before_print` callback for `googlesitekit-datastore-user`.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} userIsVerified User verification status, usually supplied via a global variable from PHP.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveUserIsVerified( userIsVerified ) {
+		invariant( userIsVerified, 'userIsVerified is required.' );
+		const { verified } = userIsVerified;
+		return {
+			payload: {
+				verified,
+			},
+			type: RECEIVE_USER_IS_VERIFIED,
+		};
+	},
 };
 
 export const controls = {};
@@ -68,10 +93,16 @@ export const controls = {};
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case RECEIVE_USER_INFO: {
-			const { user, verified } = payload;
+			const { user } = payload;
 			return {
 				...state,
 				user,
+			};
+		}
+		case RECEIVE_USER_IS_VERIFIED: {
+			const { verified } = payload;
+			return {
+				...state,
 				verified,
 			};
 		}
@@ -85,9 +116,7 @@ export const resolvers = {
 	*getUser() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		const { user, verified } = select( STORE_NAME ).getUser();
-
-		if ( user !== undefined && verified !== undefined ) {
+		if ( select( STORE_NAME ).getUser() !== undefined ) {
 			return;
 		}
 
@@ -97,6 +126,21 @@ export const resolvers = {
 		}
 
 		yield actions.receiveUserInfo( { ...global._googlesitekitUserData } );
+	},
+
+	*isVerified() {
+		const { select } = yield Data.commonActions.getRegistry();
+
+		if ( select( STORE_NAME ).isVerified() !== undefined ) {
+			return;
+		}
+
+		if ( ! global._googlesitekitUserData ) {
+			global.console.error( 'Could not load core/user info.' );
+			return;
+		}
+
+		yield actions.receiveUserIsVerified( { ...global._googlesitekitUserData } );
 	},
 };
 
@@ -121,8 +165,8 @@ export const selectors = {
 	 * @return {(Object|undefined)} User info.
 	 */
 	getUser( state ) {
-		const { user, verified } = state;
-		return { user, verified };
+		const { user } = state;
+		return user;
 	},
 
 	/**
@@ -136,7 +180,7 @@ export const selectors = {
 	 * @return {(number|undefined)} The user ID.
 	 */
 	getID: createRegistrySelector( ( select ) => () => {
-		const { user } = select( STORE_NAME ).getUser();
+		const user = select( STORE_NAME ).getUser();
 		return user !== undefined ? user.id : user;
 	} ),
 
@@ -151,7 +195,7 @@ export const selectors = {
 	 * @return {(string|undefined)} The user ID.
 	 */
 	getName: createRegistrySelector( ( select ) => () => {
-		const { user } = select( STORE_NAME ).getUser();
+		const user = select( STORE_NAME ).getUser();
 		return user !== undefined ? user.name : user;
 	} ),
 
@@ -166,7 +210,7 @@ export const selectors = {
 	 * @return {(string|undefined)} The user ID.
 	 */
 	getEmail: createRegistrySelector( ( select ) => () => {
-		const { user } = select( STORE_NAME ).getUser();
+		const user = select( STORE_NAME ).getUser();
 		return user !== undefined ? user.email : user;
 	} ),
 
@@ -181,12 +225,12 @@ export const selectors = {
 	 * @return {(string|undefined)} The user ID.
 	 */
 	getPicture: createRegistrySelector( ( select ) => () => {
-		const { user } = select( STORE_NAME ).getUser();
+		const user = select( STORE_NAME ).getUser();
 		return user !== undefined ? user.picture : user;
 	} ),
 
 	/**
-	 * Gets the Email for this user.
+	 * Gets the verified status for this user.
 	 *
 	 * Returns the true if the user is verified, false if not verified, or `undefined` if the user info is not available/loaded.
 	 *
@@ -195,10 +239,10 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} The user ID.
 	 */
-	isVerified: createRegistrySelector( ( select ) => () => {
-		const { verified } = select( STORE_NAME ).getUser() || {};
+	isVerified( state ) {
+		const { verified } = state;
 		return verified;
-	} ),
+	},
 
 };
 

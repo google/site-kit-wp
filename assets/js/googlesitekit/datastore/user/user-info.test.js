@@ -59,16 +59,29 @@ describe( 'core/user userInfo', () => {
 				} ).toThrow( 'userInfo is required.' );
 			} );
 
-			it( 'receives and sets userInfo ', async () => {
-				await registry.dispatch( STORE_NAME ).receiveUserInfo( { ...userData } );
-				expect( registry.select( STORE_NAME ).getUser() ).toMatchObject( userData );
+			it( 'receives and sets userInfo', async () => {
+				const { user } = userData;
+				await registry.dispatch( STORE_NAME ).receiveUserInfo( { user } );
+				expect( registry.select( STORE_NAME ).getUser() ).toMatchObject( user );
+			} );
+		} );
+		describe( 'receiveUserIsVerified', () => {
+			it( 'requires the userIsVerified param ', () => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).receiveUserIsVerified();
+				} ).toThrow( 'userIsVerified is required.' );
+			} );
+			it( 'receives and sets userIsVerified', async () => {
+				const { verified } = userData;
+				await registry.dispatch( STORE_NAME ).receiveUserIsVerified( { verified } );
+				expect( registry.select( STORE_NAME ).isVerified() ).toEqual( verified );
 			} );
 		} );
 	} );
 
 	describe( 'selectors', () => {
 		describe( 'getUser', () => {
-			it( 'uses a resolver to load userInfo from a global variable', async () => {
+			it( 'uses a resolver to load user data from a global variable', async () => {
 				// Set up the global
 				global[ userDataGlobal ] = userData;
 				expect( global[ userDataGlobal ] ).not.toEqual( undefined );
@@ -81,7 +94,7 @@ describe( 'core/user userInfo', () => {
 				);
 
 				const userInfo = registry.select( STORE_NAME ).getUser();
-				expect( userInfo ).toMatchObject( userData );
+				expect( userInfo ).toMatchObject( userData.user );
 
 				// Data must not be wiped after retrieving, as it could be used by other dependants.
 				expect( global[ userDataGlobal ] ).not.toEqual( undefined );
@@ -92,8 +105,36 @@ describe( 'core/user userInfo', () => {
 				muteConsole( 'error' );
 				const userInfo = registry.select( STORE_NAME ).getUser();
 
-				const { user, verified } = INITIAL_STATE;
-				expect( userInfo ).toEqual( { user, verified } );
+				const { user } = INITIAL_STATE;
+				expect( userInfo ).toEqual( user );
+			} );
+		} );
+
+		describe( 'isVerified', () => {
+			it( 'uses a resolver to load verification status from a global variable', async () => {
+				// Set up the global
+				global[ userDataGlobal ] = userData;
+				expect( global[ userDataGlobal ] ).not.toEqual( undefined );
+				registry.select( STORE_NAME ).isVerified();
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).isVerified() !== INITIAL_STATE
+					),
+				);
+				const isVerified = registry.select( STORE_NAME ).isVerified();
+				expect( isVerified ).toEqual( userData.verified );
+
+				// Data must not be wiped after retrieving, as it could be used by other dependants.
+				expect( global[ userDataGlobal ] ).not.toEqual( undefined );
+			} );
+			it( 'will return initial state (undefined) when no data is available', async () => {
+				expect( global[ userDataGlobal ] ).toEqual( undefined );
+
+				muteConsole( 'error' );
+				const isVerified = registry.select( STORE_NAME ).isVerified();
+
+				const { verified } = INITIAL_STATE;
+				expect( isVerified ).toEqual( verified );
 			} );
 		} );
 
@@ -116,7 +157,7 @@ describe( 'core/user userInfo', () => {
 
 				const userInfo = registry.select( STORE_NAME ).getUser();
 
-				expect( userInfo ).toEqual( userData );
+				expect( userInfo ).toEqual( userData.user );
 			} );
 			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toEqual( undefined );
