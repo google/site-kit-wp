@@ -1,7 +1,7 @@
 /**
- * Search console Constants.
+ * Search console utility functions.
  *
- * Site Kit by Google, Copyright 2020 Google LLC
+ * Site Kit by Google, Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,5 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/search-console';
-
-// A special Property ID value used for the "Set up a new property" option.
-export const PROPERTY_CREATE = 'property_create';
-// A special Profile ID value used for the "Set up a new profile" option.
-export const PROFILE_CREATE = 'profile_create';
+export { default as parsePropertyID } from './parse-property-id';
+export * from './validation';

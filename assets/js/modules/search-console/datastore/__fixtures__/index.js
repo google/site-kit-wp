@@ -1,5 +1,5 @@
 /**
- * Search console Constants.
+ * Analytics Datastore Fixtures.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,9 +16,7 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/search-console';
-
-// A special Property ID value used for the "Set up a new property" option.
-export const PROPERTY_CREATE = 'property_create';
-// A special Profile ID value used for the "Set up a new profile" option.
-export const PROFILE_CREATE = 'profile_create';
+export { default as createProfile } from './create-profile';
+export { default as createProperty } from './create-property';
+export { default as profiles } from './profiles';
+export { default as propertiesProfiles } from './properties-profiles';

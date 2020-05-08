@@ -21,48 +21,48 @@
  */
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
-// import profiles from './profiles';
+import properties from './properties';
 import { STORE_NAME } from './constants';
 export { STORE_NAME };
 
 const baseModuleStore = Modules.createModuleStore( 'search-console', {
 	storeName: STORE_NAME,
 	settingSlugs: [
-		// 'profileID',
+		'propertyID',
 	],
 } );
 
 export const INITIAL_STATE = Data.collectState(
 	baseModuleStore.INITIAL_STATE,
-	// profiles.INITIAL_STATE,
+	properties.INITIAL_STATE,
 );
 
 export const actions = Data.collectActions(
 	baseModuleStore.actions,
-	// profiles.actions,
+	properties.actions,
 );
 
 export const controls = Data.collectControls(
 	baseModuleStore.controls,
-	// profiles.controls,
+	properties.controls,
 );
 
 export const reducer = Data.addInitializeReducer(
 	INITIAL_STATE,
 	Data.collectReducers(
 		baseModuleStore.reducer,
-		// profiles.reducer,
+		properties.reducer,
 	)
 );
 
 export const resolvers = Data.collectResolvers(
 	baseModuleStore.resolvers,
-	// profiles.resolvers,
+	properties.resolvers,
 );
 
 export const selectors = Data.collectSelectors(
 	baseModuleStore.selectors,
-	// profiles.selectors,
+	properties.selectors,
 );
 
 const store = {
