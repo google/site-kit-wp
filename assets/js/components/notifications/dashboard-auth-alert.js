@@ -29,7 +29,10 @@ import Notification from '../notifications/notification';
 const DashboardAuthAlert = () => {
 	const { admin: { connectURL } } = global.googlesitekit;
 	const { currentAdminPage } = global.googlesitekit.admin;
-	const product = currentAdminPage.replace( /googlesitekit|module|-/g, ' ' ).replace( /(^\w{1})|(\s{1}\w{1})/g, ( match ) => match.toUpperCase() ).trim();
+	const product = currentAdminPage
+		.replace( /googlesitekit|module|-/g, ' ' )
+		.replace( /(^\w{1})|(\s{1}\w{1})/g, ( match ) => match.toUpperCase() )
+		.trim();
 
 	return (
 		<Notification
