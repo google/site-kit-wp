@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -161,10 +162,23 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} This site's admin URL.
 	 */
-	getAdminURL: createRegistrySelector( ( select ) => () => {
+	getAdminURL: createRegistrySelector( ( select ) => ( state, page = undefined, args = {} ) => {
 		const { adminURL } = select( STORE_NAME ).getSiteInfo() || {};
 
-		return adminURL;
+		// Prevent a page in args from overriding main page argument
+		const { page: extraPage, ...queryArgs } = args; // eslint-disable-line no-unused-vars
+
+		// Add query arguments to URL if supplied
+		const fullURL = ( adminURL && ( page || Object.keys( queryArgs ).length ) )
+			? addQueryArgs(
+				adminURL,
+				{
+					page,
+					...queryArgs,
+				},
+			) : adminURL;
+
+		return fullURL;
 	} ),
 
 	/**
