@@ -25,6 +25,7 @@ class Google_Service_AnalyticsProvisioning extends Google_Service_Analytics {
 	 * Constructs the internal representation of the Analytics service.
 	 *
 	 * @since n.e.x.t
+	 *
 	 * @param Google_Client $client The client used to deliver requests.
 	 * @param string        $rootUrl The root URL used for requests to the service.
 	 */
