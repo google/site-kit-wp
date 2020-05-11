@@ -46,7 +46,7 @@ export default function AccountCreate() {
 	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
-	const tz = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
+	let timezone = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
 
 	const [ isNavigating, setIsNavigating ] = useState( false );
 
@@ -59,11 +59,7 @@ export default function AccountCreate() {
 	const { setForm } = useDispatch( STORE_NAME );
 	useEffect( () => {
 		const { hostname } = new URL( siteURL );
-		let timezone = tz;
-
-		if ( ! countryCodesByTimezone[ timezone ] ) {
-			timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-		}
+		timezone = countryCodesByTimezone[ timezone ] ? timezone : Intl.DateTimeFormat().resolvedOptions().timeZone;
 		setForm( FORM_ACCOUNT_CREATE, {
 			accountName: siteName,
 			propertyName: hostname,
@@ -71,7 +67,7 @@ export default function AccountCreate() {
 			countryCode: countryCodesByTimezone[ timezone ],
 			timezone,
 		} );
-	}, [ siteName, siteURL, tz ] );
+	}, [ siteName, siteURL, timezone ] );
 
 	const { createAccount } = useDispatch( STORE_NAME );
 	const handleSubmit = useCallback(
