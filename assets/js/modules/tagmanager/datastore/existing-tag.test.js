@@ -40,12 +40,12 @@ describe( 'modules/tagmanager existing-tag', () => {
 		registry = createTestRegistry();
 	} );
 
-	afterAll( () => {
-		API.setUsingCache( true );
-	} );
-
 	afterEach( () => {
 		unsubscribeFromAll( registry );
+	} );
+
+	afterAll( () => {
+		API.setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {
@@ -128,6 +128,52 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 				const existingTag = registry.select( STORE_NAME ).getExistingTag();
 				expect( existingTag ).toEqual( null );
+			} );
+		} );
+
+		describe( 'hasExistingTag', () => {
+			it( 'returns true if an existing tag exists', async () => {
+				registry.dispatch( STORE_NAME ).receiveExistingTag( 'GTM-G000GL3' );
+
+				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
+
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getExistingTag' )
+				);
+
+				expect( hasExistingTag ).toEqual( true );
+			} );
+
+			it( 'returns false if no existing tag exists', async () => {
+				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+
+				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
+
+				// Ensure the proper parameters were sent.
+				await subscribeUntil( registry, () =>
+					registry.select( STORE_NAME ).hasFinishedResolution( 'getExistingTag' )
+				);
+
+				expect( hasExistingTag ).toEqual( false );
+			} );
+
+			it( 'returns undefined if existing tag has not been loaded yet', async () => {
+				fetch
+					.doMockOnceIf( /tagverify=1/ )
+					.mockResponse(
+						factories.generateHTMLWithTag(),
+						{ status: 200 }
+					);
+
+				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
+
+				expect( hasExistingTag ).toEqual( undefined );
+
+				await subscribeUntil( registry, () =>
+					registry.select( STORE_NAME ).hasFinishedResolution( 'getExistingTag' )
+				);
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
 			} );
 		} );
 	} );

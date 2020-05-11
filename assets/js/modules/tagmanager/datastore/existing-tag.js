@@ -30,6 +30,8 @@ import { STORE_NAME } from './constants';
 import { getExistingTag } from '../../../util/tag';
 import isValidContainerID from '../util/validation';
 
+const { createRegistrySelector } = Data;
+
 // Actions
 const FETCH_EXISTING_TAG = 'FETCH_EXISTING_TAG';
 const START_FETCH_EXISTING_TAG = 'START_FETCH_EXISTING_TAG';
@@ -155,6 +157,22 @@ export const selectors = {
 	getExistingTag( state ) {
 		return state.existingTag;
 	},
+	/**
+	 * Checks whether or not an existing tag is present.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(boolean|undefined)} Boolean if tag is present, `undefined` if tag presence has not been resolved yet.
+	 */
+	hasExistingTag: createRegistrySelector( ( select ) => () => {
+		const existingTag = select( STORE_NAME ).getExistingTag();
+
+		if ( existingTag === undefined ) {
+			return undefined;
+		}
+
+		return !! existingTag;
+	} ),
 };
 
 export default {
