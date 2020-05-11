@@ -32,6 +32,10 @@ export default function CreateAccountField( {
 	name,
 	label,
 } ) {
+	if ( 'undefined' === typeof value ) {
+		return null;
+	}
+
 	return (
 		<TextField
 			className={ classnames(
