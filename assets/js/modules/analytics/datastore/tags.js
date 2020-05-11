@@ -305,10 +305,10 @@ export const selectors = {
 	/**
 	 * Check to see if an existing tag is available on the site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?boolean} True if a tag exists, false if not; undefined if not loaded.
+	 * @return {(boolean|undefined)} True if a tag exists, false if not; undefined if not loaded.
 	 */
 	hasExistingTag: createRegistrySelector( ( select ) => () => {
 		const existingTag = select( STORE_NAME ).getExistingTag();
@@ -319,10 +319,10 @@ export const selectors = {
 	/**
 	 * Get an existing tag on the site, if present.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} Existing tag, or `null` if none.
+	 * @return {(string|undefined)} Existing tag, or `null` if none.
 	 *                   Returns `undefined` if not resolved yet.
 	 */
 	getExistingTag( state ) {
@@ -334,9 +334,9 @@ export const selectors = {
 	/**
 	 * Checks whther the user has access to the existing Analytics tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
-	 * @return {?boolean} true or false if tag permission is available,
+	 * @return {(boolean|undefined)} true or false if tag permission is available,
 	 *                    null if no existing tag,
 	 *                    otherwise undefined if resolution is incomplete.
 	 */
@@ -362,11 +362,11 @@ export const selectors = {
 	 *
 	 * Returns `undefined` if the permission check has not yet loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID The Analytics Property ID to check permissions for.
-	 * @return {?boolean} True if the user has access, false if not; `undefined` if not loaded.
+	 * @return {(boolean|undefined)} True if the user has access, false if not; `undefined` if not loaded.
 	 */
 	hasTagPermission: createRegistrySelector( ( select ) => ( state, propertyID ) => {
 		const { permission } = select( STORE_NAME ).getTagPermission( propertyID ) || {};
@@ -381,11 +381,11 @@ export const selectors = {
 	 *
 	 * Returns `undefined` if the permission check has not yet loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID The Analytics Property ID to check permissions for.
-	 * @return {?Object} Object with string `accountID` and boolean `permission` properties; `undefined` if not loaded.
+	 * @return {(Object|undefined)} Object with string `accountID` and boolean `permission` properties; `undefined` if not loaded.
 	 */
 	getTagPermission( state, propertyID ) {
 		const { tagPermissions } = state;

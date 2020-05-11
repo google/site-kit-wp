@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Assets\Stylesheet;
 /**
  * Class managing standalone mode.
  *
- * @since n.e.x.t
+ * @since 1.8.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ final class Standalone {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @var Context
 	 */
@@ -34,7 +34,7 @@ final class Standalone {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param Context $context Plugin context.
 	 */
@@ -47,7 +47,7 @@ final class Standalone {
 	/**
 	 * Standalone mode
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 */
 	public function register() {
 		if ( ! $this->is_standalone() ) {
@@ -57,7 +57,7 @@ final class Standalone {
 		/**
 		 * Appends the standalone admin body class.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.8.0
 		 *
 		 * @param string $admin_body_classes Admin body classes.
 		 * @return string Filtered admin body classes.
@@ -85,7 +85,7 @@ final class Standalone {
 	/**
 	 * Detects if we are in Google Site Kit standalone mode.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @return boolean True when in standalone mode, else false.
 	 */
@@ -101,7 +101,7 @@ final class Standalone {
 	/**
 	 * Enqueues styles for standalone mode.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 */
 	private function print_standalone_styles() {
 		?>

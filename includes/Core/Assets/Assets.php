@@ -100,6 +100,9 @@ final class Assets {
 		add_action(
 			'admin_enqueue_scripts',
 			function() {
+				if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
+					return;
+				}
 				$this->enqueue_minimal_admin_script();
 			}
 		);
@@ -441,6 +444,16 @@ final class Assets {
 					'src'          => $base_url . 'js/googlesitekit-data.js',
 					'dependencies' => array(
 						'googlesitekit-vendor',
+						'googlesitekit-api',
+					),
+				)
+			),
+			new Script(
+				'googlesitekit-datastore-user',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-user.js',
+					'dependencies' => array(
+						'googlesitekit-data',
 						'googlesitekit-api',
 					),
 				)

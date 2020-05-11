@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { groupBy } from 'lodash';
 
 /**
  * Internal dependencies
@@ -60,7 +59,7 @@ export const actions = {
 	 *
 	 * Creates a new Analytics property for an existing Google Analytics account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} accountID Google Analytics account ID.
 	 * @return {Object} Redux-style action.
@@ -117,11 +116,15 @@ export const actions = {
 			};
 			const { properties, profiles, matchedProperty } = response;
 			const { dispatch } = yield Data.commonActions.getRegistry();
-			yield actions.receiveProperties( properties );
-			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			yield actions.receiveProperties( properties, { accountID } );
 
 			if ( matchedProperty ) {
 				yield actions.receiveMatchedProperty( matchedProperty );
+			}
+
+			if ( profiles.length && profiles[ 0 ] && profiles[ 0 ].webPropertyId ) {
+				const propertyID = profiles[ 0 ].webPropertyId;
+				dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID } );
 			}
 
 			yield {
@@ -148,7 +151,7 @@ export const actions = {
 	 * Adds the newly-created property to the existing properties in
 	 * the data store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @param {Object} args           Argument params.
@@ -169,7 +172,7 @@ export const actions = {
 	/**
 	 * Adds a matchedProperty to the store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @param {Object} matchedProperty Property object.
@@ -187,7 +190,7 @@ export const actions = {
 	/**
 	 * Sets the given property and related fields in the store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @param {string} propertyID Property ID to select.
@@ -206,16 +209,23 @@ export const actions = {
 
 		const { accountID } = parsePropertyID( propertyID );
 
+		yield actions.waitForProperties( accountID );
+		const property = registry.select( STORE_NAME ).getPropertyByID( propertyID ) || {};
+
 		if ( ! internalPropertyID ) {
-			yield actions.waitForProperties( accountID );
-			const property = registry.select( STORE_NAME ).getPropertyByID( propertyID ) || {};
 			internalPropertyID = property.internalWebPropertyId;
 		}
 
 		registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalPropertyID || '' );
 
+		if ( property.defaultProfileId ) {
+			registry.dispatch( STORE_NAME ).setProfileID( property.defaultProfileId ); // Capitalization rule exception: defaultProfileId
+			return;
+		}
+
 		// Clear any profile ID selection in the case that selection falls to the getProfiles resolver.
 		registry.dispatch( STORE_NAME ).setProfileID( '' );
+
 		const profiles = registry.select( STORE_NAME ).getProfiles( propertyID );
 		if ( profiles === undefined ) {
 			return; // Selection will happen in in getProfiles resolver.
@@ -229,17 +239,19 @@ export const actions = {
 	/**
 	 * Adds properties to the store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @param {Array} properties Properties to add.
+	 * @param {Object} accountID Account ID to add.
 	 * @return {Object} Redux-style action.
 	 */
-	receiveProperties( properties ) {
+	receiveProperties( properties, { accountID } ) {
 		invariant( Array.isArray( properties ), 'properties must be an array.' );
+		invariant( accountID, 'accountID is required.' );
 
 		return {
-			payload: { properties },
+			payload: { properties, accountID },
 			type: RECEIVE_PROPERTIES,
 		};
 	},
@@ -355,13 +367,13 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_PROPERTIES: {
-			const { properties } = payload;
+			const { properties, accountID } = payload;
 
 			return {
 				...state,
 				properties: {
 					...state.properties,
-					...groupBy( properties, 'accountId' ), // Capitalization rule exception: `accountId` is a property of an API returned value.
+					[ accountID ]: [ ...properties ],
 				},
 			};
 		}
@@ -408,9 +420,12 @@ export const resolvers = {
 
 		// Only fetch properties if there are none in the store for the given account.
 		if ( ! properties ) {
-			const { response } = yield actions.fetchPropertiesProfiles( accountID );
+			const { response, error } = yield actions.fetchPropertiesProfiles( accountID );
 			if ( response && response.properties ) {
 				( { properties } = response );
+			}
+			if ( error ) {
+				return;
 			}
 		}
 
@@ -426,12 +441,12 @@ export const selectors = {
 	/**
 	 * Gets the property object by the property ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} propertyID Property ID.
-	 * @return {?Object} Property object, or undefined if not present in store.
+	 * @return {(Object|undefined)} Property object, or undefined if not present in store.
 	 */
 	getPropertyByID( state, propertyID ) {
 		if ( ! isValidPropertyID( propertyID ) ) {
@@ -444,11 +459,11 @@ export const selectors = {
 	/**
 	 * Gets the matched property, if any.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?Object} Matched property if set, otherwise `undefined`.
+	 * @return {(Object|undefined)} Matched property if set, otherwise `undefined`.
 	 */
 	getMatchedProperty( state ) {
 		return state.matchedProperty;
@@ -460,11 +475,11 @@ export const selectors = {
 	 *
 	 * Returns `undefined` if accounts have not yet loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The Analytics Account ID to fetch properties for.
-	 * @return {?Array.<Object>} An array of Analytics properties; `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} An array of Analytics properties; `undefined` if not loaded.
 	 */
 	getProperties( state, accountID ) {
 		const { properties } = state;
@@ -475,7 +490,7 @@ export const selectors = {
 	/**
 	 * Checks if a property is being created for an account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The Analytics Account ID to check for property creation.
@@ -490,7 +505,7 @@ export const selectors = {
 	/**
 	 * Checks if properties are being fetched for the given account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The Analytics Account ID to check for property creation.

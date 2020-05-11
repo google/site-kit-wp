@@ -772,9 +772,11 @@ class TagmanagerSetup extends Component {
 			<div className={ classnames( { 'googlesitekit-error-text': showErrorFormat } ) }>
 				<p>{
 					showErrorFormat
-
-						/* translators: %s: Error message */
-						? sprintf( __( 'Error: %s', 'google-site-kit' ), errorMsg )
+						? sprintf(
+							/* translators: %s: Error message */
+							__( 'Error: %s', 'google-site-kit' ),
+							errorMsg
+						)
 						: errorMsg
 				}</p>
 			</div>
