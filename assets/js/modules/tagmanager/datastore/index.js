@@ -57,60 +57,32 @@ baseModuleStore = ( ( { actions, selectors, ...store } ) => {
 	};
 } )( baseModuleStore );
 
-export const INITIAL_STATE = Data.collectState(
-	baseModuleStore.INITIAL_STATE,
-	accounts.INITIAL_STATE,
-	containers.INITIAL_STATE,
-	existingTag.INITIAL_STATE,
+const store = Data.combineStores(
+	baseModuleStore,
+	accounts,
+	containers,
+	existingTag,
 );
 
-export const actions = Data.collectActions(
-	baseModuleStore.actions,
-	accounts.actions,
-	containers.actions,
-	existingTag.actions,
-);
+// Register this store on the global registry.
+Data.registerStore( STORE_NAME, store );
 
-export const controls = Data.collectControls(
-	baseModuleStore.controls,
-	accounts.controls,
-	containers.controls,
-	existingTag.controls,
-);
-
-export const reducer = Data.addInitializeReducer(
+const {
 	INITIAL_STATE,
-	Data.collectReducers(
-		baseModuleStore.reducer,
-		accounts.reducer,
-		containers.reducer,
-		existingTag.reducer,
-	)
-);
+	actions,
+	controls,
+	reducer,
+	resolvers,
+	selectors,
+} = store;
 
-export const resolvers = Data.collectResolvers(
-	baseModuleStore.resolvers,
-	accounts.resolvers,
-	containers.resolvers,
-	existingTag.resolvers,
-);
-
-export const selectors = Data.collectSelectors(
-	baseModuleStore.selectors,
-	accounts.selectors,
-	containers.selectors,
-	existingTag.selectors,
-);
-
-const store = {
+export {
+	INITIAL_STATE,
 	actions,
 	controls,
 	reducer,
 	resolvers,
 	selectors,
 };
-
-// Register this store on the global registry.
-Data.registerStore( STORE_NAME, store );
 
 export default store;
