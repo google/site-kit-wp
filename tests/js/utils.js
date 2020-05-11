@@ -15,6 +15,7 @@ import modulesStore, { STORE_NAME as modulesStoreName } from '../../assets/js/go
 import siteStore, { STORE_NAME as siteStoreName } from '../../assets/js/googlesitekit/datastore/site';
 import userStore, { STORE_NAME as userStoreName } from '../../assets/js/googlesitekit/datastore/user';
 import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore';
+import modulesPageSpeedInsightsStore, { STORE_NAME as modulesPageSpeedInsightsStoreName } from '../../assets/js/modules/pagespeed-insights/datastore';
 
 /**
  * Create a registry with all available stores.
@@ -88,6 +89,7 @@ export const registerAllStoresOn = ( registry ) => {
 	registry.registerStore( siteStoreName, siteStore );
 	registry.registerStore( userStoreName, userStore );
 	registry.registerStore( modulesAnalyticsStoreName, modulesAnalyticsStore );
+	registry.registerStore( modulesPageSpeedInsightsStoreName, modulesPageSpeedInsightsStore );
 };
 
 const unsubscribes = [];
