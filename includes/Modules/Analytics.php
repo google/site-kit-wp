@@ -682,7 +682,7 @@ final class Analytics extends Module
 				}
 
 				if ( ! $this->authentication->get_oauth_client()->using_proxy() ) {
-					return new WP_Error( 'requires_proxy', __( 'Analytics provisioning requires connecting via the Site Kit proxy.', 'google-site-kit' ), array( 'status' => 400 ) );
+					return new WP_Error( 'requires_service', __( 'Analytics provisioning requires connecting via the Site Kit Service.', 'google-site-kit' ), array( 'status' => 400 ) );
 				}
 
 				$credentials = $this->authentication->credentials();
