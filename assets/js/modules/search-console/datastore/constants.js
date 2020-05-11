@@ -17,8 +17,3 @@
  */
 
 export const STORE_NAME = 'modules/search-console';
-
-// A special Property ID value used for the "Set up a new property" option.
-export const PROPERTY_CREATE = 'property_create';
-// A special Profile ID value used for the "Set up a new profile" option.
-export const PROFILE_CREATE = 'profile_create';

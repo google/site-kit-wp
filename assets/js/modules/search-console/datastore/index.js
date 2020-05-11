@@ -21,7 +21,6 @@
  */
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
-import properties from './properties';
 import { STORE_NAME } from './constants';
 export { STORE_NAME };
 
@@ -32,40 +31,15 @@ const baseModuleStore = Modules.createModuleStore( 'search-console', {
 	],
 } );
 
-export const INITIAL_STATE = Data.collectState(
-	baseModuleStore.INITIAL_STATE,
-	properties.INITIAL_STATE,
-);
+const {
+	actions,
+	controls,
+	reducer,
+	resolvers,
+	selectors,
+} = baseModuleStore;
 
-export const actions = Data.collectActions(
-	baseModuleStore.actions,
-	properties.actions,
-);
-
-export const controls = Data.collectControls(
-	baseModuleStore.controls,
-	properties.controls,
-);
-
-export const reducer = Data.addInitializeReducer(
-	INITIAL_STATE,
-	Data.collectReducers(
-		baseModuleStore.reducer,
-		properties.reducer,
-	)
-);
-
-export const resolvers = Data.collectResolvers(
-	baseModuleStore.resolvers,
-	properties.resolvers,
-);
-
-export const selectors = Data.collectSelectors(
-	baseModuleStore.selectors,
-	properties.selectors,
-);
-
-const store = {
+export {
 	actions,
 	controls,
 	reducer,
@@ -73,7 +47,7 @@ const store = {
 	selectors,
 };
 
-// Register this store on the global registry.
-Data.registerStore( STORE_NAME, store );
+// Register this baseModuleStore on the global registry.
+Data.registerStore( STORE_NAME, baseModuleStore );
 
-export default store;
+export default baseModuleStore;

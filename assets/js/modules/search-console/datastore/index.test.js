@@ -1,5 +1,5 @@
 /**
- * Property ID parser.
+ * modules/search-console data store: selectors test.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,26 +16,31 @@
  * limitations under the License.
  */
 
-import { isValidPropertyID } from './validation';
-
 /**
- * Parses the bits of a valid property ID into an object of its components.
- *
- * @since 1.8.0
- *
- * @see {@link https://support.google.com/analytics/answer/7372977}
- * @param {string} propertyID Property ID to parse.
- * @return {(Object|undefined)} Object of property ID components if valid, otherwise false.
+ * Internal dependencies
  */
-export default function parsePropertyID( propertyID ) {
-	if ( ! isValidPropertyID( propertyID ) ) {
-		return false;
-	}
-	const [ , accountID, number ] = propertyID.match( /^UA-(\d+)-(\d+)/ );
+import { STORE_NAME } from './constants';
+import {
+	createTestRegistry,
+	unsubscribeFromAll,
+} from 'tests/js/utils';
 
-	return {
-		accountID,
-		propertyID,
-		number,
-	};
-}
+describe( 'modules/search-console properties', () => {
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+	} );
+
+	afterEach( () => {
+		unsubscribeFromAll( registry );
+	} );
+
+	describe( 'store', () => {
+		it( 'is registered correctly', () => {
+			const selectors = registry.select( STORE_NAME );
+
+			expect( selectors.getPropertyID ).toBeInstanceOf( Function );
+		} );
+	} );
+} );
