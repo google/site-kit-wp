@@ -37,7 +37,7 @@ import { getDataTableFromData, TableOverflowContainer } from '../../../component
 import PreviewTable from '../../../components/preview-table';
 import Layout from '../../../components/layout/layout';
 import CTA from '../../../components/notifications/cta';
-import { analyticsAdsenseReportDataDefaults } from '../util';
+import { analyticsAdsenseReportDataDefaults, isDataZeroForReporting } from '../util';
 
 class AdSenseDashboardWidgetTopPagesTableSmall extends Component {
 	static renderLayout( component ) {
@@ -107,23 +107,17 @@ class AdSenseDashboardWidgetTopPagesTableSmall extends Component {
 	}
 }
 
-const isDataZero = () => {
-	return false;
-};
-
 /**
  * Check error data response.
  *
- * @param {Object} data Response data.
+ * @param {Object} data Response error data.
  *
  * @return {(HTMLElement|null)} Returns HTML element markup with error message if it exists.
  */
 const getDataError = ( data ) => {
-	if ( data && data.error_data ) {
-		const errors = Object.values( data.error_data );
-
+	if ( data.code && data.message && data.data && data.data.status ) {
 		// Specifically looking for string "badRequest"
-		if ( errors[ 0 ] && 'badRequest' === errors[ 0 ].reason ) {
+		if ( data.data.reason && 'badRequest' === data.data.reason ) {
 			return (
 				<div className="
 						mdc-layout-grid__cell
@@ -142,8 +136,11 @@ const getDataError = ( data ) => {
 				</div>
 			);
 		}
+
+		return data.message;
 	}
 
+	// Legacy errors? Maybe this is never hit but better be safe than sorry.
 	if ( data && data.errors ) {
 		const errors = Object.values( data.errors );
 		if ( errors[ 0 ] && errors[ 0 ][ 0 ] ) {
@@ -175,6 +172,6 @@ export default withData(
 		inGrid: true,
 		createGrid: true,
 	},
-	isDataZero,
+	isDataZeroForReporting,
 	getDataError,
 );
