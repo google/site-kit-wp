@@ -47,10 +47,11 @@ describe( 'SettingsEdit', () => {
 			const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 			existingTag.accountID = profiles[ 0 ].accountId;
 			existingTag.propertyID = profiles[ 0 ].webPropertyId;
+			const { accountID, propertyID } = existingTag;
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties );
-			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveProperties( properties, { accountID } );
+			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID } );
 			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
 			dispatch( STORE_NAME ).receiveTagPermission( {
 				...existingTag,
