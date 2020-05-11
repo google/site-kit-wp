@@ -40,7 +40,7 @@ export default function CountrySelect() {
 	const { setForm } = useDispatch( STORE_NAME );
 	const onEnhancedChange = useCallback( ( i, item ) => {
 		const newCountryCode = item.dataset.value;
-		if ( newCountryCode !== value ) {
+		if ( newCountryCode !== value && countriesByCode[ newCountryCode ] ) {
 			setForm( FORM_ACCOUNT_CREATE, {
 				countryCode: newCountryCode,
 				timezone: countriesByCode[ newCountryCode ].defaultTimeZoneId,
