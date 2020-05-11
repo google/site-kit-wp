@@ -53,12 +53,12 @@ describe( 'modules/tagmanager containers', () => {
 		registry.dispatch( STORE_NAME ).receiveSettings( defaultSettings );
 	} );
 
-	afterAll( () => {
-		API.setUsingCache( true );
-	} );
-
 	afterEach( () => {
 		unsubscribeFromAll( registry );
+	} );
+
+	afterAll( () => {
+		API.setUsingCache( true );
 	} );
 
 	describe( 'actions', () => {
