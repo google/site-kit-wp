@@ -469,10 +469,10 @@ export const validateJSON = ( stringToValidate ) => {
  *
  * @param {string} stringToValidate The string to validate.
  *
- * @return {boolean} Indicates GTM tag is valid.
+ * @return {boolean} Indicates GTM or OPT tag is valid.
  */
 export const validateOptimizeID = ( stringToValidate ) => {
-	return ( stringToValidate.match( /^GTM-[a-zA-Z\d]{7}$/ ) );
+	return ( stringToValidate.match( /^(GTM|OPT)-[a-zA-Z\d]{7}$/ ) );
 };
 
 /**

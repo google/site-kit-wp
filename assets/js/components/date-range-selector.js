@@ -98,9 +98,13 @@ class DateRangeSelector extends Component {
 	render() {
 		const { dateValue } = this.state;
 		const options = {
+			/* translators: %s: Number of days to request data. */
 			'last-7-days': sprintf( _n( 'Last %s day', 'Last %s days', 7, 'google-site-kit' ), 7 ),
+			/* translators: %s: Number of days to request data. */
 			'last-14-days': sprintf( _n( 'Last %s day', 'Last %s days', 14, 'google-site-kit' ), 14 ),
+			/* translators: %s: Number of days to request data. */
 			'last-28-days': sprintf( _n( 'Last %s day', 'Last %s days', 28, 'google-site-kit' ), 28 ),
+			/* translators: %s: Number of days to request data. */
 			'last-90-days': sprintf( _n( 'Last %s day', 'Last %s days', 90, 'google-site-kit' ), 90 ),
 		};
 
