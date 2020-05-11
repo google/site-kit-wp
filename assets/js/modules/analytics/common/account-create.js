@@ -92,7 +92,7 @@ export default function AccountCreate() {
 				{ __( 'Create new Analytics account', 'google-site-kit' ) }
 			</h3>
 
-			{ __( 'We’ve pre-filled the required information for your new account. Confirm or edit any details:', 'google-site-kit' ) }
+			<p>{ __( 'We’ve pre-filled the required information for your new account. Confirm or edit any details:', 'google-site-kit' ) }</p>
 
 			<div className="googlesitekit-setup-module__inputs">
 				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
