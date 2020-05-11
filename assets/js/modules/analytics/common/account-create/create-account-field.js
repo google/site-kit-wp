@@ -44,8 +44,8 @@ export default function CreateAccountField( {
 			) }
 			label={ label }
 			name={ name }
-			onChange={ ( e ) => {
-				setValue( e.target.value, name );
+			onChange={ ( event ) => {
+				setValue( event.target.value, name );
 			} }
 			outlined
 			required
