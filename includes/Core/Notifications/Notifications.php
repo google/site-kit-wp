@@ -14,6 +14,7 @@ use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
@@ -48,6 +49,14 @@ class Notifications {
 	private $options;
 
 	/**
+	 * Authentication instance.
+	 *
+	 * @since 1.8.0
+	 * @var Authentication
+	 */
+	private $authentication;
+
+	/**
 	 * Google_Proxy instance.
 	 *
 	 * @since 1.4.0
@@ -68,14 +77,16 @@ class Notifications {
 	 *
 	 * @since 1.4.0
 	 *
-	 * @param Context $context Context instance.
-	 * @param Options $options Options instance.
+	 * @param Context        $context Context instance.
+	 * @param Options        $options Options instance.
+	 * @param Authentication $authentication Authentication instance.
 	 */
-	public function __construct( Context $context, Options $options = null ) {
-		$this->context      = $context;
-		$this->options      = $options ?: new Options( $context );
-		$this->google_proxy = new Google_Proxy( $this->context );
-		$this->credentials  = new Credentials( new Encrypted_Options( $this->options ) );
+	public function __construct( Context $context, Options $options = null, Authentication $authentication = null ) {
+		$this->context        = $context;
+		$this->options        = $options ?: new Options( $context );
+		$this->google_proxy   = new Google_Proxy( $this->context );
+		$this->authentication = $authentication ?: new Authentication( $this->context );
+		$this->credentials    = $this->authentication->credentials();
 	}
 
 	/**
@@ -127,6 +138,10 @@ class Notifications {
 								$response = $this->parse_response( $response );
 							} catch ( Exception $e ) {
 								return new WP_Error( 'exception', $e->getMessage() );
+							}
+
+							if ( ! $this->authentication->get_oauth_client()->using_proxy() ) {
+								return new WP_REST_Response( array() );
 							}
 
 							$data = array_map(
