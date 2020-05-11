@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -195,6 +196,17 @@ final class Authentication {
 		);
 
 		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function( $routes ) {
+				$authentication_routes = array(
+					'/' . REST_Routes::REST_ROOT . '/core/site/data/connection',
+					'/' . REST_Routes::REST_ROOT . '/core/user/data/authentication',
+				);
+				return array_merge( $routes, $authentication_routes );
+			}
+		);
+
+		add_filter(
 			'googlesitekit_inline_base_data',
 			function ( $data ) {
 				return $this->inline_js_base_data( $data );
@@ -245,6 +257,21 @@ final class Authentication {
 
 				$this->handle_site_code( $code, $site_code );
 				$this->redirect_to_proxy( $code );
+			}
+		);
+
+		add_filter(
+			'googlesitekit_user_data',
+			function( $user ) {
+				$profile_data = $this->profile->get();
+				if ( $profile_data ) {
+					if ( $profile_data ) {
+						$user['user']['email']   = $profile_data['email'];
+						$user['user']['picture'] = $profile_data['photo'];
+					}
+				}
+				$user['verified'] = $this->verification->has();
+				return $user;
 			}
 		);
 
@@ -704,9 +731,9 @@ final class Authentication {
 							$access_token = $oauth_client->get_access_token();
 
 							$data = array(
-								'isAuthenticated' => ! empty( $access_token ),
-								'requiredScopes'  => $oauth_client->get_required_scopes(),
-								'grantedScopes'   => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
+								'authenticated'  => ! empty( $access_token ),
+								'requiredScopes' => $oauth_client->get_required_scopes(),
+								'grantedScopes'  => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
 							);
 
 							return new WP_REST_Response( $data );

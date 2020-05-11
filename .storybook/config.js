@@ -80,7 +80,7 @@ global.googlesitekit = global.googlesitekit || googlesitekit;
 global.googlesitekit.setup = global.googlesitekit.setup || googlesitekit.setup;
 global.googlesitekit.admin = global.googlesitekit.admin || googlesitekit.admin;
 global.googlesitekit.modules = global.googlesitekit.modules || googlesitekit.modules;
-global.googlesitekit.admin.assetsRoot = '/assets/';
+global.googlesitekit.admin.assetsRoot = './assets/';
 global.googlesitekit.isStorybook = true;
 global._googlesitekitBaseData = {
 	homeURL: 'http://example.com/',

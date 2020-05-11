@@ -1207,10 +1207,9 @@ final class Analytics extends Module
 
 				return $response;
 			case 'GET:report':
-				/* @var Google_Service_AnalyticsReporting_GetReportsResponse $response Response object. */
+				// If AdSense metric successfully requested, set adsenseLinked to true.
 				if ( $this->is_adsense_request( $data ) ) {
-					$is_linked = empty( $response->error );
-					$this->get_settings()->merge( array( 'adsenseLinked' => $is_linked ) );
+					$this->get_settings()->merge( array( 'adsenseLinked' => true ) );
 				}
 
 				return $response->getReports();
@@ -1378,7 +1377,7 @@ final class Analytics extends Module
 	 * Verifies that user has access to the property found in the existing tag.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Simplified to return a boolean and require account ID.
+	 * @since 1.8.0 Simplified to return a boolean and require account ID.
 	 *
 	 * @param string $property_id Property found in the existing tag.
 	 * @param string $account_id  Account ID the property belongs to.
@@ -1406,6 +1405,27 @@ final class Analytics extends Module
 	}
 
 	/**
+	 * Transforms an exception into a WP_Error object.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param Exception $e         Exception object.
+	 * @param string    $datapoint Datapoint originally requested.
+	 * @return WP_Error WordPress error object.
+	 */
+	protected function exception_to_error( Exception $e, $datapoint ) {
+		if ( 'report' === $datapoint && $e instanceof Google_Service_Exception ) {
+			$errors = $e->getErrors();
+			// If error is because of AdSense metric being requested, set adsenseLinked to false.
+			if ( isset( $errors[0]['message'] ) && $this->is_adsense_metric( substr( $errors[0]['message'], strlen( 'Restricted metric(s): ' ) ) ) ) {
+				$this->get_settings()->merge( array( 'adsenseLinked' => false ) );
+			}
+		}
+
+		return parent::exception_to_error( $e, $datapoint );
+	}
+
+	/**
 	 * Determines whether the given request is for an adsense request.
 	 *
 	 * @param Data_Request $data Data request object.
@@ -1414,12 +1434,25 @@ final class Analytics extends Module
 	 */
 	private function is_adsense_request( $data ) {
 		foreach ( (array) $data['metrics'] as $metric ) {
-			if ( isset( $metric->expression ) && 0 === strpos( $metric->expression, 'ga:adsense' ) ) {
+			$metric = (array) $metric;
+			if ( isset( $metric['expression'] ) && $this->is_adsense_metric( $metric['expression'] ) ) {
 				return true;
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Determines whether the given metric expression is for an AdSense metric.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param string $metric Metric expression.
+	 * @return bool True if AdSense metric, false otherwise.
+	 */
+	private function is_adsense_metric( $metric ) {
+		return 0 === strpos( $metric, 'ga:adsense' );
 	}
 
 	/**
@@ -1467,7 +1500,7 @@ final class Analytics extends Module
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */
@@ -1550,7 +1583,7 @@ final class Analytics extends Module
 	/**
 	 * Determines the Analytics account ID from a given Analytics property ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.0
 	 *
 	 * @param string $property_id Analytics property ID.
 	 * @return string Analytics account ID, or empty string if invalid property ID.

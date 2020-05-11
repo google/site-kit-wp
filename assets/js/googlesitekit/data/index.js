@@ -42,8 +42,10 @@ import {
 	collectSelectors,
 	collectState,
 	collectName,
+	combineStores,
 	commonActions,
 	commonControls,
+	commonStore,
 } from './utils';
 
 const Data = createRegistry();
@@ -59,8 +61,10 @@ Data.collectResolvers = collectResolvers;
 Data.collectSelectors = collectSelectors;
 Data.collectState = collectState;
 Data.collectName = collectName;
+Data.combineStores = combineStores;
 Data.commonActions = commonActions;
 Data.commonControls = commonControls;
+Data.commonStore = commonStore;
 Data.createRegistryControl = createRegistryControl;
 Data.createRegistrySelector = createRegistrySelector;
 Data.useSelect = useSelect;

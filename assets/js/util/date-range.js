@@ -37,6 +37,7 @@ export function getCurrentDateRange() {
 
 	if ( daysMatch && daysMatch[ 1 ] ) {
 		return sprintf(
+			/* translators: %s: Number of days matched. */
 			_n( '%s day', '%s days', parseInt( daysMatch[ 1 ], 10 ), 'google-site-kit' ),
 			daysMatch[ 1 ]
 		);
