@@ -89,7 +89,7 @@ export default function AccountCreate() {
 	return (
 		<div>
 			<h3 className="googlesitekit-heading-4">
-				{ __( 'Create new Analytics account', 'google-site-kit' ) }
+				{ __( 'Create your Analytics account', 'google-site-kit' ) }
 			</h3>
 
 			<p>
