@@ -113,4 +113,21 @@ final class Credentials extends Setting {
 			'oauth2_client_secret' => '',
 		);
 	}
+
+	/**
+	 * Determines whether the authentication proxy is used.
+	 *
+	 * In order to streamline the setup and authentication flow, the plugin uses a proxy mechanism based on an external
+	 * service. This can be overridden by providing actual GCP credentials with the {@see 'googlesitekit_oauth_secret'}
+	 * filter.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if proxy authentication is used, false otherwise.
+	 */
+	public function using_proxy() {
+		$creds = $this->get();
+
+		return ! preg_match( '/\.apps\.googleusercontent\.com$/', $creds['oauth2_client_id'] );
+	}
 }

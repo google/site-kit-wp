@@ -28,7 +28,7 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
 class OAuth_ClientTest extends TestCase {
 
 	const SITE_ID   = '12345678.apps.sitekit.withgoogle.com';
-	const CLIENT_ID = 'test-client-id';
+	const CLIENT_ID = '12345678.apps.googleusercontent.com';
 
 	public function test_get_client() {
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -307,20 +307,19 @@ class OAuth_ClientTest extends TestCase {
 	}
 
 	public function test_using_proxy() {
+		$this->setExpectedDeprecated( OAuth_Client::class . '::using_proxy' );
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$client  = new OAuth_Client( $context );
 
 		// Use proxy by default.
-		$client = new OAuth_Client( $context );
 		$this->assertTrue( $client->using_proxy() );
 
 		// Don't use proxy when regular OAuth client ID is used.
 		$this->fake_authentication();
-		$client = new OAuth_Client( $context );
 		$this->assertFalse( $client->using_proxy() );
 
 		// Use proxy when proxy site ID is used.
 		$this->fake_proxy_authentication();
-		$client = new OAuth_Client( $context );
 		$this->assertTrue( $client->using_proxy() );
 	}
 

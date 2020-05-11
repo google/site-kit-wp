@@ -269,7 +269,7 @@ final class Authentication {
 				// This method should run no more than once per request.
 				$this->did_sync_fields = true;
 
-				if ( $this->get_oauth_client()->using_proxy() ) {
+				if ( $this->credentials->using_proxy() ) {
 					$this->google_proxy->sync_site_fields( $this->credentials() );
 				}
 			};
@@ -555,7 +555,7 @@ final class Authentication {
 		$data['splashURL']    = esc_url_raw( $this->context->admin_url( 'splash' ) );
 
 		$auth_client = $this->get_oauth_client();
-		if ( $auth_client->using_proxy() ) {
+		if ( $this->credentials->using_proxy() ) {
 			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 			$data['proxySetupURL']       = esc_url_raw( $auth_client->get_proxy_setup_url( $access_code ) );
 			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
@@ -587,7 +587,7 @@ final class Authentication {
 		}
 
 		$auth_client = $this->get_oauth_client();
-		if ( $auth_client->using_proxy() ) {
+		if ( $this->credentials->using_proxy() ) {
 			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 			$data['proxySetupURL']       = esc_url_raw( $auth_client->get_proxy_setup_url( $access_code ) );
 			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
@@ -619,7 +619,7 @@ final class Authentication {
 		$data['grantedScopes']      = ! empty( $access_token ) ? $auth_client->get_granted_scopes() : array();
 		$data['needReauthenticate'] = $data['isAuthenticated'] && $this->need_reauthenticate();
 
-		if ( $auth_client->using_proxy() ) {
+		if ( $this->credentials->using_proxy() ) {
 			$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
 			if ( ! empty( $error_code ) ) {
 				$data['errorMessage'] = $auth_client->get_error_message( $error_code );
@@ -835,7 +835,7 @@ final class Authentication {
 					}
 
 					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
-					if ( $auth_client->using_proxy() && $access_code ) {
+					if ( $this->credentials->using_proxy() && $access_code ) {
 						$message = sprintf(
 							/* translators: 1: error code from API, 2: URL to re-authenticate */
 							__( 'Setup Error (code: %1$s). <a href="%2$s">Re-authenticate with Google</a>', 'google-site-kit' ),
