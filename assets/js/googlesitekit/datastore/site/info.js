@@ -168,7 +168,7 @@ export const selectors = {
 		const { adminURL } = select( STORE_NAME ).getSiteInfo() || {};
 
 		// Return adminURL if undefined, or if no page supplied
-		if ( ! adminURL || ! page ) {
+		if ( typeof adminURL === 'undefined' || typeof page === 'undefined' ) {
 			return adminURL;
 		}
 

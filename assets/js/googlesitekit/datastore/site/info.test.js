@@ -77,14 +77,17 @@ describe( 'core/site site info', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getAdminURL', () => {
-			it( 'returns the adminURL on its own if no arguments are supplied', async () => {
+			it( 'returns the adminURL on its own if no page argument is supplied', async () => {
 				global[ baseInfoVar ] = baseInfo;
 				global[ entityInfoVar ] = entityInfo;
 
 				expect( global[ baseInfoVar ] ).not.toEqual( undefined );
 				expect( global[ entityInfoVar ] ).not.toEqual( undefined );
 
-				const adminURL = registry.select( STORE_NAME ).getAdminURL();
+				let adminURL = registry.select( STORE_NAME ).getAdminURL();
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin' );
+
+				adminURL = registry.select( STORE_NAME ).getAdminURL( undefined, { arg1: 'argument-1', arg2: 'argument-2' } );
 				expect( adminURL ).toEqual( 'http://something.test/wp-admin' );
 			} );
 
@@ -99,7 +102,7 @@ describe( 'core/site site info', () => {
 				expect( adminURL ).toEqual( 'http://something.test/wp-admin?page=testpage' );
 			} );
 
-			it( 'returns the adminURL with page and extra query  if page and args supplied', async () => {
+			it( 'returns the adminURL with page and extra query if page and args supplied', async () => {
 				global[ baseInfoVar ] = baseInfo;
 				global[ entityInfoVar ] = entityInfo;
 
