@@ -1,15 +1,17 @@
 /**
  * WordPress dependencies
  */
-import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { activatePlugin, deactivatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
  */
 import {
+	activateAmpAndSetMode,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setSearchConsoleProperty,
+	setupAnalytics,
 	wpApiFetch,
 	useRequestInterception,
 } from '../../../utils';
@@ -73,6 +75,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 	} );
 
 	afterEach( async () => {
+		await deactivatePlugin( 'amp' );
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
@@ -167,5 +170,22 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-account .mdc-select__selected-text', { text: '' } );
 		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-property .mdc-select__selected-text', { text: '' } );
 		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-profile .mdc-select__selected-text', { text: '' } );
+	} );
+
+	describe( 'Homepage AMP', () => {
+		it( 'validates for logged-in users', async () => {
+			await setupAnalytics();
+			await activateAmpAndSetMode( 'standard' );
+			await Promise.all( [
+				page.goto( createURL( '/' ), { waitUntil: 'load' } ),
+				page.waitForSelector( '#amp-admin-bar-item-status-icon' ),
+			] );
+			await expect( page ).toMatchElement( '#amp-admin-bar-item-status-icon', { text: '✅' } );
+		} );
+		it( 'validates for non-logged-in users', async () => {
+			await setupAnalytics();
+			await activateAmpAndSetMode( 'standard' );
+			await expect( '/' ).toHaveValidAMP();
+		} );
 	} );
 } );
