@@ -74,6 +74,7 @@ export const selectors = Data.collectSelectors(
 	connection.selectors,
 	info.selectors,
 	reset.selectors,
+	notifications.selectors,
 );
 
 const store = {

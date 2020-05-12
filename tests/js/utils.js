@@ -13,8 +13,10 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
  */
 import modulesStore, { STORE_NAME as modulesStoreName } from '../../assets/js/googlesitekit/modules/datastore';
 import siteStore, { STORE_NAME as siteStoreName } from '../../assets/js/googlesitekit/datastore/site';
-import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore';
+import userStore, { STORE_NAME as userStoreName } from '../../assets/js/googlesitekit/datastore/user';
 import widgetsStore, { STORE_NAME as widgetsStoreName } from '../../assets/js/googlesitekit/widgets/datastore';
+import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore';
+import modulesSearchConsoleStore, { STORE_NAME as modulesSearchConsoleStoreName } from '../../assets/js/modules/search-console/datastore';
 
 /**
  * Create a registry with all available stores.
@@ -86,8 +88,10 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
 export const registerAllStoresOn = ( registry ) => {
 	registry.registerStore( modulesStoreName, modulesStore );
 	registry.registerStore( siteStoreName, siteStore );
+	registry.registerStore( userStoreName, userStore );
 	registry.registerStore( widgetsStoreName, widgetsStore );
 	registry.registerStore( modulesAnalyticsStoreName, modulesAnalyticsStore );
+	registry.registerStore( modulesSearchConsoleStoreName, modulesSearchConsoleStore );
 };
 
 const unsubscribes = [];

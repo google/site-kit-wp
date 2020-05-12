@@ -21,7 +21,7 @@ import { isValidPropertyID } from './validation';
 /**
  * Parses the bits of a valid property ID into an object of its components.
  *
- * @since n.e.x.t
+ * @since 1.8.0
  *
  * @see {@link https://support.google.com/analytics/answer/7372977}
  * @param {string} propertyID Property ID to parse.
