@@ -42,6 +42,7 @@ import getNoDataComponent from '../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../components/notifications/data-error';
 import { getCurrentDateRange } from '../../../util/date-range';
 import HelpLink from '../../../components/help-link';
+import { getModulesData } from '../../../util';
 
 class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 	constructor( props ) {
@@ -161,7 +162,7 @@ class GoogleSitekitSearchConsoleDashboardWidget extends Component {
 		const wrapperClass = ! loading && receivingData ? '' : 'googlesitekit-nodata';
 		const dateRange = getCurrentDateRange();
 
-		const searchConsoleDeepLink = sprintf( 'https://search.google.com/u/1/search-console?resource_id=%s', global.googlesitekit.admin.siteURL );
+		const searchConsoleDeepLink = sprintf( 'https://search.google.com/search-console?resource_id=%s', getModulesData()[ 'search-console' ].settings.propertyID );
 
 		return (
 			<Fragment>
