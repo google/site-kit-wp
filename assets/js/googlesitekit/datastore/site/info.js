@@ -168,14 +168,13 @@ export const selectors = {
 		const { adminURL } = select( STORE_NAME ).getSiteInfo() || {};
 
 		// Return adminURL if undefined, or if no page supplied
-		if ( typeof adminURL === 'undefined' || typeof page === 'undefined' ) {
+		if ( adminURL === undefined || page === undefined ) {
 			return adminURL;
 		}
 
-		// Prevent a page in args from overriding main page argument
+		// Since page should be first query arg, create queryArgs without 'page' to prevent a 'page' in args from overriding it
 		const { page: extraPage, ...queryArgs } = args; // eslint-disable-line no-unused-vars
 
-		// Add query arguments to URL if supplied
 		return addQueryArgs(
 			adminURL,
 			{
