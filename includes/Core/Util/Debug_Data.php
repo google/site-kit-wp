@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
@@ -68,14 +67,6 @@ class Debug_Data {
 	private $modules;
 
 	/**
-	 * Credentials instance.
-	 *
-	 * @since 1.5.0
-	 * @var Credentials
-	 */
-	private $credentials;
-
-	/**
 	 * Constructor.
 	 *
 	 * @since 1.5.0
@@ -97,7 +88,6 @@ class Debug_Data {
 		$this->options        = $options ?: new Options( $this->context );
 		$this->user_options   = $user_options ?: new User_Options( $this->context );
 		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
-		$this->credentials    = $this->authentication->credentials();
 		$this->modules        = $modules ?: new Modules( $this->context, $this->options, $this->user_options, $this->authentication );
 	}
 
@@ -224,7 +214,7 @@ class Debug_Data {
 	 */
 	private function get_site_status_field() {
 		$is_connected = $this->authentication->credentials()->has();
-		$using_proxy  = $this->credentials->using_proxy();
+		$using_proxy  = $this->authentication->credentials()->using_proxy();
 		$status_map   = array(
 			'connected-site'  => __( 'Connected through site credentials', 'google-site-kit' ),
 			'connected-oauth' => __( 'Connected through OAuth client credentials', 'google-site-kit' ),

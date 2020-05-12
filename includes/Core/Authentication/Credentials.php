@@ -128,6 +128,10 @@ final class Credentials extends Setting {
 	public function using_proxy() {
 		$creds = $this->get();
 
-		return ! preg_match( '/\.apps\.googleusercontent\.com$/', $creds['oauth2_client_id'] );
+		if ( ! $this->has() ) {
+			return true;
+		}
+
+		return (bool) preg_match( '/\.apps\.sitekit\.withgoogle\.com$/', $creds['oauth2_client_id'] );
 	}
 }

@@ -205,7 +205,6 @@ final class OAuth_Client {
 	 * @return Google_Site_Kit_Client|Google_Site_Kit_Proxy_Client
 	 */
 	private function setup_client() {
-		$credentials = $this->get_client_credentials();
 		if ( $this->credentials->using_proxy() ) {
 			$client = new Google_Site_Kit_Proxy_Client(
 				array( 'proxy_base_path' => $this->google_proxy->url() )
@@ -622,7 +621,6 @@ final class OAuth_Client {
 
 		// TODO: In the future, once the old authentication mechanism no longer exists, this check can be removed.
 		// For now the below action should only fire for the proxy despite not clarifying that in the hook name.
-		$credentials = $this->get_client_credentials();
 		if ( $this->credentials->using_proxy() ) {
 			/**
 			 * Fires when the current user has just been authorized to access Google APIs.
@@ -694,7 +692,7 @@ final class OAuth_Client {
 	 * @return bool True if proxy authentication is used, false otherwise.
 	 */
 	public function using_proxy() {
-		_deprecated_function( __METHOD__, 'n.e.x.t', 'Credentials::using_proxy()' );
+		_deprecated_function( __METHOD__, 'n.e.x.t', 'Credentials::class::using_proxy' );
 
 		return $this->credentials->using_proxy();
 	}

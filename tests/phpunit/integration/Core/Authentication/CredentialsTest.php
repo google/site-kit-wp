@@ -21,6 +21,9 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class CredentialsTest extends TestCase {
 
+	const SITE_ID   = '12345678.apps.sitekit.withgoogle.com';
+	const CLIENT_ID = '12345678.apps.googleusercontent.com';
+
 	private $registered_default = array(
 		'oauth2_client_id'     => '',
 		'oauth2_client_secret' => '',
@@ -66,6 +69,23 @@ class CredentialsTest extends TestCase {
 			),
 			$credentials->get()
 		);
+	}
+
+	public function test_using_proxy() {
+		$options           = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$encrypted_options = new Encrypted_Options( $options );
+		$credentials       = new Credentials( $encrypted_options );
+
+		// Use proxy by default.
+		$this->assertTrue( $credentials->using_proxy() );
+
+		// Don't use proxy when regular OAuth client ID is used.
+		$this->fake_authentication();
+		$this->assertFalse( $credentials->using_proxy() );
+
+		// Use proxy when proxy site ID is used.
+		$this->fake_proxy_authentication();
+		$this->assertTrue( $credentials->using_proxy() );
 	}
 
 	public function test_set() {
@@ -123,5 +143,37 @@ class CredentialsTest extends TestCase {
 			)
 		);
 		$this->assertTrue( $credentials->has() );
+	}
+
+	protected function fake_authentication() {
+		add_filter(
+			'googlesitekit_oauth_secret',
+			function () {
+				return json_encode(
+					array(
+						'web' => array(
+							'client_id'     => self::CLIENT_ID,
+							'client_secret' => 'test-client-secret',
+						),
+					)
+				);
+			}
+		);
+	}
+
+	protected function fake_proxy_authentication() {
+		add_filter(
+			'googlesitekit_oauth_secret',
+			function () {
+				return json_encode(
+					array(
+						'web' => array(
+							'client_id'     => self::SITE_ID,
+							'client_secret' => 'test-client-secret',
+						),
+					)
+				);
+			}
+		);
 	}
 }
