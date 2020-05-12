@@ -76,6 +76,18 @@ function filterAdSenseSettingsSetupIncomplete() {
 	);
 }
 
+const incompleteModuleData = {
+	...global.googlesitekit.modules.adsense,
+	active: true,
+	setupComplete: false,
+};
+
+const completeModuleData = {
+	...global.googlesitekit.modules.adsense,
+	active: true,
+	setupComplete: true,
+};
+
 const completeSettings = {
 	accountID: fixtures.accounts[ 0 ].id,
 	clientID: fixtures.clients[ 0 ].id,
@@ -94,7 +106,6 @@ function Settings( props ) {
 		isOpen = true,
 		isSaving = false,
 		error = false,
-		forceSetupIncomplete = false,
 		// eslint-disable-next-line no-console
 		handleAccordion = ( ...args ) => console.log( 'handleAccordion', ...args ),
 		// eslint-disable-next-line no-console
@@ -116,7 +127,7 @@ function Settings( props ) {
 					homepage={ module.homepage }
 					learnmore={ module.learnMore }
 					active={ module.active }
-					setupComplete={ ! forceSetupIncomplete && module.setupComplete }
+					setupComplete={ module.setupComplete }
 					hasSettings={ true }
 					autoActivate={ module.autoActivate }
 					updateModulesList={ updateModulesList }
@@ -144,7 +155,7 @@ storiesOf( 'AdSense Module/Settings', module )
 			dispatch( STORE_NAME ).receiveSettings( {} );
 		};
 
-		return <Settings isOpen={ false } callback={ setupRegistry } />;
+		return <Settings isOpen={ false } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 	.add( 'View, open with setup incomplete', () => {
 		filterAdSenseSettingsSetupIncomplete();
@@ -160,7 +171,7 @@ storiesOf( 'AdSense Module/Settings', module )
 			} );
 		};
 
-		return <Settings callback={ setupRegistry } forceSetupIncomplete={ true } />;
+		return <Settings module={ incompleteModuleData } callback={ setupRegistry } />;
 	} )
 	.add( 'View, open with all settings', () => {
 		filterAdSenseSettings();
@@ -170,7 +181,7 @@ storiesOf( 'AdSense Module/Settings', module )
 			dispatch( STORE_NAME ).receiveSettings( completeSettings );
 		};
 
-		return <Settings callback={ setupRegistry } />;
+		return <Settings module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 	.add( 'Edit, open', () => {
 		filterAdSenseSettings();
@@ -180,7 +191,7 @@ storiesOf( 'AdSense Module/Settings', module )
 			dispatch( STORE_NAME ).receiveSettings( completeSettings );
 		};
 
-		return <Settings isEditing={ true } callback={ setupRegistry } />;
+		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 	.add( 'Edit, open with existing tag (same account)', () => {
 		filterAdSenseSettings();
@@ -190,7 +201,7 @@ storiesOf( 'AdSense Module/Settings', module )
 			dispatch( STORE_NAME ).receiveSettings( completeSettings );
 		};
 
-		return <Settings isEditing={ true } callback={ setupRegistry } />;
+		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 	.add( 'Edit, open with existing tag (different account)', () => {
 		filterAdSenseSettings();
@@ -200,6 +211,6 @@ storiesOf( 'AdSense Module/Settings', module )
 			dispatch( STORE_NAME ).receiveSettings( completeSettings );
 		};
 
-		return <Settings isEditing={ true } callback={ setupRegistry } />;
+		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 ;

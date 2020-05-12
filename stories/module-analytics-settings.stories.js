@@ -47,6 +47,12 @@ function filterAnalyticsSettings() {
 	);
 }
 
+const completeModuleData = {
+	...global.googlesitekit.modules.analytics,
+	active: true,
+	setupComplete: true,
+};
+
 function Settings( props ) {
 	const {
 		callback,
@@ -104,7 +110,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			dispatch( STORE_NAME ).receiveSettings( {} );
 		};
 
-		return <Settings isOpen={ false } callback={ setupRegistry } />;
+		return <Settings isOpen={ false } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 	.add( 'View, open with all settings', () => {
 		filterAnalyticsSettings();
@@ -121,7 +127,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			} );
 		};
 
-		return <Settings callback={ setupRegistry } />;
+		return <Settings module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 	.add( 'View, open with all settings, no snippet with existing tag', () => {
 		filterAnalyticsSettings();
@@ -143,7 +149,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			} );
 		};
 
-		return <Settings callback={ setupRegistry } />;
+		return <Settings module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 	.add( 'Edit, open with all settings', () => {
 		filterAnalyticsSettings();
@@ -165,7 +171,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			} );
 		};
 
-		return <Settings isEditing={ true } callback={ setupRegistry } />;
+		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 	.add( 'Edit, open with no accounts', () => {
 		filterAnalyticsSettings();
@@ -176,7 +182,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			dispatch( STORE_NAME ).receiveAccounts( [] );
 		};
 
-		return <Settings isEditing={ true } callback={ setupRegistry } />;
+		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 	.add( 'Edit, with existing tag (with access)', () => {
 		filterAnalyticsSettings();
@@ -205,7 +211,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			} );
 		};
 
-		return <Settings isEditing={ true } callback={ setupRegistry } />;
+		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 	.add( 'Edit, with existing tag (no access)', () => {
 		filterAnalyticsSettings();
@@ -227,6 +233,6 @@ storiesOf( 'Analytics Module/Settings', module )
 			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 		};
 
-		return <Settings isEditing={ true } callback={ setupRegistry } />;
+		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 ;
