@@ -160,8 +160,8 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @param {string} page Page query argument to add to admin URL.
-	 * @param {Object} args Additional query arguments to add to admin URL.
+	 * @param {(string|undefined)} page Optional page query argument to add to admin URL. If not provided, the base admin URL is returned.
+	 * @param {(Object|undefined)} args Optional additional query arguments to add to admin URL.
 	 * @return {(string|undefined)} This site's admin URL.
 	 */
 	getAdminURL: createRegistrySelector( ( select ) => ( state, page, args = {} ) => {
