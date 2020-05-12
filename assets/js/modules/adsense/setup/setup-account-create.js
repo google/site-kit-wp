@@ -34,6 +34,7 @@ import { parseAccountID } from '../util/parsing';
 import { getCreateAccountURL } from '../util/url';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as siteStoreName } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as userStoreName } from '../../../googlesitekit/datastore/user/constants';
 import {
 	ErrorNotice,
 	UserProfile,
@@ -42,7 +43,7 @@ const { useSelect } = Data;
 
 export default function SetupAccountCreate() {
 	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
-	const userEmail = global.googlesitekit.admin && global.googlesitekit.admin.userData.email; // TODO: Replace with core/user store access once available.
+	const userEmail = useSelect( ( select ) => select( userStoreName ).getEmail() );
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 
 	const signUpURL = getCreateAccountURL( { siteURL } );
@@ -53,7 +54,7 @@ export default function SetupAccountCreate() {
 		global.open( signUpURL, '_blank' );
 	} );
 
-	if ( ! siteURL || 'undefined' === typeof userEmail || 'undefined' === typeof existingTag ) {
+	if ( ! siteURL || ! userEmail || 'undefined' === typeof existingTag ) {
 		return null;
 	}
 

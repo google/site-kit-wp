@@ -29,12 +29,17 @@ import Data from 'googlesitekit-data';
 import Link from '../../../components/link';
 import { getAccountURL } from '../util/url';
 import { STORE_NAME } from '../datastore/constants';
+import { STORE_NAME as userStoreName } from '../../../googlesitekit/datastore/user/constants';
 import { ErrorNotice } from '../common';
 const { useSelect } = Data;
 
 export default function SetupAccountDisapproved() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const userEmail = global.googlesitekit.admin && global.googlesitekit.admin.userData.email; // TODO: Replace with core/user store access once available.
+	const userEmail = useSelect( ( select ) => select( userStoreName ).getEmail() );
+
+	if ( ! userEmail ) {
+		return null;
+	}
 
 	const accountURL = getAccountURL( { accountID, userEmail } );
 

@@ -30,13 +30,14 @@ import Button from '../../../components/button';
 import { getAccountSiteURL } from '../util/url';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as siteStoreName } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as userStoreName } from '../../../googlesitekit/datastore/user/constants';
 import { ErrorNotice } from '../common';
 const { useSelect } = Data;
 
 export default function SetupSiteAdd() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
-	const userEmail = global.googlesitekit.admin && global.googlesitekit.admin.userData.email; // TODO: Replace with core/user store access once available.
+	const userEmail = useSelect( ( select ) => select( userStoreName ).getEmail() );
 
 	const addSiteURL = getAccountSiteURL( { accountID, siteURL, userEmail } );
 

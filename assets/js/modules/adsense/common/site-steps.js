@@ -33,12 +33,13 @@ import {
 } from '../util/url';
 import { STORE_NAME } from '../datastore';
 import { STORE_NAME as siteStoreName } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as userStoreName } from '../../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 export default function SiteSteps() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const siteURL = useSelect( ( select ) => select( siteStoreName ).getReferenceSiteURL() );
-	const userEmail = global.googlesitekit.admin && global.googlesitekit.admin.userData.email; // TODO: Replace with core/user store access once available.
+	const userEmail = useSelect( ( select ) => select( userStoreName ).getEmail() );
 
 	if ( ! accountID || ! siteURL || ! userEmail ) {
 		return <ProgressBar small />;

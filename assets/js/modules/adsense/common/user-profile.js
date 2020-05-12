@@ -24,15 +24,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-// TODO: Uncomment once core/user store exists.
-// import Data from 'googlesitekit-data';
+import Data from 'googlesitekit-data';
 import ProgressBar from '../../../components/progress-bar';
-// import { STORE_NAME as userStoreName } from '../../../googlesitekit/datastore/user/constants';
-// const { useSelect } = Data;
+import { STORE_NAME as userStoreName } from '../../../googlesitekit/datastore/user/constants';
+const { useSelect } = Data;
 
 export default function UserProfile() {
-	const userEmail = global.googlesitekit.admin && global.googlesitekit.admin.userData.email; // TODO: Replace with core/user store access once available.
-	const userPicture = global.googlesitekit.admin && global.googlesitekit.admin.userData.picture; // TODO: Replace with core/user store access once available.
+	const userEmail = useSelect( ( select ) => select( userStoreName ).getEmail() );
+	const userPicture = useSelect( ( select ) => select( userStoreName ).getPicture() );
 
 	if ( 'undefined' === typeof userEmail || 'undefined' === typeof userPicture ) {
 		return <ProgressBar small />;
