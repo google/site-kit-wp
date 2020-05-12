@@ -219,7 +219,7 @@ export const selectors = {
 	 *
 	 * @param {Object} state    Data store's state.
 	 * @param {string} clientID The AdSense Client ID to fetch URL channels for.
-	 * @return {?Array.<Object>} An array of AdSense URL channels; `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} An array of AdSense URL channels; `undefined` if not loaded.
 	 */
 	getURLChannels( state, clientID ) {
 		if ( 'undefined' === typeof clientID ) {

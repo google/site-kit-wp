@@ -42,14 +42,14 @@ export const SITE_STATUS_ADDED = 'added';
  *
  * @since n.e.x.t
  *
- * @param {Object}  data                   Input data to determine account status.
- * @param {?Array}  data.accounts          List of account objects retrieved from the API.
- * @param {?Array}  data.clients           List of client objects retrieved from the API.
- * @param {?Array}  data.alerts            List of alert objects retrieved from the API.
- * @param {?Object} data.error             Error object if one of the API requests failed.
- * @param {?string} data.previousAccountID Account ID, if already known from before.
- * @param {?string} data.previousClientID  Client ID, if already known from before.
- * @return {?string} Account status determined, or undefined if one of the required
+ * @param {Object}             data                   Input data to determine account status.
+ * @param {(Array|undefined)}  data.accounts          List of account objects retrieved from the API.
+ * @param {(Array|undefined)}  data.clients           List of client objects retrieved from the API.
+ * @param {(Array|undefined)}  data.alerts            List of alert objects retrieved from the API.
+ * @param {(Object|undefined)} data.error             Error object if one of the API requests failed.
+ * @param {(string|undefined)} data.previousAccountID Account ID, if already known from before.
+ * @param {(string|undefined)} data.previousClientID  Client ID, if already known from before.
+ * @return {(string|undefined)} Account status determined, or undefined if one of the required
  *                   parameters is undefined.
  */
 export const determineAccountStatus = ( {
@@ -113,10 +113,10 @@ export const determineAccountStatus = ( {
  *
  * @since n.e.x.t
  *
- * @param {Object}  data             Input data to determine site status.
- * @param {?Array}  data.urlChannels List of URL channel objects retrieved from the API.
- * @param {?string} data.siteURL     URL of this website.
- * @return {?string} Site status determined, or undefined if one of the required
+ * @param {Object}             data             Input data to determine site status.
+ * @param {(Array|undefined)}  data.urlChannels List of URL channel objects retrieved from the API.
+ * @param {(string|undefined)} data.siteURL     URL of this website.
+ * @return {(string|undefined)} Site status determined, or undefined if one of the required
  *                   parameters is undefined.
  */
 export const determineSiteStatus = ( {
@@ -142,10 +142,10 @@ export const determineSiteStatus = ( {
  *
  * @since n.e.x.t
  *
- * @param {Object}  data                   Input data to determine account ID.
- * @param {?Array}  data.accounts          List of account objects retrieved from the API.
- * @param {?string} data.previousAccountID Account ID, if already known from before.
- * @return {?string} Account ID, empty string if no account ID could be determined,
+ * @param {Object}             data                   Input data to determine account ID.
+ * @param {(Array|undefined)}  data.accounts          List of account objects retrieved from the API.
+ * @param {(string|undefined)} data.previousAccountID Account ID, if already known from before.
+ * @return {(string|undefined)} Account ID, empty string if no account ID could be determined,
  *                   or undefined if one of the required parameters is undefined.
  */
 export const determineAccountID = ( { accounts, previousAccountID } ) => {
@@ -184,10 +184,10 @@ export const determineAccountID = ( { accounts, previousAccountID } ) => {
  *
  * @since n.e.x.t
  *
- * @param {Object}  data                  Input data to determine client ID.
- * @param {?Array}  data.clients          List of client objects retrieved from the API.
- * @param {?string} data.previousClientID Client ID, if already known from before.
- * @return {?string} Client ID, empty string if no client ID could be determined,
+ * @param {Object}             data                  Input data to determine client ID.
+ * @param {(Array|undefined)}  data.clients          List of client objects retrieved from the API.
+ * @param {(string|undefined)} data.previousClientID Client ID, if already known from before.
+ * @return {(string|undefined)} Client ID, empty string if no client ID could be determined,
  *                   or undefined if one of the required parameters is undefined.
  */
 export const determineClientID = ( { clients, previousClientID } ) => {
@@ -228,8 +228,8 @@ export const determineClientID = ( { clients, previousClientID } ) => {
  *
  * @since n.e.x.t
  *
- * @param {?Object} error Error object or undefined.
- * @return {?string} Status based on error, or undefined if no relevant error.
+ * @param {(Object|undefined)} error Error object or undefined.
+ * @return {(string|undefined)} Status based on error, or undefined if no relevant error.
  */
 export const errorToStatus = ( error ) => {
 	const status = accountsErrorToStatus( error );

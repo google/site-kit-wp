@@ -213,7 +213,7 @@ export const selectors = {
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The AdSense Account ID to fetch alerts for.
-	 * @return {?Array.<Object>} An array of AdSense alerts; `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} An array of AdSense alerts; `undefined` if not loaded.
 	 */
 	getAlerts( state, accountID ) {
 		if ( 'undefined' === typeof accountID ) {

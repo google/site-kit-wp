@@ -31,8 +31,8 @@ import { addQueryArgs } from '@wordpress/url';
  *
  * @since n.e.x.t
  *
- * @param {Object}  options         Options for generating the URL.
- * @param {?string} options.siteURL The initial site URL to create the account for.
+ * @param {Object}             options         Options for generating the URL.
+ * @param {(string|undefined)} options.siteURL The initial site URL to create the account for.
  * @return {string} AdSense URL to create a new account.
  */
 export const getCreateAccountURL = ( { siteURL } = {} ) => {
@@ -54,9 +54,9 @@ export const getCreateAccountURL = ( { siteURL } = {} ) => {
  *
  * @since n.e.x.t
  *
- * @param {Object}  options           Options for generating the URL.
- * @param {?string} options.accountID The AdSense account ID.
- * @param {?string} options.userEmail The Google account email address. Relevant
+ * @param {Object}             options           Options for generating the URL.
+ * @param {(string|undefined)} options.accountID The AdSense account ID.
+ * @param {(string|undefined)} options.userEmail The Google account email address. Relevant
  *                                    for users with multiple Google accounts.
  * @return {string} AdSense account overview URL.
  */
@@ -70,10 +70,10 @@ export const getAccountURL = ( { accountID, userEmail } = {} ) => {
  *
  * @since n.e.x.t
  *
- * @param {Object}  options           Options for generating the URL.
- * @param {?string} options.accountID The AdSense account ID.
- * @param {?string} options.siteURL   The site URL to link to in AdSense.
- * @param {?string} options.userEmail The Google account email address. Relevant
+ * @param {Object}             options           Options for generating the URL.
+ * @param {(string|undefined)} options.accountID The AdSense account ID.
+ * @param {(string|undefined)} options.siteURL   The site URL to link to in AdSense.
+ * @param {(string|undefined)} options.userEmail The Google account email address. Relevant
  *                                    for users with multiple Google accounts.
  * @return {string} AdSense account site overview URL.
  */
@@ -91,10 +91,10 @@ export const getAccountSiteURL = ( { accountID, siteURL, userEmail } = {} ) => {
  *
  * @since n.e.x.t
  *
- * @param {Object}  options           Options for generating the URL.
- * @param {?string} options.accountID The AdSense account ID.
- * @param {?string} options.siteURL   The site URL to link to in AdSense.
- * @param {?string} options.userEmail The Google account email address. Relevant
+ * @param {Object}             options           Options for generating the URL.
+ * @param {(string|undefined)} options.accountID The AdSense account ID.
+ * @param {(string|undefined)} options.siteURL   The site URL to link to in AdSense.
+ * @param {(string|undefined)} options.userEmail The Google account email address. Relevant
  *                                    for users with multiple Google accounts.
  * @return {string} AdSense account site ads preview URL.
  */
@@ -112,11 +112,11 @@ export const getAccountSiteAdsPreviewURL = ( { accountID, siteURL, userEmail } =
  *
  * @since n.e.x.t
  *
- * @param {Object}  options           Options for generating the URL.
- * @param {?string} options.accountID The AdSense account ID.
- * @param {?string} options.userEmail The Google account email address. Relevant
+ * @param {Object}             options           Options for generating the URL.
+ * @param {(string|undefined)} options.accountID The AdSense account ID.
+ * @param {(string|undefined)} options.userEmail The Google account email address. Relevant
  *                                    for users with multiple Google accounts.
- * @param {?string} options.path      Additional path after the base URL generated.
+ * @param {(string|undefined)} options.path      Additional path after the base URL generated.
  *                                    Only relevant if accountID is also provided.
  * @return {string} AdSense frontend URL.
  */

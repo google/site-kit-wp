@@ -426,7 +426,7 @@ export const selectors = {
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?string} Original account status (may be an empty string), or
+	 * @return {(string|undefined)} Original account status (may be an empty string), or
 	 *                   undefined if not loaded yet.
 	 */
 	getOriginalAccountStatus( state ) {

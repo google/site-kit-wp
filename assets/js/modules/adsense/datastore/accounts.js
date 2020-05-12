@@ -192,7 +192,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?Array.<Object>} An array of AdSense accounts; `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} An array of AdSense accounts; `undefined` if not loaded.
 	 */
 	getAccounts( state ) {
 		const { accounts } = state;

@@ -215,7 +215,7 @@ export const selectors = {
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The AdSense Account ID to fetch clients for.
-	 * @return {?Array.<Object>} An array of AdSense clients; `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} An array of AdSense clients; `undefined` if not loaded.
 	 */
 	getClients( state, accountID ) {
 		if ( 'undefined' === typeof accountID ) {

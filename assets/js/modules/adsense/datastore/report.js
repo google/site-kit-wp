@@ -178,11 +178,11 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object}         state              Data store's state.
-	 * @param {?Object}        options            Optional. Options for generating the report.
+	 * @param {Object}         options            Optional. Options for generating the report.
 	 * @param {string}         options.dateRange  Date range slug. Default 'last-28-days'.
 	 * @param {Array.<string>} options.dimensions Dimensions to use.
 	 * @param {number}         options.limit      Maximum number of rows to include.
-	 * @return {?Array.<Object>} An AdSense report; `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} An AdSense report; `undefined` if not loaded.
 	 */
 	getReport( state, options = {} ) {
 		const { reports } = state;
