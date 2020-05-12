@@ -26,6 +26,7 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Analytics\Google_Service_AnalyticsProvisioning;
@@ -482,6 +483,10 @@ final class Analytics extends Module
 			return;
 		}
 
+		if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
+			return;
+		}
+
 		$input = $this->context->input();
 
 		if ( ! $input->filter( INPUT_GET, 'gatoscallback' ) ) {
@@ -522,7 +527,7 @@ final class Analytics extends Module
 
 		// Retrieve the internal web property id.
 		try {
-			$web_property = $this->get_service( 'analytics' )->management_webproperties->get( $account_id, $property_id );
+			$web_property = $this->get_service( 'analytics' )->management_webproperties->get( $account_id, $web_property_id );
 		} catch ( Exception $e ) {
 			wp_safe_redirect(
 				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'property_not_found' ) )
@@ -540,7 +545,13 @@ final class Analytics extends Module
 		);
 
 		wp_safe_redirect(
-			$this->context->admin_url( 'dashboard', array( 'notification' => 'authentication_success' ) )
+			$this->context->admin_url(
+				'dashboard',
+				array(
+					'notification' => 'authentication_success',
+					'slug'         => 'analytics',
+				)
+			)
 		);
 		exit;
 	}

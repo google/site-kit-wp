@@ -25,7 +25,7 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { STORE_NAME, FORM_ACCOUNT_CREATE } from './constants';
 import {
 	createTestRegistry,
 	muteConsole,
@@ -80,7 +80,8 @@ describe( 'modules/analytics accounts', () => {
 				// Silence expected API errors.
 				muteConsole( 'error' ); // Request will log an error.
 
-				registry.dispatch( STORE_NAME ).createAccount( { accountName, propertyName, profileName, timezone } );
+				registry.dispatch( STORE_NAME ).setForm( FORM_ACCOUNT_CREATE, { accountName, propertyName, profileName, timezone } );
+				registry.dispatch( STORE_NAME ).createAccount();
 				await subscribeUntil( registry,
 					() => (
 						registry.select( STORE_NAME ).isDoingCreateAccount() === false
@@ -105,7 +106,7 @@ describe( 'modules/analytics accounts', () => {
 						{ status: 200 }
 					);
 
-				registry.dispatch( STORE_NAME ).createAccount( { accountName, propertyName, profileName, timezone } );
+				registry.dispatch( STORE_NAME ).createAccount();
 				expect( registry.select( STORE_NAME ).isDoingCreateAccount() ).toEqual( true );
 			} );
 
@@ -125,9 +126,9 @@ describe( 'modules/analytics accounts', () => {
 						{ status: 500 }
 					);
 
+				registry.dispatch( STORE_NAME ).setForm( FORM_ACCOUNT_CREATE, { accountName, propertyName, profileName, timezone } );
 				muteConsole( 'error' ); // Request will log an error.
-
-				registry.dispatch( STORE_NAME ).createAccount( { accountName, propertyName, profileName, timezone } );
+				registry.dispatch( STORE_NAME ).createAccount();
 
 				await subscribeUntil( registry,
 					() => (

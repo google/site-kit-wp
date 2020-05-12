@@ -26,6 +26,7 @@ import properties from './properties';
 import profiles from './profiles';
 import settings from './settings';
 import tags from './tags';
+import form from './form';
 import { STORE_NAME } from './constants';
 export { STORE_NAME };
 
@@ -49,6 +50,7 @@ export const INITIAL_STATE = Data.collectState(
 	profiles.INITIAL_STATE,
 	settings.INITIAL_STATE,
 	tags.INITIAL_STATE,
+	form.INITIAL_STATE,
 );
 
 export const actions = Data.collectActions(
@@ -58,6 +60,7 @@ export const actions = Data.collectActions(
 	profiles.actions,
 	settings.actions,
 	tags.actions,
+	form.actions,
 );
 
 export const controls = Data.collectControls(
@@ -67,6 +70,7 @@ export const controls = Data.collectControls(
 	profiles.controls,
 	settings.controls,
 	tags.controls,
+	form.controls,
 );
 
 export const reducer = Data.addInitializeReducer(
@@ -78,6 +82,7 @@ export const reducer = Data.addInitializeReducer(
 		profiles.reducer,
 		settings.reducer,
 		tags.reducer,
+		form.reducer,
 	)
 );
 
@@ -88,6 +93,7 @@ export const resolvers = Data.collectResolvers(
 	profiles.resolvers,
 	settings.resolvers,
 	tags.resolvers,
+	form.resolvers,
 );
 
 export const selectors = Data.collectSelectors(
@@ -97,6 +103,7 @@ export const selectors = Data.collectSelectors(
 	profiles.selectors,
 	settings.selectors,
 	tags.selectors,
+	form.selectors,
 );
 
 const store = {

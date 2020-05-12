@@ -27,8 +27,9 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { isValidAccountSelection } from '../util';
-import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE } from './constants';
+import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from './constants';
 import { actions as tagActions } from './tags';
+const { createRegistrySelector, createRegistryControl } = Data;
 
 // Actions
 const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
@@ -156,42 +157,32 @@ export const actions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} args              Argument params.
-	 * @param {string} args.accountName  Google Analytics account name.
-	 * @param {string} args.propertyName Google Analytics property name.
-	 * @param {string} args.profileName  Google Analytics profile name.
-	 * @param {string} args.timezone     Google Analytics timezone.
-	 * @return {Function} Generator function action.
+	 * @return {Object} Result object with response and error keys.
 	 */
-	*createAccount( { accountName, propertyName, profileName, timezone } ) {
-		invariant( accountName, 'accountName is required to create an account.' );
-		invariant( propertyName, 'propertyName is required to create an account.' );
-		invariant( profileName, 'profileName is required to create an account.' );
-		invariant( timezone, 'timezone is required to create an account.' );
-
+	*createAccount() {
 		let response, error;
 
 		yield {
-			payload: { accountName, propertyName, profileName, timezone },
+			payload: {},
 			type: START_FETCH_CREATE_ACCOUNT,
 		};
 
 		try {
 			response = yield {
-				payload: { accountName, propertyName, profileName, timezone },
+				payload: {},
 				type: FETCH_CREATE_ACCOUNT,
 			};
 
 			yield actions.receiveCreateAccount( response );
 
 			yield {
-				payload: { accountName, propertyName, profileName, timezone },
+				payload: {},
 				type: FINISH_FETCH_CREATE_ACCOUNT,
 			};
 		} catch ( e ) {
 			error = e;
 			yield {
-				payload: { accountName, propertyName, profileName, timezone, error },
+				payload: { error },
 				type: CATCH_FETCH_CREATE_ACCOUNT,
 			};
 		}
@@ -214,14 +205,16 @@ export const controls = {
 			useCache: false,
 		} );
 	},
-	[ FETCH_CREATE_ACCOUNT ]: ( { payload: { accountName, propertyName, profileName, timezone } } ) => {
+	[ FETCH_CREATE_ACCOUNT ]: createRegistryControl( ( { select } ) => () => {
+		const { getForm } = select( STORE_NAME );
+
 		return API.set( 'modules', 'analytics', 'create-account-ticket', {
-			accountName,
-			propertyName,
-			profileName,
-			timezone,
+			accountName: getForm( FORM_ACCOUNT_CREATE, 'accountName' ),
+			propertyName: getForm( FORM_ACCOUNT_CREATE, 'propertyName' ),
+			profileName: getForm( FORM_ACCOUNT_CREATE, 'profileName' ),
+			timezone: getForm( FORM_ACCOUNT_CREATE, 'timezone' ),
 		} );
-	},
+	} ),
 };
 
 export const reducer = ( state, { type, payload } ) => {
@@ -414,11 +407,33 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean} The terms of service URL.
+	 * @return {(string|undefined)} The terms of service URL.
 	 */
 	getAccountTicketTermsOfServiceURL( state ) {
 		return state.accountTicketTermsOfServiceURL;
 	},
+	/**
+	 * Whether or not the account create form is valid to submit.
+	 *
+	 * @return {boolean} True if valid, otherwise false.
+	 */
+	canSubmitAccountCreate: createRegistrySelector( ( select ) => () => {
+		const { getForm } = select( STORE_NAME );
+
+		if ( ! getForm( FORM_ACCOUNT_CREATE, 'accountName' ) ) {
+			return false;
+		}
+		if ( ! getForm( FORM_ACCOUNT_CREATE, 'propertyName' ) ) {
+			return false;
+		}
+		if ( ! getForm( FORM_ACCOUNT_CREATE, 'profileName' ) ) {
+			return false;
+		}
+		if ( ! getForm( FORM_ACCOUNT_CREATE, 'timezone' ) ) {
+			return false;
+		}
+		return true;
+	} ),
 };
 
 export default {
