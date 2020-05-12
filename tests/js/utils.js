@@ -12,6 +12,7 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
  * Internal dependencies
  */
 import coreSiteStore, { STORE_NAME as coreSiteStoreName } from '../../assets/js/googlesitekit/datastore/site';
+import coreUserStore, { STORE_NAME as coreUserStoreName } from '../../assets/js/googlesitekit/datastore/user';
 import coreModulesStore, { STORE_NAME as coreModulesStoreName } from '../../assets/js/googlesitekit/modules/datastore';
 import modulesAdSenseStore, { STORE_NAME as modulesAdSenseStoreName } from '../../assets/js/modules/adsense/datastore';
 import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore';
@@ -85,6 +86,7 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
  */
 export const registerAllStoresOn = ( registry ) => {
 	registry.registerStore( coreSiteStoreName, coreSiteStore );
+	registry.registerStore( coreUserStoreName, coreUserStore );
 	registry.registerStore( coreModulesStoreName, coreModulesStore );
 	registry.registerStore( modulesAdSenseStoreName, modulesAdSenseStore );
 	registry.registerStore( modulesAnalyticsStoreName, modulesAnalyticsStore );
