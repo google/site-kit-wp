@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit\Core\Util\Authentication_Trait;
+use Google\Site_Kit\Tests\Authentication_Trait;
 
 /**
  * @group Authentication
@@ -79,11 +79,11 @@ class CredentialsTest extends TestCase {
 		$this->assertTrue( $credentials->using_proxy() );
 
 		// Don't use proxy when regular OAuth client ID is used.
-		$this->fake_authentication();
+		$fake_auth = $this->fake_authentication();
 		$this->assertFalse( $credentials->using_proxy() );
 
 		// Use proxy when proxy site ID is used.
-		$this->fake_proxy_authentication();
+		$fake_proxy_auth = $this->fake_proxy_authentication();
 		$this->assertTrue( $credentials->using_proxy() );
 	}
 

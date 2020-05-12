@@ -18,7 +18,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit\Core\Util\Authentication_Trait;
+use Google\Site_Kit\Tests\Authentication_Trait;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
@@ -29,9 +29,6 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
 class OAuth_ClientTest extends TestCase {
 	use Authentication_Trait;
 
-	const SITE_ID   = '12345678.apps.sitekit.withgoogle.com';
-	const CLIENT_ID = '12345678.apps.googleusercontent.com';
-
 	public function test_get_client() {
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -39,8 +36,8 @@ class OAuth_ClientTest extends TestCase {
 	}
 
 	public function test_refresh_token() {
-		$this->fake_authentication();
-		$user_id = $this->factory()->user->create();
+		$fake_auth = $this->fake_authentication();
+		$user_id   = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -208,8 +205,8 @@ class OAuth_ClientTest extends TestCase {
 		 * Requires credentials for redirect_uri to be set on the Google_Site_Kit_Client.
 		 * @see \Google\Site_Kit\Core\Authentication\Clients\OAuth_Client::get_client
 		 */
-		$this->fake_authentication();
-		$user_id = $this->factory()->user->create();
+		$fake_auth = $this->fake_authentication();
+		$user_id   = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -222,7 +219,7 @@ class OAuth_ClientTest extends TestCase {
 		 * @see \Google\Site_Kit\Core\Authentication\Authentication::handle_oauth
 		 */
 		$this->assertEquals( add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ), $params['redirect_uri'] );
-		$this->assertEquals( self::CLIENT_ID, $params['client_id'] );
+		$this->assertEquals( $fake_auth['client_id'], $params['client_id'] );
 	}
 
 	public function test_authorize_user() {
@@ -234,7 +231,7 @@ class OAuth_ClientTest extends TestCase {
 		// If GET[error] is set, it redirects to admin URL.
 		$client        = new OAuth_Client( $context, null, $user_options );
 		$_GET['error'] = 'callback_error';
-		$this->fake_authentication(); // required by get_authentication_url
+		$fake_auth     = $this->fake_authentication(); // required by get_authentication_url
 
 		try {
 			$client->authorize_user();
@@ -257,7 +254,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertEquals( 'oauth_credentials_not_exist', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
 
 		$_GET['code'] = 'test-code';
-		$this->fake_authentication();
+		$fake_auth    = $this->fake_authentication();
 		// If all goes smooth, we expect to be redirected to $success_redirect
 		$success_redirect = admin_url( 'success-redirect' );
 		$client->get_authentication_url( $success_redirect );
@@ -317,11 +314,11 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertTrue( $client->using_proxy() );
 
 		// Don't use proxy when regular OAuth client ID is used.
-		$this->fake_authentication();
+		$fake_auth = $this->fake_authentication();
 		$this->assertFalse( $client->using_proxy() );
 
 		// Use proxy when proxy site ID is used.
-		$this->fake_proxy_authentication();
+		$fake_proxy_auth = $this->fake_proxy_authentication();
 		$this->assertTrue( $client->using_proxy() );
 	}
 
@@ -341,10 +338,10 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertNotContains( 'site_id=', $url );
 
 		// Otherwise, pass site ID and given temporary access code.
-		$this->fake_proxy_authentication();
-		$client = new OAuth_Client( $context );
-		$url    = $client->get_proxy_setup_url( 'temp-code' );
-		$this->assertContains( 'site_id=' . self::SITE_ID, $url );
+		$fake_proxy_auth = $this->fake_proxy_authentication();
+		$client          = new OAuth_Client( $context );
+		$url             = $client->get_proxy_setup_url( 'temp-code' );
+		$this->assertContains( 'site_id=' . $fake_proxy_auth['client_id'], $url );
 		$this->assertContains( 'code=temp-code', $url );
 		$this->assertContains( 'scope=', $url );
 		$this->assertContains( 'nonce=', $url );
@@ -370,12 +367,12 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'token=test-access-token', $url );
 
 		// If there is a site ID, it should also include that.
-		$this->fake_proxy_authentication();
-		$client = new OAuth_Client( $context );
+		$fake_proxy_auth = $this->fake_proxy_authentication();
+		$client          = new OAuth_Client( $context );
 		$client->set_access_token( 'test-access-token', 3600 );
 		$url = $client->get_proxy_permissions_url();
 		$this->assertContains( 'token=test-access-token', $url );
-		$this->assertContains( 'site_id=' . self::SITE_ID, $url );
+		$this->assertContains( 'site_id=' . $fake_proxy_auth['client_id'], $url );
 	}
 
 	public function test_get_error_message_unknown() {
