@@ -1,5 +1,5 @@
 /**
- * Search console module initialization.
+ * Search Console module initialization.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
