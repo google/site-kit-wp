@@ -159,7 +159,6 @@ class SettingsModules extends Component {
 				handleDialog={ this.handleDialog }
 				provides={ provides }
 				isSaving={ isSaving }
-				screenID={ module.screenID }
 				error={ error }
 			/>
 		);
