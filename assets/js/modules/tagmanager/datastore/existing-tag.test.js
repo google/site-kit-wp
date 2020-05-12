@@ -177,4 +177,95 @@ describe( 'modules/tagmanager existing-tag', () => {
 			} );
 		} );
 	} );
+
+	describe( 'hasTagPermission', () => {
+		it( 'returns true if a user has access to this tag', async () => {
+			const { account, containers } = factories.buildAccountWithContainers();
+			const container = containers[ 0 ];
+			fetch
+				.doMockOnceIf(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/
+				)
+				.mockResponseOnce(
+					JSON.stringify( { account, container } ),
+					{ status: 200 }
+				);
+
+			const tag = container.publicId;
+			const initialSelect = registry.select( STORE_NAME ).hasTagPermission( tag );
+
+			// Ensure the proper parameters were sent.
+			expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
+				{
+					tag,
+				}
+			);
+
+			// The value will be undefined until the response is received.
+			expect( initialSelect ).toEqual( undefined );
+			await subscribeUntil( registry,
+				() => registry.select( STORE_NAME ).hasFinishedResolution( 'hasTagPermission', [ tag ] ),
+			);
+
+			expect( fetch ).toHaveBeenCalledTimes( 1 );
+			expect( registry.select( STORE_NAME ).hasTagPermission( tag ) ).toEqual( true );
+		} );
+
+		it( 'returns false if a user cannot access the requested tag', async () => {
+			const response = {
+				code: 'tag_manager_existing_tag_permission',
+				message: 'no tag for you', // Real message is irrelevant :)
+				data: { status: 403 },
+			};
+			fetch
+				.doMockOnceIf(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/
+				)
+				.mockResponseOnce(
+					JSON.stringify( response ),
+					{ status: 403 }
+				);
+
+			const tag = 'GTM-ABC1234';
+
+			muteConsole( 'error' ); // 403 response is expected.
+			const initialSelect = registry.select( STORE_NAME ).hasTagPermission( tag );
+
+			expect( initialSelect ).toEqual( undefined );
+			await subscribeUntil( registry,
+				() => registry.select( STORE_NAME ).hasFinishedResolution( 'hasTagPermission', [ tag ] ),
+			);
+
+			expect( fetch ).toHaveBeenCalledTimes( 1 );
+			expect( registry.select( STORE_NAME ).hasTagPermission( tag ) ).toEqual( false );
+		} );
+
+		it( 'dispatches an error if the request fails', async () => {
+			const response = {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			};
+			fetch
+				.doMockIf(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/
+				)
+				.mockResponse(
+					JSON.stringify( response ),
+					{ status: 500 }
+				);
+
+			const tag = 'GTM-ABC1234';
+
+			muteConsole( 'error' ); // 500 response expected.
+			registry.select( STORE_NAME ).hasTagPermission( tag );
+
+			await subscribeUntil( registry,
+				() => registry.select( STORE_NAME ).hasFinishedResolution( 'hasTagPermission', [ tag ] ),
+			);
+
+			expect( fetch ).toHaveBeenCalledTimes( 1 );
+			expect( registry.select( STORE_NAME ).hasTagPermission( tag ) ).toEqual( undefined );
+		} );
+	} );
 } );
