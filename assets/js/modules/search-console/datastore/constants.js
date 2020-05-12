@@ -1,5 +1,5 @@
 /**
- * All modules.
+ * Search console Constants.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,12 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import './adsense';
-import './analytics/index.legacy';
-import './optimize';
-import './pagespeed-insights';
-import './search-console/index.legacy';
-import './tagmanager/index.legacy';
+export const STORE_NAME = 'modules/search-console';
