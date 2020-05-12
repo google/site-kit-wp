@@ -76,11 +76,7 @@ describe( 'core/site site info', () => {
 	describe( 'selectors', () => {
 		describe( 'getAdminURL', () => {
 			it( 'returns the adminURL on its own if no page argument is supplied', async () => {
-				global[ baseInfoVar ] = baseInfo;
-				global[ entityInfoVar ] = entityInfo;
-
-				expect( global[ baseInfoVar ] ).not.toEqual( undefined );
-				expect( global[ entityInfoVar ] ).not.toEqual( undefined );
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
 
 				let adminURL = registry.select( STORE_NAME ).getAdminURL();
 				expect( adminURL ).toEqual( 'http://something.test/wp-admin' );
@@ -90,41 +86,28 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'returns the adminURL with page query parameter if the page argument is supplied', async () => {
-				global[ baseInfoVar ] = baseInfo;
-				global[ entityInfoVar ] = entityInfo;
-
-				expect( global[ baseInfoVar ] ).not.toEqual( undefined );
-				expect( global[ entityInfoVar ] ).not.toEqual( undefined );
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
 
 				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'testpage' );
 				expect( adminURL ).toEqual( 'http://something.test/wp-admin?page=testpage' );
 			} );
 
 			it( 'returns the adminURL with page and extra query if page and args supplied', async () => {
-				global[ baseInfoVar ] = baseInfo;
-				global[ entityInfoVar ] = entityInfo;
-
-				expect( global[ baseInfoVar ] ).not.toEqual( undefined );
-				expect( global[ entityInfoVar ] ).not.toEqual( undefined );
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
 
 				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'testpage', { arg1: 'argument-1', arg2: 'argument-2' } );
 				expect( adminURL ).toEqual( 'http://something.test/wp-admin?page=testpage&arg1=argument-1&arg2=argument-2' );
 			} );
 
 			it( 'returns the adminURL with first page if an extra page is provided in the args', async () => {
-				global[ baseInfoVar ] = baseInfo;
-				global[ entityInfoVar ] = entityInfo;
-
-				expect( global[ baseInfoVar ] ).not.toEqual( undefined );
-				expect( global[ entityInfoVar ] ).not.toEqual( undefined );
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
 
 				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'correct-page', { arg1: 'argument-1', arg2: 'argument-2', page: 'wrong-page' } );
 				expect( adminURL ).toEqual( 'http://something.test/wp-admin?page=correct-page&arg1=argument-1&arg2=argument-2' );
 			} );
 
 			it( 'returns undefined if adminURL is undefined', async () => {
-				expect( global[ baseInfoVar ] ).toEqual( undefined );
-				expect( global[ entityInfoVar ] ).toEqual( undefined );
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( {} );
 
 				const adminURL = registry.select( STORE_NAME ).getAdminURL();
 
