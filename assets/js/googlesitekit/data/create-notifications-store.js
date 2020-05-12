@@ -263,12 +263,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 
 	const resolvers = {
 		*getNotifications() {
-			try {
-				const notifications = yield actions.fetchNotifications();
-				return actions.receiveNotifications( notifications );
-			} catch ( err ) {
-				return actions.receiveNotificationsFailed();
-			}
+			yield actions.fetchNotifications();
 		},
 	};
 
