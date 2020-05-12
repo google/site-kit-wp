@@ -160,25 +160,29 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
+	 * @param {string} page Page query argument to add to admin URL.
+	 * @param {Object} args Additional query arguments to add to admin URL.
 	 * @return {(string|undefined)} This site's admin URL.
 	 */
-	getAdminURL: createRegistrySelector( ( select ) => ( state, page = undefined, args = {} ) => {
+	getAdminURL: createRegistrySelector( ( select ) => ( state, page, args = {} ) => {
 		const { adminURL } = select( STORE_NAME ).getSiteInfo() || {};
+
+		// Return adminURL if undefined, or if no page supplied
+		if ( ! adminURL || ! page ) {
+			return adminURL;
+		}
 
 		// Prevent a page in args from overriding main page argument
 		const { page: extraPage, ...queryArgs } = args; // eslint-disable-line no-unused-vars
 
 		// Add query arguments to URL if supplied
-		const fullURL = ( adminURL && ( page || Object.keys( queryArgs ).length ) )
-			? addQueryArgs(
-				adminURL,
-				{
-					page,
-					...queryArgs,
-				},
-			) : adminURL;
-
-		return fullURL;
+		return addQueryArgs(
+			adminURL,
+			{
+				page,
+				...queryArgs,
+			}
+		);
 	} ),
 
 	/**

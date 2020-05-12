@@ -25,7 +25,7 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
-import { INITIAL_STATE } from './index';
+import { INITIAL_STATE, actions } from './index';
 import { STORE_NAME } from './constants';
 
 describe( 'core/site store', () => {
@@ -50,6 +50,15 @@ describe( 'core/site store', () => {
 			const state = store.getState();
 
 			expect( state ).toEqual( INITIAL_STATE );
+		} );
+	} );
+
+	describe( 'actions', () => {
+		describe( 'getAdminURL', () => {
+			it( 'returns undefined if no adminURL defined', () => {
+				const adminURL = actions.getAdminURL();
+				expect( adminURL ).toEqual( undefined );
+			} );
 		} );
 	} );
 } );
