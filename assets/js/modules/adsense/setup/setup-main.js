@@ -188,7 +188,7 @@ export default function SetupMain( { finishSetup } ) {
 			await submitChanges();
 			setIsSubmittingInBackground( false );
 		} )();
-	}, [ previousAccountID, previousClientID, previousAccountStatus, previousSiteStatus ] );
+	}, [ canSubmitChanges, previousAccountID, previousClientID, previousAccountStatus, previousSiteStatus ] );
 
 	const isAdBlockerActive = useSelect( ( select ) => select( STORE_NAME ).isAdBlockerActive() );
 
