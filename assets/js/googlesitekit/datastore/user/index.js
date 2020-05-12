@@ -27,12 +27,14 @@ import notifications from './notifications';
 import error from './error';
 import { STORE_NAME } from './constants';
 
+export { STORE_NAME };
+
 const store = Data.combineStores(
 	Data.commonStore,
 	authentication,
 	disconnect,
 	error,
-  notifications,
+	notifications,
 	userInfo,
 );
 
