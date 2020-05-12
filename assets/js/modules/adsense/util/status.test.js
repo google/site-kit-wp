@@ -108,12 +108,44 @@ const otherURLChannelA = {
 };
 
 describe( 'determineAccountStatus', () => {
+	it( 'returns none for noAdSenseAccount error', () => {
+		const params = {
+			accounts: undefined,
+			previousAccountID: '',
+			error: {
+				code: '403',
+				message: 'This is an AdSense API error message.',
+				data: {
+					status: 403,
+					reason: 'noAdSenseAccount',
+				},
+			},
+		};
+		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_NONE );
+	} );
+
 	it( 'returns none for no accounts', () => {
 		const params = {
 			accounts: [],
 			previousAccountID: '',
 		};
 		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_NONE );
+	} );
+
+	it( 'returns disapproved for disapprovedAccount error', () => {
+		const params = {
+			accounts: undefined,
+			previousAccountID: '',
+			error: {
+				code: '403',
+				message: 'This is an AdSense API error message.',
+				data: {
+					status: 403,
+					reason: 'disapprovedAccount',
+				},
+			},
+		};
+		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_DISAPPROVED );
 	} );
 
 	it( 'returns multiple for multiple accounts without account ID provided', () => {
@@ -143,6 +175,44 @@ describe( 'determineAccountStatus', () => {
 			previousClientID: '',
 		};
 		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_GRAYLISTED );
+	} );
+
+	it( 'returns pending for accountPendingReview error', () => {
+		const params = {
+			accounts: [ accountA ],
+			clients: [ afcClientA ],
+			alerts: undefined,
+			previousAccountID: '',
+			previousClientID: '',
+			error: {
+				code: '403',
+				message: 'This is an AdSense API error message.',
+				data: {
+					status: 403,
+					reason: 'accountPendingReview',
+				},
+			},
+		};
+		expect( determineAccountStatus( params ) ).toEqual( ACCOUNT_STATUS_PENDING );
+	} );
+
+	it( 'does not return pending for accountPendingReview error if no clients loaded', () => {
+		const params = {
+			accounts: [ accountA ],
+			clients: undefined,
+			alerts: undefined,
+			previousAccountID: '',
+			previousClientID: '',
+			error: {
+				code: '403',
+				message: 'This is an AdSense API error message.',
+				data: {
+					status: 403,
+					reason: 'accountPendingReview',
+				},
+			},
+		};
+		expect( determineAccountStatus( params ) ).toEqual( undefined );
 	} );
 
 	it( 'returns no-client for no clients', () => {
@@ -181,38 +251,6 @@ describe( 'determineAccountStatus', () => {
 	it.each(
 		[
 			[
-				ACCOUNT_STATUS_NONE,
-				'noAdSenseAccount',
-			],
-			[
-				ACCOUNT_STATUS_DISAPPROVED,
-				'disapprovedAccount',
-			],
-			[
-				ACCOUNT_STATUS_PENDING,
-				'accountPendingReview',
-			],
-		]
-	)( 'returns %s for missing key parameter and error reason %s', ( expectedStatus, errorReason ) => {
-		const params = {
-			accounts: undefined,
-			clients: undefined,
-			alerts: undefined,
-			error: {
-				code: '403',
-				message: 'This is an AdSense API error message.',
-				data: {
-					status: 403,
-					reason: errorReason,
-				},
-			},
-		};
-		expect( determineAccountStatus( params ) ).toEqual( expectedStatus );
-	} );
-
-	it.each(
-		[
-			[
 				{},
 			],
 			[
@@ -236,6 +274,39 @@ describe( 'determineAccountStatus', () => {
 					clients: [],
 					previousAccountID: '',
 					previousClientID: undefined,
+				},
+			],
+			[
+				{
+					accounts: [ accountA ],
+					alerts: undefined,
+					// Even though it's technically possible to conclude the
+					// pending status without them, clients must be loaded so
+					// that the snippet can be placed. This test ensures that.
+					clients: undefined,
+					previousAccountID: '',
+					previousClientID: '',
+					error: {
+						code: '403',
+						message: 'This is an AdSense API error message.',
+						data: {
+							status: 403,
+							reason: 'accountPendingReview',
+						},
+					},
+				},
+			],
+			[
+				{
+					accounts: [ accountA ],
+					alerts: [ graylistedAlert, otherAlert ],
+					// Even though it's technically possible to conclude the
+					// graylisted status without them, clients must be loaded
+					// so that the snippet can be placed. This test ensures
+					// that.
+					clients: undefined,
+					previousAccountID: '',
+					previousClientID: '',
 				},
 			],
 		]

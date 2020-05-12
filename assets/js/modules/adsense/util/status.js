@@ -60,15 +60,8 @@ export const determineAccountStatus = ( {
 	previousAccountID,
 	previousClientID,
 } ) => {
-	if ( error ) {
-		const errorStatus = errorToStatus( error );
-		if ( errorStatus ) {
-			return errorStatus;
-		}
-	}
-
 	if ( 'undefined' === typeof accounts || 'undefined' === typeof previousAccountID ) {
-		return undefined;
+		return accountsErrorToStatus( error );
 	}
 
 	const accountID = determineAccountID( { accounts, previousAccountID } );
@@ -82,8 +75,13 @@ export const determineAccountStatus = ( {
 		return ACCOUNT_STATUS_NONE;
 	}
 
-	if ( 'undefined' === typeof alerts ) {
+	// For any of the following statuses, it must be ensured that clients are loaded.
+	if ( 'undefined' === typeof clients || 'undefined' === typeof previousClientID ) {
 		return undefined;
+	}
+
+	if ( 'undefined' === typeof alerts ) {
+		return alertsErrorToStatus( error );
 	}
 
 	const hasGraylistedAlert = alerts.some( ( alert ) => {
@@ -91,10 +89,6 @@ export const determineAccountStatus = ( {
 	} );
 	if ( hasGraylistedAlert ) {
 		return ACCOUNT_STATUS_GRAYLISTED;
-	}
-
-	if ( 'undefined' === typeof clients || 'undefined' === typeof previousClientID ) {
-		return undefined;
 	}
 
 	const clientID = determineClientID( { clients, previousClientID } );
@@ -233,26 +227,45 @@ export const determineClientID = ( { clients, previousClientID } ) => {
  * Transforms an AdSense API error to the appropriate status.
  *
  * @since n.e.x.t
- * @access private
  *
  * @param {?Object} error Error object or undefined.
  * @return {?string} Status based on error, or undefined if no relevant error.
  */
 export const errorToStatus = ( error ) => {
-	if ( ! error || ! error.data ) {
-		return undefined;
+	const status = accountsErrorToStatus( error );
+	if ( status ) {
+		return status;
 	}
+	return alertsErrorToStatus( error );
+};
 
+const accountsErrorToStatus = ( error ) => {
 	// These specific errors represent account statuses for our purposes.
-	if ( 'noAdSenseAccount' === error.data.reason ) {
+	// They can be returned from the 'accounts' datapoint.
+	if ( isError( error, 'noAdSenseAccount' ) ) {
 		return ACCOUNT_STATUS_NONE;
 	}
-	if ( 'disapprovedAccount' === error.data.reason ) {
+	if ( isError( error, 'disapprovedAccount' ) ) {
 		return ACCOUNT_STATUS_DISAPPROVED;
 	}
-	if ( 'accountPendingReview' === error.data.reason ) {
+
+	return undefined;
+};
+
+const alertsErrorToStatus = ( error ) => {
+	// These specific errors represent account statuses for our purposes.
+	// They can be returned from the 'alerts' datapoint.
+	if ( isError( error, 'accountPendingReview' ) ) {
 		return ACCOUNT_STATUS_PENDING;
 	}
 
 	return undefined;
+};
+
+const isError = ( error, errorReason ) => {
+	if ( ! error || ! error.data ) {
+		return false;
+	}
+
+	return errorReason === error.data.reason;
 };
