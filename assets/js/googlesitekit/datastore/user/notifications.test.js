@@ -1,5 +1,5 @@
 /**
- * All modules.
+ * core/user data store: notifications.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,11 +19,19 @@
 /**
  * Internal dependencies
  */
-import './adsense';
-import './analytics/index.legacy';
-import './optimize';
-import './pagespeed-insights';
-import './pagespeed-insights/index.legacy';
-import './search-console';
-import './search-console/index.legacy';
-import './tagmanager';
+import { actions, selectors } from './index';
+
+describe( 'core/user notifications', () => {
+	it( 'has appropriate notification methods', () => {
+		const actionsToExpect = [
+			'addNotification',
+			'removeNotification',
+		];
+		expect( Object.keys( actions ) ).toEqual( expect.arrayContaining( actionsToExpect ) );
+
+		const selectorsToExpect = [
+			'getNotifications',
+		];
+		expect( Object.keys( selectors ) ).toEqual( expect.arrayContaining( selectorsToExpect ) );
+	} );
+} );

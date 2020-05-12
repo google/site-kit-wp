@@ -1,5 +1,5 @@
 /**
- * All modules.
+ * Search console module entrypoint.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,11 +19,4 @@
 /**
  * Internal dependencies
  */
-import './adsense';
-import './analytics/index.legacy';
-import './optimize';
-import './pagespeed-insights';
-import './pagespeed-insights/index.legacy';
-import './search-console';
-import './search-console/index.legacy';
-import './tagmanager';
+import './modules/search-console';

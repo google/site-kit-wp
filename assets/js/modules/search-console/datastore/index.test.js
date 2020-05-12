@@ -1,5 +1,5 @@
 /**
- * All modules.
+ * modules/search-console data store: selectors test.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,11 +19,28 @@
 /**
  * Internal dependencies
  */
-import './adsense';
-import './analytics/index.legacy';
-import './optimize';
-import './pagespeed-insights';
-import './pagespeed-insights/index.legacy';
-import './search-console';
-import './search-console/index.legacy';
-import './tagmanager';
+import { STORE_NAME } from './constants';
+import {
+	createTestRegistry,
+	unsubscribeFromAll,
+} from 'tests/js/utils';
+
+describe( 'modules/search-console properties', () => {
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+	} );
+
+	afterEach( () => {
+		unsubscribeFromAll( registry );
+	} );
+
+	describe( 'store', () => {
+		it( 'is registered correctly', () => {
+			const selectors = registry.select( STORE_NAME );
+
+			expect( selectors.getPropertyID ).toBeInstanceOf( Function );
+		} );
+	} );
+} );
