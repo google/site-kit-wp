@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Core\Util\Authentication_Trait;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
@@ -26,6 +27,7 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
  * @group Authentication
  */
 class OAuth_ClientTest extends TestCase {
+	use Authentication_Trait;
 
 	const SITE_ID   = '12345678.apps.sitekit.withgoogle.com';
 	const CLIENT_ID = '12345678.apps.googleusercontent.com';
@@ -404,38 +406,6 @@ class OAuth_ClientTest extends TestCase {
 			array( 'invalid_grant' ),
 			array( 'invalid_code' ),
 			array( 'access_token_not_received' ),
-		);
-	}
-
-	protected function fake_authentication() {
-		add_filter(
-			'googlesitekit_oauth_secret',
-			function () {
-				return json_encode(
-					array(
-						'web' => array(
-							'client_id'     => self::CLIENT_ID,
-							'client_secret' => 'test-client-secret',
-						),
-					)
-				);
-			}
-		);
-	}
-
-	protected function fake_proxy_authentication() {
-		add_filter(
-			'googlesitekit_oauth_secret',
-			function () {
-				return json_encode(
-					array(
-						'web' => array(
-							'client_id'     => self::SITE_ID,
-							'client_secret' => 'test-client-secret',
-						),
-					)
-				);
-			}
 		);
 	}
 

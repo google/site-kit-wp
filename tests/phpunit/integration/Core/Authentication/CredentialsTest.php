@@ -15,14 +15,13 @@ use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Core\Util\Authentication_Trait;
 
 /**
  * @group Authentication
  */
 class CredentialsTest extends TestCase {
-
-	const SITE_ID   = '12345678.apps.sitekit.withgoogle.com';
-	const CLIENT_ID = '12345678.apps.googleusercontent.com';
+	use Authentication_Trait;
 
 	private $registered_default = array(
 		'oauth2_client_id'     => '',
@@ -143,37 +142,5 @@ class CredentialsTest extends TestCase {
 			)
 		);
 		$this->assertTrue( $credentials->has() );
-	}
-
-	protected function fake_authentication() {
-		add_filter(
-			'googlesitekit_oauth_secret',
-			function () {
-				return json_encode(
-					array(
-						'web' => array(
-							'client_id'     => self::CLIENT_ID,
-							'client_secret' => 'test-client-secret',
-						),
-					)
-				);
-			}
-		);
-	}
-
-	protected function fake_proxy_authentication() {
-		add_filter(
-			'googlesitekit_oauth_secret',
-			function () {
-				return json_encode(
-					array(
-						'web' => array(
-							'client_id'     => self::SITE_ID,
-							'client_secret' => 'test-client-secret',
-						),
-					)
-				);
-			}
-		);
 	}
 }
