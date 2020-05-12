@@ -1,4 +1,3 @@
-
 /**
  * WordPress dependencies
  */
@@ -7,23 +6,21 @@ import { deactivatePlugin, activatePlugin, createURL } from '@wordpress/e2e-test
 /**
  * Internal depedencies
  */
-import { activateAmpAndSetMode } from '../../utils/activate-amp-and-set-mode';
 import {
-	setSiteVerification,
-	setSearchConsoleProperty,
+	activateAmpAndSetMode,
+	deactivateUtilityPlugins,
+	setupSiteKit,
 	useRequestInterception,
 } from '../../utils';
 import * as adminBarMockResponses from '../modules/analytics/fixtures/admin-bar';
 
 let mockBatchResponse;
 
-describe( 'AMP', () => {
+describe( 'AMP Admin Bar compatibility', () => {
 	beforeAll( async () => {
-		await activatePlugin( 'e2e-tests-auth-plugin' );
+		await setupSiteKit();
 		await activatePlugin( 'e2e-tests-admin-bar-visibility' );
 		await activateAmpAndSetMode( 'standard' );
-		await setSiteVerification();
-		await setSearchConsoleProperty();
 
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
@@ -45,19 +42,15 @@ describe( 'AMP', () => {
 
 	afterAll( async () => {
 		await deactivatePlugin( 'amp' );
-		await deactivatePlugin( 'e2e-tests-auth-plugin' );
-		await deactivatePlugin( 'e2e-tests-admin-bar-visibility' );
+		await deactivateUtilityPlugins();
 	} );
 
-	it( 'AMP Site Kit admin bar component display', async () => {
+	it( 'Site Kit admin bar component display', async () => {
 		const { searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = searchConsole;
 
-		// await expect( page ).toMatchElement( '#amp-admin-bar-item-status-icon', { text: '✅' } );
-
-		// This is expected as a false positive as the html tag has the data-ampdevmode attribute.
-		await expect( page ).toMatchElement( '#amp-admin-bar-item-status-icon', { text: '⚠️' } );
+		await expect( page ).toMatchElement( '#amp-admin-bar-item-status-icon', { text: '✅' } );
 
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),
