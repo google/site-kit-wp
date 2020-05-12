@@ -22,6 +22,8 @@
 import Data from 'googlesitekit-data';
 import authentication from './authentication';
 import disconnect from './disconnect';
+import userInfo from './user-info';
+
 import error from './error';
 import { STORE_NAME } from './constants';
 export { STORE_NAME };
@@ -29,6 +31,7 @@ export { STORE_NAME };
 export const INITIAL_STATE = Data.collectState(
 	authentication.INITIAL_STATE,
 	disconnect.INITIAL_STATE,
+	userInfo.INITIAL_STATE,
 	error.INITIAL_STATE
 );
 
@@ -37,6 +40,7 @@ export const actions = Data.addInitializeAction(
 		Data.commonActions,
 		authentication.actions,
 		disconnect.actions,
+		userInfo.actions,
 		error.actions
 	)
 );
@@ -45,6 +49,7 @@ export const controls = Data.collectControls(
 	Data.commonControls,
 	authentication.controls,
 	disconnect.controls,
+	userInfo.controls,
 	error.controls
 );
 
@@ -53,6 +58,7 @@ export const reducer = Data.addInitializeReducer(
 	Data.collectReducers(
 		authentication.reducer,
 		disconnect.reducer,
+		userInfo.reducer,
 		error.reducer
 	)
 );
@@ -60,12 +66,14 @@ export const reducer = Data.addInitializeReducer(
 export const resolvers = Data.collectResolvers(
 	authentication.resolvers,
 	disconnect.resolvers,
+	userInfo.resolvers,
 	error.resolvers
 );
 
 export const selectors = Data.collectSelectors(
 	authentication.selectors,
 	disconnect.selectors,
+	userInfo.selectors,
 	error.selectors
 );
 
