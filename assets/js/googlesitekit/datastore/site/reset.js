@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { initializeAction } from '../../data/utils';
 
 // Actions
 const START_FETCH_RESET = 'START_FETCH_RESET';
@@ -99,7 +100,11 @@ export const actions = {
 	 * @since 1.5.0
 	 */
 	*reset() {
-		yield actions.fetchReset();
+		const { error } = yield actions.fetchReset();
+
+		if ( ! error ) {
+			yield initializeAction();
+		}
 	},
 };
 

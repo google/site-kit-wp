@@ -26,7 +26,7 @@ import apiFetch from '@wordpress/api-fetch';
  */
 import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
 import { STORE_NAME } from './constants';
-import dataStore from './index';
+import { INITIAL_STATE } from './index';
 
 describe( 'core/modules store', () => {
 	let apiFetchSpy;
@@ -49,7 +49,7 @@ describe( 'core/modules store', () => {
 		it( 'has the appropriate initial state', () => {
 			const state = store.getState();
 
-			expect( state ).toEqual( dataStore.INITIAL_STATE );
+			expect( state ).toEqual( INITIAL_STATE );
 		} );
 	} );
 } );
