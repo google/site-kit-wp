@@ -30,14 +30,6 @@ export const createTestRegistry = () => {
 	// Register all available stores on the registry.
 	registerAllStoresOn( registry );
 
-	// Populate most basic data which should not affect any tests.
-	registry.dispatch( coreUserStoreName ).receiveUserInfo( {
-		id: 1,
-		name: 'Wapuu WordPress',
-		email: 'wapuu.wordpress@gmail.com',
-		picture: 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
-	} );
-
 	return registry;
 };
 
@@ -53,6 +45,14 @@ export const createTestRegistry = () => {
  * @return {WPElement} Wrapped components.
  */
 export function WithTestRegistry( { children, callback, registry = createTestRegistry() } = {} ) {
+	// Populate most basic data which should not affect any tests.
+	registry.dispatch( coreUserStoreName ).receiveUserInfo( {
+		id: 1,
+		name: 'Wapuu WordPress',
+		email: 'wapuu.wordpress@gmail.com',
+		picture: 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
+	} );
+
 	if ( callback ) {
 		callback( registry );
 	}
