@@ -30,6 +30,13 @@ const store = Data.combineStores(
 	modules,
 );
 
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
 // Register this store on the global registry.
 Data.registerStore( STORE_NAME, store );
 
