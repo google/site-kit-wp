@@ -109,7 +109,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry.dispatch( STORE_NAME ).receiveSettings( emptySettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
-			registry.dispatch( STORE_NAME ).receiveAccounts( [] );
+			registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 			registry.dispatch( STORE_NAME ).receiveError( {
 				// Typically thrown when fetching accounts.
 				message: 'No account.',
@@ -128,7 +128,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry.dispatch( STORE_NAME ).receiveSettings( emptySettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( 'ca-pub-123456789' );
-			registry.dispatch( STORE_NAME ).receiveAccounts( [] );
+			registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 			registry.dispatch( STORE_NAME ).receiveError( {
 				// Typically thrown when fetching accounts.
 				message: 'No account.',
@@ -168,7 +168,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry.dispatch( STORE_NAME ).receiveSettings( emptySettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
-			registry.dispatch( STORE_NAME ).receiveAccounts( [] );
+			registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 			registry.dispatch( STORE_NAME ).receiveError( {
 				// Typically thrown when fetching accounts.
 				message: 'Disapproved account.',
@@ -204,7 +204,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
 			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-			registry.dispatch( STORE_NAME ).receiveAlerts( [], { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).finishResolution( 'getAlerts', [ fixtures.accounts[ 0 ].id ] );
 			registry.dispatch( STORE_NAME ).receiveError( {
 				// Typically thrown when fetching alerts.
 				message: 'Account pending review.',
