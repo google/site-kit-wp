@@ -23,16 +23,16 @@ import Data from 'googlesitekit-data';
 import authentication from './authentication';
 import disconnect from './disconnect';
 import userInfo from './user-info';
-
+import notifications from './notifications';
 import error from './error';
 import { STORE_NAME } from './constants';
-export { STORE_NAME };
 
 const store = Data.combineStores(
 	Data.commonStore,
 	authentication,
 	disconnect,
 	error,
+  notifications,
 	userInfo,
 );
 
