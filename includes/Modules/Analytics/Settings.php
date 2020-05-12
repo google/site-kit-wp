@@ -166,7 +166,9 @@ class Settings extends Module_Settings {
 				if ( isset( $option['trackingDisabled'] ) ) {
 					$option['trackingDisabled'] = (array) $option['trackingDisabled'];
 				}
-				$option['adsenseLinked'] = false;
+				if ( isset( $option['adsenseLinked'] ) ) {
+					$option['adsenseLinked'] = (bool) $option['adsenseLinked'];
+				}
 			}
 			return $option;
 		};

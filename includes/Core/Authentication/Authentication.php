@@ -260,6 +260,21 @@ final class Authentication {
 			}
 		);
 
+		add_filter(
+			'googlesitekit_user_data',
+			function( $user ) {
+				$profile_data = $this->profile->get();
+				if ( $profile_data ) {
+					if ( $profile_data ) {
+						$user['user']['email']   = $profile_data['email'];
+						$user['user']['picture'] = $profile_data['photo'];
+					}
+				}
+				$user['verified'] = $this->verification->has();
+				return $user;
+			}
+		);
+
 		// Synchronize site fields on shutdown when select options change.
 		$option_updated = function () {
 			$sync_site_fields = function () {
@@ -715,9 +730,9 @@ final class Authentication {
 							$access_token = $oauth_client->get_access_token();
 
 							$data = array(
-								'isAuthenticated' => ! empty( $access_token ),
-								'requiredScopes'  => $oauth_client->get_required_scopes(),
-								'grantedScopes'   => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
+								'authenticated'  => ! empty( $access_token ),
+								'requiredScopes' => $oauth_client->get_required_scopes(),
+								'grantedScopes'  => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
 							);
 
 							return new WP_REST_Response( $data );
