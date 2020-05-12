@@ -864,6 +864,7 @@ tag_partner: "site_kit"
 						'googlesitekit-data',
 						'googlesitekit-modules',
 						'googlesitekit-datastore-site',
+						'googlesitekit-datastore-user',
 					),
 				)
 			),
