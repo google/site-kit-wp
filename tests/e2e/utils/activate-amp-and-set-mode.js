@@ -20,10 +20,19 @@ export const allowedAmpModes = {
  * @param {string} mode The mode to set AMP to. Possible value of standard, transitional or reader.
  */
 export const activateAmpAndSetMode = async ( mode ) => {
+	await activatePlugin( 'amp' );
+	await setAMPMode( mode );
+};
+
+/**
+ * Set AMP Mode
+ *
+ * @param {string} mode The mode to set AMP to. Possible value of standard, transitional or reader.
+ */
+export const setAMPMode = async ( mode ) => {
 	// Test to be sure that the passed mode is known.
 	expect( Object.keys( allowedAmpModes ) ).toContain( mode );
-	// Active AMP and set the passed mode.
-	await activatePlugin( 'amp' );
+	// Set the AMP mode
 	await visitAdminPage( 'admin.php', 'page=amp-options' );
 	await expect( page ).toClick( `#theme_support_${ allowedAmpModes[ mode ] }` );
 	await expect( page ).toClick( '#submit' );
