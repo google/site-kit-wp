@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { actions } from './index';
+import { actions, selectors } from './index';
 
 describe( 'core/user notifications', () => {
 	it( 'has appropriate notification methods', () => {
@@ -28,5 +28,10 @@ describe( 'core/user notifications', () => {
 			'removeNotification',
 		];
 		expect( Object.keys( actions ) ).toEqual( expect.arrayContaining( actionsToExpect ) );
+
+		const selectorsToExpect = [
+			'getNotifications',
+		];
+		expect( Object.keys( selectors ) ).toEqual( expect.arrayContaining( selectorsToExpect ) );
 	} );
 } );

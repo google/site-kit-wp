@@ -67,11 +67,11 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 	const STORE_NAME = storeName || `${ type }/${ identifier }`;
 
 	const INITIAL_STATE = {
-		serverNotifications: server ? undefined : null,
+		serverNotifications: server ? undefined : {},
 		// Initialize clientNotifications as undefined rather than an empty
 		// object so we can know if a client notification was added and then
 		// removed from state.
-		clientNotifications: client ? undefined : null,
+		clientNotifications: client ? undefined : {},
 		isFetchingNotifications: false,
 	};
 
