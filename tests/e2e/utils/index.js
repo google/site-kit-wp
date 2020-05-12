@@ -1,3 +1,4 @@
+export { activateAmpAndSetMode } from './activate-amp-and-set-mode';
 export { clearSessionStorage } from './clear-session-storage';
 export { deactivateUtilityPlugins } from './deactivate-utility-plugins';
 export { evalWithWPData } from './eval-with-wp-data';
@@ -13,6 +14,7 @@ export { setEditPostFeature } from './set-edit-post-feature';
 export { setSiteVerification } from './set-site-verification';
 export { setSearchConsoleProperty } from './set-search-console-property';
 export { setupAnalytics } from './setup-analytics';
+export { setupSiteKit } from './setup-site-kit';
 export { switchDateRange } from './switch-date-range';
 export { testClientConfig } from './test-client-config';
 export { testSiteNotification } from './test-site-notification';
