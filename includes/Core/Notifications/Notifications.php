@@ -140,7 +140,7 @@ class Notifications {
 								return new WP_Error( 'exception', $e->getMessage() );
 							}
 
-							if ( ! $this->authentication->get_oauth_client()->using_proxy() ) {
+							if ( ! $this->credentials->using_proxy() ) {
 								return new WP_REST_Response( array() );
 							}
 
