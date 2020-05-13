@@ -506,7 +506,7 @@ final class Analytics extends Module
 		}
 
 		// Check for a returned error.
-		$error = $this->context->input()->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
+		$error = $input->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
 		if ( ! empty( $error ) ) {
 			wp_safe_redirect(
 				$this->context->admin_url( 'module-analytics', array( 'error_code' => $error ) )
@@ -514,9 +514,9 @@ final class Analytics extends Module
 			exit;
 		}
 
-		$account_id      = $this->context->input()->filter( INPUT_GET, 'accountId', FILTER_SANITIZE_STRING );
-		$web_property_id = $this->context->input()->filter( INPUT_GET, 'webPropertyId', FILTER_SANITIZE_STRING );
-		$profile_id      = $this->context->input()->filter( INPUT_GET, 'profileId', FILTER_SANITIZE_STRING );
+		$account_id      = $input->filter( INPUT_GET, 'accountId', FILTER_SANITIZE_STRING );
+		$web_property_id = $input->filter( INPUT_GET, 'webPropertyId', FILTER_SANITIZE_STRING );
+		$profile_id      = $input->filter( INPUT_GET, 'profileId', FILTER_SANITIZE_STRING );
 
 		if ( empty( $account_id ) || empty( $web_property_id ) || empty( $profile_id ) ) {
 			wp_safe_redirect(
