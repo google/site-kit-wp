@@ -85,25 +85,46 @@ describe( 'core/site site info', () => {
 				expect( adminURL ).toEqual( 'http://something.test/wp-admin' );
 			} );
 
-			it( 'returns the adminURL with page query parameter if the page argument is supplied', async () => {
+			it( 'returns the adminURL with page query parameter if simple page argument is supplied', async () => {
 				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
 
 				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'testpage' );
-				expect( adminURL ).toEqual( 'http://something.test/wp-admin?page=testpage' );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin/admin.php?page=testpage' );
+			} );
+
+			it( 'returns the adminURL with page query parameter if the full page argument is supplied', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+
+				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'custom.php?page=testpage' );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin/custom.php?page=testpage' );
+			} );
+
+			it( 'returns the original adminURL if the full page argument is supplied without "page" query param', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+
+				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'custom.php?notpage=testpage' );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin' );
+			} );
+
+			it( 'properly handles the adminURLs with trailing slash', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo, adminURL: 'http://something.test/wp-admin/' } );
+
+				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'custom.php?page=testpage' );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin/custom.php?page=testpage' );
 			} );
 
 			it( 'returns the adminURL with page and extra query if page and args supplied', async () => {
 				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
 
 				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'testpage', { arg1: 'argument-1', arg2: 'argument-2' } );
-				expect( adminURL ).toEqual( 'http://something.test/wp-admin?page=testpage&arg1=argument-1&arg2=argument-2' );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin/admin.php?page=testpage&arg1=argument-1&arg2=argument-2' );
 			} );
 
 			it( 'returns the adminURL with first page if an extra page is provided in the args', async () => {
 				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
 
 				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'correct-page', { arg1: 'argument-1', arg2: 'argument-2', page: 'wrong-page' } );
-				expect( adminURL ).toEqual( 'http://something.test/wp-admin?page=correct-page&arg1=argument-1&arg2=argument-2' );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin/admin.php?page=correct-page&arg1=argument-1&arg2=argument-2' );
 			} );
 
 			it( 'returns undefined if adminURL is undefined', async () => {
