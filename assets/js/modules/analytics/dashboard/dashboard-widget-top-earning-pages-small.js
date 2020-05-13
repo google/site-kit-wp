@@ -117,7 +117,7 @@ class AdSenseDashboardWidgetTopPagesTableSmall extends Component {
 const getDataError = ( data ) => {
 	if ( data.code && data.message && data.data && data.data.status ) {
 		// Specifically looking for string "badRequest"
-		if ( data.data.reason && 'badRequest' === data.data.reason ) {
+		if ( 'badRequest' === data.data.reason ) {
 			return (
 				<div className="
 						mdc-layout-grid__cell
