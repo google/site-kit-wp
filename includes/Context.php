@@ -122,9 +122,15 @@ final class Context {
 	 * @return string Full admin screen URL.
 	 */
 	public function admin_url( $slug = 'dashboard', array $query_args = array() ) {
-		$query_args['page'] = Core\Admin\Screens::PREFIX . $slug;
+		unset( $query_args['page'] );
 
-		return add_query_arg( $query_args, self_admin_url( 'admin.php' ) );
+		return add_query_arg(
+			array_merge(
+				array( 'page' => Core\Admin\Screens::PREFIX . $slug ),
+				$query_args
+			),
+			self_admin_url( 'admin.php' )
+		);
 	}
 
 	/**
