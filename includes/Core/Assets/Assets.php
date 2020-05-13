@@ -482,6 +482,16 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-forms',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-forms.js',
+					'dependencies' => array(
+						'googlesitekit-data',
+						'googlesitekit-api',
+					),
+				)
+			),
+			new Script(
 				'googlesitekit-modules',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-modules.js',
