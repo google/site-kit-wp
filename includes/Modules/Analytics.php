@@ -696,8 +696,6 @@ final class Analytics extends Module
 					return new WP_Error( 'requires_service', __( 'Analytics provisioning requires connecting via the Site Kit Service.', 'google-site-kit' ), array( 'status' => 400 ) );
 				}
 
-				$credentials = $this->authentication->credentials();
-
 				$account = new Google_Service_Analytics_Account();
 				$account->setName( $data['accountName'] );
 
@@ -716,7 +714,7 @@ final class Analytics extends Module
 				$account_ticket->setRedirectUri( $this->get_provisioning_redirect_uri() );
 
 				// Add site id and secret.
-				$creds = $credentials->get();
+				$creds = $this->authentication->credentials()->get();
 				$account_ticket->setSiteId( $creds['oauth2_client_id'] );
 				$account_ticket->setSiteSecret( $creds['oauth2_client_secret'] );
 
