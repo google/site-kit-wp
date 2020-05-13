@@ -29,8 +29,10 @@ import CTA from '../../../components/notifications/cta';
 export default function AdSenseLinkCTA() {
 	return (
 		<CTA
-			title={ __( 'Restricted metric(s)', 'google-site-kit' ) }
-			description={ __( 'You need to link Analytics and AdSense to get report for your top earning pages. Learn more: https://support.google.com/adsense/answer/6084409 ', 'google-site-kit' ) }
+			title={ __( 'Link Analytics and AdSense', 'google-site-kit' ) }
+			description={ __( 'You need to link Analytics and AdSense to get reports for your top earning pages.', 'google-site-kit' ) }
+			ctaLink="https://support.google.com/adsense/answer/6084409"
+			ctaLabel={ __( 'Learn more', 'google-site-kit' ) }
 		/>
 	);
 }
