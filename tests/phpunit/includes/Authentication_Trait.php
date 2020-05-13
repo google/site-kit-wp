@@ -27,22 +27,21 @@ trait Authentication_Trait {
 	 * @return array Fake authentication details including client_id & client_secret.
 	 */
 	public function fake_authentication() {
+		$fake_auth = array(
+			'client_id'     => '12345678.apps.googleusercontent.com',
+			'client_secret' => 'test-client-secret',
+		);
+
 		add_filter(
 			'googlesitekit_oauth_secret',
 			function () {
 				return array(
-					'web' => array(
-						'client_id'     => '12345678.apps.googleusercontent.com',
-						'client_secret' => 'test-client-secret',
-					),
+					'web' => $this->fake_auth,
 				);
 			}
 		);
 
-		return array(
-			'client_id'     => '12345678.apps.googleusercontent.com',
-			'client_secret' => 'test-client-secret',
-		);
+		return $fake_auth;
 	}
 
 	/**
@@ -53,21 +52,20 @@ trait Authentication_Trait {
 	 * @return array Fake proxy authentication details including client_id & client_secret.
 	 */
 	public function fake_proxy_authentication() {
+		$fake_proxy_auth = array(
+			'client_id'     => '12345678.apps.sitekit.withgoogle.com',
+			'client_secret' => 'test-client-secret',
+		);
+
 		add_filter(
 			'googlesitekit_oauth_secret',
 			function () {
 				return array(
-					'web' => array(
-						'client_id'     => '12345678.apps.sitekit.withgoogle.com',
-						'client_secret' => 'test-client-secret',
-					),
+					'web' => $this->fake_proxy_auth,
 				);
 			}
 		);
 
-		return array(
-			'client_id'     => '12345678.apps.sitekit.withgoogle.com',
-			'client_secret' => 'test-client-secret',
-		);
+		return $fake_proxy_auth;
 	}
 }

@@ -36,8 +36,8 @@ class OAuth_ClientTest extends TestCase {
 	}
 
 	public function test_refresh_token() {
-		$fake_auth = $this->fake_authentication();
-		$user_id   = $this->factory()->user->create();
+		$this->fake_authentication();
+		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -231,7 +231,7 @@ class OAuth_ClientTest extends TestCase {
 		// If GET[error] is set, it redirects to admin URL.
 		$client        = new OAuth_Client( $context, null, $user_options );
 		$_GET['error'] = 'callback_error';
-		$fake_auth     = $this->fake_authentication(); // required by get_authentication_url
+		$this->fake_authentication(); // required by get_authentication_url
 
 		try {
 			$client->authorize_user();
@@ -254,7 +254,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertEquals( 'oauth_credentials_not_exist', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
 
 		$_GET['code'] = 'test-code';
-		$fake_auth    = $this->fake_authentication();
+		$this->fake_authentication();
 		// If all goes smooth, we expect to be redirected to $success_redirect
 		$success_redirect = admin_url( 'success-redirect' );
 		$client->get_authentication_url( $success_redirect );
@@ -314,11 +314,11 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertTrue( $client->using_proxy() );
 
 		// Don't use proxy when regular OAuth client ID is used.
-		$fake_auth = $this->fake_authentication();
+		$this->fake_authentication();
 		$this->assertFalse( $client->using_proxy() );
 
 		// Use proxy when proxy site ID is used.
-		$fake_proxy_auth = $this->fake_proxy_authentication();
+		$this->fake_proxy_authentication();
 		$this->assertTrue( $client->using_proxy() );
 	}
 

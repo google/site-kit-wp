@@ -79,11 +79,11 @@ class CredentialsTest extends TestCase {
 		$this->assertTrue( $credentials->using_proxy() );
 
 		// Don't use proxy when regular OAuth client ID is used.
-		$fake_auth = $this->fake_authentication();
+		$this->fake_authentication();
 		$this->assertFalse( $credentials->using_proxy() );
 
 		// Use proxy when proxy site ID is used.
-		$fake_proxy_auth = $this->fake_proxy_authentication();
+		$this->fake_proxy_authentication();
 		$this->assertTrue( $credentials->using_proxy() );
 	}
 
