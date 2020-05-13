@@ -718,8 +718,8 @@ final class Analytics extends Module
 				$account_ticket->setSiteId( $creds['oauth2_client_id'] );
 				$account_ticket->setSiteSecret( $creds['oauth2_client_secret'] );
 
-				$analytics_service = $this->get_service( 'analyticsprovisioning' );
-				return $analytics_service->provisioning->createAccountTicket( $account_ticket );
+				return $this->get_service( 'analyticsprovisioning' )
+					->provisioning->createAccountTicket( $account_ticket );
 			case 'GET:goals':
 				$connection = $this->get_data( 'connection' );
 				if (
