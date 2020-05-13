@@ -26,6 +26,8 @@ class Proxy_Provisioning extends Google_Service_Resource {
 	/**
 	 * Creates an account ticket. (provisioning.createAccountTicket)
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param Proxy_AccountTicket $post_body  The post body to send.
 	 * @param array               $opt_params Optional parameters. Pass site_id and site_secret here.
 	 * @return Google_Service_Analytics_AccountTicket

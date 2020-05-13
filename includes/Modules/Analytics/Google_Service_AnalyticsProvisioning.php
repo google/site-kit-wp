@@ -30,7 +30,7 @@ class Google_Service_AnalyticsProvisioning extends Google_Service_Analytics {
 	 * @param string        $rootUrl The root URL used for requests to the service.
 	 */
 	public function __construct( Google_Client $client, $rootUrl = null ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName
-		parent::__construct( $client );
+		parent::__construct( $client, $rootUrl ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName
 		$this->provisioning = new Proxy_Provisioning(
 			$this,
 			$this->serviceName, // phpcs:ignore WordPress.NamingConventions.ValidVariableName
