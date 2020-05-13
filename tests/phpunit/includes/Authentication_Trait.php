@@ -34,9 +34,9 @@ trait Authentication_Trait {
 
 		add_filter(
 			'googlesitekit_oauth_secret',
-			function () {
+			function () use ( $fake_auth ) {
 				return array(
-					'web' => $this->fake_auth,
+					'web' => $fake_auth,
 				);
 			}
 		);
@@ -59,9 +59,9 @@ trait Authentication_Trait {
 
 		add_filter(
 			'googlesitekit_oauth_secret',
-			function () {
+			function () use ( $fake_proxy_auth ) {
 				return array(
-					'web' => $this->fake_proxy_auth,
+					'web' => $fake_proxy_auth,
 				);
 			}
 		);

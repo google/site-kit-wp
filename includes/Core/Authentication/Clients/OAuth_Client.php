@@ -692,7 +692,7 @@ final class OAuth_Client {
 	 * @return bool True if proxy authentication is used, false otherwise.
 	 */
 	public function using_proxy() {
-		_deprecated_function( __METHOD__, 'n.e.x.t', 'Credentials::class::using_proxy' );
+		_deprecated_function( __METHOD__, 'n.e.x.t', Credentials::class . '::using_proxy' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		return $this->credentials->using_proxy();
 	}
