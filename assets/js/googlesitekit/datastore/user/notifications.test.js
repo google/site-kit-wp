@@ -1,5 +1,5 @@
 /**
- * core/modules data store
+ * core/user data store: notifications.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,25 +19,19 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import modules from './modules';
-import { STORE_NAME } from './constants';
+import { actions, selectors } from './index';
 
-export { STORE_NAME };
+describe( 'core/user notifications', () => {
+	it( 'has appropriate notification methods', () => {
+		const actionsToExpect = [
+			'addNotification',
+			'removeNotification',
+		];
+		expect( Object.keys( actions ) ).toEqual( expect.arrayContaining( actionsToExpect ) );
 
-const store = Data.combineStores(
-	Data.commonStore,
-	modules,
-);
-
-export const INITIAL_STATE = store.INITIAL_STATE;
-export const actions = store.actions;
-export const controls = store.controls;
-export const reducer = store.reducer;
-export const resolvers = store.resolvers;
-export const selectors = store.selectors;
-
-// Register this store on the global registry.
-Data.registerStore( STORE_NAME, store );
-
-export default store;
+		const selectorsToExpect = [
+			'getNotifications',
+		];
+		expect( Object.keys( selectors ) ).toEqual( expect.arrayContaining( selectorsToExpect ) );
+	} );
+} );

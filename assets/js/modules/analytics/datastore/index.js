@@ -27,6 +27,7 @@ import profiles from './profiles';
 import settings from './settings';
 import tags from './tags';
 import { STORE_NAME } from './constants';
+
 export { STORE_NAME };
 
 const baseModuleStore = Modules.createModuleStore( 'analytics', {
@@ -42,70 +43,21 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 	],
 } );
 
-export const INITIAL_STATE = Data.collectState(
-	baseModuleStore.INITIAL_STATE,
-	accounts.INITIAL_STATE,
-	properties.INITIAL_STATE,
-	profiles.INITIAL_STATE,
-	settings.INITIAL_STATE,
-	tags.INITIAL_STATE,
+const store = Data.combineStores(
+	baseModuleStore,
+	accounts,
+	properties,
+	profiles,
+	settings,
+	tags,
 );
 
-export const actions = Data.collectActions(
-	baseModuleStore.actions,
-	accounts.actions,
-	properties.actions,
-	profiles.actions,
-	settings.actions,
-	tags.actions,
-);
-
-export const controls = Data.collectControls(
-	baseModuleStore.controls,
-	accounts.controls,
-	properties.controls,
-	profiles.controls,
-	settings.controls,
-	tags.controls,
-);
-
-export const reducer = Data.addInitializeReducer(
-	INITIAL_STATE,
-	Data.collectReducers(
-		baseModuleStore.reducer,
-		accounts.reducer,
-		properties.reducer,
-		profiles.reducer,
-		settings.reducer,
-		tags.reducer,
-	)
-);
-
-export const resolvers = Data.collectResolvers(
-	baseModuleStore.resolvers,
-	accounts.resolvers,
-	properties.resolvers,
-	profiles.resolvers,
-	settings.resolvers,
-	tags.resolvers,
-);
-
-export const selectors = Data.collectSelectors(
-	baseModuleStore.selectors,
-	accounts.selectors,
-	properties.selectors,
-	profiles.selectors,
-	settings.selectors,
-	tags.selectors,
-);
-
-const store = {
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
 
 // Register this store on the global registry.
 Data.registerStore( STORE_NAME, store );
