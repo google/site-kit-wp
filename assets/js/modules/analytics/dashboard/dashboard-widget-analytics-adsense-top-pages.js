@@ -36,7 +36,7 @@ import { TYPE_MODULES } from '../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../components/data-table';
 import Layout from '../../../components/layout/layout';
 import PreviewTable from '../../../components/preview-table';
-import CTA from '../../../components/notifications/cta';
+import AdSenseLinkCTA from '../common/adsense-link-cta';
 import { analyticsAdsenseReportDataDefaults, isDataZeroForReporting } from '../util';
 
 class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
@@ -148,10 +148,7 @@ const getDataError = ( data ) => {
 		// Specifically looking for string "badRequest"
 		if ( data.data.reason && 'badRequest' === data.data.reason ) {
 			return AnalyticsAdSenseDashboardWidgetTopPagesTable.renderLayout(
-				<CTA
-					title={ __( 'Restricted metric(s)', 'google-site-kit' ) }
-					description={ __( 'You need to link Analytics and AdSense to get report for your top earning pages. Learn more: https://support.google.com/adsense/answer/6084409 ', 'google-site-kit' ) }
-				/>
+				<AdSenseLinkCTA />
 			);
 		}
 
