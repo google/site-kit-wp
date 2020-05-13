@@ -124,12 +124,18 @@ final class Context {
 	public function admin_url( $slug = 'dashboard', array $query_args = array() ) {
 		unset( $query_args['page'] );
 
+		if ( $this->is_network_mode() ) {
+			$base_url = network_admin_url( 'admin.php' );
+		} else {
+			$base_url = admin_url( 'admin.php' );
+		}
+
 		return add_query_arg(
 			array_merge(
 				array( 'page' => Core\Admin\Screens::PREFIX . $slug ),
 				$query_args
 			),
-			self_admin_url( 'admin.php' )
+			$base_url
 		);
 	}
 
