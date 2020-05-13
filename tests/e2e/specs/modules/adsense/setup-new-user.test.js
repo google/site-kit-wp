@@ -1,12 +1,18 @@
 /**
  * WordPress dependencies
  */
-import { createURL, activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
+import {
+	createURL,
+	deactivatePlugin,
+	activatePlugin,
+	visitAdminPage,
+} from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
  */
 import {
+	activateAmpAndSetMode,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setAuthToken,
@@ -277,5 +283,75 @@ describe( 'setting up the AdSense module', () => {
 		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Create AdSense Account/i } );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
+	} );
+
+	it( 'has valid AMP for logged-in users', async () => {
+		await activateAmpAndSetMode( 'standard' );
+		await activatePlugin( 'e2e-tests-admin-bar-visibility' );
+
+		datapointHandlers.accounts = ( request ) => {
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( [
+					ADSENSE_ACCOUNT,
+				] ),
+			} );
+		};
+
+		datapointHandlers.clients = ( request ) => {
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( [
+					{
+						arcOptIn: false,
+						id: `ca-${ ADSENSE_ACCOUNT.id }`,
+						kind: 'adsense#adClient',
+						productCode: 'AFC',
+						supportsReporting: true,
+					},
+				] ),
+			} );
+		};
+
+		await proceedToAdsenseSetup();
+		await Promise.all( [
+			page.goto( createURL( '/' ), { waitUntil: 'load' } ),
+			page.waitForSelector( '#amp-admin-bar-item-status-icon' ),
+		] );
+		await expect( page ).toMatchElement( '#amp-admin-bar-item-status-icon', { text: '✅' } );
+		await deactivatePlugin( 'amp' );
+	} );
+
+	it( 'has valid AMP for non-logged in users', async () => {
+		await activateAmpAndSetMode( 'standard' );
+		datapointHandlers.accounts = ( request ) => {
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( [
+					ADSENSE_ACCOUNT,
+				] ),
+			} );
+		};
+
+		datapointHandlers.clients = ( request ) => {
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( [
+					{
+						arcOptIn: false,
+						id: `ca-${ ADSENSE_ACCOUNT.id }`,
+						kind: 'adsense#adClient',
+						productCode: 'AFC',
+						supportsReporting: true,
+					},
+				] ),
+			} );
+		};
+
+		await proceedToAdsenseSetup();
+
+		await expect( '/' ).toHaveValidAMP();
+
+		await deactivatePlugin( 'amp' );
 	} );
 } );
