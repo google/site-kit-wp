@@ -1,5 +1,5 @@
 /**
- * PageSpeed Insights module initialization.
+ * PageSpeed Insights module entrypoint.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,4 +19,4 @@
 /**
  * Internal dependencies
  */
-import './datastore';
+import './modules/pagespeed-insights';

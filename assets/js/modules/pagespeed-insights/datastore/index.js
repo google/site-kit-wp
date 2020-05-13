@@ -1,5 +1,5 @@
 /**
- * PageSpeed Insights module initialization.
+ * modules/pagespeed-insights data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,4 +19,22 @@
 /**
  * Internal dependencies
  */
-import './datastore';
+import Data from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
+import { STORE_NAME } from './constants';
+
+export { STORE_NAME };
+
+const baseModuleStore = Modules.createModuleStore( 'pagespeed-insights', {
+	storeName: STORE_NAME,
+} );
+
+const store = Data.combineStores(
+	Data.commonStore,
+	baseModuleStore,
+);
+
+// Register this store on the global registry.
+Data.registerStore( STORE_NAME, store );
+
+export default store;

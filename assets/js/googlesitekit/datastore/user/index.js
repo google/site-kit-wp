@@ -33,9 +33,9 @@ const store = Data.combineStores(
 	Data.commonStore,
 	authentication,
 	disconnect,
-	error,
-	notifications,
 	userInfo,
+	notifications,
+	error,
 );
 
 export const INITIAL_STATE = store.INITIAL_STATE;
