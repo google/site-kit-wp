@@ -482,9 +482,9 @@ final class Assets {
 				)
 			),
 			new Script(
-				'googlesitekit-forms',
+				'googlesitekit-datastore-forms',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-forms.js',
+					'src'          => $base_url . 'js/googlesitekit-datastore-forms.js',
 					'dependencies' => array(
 						'googlesitekit-data',
 						'googlesitekit-api',
