@@ -1,6 +1,6 @@
 <?php
 /**
- * Trait Google\Site_Kit\Tests\Authentication_Trait
+ * Trait Google\Site_Kit\Tests\Fake_Authentication_Trait
  *
  * @package   Google\Site_Kit\Core\Util
  * @copyright 2020 Google LLC
@@ -17,7 +17,7 @@ namespace Google\Site_Kit\Tests;
  * @access private
  * @ignore
  */
-trait Authentication_Trait {
+trait Fake_Authentication_Trait {
 
 	/**
 	 * Creates fake Google authentication credentials for testing.
@@ -54,7 +54,7 @@ trait Authentication_Trait {
 	public function fake_proxy_authentication() {
 		$fake_proxy_auth = array(
 			'client_id'     => '12345678.apps.sitekit.withgoogle.com',
-			'client_secret' => 'test-client-secret',
+			'client_secret' => 'test-site-secret',
 		);
 
 		add_filter(

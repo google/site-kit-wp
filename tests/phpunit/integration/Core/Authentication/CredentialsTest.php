@@ -15,13 +15,13 @@ use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit\Tests\Authentication_Trait;
+use Google\Site_Kit\Tests\Fake_Authentication_Trait;
 
 /**
  * @group Authentication
  */
 class CredentialsTest extends TestCase {
-	use Authentication_Trait;
+	use Fake_Authentication_Trait;
 
 	private $registered_default = array(
 		'oauth2_client_id'     => '',
