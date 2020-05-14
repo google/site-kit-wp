@@ -51,9 +51,11 @@ export default function AccountCreate() {
 	const [ isNavigating, setIsNavigating ] = useState( false );
 
 	// Redirect if the accountTicketTermsOfServiceURL is set.
-	if ( accountTicketTermsOfServiceURL ) {
-		global.location.assign( accountTicketTermsOfServiceURL );
-	}
+	useEffect( () => {
+		if ( accountTicketTermsOfServiceURL ) {
+			global.location.assign( accountTicketTermsOfServiceURL );
+		}
+	}, [ accountTicketTermsOfServiceURL ] );
 
 	// Set form defaults on initial render.
 	const { setForm } = useDispatch( STORE_NAME );
