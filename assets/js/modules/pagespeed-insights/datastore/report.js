@@ -45,13 +45,9 @@ export const actions = {
 	/**
 	 * Fetches a PageSpeed Insights report.
 	 *
-	 * Fetches a PageSpeed Insights report.
+	 * @since n.e.x.t
 	 *
-	 * @since 1.8.0
-	 *
-	 * @param {(Object|undefined)}	options           Optional options for generating the report.
-	 * @param {(string|undefined)} 	options.strategy  Optional strategy. Default 'mobile'.
-	 * @param {(string|undefined)} 	options.url   	  Optional URL. Default the site's reference URL.
+	 * @param {Object}	options Options used for generating the report.
 	 * @return {Object} Redux-style action.
 	 */
 	*fetchReport( options ) {
@@ -67,7 +63,7 @@ export const actions = {
 				payload: { options },
 				type: FETCH_REPORT,
 			};
-			// TODO: Figure out how report will come back from response
+
 			yield actions.receiveReport( options, report );
 
 			yield {
@@ -91,21 +87,14 @@ export const actions = {
 	/**
 	 * Adds report to the store.
 	 *
-	 * Adds the fetched report to the data store.
-	 *
 	 * @since n.e.x.t
 	 * @private
 	 *
-	 * @param {Object} 	options				Options used to fetch report.
-	 * @param {string} 	options.strategy  	Strategy. Default 'mobile'.
-	 * @param {string} 	options.url   	  	URL. Default the site's reference URL.
-	 * @param {Object} 	report 				Report to add.
+	 * @param {Object} 	options	Options used to fetch report.
+	 * @param {Object} 	report	Report to add.
 	 * @return {Object} Redux-style action.
 	 */
 	receiveReport( options, report ) {
-		console.log('--actions.receiveReport--');
-		console.log('options', options);
-		console.log('report',report);
 		invariant( 'object' === typeof options, 'options must be an object.' );
 		invariant( 'object' === typeof report, 'report must be an object.' );
 
@@ -119,9 +108,6 @@ export const actions = {
 
 export const controls = {
 	[ FETCH_REPORT ]: ( { payload: { options } } ) => {
-		console.log('--controls.FETCH_REPORT--');
-		console.log('options', options);
-		
 		const { strategy, url } = options;
 
 		return API.get( 'modules', 'pagespeed-insights', 'pagespeed', { strategy, url } );
@@ -129,8 +115,6 @@ export const controls = {
 };
 
 export const reducer = ( state, { type, payload } ) => {
-	console.log(`--reducer.${type}--`);
-	console.log('state',state);
 	switch ( type ) {
 		case START_FETCH_REPORT: {
 			const { options: { strategy, url } } = payload;
@@ -189,10 +173,6 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getReport( options = {} ) {
-		console.log('--resolvers.getReport--');
-		console.log('options', { options: options.strategy, url: options.url } );
-		const registry = yield Data.commonActions.getRegistry();
-
 		if ( options.strategy === undefined ) {
 			options.strategy = 'mobile';
 		}
@@ -200,6 +180,7 @@ export const resolvers = {
 			options.url = registry.select( CORE_SITE ).getReferenceSiteURL();
 		}
 
+		const registry = yield Data.commonActions.getRegistry();
 		const existingReport = registry.select( STORE_NAME ).getReport( options );
 
 		// If there is already a report loaded in state, consider it fulfilled and don't make an API request.
@@ -213,11 +194,7 @@ export const resolvers = {
 
 export const selectors = {
 	/**
-	 * Gets a PageSpeed Insights report for the given options.
-	 *
-	 * The report generated will include the following metrics: TODO get metrics for below
-	 * *
-	 * *
+	 * Gets a PageSpeed Insights report for the given strategy and URL.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -225,11 +202,9 @@ export const selectors = {
 	 * @param {(Object|undefined)}	options           Optional options for generating the report.
 	 * @param {(string|undefined)} 	options.strategy  Optional strategy. Default 'mobile'.
 	 * @param {(string|undefined)} 	options.url   	  Optional URL. Default the site's reference URL.
-	 * @return {<Object>|undefined)} A PageSpeed Insights report; `undefined` if not loaded.
+	 * @return {(Object|undefined)} A PageSpeed Insights report; `undefined` if not loaded.
 	 */
 	getReport( state, options = {} ) {
-		console.log('--selectors.getReport--',state);
-		console.log('options', options);
 		const { reports } = state;
 		const { strategy, url } = options;
 

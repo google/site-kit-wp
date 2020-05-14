@@ -37,7 +37,7 @@ import * as fixtures from './__fixtures__';
 describe( 'modules/pagespeed-insights report', () => {
 	const baseInfoVar = '_googlesitekitBaseData';
 	const baseInfo = {
-		referenceSiteURL: 'http://sitekit.10ublabs.com/',
+		referenceSiteURL: 'http://sitekit.10uplabs.com/',
 	};
 	const entityInfoVar = '_googlesitekitEntityData';
 	let apiFetchSpy;
@@ -81,11 +81,11 @@ describe( 'modules/pagespeed-insights report', () => {
 						/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
 					)
 					.mockResponseOnce(
-						JSON.stringify( fixtures.mobileReport ),
+						JSON.stringify( fixtures.desktopReport ),
 						{ status: 200 }
 					);
 
-				const options = { strategy: 'mobile', url: 'http://sitekit.10ublabs.com/' };
+				const options = { strategy: 'desktop', url: 'http://testsite.10uplabs.com/' };
 
 				const initialReport = registry.select( STORE_NAME ).getReport( options );
 
@@ -104,8 +104,7 @@ describe( 'modules/pagespeed-insights report', () => {
 				const report = registry.select( STORE_NAME ).getReport( options );
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
-				console.log('report', report);
-				expect( report ).toEqual( fixtures.mobileReport );
+				expect( report ).toEqual( fixtures.desktopReport );
 			} );
 
 			it( 'does not make a network request if report for given options is already present', async () => {
@@ -116,7 +115,7 @@ describe( 'modules/pagespeed-insights report', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveReport( { options, report: fixtures.mobileReport } );
+				registry.dispatch( STORE_NAME ).receiveReport( options, fixtures.mobileReport );
 
 				const report = registry.select( STORE_NAME ).getReport( options );
 
