@@ -121,7 +121,7 @@ final class Credentials extends Setting {
 	 * service. This can be overridden by providing actual GCP credentials with the {@see 'googlesitekit_oauth_secret'}
 	 * filter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return bool True if proxy authentication is used, false otherwise.
 	 */

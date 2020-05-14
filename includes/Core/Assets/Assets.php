@@ -659,7 +659,7 @@ final class Assets {
 	/**
 	 * Gets the inline data specific to the current user
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return array The user inline data to be output.
 	 */
@@ -680,7 +680,7 @@ final class Assets {
 		 *
 		 * This should not include anything remotely expensive to compute.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.9.0
 		 *
 		 * @param array $data User data.
 		 */

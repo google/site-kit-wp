@@ -76,7 +76,7 @@ export const actions = {
 	/**
 	 * Stores connection info received from the REST API.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @param {Object} authentication Authentication info from the API.
@@ -165,7 +165,7 @@ export const selectors = {
 	 * ```
 	 *
 	 * @private
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} User authentication info.
@@ -180,7 +180,7 @@ export const selectors = {
 	 * Returns `true` if the user is authenticated, `false` if
 	 * not. Returns `undefined` if the authentication info is not available/loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} User authentication status.
@@ -196,7 +196,7 @@ export const selectors = {
 	 * Returns an array of granted scopes or undefined
 	 * if authentication info is not available/loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} Array of granted scopes
@@ -212,7 +212,7 @@ export const selectors = {
 	 * Returns an array of required scopes or undefined
 	 * if authentication info is not available/loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} Array of required scopes
