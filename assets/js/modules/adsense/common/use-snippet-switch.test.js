@@ -25,7 +25,7 @@ import apiFetchMock from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import UseSnippetSwitch from './use-snippet-switch';
-import { fireEvent, muteConsole, render } from '../../../../../tests/js/test-utils';
+import { fireEvent, render } from '../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../datastore/constants';
 
 // Mock apiFetch so we know if it's called.
@@ -35,10 +35,12 @@ apiFetchMock.mockImplementation( ( ...args ) => {
 	console.warn( 'apiFetch', ...args );
 } );
 
-const setupRegistry = ( registry ) => {
-	registry.dispatch( STORE_NAME ).receiveSettings( {
-		useSnippet: false,
-	} );
+const getSetupRegistry = ( useSnippetValue ) => {
+	return ( registry ) => {
+		registry.dispatch( STORE_NAME ).receiveSettings( {
+			useSnippet: useSnippetValue,
+		} );
+	};
 };
 
 describe( 'UseSnippetSwitch', () => {
@@ -46,7 +48,7 @@ describe( 'UseSnippetSwitch', () => {
 	afterAll( () => jest.restoreAllMocks() );
 
 	it( 'should update useSnippet in the store when toggled', async () => {
-		const { container, registry } = render( <UseSnippetSwitch />, { setupRegistry } );
+		const { container, registry } = render( <UseSnippetSwitch />, { setupRegistry: getSetupRegistry( false ) } );
 		const originalUseSnippet = registry.select( STORE_NAME ).getUseSnippet();
 		expect( originalUseSnippet ).toBe( false );
 
@@ -61,14 +63,13 @@ describe( 'UseSnippetSwitch', () => {
 	} );
 
 	it( 'should render nothing when useSnippet is undefined', async () => {
-		muteConsole( 'warn' );
-		const { queryAllByRole } = render( <UseSnippetSwitch /> );
+		const { queryAllByRole } = render( <UseSnippetSwitch />, { setupRegistry: getSetupRegistry( undefined ) } );
 
 		expect( queryAllByRole( 'switch', { hidden: true } ) ).toHaveLength( 0 );
 	} );
 
 	it( 'should persist useSnippet when saveOnChange prop is enabled', async () => {
-		const { container, registry } = render( <UseSnippetSwitch saveOnChange={ true } />, { setupRegistry } );
+		const { container, registry } = render( <UseSnippetSwitch saveOnChange={ true } />, { setupRegistry: getSetupRegistry( false ) } );
 		const originalUseSnippet = registry.select( STORE_NAME ).getUseSnippet();
 		expect( originalUseSnippet ).toBe( false );
 
