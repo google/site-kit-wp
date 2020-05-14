@@ -54,7 +54,7 @@ export default function SetupAccountCreate() {
 		global.open( signUpURL, '_blank' );
 	} );
 
-	if ( ! siteURL || ! userEmail || 'undefined' === typeof existingTag ) {
+	if ( ! siteURL || ! userEmail || undefined === existingTag ) {
 		return null;
 	}
 

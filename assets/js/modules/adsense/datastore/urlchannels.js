@@ -105,7 +105,7 @@ export const actions = {
 export const controls = {
 	[ FETCH_URLCHANNELS ]: ( { payload: { clientID } } ) => {
 		const accountID = parseAccountID( clientID );
-		if ( 'undefined' === typeof accountID ) {
+		if ( undefined === accountID ) {
 			// Mirror the API response that would happen for an invalid client ID.
 			return new Promise( () => {
 				throw {
@@ -197,7 +197,7 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getURLChannels( clientID ) {
-		if ( 'undefined' === typeof clientID ) {
+		if ( undefined === clientID ) {
 			return;
 		}
 
@@ -222,7 +222,7 @@ export const selectors = {
 	 * @return {(Array.<Object>|undefined)} An array of AdSense URL channels; `undefined` if not loaded.
 	 */
 	getURLChannels( state, clientID ) {
-		if ( 'undefined' === typeof clientID ) {
+		if ( undefined === clientID ) {
 			return undefined;
 		}
 

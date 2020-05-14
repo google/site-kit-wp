@@ -33,7 +33,7 @@ export default function UserProfile() {
 	const userEmail = useSelect( ( select ) => select( userStoreName ).getEmail() );
 	const userPicture = useSelect( ( select ) => select( userStoreName ).getPicture() );
 
-	if ( 'undefined' === typeof userEmail || 'undefined' === typeof userPicture ) {
+	if ( undefined === userEmail || undefined === userPicture ) {
 		return <ProgressBar small />;
 	}
 

@@ -57,7 +57,7 @@ export default function UseSnippetSwitch( props ) {
 		}
 	}, [ useSnippet ] );
 
-	if ( 'undefined' === typeof useSnippet ) {
+	if ( undefined === useSnippet ) {
 		return null;
 	}
 

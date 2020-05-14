@@ -63,7 +63,7 @@ export const actions = {
 	*fetchSaveUseSnippet( useSnippet ) {
 		let response, error;
 
-		if ( 'undefined' === typeof useSnippet ) {
+		if ( undefined === useSnippet ) {
 			error = {
 				message: 'useSnippet is required.',
 			};
@@ -122,7 +122,7 @@ export const actions = {
 	*saveUseSnippet() {
 		const registry = yield commonActions.getRegistry();
 		const useSnippet = registry.select( STORE_NAME ).getUseSnippet();
-		if ( 'undefined' === typeof useSnippet ) {
+		if ( undefined === useSnippet ) {
 			return;
 		}
 
@@ -337,7 +337,7 @@ export const reducer = ( state, { type, payload } ) => {
 
 			// Only set original account status when it is really the first
 			// time that we load the settings on this pageload.
-			if ( 'undefined' === typeof state.originalAccountStatus ) {
+			if ( undefined === state.originalAccountStatus ) {
 				return {
 					...state,
 					originalAccountStatus: accountStatus,
@@ -359,7 +359,7 @@ export const resolvers = {
 
 		// Do not do anything if original account status already known.
 		const existingOriginalAccountStatus = registry.select( STORE_NAME ).getOriginalAccountStatus();
-		if ( 'undefined' !== typeof existingOriginalAccountStatus ) {
+		if ( undefined !== existingOriginalAccountStatus ) {
 			return;
 		}
 

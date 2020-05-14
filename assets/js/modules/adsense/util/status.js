@@ -60,7 +60,7 @@ export const determineAccountStatus = ( {
 	previousAccountID,
 	previousClientID,
 } ) => {
-	if ( 'undefined' === typeof accounts || 'undefined' === typeof previousAccountID ) {
+	if ( undefined === accounts || undefined === previousAccountID ) {
 		return accountsErrorToStatus( error );
 	}
 
@@ -76,11 +76,11 @@ export const determineAccountStatus = ( {
 	}
 
 	// For any of the following statuses, it must be ensured that clients are loaded.
-	if ( 'undefined' === typeof clients || 'undefined' === typeof previousClientID ) {
+	if ( undefined === clients || undefined === previousClientID ) {
 		return undefined;
 	}
 
-	if ( 'undefined' === typeof alerts ) {
+	if ( undefined === alerts ) {
 		return alertsErrorToStatus( error );
 	}
 
@@ -123,7 +123,7 @@ export const determineSiteStatus = ( {
 	urlChannels,
 	siteURL,
 } ) => {
-	if ( 'undefined' === typeof urlChannels || 'undefined' === typeof siteURL ) {
+	if ( undefined === urlChannels || undefined === siteURL ) {
 		return undefined;
 	}
 
@@ -150,7 +150,7 @@ export const determineSiteStatus = ( {
  */
 export const determineAccountID = ( { accounts, previousAccountID } ) => {
 	// If loading, nothing to determine.
-	if ( 'undefined' === typeof accounts ) {
+	if ( undefined === accounts ) {
 		return undefined;
 	}
 
@@ -192,7 +192,7 @@ export const determineAccountID = ( { accounts, previousAccountID } ) => {
  */
 export const determineClientID = ( { clients, previousClientID } ) => {
 	// If loading, nothing to determine.
-	if ( 'undefined' === typeof clients ) {
+	if ( undefined === clients ) {
 		return undefined;
 	}
 

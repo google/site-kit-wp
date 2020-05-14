@@ -127,7 +127,7 @@ export default function SetupMain( { finishSetup } ) {
 	// Update current account ID setting on-the-fly.
 	useEffect( () => {
 		// Don't do anything if setting has not loaded yet or if account ID cannot be determined.
-		if ( 'undefined' === typeof previousAccountID || 'undefined' === typeof accountID ) {
+		if ( undefined === previousAccountID || undefined === accountID ) {
 			return;
 		}
 		setAccountID( accountID );
@@ -136,7 +136,7 @@ export default function SetupMain( { finishSetup } ) {
 	// Update current client ID setting on-the-fly.
 	useEffect( () => {
 		// Don't do anything if setting has not loaded yet or if client ID cannot be determined.
-		if ( 'undefined' === typeof previousClientID || 'undefined' === typeof clientID ) {
+		if ( undefined === previousClientID || undefined === clientID ) {
 			return;
 		}
 		setClientID( clientID );
@@ -145,7 +145,7 @@ export default function SetupMain( { finishSetup } ) {
 	// Update account status setting on-the-fly.
 	useEffect( () => {
 		// Don't do anything if account status cannot be determined (because of arguments not loaded yet).
-		if ( 'undefined' === typeof accountStatus ) {
+		if ( undefined === accountStatus ) {
 			return;
 		}
 		// Force setup completion flags to false in case it had been set before.
@@ -163,7 +163,7 @@ export default function SetupMain( { finishSetup } ) {
 	// Update site status setting on-the-fly.
 	useEffect( () => {
 		// Don't do anything if site status cannot be determined (because of arguments not loaded yet).
-		if ( 'undefined' === typeof siteStatus ) {
+		if ( undefined === siteStatus ) {
 			return;
 		}
 		// Force site setup completion flag to false in case it had been set before.
@@ -200,7 +200,7 @@ export default function SetupMain( { finishSetup } ) {
 	};
 
 	let viewComponent;
-	if ( 'undefined' === typeof accountStatus || ( isDoingSubmitChanges && ! isSubmittingInBackground ) || isNavigating ) {
+	if ( undefined === accountStatus || ( isDoingSubmitChanges && ! isSubmittingInBackground ) || isNavigating ) {
 		// Show loading indicator if account status not determined yet or if
 		// a submission is in progress that is not happening in background.
 		viewComponent = <ProgressBar />;
@@ -233,7 +233,7 @@ export default function SetupMain( { finishSetup } ) {
 					accountStatus
 				) } />;
 		}
-	} else if ( 'undefined' === typeof siteStatus ) {
+	} else if ( undefined === siteStatus ) {
 		// Show loading indicator if site status not determined yet.
 		viewComponent = <ProgressBar />;
 	} else if ( siteStatus !== SITE_STATUS_ADDED || ! siteSetupComplete ) {

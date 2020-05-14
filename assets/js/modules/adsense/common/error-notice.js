@@ -30,7 +30,7 @@ export default function ErrorNotice() {
 
 	// Do not display if no error or if the error yields an account status,
 	// in which case it is an "expected" error.
-	if ( ! error || 'undefined' !== typeof errorToStatus( error ) ) {
+	if ( ! error || undefined !== errorToStatus( error ) ) {
 		return null;
 	}
 

@@ -52,7 +52,7 @@ export default function SetupAccountApproved() {
 		await completeAccountSetup();
 	}, [ isDoingSubmitChanges ] );
 
-	if ( 'undefined' === typeof existingTag || 'undefined' === typeof originalAccountStatus ) {
+	if ( undefined === existingTag || undefined === originalAccountStatus ) {
 		return null;
 	}
 

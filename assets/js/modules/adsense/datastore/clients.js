@@ -190,7 +190,7 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getClients( accountID ) {
-		if ( 'undefined' === typeof accountID || ! isValidAccountID( accountID ) ) {
+		if ( undefined === accountID || ! isValidAccountID( accountID ) ) {
 			return;
 		}
 
@@ -218,7 +218,7 @@ export const selectors = {
 	 * @return {(Array.<Object>|undefined)} An array of AdSense clients; `undefined` if not loaded.
 	 */
 	getClients( state, accountID ) {
-		if ( 'undefined' === typeof accountID ) {
+		if ( undefined === accountID ) {
 			return undefined;
 		}
 

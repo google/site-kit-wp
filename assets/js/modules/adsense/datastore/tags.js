@@ -263,7 +263,7 @@ export const resolvers = {
 	},
 
 	*getTagPermission( clientID ) {
-		if ( 'undefined' === typeof clientID ) {
+		if ( undefined === clientID ) {
 			return;
 		}
 

@@ -43,7 +43,7 @@ export default function AccountSelect() {
 		}
 	} );
 
-	if ( 'undefined' === typeof accounts ) {
+	if ( undefined === accounts ) {
 		return <ProgressBar small />;
 	}
 

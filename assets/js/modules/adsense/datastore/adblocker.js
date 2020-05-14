@@ -36,7 +36,7 @@ export const INITIAL_STATE = {
 
 export const actions = {
 	receiveIsAdBlockerActive( isAdBlockerActive ) {
-		invariant( 'undefined' !== typeof isAdBlockerActive, 'isAdBlockerActive is required.' );
+		invariant( undefined !== isAdBlockerActive, 'isAdBlockerActive is required.' );
 		return {
 			payload: { isAdBlockerActive },
 			type: RECEIVE_IS_ADBLOCKER_ACTIVE,
@@ -70,7 +70,7 @@ export const resolvers = {
 
 		// If ad blocker status was already detected, consider it fulfilled
 		// and don't check the global.
-		if ( 'undefined' !== typeof isAdBlockerActive ) {
+		if ( undefined !== isAdBlockerActive ) {
 			return;
 		}
 
