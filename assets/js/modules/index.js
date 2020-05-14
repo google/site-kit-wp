@@ -22,6 +22,6 @@
 import './adsense';
 import './analytics/index.legacy';
 import './optimize';
-import './pagespeed-insights';
+import './pagespeed-insights/index.legacy';
 import './search-console/index.legacy';
 import './tagmanager';
