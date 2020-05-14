@@ -22,12 +22,18 @@
 import invariant from 'invariant';
 
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { isValidAccountSelection } from '../util';
 import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from './constants';
+import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { actions as tagActions } from './tags';
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -409,9 +415,25 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The terms of service URL.
 	 */
-	getAccountTicketTermsOfServiceURL( state ) {
-		return state.accountTicketTermsOfServiceURL;
-	},
+	getAccountTicketTermsOfServiceURL: createRegistrySelector( ( select ) => ( state ) => {
+		const { accountTicketTermsOfServiceURL: url } = state;
+		if ( undefined === url ) {
+			return undefined;
+		}
+
+		const email = select( CORE_USER ).getEmail();
+		if ( undefined === email ) {
+			return url;
+		}
+
+		// While there should only be one anchor, let's make sure we get everything.
+		const [ baseURL, ...anchors ] = url.split( '#' );
+		const userBaseURL = addQueryArgs( baseURL, {
+			authuser: email,
+		} );
+		return `${ userBaseURL }#${ anchors.join( '#' ) }`;
+	} ),
+
 	/**
 	 * Whether or not the account create form is valid to submit.
 	 *
