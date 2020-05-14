@@ -144,7 +144,7 @@ export const resolvers = {
 			homeURL,
 			referenceSiteURL,
 			timezone,
-			usingProxy,
+			usingProxy: !! usingProxy,
 			siteName,
 		} );
 	},
@@ -349,7 +349,7 @@ export const selectors = {
 	 */
 	isUsingProxy: createRegistrySelector( ( select ) => () => {
 		const { usingProxy } = select( STORE_NAME ).getSiteInfo() || {};
-		return !! usingProxy;
+		return usingProxy;
 	} ),
 
 	/**
