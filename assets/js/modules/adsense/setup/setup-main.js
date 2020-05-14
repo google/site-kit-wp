@@ -273,8 +273,11 @@ export default function SetupMain( { finishSetup } ) {
 		setIsNavigating( true );
 	};
 
+	// Fetch existing tag right here, to ensure the progress bar is still being shown while this is being loaded.
+	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
+
 	let viewComponent;
-	if ( undefined === accountStatus || ( isDoingSubmitChanges && ! isSubmittingInBackground ) || isNavigating ) {
+	if ( undefined === accountStatus || undefined === existingTag || ( isDoingSubmitChanges && ! isSubmittingInBackground ) || isNavigating ) {
 		// Show loading indicator if account status not determined yet or if
 		// a submission is in progress that is not happening in background.
 		viewComponent = <ProgressBar />;
