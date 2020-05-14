@@ -41,7 +41,7 @@ export default function SettingsSetupIncomplete() {
 		<Fragment>
 			<AdBlockerWarning />
 
-			{ isPendingStatus && __( 'Site Kit has placed the code on your site, ', 'google-site-kit' ) }
+			{ isPendingStatus && __( 'Site Kit has placed AdSense code on your site, ', 'google-site-kit' ) }
 			{ ! isPendingStatus && __( 'Setup incomplete: ', 'google-site-kit' ) }
 
 			<Link

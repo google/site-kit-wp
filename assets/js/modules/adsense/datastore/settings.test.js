@@ -41,8 +41,6 @@ import { createCacheKey } from '../../../googlesitekit/api';
 describe( 'modules/adsense settings', () => {
 	let apiFetchSpy;
 	let registry;
-	let dispatch;
-	let select;
 
 	const validSettings = {
 		accountID: 'pub-12345678',
@@ -63,8 +61,6 @@ describe( 'modules/adsense settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		dispatch = registry.dispatch( STORE_NAME );
-		select = registry.select( STORE_NAME );
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
@@ -91,10 +87,10 @@ describe( 'modules/adsense settings', () => {
 						);
 
 					// Ensure initial settings from server are present.
-					dispatch.receiveSettings( { useSnippet: false } );
+					registry.dispatch( STORE_NAME ).receiveSettings( { useSnippet: false } );
 
-					dispatch.setUseSnippet( true );
-					await dispatch.saveUseSnippet();
+					registry.dispatch( STORE_NAME ).setUseSnippet( true );
+					await registry.dispatch( STORE_NAME ).saveUseSnippet();
 				} ).not.toThrow();
 			} );
 
@@ -109,16 +105,16 @@ describe( 'modules/adsense settings', () => {
 					);
 
 				// Update setting and ensure this flags a settings change.
-				dispatch.setUseSnippet( true );
-				expect( select.haveSettingsChanged() ).toBe( true );
+				registry.dispatch( STORE_NAME ).setUseSnippet( true );
+				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( true );
 
-				await dispatch.saveUseSnippet();
+				await registry.dispatch( STORE_NAME ).saveUseSnippet();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
 				// Ensure settings now no longer need to be updated because
 				// server-side and client-side settings now match.
-				expect( select.haveSettingsChanged() ).toBe( false );
+				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
 			} );
 		} );
 
@@ -126,7 +122,7 @@ describe( 'modules/adsense settings', () => {
 			it( 'requires the useSnippet param', () => {
 				const consoleErrorSpy = jest.spyOn( global.console, 'error' );
 
-				dispatch.fetchSaveUseSnippet();
+				registry.dispatch( STORE_NAME ).fetchSaveUseSnippet();
 				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'useSnippet is required.' );
 
 				consoleErrorSpy.mockClear();
@@ -142,38 +138,54 @@ describe( 'modules/adsense settings', () => {
 						{ status: 200 }
 					);
 
-				dispatch.fetchSaveUseSnippet( true );
-				expect( select.isDoingSaveUseSnippet() ).toEqual( true );
+				registry.dispatch( STORE_NAME ).fetchSaveUseSnippet( true );
+				expect( registry.select( STORE_NAME ).isDoingSaveUseSnippet() ).toEqual( true );
 			} );
 		} );
 
 		describe( 'receiveSaveUseSnippet', () => {
 			it( 'requires the response param', () => {
 				expect( () => {
-					dispatch.receiveSaveUseSnippet();
+					registry.dispatch( STORE_NAME ).receiveSaveUseSnippet();
 				} ).toThrow( 'response is required.' );
 			} );
 
 			it( 'requires the params param', () => {
 				expect( () => {
-					dispatch.receiveSaveUseSnippet( true );
+					registry.dispatch( STORE_NAME ).receiveSaveUseSnippet( true );
 				} ).toThrow( 'params is required.' );
 			} );
 
+			it( 'receives useSnippet and integrates into settings store', () => {
+				// Simulate having loaded settings (useSnippet as false).
+				registry.dispatch( STORE_NAME ).receiveSettings( {
+					useSnippet: false,
+					accountStatus: 'test-status',
+				} );
+				expect( registry.select( STORE_NAME ).getUseSnippet() ).toBe( false );
+
+				// Simulate having saved useSnippet as true.
+				registry.dispatch( STORE_NAME ).receiveSaveUseSnippet( true, { useSnippet: true } );
+
+				// getUseSnippet comes from settings store. Account status should be unmodified.
+				expect( registry.select( STORE_NAME ).getUseSnippet() ).toBe( true );
+				expect( registry.select( STORE_NAME ).getAccountStatus() ).toEqual( 'test-status' );
+			} );
+
 			it( 'receives and sets useSnippet from parameter', () => {
-				dispatch.setUseSnippet( true );
+				registry.dispatch( STORE_NAME ).setUseSnippet( true );
 
 				// Fake a request saving the useSnippet as false.
-				dispatch.receiveSaveUseSnippet( true, { useSnippet: false } );
+				registry.dispatch( STORE_NAME ).receiveSaveUseSnippet( true, { useSnippet: false } );
 
 				// Make sure the saved false is now in place.
-				expect( select.getUseSnippet() ).toBe( false );
+				expect( registry.select( STORE_NAME ).getUseSnippet() ).toBe( false );
 			} );
 		} );
 
 		describe( 'submitChanges', () => {
 			it( 'dispatches saveSettings', async () => {
-				dispatch.setSettings( validSettings );
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
 				fetch
 					.doMockOnceIf(
@@ -184,15 +196,15 @@ describe( 'modules/adsense settings', () => {
 						{ status: 200 }
 					);
 
-				await dispatch.submitChanges();
+				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( fetch ).toHaveBeenCalled();
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
-				expect( select.haveSettingsChanged() ).toBe( false );
+				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
 			} );
 
 			it( 'handles an error if set while saving settings', async () => {
-				dispatch.setSettings( validSettings );
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
 				fetch
 					.doMockOnceIf(
@@ -203,14 +215,14 @@ describe( 'modules/adsense settings', () => {
 						{ status: 500 }
 					);
 
-				await dispatch.submitChanges();
+				await registry.dispatch( STORE_NAME ).submitChanges();
 
-				expect( select.getSettings() ).toEqual( validSettings );
-				expect( select.getError() ).toEqual( wpError );
+				expect( registry.select( STORE_NAME ).getSettings() ).toEqual( validSettings );
+				expect( registry.select( STORE_NAME ).getError() ).toEqual( wpError );
 			} );
 
 			it( 'invalidates AdSense API cache on success', async () => {
-				dispatch.setSettings( validSettings );
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
 				fetch
 					.doMockOnceIf(
@@ -225,7 +237,7 @@ describe( 'modules/adsense settings', () => {
 				expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );
 				expect( ( await getItem( cacheKey ) ).value ).toEqual( 'test-value' );
 
-				await dispatch.submitChanges();
+				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( ( await getItem( cacheKey ) ).value ).toBeFalsy();
 			} );
@@ -234,13 +246,13 @@ describe( 'modules/adsense settings', () => {
 		describe( 'receiveOriginalAccountStatus', () => {
 			it( 'requires the originalAccountStatus param', () => {
 				expect( () => {
-					dispatch.receiveOriginalAccountStatus();
+					registry.dispatch( STORE_NAME ).receiveOriginalAccountStatus();
 				} ).toThrow( 'originalAccountStatus is required.' );
 			} );
 
 			it( 'receives and sets originalAccountStatus from parameter', () => {
-				dispatch.receiveOriginalAccountStatus( 'something' );
-				expect( select.getOriginalAccountStatus() ).toEqual( 'something' );
+				registry.dispatch( STORE_NAME ).receiveOriginalAccountStatus( 'something' );
+				expect( registry.select( STORE_NAME ).getOriginalAccountStatus() ).toEqual( 'something' );
 			} );
 		} );
 	} );
@@ -248,51 +260,51 @@ describe( 'modules/adsense settings', () => {
 	describe( 'selectors', () => {
 		describe( 'isDoingSubmitChanges', () => {
 			it( 'sets internal state while submitting changes', () => {
-				expect( select.isDoingSubmitChanges() ).toBe( false );
+				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
 
-				dispatch.submitChanges();
-				expect( select.isDoingSubmitChanges() ).toBe( true );
+				registry.dispatch( STORE_NAME ).submitChanges();
+				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
 			} );
 
 			it( 'toggles the internal state again once submission is completed', async () => {
-				const submitPromise = dispatch.submitChanges();
-				expect( select.isDoingSubmitChanges() ).toBe( true );
+				const submitPromise = registry.dispatch( STORE_NAME ).submitChanges();
+				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
 
 				await submitPromise;
 
-				expect( select.isDoingSubmitChanges() ).toBe( false );
+				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
 			} );
 		} );
 
 		describe( 'canSubmitChanges', () => {
 			it( 'requires a valid accountID or empty string', () => {
-				dispatch.setSettings( validSettings );
-				expect( select.canSubmitChanges() ).toBe( true );
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
-				dispatch.setAccountID( '0' );
-				expect( select.canSubmitChanges() ).toBe( false );
+				registry.dispatch( STORE_NAME ).setAccountID( '0' );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 
-				dispatch.setAccountID( null );
-				expect( select.canSubmitChanges() ).toBe( false );
+				registry.dispatch( STORE_NAME ).setAccountID( null );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 
 				// An empty string is accepted (for when no account can be determined).
-				dispatch.setAccountID( '' );
-				expect( select.canSubmitChanges() ).toBe( true );
+				registry.dispatch( STORE_NAME ).setAccountID( '' );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 			} );
 
 			it( 'requires a valid clientID or empty string', () => {
-				dispatch.setSettings( validSettings );
-				expect( select.canSubmitChanges() ).toBe( true );
+				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
-				dispatch.setClientID( '0' );
-				expect( select.canSubmitChanges() ).toBe( false );
+				registry.dispatch( STORE_NAME ).setClientID( '0' );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 
-				dispatch.setClientID( null );
-				expect( select.canSubmitChanges() ).toBe( false );
+				registry.dispatch( STORE_NAME ).setClientID( null );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
 
 				// An empty string is accepted (for when no client can be determined).
-				dispatch.setClientID( '' );
-				expect( select.canSubmitChanges() ).toBe( true );
+				registry.dispatch( STORE_NAME ).setClientID( '' );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 			} );
 		} );
 
@@ -308,13 +320,13 @@ describe( 'modules/adsense settings', () => {
 						{ status: 200 }
 					);
 
-				const initialOriginalAccountStatus = select.getOriginalAccountStatus();
+				const initialOriginalAccountStatus = registry.select( STORE_NAME ).getOriginalAccountStatus();
 				// Settings will be their initial value while being fetched.
 				expect( initialOriginalAccountStatus ).toEqual( undefined );
 
-				await subscribeUntil( registry, () => select.hasFinishedResolution( 'getOriginalAccountStatus' ) && select.hasFinishedResolution( 'getSettings' ) );
+				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'getOriginalAccountStatus' ) && registry.select( STORE_NAME ).hasFinishedResolution( 'getSettings' ) );
 
-				const originalAccountStatus = select.getOriginalAccountStatus();
+				const originalAccountStatus = registry.select( STORE_NAME ).getOriginalAccountStatus();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( originalAccountStatus ).toEqual( response.accountStatus );
@@ -322,11 +334,11 @@ describe( 'modules/adsense settings', () => {
 
 			it( 'does not make a network request if original account status is already set', async () => {
 				const value = 'a-status';
-				dispatch.receiveOriginalAccountStatus( value );
+				registry.dispatch( STORE_NAME ).receiveOriginalAccountStatus( value );
 
-				expect( select.getOriginalAccountStatus() ).toEqual( value );
+				expect( registry.select( STORE_NAME ).getOriginalAccountStatus() ).toEqual( value );
 
-				await subscribeUntil( registry, () => select.hasFinishedResolution( 'getOriginalAccountStatus' ) );
+				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'getOriginalAccountStatus' ) );
 
 				expect( fetch ).not.toHaveBeenCalled();
 			} );
@@ -334,14 +346,14 @@ describe( 'modules/adsense settings', () => {
 			it( 'does not override original account status when receiving settings again', async () => {
 				// Set original value.
 				const value = 'a-status';
-				dispatch.receiveOriginalAccountStatus( value );
+				registry.dispatch( STORE_NAME ).receiveOriginalAccountStatus( value );
 
-				expect( select.getOriginalAccountStatus() ).toEqual( value );
+				expect( registry.select( STORE_NAME ).getOriginalAccountStatus() ).toEqual( value );
 
 				// Despite receiving settings, the value should not be updated
 				// as it was already set.
-				dispatch.receiveSettings( { accountStatus: 'another-status' } );
-				expect( select.getOriginalAccountStatus() ).toEqual( value );
+				registry.dispatch( STORE_NAME ).receiveSettings( { accountStatus: 'another-status' } );
+				expect( registry.select( STORE_NAME ).getOriginalAccountStatus() ).toEqual( value );
 			} );
 		} );
 	} );

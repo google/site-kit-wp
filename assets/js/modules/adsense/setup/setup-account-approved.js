@@ -70,7 +70,9 @@ export default function SetupAccountApproved() {
 		label = __( 'Keep AdSense code placed by Site Kit', 'google-site-kit' );
 	}
 
-	let showProfile, checkedMessage, uncheckedMessage;
+	let showProfile;
+	let checkedMessage;
+	let uncheckedMessage;
 	if ( existingTag && hasExistingTagPermission ) {
 		// Existing tag with permission.
 		showProfile = false;

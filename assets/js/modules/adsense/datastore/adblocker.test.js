@@ -28,13 +28,9 @@ import {
 
 describe( 'modules/adsense adblocker', () => {
 	let registry;
-	let select;
-	let dispatch;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		select = registry.select( STORE_NAME );
-		dispatch = registry.dispatch( STORE_NAME );
 	} );
 
 	afterEach( () => {
@@ -45,14 +41,14 @@ describe( 'modules/adsense adblocker', () => {
 		describe( 'receiveIsAdBlockerActive', () => {
 			it( 'requires the isAdBlockerActive param to be boolean', () => {
 				expect( () => {
-					dispatch.receiveIsAdBlockerActive();
+					registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive();
 				} ).toThrow( 'isAdBlockerActive must be boolean.' );
 			} );
 
 			it( 'receives and sets isAdBlockerActive', () => {
-				dispatch.receiveIsAdBlockerActive( true );
+				registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( true );
 
-				expect( select.isAdBlockerActive() ).toBe( true );
+				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBe( true );
 			} );
 		} );
 	} );
@@ -65,11 +61,11 @@ describe( 'modules/adsense adblocker', () => {
 				}
 				global.googlesitekit.canAdsRun = true;
 
-				select.isAdBlockerActive();
-				await subscribeUntil( registry, () => select.hasFinishedResolution( 'isAdBlockerActive' ) );
+				registry.select( STORE_NAME ).isAdBlockerActive();
+				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'isAdBlockerActive' ) );
 
 				// canAdsRun global has opposite value of isAdBlockerActive.
-				expect( select.isAdBlockerActive() ).toBe( false );
+				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBe( false );
 
 				// Data must not be wiped after retrieving, as it could be used by other dependants.
 				expect( global.googlesitekit.canAdsRun ).not.toEqual( undefined );
@@ -84,23 +80,23 @@ describe( 'modules/adsense adblocker', () => {
 				global.googlesitekit.canAdsRun = false;
 
 				// Set value to false, contrary to the global above which would result in this being true.
-				dispatch.receiveIsAdBlockerActive( false );
+				registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 
-				expect( select.isAdBlockerActive() ).toBe( false );
-				await subscribeUntil( registry, () => select.hasFinishedResolution( 'isAdBlockerActive' ) );
+				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBe( false );
+				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'isAdBlockerActive' ) );
 
 				// Value should still be false because the global with true is not considered.
-				expect( select.isAdBlockerActive() ).toBe( false );
+				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBe( false );
 			} );
 
 			it( 'returns true if ad blocker is received as active', async () => {
-				dispatch.receiveIsAdBlockerActive( true );
+				registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( true );
 
-				expect( select.isAdBlockerActive() ).toBe( true );
-				await subscribeUntil( registry, () => select.hasFinishedResolution( 'isAdBlockerActive' ) );
+				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBe( true );
+				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'isAdBlockerActive' ) );
 
 				// Value should still be true since resolver should not have changed anything.
-				expect( select.isAdBlockerActive() ).toBe( true );
+				expect( registry.select( STORE_NAME ).isAdBlockerActive() ).toBe( true );
 			} );
 		} );
 	} );

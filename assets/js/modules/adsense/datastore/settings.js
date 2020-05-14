@@ -64,9 +64,7 @@ export const actions = {
 		let response, error;
 
 		if ( undefined === useSnippet ) {
-			error = {
-				message: 'useSnippet is required.',
-			};
+			error = new Error( 'useSnippet is required.' );
 			global.console.error( error.message );
 			return { response, error };
 		}
@@ -159,8 +157,9 @@ export const actions = {
 	/**
 	 * Sets the accountSetupComplete flag to true and submits all changes.
 	 *
-	 * This asynchronous action is used to couple setting of the flag with the
-	 * submission of the data, to avoid getting the value out of sync.
+	 * An asynchronous action is used to invoke this action's control, which ensures
+	 * `setAccountSetupComplete( true )` is called before we submit the changes.
+	 * See the `COMPLETE_ACCOUNT_SETUP` control below for more.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -178,8 +177,8 @@ export const actions = {
 	 * Sets the siteSetupComplete flag to true and submits all changes.
 	 *
 	 * An asynchronous action is used to invoke this action's control, which ensures
-	 * `setAccountSetupComplete( true )` is called before we submit the changes.
-	 * See the `COMPLETE_ACCOUNT_SETUP` control below for more.
+	 * `setSiteSetupComplete( true )` is called before we submit the changes.
+	 * See the `COMPLETE_SITE_SETUP` control below for more.
 	 *
 	 * @since n.e.x.t
 	 *
