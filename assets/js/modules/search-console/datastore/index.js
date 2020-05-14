@@ -1,5 +1,5 @@
 /**
- * core/modules data store
+ * modules/search-console data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -20,24 +20,34 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import modules from './modules';
+import Modules from 'googlesitekit-modules';
 import { STORE_NAME } from './constants';
-
 export { STORE_NAME };
 
-const store = Data.combineStores(
-	Data.commonStore,
-	modules,
-);
+const baseModuleStore = Modules.createModuleStore( 'search-console', {
+	storeName: STORE_NAME,
+	settingSlugs: [
+		'propertyID',
+	],
+} );
 
-export const INITIAL_STATE = store.INITIAL_STATE;
-export const actions = store.actions;
-export const controls = store.controls;
-export const reducer = store.reducer;
-export const resolvers = store.resolvers;
-export const selectors = store.selectors;
+const {
+	actions,
+	controls,
+	reducer,
+	resolvers,
+	selectors,
+} = baseModuleStore;
 
-// Register this store on the global registry.
-Data.registerStore( STORE_NAME, store );
+export {
+	actions,
+	controls,
+	reducer,
+	resolvers,
+	selectors,
+};
 
-export default store;
+// Register this baseModuleStore on the global registry.
+Data.registerStore( STORE_NAME, baseModuleStore );
+
+export default baseModuleStore;

@@ -21,6 +21,7 @@
  */
 import invariant from 'invariant';
 import { addQueryArgs } from '@wordpress/url';
+import queryString from 'query-string';
 
 /**
  * Internal dependencies
@@ -160,25 +161,44 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
+	 * @param {(string|undefined)} page Optional page query argument ( Simple format: 'test-page' or Full format: 'custom.php?page=test-page' ) to add to admin URL. If not provided, the base admin URL is returned.
+	 * @param {(Object|undefined)} args Optional additional query arguments to add to admin URL.
 	 * @return {(string|undefined)} This site's admin URL.
 	 */
-	getAdminURL: createRegistrySelector( ( select ) => ( state, page = undefined, args = {} ) => {
+	getAdminURL: createRegistrySelector( ( select ) => ( state, page, args = {} ) => {
 		const { adminURL } = select( STORE_NAME ).getSiteInfo() || {};
 
-		// Prevent a page in args from overriding main page argument
+		// Return adminURL if undefined, or if no page supplied.
+		if ( adminURL === undefined || page === undefined ) {
+			return adminURL;
+		}
+
+		const baseURL = ( adminURL[ adminURL.length - 1 ] === '/' ) ? adminURL : `${ adminURL }/`;
+		let pageArg = page;
+		let phpFile = 'admin.php';
+
+		// If page argument is full format (i.e. 'admin.php?page=google-site-kit'), extract php file and pageArg, returning early with adminURL if no 'page' param found.
+		if ( page.indexOf( '.php?' ) !== -1 ) {
+			const splitPage = page.split( '?' );
+			pageArg = queryString.parse( splitPage.pop() ).page;
+
+			if ( ! pageArg ) {
+				return adminURL;
+			}
+
+			phpFile = splitPage.shift();
+		}
+
+		// Since page should be first query arg, create queryArgs without 'page' to prevent a 'page' in args from overriding it.
 		const { page: extraPage, ...queryArgs } = args; // eslint-disable-line no-unused-vars
 
-		// Add query arguments to URL if supplied
-		const fullURL = ( adminURL && ( page || Object.keys( queryArgs ).length ) )
-			? addQueryArgs(
-				adminURL,
-				{
-					page,
-					...queryArgs,
-				},
-			) : adminURL;
-
-		return fullURL;
+		return addQueryArgs(
+			`${ baseURL }${ phpFile }`,
+			{
+				page: pageArg,
+				...queryArgs,
+			}
+		);
 	} ),
 
 	/**
