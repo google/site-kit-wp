@@ -23,41 +23,18 @@ import Data from 'googlesitekit-data';
 import forms from './forms';
 import { STORE_NAME } from './constants';
 
-export const INITIAL_STATE = Data.collectState(
-);
-
 export { STORE_NAME };
 
-export const actions = Data.addInitializeAction(
-	Data.collectActions(
-		forms.actions
-	)
+const store = Data.combineStores(
+	forms,
 );
 
-export const controls = Data.collectControls(
-);
-
-export const reducer = Data.addInitializeReducer(
-	INITIAL_STATE,
-	Data.collectReducers(
-		forms.reducer
-	)
-);
-
-export const resolvers = Data.collectResolvers(
-);
-
-export const selectors = Data.collectSelectors(
-	forms.selectors
-);
-
-const store = {
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
 
 // Register this store on the global registry.
 Data.registerStore( STORE_NAME, store );
