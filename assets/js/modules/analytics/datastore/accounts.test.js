@@ -81,12 +81,7 @@ describe( 'modules/analytics accounts', () => {
 
 				// Silence expected API errors.
 				muteConsole( 'error' ); // Request will log an error.
-				registry.dispatch( STORE_NAME ).createAccount();
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).isDoingCreateAccount() === false
-					),
-				);
+				await registry.dispatch( STORE_NAME ).createAccount();
 
 				// Ensure the proper body parameters were sent.
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toMatchObject(
