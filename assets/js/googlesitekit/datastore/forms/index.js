@@ -1,5 +1,5 @@
 /**
- * core/forms data store
+ * core/forms Data store: values
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,24 +17,66 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
 import Data from 'googlesitekit-data';
-import forms from './forms';
+import invariant from 'invariant';
 import { STORE_NAME } from './constants';
+
+// Actions
+const SET_FORM_VALUES = 'SET_FORM_VALUES';
 
 export { STORE_NAME };
 
-const store = Data.combineStores(
-	forms,
-);
+export const INITIAL_STATE = {
+};
 
-export const INITIAL_STATE = store.INITIAL_STATE;
-export const actions = store.actions;
-export const controls = store.controls;
-export const reducer = store.reducer;
-export const resolvers = store.resolvers;
-export const selectors = store.selectors;
+export const actions = {
+	setValues( formName, formData ) {
+		invariant( formName, 'form name is required.' );
+
+		return {
+			payload: { formName, formData },
+			type: SET_FORM_VALUES,
+		};
+	},
+};
+
+export const controls = {};
+
+export const reducer = ( state, { type, payload } ) => {
+	switch ( type ) {
+		case SET_FORM_VALUES: {
+			const { formName, formData } = payload;
+
+			return {
+				...state,
+				[ formName ]: formData,
+			};
+		}
+
+		default: {
+			return { ...state };
+		}
+	}
+};
+
+export const resolvers = {};
+
+export const selectors = {
+	getValue( state, formName, key ) {
+		if ( ! formName ) {
+			return undefined;
+		}
+		if ( ! key ) {
+			return undefined;
+		}
+
+		return state[ formName ][ key ];
+	},
+};
+
+const store = 'forms';
 
 // Register this store on the global registry.
 Data.registerStore( STORE_NAME, store );
