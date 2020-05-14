@@ -487,7 +487,9 @@ final class Analytics extends Module
 			return;
 		}
 
-		if ( ! $this->context->input()->filter( INPUT_GET, 'gatoscallback', FILTER_VALIDATE_BOOLEAN ) ) {
+		$input = $this->context->input();
+
+		if ( ! $input->filter( INPUT_GET, 'gatoscallback' ) ) {
 			return;
 		}
 
