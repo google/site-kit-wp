@@ -123,13 +123,7 @@ describe( 'modules/analytics accounts', () => {
 
 				registry.dispatch( STORE_NAME ).setForm( FORM_ACCOUNT_CREATE, { accountName, propertyName, profileName, timezone } );
 				muteConsole( 'error' ); // Request will log an error.
-				registry.dispatch( STORE_NAME ).createAccount();
-
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).isDoingCreateAccount() === false
-					),
-				);
+				await registry.dispatch( STORE_NAME ).createAccount();
 
 				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( response );
 			} );
