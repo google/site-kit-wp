@@ -494,7 +494,7 @@ final class Analytics extends Module
 		}
 
 		// The handler should check the received Account Ticket id parameter against the id stored in the provisioning step.
-		$account_ticket_id        = $this->context->input()->filter( INPUT_GET, 'accountTicketId', FILTER_SANITIZE_STRING );
+		$account_ticket_id        = $input->filter( INPUT_GET, 'accountTicketId', FILTER_SANITIZE_STRING );
 		$stored_account_ticket_id = get_transient( self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
 		delete_transient( self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
 
