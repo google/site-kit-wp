@@ -33,6 +33,7 @@ import AccountField from './account-create/account-field';
 import PropertyField from './account-create/property-field';
 import ProfileField from './account-create/profile-field';
 import CountrySelect from './account-create/country-select';
+import ErrorNotice from './error-notice';
 import { STORE_NAME, FORM_ACCOUNT_CREATE } from '../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { countryCodesByTimezone } from '../util/countries-timezones';
@@ -90,6 +91,8 @@ export default function AccountCreate() {
 
 	return (
 		<div>
+			<ErrorNotice />
+
 			<h3 className="googlesitekit-heading-4">
 				{ __( 'Create your Analytics account', 'google-site-kit' ) }
 			</h3>
