@@ -1,17 +1,25 @@
 /**
  * WordPress dependencies
  */
-import { activatePlugin, visitAdminPage, createURL } from '@wordpress/e2e-test-utils';
+import {
+	activatePlugin,
+	deactivatePlugin,
+	visitAdminPage,
+	createURL,
+} from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
  */
 import {
+	activateAmpAndSetMode,
+	allowedAmpModes,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	useRequestInterception,
 	setSearchConsoleProperty,
 	setupAnalytics,
+	setAMPMode,
 } from '../../../utils';
 
 async function proceedToTagManagerSetup() {
@@ -168,5 +176,28 @@ describe( 'Tag Manager module setup', () => {
 		// Ensure buttons are present.
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module--tag-manager .mdc-button', { text: /create an account/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module--tag-manager .googlesitekit-cta-link', { text: /re-fetch my account/i } );
+	} );
+
+	describe.each(
+		Object.keys( allowedAmpModes )
+	)( 'AMP mode %s', ( mode ) => {
+		beforeAll( async () => {
+			await activatePlugin( 'amp' );
+		} );
+		afterAll( async () => {
+			await deactivatePlugin( 'amp' );
+		} );
+		it( 'renders the correct drop downs in the setup screen', async () => {
+			await setAMPMode( mode );
+			await activatePlugin( 'e2e-tests-module-setup-tagmanager-api-mock' );
+			await proceedToTagManagerSetup();
+
+			// Ensure that the correct dropdowns are displayed.
+			if ( 'standard' !== mode ) {
+				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--web' );
+			}
+			await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
+			await deactivatePlugin( 'amp' );
+		} );
 	} );
 } );
