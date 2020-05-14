@@ -97,6 +97,8 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-modules': './assets/js/googlesitekit-modules.js',
 				'googlesitekit-modules-adsense': './assets/js/googlesitekit-modules-adsense.js',
 				'googlesitekit-modules-analytics': './assets/js/googlesitekit-modules-analytics.js',
+				'googlesitekit-modules-pagespeed-insights': 'assets/js/googlesitekit-modules-pagespeed-insights.js',
+				'googlesitekit-modules-search-console': './assets/js/googlesitekit-modules-search-console.js',
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
 				'googlesitekit-settings': './assets/js/googlesitekit-settings.js',

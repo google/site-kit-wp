@@ -1,7 +1,7 @@
 /**
  * PageSpeed Insights module initialization.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,54 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-
-/**
- * WordPress dependencies
- */
-import { addFilter } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
-import { createAddToFilter } from '../../util/helpers';
-import DashboardSpeed from './dashboard/dashboard-widget-speed';
-import PageSpeedInsightsDashboardWidgetHomepageSpeed from './dashboard/dashboard-widget-homepage-speed';
-import PageSpeedInsightsCTA from './dashboard/dashboard-cta';
-import { settingsDetails as SettingsDetails } from './settings';
-import { getModulesData } from '../../util';
-
-const slug = 'pagespeed-insights';
-
-const {
-	active,
-	setupComplete,
-} = getModulesData()[ slug ];
-
-if ( active && setupComplete ) {
-	const addDashboardSpeed = createAddToFilter( <DashboardSpeed /> );
-	const addPageSpeedInsightsDashboardWidgetHomepageSpeed = createAddToFilter( <PageSpeedInsightsDashboardWidgetHomepageSpeed /> );
-
-	/**
-	 * Add components to the Site Kit Dashboard.
-	 */
-	addFilter( 'googlesitekit.DashboardModule',
-		'googlesitekit.PageSpeedInsights',
-		addDashboardSpeed, 45 );
-	addFilter( 'googlesitekit.DashboardDetailsModule',
-		'googlesitekit.PageSpeedInsights',
-		addDashboardSpeed, 45 );
-	addFilter( 'googlesitekit.DashboardSpeed',
-		'googlesitekit.PageSpeedInsightsHomepageSpeed',
-		addPageSpeedInsightsDashboardWidgetHomepageSpeed );
-} else {
-	const addPageSpeedInsightsCTA = createAddToFilter( <PageSpeedInsightsCTA /> );
-	addFilter( 'googlesitekit.DashboardModule',
-		'googlesitekit.PageSpeedInsights',
-		addPageSpeedInsightsCTA, 45 );
-}
-
-addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
-	'googlesitekit.PageSpeedInsightsModuleSettingsDetails',
-	createAddToFilter( <SettingsDetails /> ), 10 );
+import './datastore';

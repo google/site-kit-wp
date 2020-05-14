@@ -16,6 +16,8 @@ import coreUserStore, { STORE_NAME as coreUserStoreName } from '../../assets/js/
 import coreModulesStore, { STORE_NAME as coreModulesStoreName } from '../../assets/js/googlesitekit/modules/datastore';
 import modulesAdSenseStore, { STORE_NAME as modulesAdSenseStoreName } from '../../assets/js/modules/adsense/datastore';
 import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore';
+import modulesPageSpeedInsightsStore, { STORE_NAME as modulesPageSpeedInsightsStoreName } from '../../assets/js/modules/pagespeed-insights/datastore';
+import modulesSearchConsoleStore, { STORE_NAME as modulesSearchConsoleStoreName } from '../../assets/js/modules/search-console/datastore';
 
 /**
  * Create a registry with all available stores.
@@ -90,6 +92,8 @@ export const registerAllStoresOn = ( registry ) => {
 	registry.registerStore( coreModulesStoreName, coreModulesStore );
 	registry.registerStore( modulesAdSenseStoreName, modulesAdSenseStore );
 	registry.registerStore( modulesAnalyticsStoreName, modulesAnalyticsStore );
+	registry.registerStore( modulesPageSpeedInsightsStoreName, modulesPageSpeedInsightsStore );
+	registry.registerStore( modulesSearchConsoleStoreName, modulesSearchConsoleStore );
 };
 
 const unsubscribes = [];

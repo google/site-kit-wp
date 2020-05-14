@@ -1,5 +1,5 @@
 /**
- * All modules.
+ * PageSpeed Insights Constants.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,12 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import './adsense/index.legacy';
-import './analytics/index.legacy';
-import './optimize';
-import './pagespeed-insights/index.legacy';
-import './search-console/index.legacy';
-import './tagmanager';
+export const STORE_NAME = 'modules/pagespeed-insights';

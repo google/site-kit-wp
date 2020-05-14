@@ -1,5 +1,5 @@
 /**
- * All modules.
+ * core/user data store: notifications.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,9 +19,8 @@
 /**
  * Internal dependencies
  */
-import './adsense/index.legacy';
-import './analytics/index.legacy';
-import './optimize';
-import './pagespeed-insights/index.legacy';
-import './search-console/index.legacy';
-import './tagmanager';
+import { createNotificationsStore } from '../../data/create-notifications-store';
+
+const notifications = createNotificationsStore( 'core', 'user', 'notifications', { server: false } );
+
+export default notifications;
