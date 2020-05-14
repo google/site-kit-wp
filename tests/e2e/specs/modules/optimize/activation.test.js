@@ -1,12 +1,17 @@
 /**
  * WordPress dependencies
  */
-import { visitAdminPage, activatePlugin } from '@wordpress/e2e-test-utils';
+import {
+	activatePlugin,
+	deactivatePlugin,
+	visitAdminPage,
+} from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
  */
 import {
+	activateAmpAndSetMode,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setSearchConsoleProperty,
@@ -86,5 +91,15 @@ describe( 'Optimize Activation', () => {
 		await setupHandle.dispose();
 
 		await finishOptimizeSetup();
+	} );
+
+	it( 'displays AMP experimental JSON field', async () => {
+		await activateAmpAndSetMode( 'standard' );
+		await setupAnalytics( { useSnippet: true } );
+		await proceedToOptimizeSetup();
+
+		const setupHandle = await page.$( '.googlesitekit-setup-module--optimize' );
+		await expect( setupHandle ).toMatchElement( 'p', { text: /Please input your AMP experiment settings in JSON format below./i } );
+		await deactivatePlugin( 'amp' );
 	} );
 } );
