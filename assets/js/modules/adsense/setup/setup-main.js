@@ -50,7 +50,6 @@ import {
 	determineClientID,
 	determineAccountStatus,
 	determineSiteStatus,
-	isPendingAccountStatus,
 } from '../util/status';
 import SetupAccountCreate from './setup-account-create';
 import SetupAccountSelect from './setup-account-select';
@@ -125,46 +124,58 @@ export default function SetupMain( { finishSetup } ) {
 		submitChanges,
 	} = useDispatch( STORE_NAME );
 
+	// Allow flagging when a background submission should happen.
+	const [ isAwaitingBackgroundSubmit, setIsAwaitingBackgroundSubmit ] = useState( false );
+
 	// Update current account ID setting on-the-fly.
 	useEffect( () => {
-		// Don't do anything if setting has not loaded yet or if account ID cannot be determined.
-		if ( undefined === previousAccountID || undefined === accountID ) {
+		// Don't do anything if setting has not loaded yet, if account ID
+		// cannot be determined, or if nothing has changed.
+		if ( undefined === previousAccountID || undefined === accountID || previousAccountID === accountID ) {
 			return;
 		}
 		setAccountID( accountID );
+		// Set flag to await background submission.
+		setIsAwaitingBackgroundSubmit( true );
 	}, [ previousAccountID, accountID ] );
 
 	// Update current client ID setting on-the-fly.
 	useEffect( () => {
-		// Don't do anything if setting has not loaded yet or if client ID cannot be determined.
-		if ( undefined === previousClientID || undefined === clientID ) {
+		// Don't do anything if setting has not loaded yet, if client ID cannot
+		// be determined, or if nothing has changed.
+		if ( undefined === previousClientID || undefined === clientID || previousClientID === clientID ) {
 			return;
 		}
 		setClientID( clientID );
+		// Set flag to await background submission.
+		setIsAwaitingBackgroundSubmit( true );
 	}, [ previousClientID, clientID ] );
 
 	// Update account status setting on-the-fly.
 	useEffect( () => {
-		// Don't do anything if account status cannot be determined (because of arguments not loaded yet).
-		if ( undefined === accountStatus ) {
+		// Don't do anything if setting has not loaded yet, if account status
+		// cannot be determined, or if nothing has changed.
+		if ( undefined === previousAccountStatus || undefined === accountStatus || previousAccountStatus === accountStatus ) {
 			return;
 		}
-		// Force setup completion flags to false in case it had been set before.
+		// Force setup completion flags to false in case it had been set
+		// before, and enforce snippet placement until the account is
+		// approved.
 		if ( accountStatus !== ACCOUNT_STATUS_APPROVED ) {
 			setAccountSetupComplete( false );
 			setSiteSetupComplete( false );
-		}
-		// Force snippet placement to true when account is graylisted or pending.
-		if ( isPendingAccountStatus( accountStatus ) ) {
 			setUseSnippet( true );
 		}
 		setAccountStatus( accountStatus );
-	}, [ accountStatus ] );
+		// Set flag to await background submission.
+		setIsAwaitingBackgroundSubmit( true );
+	}, [ previousAccountStatus, accountStatus ] );
 
 	// Update site status setting on-the-fly.
 	useEffect( () => {
-		// Don't do anything if site status cannot be determined (because of arguments not loaded yet).
-		if ( undefined === siteStatus ) {
+		// Don't do anything if setting has not loaded yet, if site status
+		// cannot be determined, or if nothing has changed.
+		if ( undefined === previousSiteStatus || undefined === siteStatus || previousSiteStatus === siteStatus ) {
 			return;
 		}
 		// Force site setup completion flag to false in case it had been set before.
@@ -172,16 +183,31 @@ export default function SetupMain( { finishSetup } ) {
 			setSiteSetupComplete( false );
 		}
 		setSiteStatus( siteStatus );
-	}, [ siteStatus ] );
+		// Set flag to await background submission.
+		setIsAwaitingBackgroundSubmit( true );
+	}, [ previousSiteStatus, siteStatus ] );
 
 	// Submit changes for determined parameters in the background when they are valid.
 	const [ isSubmittingInBackground, setIsSubmittingInBackground ] = useState( false );
+	// If a background submission should happen and changes are valid to be
+	// submitted, do that here. This is wrapped in a separate useEffect hook
+	// and relies on isAwaitingBackgroundSubmit since the above useEffect hook
+	// must not depend on canSubmitChanges, since that is also updated when
+	// other than the above four settings are updated.
 	useEffect( () => {
-		// Only submit changes if valid.
-		// TODO: Remove temporary hack to avoid saving in Storybook.
-		if ( ! canSubmitChanges || global.__STORYBOOK_ADDONS ) {
+		if ( ! isAwaitingBackgroundSubmit || isSubmittingInBackground || ! canSubmitChanges ) {
 			return;
 		}
+
+		// Set flag to false since we are gonna run the background submission
+		// right now.
+		setIsAwaitingBackgroundSubmit( false );
+
+		// TODO: Remove temporary hack to avoid saving in Storybook.
+		if ( global.__STORYBOOK_ADDONS ) {
+			return;
+		}
+
 		// Set internal state for submitting in background to avoid sudden
 		// rendering of a progress bar.
 		( async () => {
@@ -189,7 +215,7 @@ export default function SetupMain( { finishSetup } ) {
 			await submitChanges();
 			setIsSubmittingInBackground( false );
 		} )();
-	}, [ canSubmitChanges, previousAccountID, previousClientID, previousAccountStatus, previousSiteStatus ] );
+	}, [ isAwaitingBackgroundSubmit, isSubmittingInBackground, canSubmitChanges ] );
 
 	const isAdBlockerActive = useSelect( ( select ) => select( STORE_NAME ).isAdBlockerActive() );
 
