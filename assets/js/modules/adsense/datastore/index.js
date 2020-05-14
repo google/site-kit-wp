@@ -31,97 +31,44 @@ import clients from './clients';
 import report from './report';
 import tags from './tags';
 import urlchannels from './urlchannels';
+import settings from './settings';
+import adblocker from './adblocker';
+import error from './error';
+import { STORE_NAME } from './constants';
+export { STORE_NAME };
 
 const baseModuleStore = Modules.createModuleStore( 'adsense', {
+	storeName: STORE_NAME,
 	settingSlugs: [
 		'accountID',
 		'clientID',
 		'useSnippet',
 		'accountStatus',
 		'siteStatus',
+		'accountSetupComplete',
+		'siteSetupComplete',
 	],
 } );
 
-export const STORE_NAME = baseModuleStore.STORE_NAME;
-
-export const INITIAL_STATE = Data.collectState(
-	baseModuleStore.INITIAL_STATE,
-	accounts.INITIAL_STATE,
-	alerts.INITIAL_STATE,
-	clients.INITIAL_STATE,
-	report.INITIAL_STATE,
-	tags.INITIAL_STATE,
-	urlchannels.INITIAL_STATE,
+const store = Data.combineStores(
+	baseModuleStore,
+	accounts,
+	alerts,
+	clients,
+	report,
+	tags,
+	urlchannels,
+	settings,
+	adblocker,
+	error,
 );
 
-export const actions = Data.addInitializeAction( Data.collectActions(
-	baseModuleStore.actions,
-	accounts.actions,
-	alerts.actions,
-	clients.actions,
-	report.actions,
-	tags.actions,
-	urlchannels.actions,
-) );
-
-export const controls = Data.collectControls(
-	baseModuleStore.controls,
-	accounts.controls,
-	alerts.controls,
-	clients.controls,
-	report.controls,
-	tags.controls,
-	urlchannels.controls,
-);
-
-export const reducer = Data.addInitializeReducer(
-	INITIAL_STATE,
-	Data.collectReducers(
-		baseModuleStore.reducer,
-		accounts.reducer,
-		alerts.reducer,
-		clients.reducer,
-		report.reducer,
-		tags.reducer,
-		urlchannels.reducer,
-	)
-);
-
-export const resolvers = Data.collectResolvers(
-	baseModuleStore.resolvers,
-	accounts.resolvers,
-	alerts.resolvers,
-	clients.resolvers,
-	report.resolvers,
-	tags.resolvers,
-	urlchannels.resolvers,
-);
-
-export const selectors = Data.collectSelectors(
-	baseModuleStore.selectors,
-	accounts.selectors,
-	alerts.selectors,
-	clients.selectors,
-	report.selectors,
-	tags.selectors,
-	urlchannels.selectors,
-	{
-		// TODO: Revisit better way to handle and retrieve errors.
-		getError( state ) {
-			const { error } = state;
-
-			return error;
-		},
-	},
-);
-
-const store = {
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
 
 // Register this store on the global registry.
 Data.registerStore( STORE_NAME, store );

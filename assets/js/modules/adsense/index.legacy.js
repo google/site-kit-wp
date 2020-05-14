@@ -20,26 +20,15 @@
  * Internal dependencies
  */
 import { createAddToFilter } from '../../util/helpers';
-import { fillFilterWithComponent, getSiteKitAdminURL, getModulesData } from '../../util';
+import { getSiteKitAdminURL, getModulesData } from '../../util';
 import AdSenseDashboardWidget from './dashboard/dashboard-widget';
 import DashboardEarnings from './dashboard/dashboard-earnings';
-import AdSenseSettings from './settings/adsense-settings';
-import AdSenseModuleStatus from './dashboard/adsense-module-status';
-import AdSenseSettingsStatus from './settings/adsense-settings-status';
-import AdSenseSettingsWarning from './settings/adsense-settings-warning';
 
 /**
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
 const slug = 'adsense';
-
-/**
- * Append ad blocker warning.
- */
-addFilter( 'googlesitekit.ModuleSettingsWarning',
-	'googlesitekit.adsenseSettingsWarning',
-	fillFilterWithComponent( AdSenseSettingsWarning, {} ) );
 
 addFilter( 'googlesitekit.SetupModuleShowLink',
 	'googlesitekit.adsenseSetupModuleShowLink', ( showLink, moduleSlug ) => {
@@ -88,52 +77,12 @@ if ( modulesData.adsense.active ) {
 		addFilter( `googlesitekit.Connected-${ slug }`,
 			'googlesitekit.AdSenseModuleConnected', ( isConnected ) => {
 				const { settings } = modulesData[ slug ];
-				if ( ! isConnected && undefined !== settings && ( 'account-pending-review' === settings.accountStatus || 'ads-display-pending' === settings.accountStatus ) ) {
+				if ( ! isConnected && undefined !== settings && ( 'graylisted' === settings.accountStatus || 'pending' === settings.accountStatus ) ) {
 					return true;
 				}
 				return isConnected;
 			} );
 	}
-
-	/**
-	 * Add components to the settings page.
-	 */
-	addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
-		'googlesitekit.AdSenseModuleSettingsDetails',
-		fillFilterWithComponent( AdSenseSettings, {
-			onSettingsPage: true,
-		} ) );
-
-	/**
-	 * Add component to the setup wizard
-	 */
-	addFilter( `googlesitekit.ModuleSetup-${ slug }`,
-		'googlesitekit.TagmanagerModuleSetupWizard',
-		fillFilterWithComponent( AdSenseModuleStatus, {
-			onSettingsPage: false,
-		} ) );
-
-	/**
-	 * Set AdSense to auto refresh status when account is not connected.
-	 */
-	addFilter( 'googlesitekit.autoRefreshModules',
-		'googlesitekit.AdSenseAutoRefresh', ( modules ) => {
-			modules.push( {
-				identifier: 'adsense',
-				toRefresh: () => {
-					let status = '';
-					if ( modulesData.adsense && modulesData.adsense[ 'account-status' ] ) {
-						status = modulesData.adsense[ 'account-status' ].accountStatus;
-					}
-
-					if ( status && -1 < status.indexOf( 'account-connected' ) ) {
-						return false;
-					}
-					return true;
-				},
-			} );
-			return modules;
-		} );
 
 	/**
 	 * Add components to the Notification requests.
@@ -145,12 +94,4 @@ if ( modulesData.adsense.active ) {
 			} );
 			return modules;
 		} );
-
-	/**
-	 * Filter the settings message when the module setup is incomplete.
-	 */
-	addFilter( 'googlesitekit.ModuleSetupIncomplete',
-		'googlesitekit.adsenseSettingStatus',
-		fillFilterWithComponent( AdSenseSettingsStatus, {} ) );
 }
-

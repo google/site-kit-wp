@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './index';
+import { STORE_NAME } from './constants';
 import { isValidAccountID } from '../util';
 
 // Actions
@@ -161,9 +161,22 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RESET_ALERTS: {
+			const {
+				accountStatus,
+				siteStatus,
+				accountSetupComplete,
+				siteSetupComplete,
+			} = state.savedSettings || {};
 			return {
 				...state,
-				alerts: {},
+				alerts: INITIAL_STATE.alerts,
+				settings: {
+					...( state.settings || {} ),
+					accountStatus,
+					siteStatus,
+					accountSetupComplete,
+					siteSetupComplete,
+				},
 			};
 		}
 
@@ -175,7 +188,7 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getAlerts( accountID ) {
-		if ( 'undefined' === typeof accountID || ! isValidAccountID( accountID ) ) {
+		if ( undefined === accountID || ! isValidAccountID( accountID ) ) {
 			return;
 		}
 
@@ -200,10 +213,10 @@ export const selectors = {
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The AdSense Account ID to fetch alerts for.
-	 * @return {?Array.<Object>} An array of AdSense alerts; `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} An array of AdSense alerts; `undefined` if not loaded.
 	 */
 	getAlerts( state, accountID ) {
-		if ( 'undefined' === typeof accountID ) {
+		if ( undefined === accountID ) {
 			return undefined;
 		}
 

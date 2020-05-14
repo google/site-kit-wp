@@ -27,7 +27,6 @@ import { delay } from 'lodash';
 import { withFilters } from '@wordpress/components';
 import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { applyFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -55,71 +54,7 @@ class SetupWrapper extends Component {
 		const { moduleToSetup } = global.googlesitekit.setup;
 		this.state = {
 			currentModule: moduleToSetup,
-			refresh: false,
 		};
-
-		// Auto refresh modules status after window unfocused inactivity.
-		this.timeoutID = null;
-		this.unfocusedTime = 0;
-		this.autoRefreshModules = applyFilters( 'googlesitekit.autoRefreshModules', [] );
-		this.moduleRefresh = this.autoRefreshModules.find( ( module ) => this.state.currentModule === module.identifier );
-
-		this.refreshStatus = this.refreshStatus.bind( this );
-		this.startUnfocusedTimer = this.startUnfocusedTimer.bind( this );
-	}
-
-	componentDidMount() {
-		global.addEventListener( 'focus', this.refreshStatus );
-		global.addEventListener( 'blur', this.startUnfocusedTimer );
-	}
-
-	componentWillUnmount() {
-		global.removeEventListener( 'focus', this.refreshStatus );
-		global.removeEventListener( 'blur', this.startUnfocusedTimer );
-	}
-
-	/**
-	 * Start timer for time window is unfocused.
-	 */
-	startUnfocusedTimer() {
-		if ( this.moduleRefresh ) {
-			let toRefresh = true;
-			if ( this.moduleRefresh.toRefresh ) {
-				toRefresh = this.moduleRefresh.toRefresh();
-			}
-
-			if ( toRefresh ) {
-				this.timeoutID = global.setInterval( () => {
-					this.unfocusedTime++;
-				}, 1000 );
-			}
-		}
-	}
-
-	/**
-	 * Refresh status after user has returned to the setup window
-	 * and after certain time of inactivity.
-	 */
-	refreshStatus() {
-		if ( this.moduleRefresh ) {
-			const idleTime = this.moduleRefresh.idleTime || 15;
-
-			let toRefresh = true;
-			if ( this.moduleRefresh.toRefresh ) {
-				toRefresh = this.moduleRefresh.toRefresh();
-			}
-
-			if ( toRefresh ) {
-				if ( idleTime < this.unfocusedTime ) {
-					// force re-render.
-					this.setState( { refresh: this.timeoutID } );
-				}
-
-				global.clearTimeout( this.timeoutID );
-				this.unfocusedTime = 0;
-				this.timeoutID = null;
-			}
-		}
 	}
 
 	static loadSetupModule( slug ) {

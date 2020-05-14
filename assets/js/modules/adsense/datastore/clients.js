@@ -20,15 +20,14 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { groupBy } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './index';
-import { isValidAccountID, parseAccountID } from '../util';
+import { STORE_NAME } from './constants';
+import { isValidAccountID } from '../util';
 
 // Actions
 const FETCH_CLIENTS = 'FETCH_CLIENTS';
@@ -61,7 +60,7 @@ export const actions = {
 				type: FETCH_CLIENTS,
 			};
 
-			yield actions.receiveClients( response );
+			yield actions.receiveClients( response, { accountID } );
 
 			yield {
 				payload: { accountID },
@@ -79,11 +78,12 @@ export const actions = {
 		return { response, error };
 	},
 
-	receiveClients( clients ) {
+	receiveClients( clients, { accountID } ) {
 		invariant( Array.isArray( clients ), 'clients must be an array.' );
+		invariant( accountID, 'accountID is required.' );
 
 		return {
-			payload: { clients },
+			payload: { accountID, clients },
 			type: RECEIVE_CLIENTS,
 		};
 	},
@@ -124,13 +124,13 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_CLIENTS: {
-			const { clients } = payload;
+			const { accountID, clients } = payload;
 
 			return {
 				...state,
 				clients: {
 					...state.clients,
-					...groupBy( clients, ( client ) => parseAccountID( client.id ) ),
+					[ accountID ]: [ ...clients ],
 				},
 			};
 		}
@@ -161,9 +161,24 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RESET_CLIENTS: {
+			const {
+				clientID,
+				accountStatus,
+				siteStatus,
+				accountSetupComplete,
+				siteSetupComplete,
+			} = state.savedSettings || {};
 			return {
 				...state,
-				clients: {},
+				clients: INITIAL_STATE.clients,
+				settings: {
+					...( state.settings || {} ),
+					clientID,
+					accountStatus,
+					siteStatus,
+					accountSetupComplete,
+					siteSetupComplete,
+				},
 			};
 		}
 
@@ -175,7 +190,7 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getClients( accountID ) {
-		if ( 'undefined' === typeof accountID || ! isValidAccountID( accountID ) ) {
+		if ( undefined === accountID || ! isValidAccountID( accountID ) ) {
 			return;
 		}
 
@@ -200,10 +215,10 @@ export const selectors = {
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The AdSense Account ID to fetch clients for.
-	 * @return {?Array.<Object>} An array of AdSense clients; `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} An array of AdSense clients; `undefined` if not loaded.
 	 */
 	getClients( state, accountID ) {
-		if ( 'undefined' === typeof accountID ) {
+		if ( undefined === accountID ) {
 			return undefined;
 		}
 

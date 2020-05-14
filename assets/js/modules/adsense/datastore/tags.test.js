@@ -25,7 +25,7 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './index';
+import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	muteConsole,
@@ -283,6 +283,58 @@ describe( 'modules/adsense tags', () => {
 				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( fixtures.tagPermissionNoAccess.clientID );
 
 				expect( hasPermission ).toEqual( undefined );
+			} );
+		} );
+
+		describe( 'hasExistingTagPermission', () => {
+			it( 'returns true if an existing tag exists and the user has permission for it', async () => {
+				registry.dispatch( STORE_NAME ).receiveExistingTag( 'ca-pub-12345678' );
+				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+					accountID: 'pub-12345678',
+					clientID: 'ca-pub-12345678',
+					permission: true,
+				} );
+
+				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
+
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getExistingTag' )
+				);
+
+				expect( hasPermission ).toEqual( true );
+			} );
+
+			it( 'returns false if an existing tag exists and the user does not have permission for it', async () => {
+				registry.dispatch( STORE_NAME ).receiveExistingTag( 'ca-pub-12345678' );
+				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+					accountID: 'pub-12345678',
+					clientID: 'ca-pub-12345678',
+					permission: false,
+				} );
+
+				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
+
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getExistingTag' )
+				);
+
+				expect( hasPermission ).toEqual( false );
+			} );
+
+			it( 'returns null if no existing tag exists', async () => {
+				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+
+				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
+
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getExistingTag' )
+				);
+
+				expect( hasPermission ).toEqual( null );
+				expect( fetch ).not.toHaveBeenCalled();
 			} );
 		} );
 	} );

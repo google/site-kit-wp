@@ -24,6 +24,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
+import { withFilters } from '@wordpress/components';
 import { Component, Fragment } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
@@ -38,14 +39,16 @@ import getNoDataComponent from '../../../components/notifications/nodata';
 import getDataErrorComponent from '../../../components/notifications/data-error';
 import ProgressBar from '../../../components/progress-bar';
 import AdSenseDashboardOutro from './dashboard-outro';
-import { isAdsenseConnectedAnalytics, propsFromAccountStatus } from '../util';
+import { isAdsenseConnectedAnalytics } from '../util';
 import ModuleSettingsWarning from '../../../components/notifications/module-settings-warning';
-import AdSenseInProcessStatus from './adsense-in-process-status';
 import { getModulesData } from '../../../util';
 import HelpLink from '../../../components/help-link';
 import Header from '../../../components/header';
 import PageHeader from '../../../components/page-header';
 import Layout from '../../../components/layout/layout';
+
+// Empty component to allow filtering in refactored version.
+const AdSenseDashboardZeroData = withFilters( 'googlesitekit.AdSenseDashboardZeroData' )( () => null );
 
 class AdSenseDashboardWidget extends Component {
 	constructor( props ) {
@@ -56,7 +59,6 @@ class AdSenseDashboardWidget extends Component {
 			loading: true,
 			isAdSenseConnected: true,
 			zeroData: false,
-			instructionProps: {},
 		};
 		this.handleDataError = this.handleDataError.bind( this );
 		this.handleDataSuccess = this.handleDataSuccess.bind( this );
@@ -115,12 +117,9 @@ class AdSenseDashboardWidget extends Component {
 	 * Show the "We're getting your site ready for ads. screen until we have data.".
 	 */
 	handleZeroData() {
-		const instructionProps = propsFromAccountStatus( 'account-connected-no-data' );
-
 		this.setState( {
 			zeroData: true,
 			loading: false,
-			instructionProps,
 		} );
 	}
 
@@ -133,7 +132,6 @@ class AdSenseDashboardWidget extends Component {
 			loading,
 			isAdSenseConnected,
 			zeroData,
-			instructionProps,
 		} = this.state;
 		const { homepage } = modulesData.adsense;
 
@@ -168,20 +166,7 @@ class AdSenseDashboardWidget extends Component {
 									mdc-layout-grid__cell--span-12
 								">
 									<Layout fill>
-										<div className="mdc-layout-grid mdc-layout-grid--fill">
-											<div className="mdc-layout-grid__inner">
-												<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-													<AdSenseInProcessStatus
-														ctaLink={ instructionProps.ctaLink }
-														ctaLinkText={ instructionProps.ctaLinkText }
-														header={ instructionProps.statusHeadline }
-														subHeader={ instructionProps.statusMessage }
-														incomplete={ instructionProps.incomplete }
-														required={ instructionProps.required }
-													/>
-												</div>
-											</div>
-										</div>
+										<AdSenseDashboardZeroData />
 									</Layout>
 								</div>
 							}

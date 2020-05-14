@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './index';
+import { STORE_NAME } from './constants';
 import { parseAccountID } from '../util';
 
 // Actions
@@ -105,7 +105,7 @@ export const actions = {
 export const controls = {
 	[ FETCH_URLCHANNELS ]: ( { payload: { clientID } } ) => {
 		const accountID = parseAccountID( clientID );
-		if ( 'undefined' === typeof accountID ) {
+		if ( undefined === accountID ) {
 			// Mirror the API response that would happen for an invalid client ID.
 			return new Promise( () => {
 				throw {
@@ -174,9 +174,18 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RESET_URLCHANNELS: {
+			const {
+				siteStatus,
+				siteSetupComplete,
+			} = state.savedSettings || {};
 			return {
 				...state,
-				urlchannels: {},
+				urlchannels: INITIAL_STATE.urlchannels,
+				settings: {
+					...( state.settings || {} ),
+					siteStatus,
+					siteSetupComplete,
+				},
 			};
 		}
 
@@ -188,7 +197,7 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getURLChannels( clientID ) {
-		if ( 'undefined' === typeof clientID ) {
+		if ( undefined === clientID ) {
 			return;
 		}
 
@@ -210,10 +219,10 @@ export const selectors = {
 	 *
 	 * @param {Object} state    Data store's state.
 	 * @param {string} clientID The AdSense Client ID to fetch URL channels for.
-	 * @return {?Array.<Object>} An array of AdSense URL channels; `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} An array of AdSense URL channels; `undefined` if not loaded.
 	 */
 	getURLChannels( state, clientID ) {
-		if ( 'undefined' === typeof clientID ) {
+		if ( undefined === clientID ) {
 			return undefined;
 		}
 

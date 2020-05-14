@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './index';
+import { STORE_NAME } from './constants';
 
 // Actions
 const FETCH_ACCOUNTS = 'FETCH_ACCOUNTS';
@@ -141,9 +141,26 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RESET_ACCOUNTS: {
+			const {
+				accountID,
+				clientID,
+				accountStatus,
+				siteStatus,
+				accountSetupComplete,
+				siteSetupComplete,
+			} = state.savedSettings || {};
 			return {
 				...state,
-				accounts: undefined,
+				accounts: INITIAL_STATE.accounts,
+				settings: {
+					...( state.settings || {} ),
+					accountID,
+					clientID,
+					accountStatus,
+					siteStatus,
+					accountSetupComplete,
+					siteSetupComplete,
+				},
 			};
 		}
 
@@ -175,7 +192,7 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {?Array.<Object>} An array of AdSense accounts; `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} An array of AdSense accounts; `undefined` if not loaded.
 	 */
 	getAccounts( state ) {
 		const { accounts } = state;

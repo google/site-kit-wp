@@ -261,7 +261,7 @@ export const reducer = ( state, { type, payload } ) => {
 		case RESET_ACCOUNTS: {
 			return {
 				...state,
-				accounts: undefined,
+				accounts: INITIAL_STATE.accounts,
 				settings: {
 					...state.settings,
 					accountID: undefined,

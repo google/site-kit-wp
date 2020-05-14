@@ -17,11 +17,11 @@
  */
 
 export const ACCOUNT_STATUS_NONE = 'none';
+export const ACCOUNT_STATUS_MULTIPLE = 'multiple';
 export const ACCOUNT_STATUS_DISAPPROVED = 'disapproved';
 export const ACCOUNT_STATUS_GRAYLISTED = 'graylisted';
-export const ACCOUNT_STATUS_MULTIPLE = 'multiple';
-export const ACCOUNT_STATUS_NO_CLIENT = 'no-client';
 export const ACCOUNT_STATUS_PENDING = 'pending';
+export const ACCOUNT_STATUS_NO_CLIENT = 'no-client';
 export const ACCOUNT_STATUS_APPROVED = 'approved';
 
 // TODO: Expand the statuses provided here to be more specific in case the
@@ -42,14 +42,14 @@ export const SITE_STATUS_ADDED = 'added';
  *
  * @since n.e.x.t
  *
- * @param {Object}  data                   Input data to determine account status.
- * @param {?Array}  data.accounts          List of account objects retrieved from the API.
- * @param {?Array}  data.clients           List of client objects retrieved from the API.
- * @param {?Array}  data.alerts            List of alert objects retrieved from the API.
- * @param {?Object} data.error             Error object if one of the API requests failed.
- * @param {?string} data.previousAccountID Account ID, if already known from before.
- * @param {?string} data.previousClientID  Client ID, if already known from before.
- * @return {?string} Account status determined, or undefined if one of the required
+ * @param {Object}             data                   Input data to determine account status.
+ * @param {(Array|undefined)}  data.accounts          List of account objects retrieved from the API.
+ * @param {(Array|undefined)}  data.clients           List of client objects retrieved from the API.
+ * @param {(Array|undefined)}  data.alerts            List of alert objects retrieved from the API.
+ * @param {(Object|undefined)} data.error             Error object if one of the API requests failed.
+ * @param {(string|undefined)} data.previousAccountID Account ID, if already known from before.
+ * @param {(string|undefined)} data.previousClientID  Client ID, if already known from before.
+ * @return {(string|undefined)} Account status determined, or undefined if one of the required
  *                   parameters is undefined.
  */
 export const determineAccountStatus = ( {
@@ -60,8 +60,8 @@ export const determineAccountStatus = ( {
 	previousAccountID,
 	previousClientID,
 } ) => {
-	if ( 'undefined' === typeof accounts || 'undefined' === typeof previousAccountID ) {
-		return errorToStatus( error );
+	if ( undefined === accounts || undefined === previousAccountID ) {
+		return accountsErrorToStatus( error );
 	}
 
 	const accountID = determineAccountID( { accounts, previousAccountID } );
@@ -75,8 +75,13 @@ export const determineAccountStatus = ( {
 		return ACCOUNT_STATUS_NONE;
 	}
 
-	if ( 'undefined' === typeof alerts ) {
-		return errorToStatus( error );
+	// For any of the following statuses, it must be ensured that clients are loaded.
+	if ( undefined === clients || undefined === previousClientID ) {
+		return undefined;
+	}
+
+	if ( undefined === alerts ) {
+		return alertsErrorToStatus( error );
 	}
 
 	const hasGraylistedAlert = alerts.some( ( alert ) => {
@@ -84,10 +89,6 @@ export const determineAccountStatus = ( {
 	} );
 	if ( hasGraylistedAlert ) {
 		return ACCOUNT_STATUS_GRAYLISTED;
-	}
-
-	if ( 'undefined' === typeof clients || 'undefined' === typeof previousClientID ) {
-		return errorToStatus( error );
 	}
 
 	const clientID = determineClientID( { clients, previousClientID } );
@@ -112,17 +113,17 @@ export const determineAccountStatus = ( {
  *
  * @since n.e.x.t
  *
- * @param {Object}  data             Input data to determine site status.
- * @param {?Array}  data.urlChannels List of URL channel objects retrieved from the API.
- * @param {?string} data.siteURL     URL of this website.
- * @return {?string} Site status determined, or undefined if one of the required
+ * @param {Object}             data             Input data to determine site status.
+ * @param {(Array|undefined)}  data.urlChannels List of URL channel objects retrieved from the API.
+ * @param {(string|undefined)} data.siteURL     URL of this website.
+ * @return {(string|undefined)} Site status determined, or undefined if one of the required
  *                   parameters is undefined.
  */
 export const determineSiteStatus = ( {
 	urlChannels,
 	siteURL,
 } ) => {
-	if ( 'undefined' === typeof urlChannels || 'undefined' === typeof siteURL ) {
+	if ( undefined === urlChannels || undefined === siteURL ) {
 		return undefined;
 	}
 
@@ -141,28 +142,28 @@ export const determineSiteStatus = ( {
  *
  * @since n.e.x.t
  *
- * @param {Object}  data                   Input data to determine account ID.
- * @param {?Array}  data.accounts          List of account objects retrieved from the API.
- * @param {?string} data.previousAccountID Account ID, if already known from before.
- * @return {?string} Account ID, empty string if no account ID could be determined,
+ * @param {Object}             data                   Input data to determine account ID.
+ * @param {(Array|undefined)}  data.accounts          List of account objects retrieved from the API.
+ * @param {(string|undefined)} data.previousAccountID Account ID, if already known from before.
+ * @return {(string|undefined)} Account ID, empty string if no account ID could be determined,
  *                   or undefined if one of the required parameters is undefined.
  */
 export const determineAccountID = ( { accounts, previousAccountID } ) => {
 	// If loading, nothing to determine.
-	if ( 'undefined' === typeof accounts ) {
+	if ( undefined === accounts ) {
 		return undefined;
 	}
 
 	// If no accounts, the user needs to create one.
 	if ( ! accounts.length ) {
-		return '';
+		return undefined;
 	}
 
 	// If there are multiple accounts (very rare), we'll need the account ID.
 	if ( accounts.length > 1 ) {
 		// If no ID passed, the user will need to select an account first.
 		if ( ! previousAccountID ) {
-			return '';
+			return undefined;
 		}
 
 		// Ensure the passed account ID is actually available.
@@ -171,7 +172,7 @@ export const determineAccountID = ( { accounts, previousAccountID } ) => {
 				return previousAccountID;
 			}
 			return acc;
-		}, '' );
+		}, undefined );
 	}
 
 	// Choose the only account that the user has.
@@ -183,15 +184,15 @@ export const determineAccountID = ( { accounts, previousAccountID } ) => {
  *
  * @since n.e.x.t
  *
- * @param {Object}  data                  Input data to determine client ID.
- * @param {?Array}  data.clients          List of client objects retrieved from the API.
- * @param {?string} data.previousClientID Client ID, if already known from before.
- * @return {?string} Client ID, empty string if no client ID could be determined,
+ * @param {Object}             data                  Input data to determine client ID.
+ * @param {(Array|undefined)}  data.clients          List of client objects retrieved from the API.
+ * @param {(string|undefined)} data.previousClientID Client ID, if already known from before.
+ * @return {(string|undefined)} Client ID, empty string if no client ID could be determined,
  *                   or undefined if one of the required parameters is undefined.
  */
 export const determineClientID = ( { clients, previousClientID } ) => {
 	// If loading, nothing to determine.
-	if ( 'undefined' === typeof clients ) {
+	if ( undefined === clients ) {
 		return undefined;
 	}
 
@@ -202,7 +203,7 @@ export const determineClientID = ( { clients, previousClientID } ) => {
 
 	// If no AFC clients, the user needs to create one.
 	if ( ! afcClients.length ) {
-		return '';
+		return undefined;
 	}
 
 	// If multiple AFC clients and client ID was already known, try looking it up.
@@ -223,29 +224,56 @@ export const determineClientID = ( { clients, previousClientID } ) => {
 };
 
 /**
+ * Checks whether the given account status is considered pending.
+ *
+ * @since n.e.x.t
+ *
+ * @param {(string|undefined)} accountStatus Account status.
+ * @return {boolean} True if pending, false otherwise.
+ */
+export const isPendingAccountStatus = ( accountStatus ) => {
+	return accountStatus === ACCOUNT_STATUS_GRAYLISTED || accountStatus === ACCOUNT_STATUS_PENDING;
+};
+
+/**
  * Transforms an AdSense API error to the appropriate status.
  *
  * @since n.e.x.t
- * @access private
  *
- * @param {?Object} error Error object or undefined.
- * @return {?string} Status based on error, or undefined if no relevant error.
+ * @param {(Object|undefined)} error Error object or undefined.
+ * @return {(string|undefined)} Status based on error, or undefined if no relevant error.
  */
-const errorToStatus = ( error ) => {
-	if ( ! error ) {
-		return undefined;
-	}
+export const errorToStatus = ( error ) => {
+	return accountsErrorToStatus( error ) || alertsErrorToStatus( error );
+};
 
+const accountsErrorToStatus = ( error ) => {
 	// These specific errors represent account statuses for our purposes.
-	if ( 'noAdSenseAccount' === error.data.reason ) {
+	// They can be returned from the 'accounts' datapoint.
+	if ( isError( error, 'noAdSenseAccount' ) ) {
 		return ACCOUNT_STATUS_NONE;
 	}
-	if ( 'disapprovedAccount' === error.data.reason ) {
+	if ( isError( error, 'disapprovedAccount' ) ) {
 		return ACCOUNT_STATUS_DISAPPROVED;
 	}
-	if ( 'accountPendingReview' === error.data.reason ) {
+
+	return undefined;
+};
+
+const alertsErrorToStatus = ( error ) => {
+	// These specific errors represent account statuses for our purposes.
+	// They can be returned from the 'alerts' datapoint.
+	if ( isError( error, 'accountPendingReview' ) ) {
 		return ACCOUNT_STATUS_PENDING;
 	}
 
 	return undefined;
+};
+
+const isError = ( error, errorReason ) => {
+	if ( ! error || ! error.data ) {
+		return false;
+	}
+
+	return errorReason === error.data.reason;
 };

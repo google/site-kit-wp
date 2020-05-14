@@ -25,7 +25,7 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './index';
+import { STORE_NAME } from './constants';
 import {
 	createTestRegistry,
 	muteConsole,
@@ -98,7 +98,7 @@ describe( 'modules/adsense clients', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients );
+				registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients, { accountID } );
 
 				const clients = registry.select( STORE_NAME ).getClients( accountID );
 

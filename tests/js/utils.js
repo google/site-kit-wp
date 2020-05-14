@@ -29,6 +29,7 @@ import modulesSearchConsoleStore, { STORE_NAME as modulesSearchConsoleStoreName 
 export const createTestRegistry = () => {
 	const registry = createRegistry();
 
+	// Register all available stores on the registry.
 	registerAllStoresOn( registry );
 
 	return registry;
@@ -46,6 +47,14 @@ export const createTestRegistry = () => {
  * @return {WPElement} Wrapped components.
  */
 export function WithTestRegistry( { children, callback, registry = createTestRegistry() } = {} ) {
+	// Populate most basic data which should not affect any tests.
+	registry.dispatch( coreUserStoreName ).receiveUserInfo( {
+		id: 1,
+		name: 'Wapuu WordPress',
+		email: 'wapuu.wordpress@gmail.com',
+		picture: 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
+	} );
+
 	if ( callback ) {
 		callback( registry );
 	}

@@ -27,7 +27,7 @@ import { isValidAccountID, isValidClientID } from './validation';
  * @since n.e.x.t
  *
  * @param {string} clientID AdSense client ID.
- * @return {?string} AdSense account ID, or undefined if invalid client ID.
+ * @return {(string|undefined)} AdSense account ID, or undefined if invalid client ID.
  */
 export function parseAccountID( clientID ) {
 	if ( ! isValidClientID( clientID ) ) {
@@ -42,7 +42,7 @@ export function parseAccountID( clientID ) {
  * @since n.e.x.t
  *
  * @param {string} accountID AdSense account ID.
- * @return {?string} AdSense AFC client ID, or undefined if invalid account ID.
+ * @return {(string|undefined)} AdSense AFC client ID, or undefined if invalid account ID.
  */
 export function parseAFCClientID( accountID ) {
 	if ( ! isValidAccountID( accountID ) ) {
