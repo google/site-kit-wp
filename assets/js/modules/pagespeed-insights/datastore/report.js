@@ -31,9 +31,10 @@ import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/c
 
 // Actions
 const FETCH_REPORT = 'FETCH_REPORT';
+const START_FETCH_REPORT = 'START_FETCH_REPORT';
+const FINISH_FETCH_REPORT = 'FINISH_FETCH_REPORT';
+const CATCH_FETCH_REPORT = 'CATCH_FETCH_REPORT';
 const RECEIVE_REPORT = 'RECEIVE_REPORT';
-const RECEIVE_REPORT_SUCCEEDED = 'RECEIVE_REPORT_SUCCEEDED';
-const RECEIVE_REPORT_FAILED = 'RECEIVE_REPORT_FAILED';
 
 export const INITIAL_STATE = {
 	isFetchingReport: {},
@@ -41,18 +42,72 @@ export const INITIAL_STATE = {
 };
 
 export const actions = {
-	fetchReport( options ) {
-		invariant( 'object' === typeof options, 'options must be an object.' );
+	/**
+	 * Fetches a PageSpeed Insights report.
+	 *
+	 * Fetches a PageSpeed Insights report.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param {(Object|undefined)}	options           Optional options for generating the report.
+	 * @param {(string|undefined)} 	options.strategy  Optional strategy. Default 'mobile'.
+	 * @param {(string|undefined)} 	options.url   	  Optional URL. Default the site's reference URL.
+	 * @return {Object} Redux-style action.
+	 */
+	*fetchReport( options ) {
+		let response, error;
 
-		return {
+		yield {
 			payload: { options },
-			type: FETCH_REPORT,
+			type: START_FETCH_REPORT,
 		};
+
+		try {
+			const report = yield {
+				payload: { options },
+				type: FETCH_REPORT,
+			};
+			// TODO: Figure out how report will come back from response
+			yield actions.receiveReport( options, report );
+
+			yield {
+				payload: { options },
+				type: FINISH_FETCH_REPORT,
+			};
+		} catch ( e ) {
+			error = e;
+			yield {
+				payload: {
+					options,
+					error,
+				},
+				type: CATCH_FETCH_REPORT,
+			};
+		}
+
+		return { response, error };
 	},
 
-	receiveReport( { options, report } ) {
+	/**
+	 * Adds report to the store.
+	 *
+	 * Adds the fetched report to the data store.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} 	options				Options used to fetch report.
+	 * @param {string} 	options.strategy  	Strategy. Default 'mobile'.
+	 * @param {string} 	options.url   	  	URL. Default the site's reference URL.
+	 * @param {Object} 	report 				Report to add.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveReport( options, report ) {
+		console.log('--actions.receiveReport--');
+		console.log('options', options);
+		console.log('report',report);
 		invariant( 'object' === typeof options, 'options must be an object.' );
-		invariant( 'object' === typeof report, 'report must be an array.' );
+		invariant( 'object' === typeof report, 'report must be an object.' );
 
 		return {
 			payload: { options, report },
@@ -60,28 +115,13 @@ export const actions = {
 		};
 	},
 
-	receiveReportSucceeded( options ) {
-		invariant( 'object' === typeof options, 'options must be an object.' );
-
-		return {
-			payload: { options },
-			type: RECEIVE_REPORT_SUCCEEDED,
-		};
-	},
-
-	receiveReportFailed( { options, error } ) {
-		invariant( 'object' === typeof options, 'options must be an object.' );
-		invariant( error, 'error is required.' );
-
-		return {
-			payload: { options, error },
-			type: RECEIVE_REPORT_FAILED,
-		};
-	},
 };
 
 export const controls = {
 	[ FETCH_REPORT ]: ( { payload: { options } } ) => {
+		console.log('--controls.FETCH_REPORT--');
+		console.log('options', options);
+		
 		const { strategy, url } = options;
 
 		return API.get( 'modules', 'pagespeed-insights', 'pagespeed', { strategy, url } );
@@ -89,8 +129,10 @@ export const controls = {
 };
 
 export const reducer = ( state, { type, payload } ) => {
+	console.log(`--reducer.${type}--`);
+	console.log('state',state);
 	switch ( type ) {
-		case FETCH_REPORT: {
+		case START_FETCH_REPORT: {
 			const { options: { strategy, url } } = payload;
 
 			return {
@@ -98,6 +140,18 @@ export const reducer = ( state, { type, payload } ) => {
 				isFetchingReport: {
 					...state.isFetchingReport,
 					[ `${ strategy }::${ url }` ]: true,
+				},
+			};
+		}
+
+		case FINISH_FETCH_REPORT: {
+			const { options: { strategy, url } } = payload;
+
+			return {
+				...state,
+				isFetchingReport: {
+					...state.isFetchingReport,
+					[ `${ strategy }::${ url }` ]: false,
 				},
 			};
 		}
@@ -114,19 +168,7 @@ export const reducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case RECEIVE_REPORT_SUCCEEDED: {
-			const { options: { strategy, url } } = payload;
-
-			return {
-				...state,
-				isFetchingReport: {
-					...state.isFetchingReport,
-					[ `${ strategy }::${ url }` ]: false,
-				},
-			};
-		}
-
-		case RECEIVE_REPORT_FAILED: {
+		case CATCH_FETCH_REPORT: {
 			const { options: { strategy, url }, error } = payload;
 
 			return {
@@ -147,34 +189,25 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getReport( options = {} ) {
+		console.log('--resolvers.getReport--');
+		console.log('options', { options: options.strategy, url: options.url } );
 		const registry = yield Data.commonActions.getRegistry();
 
-		if ( typeof options.strategy === 'undefined' ) {
+		if ( options.strategy === undefined ) {
 			options.strategy = 'mobile';
 		}
-		if ( typeof options.url === 'undefined' ) {
+		if ( options.url === undefined ) {
 			options.url = registry.select( CORE_SITE ).getReferenceSiteURL();
 		}
 
 		const existingReport = registry.select( STORE_NAME ).getReport( options );
 
-		// If there is already a report loaded in state, consider it fulfilled
-		// and don't make an API request.
+		// If there is already a report loaded in state, consider it fulfilled and don't make an API request.
 		if ( existingReport ) {
 			return;
 		}
 
-		try {
-			const report = yield actions.fetchReport( options );
-
-			yield actions.receiveReport( { options, report } );
-
-			return yield actions.receiveReportSucceeded( options );
-		} catch ( error ) {
-			// TODO: Implement an error handler store or some kind of centralized
-			// place for error dispatch...
-			return actions.receiveReportFailed( { options, error } );
-		}
+		yield actions.fetchReport( options );
 	},
 };
 
@@ -188,13 +221,15 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}         state              Data store's state.
-	 * @param {?Object}        options            Optional. Options for generating the report.
-	 * @param {string}         options.strategy   Strategy. Default 'mobile'.
-	 * @param {string}         options.url   	  URL. Default the site's reference URL.
-	 * @return {?Array.<Object>} An AdSense report; `undefined` if not loaded.
+	 * @param {Object}         		state             Data store's state.
+	 * @param {(Object|undefined)}	options           Optional options for generating the report.
+	 * @param {(string|undefined)} 	options.strategy  Optional strategy. Default 'mobile'.
+	 * @param {(string|undefined)} 	options.url   	  Optional URL. Default the site's reference URL.
+	 * @return {<Object>|undefined)} A PageSpeed Insights report; `undefined` if not loaded.
 	 */
 	getReport( state, options = {} ) {
+		console.log('--selectors.getReport--',state);
+		console.log('options', options);
 		const { reports } = state;
 		const { strategy, url } = options;
 

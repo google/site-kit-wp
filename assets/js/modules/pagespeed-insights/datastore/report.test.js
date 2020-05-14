@@ -85,9 +85,14 @@ describe( 'modules/pagespeed-insights report', () => {
 						{ status: 200 }
 					);
 
-				const options = {};
+				const options = { strategy: 'mobile', url: 'http://sitekit.10ublabs.com/' };
 
 				const initialReport = registry.select( STORE_NAME ).getReport( options );
+
+				// Ensure the proper parameters were passed.
+				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
+					options
+				);
 
 				expect( initialReport ).toEqual( undefined );
 				await subscribeUntil( registry,
@@ -99,6 +104,7 @@ describe( 'modules/pagespeed-insights report', () => {
 				const report = registry.select( STORE_NAME ).getReport( options );
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				console.log('report', report);
 				expect( report ).toEqual( fixtures.mobileReport );
 			} );
 
