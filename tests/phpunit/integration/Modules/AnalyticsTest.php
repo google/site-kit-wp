@@ -205,7 +205,7 @@ class AnalyticsTest extends TestCase {
 		// Results in an error for a mismatch (or no account ticket ID stored from before at all).
 		try {
 			$method->invokeArgs( $analytics, array() );
-			throw new \Exception( 'missing redirect' );
+			$this->fail( 'Expected redirect to module page with "account_ticket_id_mismatch" error' );
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
 				add_query_arg( 'error_code', 'account_ticket_id_mismatch', $analytics_module_page_url ),
@@ -218,10 +218,10 @@ class AnalyticsTest extends TestCase {
 		$_GET['error'] = 'user_cancel';
 		try {
 			$method->invokeArgs( $analytics, array() );
-			throw new \Exception( 'missing redirect' );
+			$this->fail( 'Expected redirect to module page with "user_cancel" error' );
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
-				add_query_arg( 'error_code', $_GET['error'], $analytics_module_page_url ),
+				add_query_arg( 'error_code', 'user_cancel', $analytics_module_page_url ),
 				$redirect->get_location()
 			);
 			// Ensure transient was deleted by the method despite error.
@@ -235,7 +235,7 @@ class AnalyticsTest extends TestCase {
 		$_GET['webPropertyId'] = 'UA-12345678-1';
 		try {
 			$method->invokeArgs( $analytics, array() );
-			throw new \Exception( 'missing redirect' );
+			$this->fail( 'Expected redirect to module page with "callback_missing_parameter" error' );
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
 				add_query_arg( 'error_code', 'callback_missing_parameter', $analytics_module_page_url ),
@@ -278,7 +278,7 @@ class AnalyticsTest extends TestCase {
 			->willReturn( $expected_webproperty );
 		try {
 			$method->invokeArgs( $analytics, array() );
-			throw new \Exception( 'missing redirect' );
+			$this->fail( 'Expected redirect to module page with "authentication_success" notification' );
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
 				add_query_arg(
