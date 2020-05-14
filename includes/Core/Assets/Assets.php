@@ -622,6 +622,8 @@ final class Assets {
 			'blogPrefix'       => $wpdb->get_blog_prefix(),
 			'ampMode'          => $this->context->get_amp_mode(),
 			'isNetworkMode'    => $this->context->is_network_mode(),
+			'timezone'         => get_option( 'timezone_string' ),
+			'siteName'         => get_bloginfo( 'name' ),
 		);
 
 		/**
@@ -658,7 +660,7 @@ final class Assets {
 	 * Gets the inline data specific to the current user
 	 *
 	 * @since n.e.x.t
-	 * 
+	 *
 	 * @return array The user inline data to be output.
 	 */
 	private function get_inline_user_data() {
