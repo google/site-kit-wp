@@ -273,7 +273,9 @@ export default function SetupMain( { finishSetup } ) {
 		setIsNavigating( true );
 	};
 
-	// Fetch existing tag right here, to ensure the progress bar is still being shown while this is being loaded.
+	// Fetch existing tag right here, to ensure the progress bar is still being
+	// shown while this is being loaded. It is technically used only by child
+	// components.
 	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
 
 	let viewComponent;
