@@ -487,7 +487,6 @@ final class Assets {
 					'src'          => $base_url . 'js/googlesitekit-datastore-forms.js',
 					'dependencies' => array(
 						'googlesitekit-data',
-						'googlesitekit-api',
 					),
 				)
 			),

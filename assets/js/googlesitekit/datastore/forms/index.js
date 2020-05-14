@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import forms from './forms';
 import { STORE_NAME } from './constants';
 
 export const INITIAL_STATE = Data.collectState(
@@ -29,6 +30,7 @@ export { STORE_NAME };
 
 export const actions = Data.addInitializeAction(
 	Data.collectActions(
+		forms.actions
 	)
 );
 
@@ -38,6 +40,7 @@ export const controls = Data.collectControls(
 export const reducer = Data.addInitializeReducer(
 	INITIAL_STATE,
 	Data.collectReducers(
+		forms.reducer
 	)
 );
 
@@ -45,6 +48,7 @@ export const resolvers = Data.collectResolvers(
 );
 
 export const selectors = Data.collectSelectors(
+	forms.selectors
 );
 
 const store = {
