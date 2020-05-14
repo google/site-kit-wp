@@ -281,7 +281,7 @@ export const selectors = {
 	/**
 	 * Check to see if an existing tag is available on the site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} True if a tag exists, false if not; undefined if not loaded.
@@ -295,7 +295,7 @@ export const selectors = {
 	/**
 	 * Gets an existing tag on the site, if present.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|null|undefined)} Existing tag, or `null` if none.
@@ -310,7 +310,7 @@ export const selectors = {
 	/**
 	 * Checks whether the user has access to the existing AdSense tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return {(boolean|null|undefined)} true or false if tag permission is available,
 	 *                                    null if no existing tag,
@@ -338,7 +338,7 @@ export const selectors = {
 	 *
 	 * Returns `undefined` if the permission check has not yet loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state    Data store's state.
 	 * @param {string} clientID The AdSense Client ID to check permissions for.
@@ -358,7 +358,7 @@ export const selectors = {
 	 *
 	 * Returns `undefined` if the permission check has not yet loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state    Data store's state.
 	 * @param {string} clientID The AdSense Client ID to check permissions for.

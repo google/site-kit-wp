@@ -19,7 +19,7 @@
 /**
  * Checks if the given account ID appears to be a valid AdSense account.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  *
  * @param {string|number} accountID Account ID to test.
  * @return {boolean} True if the given account ID is valid, false otherwise.
@@ -31,7 +31,7 @@ export function isValidAccountID( accountID ) {
 /**
  * Checks if the given client ID appears to be a valid AdSense client.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  *
  * @param {string|number} clientID Client ID to test.
  * @return {boolean} True if the given client ID is valid, false otherwise.

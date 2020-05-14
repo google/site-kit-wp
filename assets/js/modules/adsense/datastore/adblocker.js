@@ -85,7 +85,7 @@ export const selectors = {
 	/**
 	 * Returns whether an ad blocker is active on the client.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean|undefined} True or false depending on whether an ad blocker is active; `undefined` if not loaded.

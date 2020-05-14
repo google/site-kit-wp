@@ -215,7 +215,7 @@ export const selectors = {
 	/**
 	 * Gets all Google AdSense URL channels for this account and client.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state    Data store's state.
 	 * @param {string} clientID The AdSense Client ID to fetch URL channels for.

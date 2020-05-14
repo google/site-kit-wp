@@ -175,7 +175,7 @@ export const selectors = {
 	 * * 'PAGE_VIEWS_RPM'
 	 * * 'IMPRESSIONS'
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object}         state              Data store's state.
 	 * @param {Object}         options            Optional. Options for generating the report.

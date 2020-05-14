@@ -115,7 +115,7 @@ export const actions = {
 	 * be saved right away when being toggled, which is what this action is
 	 * intended for.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 */
 	*saveUseSnippet() {
@@ -131,7 +131,7 @@ export const actions = {
 	/**
 	 * Submits all changes currently present in the client, persisting them on the server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return {Object} Empty object on success, object with `error` property on failure.
 	 */
@@ -161,7 +161,7 @@ export const actions = {
 	 * `setAccountSetupComplete( true )` is called before we submit the changes.
 	 * See the `COMPLETE_ACCOUNT_SETUP` control below for more.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return {boolean} True on success, false on failure.
 	 */
@@ -180,7 +180,7 @@ export const actions = {
 	 * `setSiteSetupComplete( true )` is called before we submit the changes.
 	 * See the `COMPLETE_SITE_SETUP` control below for more.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return {boolean} True on success, false on failure.
 	 */
@@ -375,7 +375,7 @@ export const selectors = {
 	/**
 	 * Checks if changes can be submitted.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return {boolean} True if changes can be submitted, false otherwise.
 	 */
@@ -417,7 +417,7 @@ export const selectors = {
 	/**
 	 * Checks whether changes are currently being submitted.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} `true` if submitting, `false` if not.
@@ -429,7 +429,7 @@ export const selectors = {
 	/**
 	 * Checks whether the useSnippet value is currently being saved.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} `true` if saving useSnippet, `false` if not.
@@ -441,7 +441,7 @@ export const selectors = {
 	/**
 	 * Gets the original account status stored before the current pageload.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.

@@ -29,7 +29,7 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Returns the URL for creating a new AdSense account.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  *
  * @param {Object}             options         Options for generating the URL.
  * @param {(string|undefined)} options.siteURL The initial site URL to create the account for.
@@ -52,7 +52,7 @@ export const getCreateAccountURL = ( { siteURL } = {} ) => {
 /**
  * Returns the URL to an AdSense account's overview page.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  *
  * @param {Object}             options           Options for generating the URL.
  * @param {(string|undefined)} options.accountID The AdSense account ID.
@@ -68,7 +68,7 @@ export const getAccountURL = ( { accountID, userEmail } = {} ) => {
 /**
  * Returns the URL to an AdSense account's site overview page.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  *
  * @param {Object}             options           Options for generating the URL.
  * @param {(string|undefined)} options.accountID The AdSense account ID.
@@ -89,7 +89,7 @@ export const getAccountSiteURL = ( { accountID, siteURL, userEmail } = {} ) => {
 /**
  * Returns the URL to an AdSense account's site ads preview page.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  *
  * @param {Object}             options           Options for generating the URL.
  * @param {(string|undefined)} options.accountID The AdSense account ID.
@@ -110,7 +110,7 @@ export const getAccountSiteAdsPreviewURL = ( { accountID, siteURL, userEmail } =
 /**
  * Returns a URL to an account screen in the AdSense frontend.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  *
  * @param {Object}             options           Options for generating the URL.
  * @param {(string|undefined)} options.accountID The AdSense account ID.

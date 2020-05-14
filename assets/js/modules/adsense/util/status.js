@@ -40,7 +40,7 @@ export const SITE_STATUS_ADDED = 'added';
  * This utility function should be used in combination with data retrieved from
  * the datastore, hence passing undefined (loading state) is supported.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  *
  * @param {Object}             data                   Input data to determine account status.
  * @param {(Array|undefined)}  data.accounts          List of account objects retrieved from the API.
@@ -111,7 +111,7 @@ export const determineAccountStatus = ( {
  * necessarily mean it has been already approved - there still may be actions
  * required for the user.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  *
  * @param {Object}             data             Input data to determine site status.
  * @param {(Array|undefined)}  data.urlChannels List of URL channel objects retrieved from the API.
@@ -140,7 +140,7 @@ export const determineSiteStatus = ( {
 /**
  * Determines the AdSense account ID for given input data.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  *
  * @param {Object}             data                   Input data to determine account ID.
  * @param {(Array|undefined)}  data.accounts          List of account objects retrieved from the API.
@@ -182,7 +182,7 @@ export const determineAccountID = ( { accounts, previousAccountID } ) => {
 /**
  * Determines the AdSense client ID for given input data.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  *
  * @param {Object}             data                  Input data to determine client ID.
  * @param {(Array|undefined)}  data.clients          List of client objects retrieved from the API.
@@ -226,7 +226,7 @@ export const determineClientID = ( { clients, previousClientID } ) => {
 /**
  * Checks whether the given account status is considered pending.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  *
  * @param {(string|undefined)} accountStatus Account status.
  * @return {boolean} True if pending, false otherwise.
@@ -238,7 +238,7 @@ export const isPendingAccountStatus = ( accountStatus ) => {
 /**
  * Transforms an AdSense API error to the appropriate status.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  *
  * @param {(Object|undefined)} error Error object or undefined.
  * @return {(string|undefined)} Status based on error, or undefined if no relevant error.

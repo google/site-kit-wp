@@ -846,7 +846,7 @@ tag_partner: "site_kit"
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */
@@ -874,7 +874,7 @@ tag_partner: "site_kit"
 	/**
 	 * Verifies that user has access to the given client and account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param string $client_id  Client found in the existing tag.
 	 * @param string $account_id Account ID the client belongs to.
@@ -904,7 +904,7 @@ tag_partner: "site_kit"
 	/**
 	 * Determines the AdSense account ID from a given AdSense client ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param string $client_id AdSense client ID.
 	 * @return string AdSense account ID, or empty string if invalid client ID.

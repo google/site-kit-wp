@@ -28,7 +28,7 @@ class Settings extends Module_Settings {
 	/**
 	 * Legacy account statuses to be migrated on-the-fly.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @var array
 	 */
 	protected $legacy_account_statuses = array(

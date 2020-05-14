@@ -189,7 +189,7 @@ export const selectors = {
 	/**
 	 * Get all Google AdSense accounts this user has available.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array.<Object>|undefined)} An array of AdSense accounts; `undefined` if not loaded.
