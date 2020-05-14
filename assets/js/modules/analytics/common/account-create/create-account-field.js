@@ -32,7 +32,8 @@ export default function CreateAccountField( {
 	name,
 	label,
 } ) {
-	if ( 'undefined' === typeof value ) {
+	// Ensure field doesn't render until default value is available, fixing a potential render bug.
+	if ( value === undefined ) {
 		return null;
 	}
 
