@@ -76,7 +76,14 @@ export const selectors = {
 	},
 };
 
-const store = 'forms';
+const store = {
+	INITIAL_STATE,
+	actions,
+	controls,
+	reducer,
+	resolvers,
+	selectors,
+};
 
 // Register this store on the global registry.
 Data.registerStore( STORE_NAME, store );
