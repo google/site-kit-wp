@@ -85,28 +85,6 @@ if ( modulesData.adsense.active ) {
 	}
 
 	/**
-	 * Set AdSense to auto refresh status when account is not connected.
-	 */
-	addFilter( 'googlesitekit.autoRefreshModules',
-		'googlesitekit.AdSenseAutoRefresh', ( modules ) => {
-			modules.push( {
-				identifier: 'adsense',
-				toRefresh: () => {
-					let status = '';
-					if ( modulesData.adsense && modulesData.adsense[ 'account-status' ] ) {
-						status = modulesData.adsense[ 'account-status' ].accountStatus;
-					}
-
-					if ( status && -1 < status.indexOf( 'account-connected' ) ) {
-						return false;
-					}
-					return true;
-				},
-			} );
-			return modules;
-		} );
-
-	/**
 	 * Add components to the Notification requests.
 	 */
 	addFilter( 'googlesitekit.ModulesNotificationsRequest',

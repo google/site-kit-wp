@@ -122,6 +122,11 @@ export default function SetupMain( { finishSetup } ) {
 		setSiteSetupComplete,
 		setUseSnippet,
 		submitChanges,
+		resetAccounts,
+		resetAlerts,
+		resetClients,
+		resetURLChannels,
+		receiveError,
 	} = useDispatch( STORE_NAME );
 
 	// Allow flagging when a background submission should happen.
@@ -218,6 +223,48 @@ export default function SetupMain( { finishSetup } ) {
 	}, [ isAwaitingBackgroundSubmit, isSubmittingInBackground, canSubmitChanges ] );
 
 	const isAdBlockerActive = useSelect( ( select ) => select( STORE_NAME ).isAdBlockerActive() );
+
+	// Reset all fetched data when user re-focuses tab.
+	useEffect( () => {
+		let timeout;
+		let idleSeconds = 0;
+		// Count seconds once user focuses elsewhere.
+		const countIdleTime = () => {
+			timeout = global.setInterval( () => {
+				idleSeconds++;
+			}, 1000 );
+		};
+		// Reset when user re-focuses after 15 seconds or more.
+		const reset = () => {
+			global.clearTimeout( timeout );
+			// Do not reset if user has been away for less than 15 seconds.
+			if ( idleSeconds < 15 ) {
+				idleSeconds = 0;
+				return;
+			}
+			idleSeconds = 0;
+			// Do not reset if account status has not been determined yet, or
+			// if the account is approved.
+			if ( undefined === accountStatus || ACCOUNT_STATUS_APPROVED === accountStatus ) {
+				return;
+			}
+
+			// Unset any potential error.
+			receiveError( undefined );
+			// Reset all data to force re-fetch.
+			resetAccounts();
+			resetAlerts();
+			resetClients();
+			resetURLChannels();
+		};
+		global.addEventListener( 'focus', reset );
+		global.addEventListener( 'blur', countIdleTime );
+		return () => {
+			global.removeEventListener( 'focus', reset );
+			global.removeEventListener( 'blur', countIdleTime );
+			global.clearTimeout( timeout );
+		};
+	}, [ accountStatus ] );
 
 	// When `finishSetup` is called, flag that we are navigating to keep the progress bar going.
 	const [ isNavigating, setIsNavigating ] = useState( false );
