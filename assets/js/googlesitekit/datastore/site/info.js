@@ -328,7 +328,7 @@ export const selectors = {
 	/**
 	 * Gets a site's timezone.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The timezone.
@@ -342,7 +342,7 @@ export const selectors = {
 	/**
 	 * Returns true if this site is using the proxy service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} `true` if the proxy service is in use, `false` if not. Returns `undefined` if not loaded.
@@ -355,7 +355,7 @@ export const selectors = {
 	/**
 	 * Gets a site's name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The site name.

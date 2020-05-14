@@ -15,7 +15,7 @@ use Google\Site_Kit_Dependencies\Google_Service_Analytics_AccountTicket;
 /**
  * Class for the Analytics provisioning Account Ticket object.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Proxy_AccountTicket extends Google_Service_Analytics_AccountTicket {
 	/**
 	 * The site ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @var String
 	 */
 	public $site_id = '';
@@ -32,7 +32,7 @@ class Proxy_AccountTicket extends Google_Service_Analytics_AccountTicket {
 	/**
 	 * The site secret.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @var String
 	 */
 	public $site_secret = '';
@@ -40,7 +40,7 @@ class Proxy_AccountTicket extends Google_Service_Analytics_AccountTicket {
 	/**
 	 * Gets the site ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 */
 	public function getSiteId() {
 		return $this->site_id;
@@ -49,7 +49,7 @@ class Proxy_AccountTicket extends Google_Service_Analytics_AccountTicket {
 	/**
 	 * Sets the site ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param string $id The site id.
 	 */
@@ -60,7 +60,7 @@ class Proxy_AccountTicket extends Google_Service_Analytics_AccountTicket {
 	/**
 	 * Gets the site secret.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 */
 	public function getSiteSecret() {
 		return $this->site_secret;
@@ -69,7 +69,7 @@ class Proxy_AccountTicket extends Google_Service_Analytics_AccountTicket {
 	/**
 	 * Sets the site secret.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param string $secret The site secret.
 	 */

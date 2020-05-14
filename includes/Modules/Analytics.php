@@ -476,7 +476,7 @@ final class Analytics extends Module
 	/**
 	 * Handles the provisioning callback after the user completes the terms of service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 */
 	protected function handle_provisioning_callback() {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -1349,7 +1349,7 @@ final class Analytics extends Module
 	/**
 	 * Gets the provisioning redirect URI that listens for the Terms of Service redirect.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return string Provisioning redirect URI.
 	 */

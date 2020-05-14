@@ -161,7 +161,7 @@ export const actions = {
 	/**
 	 * Creates a new Analytics account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return {Object} Result object with response and error keys.
 	 */
@@ -398,7 +398,7 @@ export const selectors = {
 	/**
 	 * Indicates whether account creation is currently in progress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} True if an account is being created, false otherwise.
@@ -410,7 +410,7 @@ export const selectors = {
 	/**
 	 * Get the terms of service URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The terms of service URL.
