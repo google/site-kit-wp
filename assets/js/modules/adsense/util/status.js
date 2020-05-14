@@ -224,6 +224,18 @@ export const determineClientID = ( { clients, previousClientID } ) => {
 };
 
 /**
+ * Checks whether the given account status is considered pending.
+ *
+ * @since n.e.x.t
+ *
+ * @param {(string|undefined)} accountStatus Account status.
+ * @return {boolean} True if pending, false otherwise.
+ */
+export const isPendingAccountStatus = ( accountStatus ) => {
+	return accountStatus === ACCOUNT_STATUS_GRAYLISTED || accountStatus === ACCOUNT_STATUS_PENDING;
+};
+
+/**
  * Transforms an AdSense API error to the appropriate status.
  *
  * @since n.e.x.t
@@ -232,11 +244,7 @@ export const determineClientID = ( { clients, previousClientID } ) => {
  * @return {(string|undefined)} Status based on error, or undefined if no relevant error.
  */
 export const errorToStatus = ( error ) => {
-	const status = accountsErrorToStatus( error );
-	if ( status ) {
-		return status;
-	}
-	return alertsErrorToStatus( error );
+	return accountsErrorToStatus( error ) || alertsErrorToStatus( error );
 };
 
 const accountsErrorToStatus = ( error ) => {

@@ -51,7 +51,7 @@ describe( 'modules/adsense settings', () => {
 		accountStatus: ACCOUNT_STATUS_APPROVED,
 		siteStatus: SITE_STATUS_ADDED,
 	};
-	const error = {
+	const wpError = {
 		code: 'internal_error',
 		message: 'Something wrong happened.',
 		data: { status: 500 },
@@ -112,9 +112,7 @@ describe( 'modules/adsense settings', () => {
 				dispatch.setUseSnippet( true );
 				expect( select.haveSettingsChanged() ).toBe( true );
 
-				dispatch.saveUseSnippet();
-
-				await subscribeUntil( registry, () => select.isDoingSaveUseSnippet() === false );
+				await dispatch.saveUseSnippet();
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
@@ -186,12 +184,7 @@ describe( 'modules/adsense settings', () => {
 						{ status: 200 }
 					);
 
-				dispatch.submitChanges();
-
-				await subscribeUntil(
-					registry,
-					() => select.isDoingSubmitChanges() === false
-				);
+				await dispatch.submitChanges();
 
 				expect( fetch ).toHaveBeenCalled();
 				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
@@ -206,19 +199,14 @@ describe( 'modules/adsense settings', () => {
 						/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/
 					)
 					.mockResponseOnce(
-						JSON.stringify( error ),
+						JSON.stringify( wpError ),
 						{ status: 500 }
 					);
 
-				dispatch.submitChanges();
-
-				await subscribeUntil(
-					registry,
-					() => select.isDoingSubmitChanges() === false
-				);
+				await dispatch.submitChanges();
 
 				expect( select.getSettings() ).toEqual( validSettings );
-				expect( select.getError() ).toEqual( error );
+				expect( select.getError() ).toEqual( wpError );
 			} );
 
 			it( 'invalidates AdSense API cache on success', async () => {
@@ -235,7 +223,7 @@ describe( 'modules/adsense settings', () => {
 
 				const cacheKey = createCacheKey( 'modules', 'adsense', 'arbitrary-datapoint' );
 				expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );
-				expect( ( await getItem( cacheKey ) ).value ).not.toBeFalsy();
+				expect( ( await getItem( cacheKey ) ).value ).toEqual( 'test-value' );
 
 				await dispatch.submitChanges();
 
@@ -267,32 +255,44 @@ describe( 'modules/adsense settings', () => {
 			} );
 
 			it( 'toggles the internal state again once submission is completed', async () => {
-				dispatch.submitChanges();
+				const submitPromise = dispatch.submitChanges();
 				expect( select.isDoingSubmitChanges() ).toBe( true );
 
-				await subscribeUntil( registry,
-					() => registry.stores[ STORE_NAME ].store.getState().isDoingSubmitChanges === false
-				);
+				await submitPromise;
 
 				expect( select.isDoingSubmitChanges() ).toBe( false );
 			} );
 		} );
 
 		describe( 'canSubmitChanges', () => {
-			it( 'requires a valid accountID', () => {
+			it( 'requires a valid accountID or empty string', () => {
 				dispatch.setSettings( validSettings );
 				expect( select.canSubmitChanges() ).toBe( true );
 
 				dispatch.setAccountID( '0' );
 				expect( select.canSubmitChanges() ).toBe( false );
+
+				dispatch.setAccountID( null );
+				expect( select.canSubmitChanges() ).toBe( false );
+
+				// An empty string is accepted (for when no account can be determined).
+				dispatch.setAccountID( '' );
+				expect( select.canSubmitChanges() ).toBe( true );
 			} );
 
-			it( 'requires a valid clientID', () => {
+			it( 'requires a valid clientID or empty string', () => {
 				dispatch.setSettings( validSettings );
 				expect( select.canSubmitChanges() ).toBe( true );
 
 				dispatch.setClientID( '0' );
 				expect( select.canSubmitChanges() ).toBe( false );
+
+				dispatch.setClientID( null );
+				expect( select.canSubmitChanges() ).toBe( false );
+
+				// An empty string is accepted (for when no client can be determined).
+				dispatch.setClientID( '' );
+				expect( select.canSubmitChanges() ).toBe( true );
 			} );
 		} );
 
@@ -311,11 +311,8 @@ describe( 'modules/adsense settings', () => {
 				const initialOriginalAccountStatus = select.getOriginalAccountStatus();
 				// Settings will be their initial value while being fetched.
 				expect( initialOriginalAccountStatus ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						select.getOriginalAccountStatus() !== undefined
-					),
-				);
+
+				await subscribeUntil( registry, () => select.hasFinishedResolution( 'getOriginalAccountStatus' ) && select.hasFinishedResolution( 'getSettings' ) );
 
 				const originalAccountStatus = select.getOriginalAccountStatus();
 

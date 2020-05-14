@@ -103,7 +103,8 @@ addFilter(
 	} )
 );
 
-addFilter( 'googlesitekit.ModuleSettingsWarning',
+addFilter(
+	'googlesitekit.ModuleSettingsWarning',
 	'googlesitekit.adsenseSettingsWarning',
 	fillFilterWithComponent( ( props ) => {
 		const { slug, context, OriginalComponent } = props;

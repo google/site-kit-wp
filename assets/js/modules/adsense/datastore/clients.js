@@ -170,7 +170,7 @@ export const reducer = ( state, { type, payload } ) => {
 			} = state.savedSettings || {};
 			return {
 				...state,
-				clients: {},
+				clients: INITIAL_STATE.clients,
 				settings: {
 					...( state.settings || {} ),
 					clientID,

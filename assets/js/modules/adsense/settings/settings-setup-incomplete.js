@@ -29,16 +29,13 @@ import Data from 'googlesitekit-data';
 import Link from '../../../components/link';
 import { getReAuthURL } from '../../../util';
 import { STORE_NAME } from '../datastore/constants';
-import {
-	ACCOUNT_STATUS_GRAYLISTED,
-	ACCOUNT_STATUS_PENDING,
-} from '../util/status';
+import { isPendingAccountStatus } from '../util/status';
 import { AdBlockerWarning } from '../common';
 const { useSelect } = Data;
 
 export default function SettingsSetupIncomplete() {
 	const accountStatus = useSelect( ( select ) => select( STORE_NAME ).getAccountStatus() );
-	const isPendingStatus = accountStatus === ACCOUNT_STATUS_GRAYLISTED || accountStatus === ACCOUNT_STATUS_PENDING;
+	const isPendingStatus = isPendingAccountStatus( accountStatus );
 
 	return (
 		<Fragment>

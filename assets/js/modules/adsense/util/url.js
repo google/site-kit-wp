@@ -57,7 +57,7 @@ export const getCreateAccountURL = ( { siteURL } = {} ) => {
  * @param {Object}             options           Options for generating the URL.
  * @param {(string|undefined)} options.accountID The AdSense account ID.
  * @param {(string|undefined)} options.userEmail The Google account email address. Relevant
- *                                    for users with multiple Google accounts.
+ *                                               for users with multiple Google accounts.
  * @return {string} AdSense account overview URL.
  */
 export const getAccountURL = ( { accountID, userEmail } = {} ) => {
@@ -74,7 +74,7 @@ export const getAccountURL = ( { accountID, userEmail } = {} ) => {
  * @param {(string|undefined)} options.accountID The AdSense account ID.
  * @param {(string|undefined)} options.siteURL   The site URL to link to in AdSense.
  * @param {(string|undefined)} options.userEmail The Google account email address. Relevant
- *                                    for users with multiple Google accounts.
+ *                                               for users with multiple Google accounts.
  * @return {string} AdSense account site overview URL.
  */
 export const getAccountSiteURL = ( { accountID, siteURL, userEmail } = {} ) => {
@@ -95,7 +95,7 @@ export const getAccountSiteURL = ( { accountID, siteURL, userEmail } = {} ) => {
  * @param {(string|undefined)} options.accountID The AdSense account ID.
  * @param {(string|undefined)} options.siteURL   The site URL to link to in AdSense.
  * @param {(string|undefined)} options.userEmail The Google account email address. Relevant
- *                                    for users with multiple Google accounts.
+ *                                               for users with multiple Google accounts.
  * @return {string} AdSense account site ads preview URL.
  */
 export const getAccountSiteAdsPreviewURL = ( { accountID, siteURL, userEmail } = {} ) => {
@@ -115,9 +115,9 @@ export const getAccountSiteAdsPreviewURL = ( { accountID, siteURL, userEmail } =
  * @param {Object}             options           Options for generating the URL.
  * @param {(string|undefined)} options.accountID The AdSense account ID.
  * @param {(string|undefined)} options.userEmail The Google account email address. Relevant
- *                                    for users with multiple Google accounts.
+ *                                               for users with multiple Google accounts.
  * @param {(string|undefined)} options.path      Additional path after the base URL generated.
- *                                    Only relevant if accountID is also provided.
+ *                                               Only relevant if accountID is also provided.
  * @return {string} AdSense frontend URL.
  */
 const getAccountBaseURL = ( { accountID, userEmail, path = '/home' } = {} ) => {

@@ -169,7 +169,7 @@ export const reducer = ( state, { type, payload } ) => {
 			} = state.savedSettings || {};
 			return {
 				...state,
-				alerts: {},
+				alerts: INITIAL_STATE.alerts,
 				settings: {
 					...( state.settings || {} ),
 					accountStatus,

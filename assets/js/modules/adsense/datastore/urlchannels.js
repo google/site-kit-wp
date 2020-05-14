@@ -180,7 +180,7 @@ export const reducer = ( state, { type, payload } ) => {
 			} = state.savedSettings || {};
 			return {
 				...state,
-				urlchannels: {},
+				urlchannels: INITIAL_STATE.urlchannels,
 				settings: {
 					...( state.settings || {} ),
 					siteStatus,

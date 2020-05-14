@@ -36,7 +36,7 @@ export const INITIAL_STATE = {
 
 export const actions = {
 	receiveIsAdBlockerActive( isAdBlockerActive ) {
-		invariant( undefined !== isAdBlockerActive, 'isAdBlockerActive is required.' );
+		invariant( 'boolean' === typeof isAdBlockerActive, 'isAdBlockerActive must be boolean.' );
 		return {
 			payload: { isAdBlockerActive },
 			type: RECEIVE_IS_ADBLOCKER_ACTIVE,

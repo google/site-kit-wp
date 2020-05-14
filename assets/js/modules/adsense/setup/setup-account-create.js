@@ -52,7 +52,7 @@ export default function SetupAccountCreate() {
 		event.preventDefault();
 		trackEvent( 'adsense_setup', 'create_adsense_account' );
 		global.open( signUpURL, '_blank' );
-	} );
+	}, [ signUpURL ] );
 
 	if ( ! siteURL || ! userEmail || undefined === existingTag ) {
 		return null;

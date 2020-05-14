@@ -151,7 +151,7 @@ export const reducer = ( state, { type, payload } ) => {
 			} = state.savedSettings || {};
 			return {
 				...state,
-				accounts: undefined,
+				accounts: INITIAL_STATE.accounts,
 				settings: {
 					...( state.settings || {} ),
 					accountID,

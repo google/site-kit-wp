@@ -56,6 +56,11 @@ export default function SetupAccountApproved() {
 		return null;
 	}
 
+	// Depending on whether the user's AdSense account was already approved
+	// before setting up the module in Site Kit or not, different wording
+	// needs to be used. This can be determined by checking the previously
+	// saved account status. If the previous value is the approved state or
+	// nothing, we know the account had already been approved.
 	const isApprovedFromVeryBeginning = '' === originalAccountStatus || ACCOUNT_STATUS_APPROVED === originalAccountStatus;
 
 	let label;
@@ -108,9 +113,7 @@ export default function SetupAccountApproved() {
 				}
 			</p>
 
-			{ showProfile &&
-				<UserProfile />
-			}
+			{ showProfile && <UserProfile /> }
 
 			<UseSnippetSwitch
 				label={ label }

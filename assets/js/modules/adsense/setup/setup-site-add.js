@@ -44,7 +44,7 @@ export default function SetupSiteAdd() {
 	const addSiteHandler = useCallback( ( event ) => {
 		event.preventDefault();
 		global.open( addSiteURL, '_blank' );
-	} );
+	}, [ addSiteURL ] );
 
 	if ( ! accountID || ! siteURL || ! userEmail ) {
 		return null;

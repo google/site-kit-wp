@@ -43,10 +43,10 @@ describe( 'modules/adsense adblocker', () => {
 
 	describe( 'actions', () => {
 		describe( 'receiveIsAdBlockerActive', () => {
-			it( 'requires the isAdBlockerActive param', () => {
+			it( 'requires the isAdBlockerActive param to be boolean', () => {
 				expect( () => {
 					dispatch.receiveIsAdBlockerActive();
-				} ).toThrow( 'isAdBlockerActive is required.' );
+				} ).toThrow( 'isAdBlockerActive must be boolean.' );
 			} );
 
 			it( 'receives and sets isAdBlockerActive', () => {
@@ -65,14 +65,8 @@ describe( 'modules/adsense adblocker', () => {
 				}
 				global.googlesitekit.canAdsRun = true;
 
-				expect( global.googlesitekit.canAdsRun ).not.toEqual( undefined );
-
 				select.isAdBlockerActive();
-				await subscribeUntil( registry,
-					() => (
-						select.isAdBlockerActive() !== undefined
-					),
-				);
+				await subscribeUntil( registry, () => select.hasFinishedResolution( 'isAdBlockerActive' ) );
 
 				// canAdsRun global has opposite value of isAdBlockerActive.
 				expect( select.isAdBlockerActive() ).toBe( false );

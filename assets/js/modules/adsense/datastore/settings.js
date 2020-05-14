@@ -118,6 +118,7 @@ export const actions = {
 	 * intended for.
 	 *
 	 * @since n.e.x.t
+	 * @private
 	 */
 	*saveUseSnippet() {
 		const registry = yield commonActions.getRegistry();
@@ -176,8 +177,9 @@ export const actions = {
 	/**
 	 * Sets the siteSetupComplete flag to true and submits all changes.
 	 *
-	 * This asynchronous action is used to couple setting of the flag with the
-	 * submission of the data, to avoid getting the value out of sync.
+	 * An asynchronous action is used to invoke this action's control, which ensures
+	 * `setAccountSetupComplete( true )` is called before we submit the changes.
+	 * See the `COMPLETE_ACCOUNT_SETUP` control below for more.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -220,6 +222,7 @@ export const controls = {
 		await API.invalidateCache( 'modules', 'adsense' );
 		return {};
 	} ),
+	// This is a control to allow for asynchronous logic using external action dispatchers.
 	[ COMPLETE_ACCOUNT_SETUP ]: createRegistryControl( ( registry ) => async () => {
 		await registry.dispatch( STORE_NAME ).setAccountSetupComplete( true );
 		// canSubmitChanges cannot be checked before here because the settings
@@ -237,6 +240,7 @@ export const controls = {
 		}
 		return true;
 	} ),
+	// This is a control to allow for asynchronous logic using external action dispatchers.
 	[ COMPLETE_SITE_SETUP ]: createRegistryControl( ( registry ) => async () => {
 		await registry.dispatch( STORE_NAME ).setSiteSetupComplete( true );
 		// canSubmitChanges cannot be checked before here because the settings
@@ -273,7 +277,7 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_SAVE_USE_SNIPPET: {
-			// The server response in this case is just a non-helpful true,
+			// The server response in this case is simply `true`,
 			// so this value is actually the one passed as parameter, assumed
 			// to be the saved value from the successful request.
 			const { params } = payload;
@@ -411,10 +415,26 @@ export const selectors = {
 		return true;
 	} ),
 
+	/**
+	 * Checks whether changes are currently being submitted.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} `true` if submitting, `false` if not.
+	 */
 	isDoingSubmitChanges( state ) {
 		return !! state.isDoingSubmitChanges;
 	},
 
+	/**
+	 * Checks whether the useSnippet value is currently being saved.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} `true` if saving useSnippet, `false` if not.
+	 */
 	isDoingSaveUseSnippet( state ) {
 		return state.isFetchingSaveUseSnippet;
 	},
@@ -427,7 +447,7 @@ export const selectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} Original account status (may be an empty string), or
-	 *                   undefined if not loaded yet.
+	 *                              undefined if not loaded yet.
 	 */
 	getOriginalAccountStatus( state ) {
 		return state.originalAccountStatus;

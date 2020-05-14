@@ -37,7 +37,7 @@ export default function SetupAccountDisapproved() {
 	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
 	const userEmail = useSelect( ( select ) => select( userStoreName ).getEmail() );
 
-	if ( ! userEmail ) {
+	if ( undefined === accountID || ! userEmail ) {
 		return null;
 	}
 

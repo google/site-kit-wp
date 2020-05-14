@@ -50,6 +50,7 @@ import {
 	determineClientID,
 	determineAccountStatus,
 	determineSiteStatus,
+	isPendingAccountStatus,
 } from '../util/status';
 import SetupAccountCreate from './setup-account-create';
 import SetupAccountSelect from './setup-account-select';
@@ -154,7 +155,7 @@ export default function SetupMain( { finishSetup } ) {
 			setSiteSetupComplete( false );
 		}
 		// Force snippet placement to true when account is graylisted or pending.
-		if ( accountStatus === ACCOUNT_STATUS_GRAYLISTED || accountStatus === ACCOUNT_STATUS_PENDING ) {
+		if ( isPendingAccountStatus( accountStatus ) ) {
 			setUseSnippet( true );
 		}
 		setAccountStatus( accountStatus );

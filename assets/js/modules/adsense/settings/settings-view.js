@@ -25,6 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import DisplaySetting from '../../../components/display-setting';
 import Link from '../../../components/link';
 import { getAccountSiteURL } from '../util/url';
 import { STORE_NAME } from '../datastore/constants';
@@ -86,7 +87,7 @@ export default function SettingsView() {
 						{ __( 'Publisher ID', 'google-site-kit' ) }
 					</p>
 					<h5 className="googlesitekit-settings-module__meta-item-data">
-						{ accountID }
+						<DisplaySetting value={ accountID } />
 					</h5>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
