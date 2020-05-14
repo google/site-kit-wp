@@ -49,7 +49,7 @@ export default function AdBlockerWarning( { context } ) {
 	if ( isAccountSetupComplete && isSiteSetupComplete ) {
 		message = __( 'Ad blocker detected, you need to disable it to get the AdSense latest data.', 'google-site-kit' );
 	} else {
-		message = __( 'Ad blocker detected, you need to disable it in order to setup AdSense.', 'google-site-kit' );
+		message = __( 'Ad blocker detected, you need to disable it in order to set up AdSense.', 'google-site-kit' );
 	}
 
 	return (
