@@ -45,7 +45,6 @@ const getSetupRegistry = ( useSnippetValue ) => {
 
 describe( 'UseSnippetSwitch', () => {
 	afterEach( () => apiFetchMock.mockClear() );
-	afterAll( () => jest.restoreAllMocks() );
 
 	it( 'should update useSnippet in the store when toggled', async () => {
 		const { container, registry } = render( <UseSnippetSwitch />, { setupRegistry: getSetupRegistry( false ) } );
@@ -63,9 +62,9 @@ describe( 'UseSnippetSwitch', () => {
 	} );
 
 	it( 'should render nothing when useSnippet is undefined', async () => {
-		const { queryAllByRole } = render( <UseSnippetSwitch />, { setupRegistry: getSetupRegistry( undefined ) } );
+		const { container } = render( <UseSnippetSwitch />, { setupRegistry: getSetupRegistry( undefined ) } );
 
-		expect( queryAllByRole( 'switch', { hidden: true } ) ).toHaveLength( 0 );
+		expect( container.firstChild ).toEqual( null );
 	} );
 
 	it( 'should persist useSnippet when saveOnChange prop is enabled', async () => {

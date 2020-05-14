@@ -55,7 +55,7 @@ export default function SiteSteps() {
 			linkURL: enableAutoAdsURL,
 		},
 		{
-			linkText: __( 'Verified that your site is marked as Ready', 'google-site-kit' ),
+			linkText: __( 'Verified that your site is marked as "Ready"', 'google-site-kit' ),
 			linkURL: siteStatusURL,
 		},
 	];

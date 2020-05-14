@@ -41,7 +41,7 @@ export default function AccountSelect() {
 		if ( accountID !== newAccountID ) {
 			setAccountID( newAccountID );
 		}
-	} );
+	}, [ accountID ] );
 
 	if ( undefined === accounts ) {
 		return <ProgressBar small />;

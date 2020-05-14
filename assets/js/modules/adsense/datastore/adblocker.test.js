@@ -49,8 +49,8 @@ describe( 'modules/adsense adblocker', () => {
 				} ).toThrow( 'isAdBlockerActive is required.' );
 			} );
 
-			it( 'receives and sets isAdBlockerActive', async () => {
-				await dispatch.receiveIsAdBlockerActive( true );
+			it( 'receives and sets isAdBlockerActive', () => {
+				dispatch.receiveIsAdBlockerActive( true );
 
 				expect( select.isAdBlockerActive() ).toBe( true );
 			} );
@@ -85,9 +85,11 @@ describe( 'modules/adsense adblocker', () => {
 				if ( ! global.googlesitekit ) {
 					global.googlesitekit = {};
 				}
+				// Setting `canAdsRun` to `false` means an ad-blocker is enabled;
+				// if we can run ads, then we don't have an ad-blocker on.
 				global.googlesitekit.canAdsRun = false;
 
-				// Set value to false, contrary to the global above which would result in true.
+				// Set value to false, contrary to the global above which would result in this being true.
 				dispatch.receiveIsAdBlockerActive( false );
 
 				expect( select.isAdBlockerActive() ).toBe( false );

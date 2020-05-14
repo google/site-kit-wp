@@ -39,7 +39,7 @@ const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch( props ) {
 	const {
-		label = __( 'Let Site Kit place code on your site', 'google-site-kit' ),
+		label = __( 'Let Site Kit place AdSense code on your site', 'google-site-kit' ),
 		checkedMessage,
 		uncheckedMessage,
 		saveOnChange,
@@ -70,7 +70,7 @@ export default function UseSnippetSwitch( props ) {
 					checked={ useSnippet }
 					disabled={ isDoingSaveUseSnippet }
 					hideLabel={ false }
-				/> <span className="googlesitekit-recommended">{ __( 'RECOMMENDED', 'google-site-kit' ) }</span>
+				/> <span className="googlesitekit-recommended">{ __( 'Recommended', 'google-site-kit' ) }</span>
 			</div>
 			{ useSnippet && checkedMessage &&
 				<SettingsNotice

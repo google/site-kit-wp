@@ -308,13 +308,13 @@ export const selectors = {
 	},
 
 	/**
-	 * Checks whther the user has access to the existing AdSense tag.
+	 * Checks whether the user has access to the existing AdSense tag.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @return {(boolean|null|undefined)} true or false if tag permission is available,
-	 *                    null if no existing tag,
-	 *                    otherwise undefined if resolution is incomplete.
+	 *                                    null if no existing tag,
+	 *                                    otherwise undefined if resolution is incomplete.
 	 */
 	hasExistingTagPermission: createRegistrySelector( ( select ) => () => {
 		const hasExistingTag = select( STORE_NAME ).hasExistingTag();
@@ -342,7 +342,7 @@ export const selectors = {
 	 *
 	 * @param {Object} state    Data store's state.
 	 * @param {string} clientID The AdSense Client ID to check permissions for.
-	 * @return {boolean|undefined} True if the user has access, false if not; `undefined` if not loaded.
+	 * @return {(boolean|undefined)} True if the user has access, false if not; `undefined` if not loaded.
 	 */
 	hasTagPermission: createRegistrySelector( ( select ) => ( state, clientID ) => {
 		const { permission } = select( STORE_NAME ).getTagPermission( clientID ) || {};

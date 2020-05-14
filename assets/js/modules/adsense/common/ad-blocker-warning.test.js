@@ -32,8 +32,6 @@ const setupNoAdBlockerRegistry = async ( registry ) => {
 };
 
 describe( 'AdBlockerWarning', () => {
-	afterAll( () => jest.restoreAllMocks() );
-
 	it( 'should render the warning when an AdBlocker is active', async () => {
 		const { container } = render( <AdBlockerWarning />, { setupRegistry: setupAdBlockerRegistry } );
 

@@ -60,7 +60,7 @@ export default function SetupAccountApproved() {
 
 	let label;
 	if ( isApprovedFromVeryBeginning ) {
-		label = __( 'Let Site Kit place code on your site to get your site approved', 'google-site-kit' );
+		label = __( 'Let Site Kit place AdSense code on your site to get your site approved', 'google-site-kit' );
 	} else {
 		label = __( 'Keep the code placed by Site Kit', 'google-site-kit' );
 	}
