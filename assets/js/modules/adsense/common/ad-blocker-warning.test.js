@@ -41,6 +41,6 @@ describe( 'AdBlockerWarning', () => {
 	it( 'should render nothing when no AdBlocker is active', async () => {
 		const { container } = render( <AdBlockerWarning />, { setupRegistry: setupNoAdBlockerRegistry } );
 
-		expect( container.querySelector( '.googlesitekit-settings-module-warning' ) ).toEqual( null );
+		expect( container.firstChild ).toEqual( null );
 	} );
 } );

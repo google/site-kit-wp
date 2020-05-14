@@ -42,7 +42,7 @@ export default function UserProfile() {
 			<img
 				className="googlesitekit-setup-module__user-image"
 				src={ userPicture }
-				alt={ __( 'User Avatar', 'google-site-kit' ) }
+				alt=""
 			/>
 			<span className="googlesitekit-setup-module__user-email">
 				{ userEmail }
