@@ -36,6 +36,7 @@ import { TYPE_MODULES } from '../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../components/data-table';
 import Layout from '../../../components/layout/layout';
 import PreviewTable from '../../../components/preview-table';
+import ctaWrapper from '../../../components/notifications/cta-wrapper';
 import AdSenseLinkCTA from '../common/adsense-link-cta';
 import { analyticsAdsenseReportDataDefaults, isDataZeroForReporting } from '../util';
 
@@ -148,7 +149,7 @@ const getDataError = ( data ) => {
 		// Specifically looking for string "badRequest"
 		if ( 'badRequest' === data.data.reason ) {
 			return AnalyticsAdSenseDashboardWidgetTopPagesTable.renderLayout(
-				<AdSenseLinkCTA />
+				ctaWrapper( <AdSenseLinkCTA />, false, false, true )
 			);
 		}
 
@@ -192,11 +193,7 @@ export default withData(
 	AnalyticsAdSenseDashboardWidgetTopPagesTable.renderLayout(
 		<PreviewTable padding />
 	),
-	{
-		inGrid: true,
-		fullWidth: true,
-		createGrid: true,
-	},
+	{ createGrid: true },
 	// Force isDataZero to false since it is handled within the component.
 	() => false,
 	getDataError
