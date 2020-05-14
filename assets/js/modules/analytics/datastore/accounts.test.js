@@ -77,10 +77,10 @@ describe( 'modules/analytics accounts', () => {
 						{ status: 200 }
 					);
 
+				registry.dispatch( STORE_NAME ).setForm( FORM_ACCOUNT_CREATE, { accountName, propertyName, profileName, timezone } );
+
 				// Silence expected API errors.
 				muteConsole( 'error' ); // Request will log an error.
-
-				registry.dispatch( STORE_NAME ).setForm( FORM_ACCOUNT_CREATE, { accountName, propertyName, profileName, timezone } );
 				registry.dispatch( STORE_NAME ).createAccount();
 				await subscribeUntil( registry,
 					() => (
