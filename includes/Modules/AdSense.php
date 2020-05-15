@@ -533,7 +533,7 @@ tag_partner: "site_kit"
 				return function() {
 					$account_id = $this->get_data( 'account-id' );
 					if ( ! is_wp_error( $account_id ) && $account_id ) {
-						return sprintf( 'https://www.google.com/adsense/new/u/0/%s/main/viewreports', $account_id );
+						return sprintf( 'https://www.google.com/adsense/new/%s/main/viewreports', $account_id );
 					}
 					return 'https://www.google.com/adsense/start';
 				};
