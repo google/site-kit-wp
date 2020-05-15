@@ -184,13 +184,13 @@ describe( 'Tag Manager module setup', () => {
 		beforeEach( async () => {
 			await activatePlugin( 'amp' );
 			await activatePlugin( 'e2e-tests-module-setup-tagmanager-api-mock' );
-			await proceedToTagManagerSetup();
 		} );
 		afterEach( async () => {
 			await deactivatePlugin( 'amp' );
 		} );
 		it( 'renders the correct drop downs in the setup screen', async () => {
 			await setAMPMode( mode );
+			await proceedToTagManagerSetup();
 
 			// Ensure that the correct dropdowns are displayed.
 			if ( 'standard' !== mode ) {
@@ -201,7 +201,6 @@ describe( 'Tag Manager module setup', () => {
 	} );
 	describe( 'Homepage AMP', () => {
 		beforeEach( async () => {
-			await setupAnalytics();
 			await activateAmpAndSetMode( 'standard' );
 		} );
 		afterEach( async () => {
