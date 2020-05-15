@@ -23,17 +23,15 @@ import Data from 'googlesitekit-data';
 import invariant from 'invariant';
 import { STORE_NAME } from './constants';
 
-// Actions
-const SET_FORM_VALUES = 'SET_FORM_VALUES';
-
 export { STORE_NAME };
 
-export const INITIAL_STATE = {
-};
+const SET_FORM_VALUES = 'SET_FORM_VALUES';
+
+export const INITIAL_STATE = {};
 
 export const actions = {
 	setValues( formName, formData ) {
-		invariant( formName, 'form name is required.' );
+		invariant( formName, 'formName is required for setting values.' );
 
 		return {
 			payload: { formName, formData },
@@ -65,13 +63,6 @@ export const resolvers = {};
 
 export const selectors = {
 	getValue( state, formName, key ) {
-		if ( ! formName ) {
-			return undefined;
-		}
-		if ( ! key ) {
-			return undefined;
-		}
-
 		return state[ formName ][ key ];
 	},
 };
