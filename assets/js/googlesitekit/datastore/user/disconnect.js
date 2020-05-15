@@ -71,7 +71,7 @@ export const actions = {
 	/**
 	 * Stores the disconnection info received from the REST API.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @param {Object} disconnected Disconnection response from the API.
@@ -136,7 +136,7 @@ export const selectors = {
 	/**
 	 * Returns whether a disconnect is occuring.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} Is a disconnect ocurring or not.

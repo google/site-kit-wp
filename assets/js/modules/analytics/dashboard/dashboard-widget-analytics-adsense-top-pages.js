@@ -36,7 +36,9 @@ import { TYPE_MODULES } from '../../../components/data';
 import { getDataTableFromData, TableOverflowContainer } from '../../../components/data-table';
 import Layout from '../../../components/layout/layout';
 import PreviewTable from '../../../components/preview-table';
-import { analyticsAdsenseReportDataDefaults } from '../util';
+import ctaWrapper from '../../../components/notifications/cta-wrapper';
+import AdSenseLinkCTA from '../common/adsense-link-cta';
+import { analyticsAdsenseReportDataDefaults, isDataZeroForReporting } from '../util';
 
 class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
 	static renderLayout( component ) {
@@ -56,7 +58,9 @@ class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
 	render() {
 		const { data } = this.props;
 
-		if ( ! data || ! data.length ) {
+		// Do not return zero data callout here since it will already be
+		// present on the page from other sources.
+		if ( isDataZeroForReporting( data ) ) {
 			return null;
 		}
 
@@ -129,11 +133,6 @@ class AnalyticsAdSenseDashboardWidgetTopPagesTable extends Component {
 	}
 }
 
-// @todo: need to have test account that connected analytics to adsense but has zero data.
-const isDataZero = () => {
-	return false;
-};
-
 /**
  * Check error data response, and handle the INVALID_ARGUMENT specifically.
  *
@@ -146,24 +145,36 @@ const isDataZero = () => {
  *
  */
 const getDataError = ( data ) => {
-	if ( ! data || ! data.error ) {
-		return false;
+	if ( data.code && data.message && data.data && data.data.status ) {
+		// Specifically looking for string "badRequest"
+		if ( 'badRequest' === data.data.reason ) {
+			return AnalyticsAdSenseDashboardWidgetTopPagesTable.renderLayout(
+				ctaWrapper( <AdSenseLinkCTA />, false, false, true )
+			);
+		}
+
+		return data.message;
 	}
 
-	// We don't want to show error as AdsenseDashboardOutro will be rendered for this case.
-	if ( 400 === data.error.code && 'INVALID_ARGUMENT' === data.error.status && getModulesData().analytics.active ) {
-		return null;
+	// Legacy errors? Maybe this is never hit but better be safe than sorry.
+	if ( data.error ) {
+		// We don't want to show error as AdsenseDashboardOutro will be rendered for this case.
+		if ( 400 === data.error.code && 'INVALID_ARGUMENT' === data.error.status && getModulesData().analytics.active ) {
+			return null;
+		}
+
+		if ( data.error.message ) {
+			return data.error.message;
+		}
+
+		if ( data.error.errors && data.error.errors[ 0 ] && data.error.errors[ 0 ].message ) {
+			return data.error.errors[ 0 ].message;
+		}
+
+		return __( 'Unidentified error', 'google-site-kit' );
 	}
 
-	if ( data.error.message ) {
-		return data.error.message;
-	}
-
-	if ( data.error.errors && data.error.errors[ 0 ] && data.error.errors[ 0 ].message ) {
-		return data.error.errors[ 0 ].message;
-	}
-
-	return __( 'Unidentified error', 'google-site-kit' );
+	return false;
 };
 
 export default withData(
@@ -182,11 +193,8 @@ export default withData(
 	AnalyticsAdSenseDashboardWidgetTopPagesTable.renderLayout(
 		<PreviewTable padding />
 	),
-	{
-		inGrid: true,
-		fullWidth: true,
-		createGrid: true,
-	},
-	isDataZero,
+	{ createGrid: true },
+	// Force isDataZero to false since it is handled within the component.
+	() => false,
 	getDataError
 );
