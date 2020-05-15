@@ -1,5 +1,5 @@
 /**
- * core/forms Data store: values
+ * Analytics form datastore.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,27 +16,21 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import Data from 'googlesitekit-data';
 import invariant from 'invariant';
-import { STORE_NAME } from './constants';
 
-export { STORE_NAME };
-
-const SET_FORM_VALUES = 'SET_FORM_VALUES';
+// Actions
+const SET_FORM = 'SET_FORM';
 
 export const INITIAL_STATE = {};
 
 export const actions = {
-	setValues( formName, formData ) {
-		invariant( formName, 'formName is required for setting values.' );
-		invariant( formData !== undefined, 'formData is required.' );
+	setForm( formID, data ) {
+		invariant( formID, 'formID is required for updating data.' );
+		invariant( typeof data === 'object', 'data must be an object to merge.' );
 
 		return {
-			payload: { formName, formData },
-			type: SET_FORM_VALUES,
+			payload: { formID, data },
+			type: SET_FORM,
 		};
 	},
 };
@@ -45,15 +39,17 @@ export const controls = {};
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_FORM_VALUES: {
-			const { formName, formData } = payload;
+		case SET_FORM:
+			const { formID, data } = payload;
+			const formKey = `form::${ formID }`;
 
 			return {
 				...state,
-				[ formName ]: formData,
+				[ formKey ]: {
+					...( state[ formKey ] || {} ),
+					...data,
+				},
 			};
-		}
-
 		default: {
 			return { ...state };
 		}
@@ -63,12 +59,14 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {};
 
 export const selectors = {
-	getValue( state, formName, key ) {
-		return state[ formName ][ key ];
+	getForm( state, formID, key ) {
+		const form = state[ `form::${ formID }` ] || {};
+
+		return form[ key ];
 	},
 };
 
-const store = {
+export default {
 	INITIAL_STATE,
 	actions,
 	controls,
@@ -76,8 +74,3 @@ const store = {
 	resolvers,
 	selectors,
 };
-
-// Register this store on the global registry.
-Data.registerStore( STORE_NAME, store );
-
-export default store;
