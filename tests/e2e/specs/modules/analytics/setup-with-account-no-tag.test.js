@@ -75,7 +75,6 @@ describe( 'setting up the Analytics module with an existing account and no exist
 	} );
 
 	afterEach( async () => {
-		await deactivatePlugin( 'amp' );
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
 	} );
@@ -173,18 +172,17 @@ describe( 'setting up the Analytics module with an existing account and no exist
 	} );
 
 	describe( 'Homepage AMP', () => {
-		it( 'validates for logged-in users', async () => {
+		beforeEach( async () => {
 			await setupAnalytics();
 			await activateAmpAndSetMode( 'standard' );
-			await Promise.all( [
-				page.goto( createURL( '/' ), { waitUntil: 'load' } ),
-				page.waitForSelector( '#amp-admin-bar-item-status-icon' ),
-			] );
-			await expect( page ).toMatchElement( '#amp-admin-bar-item-status-icon', { text: '✅' } );
+		} );
+		afterEach( async () => {
+			await deactivatePlugin( 'amp' );
+		} );
+		it( 'validates for logged-in users', async () => {
+			await expect( '/' ).toHaveValidAMP( { loggedIn: true } );
 		} );
 		it( 'validates for non-logged-in users', async () => {
-			await setupAnalytics();
-			await activateAmpAndSetMode( 'standard' );
 			await expect( '/' ).toHaveValidAMP();
 		} );
 	} );
