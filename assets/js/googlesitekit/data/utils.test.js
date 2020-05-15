@@ -20,14 +20,10 @@
  * Internal dependencies
  */
 import {
-	addInitializeAction,
-	addInitializeReducer,
 	collect,
-	collectActions,
 	collectReducers,
 	collectName,
 	combineStores,
-	initializeAction,
 } from './utils';
 
 describe( 'data utils', () => {
@@ -103,25 +99,6 @@ describe( 'data utils', () => {
 			expect( () => {
 				collect( objectOne, objectTwo );
 			} ).toThrow( /Your call to collect\(\) contains the following duplicated functions: cat, feline./ );
-		} );
-	} );
-
-	describe( 'addInitializeAction()', () => {
-		it( 'should include an initialize action that dispatches an INITIALIZE action type', () => {
-			const objectOne = {
-				bar: () => {},
-				foo: () => {},
-			};
-			const objectTwo = {
-				cat: () => {},
-				dog: () => {},
-			};
-
-			expect(
-				addInitializeAction( collectActions( objectOne, objectTwo ) )
-			).toMatchObject( {
-				initialize: initializeAction,
-			} );
 		} );
 	} );
 
@@ -710,36 +687,6 @@ describe( 'data utils', () => {
 
 				state = combinedReducer( state, anotherFakeAction() );
 				expect( state ).toEqual( { count: 0, one: true, two: 2 } );
-
-				// Should not respond to the initializeAction as this reducer is not
-				// extended with `addInitializeReducer()`. This will return state as-is.
-				const newState = combinedReducer( state, initializeAction() );
-
-				expect( state ).toEqual( newState );
-			} );
-		} );
-
-		describe( 'addInitializeReducer()', () => {
-			it( 'should respond to an INITIALIZE action because it extends the reducers to include one', () => {
-				const initialState = { count: 0 };
-				const combinedReducer = addInitializeReducer(
-					initialState,
-					collectReducers( fakeReducer, fakeReducerTwo )
-				);
-
-				let state = combinedReducer();
-				expect( state ).toEqual( { count: 0 } );
-
-				// It should still respond to the original actions.
-				state = combinedReducer( state, fakeAction() );
-				expect( state ).toEqual( { count: 0, one: true } );
-
-				state = combinedReducer( state, anotherFakeAction() );
-				expect( state ).toEqual( { count: 0, one: true, two: 2 } );
-
-				//
-				state = combinedReducer( state, initializeAction() );
-				expect( state ).toEqual( initialState );
 			} );
 		} );
 
