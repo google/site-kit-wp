@@ -22,7 +22,7 @@ export async function toHaveValidAMP( path, options = { loggedIn: false } ) {
 	const result = {};
 	if ( true === loggedIn ) {
 		await Promise.all( [
-			page.goto( createURL( '/' ), { waitUntil: 'load' } ),
+			page.goto( createURL( path ), { waitUntil: 'load' } ),
 			page.waitForSelector( '#amp-admin-bar-item-status-icon' ),
 		] );
 		try {
