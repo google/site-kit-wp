@@ -47,13 +47,6 @@ export default function SetupSiteAdded( { finishSetup } ) {
 			return;
 		}
 
-		// TODO: Remove temporary hack to avoid saving in Storybook.
-		if ( global.__STORYBOOK_ADDONS ) {
-			finishSetup();
-			trackEvent( 'adsense_setup', 'complete_adsense_setup' );
-			return;
-		}
-
 		const success = await completeSiteSetup();
 		if ( success ) {
 			finishSetup();

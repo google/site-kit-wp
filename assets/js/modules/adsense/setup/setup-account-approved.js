@@ -45,8 +45,7 @@ export default function SetupAccountApproved() {
 
 	const { completeAccountSetup } = useDispatch( STORE_NAME );
 	const continueHandler = useCallback( async () => {
-		// TODO: Remove temporary hack to avoid saving in Storybook.
-		if ( isDoingSubmitChanges || global.__STORYBOOK_ADDONS ) {
+		if ( isDoingSubmitChanges ) {
 			return;
 		}
 		await completeAccountSetup();

@@ -208,11 +208,6 @@ export default function SetupMain( { finishSetup } ) {
 		// right now.
 		setIsAwaitingBackgroundSubmit( false );
 
-		// TODO: Remove temporary hack to avoid saving in Storybook.
-		if ( global.__STORYBOOK_ADDONS ) {
-			return;
-		}
-
 		// Set internal state for submitting in background to avoid sudden
 		// rendering of a progress bar.
 		( async () => {
