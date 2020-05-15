@@ -76,6 +76,9 @@ export const reducer = ( state, { payload, type } ) => {
 				currentEntityType,
 				homeURL,
 				referenceSiteURL,
+				timezone,
+				usingProxy,
+				siteName,
 			} = payload.siteInfo;
 
 			return {
@@ -89,6 +92,9 @@ export const reducer = ( state, { payload, type } ) => {
 					currentEntityType,
 					homeURL,
 					referenceSiteURL,
+					timezone,
+					usingProxy,
+					siteName,
 				},
 			};
 		}
@@ -117,6 +123,9 @@ export const resolvers = {
 			ampMode,
 			homeURL,
 			referenceSiteURL,
+			timezone,
+			usingProxy,
+			siteName,
 		} = global._googlesitekitBaseData;
 		const {
 			currentEntityURL,
@@ -134,6 +143,9 @@ export const resolvers = {
 			currentEntityType,
 			homeURL,
 			referenceSiteURL,
+			timezone,
+			usingProxy: !! usingProxy,
+			siteName,
 		} );
 	},
 };
@@ -312,6 +324,48 @@ export const selectors = {
 
 		return ampMode !== undefined ? !! ampMode : ampMode;
 	} ),
+
+	/**
+	 * Gets a site's timezone.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The timezone.
+	 */
+	getTimezone: createRegistrySelector( ( select ) => () => {
+		const { timezone } = select( STORE_NAME ).getSiteInfo() || {};
+
+		return timezone;
+	} ),
+
+	/**
+	 * Returns true if this site is using the proxy service.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if the proxy service is in use, `false` if not. Returns `undefined` if not loaded.
+	 */
+	isUsingProxy: createRegistrySelector( ( select ) => () => {
+		const { usingProxy } = select( STORE_NAME ).getSiteInfo() || {};
+		return usingProxy;
+	} ),
+
+	/**
+	 * Gets a site's name.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The site name.
+	 */
+	getSiteName: createRegistrySelector( ( select ) => () => {
+		const { siteName } = select( STORE_NAME ).getSiteInfo() || {};
+
+		return siteName;
+	} ),
+
 };
 
 export default {

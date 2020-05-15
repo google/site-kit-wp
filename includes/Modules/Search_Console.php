@@ -534,7 +534,7 @@ final class Search_Console extends Module
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */

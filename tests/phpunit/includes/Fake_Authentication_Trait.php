@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Tests;
 /**
  * Trait for getting fake authentication credentials.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  * @access private
  * @ignore
  */
@@ -22,8 +22,8 @@ trait Fake_Authentication_Trait {
 	/**
 	 * Creates fake Google authentication credentials for testing.
 	 *
-	 * @since n.e.x.t
-	 * 
+	 * @since 1.9.0
+	 *
 	 * @return array Fake authentication details including client_id & client_secret.
 	 */
 	public function fake_authentication() {
@@ -47,8 +47,8 @@ trait Fake_Authentication_Trait {
 	/**
 	 * Creates fake proxy authentication credentials for testing.
 	 *
-	 * @since n.e.x.t
-	 * 
+	 * @since 1.9.0
+	 *
 	 * @return array Fake proxy authentication details including client_id & client_secret.
 	 */
 	public function fake_proxy_authentication() {
