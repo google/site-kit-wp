@@ -102,4 +102,20 @@ describe( 'Optimize Activation', () => {
 		await expect( setupHandle ).toMatchElement( 'p', { text: /Please input your AMP experiment settings in JSON format below./i } );
 		await deactivatePlugin( 'amp' );
 	} );
+
+	describe( 'Homepage AMP', () => {
+		beforeEach( async () => {
+			await setupAnalytics();
+			await activateAmpAndSetMode( 'standard' );
+		} );
+		afterEach( async () => {
+			await deactivatePlugin( 'amp' );
+		} );
+		it( 'validates for logged-in users', async () => {
+			await expect( '/' ).toHaveValidAMP( { loggedIn: true } );
+		} );
+		it( 'validates for non-logged-in users', async () => {
+			await expect( '/' ).toHaveValidAMP();
+		} );
+	} );
 } );
