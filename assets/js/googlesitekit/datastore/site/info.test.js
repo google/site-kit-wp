@@ -35,6 +35,9 @@ describe( 'core/site site info', () => {
 		ampMode: 'reader',
 		homeURL: 'http://something.test/homepage',
 		referenceSiteURL: 'http://something.test',
+		siteName: 'Something Test',
+		timezone: 'America/Denver',
+		usingProxy: true,
 	};
 	const entityInfoVar = '_googlesitekitEntityData';
 	const entityInfo = {
@@ -74,6 +77,68 @@ describe( 'core/site site info', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'getAdminURL', () => {
+			it( 'returns the adminURL on its own if no page argument is supplied', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+
+				let adminURL = registry.select( STORE_NAME ).getAdminURL();
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin' );
+
+				adminURL = registry.select( STORE_NAME ).getAdminURL( undefined, { arg1: 'argument-1', arg2: 'argument-2' } );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin' );
+			} );
+
+			it( 'returns the adminURL with page query parameter if simple page argument is supplied', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+
+				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'testpage' );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin/admin.php?page=testpage' );
+			} );
+
+			it( 'returns the adminURL with page query parameter if the full page argument is supplied', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+
+				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'custom.php?page=testpage' );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin/custom.php?page=testpage' );
+			} );
+
+			it( 'returns the original adminURL if the full page argument is supplied without "page" query param', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+
+				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'custom.php?notpage=testpage' );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin' );
+			} );
+
+			it( 'properly handles the adminURLs with trailing slash', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo, adminURL: 'http://something.test/wp-admin/' } );
+
+				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'custom.php?page=testpage' );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin/custom.php?page=testpage' );
+			} );
+
+			it( 'returns the adminURL with page and extra query if page and args supplied', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+
+				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'testpage', { arg1: 'argument-1', arg2: 'argument-2' } );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin/admin.php?page=testpage&arg1=argument-1&arg2=argument-2' );
+			} );
+
+			it( 'returns the adminURL with first page if an extra page is provided in the args', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+
+				const adminURL = registry.select( STORE_NAME ).getAdminURL( 'correct-page', { arg1: 'argument-1', arg2: 'argument-2', page: 'wrong-page' } );
+				expect( adminURL ).toEqual( 'http://something.test/wp-admin/admin.php?page=correct-page&arg1=argument-1&arg2=argument-2' );
+			} );
+
+			it( 'returns undefined if adminURL is undefined', async () => {
+				await registry.dispatch( STORE_NAME ).receiveSiteInfo( {} );
+
+				const adminURL = registry.select( STORE_NAME ).getAdminURL();
+
+				expect( adminURL ).toEqual( undefined );
+			} );
+		} );
+
 		describe( 'getSiteInfo', () => {
 			it( 'uses a resolver to load site info from a global variable by default, then deletes that global variable after consumption', async () => {
 				global[ baseInfoVar ] = baseInfo;
@@ -118,6 +183,9 @@ describe( 'core/site site info', () => {
 			[ 'getCurrentEntityURL' ],
 			[ 'getHomeURL' ],
 			[ 'getReferenceSiteURL' ],
+			[ 'getSiteName' ],
+			[ 'getTimezone' ],
+			[ 'isUsingProxy' ],
 		] )( `%i()`, ( selector ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;

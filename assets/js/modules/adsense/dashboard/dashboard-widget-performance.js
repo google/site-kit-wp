@@ -169,7 +169,7 @@ export default withData(
 		},
 	],
 	<PreviewBlock width="100%" height="250px" />,
-	{},
+	{ createGrid: true },
 	isDataZeroAdSense
 );
 
