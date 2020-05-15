@@ -132,6 +132,15 @@ describe( 'core/modules modules', () => {
 				expect( isActiveAfter ).toEqual( true );
 			} );
 
+			it( 'makes a refetch authentication request that is completed before action is completed', async () => {
+				// const coreUserDataExpectedResponse = { authenticated: true, requiredScopes: [], grantedScopes: [] };
+				// const coreUserDataEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/authentication/;
+
+				// TODO Ensure refetch auth request is made
+
+				// TODO Ensure action completes
+			} );
+
 			it( 'does not update status if the API encountered a failure', async () => {
 				// In our fixtures, optimize is off by default.
 				const slug = 'optimize';
@@ -268,6 +277,15 @@ describe( 'core/modules modules', () => {
 
 				expect( fetch ).toHaveBeenCalledTimes( 3 );
 				expect( isActiveAfter ).toEqual( false );
+			} );
+
+			it( 'makes a refetch authentication request that is completed before action is completed', async () => {
+				// const coreUserDataExpectedResponse = { authenticated: true, requiredScopes: [], grantedScopes: [] };
+				// const coreUserDataEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/authentication/;
+
+				// TODO Ensure refetch auth request is made
+
+				// TODO Ensure action completes
 			} );
 
 			it( 'does not update status if the API encountered a failure', async () => {

@@ -22,11 +22,17 @@
 import invariant from 'invariant';
 
 /**
+ * WordPress dependencies
+ */
+import { createRegistryControl } from '@wordpress/data';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
+import { CORE_USER_STORE_NAME } from '../../datastore/user/constants';
 
 const { createRegistrySelector } = Data;
 
@@ -40,6 +46,7 @@ const FETCH_MODULES = 'FETCH_MODULES';
 const FINISH_FETCH_MODULES = 'FINISH_FETCH_MODULES';
 const CATCH_FETCH_MODULES = 'CATCH_FETCH_MODULES';
 const RECEIVE_MODULES = 'RECEIVE_MODULES';
+const REFETCH_AUTHENICATION = 'REFETCH_AUTHENICATION';
 
 export const INITIAL_STATE = {
 	modules: undefined,
@@ -60,6 +67,12 @@ export const actions = {
 	 */
 	*activateModule( slug ) {
 		const { response, error } = yield actions.setModuleActivation( slug, true );
+
+		yield {
+			payload: {},
+			type: REFETCH_AUTHENICATION,
+		};
+
 		return { response, error };
 	},
 
@@ -75,6 +88,12 @@ export const actions = {
 	 */
 	*deactivateModule( slug ) {
 		const { response, error } = yield actions.setModuleActivation( slug, false );
+
+		yield {
+			payload: {},
+			type: REFETCH_AUTHENICATION,
+		};
+
 		return { response, error };
 	},
 
@@ -197,6 +216,9 @@ export const controls = {
 	[ FETCH_MODULES ]: () => {
 		return API.get( 'core', 'modules', 'list', null, { useCache: false } );
 	},
+	[ REFETCH_AUTHENICATION ]: createRegistryControl( ( registry ) => () => {
+		registry.dispatch( CORE_USER_STORE_NAME ).fetchAuthentication();
+	} ),
 };
 
 export const reducer = ( state, { type, payload } ) => {
