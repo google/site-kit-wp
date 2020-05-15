@@ -36,4 +36,5 @@ export const setAMPMode = async ( mode ) => {
 	await visitAdminPage( 'admin.php', 'page=amp-options' );
 	await expect( page ).toClick( `#theme_support_${ allowedAmpModes[ mode ] }` );
 	await expect( page ).toClick( '#submit' );
+	await page.waitForNavigation();
 };
