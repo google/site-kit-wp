@@ -4,7 +4,6 @@
 import {
 	activatePlugin,
 	deactivatePlugin,
-	createURL,
 } from '@wordpress/e2e-test-utils';
 
 /**
