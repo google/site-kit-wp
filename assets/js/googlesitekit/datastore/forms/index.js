@@ -17,7 +17,7 @@
  */
 
 /**
- * External dependencies
+ * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import invariant from 'invariant';
@@ -30,9 +30,19 @@ const SET_FORM_VALUES = 'SET_FORM_VALUES';
 export const INITIAL_STATE = {};
 
 export const actions = {
+	/**
+	 * Stores site form information.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {string} formName Name of the form.
+	 * @param {Object} formData Form data supplied as a map of keys to set and their respective values.
+	 * @return {Object} Redux-style action.
+	 */
 	setValues( formName, formData ) {
 		invariant( formName, 'formName is required for setting values.' );
-		invariant( formData !== undefined, 'formData is required.' );
+		invariant( typeof formData === 'object', 'formData must be an object.' );
 
 		return {
 			payload: { formName, formData },
@@ -50,7 +60,7 @@ export const reducer = ( state, { type, payload } ) => {
 
 			return {
 				...state,
-				[ formName ]: formData,
+				[ formName ]: { ...( state[ formName ] || {} ), ...formData },
 			};
 		}
 
@@ -63,6 +73,17 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {};
 
 export const selectors = {
+	/**
+	 * Gets the existing form by formName and key.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} formName Name of the form.
+	 * @param {string} key Key supplied from formData.
+	 * @return {string|undefined} Value stored in state by formName and key or undefined.
+	 */
 	getValue( state, formName, key ) {
 		return state[ formName ][ key ];
 	},

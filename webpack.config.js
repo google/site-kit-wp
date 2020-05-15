@@ -97,6 +97,7 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-modules-analytics': './assets/js/googlesitekit-modules-analytics.js',
 				'googlesitekit-modules-pagespeed-insights': 'assets/js/googlesitekit-modules-pagespeed-insights.js',
 				'googlesitekit-modules-search-console': './assets/js/googlesitekit-modules-search-console.js',
+				'googlesitekit-datastore-forms': './assets/js/googlesitekit-datastore-forms.js',
 				'googlesitekit-modules': './assets/js/googlesitekit-modules.js', // TODO: Add external following 1162.
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
