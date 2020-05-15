@@ -30,11 +30,7 @@ describe( 'AMP Homepage', () => {
 
 	describe( 'Logged in user.', () => {
 		it( 'has no validation errors', async () => {
-			await Promise.all( [
-				page.goto( createURL( '/' ), { waitUntil: 'load' } ),
-				page.waitForSelector( '#amp-admin-bar-item-status-icon' ),
-			] );
-			await expect( page ).toMatchElement( '#amp-admin-bar-item-status-icon', { text: '✅' } );
+			await expect( '/' ).toHaveValidAMP( { loggedIn: true } );
 		} );
 	} );
 	describe( 'Non-logged-in user', () => {

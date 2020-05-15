@@ -314,11 +314,7 @@ describe( 'setting up the AdSense module', () => {
 		};
 
 		await proceedToAdsenseSetup();
-		await Promise.all( [
-			page.goto( createURL( '/' ), { waitUntil: 'load' } ),
-			page.waitForSelector( '#amp-admin-bar-item-status-icon' ),
-		] );
-		await expect( page ).toMatchElement( '#amp-admin-bar-item-status-icon', { text: '✅' } );
+		await expect( '/' ).toHaveValidAMP( { loggedIn: true } );
 		await deactivatePlugin( 'amp' );
 	} );
 
