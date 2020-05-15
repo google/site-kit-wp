@@ -85,14 +85,14 @@ export const actions = {
 	},
 
 	*resetAccounts() {
-		const registry = yield Data.commonActions.getRegistry();
+		const { dispatch } = yield Data.commonActions.getRegistry();
 
 		yield {
 			payload: {},
 			type: RESET_ACCOUNTS,
 		};
 
-		return registry.stores[ STORE_NAME ].getActions()
+		return dispatch( STORE_NAME )
 			.invalidateResolutionForStoreSelector( 'getAccounts' );
 	},
 };

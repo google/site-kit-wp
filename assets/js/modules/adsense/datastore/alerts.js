@@ -89,14 +89,14 @@ export const actions = {
 	},
 
 	*resetAlerts() {
-		const registry = yield Data.commonActions.getRegistry();
+		const { dispatch } = yield Data.commonActions.getRegistry();
 
 		yield {
 			payload: {},
 			type: RESET_ALERTS,
 		};
 
-		return registry.stores[ STORE_NAME ].getActions()
+		return dispatch( STORE_NAME )
 			.invalidateResolutionForStoreSelector( 'getAlerts' );
 	},
 };
