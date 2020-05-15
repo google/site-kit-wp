@@ -48,6 +48,8 @@ describe( 'modules/analytics profiles', () => {
 		store = registry.stores[ STORE_NAME ].store;
 
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
+		// Receive empty settings to prevent unexpected fetch by resolver.
+		registry.dispatch( STORE_NAME ).receiveSettings( {} );
 	} );
 
 	afterAll( () => {
@@ -84,7 +86,6 @@ describe( 'modules/analytics profiles', () => {
 					}
 				);
 
-				muteConsole( 'error' );
 				await subscribeUntil( registry,
 					() => (
 						registry.select( STORE_NAME ).getProfiles( propertyID )
@@ -142,10 +143,15 @@ describe( 'modules/analytics profiles', () => {
 				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( response );
 
 				// Ignore the request fired by the `getProperties` selector.
-				muteConsole( 'error' );
+				fetch
+					.doMockIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/
+					)
+					.mockResponse( JSON.stringify( {} ) );
+
 				const properties = registry.select( STORE_NAME ).getProperties( accountID );
-				// No properties should have been added yet, as the property creation
-				// failed.
+
+				// No properties should have been added yet, as the property creation failed.
 				expect( properties ).toEqual( undefined );
 			} );
 		} );
@@ -154,7 +160,6 @@ describe( 'modules/analytics profiles', () => {
 	describe( 'selectors', () => {
 		describe( 'getProfiles', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( {} );
 				fetch
 					.doMockOnceIf(
 						/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/
@@ -192,12 +197,12 @@ describe( 'modules/analytics profiles', () => {
 			} );
 
 			it( 'does not make a network request if profiles for this account + property are already present', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( {} );
 				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // Capitalization rule exception: `webPropertyId` is a property of an API returned value.
+				const propertyID = testPropertyID;
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveProfiles( fixtures.profiles );
+				registry.dispatch( STORE_NAME ).receiveProfiles( fixtures.profiles, { propertyID } );
 
 				const profiles = registry.select( STORE_NAME ).getProfiles( testPropertyID );
 
@@ -212,7 +217,6 @@ describe( 'modules/analytics profiles', () => {
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( {} );
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',

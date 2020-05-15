@@ -39,12 +39,13 @@ apiFetchMock.mockImplementation( ( ...args ) => {
 const setupRegistry = ( { dispatch } ) => {
 	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId;
 	dispatch( STORE_NAME ).setAccountID( accountID );
-	dispatch( STORE_NAME ).receiveProperties( fixtures.accountsPropertiesProfiles.properties );
+	dispatch( STORE_NAME ).receiveProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
 	dispatch( STORE_NAME ).receiveExistingTag( null );
 };
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
-	dispatch( STORE_NAME ).receiveProperties( fixtures.accountsPropertiesProfiles.properties );
+	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId;
+	dispatch( STORE_NAME ).receiveProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
 	dispatch( STORE_NAME ).receiveExistingTag( fixtures.getTagPermissionsAccess );
 	// Existing tag IDs are set in the resolver so we have to fill those here.
 	dispatch( STORE_NAME ).setAccountID( fixtures.getTagPermissionsAccess.accountID );
@@ -52,8 +53,9 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
+	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId;
 	dispatch( STORE_NAME ).setSettings( {} );
-	dispatch( STORE_NAME ).receiveProperties( [] );
+	dispatch( STORE_NAME ).receiveProperties( [], { accountID } );
 	dispatch( STORE_NAME ).receiveExistingTag( null );
 };
 

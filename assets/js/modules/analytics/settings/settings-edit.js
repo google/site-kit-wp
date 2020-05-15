@@ -27,11 +27,13 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME, ACCOUNT_CREATE } from '../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import SettingsForm from './settings-form';
 import ProgressBar from '../../../components/progress-bar';
 import {
 	AccountCreate,
 	ExistingTagError,
+	AccountCreateLegacy,
 } from '../common';
 import { parsePropertyID } from '../util';
 const { useSelect, useDispatch } = Data;
@@ -45,28 +47,8 @@ export default function SettingsEdit() {
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
-	const haveSettingsChanged = useSelect( ( select ) => select( STORE_NAME ).haveSettingsChanged() );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
-
-	// Rollback any temporary selections to saved values on dismount.
-	// This is a bit of a hacky solution, as we'd prefer to rollback changes
-	// when the "cancel" button is clicked. But we don't yet have control over
-	// that section of the page, so if the component is unmounted, has changes,
-	// and is not submitting those changes: we rollback.
-	//
-	// Technically this means we rollback right before we receive new settings
-	// when they ARE saved, because the component is unmounted then and meets the
-	// `haveSettingsChanged && ! isDoingSubmitChanges` criteria below.
-	// But that's fine as the new settings are then immediately loaded into state
-	// and there aren't any visual glitches. 🤷🏻‍♂️
-	const { rollbackSettings } = useDispatch( STORE_NAME );
-	useEffect( () => {
-		return () => {
-			if ( haveSettingsChanged && ! isDoingSubmitChanges ) {
-				rollbackSettings();
-			}
-		};
-	}, [ haveSettingsChanged, isDoingSubmitChanges ] );
+	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
 
 	// Set the accountID and property if there is an existing tag.
 	// This only applies to the edit view, so we apply it here rather than in the datastore.
@@ -95,7 +77,7 @@ export default function SettingsEdit() {
 			'googlekit.AnalyticsSettingsConfirmed',
 			async ( chain, module ) => {
 				if ( 'analytics-module' === module ) {
-					const { error } = await submitChanges() || {};
+					const { error } = await submitChanges();
 					if ( error ) {
 						return Promise.reject( error );
 					}
@@ -119,7 +101,7 @@ export default function SettingsEdit() {
 	} else if ( hasExistingTag && existingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
 	} else if ( ! accounts.length || isCreateAccount ) {
-		viewComponent = <AccountCreate />;
+		viewComponent = usingProxy ? <AccountCreate /> : <AccountCreateLegacy />;
 	} else {
 		viewComponent = <SettingsForm />;
 	}

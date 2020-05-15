@@ -215,7 +215,7 @@ class SettingsModule extends Component {
 		let buttonText = __( 'Close', 'google-site-kit' );
 		if ( hasSettings && setupComplete ) {
 			if ( isSavingModule ) {
-				buttonText = __( 'Saving...', 'google-site-kit' );
+				buttonText = __( 'Saving…', 'google-site-kit' );
 			} else {
 				buttonText = __( 'Confirm Changes', 'google-site-kit' );
 			}
@@ -288,10 +288,16 @@ class SettingsModule extends Component {
 										<p className="googlesitekit-settings-module__status">
 											{
 												isConnected
-													/* translators: %s: module name */
-													? sprintf( __( '%s is connected', 'google-site-kit' ), name )
-													/* translators: %s: module name */
-													: sprintf( __( '%s is not connected', 'google-site-kit' ), name )
+													? sprintf(
+														/* translators: %s: module name. */
+														__( '%s is connected', 'google-site-kit' ),
+														name
+													)
+													: sprintf(
+														/* translators: %s: module name. */
+														__( '%s is not connected', 'google-site-kit' ),
+														name
+													)
 											}
 											<span className={ classnames(
 												'googlesitekit-settings-module__status-icon',

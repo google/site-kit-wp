@@ -11,8 +11,12 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
 /**
  * Internal dependencies
  */
+import modulesStore, { STORE_NAME as modulesStoreName } from '../../assets/js/googlesitekit/modules/datastore';
 import siteStore, { STORE_NAME as siteStoreName } from '../../assets/js/googlesitekit/datastore/site';
+import userStore, { STORE_NAME as userStoreName } from '../../assets/js/googlesitekit/datastore/user';
 import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore';
+import modulesPageSpeedInsightsStore, { STORE_NAME as modulesPageSpeedInsightsStoreName } from '../../assets/js/modules/pagespeed-insights/datastore';
+import modulesSearchConsoleStore, { STORE_NAME as modulesSearchConsoleStoreName } from '../../assets/js/modules/search-console/datastore';
 
 /**
  * Create a registry with all available stores.
@@ -82,8 +86,12 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
  * @param {wp.data.registry} registry Registry to register each store on.
  */
 export const registerAllStoresOn = ( registry ) => {
+	registry.registerStore( modulesStoreName, modulesStore );
 	registry.registerStore( siteStoreName, siteStore );
+	registry.registerStore( userStoreName, userStore );
 	registry.registerStore( modulesAnalyticsStoreName, modulesAnalyticsStore );
+	registry.registerStore( modulesPageSpeedInsightsStoreName, modulesPageSpeedInsightsStore );
+	registry.registerStore( modulesSearchConsoleStoreName, modulesSearchConsoleStore );
 };
 
 const unsubscribes = [];
