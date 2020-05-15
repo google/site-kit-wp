@@ -1,5 +1,5 @@
 /**
- * Analytics Constants.
+ * Analytics AdSense Link CTA component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,13 +16,23 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/analytics';
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
-// A special Account ID value used for the "Set up a new account" option.
-export const ACCOUNT_CREATE = 'account_create';
-// A special Property ID value used for the "Set up a new property" option.
-export const PROPERTY_CREATE = 'property_create';
-// A special Profile ID value used for the "Set up a new profile" option.
-export const PROFILE_CREATE = 'profile_create';
-// Form ID for the account creation form.
-export const FORM_ACCOUNT_CREATE = 'accountCreate';
+/**
+ * Internal dependencies
+ */
+import CTA from '../../../components/notifications/cta';
+
+export default function AdSenseLinkCTA() {
+	return (
+		<CTA
+			title={ __( 'Link Analytics and AdSense', 'google-site-kit' ) }
+			description={ __( 'Get reports for your top earning pages by linking your Analytics and AdSense accounts.', 'google-site-kit' ) }
+			ctaLink="https://support.google.com/adsense/answer/6084409"
+			ctaLabel={ __( 'Learn more', 'google-site-kit' ) }
+		/>
+	);
+}

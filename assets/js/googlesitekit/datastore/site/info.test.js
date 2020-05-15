@@ -35,6 +35,9 @@ describe( 'core/site site info', () => {
 		ampMode: 'reader',
 		homeURL: 'http://something.test/homepage',
 		referenceSiteURL: 'http://something.test',
+		siteName: 'Something Test',
+		timezone: 'America/Denver',
+		usingProxy: true,
 	};
 	const entityInfoVar = '_googlesitekitEntityData';
 	const entityInfo = {
@@ -180,6 +183,9 @@ describe( 'core/site site info', () => {
 			[ 'getCurrentEntityURL' ],
 			[ 'getHomeURL' ],
 			[ 'getReferenceSiteURL' ],
+			[ 'getSiteName' ],
+			[ 'getTimezone' ],
+			[ 'isUsingProxy' ],
 		] )( `%i()`, ( selector ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;
