@@ -181,10 +181,10 @@ describe( 'Tag Manager module setup', () => {
 	describe.each(
 		Object.keys( allowedAmpModes )
 	)( 'AMP mode %s', ( mode ) => {
-		beforeAll( async () => {
+		beforeEach( async () => {
 			await activatePlugin( 'amp' );
 		} );
-		afterAll( async () => {
+		afterEach( async () => {
 			await deactivatePlugin( 'amp' );
 		} );
 		it( 'renders the correct drop downs in the setup screen', async () => {
@@ -198,6 +198,21 @@ describe( 'Tag Manager module setup', () => {
 			}
 			await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
 			await deactivatePlugin( 'amp' );
+		} );
+	} );
+	describe( 'Homepage AMP', () => {
+		beforeEach( async () => {
+			await setupAnalytics();
+			await activateAmpAndSetMode( 'standard' );
+		} );
+		afterEach( async () => {
+			await deactivatePlugin( 'amp' );
+		} );
+		it( 'validates for logged-in users', async () => {
+			await expect( '/' ).toHaveValidAMP( { loggedIn: true } );
+		} );
+		it( 'validates for non-logged-in users', async () => {
+			await expect( '/' ).toHaveValidAMP();
 		} );
 	} );
 } );
