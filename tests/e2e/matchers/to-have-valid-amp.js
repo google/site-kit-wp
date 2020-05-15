@@ -17,8 +17,7 @@ import {
  * @param {string} path The URL path of the current site to check.
  * @param {Object } options Settings object to control the matcher.
  */
-export async function toHaveValidAMP( path, options = { loggedIn: false } ) {
-	const { loggedIn } = options;
+export async function toHaveValidAMP( path, { loggedIn = false } ) {
 	const result = {};
 	if ( true === loggedIn ) {
 		await Promise.all( [
