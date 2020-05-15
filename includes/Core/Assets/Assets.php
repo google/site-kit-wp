@@ -492,6 +492,15 @@ final class Assets {
 					),
 				)
 			),
+			new Script(
+				'googlesitekit-widgets',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-widgets.js',
+					'dependencies' => array(
+						'googlesitekit-data',
+					),
+				)
+			),
 			// End JSR Assets.
 			new Script(
 				'googlesitekit-ads-detect',
