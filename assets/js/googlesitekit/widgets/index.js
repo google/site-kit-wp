@@ -16,6 +16,102 @@
  * limitations under the License.
  */
 
-const Widgets = {};
+/**
+ * Internal dependencies
+ */
+import { dispatch, select } from 'googlesitekit-data';
+import { STORE_NAME } from './datastore';
+
+const Widgets = {
+	/**
+	 * Register a widget area
+	 *
+	 * @since n.e.x.t
+	 * @param {string}             slug               Widget Area's slug.
+	 * @param {Object}             settings           Widget Area's settings.
+	 * @param {number}             settings.priority  Priority for this widget area. Default: 10.
+	 * @param {string}             settings.title     Title for this widget area.
+	 * @param {string}             settings.subtitle  Subtitle for this widget area.
+	 * @param {(string|undefined)} settings.icon      URL to SVG icon for this widget area.
+	 * @param {string}             settings.style     Widget area style (one of "boxes", "composite").
+	 * @param {(string|Array)}     areas              Widget Area slug(s).
+	 */
+	registerWidgetArea( slug, settings, areas ) {
+		dispatch( STORE_NAME ).registerWidgetArea( slug, settings );
+		dispatch( STORE_NAME ).assignWidget( slug, areas );
+	},
+
+	/**
+	 * Register a widget.
+	 *
+	 * @since n.e.x.t
+	 * @param {string}         slug      Widget's slug.
+	 * @param {Object}         settings  Widget's settings.
+	 * @param {(string|Array)} contexts  Widget Context's slug(s).
+	 */
+	registerWidget( slug, settings, contexts ) {
+		dispatch( STORE_NAME ).registerWidget( slug, settings );
+		dispatch( STORE_NAME ).assignWidgetArea( slug, contexts );
+	},
+
+	/**
+	 * Assigns a widget area to one (or several) contexts.
+	 *
+	 * Accepts an area slug to register as the first argument, then either a string
+	 * (for a single context slug) or array of contexts slugs (to assign the widget area
+	 * to multiple contexts).
+	 *
+	 * @since n.e.x.t
+	 * @param {string}         slug          Widget Area's slug.
+	 * @param {(string|Array)} contextSlugs  Widget Context's slug(s).
+	 */
+	assignWidgetArea( slug, contextSlugs ) {
+		dispatch( STORE_NAME ).assignWidgetArea( slug, contextSlugs );
+	},
+
+	/**
+	 * Assigns an existing widget (by slug) to a widget area(s).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  {string}         slug            Widget slug.
+	 * @param  {(string|Array)} widgetAreaSlugs Widget Area slug(s).
+	 */
+	assignWidget( slug, widgetAreaSlugs ) {
+		dispatch( STORE_NAME ).assignWidget( slug, widgetAreaSlugs );
+	},
+
+	/**
+	 * Checks if a widget area has been registered.
+	 *
+	 * Returns `true` if the widget area has been registered.
+	 * Returns `false` if the widget area has NOT been registered.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  {string} slug Widget Area's slug.
+	 *
+	 * @return {boolean} `true`/`false` based on whether widget area has been registered.
+	 */
+	isWidgetAreaRegistered( slug ) {
+		return select( STORE_NAME ).isWidgetAreaRegistered( slug );
+	},
+
+	/**
+	 * Checks if a widget has been registered with a given slug.
+	 *
+	 * Returns `true` if the widget area has been registered.
+	 * Returns `false` if the widget area has NOT been registered.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  {string}  slug  Widget's slug.
+	 *
+	 * @return {boolean}       `true`/`false` based on whether widget has been registered.
+	 */
+	isWidgetRegistered( slug ) {
+		return select( STORE_NAME ).isWidgetRegistered( slug );
+	},
+};
 
 export default Widgets;
