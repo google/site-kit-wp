@@ -183,21 +183,20 @@ describe( 'Tag Manager module setup', () => {
 	)( 'AMP mode %s', ( mode ) => {
 		beforeEach( async () => {
 			await activatePlugin( 'amp' );
+			await activatePlugin( 'e2e-tests-module-setup-tagmanager-api-mock' );
+			await proceedToTagManagerSetup();
 		} );
 		afterEach( async () => {
 			await deactivatePlugin( 'amp' );
 		} );
 		it( 'renders the correct drop downs in the setup screen', async () => {
 			await setAMPMode( mode );
-			await activatePlugin( 'e2e-tests-module-setup-tagmanager-api-mock' );
-			await proceedToTagManagerSetup();
 
 			// Ensure that the correct dropdowns are displayed.
 			if ( 'standard' !== mode ) {
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--web' );
 			}
 			await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
-			await deactivatePlugin( 'amp' );
 		} );
 	} );
 	describe( 'Homepage AMP', () => {
