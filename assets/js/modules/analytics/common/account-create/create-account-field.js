@@ -54,6 +54,7 @@ export default function CreateAccountField( {
 			<Input
 				name={ name }
 				value={ value }
+				id={ `googlesitekit_analytics_account_create_${ name }` }
 			/>
 		</TextField>
 	);
