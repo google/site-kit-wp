@@ -265,10 +265,8 @@ final class Authentication {
 			function( $user ) {
 				$profile_data = $this->profile->get();
 				if ( $profile_data ) {
-					if ( $profile_data ) {
-						$user['user']['email']   = $profile_data['email'];
-						$user['user']['picture'] = $profile_data['photo'];
-					}
+					$user['user']['email']   = $profile_data['email'];
+					$user['user']['picture'] = $profile_data['photo'];
 				}
 				$user['verified'] = $this->verification->has();
 				return $user;
