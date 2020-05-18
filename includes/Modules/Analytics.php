@@ -168,11 +168,7 @@ final class Analytics extends Module
 	 */
 	public function get_scopes() {
 		return array(
-			'https://www.googleapis.com/auth/analytics',
 			'https://www.googleapis.com/auth/analytics.readonly',
-			'https://www.googleapis.com/auth/analytics.manage.users',
-			'https://www.googleapis.com/auth/analytics.edit',
-			'https://www.googleapis.com/auth/analytics.provision',
 		);
 	}
 

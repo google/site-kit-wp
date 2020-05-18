@@ -108,11 +108,7 @@ class AnalyticsTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'https://www.googleapis.com/auth/analytics',
 				'https://www.googleapis.com/auth/analytics.readonly',
-				'https://www.googleapis.com/auth/analytics.manage.users',
-				'https://www.googleapis.com/auth/analytics.edit',
-				'https://www.googleapis.com/auth/analytics.provision',
 			),
 			$analytics->get_scopes()
 		);
