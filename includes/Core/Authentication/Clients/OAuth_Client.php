@@ -808,6 +808,8 @@ final class OAuth_Client {
 			$query_args['site_id'] = $credentials->web->client_id;
 		}
 
+		$query_args['application_name'] = rawurlencode( 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION );
+
 		return add_query_arg( $query_args, $this->google_proxy->url( Google_Proxy::PERMISSIONS_URI ) );
 	}
 

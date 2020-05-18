@@ -376,6 +376,9 @@ class OAuth_ClientTest extends TestCase {
 		$url = $client->get_proxy_permissions_url();
 		$this->assertContains( 'token=test-access-token', $url );
 		$this->assertContains( 'site_id=' . self::SITE_ID, $url );
+
+		// The URL should include the application name.
+		$this->assertContains( 'application_name=', $url );
 	}
 
 	public function test_get_error_message_unknown() {
