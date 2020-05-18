@@ -1,5 +1,5 @@
 /**
- * SearchConsoleSettingStatus component.
+ * Search Console Settings View component
  *
  * Site Kit by Google, Copyright 2019 Google LLC
  *
@@ -19,27 +19,27 @@
 /**
  * WordPress dependencies
  */
-import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-const { siteURL } = global.googlesitekit.admin;
 
-class SearchConsoleSettingStatus extends Component {
-	render() {
-		return (
-			<div className="
-				mdc-layout-grid__cell
-				mdc-layout-grid__cell--span-12
-			">
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { STORE_NAME } from '../datastore/constants';
 
-				<div className="googlesitekit-settings-module__meta-item-type">
-					{ __( 'Connected URL', 'google-site-kit' ) }
-				</div>
-				<div className="googlesitekit-settings-module__meta-item-data">
-					{ siteURL }
-				</div>
+export default function SettingsView() {
+	const { useSelect } = Data;
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+
+	return (
+		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+
+			<div className="googlesitekit-settings-module__meta-item-type">
+				{ __( 'Connected Property', 'google-site-kit' ) }
 			</div>
-		);
-	}
+			<div className="googlesitekit-settings-module__meta-item-data">
+				{ propertyID }
+			</div>
+		</div>
+	);
 }
-
-export default SearchConsoleSettingStatus;

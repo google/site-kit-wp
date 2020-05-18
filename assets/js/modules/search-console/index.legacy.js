@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import SearchConsoleSettingStatus from './settings/search-console-settings-status';
+import SettingsView from './settings/settings-view';
 
 /**
  * WordPress dependencies
@@ -65,7 +65,7 @@ import DashboardPopularity from './dashboard/dashboard-widget-popularity';
  */
 addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
 	'googlesitekit.SearchConsoleModuleSettingsDetails',
-	fillFilterWithComponent( SearchConsoleSettingStatus, {
+	fillFilterWithComponent( SettingsView, {
 		onSettingsPage: true,
 	} ) );
 
