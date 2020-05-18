@@ -19,4 +19,30 @@
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import './datastore';
+import { fillFilterWithComponent } from '../../util';
+import { SettingsMain as SearchConsolesSettings } from './settings';
+
+/**
+ * WordPress dependencies
+ */
+import { addFilter } from '@wordpress/hooks';
+
+function ConnectedSearchConsoleSettings( props ) {
+	return (
+		<Data.RegistryProvider value={ Data }>
+			<SearchConsolesSettings { ...props } />
+		</Data.RegistryProvider>
+	);
+}
+
+/**
+ * Add components to the settings page.
+ */
+addFilter( 'googlesitekit.ModuleSettingsDetails-search-console',
+	'googlesitekit.SearchConsoleModuleSettingsDetails',
+	fillFilterWithComponent( ConnectedSearchConsoleSettings, {
+		onSettingsPage: true,
+	} )
+);
