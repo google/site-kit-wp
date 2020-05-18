@@ -337,6 +337,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'nonce=', $url );
 		$this->assertContains( 'return_uri=', $url );
 		$this->assertContains( 'action_uri=', $url );
+		$this->assertContains( 'application_name=', $url );
 		$this->assertNotContains( 'site_id=', $url );
 
 		// Otherwise, pass site ID and given temporary access code.
@@ -347,7 +348,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'code=temp-code', $url );
 		$this->assertContains( 'scope=', $url );
 		$this->assertContains( 'nonce=', $url );
-		$this->assertNotContains( 'name=', $url );
+		$this->assertNotContains( '&name=', $url );
 		$this->assertNotContains( 'url=', $url );
 		$this->assertNotContains( 'admin_root=', $url );
 		$this->assertNotContains( 'return_uri=', $url );
