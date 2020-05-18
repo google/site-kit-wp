@@ -393,6 +393,22 @@ abstract class Module {
 	}
 
 	/**
+	 * Gets map of datapoint to definition data for each.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Map of datapoints to their definitions.
+	 */
+	protected function get_datapoint_definitions() {
+		return array_map(
+			function ( $service ) {
+				return compact( 'service' );
+			},
+			$this->get_datapoint_services()
+		);
+	}
+
+	/**
 	 * Creates a request object for the given datapoint.
 	 *
 	 * @since 1.0.0
