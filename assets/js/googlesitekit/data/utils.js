@@ -27,49 +27,6 @@ import invariant from 'invariant';
 import { createRegistryControl } from '@wordpress/data';
 
 const GET_REGISTRY = 'GET_REGISTRY';
-const INITIALIZE = 'INITIALIZE';
-
-/**
- * Adds an initialize action to an existing object of actions.
- *
- * @since 1.5.0
- *
- * @param {Object} actions An object of actions.
- * @return {Object} The combined action object, extended with an initialize() action.
- */
-export const addInitializeAction = ( actions ) => {
-	return collect( actions, {
-		initialize: initializeAction,
-	} );
-};
-
-/**
- * Adds an initialize reducer handler to an existing reducer.
- *
- * Adds a reducer that resets the store to its initial state if the
- * `initialize()` action is dispatched on it.
- *
- * @since 1.5.0
- *
- * @param {Object} initialState The store's default state (`INITIAL_STATE`).
- * @param {Function} reducer A single reducer to extend with an initialize() handler.
- * @return {Function} A Redux-style reducer.
- */
-export const addInitializeReducer = ( initialState, reducer ) => {
-	const initializeReducer = ( state, action ) => {
-		switch ( action.type ) {
-			case INITIALIZE: {
-				return { ...initialState };
-			}
-
-			default: {
-				return { ...state };
-			}
-		}
-	};
-
-	return collectReducers( initialState, reducer, initializeReducer );
-};
 
 /**
  * Collects and combines multiple objects of similar shape.
@@ -99,23 +56,6 @@ export const collect = ( ...items ) => {
 	invariant( duplicates.length === 0, `collect() cannot accept collections with duplicate keys. Your call to collect() contains the following duplicated functions: ${ duplicates.join( ', ' ) }. Check your data stores for duplicates.` );
 
 	return collectedObject;
-};
-
-/**
- * Dispatches an initialize action.
- *
- * Generic action used by all stores. Dispatching it returns the store
- * to its INITIAL_STATE.
- *
- * @since 1.5.0
- *
- * @return {Object} An initialize action.
- */
-export const initializeAction = () => {
-	return {
-		payload: {},
-		type: INITIALIZE,
-	};
 };
 
 /**
@@ -213,6 +153,53 @@ export const collectName = ( ...args ) => {
 };
 
 /**
+ * An empty reducer.
+ *
+ * @since 1.8.0
+ * @private
+ *
+ * @param  {Object} state A store's state.
+ * @return {Object} The same state data as passed in `state`.
+ */
+const passthroughReducer = ( state ) => {
+	return { ...state };
+};
+
+/**
+ * Combines multiple stores.
+ *
+ * @since 1.8.0
+ *
+ * @param {...Object} stores A list of objects, each a store containing one or more of the following keys: INITIAL_STATE, actions, controls, reducer, resolvers, selectors
+ * @return {Object} The combined store.
+ */
+export const combineStores = ( ...stores ) => {
+	const combinedInitialState = collectState(
+		...stores.map( ( store ) => ( store.INITIAL_STATE || {} ) )
+	);
+
+	return {
+		INITIAL_STATE: combinedInitialState,
+		controls: collectControls(
+			...stores.map( ( store ) => ( store.controls || {} ) )
+		),
+		actions: collectActions(
+			...stores.map( ( store ) => ( store.actions || {} ) )
+		),
+		reducer: collectReducers(
+			combinedInitialState,
+			...stores.map( ( store ) => ( store.reducer || passthroughReducer ) )
+		),
+		resolvers: collectResolvers(
+			...stores.map( ( store ) => ( store.resolvers || {} ) )
+		),
+		selectors: collectSelectors(
+			...stores.map( ( store ) => ( store.selectors || {} ) )
+		),
+	};
+};
+
+/**
  * An object of common actions most stores will use.
  *
  * @since 1.7.0
@@ -281,4 +268,17 @@ const findDuplicates = ( array ) => {
 	}
 
 	return duplicates;
+};
+
+/**
+ * A store containing the common actions, controls and reducer that all stores will use.
+ *
+ * @since 1.8.0
+ *
+ * @return {Object} Object with common actions, controls and reducer.
+ */
+export const commonStore = {
+	actions: commonActions,
+	controls: commonControls,
+	reducer: passthroughReducer,
 };

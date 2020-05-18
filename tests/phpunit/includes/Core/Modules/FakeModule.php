@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Psr\Http\Message\RequestInterface;
 use WP_Error;
+use Exception;
 
 class FakeModule extends Module {
 
@@ -188,5 +189,18 @@ class FakeModule extends Module {
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
 		return array();
+	}
+
+	/**
+	 * Transforms an exception into a WP_Error object.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param Exception $e         Exception object.
+	 * @param string    $datapoint Datapoint originally requested.
+	 * @return WP_Error WordPress error object.
+	 */
+	public function exception_to_error( Exception $e, $datapoint ) { // phpcs:ignore Generic.CodeAnalysis.UselessOverridingMethod
+		return parent::exception_to_error( $e, $datapoint );
 	}
 }

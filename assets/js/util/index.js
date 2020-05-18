@@ -15,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 /**
  * External dependencies
  */
@@ -25,18 +26,14 @@ import {
 	get,
 	unescape,
 } from 'lodash';
-import React from 'react';
 
 /**
  * WordPress dependencies
  */
-import apiFetch from '@wordpress/api-fetch';
 import {
 	addFilter,
-	applyFilters,
 } from '@wordpress/hooks';
 import {
-	_n,
 	__,
 	sprintf,
 } from '@wordpress/i18n';
@@ -46,11 +43,8 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
  * Internal dependencies
  */
 import SvgIcon from './svg-icon';
-import { default as setupTagMatchers } from '../components/setup/tag-matchers';
-import { default as adsenseTagMatchers } from '../modules/adsense/util/tagMatchers';
-import { default as analyticsTagMatchers } from '../modules/analytics/util/tagMatchers';
-import { tagMatchers as tagmanagerTagMatchers } from '../modules/tagmanager/util';
 import { trackEvent } from './tracking';
+import { fillFilterWithComponent } from './helpers';
 export { trackEvent };
 export { SvgIcon };
 export * from './sanitize';
@@ -58,6 +52,7 @@ export * from './stringify';
 export * from './standalone';
 export * from './storage';
 export * from './i18n';
+export * from './helpers';
 
 /**
  * Remove a parameter from a URL string.
@@ -436,34 +431,6 @@ export const getReAuthURL = ( slug, status, _googlesitekit = global.googlesiteki
 };
 
 /**
- * Replace a filtered component with the passed component and merge their props.
- *
- * Components wrapped in the 'withFilters' higher order component have a filter applied to them (wp.hooks.applyFilters).
- * This helper is used to replace (or "Fill") a filtered component with a passed component. To use, pass as the third
- * argument to an addFilter call, eg:
- *
- * 	addFilter( `googlesitekit.ModuleSettingsDetails-${slug}`,
- * 		'googlesitekit.AdSenseModuleSettingsDetails',
- * 		fillFilterWithComponent( AdSenseSettings, {
- * 			onSettingsPage: true,
- * 		} ) );
- *
- * @param {WPElement} NewComponent The component to render in place of the filtered component.
- * @param {Object}    newProps     The props to pass down to the new component.
- *
- * @return {WPElement} React Component after overriding filtered component with NewComponent.
- */
-export const fillFilterWithComponent = ( NewComponent, newProps ) => {
-	return ( OriginalComponent ) => {
-		return function InnerComponent( props ) {
-			return (
-				<NewComponent { ...props } { ...newProps } OriginalComponent={ OriginalComponent } />
-			);
-		};
-	};
-};
-
-/**
  * Get Site Kit Admin URL Helper
  *
  * @param {string} page The page slug. Optional. Default is 'googlesitekit-dashboard'.
@@ -502,84 +469,10 @@ export const validateJSON = ( stringToValidate ) => {
  *
  * @param {string} stringToValidate The string to validate.
  *
- * @return {boolean} Indicates GTM tag is valid.
+ * @return {boolean} Indicates GTM or OPT tag is valid.
  */
 export const validateOptimizeID = ( stringToValidate ) => {
-	return ( stringToValidate.match( /^GTM-[a-zA-Z\d]{7}$/ ) );
-};
-
-/**
- * Looks for existing tag requesting front end html, if no existing tag was found on server side
- * while requesting list of accounts.
- *
- * @param {string} module Module slug.
- *
- * @return {(string|null)} The tag id if found, otherwise null.
- */
-export const getExistingTag = async ( module ) => {
-	const { homeURL, ampMode } = global.googlesitekit.admin;
-	const tagFetchQueryArgs = {
-		// Indicates a tag checking request. This lets Site Kit know not to output its own tags.
-		tagverify: 1,
-		// Add a timestamp for cache-busting.
-		timestamp: Date.now(),
-	};
-
-	// Always check the homepage regardless of AMP mode.
-	let tagFound = await scrapeTag( addQueryArgs( homeURL, tagFetchQueryArgs ), module );
-
-	if ( ! tagFound && 'secondary' === ampMode ) {
-		tagFound = await apiFetch( { path: '/wp/v2/posts?per_page=1' } ).then(
-			// Scrape the first post in AMP mode, if there is one.
-			( posts ) => posts.slice( 0, 1 ).map( async ( post ) => {
-				return await scrapeTag( addQueryArgs( post.link, { ...tagFetchQueryArgs, amp: 1 } ), module );
-			} ).pop()
-		);
-	}
-
-	return Promise.resolve( tagFound || null );
-};
-
-/**
- * Scrapes a module tag from the given URL.
- *
- * @param {string} url URL request and parse tag from.
- * @param {string} module The module to parse tag for.
- *
- * @return {(string|null)} The tag id if found, otherwise null.
- */
-export const scrapeTag = async ( url, module ) => {
-	try {
-		const html = await fetch( url, { credentials: 'omit' } ).then( ( res ) => res.text() );
-		return extractTag( html, module ) || null;
-	} catch ( error ) {
-		return null;
-	}
-};
-
-/**
- * Extracts a tag related to a module from the given string.
- *
- * @param {string} string The string from where to find the tag.
- * @param {string} module The tag to search for, one of 'adsense' or 'analytics'
- *
- * @return {(string|boolean)} The tag id if found, otherwise false.
- */
-export const extractTag = ( string, module ) => {
-	const matchers = {
-		adsense: adsenseTagMatchers,
-		analytics: analyticsTagMatchers,
-		tagmanager: tagmanagerTagMatchers,
-		setup: setupTagMatchers,
-	}[ module ] || [];
-
-	const matchingPattern = matchers.find( ( pattern ) => pattern.test( string ) );
-
-	if ( matchingPattern ) {
-		return matchingPattern.exec( string )[ 1 ];
-	}
-
-	return false;
+	return ( stringToValidate.match( /^(GTM|OPT)-[a-zA-Z\d]{7}$/ ) );
 };
 
 /**
@@ -676,39 +569,6 @@ export const decodeHtmlEntity = ( str ) => {
 
 	return unescape( decoded );
 };
-
-/**
- * Gets the current dateRange string.
- *
- * @return {string} the date range string.
- */
-export function getCurrentDateRange() {
-	/**
-	 * Filter the date range used for queries.
-	 *
-	 * @param String The selected date range. Default 'Last 28 days'.
-	 */
-	const dateRange = applyFilters( 'googlesitekit.dateRange', 'last-28-days' );
-	const daysMatch = dateRange.match( /last-(\d+)-days/ );
-
-	if ( daysMatch && daysMatch[ 1 ] ) {
-		return sprintf(
-			_n( '%s day', '%s days', parseInt( daysMatch[ 1 ], 10 ), 'google-site-kit' ),
-			daysMatch[ 1 ]
-		);
-	}
-
-	throw new Error( 'Unrecognized date range slug used in `googlesitekit.dateRange`.' );
-}
-
-/**
- * Gets the current dateRange slug.
- *
- * @return {string} the date range slug.
- */
-export function getCurrentDateRangeSlug() {
-	return applyFilters( 'googlesitekit.dateRange', 'last-28-days' );
-}
 
 /**
  * Get the icon for a module.

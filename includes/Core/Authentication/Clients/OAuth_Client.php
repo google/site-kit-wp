@@ -205,7 +205,7 @@ final class OAuth_Client {
 	 * @return Google_Site_Kit_Client|Google_Site_Kit_Proxy_Client
 	 */
 	private function setup_client() {
-		if ( $this->using_proxy() ) {
+		if ( $this->credentials->using_proxy() ) {
 			$client = new Google_Site_Kit_Proxy_Client(
 				array( 'proxy_base_path' => $this->google_proxy->url() )
 			);
@@ -621,7 +621,7 @@ final class OAuth_Client {
 
 		// TODO: In the future, once the old authentication mechanism no longer exists, this check can be removed.
 		// For now the below action should only fire for the proxy despite not clarifying that in the hook name.
-		if ( $this->using_proxy() ) {
+		if ( $this->credentials->using_proxy() ) {
 			/**
 			 * Fires when the current user has just been authorized to access Google APIs.
 			 *
@@ -687,23 +687,14 @@ final class OAuth_Client {
 	 * filter.
 	 *
 	 * @since 1.0.0
+	 * @deprecated 1.9.0
 	 *
 	 * @return bool True if proxy authentication is used, false otherwise.
 	 */
 	public function using_proxy() {
-		$credentials = $this->get_client_credentials();
+		_deprecated_function( __METHOD__, '1.9.0', Credentials::class . '::using_proxy' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		// If no credentials yet, assume true.
-		if ( ! is_object( $credentials ) || empty( $credentials->web->client_id ) ) {
-			return true;
-		}
-
-		// If proxy credentials, return true.
-		if ( false !== strpos( $credentials->web->client_id, '.apps.sitekit.withgoogle.com' ) ) {
-			return true;
-		}
-
-		return false;
+		return $this->credentials->using_proxy();
 	}
 
 	/**

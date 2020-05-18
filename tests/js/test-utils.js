@@ -5,10 +5,14 @@ import { render } from '@testing-library/react';
 import invariant from 'invariant';
 
 /**
+ * WordPress dependencies
+ */
+import { RegistryProvider } from '@wordpress/data';
+
+/**
  * Internal dependencies
  */
 import { createTestRegistry } from './utils';
-import { RegistryProvider } from '@wordpress/data';
 
 // Override `@testing-library/react`'s render method with one that includes
 // our data store.
