@@ -45,7 +45,7 @@ export const actions = {
 	 * from a global variable (`_googlesitekitUserData`), set by PHP
 	 * in the `before_print` callback for `googlesitekit-datastore-user`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @param {Object} userInfo User info, usually supplied via a global variable from PHP.
@@ -68,7 +68,7 @@ export const actions = {
 	 * from a global variable (`_googlesitekitUserData`), set by PHP
 	 * in the `before_print` callback for `googlesitekit-datastore-user`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @param {boolean} userIsVerified User verification status, usually supplied via a global variable from PHP.
@@ -156,7 +156,7 @@ export const selectors = {
 	 * ```
 	 *
 	 * @private
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} User info.
@@ -171,7 +171,7 @@ export const selectors = {
 	 *
 	 * Returns ID of the user or `undefined` if the user info is not available/loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(number|undefined)} The user ID.
@@ -186,7 +186,7 @@ export const selectors = {
 	 *
 	 * Returns Name of the user or `undefined` if the user info is not available/loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The user ID.
@@ -201,7 +201,7 @@ export const selectors = {
 	 *
 	 * Returns email of the user or `undefined` if the user info is not available/loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The user ID.
@@ -216,7 +216,7 @@ export const selectors = {
 	 *
 	 * Returns url of the user picture or `undefined` if the user info is not available/loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The user ID.
@@ -231,7 +231,7 @@ export const selectors = {
 	 *
 	 * Returns the true if the user is verified, false if not verified, or `undefined` if the user info is not available/loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} The user ID.

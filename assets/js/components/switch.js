@@ -49,6 +49,7 @@ class Switch extends Component {
 			onClick,
 			label,
 			checked,
+			disabled,
 			hideLabel,
 		} = this.props;
 
@@ -64,7 +65,10 @@ class Switch extends Component {
 					aria-checked={ checked ? 'true' : 'false' }
 					className={ classnames(
 						'mdc-switch',
-						{ 'mdc-switch--checked': checked }
+						{
+							'mdc-switch--checked': checked,
+							'mdc-switch--disabled': disabled,
+						}
 					) }
 					onClick={ onClick }
 					onKeyPress={ onKeyPress }
@@ -81,6 +85,7 @@ class Switch extends Component {
 								className="mdc-switch__native-control"
 								role="switch"
 								checked={ checked }
+								disabled={ disabled }
 								onChange={ () => {} }
 							/>
 						</div>
@@ -101,12 +106,14 @@ Switch.propTypes = {
 	onClick: PropTypes.func,
 	label: PropTypes.string.isRequired,
 	checked: PropTypes.bool,
+	disabled: PropTypes.bool,
 	hideLabel: PropTypes.bool,
 	instanceId: PropTypes.number.isRequired,
 };
 
 Switch.defaultProps = {
 	checked: false,
+	disabled: false,
 	hideLabel: true,
 };
 
