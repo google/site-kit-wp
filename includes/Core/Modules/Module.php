@@ -384,10 +384,13 @@ abstract class Module {
 	 * Returns the mapping between available datapoints and their services.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t No longer abstract.
 	 *
 	 * @return array Associative array of $datapoint => $service_identifier pairs.
 	 */
-	abstract protected function get_datapoint_services();
+	protected function get_datapoint_services() {
+		return array();
+	}
 
 	/**
 	 * Creates a request object for the given datapoint.
