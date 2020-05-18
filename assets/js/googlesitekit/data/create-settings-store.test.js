@@ -34,7 +34,7 @@ import {
 	muteConsole,
 	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../tests/js/utils';
 import { createSettingsStore } from './create-settings-store';
 
 const STORE_ARGS = [ 'core', 'site', 'settings' ];
@@ -171,9 +171,12 @@ describe( 'createSettingsStore store', () => {
 
 		describe( 'fetchSaveSettings', () => {
 			it( 'requires the values param', () => {
-				expect( () => {
-					dispatch.receiveSaveSettings();
-				} ).toThrow( 'values is required.' );
+				const consoleErrorSpy = jest.spyOn( global.console, 'error' );
+
+				dispatch.fetchSaveSettings();
+				expect( consoleErrorSpy ).toHaveBeenCalledWith( 'values is required.' );
+
+				consoleErrorSpy.mockClear();
 			} );
 
 			it( 'sets isDoingSaveSettings', () => {
