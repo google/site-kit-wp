@@ -746,7 +746,7 @@ final class OAuth_Client {
 			$site_fields  = array_map( 'rawurlencode', $this->google_proxy->get_site_fields() );
 			$query_params = array_merge( $query_params, $site_fields );
 		}
-
+		$query_params['application_name'] = rawurlencode( 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION );
 		return add_query_arg( $query_params, $this->google_proxy->url( Google_Proxy::SETUP_URI ) );
 	}
 
