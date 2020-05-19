@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification_File;
@@ -18,8 +19,8 @@ use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Authentication\Authentication;
 use WP_User;
+use WP_Error;
 
 /**
  * Class Migration_1_8_1
@@ -174,6 +175,13 @@ class Migration_1_8_1 {
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
+
+		$response_code = wp_remote_retrieve_response_code( $response );
+		if ( 200 !== $response_code ) {
+			$body    = wp_remote_retrieve_body( $response );
+			$decoded = json_decode( $body, true );
+			return new WP_Error( $response_code, ! empty( $decoded['error'] ) ? $decoded['error'] : $body );
+		}
 		return true;
 	}
 
@@ -205,8 +213,8 @@ class Migration_1_8_1 {
 			}
 
 			// Try to get profile email, otherwise fall back to WP email.
-			if ( $this->profile->has() ) {
-				$unauthorized_identifiers[] = $this->profile->get()['email'];
+			if ( $this->authentication->profile()->has() ) {
+				$unauthorized_identifiers[] = $this->authentication->profile()->get()['email'];
 			} else {
 				$unauthorized_identifiers[] = $user->user_email;
 			}
@@ -236,7 +244,6 @@ class Migration_1_8_1 {
 		return get_users(
 			array(
 				'number'     => 20,
-				'fields'     => 'ID',
 				'meta_query' => array( // phpcs:ignore WordPress.DB.SlowDBQuery
 					'relation' => 'OR',
 					array(
