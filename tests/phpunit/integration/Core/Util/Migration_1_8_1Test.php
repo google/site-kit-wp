@@ -20,9 +20,11 @@ use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Migration_1_8_1;
+use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 
 class Migration_1_8_1Test extends TestCase {
+	use Fake_Site_Connection_Trait;
 
 	const FILE_VERIFICATION = Verification_File::OPTION;
 	const META_VERIFICATION = Verification_Meta::OPTION;
