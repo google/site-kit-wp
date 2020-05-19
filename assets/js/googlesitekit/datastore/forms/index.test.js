@@ -19,31 +19,14 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from 'tests/js/utils';
+import { createTestRegistry } from 'tests/js/utils';
 import { STORE_NAME } from './constants';
 
 describe( 'core/forms store', () => {
-	const formName = 'Form 1';
-	const formData = {
-		key1: 'value1',
-		key2: 'value2',
-	};
-	const newFormName = 'Form 2';
-	const newFormData = {
-		key3: 'value3',
-		key4: 'value4',
-	};
 	let registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-	} );
-
-	afterEach( () => {
-		unsubscribeFromAll( registry );
 	} );
 
 	describe( 'actions', () => {
@@ -53,9 +36,28 @@ describe( 'core/forms store', () => {
 					registry.dispatch( STORE_NAME ).setValues();
 				} ).toThrow( 'formName is required for setting values.' );
 			} );
+
 			it( 'requires the formData param', () => {
+				const formName = 'Form 1';
+
 				expect( () => {
 					registry.dispatch( STORE_NAME ).setValues( formName );
+				} ).toThrow( 'formData must be an object.' );
+			} );
+
+			it( 'requires the formData param to be an object not an array', () => {
+				const formName = 'Form 1';
+
+				expect( () => {
+					registry.dispatch( STORE_NAME ).setValues( formName, [] );
+				} ).toThrow( 'formData must be an object.' );
+			} );
+
+			it( 'requires the formData param to be an object not a string', () => {
+				const formName = 'Form 1';
+
+				expect( () => {
+					registry.dispatch( STORE_NAME ).setValues( formName, 'formData' );
 				} ).toThrow( 'formData must be an object.' );
 			} );
 		} );
@@ -63,29 +65,65 @@ describe( 'core/forms store', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getValue', () => {
-			it( 'works with a formName not previously assigned', async () => {
-				await registry.dispatch( STORE_NAME ).setValues( formName, { ...formData } );
+			it( 'works with a formName that does not exist', () => {
+				const formName = 'Form 1';
+				const formData = {
+					key1: 'value1',
+					key2: 'value2',
+				};
+				const newFormName = 'Form 2';
+
+				registry.dispatch( STORE_NAME ).setValues( formName, { ...formData } );
+
+				const form = registry.select( STORE_NAME ).getValue( newFormName, 'key2' );
+				expect( form ).toEqual( undefined );
+			} );
+
+			it( 'works with formData where the key does not exist', () => {
+				const formName = 'Form 1';
+				const formData = {
+					key1: 'value1',
+					key2: 'value2',
+				};
+
+				registry.dispatch( STORE_NAME ).setValues( formName, { ...formData } );
+
+				const form = registry.select( STORE_NAME ).getValue( formName, 'key3' );
+				expect( form ).toEqual( undefined );
+			} );
+
+			it( 'works with an existing formName', () => {
+				const formName = 'Form 1';
+				const formData = {
+					key1: 'value1',
+					key2: 'value2',
+				};
+
+				registry.dispatch( STORE_NAME ).setValues( formName, { ...formData } );
 
 				const { key2 } = formData;
-				const form = registry.select( STORE_NAME ).getValue( formName, Object.keys( formData )[ 1 ] );
+				const form = registry.select( STORE_NAME ).getValue( formName, 'key2' );
 				expect( form ).toEqual( key2 );
 			} );
-			it( 'works with a formName previously assigned', async () => {
-				await registry.dispatch( STORE_NAME ).setValues( formName, { ...formData } );
 
-				await registry.dispatch( STORE_NAME ).setValues( newFormName, { ...newFormData } );
+			it( 'preserves data from state when new data is assigned', () => {
+				const formName = 'Form 1';
+				const formData = {
+					key1: 'value1',
+					key2: 'value2',
+				};
+				const newFormName = 'Form 2';
+				const newFormData = {
+					key3: 'value3',
+					key4: 'value4',
+				};
 
-				const { key4 } = newFormData;
-				const form = registry.select( STORE_NAME ).getValue( newFormName, Object.keys( newFormData )[ 1 ] );
-				expect( form ).toEqual( key4 );
-			} );
-			it( 'preserves data from state when new data is assigned', async () => {
-				await registry.dispatch( STORE_NAME ).setValues( formName, { ...formData } );
+				registry.dispatch( STORE_NAME ).setValues( formName, { ...formData } );
 
-				await registry.dispatch( STORE_NAME ).setValues( newFormName, { ...newFormData } );
+				registry.dispatch( STORE_NAME ).setValues( newFormName, { ...newFormData } );
 
 				const { key2 } = formData;
-				const form = registry.select( STORE_NAME ).getValue( formName, Object.keys( formData )[ 1 ] );
+				const form = registry.select( STORE_NAME ).getValue( formName, 'key2' );
 				expect( form ).toEqual( key2 );
 			} );
 		} );

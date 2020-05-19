@@ -42,7 +42,7 @@ export const actions = {
 	 */
 	setValues( formName, formData ) {
 		invariant( formName, 'formName is required for setting values.' );
-		invariant( typeof formData === 'object', 'formData must be an object.' );
+		invariant( formData instanceof Object && formData.constructor === Object, 'formData must be an object.' );
 
 		return {
 			payload: { formName, formData },
@@ -82,10 +82,10 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @param {string} formName Name of the form.
 	 * @param {string} key Key supplied from formData.
-	 * @return {string|undefined} Value stored in state by formName and key or undefined.
+	 * @return {*} Value stored in state by formName and key or undefined.
 	 */
 	getValue( state, formName, key ) {
-		return state[ formName ][ key ];
+		return state[ formName ] ? state[ formName ][ key ] : undefined;
 	},
 };
 
