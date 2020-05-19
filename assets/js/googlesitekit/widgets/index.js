@@ -16,6 +16,13 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+// This import has side-effects; it registers the Widgets datastore on the default
+// data store registry (eg. `googlesitekit.data`).
+import './datastore';
+
 const Widgets = {};
 
 export default Widgets;

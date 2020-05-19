@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { STORE_NAME, WIDGET_WIDTHS } from './constants';
 
 const { commonActions, createRegistrySelector } = Data;
 
@@ -53,20 +53,16 @@ export const actions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param  {string}         slug      Widget slug.
-	 * @param  {(string|Array)} areaSlugs Widget Area slug(s).
-	 * @return {Object}                   Redux-style action.
+	 * @param {string}         slug      Widget slug.
+	 * @param {(string|Array)} areaSlugs Widget Area slug(s).
+	 * @return {Object} Redux-style action.
 	 */
 	assignWidget( slug, areaSlugs ) {
-		let areaSlugsAsArray;
-		if ( typeof areaSlugs === 'string' ) {
-			areaSlugsAsArray = [ areaSlugs ];
-		} else {
-			areaSlugsAsArray = [ ...areaSlugs ];
-		}
-
 		return {
-			payload: { slug, areaSlugs: areaSlugsAsArray },
+			payload: {
+				slug,
+				areaSlugs: ( typeof areaSlugs === 'string' ) ? [ areaSlugs ] : areaSlugs,
+			},
 			type: ASSIGN_WIDGET,
 		};
 	},
@@ -75,11 +71,22 @@ export const actions = {
 	 * Register a widget with a given slug and settings.
 	 *
 	 * @since n.e.x.t
-	 * @param {string} slug           Widget's slug.
-	 * @param {Object} settings       Widget's settings.
-	 * @return {Object}          Redux-style action.
+	 *
+	 * @param {string}          slug               Widget's slug.
+	 * @param {Object}          settings           Widget's settings.
+	 * @param {React.Component} settings.component React component used to display the contents of this widget.
+	 * @param {number}          settings.priority  Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
+	 * @param {string}          settings.width     Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
+	 * @return {Object} Redux-style action.
 	 */
-	*registerWidget( slug, settings ) {
+	*registerWidget( slug, {
+		component,
+		priority = 10,
+		width = 'quarter',
+	} = {} ) {
+		invariant( component, 'component is required to register a widget.' );
+		invariant( WIDGET_WIDTHS.includes( width ), `Widget width should be one of: ${ WIDGET_WIDTHS.join( ', ' ) } but "${ width }" was provided.` );
+
 		const registry = yield commonActions.getRegistry();
 		let registryKey = yield registry.select( STORE_NAME ).getWidgetRegistryKey();
 
@@ -98,16 +105,11 @@ export const actions = {
 			WidgetComponents[ registryKey ] = {};
 		}
 		if ( WidgetComponents[ registryKey ][ slug ] === undefined ) {
-			WidgetComponents[ registryKey ][ slug ] = settings.component;
+			WidgetComponents[ registryKey ][ slug ] = component;
 		}
-		const settingsToUse = {
-			priority: 10,
-			...settings,
-		};
-		delete settingsToUse.component;
 
 		yield {
-			payload: { slug, settings: settingsToUse },
+			payload: { slug, settings: { priority, width } },
 			type: REGISTER_WIDGET,
 		};
 
@@ -184,9 +186,9 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param  {Object}  state Data store's state.
-	 * @param  {string}  slug  Widget's slug.
-	 * @return {boolean}       `true`/`false` based on whether widget has been registered.
+	 * @param {Object}  state Data store's state.
+	 * @param {string}  slug  Widget's slug.
+	 * @return {boolean} `true`/`false` based on whether widget has been registered.
 	 */
 	isWidgetRegistered( state, slug ) {
 		const { widgets } = state;
@@ -203,9 +205,9 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param  {Object} state          Data store's state.
-	 * @param  {string} widgetAreaSlug Widget context to get areas for.
-	 * @return {Array}                 An ordered array of widgets for this area.
+	 * @param {Object} state          Data store's state.
+	 * @param {string} widgetAreaSlug Widget context to get areas for.
+	 * @return {Array} An ordered array of widgets for this area.
 	 */
 	getWidgets: createRegistrySelector( ( select ) => ( state, widgetAreaSlug ) => {
 		invariant( widgetAreaSlug, 'widgetAreaSlug is required.' );
@@ -235,11 +237,11 @@ export const selectors = {
 	 * between registries. This allows us to access the appropriate registry global
 	 * from inside selectors.
 	 *
-	 * @private
 	 * @since n.e.x.t
+	 * @private
 	 *
-	 * @param  {Object}              state Data store's state.
-	 * @return {(number|undefined)}        An ordered array of widgets for this area.
+	 * @param {Object} state Data store's state.
+	 * @return {(number|undefined)} An ordered array of widgets for this area.
 	 */
 	getWidgetRegistryKey( state ) {
 		const { registryKey } = state;

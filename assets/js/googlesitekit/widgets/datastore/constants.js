@@ -16,4 +16,7 @@
  * limitations under the License.
  */
 
+export const WIDGET_STYLES = [ 'boxes', 'composite' ];
+export const WIDGET_WIDTHS = [ 'quarter', 'half', 'full' ];
+
 export const STORE_NAME = 'core/widgets';

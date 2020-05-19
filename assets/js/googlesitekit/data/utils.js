@@ -158,7 +158,7 @@ export const collectName = ( ...args ) => {
  * @since 1.8.0
  * @private
  *
- * @param  {Object} state A store's state.
+ * @param {Object} state A store's state.
  * @return {Object} The same state data as passed in `state`.
  */
 const passthroughReducer = ( state ) => {
