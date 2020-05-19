@@ -25,6 +25,7 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import DisplaySetting from '../../../components/display-setting';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { trackingExclusionLabels } from '../common/tracking-exclusion-switches';
@@ -56,7 +57,7 @@ export default function SettingsView() {
 						{ __( 'Account', 'google-site-kit' ) }
 					</p>
 					<h5 className="googlesitekit-settings-module__meta-item-data">
-						{ accountID || null }
+						<DisplaySetting value={ accountID } />
 					</h5>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
@@ -64,7 +65,7 @@ export default function SettingsView() {
 						{ __( 'Property', 'google-site-kit' ) }
 					</p>
 					<h5 className="googlesitekit-settings-module__meta-item-data">
-						{ propertyID || null }
+						<DisplaySetting value={ propertyID } />
 					</h5>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
@@ -72,7 +73,7 @@ export default function SettingsView() {
 						{ __( 'View', 'google-site-kit' ) }
 					</p>
 					<h5 className="googlesitekit-settings-module__meta-item-data">
-						{ profileID || null }
+						<DisplaySetting value={ profileID } />
 					</h5>
 				</div>
 			</div>

@@ -15,7 +15,12 @@ import modulesStore, { STORE_NAME as modulesStoreName } from '../../assets/js/go
 import siteStore, { STORE_NAME as siteStoreName } from '../../assets/js/googlesitekit/datastore/site';
 import userStore, { STORE_NAME as userStoreName } from '../../assets/js/googlesitekit/datastore/user';
 import widgetsStore, { STORE_NAME as widgetsStoreName } from '../../assets/js/googlesitekit/widgets/datastore';
+import coreSiteStore, { STORE_NAME as coreSiteStoreName } from '../../assets/js/googlesitekit/datastore/site';
+import coreUserStore, { STORE_NAME as coreUserStoreName } from '../../assets/js/googlesitekit/datastore/user';
+import coreModulesStore, { STORE_NAME as coreModulesStoreName } from '../../assets/js/googlesitekit/modules/datastore';
+import modulesAdSenseStore, { STORE_NAME as modulesAdSenseStoreName } from '../../assets/js/modules/adsense/datastore';
 import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore';
+import modulesPageSpeedInsightsStore, { STORE_NAME as modulesPageSpeedInsightsStoreName } from '../../assets/js/modules/pagespeed-insights/datastore';
 import modulesSearchConsoleStore, { STORE_NAME as modulesSearchConsoleStoreName } from '../../assets/js/modules/search-console/datastore';
 
 /**
@@ -28,6 +33,7 @@ import modulesSearchConsoleStore, { STORE_NAME as modulesSearchConsoleStoreName 
 export const createTestRegistry = () => {
 	const registry = createRegistry();
 
+	// Register all available stores on the registry.
 	registerAllStoresOn( registry );
 
 	return registry;
@@ -45,6 +51,14 @@ export const createTestRegistry = () => {
  * @return {WPElement} Wrapped components.
  */
 export function WithTestRegistry( { children, callback, registry = createTestRegistry() } = {} ) {
+	// Populate most basic data which should not affect any tests.
+	registry.dispatch( coreUserStoreName ).receiveUserInfo( {
+		id: 1,
+		name: 'Wapuu WordPress',
+		email: 'wapuu.wordpress@gmail.com',
+		picture: 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
+	} );
+
 	if ( callback ) {
 		callback( registry );
 	}
@@ -90,7 +104,12 @@ export const registerAllStoresOn = ( registry ) => {
 	registry.registerStore( siteStoreName, siteStore );
 	registry.registerStore( userStoreName, userStore );
 	registry.registerStore( widgetsStoreName, widgetsStore );
+	registry.registerStore( coreSiteStoreName, coreSiteStore );
+	registry.registerStore( coreUserStoreName, coreUserStore );
+	registry.registerStore( coreModulesStoreName, coreModulesStore );
+	registry.registerStore( modulesAdSenseStoreName, modulesAdSenseStore );
 	registry.registerStore( modulesAnalyticsStoreName, modulesAnalyticsStore );
+	registry.registerStore( modulesPageSpeedInsightsStoreName, modulesPageSpeedInsightsStore );
 	registry.registerStore( modulesSearchConsoleStoreName, modulesSearchConsoleStore );
 };
 
