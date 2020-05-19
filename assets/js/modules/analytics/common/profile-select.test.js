@@ -123,7 +123,7 @@ describe( 'ProfileSelect', () => {
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( 1 );
-		expect( listItems[ 0 ].textContent ).toMatch( /set up a new profile/i );
+		expect( listItems[ 0 ].textContent ).toMatch( /set up a new view/i );
 	} );
 
 	it( 'should update profileID in the store when a new item is selected', async () => {
@@ -133,7 +133,7 @@ describe( 'ProfileSelect', () => {
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 		// Click this element to select it and fire the onChange event.
-		fireEvent.click( getByText( /set up a new profile/i ) );
+		fireEvent.click( getByText( /set up a new view/i ) );
 
 		const newProfileID = registry.select( STORE_NAME ).getProfileID();
 		expect( originalProfileID ).not.toEqual( newProfileID );
