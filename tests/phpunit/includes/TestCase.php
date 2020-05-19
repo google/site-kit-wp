@@ -15,7 +15,7 @@ use Google\Site_Kit\Tests\Exception\RedirectException;
 class TestCase extends \WP_UnitTestCase {
 
 	const SITE_ID   = '12345678.apps.sitekit.withgoogle.com';
-	const CLIENT_ID = 'test-client-id';
+	const CLIENT_ID = '12345678.apps.googleusercontent.com';
 
 	// Do not preserve global state since it doesn't support closures within globals.
 	protected $preserveGlobalState = false;
