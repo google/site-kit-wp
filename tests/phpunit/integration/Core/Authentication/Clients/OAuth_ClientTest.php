@@ -27,9 +27,6 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
  */
 class OAuth_ClientTest extends TestCase {
 
-	const SITE_ID   = '12345678.apps.sitekit.withgoogle.com';
-	const CLIENT_ID = 'test-client-id';
-
 	public function test_get_client() {
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -37,7 +34,7 @@ class OAuth_ClientTest extends TestCase {
 	}
 
 	public function test_refresh_token() {
-		$this->fake_authentication();
+		$this->fake_site_connection();
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -206,7 +203,7 @@ class OAuth_ClientTest extends TestCase {
 		 * Requires credentials for redirect_uri to be set on the Google_Site_Kit_Client.
 		 * @see \Google\Site_Kit\Core\Authentication\Clients\OAuth_Client::get_client
 		 */
-		$this->fake_authentication();
+		$this->fake_site_connection();
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -232,7 +229,7 @@ class OAuth_ClientTest extends TestCase {
 		// If GET[error] is set, it redirects to admin URL.
 		$client        = new OAuth_Client( $context, null, $user_options );
 		$_GET['error'] = 'callback_error';
-		$this->fake_authentication(); // required by get_authentication_url
+		$this->fake_site_connection(); // required by get_authentication_url
 
 		try {
 			$client->authorize_user();
@@ -255,7 +252,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertEquals( 'oauth_credentials_not_exist', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
 
 		$_GET['code'] = 'test-code';
-		$this->fake_authentication();
+		$this->fake_site_connection();
 		// If all goes smooth, we expect to be redirected to $success_redirect
 		$success_redirect = admin_url( 'success-redirect' );
 		$client->get_authentication_url( $success_redirect );
@@ -314,12 +311,12 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertTrue( $client->using_proxy() );
 
 		// Don't use proxy when regular OAuth client ID is used.
-		$this->fake_authentication();
+		$this->fake_site_connection();
 		$client = new OAuth_Client( $context );
 		$this->assertFalse( $client->using_proxy() );
 
 		// Use proxy when proxy site ID is used.
-		$this->fake_proxy_authentication();
+		$this->fake_proxy_site_connection();
 		$client = new OAuth_Client( $context );
 		$this->assertTrue( $client->using_proxy() );
 	}
@@ -340,7 +337,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertNotContains( 'site_id=', $url );
 
 		// Otherwise, pass site ID and given temporary access code.
-		$this->fake_proxy_authentication();
+		$this->fake_proxy_site_connection();
 		$client = new OAuth_Client( $context );
 		$url    = $client->get_proxy_setup_url( 'temp-code' );
 		$this->assertContains( 'site_id=' . self::SITE_ID, $url );
@@ -369,7 +366,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'token=test-access-token', $url );
 
 		// If there is a site ID, it should also include that.
-		$this->fake_proxy_authentication();
+		$this->fake_proxy_site_connection();
 		$client = new OAuth_Client( $context );
 		$client->set_access_token( 'test-access-token', 3600 );
 		$url = $client->get_proxy_permissions_url();
@@ -405,38 +402,6 @@ class OAuth_ClientTest extends TestCase {
 			array( 'invalid_grant' ),
 			array( 'invalid_code' ),
 			array( 'access_token_not_received' ),
-		);
-	}
-
-	protected function fake_authentication() {
-		add_filter(
-			'googlesitekit_oauth_secret',
-			function () {
-				return json_encode(
-					array(
-						'web' => array(
-							'client_id'     => self::CLIENT_ID,
-							'client_secret' => 'test-client-secret',
-						),
-					)
-				);
-			}
-		);
-	}
-
-	protected function fake_proxy_authentication() {
-		add_filter(
-			'googlesitekit_oauth_secret',
-			function () {
-				return json_encode(
-					array(
-						'web' => array(
-							'client_id'     => self::SITE_ID,
-							'client_secret' => 'test-client-secret',
-						),
-					)
-				);
-			}
 		);
 	}
 

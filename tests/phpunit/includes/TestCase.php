@@ -14,6 +14,9 @@ use Google\Site_Kit\Tests\Exception\RedirectException;
 
 class TestCase extends \WP_UnitTestCase {
 
+	const SITE_ID   = '12345678.apps.sitekit.withgoogle.com';
+	const CLIENT_ID = 'test-client-id';
+
 	// Do not preserve global state since it doesn't support closures within globals.
 	protected $preserveGlobalState = false;
 
@@ -139,6 +142,38 @@ class TestCase extends \WP_UnitTestCase {
 			'pre_site_option_active_sitewide_plugins',
 			function () {
 				return array( GOOGLESITEKIT_PLUGIN_BASENAME => true );
+			}
+		);
+	}
+
+	protected function fake_site_connection() {
+		add_filter(
+			'googlesitekit_oauth_secret',
+			function () {
+				return json_encode(
+					array(
+						'web' => array(
+							'client_id'     => self::CLIENT_ID,
+							'client_secret' => 'test-client-secret',
+						),
+					)
+				);
+			}
+		);
+	}
+
+	protected function fake_proxy_site_connection() {
+		add_filter(
+			'googlesitekit_oauth_secret',
+			function () {
+				return json_encode(
+					array(
+						'web' => array(
+							'client_id'     => self::SITE_ID,
+							'client_secret' => 'test-client-secret',
+						),
+					)
+				);
 			}
 		);
 	}
