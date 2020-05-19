@@ -348,6 +348,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'code=temp-code', $url );
 		$this->assertContains( 'scope=', $url );
 		$this->assertContains( 'nonce=', $url );
+		$this->assertContains( 'application_name=', $url );
 		$this->assertNotContains( '&name=', $url );
 		$this->assertNotContains( 'url=', $url );
 		$this->assertNotContains( 'admin_root=', $url );
@@ -368,6 +369,7 @@ class OAuth_ClientTest extends TestCase {
 		$client->set_access_token( 'test-access-token', 3600 );
 		$url = $client->get_proxy_permissions_url();
 		$this->assertContains( 'token=test-access-token', $url );
+		$this->assertContains( 'application_name=', $url );
 
 		// If there is a site ID, it should also include that.
 		$this->fake_proxy_authentication();
@@ -376,8 +378,6 @@ class OAuth_ClientTest extends TestCase {
 		$url = $client->get_proxy_permissions_url();
 		$this->assertContains( 'token=test-access-token', $url );
 		$this->assertContains( 'site_id=' . self::SITE_ID, $url );
-
-		// The URL should include the application name.
 		$this->assertContains( 'application_name=', $url );
 	}
 
