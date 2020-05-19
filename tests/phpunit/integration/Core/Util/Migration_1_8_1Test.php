@@ -75,22 +75,19 @@ class Migration_1_8_1Test extends TestCase {
 
 	public function test_migrate_without_using_proxy() {
 		$this->fake_site_connection();
-		$result = $this->migration->migrate();
-		$this->assertFalse( $result );
+		$this->migration->migrate();
 		$this->assertNotEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version() );
 	}
 
 	public function test_migrate_without_credentials() {
-		$result = $this->migration->migrate();
-		$this->assertFalse( $result );
+		$this->migration->migrate();
 		$this->assertNotEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version() );
 	}
 
 	public function test_migrate_without_users() {
 		$this->fake_proxy_site_connection();
 
-		$result = $this->migration->migrate();
-		$this->assertTrue( $result );
+		$this->migration->migrate();
 		$this->assertEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version() );
 	}
 
@@ -100,8 +97,7 @@ class Migration_1_8_1Test extends TestCase {
 
 		$this->fake_proxy_site_connection();
 
-		$result = $this->migration->migrate();
-		$this->assertTrue( $result );
+		$this->migration->migrate();
 		$this->assertEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version() );
 	}
 
@@ -136,8 +132,7 @@ class Migration_1_8_1Test extends TestCase {
 		$this->fake_proxy_site_connection();
 		$this->stub_mark_notifications_response();
 
-		$result = $this->migration->migrate();
-		$this->assertTrue( $result );
+		$this->migration->migrate();
 		$this->assertReceivedIdentifiers( $expected_identifiers );
 		foreach ( $problem_cases as $user ) {
 			$this->assertNoSiteKitUserOptions( $user->ID );
@@ -154,8 +149,7 @@ class Migration_1_8_1Test extends TestCase {
 		$this->fake_proxy_site_connection();
 		$this->stub_mark_notifications_response( 'invalid_notification_id' );
 
-		$result = $this->migration->migrate();
-		$this->assertWPErrorWithMessage( 'invalid_notification_id', $result );
+		$this->migration->migrate();
 		// Despite API error, users have been determined and cleared correctly.
 		$this->assertReceivedIdentifiers(
 			array_map(

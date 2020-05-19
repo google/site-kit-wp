@@ -102,36 +102,31 @@ class Migration_1_8_1 {
 	 * Migrates the DB.
 	 *
 	 * @since 1.8.1
-	 *
-	 * @return boolean|WP_Error True on success, WP_Error on failure, false if
-	 *                          routine cannot run or is not applicable.
 	 */
 	public function migrate() {
 		$db_version = $this->options->get( 'googlesitekit_db_version' );
 
 		// Do not run if database version already updated.
 		if ( $db_version && version_compare( $db_version, self::DB_VERSION, '>=' ) ) {
-			return false;
+			return;
 		}
 
 		// Only run routine if using the authentication service, otherwise it
 		// is irrelevant.
 		if ( ! $this->authentication->get_oauth_client()->using_proxy() ) {
-			return false;
+			return;
 		}
 
 		// Only run routine once site credentials present, otherwise it is not
 		// possible to connect to the authentication service.
 		if ( ! $this->authentication->credentials()->has() ) {
-			return false;
+			return;
 		}
 
-		$result = $this->clear_and_flag_unauthorized_verified_users();
+		$this->clear_and_flag_unauthorized_verified_users();
 
 		// Update database version.
 		$this->options->set( 'googlesitekit_db_version', self::DB_VERSION );
-
-		return $result;
 	}
 
 	/**
