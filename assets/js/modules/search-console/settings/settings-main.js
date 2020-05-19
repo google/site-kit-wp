@@ -21,6 +21,10 @@
  */
 import SettingsView from './settings-view';
 
-export default function SettingsMain() {
+export default function SettingsMain( { isOpen } ) {
+	if ( ! isOpen ) {
+		return null;
+	}
+
 	return <SettingsView />;
 }
