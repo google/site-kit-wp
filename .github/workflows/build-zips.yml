@@ -8,7 +8,7 @@ on:
   pull_request:
 
 jobs:
-  build-pr:
+  build-zips:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
