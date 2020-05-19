@@ -376,10 +376,7 @@ final class Authentication {
 
 		// Delete all user data.
 		$user_id = $this->user_options->get_user_id();
-		$prefix  = 'googlesitekit\_%';
-		if ( ! $this->context->is_network_mode() ) {
-			$prefix = $wpdb->get_blog_prefix() . $prefix;
-		}
+		$prefix  = $this->user_options->get_meta_key( 'googlesitekit\_%' );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->query(
