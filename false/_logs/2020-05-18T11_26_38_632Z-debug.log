@@ -1,0 +1,44 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/Users/shah/.nvm/versions/node/v10.20.1/bin/node',
+1 verbose cli   '/Users/shah/.nvm/versions/node/v10.20.1/bin/npm',
+1 verbose cli   'run',
+1 verbose cli   'test:e2e',
+1 verbose cli   '--no-cache' ]
+2 info using npm@6.14.4
+3 info using node@v10.20.1
+4 verbose run-script [ 'pretest:e2e', 'test:e2e', 'posttest:e2e' ]
+5 info lifecycle googlesitekit@~pretest:e2e: googlesitekit@
+6 verbose lifecycle googlesitekit@~pretest:e2e: unsafe-perm in lifecycle true
+7 verbose lifecycle googlesitekit@~pretest:e2e: PATH: /Users/shah/.nvm/versions/node/v10.20.1/lib/node_modules/npm/node_modules/npm-lifecycle/node-gyp-bin:/Users/shah/wp-local-docker-sites/sitekit-10uplabs-dev/wordpress/wp-content/plugins/google-site-kit/node_modules/.bin:/Users/shah/.nvm/versions/node/v10.20.1/bin:/Users/shah/.composer/vendor/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+8 verbose lifecycle googlesitekit@~pretest:e2e: CWD: /Users/shah/wp-local-docker-sites/sitekit-10uplabs-dev/wordpress/wp-content/plugins/google-site-kit
+9 silly lifecycle googlesitekit@~pretest:e2e: Args: [ '-c', './bin/local-env/env-check.sh' ]
+10 silly lifecycle googlesitekit@~pretest:e2e: Returned: code: 0  signal: null
+11 info lifecycle googlesitekit@~test:e2e: googlesitekit@
+12 verbose lifecycle googlesitekit@~test:e2e: unsafe-perm in lifecycle true
+13 verbose lifecycle googlesitekit@~test:e2e: PATH: /Users/shah/.nvm/versions/node/v10.20.1/lib/node_modules/npm/node_modules/npm-lifecycle/node-gyp-bin:/Users/shah/wp-local-docker-sites/sitekit-10uplabs-dev/wordpress/wp-content/plugins/google-site-kit/node_modules/.bin:/Users/shah/.nvm/versions/node/v10.20.1/bin:/Users/shah/.composer/vendor/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+14 verbose lifecycle googlesitekit@~test:e2e: CWD: /Users/shah/wp-local-docker-sites/sitekit-10uplabs-dev/wordpress/wp-content/plugins/google-site-kit
+15 silly lifecycle googlesitekit@~test:e2e: Args: [ '-c',
+15 silly lifecycle   'WP_BASE_URL=http://localhost:9002 wp-scripts test-e2e --config=tests/e2e/jest.config.js' ]
+16 silly lifecycle googlesitekit@~test:e2e: Returned: code: 1  signal: null
+17 info lifecycle googlesitekit@~test:e2e: Failed to exec test:e2e script
+18 verbose stack Error: googlesitekit@ test:e2e: `WP_BASE_URL=http://localhost:9002 wp-scripts test-e2e --config=tests/e2e/jest.config.js`
+18 verbose stack Exit status 1
+18 verbose stack     at EventEmitter.<anonymous> (/Users/shah/.nvm/versions/node/v10.20.1/lib/node_modules/npm/node_modules/npm-lifecycle/index.js:332:16)
+18 verbose stack     at EventEmitter.emit (events.js:198:13)
+18 verbose stack     at ChildProcess.<anonymous> (/Users/shah/.nvm/versions/node/v10.20.1/lib/node_modules/npm/node_modules/npm-lifecycle/lib/spawn.js:55:14)
+18 verbose stack     at ChildProcess.emit (events.js:198:13)
+18 verbose stack     at maybeClose (internal/child_process.js:982:16)
+18 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:259:5)
+19 verbose pkgid googlesitekit@
+20 verbose cwd /Users/shah/wp-local-docker-sites/sitekit-10uplabs-dev/wordpress/wp-content/plugins/google-site-kit
+21 verbose Darwin 19.4.0
+22 verbose argv "/Users/shah/.nvm/versions/node/v10.20.1/bin/node" "/Users/shah/.nvm/versions/node/v10.20.1/bin/npm" "run" "test:e2e" "--no-cache"
+23 verbose node v10.20.1
+24 verbose npm  v6.14.4
+25 error code ELIFECYCLE
+26 error errno 1
+27 error googlesitekit@ test:e2e: `WP_BASE_URL=http://localhost:9002 wp-scripts test-e2e --config=tests/e2e/jest.config.js`
+27 error Exit status 1
+28 error Failed at the googlesitekit@ test:e2e script.
+28 error This is probably not a problem with npm. There is likely additional logging output above.
+29 verbose exit [ 1, true ]

@@ -38,26 +38,20 @@ describe( 'core/forms store', () => {
 			} );
 
 			it( 'requires the formData param', () => {
-				const formName = 'Form 1';
-
 				expect( () => {
-					registry.dispatch( STORE_NAME ).setValues( formName );
+					registry.dispatch( STORE_NAME ).setValues( 'form-name' );
 				} ).toThrow( 'formData must be an object.' );
 			} );
 
 			it( 'requires the formData param to be an object not an array', () => {
-				const formName = 'Form 1';
-
 				expect( () => {
-					registry.dispatch( STORE_NAME ).setValues( formName, [] );
+					registry.dispatch( STORE_NAME ).setValues( 'form-name', [] );
 				} ).toThrow( 'formData must be an object.' );
 			} );
 
 			it( 'requires the formData param to be an object not a string', () => {
-				const formName = 'Form 1';
-
 				expect( () => {
-					registry.dispatch( STORE_NAME ).setValues( formName, 'formData' );
+					registry.dispatch( STORE_NAME ).setValues( 'form-name', 'formData' );
 				} ).toThrow( 'formData must be an object.' );
 			} );
 		} );
@@ -66,65 +60,42 @@ describe( 'core/forms store', () => {
 	describe( 'selectors', () => {
 		describe( 'getValue', () => {
 			it( 'works with a formName that does not exist', () => {
-				const formName = 'Form 1';
-				const formData = {
-					key1: 'value1',
-					key2: 'value2',
-				};
-				const newFormName = 'Form 2';
+				const formData = { key1: 'value1', key2: 'value2' };
 
-				registry.dispatch( STORE_NAME ).setValues( formName, { ...formData } );
+				registry.dispatch( STORE_NAME ).setValues( 'form-name', formData );
 
-				const form = registry.select( STORE_NAME ).getValue( newFormName, 'key2' );
-				expect( form ).toEqual( undefined );
+				const formValue = registry.select( STORE_NAME ).getValue( 'new-form-name', 'key2' );
+				expect( formValue ).toEqual( undefined );
 			} );
 
 			it( 'works with formData where the key does not exist', () => {
-				const formName = 'Form 1';
-				const formData = {
-					key1: 'value1',
-					key2: 'value2',
-				};
+				const formData = { key1: 'value1', key2: 'value2' };
 
-				registry.dispatch( STORE_NAME ).setValues( formName, { ...formData } );
+				registry.dispatch( STORE_NAME ).setValues( 'form-name', formData );
 
-				const form = registry.select( STORE_NAME ).getValue( formName, 'key3' );
-				expect( form ).toEqual( undefined );
+				const formValue = registry.select( STORE_NAME ).getValue( 'form-name', 'key3' );
+				expect( formValue ).toEqual( undefined );
 			} );
 
 			it( 'works with an existing formName', () => {
-				const formName = 'Form 1';
-				const formData = {
-					key1: 'value1',
-					key2: 'value2',
-				};
+				const formData = { key1: 'value1', key2: 'value2' };
 
-				registry.dispatch( STORE_NAME ).setValues( formName, { ...formData } );
+				registry.dispatch( STORE_NAME ).setValues( 'form-name', formData );
 
-				const { key2 } = formData;
-				const form = registry.select( STORE_NAME ).getValue( formName, 'key2' );
-				expect( form ).toEqual( key2 );
+				const formValue = registry.select( STORE_NAME ).getValue( 'form-name', 'key2' );
+				expect( formValue ).toEqual( formData.key2 );
 			} );
 
 			it( 'preserves data from state when new data is assigned', () => {
-				const formName = 'Form 1';
-				const formData = {
-					key1: 'value1',
-					key2: 'value2',
-				};
-				const newFormName = 'Form 2';
-				const newFormData = {
-					key3: 'value3',
-					key4: 'value4',
-				};
+				const formData = { key1: 'value1', key2: 'value2' };
+				const newFormData = { key3: 'value3', key4: 'value4' };
 
-				registry.dispatch( STORE_NAME ).setValues( formName, { ...formData } );
+				registry.dispatch( STORE_NAME ).setValues( 'form-name', formData );
 
-				registry.dispatch( STORE_NAME ).setValues( newFormName, { ...newFormData } );
+				registry.dispatch( STORE_NAME ).setValues( 'new-form-name', newFormData );
 
-				const { key2 } = formData;
-				const form = registry.select( STORE_NAME ).getValue( formName, 'key2' );
-				expect( form ).toEqual( key2 );
+				const formValue = registry.select( STORE_NAME ).getValue( 'form-name', 'key2' );
+				expect( formValue ).toEqual( formData.key2 );
 			} );
 		} );
 	} );
