@@ -40,11 +40,7 @@ const REGISTER_WIDGET_AREA = 'REGISTER_WIDGET_AREA';
 
 export const INITIAL_STATE = {
 	areas: {},
-	areaWidgets: {},
-	contexts: {
-		analytics: [],
-		dashboard: [],
-	},
+	contexts: {},
 };
 
 export const actions = {
@@ -123,7 +119,7 @@ export const reducer = ( state, { type, payload } ) => {
 			const { contexts } = state;
 			contextSlugs.forEach( ( contextSlug ) => {
 				if ( contexts[ contextSlug ] === undefined ) {
-					return;
+					contexts[ contextSlug ] = [];
 				}
 
 				if ( ! contexts[ contextSlug ].includes( slug ) ) {
