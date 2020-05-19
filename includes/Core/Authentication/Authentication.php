@@ -480,6 +480,10 @@ final class Authentication {
 
 		// Handles Direct OAuth client request.
 		if ( $input->filter( INPUT_GET, 'oauth2callback' ) ) {
+			if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
+				wp_die( esc_html__( 'You don\'t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
+			}
+
 			$auth_client->authorize_user();
 		}
 
