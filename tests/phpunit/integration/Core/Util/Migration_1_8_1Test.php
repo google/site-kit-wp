@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Core\Util;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification_File;
 use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
@@ -115,19 +116,29 @@ class Migration_1_8_1Test extends TestCase {
 			$this->create_user( 'editor', self::FILE_VERIFICATION ),
 		);
 
+		// Set Google profile data for one of the problematic users (see below).
+		$profile = new Profile( new User_Options( $this->context, $problem_cases[0]->ID ) );
+		$profile->set(
+			array(
+				'email' => 'wapuu.wordpress@gmail.com',
+				'photo' => 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
+			)
+		);
+
+		// Ensure the functionality uses Google profile email preferably, but
+		// falls back to WordPress user email if Google profile data not
+		// present.
+		$expected_identifiers = array(
+			'wapuu.wordpress@gmail.com',
+			$problem_cases[1]->user_email,
+		);
+
 		$this->fake_proxy_site_connection();
 		$this->stub_mark_notifications_response();
 
 		$result = $this->migration->migrate();
 		$this->assertTrue( $result );
-		$this->assertReceivedIdentifiers(
-			array_map(
-				function( $user ) {
-					return $user->user_email;
-				},
-				$problem_cases
-			)
-		);
+		$this->assertReceivedIdentifiers( $expected_identifiers );
 		foreach ( $problem_cases as $user ) {
 			$this->assertNoSiteKitUserOptions( $user->ID );
 		}
