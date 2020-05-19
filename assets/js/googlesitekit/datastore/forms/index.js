@@ -85,7 +85,9 @@ export const selectors = {
 	 * @return {*} Value stored in state by formName and key or undefined.
 	 */
 	getValue( state, formName, key ) {
-		return state[ formName ] ? state[ formName ][ key ] : undefined;
+		const formData = state[ formName ] || {};
+
+		return formData[ key ];
 	},
 };
 
