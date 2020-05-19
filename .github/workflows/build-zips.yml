@@ -1,4 +1,4 @@
-name: build-pr
+name: build-zips
 
 on:
   push:
@@ -61,7 +61,7 @@ jobs:
 
   deploy-to-wiki:
     runs-on: ubuntu-latest
-    needs: build-pr
+    needs: build-zips
     steps:
       - uses: actions/checkout@v2
         with:
