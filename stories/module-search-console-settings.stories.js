@@ -50,7 +50,7 @@ function Settings( props ) {
 	const {
 		callback,
 		// eslint-disable-next-line space-infix-ops
-		module = global.googlesitekit.modules.search-console,
+		module = global.googlesitekit.modules[ 'search-console' ],
 		isEditing = false,
 		isOpen = true,
 		isSaving = false,
@@ -81,7 +81,7 @@ function Settings( props ) {
 					updateModulesList={ updateModulesList }
 					handleEdit={ handleButtonAction }
 					handleConfirm
-					isEditing={ isEditing ? { 'analytics-module': true } : {} }
+					isEditing={ isEditing ? { 'search-console-module': true } : {} }
 					isOpen={ isOpen }
 					handleAccordion={ handleAccordion }
 					handleDialog={ handleDialog }
