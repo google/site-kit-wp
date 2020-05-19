@@ -79,19 +79,27 @@ class Migration_1_8_1Test extends TestCase {
 
 	public function test_migrate_without_using_proxy() {
 		$this->fake_site_connection();
+		$this->stub_mark_notifications_response();
+
 		$this->migration->migrate();
+		$this->assertNotIssuedAPIRequest();
 		$this->assertNotEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version() );
 	}
 
 	public function test_migrate_without_credentials() {
+		$this->stub_mark_notifications_response();
+
 		$this->migration->migrate();
+		$this->assertNotIssuedAPIRequest();
 		$this->assertNotEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version() );
 	}
 
 	public function test_migrate_without_users() {
 		$this->fake_proxy_site_connection();
+		$this->stub_mark_notifications_response();
 
 		$this->migration->migrate();
+		$this->assertNotIssuedAPIRequest();
 		$this->assertEquals( Migration_1_8_1::DB_VERSION, $this->get_db_version() );
 	}
 
