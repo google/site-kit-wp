@@ -144,8 +144,7 @@ class Migration_1_8_1Test extends TestCase {
 		$this->stub_mark_notifications_response( 'invalid_notification_id' );
 
 		$result = $this->migration->migrate();
-		$this->assertWPError( $result );
-		$this->assertEquals( 'invalid_notification_id', $result->get_error_message() );
+		$this->assertWPErrorWithMessage( 'invalid_notification_id', $result );
 		// Despite API error, users have been determined and cleared correctly.
 		$this->assertReceivedIdentifiers(
 			array_map(
