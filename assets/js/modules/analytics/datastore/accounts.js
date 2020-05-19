@@ -128,11 +128,14 @@ export const actions = {
 	},
 
 	*resetAccounts() {
-		const registry = yield Data.commonActions.getRegistry();
+		const { dispatch } = yield Data.commonActions.getRegistry();
 
-		yield { type: RESET_ACCOUNTS };
+		yield {
+			payload: {},
+			type: RESET_ACCOUNTS,
+		};
 
-		return registry.stores[ STORE_NAME ].getActions()
+		return dispatch( STORE_NAME )
 			.invalidateResolutionForStoreSelector( 'getAccounts' );
 	},
 
@@ -261,7 +264,7 @@ export const reducer = ( state, { type, payload } ) => {
 		case RESET_ACCOUNTS: {
 			return {
 				...state,
-				accounts: undefined,
+				accounts: INITIAL_STATE.accounts,
 				settings: {
 					...state.settings,
 					accountID: undefined,

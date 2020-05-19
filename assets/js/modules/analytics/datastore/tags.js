@@ -332,7 +332,7 @@ export const selectors = {
 	},
 
 	/**
-	 * Checks whther the user has access to the existing Analytics tag.
+	 * Checks whether the user has access to the existing Analytics tag.
 	 *
 	 * @since 1.8.0
 	 *
