@@ -816,7 +816,7 @@ final class OAuth_Client {
 	/**
 	 * Returns the application name: a combination of the namespace and version.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.8.1
 	 *
 	 * @return string The application name.
 	 */

@@ -376,10 +376,7 @@ final class Authentication {
 
 		// Delete all user data.
 		$user_id = $this->user_options->get_user_id();
-		$prefix  = 'googlesitekit\_%';
-		if ( ! $this->context->is_network_mode() ) {
-			$prefix = $wpdb->get_blog_prefix() . $prefix;
-		}
+		$prefix  = $this->user_options->get_meta_key( 'googlesitekit\_%' );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->query(
@@ -480,6 +477,10 @@ final class Authentication {
 
 		// Handles Direct OAuth client request.
 		if ( $input->filter( INPUT_GET, 'oauth2callback' ) ) {
+			if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
+				wp_die( esc_html__( 'You don\'t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
+			}
+
 			$auth_client->authorize_user();
 		}
 
@@ -494,7 +495,7 @@ final class Authentication {
 			}
 
 			if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
-				wp_die( esc_html__( 'You don\'t have permissions to perform this action.', 'google-site-kit' ), 403 );
+				wp_die( esc_html__( 'You don\'t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
 			}
 
 			$this->disconnect();
@@ -517,7 +518,7 @@ final class Authentication {
 			}
 
 			if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
-				wp_die( esc_html__( 'You don\'t have permissions to perform this action.', 'google-site-kit' ), 403 );
+				wp_die( esc_html__( 'You don\'t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
 			}
 
 			$redirect_url = $input->filter( INPUT_GET, 'redirect', FILTER_VALIDATE_URL );
@@ -928,6 +929,10 @@ final class Authentication {
 	private function handle_site_code( $code, $site_code ) {
 		if ( ! $code || ! $site_code ) {
 			return;
+		}
+
+		if ( ! current_user_can( Permissions::SETUP ) ) {
+			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
 		}
 
 		try {
