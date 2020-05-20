@@ -157,6 +157,11 @@ class TestCase extends \WP_UnitTestCase {
 		);
 	}
 
+	protected function assertWPErrorWithMessage( $expected_message, $actual ) {
+		$this->assertWPError( $actual );
+		$this->assertEquals( $expected_message, $actual->get_error_message() );
+	}
+
 	protected function queryOption( $option ) {
 		global $wpdb;
 
