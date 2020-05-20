@@ -43,6 +43,7 @@ const REGISTER_WIDGET = 'REGISTER_WIDGET';
 const SET_WIDGET_COMPONENT_KEY = 'SET_WIDGET_COMPONENT_KEY';
 
 export const INITIAL_STATE = {
+	areaWidgets: {},
 	registryKey: undefined,
 	widgets: {},
 };
