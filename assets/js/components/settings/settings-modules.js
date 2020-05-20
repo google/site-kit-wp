@@ -147,6 +147,7 @@ class SettingsModules extends Component {
 				homepage={ module.homepage }
 				learnmore={ module.learnMore }
 				active={ module.active }
+				setupComplete={ module.setupComplete }
 				hasSettings={ !! module.settings && 'search-console' !== module.slug }
 				autoActivate={ module.autoActivate }
 				updateModulesList={ this.updateModulesList }
@@ -158,7 +159,6 @@ class SettingsModules extends Component {
 				handleDialog={ this.handleDialog }
 				provides={ provides }
 				isSaving={ isSaving }
-				screenID={ module.screenID }
 				error={ error }
 			/>
 		);

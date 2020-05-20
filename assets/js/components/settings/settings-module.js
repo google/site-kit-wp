@@ -40,7 +40,6 @@ import {
 	getReAuthURL,
 	moduleIcon,
 	showErrorNotification,
-	getModulesData,
 } from '../../util';
 import { refreshAuthentication } from '../../util/refresh-authentication';
 import Link from '../../components/link';
@@ -60,12 +59,10 @@ import ModuleSetupIncomplete from '../../components/settings/module-setup-incomp
 class SettingsModule extends Component {
 	constructor( props ) {
 		super( props );
-		const { slug } = props;
-		const { setupComplete } = getModulesData()[ slug ];
 		this.state = {
 			isSaving: false,
 			active: props.active,
-			setupComplete,
+			setupComplete: props.setupComplete,
 			dialogActive: false,
 		};
 
@@ -186,7 +183,6 @@ class SettingsModule extends Component {
 			autoActivate,
 			provides,
 			isSaving,
-			screenID,
 			error,
 		} = this.props;
 
@@ -340,7 +336,6 @@ class SettingsModule extends Component {
 									{
 										hasSettings && ! setupComplete &&
 											<ModuleSetupIncomplete
-												screenID={ screenID }
 												slug={ slug }
 											/>
 									}
@@ -485,6 +480,7 @@ SettingsModule.propTypes = {
 	hasSettings: PropTypes.bool,
 	required: PropTypes.array,
 	active: PropTypes.bool,
+	setupComplete: PropTypes.bool,
 };
 
 SettingsModule.defaultProps = {
@@ -495,6 +491,7 @@ SettingsModule.defaultProps = {
 	handleEdit: null,
 	handleDialog: null,
 	active: false,
+	setupComplete: false,
 };
 
 export default SettingsModule;

@@ -35,7 +35,7 @@ class SettingsTest extends SettingsTestCase {
 			'googlesitekit_adsense_account_id',
 			function () {
 				return 'filtered-adsense-account-id';
-			} 
+			}
 		);
 		$this->assertArraySubset( array( 'accountID' => 'filtered-adsense-account-id' ), get_option( Settings::OPTION ) );
 
@@ -52,11 +52,13 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'setupComplete' => false,
-				'accountID'     => '',
-				'accountStatus' => '',
-				'clientID'      => '',
-				'useSnippet'    => true,
+				'accountID'            => '',
+				'clientID'             => '',
+				'accountStatus'        => '',
+				'siteStatus'           => '',
+				'accountSetupComplete' => false,
+				'siteSetupComplete'    => false,
+				'useSnippet'           => true,
 			),
 			get_option( Settings::OPTION )
 		);
@@ -77,11 +79,12 @@ class SettingsTest extends SettingsTestCase {
 		$option = $settings->get();
 		$this->assertArraySubset(
 			array(
-				'accountID'     => 'test-account-id',
-				'accountStatus' => 'test-account-status',
-				'clientID'      => 'test-client-id',
-				'useSnippet'    => 'test-adsense-tag-enabled',
-				'setupComplete' => 'test-setup-complete',
+				'accountID'            => 'test-account-id',
+				'accountStatus'        => 'test-account-status',
+				'clientID'             => 'test-client-id',
+				'useSnippet'           => 'test-adsense-tag-enabled',
+				'accountSetupComplete' => 'test-setup-complete',
+				'siteSetupComplete'    => 'test-setup-complete',
 			),
 			$option
 		);
@@ -96,7 +99,7 @@ class SettingsTest extends SettingsTestCase {
 			array(
 				'account_id' => 'test-legacy-account-id',
 				'accountID'  => 'test-current-account-id',
-			) 
+			)
 		);
 		$option = $settings->get();
 		$this->assertEquals( 'test-current-account-id', $option['accountID'] );
