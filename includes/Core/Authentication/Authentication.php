@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Admin\Notice;
+use Google\Site_Kit\Core\Util\Scopes;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -909,12 +910,10 @@ final class Authentication {
 			return false;
 		}
 
-		$granted_scopes  = $auth_client->get_granted_scopes();
-		$required_scopes = $auth_client->get_required_scopes();
-
-		$required_and_granted_scopes = array_intersect( $granted_scopes, $required_scopes );
-
-		return count( $required_and_granted_scopes ) < count( $required_scopes );
+		return Scopes::are_satisfied_by(
+			$auth_client->get_required_scopes(),
+			$auth_client->get_granted_scopes()
+		);
 	}
 
 	/**
