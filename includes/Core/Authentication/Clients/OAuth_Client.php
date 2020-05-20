@@ -39,6 +39,7 @@ final class OAuth_Client {
 	const OPTION_REFRESH_TOKEN           = 'googlesitekit_refresh_token';
 	const OPTION_REDIRECT_URL            = 'googlesitekit_redirect_url';
 	const OPTION_AUTH_SCOPES             = 'googlesitekit_auth_scopes';
+	const OPTION_ADDITIONAL_AUTH_SCOPES  = 'googlesitekit_additional_auth_scopes';
 	const OPTION_ERROR_CODE              = 'googlesitekit_error_code';
 	const OPTION_PROXY_ACCESS_CODE       = 'googlesitekit_proxy_access_code';
 
@@ -407,6 +408,18 @@ final class OAuth_Client {
 	 */
 	public function get_granted_scopes() {
 		return array_values( (array) $this->user_options->get( self::OPTION_AUTH_SCOPES ) );
+	}
+
+	/**
+	 * Gets the list of currently granted additional Google OAuth scopes for the current user.
+	 *
+	 * @since n.e.x.t
+	 * @see https://developers.google.com/identity/protocols/googlescopes
+	 *
+	 * @return string[] List of Google OAuth scopes.
+	 */
+	public function get_granted_additional_scopes() {
+		return array_values( $this->user_options->get( self::OPTION_ADDITIONAL_AUTH_SCOPES ) ?: array() );
 	}
 
 	/**

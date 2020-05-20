@@ -113,6 +113,22 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertEquals( $granted_scopes, $client->get_granted_scopes() );
 	}
 
+	public function test_get_granted_additional_scopes() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		update_user_option( $user_id, OAuth_Client::OPTION_AUTH_SCOPES, array( 'test-scope' ) );
+		update_user_option( $user_id, OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, array( 'extra-scope' ) );
+
+		// Only returns additional scopes.
+
+		$this->assertEqualSets(
+			array( 'extra-scope' ),
+			$client->get_granted_additional_scopes()
+		);
+	}
+
 	public function test_set_granted_scopes() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
