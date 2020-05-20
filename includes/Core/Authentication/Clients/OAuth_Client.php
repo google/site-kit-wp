@@ -21,6 +21,7 @@ use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Scopes;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit_Dependencies\Google_Service_PeopleService;
 use WP_HTTP_Proxy;
@@ -408,6 +409,18 @@ final class OAuth_Client {
 	 */
 	public function get_granted_scopes() {
 		return array_values( (array) $this->user_options->get( self::OPTION_AUTH_SCOPES ) );
+	}
+
+	/**
+	 * Checks whether or not currently granted scopes are sufficient for the given list.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string[] $scopes List of scopes to test against granted scopes.
+	 * @return bool
+	 */
+	public function has_sufficient_scopes( array $scopes ) {
+		return Scopes::are_satisfied_by( $scopes, $this->get_granted_scopes() );
 	}
 
 	/**
