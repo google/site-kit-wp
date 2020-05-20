@@ -113,7 +113,7 @@ class Migration_1_8_1 {
 
 		// Only run routine if using the authentication service, otherwise it
 		// is irrelevant.
-		if ( ! $this->authentication->get_oauth_client()->using_proxy() ) {
+		if ( ! $this->authentication->credentials()->using_proxy() ) {
 			return;
 		}
 
