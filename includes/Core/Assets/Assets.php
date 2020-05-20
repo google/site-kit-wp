@@ -344,6 +344,7 @@ final class Assets {
 			'googlesitekit-vendor',
 			'googlesitekit-commons',
 			'googlesitekit-base',
+			'googlesitekit-data',
 		);
 
 		// Register plugin scripts.
