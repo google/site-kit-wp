@@ -905,8 +905,7 @@ final class Authentication {
 	private function need_reauthenticate() {
 		$auth_client = $this->get_oauth_client();
 
-		$access_token = $auth_client->get_access_token();
-		if ( empty( $access_token ) ) {
+		if ( ! $auth_client->get_access_token() ) {
 			return false;
 		}
 
