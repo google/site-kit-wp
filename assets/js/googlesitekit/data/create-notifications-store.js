@@ -45,15 +45,19 @@ const RECEIVE_NOTIFICATIONS = 'RECEIVE_NOTIFICATIONS';
  * @since 1.6.0
  * @private
  *
- * @param {string} type              The data to access. One of 'core' or 'modules'.
- * @param {string} identifier        The data identifier, eg. a module slug like 'search-console'.
- * @param {string} datapoint         The endpoint to request data from, e.g. 'notifications'.
- * @param {Object} options           Optional. Options to consider for the store.
- * @param {number} options.storeName Store name to use. Default is '{type}/{identifier}'.
+ * @param {string}  type              The data to access. One of 'core' or 'modules'.
+ * @param {string}  identifier        The data identifier, eg. a module slug like 'search-console'.
+ * @param {string}  datapoint         The endpoint to request data from, e.g. 'notifications'.
+ * @param {Object}  options           Optional. Options to consider for the store.
+ * @param {boolean} options.client    Enable client-only notifications. `true` by default.
+ * @param {boolean} options.server    Enable server notifications. `true` by default.
+ * @param {number}  options.storeName Store name to use. Default is '{type}/{identifier}'.
  * @return {Object} The notifications store object, with additional `STORE_NAME` and
  *                  `INITIAL_STATE` properties.
  */
 export const createNotificationsStore = ( type, identifier, datapoint, {
+	client = true,
+	server = true,
 	storeName = undefined,
 } = {} ) => {
 	invariant( type, 'type is required.' );
@@ -63,11 +67,11 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 	const STORE_NAME = storeName || `${ type }/${ identifier }`;
 
 	const INITIAL_STATE = {
-		serverNotifications: undefined,
+		serverNotifications: server ? undefined : {},
 		// Initialize clientNotifications as undefined rather than an empty
 		// object so we can know if a client notification was added and then
 		// removed from state.
-		clientNotifications: undefined,
+		clientNotifications: client ? undefined : {},
 		isFetchingNotifications: false,
 	};
 
@@ -262,6 +266,14 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 			yield actions.fetchNotifications();
 		},
 	};
+
+	// If server notifications are disabled, we should remove the getNotifications
+	// resolver. If we set it as `undefined` we'll encounter issues with an `undefined`
+	// resolver, because @wordpress/data will still try to register the resolver because
+	// it sees a key. And this is nicer than a no-op resolver.
+	if ( ! server ) {
+		delete resolvers.getNotifications;
+	}
 
 	const selectors = {
 		/**

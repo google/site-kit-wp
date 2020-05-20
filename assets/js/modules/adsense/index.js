@@ -1,7 +1,7 @@
 /**
  * AdSense module initialization.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,133 +24,99 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import { createAddToFilter } from '../../util/helpers';
-import { fillFilterWithComponent, getSiteKitAdminURL, getModulesData } from '../../util';
-import AdSenseDashboardWidget from './dashboard/dashboard-widget';
-import DashboardEarnings from './dashboard/dashboard-earnings';
-import AdSenseSettings from './settings/adsense-settings';
-import AdSenseModuleStatus from './dashboard/adsense-module-status';
-import AdSenseSettingsStatus from './settings/adsense-settings-status';
-import AdSenseSettingsWarning from './settings/adsense-settings-warning';
+import Data from 'googlesitekit-data';
+import './datastore';
+import { fillFilterWithComponent } from '../../util';
+import { SetupMain } from './setup';
+import {
+	SettingsMain,
+	SettingsSetupIncomplete,
+} from './settings';
+import { AdBlockerWarning } from './common';
+import { DashboardZeroData } from './dashboard';
 
-const slug = 'adsense';
-/**
- * Append ad blocker warning.
- */
-addFilter( 'googlesitekit.ModuleSettingsWarning',
-	'googlesitekit.adsenseSettingsWarning',
-	fillFilterWithComponent( AdSenseSettingsWarning, {} ) );
-
-addFilter( 'googlesitekit.SetupModuleShowLink',
-	'googlesitekit.adsenseSetupModuleShowLink', ( showLink, moduleSlug ) => {
-		if ( 'adsense' === moduleSlug && ! global.googlesitekit.canAdsRun ) {
-			return false;
-		}
-		return showLink;
-	} );
-
-const modulesData = getModulesData();
-if ( modulesData.adsense.active ) {
-	const addAdSenseDashboardWidget = createAddToFilter( <AdSenseDashboardWidget /> );
-	const addDashboardEarnings = createAddToFilter( <DashboardEarnings /> );
-
-	// If setup is complete, show the AdSense data.
-	if ( modulesData[ slug ].setupComplete ) {
-		/**
-		 * Action triggered when the settings App is loaded.
-		 */
-		addFilter( `googlesitekit.ModuleApp-${ slug }`,
-			'googlesitekit.ModuleApp',
-			addAdSenseDashboardWidget );
-
-		addFilter( 'googlesitekit.DashboardModule',
-			'googlesitekit.DashboardEarningModule',
-			addDashboardEarnings, 50 );
-	} else {
-		const {
-			reAuth,
-			currentScreen,
-		} = global.googlesitekit.admin;
-		const id = currentScreen ? currentScreen.id : null;
-
-		if ( ! reAuth && 'site-kit_page_googlesitekit-module-adsense' === id ) {
-			// Setup incomplete: redirect to the setup flow.
-			global.location = getSiteKitAdminURL(
-				`googlesitekit-module-${ slug }`,
-				{
-					reAuth: true,
-					slug,
-				}
-			);
-		}
-
-		// Show module as connected in the settings when status is pending review.
-		addFilter( `googlesitekit.Connected-${ slug }`,
-			'googlesitekit.AdSenseModuleConnected', ( isConnected ) => {
-				const { settings } = modulesData[ slug ];
-				if ( ! isConnected && undefined !== settings && ( 'account-pending-review' === settings.accountStatus || 'ads-display-pending' === settings.accountStatus ) ) {
-					return true;
-				}
-				return isConnected;
-			} );
-	}
-
-	/**
-	 * Add components to the settings page.
-	 */
-	addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
-		'googlesitekit.AdSenseModuleSettingsDetails',
-		fillFilterWithComponent( AdSenseSettings, {
-			onSettingsPage: true,
-		} ) );
-
-	/**
-	 * Add component to the setup wizard
-	 */
-	addFilter( `googlesitekit.ModuleSetup-${ slug }`,
-		'googlesitekit.TagmanagerModuleSetupWizard',
-		fillFilterWithComponent( AdSenseModuleStatus, {
-			onSettingsPage: false,
-		} ) );
-
-	/**
-	 * Set AdSense to auto refresh status when account is not connected.
-	 */
-	addFilter( 'googlesitekit.autoRefreshModules',
-		'googlesitekit.AdSenseAutoRefresh', ( modules ) => {
-			modules.push( {
-				identifier: 'adsense',
-				toRefresh: () => {
-					let status = '';
-					if ( modulesData.adsense && modulesData.adsense[ 'account-status' ] ) {
-						status = modulesData.adsense[ 'account-status' ].accountStatus;
-					}
-
-					if ( status && -1 < status.indexOf( 'account-connected' ) ) {
-						return false;
-					}
-					return true;
-				},
-			} );
-			return modules;
-		} );
-
-	/**
-	 * Add components to the Notification requests.
-	 */
-	addFilter( 'googlesitekit.ModulesNotificationsRequest',
-		'googlesitekit.adsenseNotifications', ( modules ) => {
-			modules.push( {
-				identifier: 'adsense',
-			} );
-			return modules;
-		} );
-
-	/**
-	 * Filter the settings message when the module setup is incomplete.
-	 */
-	addFilter( 'googlesitekit.ModuleSetupIncomplete',
-		'googlesitekit.adsenseSettingStatus',
-		fillFilterWithComponent( AdSenseSettingsStatus, {} ) );
+function ConnectedSetupMain( props ) {
+	return (
+		<Data.RegistryProvider value={ Data }>
+			<SetupMain { ...props } />
+		</Data.RegistryProvider>
+	);
 }
 
+function ConnectedSettingsMain( props ) {
+	return (
+		<Data.RegistryProvider value={ Data }>
+			<SettingsMain { ...props } />
+		</Data.RegistryProvider>
+	);
+}
+
+function ConnectedSettingsSetupIncomplete( props ) {
+	return (
+		<Data.RegistryProvider value={ Data }>
+			<SettingsSetupIncomplete { ...props } />
+		</Data.RegistryProvider>
+	);
+}
+
+function ConnectedAdBlockerWarning( props ) {
+	return (
+		<Data.RegistryProvider value={ Data }>
+			<AdBlockerWarning { ...props } />
+		</Data.RegistryProvider>
+	);
+}
+
+function ConnectedDashboardZeroData( props ) {
+	return (
+		<Data.RegistryProvider value={ Data }>
+			<DashboardZeroData { ...props } />
+		</Data.RegistryProvider>
+	);
+}
+
+addFilter(
+	'googlesitekit.ModuleSetup-adsense',
+	'googlesitekit.AdSenseModuleSetup',
+	fillFilterWithComponent( ConnectedSetupMain )
+);
+
+addFilter(
+	'googlesitekit.ModuleSettingsDetails-adsense',
+	'googlesitekit.AdSenseModuleSettings',
+	fillFilterWithComponent( ConnectedSettingsMain )
+);
+
+addFilter(
+	'googlesitekit.ModuleSetupIncomplete',
+	'googlesitekit.AdSenseModuleSettingsSetupIncomplete',
+	fillFilterWithComponent( ( props ) => {
+		const { slug, OriginalComponent } = props;
+		if ( 'adsense' !== slug ) {
+			return <OriginalComponent { ...props } />;
+		}
+		return (
+			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+				<ConnectedSettingsSetupIncomplete />
+			</div>
+		);
+	} )
+);
+
+addFilter(
+	'googlesitekit.ModuleSettingsWarning',
+	'googlesitekit.adsenseSettingsWarning',
+	fillFilterWithComponent( ( props ) => {
+		const { slug, context, OriginalComponent } = props;
+		if ( 'adsense' !== slug ) {
+			return <OriginalComponent { ...props } />;
+		}
+		return <ConnectedAdBlockerWarning context={ context } />;
+	} )
+);
+
+addFilter(
+	'googlesitekit.AdSenseDashboardZeroData',
+	'googlesitekit.AdSenseDashboardZeroDataRefactored',
+	fillFilterWithComponent( ConnectedDashboardZeroData )
+);
