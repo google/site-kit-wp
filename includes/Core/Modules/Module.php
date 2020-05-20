@@ -292,18 +292,26 @@ abstract class Module {
 			$key                   = $dataset->key ?: wp_rand();
 			$data_requests[ $key ] = $dataset;
 			$datapoint             = $dataset->datapoint;
-			$request               = $this->create_data_request( $dataset );
+
+			try {
+				$this->validate_data_request( $dataset );
+				$request = $this->create_data_request( $dataset );
+			} catch ( Exception $e ) {
+				$request = $this->exception_to_error( $e, $datapoint );
+			}
 
 			if ( is_wp_error( $request ) ) {
 				$results[ $key ] = $request;
 				continue;
 			}
 
-			if ( ! $request instanceof RequestInterface ) {
+			if ( $request instanceof Closure ) {
 				try {
-					$results[ $key ] = call_user_func( $request );
-					if ( ! is_wp_error( $results[ $key ] ) ) {
-						$results[ $key ] = $this->parse_data_response( $dataset, $results[ $key ] );
+					$response        = $request();
+					$results[ $key ] = $response;
+
+					if ( ! is_wp_error( $response ) ) {
+						$results[ $key ] = $this->parse_data_response( $dataset, $response );
 					}
 				} catch ( Exception $e ) {
 					$results[ $key ] = $this->exception_to_error( $e, $datapoint );
