@@ -59,11 +59,9 @@ class Scopes {
 			return false;
 		}
 
-		$satisfying_scopes = self::$map[ $scope ];
+		$satisfying_scopes = array_filter( self::$map[ $scope ], 'is_string' );
 
-		if ( ! empty( $satisfying_scopes['requires_all'] ) ) {
-			unset( $satisfying_scopes['requires_all'] );
-
+		if ( ! empty( self::$map[ $scope ]['requires_all'] ) ) {
 			// Return true if all satisfying scopes are present, otherwise false.
 			return ! array_diff( $satisfying_scopes, $available_scopes );
 		}
