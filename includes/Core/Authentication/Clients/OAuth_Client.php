@@ -445,13 +445,23 @@ final class OAuth_Client {
 	 * @since 1.0.0
 	 * @see https://developers.google.com/identity/protocols/googlescopes
 	 *
-	 * @param array $scopes List of Google OAuth scopes.
-	 * @return bool True on success, false on failure.
+	 * @param string[] $scopes List of Google OAuth scopes.
 	 */
 	public function set_granted_scopes( $scopes ) {
-		$scopes = array_filter( $scopes, 'is_string' );
+		$required_scopes = $this->get_required_scopes();
+		$base_scopes     = array();
+		$extra_scopes    = array();
 
-		return $this->user_options->set( self::OPTION_AUTH_SCOPES, $scopes );
+		foreach ( $scopes as $scope ) {
+			if ( in_array( $scope, $required_scopes, true ) ) {
+				$base_scopes[] = $scope;
+			} else {
+				$extra_scopes[] = $scope;
+			}
+		}
+
+		$this->user_options->set( self::OPTION_AUTH_SCOPES, $base_scopes );
+		$this->user_options->set( self::OPTION_ADDITIONAL_AUTH_SCOPES, $extra_scopes );
 	}
 
 	/**

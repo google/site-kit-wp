@@ -142,11 +142,26 @@ class OAuth_ClientTest extends TestCase {
 		wp_set_current_user( $user_id );
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
+		// Register a custom list of required scopes for this test.
+		add_filter(
+			'googlesitekit_auth_scopes',
+			function () {
+				return array( 'test-scope' );
+			}
+		);
+
 		$this->assertNotContains( 'test-scope', (array) get_user_option( OAuth_Client::OPTION_AUTH_SCOPES, $user_id ) );
 
-		$this->assertTrue( $client->set_granted_scopes( array( 'test-scope' ) ) );
+		$client->set_granted_scopes( array( 'test-scope' ) );
 
 		$this->assertContains( 'test-scope', (array) get_user_option( OAuth_Client::OPTION_AUTH_SCOPES, $user_id ) );
+		$this->assertEmpty( get_user_option( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, $user_id ) );
+
+		// It saves any additional (non-required) scopes into its respective user option.
+		$client->set_granted_scopes( array( 'test-scope', 'extra-scope' ) );
+
+		$this->assertContains( 'test-scope', (array) get_user_option( OAuth_Client::OPTION_AUTH_SCOPES, $user_id ) );
+		$this->assertContains( 'extra-scope', (array) get_user_option( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, $user_id ) );
 	}
 
 	public function test_get_access_token() {
