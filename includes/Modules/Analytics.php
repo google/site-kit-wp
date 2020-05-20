@@ -725,7 +725,7 @@ final class Analytics extends Module
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'timezone' ), array( 'status' => 400 ) );
 				}
 
-				if ( ! $this->authentication->get_oauth_client()->using_proxy() ) {
+				if ( ! $this->authentication->credentials()->using_proxy() ) {
 					return new WP_Error( 'requires_service', __( 'Analytics provisioning requires connecting via the Site Kit Service.', 'google-site-kit' ), array( 'status' => 400 ) );
 				}
 
