@@ -562,11 +562,13 @@ final class OAuth_Client {
 	 * Gets the authentication URL.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Added $additional_scopes parameter.
 	 *
-	 * @param string $redirect_url Redirect URL after authentication.
+	 * @param string   $redirect_url      Redirect URL after authentication.
+	 * @param string[] $additional_scopes List of additional scopes to request.
 	 * @return string Authentication URL.
 	 */
-	public function get_authentication_url( $redirect_url = '' ) {
+	public function get_authentication_url( $redirect_url = '', $additional_scopes = array() ) {
 		if ( empty( $redirect_url ) ) {
 			$redirect_url = $this->context->admin_url( 'splash' );
 		}
@@ -578,7 +580,8 @@ final class OAuth_Client {
 		$this->user_options->set( self::OPTION_REDIRECT_URL, $redirect_url );
 
 		// Ensure the latest required scopes are requested.
-		$this->get_client()->setScopes( $this->get_required_scopes() );
+		$scopes = array_merge( $this->get_required_scopes(), $this->get_granted_additional_scopes(), $additional_scopes );
+		$this->get_client()->setScopes( array_unique( $scopes ) );
 
 		return $this->get_client()->createAuthUrl();
 	}

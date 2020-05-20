@@ -249,6 +249,7 @@ class OAuth_ClientTest extends TestCase {
 		wp_set_current_user( $user_id );
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
+		$base_scopes        = $client->get_required_scopes();
 		$post_auth_redirect = 'http://example.com/test/redirect/url';
 		$authentication_url = $client->get_authentication_url( $post_auth_redirect );
 		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/auth?', $authentication_url );
@@ -259,6 +260,34 @@ class OAuth_ClientTest extends TestCase {
 		 */
 		$this->assertEquals( add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ), $params['redirect_uri'] );
 		$this->assertEquals( $fake_credentials['client_id'], $params['client_id'] );
+		$this->assertEqualSets(
+			explode( ' ', $params['scope'] ),
+			$base_scopes
+		);
+
+		// Includes any saved additional scopes.
+		$saved_extra_scopes = array( 'http://example.com/saved/extra-scope' );
+		update_user_option( $user_id, OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, $saved_extra_scopes );
+		$authentication_url = $client->get_authentication_url( $post_auth_redirect );
+		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/auth?', $authentication_url );
+		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
+		$this->assertEqualSets(
+			explode( ' ', $params['scope'] ),
+			array_merge( $base_scopes, $saved_extra_scopes )
+		);
+
+		// Accepts additional scopes via second parameter to include in the request.
+		$extra_scopes       = array(
+			'http://example.com/foo/bar',
+			'http://example.com/bar/baz',
+		);
+		$authentication_url = $client->get_authentication_url( $post_auth_redirect, $extra_scopes );
+		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/auth?', $authentication_url );
+		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
+		$this->assertEqualSets(
+			explode( ' ', $params['scope'] ),
+			array_merge( $base_scopes, $saved_extra_scopes, $extra_scopes )
+		);
 	}
 
 	public function test_authorize_user() {
@@ -455,6 +484,7 @@ class OAuth_ClientTest extends TestCase {
 			OAuth_Client::OPTION_ACCESS_TOKEN_CREATED,
 			OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN,
 			OAuth_Client::OPTION_AUTH_SCOPES,
+			OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES,
 			OAuth_Client::OPTION_REDIRECT_URL,
 			OAuth_Client::OPTION_REFRESH_TOKEN,
 		);
