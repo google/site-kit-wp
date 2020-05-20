@@ -49,7 +49,6 @@ function filterSearchConsoleSettings() {
 function Settings( props ) {
 	const {
 		callback,
-		// eslint-disable-next-line space-infix-ops
 		module = global.googlesitekit.modules[ 'search-console' ],
 		isEditing = false,
 		isOpen = true,
