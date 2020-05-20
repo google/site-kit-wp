@@ -586,6 +586,43 @@ final class Analytics extends Module
 	}
 
 	/**
+	 * Gets map of datapoint to definition data for each.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Map of datapoints to their definitions.
+	 */
+	protected function get_datapoint_definitions() {
+		$map = parent::get_datapoint_definitions();
+
+		$map['POST:create-account-ticket'] = array_merge(
+			$map['POST:create-account-ticket'],
+			array(
+				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.provision' ),
+				'request_scopes_message' => __( 'Additional permissions are required to create a new Analytics account.', 'google-site-kit' ),
+			)
+		);
+
+		$map['POST:create-property'] = array_merge(
+			$map['POST:create-property'],
+			array(
+				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
+				'request_scopes_message' => __( 'Additional permissions are required to create a new Analytics property.', 'google-site-kit' ),
+			)
+		);
+
+		$map['POST:create-profile'] = array_merge(
+			$map['POST:create-profile'],
+			array(
+				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
+				'request_scopes_message' => __( 'Additional permissions are required to create a new Analytics view.', 'google-site-kit' ),
+			)
+		);
+
+		return $map;
+	}
+
+	/**
 	 * Creates a request object for the given datapoint.
 	 *
 	 * @since 1.0.0
