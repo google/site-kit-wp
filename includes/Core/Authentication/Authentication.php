@@ -20,7 +20,6 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Admin\Notice;
-use Google\Site_Kit\Core\Util\Scopes;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -635,7 +634,7 @@ final class Authentication {
 		$data['isAuthenticated']    = ! empty( $access_token );
 		$data['requiredScopes']     = $auth_client->get_required_scopes();
 		$data['grantedScopes']      = ! empty( $access_token ) ? $auth_client->get_granted_scopes() : array();
-		$data['needReauthenticate'] = $data['isAuthenticated'] && $this->need_reauthenticate();
+		$data['needReauthenticate'] = $data['isAuthenticated'] && $auth_client->requires_additional_scopes();
 
 		if ( $this->credentials->using_proxy() ) {
 			$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
@@ -819,7 +818,7 @@ final class Authentication {
 				},
 				'type'            => Notice::TYPE_SUCCESS,
 				'active_callback' => function() {
-					return $this->need_reauthenticate();
+					return $this->get_oauth_client()->requires_additional_scopes();
 				},
 			)
 		);
@@ -894,26 +893,6 @@ final class Authentication {
 					return (bool) $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
 				},
 			)
-		);
-	}
-
-	/**
-	 * Checks if the current user needs to reauthenticate (e.g. because of new requested scopes).
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return bool TRUE if need reauthenticate and FALSE otherwise.
-	 */
-	private function need_reauthenticate() {
-		$auth_client = $this->get_oauth_client();
-
-		if ( ! $auth_client->get_access_token() ) {
-			return false;
-		}
-
-		return Scopes::are_satisfied_by(
-			$auth_client->get_required_scopes(),
-			$auth_client->get_granted_scopes()
 		);
 	}
 

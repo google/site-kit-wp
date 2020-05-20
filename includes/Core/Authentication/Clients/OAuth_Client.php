@@ -428,6 +428,21 @@ final class OAuth_Client {
 	}
 
 	/**
+	 * Checks if new scopes are required that are not yet granted for the current user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool true if any required scopes are not satisfied, otherwise false.
+	 */
+	public function requires_additional_scopes() {
+		if ( ! $this->get_access_token() ) {
+			return false;
+		}
+
+		return ! $this->has_sufficient_scopes( $this->get_required_scopes() );
+	}
+
+	/**
 	 * Checks whether or not currently granted scopes are sufficient for the given list.
 	 *
 	 * @since n.e.x.t
