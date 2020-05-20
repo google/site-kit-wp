@@ -15,13 +15,13 @@ use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit\Tests\Fake_Authentication_Trait;
+use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 
 /**
  * @group Authentication
  */
 class CredentialsTest extends TestCase {
-	use Fake_Authentication_Trait;
+	use Fake_Site_Connection_Trait;
 
 	private $registered_default = array(
 		'oauth2_client_id'     => '',
@@ -79,11 +79,11 @@ class CredentialsTest extends TestCase {
 		$this->assertTrue( $credentials->using_proxy() );
 
 		// Don't use proxy when regular OAuth client ID is used.
-		$this->fake_authentication();
+		$this->fake_site_connection();
 		$this->assertFalse( $credentials->using_proxy() );
 
 		// Use proxy when proxy site ID is used.
-		$this->fake_proxy_authentication();
+		$this->fake_proxy_site_connection();
 		$this->assertTrue( $credentials->using_proxy() );
 	}
 
