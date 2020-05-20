@@ -426,7 +426,7 @@ export const selectors = {
 
 		const email = select( CORE_USER ).getEmail();
 		if ( undefined === email ) {
-			return url;
+			return undefined;
 		}
 
 		// While there should only be one anchor, let's make sure we get everything.
