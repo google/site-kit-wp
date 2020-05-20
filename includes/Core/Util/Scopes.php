@@ -46,8 +46,8 @@ class Scopes {
 	/**
 	 * Tests if the given scope is satisfied by the given list of available scopes.
 	 *
-	 * @param string $scope            OAuth scope to test for.
-	 * @param array  $available_scopes Available OAuth scopes to test the individual scope against.
+	 * @param string   $scope            OAuth scope to test for.
+	 * @param string[] $available_scopes Available OAuth scopes to test the individual scope against.
 	 * @return bool True if the given scope is satisfied, otherwise false.
 	 */
 	public static function is_satisfied_by( $scope, array $available_scopes ) {
@@ -75,8 +75,8 @@ class Scopes {
 	/**
 	 * Tests if all the given scopes are satisfied by the list of available scopes.
 	 *
-	 * @param array $scopes           OAuth scopes to test.
-	 * @param array $available_scopes OAuth scopes to test $scopes against.
+	 * @param string[] $scopes           OAuth scopes to test.
+	 * @param string[] $available_scopes OAuth scopes to test $scopes against.
 	 * @return bool True if all given scopes are satisfied, otherwise false.
 	 */
 	public static function are_satisfied_by( array $scopes, array $available_scopes ) {
