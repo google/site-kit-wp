@@ -83,12 +83,12 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<p className="googlesitekit-settings-module__meta-item-type">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Publisher ID', 'google-site-kit' ) }
-					</p>
-					<h5 className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ accountID } />
 					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting value={ accountID } />
+					</p>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
 					<p className="googlesitekit-settings-module__meta-item-type">
