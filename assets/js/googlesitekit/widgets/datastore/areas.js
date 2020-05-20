@@ -40,7 +40,7 @@ const REGISTER_WIDGET_AREA = 'REGISTER_WIDGET_AREA';
 
 export const INITIAL_STATE = {
 	areas: {},
-	contexts: {},
+	contextAssignments: {},
 };
 
 export const actions = {
@@ -116,20 +116,20 @@ export const reducer = ( state, { type, payload } ) => {
 		case ASSIGN_WIDGET_AREA: {
 			const { slug, contextSlugs } = payload;
 
-			const { contexts } = state;
+			const { contextAssignments } = state;
 			contextSlugs.forEach( ( contextSlug ) => {
-				if ( contexts[ contextSlug ] === undefined ) {
-					contexts[ contextSlug ] = [];
+				if ( contextAssignments[ contextSlug ] === undefined ) {
+					contextAssignments[ contextSlug ] = [];
 				}
 
-				if ( ! contexts[ contextSlug ].includes( slug ) ) {
-					contexts[ contextSlug ].push( slug );
+				if ( ! contextAssignments[ contextSlug ].includes( slug ) ) {
+					contextAssignments[ contextSlug ].push( slug );
 				}
 			} );
 
 			return {
 				...state,
-				contexts,
+				contextAssignments,
 			};
 		}
 
@@ -195,10 +195,10 @@ export const selectors = {
 	getWidgetAreas( state, contextSlug ) {
 		invariant( contextSlug, 'contextSlug is required.' );
 
-		const { areas, contexts } = state;
+		const { areas, contextAssignments } = state;
 
 		return Object.values( areas ).filter( ( area ) => {
-			return contexts[ contextSlug ] && contexts[ contextSlug ].includes( area.slug );
+			return contextAssignments[ contextSlug ] && contextAssignments[ contextSlug ].includes( area.slug );
 		} ).sort( ( areaA, areaB ) => {
 			if ( areaA.priority > areaB.priority ) {
 				return 1;

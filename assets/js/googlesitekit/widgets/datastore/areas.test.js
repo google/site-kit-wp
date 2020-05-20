@@ -44,18 +44,18 @@ describe( 'core/widgets Widget areas', () => {
 				// Assign this widget area to the dashboard context.
 				registry.dispatch( STORE_NAME ).assignWidgetArea( 'header', 'dashboard' );
 
-				const { contexts } = store.getState();
+				const { contextAssignments } = store.getState();
 
-				expect( contexts.dashboard ).toEqual( [ 'header' ] );
+				expect( contextAssignments.dashboard ).toEqual( [ 'header' ] );
 			} );
 
 			it( 'should re-use a context if one is already created', () => {
 				registry.dispatch( STORE_NAME ).assignWidgetArea( 'header', 'dashboard' );
 				registry.dispatch( STORE_NAME ).assignWidgetArea( 'footer', 'dashboard' );
 
-				const { contexts } = store.getState();
+				const { contextAssignments } = store.getState();
 
-				expect( contexts.dashboard ).toEqual( [ 'header', 'footer' ] );
+				expect( contextAssignments.dashboard ).toEqual( [ 'header', 'footer' ] );
 			} );
 
 			it( 'should assign a registered widget area to a context', () => {

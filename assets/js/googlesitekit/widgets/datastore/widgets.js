@@ -43,7 +43,7 @@ const REGISTER_WIDGET = 'REGISTER_WIDGET';
 const SET_WIDGET_COMPONENT_KEY = 'SET_WIDGET_COMPONENT_KEY';
 
 export const INITIAL_STATE = {
-	areaWidgets: {},
+	areaAssignments: {},
 	registryKey: undefined,
 	widgets: {},
 };
@@ -125,20 +125,20 @@ export const reducer = ( state, { type, payload } ) => {
 		case ASSIGN_WIDGET: {
 			const { slug, areaSlugs } = payload;
 
-			const { areaWidgets } = state;
+			const { areaAssignments } = state;
 			areaSlugs.forEach( ( areaSlug ) => {
-				if ( areaWidgets[ areaSlug ] === undefined ) {
-					areaWidgets[ areaSlug ] = [];
+				if ( areaAssignments[ areaSlug ] === undefined ) {
+					areaAssignments[ areaSlug ] = [];
 				}
 
-				if ( ! areaWidgets[ areaSlug ].includes( slug ) ) {
-					areaWidgets[ areaSlug ].push( slug );
+				if ( ! areaAssignments[ areaSlug ].includes( slug ) ) {
+					areaAssignments[ areaSlug ].push( slug );
 				}
 			} );
 
 			return {
 				...state,
-				areaWidgets,
+				areaAssignments,
 			};
 		}
 
@@ -187,8 +187,8 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}  state Data store's state.
-	 * @param {string}  slug  Widget's slug.
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Widget's slug.
 	 * @return {boolean} `true`/`false` based on whether widget has been registered.
 	 */
 	isWidgetRegistered( state, slug ) {
@@ -213,12 +213,12 @@ export const selectors = {
 	getWidgets: createRegistrySelector( ( select ) => ( state, widgetAreaSlug ) => {
 		invariant( widgetAreaSlug, 'widgetAreaSlug is required.' );
 
-		const { areaWidgets, widgets } = state;
+		const { areaAssignments, widgets } = state;
 
 		const registryKey = select( STORE_NAME ).getWidgetRegistryKey();
 
 		return Object.values( widgets ).filter( ( widget ) => {
-			return areaWidgets[ widgetAreaSlug ] && areaWidgets[ widgetAreaSlug ].includes( widget.slug );
+			return areaAssignments[ widgetAreaSlug ] && areaAssignments[ widgetAreaSlug ].includes( widget.slug );
 		} ).sort( ( widgetA, widgetB ) => {
 			if ( widgetA.priority > widgetB.priority ) {
 				return 1;
