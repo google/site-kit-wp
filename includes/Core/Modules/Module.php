@@ -10,7 +10,10 @@
 
 namespace Google\Site_Kit\Core\Modules;
 
+use Closure;
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Exception\Insufficient_Scopes_Exception;
+use Google\Site_Kit\Core\Contracts\WP_Errorable;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Cache;
@@ -448,10 +451,80 @@ abstract class Module {
 	 * phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.Missing
 	 */
 	final protected function execute_data_request( Data_Request $data ) {
-		$datapoint_services = $this->get_datapoint_services();
+		try {
+			$this->validate_data_request( $data );
+
+			$request = $this->make_data_request( $data );
+
+			if ( is_wp_error( $request ) ) {
+				return $request;
+			} elseif ( $request instanceof Closure ) {
+				$response = $request();
+			} elseif ( $request instanceof RequestInterface ) {
+				$response = $this->get_client()->execute( $request );
+			} else {
+				return new WP_Error(
+					'invalid_datapoint_request',
+					__( 'Invalid datapoint request.', 'google-site-kit' ),
+					array( 'status' => 400 )
+				);
+			}
+		} catch ( Exception $e ) {
+			return $this->exception_to_error( $e, $data->datapoint );
+		}
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		return $this->parse_data_response( $data, $response );
+	}
+
+	/**
+	 * Validates the given data request.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data Data request object.
+	 * @throws Insufficient_Scopes_Exception Thrown if the user has not granted
+	 *                                       necessary scopes required by the datapoint.
+	 */
+	private function validate_data_request( Data_Request $data ) {
+		$definitions   = $this->get_datapoint_definitions();
+		$datapoint_key = "$data->method:$data->datapoint";
+
+		// All datapoints must be defined.
+		if ( empty( $definitions[ $datapoint_key ] ) ) {
+			throw new Exception( __( 'Invalid datapoint.', 'google-site-kit' ), 400 );
+		}
+
+		if ( empty( $definitions[ $datapoint_key ]['scopes'] ) ) {
+			return;
+		}
+
+		$datapoint = $definitions[ $datapoint_key ];
+
+		// If the datapoint requires specific scopes, ensure they are satisfied.
+		if ( ! $this->authentication->get_oauth_client()->has_sufficient_scopes( $datapoint['scopes'] ) ) {
+			$exception = new Insufficient_Scopes_Exception( $datapoint['request_scopes_message'] );
+			$exception->set_scopes( $datapoint['scopes'] );
+			throw $exception;
+		}
+	}
+
+	/**
+	 * Facilitates the creation of a request object for execution.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data Data request object.
+	 * @return RequestInterface|Closure|WP_Error
+	 */
+	private function make_data_request( Data_Request $data ) {
+		$definitions = $this->get_datapoint_definitions();
 
 		// We only need to initialize the client if this datapoint relies on a service.
-		$requires_client = ! empty( $datapoint_services[ $data->datapoint ] );
+		$requires_client = ! empty( $definitions[ "$data->method:$data->datapoint" ]['service'] );
 
 		if ( $requires_client ) {
 			$restore_defer = $this->with_client_defer( true );
@@ -463,27 +536,7 @@ abstract class Module {
 			$restore_defer();
 		}
 
-		if ( is_wp_error( $request ) ) {
-			return $request;
-		}
-
-		try {
-			if ( ! $request instanceof RequestInterface ) {
-				$response = call_user_func( $request );
-			} elseif ( $requires_client ) {
-				$response = $this->get_client()->execute( $request );
-			} else {
-				throw new Exception( __( 'Datapoint registered incorrectly.', 'google-site-kit' ) );
-			}
-		} catch ( Exception $e ) {
-			return $this->exception_to_error( $e, $data->datapoint );
-		}
-
-		if ( is_wp_error( $response ) ) {
-			return $response;
-		}
-
-		return $this->parse_data_response( $data, $response );
+		return $request;
 	}
 
 	/**
