@@ -42,6 +42,8 @@ const ASSIGN_WIDGET = 'ASSIGN_WIDGET';
 const REGISTER_WIDGET = 'REGISTER_WIDGET';
 const SET_WIDGET_COMPONENT_KEY = 'SET_WIDGET_COMPONENT_KEY';
 
+const WidgetWidthKeys = Object.keys( WIDGET_WIDTHS ).map( ( ( key ) => `WIDGET_WIDTHS.${ key }` ) ).join( ', ' );
+
 export const INITIAL_STATE = {
 	areaAssignments: {},
 	registryKey: undefined,
@@ -83,10 +85,10 @@ export const actions = {
 	*registerWidget( slug, {
 		component,
 		priority = 10,
-		width = 'quarter',
+		width = WIDGET_WIDTHS.QUARTER,
 	} = {} ) {
 		invariant( component, 'component is required to register a widget.' );
-		invariant( WIDGET_WIDTHS.includes( width ), `Widget width should be one of: ${ WIDGET_WIDTHS.join( ', ' ) } but "${ width }" was provided.` );
+		invariant( Object.values( WIDGET_WIDTHS ).includes( width ), `Widget width should be one of: ${ WidgetWidthKeys }, but "${ width }" was provided.` );
 
 		const registry = yield commonActions.getRegistry();
 		let registryKey = yield registry.select( STORE_NAME ).getWidgetRegistryKey();

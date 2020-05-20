@@ -38,6 +38,8 @@ export const WidgetComponents = {};
 const ASSIGN_WIDGET_AREA = 'ASSIGN_WIDGET_AREA';
 const REGISTER_WIDGET_AREA = 'REGISTER_WIDGET_AREA';
 
+const WidgetStyleKeys = Object.keys( WIDGET_STYLES ).map( ( ( key ) => `WIDGET_STYLES.${ key }` ) ).join( ', ' );
+
 export const INITIAL_STATE = {
 	areas: {},
 	contextAssignments: {},
@@ -89,7 +91,7 @@ export const actions = {
 	 */
 	registerWidgetArea( slug, {
 		priority = 10,
-		style = 'boxes',
+		style = WIDGET_STYLES.BOXES,
 		title,
 		subtitle,
 		icon,
@@ -97,7 +99,7 @@ export const actions = {
 		invariant( slug, 'slug is required.' );
 		invariant( title, 'settings.title is required.' );
 		invariant( subtitle, 'settings.subtitle is required.' );
-		invariant( WIDGET_STYLES.includes( style ), `settings.style must be one of: ${ WIDGET_STYLES.join( ', ' ) }.` );
+		invariant( Object.values( WIDGET_STYLES ).includes( style ), `settings.style must be one of: ${ WidgetStyleKeys }.` );
 
 		return {
 			payload: {
