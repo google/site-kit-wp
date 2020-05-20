@@ -18,5 +18,7 @@
 
 /**
  * Internal dependencies
+ *
+ * Registers the core/forms datastore.
  */
 import './googlesitekit/datastore/forms';
