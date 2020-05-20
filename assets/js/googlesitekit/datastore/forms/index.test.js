@@ -55,19 +55,49 @@ describe( 'core/forms store', () => {
 				} ).toThrow( 'formData must be an object.' );
 			} );
 
-			it( 'works with formData where the key value is updated, and the untouched key and updated key return expected values', () => {
-				const formData = { key1: 'value1', key2: 'value2' };
-				const newFormData = { key1: 'value3' };
+			it( 'works with formData where the key value is updated, and the untouched key returns an expected value', () => {
+				registry.dispatch( STORE_NAME ).setValues( 'form-name', { key1: 'value1', key2: 'value2' } );
 
-				registry.dispatch( STORE_NAME ).setValues( 'form-name', formData );
+				registry.dispatch( STORE_NAME ).setValues( 'form-name', { key1: 'value3' } );
 
-				registry.dispatch( STORE_NAME ).setValues( 'form-name', newFormData );
+				const formValue = registry.select( STORE_NAME ).getValue( 'form-name', 'key2' );
+				expect( formValue ).toEqual( 'value2' );
+			} );
 
-				const formOriginalValue = registry.select( STORE_NAME ).getValue( 'form-name', 'key2' );
-				expect( formOriginalValue ).toEqual( 'value2' );
+			it( 'works with formData where the key value is updated, and the updated key returns an expected value', () => {
+				registry.dispatch( STORE_NAME ).setValues( 'form-name', { key1: 'value1', key2: 'value2' } );
 
-				const formUpdatedValue = registry.select( STORE_NAME ).getValue( 'form-name', 'key1' );
-				expect( formUpdatedValue ).toEqual( 'value3' );
+				registry.dispatch( STORE_NAME ).setValues( 'form-name', { key1: 'value3' } );
+
+				const formValue = registry.select( STORE_NAME ).getValue( 'form-name', 'key1' );
+				expect( formValue ).toEqual( 'value3' );
+			} );
+
+			it( 'works with formData where the key value is updated with an empty object without overwriting the store', () => {
+				registry.dispatch( STORE_NAME ).setValues( 'form-name', { key1: 'value1', key2: 'value2' } );
+
+				registry.dispatch( STORE_NAME ).setValues( 'form-name', {} );
+
+				const formValue = registry.select( STORE_NAME ).getValue( 'form-name', 'key2' );
+				expect( formValue ).toEqual( 'value2' );
+			} );
+
+			it( 'works with empty formData where the key value is updated', () => {
+				registry.dispatch( STORE_NAME ).setValues( 'form-name', {} );
+
+				registry.dispatch( STORE_NAME ).setValues( 'form-name', { key1: 'value1', key2: 'value2' } );
+
+				const formValue = registry.select( STORE_NAME ).getValue( 'form-name', 'key2' );
+				expect( formValue ).toEqual( 'value2' );
+			} );
+
+			it( 'preserves data from state when new data is assigned', () => {
+				registry.dispatch( STORE_NAME ).setValues( 'form-name', { key1: 'value1', key2: 'value2' } );
+
+				registry.dispatch( STORE_NAME ).setValues( 'new-form-name', { key3: 'value3', key4: 'value4' } );
+
+				const formValue = registry.select( STORE_NAME ).getValue( 'form-name', 'key2' );
+				expect( formValue ).toEqual( 'value2' );
 			} );
 		} );
 	} );
@@ -75,39 +105,19 @@ describe( 'core/forms store', () => {
 	describe( 'selectors', () => {
 		describe( 'getValue', () => {
 			it( 'works with a formName that does not exist', () => {
-				const formData = { key1: 'value1', key2: 'value2' };
-
-				registry.dispatch( STORE_NAME ).setValues( 'form-name', formData );
-
-				const formValue = registry.select( STORE_NAME ).getValue( 'new-form-name', 'key2' );
+				const formValue = registry.select( STORE_NAME ).getValue( 'form-name', 'key2' );
 				expect( formValue ).toEqual( undefined );
 			} );
 
 			it( 'works with formData where the key does not exist', () => {
-				const formData = { key1: 'value1', key2: 'value2' };
-
-				registry.dispatch( STORE_NAME ).setValues( 'form-name', formData );
+				registry.dispatch( STORE_NAME ).setValues( 'form-name', { key1: 'value1', key2: 'value2' } );
 
 				const formValue = registry.select( STORE_NAME ).getValue( 'form-name', 'key3' );
 				expect( formValue ).toEqual( undefined );
 			} );
 
 			it( 'works with an existing formName', () => {
-				const formData = { key1: 'value1', key2: 'value2' };
-
-				registry.dispatch( STORE_NAME ).setValues( 'form-name', formData );
-
-				const formValue = registry.select( STORE_NAME ).getValue( 'form-name', 'key2' );
-				expect( formValue ).toEqual( 'value2' );
-			} );
-
-			it( 'preserves data from state when new data is assigned', () => {
-				const formData = { key1: 'value1', key2: 'value2' };
-				const newFormData = { key3: 'value3', key4: 'value4' };
-
-				registry.dispatch( STORE_NAME ).setValues( 'form-name', formData );
-
-				registry.dispatch( STORE_NAME ).setValues( 'new-form-name', newFormData );
+				registry.dispatch( STORE_NAME ).setValues( 'form-name', { key1: 'value1', key2: 'value2' } );
 
 				const formValue = registry.select( STORE_NAME ).getValue( 'form-name', 'key2' );
 				expect( formValue ).toEqual( 'value2' );

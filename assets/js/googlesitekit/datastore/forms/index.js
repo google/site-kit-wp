@@ -81,8 +81,8 @@ export const selectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} formName Name of the form.
-	 * @param {string} key Key supplied from formData.
-	 * @return {*} Value stored in state by formName and key or undefined.
+	 * @param {string} key Get data stored in this key.
+	 * @return {*} Value stored in state by formName and key. Returns `undefined` if formName or key isn't found.
 	 */
 	getValue( state, formName, key ) {
 		const formData = state[ formName ] || {};
