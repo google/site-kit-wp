@@ -49,13 +49,19 @@ describe( 'core/forms store', () => {
 				} ).toThrow( 'formData must be an object.' );
 			} );
 
+			it( 'does not throw if formData is an object', () => {
+				expect( () => {
+					registry.dispatch( STORE_NAME ).setValues( 'form-name', {} );
+				} ).not.toThrow();
+			} );
+
 			it( 'requires the formData param to be an object not a string', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).setValues( 'form-name', 'formData' );
 				} ).toThrow( 'formData must be an object.' );
 			} );
 
-			it( 'works with formData where the key value is updated, and the untouched key returns an expected value', () => {
+			it( 'does not overwrite unrelated keys', () => {
 				registry.dispatch( STORE_NAME ).setValues( 'form-name', { key1: 'value1', key2: 'value2' } );
 
 				registry.dispatch( STORE_NAME ).setValues( 'form-name', { key1: 'value3' } );
@@ -64,7 +70,7 @@ describe( 'core/forms store', () => {
 				expect( formValue ).toEqual( 'value2' );
 			} );
 
-			it( 'works with formData where the key value is updated, and the updated key returns an expected value', () => {
+			it( 'returns a newly-set value if a new value for an existing key is set', () => {
 				registry.dispatch( STORE_NAME ).setValues( 'form-name', { key1: 'value1', key2: 'value2' } );
 
 				registry.dispatch( STORE_NAME ).setValues( 'form-name', { key1: 'value3' } );
@@ -73,7 +79,7 @@ describe( 'core/forms store', () => {
 				expect( formValue ).toEqual( 'value3' );
 			} );
 
-			it( 'works with formData where the key value is updated with an empty object without overwriting the store', () => {
+			it( 'does not overwrite unrelated keys when an empty object is supplied to formData', () => {
 				registry.dispatch( STORE_NAME ).setValues( 'form-name', { key1: 'value1', key2: 'value2' } );
 
 				registry.dispatch( STORE_NAME ).setValues( 'form-name', {} );
@@ -116,7 +122,7 @@ describe( 'core/forms store', () => {
 				expect( formValue ).toEqual( undefined );
 			} );
 
-			it( 'works with an existing formName', () => {
+			it( 'works with an existing formName and key', () => {
 				registry.dispatch( STORE_NAME ).setValues( 'form-name', { key1: 'value1', key2: 'value2' } );
 
 				const formValue = registry.select( STORE_NAME ).getValue( 'form-name', 'key2' );
