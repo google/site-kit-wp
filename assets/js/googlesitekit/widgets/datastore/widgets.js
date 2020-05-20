@@ -220,7 +220,15 @@ export const selectors = {
 		return Object.values( widgets ).filter( ( widget ) => {
 			return areaWidgets[ widgetAreaSlug ] && areaWidgets[ widgetAreaSlug ].includes( widget.slug );
 		} ).sort( ( widgetA, widgetB ) => {
-			return ( widgetA.priority >= widgetB.priority ) ? 1 : -1;
+			if ( widgetA.priority > widgetB.priority ) {
+				return 1;
+			}
+
+			if ( widgetA.priority < widgetB.priority ) {
+				return -1;
+			}
+
+			return 0;
 		} ).map( ( widget ) => {
 			const widgetWithComponent = { ...widget };
 			if ( WidgetComponents[ registryKey ] ) {

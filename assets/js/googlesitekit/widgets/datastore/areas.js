@@ -200,7 +200,15 @@ export const selectors = {
 		return Object.values( areas ).filter( ( area ) => {
 			return contexts[ contextSlug ] && contexts[ contextSlug ].includes( area.slug );
 		} ).sort( ( areaA, areaB ) => {
-			return ( areaA.priority >= areaB.priority ) ? 1 : -1;
+			if ( areaA.priority > areaB.priority ) {
+				return 1;
+			}
+
+			if ( areaA.priority < areaB.priority ) {
+				return -1;
+			}
+
+			return 0;
 		} );
 	},
 };
