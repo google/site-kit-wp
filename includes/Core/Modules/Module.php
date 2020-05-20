@@ -400,11 +400,17 @@ abstract class Module {
 	 * @return array Map of datapoints to their definitions.
 	 */
 	protected function get_datapoint_definitions() {
-		return array_map(
-			function ( $service ) {
-				return compact( 'service' );
+		$services = $this->get_datapoint_services();
+
+		return array_reduce(
+			array_keys( $services ),
+			function ( $map, $datapoint ) use ( $services ) {
+				$map[ "GET:$datapoint" ]  = array( 'service' => $services[ $datapoint ] );
+				$map[ "POST:$datapoint" ] = array( 'service' => $services[ $datapoint ] );
+
+				return $map;
 			},
-			$this->get_datapoint_services()
+			array()
 		);
 	}
 
