@@ -111,6 +111,14 @@ class OAuth_ClientTest extends TestCase {
 		update_user_option( $user_id, OAuth_Client::OPTION_AUTH_SCOPES, $granted_scopes );
 
 		$this->assertEquals( $granted_scopes, $client->get_granted_scopes() );
+
+		// Includes additional granted scopes when present.
+		update_user_option( $user_id, OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, array( 'extra-scope' ) );
+
+		$this->assertEqualSets(
+			array( 'test-scope', 'extra-scope' ),
+			$client->get_granted_scopes()
+		);
 	}
 
 	public function test_get_granted_additional_scopes() {

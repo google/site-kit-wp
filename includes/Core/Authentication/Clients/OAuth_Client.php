@@ -404,10 +404,15 @@ final class OAuth_Client {
 	 * @since 1.0.0
 	 * @see https://developers.google.com/identity/protocols/googlescopes
 	 *
-	 * @return array List of Google OAuth scopes.
+	 * @return string[] List of Google OAuth scopes.
 	 */
 	public function get_granted_scopes() {
-		return array_values( (array) $this->user_options->get( self::OPTION_AUTH_SCOPES ) );
+		$base_scopes  = $this->user_options->get( self::OPTION_AUTH_SCOPES ) ?: array();
+		$extra_scopes = $this->get_granted_additional_scopes();
+
+		return array_unique(
+			array_merge( $base_scopes, $extra_scopes )
+		);
 	}
 
 	/**
