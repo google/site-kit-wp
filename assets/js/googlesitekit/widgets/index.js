@@ -1,5 +1,5 @@
 /**
- * Public API entrypoint.
+ * Widgets API
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,15 +19,10 @@
 /**
  * Internal dependencies
  */
-import API from './googlesitekit/api';
+// This import has side-effects; it registers the Widgets datastore on the default
+// data store registry (eg. `googlesitekit.data`).
+import './datastore';
 
-if ( global.googlesitekit === undefined ) {
-	global.googlesitekit = {};
-}
+const Widgets = {};
 
-if ( global.googlesitekit.api === undefined ) {
-	global.googlesitekit.api = API;
-}
-
-// This is only exported for Jest and is not used in production.
-export default API;
+export default Widgets;
