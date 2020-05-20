@@ -732,6 +732,10 @@ abstract class Module {
 	 * @return WP_Error WordPress error object.
 	 */
 	protected function exception_to_error( Exception $e, $datapoint ) {
+		if ( $e instanceof WP_Errorable ) {
+			return $e->to_wp_error();
+		}
+
 		$code = $e->getCode();
 
 		$message = $e->getMessage();
