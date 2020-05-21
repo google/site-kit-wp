@@ -1,5 +1,5 @@
 /**
- * Public API entrypoint.
+ * core/widgets data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,15 +19,16 @@
 /**
  * Internal dependencies
  */
-import API from './googlesitekit/api';
+import Data from 'googlesitekit-data';
+import areas from './areas';
+import { STORE_NAME } from './constants';
+import widgets from './widgets';
 
-if ( global.googlesitekit === undefined ) {
-	global.googlesitekit = {};
-}
+export { STORE_NAME };
 
-if ( global.googlesitekit.api === undefined ) {
-	global.googlesitekit.api = API;
-}
+const store = Data.combineStores( Data.commonStore, areas, widgets );
 
-// This is only exported for Jest and is not used in production.
-export default API;
+// Register this store on the global registry.
+Data.registerStore( STORE_NAME, store );
+
+export default store;
