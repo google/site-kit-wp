@@ -32,7 +32,7 @@ import { createRegistryControl } from '@wordpress/data';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { CORE_USER_STORE_NAME } from '../../datastore/user/constants';
+import { STORE_NAME as CORE_USER_STORE_NAME } from '../../datastore/user/constants';
 
 const { createRegistrySelector } = Data;
 

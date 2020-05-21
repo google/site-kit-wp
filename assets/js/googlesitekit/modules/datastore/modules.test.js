@@ -32,7 +32,6 @@ import {
 	unsubscribeFromAll,
 } from 'tests/js/utils';
 import { STORE_NAME } from './constants';
-import { CORE_USER_STORE_NAME } from '../../datastore/user/constants';
 import FIXTURES from './fixtures.json';
 
 describe( 'core/modules modules', () => {
@@ -109,89 +108,14 @@ describe( 'core/modules modules', () => {
 						JSON.stringify( responseWithOptimizeEnabled ),
 						{ status: 200 }
 					);
-
-				registry.dispatch( STORE_NAME ).activateModule( slug );
-
-				// Wait until this activation action has completed.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.isSettingModuleActivation( slug ) === false
-				);
-
-				// Ensure the proper body parameters were sent.
-				expect( JSON.parse( fetch.mock.calls[ 1 ][ 1 ].body ).data ).toMatchObject(
-					{
-						slug,
-						active: true,
-					}
-				);
-
-				// Optimize should be active.
-				const isActiveAfter = registry.select( STORE_NAME ).isModuleActive( slug );
-
-				expect( fetch ).toHaveBeenCalledTimes( 3 );
-				expect( isActiveAfter ).toEqual( true );
-			} );
-
-			it( 'makes a refetch authentication request that is completed before action is completed', async () => {
-				// In our fixtures, optimize is off by default.
-				const slug = 'optimize';
-				const responseWithOptimizeEnabled = FIXTURES.reduce( ( acc, module ) => {
-					if ( module.slug === slug ) {
-						return [ ...acc, { ...module, active: true } ];
-					}
-
-					return [ ...acc, module ];
-				}, [] );
-
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/modules\/data\/list/
-					)
-					.mockResponseOnce(
-						JSON.stringify( FIXTURES ),
-						{ status: 200 }
-					);
-
-				// Call a selector that triggers an HTTP request to get the modules.
-				registry.select( STORE_NAME ).isModuleActive( slug );
-				// Wait until the modules have been loaded.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getModules' )
-				);
-				const isActiveBefore = registry.select( STORE_NAME ).isModuleActive( slug );
-
-				expect( isActiveBefore ).toEqual( false );
-
-				// Activate the module.
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/modules\/data\/activation/
-					)
-					.mockResponseOnce(
-						JSON.stringify( { success: true } ),
-						{ status: 200 }
-					);
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/modules\/data\/list/
-					)
-					.mockResponseOnce(
-						JSON.stringify( responseWithOptimizeEnabled ),
-						{ status: 200 }
-					);
-
-				
-
-				registry.dispatch( STORE_NAME ).activateModule( slug );
-
 				fetch
 					.doMockOnceIf( /^\/google-site-kit\/v1\/core\/user\/data\/authentication/ )
 					.mockResponseOnce(
 						JSON.stringify( {} ),
 						{ status: 200 }
 					);
+
+				registry.dispatch( STORE_NAME ).activateModule( slug );
 
 				// Wait until this activation action has completed.
 				await subscribeUntil( registry, () => registry
@@ -212,9 +136,6 @@ describe( 'core/modules modules', () => {
 
 				expect( fetch ).toHaveBeenCalledTimes( 4 );
 				expect( isActiveAfter ).toEqual( true );
-				// TODO Ensure refetch auth request is made
-
-				// TODO Ensure action completes
 			} );
 
 			it( 'does not update status if the API encountered a failure', async () => {
@@ -255,6 +176,12 @@ describe( 'core/modules modules', () => {
 						JSON.stringify( response ),
 						{ status: 500 }
 					);
+				fetch
+					.doMockOnceIf( /^\/google-site-kit\/v1\/core\/user\/data\/authentication/ )
+					.mockResponseOnce(
+						JSON.stringify( {} ),
+						{ status: 200 }
+					);
 
 				registry.dispatch( STORE_NAME ).activateModule( slug );
 
@@ -277,7 +204,7 @@ describe( 'core/modules modules', () => {
 
 				// The third request to update the modules shouldn't be called, because the
 				// activation request failed.
-				expect( fetch ).toHaveBeenCalledTimes( 2 );
+				expect( fetch ).toHaveBeenCalledTimes( 3 );
 				expect( isActiveAfter ).toEqual( false );
 			} );
 		} );
@@ -331,6 +258,12 @@ describe( 'core/modules modules', () => {
 						JSON.stringify( responseWithAnalyticsDisabled ),
 						{ status: 200 }
 					);
+				fetch
+					.doMockOnceIf( /^\/google-site-kit\/v1\/core\/user\/data\/authentication/ )
+					.mockResponseOnce(
+						JSON.stringify( {} ),
+						{ status: 200 }
+					);
 
 				registry.dispatch( STORE_NAME ).deactivateModule( slug );
 
@@ -351,17 +284,8 @@ describe( 'core/modules modules', () => {
 				// Analytics should no longer be active.
 				const isActiveAfter = registry.select( STORE_NAME ).isModuleActive( slug );
 
-				expect( fetch ).toHaveBeenCalledTimes( 3 );
+				expect( fetch ).toHaveBeenCalledTimes( 4 );
 				expect( isActiveAfter ).toEqual( false );
-			} );
-
-			it( 'makes a refetch authentication request that is completed before action is completed', async () => {
-				// const coreUserDataExpectedResponse = { authenticated: true, requiredScopes: [], grantedScopes: [] };
-				// const coreUserDataEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/authentication/;
-
-				// TODO Ensure refetch auth request is made
-
-				// TODO Ensure action completes
 			} );
 
 			it( 'does not update status if the API encountered a failure', async () => {
@@ -402,6 +326,12 @@ describe( 'core/modules modules', () => {
 						JSON.stringify( response ),
 						{ status: 500 }
 					);
+				fetch
+					.doMockOnceIf( /^\/google-site-kit\/v1\/core\/user\/data\/authentication/ )
+					.mockResponseOnce(
+						JSON.stringify( {} ),
+						{ status: 200 }
+					);
 
 				registry.dispatch( STORE_NAME ).deactivateModule( slug );
 
@@ -424,7 +354,7 @@ describe( 'core/modules modules', () => {
 
 				// The third request to update the modules shouldn't be called, because the
 				// deactivation request failed.
-				expect( fetch ).toHaveBeenCalledTimes( 2 );
+				expect( fetch ).toHaveBeenCalledTimes( 3 );
 				expect( isActiveAfter ).toEqual( true );
 			} );
 		} );
