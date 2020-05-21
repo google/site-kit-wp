@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import './adsense';
+import './adsense/index.legacy';
 import './analytics/index.legacy';
 import './optimize';
 import './pagespeed-insights/index.legacy';
