@@ -55,7 +55,7 @@ export const actions = {
 	 *
 	 * @since 1.8.0
 	 *
-	 * @param  {string} slug Slug of the module to activate.
+	 * @param {string} slug Slug of the module to activate.
 	 * @return {Object}      Object with {response, error}
 	 */
 	*activateModule( slug ) {
@@ -70,7 +70,7 @@ export const actions = {
 	 *
 	 * @since 1.8.0
 	 *
-	 * @param  {string} slug Slug of the module to activate.
+	 * @param {string} slug Slug of the module to activate.
 	 * @return {Object}      Object with {response, error}
 	 */
 	*deactivateModule( slug ) {
@@ -87,8 +87,8 @@ export const actions = {
 	 * @since 1.8.0
 	 * @private
 	 *
-	 * @param  {string}  slug   Slug of the module to activate/deactivate.
-	 * @param  {boolean} active `true` to activate; `false` to deactivate.
+	 * @param {string}  slug   Slug of the module to activate/deactivate.
+	 * @param {boolean} active `true` to activate; `false` to deactivate.
 	 * @return {Object}         Object with {response, error}
 	 */
 	*setModuleActivation( slug, active ) {
