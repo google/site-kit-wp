@@ -22,37 +22,23 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { Component } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import ErrorHandler from '../ErrorHandler';
 
-class Root extends Component {
-	render() {
-		const { children } = this.props;
-
-		return (
-			<Data.RegistryProvider value={ Data }>
-				<ErrorHandler>
-					{ children }
-				</ErrorHandler>
-			</Data.RegistryProvider>
-		);
-	}
+export default function Root( { children } ) {
+	return (
+		<Data.RegistryProvider value={ Data }>
+			<ErrorHandler>
+				{ children }
+			</ErrorHandler>
+		</Data.RegistryProvider>
+	);
 }
 
 Root.propTypes = {
-	registry: PropTypes.node.isRequired,
 	children: PropTypes.node.isRequired,
 };
 
-Root.defaultProps = {
-	registry: Data,
-};
-
-export default Root;
+Root.defaultProps = {};
