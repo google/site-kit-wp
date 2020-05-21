@@ -22,6 +22,11 @@
 import invariant from 'invariant';
 
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -421,7 +426,13 @@ export const selectors = {
 			return undefined;
 		}
 
-		return `https://analytics.google.com/analytics/web/?authuser=${ email }&provisioningSignup=false#management/TermsOfService/?api.accountTicketId=${ accountTicketID }`;
+		return addQueryArgs(
+			'https://analytics.google.com/analytics/web/',
+			{
+				authuser: email,
+				provisioningSignup: 'false',
+			}
+		) + `#management/TermsOfService/?api.accountTicketId=${ accountTicketID }`;
 	} ),
 
 	/**
