@@ -132,6 +132,14 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 
 		return response;
 	} catch ( error ) {
+		// Check to see if this error was a `missing_required_scopes` error; if
+		// so—and there is a data store available to dispatch on—dispatch a
+		// `setPermissionScopeError()` action.
+		// Kind of a hack, but scales to all components.
+		if ( error.code === 'missing_required_scopes' && global.googlesitekit && global.googlesitekit.data && global.googlesitekit.data.dispatch( 'core/user' ) ) {
+			global.googlesitekit.data.dispatch( 'core/user' ).setPermissionScopeError( error );
+		}
+
 		global.console.error( 'Google Site Kit API Error', error );
 
 		throw error;

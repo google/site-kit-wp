@@ -21,6 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
+import { createSnapshotStore } from '../../../googlesitekit/data/create-snapshot-store';
 import accounts from './accounts';
 import properties from './properties';
 import profiles from './profiles';
@@ -50,6 +51,7 @@ const store = Data.combineStores(
 	properties,
 	profiles,
 	settings,
+	createSnapshotStore( STORE_NAME ),
 	tags,
 	form,
 );

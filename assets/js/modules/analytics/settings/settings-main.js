@@ -25,6 +25,8 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import PermissionsModal from '../../../components/permissions-modal';
+import RestoreSnapshots from '../../../components/restore-snapshots';
 import SettingsEdit from './settings-edit';
 import SettingsView from './settings-view';
 import { STORE_NAME } from '../datastore/constants';
@@ -45,9 +47,11 @@ export default function SettingsMain( { isOpen, isEditing } ) {
 		return null;
 	}
 
-	if ( isEditing ) {
-		return <SettingsEdit />;
-	}
-
-	return <SettingsView />;
+	return (
+		<RestoreSnapshots>
+			<PermissionsModal dataStoreToSnapshot={ STORE_NAME } />
+			{ isEditing && <SettingsEdit /> }
+			{ ! isEditing && <SettingsView /> }
+		</RestoreSnapshots>
+	);
 }

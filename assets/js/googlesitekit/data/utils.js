@@ -244,6 +244,7 @@ export const commonControls = {
 	 * @return {Object} FSA-compatible action.
 	 */
 	[ GET_REGISTRY ]: createRegistryControl( ( registry ) => () => registry ),
+	// [ SNAPSHOT_START ]: createRegistryControl( ( registry ) => () => registry ),
 };
 
 /**
