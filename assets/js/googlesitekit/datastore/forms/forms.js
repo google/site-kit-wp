@@ -17,7 +17,7 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
 import invariant from 'invariant';
 
