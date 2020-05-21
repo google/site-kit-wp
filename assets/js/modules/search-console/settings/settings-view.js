@@ -25,6 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import DisplaySetting from '../../../components/display-setting';
 import { STORE_NAME } from '../datastore/constants';
 const { useSelect } = Data;
 
@@ -38,7 +39,7 @@ export default function SettingsView() {
 				{ __( 'Connected Property', 'google-site-kit' ) }
 			</div>
 			<div className="googlesitekit-settings-module__meta-item-data">
-				{ propertyID }
+				<DisplaySetting value={ propertyID } />
 			</div>
 		</div>
 	);

@@ -38,7 +38,8 @@ import { WithTestRegistry } from '../tests/js/utils';
 
 function filterSearchConsoleSettings() {
 	removeAllFilters( 'googlesitekit.ModuleSettingsDetails-search-console' );
-	addFilter( 'googlesitekit.ModuleSettingsDetails-search-console',
+	addFilter(
+		'googlesitekit.ModuleSettingsDetails-search-console',
 		'googlesitekit.SearchConsoleModuleSettingsDetails',
 		fillFilterWithComponent( SearchConsoleSettings, {
 			onSettingsPage: true,
@@ -116,7 +117,7 @@ storiesOf( 'Search Console Module/Settings', module )
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveSettings( {
-				propertyID: 'UA-1234567890-1',
+				propertyID: 'http://example.com/',
 			} );
 		};
 

@@ -40,7 +40,8 @@ function ConnectedSearchConsoleSettings( props ) {
 /**
  * Add components to the settings page.
  */
-addFilter( 'googlesitekit.ModuleSettingsDetails-search-console',
+addFilter(
+	'googlesitekit.ModuleSettingsDetails-search-console',
 	'googlesitekit.SearchConsoleModuleSettingsDetails',
 	fillFilterWithComponent( ConnectedSearchConsoleSettings, {
 		onSettingsPage: true,
