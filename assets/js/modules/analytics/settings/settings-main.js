@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { Fragment, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -48,10 +48,14 @@ export default function SettingsMain( { isOpen, isEditing } ) {
 	}
 
 	return (
-		<RestoreSnapshots>
+		<Fragment>
 			<PermissionsModal dataStoreToSnapshot={ STORE_NAME } />
-			{ isEditing && <SettingsEdit /> }
+			{ isEditing && (
+				<RestoreSnapshots>
+					<SettingsEdit />
+				</RestoreSnapshots>
+			) }
 			{ ! isEditing && <SettingsView /> }
-		</RestoreSnapshots>
+		</Fragment>
 	);
 }
