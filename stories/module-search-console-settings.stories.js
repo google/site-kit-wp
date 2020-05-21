@@ -46,6 +46,12 @@ function filterSearchConsoleSettings() {
 	);
 }
 
+const completeModuleData = {
+	...global.googlesitekit.modules[ 'search-console' ],
+	active: true,
+	setupComplete: true,
+};
+
 function Settings( props ) {
 	const {
 		callback,
@@ -75,7 +81,8 @@ function Settings( props ) {
 					homepage={ module.homepage }
 					learnmore={ module.learnMore }
 					active={ module.active }
-					hasSettings={ true }
+					setupComplete={ module.setupComplete }
+					hasSettings={ false }
 					autoActivate={ module.autoActivate }
 					updateModulesList={ updateModulesList }
 					handleEdit={ handleButtonAction }
@@ -102,7 +109,7 @@ storiesOf( 'Search Console Module/Settings', module )
 			dispatch( STORE_NAME ).receiveSettings( {} );
 		};
 
-		return <Settings isOpen={ false } callback={ setupRegistry } />;
+		return <Settings isOpen={ false } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 	.add( 'View, open with all settings', () => {
 		filterSearchConsoleSettings();
@@ -113,6 +120,6 @@ storiesOf( 'Search Console Module/Settings', module )
 			} );
 		};
 
-		return <Settings callback={ setupRegistry } />;
+		return <Settings module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 ;

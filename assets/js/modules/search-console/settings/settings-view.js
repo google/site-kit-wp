@@ -1,7 +1,7 @@
 /**
  * Search Console Settings View component
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,9 +26,9 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
+const { useSelect } = Data;
 
 export default function SettingsView() {
-	const { useSelect } = Data;
 	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
 
 	return (
