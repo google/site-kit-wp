@@ -35,7 +35,7 @@ import { loadTranslations } from './util';
 import ProgressBar from './components/progress-bar';
 import './components/data';
 import './components/notifications';
-import ErrorHandler from './components/ErrorHandler';
+import Root from './components/root';
 import ModuleApp from './components/module-app';
 
 class GoogleSitekitModule extends Component {
@@ -71,7 +71,7 @@ class GoogleSitekitModule extends Component {
 			const Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wrapper" */'./components/setup/setup-wrapper' ) );
 
 			return (
-				<ErrorHandler>
+				<Root>
 					<Suspense fallback={
 						<div className="googlesitekit-setup">
 							<div className="mdc-layout-grid">
@@ -99,14 +99,14 @@ class GoogleSitekitModule extends Component {
 					}>
 						<Setup />
 					</Suspense>
-				</ErrorHandler>
+				</Root>
 			);
 		}
 
 		return (
-			<ErrorHandler>
+			<Root>
 				<ModuleApp />
-			</ErrorHandler>
+			</Root>
 		);
 	}
 }

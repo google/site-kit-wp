@@ -27,7 +27,7 @@ import { doAction } from '@wordpress/hooks';
  * Internal dependencies
  */
 import { clearWebStorage, loadTranslations } from './util';
-import ErrorHandler from './components/ErrorHandler';
+import Root from './components/root';
 import './modules';
 import Setup from './components/setup/setup-wrapper';
 import DashboardApp from './components/dashboard/dashboard-app';
@@ -42,17 +42,17 @@ class GoogleSitekitDashboard extends Component {
 
 		if ( showModuleSetupWizard ) {
 			return (
-				<ErrorHandler>
+				<Root>
 					<Setup />
-				</ErrorHandler>
+				</Root>
 			);
 		}
 
 		return (
-			<ErrorHandler>
+			<Root>
 				<NotificationCounter />
 				<DashboardApp />
-			</ErrorHandler>
+			</Root>
 		);
 	}
 }

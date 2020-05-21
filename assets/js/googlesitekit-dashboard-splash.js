@@ -28,17 +28,17 @@ import { doAction } from '@wordpress/hooks';
  */
 import { clearWebStorage, loadTranslations } from './util';
 import './components/notifications';
-import ErrorHandler from './components/ErrorHandler';
+import Root from './components/root';
 import DashboardSplashApp from './components/dashboard-splash/dashboard-splash-app';
 import NotificationCounter from './components/notifications/notification-counter';
 
 class GoogleSitekitDashboardSplash extends Component {
 	render() {
 		return (
-			<ErrorHandler>
+			<Root>
 				<NotificationCounter />
 				<DashboardSplashApp />
-			</ErrorHandler>
+			</Root>
 		);
 	}
 }

@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
  */
 import DashboardMain from './dashboard-main';
 import DashboardNotifications from './dashboard-notifications';
-import ErrorHandler from '../ErrorHandler';
+import Root from '../root';
 import Header from '../header';
 import DateRangeSelector from '../date-range-selector';
 import PageHeader from '../page-header';
@@ -36,7 +36,7 @@ import '../publisher-wins';
 class DashboardApp extends Component {
 	render() {
 		return (
-			<ErrorHandler>
+			<Root>
 				<Header />
 				<DashboardNotifications />
 				<div className="googlesitekit-module-page">
@@ -72,7 +72,7 @@ class DashboardApp extends Component {
 						</div>
 					</div>
 				</div>
-			</ErrorHandler>
+			</Root>
 		);
 	}
 }

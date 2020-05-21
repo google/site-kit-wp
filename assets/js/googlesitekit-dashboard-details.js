@@ -35,14 +35,14 @@ import { Component, render } from '@wordpress/element';
 import { loadTranslations } from './util';
 import './components/notifications';
 import DashboardDetailsApp from './components/dashboard-details/dashboard-details-app';
-import ErrorHandler from './components/ErrorHandler';
+import Root from './components/root';
 
 class GoogleSitekitDashboardDetails extends Component {
 	render() {
 		return (
-			<ErrorHandler>
+			<Root>
 				<DashboardDetailsApp />
-			</ErrorHandler>
+			</Root>
 		);
 	}
 }

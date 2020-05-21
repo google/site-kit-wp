@@ -34,15 +34,15 @@ import { Component, render } from '@wordpress/element';
  */
 import { loadTranslations } from './util';
 import './components/data';
-import ErrorHandler from './components/ErrorHandler';
+import Root from './components/root';
 import WPDashboardMain from './components/wp-dashboard/wp-dashboard-main';
 
 class GoogleSitekitWPDashboard extends Component {
 	render() {
 		return (
-			<ErrorHandler>
+			<Root>
 				<WPDashboardMain />
-			</ErrorHandler>
+			</Root>
 		);
 	}
 }

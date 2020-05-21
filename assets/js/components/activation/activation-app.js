@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ErrorHandler from '../ErrorHandler';
+import Root from '../root';
 import { trackEvent } from '../../util';
 import { ActivationMain } from './activation-main';
 import NotificationCounter from '../notifications/notification-counter';
@@ -45,7 +45,7 @@ export class ActivationApp extends Component {
 		}
 
 		return (
-			<ErrorHandler>
+			<Root>
 				<NotificationCounter />
 				<ActivationMain
 					buttonURL={ buttonURL }
@@ -54,7 +54,7 @@ export class ActivationApp extends Component {
 						trackEvent( 'plugin_setup', proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
 					} }
 				/>
-			</ErrorHandler>
+			</Root>
 		);
 	}
 }

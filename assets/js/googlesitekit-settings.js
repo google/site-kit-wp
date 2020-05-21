@@ -34,15 +34,15 @@ import { Component, render } from '@wordpress/element';
  */
 import { loadTranslations } from './util';
 import './components/notifications';
-import ErrorHandler from './components/ErrorHandler';
+import Root from './components/root';
 import SettingsApp from './components/settings/settings-app';
 
 class GoogleSitekitSettings extends Component {
 	render() {
 		return (
-			<ErrorHandler>
+			<Root>
 				<SettingsApp />
-			</ErrorHandler>
+			</Root>
 		);
 	}
 }
