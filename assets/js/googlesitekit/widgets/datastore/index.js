@@ -26,10 +26,7 @@ import widgets from './widgets';
 
 export { STORE_NAME };
 
-const store = Data.combineStores( {
-	actions: Data.commonActions,
-	controls: Data.commonControls,
-}, areas, widgets );
+const store = Data.combineStores( Data.commonStore, areas, widgets );
 
 // Register this store on the global registry.
 Data.registerStore( STORE_NAME, store );

@@ -22,6 +22,11 @@
 import invariant from 'invariant';
 
 /**
+ * Internal dependencies
+ */
+import { WIDGET_STYLES } from './constants';
+
+/**
  * Store our widget components by registry, then by widget `slug`. We do this because
  * we can't store React components in our data store.
  *
@@ -33,13 +38,11 @@ export const WidgetComponents = {};
 const ASSIGN_WIDGET_AREA = 'ASSIGN_WIDGET_AREA';
 const REGISTER_WIDGET_AREA = 'REGISTER_WIDGET_AREA';
 
+const WidgetStyleKeys = Object.keys( WIDGET_STYLES ).map( ( ( key ) => `WIDGET_STYLES.${ key }` ) ).join( ', ' );
+
 export const INITIAL_STATE = {
 	areas: {},
-	areaWidgets: {},
-	contexts: {
-		analytics: [],
-		dashboard: [],
-	},
+	contextAssignments: {},
 };
 
 export const actions = {
@@ -58,20 +61,16 @@ export const actions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param  {string}         areaSlug     Widget Area's slug.
-	 * @param  {(string|Array)} contextSlugs Widget Context's slug(s).
-	 * @return {Object}                      Redux-style action.
+	 * @param {string}         slug         Widget Area's slug.
+	 * @param {(string|Array)} contextSlugs Widget Context's slug(s).
+	 * @return {Object} Redux-style action.
 	 */
-	assignWidgetArea( areaSlug, contextSlugs ) {
-		let contextSlugsAsArray;
-		if ( typeof contextSlugs === 'string' ) {
-			contextSlugsAsArray = [ contextSlugs ];
-		} else {
-			contextSlugsAsArray = [ ...contextSlugsAsArray ];
-		}
-
+	assignWidgetArea( slug, contextSlugs ) {
 		return {
-			payload: { areaSlug, contextSlugs: contextSlugsAsArray },
+			payload: {
+				slug,
+				contextSlugs: ( typeof contextSlugs === 'string' ) ? [ contextSlugs ] : contextSlugs,
+			},
 			type: ASSIGN_WIDGET_AREA,
 		};
 	},
@@ -81,29 +80,32 @@ export const actions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param  {string}             areaSlug           Widget Area's slug.
-	 * @param  {Object}             settings           Widget Area's settings.
-	 * @param  {number}             settings.priority  Priority for this widget area. Default: 10.
-	 * @param  {string}             settings.title     Title for this widget area.
-	 * @param  {string}             settings.subtitle  Subtitle for this widget area.
-	 * @param  {(string|undefined)} settings.icon      URL to SVG icon for this widget area.
-	 * @param  {string}             settings.style     Widget area style (one of "boxes", "composite").
-	 * @return {Object}                                Redux-style action.
+	 * @param {string}             slug               Widget Area's slug.
+	 * @param {Object}             settings           Widget Area's settings.
+	 * @param {string}             settings.title     Title for this widget area.
+	 * @param {string}             settings.subtitle  Subtitle for this widget area.
+	 * @param {string}             settings.icon      Optional. URL to SVG icon for this widget area.
+	 * @param {string}             settings.style     Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
+	 * @param {number}             settings.priority  Optional. Priority for this widget area. Default: 10.
+	 * @return {Object} Redux-style action.
 	 */
-	registerWidgetArea( areaSlug, settings ) {
-		invariant( areaSlug, 'areaSlug is required.' );
-		invariant( settings, 'settings is required.' );
-		invariant( settings.title, 'settings.title is required.' );
-		invariant( settings.subtitle, 'settings.subtitle is required.' );
-		invariant( settings.style, 'settings.style is required.' );
-
-		const settingsToUse = {
-			priority: 10,
-			...settings,
-		};
+	registerWidgetArea( slug, {
+		priority = 10,
+		style = WIDGET_STYLES.BOXES,
+		title,
+		subtitle,
+		icon,
+	} = {} ) {
+		invariant( slug, 'slug is required.' );
+		invariant( title, 'settings.title is required.' );
+		invariant( subtitle, 'settings.subtitle is required.' );
+		invariant( Object.values( WIDGET_STYLES ).includes( style ), `settings.style must be one of: ${ WidgetStyleKeys }.` );
 
 		return {
-			payload: { areaSlug, settings: settingsToUse },
+			payload: {
+				slug,
+				settings: { priority, style, title, subtitle, icon },
+			},
 			type: REGISTER_WIDGET_AREA,
 		};
 	},
@@ -114,30 +116,30 @@ export const controls = {};
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case ASSIGN_WIDGET_AREA: {
-			const { areaSlug, contextSlugs } = payload;
+			const { slug, contextSlugs } = payload;
 
-			const { contexts } = state;
+			const { contextAssignments } = state;
 			contextSlugs.forEach( ( contextSlug ) => {
-				if ( contexts[ contextSlug ] === undefined ) {
-					return;
+				if ( contextAssignments[ contextSlug ] === undefined ) {
+					contextAssignments[ contextSlug ] = [];
 				}
 
-				if ( ! contexts[ contextSlug ].includes( areaSlug ) ) {
-					contexts[ contextSlug ].push( areaSlug );
+				if ( ! contextAssignments[ contextSlug ].includes( slug ) ) {
+					contextAssignments[ contextSlug ].push( slug );
 				}
 			} );
 
 			return {
 				...state,
-				contexts,
+				contextAssignments,
 			};
 		}
 
 		case REGISTER_WIDGET_AREA: {
-			const { areaSlug, settings } = payload;
+			const { slug, settings } = payload;
 
-			if ( state.areas[ areaSlug ] !== undefined ) {
-				global.console.warn( `Could not register widget area with slug "${ areaSlug }". Widget Area "${ areaSlug }" is already registered.` );
+			if ( state.areas[ slug ] !== undefined ) {
+				global.console.warn( `Could not register widget area with slug "${ slug }". Widget area "${ slug }" is already registered.` );
 
 				return { ...state };
 			}
@@ -146,7 +148,7 @@ export const reducer = ( state, { type, payload } ) => {
 				...state,
 				areas: {
 					...state.areas,
-					[ areaSlug ]: { ...settings, slug: areaSlug },
+					[ slug ]: { ...settings, slug },
 				},
 			};
 		}
@@ -169,14 +171,14 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param  {Object} state    Data store's state.
-	 * @param  {string} areaSlug Widget Area's slug.
-	 * @return {boolean}         `true`/`false` based on whether widget area has been registered.
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Widget Area's slug.
+	 * @return {boolean} `true`/`false` based on whether widget area has been registered.
 	 */
-	isWidgetAreaRegistered( state, areaSlug ) {
+	isWidgetAreaRegistered( state, slug ) {
 		const { areas } = state;
 
-		return areas[ areaSlug ] !== undefined;
+		return areas[ slug ] !== undefined;
 	},
 
 	/**
@@ -188,19 +190,27 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param  {Object} state       Data store's state.
-	 * @param  {string} contextSlug Widget context to get areas for.
-	 * @return {Array}              An ordered array of widget areas for this context.
+	 * @param {Object} state       Data store's state.
+	 * @param {string} contextSlug Widget context to get areas for.
+	 * @return {Array} An ordered array of widget areas for this context.
 	 */
 	getWidgetAreas( state, contextSlug ) {
 		invariant( contextSlug, 'contextSlug is required.' );
 
-		const { areas, contexts } = state;
+		const { areas, contextAssignments } = state;
 
 		return Object.values( areas ).filter( ( area ) => {
-			return contexts[ contextSlug ] && contexts[ contextSlug ].includes( area.slug );
+			return contextAssignments[ contextSlug ] && contextAssignments[ contextSlug ].includes( area.slug );
 		} ).sort( ( areaA, areaB ) => {
-			return ( areaA.priority >= areaB.priority ) ? 1 : -1;
+			if ( areaA.priority > areaB.priority ) {
+				return 1;
+			}
+
+			if ( areaA.priority < areaB.priority ) {
+				return -1;
+			}
+
+			return 0;
 		} );
 	},
 };

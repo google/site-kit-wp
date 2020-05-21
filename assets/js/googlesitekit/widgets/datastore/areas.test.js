@@ -25,7 +25,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
-describe( 'core/widgets Widget Areas', () => {
+describe( 'core/widgets Widget areas', () => {
 	let registry;
 	let store;
 
@@ -40,6 +40,24 @@ describe( 'core/widgets Widget Areas', () => {
 
 	describe( 'actions', () => {
 		describe( 'assignWidgetArea', () => {
+			it( 'should implicitly create a context when assigning a widget area, if one does not exist', () => {
+				// Assign this widget area to the dashboard context.
+				registry.dispatch( STORE_NAME ).assignWidgetArea( 'header', 'dashboard' );
+
+				const { contextAssignments } = store.getState();
+
+				expect( contextAssignments.dashboard ).toEqual( [ 'header' ] );
+			} );
+
+			it( 'should re-use a context if one is already created', () => {
+				registry.dispatch( STORE_NAME ).assignWidgetArea( 'header', 'dashboard' );
+				registry.dispatch( STORE_NAME ).assignWidgetArea( 'footer', 'dashboard' );
+
+				const { contextAssignments } = store.getState();
+
+				expect( contextAssignments.dashboard ).toEqual( [ 'header', 'footer' ] );
+			} );
+
 			it( 'should assign a registered widget area to a context', () => {
 				// Register the widget area.
 				const slug = 'header';
@@ -84,19 +102,21 @@ describe( 'core/widgets Widget Areas', () => {
 				} );
 			} );
 
-			it( 'requires an areaSlug', () => {
+			it( 'requires a slug', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).registerWidgetArea( null, {} );
-				} ).toThrow( 'areaSlug is required.' );
+				} ).toThrow( 'slug is required.' );
 			} );
 
 			it( 'requires settings', () => {
+				// (It will throw for the first missing param, because the settings argument is
+				// always defined .)
 				expect( () => {
 					registry.dispatch( STORE_NAME ).registerWidgetArea( 'my-cool-slug' );
-				} ).toThrow( 'settings is required.' );
+				} ).toThrow( 'settings.title is required.' );
 			} );
 
-			it( 'requires a title, subtitle, and style in settings', () => {
+			it( 'requires a title and subtitle in settings', () => {
 				expect( () => {
 					registry.dispatch( STORE_NAME ).registerWidgetArea( 'header', {} );
 				} ).toThrow( 'settings.title is required.' );
@@ -112,7 +132,7 @@ describe( 'core/widgets Widget Areas', () => {
 						title: 'Analytics Header',
 						subtitle: 'Analytics tell you about visitors',
 					} );
-				} ).toThrow( 'settings.style is required.' );
+				} ).not.toThrow();
 
 				expect( () => {
 					registry.dispatch( STORE_NAME ).registerWidgetArea( 'header', {

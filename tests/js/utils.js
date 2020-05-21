@@ -11,13 +11,10 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import modulesStore, { STORE_NAME as modulesStoreName } from '../../assets/js/googlesitekit/modules/datastore';
-import siteStore, { STORE_NAME as siteStoreName } from '../../assets/js/googlesitekit/datastore/site';
-import userStore, { STORE_NAME as userStoreName } from '../../assets/js/googlesitekit/datastore/user';
-import widgetsStore, { STORE_NAME as widgetsStoreName } from '../../assets/js/googlesitekit/widgets/datastore';
 import coreSiteStore, { STORE_NAME as coreSiteStoreName } from '../../assets/js/googlesitekit/datastore/site';
 import coreUserStore, { STORE_NAME as coreUserStoreName } from '../../assets/js/googlesitekit/datastore/user';
 import coreModulesStore, { STORE_NAME as coreModulesStoreName } from '../../assets/js/googlesitekit/modules/datastore';
+import coreWidgetsStore, { STORE_NAME as coreWidgetsStoreName } from '../../assets/js/googlesitekit/widgets/datastore';
 import modulesAdSenseStore, { STORE_NAME as modulesAdSenseStoreName } from '../../assets/js/modules/adsense/datastore';
 import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore';
 import modulesPageSpeedInsightsStore, { STORE_NAME as modulesPageSpeedInsightsStoreName } from '../../assets/js/modules/pagespeed-insights/datastore';
@@ -100,13 +97,10 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
  * @param {wp.data.registry} registry Registry to register each store on.
  */
 export const registerAllStoresOn = ( registry ) => {
-	registry.registerStore( modulesStoreName, modulesStore );
-	registry.registerStore( siteStoreName, siteStore );
-	registry.registerStore( userStoreName, userStore );
-	registry.registerStore( widgetsStoreName, widgetsStore );
 	registry.registerStore( coreSiteStoreName, coreSiteStore );
 	registry.registerStore( coreUserStoreName, coreUserStore );
 	registry.registerStore( coreModulesStoreName, coreModulesStore );
+	registry.registerStore( coreWidgetsStoreName, coreWidgetsStore );
 	registry.registerStore( modulesAdSenseStoreName, modulesAdSenseStore );
 	registry.registerStore( modulesAnalyticsStoreName, modulesAnalyticsStore );
 	registry.registerStore( modulesPageSpeedInsightsStoreName, modulesPageSpeedInsightsStore );

@@ -117,9 +117,9 @@ describe( 'core/widgets Widgets', () => {
 
 				const state = store.getState();
 
-				expect( state.areaWidgets[ 'dashboard-header' ].includes( 'slugOne' ) ).toEqual( true );
-				expect( state.areaWidgets[ 'dashboard-header' ].includes( 'slugTwo' ) ).toEqual( true );
-				expect( state.areaWidgets[ 'dashboard-header' ].includes( 'slugThree' ) ).toEqual( true );
+				expect( state.areaAssignments[ 'dashboard-header' ].includes( 'slugOne' ) ).toEqual( true );
+				expect( state.areaAssignments[ 'dashboard-header' ].includes( 'slugTwo' ) ).toEqual( true );
+				expect( state.areaAssignments[ 'dashboard-header' ].includes( 'slugThree' ) ).toEqual( true );
 			} );
 
 			it( 'should allow assignment of non-registered widget areas', () => {
@@ -129,8 +129,8 @@ describe( 'core/widgets Widgets', () => {
 
 				const state = store.getState();
 
-				expect( state.areaWidgets[ 'dashboard-header' ].includes( 'testOne' ) ).toEqual( true );
-				expect( state.areaWidgets[ 'dashboard-header' ].includes( 'testTwo' ) ).toEqual( true );
+				expect( state.areaAssignments[ 'dashboard-header' ].includes( 'testOne' ) ).toEqual( true );
+				expect( state.areaAssignments[ 'dashboard-header' ].includes( 'testTwo' ) ).toEqual( true );
 			} );
 		} );
 
