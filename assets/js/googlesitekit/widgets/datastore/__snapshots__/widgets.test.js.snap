@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`core/widgets Widgets actions registerWidget places the widget component in a variable external to the store, with a key from the store 1`] = `
+<div>
+  Hello 
+  world
+  !
+</div>
+`;
