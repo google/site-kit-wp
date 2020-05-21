@@ -1,5 +1,5 @@
 /**
- * Public API entrypoint.
+ * Public Widgets API entrypoint.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,15 +19,15 @@
 /**
  * Internal dependencies
  */
-import API from './googlesitekit/api';
+import Widgets from './googlesitekit/widgets';
 
-if ( global.googlesitekit === undefined ) {
+if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};
 }
 
-if ( global.googlesitekit.api === undefined ) {
-	global.googlesitekit.api = API;
+if ( typeof global.googlesitekit.data === 'undefined' ) {
+	global.googlesitekit.widgets = Widgets;
 }
 
 // This is only exported for Jest and is not used in production.
-export default API;
+export default Widgets;

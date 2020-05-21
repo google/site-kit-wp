@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Verification_File
+ * Class Google\Site_Kit\Core\Authentication\Verification_File
  *
  * @package   Google\Site_Kit
  * @copyright 2019 Google LLC
