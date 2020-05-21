@@ -27,9 +27,9 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import ErrorHandler from '../ErrorHandler';
 
-export default function Root( { children } ) {
+export default function Root( { children, registry } ) {
 	return (
-		<Data.RegistryProvider value={ Data }>
+		<Data.RegistryProvider value={ registry }>
 			<ErrorHandler>
 				{ children }
 			</ErrorHandler>
@@ -39,6 +39,9 @@ export default function Root( { children } ) {
 
 Root.propTypes = {
 	children: PropTypes.node.isRequired,
+	registry: PropTypes.object,
 };
 
-Root.defaultProps = {};
+Root.defaultProps = {
+	registry: Data,
+};
