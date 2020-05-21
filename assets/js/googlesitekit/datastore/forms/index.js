@@ -20,85 +20,22 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import invariant from 'invariant';
+import forms from './forms';
 import { STORE_NAME } from './constants';
 
 export { STORE_NAME };
 
-const SET_FORM_VALUES = 'SET_FORM_VALUES';
+const store = Data.combineStores(
+	Data.commonStore,
+	forms,
+);
 
-export const INITIAL_STATE = {};
-
-export const actions = {
-	/**
-	 * Stores site form information.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {string} formName Name of the form.
-	 * @param {Object} formData Form data supplied as a map of keys to set and their respective values.
-	 * @return {Object} Redux-style action.
-	 */
-	setValues( formName, formData ) {
-		invariant( formName, 'formName is required for setting values.' );
-		invariant( formData instanceof Object && formData.constructor === Object, 'formData must be an object.' );
-
-		return {
-			payload: { formName, formData },
-			type: SET_FORM_VALUES,
-		};
-	},
-};
-
-export const controls = {};
-
-export const reducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		case SET_FORM_VALUES: {
-			const { formName, formData } = payload;
-
-			return {
-				...state,
-				[ formName ]: { ...( state[ formName ] || {} ), ...formData },
-			};
-		}
-
-		default: {
-			return { ...state };
-		}
-	}
-};
-
-export const resolvers = {};
-
-export const selectors = {
-	/**
-	 * Gets the existing form by formName and key.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Object} state Data store's state.
-	 * @param {string} formName Name of the form.
-	 * @param {string} key Get data stored in this key.
-	 * @return {*} Value stored in state by formName and key. Returns `undefined` if formName or key isn't found.
-	 */
-	getValue( state, formName, key ) {
-		const formData = state[ formName ] || {};
-
-		return formData[ key ];
-	},
-};
-
-const store = {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
 
 // Register this store on the global registry.
 Data.registerStore( STORE_NAME, store );
