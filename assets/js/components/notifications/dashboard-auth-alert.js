@@ -24,15 +24,16 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { getModulesData } from '../../util';
 import Notification from '../notifications/notification';
 
 const DashboardAuthAlert = () => {
 	const { admin: { connectURL } } = global.googlesitekit;
-	const { currentAdminPage } = global.googlesitekit.admin;
-	const product = currentAdminPage
-		.replace( /googlesitekit|module|-/g, ' ' )
-		.replace( /(^\w{1})|(\s{1}\w{1})/g, ( match ) => match.toUpperCase() )
-		.trim();
+	const { requiredScopes, grantedScopes } = global.googlesitekit.setup;
+
+	const productUrl = requiredScopes.filter( ( e ) => ! grantedScopes.includes( e ) )[ 0 ];
+	const productSlug = productUrl ? productUrl.toString().split( '/' ).pop() : '';
+	const product = productSlug ? getModulesData()[ productSlug ].name : '';
 
 	return (
 		<Notification

@@ -170,6 +170,14 @@ export const selectors = {
 		return true;
 	} ),
 
+	/**
+	 * Checks whether changes are currently being submitted.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} `true` if submitting, `false` if not.
+	 */
 	isDoingSubmitChanges( state ) {
 		return !! state.isDoingSubmitChanges;
 	},

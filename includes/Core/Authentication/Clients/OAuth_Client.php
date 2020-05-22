@@ -205,7 +205,7 @@ final class OAuth_Client {
 	 * @return Google_Site_Kit_Client|Google_Site_Kit_Proxy_Client
 	 */
 	private function setup_client() {
-		if ( $this->using_proxy() ) {
+		if ( $this->credentials->using_proxy() ) {
 			$client = new Google_Site_Kit_Proxy_Client(
 				array( 'proxy_base_path' => $this->google_proxy->url() )
 			);
@@ -213,7 +213,7 @@ final class OAuth_Client {
 			$client = new Google_Site_Kit_Client();
 		}
 
-		$application_name = 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION;
+		$application_name = $this->get_application_name();
 		// The application name is included in the Google client's user-agent for requests to Google APIs.
 		$client->setApplicationName( $application_name );
 		// Override the default user-agent for the Guzzle client. This is used for oauth/token requests.
@@ -621,7 +621,7 @@ final class OAuth_Client {
 
 		// TODO: In the future, once the old authentication mechanism no longer exists, this check can be removed.
 		// For now the below action should only fire for the proxy despite not clarifying that in the hook name.
-		if ( $this->using_proxy() ) {
+		if ( $this->credentials->using_proxy() ) {
 			/**
 			 * Fires when the current user has just been authorized to access Google APIs.
 			 *
@@ -687,23 +687,14 @@ final class OAuth_Client {
 	 * filter.
 	 *
 	 * @since 1.0.0
+	 * @deprecated 1.9.0
 	 *
 	 * @return bool True if proxy authentication is used, false otherwise.
 	 */
 	public function using_proxy() {
-		$credentials = $this->get_client_credentials();
+		_deprecated_function( __METHOD__, '1.9.0', Credentials::class . '::using_proxy' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		// If no credentials yet, assume true.
-		if ( ! is_object( $credentials ) || empty( $credentials->web->client_id ) ) {
-			return true;
-		}
-
-		// If proxy credentials, return true.
-		if ( false !== strpos( $credentials->web->client_id, '.apps.sitekit.withgoogle.com' ) ) {
-			return true;
-		}
-
-		return false;
+		return $this->credentials->using_proxy();
 	}
 
 	/**
@@ -746,7 +737,7 @@ final class OAuth_Client {
 			$site_fields  = array_map( 'rawurlencode', $this->google_proxy->get_site_fields() );
 			$query_params = array_merge( $query_params, $site_fields );
 		}
-
+		$query_params['application_name'] = rawurlencode( $this->get_application_name() );
 		return add_query_arg( $query_params, $this->google_proxy->url( Google_Proxy::SETUP_URI ) );
 	}
 
@@ -808,7 +799,20 @@ final class OAuth_Client {
 			$query_args['site_id'] = $credentials->web->client_id;
 		}
 
+		$query_args['application_name'] = rawurlencode( $this->get_application_name() );
+
 		return add_query_arg( $query_args, $this->google_proxy->url( Google_Proxy::PERMISSIONS_URI ) );
+	}
+
+	/**
+	 * Returns the application name: a combination of the namespace and version.
+	 *
+	 * @since 1.8.1
+	 *
+	 * @return string The application name.
+	 */
+	private function get_application_name() {
+		return 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION;
 	}
 
 	/**

@@ -29,7 +29,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getModulesData } from '../../../util';
 import calculateOverviewData from './calculateOverviewData';
 
 export { calculateOverviewData };
@@ -461,19 +460,6 @@ export const getTopPagesReportDataDefaults = () => {
 			alias: 'Bounce rate',
 		},
 	];
-
-	if ( getModulesData().analytics.settings.adsenseLinked ) {
-		metrics.push(
-			{
-				expression: 'ga:adsenseRevenue',
-				alias: 'AdSense Revenue',
-			},
-			{
-				expression: 'ga:adsenseECPM',
-				alias: 'AdSense ECPM',
-			}
-		);
-	}
 
 	return {
 		dimensions: [

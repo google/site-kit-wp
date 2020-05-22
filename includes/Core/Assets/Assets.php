@@ -382,6 +382,15 @@ final class Assets {
 				)
 			),
 			new Script_Data(
+				'googlesitekit-user-data',
+				array(
+					'global'        => '_googlesitekitUserData',
+					'data_callback' => function() {
+						return $this->get_inline_user_data();
+					},
+				)
+			),
+			new Script_Data(
 				'googlesitekit-apifetch-data',
 				array(
 					'global'        => '_googlesitekitAPIFetchData',
@@ -455,6 +464,7 @@ final class Assets {
 					'dependencies' => array(
 						'googlesitekit-data',
 						'googlesitekit-api',
+						'googlesitekit-user-data',
 					),
 				)
 			),
@@ -468,6 +478,15 @@ final class Assets {
 						'googlesitekit-data',
 						'googlesitekit-base-data',
 						'googlesitekit-entity-data',
+					),
+				)
+			),
+			new Script(
+				'googlesitekit-datastore-forms',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-forms.js',
+					'dependencies' => array(
+						'googlesitekit-data',
 					),
 				)
 			),
@@ -612,6 +631,8 @@ final class Assets {
 			'blogPrefix'       => $wpdb->get_blog_prefix(),
 			'ampMode'          => $this->context->get_amp_mode(),
 			'isNetworkMode'    => $this->context->is_network_mode(),
+			'timezone'         => get_option( 'timezone_string' ),
+			'siteName'         => get_bloginfo( 'name' ),
 		);
 
 		/**
@@ -642,6 +663,37 @@ final class Assets {
 			'currentEntityTitle' => $current_entity ? $current_entity->get_title() : null,
 			'currentEntityID'    => $current_entity ? $current_entity->get_id() : null,
 		);
+	}
+
+	/**
+	 * Gets the inline data specific to the current user
+	 *
+	 * @since 1.9.0
+	 *
+	 * @return array The user inline data to be output.
+	 */
+	private function get_inline_user_data() {
+		$current_user = wp_get_current_user();
+
+		$inline_data = array(
+			'user' => array(
+				'id'      => $current_user->ID,
+				'email'   => $current_user->user_email,
+				'name'    => $current_user->display_name,
+				'picture' => get_avatar_url( $current_user->user_email ),
+			),
+		);
+
+		/**
+		 * Filters the user inline data to pass to JS.
+		 *
+		 * This should not include anything remotely expensive to compute.
+		 *
+		 * @since 1.9.0
+		 *
+		 * @param array $data User data.
+		 */
+		return apply_filters( 'googlesitekit_user_data', $inline_data );
 	}
 
 	/**

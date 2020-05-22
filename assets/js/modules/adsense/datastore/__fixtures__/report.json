@@ -1,0 +1,32 @@
+{
+  "kind": "adsense#report",
+  "totalMatchedRows": "0",
+  "headers": [
+    {
+      "name": "EARNINGS",
+      "type": "METRIC_CURRENCY",
+      "currency": "USD"
+    },
+    {
+      "name": "PAGE_VIEWS_RPM",
+      "type": "METRIC_CURRENCY",
+      "currency": "USD"
+    },
+    {
+      "name": "IMPRESSIONS",
+      "type": "METRIC_TALLY"
+    }
+  ],
+  "totals": [
+    null,
+    null,
+    null
+  ],
+  "averages": [
+    null,
+    null,
+    null
+  ],
+  "startDate": "2020-02-02",
+  "endDate": "2020-02-28"
+}
