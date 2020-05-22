@@ -34,8 +34,12 @@ const { useSelect, useDispatch } = Data;
 
 const PermissionsModal = ( { dataStoreToSnapshot } ) => {
 	const permissionsError = useSelect( ( select ) => select( CORE_USER ).getPermissionScopeError() );
-	const additionalScopes = permissionsError?.data?.scopes;
-	const connectURL = useSelect( ( select ) => select( CORE_USER ).getConnectURL( additionalScopes ) );
+	const connectURL = useSelect(
+		( select ) => select( CORE_USER ).getConnectURL( {
+			additionalScopes: permissionsError?.data?.scopes,
+			redirectURL: global.location.href,
+		} )
+	);
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );
 	// TODO: This should come from the API response or a router, not a prop.
 	const { takeSnapshot } = useDispatch( dataStoreToSnapshot );
