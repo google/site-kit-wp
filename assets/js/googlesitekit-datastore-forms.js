@@ -1,5 +1,5 @@
 /**
- * Public API entrypoint.
+ * Entrypoint for the core/forms data store.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,18 +16,10 @@
  * limitations under the License.
  */
 
+// This import has side effects; it registers the core/forms datastore
+// on the default data store (`googlesitekit.data`).
+
 /**
  * Internal dependencies
  */
-import API from './googlesitekit/api';
-
-if ( global.googlesitekit === undefined ) {
-	global.googlesitekit = {};
-}
-
-if ( global.googlesitekit.api === undefined ) {
-	global.googlesitekit.api = API;
-}
-
-// This is only exported for Jest and is not used in production.
-export default API;
+import './googlesitekit/datastore/forms';

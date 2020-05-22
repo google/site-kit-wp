@@ -1,5 +1,5 @@
 /**
- * Public API entrypoint.
+ * Search Console Settings Main component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,15 +19,12 @@
 /**
  * Internal dependencies
  */
-import API from './googlesitekit/api';
+import SettingsView from './settings-view';
 
-if ( global.googlesitekit === undefined ) {
-	global.googlesitekit = {};
+export default function SettingsMain( { isOpen } ) {
+	if ( ! isOpen ) {
+		return null;
+	}
+
+	return <SettingsView />;
 }
-
-if ( global.googlesitekit.api === undefined ) {
-	global.googlesitekit.api = API;
-}
-
-// This is only exported for Jest and is not used in production.
-export default API;
