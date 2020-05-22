@@ -6,9 +6,8 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * The allow list of AMP modes.
- *
  */
-export const allowedAmpModes = {
+export const allowedAMPModes = {
 	standard: 'standard',
 	transitional: 'transitional',
 	reader: 'disabled',
@@ -19,7 +18,7 @@ export const allowedAmpModes = {
  *
  * @param {string} mode The mode to set AMP to. Possible value of standard, transitional or reader.
  */
-export const activateAmpAndSetMode = async ( mode ) => {
+export const activateAMPWithMode = async ( mode ) => {
 	await activatePlugin( 'amp' );
 	await setAMPMode( mode );
 };
@@ -31,10 +30,10 @@ export const activateAmpAndSetMode = async ( mode ) => {
  */
 export const setAMPMode = async ( mode ) => {
 	// Test to be sure that the passed mode is known.
-	await expect( Object.keys( allowedAmpModes ) ).toContain( mode );
+	expect( allowedAMPModes ).toHaveProperty( mode );
 	// Set the AMP mode
 	await visitAdminPage( 'admin.php', 'page=amp-options' );
-	await expect( page ).toClick( `#theme_support_${ allowedAmpModes[ mode ] }` );
+	await expect( page ).toClick( `#theme_support_${ allowedAMPModes[ mode ] }` );
 	await expect( page ).toClick( '#submit' );
 	await page.waitForNavigation();
 };

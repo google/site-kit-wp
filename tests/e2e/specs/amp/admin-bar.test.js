@@ -7,7 +7,7 @@ import { deactivatePlugin, activatePlugin, createURL } from '@wordpress/e2e-test
  * Internal depedencies
  */
 import {
-	activateAmpAndSetMode,
+	activateAMPWithMode,
 	deactivateUtilityPlugins,
 	setupSiteKit,
 	useRequestInterception,
@@ -20,7 +20,7 @@ describe( 'AMP Admin Bar compatibility', () => {
 	beforeAll( async () => {
 		await setupSiteKit();
 		await activatePlugin( 'e2e-tests-admin-bar-visibility' );
-		await activateAmpAndSetMode( 'standard' );
+		await activateAMPWithMode( 'standard' );
 
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
@@ -50,7 +50,7 @@ describe( 'AMP Admin Bar compatibility', () => {
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = searchConsole;
 
-		await expect( page ).toMatchElement( '#amp-admin-bar-item-status-icon', { text: '✅' } );
+		await expect( page ).toHaveValidAMP( { loggedIn: true } );
 
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),

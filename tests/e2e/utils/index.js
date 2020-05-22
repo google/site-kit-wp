@@ -1,4 +1,4 @@
-export { activateAmpAndSetMode, allowedAmpModes, setAMPMode } from './activate-amp-and-set-mode';
+export { activateAMPWithMode, allowedAMPModes, setAMPMode } from './activate-amp-and-set-mode';
 export { clearSessionStorage } from './clear-session-storage';
 export { deactivateUtilityPlugins } from './deactivate-utility-plugins';
 export { evalWithWPData } from './eval-with-wp-data';

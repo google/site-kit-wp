@@ -12,7 +12,7 @@ import {
  * Internal dependencies
  */
 import {
-	activateAmpAndSetMode,
+	activateAMPWithMode,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setAuthToken,
@@ -262,7 +262,7 @@ describe( 'setting up the AdSense module', () => {
 	} );
 
 	it( 'has valid AMP for logged-in users', async () => {
-		await activateAmpAndSetMode( 'standard' );
+		await activateAMPWithMode( 'standard' );
 		await activatePlugin( 'e2e-tests-admin-bar-visibility' );
 
 		datapointHandlers.accounts = ( request ) => {
@@ -295,7 +295,7 @@ describe( 'setting up the AdSense module', () => {
 	} );
 
 	it( 'has valid AMP for non-logged in users', async () => {
-		await activateAmpAndSetMode( 'standard' );
+		await activateAMPWithMode( 'standard' );
 		datapointHandlers.accounts = ( request ) => {
 			request.respond( {
 				status: 200,

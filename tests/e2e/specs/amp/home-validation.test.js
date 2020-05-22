@@ -10,7 +10,7 @@ import {
  * Internal depedencies
  */
 import {
-	activateAmpAndSetMode,
+	activateAMPWithMode,
 	deactivateUtilityPlugins,
 	setupSiteKit,
 } from '../../utils';
@@ -19,7 +19,7 @@ describe( 'AMP Homepage', () => {
 	beforeAll( async () => {
 		await setupSiteKit();
 		await activatePlugin( 'e2e-tests-admin-bar-visibility' );
-		await activateAmpAndSetMode( 'standard' );
+		await activateAMPWithMode( 'standard' );
 	} );
 
 	afterAll( async () => {
@@ -27,7 +27,7 @@ describe( 'AMP Homepage', () => {
 		await deactivateUtilityPlugins();
 	} );
 
-	describe( 'Logged in user.', () => {
+	describe( 'Logged-in user', () => {
 		it( 'has no validation errors', async () => {
 			await expect( '/' ).toHaveValidAMP( { loggedIn: true } );
 		} );

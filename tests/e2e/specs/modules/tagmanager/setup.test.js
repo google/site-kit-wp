@@ -12,8 +12,8 @@ import {
  * Internal dependencies
  */
 import {
-	activateAmpAndSetMode,
-	allowedAmpModes,
+	activateAMPWithMode,
+	allowedAMPModes,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	useRequestInterception,
@@ -179,7 +179,7 @@ describe( 'Tag Manager module setup', () => {
 	} );
 
 	describe.each(
-		Object.keys( allowedAmpModes )
+		Object.keys( allowedAMPModes )
 	)( 'AMP mode %s', ( mode ) => {
 		beforeEach( async () => {
 			await activatePlugin( 'amp' );
@@ -201,7 +201,7 @@ describe( 'Tag Manager module setup', () => {
 	} );
 	describe( 'Homepage AMP', () => {
 		beforeEach( async () => {
-			await activateAmpAndSetMode( 'standard' );
+			await activateAMPWithMode( 'standard' );
 		} );
 		afterEach( async () => {
 			await deactivatePlugin( 'amp' );

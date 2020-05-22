@@ -11,7 +11,7 @@ import {
  * Internal dependencies
  */
 import {
-	activateAmpAndSetMode,
+	activateAMPWithMode,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setSearchConsoleProperty,
@@ -94,7 +94,7 @@ describe( 'Optimize Activation', () => {
 	} );
 
 	it( 'displays AMP experimental JSON field', async () => {
-		await activateAmpAndSetMode( 'standard' );
+		await activateAMPWithMode( 'standard' );
 		await setupAnalytics( { useSnippet: true } );
 		await proceedToOptimizeSetup();
 
@@ -106,7 +106,7 @@ describe( 'Optimize Activation', () => {
 	describe( 'Homepage AMP', () => {
 		beforeEach( async () => {
 			await setupAnalytics();
-			await activateAmpAndSetMode( 'standard' );
+			await activateAMPWithMode( 'standard' );
 		} );
 		afterEach( async () => {
 			await deactivatePlugin( 'amp' );

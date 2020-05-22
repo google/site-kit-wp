@@ -7,7 +7,7 @@ import { activatePlugin, deactivatePlugin, createURL, visitAdminPage } from '@wo
  * Internal dependencies
  */
 import {
-	activateAmpAndSetMode,
+	activateAMPWithMode,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setSearchConsoleProperty,
@@ -174,7 +174,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 	describe( 'Homepage AMP', () => {
 		beforeEach( async () => {
 			await setupAnalytics();
-			await activateAmpAndSetMode( 'standard' );
+			await activateAMPWithMode( 'standard' );
 		} );
 		afterEach( async () => {
 			await deactivatePlugin( 'amp' );
