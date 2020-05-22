@@ -103,6 +103,9 @@ export const getDataTableFromData = ( data, headers, options ) => {
 	} );
 
 	const columns = data && data[ 0 ] && data[ 0 ].length ? data[ 0 ].length : 1;
+	const mobileColumns = ( options.hideColumns && options.hideColumns.mobile && options.hideColumns.mobile.length > 0 )
+		? columns - options.hideColumns.mobile.length
+		: columns;
 
 	return (
 		<div className={ classnames(
@@ -111,7 +114,8 @@ export const getDataTableFromData = ( data, headers, options ) => {
 		) }>
 			<table className={ classnames(
 				'googlesitekit-table__wrapper',
-				`googlesitekit-table__wrapper--${ columns }-col`
+				`googlesitekit-table__wrapper--${ columns }-col`,
+				{ [ `googlesitekit-table__wrapper--mobile-${ mobileColumns }-col` ]: ( mobileColumns !== columns ) }
 			) }>
 				<thead className="googlesitekit-table__head">
 					<tr
