@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import SearchConsoleSettingStatus from './settings/search-console-settings-status';
-
-/**
  * WordPress dependencies
  */
 import { addFilter } from '@wordpress/hooks';
@@ -30,7 +25,6 @@ import { addFilter } from '@wordpress/hooks';
  * Internal dependencies
  */
 import { createAddToFilter } from '../../util/helpers';
-import { fillFilterWithComponent } from '../../util';
 
 const slug = 'search-console';
 
@@ -59,15 +53,6 @@ import DashboardDetailsWidgetKeywordsTable from './dashboard-details/dashboard-d
 import DashboardWidgetPopularKeywordsTable from './dashboard/dashboard-widget-popular-keyword-table';
 import DashboardDetailsWidgetSearchFunnel from './dashboard-details/dashboard-details-widget-search-funnel';
 import DashboardPopularity from './dashboard/dashboard-widget-popularity';
-
-/**
- * Add components to the settings page.
- */
-addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
-	'googlesitekit.SearchConsoleModuleSettingsDetails',
-	fillFilterWithComponent( SearchConsoleSettingStatus, {
-		onSettingsPage: true,
-	} ) );
 
 /**
  * Add components to the Site Kit Dashboard.
