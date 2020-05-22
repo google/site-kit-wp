@@ -547,8 +547,7 @@ final class Authentication {
 			}
 
 			// User is trying to authenticate, but access token hasn't been set.
-			$additional_scopes = $input->filter( INPUT_GET, 'additional_scopes', FILTER_SANITIZE_STRING ) ?: '';
-			$additional_scopes = array_filter( explode( ' ', $additional_scopes ) );
+			$additional_scopes = $input->filter( INPUT_GET, 'additional_scopes', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 			wp_safe_redirect(
 				esc_url_raw(
 					$auth_client->get_authentication_url( $redirect_url, $additional_scopes )
