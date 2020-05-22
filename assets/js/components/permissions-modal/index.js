@@ -64,7 +64,7 @@ const PermissionsModal = ( { dataStoreToSnapshot } ) => {
 
 	// If there aren't any scopes for us to request, there's no reason to show
 	// the modal. Log a console warning if this happens and return `null`.
-	if ( permissionsError && permissionsError.data && permissionsError.data.scopes && permissionsError.data.scopes.length === 0 ) {
+	if ( ! permissionsError?.data?.scopes?.length ) {
 		global.console.warn( 'permissionsError lacks scopes array to use for redirect, so not showing the PermissionsModal. permissionsError was:', permissionsError );
 		return null;
 	}
