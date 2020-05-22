@@ -19,11 +19,11 @@
 /**
  * External dependencies
  */
+import fetchMock from 'fetch-mock-jest';
 
 /**
  * WordPress dependencies
  */
-import apiFetch from '@wordpress/api-fetch';
 import { createRegistry } from '@wordpress/data';
 
 /**
@@ -40,7 +40,6 @@ import { createNotificationsStore } from './create-notifications-store';
 const STORE_ARGS = [ 'core', 'site', 'notifications' ];
 
 describe( 'createNotificationsStore store', () => {
-	let apiFetchSpy;
 	let dispatch;
 	let registry;
 	let select;
@@ -59,8 +58,6 @@ describe( 'createNotificationsStore store', () => {
 		dispatch = registry.dispatch( storeDefinition.STORE_NAME );
 		store = registry.stores[ storeDefinition.STORE_NAME ].store;
 		select = registry.select( storeDefinition.STORE_NAME );
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -69,7 +66,8 @@ describe( 'createNotificationsStore store', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
+		fetchMock.restore();
+		fetchMock.mockClear();
 	} );
 
 	describe( 'name', () => {
@@ -148,14 +146,10 @@ describe( 'createNotificationsStore store', () => {
 
 			it( 'does not remove server notifications and emits a warning if they are sent to removeNotification', async () => {
 				const serverNotifications = [ { id: 'server_notification' } ];
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/notifications/
-					)
-					.mockResponseOnce(
-						JSON.stringify( serverNotifications ),
-						{ status: 200 }
-					);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+					{ body: serverNotifications, status: 200 }
+				);
 
 				const clientNotification = { id: 'client_notification' };
 
@@ -210,14 +204,10 @@ describe( 'createNotificationsStore store', () => {
 		describe( 'getNotifications', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const response = [ { id: 'test_notification' } ];
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/notifications/
-					)
-					.mockResponseOnce(
-						JSON.stringify( response ),
-						{ status: 200 }
-					);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+					{ body: response, status: 200 }
+				);
 
 				const initialNotifications = select.getNotifications();
 				// Notifications will be their initial value while being fetched.
@@ -230,11 +220,11 @@ describe( 'createNotificationsStore store', () => {
 
 				const notifications = select.getNotifications();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( notifications ).toEqual( response );
 
 				const notificationsSelect = select.getNotifications();
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( notificationsSelect ).toEqual( notifications );
 			} );
 
@@ -257,14 +247,10 @@ describe( 'createNotificationsStore store', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/notifications/
-					)
-					.mockResponseOnce(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
+					{ body: response, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				select.getNotifications();
@@ -276,7 +262,7 @@ describe( 'createNotificationsStore store', () => {
 
 				const notifications = select.getNotifications();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( notifications ).toEqual( undefined );
 			} );
 		} );
@@ -288,23 +274,25 @@ describe( 'createNotificationsStore store', () => {
 				const [ type, identifier, datapoint ] = STORE_ARGS;
 				const response = { type, identifier, datapoint };
 
-				fetch
-					.mockResponseOnce( async ( req ) => {
-						if ( req.url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` ) ) {
-							return {
-								body: JSON.stringify( response ),
-								init: { status: 200 },
-							};
-						}
-						return {
-							body: JSON.stringify( {
-								code: 'incorrect_api_endpoint',
-								message: 'Incorrect API endpoint',
-								data: { status: 400 },
-							} ),
-							init: { status: 400 },
-						};
-					} );
+				fetchMock.once(
+					( url ) => (
+						url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` )
+					),
+					{ body: response, status: 200 }
+				);
+				fetchMock.once(
+					( url ) => (
+						! url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` )
+					),
+					{
+						body: {
+							code: 'incorrect_api_endpoint',
+							message: 'Incorrect API endpoint',
+							data: { status: 400 },
+						},
+						init: { status: 400 },
+					}
+				);
 
 				const result = await storeDefinition.controls.FETCH_NOTIFICATIONS();
 				expect( result ).toEqual( response );
