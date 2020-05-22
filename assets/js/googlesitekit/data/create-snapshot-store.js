@@ -140,7 +140,11 @@ export const createSnapshotStore = ( storeName ) => {
 		switch ( type ) {
 			case SET_STATE_FROM_SNAPSHOT: {
 				const { snapshot } = payload;
-				return { ...snapshot };
+				// Exclude any top-level errors from the restored state.
+				// eslint-disable-next-line no-unused-vars
+				const { error, ...newState } = snapshot;
+
+				return { ...newState };
 			}
 
 			default: {
