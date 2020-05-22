@@ -587,6 +587,9 @@ final class OAuth_Client {
 		if ( empty( $redirect_url ) ) {
 			$redirect_url = $this->context->admin_url( 'splash' );
 		}
+		if ( ! is_array( $additional_scopes ) ) {
+			$additional_scopes = array();
+		}
 
 		$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
 		// Ensure we remove error query string.
