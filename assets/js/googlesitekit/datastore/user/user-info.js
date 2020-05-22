@@ -220,23 +220,29 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}   state              Data store's state.
-	 * @param {string[]} [additionalScopes] Additional scopes to request.
+	 * @param {Object}   state                   Data store's state.
+	 * @param {Object}   [args]                  Optional arguments for the resulting URL.
+	 * @param {string[]} [args.additionalScopes] Additional scopes to request.
+	 * @param {string}   [args.redirectURL]      URL to redirect to after successful authentication.
 	 * @return {(string|undefined)} Full URL to connect, or `undefined` if not loaded yet.
 	 */
-	getConnectURL( state, additionalScopes = [] ) {
+	getConnectURL( state, {
+		additionalScopes = [],
+		redirectURL = undefined,
+	} = {} ) {
 		const { connectURL } = state;
+		const queryArgs = { redirect: redirectURL };
 
 		if ( connectURL === undefined ) {
 			return undefined;
 		}
 
-		// If additional scopes are provided, merge them with the current scopes.
+		// If additional scopes are provided, pass them in the dedicated query param.
 		if ( additionalScopes && additionalScopes.length ) {
-			return addQueryArgs( connectURL, { additional_scopes: additionalScopes } );
+			return addQueryArgs( connectURL, { ...queryArgs, additional_scopes: additionalScopes } );
 		}
 
-		return connectURL;
+		return addQueryArgs( connectURL, queryArgs );
 	},
 
 	/**
