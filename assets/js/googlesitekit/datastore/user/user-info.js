@@ -22,6 +22,11 @@
 import invariant from 'invariant';
 
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -29,15 +34,37 @@ import { STORE_NAME } from './constants';
 
 const { createRegistrySelector } = Data;
 
+const RECEIVE_CONNECT_URL = 'RECEIVE_CONNECT_URL';
 const RECEIVE_USER_INFO = 'RECEIVE_USER_INFO';
 const RECEIVE_USER_IS_VERIFIED = 'RECEIVE_USER_IS_VERIFIED';
 
 const INITIAL_STATE = {
+	connectURL: undefined,
 	user: undefined,
 	verified: undefined,
 };
 
 export const actions = {
+	/**
+	 * Stores the OAuth connection URL in the datastore.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {string} connectURL Full URL to the Site Kit googlesitekit_connect handler.
+	 * @return {Object} Redux-style action.
+	 */
+	receiveConnectURL( connectURL ) {
+		invariant( connectURL, 'connectURL is required.' );
+
+		return {
+			payload: {
+				connectURL,
+			},
+			type: RECEIVE_CONNECT_URL,
+		};
+	},
+
 	/**
 	 * Stores user info in the datastore.
 	 *
@@ -89,6 +116,13 @@ export const controls = {};
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
+		case RECEIVE_CONNECT_URL: {
+			const { connectURL } = payload;
+			return {
+				...state,
+				connectURL,
+			};
+		}
 		case RECEIVE_USER_INFO: {
 			const { user } = payload;
 			return {
@@ -110,6 +144,22 @@ export const reducer = ( state, { type, payload } ) => {
 };
 
 export const resolvers = {
+	*getConnectURL() {
+		const { select } = yield Data.commonActions.getRegistry();
+
+		if ( select( STORE_NAME ).getConnectURL() ) {
+			return;
+		}
+
+		if ( ! global._googlesitekitUserData ) {
+			global.console.error( 'Could not load core/user info.' );
+			return;
+		}
+		const { connectURL } = global._googlesitekitUserData;
+
+		yield actions.receiveConnectURL( connectURL );
+	},
+
 	*getUser() {
 		const { select } = yield Data.commonActions.getRegistry();
 
@@ -164,6 +214,29 @@ export const selectors = {
 	getUser( state ) {
 		const { user } = state;
 		return user;
+	},
+	/**
+	 * Gets a URL for (re)connecting via OAuth, with optional additional scopes.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}   state              Data store's state.
+	 * @param {string[]} [additionalScopes] Additional scopes to request.
+	 * @return {(string|undefined)} Full URL to connect, or `undefined` if not loaded yet.
+	 */
+	getConnectURL( state, additionalScopes = [] ) {
+		const { connectURL } = state;
+
+		if ( connectURL === undefined ) {
+			return undefined;
+		}
+
+		// If additional scopes are provided, merge them with the current scopes.
+		if ( additionalScopes && additionalScopes.length ) {
+			return addQueryArgs( connectURL, { additional_scopes: additionalScopes } );
+		}
+
+		return connectURL;
 	},
 
 	/**
