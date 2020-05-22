@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: E2E Enable Loopback
- * Description: Plugin to filter http requests to remove the port.
+ * Description: MU plugin for ensuring WordPress can make HTTP requests to itself during E2E tests.
  *
  * @package   Google\Site_Kit
  * @copyright 2020 Google LLC

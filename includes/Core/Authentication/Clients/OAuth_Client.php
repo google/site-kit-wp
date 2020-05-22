@@ -213,7 +213,7 @@ final class OAuth_Client {
 			$client = new Google_Site_Kit_Client();
 		}
 
-		$application_name = 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION;
+		$application_name = $this->get_application_name();
 		// The application name is included in the Google client's user-agent for requests to Google APIs.
 		$client->setApplicationName( $application_name );
 		// Override the default user-agent for the Guzzle client. This is used for oauth/token requests.
@@ -737,7 +737,7 @@ final class OAuth_Client {
 			$site_fields  = array_map( 'rawurlencode', $this->google_proxy->get_site_fields() );
 			$query_params = array_merge( $query_params, $site_fields );
 		}
-
+		$query_params['application_name'] = rawurlencode( $this->get_application_name() );
 		return add_query_arg( $query_params, $this->google_proxy->url( Google_Proxy::SETUP_URI ) );
 	}
 
@@ -799,7 +799,20 @@ final class OAuth_Client {
 			$query_args['site_id'] = $credentials->web->client_id;
 		}
 
+		$query_args['application_name'] = rawurlencode( $this->get_application_name() );
+
 		return add_query_arg( $query_args, $this->google_proxy->url( Google_Proxy::PERMISSIONS_URI ) );
+	}
+
+	/**
+	 * Returns the application name: a combination of the namespace and version.
+	 *
+	 * @since 1.8.1
+	 *
+	 * @return string The application name.
+	 */
+	private function get_application_name() {
+		return 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION;
 	}
 
 	/**
