@@ -71,24 +71,22 @@ class GoogleSitekitModule extends Component {
 			const Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wrapper" */'./components/setup/setup-wrapper' ) );
 
 			return (
-				<Root>
-					<Suspense fallback={
-						<div className="googlesitekit-setup">
-							<div className="mdc-layout-grid">
-								<div className="mdc-layout-grid__inner">
-									<div className="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-12
-									">
-										<div className="googlesitekit-setup__wrapper">
-											<div className="mdc-layout-grid">
-												<div className="mdc-layout-grid__inner">
-													<div className="
-														mdc-layout-grid__cell
-														mdc-layout-grid__cell--span-12
-													">
-														<ProgressBar />
-													</div>
+				<Suspense fallback={
+					<div className="googlesitekit-setup">
+						<div className="mdc-layout-grid">
+							<div className="mdc-layout-grid__inner">
+								<div className="
+									mdc-layout-grid__cell
+									mdc-layout-grid__cell--span-12
+								">
+									<div className="googlesitekit-setup__wrapper">
+										<div className="mdc-layout-grid">
+											<div className="mdc-layout-grid__inner">
+												<div className="
+													mdc-layout-grid__cell
+													mdc-layout-grid__cell--span-12
+												">
+													<ProgressBar />
 												</div>
 											</div>
 										</div>
@@ -96,17 +94,15 @@ class GoogleSitekitModule extends Component {
 								</div>
 							</div>
 						</div>
-					}>
-						<Setup />
-					</Suspense>
-				</Root>
+					</div>
+				}>
+					<Setup />
+				</Suspense>
 			);
 		}
 
 		return (
-			<Root>
-				<ModuleApp />
-			</Root>
+			<ModuleApp />
 		);
 	}
 }
@@ -118,7 +114,7 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <GoogleSitekitModule />, renderTarget );
+		render( <Root><GoogleSitekitModule /></Root>, renderTarget );
 
 		/**
 		 * Action triggered when the dashboard App is loaded.

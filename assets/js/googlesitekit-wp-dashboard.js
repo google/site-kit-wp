@@ -40,9 +40,7 @@ import WPDashboardMain from './components/wp-dashboard/wp-dashboard-main';
 class GoogleSitekitWPDashboard extends Component {
 	render() {
 		return (
-			<Root>
-				<WPDashboardMain />
-			</Root>
+			<WPDashboardMain />
 		);
 	}
 }
@@ -54,7 +52,7 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <GoogleSitekitWPDashboard />, renderTarget );
+		render( <Root><GoogleSitekitWPDashboard /></Root>, renderTarget );
 
 		/**
 		 * Action triggered when the WP Dashboard App is loaded.

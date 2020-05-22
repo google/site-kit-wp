@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import './datastore';
 import { fillFilterWithComponent } from '../../util';
 import { SetupMain as AnalyticsSetup } from './setup';
@@ -30,30 +29,14 @@ import { SettingsMain as AnalyticsSettings } from './settings';
  */
 import { addFilter } from '@wordpress/hooks';
 
-function ConnectedAnalyticsSetup( props ) {
-	return (
-		<Data.RegistryProvider value={ Data }>
-			<AnalyticsSetup { ...props } />
-		</Data.RegistryProvider>
-	);
-}
-
-function ConnectedAnalyticsSettings( props ) {
-	return (
-		<Data.RegistryProvider value={ Data }>
-			<AnalyticsSettings { ...props } />
-		</Data.RegistryProvider>
-	);
-}
-
 addFilter(
 	'googlesitekit.ModuleSetup-analytics',
 	'googlesitekit.AnalyticsModuleSetup',
-	fillFilterWithComponent( ConnectedAnalyticsSetup )
+	fillFilterWithComponent( AnalyticsSetup )
 );
 
 addFilter(
 	'googlesitekit.ModuleSettingsDetails-analytics',
 	'googlesitekit.AnalyticsModuleSettings',
-	fillFilterWithComponent( ConnectedAnalyticsSettings )
+	fillFilterWithComponent( AnalyticsSettings )
 );

@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { Component, render } from '@wordpress/element';
+import { Component, render, Fragment } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
 
 /**
@@ -42,17 +42,15 @@ class GoogleSitekitDashboard extends Component {
 
 		if ( showModuleSetupWizard ) {
 			return (
-				<Root>
-					<Setup />
-				</Root>
+				<Setup />
 			);
 		}
 
 		return (
-			<Root>
+			<Fragment>
 				<NotificationCounter />
 				<DashboardApp />
-			</Root>
+			</Fragment>
 		);
 	}
 }
@@ -68,7 +66,7 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <GoogleSitekitDashboard />, renderTarget );
+		render( <Root><GoogleSitekitDashboard /></Root>, renderTarget );
 
 		/**
 		 * Action triggered when the dashboard App is loaded.

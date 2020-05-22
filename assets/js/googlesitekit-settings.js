@@ -40,9 +40,7 @@ import SettingsApp from './components/settings/settings-app';
 class GoogleSitekitSettings extends Component {
 	render() {
 		return (
-			<Root>
-				<SettingsApp />
-			</Root>
+			<SettingsApp />
 		);
 	}
 }
@@ -54,7 +52,7 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <GoogleSitekitSettings />, renderTarget );
+		render( <Root><GoogleSitekitSettings /></Root>, renderTarget );
 
 		/**
 		 * Action triggered when the settings App is loaded.

@@ -40,9 +40,7 @@ import Root from './components/root';
 class GoogleSitekitDashboardDetails extends Component {
 	render() {
 		return (
-			<Root>
-				<DashboardDetailsApp />
-			</Root>
+			<DashboardDetailsApp />
 		);
 	}
 }
@@ -54,7 +52,7 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <GoogleSitekitDashboardDetails />, renderTarget );
+		render( <Root><GoogleSitekitDashboardDetails /></Root>, renderTarget );
 
 		/**
 		 * Action triggered when the dashboard details App is loaded.
