@@ -43,8 +43,6 @@ class SettingsModules extends Component {
 
 		this.state = {
 			error: false,
-			isEditing: {},
-			openModules: {},
 			isSaving: false,
 		};
 
@@ -66,16 +64,15 @@ class SettingsModules extends Component {
 	}
 
 	handleAccordion( module, e ) {
+		const { activeModule, moduleState } = this.props;
 		// Set focus on heading when clicked.
 		e.target.closest( '.googlesitekit-settings-module__header' ).focus();
 
-		this.setState( ( prevState ) => {
-			return {
-				openModules: {
-					[ module ]: ! prevState.openModules[ module ],
-				},
-			};
-		} );
+		// If same as activeModule, toggle closed, otherwise it is open.
+		const isOpen = module !== activeModule || ! moduleState;
+
+		this.props.setActiveModule( isOpen ? module : null );
+		this.props.setModuleState( isOpen ? 'view' : null );
 	}
 
 	/**
@@ -99,16 +96,12 @@ class SettingsModules extends Component {
 				// Clears session and local storage on every successful setting.
 				clearWebStorage();
 
-				this.setState( ( prevState ) => {
-					return {
-						isSaving: false,
-						error: false,
-						isEditing: {
-							...prevState.isEditing,
-							[ module ]: ! prevState.isEditing[ module ],
-						},
-					};
+				this.setState( {
+					isSaving: false,
+					error: false,
 				} );
+
+				this.setModuleState( 'view' );
 			} ).catch( ( err ) => {
 				this.setState( {
 					isSaving: false,
@@ -119,24 +112,22 @@ class SettingsModules extends Component {
 				} );
 			} );
 		} else {
-			this.setState( ( prevState ) => {
-				return {
-					isEditing: {
-						...prevState.isEditing,
-						[ module ]: ! prevState.isEditing[ module ],
-					},
-					error: false, // Reset error state when switching modules.
-				};
+			this.setState( {
+				error: false, // Reset error state when switching modules.
 			} );
+			this.props.setModuleState(
+				this.props.moduleState === 'edit' ? 'view' : 'edit'
+			);
 		}
 	}
 
 	settingsModuleComponent( module, isSaving ) {
+		const { activeModule, moduleState } = this.props;
 		const modulesData = getModulesData();
+		const isCurrentModule = activeModule === module.slug;
 
 		const { provides } = modulesData[ module.slug ];
-		const { isEditing, openModules, error } = this.state;
-		const isOpen = openModules[ module.slug ] || false;
+		const { error } = this.state;
 
 		return (
 			<SettingsModule
@@ -153,8 +144,8 @@ class SettingsModules extends Component {
 				updateModulesList={ this.updateModulesList }
 				handleEdit={ this.handleButtonAction }
 				handleConfirm
-				isEditing={ isEditing }
-				isOpen={ isOpen }
+				isEditing={ { [ `${ activeModule }-module` ]: moduleState === 'edit' } }
+				isOpen={ isCurrentModule && moduleState }
 				handleAccordion={ this.handleAccordion }
 				handleDialog={ this.handleDialog }
 				provides={ provides }
