@@ -33,7 +33,7 @@ const DashboardAuthAlert = () => {
 
 	const productUrl = requiredScopes.filter( ( e ) => ! grantedScopes.includes( e ) )[ 0 ];
 	const productSlug = productUrl ? productUrl.toString().split( '/' ).pop() : '';
-	const product = productSlug ? getModulesData()[ productSlug ].name : '';
+	const product = getModulesData()[ productSlug ] ? getModulesData()[ productSlug ].name : '';
 
 	return (
 		<Notification
