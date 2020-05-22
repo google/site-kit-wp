@@ -19,11 +19,7 @@
 /**
  * External dependencies
  */
-
-/**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
+import fetchMock from 'fetch-mock-jest';
 
 /**
  * Internal dependencies
@@ -46,11 +42,9 @@ describe( 'googlesitekit.api', () => {
 	const { getItem, setItem, setSelectedStorageBackend } = CacheModule;
 	let storageMechanism;
 
-	let apiFetchSpy;
 	let getItemSpy;
 	let setItemSpy;
 	beforeEach( () => {
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 		getItemSpy = jest.spyOn( CacheModule, 'getItem' );
 		setItemSpy = jest.spyOn( CacheModule, 'setItem' );
 	} );
@@ -62,7 +56,8 @@ describe( 'googlesitekit.api', () => {
 	} );
 
 	afterEach( async () => {
-		apiFetchSpy.mockRestore();
+		fetchMock.restore();
+		fetchMock.mockClear();
 		getItemSpy.mockRestore();
 		setItemSpy.mockRestore();
 
@@ -112,11 +107,10 @@ describe( 'googlesitekit.api', () => {
 		it( 'should return a response', async () => {
 			// TODO: Maybe refactor this into a helper once we know how we usually
 			// mock requests.
-			fetch
-				.doMockOnceIf(
-					/^\/google-site-kit\/v1\/core\/search-console\/data\/users/
-				)
-				.mockResponseOnce( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+			fetchMock.once(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/users/,
+				{ body: { foo: 'bar' }, status: 200 }
+			);
 
 			const response = await get( 'core', 'search-console', 'users' );
 
@@ -125,16 +119,15 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should send query string params from data params', async () => {
-			fetch
-				.doMockIf(
-					/^\/google-site-kit\/v1\/core\/search-console\/data\/search/
-				)
-				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+			fetchMock.once(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/search/,
+				{ body: { foo: 'bar' }, status: 200 }
+			);
 
 			const dataBody = { somethingElse: 'to-set', foo: 1, arrayValue: [ 1, 2 ] };
 			await get( 'core', 'search-console', 'search', dataBody );
-			expect( fetch ).toHaveBeenCalledWith(
-				'/google-site-kit/v1/core/search-console/data/search?somethingElse=to-set&foo=1&arrayValue%5B0%5D=1&arrayValue%5B1%5D=2&_locale=user',
+			expect( fetchMock ).toHaveFetched(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/search/,
 				{
 					body: undefined,
 					credentials: 'include',
@@ -153,11 +146,10 @@ describe( 'googlesitekit.api', () => {
 				data: { status: 404 },
 			};
 
-			fetch
-				.doMockOnceIf(
-					/^\/google-site-kit\/v1\/core\/search-console\/data\/other/
-				)
-				.mockResponseOnce( JSON.stringify( errorResponse ), { status: 404 } );
+			fetchMock.once(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/other/,
+				{ body: errorResponse, status: 404 }
+			);
 
 			try {
 				muteConsole( 'error' );
@@ -174,11 +166,10 @@ describe( 'googlesitekit.api', () => {
 				data: { status: 500 },
 			};
 
-			fetch
-				.doMockOnceIf(
-					/^\/google-site-kit\/v1\/core\/search-console\/data\/users/
-				)
-				.mockResponseOnce( JSON.stringify( errorResponse ), { status: 500 } );
+			fetchMock.once(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/users/,
+				{ body: errorResponse, status: 500 }
+			);
 
 			try {
 				muteConsole( 'error' );
@@ -189,16 +180,15 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should cache requests by default', async () => {
-			expect( fetch ).toHaveBeenCalledTimes( 0 );
+			expect( fetchMock ).toHaveFetchedTimes( 0 );
 
-			fetch
-				.doMockIf(
-					/^\/google-site-kit\/v1\/core\/search-console\/data\/users/
-				)
-				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+			fetchMock.once(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/users/,
+				{ body: { foo: 'bar' }, status: 200 }
+			);
 
 			const firstResponse = await get( 'core', 'search-console', 'users' );
-			expect( fetch ).toHaveBeenCalledTimes( 1 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			// Ensure the response was saved to the cache.
 			expect( setItemSpy ).toHaveBeenCalledWith(
 				createCacheKey( 'core', 'search-console', 'users' ),
@@ -210,7 +200,7 @@ describe( 'googlesitekit.api', () => {
 			const secondResponse = await get( 'core', 'search-console', 'users' );
 
 			expect( secondResponse ).toEqual( firstResponse );
-			expect( fetch ).toHaveBeenCalledTimes( 1 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 			// Ensure cache functions were used.
 			expect( getItemSpy ).toHaveBeenCalledWith(
@@ -222,22 +212,21 @@ describe( 'googlesitekit.api', () => {
 		it( 'should not use cache if caching is disabled globally', async () => {
 			setUsingCache( false );
 
-			fetch
-				.doMockIf(
-					/^\/google-site-kit\/v1\/core\/search-console\/data\/notifications/
-				)
-				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+			fetchMock.mock(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/notifications/,
+				{ body: { foo: 'bar' }, status: 200 }
+			);
 
 			await get( 'core', 'search-console', 'notifications' );
 			expect( setItemSpy ).not.toHaveBeenCalledWith(
 				createCacheKey( 'core', 'search-console', 'notifications' ),
 				{ foo: 'bar' }
 			);
-			expect( fetch ).toHaveBeenCalledTimes( 1 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 			// Ensure `fetch()` is called a second time; the cache is disabled.
 			await get( 'core', 'search-console', 'notifications' );
-			expect( fetch ).toHaveBeenCalledTimes( 2 );
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
 
 			// Ensure the cache was never used.
 			expect( getItemSpy ).not.toHaveBeenCalledWith(
@@ -250,22 +239,21 @@ describe( 'googlesitekit.api', () => {
 			// Ensure global caching is enabled when we disable caching on a per-request basis.
 			setUsingCache( true );
 
-			fetch
-				.doMockIf(
-					/^\/google-site-kit\/v1\/core\/search-console\/data\/other/
-				)
-				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+			fetchMock.mock(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/other/,
+				{ body: { foo: 'bar' }, status: 200 }
+			);
 
 			await get( 'core', 'search-console', 'other', undefined, { useCache: false } );
 			expect( setItemSpy ).not.toHaveBeenCalledWith(
 				createCacheKey( 'core', 'search-console', 'other' ),
 				{ foo: 'bar' }
 			);
-			expect( fetch ).toHaveBeenCalledTimes( 1 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 			// Ensure `fetch()` is called a second time; the cache is disabled.
 			await get( 'core', 'search-console', 'other', undefined, { useCache: false } );
-			expect( fetch ).toHaveBeenCalledTimes( 2 );
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
 
 			// Ensure the cache was never used.
 			expect( getItemSpy ).not.toHaveBeenCalledWith(
@@ -275,23 +263,22 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should not use cache even if cached values exist', async () => {
-			fetch
-				.doMockIf(
-					/^\/google-site-kit\/v1\/core\/search-console\/data\/cached/
-				)
-				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+			fetchMock.mock(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/cached/,
+				{ body: { foo: 'bar' }, status: 200 }
+			);
 
 			await get( 'core', 'search-console', 'cached' );
 			expect( setItemSpy ).toHaveBeenCalledWith(
 				createCacheKey( 'core', 'search-console', 'cached' ),
 				{ foo: 'bar' }
 			);
-			expect( fetch ).toHaveBeenCalledTimes( 1 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 			// Ensure `fetch()` is called a second time; the cache is disabled.
 			getItemSpy.mockReset();
 			await get( 'core', 'search-console', 'cached', undefined, { useCache: false } );
-			expect( fetch ).toHaveBeenCalledTimes( 2 );
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
 
 			// Ensure the cache was never used.
 			expect( getItemSpy ).not.toHaveBeenCalledWith(
@@ -329,18 +316,17 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should send request body data from data params', async () => {
-			fetch
-				.doMockIf(
-					/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/
-				)
-				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+			fetchMock.once(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
+				{ body: { foo: 'bar' }, status: 200 }
+			);
 
 			const dataBody = { somethingElse: 'to-set', foo: 1, arrayValue: [ 1, 2 ] };
 			await set( 'core', 'search-console', 'settings', dataBody );
-			expect( fetch ).toHaveBeenCalledWith(
-				'/google-site-kit/v1/core/search-console/data/settings?_locale=user',
+			expect( fetchMock ).toHaveFetched(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
 				{
-					body: JSON.stringify( { data: dataBody } ),
+					body: { data: dataBody },
 					credentials: 'include',
 					headers: {
 						Accept: 'application/json, */*;q=0.1',
@@ -352,21 +338,20 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should send request body data from data params and query params if set', async () => {
-			fetch
-				.doMockIf(
-					/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/
-				)
-				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+			fetchMock.once(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
+				{ body: { foo: 'bar' }, status: 200 }
+			);
 
 			const dataBody = { somethingElse: 'to-set', foo: 1, arrayValue: [ 1, 2 ] };
 			await set( 'core', 'search-console', 'settings', dataBody, {
 				queryParams: { foo: 'bar' },
 			} );
 
-			expect( fetch ).toHaveBeenCalledWith(
-				'/google-site-kit/v1/core/search-console/data/settings?foo=bar&_locale=user',
+			expect( fetchMock ).toHaveFetched(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
 				{
-					body: JSON.stringify( { data: dataBody } ),
+					body: { data: dataBody },
 					credentials: 'include',
 					headers: {
 						Accept: 'application/json, */*;q=0.1',
@@ -378,18 +363,17 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should never use the cache for set requests', async () => {
-			fetch
-				.doMockIf(
-					/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/
-				)
-				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+			fetchMock.mock(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
+				{ body: { foo: 'bar' }, status: 200 }
+			);
 
 			await set( 'core', 'search-console', 'settings', { somethingElse: 'to-set' } );
-			expect( fetch ).toHaveBeenCalledTimes( 1 );
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 			// Ensure `fetch()` is called a second time; the cache is disabled.
 			await set( 'core', 'search-console', 'settings', { something: 'to-set' } );
-			expect( fetch ).toHaveBeenCalledTimes( 2 );
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
 
 			// Ensure the cache was not set used.
 			expect( getItemSpy ).not.toHaveBeenCalled();
@@ -398,11 +382,10 @@ describe( 'googlesitekit.api', () => {
 
 		it( 'should invalidate the cache for matching type+identifier+datapoint combo', async () => {
 			// Mock all requests for this URL.
-			fetch
-				.doMockIf(
-					/^\/google-site-kit\/v1\/core\/search-console\/data\/will-cache/
-				)
-				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+			fetchMock.mock(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/will-cache/,
+				{ body: { foo: 'bar' }, status: 200 }
+			);
 
 			// Contents should not be found in the cache on first request.
 			let cacheData = await getItem(
@@ -430,11 +413,10 @@ describe( 'googlesitekit.api', () => {
 
 		it( 'should invalidate the cache for matching type+identifier+datapoint with query params', async () => {
 			// Mock all requests for this URL.
-			fetch
-				.doMockIf(
-					/^\/google-site-kit\/v1\/core\/search-console\/data\/will-cache/
-				)
-				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+			fetchMock.mock(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/will-cache/,
+				{ body: { foo: 'bar' }, status: 200 }
+			);
 
 			const queryParams = { surf: 'board' };
 
@@ -616,16 +598,15 @@ describe( 'googlesitekit.api', () => {
 
 	describe( 'siteKitRequest', () => {
 		it( 'should send a request using fetch', async () => {
-			fetch
-				.doMockIf(
-					/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/
-				)
-				.mockResponse( JSON.stringify( { foo: 'bar' } ), { status: 200 } );
+			fetchMock.once(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
+				{ body: { foo: 'bar' }, status: 200 }
+			);
 
 			await siteKitRequest( 'core', 'search-console', 'settings' );
 
-			expect( fetch ).toHaveBeenCalledWith(
-				'/google-site-kit/v1/core/search-console/data/settings?_locale=user',
+			expect( fetchMock ).toHaveFetched(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
 				{
 					body: undefined,
 					credentials: 'include',
