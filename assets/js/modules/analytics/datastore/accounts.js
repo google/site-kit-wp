@@ -55,7 +55,7 @@ export const INITIAL_STATE = {
 	accounts: undefined,
 	isFetchingAccountsPropertiesProfiles: false,
 	isFetchingCreateAccount: false,
-	accountTicketTermsOfServiceURL: undefined,
+	accountTicketID: undefined,
 };
 
 export const actions = {
@@ -300,7 +300,7 @@ export const reducer = ( state, { type, payload } ) => {
 			const { accountTicket: { id } } = payload;
 			return {
 				...state,
-				accountTicketTermsOfServiceURL: `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/?api.accountTicketId=${ id }`,
+				accountTicketID: id,
 			};
 		}
 
@@ -419,22 +419,20 @@ export const selectors = {
 	 * @return {(string|undefined)} The terms of service URL.
 	 */
 	getAccountTicketTermsOfServiceURL: createRegistrySelector( ( select ) => ( state ) => {
-		const { accountTicketTermsOfServiceURL: url } = state;
-		if ( undefined === url ) {
+		const { accountTicketID } = state;
+		const email = select( CORE_USER ).getEmail();
+
+		if ( undefined === accountTicketID || ! email ) {
 			return undefined;
 		}
 
-		const email = select( CORE_USER ).getEmail();
-		if ( undefined === email ) {
-			return url;
-		}
-
-		// While there should only be one anchor, let's make sure we get everything.
-		const [ baseURL, ...anchors ] = url.split( '#' );
-		const userBaseURL = addQueryArgs( baseURL, {
-			authuser: email,
-		} );
-		return `${ userBaseURL }#${ anchors.join( '#' ) }`;
+		return addQueryArgs(
+			'https://analytics.google.com/analytics/web/',
+			{
+				authuser: email,
+				provisioningSignup: 'false',
+			}
+		) + `#management/TermsOfService/?api.accountTicketId=${ accountTicketID }`;
 	} ),
 
 	/**
