@@ -19,11 +19,11 @@
 /**
  * External dependencies
  */
+import fetchMock from 'fetch-mock-jest';
 
 /**
  * WordPress dependencies
  */
-import apiFetch from '@wordpress/api-fetch';
 import { createRegistry } from '@wordpress/data';
 
 /**
@@ -40,7 +40,6 @@ import { createSettingsStore } from './create-settings-store';
 const STORE_ARGS = [ 'core', 'site', 'settings' ];
 
 describe( 'createSettingsStore store', () => {
-	let apiFetchSpy;
 	let dispatch;
 	let registry;
 	let select;
@@ -62,8 +61,6 @@ describe( 'createSettingsStore store', () => {
 		dispatch = registry.dispatch( storeDefinition.STORE_NAME );
 		store = registry.stores[ storeDefinition.STORE_NAME ].store;
 		select = registry.select( storeDefinition.STORE_NAME );
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -71,8 +68,9 @@ describe( 'createSettingsStore store', () => {
 	} );
 
 	afterEach( () => {
+		fetchMock.restore();
+		fetchMock.mockClear();
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'name', () => {
@@ -131,14 +129,10 @@ describe( 'createSettingsStore store', () => {
 		describe( 'saveSettings', () => {
 			it( 'does not require any params', () => {
 				expect( async () => {
-					fetch
-						.doMockOnceIf(
-							/^\/google-site-kit\/v1\/core\/site\/data\/settings/
-						)
-						.mockResponseOnce(
-							JSON.stringify( { setting1: 'serverside' } ),
-							{ status: 200 }
-						);
+					fetchMock.once(
+						/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+						{ body: { setting1: 'serverside' }, status: 200 }
+					);
 
 					await dispatch.saveSettings();
 				} ).not.toThrow();
@@ -146,14 +140,10 @@ describe( 'createSettingsStore store', () => {
 
 			it( 'updates settings from server', async () => {
 				const response = { isSkyBlue: 'yes' };
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/settings/
-					)
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 200 }
-					);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					{ body: response, status: 200 }
+				);
 
 				// The server is the authority. So because this won't be part of the response
 				// (see above), it will be disregarded.
@@ -163,8 +153,8 @@ describe( 'createSettingsStore store', () => {
 
 				await subscribeUntil( registry, () => select.isDoingSaveSettings() === false );
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
-				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toMatchObject( { isSkyBlue: 'no' } );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( JSON.parse( fetchMock.calls()[ 0 ][ 1 ].body ).data ).toMatchObject( { isSkyBlue: 'no' } );
 				expect( store.getState().settings ).toMatchObject( response );
 			} );
 		} );
@@ -180,14 +170,10 @@ describe( 'createSettingsStore store', () => {
 			} );
 
 			it( 'sets isDoingSaveSettings', () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/settings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( { setting1: true } ),
-						{ status: 200 }
-					);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					{ body: { setting1: true }, status: 200 }
+				);
 
 				dispatch.fetchSaveSettings( {} );
 				expect( select.isDoingSaveSettings() ).toEqual( true );
@@ -269,14 +255,10 @@ describe( 'createSettingsStore store', () => {
 		describe( 'getSettings', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const response = { setting1: 'value' };
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/settings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( response ),
-						{ status: 200 }
-					);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					{ body: response, status: 200 }
+				);
 
 				const initialSettings = select.getSettings();
 				// Settings will be their initial value while being fetched.
@@ -289,10 +271,10 @@ describe( 'createSettingsStore store', () => {
 
 				const settings = select.getSettings();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( settings ).toEqual( response );
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( select.getSettings() ).toEqual( settings );
 			} );
 
@@ -305,6 +287,7 @@ describe( 'createSettingsStore store', () => {
 
 				await subscribeUntil( registry, () => select.hasFinishedResolution( 'getSettings' ) );
 
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
 				expect( fetch ).not.toHaveBeenCalled();
 			} );
 
@@ -324,14 +307,10 @@ describe( 'createSettingsStore store', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/settings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					{ body: response, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				select.getSettings();
@@ -343,7 +322,7 @@ describe( 'createSettingsStore store', () => {
 
 				const settings = select.getSettings();
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( settings ).toEqual( undefined );
 			} );
 		} );
@@ -356,14 +335,10 @@ describe( 'createSettingsStore store', () => {
 				const serverValues = { setting1: 'serverside' };
 				const clientValues = { setting1: 'clientside' };
 
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/settings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( serverValues ),
-						{ status: 200 }
-					);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					{ body: serverValues, status: 200 }
+				);
 
 				select.getSettings();
 				await subscribeUntil( registry,
@@ -396,17 +371,16 @@ describe( 'createSettingsStore store', () => {
 
 			it( 'uses a resolver to make a network request', async () => {
 				const value = 'serverside';
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/core\/site\/data\/settings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( {
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					{
+						body: {
 							otherSetting: 'other-value',
 							isSkyBlue: value,
-						} ),
-						{ status: 200 }
-					);
+						},
+						status: 200,
+					}
+				);
 
 				// Setting will have its initial value while being fetched.
 				expect( select.getIsSkyBlue() ).toEqual( undefined );
@@ -416,9 +390,9 @@ describe( 'createSettingsStore store', () => {
 					),
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( select.getIsSkyBlue() ).toEqual( value );
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 		} );
 	} );
@@ -445,23 +419,25 @@ describe( 'createSettingsStore store', () => {
 				const [ type, identifier, datapoint ] = STORE_ARGS;
 				const response = { type, identifier, datapoint };
 
-				fetch
-					.mockResponseOnce( async ( req ) => {
-						if ( req.url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` ) ) {
-							return {
-								body: JSON.stringify( response ),
-								init: { status: 200 },
-							};
-						}
-						return {
-							body: JSON.stringify( {
-								code: 'incorrect_api_endpoint',
-								message: 'Incorrect API endpoint',
-								data: { status: 400 },
-							} ),
-							init: { status: 400 },
-						};
-					} );
+				fetchMock.once(
+					( url ) => (
+						url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` )
+					),
+					{ body: response, status: 200 }
+				);
+				fetchMock.once(
+					( url ) => (
+						! url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` )
+					),
+					{
+						body: {
+							code: 'incorrect_api_endpoint',
+							message: 'Incorrect API endpoint',
+							data: { status: 400 },
+						},
+						init: { status: 400 },
+					}
+				);
 
 				const result = await storeDefinition.controls.FETCH_SETTINGS();
 				expect( result ).toEqual( response );
@@ -476,23 +452,25 @@ describe( 'createSettingsStore store', () => {
 				const [ type, identifier, datapoint ] = STORE_ARGS;
 				const response = { type, identifier, datapoint };
 
-				fetch
-					.mockResponseOnce( async ( req ) => {
-						if ( req.url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` ) ) {
-							return {
-								body: JSON.stringify( response ),
-								init: { status: 200 },
-							};
-						}
-						return {
-							body: JSON.stringify( {
-								code: 'incorrect_api_endpoint',
-								message: 'Incorrect API endpoint',
-								data: { status: 400 },
-							} ),
-							init: { status: 400 },
-						};
-					} );
+				fetchMock.once(
+					( url ) => (
+						url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` )
+					),
+					{ body: response, status: 200 }
+				);
+				fetchMock.once(
+					( url ) => (
+						! url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` )
+					),
+					{
+						body: {
+							code: 'incorrect_api_endpoint',
+							message: 'Incorrect API endpoint',
+							data: { status: 400 },
+						},
+						init: { status: 400 },
+					}
+				);
 
 				const result = await storeDefinition.controls.FETCH_SAVE_SETTINGS( {
 					type: 'FETCH_SAVE_SETTINGS',
