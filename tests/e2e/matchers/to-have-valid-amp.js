@@ -11,19 +11,9 @@ const { JSDOM } = jsdom;
 import { createURL } from '@wordpress/e2e-test-utils';
 
 /**
- * Helper to prepare the cookies to be passed to fetch
- *
- * @param {Array} cookies Array of cookies returned from page.getCookes().
- *
- * @return {string} The cookie string.
+ * Internal dependencies
  */
-async function parseCookies( cookies ) {
-	let parsedCookies = '';
-	cookies.forEach( ( cookie ) => {
-		parsedCookies += `${ cookie.name }=${ cookie.value }; `;
-	} );
-	return parsedCookies;
-}
+import { fetchPageContent } from '../utils';
 
 /**
  * Test for valid AMP for logged in users.
@@ -40,24 +30,23 @@ async function validateAMPforLoggedInUser( path ) {
 	// Make sure we have a login cookie
 	expect( cookies.filter( ( cookie ) => cookie.name.match( /^wordpress_logged_in/ ) ).length ).toBeGreaterThan( 0 );
 
-	// make the request
-	const response = await fetch( urlToFetch, { headers: { cookie: parseCookies( cookies ) } } );
-	if ( 200 === response.status ) {
-		const html = await response.text();
-		const { document: jsDoc } = ( new JSDOM( html ) ).window;
+	// Get the logged in markup.
+	const { success, payload } = await fetchPageContent( urlToFetch, cookies );
+
+	if ( success ) {
+		const { document: jsDoc } = ( new JSDOM( payload ) ).window;
 		try {
-			expect( jsDoc.querySelector( '#amp-admin-bar-item-status-icon' ) ).toMatch( '✅' );
-			pass = true;
-			message = () => 'Expected logged-in user to have valid AMP';
-		} catch ( error ) {
+			expect( jsDoc.querySelector( '#amp-admin-bar-item-status-icon' ).textContent ).toMatch( '✅' );
 			pass = true;
 			message = () => 'Expected logged-in user not to have valid AMP';
+		} catch ( error ) {
+			pass = false;
+			message = () => 'Expected logged-in user to have valid AMP';
 		}
 	} else {
 		pass = false;
-		message = () => `fetch() error: ${ page.url() } returned a status of ${ response.status }`;
+		message = () => `fetchPageContent(${ urlToFetch }) returned an error:  ${ payload }`;
 	}
-
 	return { pass, message };
 }
 
@@ -71,21 +60,16 @@ async function validateAMPforLoggedInUser( path ) {
 async function validateAMPForLoggedOutUser( path ) {
 	let pass, message;
 	const urlToFetch = 'object' === typeof path ? path.url() : createURL( path );
-	try {
-		const response = await fetch( urlToFetch, { credentials: 'omit' } );
-		if ( 200 !== response.status ) {
-			pass = false;
-			message = () => `fetch() error: ${ urlToFetch } returned a status of ${ response.statusText }`;
-		} else {
-			const html = await response.text();
-			const validator = await amphtmlValidator.getInstance();
-			const { status } = validator.validateString( html );
-			pass = ( 'PASS' === status );
-			message = () => `AMP Status: ${ status }`;
-		}
-	} catch ( error ) {
+
+	const { success, payload } = await fetchPageContent( urlToFetch );
+	if ( success ) {
+		const validator = await amphtmlValidator.getInstance();
+		const { status } = validator.validateString( payload );
+		pass = ( 'PASS' === status );
+		message = () => `AMP Status: ${ status }`;
+	} else {
 		pass = false;
-		message = () => error.message;
+		message = () => `fetchPageContent(${ urlToFetch }) returned an error:  ${ payload }`;
 	}
 	return { pass, message };
 }

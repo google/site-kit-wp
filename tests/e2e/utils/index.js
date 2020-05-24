@@ -2,6 +2,7 @@ export { activateAMPWithMode, allowedAMPModes, setAMPMode } from './activate-amp
 export { clearSessionStorage } from './clear-session-storage';
 export { deactivateUtilityPlugins } from './deactivate-utility-plugins';
 export { evalWithWPData } from './eval-with-wp-data';
+export { fetchPageContent } from './fetch-page-content';
 export { getWPVersion } from './get-wp-version';
 export { logoutUser } from './logout-user';
 export { pasteText } from './paste-text';
@@ -20,3 +21,4 @@ export { testClientConfig } from './test-client-config';
 export { testSiteNotification } from './test-site-notification';
 export { useRequestInterception } from './use-request-interception';
 export { wpApiFetch } from './wp-api-fetch';
+
