@@ -113,12 +113,14 @@ if ( modulesData.analytics.active ) {
 		'googlesitekit.Analytics',
 		addWPAnalyticsDashboardWidgetTopPagesTable );
 
-	/**
-	 * Add components to the module detail page.
-	 */
-	addFilter( 'googlesitekit.ModuleApp-' + slug,
-		'googlesitekit.Analytics',
-		addAnalyticsDashboardWidget );
+	if ( modulesData[ slug ].setupComplete ) {
+		/**
+		 * Add components to the module detail page.
+		 */
+		addFilter( 'googlesitekit.ModuleApp-' + slug,
+			'googlesitekit.Analytics',
+			addAnalyticsDashboardWidget );
+	}
 
 	/**
 	 * Add components to the AdSense Dashboard.
