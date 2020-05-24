@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
@@ -30,8 +35,10 @@ import SetupForm from './setup-form';
 import ProgressBar from '../../../components/progress-bar';
 import { SvgIcon, trackEvent } from '../../../util';
 import { STORE_NAME, ACCOUNT_CREATE } from '../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	AccountCreate,
+	AccountCreateLegacy,
 	ExistingTagError,
 } from '../common';
 import { parsePropertyID } from '../util';
@@ -47,6 +54,7 @@ export default function SetupMain( { finishSetup } ) {
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
+	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
 
 	// Set the accountID and property if there is an existing tag.
 	const { setAccountID, selectProperty } = useDispatch( STORE_NAME );
@@ -77,7 +85,7 @@ export default function SetupMain( { finishSetup } ) {
 	} else if ( hasExistingTag && existingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
 	} else if ( isCreateAccount || ( Array.isArray( accounts ) && ! accounts.length ) ) {
-		viewComponent = <AccountCreate />;
+		viewComponent = usingProxy ? <AccountCreate /> : <AccountCreateLegacy />;
 	} else {
 		viewComponent = <SetupForm finishSetup={ finishSetupAndNavigate } />;
 	}
@@ -97,3 +105,11 @@ export default function SetupMain( { finishSetup } ) {
 		</div>
 	);
 }
+
+SetupMain.propTypes = {
+	finishSetup: PropTypes.func,
+};
+
+SetupMain.defaultProps = {
+	finishSetup: () => {},
+};

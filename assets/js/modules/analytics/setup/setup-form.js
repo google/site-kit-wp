@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -46,7 +51,7 @@ export default function SetupForm( { finishSetup } ) {
 	const { submitChanges } = useDispatch( STORE_NAME );
 	const submitForm = useCallback( async ( event ) => {
 		event.preventDefault();
-		const { error } = await submitChanges() || {};
+		const { error } = await submitChanges();
 		if ( ! error ) {
 			finishSetup();
 			trackEvent( 'analytics_setup', 'analytics_configured' );
@@ -60,13 +65,13 @@ export default function SetupForm( { finishSetup } ) {
 		>
 			<ErrorNotice />
 
+			<ExistingTagNotice />
+
 			{ ( !! accounts.length && ! hasExistingTag ) && (
-				<p>
+				<p className="googlesitekit-margin-bottom-0">
 					{ __( 'Please select the account information below. You can change this view later in your settings.', 'google-site-kit' ) }
 				</p>
 			) }
-
-			<ExistingTagNotice />
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
@@ -84,3 +89,11 @@ export default function SetupForm( { finishSetup } ) {
 		</form>
 	);
 }
+
+SetupForm.propTypes = {
+	finishSetup: PropTypes.func,
+};
+
+SetupForm.defaultProps = {
+	finishSetup: () => {},
+};

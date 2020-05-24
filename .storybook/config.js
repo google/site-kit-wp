@@ -43,6 +43,7 @@ import '../vendor/johnpbloch/wordpress-core/wp-admin/css/dashboard.css';
 import '../vendor/johnpbloch/wordpress-core/wp-admin/css/edit.css';
 import '../vendor/johnpbloch/wordpress-core/wp-admin/css/forms.css';
 import { googlesitekit as dashboardData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-dashboard-googlesitekit';
+import { bootstrapFetchMocks } from './fetch-mocks';
 
 // Default Data.
 const googlesitekit = dashboardData;
@@ -80,7 +81,7 @@ global.googlesitekit = global.googlesitekit || googlesitekit;
 global.googlesitekit.setup = global.googlesitekit.setup || googlesitekit.setup;
 global.googlesitekit.admin = global.googlesitekit.admin || googlesitekit.admin;
 global.googlesitekit.modules = global.googlesitekit.modules || googlesitekit.modules;
-global.googlesitekit.admin.assetsRoot = '/assets/';
+global.googlesitekit.admin.assetsRoot = './assets/';
 global.googlesitekit.isStorybook = true;
 global._googlesitekitBaseData = {
 	homeURL: 'http://example.com/',
@@ -104,6 +105,8 @@ global._googlesitekitEntityData = {
 	currentEntityTitle: null,
 	currentEntityID: null,
 };
+
+bootstrapFetchMocks();
 
 // Global Decorator.
 addDecorator( ( story ) => <div className="googlesitekit-plugin-preview">

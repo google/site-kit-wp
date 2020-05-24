@@ -34,7 +34,7 @@ branches:
   only:
     - master
     - develop
-    - refactor/analytics-data-store
+    - adsense-setup-refactoring
 
 # Before install, failures in this section will result in build status 'errored'
 before_install:

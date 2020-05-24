@@ -25,10 +25,11 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import DisplaySetting from '../../../components/display-setting';
 import { STORE_NAME } from '../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { trackingExclusionLabels } from '../common/tracking-exclusion-switches';
-import { ExistingTagError, ExistingTagNotice } from '../common';
+import { ExistingTagError, ExistingTagNotice, ErrorNotice } from '../common';
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -45,8 +46,10 @@ export default function SettingsView() {
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 
-			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
+			{ /* Prevent showing ExistingTagError and general ErrorNotice at the same time. */ }
+			{ ( ! hasExistingTag || hasExistingTagPermission ) && <ErrorNotice /> }
 			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
+			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
@@ -54,7 +57,7 @@ export default function SettingsView() {
 						{ __( 'Account', 'google-site-kit' ) }
 					</p>
 					<h5 className="googlesitekit-settings-module__meta-item-data">
-						{ accountID || null }
+						<DisplaySetting value={ accountID } />
 					</h5>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
@@ -62,7 +65,7 @@ export default function SettingsView() {
 						{ __( 'Property', 'google-site-kit' ) }
 					</p>
 					<h5 className="googlesitekit-settings-module__meta-item-data">
-						{ propertyID || null }
+						<DisplaySetting value={ propertyID } />
 					</h5>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
@@ -70,7 +73,7 @@ export default function SettingsView() {
 						{ __( 'View', 'google-site-kit' ) }
 					</p>
 					<h5 className="googlesitekit-settings-module__meta-item-data">
-						{ profileID || null }
+						<DisplaySetting value={ profileID } />
 					</h5>
 				</div>
 			</div>
@@ -82,7 +85,8 @@ export default function SettingsView() {
 					</p>
 					<h5 className="googlesitekit-settings-module__meta-item-data">
 						{ useSnippet && __( 'Snippet is inserted', 'google-site-kit' ) }
-						{ ! useSnippet && __( 'Snippet is not inserted', 'google-site-kit' ) }
+						{ ( ! useSnippet && ! hasExistingTag ) && __( 'Snippet is not inserted', 'google-site-kit' ) }
+						{ ( ! useSnippet && hasExistingTag ) && __( 'Inserted by another plugin or theme', 'google-site-kit' ) }
 					</h5>
 				</div>
 			</div>

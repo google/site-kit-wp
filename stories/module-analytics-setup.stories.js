@@ -35,6 +35,7 @@ import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
+import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 import { ACCOUNT_CREATE } from '../assets/js/modules/analytics/datastore/constants';
 
@@ -77,8 +78,8 @@ storiesOf( 'Analytics Module/Setup', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties );
-			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 			dispatch( STORE_NAME ).receiveExistingTag( null );
 		};
 
@@ -91,8 +92,8 @@ storiesOf( 'Analytics Module/Setup', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties );
-			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 			dispatch( STORE_NAME ).receiveExistingTag( null );
 			dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
 		};
@@ -110,15 +111,37 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		return <Setup callback={ setupRegistry } />;
 	} )
-	.add( 'Create Account', () => {
+	.add( 'Create Account Legacy', () => {
 		filterAnalyticsSetup();
 
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveExistingTag( null );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties );
-			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
+			dispatch( STORE_NAME ).setSettings( {
+				accountID: ACCOUNT_CREATE,
+			} );
+		};
+
+		return <Setup callback={ setupRegistry } />;
+	} )
+	.add( 'Create Account', () => {
+		filterAnalyticsSetup();
+
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( CORE_SITE ).receiveSiteInfo( {
+				usingProxy: true,
+				referenceSiteURL: 'http://example.com',
+				timezone: 'America/Detroit',
+				siteName: 'My Site Name',
+			} );
+			dispatch( STORE_NAME ).receiveExistingTag( null );
+			dispatch( STORE_NAME ).receiveAccounts( accounts );
+			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 			dispatch( STORE_NAME ).setSettings( {
 				accountID: ACCOUNT_CREATE,
 			} );
@@ -138,8 +161,8 @@ storiesOf( 'Analytics Module/Setup', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties );
-			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
 			dispatch( STORE_NAME ).receiveTagPermission( {
 				...existingTag,
@@ -160,8 +183,8 @@ storiesOf( 'Analytics Module/Setup', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties );
-			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
 			dispatch( STORE_NAME ).receiveTagPermission( {
 				...existingTag,

@@ -66,7 +66,7 @@ class PostSearcher extends Component {
 	 * @param {Function} populateResults The callback function to pass the results to.
 	 */
 	async postSearch( query, populateResults ) {
-		populateResults( [ __( 'Loading...', 'google-site-kit' ) ] );
+		populateResults( [ __( 'Loading…', 'google-site-kit' ) ] );
 
 		try {
 			const results = await data.get( TYPE_CORE, 'search', 'post-search', { query: encodeURIComponent( query ) } );

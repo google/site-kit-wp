@@ -202,8 +202,15 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {Object} Redux-style action.
 		 */
 		*fetchSaveSettings( values ) {
-			invariant( values, 'values is required.' );
 			let response, error;
+
+			if ( ! values ) {
+				error = {
+					message: 'values is required.',
+				};
+				global.console.error( error.message );
+				return { response, error };
+			}
 
 			yield {
 				payload: {},
@@ -391,7 +398,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @since 1.6.0
 		 *
 		 * @param {Object} state Data store's state.
-		 * @return {?Object} Settings with their values, or undefined.
+		 * @return {(Object|undefined)} Settings with their values, or undefined.
 		 */
 		getSettings( state ) {
 			return state.settings;

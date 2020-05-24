@@ -15,3 +15,13 @@ global.googlesitekit.canAdsRun = true;
 document.addEventListener( 'DOMContentLoaded', function() {
 	global.googlesitekit.canAdsRun = true;
 } );
+
+// If registry and AdSense datastore are loaded, use that instead of the global.
+if (
+	global.googlesitekit.data &&
+	global.googlesitekit.data.dispatch &&
+	global.googlesitekit.data.stores &&
+	global.googlesitekit.data.stores[ 'modules/adsense' ]
+) {
+	global.googlesitekit.data.dispatch( 'modules/adsense' ).receiveIsAdBlockerActive( false );
+}

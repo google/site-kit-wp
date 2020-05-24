@@ -47,6 +47,12 @@ function filterAnalyticsSettings() {
 	);
 }
 
+const completeModuleData = {
+	...global.googlesitekit.modules.analytics,
+	active: true,
+	setupComplete: true,
+};
+
 function Settings( props ) {
 	const {
 		callback,
@@ -76,6 +82,7 @@ function Settings( props ) {
 					homepage={ module.homepage }
 					learnmore={ module.learnMore }
 					active={ module.active }
+					setupComplete={ module.setupComplete }
 					hasSettings={ true }
 					autoActivate={ module.autoActivate }
 					updateModulesList={ updateModulesList }
@@ -103,7 +110,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			dispatch( STORE_NAME ).receiveSettings( {} );
 		};
 
-		return <Settings isOpen={ false } callback={ setupRegistry } />;
+		return <Settings isOpen={ false } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 	.add( 'View, open with all settings', () => {
 		filterAnalyticsSettings();
@@ -120,7 +127,29 @@ storiesOf( 'Analytics Module/Settings', module )
 			} );
 		};
 
-		return <Settings callback={ setupRegistry } />;
+		return <Settings module={ completeModuleData } callback={ setupRegistry } />;
+	} )
+	.add( 'View, open with all settings, no snippet with existing tag', () => {
+		filterAnalyticsSettings();
+
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).receiveExistingTag( 'UA-1234567890-1' );
+			dispatch( STORE_NAME ).receiveTagPermission( {
+				accountID: '1234567890',
+				propertyID: 'UA-1234567890-1',
+				permission: true,
+			} );
+			dispatch( STORE_NAME ).receiveSettings( {
+				accountID: '1234567890',
+				propertyID: 'UA-1234567890-1',
+				profileID: '9999999',
+				anonymizeIP: true,
+				useSnippet: false,
+				trackingDisabled: [ 'loggedinUsers' ],
+			} );
+		};
+
+		return <Settings module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 	.add( 'Edit, open with all settings', () => {
 		filterAnalyticsSettings();
@@ -130,8 +159,8 @@ storiesOf( 'Analytics Module/Settings', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveExistingTag( null );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties );
-			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 			dispatch( STORE_NAME ).receiveSettings( {
 				accountID: accountId,
 				propertyID: webPropertyId,
@@ -142,7 +171,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			} );
 		};
 
-		return <Settings isEditing={ true } callback={ setupRegistry } />;
+		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 	.add( 'Edit, open with no accounts', () => {
 		filterAnalyticsSettings();
@@ -153,7 +182,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			dispatch( STORE_NAME ).receiveAccounts( [] );
 		};
 
-		return <Settings isEditing={ true } callback={ setupRegistry } />;
+		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 	.add( 'Edit, with existing tag (with access)', () => {
 		filterAnalyticsSettings();
@@ -166,8 +195,8 @@ storiesOf( 'Analytics Module/Settings', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties );
-			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 			dispatch( STORE_NAME ).setSettings( {
 				accountID: '',
 				propertyID: '',
@@ -182,7 +211,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			} );
 		};
 
-		return <Settings isEditing={ true } callback={ setupRegistry } />;
+		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 	.add( 'Edit, with existing tag (no access)', () => {
 		filterAnalyticsSettings();
@@ -200,10 +229,10 @@ storiesOf( 'Analytics Module/Settings', module )
 			} );
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties );
-			dispatch( STORE_NAME ).receiveProfiles( profiles );
+			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 		};
 
-		return <Settings isEditing={ true } callback={ setupRegistry } />;
+		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
 	} )
 ;

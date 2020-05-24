@@ -397,6 +397,10 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			return;
 		}
 
+		if ( ! current_user_can( Permissions::SETUP ) ) {
+			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
+		}
+
 		switch ( $verification_type ) {
 			case self::VERIFICATION_TYPE_FILE:
 				$this->authentication->verification_file()->set( $verification_token );
