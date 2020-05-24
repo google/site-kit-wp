@@ -47,12 +47,14 @@ import Layout from './layout/layout';
 class PostSearcher extends Component {
 	constructor( props ) {
 		super( props );
-
+		this.disallowedSelections = [ 'No results found' ];
 		this.state = {
 			isSearching: false,
 			results: [],
 			error: false,
 			message: '',
+			canSubmit: false,
+			match: {},
 		};
 		this.postSearch = this.postSearch.bind( this );
 		this.onClick = this.onClick.bind( this );
@@ -113,20 +115,33 @@ class PostSearcher extends Component {
 	}
 
 	onConfirm( selection ) {
-		this.setState( {
-			selection,
-		} );
+		const { results } = this.state;
+		let match;
+		// Check to that the selection is "valid".
+		if ( ! this.disallowedSelections.includes( selection ) ) {
+			match = find(
+				results,
+				( result ) => {
+					return result.post_title === selection;
+				}
+			);
+			if ( selection && ! isUndefined( match ) ) {
+				this.setState( {
+					selection,
+					canSubmit: true,
+					match,
+				} );
+			}
+		} else {
+			this.setState( {
+				canSubmit: false,
+			} );
+		}
 	}
 
 	onClick() {
-		const { results, selection } = this.state;
-		const match = find(
-			results,
-			( result ) => {
-				return result.post_title === selection;
-			}
-		);
-		if ( ! isUndefined( match ) ) {
+		const { canSubmit, selection, match } = this.state;
+		if ( canSubmit ) {
 			document.location = getSiteKitAdminURL(
 				'googlesitekit-dashboard',
 				{
@@ -135,8 +150,6 @@ class PostSearcher extends Component {
 					pageTitle: selection,
 				}
 			);
-		} else {
-			this.setState( { message: __( 'Please check that the Title or URL is correct', 'google-site-kit' ) } );
 		}
 	}
 
@@ -160,7 +173,7 @@ class PostSearcher extends Component {
 						<div className="mdc-layout-grid__inner">
 							<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 								<div className="googlesitekit-post-searcher">
-									<label className="googlesitekit-post-searcher__label" htmlFor="autocomplete">{ __( 'Title or URL', 'google-site-kit' ) }</label>
+									<label className="googlesitekit-post-searcher__label" htmlFor="autocomplete">{ __( 'Title', 'google-site-kit' ) }</label>
 									<Autocomplete
 										id="autocomplete"
 										source={ debounce( this.postSearch, 200 ) }
@@ -172,6 +185,7 @@ class PostSearcher extends Component {
 										<Button
 											onClick={ this.onClick }
 											className="googlesitekit-post-searcher__button"
+											disabled={ ! this.state.canSubmit }
 										>
 											{ __( 'View Data', 'google-site-kit' ) }
 										</Button>
