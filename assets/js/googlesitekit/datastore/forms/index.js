@@ -1,5 +1,5 @@
 /**
- * Public API entrypoint.
+ * core/forms data store
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,15 +19,25 @@
 /**
  * Internal dependencies
  */
-import API from './googlesitekit/api';
+import Data from 'googlesitekit-data';
+import forms from './forms';
+import { STORE_NAME } from './constants';
 
-if ( global.googlesitekit === undefined ) {
-	global.googlesitekit = {};
-}
+export { STORE_NAME };
 
-if ( global.googlesitekit.api === undefined ) {
-	global.googlesitekit.api = API;
-}
+const store = Data.combineStores(
+	Data.commonStore,
+	forms,
+);
 
-// This is only exported for Jest and is not used in production.
-export default API;
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+// Register this store on the global registry.
+Data.registerStore( STORE_NAME, store );
+
+export default store;

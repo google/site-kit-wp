@@ -1,5 +1,5 @@
 /**
- * Public API entrypoint.
+ * core/widgets data store: constants.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,18 +16,7 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import API from './googlesitekit/api';
+export const WIDGET_STYLES = { BOXES: 'boxes', COMPOSITE: 'composite' };
+export const WIDGET_WIDTHS = { QUARTER: 'quarter', HALF: 'half', FULL: 'full' };
 
-if ( global.googlesitekit === undefined ) {
-	global.googlesitekit = {};
-}
-
-if ( global.googlesitekit.api === undefined ) {
-	global.googlesitekit.api = API;
-}
-
-// This is only exported for Jest and is not used in production.
-export default API;
+export const STORE_NAME = 'core/widgets';
