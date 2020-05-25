@@ -50,8 +50,8 @@ const tabIDsByIndex = Object.keys( tabToIndex );
 class SettingsApp extends Component {
 	constructor( props ) {
 		super( props );
-		// Route, e.g. #tab/settings/analytics/(view|edit)
-		const hashParts = global.location.hash.replace( '#tab/', '' ).split( /\// );
+		// Route, e.g. #settings/analytics/(view|edit)
+		const hashParts = global.location.hash.replace( '#', '' ).split( /\// );
 		// eslint-disable-next-line prefer-const
 		let [ activeTabID, moduleSlug, moduleState ] = hashParts;
 		moduleSlug = getModulesData()[ moduleSlug ] ? moduleSlug : null;
@@ -83,7 +83,7 @@ class SettingsApp extends Component {
 			moduleSlug,
 			moduleState,
 		} = this.state;
-		const fragments = [ 'tab', activeTabID ];
+		const fragments = [ activeTabID ];
 
 		if ( activeTabID === 'settings' ) {
 			// eslint-disable-next-line no-unused-expressions
