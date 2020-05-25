@@ -51,7 +51,6 @@ describe( 'Optimize Activation', () => {
 
 	afterEach( async () => {
 		await deactivateUtilityPlugins();
-		await deactivatePlugin( 'amp' );
 		await resetSiteKit();
 	} );
 
@@ -94,22 +93,32 @@ describe( 'Optimize Activation', () => {
 		await finishOptimizeSetup();
 	} );
 
-	it( 'displays AMP experimental JSON field', async () => {
-		await activateAMPWithMode( 'standard' );
-		await setupAnalytics( { useSnippet: true } );
-		await proceedToOptimizeSetup();
+	describe( 'Settings with AMP enabled', () => {
+		beforeEach( async () => {
+			await activateAMPWithMode( 'standard' );
+			await setupAnalytics( { useSnippet: true } );
+			await proceedToOptimizeSetup();
+		} );
 
-		const setupHandle = await page.$( '.googlesitekit-setup-module--optimize' );
-		await expect( setupHandle ).toMatchElement( 'p', { text: /Please input your AMP experiment settings in JSON format below./i } );
+		afterEach( async () => {
+			await deactivatePlugin( 'amp' );
+			await resetSiteKit();
+		} );
+
+		it( 'displays AMP experimental JSON field', async () => {
+			await expect( page ).toMatchElement( '.googlesitekit-setup-module--optimize p', { text: /Please input your AMP experiment settings in JSON format below./i } );
+		} );
 	} );
 
 	describe( 'Homepage AMP', () => {
 		beforeEach( async () => {
-			await setupAnalytics();
 			await activateAMPWithMode( 'standard' );
+			await setupAnalytics();
 		} );
+
 		afterEach( async () => {
 			await deactivatePlugin( 'amp' );
+			await resetSiteKit();
 		} );
 		it( 'validates for logged-in users', async () => {
 			await expect( '/' ).toHaveValidAMP( { loggedIn: true } );
