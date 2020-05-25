@@ -4,6 +4,7 @@
 import amphtmlValidator from 'amphtml-validator';
 import jsdom from 'jsdom';
 const { JSDOM } = jsdom;
+
 /**
  * WordPress dependencies
  */
@@ -17,7 +18,7 @@ import { fetchPageContent } from '../utils';
 /**
  * Test for valid AMP for logged in users.
  *
- * @param {string} path The HTML to be used for matching elements.
+ * @param {( string|Object )} path The string URI or page object
  *
  * @return {Object} Object containing the pass flag and message for the matcher
  */
@@ -27,7 +28,7 @@ async function validateAMPforLoggedInUser( path ) {
 	const cookies = await page.cookies();
 
 	// Make sure we have a login cookie
-	expect( cookies.filter( ( cookie ) => cookie.name.match( /^wordpress_logged_in/ ) ).length ).toBeGreaterThan( 0 );
+	expect( cookies.some( ( { name } ) => name.match( /^wordpress_logged_in/ ) ) ).toBeTruthy();
 
 	// Get the logged in markup.
 	const { success, payload } = await fetchPageContent( urlToFetch, cookies );
