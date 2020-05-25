@@ -51,6 +51,7 @@ describe( 'Optimize Activation', () => {
 
 	afterEach( async () => {
 		await deactivateUtilityPlugins();
+		await deactivatePlugin( 'amp' );
 		await resetSiteKit();
 	} );
 
@@ -100,7 +101,6 @@ describe( 'Optimize Activation', () => {
 
 		const setupHandle = await page.$( '.googlesitekit-setup-module--optimize' );
 		await expect( setupHandle ).toMatchElement( 'p', { text: /Please input your AMP experiment settings in JSON format below./i } );
-		await deactivatePlugin( 'amp' );
 	} );
 
 	describe( 'Homepage AMP', () => {

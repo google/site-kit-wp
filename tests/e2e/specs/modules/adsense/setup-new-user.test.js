@@ -116,6 +116,7 @@ describe( 'setting up the AdSense module', () => {
 			return datapointHandlers[ key ] = defaultHandler;
 		} );
 		await deactivateUtilityPlugins();
+		await deactivatePlugin( 'amp' );
 		await resetSiteKit();
 	} );
 
@@ -291,7 +292,6 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 		await expect( '/' ).toHaveValidAMP( { loggedIn: true } );
-		await deactivatePlugin( 'amp' );
 	} );
 
 	it( 'has valid AMP for non-logged in users', async () => {
@@ -323,7 +323,5 @@ describe( 'setting up the AdSense module', () => {
 		await proceedToAdsenseSetup();
 
 		await expect( '/' ).toHaveValidAMP();
-
-		await deactivatePlugin( 'amp' );
 	} );
 } );
