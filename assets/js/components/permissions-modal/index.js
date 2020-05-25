@@ -29,10 +29,12 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user';
 import Dialog from '../dialog';
 import Modal from '../modal';
+import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
 
-const { useSelect, useDispatch } = Data;
+const { useSelect, useDispatch, useRegistry } = Data;
 
-const PermissionsModal = ( { dataStoreToSnapshot } ) => {
+const PermissionsModal = () => {
+	const registry = useRegistry();
 	const permissionsError = useSelect( ( select ) => select( CORE_USER ).getPermissionScopeError() );
 	const connectURL = useSelect(
 		( select ) => select( CORE_USER ).getConnectURL( {
@@ -41,8 +43,6 @@ const PermissionsModal = ( { dataStoreToSnapshot } ) => {
 		} )
 	);
 	const { clearPermissionScopeError } = useDispatch( CORE_USER );
-	// TODO: This should come from the API response or a router, not a prop.
-	const { takeSnapshot } = useDispatch( dataStoreToSnapshot );
 
 	const onCancel = useCallback( () => {
 		clearPermissionScopeError();
@@ -51,12 +51,10 @@ const PermissionsModal = ( { dataStoreToSnapshot } ) => {
 	const onConfirm = useCallback( async () => {
 		// If we have a datastores to snapshot before navigating away to the
 		// authorization page, do that first.
-		if ( dataStoreToSnapshot ) {
-			await takeSnapshot();
-		}
+		await snapshotAllStores( registry );
 
 		global.location.assign( connectURL );
-	}, [ dataStoreToSnapshot, connectURL ] );
+	}, [ registry, connectURL ] );
 
 	if ( ! permissionsError ) {
 		return null;
