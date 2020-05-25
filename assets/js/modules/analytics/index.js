@@ -23,20 +23,22 @@ import './datastore';
 import { fillFilterWithComponent } from '../../util';
 import { SetupMain as AnalyticsSetup } from './setup';
 import { SettingsMain as AnalyticsSettings } from './settings';
+import withSnapshotRestoration from '../../components/restore-snapshots/with-snapshot-restoration';
 
 /**
  * WordPress dependencies
  */
+import { compose } from '@wordpress/compose';
 import { addFilter } from '@wordpress/hooks';
 
 addFilter(
 	'googlesitekit.ModuleSetup-analytics',
 	'googlesitekit.AnalyticsModuleSetup',
-	fillFilterWithComponent( AnalyticsSetup )
+	compose( fillFilterWithComponent, withSnapshotRestoration )( AnalyticsSetup )
 );
 
 addFilter(
 	'googlesitekit.ModuleSettingsDetails-analytics',
 	'googlesitekit.AnalyticsModuleSettings',
-	fillFilterWithComponent( AnalyticsSettings )
+	compose( fillFilterWithComponent, withSnapshotRestoration )( AnalyticsSettings )
 );
