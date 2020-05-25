@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* eslint camelcase:[0] */
 
 /**
  * External dependencies
@@ -26,8 +25,8 @@ import './modules';
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
+import { render } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
-import { Component, render } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -37,14 +36,6 @@ import './components/notifications';
 import Root from './components/root';
 import SettingsApp from './components/settings/settings-app';
 
-class GoogleSitekitSettings extends Component {
-	render() {
-		return (
-			<SettingsApp />
-		);
-	}
-}
-
 // Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById( 'googlesitekit-settings-wrapper' );
@@ -52,7 +43,7 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <Root><GoogleSitekitSettings /></Root>, renderTarget );
+		render( <Root><SettingsApp /></Root>, renderTarget );
 
 		/**
 		 * Action triggered when the settings App is loaded.
