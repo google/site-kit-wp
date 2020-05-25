@@ -26,8 +26,8 @@ import './modules';
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
+import { render } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
-import { Component, render } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -37,14 +37,6 @@ import './components/data';
 import Root from './components/root';
 import WPDashboardMain from './components/wp-dashboard/wp-dashboard-main';
 
-class GoogleSitekitWPDashboard extends Component {
-	render() {
-		return (
-			<WPDashboardMain />
-		);
-	}
-}
-
 // Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-wp-dashboard' );
@@ -52,7 +44,7 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <Root><GoogleSitekitWPDashboard /></Root>, renderTarget );
+		render( <Root><WPDashboardMain /></Root>, renderTarget );
 
 		/**
 		 * Action triggered when the WP Dashboard App is loaded.
