@@ -26,12 +26,14 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import ErrorHandler from '../ErrorHandler';
+import PermissionsModal from '../permissions-modal';
 
 export default function Root( { children, registry } ) {
 	return (
 		<Data.RegistryProvider value={ registry }>
 			<ErrorHandler>
 				{ children }
+				<PermissionsModal />
 			</ErrorHandler>
 		</Data.RegistryProvider>
 	);
