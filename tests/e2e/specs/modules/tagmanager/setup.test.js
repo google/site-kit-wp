@@ -197,6 +197,12 @@ describe( 'Tag Manager module setup', () => {
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp .mdc-floating-label', { text: 'Container' } );
 				await expect( page ).not.toMatchElement( '.googlesitekit-tagmanager__select-container--web' );
 			} );
+			it( 'validates Homepage AMP for logged-in users', async () => {
+				await expect( '/' ).toHaveValidAMP( { loggedIn: true } );
+			} );
+			it( 'validates Homepage AMP for non-logged-in users', async () => {
+				await expect( '/' ).toHaveValidAMP();
+			} );
 		} );
 
 		describe( 'with Secondary AMP', () => {
@@ -210,6 +216,12 @@ describe( 'Tag Manager module setup', () => {
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp .mdc-floating-label', { text: 'AMP Container' } );
 			} );
+			it( 'validates for logged-in users', async () => {
+				await expect( '/' ).toHaveValidAMP( { loggedIn: true } );
+			} );
+			it( 'validates for non-logged-in users', async () => {
+				await expect( '/' ).toHaveValidAMP();
+			} );
 		} );
 
 		describe( 'with Reader AMP', () => {
@@ -221,21 +233,6 @@ describe( 'Tag Manager module setup', () => {
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--web' );
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
 			} );
-		} );
-	} );
-
-	describe( 'Homepage AMP', () => {
-		beforeEach( async () => {
-			await activateAMPWithMode( 'standard' );
-		} );
-		afterEach( async () => {
-			await deactivatePlugin( 'amp' );
-		} );
-		it( 'validates for logged-in users', async () => {
-			await expect( '/' ).toHaveValidAMP( { loggedIn: true } );
-		} );
-		it( 'validates for non-logged-in users', async () => {
-			await expect( '/' ).toHaveValidAMP();
 		} );
 	} );
 } );
