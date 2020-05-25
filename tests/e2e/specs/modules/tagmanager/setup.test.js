@@ -178,9 +178,7 @@ describe( 'Tag Manager module setup', () => {
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module--tag-manager .googlesitekit-cta-link', { text: /re-fetch my account/i } );
 	} );
 
-	describe.each(
-		Object.keys( allowedAMPModes )
-	)( 'AMP mode %s', ( mode ) => {
+	describe( 'Setup with AMP active', () => {
 		beforeEach( async () => {
 			await activatePlugin( 'amp' );
 			await activatePlugin( 'e2e-tests-module-setup-tagmanager-api-mock' );
@@ -188,17 +186,40 @@ describe( 'Tag Manager module setup', () => {
 		afterEach( async () => {
 			await deactivatePlugin( 'amp' );
 		} );
-		it( 'renders the correct drop downs in the setup screen', async () => {
-			await setAMPMode( mode );
-			await proceedToTagManagerSetup();
 
-			// Ensure that the correct dropdowns are displayed.
-			if ( 'standard' !== mode ) {
+		describe( 'with Primary AMP', () => {
+			beforeEach( async () => {
+				await setAMPMode( 'standard' );
+				await proceedToTagManagerSetup();
+			} );
+			it( 'renders only the AMP container select menu', async () => {
+				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
+			} );
+		} );
+
+		describe( 'with Secondary AMP', () => {
+			beforeEach( async () => {
+				await setAMPMode( 'transitional' );
+				await proceedToTagManagerSetup();
+			} );
+			it( 'renders both the AMP and web container select menus', async () => {
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--web' );
-			}
-			await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
+				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
+			} );
+		} );
+
+		describe( 'with Reader AMP', () => {
+			beforeEach( async () => {
+				await setAMPMode( 'reader' );
+				await proceedToTagManagerSetup();
+			} );
+			it( 'renders both the AMP and web container select menus', async () => {
+				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--web' );
+				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
+			} );
 		} );
 	} );
+
 	describe( 'Homepage AMP', () => {
 		beforeEach( async () => {
 			await activateAMPWithMode( 'standard' );
