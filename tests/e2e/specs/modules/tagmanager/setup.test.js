@@ -194,6 +194,8 @@ describe( 'Tag Manager module setup', () => {
 			} );
 			it( 'renders only the AMP container select menu', async () => {
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
+				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp .mdc-floating-label', { text: 'Container' } );
+				await expect( page ).not.toMatchElement( '.googlesitekit-tagmanager__select-container--web' );
 			} );
 		} );
 
@@ -204,7 +206,9 @@ describe( 'Tag Manager module setup', () => {
 			} );
 			it( 'renders both the AMP and web container select menus', async () => {
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--web' );
+				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--web .mdc-floating-label', { text: 'Web Container' } );
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
+				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp .mdc-floating-label', { text: 'AMP Container' } );
 			} );
 		} );
 
