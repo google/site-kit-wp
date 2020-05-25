@@ -101,9 +101,7 @@ class GoogleSitekitModule extends Component {
 			);
 		}
 
-		return (
-			<ModuleApp />
-		);
+		return <ModuleApp />;
 	}
 }
 
