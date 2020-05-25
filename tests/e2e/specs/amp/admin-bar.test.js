@@ -45,7 +45,7 @@ describe( 'AMP Admin Bar compatibility', () => {
 		await deactivateUtilityPlugins();
 	} );
 
-	it( 'Site Kit admin bar component display', async () => {
+	it( 'it has a functional Site Kit admin bar in AMP', async () => {
 		const { searchConsole } = adminBarMockResponses;
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = searchConsole;
