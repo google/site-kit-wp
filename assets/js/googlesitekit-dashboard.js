@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { Component, render, Fragment } from '@wordpress/element';
+import { render, Fragment } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
 
 /**
@@ -34,26 +34,20 @@ import DashboardApp from './components/dashboard/dashboard-app';
 import NotificationCounter from './components/notifications/notification-counter';
 import './components/notifications';
 
-class GoogleSitekitDashboard extends Component {
-	render() {
-		const {
-			showModuleSetupWizard,
-		} = global.googlesitekit.setup;
+const GoogleSitekitDashboard = () => {
+	const { showModuleSetupWizard } = global.googlesitekit.setup;
 
-		if ( showModuleSetupWizard ) {
-			return (
-				<Setup />
-			);
-		}
-
-		return (
-			<Fragment>
-				<NotificationCounter />
-				<DashboardApp />
-			</Fragment>
-		);
+	if ( showModuleSetupWizard ) {
+		return <Setup />;
 	}
-}
+
+	return (
+		<Fragment>
+			<NotificationCounter />
+			<DashboardApp />
+		</Fragment>
+	);
+};
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
