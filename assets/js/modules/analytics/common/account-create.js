@@ -46,6 +46,7 @@ export default function AccountCreate() {
 	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( STORE_NAME ).getAccountTicketTermsOfServiceURL() );
 	const canSubmitAccountCreate = useSelect( ( select ) => select( STORE_NAME ).canSubmitAccountCreate() );
 	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
+	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
 	let timezone = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
@@ -136,12 +137,14 @@ export default function AccountCreate() {
 					{ __( 'Create Account', 'google-site-kit' ) }
 				</Button>
 
-				<Link
-					className="googlesitekit-setup-module__sub-action"
-					onClick={ handleBack }
-				>
-					{ __( 'Back', 'google-site-kit' ) }
-				</Link>
+				{ ( accounts && !! accounts.length ) && (
+					<Link
+						className="googlesitekit-setup-module__sub-action"
+						onClick={ handleBack }
+					>
+						{ __( 'Back', 'google-site-kit' ) }
+					</Link>
+				) }
 			</div>
 		</div>
 	);
