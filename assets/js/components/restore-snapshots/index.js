@@ -24,18 +24,23 @@ import { useEffect, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { restoreAllSnapshots } from '../../googlesitekit/data/create-snapshot-store';
+const { useRegistry } = Data;
 
 const RestoreSnapshots = ( { children } ) => {
+	const registry = useRegistry();
 	const [ restoredSnapshots, setRestoredSnapshots ] = useState( false );
 
 	useEffect( () => {
-		( async () => {
-			await restoreAllSnapshots();
+		if ( ! restoredSnapshots ) {
+			( async () => {
+				await restoreAllSnapshots( registry );
 
-			setRestoredSnapshots( true );
-		} )();
-	}, [] );
+				setRestoredSnapshots( true );
+			} )();
+		}
+	}, [ registry, restoredSnapshots ] );
 
 	if ( ! restoredSnapshots ) {
 		return null;
