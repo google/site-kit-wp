@@ -20,42 +20,34 @@
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { Component, render } from '@wordpress/element';
+import { render, Fragment } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
  */
 import { clearWebStorage, loadTranslations } from './util';
-import ErrorHandler from './components/ErrorHandler';
+import Root from './components/root';
 import './modules';
 import Setup from './components/setup/setup-wrapper';
 import DashboardApp from './components/dashboard/dashboard-app';
 import NotificationCounter from './components/notifications/notification-counter';
 import './components/notifications';
 
-class GoogleSitekitDashboard extends Component {
-	render() {
-		const {
-			showModuleSetupWizard,
-		} = global.googlesitekit.setup;
+const GoogleSitekitDashboard = () => {
+	const { showModuleSetupWizard } = global.googlesitekit.setup;
 
-		if ( showModuleSetupWizard ) {
-			return (
-				<ErrorHandler>
-					<Setup />
-				</ErrorHandler>
-			);
-		}
-
-		return (
-			<ErrorHandler>
-				<NotificationCounter />
-				<DashboardApp />
-			</ErrorHandler>
-		);
+	if ( showModuleSetupWizard ) {
+		return <Setup />;
 	}
-}
+
+	return (
+		<Fragment>
+			<NotificationCounter />
+			<DashboardApp />
+		</Fragment>
+	);
+};
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
@@ -68,7 +60,7 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <GoogleSitekitDashboard />, renderTarget );
+		render( <Root><GoogleSitekitDashboard /></Root>, renderTarget );
 
 		/**
 		 * Action triggered when the dashboard App is loaded.
