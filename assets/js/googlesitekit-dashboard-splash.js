@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { Component, render, Fragment } from '@wordpress/element';
+import { render, Fragment } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
 
 /**
@@ -32,16 +32,14 @@ import Root from './components/root';
 import DashboardSplashApp from './components/dashboard-splash/dashboard-splash-app';
 import NotificationCounter from './components/notifications/notification-counter';
 
-class GoogleSitekitDashboardSplash extends Component {
-	render() {
-		return (
-			<Fragment>
-				<NotificationCounter />
-				<DashboardSplashApp />
-			</Fragment>
-		);
-	}
-}
+const GoogleSitekitDashboardSplash = () => {
+	return (
+		<Fragment>
+			<NotificationCounter />
+			<DashboardSplashApp />
+		</Fragment>
+	);
+};
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
