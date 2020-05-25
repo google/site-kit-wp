@@ -72,13 +72,12 @@ const PermissionsModal = ( { dataStoreToSnapshot } ) => {
 	return (
 		<Modal>
 			<Dialog
-				dialogActive={ true }
-				handleConfirm={ onConfirm }
-				handleDialog={ onCancel }
 				title={ __( 'Additional Permissions Required', 'google-site-kit' ) }
 				subtitle={ permissionsError.message }
 				confirmButton={ __( 'Authorize additional permissions', 'google-site-kit' ) }
-				provides={ [] }
+				dialogActive={ true }
+				handleConfirm={ onConfirm }
+				handleDialog={ onCancel }
 			/>
 		</Modal>
 	);
