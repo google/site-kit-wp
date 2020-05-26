@@ -94,6 +94,7 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-data': './assets/js/googlesitekit-data.js',
 				'googlesitekit-datastore-site': './assets/js/googlesitekit-datastore-site.js',
 				'googlesitekit-datastore-user': './assets/js/googlesitekit-datastore-user.js',
+				'googlesitekit-datastore-forms': './assets/js/googlesitekit-datastore-forms.js',
 				'googlesitekit-modules': './assets/js/googlesitekit-modules.js',
 				'googlesitekit-modules-adsense': './assets/js/googlesitekit-modules-adsense.js',
 				'googlesitekit-modules-analytics': './assets/js/googlesitekit-modules-analytics.js',
