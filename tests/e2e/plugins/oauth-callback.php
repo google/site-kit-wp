@@ -56,11 +56,13 @@ add_action(
 
 		if ( isset( $_GET['scope'] ) ) {
 			$oauth_client = new OAuth_Client( $context );
-			if ( 'TEST_ALL_SCOPES' === $_GET['scope'] ) {
-				$scopes = $oauth_client->get_required_scopes();
-			} else {
-				$scopes = explode( ' ', $_GET['scope'] );
+			$scopes       = explode( ' ', $_GET['scope'] );
+
+			if ( in_array( 'TEST_ALL_SCOPES', $scopes, true ) ) {
+				$scopes = array_diff( $scopes, array( 'TEST_ALL_SCOPES' ) );
+				$scopes = array_merge( $scopes, $oauth_client->get_required_scopes() );
 			}
+
 			$oauth_client->set_granted_scopes( $scopes );
 		}
 
