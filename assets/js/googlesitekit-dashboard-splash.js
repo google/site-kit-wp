@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { Component, render } from '@wordpress/element';
+import { render, Fragment } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
 
 /**
@@ -28,20 +28,18 @@ import { doAction } from '@wordpress/hooks';
  */
 import { clearWebStorage, loadTranslations } from './util';
 import './components/notifications';
-import ErrorHandler from './components/ErrorHandler';
+import Root from './components/root';
 import DashboardSplashApp from './components/dashboard-splash/dashboard-splash-app';
 import NotificationCounter from './components/notifications/notification-counter';
 
-class GoogleSitekitDashboardSplash extends Component {
-	render() {
-		return (
-			<ErrorHandler>
-				<NotificationCounter />
-				<DashboardSplashApp />
-			</ErrorHandler>
-		);
-	}
-}
+const GoogleSitekitDashboardSplash = () => {
+	return (
+		<Fragment>
+			<NotificationCounter />
+			<DashboardSplashApp />
+		</Fragment>
+	);
+};
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
@@ -54,7 +52,7 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <GoogleSitekitDashboardSplash />, renderTarget );
+		render( <Root><GoogleSitekitDashboardSplash /></Root>, renderTarget );
 
 		/**
 		 * Action triggered when the Dashboard Splash App is loaded.

@@ -344,6 +344,7 @@ final class Assets {
 			'googlesitekit-vendor',
 			'googlesitekit-commons',
 			'googlesitekit-base',
+			'googlesitekit-data',
 		);
 
 		// Register plugin scripts.
@@ -497,6 +498,15 @@ final class Assets {
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',
+						'googlesitekit-data',
+					),
+				)
+			),
+			new Script(
+				'googlesitekit-widgets',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-widgets.js',
+					'dependencies' => array(
 						'googlesitekit-data',
 					),
 				)
