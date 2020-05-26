@@ -1,5 +1,5 @@
 /**
- * Analytics module initialization.
+ * Root component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,26 +17,31 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
-import './datastore';
-import { fillFilterWithComponent } from '../../util';
-import { SetupMain as AnalyticsSetup } from './setup';
-import { SettingsMain as AnalyticsSettings } from './settings';
+import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
-import { addFilter } from '@wordpress/hooks';
+import Data from 'googlesitekit-data';
+import ErrorHandler from '../ErrorHandler';
 
-addFilter(
-	'googlesitekit.ModuleSetup-analytics',
-	'googlesitekit.AnalyticsModuleSetup',
-	fillFilterWithComponent( AnalyticsSetup )
-);
+export default function Root( { children, registry } ) {
+	return (
+		<Data.RegistryProvider value={ registry }>
+			<ErrorHandler>
+				{ children }
+			</ErrorHandler>
+		</Data.RegistryProvider>
+	);
+}
 
-addFilter(
-	'googlesitekit.ModuleSettingsDetails-analytics',
-	'googlesitekit.AnalyticsModuleSettings',
-	fillFilterWithComponent( AnalyticsSettings )
-);
+Root.propTypes = {
+	children: PropTypes.node.isRequired,
+	registry: PropTypes.object,
+};
+
+Root.defaultProps = {
+	registry: Data,
+};
