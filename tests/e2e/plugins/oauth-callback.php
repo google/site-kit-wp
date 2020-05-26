@@ -55,12 +55,13 @@ add_action(
 		}
 
 		if ( isset( $_GET['scope'] ) ) {
+			$oauth_client = new OAuth_Client( $context );
 			if ( 'TEST_ALL_SCOPES' === $_GET['scope'] ) {
-				$scopes = ( new OAuth_Client( $context ) )->get_required_scopes();
+				$scopes = $oauth_client->get_required_scopes();
 			} else {
 				$scopes = explode( ' ', $_GET['scope'] );
 			}
-			$user_options->set( OAuth_Client::OPTION_AUTH_SCOPES, $scopes );
+			$oauth_client->set_granted_scopes( $scopes );
 		}
 
 		activate_plugins(
