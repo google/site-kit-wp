@@ -46,7 +46,9 @@ add_action(
 
 		$redirect_url        = $user_options->get( OAuth_Client::OPTION_REDIRECT_URL );
 		$success_redirect    = $redirect_url ?: $context->admin_url( 'splash', array( 'notification' => 'authentication_success' ) );
-		$plugins_to_activate = array( __DIR__ . '/auth.php' );
+		$plugins_to_activate = array(
+			sprintf( '%s/%s-auth.php', __DIR__, empty( $_GET['e2e-proxy-auth'] ) ? 'gcp' : 'proxy' ),
+		);
 
 		if ( ! empty( $_GET['e2e-site-verification'] ) ) {
 			$plugins_to_activate[] = __DIR__ . '/site-verification.php';
