@@ -34,6 +34,7 @@ describe( 'AMP Homepage', () => {
 	} );
 	describe( 'Non-logged-in user', () => {
 		it( 'has no validation errors', async () => {
-			await expect( '/' ).toHaveValidAMPForVistor();
+			await expect( '/' ).toHaveValidAMPForVisitor();
+		} );
 	} );
 } );
