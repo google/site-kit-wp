@@ -30,31 +30,35 @@ const Widgets = {
 	 * Register a widget area
 	 *
 	 * @since n.e.x.t
-	 * @param {string}             slug               Widget Area's slug.
-	 * @param {Object}             settings           Widget Area's settings.
-	 * @param {number}             settings.priority  Priority for this widget area. Default: 10.
-	 * @param {string}             settings.title     Title for this widget area.
-	 * @param {string}             settings.subtitle  Subtitle for this widget area.
-	 * @param {(string|undefined)} settings.icon      URL to SVG icon for this widget area.
-	 * @param {string}             settings.style     Widget area style (one of "boxes", "composite").
-	 * @param {(string|Array)}     areas              Widget Area slug(s).
+	 * @param {string}             slug                Widget Area's slug.
+	 * @param {Object}             settings            Widget Area's settings.
+	 * @param {string}             settings.title      Title for this widget area.
+	 * @param {string}             settings.subtitle   Subtitle for this widget area.
+	 * @param {number}             [settings.priority] Priority for this widget area. Default: 10.
+	 * @param {(string|undefined)} [settings.icon]     URL to SVG icon for this widget area.
+	 * @param {string}             [settings.style]    Widget area style (one of "boxes", "composite").
+	 * @param {(string|Array)}     [areaSlugs]         Optional. Widget area slug(s).
 	 */
-	registerWidgetArea( slug, settings, areas ) {
+	registerWidgetArea( slug, settings, areaSlugs ) {
 		dispatch( STORE_NAME ).registerWidgetArea( slug, settings );
-		dispatch( STORE_NAME ).assignWidget( slug, areas );
+		if ( areaSlugs ) {
+			dispatch( STORE_NAME ).assignWidget( slug, areaSlugs );
+		}
 	},
 
 	/**
 	 * Register a widget.
 	 *
 	 * @since n.e.x.t
-	 * @param {string}         slug      Widget's slug.
-	 * @param {Object}         settings  Widget's settings.
-	 * @param {(string|Array)} contexts  Widget Context's slug(s).
+	 * @param {string}         slug           Widget's slug.
+	 * @param {Object}         settings       Widget's settings.
+	 * @param {(string|Array)} [contextSlugs] Widget context's slug(s).
 	 */
-	registerWidget( slug, settings, contexts ) {
+	registerWidget( slug, settings, contextSlugs ) {
 		dispatch( STORE_NAME ).registerWidget( slug, settings );
-		dispatch( STORE_NAME ).assignWidgetArea( slug, contexts );
+		if ( contextSlugs ) {
+			dispatch( STORE_NAME ).assignWidgetArea( slug, contextSlugs );
+		}
 	},
 
 	/**
