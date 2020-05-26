@@ -45,6 +45,7 @@ export default function AccountCreate() {
 	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( STORE_NAME ).getAccountTicketTermsOfServiceURL() );
 	const canSubmitAccountCreate = useSelect( ( select ) => select( STORE_NAME ).canSubmitAccountCreate() );
 	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
+	const hasAccountCreateForm = useSelect( ( select ) => select( STORE_NAME ).hasForm( FORM_ACCOUNT_CREATE ) );
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
 	let timezone = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
@@ -61,16 +62,20 @@ export default function AccountCreate() {
 	// Set form defaults on initial render.
 	const { setForm } = useDispatch( STORE_NAME );
 	useEffect( () => {
-		const { hostname } = new URL( siteURL );
-		timezone = countryCodesByTimezone[ timezone ] ? timezone : Intl.DateTimeFormat().resolvedOptions().timeZone;
-		setForm( FORM_ACCOUNT_CREATE, {
-			accountName: siteName,
-			propertyName: hostname,
-			profileName: __( 'All website traffic', 'google-site-kit' ),
-			countryCode: countryCodesByTimezone[ timezone ],
-			timezone,
-		} );
-	}, [ siteName, siteURL, timezone ] );
+		// Only set the form if not already present in store.
+		// e.g. after a snapshot has been restored.
+		if ( ! hasAccountCreateForm ) {
+			const { hostname } = new URL( siteURL );
+			timezone = countryCodesByTimezone[ timezone ] ? timezone : Intl.DateTimeFormat().resolvedOptions().timeZone;
+			setForm( FORM_ACCOUNT_CREATE, {
+				accountName: siteName,
+				propertyName: hostname,
+				profileName: __( 'All website traffic', 'google-site-kit' ),
+				countryCode: countryCodesByTimezone[ timezone ],
+				timezone,
+			} );
+		}
+	}, [ hasAccountCreateForm, siteName, siteURL, timezone ] );
 
 	const { createAccount } = useDispatch( STORE_NAME );
 	const handleSubmit = useCallback(
