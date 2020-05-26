@@ -1,21 +1,4 @@
 /**
- * External dependencies
- *
- */
-//import fetch from 'node-fetch';
-
-/**
- * Helper to prepare the cookies to be passed to node-fetch
- *
- * @param {Array} cookies Array of cookies returned from page.getCookes().
- *
- * @return {string} The cookie string.
- */
-export function prepareCookiesForHeader( cookies ) {
-	return cookies.map( ( { name, value } ) => `${ name }=${ value };` ).join( ' ' );
-}
-
-/**
  * Fetch markup for any given URL in the context of Puppateer
  *
  * @param {string} url     Page URI to retrieve the content for.
