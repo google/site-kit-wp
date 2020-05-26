@@ -91,7 +91,7 @@ export default function AccountCreate() {
 	const { rollbackSettings } = useDispatch( STORE_NAME );
 	const handleBack = useCallback( () => rollbackSettings() );
 
-	if ( isDoingCreateAccount || isNavigating ) {
+	if ( isDoingCreateAccount || isNavigating || accounts === undefined ) {
 		return <ProgressBar />;
 	}
 
