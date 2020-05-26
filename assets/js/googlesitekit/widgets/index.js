@@ -27,16 +27,17 @@ import './datastore';
 
 const Widgets = {
 	/**
-	 * Register a widget area
+	 * Registers a widget area.
 	 *
 	 * @since n.e.x.t
-	 * @param {string}             slug                Widget Area's slug.
-	 * @param {Object}             settings            Widget Area's settings.
+	 *
+	 * @param {string}             slug                Widget area's slug.
+	 * @param {Object}             settings            Widget area's settings.
 	 * @param {string}             settings.title      Title for this widget area.
 	 * @param {string}             settings.subtitle   Subtitle for this widget area.
-	 * @param {number}             [settings.priority] Priority for this widget area. Default: 10.
-	 * @param {(string|undefined)} [settings.icon]     URL to SVG icon for this widget area.
-	 * @param {string}             [settings.style]    Widget area style (one of "boxes", "composite").
+	 * @param {number}             [settings.priority] Optional. Priority for this widget area. Default: 10.
+	 * @param {(string|undefined)} [settings.icon]     Optional. URL to SVG icon for this widget area.
+	 * @param {string}             [settings.style]    Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
 	 * @param {(string|Array)}     [areaSlugs]         Optional. Widget area slug(s).
 	 */
 	registerWidgetArea( slug, settings, areaSlugs ) {
@@ -47,12 +48,16 @@ const Widgets = {
 	},
 
 	/**
-	 * Register a widget.
+	 * Registers a widget.
 	 *
 	 * @since n.e.x.t
-	 * @param {string}         slug           Widget's slug.
-	 * @param {Object}         settings       Widget's settings.
-	 * @param {(string|Array)} [contextSlugs] Widget context's slug(s).
+	 *
+	 * @param {string}          slug               Widget's slug.
+	 * @param {Object}          settings           Widget's settings.
+	 * @param {React.Component} settings.component React component used to display the contents of this widget.
+	 * @param {number}          settings.priority  Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
+	 * @param {string}          settings.width     Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
+	 * @param {(string|Array)} [contextSlugs] Optional. Widget context slug(s).
 	 */
 	registerWidget( slug, settings, contextSlugs ) {
 		dispatch( STORE_NAME ).registerWidget( slug, settings );
@@ -69,8 +74,9 @@ const Widgets = {
 	 * to multiple contexts).
 	 *
 	 * @since n.e.x.t
+	 *
 	 * @param {string}         slug          Widget Area's slug.
-	 * @param {(string|Array)} contextSlugs  Widget Context's slug(s).
+	 * @param {(string|Array)} contextSlugs  Widget context slug(s).
 	 */
 	assignWidgetArea( slug, contextSlugs ) {
 		dispatch( STORE_NAME ).assignWidgetArea( slug, contextSlugs );
@@ -82,7 +88,7 @@ const Widgets = {
 	 * @since n.e.x.t
 	 *
 	 * @param  {string}         slug            Widget slug.
-	 * @param  {(string|Array)} widgetAreaSlugs Widget Area slug(s).
+	 * @param  {(string|Array)} widgetAreaSlugs Widget area slug(s).
 	 */
 	assignWidget( slug, widgetAreaSlugs ) {
 		dispatch( STORE_NAME ).assignWidget( slug, widgetAreaSlugs );
@@ -97,7 +103,6 @@ const Widgets = {
 	 * @since n.e.x.t
 	 *
 	 * @param  {string} slug Widget Area's slug.
-	 *
 	 * @return {boolean} `true`/`false` based on whether widget area has been registered.
 	 */
 	isWidgetAreaRegistered( slug ) {
@@ -113,8 +118,7 @@ const Widgets = {
 	 * @since n.e.x.t
 	 *
 	 * @param  {string}  slug  Widget's slug.
-	 *
-	 * @return {boolean}       `true`/`false` based on whether widget has been registered.
+	 * @return {boolean} `true`/`false` based on whether widget has been registered.
 	 */
 	isWidgetRegistered( slug ) {
 		return select( STORE_NAME ).isWidgetRegistered( slug );
