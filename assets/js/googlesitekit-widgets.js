@@ -25,7 +25,7 @@ if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};
 }
 
-if ( typeof global.googlesitekit.widgets === 'undefined' ) {
+if ( global.googlesitekit.widgets === undefined ) {
 	global.googlesitekit.widgets = Widgets;
 }
 
