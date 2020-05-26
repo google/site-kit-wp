@@ -59,6 +59,9 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {};
 
 export const selectors = {
+	hasForm( state, formID ) {
+		return !! state[ `form::${ formID }` ];
+	},
 	getForm( state, formID, key ) {
 		const form = state[ `form::${ formID }` ] || {};
 
