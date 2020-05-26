@@ -30,15 +30,8 @@ add_action(
 		$user_options = new User_Options( $context );
 
 		if ( filter_input( INPUT_GET, 'googlesitekit_connect', FILTER_VALIDATE_BOOLEAN ) ) {
-			$redirect_url = '';
-			if ( ! empty( $_GET['redirect'] ) ) {
-				$redirect_url = esc_url_raw( wp_unslash( $_GET['redirect'] ) );
-			}
-
-			$auth_client = new OAuth_Client( $context );
-			// User is trying to authenticate, but access token hasn't been set.
-			wp_safe_redirect( $auth_client->get_authentication_url( $redirect_url ) );
-			exit();
+			// Allow this case to be handled by default implementation.
+			return;
 		}
 
 		if (
