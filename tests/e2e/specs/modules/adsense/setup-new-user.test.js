@@ -116,7 +116,6 @@ describe( 'setting up the AdSense module', () => {
 			return datapointHandlers[ key ] = defaultHandler;
 		} );
 		await deactivateUtilityPlugins();
-		await deactivatePlugin( 'amp' );
 		await resetSiteKit();
 	} );
 
@@ -262,66 +261,70 @@ describe( 'setting up the AdSense module', () => {
 		await expect( '/' ).not.toHaveAdSenseTag();
 	} );
 
-	it( 'has valid AMP for logged-in users', async () => {
-		await activateAMPWithMode( 'standard' );
-		await activatePlugin( 'e2e-tests-admin-bar-visibility' );
+	describe( 'AMP is setup', () => {
+		beforeEach( async () => {
+			await activateAMPWithMode( 'standard' );
+		} );
+		afterEach( async () => {
+			await deactivatePlugin( 'amp' );
+		} );
+		it( 'has valid AMP for logged-in users', async () => {
+			datapointHandlers.accounts = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [
+						ADSENSE_ACCOUNT,
+					] ),
+				} );
+			};
 
-		datapointHandlers.accounts = ( request ) => {
-			request.respond( {
-				status: 200,
-				body: JSON.stringify( [
-					ADSENSE_ACCOUNT,
-				] ),
-			} );
-		};
+			datapointHandlers.clients = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [
+						{
+							arcOptIn: false,
+							id: `ca-${ ADSENSE_ACCOUNT.id }`,
+							kind: 'adsense#adClient',
+							productCode: 'AFC',
+							supportsReporting: true,
+						},
+					] ),
+				} );
+			};
 
-		datapointHandlers.clients = ( request ) => {
-			request.respond( {
-				status: 200,
-				body: JSON.stringify( [
-					{
-						arcOptIn: false,
-						id: `ca-${ ADSENSE_ACCOUNT.id }`,
-						kind: 'adsense#adClient',
-						productCode: 'AFC',
-						supportsReporting: true,
-					},
-				] ),
-			} );
-		};
+			await proceedToAdsenseSetup();
+			await expect( '/' ).toHaveValidAMPForUser();
+		} );
 
-		await proceedToAdsenseSetup();
-		await expect( '/' ).toHaveValidAMPForUser();
-	} );
+		it( 'has valid AMP for non-logged in users', async () => {
+			await activateAMPWithMode( 'standard' );
+			datapointHandlers.accounts = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [
+						ADSENSE_ACCOUNT,
+					] ),
+				} );
+			};
 
-	it( 'has valid AMP for non-logged in users', async () => {
-		await activateAMPWithMode( 'standard' );
-		datapointHandlers.accounts = ( request ) => {
-			request.respond( {
-				status: 200,
-				body: JSON.stringify( [
-					ADSENSE_ACCOUNT,
-				] ),
-			} );
-		};
+			datapointHandlers.clients = ( request ) => {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [
+						{
+							arcOptIn: false,
+							id: `ca-${ ADSENSE_ACCOUNT.id }`,
+							kind: 'adsense#adClient',
+							productCode: 'AFC',
+							supportsReporting: true,
+						},
+					] ),
+				} );
+			};
 
-		datapointHandlers.clients = ( request ) => {
-			request.respond( {
-				status: 200,
-				body: JSON.stringify( [
-					{
-						arcOptIn: false,
-						id: `ca-${ ADSENSE_ACCOUNT.id }`,
-						kind: 'adsense#adClient',
-						productCode: 'AFC',
-						supportsReporting: true,
-					},
-				] ),
-			} );
-		};
-
-		await proceedToAdsenseSetup();
-
-		await expect( '/' ).toHaveValidAMPForVisitor();
+			await proceedToAdsenseSetup();
+			await expect( '/' ).toHaveValidAMPForVisitor();
+		} );
 	} );
 } );
