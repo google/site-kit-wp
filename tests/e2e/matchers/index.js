@@ -1,2 +1,3 @@
 export { toHaveAdSenseTag } from './to-have-adsense-tag';
-export { toHaveValidAMP } from './to-have-valid-amp';
+export { toHaveValidAMPForUser } from './to-have-valid-amp-for-user';
+export { toHaveValidAMPForVisitor } from './to-have-valid-amp-for-visitor';

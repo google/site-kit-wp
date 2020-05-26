@@ -291,7 +291,7 @@ describe( 'setting up the AdSense module', () => {
 		};
 
 		await proceedToAdsenseSetup();
-		await expect( '/' ).toHaveValidAMP( { loggedIn: true } );
+		await expect( '/' ).toHaveValidAMPForUser();
 	} );
 
 	it( 'has valid AMP for non-logged in users', async () => {
@@ -322,6 +322,6 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 
-		await expect( '/' ).toHaveValidAMP();
+		await expect( '/' ).toHaveValidAMPForVisitor();
 	} );
 } );

@@ -50,8 +50,8 @@ describe( 'AMP Admin Bar compatibility', () => {
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = searchConsole;
 
-		await expect( page ).toHaveValidAMP( { loggedIn: true } );
-		await expect( page ).toHaveValidAMP();
+		await expect( page ).toHaveValidAMPForUser();
+		await expect( page ).toHaveValidAMPForVisitor();
 
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),

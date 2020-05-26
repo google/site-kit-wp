@@ -180,10 +180,10 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			await deactivatePlugin( 'amp' );
 		} );
 		it( 'validates for logged-in users', async () => {
-			await expect( '/' ).toHaveValidAMP( { loggedIn: true } );
+			await expect( '/' ).toHaveValidAMPForUser();
 		} );
 		it( 'validates for non-logged-in users', async () => {
-			await expect( '/' ).toHaveValidAMP();
+			await expect( '/' ).toHaveValidAMPForVisitor();
 		} );
 	} );
 } );

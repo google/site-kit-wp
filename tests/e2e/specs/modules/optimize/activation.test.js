@@ -121,10 +121,10 @@ describe( 'Optimize Activation', () => {
 			await resetSiteKit();
 		} );
 		it( 'validates for logged-in users', async () => {
-			await expect( '/' ).toHaveValidAMP( { loggedIn: true } );
+			await expect( '/' ).toHaveValidAMPForUser();
 		} );
 		it( 'validates for non-logged-in users', async () => {
-			await expect( '/' ).toHaveValidAMP();
+			await expect( '/' ).toHaveValidAMPForVisitor();
 		} );
 	} );
 } );

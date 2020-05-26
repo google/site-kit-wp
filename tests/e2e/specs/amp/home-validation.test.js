@@ -29,12 +29,11 @@ describe( 'AMP Homepage', () => {
 
 	describe( 'Logged-in user', () => {
 		it( 'has no validation errors', async () => {
-			await expect( '/' ).toHaveValidAMP( { loggedIn: true } );
+			await expect( '/' ).toHaveValidAMPForUser();
 		} );
 	} );
 	describe( 'Non-logged-in user', () => {
 		it( 'has no validation errors', async () => {
-			await expect( '/' ).toHaveValidAMP();
-		} );
+			await expect( '/' ).toHaveValidAMPForVistor();
 	} );
 } );

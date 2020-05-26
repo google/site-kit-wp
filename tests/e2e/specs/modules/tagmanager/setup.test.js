@@ -198,10 +198,10 @@ describe( 'Tag Manager module setup', () => {
 				await expect( page ).not.toMatchElement( '.googlesitekit-tagmanager__select-container--web' );
 			} );
 			it( 'validates Homepage AMP for logged-in users', async () => {
-				await expect( '/' ).toHaveValidAMP( { loggedIn: true } );
+				await expect( '/' ).toHaveValidAMPForUser();
 			} );
 			it( 'validates Homepage AMP for non-logged-in users', async () => {
-				await expect( '/' ).toHaveValidAMP();
+				await expect( '/' ).toHaveValidAMPForVisitor();
 			} );
 		} );
 
@@ -217,10 +217,10 @@ describe( 'Tag Manager module setup', () => {
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp .mdc-floating-label', { text: 'AMP Container' } );
 			} );
 			it( 'validates for logged-in users', async () => {
-				await expect( '/' ).toHaveValidAMP( { loggedIn: true } );
+				await expect( '/' ).toHaveValidAMPForUser();
 			} );
 			it( 'validates for non-logged-in users', async () => {
-				await expect( '/' ).toHaveValidAMP();
+				await expect( '/' ).toHaveValidAMPForVisitor();
 			} );
 		} );
 
