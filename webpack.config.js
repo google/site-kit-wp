@@ -100,6 +100,7 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-modules-analytics': './assets/js/googlesitekit-modules-analytics.js',
 				'googlesitekit-modules-pagespeed-insights': 'assets/js/googlesitekit-modules-pagespeed-insights.js',
 				'googlesitekit-modules-search-console': './assets/js/googlesitekit-modules-search-console.js',
+				'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
 				'googlesitekit-settings': './assets/js/googlesitekit-settings.js',

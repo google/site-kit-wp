@@ -19,10 +19,110 @@
 /**
  * Internal dependencies
  */
+import { dispatch, select } from 'googlesitekit-data';
+import { STORE_NAME } from './datastore/constants';
 // This import has side-effects; it registers the Widgets datastore on the default
 // data store registry (eg. `googlesitekit.data`).
 import './datastore';
 
-const Widgets = {};
+const Widgets = {
+	/**
+	 * Registers a widget area.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string}             slug                Widget area's slug.
+	 * @param {Object}             settings            Widget area's settings.
+	 * @param {string}             settings.title      Title for this widget area.
+	 * @param {string}             settings.subtitle   Subtitle for this widget area.
+	 * @param {number}             [settings.priority] Optional. Priority for this widget area. Default: 10.
+	 * @param {(string|undefined)} [settings.icon]     Optional. URL to SVG icon for this widget area.
+	 * @param {string}             [settings.style]    Optional. Widget area style (one of "boxes", "composite"). Default: "boxes".
+	 * @param {(string|Array)}     [areaSlugs]         Optional. Widget area slug(s).
+	 */
+	registerWidgetArea( slug, settings, areaSlugs ) {
+		dispatch( STORE_NAME ).registerWidgetArea( slug, settings );
+		if ( areaSlugs ) {
+			dispatch( STORE_NAME ).assignWidget( slug, areaSlugs );
+		}
+	},
+
+	/**
+	 * Registers a widget.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string}          slug               Widget's slug.
+	 * @param {Object}          settings           Widget's settings.
+	 * @param {React.Component} settings.component React component used to display the contents of this widget.
+	 * @param {number}          settings.priority  Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
+	 * @param {string}          settings.width     Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
+	 * @param {(string|Array)}  [contextSlugs]     Optional. Widget context slug(s).
+	 */
+	registerWidget( slug, settings, contextSlugs ) {
+		dispatch( STORE_NAME ).registerWidget( slug, settings );
+		if ( contextSlugs ) {
+			dispatch( STORE_NAME ).assignWidgetArea( slug, contextSlugs );
+		}
+	},
+
+	/**
+	 * Assigns a widget area to one (or several) contexts.
+	 *
+	 * Accepts an area slug to register as the first argument, then either a string
+	 * (for a single context slug) or array of contexts slugs (to assign the widget area
+	 * to multiple contexts).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string}         slug          Widget Area's slug.
+	 * @param {(string|Array)} contextSlugs  Widget context slug(s).
+	 */
+	assignWidgetArea( slug, contextSlugs ) {
+		dispatch( STORE_NAME ).assignWidgetArea( slug, contextSlugs );
+	},
+
+	/**
+	 * Assigns an existing widget (by slug) to a widget area(s).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  {string}         slug            Widget slug.
+	 * @param  {(string|Array)} widgetAreaSlugs Widget area slug(s).
+	 */
+	assignWidget( slug, widgetAreaSlugs ) {
+		dispatch( STORE_NAME ).assignWidget( slug, widgetAreaSlugs );
+	},
+
+	/**
+	 * Checks if a widget area has been registered.
+	 *
+	 * Returns `true` if the widget area has been registered.
+	 * Returns `false` if the widget area has NOT been registered.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  {string} slug Widget Area's slug.
+	 * @return {boolean} `true`/`false` based on whether widget area has been registered.
+	 */
+	isWidgetAreaRegistered( slug ) {
+		return select( STORE_NAME ).isWidgetAreaRegistered( slug );
+	},
+
+	/**
+	 * Checks if a widget has been registered with a given slug.
+	 *
+	 * Returns `true` if the widget area has been registered.
+	 * Returns `false` if the widget area has NOT been registered.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  {string}  slug  Widget's slug.
+	 * @return {boolean} `true`/`false` based on whether widget has been registered.
+	 */
+	isWidgetRegistered( slug ) {
+		return select( STORE_NAME ).isWidgetRegistered( slug );
+	},
+};
 
 export default Widgets;
