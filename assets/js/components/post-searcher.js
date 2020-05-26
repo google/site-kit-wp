@@ -21,7 +21,6 @@
  */
 import {
 	map,
-	find,
 	debounce,
 	trim,
 	isUndefined,
@@ -47,7 +46,8 @@ import Layout from './layout/layout';
 class PostSearcher extends Component {
 	constructor( props ) {
 		super( props );
-		this.disallowedSelections = [ 'No results found' ];
+		this.noResultsMessage = __( 'No results found', 'google-site-kit' );
+		this.disallowedSelections = [ this.noResultsMessage ];
 		this.state = {
 			isSearching: false,
 			results: [],
@@ -78,7 +78,7 @@ class PostSearcher extends Component {
 					return result.post_title;
 				} ) );
 			} else {
-				populateResults( [ __( 'No results found', 'google-site-kit' ) ] );
+				populateResults( [ this.noResultsMessage ] );
 			}
 
 			this.setState( {
@@ -88,7 +88,7 @@ class PostSearcher extends Component {
 				message: '',
 			} );
 		} catch ( err ) {
-			populateResults( [ __( 'No results found', 'google-site-kit' ) ] );
+			populateResults( [ this.noResultsMessage ] );
 
 			this.setState( {
 				isSearching: false,
@@ -118,13 +118,8 @@ class PostSearcher extends Component {
 		const { results } = this.state;
 		let match;
 		// Check to that the selection is "valid".
-		if ( ! this.disallowedSelections.includes( selection ) ) {
-			match = find(
-				results,
-				( result ) => {
-					return result.post_title === selection;
-				}
-			);
+		if ( ! Array.isArray( results ) || ! this.disallowedSelections.includes( selection ) ) {
+			match = results.find( ( result ) => result.post_title === selection );
 			if ( selection && ! isUndefined( match ) ) {
 				this.setState( {
 					selection,
@@ -142,14 +137,14 @@ class PostSearcher extends Component {
 	onClick() {
 		const { canSubmit, selection, match } = this.state;
 		if ( canSubmit ) {
-			document.location = getSiteKitAdminURL(
+			global.location.assign( getSiteKitAdminURL(
 				'googlesitekit-dashboard',
 				{
 					id: match.id,
 					permaLink: match.permalink,
 					pageTitle: selection,
 				}
-			);
+			) );
 		}
 	}
 
@@ -173,7 +168,9 @@ class PostSearcher extends Component {
 						<div className="mdc-layout-grid__inner">
 							<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 								<div className="googlesitekit-post-searcher">
-									<label className="googlesitekit-post-searcher__label" htmlFor="autocomplete">{ __( 'Title', 'google-site-kit' ) }</label>
+									<label className="googlesitekit-post-searcher__label" htmlFor="autocomplete">
+										{ __( 'Title or URL', 'google-site-kit' ) }
+									</label>
 									<Autocomplete
 										id="autocomplete"
 										source={ debounce( this.postSearch, 200 ) }
@@ -191,7 +188,6 @@ class PostSearcher extends Component {
 										</Button>
 									</div>
 								</div>
-								{ 0 < this.state.message.length && <p>{ this.state.message }</p> }
 							</div>
 						</div>
 					</div>
