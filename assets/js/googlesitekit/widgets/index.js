@@ -57,7 +57,7 @@ const Widgets = {
 	 * @param {React.Component} settings.component React component used to display the contents of this widget.
 	 * @param {number}          settings.priority  Optional. Widget's priority for ordering (lower number is higher priority, like WordPress hooks). Default is: 10.
 	 * @param {string}          settings.width     Optional. Widget's maximum width to occupy. Default is: "quarter". One of: "quarter", "half", "full".
-	 * @param {(string|Array)} [contextSlugs] Optional. Widget context slug(s).
+	 * @param {(string|Array)}  [contextSlugs]     Optional. Widget context slug(s).
 	 */
 	registerWidget( slug, settings, contextSlugs ) {
 		dispatch( STORE_NAME ).registerWidget( slug, settings );
