@@ -35,9 +35,9 @@ add_action(
 		}
 
 		if (
-		empty( $_GET['oauth2callback'] )
-		|| empty( $_GET['code'] )
-		|| 'valid-test-code' !== $_GET['code']
+			empty( $_GET['oauth2callback'] )
+			|| empty( $_GET['code'] )
+			|| 'valid-test-code' !== $_GET['code']
 		) {
 			return;
 		}
