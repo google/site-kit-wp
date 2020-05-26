@@ -32,15 +32,15 @@ const DashboardAuthAlert = () => {
 	const { requiredScopes, grantedScopes } = global.googlesitekit.setup;
 
 	const productUrl = requiredScopes.filter( ( e ) => ! grantedScopes.includes( e ) )[ 0 ];
-	const productSlug = productUrl ? productUrl.toString().split( '/' ).pop() : '';
-	const product = getModulesData()[ productSlug ] ? getModulesData()[ productSlug ].name : '';
+	const productSlug = productUrl.match( /https:\/\/www.googleapis.com\/auth\/([a-z]+)/ )[ 1 ];
+	const productName = getModulesData()[ productSlug ] ? getModulesData()[ productSlug ].name : '';
 
 	return (
 		<Notification
 			id="authentication error"
-			title={ __( "Site Kit can't access necessary data", 'google-site-kit' ) }
+			title={ __( 'Site Kit can’t access necessary data', 'google-site-kit' ) }
 			/* translators: %1$s: Product name */
-			description={ sprintf( __( "Site Kit can't access the relevant data from %1$s because you haven't granted all API scopes requested during setup. To use Site Kit, you'll need to redo the setup for %1$s – make sure to approve all API scopes at the authentication stage. ", 'google-site-kit' ), product ) }
+			description={ sprintf( __( 'Site Kit can’t access the relevant data from %1$s because you haven’t granted all API scopes requested during setup. To use Site Kit, you’ll need to redo the setup for %1$s – make sure to approve all API scopes at the authentication stage. ', 'google-site-kit' ), productName ) }
 			handleDismiss={ () => {} }
 			format="small"
 			type="win-error"
