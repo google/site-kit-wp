@@ -2,7 +2,7 @@
  * External dependencies
  *
  */
-import fetch from 'node-fetch';
+//import fetch from 'node-fetch';
 
 /**
  * Helper to prepare the cookies to be passed to node-fetch
@@ -12,32 +12,26 @@ import fetch from 'node-fetch';
  * @return {string} The cookie string.
  */
 export function prepareCookiesForHeader( cookies ) {
-	let parsedCookies = '';
-	cookies.forEach( ( cookie ) => {
-		parsedCookies += `${ cookie.name }=${ cookie.value }; `;
-	} );
-	return parsedCookies;
+	return cookies.map( ( { name, value } ) => `${ name }=${ value };` ).join( ' ' );
 }
 
 /**
- * Fetch markup for any given URL.
+ * Fetch markup for any given URL in the context of Puppateer
  *
- * @param {string} path   Page URI to retrieve the content for.
- * @param {Array} cookies Array of cookies as retrieved via page.cookies().
+ * @param {string} url     Page URI to retrieve the content for.
+ * @param {Object} options Options object to be passed to fetch()
  */
-export async function fetchPageContent( path, cookies = [] ) {
-	let success, payload;
+export async function fetchPageContent( url, options = {} ) {
 	try {
-		const response = await fetch( path, { headers: { cookie: prepareCookiesForHeader( cookies ) } } );
-		if ( 200 !== response.status ) {
-			throw new Error( `fetch() error: ${ path } returned a status of ${ response.status }` );
-		} else {
-			success = true;
-			payload = await response.text();
-		}
-	} catch ( error ) {
-		success = false;
-		payload = error.message;
+		// Wait until apiFetch is available on the client.
+		await page.waitForFunction( () => window.fetch !== undefined );
+	} catch ( e ) {
+		// eslint-disable-next-line no-console
+		console.warn( 'fetchPageContent failure', page.url(), JSON.stringify( options ) );
+		throw e;
 	}
-	return { success, payload };
+
+	return await page.evaluate( ( fetchURL, fetchOptions ) => {
+		return window.fetch( fetchURL, fetchOptions ).then( ( res ) => res.text() );
+	}, url, options );
 }
