@@ -12,8 +12,6 @@ import {
  * Internal dependencies
  */
 import {
-	activateAMPWithMode,
-	allowedAMPModes,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	useRequestInterception,
