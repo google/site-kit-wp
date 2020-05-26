@@ -181,6 +181,7 @@ describe( 'Tag Manager module setup', () => {
 			await activatePlugin( 'amp' );
 			await activatePlugin( 'e2e-tests-module-setup-tagmanager-api-mock' );
 		} );
+
 		afterEach( async () => {
 			await deactivatePlugin( 'amp' );
 		} );
@@ -214,11 +215,19 @@ describe( 'Tag Manager module setup', () => {
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
 				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp .mdc-floating-label', { text: 'AMP Container' } );
 			} );
-			it( 'validates for logged-in users', async () => {
-				await expect( '/' ).toHaveValidAMPForUser();
+			it( 'validates homepage AMP for logged-in users', async () => {
+				await expect( page ).toClick( 'button', { text: /confirm \& continue/i } );
+				await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
+				await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Tag Manager!/i } );
+				await page.goto( createURL( '/', 'amp' ), { waitUntil: 'load' } );
+				await expect( page ).toHaveValidAMPForUser();
 			} );
-			it( 'validates for non-logged-in users', async () => {
-				await expect( '/' ).toHaveValidAMPForVisitor();
+			it( 'validates homepage AMP for non-logged-in users', async () => {
+				await expect( page ).toClick( 'button', { text: /confirm \& continue/i } );
+				await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
+				await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Tag Manager!/i } );
+				await page.goto( createURL( '/', 'amp' ), { waitUntil: 'load' } );
+				await expect( page ).toHaveValidAMPForVisitor();
 			} );
 		} );
 
