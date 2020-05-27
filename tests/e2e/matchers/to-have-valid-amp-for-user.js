@@ -46,7 +46,9 @@ export async function toHaveValidAMPForUser( path ) {
 	const cookies = await page.cookies();
 
 	// Make sure we have a login cookie
-	expect( cookies.some( ( { name } ) => name.match( /^wordpress_logged_in/ ) ) ).toBeTruthy();
+	if ( false === cookies.some( ( { name } ) => name.match( /^wordpress_logged_in/ ) ) ) {
+		throw new Error( 'toHaveValidAMPForUser failed. User is not logged in.' );
+	}
 
 	const html = await fetchPageContent( urlToFetch );
 	const jsDoc = new JSDOM( html ).window.document;
