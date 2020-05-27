@@ -580,7 +580,6 @@ final class Analytics extends Module
 			// POST.
 			'create-property'              => 'analytics',
 			'create-profile'               => 'analytics',
-			'settings'                     => '',
 			'create-account-ticket'        => 'analyticsprovisioning',
 		);
 	}
