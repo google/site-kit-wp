@@ -20,16 +20,17 @@
  * WordPress dependencies
  */
 import { useEffect } from '@wordpress/element';
+import { doAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
  */
-import dataAPI from './index';
+import './index'; // Ensure dataAPI is loaded.
 
 export default function CollectModuleData( { context, args } ) {
 	useEffect( () => {
-		dataAPI.collectModuleData.bind( dataAPI )( context, args );
-	}, [] );
+		doAction( 'googlesitekit.moduleLoaded', context, args );
+	}, [ context, args ] );
 
 	return null;
 }
