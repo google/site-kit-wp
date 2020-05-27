@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Modules\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
@@ -457,8 +458,9 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	 * @since 1.0.0
 	 *
 	 * @param Data_Request $data Data request object.
-	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
+	 *
+	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
@@ -621,7 +623,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 
 		}
 
-		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
+		throw new Invalid_Datapoint_Exception( __( 'Invalid datapoint.', 'google-site-kit' ) );
 	}
 
 	/**

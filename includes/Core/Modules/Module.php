@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\Modules\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit_Dependencies\Google_Service;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
@@ -493,6 +494,8 @@ abstract class Module {
 	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data Data request object.
+	 *
+	 * @throws Invalid_Datapoint_Exception   Thrown if the datapoint does not exist.
 	 * @throws Insufficient_Scopes_Exception Thrown if the user has not granted
 	 *                                       necessary scopes required by the datapoint.
 	 */
@@ -502,7 +505,7 @@ abstract class Module {
 
 		// All datapoints must be defined.
 		if ( empty( $definitions[ $datapoint_key ] ) ) {
-			throw new Exception( __( 'Invalid datapoint.', 'google-site-kit' ), 400 );
+			throw new Invalid_Datapoint_Exception( __( 'Invalid datapoint.', 'google-site-kit' ) );
 		}
 
 		if ( empty( $definitions[ $datapoint_key ]['scopes'] ) ) {
@@ -513,9 +516,7 @@ abstract class Module {
 
 		// If the datapoint requires specific scopes, ensure they are satisfied.
 		if ( ! $this->authentication->get_oauth_client()->has_sufficient_scopes( $datapoint['scopes'] ) ) {
-			$exception = new Insufficient_Scopes_Exception( $datapoint['request_scopes_message'] );
-			$exception->set_scopes( $datapoint['scopes'] );
-			throw $exception;
+			throw new Insufficient_Scopes_Exception( $datapoint['request_scopes_message'], 0, null, $datapoint['scopes'] );
 		}
 	}
 
