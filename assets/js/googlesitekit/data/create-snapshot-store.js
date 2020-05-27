@@ -55,14 +55,14 @@ export const createSnapshotStore = ( storeName ) => {
 	const INITIAL_STATE = {};
 
 	const actions = {
-	/**
-	 * Deletes a snapshot of state for a storeName, using our cache API.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @return {boolean} Cache deletion response.
-	 */
+		/**
+		 * Deletes a snapshot of state for a storeName, using our cache API.
+		 *
+		 * @since n.e.x.t
+		 * @private
+		 *
+		 * @return {boolean} Cache deletion response.
+		 */
 		*deleteSnapshot() {
 			const cacheResult = yield {
 				payload: {},
