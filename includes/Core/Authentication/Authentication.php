@@ -228,13 +228,6 @@ final class Authentication {
 		);
 
 		add_filter(
-			'googlesitekit_user_data',
-			function ( $data ) {
-				return $this->inline_js_user_data( $data );
-			}
-		);
-
-		add_filter(
 			'allowed_redirect_hosts',
 			function ( $hosts ) {
 				return $this->allowed_redirect_hosts( $hosts );
@@ -270,12 +263,16 @@ final class Authentication {
 		add_filter(
 			'googlesitekit_user_data',
 			function( $user ) {
-				$profile_data = $this->profile->get();
-				if ( $profile_data ) {
+				$user['connectURL'] = esc_url_raw( $this->get_connect_url() );
+
+				if ( $this->profile->has() ) {
+					$profile_data            = $this->profile->get();
 					$user['user']['email']   = $profile_data['email'];
 					$user['user']['picture'] = $profile_data['photo'];
 				}
+
 				$user['verified'] = $this->verification->has();
+
 				return $user;
 			}
 		);
@@ -673,20 +670,6 @@ final class Authentication {
 		$data['showModuleSetupWizard'] = $this->context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
 
 		$data['moduleToSetup'] = sanitize_key( (string) $this->context->input()->filter( INPUT_GET, 'slug' ) );
-
-		return $data;
-	}
-
-	/**
-	 * Modifies the user data to pass to JS.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $data Inline JS data.
-	 * @return array Filtered $data.
-	 */
-	private function inline_js_user_data( $data ) {
-		$data['connectURL'] = esc_url_raw( $this->get_connect_url() );
 
 		return $data;
 	}
