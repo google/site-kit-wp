@@ -102,6 +102,7 @@ export const controls = {
 		}
 
 		await API.invalidateCache( 'modules', 'analytics' );
+		// TODO: Remove once legacy dataAPI is no longer used.
 		dataAPI.invalidateCacheGroup( TYPE_MODULES, 'analytics' );
 
 		return {};

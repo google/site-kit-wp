@@ -220,6 +220,7 @@ export const controls = {
 		}
 
 		await API.invalidateCache( 'modules', 'adsense' );
+		// TODO: Remove once legacy dataAPI is no longer used.
 		dataAPI.invalidateCacheGroup( TYPE_MODULES, 'adsense' );
 
 		return {};
