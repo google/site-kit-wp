@@ -12,12 +12,12 @@ namespace Google\Site_Kit\Core\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\REST_API\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Modules\Exception\Invalid_Datapoint_Exception;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -766,7 +766,7 @@ final class Modules {
 
 		if ( in_array( 'settings', $module->get_datapoints(), true ) ) {
 			$result = $module->set_data( 'settings', $data );
-			if ( is_wp_error( $result ) && $result->get_error_code() !== 'invalid_datapoint' ) {
+			if ( is_wp_error( $result ) && $result->get_error_code() !== Invalid_Datapoint_Exception::WP_ERROR_CODE ) {
 				return $result;
 			} elseif ( ! is_wp_error( $result ) ) {
 				return true;

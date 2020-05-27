@@ -110,14 +110,14 @@ class ScopesTest extends TestCase {
 	/**
 	 * @dataProvider are_satisfied_by_provider
 	 * @param $scopes
-	 * @param $available_scopes
+	 * @param $granted_scopes
 	 * @param $expected_result
 	 */
-	public function test_are_satisfied_by( array $scopes, array $available_scopes, $expected_result ) {
+	public function test_are_satisfied_by( array $scopes, array $granted_scopes, $expected_result ) {
 		if ( $expected_result ) {
-			$this->assertTrue( Scopes::are_satisfied_by( $scopes, $available_scopes ) );
+			$this->assertTrue( Scopes::are_satisfied_by( $scopes, $granted_scopes ) );
 		} else {
-			$this->assertFalse( Scopes::are_satisfied_by( $scopes, $available_scopes ) );
+			$this->assertFalse( Scopes::are_satisfied_by( $scopes, $granted_scopes ) );
 		}
 	}
 
