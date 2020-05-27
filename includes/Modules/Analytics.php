@@ -1001,61 +1001,6 @@ final class Analytics extends Module
 				$profile = new Google_Service_Analytics_Profile();
 				$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
 				return $profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $data['propertyID'], $profile );
-			case 'POST:settings':
-				return function() use ( $data ) {
-					$option          = $data->data;
-					$is_new_property = false;
-
-					if ( isset( $option['accountID'], $option['propertyID'] ) ) {
-						if ( '0' === $option['propertyID'] ) {
-							$is_new_property = true;
-							$restore_defer   = $this->with_client_defer( false );
-							$property        = new Google_Service_Analytics_Webproperty();
-							$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
-							try {
-								$property = $this->get_service( 'analytics' )->management_webproperties->insert( $option['accountID'], $property );
-							} catch ( Exception $e ) {
-								$restore_defer();
-								return $this->exception_to_error( $e, $data->datapoint );
-							}
-							$restore_defer();
-							/* @var Google_Service_Analytics_Webproperty $property Property instance. */
-							$option['propertyID']            = $property->getId();
-							$option['internalWebPropertyID'] = $property->getInternalWebPropertyId();
-						}
-						if ( isset( $option['profileID'] ) ) {
-							if ( '0' === $option['profileID'] ) {
-								$restore_defer = $this->with_client_defer( false );
-								$profile       = new Google_Service_Analytics_Profile();
-								$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
-								try {
-									$profile = $this->get_service( 'analytics' )->management_profiles->insert( $option['accountID'], $option['propertyID'], $profile );
-								} catch ( Exception $e ) {
-									$restore_defer();
-									return $this->exception_to_error( $e, $data->datapoint );
-								}
-								$restore_defer();
-								$option['profileID'] = $profile->id;
-							}
-
-							// Set default profile for new property.
-							if ( $is_new_property ) {
-								$restore_defer = $this->with_client_defer( false );
-								$property      = new Google_Service_Analytics_Webproperty();
-								$property->setDefaultProfileId( $option['profileID'] );
-								try {
-									$property = $this->get_service( 'analytics' )->management_webproperties->patch( $option['accountID'], $option['propertyID'], $property );
-								} catch ( Exception $e ) {
-									$restore_defer();
-									return $this->exception_to_error( $e, $data->datapoint );
-								}
-								$restore_defer();
-							}
-						}
-					}
-					$this->get_settings()->merge( $option );
-					return $this->get_settings()->get();
-				};
 			case 'GET:tag-permission':
 				return function() use ( $data ) {
 					if ( ! isset( $data['propertyID'] ) ) {
