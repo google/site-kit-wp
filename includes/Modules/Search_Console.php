@@ -23,7 +23,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
-use Google\Site_Kit\Core\Modules\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Google_URL_Matcher_Trait;

@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Modules\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;

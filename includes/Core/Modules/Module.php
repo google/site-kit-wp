@@ -19,7 +19,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
-use Google\Site_Kit\Core\Modules\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit_Dependencies\Google_Service;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;

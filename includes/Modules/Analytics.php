@@ -22,7 +22,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
-use Google\Site_Kit\Core\Modules\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;

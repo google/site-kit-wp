@@ -1,17 +1,17 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Modules\Exception\Invalid_Datapoint_Exception
+ * Class Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception
  *
- * @package   Google\Site_Kit\Core\Modules\Exception
+ * @package   Google\Site_Kit\Core\REST_API\Exception
  * @copyright 2020 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Modules\Exception;
+namespace Google\Site_Kit\Core\REST_API\Exception;
 
-use Exception;
 use Google\Site_Kit\Core\Contracts\WP_Errorable;
+use Exception;
 use WP_Error;
 
 /**
