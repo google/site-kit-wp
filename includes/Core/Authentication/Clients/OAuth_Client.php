@@ -434,7 +434,7 @@ final class OAuth_Client {
 	 *
 	 * @return bool true if any required scopes are not satisfied, otherwise false.
 	 */
-	public function requires_additional_scopes() {
+	public function needs_reauthentication() {
 		if ( ! $this->get_access_token() ) {
 			return false;
 		}
