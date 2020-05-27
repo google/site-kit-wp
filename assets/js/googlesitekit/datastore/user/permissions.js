@@ -96,8 +96,8 @@ export const selectors = {
 	/**
 	 * Gets the most recent permission error encountered by this user.
 	 *
-	 * @private
 	 * @since n.e.x.t
+	 * @private
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Permission scope errors. Returns `null` if no error exists.
