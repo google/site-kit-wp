@@ -144,7 +144,6 @@ class AnalyticsTest extends TestCase {
 				'profiles',
 				'tag-permission',
 				'report',
-				'settings',
 				'tracking-disabled',
 				'anonymize-ip',
 				'create-property',
