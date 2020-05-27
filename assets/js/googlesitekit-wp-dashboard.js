@@ -26,26 +26,16 @@ import './modules';
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
+import { render } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
-import { Component, render } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { loadTranslations } from './util';
 import './components/data';
-import ErrorHandler from './components/ErrorHandler';
+import Root from './components/root';
 import WPDashboardMain from './components/wp-dashboard/wp-dashboard-main';
-
-class GoogleSitekitWPDashboard extends Component {
-	render() {
-		return (
-			<ErrorHandler>
-				<WPDashboardMain />
-			</ErrorHandler>
-		);
-	}
-}
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
@@ -54,7 +44,7 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <GoogleSitekitWPDashboard />, renderTarget );
+		render( <Root><WPDashboardMain /></Root>, renderTarget );
 
 		/**
 		 * Action triggered when the WP Dashboard App is loaded.

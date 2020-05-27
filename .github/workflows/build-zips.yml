@@ -1,14 +1,15 @@
-name: build-pr
+name: build-zips
 
 on:
   push:
     branches:
       - develop
       - master
+    tags: ['**']
   pull_request:
 
 jobs:
-  build-pr:
+  build-zips:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -61,7 +62,7 @@ jobs:
 
   deploy-to-wiki:
     runs-on: ubuntu-latest
-    needs: build-pr
+    needs: build-zips
     steps:
       - uses: actions/checkout@v2
         with:

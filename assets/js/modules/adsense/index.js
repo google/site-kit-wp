@@ -24,7 +24,6 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import './datastore';
 import { fillFilterWithComponent } from '../../util';
 import { SetupMain } from './setup';
@@ -35,56 +34,16 @@ import {
 import { AdBlockerWarning } from './common';
 import { DashboardZeroData } from './dashboard';
 
-function ConnectedSetupMain( props ) {
-	return (
-		<Data.RegistryProvider value={ Data }>
-			<SetupMain { ...props } />
-		</Data.RegistryProvider>
-	);
-}
-
-function ConnectedSettingsMain( props ) {
-	return (
-		<Data.RegistryProvider value={ Data }>
-			<SettingsMain { ...props } />
-		</Data.RegistryProvider>
-	);
-}
-
-function ConnectedSettingsSetupIncomplete( props ) {
-	return (
-		<Data.RegistryProvider value={ Data }>
-			<SettingsSetupIncomplete { ...props } />
-		</Data.RegistryProvider>
-	);
-}
-
-function ConnectedAdBlockerWarning( props ) {
-	return (
-		<Data.RegistryProvider value={ Data }>
-			<AdBlockerWarning { ...props } />
-		</Data.RegistryProvider>
-	);
-}
-
-function ConnectedDashboardZeroData( props ) {
-	return (
-		<Data.RegistryProvider value={ Data }>
-			<DashboardZeroData { ...props } />
-		</Data.RegistryProvider>
-	);
-}
-
 addFilter(
 	'googlesitekit.ModuleSetup-adsense',
 	'googlesitekit.AdSenseModuleSetup',
-	fillFilterWithComponent( ConnectedSetupMain )
+	fillFilterWithComponent( SetupMain )
 );
 
 addFilter(
 	'googlesitekit.ModuleSettingsDetails-adsense',
 	'googlesitekit.AdSenseModuleSettings',
-	fillFilterWithComponent( ConnectedSettingsMain )
+	fillFilterWithComponent( SettingsMain )
 );
 
 addFilter(
@@ -97,7 +56,7 @@ addFilter(
 		}
 		return (
 			<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-				<ConnectedSettingsSetupIncomplete />
+				<SettingsSetupIncomplete />
 			</div>
 		);
 	} )
@@ -111,12 +70,12 @@ addFilter(
 		if ( 'adsense' !== slug ) {
 			return <OriginalComponent { ...props } />;
 		}
-		return <ConnectedAdBlockerWarning context={ context } />;
+		return <AdBlockerWarning context={ context } />;
 	} )
 );
 
 addFilter(
 	'googlesitekit.AdSenseDashboardZeroData',
 	'googlesitekit.AdSenseDashboardZeroDataRefactored',
-	fillFilterWithComponent( ConnectedDashboardZeroData )
+	fillFilterWithComponent( DashboardZeroData )
 );
