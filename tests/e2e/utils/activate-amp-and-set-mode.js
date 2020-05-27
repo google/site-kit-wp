@@ -8,6 +8,8 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
  * The allow list of AMP modes.
  */
 export const allowedAMPModes = {
+	primary: 'standard',
+	secondary: 'transitional',
 	standard: 'standard',
 	transitional: 'transitional',
 	reader: 'disabled',
