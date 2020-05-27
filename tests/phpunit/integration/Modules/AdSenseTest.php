@@ -49,7 +49,7 @@ class AdSenseTest extends TestCase {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertContains(
-			'https://www.googleapis.com/auth/adsense',
+			'https://www.googleapis.com/auth/adsense.readonly',
 			$adsense->get_scopes()
 		);
 	}

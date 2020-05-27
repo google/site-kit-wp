@@ -27,7 +27,7 @@ import './modules';
  * WordPress dependencies
  */
 import { doAction } from '@wordpress/hooks';
-import { Component, render } from '@wordpress/element';
+import { Component, render, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -41,7 +41,7 @@ import {
 } from './util';
 import Link from './components/link';
 import AdminbarModules from './components/adminbar/adminbar-modules';
-import ErrorHandler from './components/ErrorHandler';
+import Root from './components/root';
 
 export class GoogleSitekitAdminbar extends Component {
 	constructor( props ) {
@@ -78,7 +78,7 @@ export class GoogleSitekitAdminbar extends Component {
 		} = global.googlesitekit;
 
 		return (
-			<ErrorHandler>
+			<Fragment>
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
 						<div className="
@@ -126,7 +126,7 @@ export class GoogleSitekitAdminbar extends Component {
 				>
 					{ __( 'More details', 'google-site-kit' ) }
 				</Link>
-			</ErrorHandler>
+			</Fragment>
 		);
 	}
 }
@@ -138,7 +138,7 @@ export function init() {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <GoogleSitekitAdminbar />, renderTarget );
+		render( <Root><GoogleSitekitAdminbar /></Root>, renderTarget );
 
 		/**
 		 * Action triggered when the dashboard App is loaded.

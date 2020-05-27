@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Component } from '@wordpress/element';
+import { Component, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -27,7 +27,6 @@ import { __ } from '@wordpress/i18n';
  */
 import DashboardMain from './dashboard-main';
 import DashboardNotifications from './dashboard-notifications';
-import ErrorHandler from '../ErrorHandler';
 import Header from '../header';
 import DateRangeSelector from '../date-range-selector';
 import PageHeader from '../page-header';
@@ -36,7 +35,7 @@ import '../publisher-wins';
 class DashboardApp extends Component {
 	render() {
 		return (
-			<ErrorHandler>
+			<Fragment>
 				<Header />
 				<DashboardNotifications />
 				<div className="googlesitekit-module-page">
@@ -72,7 +71,7 @@ class DashboardApp extends Component {
 						</div>
 					</div>
 				</div>
-			</ErrorHandler>
+			</Fragment>
 		);
 	}
 }
