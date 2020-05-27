@@ -434,7 +434,7 @@ final class OAuth_Client {
 	 *
 	 * @return bool true if any required scopes are not satisfied, otherwise false.
 	 */
-	public function requires_additional_scopes() {
+	public function needs_reauthentication() {
 		if ( ! $this->get_access_token() ) {
 			return false;
 		}
@@ -598,7 +598,7 @@ final class OAuth_Client {
 		$this->user_options->set( self::OPTION_REDIRECT_URL, $redirect_url );
 
 		// Ensure the latest required scopes are requested.
-		$scopes = array_merge( $this->get_required_scopes(), $this->get_granted_additional_scopes(), $additional_scopes );
+		$scopes = array_merge( $this->get_required_scopes(), $additional_scopes );
 		$this->get_client()->setScopes( array_unique( $scopes ) );
 
 		return $this->get_client()->createAuthUrl();

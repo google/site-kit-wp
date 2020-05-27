@@ -640,7 +640,7 @@ final class Authentication {
 		$data['isAuthenticated']    = ! empty( $access_token );
 		$data['requiredScopes']     = $auth_client->get_required_scopes();
 		$data['grantedScopes']      = ! empty( $access_token ) ? $auth_client->get_granted_scopes() : array();
-		$data['needReauthenticate'] = $data['isAuthenticated'] && $auth_client->requires_additional_scopes();
+		$data['needReauthenticate'] = $data['isAuthenticated'] && $auth_client->needs_reauthentication();
 
 		if ( $this->credentials->using_proxy() ) {
 			$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
@@ -838,7 +838,7 @@ final class Authentication {
 				},
 				'type'            => Notice::TYPE_SUCCESS,
 				'active_callback' => function() {
-					return $this->get_oauth_client()->requires_additional_scopes();
+					return $this->get_oauth_client()->needs_reauthentication();
 				},
 			)
 		);

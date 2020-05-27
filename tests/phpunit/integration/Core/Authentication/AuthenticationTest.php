@@ -382,7 +382,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertFalse( is_admin() );
 		do_action( 'init' );
 
-		set_current_screen( 'index.php' ); // Fake dashboard.
+		set_current_screen( 'dashboard' );
 		$this->assertTrue( is_admin() );
 
 		// Requires 'connect' nonce.
