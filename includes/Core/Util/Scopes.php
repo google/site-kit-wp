@@ -44,16 +44,16 @@ class Scopes {
 	);
 
 	/**
-	 * Tests if the given scope is satisfied by the given list of available scopes.
+	 * Tests if the given scope is satisfied by the given list of granted scopes.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string   $scope            OAuth scope to test for.
-	 * @param string[] $available_scopes Available OAuth scopes to test the individual scope against.
+	 * @param string   $scope          OAuth scope to test for.
+	 * @param string[] $granted_scopes Available OAuth scopes to test the individual scope against.
 	 * @return bool True if the given scope is satisfied, otherwise false.
 	 */
-	public static function is_satisfied_by( $scope, array $available_scopes ) {
-		if ( in_array( $scope, $available_scopes, true ) ) {
+	public static function is_satisfied_by( $scope, array $granted_scopes ) {
+		if ( in_array( $scope, $granted_scopes, true ) ) {
 			return true;
 		}
 
@@ -65,25 +65,25 @@ class Scopes {
 
 		if ( ! empty( self::$map[ $scope ]['requires_all'] ) ) {
 			// Return true if all satisfying scopes are present, otherwise false.
-			return ! array_diff( $satisfying_scopes, $available_scopes );
+			return ! array_diff( $satisfying_scopes, $granted_scopes );
 		}
 
 		// Return true if any of the scopes are present, otherwise false.
-		return (bool) array_intersect( $satisfying_scopes, $available_scopes );
+		return (bool) array_intersect( $satisfying_scopes, $granted_scopes );
 	}
 
 	/**
-	 * Tests if all the given scopes are satisfied by the list of available scopes.
+	 * Tests if all the given scopes are satisfied by the list of granted scopes.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string[] $scopes           OAuth scopes to test.
-	 * @param string[] $available_scopes OAuth scopes to test $scopes against.
+	 * @param string[] $scopes         OAuth scopes to test.
+	 * @param string[] $granted_scopes OAuth scopes to test $scopes against.
 	 * @return bool True if all given scopes are satisfied, otherwise false.
 	 */
-	public static function are_satisfied_by( array $scopes, array $available_scopes ) {
+	public static function are_satisfied_by( array $scopes, array $granted_scopes ) {
 		foreach ( $scopes as $scope ) {
-			if ( ! self::is_satisfied_by( $scope, $available_scopes ) ) {
+			if ( ! self::is_satisfied_by( $scope, $granted_scopes ) ) {
 				return false;
 			}
 		}
