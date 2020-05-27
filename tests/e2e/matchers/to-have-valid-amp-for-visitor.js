@@ -1,7 +1,7 @@
 /**
  * toHaveValidAMPForVistor matcher.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import { fetchPageContent } from '../utils';
 /**
  * Matcher to determine if the path has valid AMP for vistors ( not logged in)
  *
- * @param {( string|Object )} path The string URI or page object
+ * @param {(string|Object)} path The string URI or page object
  *
  * @return {Object} Matcher results
  */
@@ -44,7 +44,7 @@ export async function toHaveValidAMPForVisitor( path ) {
 	const urlToFetch = 'object' === typeof path ? path.url() : createURL( path );
 
 	const html = await fetchPageContent( urlToFetch, { credentials: 'omit' } );
-	// make sure that we don't see the AMP bar
+	// Make sure the admin bar is not present.
 	const jsDoc = new JSDOM( html ).window.document;
 	if ( jsDoc.querySelector( '#wpadminbar' ) ) {
 		throw new Error( 'toHaveValidAMPForVisitor failed. The admin bar was found.' );
