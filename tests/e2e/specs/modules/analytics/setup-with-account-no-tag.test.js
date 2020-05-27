@@ -191,8 +191,8 @@ describe( 'setting up the Analytics module with an existing account and no exist
 
 	describe( 'Homepage AMP', () => {
 		beforeEach( async () => {
-			await setupAnalytics();
 			await activateAMPWithMode( 'primary' );
+			await setupAnalytics();
 		} );
 		afterEach( async () => {
 			await deactivatePlugin( 'amp' );
