@@ -38,6 +38,9 @@ import {
 } from './cache';
 import { stringifyObject } from '../../util';
 
+// Specific error to handle here, see below.
+import { PERMISSION_SCOPE_ERROR_CODE } from '../datastore/user/constants';
+
 // Caching is enabled by default.
 let cachingEnabled = true;
 
@@ -132,11 +135,11 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 
 		return response;
 	} catch ( error ) {
-		// Check to see if this error was a `missing_required_scopes` error; if
-		// so—and there is a data store available to dispatch on—dispatch a
+		// Check to see if this error was a `PERMISSION_SCOPE_ERROR_CODE` error;
+		// if so and there is a data store available to dispatch on, dispatch a
 		// `setPermissionScopeError()` action.
 		// Kind of a hack, but scales to all components.
-		if ( error.code === 'missing_required_scopes' && global.googlesitekit && global.googlesitekit.data && global.googlesitekit.data.dispatch( 'core/user' ) ) {
+		if ( error.code === PERMISSION_SCOPE_ERROR_CODE && global.googlesitekit && global.googlesitekit.data && global.googlesitekit.data.dispatch( 'core/user' ) ) {
 			global.googlesitekit.data.dispatch( 'core/user' ).setPermissionScopeError( error );
 		}
 
