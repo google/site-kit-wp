@@ -68,7 +68,7 @@ class Insufficient_Scopes_Exception extends Exception implements WP_Errorable {
 			static::WP_ERROR_CODE,
 			$this->getMessage(),
 			array(
-				'status' => 401, // Unauthorized.
+				'status' => 403, // Forbidden.
 				'scopes' => $this->scopes,
 			)
 		);
