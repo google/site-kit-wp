@@ -126,8 +126,6 @@ export const createSnapshotStore = ( storeName ) => {
 			return deleteItem( `datastore::cache::${ storeName }` );
 		},
 		[ CREATE_SNAPSHOT ]: createRegistryControl( ( registry ) => () => {
-			// console.log( `saving ${ storeName }`, registry.stores[ storeName ].store.getState() );
-			// registry.stores[ storeName ].store.getState().foo();
 			return setItem( `datastore::cache::${ storeName }`, registry.stores[ storeName ].store.getState() );
 		} ),
 		[ RESTORE_SNAPSHOT ]: () => {
