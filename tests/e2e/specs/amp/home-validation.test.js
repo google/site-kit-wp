@@ -19,7 +19,7 @@ describe( 'AMP Homepage', () => {
 	beforeAll( async () => {
 		await setupSiteKit();
 		await activatePlugin( 'e2e-tests-admin-bar-visibility' );
-		await activateAMPWithMode( 'standard' );
+		await activateAMPWithMode( 'primary' );
 	} );
 
 	afterAll( async () => {

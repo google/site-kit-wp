@@ -20,7 +20,7 @@ describe( 'AMP Admin Bar compatibility', () => {
 	beforeAll( async () => {
 		await setupSiteKit();
 		await activatePlugin( 'e2e-tests-admin-bar-visibility' );
-		await activateAMPWithMode( 'standard' );
+		await activateAMPWithMode( 'primary' );
 
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {

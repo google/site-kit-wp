@@ -263,7 +263,7 @@ describe( 'setting up the AdSense module', () => {
 
 	describe( 'AMP is setup', () => {
 		beforeEach( async () => {
-			await activateAMPWithMode( 'standard' );
+			await activateAMPWithMode( 'primary' );
 		} );
 		afterEach( async () => {
 			await deactivatePlugin( 'amp' );
@@ -298,7 +298,7 @@ describe( 'setting up the AdSense module', () => {
 		} );
 
 		it( 'has valid AMP for non-logged in users', async () => {
-			await activateAMPWithMode( 'standard' );
+			await activateAMPWithMode( 'primary' );
 			datapointHandlers.accounts = ( request ) => {
 				request.respond( {
 					status: 200,

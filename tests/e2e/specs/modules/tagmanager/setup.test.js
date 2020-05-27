@@ -188,7 +188,7 @@ describe( 'Tag Manager module setup', () => {
 
 		describe( 'with Primary AMP', () => {
 			beforeEach( async () => {
-				await setAMPMode( 'standard' );
+				await setAMPMode( 'primary' );
 				await proceedToTagManagerSetup();
 			} );
 			it( 'renders only the AMP container select menu', async () => {
@@ -206,7 +206,7 @@ describe( 'Tag Manager module setup', () => {
 
 		describe( 'with Secondary AMP', () => {
 			beforeEach( async () => {
-				await setAMPMode( 'transitional' );
+				await setAMPMode( 'secondary' );
 				await proceedToTagManagerSetup();
 			} );
 			it( 'renders both the AMP and web container select menus', async () => {
@@ -228,17 +228,6 @@ describe( 'Tag Manager module setup', () => {
 				await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Tag Manager!/i } );
 				await page.goto( createURL( '/', 'amp' ), { waitUntil: 'load' } );
 				await expect( page ).toHaveValidAMPForVisitor();
-			} );
-		} );
-
-		describe( 'with Reader AMP', () => {
-			beforeEach( async () => {
-				await setAMPMode( 'reader' );
-				await proceedToTagManagerSetup();
-			} );
-			it( 'renders both the AMP and web container select menus', async () => {
-				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--web' );
-				await expect( page ).toMatchElement( '.googlesitekit-tagmanager__select-container--amp' );
 			} );
 		} );
 	} );

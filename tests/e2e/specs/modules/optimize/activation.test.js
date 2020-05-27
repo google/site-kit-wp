@@ -95,7 +95,7 @@ describe( 'Optimize Activation', () => {
 
 	describe( 'Settings with AMP enabled', () => {
 		beforeEach( async () => {
-			await activateAMPWithMode( 'standard' );
+			await activateAMPWithMode( 'primary' );
 			await setupAnalytics( { useSnippet: true } );
 			await proceedToOptimizeSetup();
 		} );
@@ -112,7 +112,7 @@ describe( 'Optimize Activation', () => {
 
 	describe( 'Homepage AMP', () => {
 		beforeEach( async () => {
-			await activateAMPWithMode( 'standard' );
+			await activateAMPWithMode( 'primary' );
 			await setupAnalytics();
 		} );
 
