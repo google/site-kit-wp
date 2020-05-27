@@ -286,7 +286,7 @@ class OAuth_ClientTest extends TestCase {
 			$base_scopes
 		);
 
-		// Includes any saved additional scopes.
+		// Does not include any saved additional scopes.
 		$saved_extra_scopes = array( 'http://example.com/saved/extra-scope' );
 		update_user_option( $user_id, OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, $saved_extra_scopes );
 		$authentication_url = $client->get_authentication_url( $post_auth_redirect );
@@ -294,7 +294,7 @@ class OAuth_ClientTest extends TestCase {
 		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
 		$this->assertEqualSets(
 			explode( ' ', $params['scope'] ),
-			array_merge( $base_scopes, $saved_extra_scopes )
+			$base_scopes
 		);
 
 		// Accepts additional scopes via second parameter to include in the request.
@@ -307,7 +307,7 @@ class OAuth_ClientTest extends TestCase {
 		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
 		$this->assertEqualSets(
 			explode( ' ', $params['scope'] ),
-			array_merge( $base_scopes, $saved_extra_scopes, $extra_scopes )
+			array_merge( $base_scopes, $extra_scopes )
 		);
 	}
 
