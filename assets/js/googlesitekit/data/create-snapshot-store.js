@@ -104,7 +104,7 @@ export const createSnapshotStore = ( storeName ) => {
 		},
 
 		/**
-		 * Takes a snapshot of the current state of this store, using our cache API.
+		 * Creates a snapshot of the current state of this store, using our cache API.
 		 *
 		 * @since n.e.x.t
 		 * @private
@@ -170,7 +170,7 @@ export const getStoresWithSnapshots = ( registry = Data ) => {
 };
 
 /**
- * Takes snapshots of all supporting stores.
+ * Creates snapshots of all supporting stores.
  *
  * @since n.e.x.t
  * @private
