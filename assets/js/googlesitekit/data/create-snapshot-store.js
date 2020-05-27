@@ -111,7 +111,7 @@ export const createSnapshotStore = ( storeName ) => {
 		 *
 		 * @return {boolean} Cache write response.
 		 */
-		*takeSnapshot() {
+		*createSnapshot() {
 			const cacheResult = yield {
 				payload: {},
 				type: CREATE_SNAPSHOT,
@@ -180,7 +180,7 @@ export const getStoresWithSnapshots = ( registry = Data ) => {
  */
 export const snapshotAllStores = ( registry = Data ) => {
 	return Promise.all( getStoresWithSnapshots( registry ).map( ( store ) => {
-		return store.getActions().takeSnapshot();
+		return store.getActions().createSnapshot();
 	} ) );
 };
 
