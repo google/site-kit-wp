@@ -101,7 +101,7 @@ class SettingsModules extends Component {
 					error: false,
 				} );
 
-				this.setModuleState( 'view' );
+				this.props.setModuleState( 'view' );
 			} ).catch( ( err ) => {
 				this.setState( {
 					isSaving: false,
