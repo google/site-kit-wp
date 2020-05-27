@@ -46,6 +46,8 @@ class Scopes {
 	/**
 	 * Tests if the given scope is satisfied by the given list of available scopes.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param string   $scope            OAuth scope to test for.
 	 * @param string[] $available_scopes Available OAuth scopes to test the individual scope against.
 	 * @return bool True if the given scope is satisfied, otherwise false.
@@ -72,6 +74,8 @@ class Scopes {
 
 	/**
 	 * Tests if all the given scopes are satisfied by the list of available scopes.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param string[] $scopes           OAuth scopes to test.
 	 * @param string[] $available_scopes OAuth scopes to test $scopes against.
