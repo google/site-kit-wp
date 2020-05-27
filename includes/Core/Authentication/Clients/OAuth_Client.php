@@ -418,6 +418,9 @@ final class OAuth_Client {
 	/**
 	 * Gets the list of currently granted additional Google OAuth scopes for the current user.
 	 *
+	 * Scopes are considered "additional scopes" if they were granted to perform a specific action,
+	 * rather than being granted as an overall required scope.
+	 *
 	 * @since n.e.x.t
 	 * @see https://developers.google.com/identity/protocols/googlescopes
 	 *
@@ -439,7 +442,7 @@ final class OAuth_Client {
 			return false;
 		}
 
-		return ! $this->has_sufficient_scopes( $this->get_required_scopes() );
+		return ! $this->has_sufficient_scopes();
 	}
 
 	/**
@@ -447,10 +450,14 @@ final class OAuth_Client {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string[] $scopes List of scopes to test against granted scopes.
+	 * @param string[] $scopes Optional. List of scopes to test against granted scopes.
+	 *                         Default is the list of required scopes.
 	 * @return bool
 	 */
-	public function has_sufficient_scopes( array $scopes ) {
+	public function has_sufficient_scopes( array $scopes = null ) {
+		if ( null === $scopes ) {
+			$scopes = $this->get_required_scopes();
+		}
 		return Scopes::are_satisfied_by( $scopes, $this->get_granted_scopes() );
 	}
 
