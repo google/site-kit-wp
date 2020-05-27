@@ -21,6 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import dataAPI, { TYPE_MODULES } from '../../../components/data';
 import {
 	isValidAccountID,
 	isValidInternalWebPropertyID,
@@ -101,6 +102,7 @@ export const controls = {
 		}
 
 		await API.invalidateCache( 'modules', 'analytics' );
+		dataAPI.invalidateCacheGroup( TYPE_MODULES, 'analytics' );
 
 		return {};
 	} ),

@@ -26,6 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import dataAPI, { TYPE_MODULES } from '../../../components/data';
 import {
 	isValidAccountID,
 	isValidClientID,
@@ -219,6 +220,8 @@ export const controls = {
 		}
 
 		await API.invalidateCache( 'modules', 'adsense' );
+		dataAPI.invalidateCacheGroup( TYPE_MODULES, 'adsense' );
+
 		return {};
 	} ),
 	// This is a control to allow for asynchronous logic using external action dispatchers.
