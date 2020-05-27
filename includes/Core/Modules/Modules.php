@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\REST_API\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
@@ -599,10 +600,10 @@ final class Modules {
 								$notifications = $modules[ $slug ]->get_data( 'notifications' );
 								if ( is_wp_error( $notifications ) ) {
 									// Don't consider it an error if the module does not have a 'notifications' datapoint.
-									if ( 'invalid_datapoint' !== $notifications->get_error_code() ) {
-										return $notifications;
+									if ( Invalid_Datapoint_Exception::WP_ERROR_CODE === $notifications->get_error_code() ) {
+										$notifications = array();
 									}
-									$notifications = array();
+									return $notifications;
 								}
 							}
 							return new WP_REST_Response( $notifications );

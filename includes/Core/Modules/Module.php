@@ -14,6 +14,7 @@ use Closure;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Exception\Insufficient_Scopes_Exception;
 use Google\Site_Kit\Core\Contracts\WP_Errorable;
+use Google\Site_Kit\Core\REST_API\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Cache;
@@ -502,7 +503,7 @@ abstract class Module {
 
 		// All datapoints must be defined.
 		if ( empty( $definitions[ $datapoint_key ] ) ) {
-			throw new Exception( __( 'Invalid datapoint.', 'google-site-kit' ), 400 );
+			throw new Invalid_Datapoint_Exception();
 		}
 
 		if ( empty( $definitions[ $datapoint_key ]['scopes'] ) ) {
