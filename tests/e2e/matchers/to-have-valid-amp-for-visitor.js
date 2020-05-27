@@ -45,9 +45,10 @@ export async function toHaveValidAMPForVisitor( path ) {
 
 	const html = await fetchPageContent( urlToFetch, { credentials: 'omit' } );
 	// make sure that we don't see the AMP bar
-	const { document: jsDoc } = ( new JSDOM( html ) ).window;
-	expect( jsDoc.querySelector( '#amp-admin-bar-item-status-icon' ) ).toBeNull();
-
+	const jsDoc = new JSDOM( html ).window.document;
+	if ( jsDoc.querySelector( '#wpadminbar' ) ) {
+		throw new Error( 'toHaveValidAMPForVisitor failed. The admin bar was found.' );
+	}
 	const validator = await ampHTMLValidator.getInstance();
 	const { status } = validator.validateString( html );
 	const pass = ( 'PASS' === status );
