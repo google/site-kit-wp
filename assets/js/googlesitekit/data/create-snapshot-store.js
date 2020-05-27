@@ -164,8 +164,8 @@ export const createSnapshotStore = ( storeName ) => {
  * @return {Object} The snapshot store object.
  */
 export const getStoresWithSnapshots = ( registry = Data ) => {
-	return Object.values( registry.namespaces ).filter( ( nameSpace ) => {
-		return Object.keys( nameSpace.getActions() ).includes( 'restoreSnapshot' );
+	return Object.values( registry.stores ).filter( ( store ) => {
+		return Object.keys( store.getActions() ).includes( 'restoreSnapshot' );
 	} );
 };
 
