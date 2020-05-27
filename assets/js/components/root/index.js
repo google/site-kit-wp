@@ -27,12 +27,25 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import ErrorHandler from '../ErrorHandler';
 import PermissionsModal from '../permissions-modal';
+import RestoreSnapshots from '../restore-snapshots';
+import CollectModuleData from '../data/collect-module-data';
 
-export default function Root( { children, registry } ) {
+export default function Root( {
+	children,
+	registry,
+	dataAPIContext,
+	dataAPIModuleArgs,
+} ) {
 	return (
 		<Data.RegistryProvider value={ registry }>
 			<ErrorHandler>
-				{ children }
+				<RestoreSnapshots>
+					{ children }
+					{ dataAPIContext && (
+						// Legacy dataAPI support.
+						<CollectModuleData context={ dataAPIContext } args={ dataAPIModuleArgs } />
+					) }
+				</RestoreSnapshots>
 				<PermissionsModal />
 			</ErrorHandler>
 		</Data.RegistryProvider>
