@@ -257,7 +257,7 @@ final class Search_Console extends Module
 				return $this->get_webmasters_service()->sites->listSites();
 		}
 
-		throw new Invalid_Datapoint_Exception( __( 'Invalid datapoint.', 'google-site-kit' ) );
+		throw new Invalid_Datapoint_Exception();
 	}
 
 	/**

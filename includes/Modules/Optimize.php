@@ -259,7 +259,7 @@ final class Optimize extends Module implements Module_With_Settings, Module_With
 				};
 		}
 
-		throw new Invalid_Datapoint_Exception( __( 'Invalid datapoint.', 'google-site-kit' ) );
+		throw new Invalid_Datapoint_Exception();
 	}
 
 	/**

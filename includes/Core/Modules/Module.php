@@ -505,7 +505,7 @@ abstract class Module {
 
 		// All datapoints must be defined.
 		if ( empty( $definitions[ $datapoint_key ] ) ) {
-			throw new Invalid_Datapoint_Exception( __( 'Invalid datapoint.', 'google-site-kit' ) );
+			throw new Invalid_Datapoint_Exception();
 		}
 
 		if ( empty( $definitions[ $datapoint_key ]['scopes'] ) ) {

@@ -640,7 +640,7 @@ tag_partner: "site_kit"
 				};
 		}
 
-		throw new Invalid_Datapoint_Exception( __( 'Invalid datapoint.', 'google-site-kit' ) );
+		throw new Invalid_Datapoint_Exception();
 	}
 
 	/**

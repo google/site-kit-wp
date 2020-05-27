@@ -35,7 +35,7 @@ class Invalid_Datapoint_Exception extends Exception implements WP_Errorable {
 	public function to_wp_error() {
 		return new WP_Error(
 			static::WP_ERROR_CODE,
-			$this->getMessage(),
+			__( 'Invalid datapoint.', 'google-site-kit' ),
 			array(
 				'status' => 400, // Bad request.
 			)

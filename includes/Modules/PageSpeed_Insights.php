@@ -122,7 +122,7 @@ final class PageSpeed_Insights extends Module
 				);
 		}
 
-		throw new Invalid_Datapoint_Exception( __( 'Invalid datapoint.', 'google-site-kit' ) );
+		throw new Invalid_Datapoint_Exception();
 	}
 
 	/**
