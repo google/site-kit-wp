@@ -540,9 +540,10 @@ final class Authentication {
 			}
 
 			// User is trying to authenticate, but access token hasn't been set.
+			$additional_scopes = $input->filter( INPUT_GET, 'additional_scopes', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 			wp_safe_redirect(
 				esc_url_raw(
-					$auth_client->get_authentication_url( $redirect_url )
+					$auth_client->get_authentication_url( $redirect_url, $additional_scopes )
 				)
 			);
 			exit();
@@ -632,7 +633,7 @@ final class Authentication {
 		$data['isAuthenticated']    = ! empty( $access_token );
 		$data['requiredScopes']     = $auth_client->get_required_scopes();
 		$data['grantedScopes']      = ! empty( $access_token ) ? $auth_client->get_granted_scopes() : array();
-		$data['needReauthenticate'] = $data['isAuthenticated'] && $this->need_reauthenticate();
+		$data['needReauthenticate'] = $data['isAuthenticated'] && $auth_client->needs_reauthentication();
 
 		if ( $this->credentials->using_proxy() ) {
 			$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
@@ -816,7 +817,7 @@ final class Authentication {
 				},
 				'type'            => Notice::TYPE_SUCCESS,
 				'active_callback' => function() {
-					return $this->need_reauthenticate();
+					return $this->get_oauth_client()->needs_reauthentication();
 				},
 			)
 		);
@@ -892,29 +893,6 @@ final class Authentication {
 				},
 			)
 		);
-	}
-
-	/**
-	 * Checks if the current user needs to reauthenticate (e.g. because of new requested scopes).
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return bool TRUE if need reauthenticate and FALSE otherwise.
-	 */
-	private function need_reauthenticate() {
-		$auth_client = $this->get_oauth_client();
-
-		$access_token = $auth_client->get_access_token();
-		if ( empty( $access_token ) ) {
-			return false;
-		}
-
-		$granted_scopes  = $auth_client->get_granted_scopes();
-		$required_scopes = $auth_client->get_required_scopes();
-
-		$required_and_granted_scopes = array_intersect( $granted_scopes, $required_scopes );
-
-		return count( $required_and_granted_scopes ) < count( $required_scopes );
 	}
 
 	/**

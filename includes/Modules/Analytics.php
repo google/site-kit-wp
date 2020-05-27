@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
@@ -168,11 +169,7 @@ final class Analytics extends Module
 	 */
 	public function get_scopes() {
 		return array(
-			'https://www.googleapis.com/auth/analytics',
 			'https://www.googleapis.com/auth/analytics.readonly',
-			'https://www.googleapis.com/auth/analytics.manage.users',
-			'https://www.googleapis.com/auth/analytics.edit',
-			'https://www.googleapis.com/auth/analytics.provision',
 		);
 	}
 
@@ -584,9 +581,45 @@ final class Analytics extends Module
 			// POST.
 			'create-property'              => 'analytics',
 			'create-profile'               => 'analytics',
-			'settings'                     => '',
 			'create-account-ticket'        => 'analyticsprovisioning',
 		);
+	}
+
+	/**
+	 * Gets map of datapoint to definition data for each.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Map of datapoints to their definitions.
+	 */
+	protected function get_datapoint_definitions() {
+		$map = parent::get_datapoint_definitions();
+
+		$map['POST:create-account-ticket'] = array_merge(
+			$map['POST:create-account-ticket'],
+			array(
+				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.provision' ),
+				'request_scopes_message' => __( 'Additional permissions are required to create a new Analytics account.', 'google-site-kit' ),
+			)
+		);
+
+		$map['POST:create-property'] = array_merge(
+			$map['POST:create-property'],
+			array(
+				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
+				'request_scopes_message' => __( 'Additional permissions are required to create a new Analytics property.', 'google-site-kit' ),
+			)
+		);
+
+		$map['POST:create-profile'] = array_merge(
+			$map['POST:create-profile'],
+			array(
+				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
+				'request_scopes_message' => __( 'Additional permissions are required to create a new Analytics view.', 'google-site-kit' ),
+			)
+		);
+
+		return $map;
 	}
 
 	/**
@@ -595,8 +628,9 @@ final class Analytics extends Module
 	 * @since 1.0.0
 	 *
 	 * @param Data_Request $data Data request object.
-	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
+	 *
+	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
@@ -692,7 +726,7 @@ final class Analytics extends Module
 					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'timezone' ), array( 'status' => 400 ) );
 				}
 
-				if ( ! $this->authentication->get_oauth_client()->using_proxy() ) {
+				if ( ! $this->authentication->credentials()->using_proxy() ) {
 					return new WP_Error( 'requires_service', __( 'Analytics provisioning requires connecting via the Site Kit Service.', 'google-site-kit' ), array( 'status' => 400 ) );
 				}
 
@@ -968,61 +1002,6 @@ final class Analytics extends Module
 				$profile = new Google_Service_Analytics_Profile();
 				$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
 				return $profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $data['propertyID'], $profile );
-			case 'POST:settings':
-				return function() use ( $data ) {
-					$option          = $data->data;
-					$is_new_property = false;
-
-					if ( isset( $option['accountID'], $option['propertyID'] ) ) {
-						if ( '0' === $option['propertyID'] ) {
-							$is_new_property = true;
-							$restore_defer   = $this->with_client_defer( false );
-							$property        = new Google_Service_Analytics_Webproperty();
-							$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
-							try {
-								$property = $this->get_service( 'analytics' )->management_webproperties->insert( $option['accountID'], $property );
-							} catch ( Exception $e ) {
-								$restore_defer();
-								return $this->exception_to_error( $e, $data->datapoint );
-							}
-							$restore_defer();
-							/* @var Google_Service_Analytics_Webproperty $property Property instance. */
-							$option['propertyID']            = $property->getId();
-							$option['internalWebPropertyID'] = $property->getInternalWebPropertyId();
-						}
-						if ( isset( $option['profileID'] ) ) {
-							if ( '0' === $option['profileID'] ) {
-								$restore_defer = $this->with_client_defer( false );
-								$profile       = new Google_Service_Analytics_Profile();
-								$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
-								try {
-									$profile = $this->get_service( 'analytics' )->management_profiles->insert( $option['accountID'], $option['propertyID'], $profile );
-								} catch ( Exception $e ) {
-									$restore_defer();
-									return $this->exception_to_error( $e, $data->datapoint );
-								}
-								$restore_defer();
-								$option['profileID'] = $profile->id;
-							}
-
-							// Set default profile for new property.
-							if ( $is_new_property ) {
-								$restore_defer = $this->with_client_defer( false );
-								$property      = new Google_Service_Analytics_Webproperty();
-								$property->setDefaultProfileId( $option['profileID'] );
-								try {
-									$property = $this->get_service( 'analytics' )->management_webproperties->patch( $option['accountID'], $option['propertyID'], $property );
-								} catch ( Exception $e ) {
-									$restore_defer();
-									return $this->exception_to_error( $e, $data->datapoint );
-								}
-								$restore_defer();
-							}
-						}
-					}
-					$this->get_settings()->merge( $option );
-					return $this->get_settings()->get();
-				};
 			case 'GET:tag-permission':
 				return function() use ( $data ) {
 					if ( ! isset( $data['propertyID'] ) ) {
@@ -1070,7 +1049,7 @@ final class Analytics extends Module
 				};
 		}
 
-		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
+		throw new Invalid_Datapoint_Exception();
 	}
 
 	/**
