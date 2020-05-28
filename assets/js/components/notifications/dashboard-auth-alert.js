@@ -25,13 +25,19 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Notification from '../notifications/notification';
+import { parseUnsatisfiedScopes, getModulesData } from '../../util';
 
 const DashboardAuthAlert = () => {
-	const { admin: { connectURL } } = global.googlesitekit;
-	const { unsatisfiedScopes } = global.googlesitekit.setup;
 	let message = '';
-	const missingScopes = [ ...new Set( unsatisfiedScopes.map( ( item ) => item.match( /https:\/\/www.googleapis.com\/auth\/([a-z]+)/ )[ 1 ] ) ) ];
-	const moduleNames = missingScopes.map( ( module ) => module.charAt( 0 ).toUpperCase() + module.slice( 1 ) );
+	const { admin: { connectURL }, setup: { unsatisfiedScopes } } = global.googlesitekit;
+	const missingScopes = parseUnsatisfiedScopes( unsatisfiedScopes );
+	const moduleData = getModulesData();
+	const moduleNames = missingScopes.map( ( scope ) => {
+		if ( moduleData[ scope[ 0 ] ] ) {
+			return moduleData[ scope[ 0 ] ].name;
+		}
+		return __( 'Generic', 'google-site-kit' );
+	} );
 	if ( 1 < moduleNames.length ) {
 		/* translators: %1$s: Product name */
 		message = sprintf( __( 'Site Kit can’t access the some relevant data because you haven’t granted all API scopes requested during setup. To use Site Kit, you’ll need to redo the setup for: %1$s – make sure to approve all API scopes at the authentication stage.', 'google-site-kit' ), moduleNames.join( ', ' ) );
