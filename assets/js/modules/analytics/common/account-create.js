@@ -26,6 +26,7 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Button from '../../../components/button';
+import Link from '../../../components/link';
 import ProgressBar from '../../../components/progress-bar';
 import { trackEvent } from '../../../util';
 import TimezoneSelect from './account-create/timezone-select';
@@ -48,6 +49,8 @@ export default function AccountCreate() {
 	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
 	const hasAccountCreateForm = useSelect( ( select ) => select( STORE_NAME ).hasForm( FORM_ACCOUNT_CREATE ) );
 	const hasProvisioningScope = useSelect( ( select ) => select( STORE_NAME ).hasProvisioningScope() );
+	const autoSubmit = useSelect( ( select ) => select( STORE_NAME ).getForm( FORM_ACCOUNT_CREATE, 'autoSubmit' ) );
+	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
 	let timezone = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
@@ -87,6 +90,8 @@ export default function AccountCreate() {
 			// typically handled automatically based on API responses, but
 			// this particular case has some special handling to improve UX.
 			if ( ! hasProvisioningScope ) {
+				// When state is restored, auto-submit the request again.
+				setForm( FORM_ACCOUNT_CREATE, { autoSubmit: true } );
 				setPermissionScopeError( {
 					code: PERMISSION_SCOPE_ERROR_CODE,
 					message: __( 'Additional permissions are required to create a new Analytics account.', 'google-site-kit' ),
@@ -99,6 +104,7 @@ export default function AccountCreate() {
 				return;
 			}
 
+			setForm( FORM_ACCOUNT_CREATE, { autoSubmit: false } );
 			trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
 			const { error } = await createAccount();
 
@@ -109,7 +115,19 @@ export default function AccountCreate() {
 		[ createAccount, setIsNavigating, hasProvisioningScope, setPermissionScopeError ]
 	);
 
-	if ( isDoingCreateAccount || isNavigating || undefined === hasProvisioningScope ) {
+	// If the user ends up back on this component with the provisioning scope granted,
+	// and already submitted the form, trigger the submit again.
+	useEffect( () => {
+		if ( hasProvisioningScope && autoSubmit ) {
+			handleSubmit();
+		}
+	}, [ hasProvisioningScope, autoSubmit, handleSubmit ] );
+
+	// If the user clicks "Back", rollback settings to restore saved values, if any.
+	const { rollbackSettings } = useDispatch( STORE_NAME );
+	const handleBack = useCallback( () => rollbackSettings() );
+
+	if ( isDoingCreateAccount || isNavigating || accounts === undefined || hasProvisioningScope === undefined ) {
 		return <ProgressBar />;
 	}
 
@@ -148,12 +166,23 @@ export default function AccountCreate() {
 				{ ! hasProvisioningScope && __( 'You will need to give Site Kit permission to create an Analytics account on your behalf and also accept the Google Analytics terms of service.', 'google-site-kit' ) }
 			</p>
 
-			<Button
-				disabled={ ! canSubmitAccountCreate }
-				onClick={ handleSubmit }
-			>
-				{ __( 'Create Account', 'google-site-kit' ) }
-			</Button>
+			<div className="googlesitekit-setup-module__action">
+				<Button
+					disabled={ ! canSubmitAccountCreate }
+					onClick={ handleSubmit }
+				>
+					{ __( 'Create Account', 'google-site-kit' ) }
+				</Button>
+
+				{ ( accounts && !! accounts.length ) && (
+					<Link
+						className="googlesitekit-setup-module__sub-action"
+						onClick={ handleBack }
+					>
+						{ __( 'Back', 'google-site-kit' ) }
+					</Link>
+				) }
+			</div>
 		</div>
 	);
 }
