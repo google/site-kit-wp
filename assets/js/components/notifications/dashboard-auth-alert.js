@@ -24,23 +24,30 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getModulesData } from '../../util';
 import Notification from '../notifications/notification';
 
 const DashboardAuthAlert = () => {
 	const { admin: { connectURL } } = global.googlesitekit;
-	const { requiredScopes, grantedScopes } = global.googlesitekit.setup;
-
-	const productUrl = requiredScopes.filter( ( e ) => ! grantedScopes.includes( e ) )[ 0 ];
-	const productSlug = productUrl.match( /https:\/\/www.googleapis.com\/auth\/([a-z]+)/ )[ 1 ];
-	const productName = getModulesData()[ productSlug ] ? getModulesData()[ productSlug ].name : '';
-
+	const { unsatisfiedScopes } = global.googlesitekit.setup;
+	let message = '';
+	const missingScopes = [ ...new Set( unsatisfiedScopes.map( ( item ) => item.match( /https:\/\/www.googleapis.com\/auth\/([a-z]+)/ )[ 1 ] ) ) ];
+	const moduleNames = missingScopes.map( ( module ) => module.charAt( 0 ).toUpperCase() + module.slice( 1 ) );
+	if ( 1 < moduleNames.length ) {
+		/* translators: %1$s: Product name */
+		message = sprintf( __( 'Site Kit can’t access the some relevant data because you haven’t granted all API scopes requested during setup. To use Site Kit, you’ll need to redo the setup for: %1$s – make sure to approve all API scopes at the authentication stage.', 'google-site-kit' ), moduleNames.join( ', ' ) );
+	} else if ( moduleNames.length === 1 ) {
+		/* translators: %1$s: Product name */
+		message = sprintf( __( 'Site Kit can’t access the relevant data from %1$s because you haven’t granted all API scopes requested during setup. To use Site Kit, you’ll need to redo the setup for %1$s – make sure to approve all API scopes at the authentication stage.', 'google-site-kit' ), moduleNames[ 0 ] );
+	} else {
+		// Generic error message here.
+		message = __( 'Site Kit can’t access the relevant data from because you haven’t granted all API scopes requested during setup. Please redo setup.', 'google-site-kit' );
+	}
 	return (
 		<Notification
 			id="authentication error"
 			title={ __( 'Site Kit can’t access necessary data', 'google-site-kit' ) }
-			/* translators: %1$s: Product name */
-			description={ sprintf( __( 'Site Kit can’t access the relevant data from %1$s because you haven’t granted all API scopes requested during setup. To use Site Kit, you’ll need to redo the setup for %1$s – make sure to approve all API scopes at the authentication stage. ', 'google-site-kit' ), productName ) }
+
+			description={ message }
 			handleDismiss={ () => {} }
 			format="small"
 			type="win-error"
