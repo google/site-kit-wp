@@ -17,9 +17,9 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import apiFetch from '@wordpress/api-fetch';
+import fetchMock from 'fetch-mock-jest';
 
 /**
  * Internal dependencies
@@ -35,7 +35,6 @@ import {
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/adsense report', () => {
-	let apiFetchSpy;
 	let registry;
 	let store;
 
@@ -46,8 +45,6 @@ describe( 'modules/adsense report', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -56,7 +53,8 @@ describe( 'modules/adsense report', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
+		fetchMock.restore();
+		fetchMock.mockClear();
 	} );
 
 	describe( 'actions', () => {
@@ -66,14 +64,10 @@ describe( 'modules/adsense report', () => {
 	describe( 'selectors', () => {
 		describe( 'getReport', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( fixtures.report ),
-						{ status: 200 }
-					);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/,
+					{ body: fixtures.report, status: 200 }
+				);
 
 				const initialReport = registry.select( STORE_NAME ).getReport( {} );
 
@@ -86,7 +80,7 @@ describe( 'modules/adsense report', () => {
 
 				const report = registry.select( STORE_NAME ).getReport( {} );
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( report ).toEqual( fixtures.report );
 			} );
 
@@ -106,7 +100,7 @@ describe( 'modules/adsense report', () => {
 					.hasFinishedResolution( 'getReport', [ options ] )
 				);
 
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
 				expect( report ).toEqual( fixtures.report );
 			} );
 
@@ -116,14 +110,10 @@ describe( 'modules/adsense report', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/
-					)
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/,
+					{ body: response, status: 500 }
+				);
 
 				const options = {
 					dateRange: 'last-90-days',
@@ -139,7 +129,7 @@ describe( 'modules/adsense report', () => {
 					() => store.getState().isFetchingReport[ '029df8a6f771dcfe67c270ef5f3fa62a' ] === false,
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const report = registry.select( STORE_NAME ).getReport( options );
 				expect( report ).toEqual( undefined );

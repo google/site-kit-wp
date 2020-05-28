@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock-jest';
+
+/**
  * Internal dependencies
  */
 import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';
@@ -29,17 +34,17 @@ describe( 'core/user disconnect', () => {
 	beforeEach( () => {
 		// Create a mock to avoid triggering a network request error.
 		// The return value is irrelevant to the test.
-		fetch
-			.doMockOnceIf( coreUserDataDisconnectEndpointRegExp )
-			.mockResponseOnce(
-				JSON.stringify( {} ),
-				{ status: 200 }
-			);
+		fetchMock.once(
+			coreUserDataDisconnectEndpointRegExp,
+			{ body: {}, status: 200 }
+		);
 		registry = createTestRegistry();
 	} );
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
+		fetchMock.restore();
+		fetchMock.mockClear();
 	} );
 
 	describe( 'disconnect', () => {

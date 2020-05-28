@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
@@ -29,20 +24,16 @@ import { INITIAL_STATE } from './index';
 import { STORE_NAME } from './constants';
 
 describe( 'core/site store', () => {
-	let apiFetchSpy;
 	let registry;
 	let store;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'reducer', () => {

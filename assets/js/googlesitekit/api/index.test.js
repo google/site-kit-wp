@@ -21,6 +21,11 @@
  */
 import fetchMock from 'fetch-mock-jest';
 
+// /**
+//  * WordPress dependencies
+//  */
+// import apiFetch from '@wordpress/api-fetch';
+
 /**
  * Internal dependencies
  */
@@ -119,7 +124,7 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should send query string params from data params', async () => {
-			fetchMock.once(
+			fetchMock.mock(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/search/,
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -127,7 +132,7 @@ describe( 'googlesitekit.api', () => {
 			const dataBody = { somethingElse: 'to-set', foo: 1, arrayValue: [ 1, 2 ] };
 			await get( 'core', 'search-console', 'search', dataBody );
 			expect( fetchMock ).toHaveFetched(
-				/^\/google-site-kit\/v1\/core\/search-console\/data\/search/,
+				'/google-site-kit/v1/core/search-console/data/search?somethingElse=to-set&foo=1&arrayValue%5B0%5D=1&arrayValue%5B1%5D=2&_locale=user',
 				{
 					body: undefined,
 					credentials: 'include',
@@ -180,9 +185,9 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should cache requests by default', async () => {
-			expect( fetchMock ).toHaveFetchedTimes( 0 );
+			expect( fetchMock ).toHaveBeenCalledTimes( 0 );
 
-			fetchMock.once(
+			fetchMock.mock(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/users/,
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -316,7 +321,7 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should send request body data from data params', async () => {
-			fetchMock.once(
+			fetchMock.mock(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -324,7 +329,7 @@ describe( 'googlesitekit.api', () => {
 			const dataBody = { somethingElse: 'to-set', foo: 1, arrayValue: [ 1, 2 ] };
 			await set( 'core', 'search-console', 'settings', dataBody );
 			expect( fetchMock ).toHaveFetched(
-				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
+				'/google-site-kit/v1/core/search-console/data/settings?_locale=user',
 				{
 					body: { data: dataBody },
 					credentials: 'include',
@@ -338,7 +343,7 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should send request body data from data params and query params if set', async () => {
-			fetchMock.once(
+			fetchMock.mock(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -349,7 +354,7 @@ describe( 'googlesitekit.api', () => {
 			} );
 
 			expect( fetchMock ).toHaveFetched(
-				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
+				'/google-site-kit/v1/core/search-console/data/settings?foo=bar&_locale=user',
 				{
 					body: { data: dataBody },
 					credentials: 'include',
@@ -598,7 +603,7 @@ describe( 'googlesitekit.api', () => {
 
 	describe( 'siteKitRequest', () => {
 		it( 'should send a request using fetch', async () => {
-			fetchMock.once(
+			fetchMock.mock(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -606,7 +611,7 @@ describe( 'googlesitekit.api', () => {
 			await siteKitRequest( 'core', 'search-console', 'settings' );
 
 			expect( fetchMock ).toHaveFetched(
-				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
+				'/google-site-kit/v1/core/search-console/data/settings?_locale=user',
 				{
 					body: undefined,
 					credentials: 'include',

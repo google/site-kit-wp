@@ -1,3 +1,5 @@
+import fetchMock from 'fetch-mock';
+
 beforeEach( () => {
 	global.console.error.mockClear();
 	global.console.warn.mockClear();
@@ -14,5 +16,5 @@ beforeEach( () => {
 		sessionStorage[ method ].mockClear();
 	} );
 
-	fetch.resetMocks();
+	fetchMock.reset();
 } );

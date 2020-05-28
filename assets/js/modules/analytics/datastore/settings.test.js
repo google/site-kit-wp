@@ -17,9 +17,9 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import apiFetch from '@wordpress/api-fetch';
+import fetchMock from 'fetch-mock-jest';
 
 /**
  * Internal dependencies
@@ -37,7 +37,7 @@ import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
 
 describe( 'modules/analytics settings', () => {
-	let apiFetchSpy;
+	fetchMock.config.fallbackToNetwork = true;
 	let registry;
 
 	const validSettings = {
@@ -66,7 +66,6 @@ describe( 'modules/analytics settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -75,7 +74,8 @@ describe( 'modules/analytics settings', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
+		fetchMock.restore();
+		fetchMock.mockClear();
 	} );
 
 	describe( 'actions', () => {
@@ -97,27 +97,23 @@ describe( 'modules/analytics settings', () => {
 					internalWebPropertyId: '123456789',
 				};
 
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/
-					)
-					.mockResponseOnce(
-						JSON.stringify( createdProperty ),
-						{ status: 200 }
-					)
-					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ )
-					.mockResponseOnce( async ( req ) => {
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					{ body: createdProperty, status: 200 }
+				);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					async ( url, opts, req ) => {
 						const { data } = await req.json();
-						// Return the same settings passed to the API.
-						return JSON.stringify( data );
-					} )
-				;
+						return { body: data, status: 200 };
+					}
+				);
 
 				const result = await registry.dispatch( STORE_NAME ).submitChanges();
-
-				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject( {
-					data: { accountID: '12345' },
-				} );
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					{ body: { data: { accountID: '12345' } } },
+				);
 
 				expect( result.error ).toBeFalsy();
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( createdProperty.id );
@@ -131,24 +127,17 @@ describe( 'modules/analytics settings', () => {
 					propertyID: PROPERTY_CREATE,
 				} );
 
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/
-					)
-					.mockResponseOnce(
-						JSON.stringify( error ),
-						{ status: 500 }
-					);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					{ body: error, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
-				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
-					{
-						data: {
-							accountID: '12345',
-						},
-					}
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					{ body: { data: { accountID: '12345' } } },
 				);
 
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( PROPERTY_CREATE );
@@ -166,32 +155,30 @@ describe( 'modules/analytics settings', () => {
 					...fixtures.propertiesProfiles.profiles[ 0 ],
 					id: '987654321',
 				};
-
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/
-					)
-					.mockResponseOnce(
-						JSON.stringify( createdProfile ),
-						{ status: 200 }
-					)
-					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ )
-					.mockResponseOnce( async ( req ) => {
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					{ body: createdProfile, status: 200 }
+				);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					async ( url, opts, req ) => {
 						const { data } = await req.json();
-						// Return the same settings passed to the API.
-						return JSON.stringify( data );
-					} )
-				;
+						return { body: data, status: 200 };
+					}
+				);
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
-				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
 					{
-						data: {
-							accountID: '12345',
-							propertyID: 'UA-12345-1',
+						body: {
+							data: {
+								accountID: '12345',
+								propertyID: 'UA-12345-1',
+							},
 						},
-					}
+					},
 				);
 
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( createdProfile.id );
@@ -205,26 +192,18 @@ describe( 'modules/analytics settings', () => {
 					profileID: PROFILE_CREATE,
 				} );
 
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/
-					)
-					.mockResponseOnce(
-						JSON.stringify( error ),
-						{ status: 500 }
-					);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					{ body: error, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				const result = await registry.dispatch( STORE_NAME ).submitChanges();
 
-				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject(
-					{
-						data: {
-							accountID: '12345',
-						},
-					}
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					{ body: { data: { accountID: '12345', propertyID: 'UA-12345-1' } } },
 				);
-
 				expect( result.error ).toEqual( error );
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( PROFILE_CREATE );
 				expect( registry.select( STORE_NAME ).getError() ).toEqual( error );
@@ -246,18 +225,21 @@ describe( 'modules/analytics settings', () => {
 					id: '987654321',
 				};
 
-				fetch
-					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/ )
-					.mockResponseOnce( JSON.stringify( createdProperty ), { status: 200 } )
-					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/ )
-					.mockResponseOnce( JSON.stringify( createdProfile ), { status: 200 } )
-					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ )
-					.mockResponseOnce( async ( req ) => {
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
+					{ body: createdProperty, status: 200 }
+				);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
+					{ body: createdProfile, status: 200 }
+				);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					async ( url, opts, req ) => {
 						const { data } = await req.json();
-						// Return the same settings passed to the API.
-						return JSON.stringify( data );
-					} )
-				;
+						return { body: data, status: 200 };
+					}
+				);
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
@@ -268,52 +250,46 @@ describe( 'modules/analytics settings', () => {
 			it( 'dispatches saveSettings', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( validSettings ),
-						{ status: 200 }
-					);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					{ body: validSettings, status: 200 }
+				);
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
-				expect( fetch ).toHaveBeenCalled();
-				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
+				expect( fetchMock ).not.toHaveFetchedTimes( 0 );
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					{ body: { data: validSettings } },
+				);
 				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
 			} );
 
 			it( 'returns an error if saveSettings fails', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( error ),
-						{ status: 500 }
-					);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					{ body: error, status: 500 }
+				);
 
 				muteConsole( 'error' );
 				const result = await registry.dispatch( STORE_NAME ).submitChanges();
 
-				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					{ body: { data: validSettings } },
+				);
 				expect( result.error ).toEqual( error );
 			} );
 
 			it( 'invalidates Analytics API cache on success', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
-					)
-					.mockResponseOnce(
-						JSON.stringify( validSettings ),
-						{ status: 200 }
-					);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
+					{ body: validSettings, status: 200 }
+				);
 
 				const cacheKey = createCacheKey( 'modules', 'analytics', 'arbitrary-datapoint' );
 				expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );

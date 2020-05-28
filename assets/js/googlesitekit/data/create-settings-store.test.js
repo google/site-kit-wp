@@ -154,7 +154,13 @@ describe( 'createSettingsStore store', () => {
 				await subscribeUntil( registry, () => select.isDoingSaveSettings() === false );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( JSON.parse( fetchMock.calls()[ 0 ][ 1 ].body ).data ).toMatchObject( { isSkyBlue: 'no' } );
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					{
+						body: { data: { isSkyBlue: 'no' } },
+					}
+				);
+
 				expect( store.getState().settings ).toMatchObject( response );
 			} );
 		} );
@@ -288,7 +294,6 @@ describe( 'createSettingsStore store', () => {
 				await subscribeUntil( registry, () => select.hasFinishedResolution( 'getSettings' ) );
 
 				expect( fetchMock ).toHaveFetchedTimes( 0 );
-				expect( fetch ).not.toHaveBeenCalled();
 			} );
 
 			it( 'returns client settings even if server settings have not loaded', () => {

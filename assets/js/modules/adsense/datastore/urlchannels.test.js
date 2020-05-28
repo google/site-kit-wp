@@ -17,9 +17,9 @@
  */
 
 /**
- * WordPress dependencies
+ * External dependencies
  */
-import apiFetch from '@wordpress/api-fetch';
+import fetchMock from 'fetch-mock-jest';
 
 /**
  * Internal dependencies
@@ -35,7 +35,6 @@ import {
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/adsense URL channels', () => {
-	let apiFetchSpy;
 	let registry;
 	let store;
 
@@ -46,8 +45,6 @@ describe( 'modules/adsense URL channels', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		store = registry.stores[ STORE_NAME ].store;
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -56,7 +53,8 @@ describe( 'modules/adsense URL channels', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
+		fetchMock.restore();
+		fetchMock.mockClear();
 	} );
 
 	describe( 'actions', () => {
@@ -66,14 +64,10 @@ describe( 'modules/adsense URL channels', () => {
 	describe( 'selectors', () => {
 		describe( 'getURLChannels', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetch
-					.doMockOnceIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/
-					)
-					.mockResponseOnce(
-						JSON.stringify( fixtures.urlchannels ),
-						{ status: 200 }
-					);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/,
+					{ body: fixtures.urlchannels, status: 200 }
+				);
 
 				const clientID = fixtures.clients[ 0 ].id;
 
@@ -88,7 +82,7 @@ describe( 'modules/adsense URL channels', () => {
 
 				const urlchannels = registry.select( STORE_NAME ).getURLChannels( clientID );
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( urlchannels ).toEqual( fixtures.urlchannels );
 			} );
 
@@ -106,7 +100,7 @@ describe( 'modules/adsense URL channels', () => {
 					.hasFinishedResolution( 'getURLChannels', [ clientID ] )
 				);
 
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
 				expect( urlchannels ).toEqual( fixtures.urlchannels );
 			} );
 
@@ -116,14 +110,10 @@ describe( 'modules/adsense URL channels', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetch
-					.doMockIf(
-						/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/
-					)
-					.mockResponse(
-						JSON.stringify( response ),
-						{ status: 500 }
-					);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/,
+					{ body: response, status: 500 }
+				);
 
 				const fakeClientID = 'ca-pub-777888999';
 
@@ -135,7 +125,7 @@ describe( 'modules/adsense URL channels', () => {
 					() => store.getState().isFetchingURLChannels[ fakeClientID ] === false,
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const urlchannels = registry.select( STORE_NAME ).getURLChannels( fakeClientID );
 				expect( urlchannels ).toEqual( undefined );
@@ -157,7 +147,7 @@ describe( 'modules/adsense URL channels', () => {
 					() => store.getState().isFetchingURLChannels[ invalidClientID ] === false,
 				);
 
-				expect( fetch ).toHaveBeenCalledTimes( 0 );
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
 
 				const urlchannels = registry.select( STORE_NAME ).getURLChannels( invalidClientID );
 				expect( urlchannels ).toEqual( undefined );

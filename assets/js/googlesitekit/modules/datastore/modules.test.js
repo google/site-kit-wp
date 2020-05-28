@@ -107,10 +107,15 @@ describe( 'core/modules modules', () => {
 				);
 
 				// Ensure the proper body parameters were sent.
-				expect( JSON.parse( fetchMock.calls()[ 1 ][ 1 ].body ).data ).toMatchObject(
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
 					{
-						slug,
-						active: true,
+						body: {
+							data: {
+								slug,
+								active: true,
+							},
+						},
 					}
 				);
 
@@ -160,10 +165,15 @@ describe( 'core/modules modules', () => {
 				);
 
 				// Ensure the proper body parameters were sent.
-				expect( JSON.parse( fetchMock.calls()[ 1 ][ 1 ].body ).data ).toMatchObject(
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
 					{
-						slug,
-						active: true,
+						body: {
+							data: {
+								slug,
+								active: true,
+							},
+						},
 					}
 				);
 
@@ -226,10 +236,15 @@ describe( 'core/modules modules', () => {
 				);
 
 				// Ensure the proper body parameters were sent.
-				expect( JSON.parse( fetchMock.calls()[ 1 ][ 1 ].body ).data ).toMatchObject(
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
 					{
-						slug,
-						active: false,
+						body: {
+							data: {
+								slug,
+								active: false,
+							},
+						},
 					}
 				);
 
@@ -280,10 +295,15 @@ describe( 'core/modules modules', () => {
 				);
 
 				// Ensure the proper body parameters were sent.
-				expect( JSON.parse( fetchMock.calls()[ 1 ][ 1 ].body ).data ).toMatchObject(
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
 					{
-						slug,
-						active: false,
+						body: {
+							data: {
+								slug,
+								active: false,
+							},
+						},
 					}
 				);
 
@@ -357,7 +377,7 @@ describe( 'core/modules modules', () => {
 					.hasFinishedResolution( 'getModules' )
 				);
 
-				expect( fetch ).not.toHaveBeenCalled();
+				expect( fetchMock ).toHaveFetchedTimes( 0 );
 				expect( modules ).toEqual( fixturesKeyValue );
 			} );
 
