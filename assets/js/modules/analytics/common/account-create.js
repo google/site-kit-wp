@@ -93,6 +93,7 @@ export default function AccountCreate() {
 					data: {
 						status: 403,
 						scopes: [ PROVISIONING_SCOPE ],
+						skipModal: true,
 					},
 				} );
 				return;

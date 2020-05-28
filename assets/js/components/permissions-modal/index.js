@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { useEffect, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -56,6 +56,18 @@ const PermissionsModal = () => {
 		global.location.assign( connectURL );
 	}, [ registry, connectURL ] );
 
+	useEffect( () => {
+		// If error has flag to skip the modal, redirect to the authorization
+		// page immediately without prompting the user, essentially short-
+		// circuiting to the confirm step.
+		const confirmIfSkipModal = async () => {
+			if ( permissionsError?.data?.skipModal && permissionsError?.data?.scopes?.length ) {
+				await onConfirm();
+			}
+		};
+		confirmIfSkipModal();
+	}, [ onConfirm, permissionsError ] );
+
 	if ( ! permissionsError ) {
 		return null;
 	}
@@ -64,6 +76,10 @@ const PermissionsModal = () => {
 	// the modal. Log a console warning if this happens and return `null`.
 	if ( ! permissionsError?.data?.scopes?.length ) {
 		global.console.warn( 'permissionsError lacks scopes array to use for redirect, so not showing the PermissionsModal. permissionsError was:', permissionsError );
+		return null;
+	}
+
+	if ( permissionsError?.data?.skipModal ) {
 		return null;
 	}
 
