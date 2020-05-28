@@ -144,7 +144,7 @@ export default function AccountCreate() {
 			</div>
 
 			<p>
-				{ hasProvisioningScope && __( 'You will be redirected to Google Analytics to accept the terms of service and create your new account.', 'google-site-kit' ) }
+				{ hasProvisioningScope && __( 'You will be redirected to Google Analytics to accept the terms of service.', 'google-site-kit' ) }
 				{ ! hasProvisioningScope && __( 'You will need to give Site Kit permission to create an Analytics account on your behalf and also accept the Google Analytics terms of service.', 'google-site-kit' ) }
 			</p>
 
