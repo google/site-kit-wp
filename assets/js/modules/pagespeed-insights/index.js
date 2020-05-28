@@ -31,6 +31,8 @@ import { addFilter } from '@wordpress/hooks';
 /**
  * Add components to the settings page.
  */
-addFilter( 'googlesitekit.ModuleSettingsDetails-pagespeed-insights',
+addFilter(
+	'googlesitekit.ModuleSettingsDetails-pagespeed-insights',
 	'googlesitekit.PageSpeedInsightsModuleSettingsDetails',
-	fillFilterWithComponent( PageSpeedInsightsSettings ), 10 );
+	fillFilterWithComponent( PageSpeedInsightsSettings )
+);

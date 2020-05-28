@@ -39,7 +39,8 @@ function filterPageSpeedInsightsSettings() {
 	addFilter(
 		'googlesitekit.ModuleSettingsDetails-pagespeed-insights',
 		'googlesitekit.PageSpeedInsightsModuleSettingsDetails',
-		fillFilterWithComponent( PageSpeedInsightsSettings ), 10 );
+		fillFilterWithComponent( PageSpeedInsightsSettings )
+	);
 }
 
 const completeModuleData = {
