@@ -1,7 +1,7 @@
 /**
  * PostSearcher component.
  *
- * Site Kit by Google, Copyright 2019 Google LLC
+ * Site Kit by Google, Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import {
 	map,
 	debounce,
 	trim,
-	isUndefined,
 } from 'lodash';
 import Autocomplete from 'accessible-autocomplete/react';
 
@@ -47,7 +46,6 @@ class PostSearcher extends Component {
 	constructor( props ) {
 		super( props );
 		this.noResultsMessage = __( 'No results found', 'google-site-kit' );
-		this.disallowedSelections = [ this.noResultsMessage ];
 		this.state = {
 			isSearching: false,
 			results: [],
@@ -116,11 +114,10 @@ class PostSearcher extends Component {
 
 	onConfirm( selection ) {
 		const { results } = this.state;
-		let match;
-		// Check to that the selection is "valid".
-		if ( ! Array.isArray( results ) || ! this.disallowedSelections.includes( selection ) ) {
-			match = results.find( ( result ) => result.post_title === selection );
-			if ( selection && ! isUndefined( match ) ) {
+		// Check that the selection is "valid".
+		if ( Array.isArray( results ) && selection !== this.noResultsMessage ) {
+			const match = results.find( ( result ) => result.post_title === selection );
+			if ( selection && match ) {
 				this.setState( {
 					selection,
 					canSubmit: true,
@@ -135,12 +132,12 @@ class PostSearcher extends Component {
 	}
 
 	onClick() {
-		const { canSubmit, selection, match } = this.state;
-		if ( canSubmit ) {
+		const { selection, match } = this.state;
+		if ( match && match.ID ) {
 			global.location.assign( getSiteKitAdminURL(
 				'googlesitekit-dashboard',
 				{
-					id: match.id,
+					id: match.ID,
 					permaLink: match.permalink,
 					pageTitle: selection,
 				}
