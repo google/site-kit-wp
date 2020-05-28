@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* eslint camelcase:[0] */
 
 /**
  * External dependencies
@@ -26,8 +25,8 @@ import './modules';
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
+import { render } from '@wordpress/element';
 import { doAction } from '@wordpress/hooks';
-import { Component, render } from '@wordpress/element';
 
 /**
  * Internal dependencies.
@@ -35,17 +34,7 @@ import { Component, render } from '@wordpress/element';
 import { loadTranslations } from './util';
 import './components/notifications';
 import DashboardDetailsApp from './components/dashboard-details/dashboard-details-app';
-import ErrorHandler from './components/ErrorHandler';
-
-class GoogleSitekitDashboardDetails extends Component {
-	render() {
-		return (
-			<ErrorHandler>
-				<DashboardDetailsApp />
-			</ErrorHandler>
-		);
-	}
-}
+import Root from './components/root';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
@@ -54,7 +43,7 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <GoogleSitekitDashboardDetails />, renderTarget );
+		render( <Root><DashboardDetailsApp /></Root>, renderTarget );
 
 		/**
 		 * Action triggered when the dashboard details App is loaded.

@@ -31,6 +31,7 @@ import { doAction } from '@wordpress/hooks';
 import { loadTranslations, trackEvent } from './util';
 import './components/notifications';
 import { ActivationApp } from './components/activation/activation-app';
+import Root from './components/root';
 
 domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-activation' );
@@ -39,7 +40,7 @@ domReady( () => {
 		loadTranslations();
 		trackEvent( 'plugin_setup', 'plugin_activated' );
 
-		render( <ActivationApp />, renderTarget );
+		render( <Root><ActivationApp /></Root>, renderTarget );
 
 		renderTarget.classList.remove( 'googlesitekit-activation--loading' );
 
