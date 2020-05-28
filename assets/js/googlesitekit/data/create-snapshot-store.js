@@ -1,4 +1,3 @@
-
 /**
  * Provides a datastore for snapshotting and restoring state.
  *

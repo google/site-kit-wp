@@ -33,6 +33,7 @@ import CollectModuleData from '../data/collect-module-data';
 export default function Root( {
 	children,
 	registry,
+	// TODO: Remove legacy dataAPI prop support once phased out.
 	dataAPIContext,
 	dataAPIModuleArgs,
 } ) {
