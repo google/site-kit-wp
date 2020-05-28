@@ -26,6 +26,7 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Button from '../../../components/button';
+import Link from '../../../components/link';
 import ProgressBar from '../../../components/progress-bar';
 import { trackEvent } from '../../../util';
 import TimezoneSelect from './account-create/timezone-select';
@@ -45,6 +46,7 @@ export default function AccountCreate() {
 	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( STORE_NAME ).getAccountTicketTermsOfServiceURL() );
 	const canSubmitAccountCreate = useSelect( ( select ) => select( STORE_NAME ).canSubmitAccountCreate() );
 	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
+	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
 	let timezone = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
@@ -85,7 +87,11 @@ export default function AccountCreate() {
 		[ createAccount, setIsNavigating ]
 	);
 
-	if ( isDoingCreateAccount || isNavigating ) {
+	// If the user clicks "Back", rollback settings to restore saved values, if any.
+	const { rollbackSettings } = useDispatch( STORE_NAME );
+	const handleBack = useCallback( () => rollbackSettings() );
+
+	if ( isDoingCreateAccount || isNavigating || accounts === undefined ) {
 		return <ProgressBar />;
 	}
 
@@ -123,12 +129,23 @@ export default function AccountCreate() {
 				{ __( 'You will be redirected to Google Analytics to accept the Terms of Service and create your new account.', 'google-site-kit' ) }
 			</p>
 
-			<Button
-				disabled={ ! canSubmitAccountCreate }
-				onClick={ handleSubmit }
-			>
-				{ __( 'Create Account', 'google-site-kit' ) }
-			</Button>
+			<div className="googlesitekit-setup-module__action">
+				<Button
+					disabled={ ! canSubmitAccountCreate }
+					onClick={ handleSubmit }
+				>
+					{ __( 'Create Account', 'google-site-kit' ) }
+				</Button>
+
+				{ ( accounts && !! accounts.length ) && (
+					<Link
+						className="googlesitekit-setup-module__sub-action"
+						onClick={ handleBack }
+					>
+						{ __( 'Back', 'google-site-kit' ) }
+					</Link>
+				) }
+			</div>
 		</div>
 	);
 }

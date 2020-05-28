@@ -100,10 +100,27 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		return <Setup callback={ setupRegistry } />;
 	} )
+	.add( 'No Accounts (legacy)', () => {
+		filterAnalyticsSetup();
+
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( STORE_NAME ).setSettings( {} );
+			dispatch( STORE_NAME ).receiveAccounts( [] );
+			dispatch( STORE_NAME ).receiveExistingTag( null );
+		};
+
+		return <Setup callback={ setupRegistry } />;
+	} )
 	.add( 'No Accounts', () => {
 		filterAnalyticsSetup();
 
 		const setupRegistry = ( { dispatch } ) => {
+			dispatch( CORE_SITE ).receiveSiteInfo( {
+				usingProxy: true,
+				referenceSiteURL: 'http://example.com',
+				timezone: 'America/Detroit',
+				siteName: 'My Site Name',
+			} );
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( [] );
 			dispatch( STORE_NAME ).receiveExistingTag( null );

@@ -1,5 +1,5 @@
 /**
- * Public Widgets API entrypoint.
+ * Root component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -17,17 +17,31 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
-import Widgets from './googlesitekit/widgets';
+import Data from 'googlesitekit-data';
+import ErrorHandler from '../ErrorHandler';
 
-if ( typeof global.googlesitekit === 'undefined' ) {
-	global.googlesitekit = {};
+export default function Root( { children, registry } ) {
+	return (
+		<Data.RegistryProvider value={ registry }>
+			<ErrorHandler>
+				{ children }
+			</ErrorHandler>
+		</Data.RegistryProvider>
+	);
 }
 
-if ( global.googlesitekit.widgets === undefined ) {
-	global.googlesitekit.widgets = Widgets;
-}
+Root.propTypes = {
+	children: PropTypes.node.isRequired,
+	registry: PropTypes.object,
+};
 
-// This is only exported for Jest and is not used in production.
-export default Widgets;
+Root.defaultProps = {
+	registry: Data,
+};

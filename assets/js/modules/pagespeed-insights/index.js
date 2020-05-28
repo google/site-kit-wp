@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import './datastore';
 import { fillFilterWithComponent } from '../../util';
 import { SettingsMain as PageSpeedInsightsSettings } from './settings';
@@ -29,17 +28,9 @@ import { SettingsMain as PageSpeedInsightsSettings } from './settings';
  */
 import { addFilter } from '@wordpress/hooks';
 
-function ConnectedPageSpeedInsightsSettings( props ) {
-	return (
-		<Data.RegistryProvider value={ Data }>
-			<PageSpeedInsightsSettings { ...props } />
-		</Data.RegistryProvider>
-	);
-}
-
 /**
  * Add components to the settings page.
  */
 addFilter( 'googlesitekit.ModuleSettingsDetails-pagespeed-insights',
 	'googlesitekit.PageSpeedInsightsModuleSettingsDetails',
-	fillFilterWithComponent( ConnectedPageSpeedInsightsSettings ), 10 );
+	fillFilterWithComponent( PageSpeedInsightsSettings ), 10 );
