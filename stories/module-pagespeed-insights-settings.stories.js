@@ -32,8 +32,6 @@ import { removeAllFilters, addFilter } from '@wordpress/hooks';
 import SettingsModule from '../assets/js/components/settings/settings-module';
 import { SettingsMain as PageSpeedInsightsSettings } from '../assets/js/modules/pagespeed-insights/settings';
 import { fillFilterWithComponent } from '../assets/js/util';
-
-import { STORE_NAME } from '../assets/js/modules/pagespeed-insights/datastore';
 import { WithTestRegistry } from '../tests/js/utils';
 
 function filterPageSpeedInsightsSettings() {
@@ -103,21 +101,11 @@ storiesOf( 'PageSpeed Insights Module/Settings', module )
 	.add( 'View, closed', () => {
 		filterPageSpeedInsightsSettings();
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveSettings( {} );
-		};
-
-		return <Settings isOpen={ false } module={ completeModuleData } callback={ setupRegistry } />;
+		return <Settings isOpen={ false } module={ completeModuleData } />;
 	} )
 	.add( 'View, open with all settings', () => {
 		filterPageSpeedInsightsSettings();
 
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveSettings( {
-				propertyID: 'http://example.com/',
-			} );
-		};
-
-		return <Settings module={ completeModuleData } callback={ setupRegistry } />;
+		return <Settings module={ completeModuleData } />;
 	} )
 ;
