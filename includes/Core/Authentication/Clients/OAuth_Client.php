@@ -459,14 +459,15 @@ final class OAuth_Client {
 			$scopes = $this->get_required_scopes();
 		}
 
-		$granted_scopes = $this->get_granted_scopes();
-
-		return array_filter(
+		$granted_scopes     = $this->get_granted_scopes();
+		$unsatisfied_scopes = array_filter(
 			$scopes,
 			function( $scope ) use ( $granted_scopes ) {
 				return ! Scopes::is_satisfied_by( $scope, $granted_scopes );
 			}
 		);
+
+		return array_values( $unsatisfied_scopes );
 	}
 
 	/**
