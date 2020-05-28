@@ -88,7 +88,7 @@ const PermissionsModal = () => {
 			<Dialog
 				title={ __( 'Additional Permissions Required', 'google-site-kit' ) }
 				subtitle={ permissionsError.message }
-				confirmButton={ __( 'Authorize additional permissions', 'google-site-kit' ) }
+				confirmButton={ __( 'Proceed', 'google-site-kit' ) }
 				dialogActive={ true }
 				handleConfirm={ onConfirm }
 				handleDialog={ onCancel }
