@@ -39,7 +39,7 @@ import {
 import { stringifyObject } from '../../util';
 
 // Specific error to handle here, see below.
-import { PERMISSION_SCOPE_ERROR_CODE } from '../datastore/user/constants';
+import { STORE_NAME as CORE_USER, PERMISSION_SCOPE_ERROR_CODE } from '../datastore/user/constants';
 
 // Caching is enabled by default.
 let cachingEnabled = true;
@@ -139,8 +139,8 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 		// if so and there is a data store available to dispatch on, dispatch a
 		// `setPermissionScopeError()` action.
 		// Kind of a hack, but scales to all components.
-		if ( error.code === PERMISSION_SCOPE_ERROR_CODE && global.googlesitekit && global.googlesitekit.data && global.googlesitekit.data.dispatch( 'core/user' ) ) {
-			global.googlesitekit.data.dispatch( 'core/user' ).setPermissionScopeError( error );
+		if ( error.code === PERMISSION_SCOPE_ERROR_CODE && global.googlesitekit && global.googlesitekit.data && global.googlesitekit.data.dispatch( CORE_USER ) ) {
+			global.googlesitekit.data.dispatch( CORE_USER ).setPermissionScopeError( error );
 		}
 
 		global.console.error( 'Google Site Kit API Error', error );

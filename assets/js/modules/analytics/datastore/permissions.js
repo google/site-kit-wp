@@ -43,6 +43,7 @@ export const selectors = {
 	 * provisioning a Google Analytics account.
 	 *
 	 * @since n.e.x.t
+	 * @private
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} True if access granted, false if not;

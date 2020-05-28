@@ -34,8 +34,9 @@ import PropertyField from './account-create/property-field';
 import ProfileField from './account-create/profile-field';
 import CountrySelect from './account-create/country-select';
 import ErrorNotice from './error-notice';
-import { STORE_NAME, FORM_ACCOUNT_CREATE } from '../datastore/constants';
+import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER, PERMISSION_SCOPE_ERROR_CODE } from '../../../googlesitekit/datastore/user/constants';
 import { countryCodesByTimezone } from '../util/countries-timezones';
 import Data from 'googlesitekit-data';
 
@@ -46,6 +47,7 @@ export default function AccountCreate() {
 	const canSubmitAccountCreate = useSelect( ( select ) => select( STORE_NAME ).canSubmitAccountCreate() );
 	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
 	const hasAccountCreateForm = useSelect( ( select ) => select( STORE_NAME ).hasForm( FORM_ACCOUNT_CREATE ) );
+	const hasProvisioningScope = useSelect( ( select ) => select( STORE_NAME ).hasProvisioningScope() );
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
 	let timezone = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
@@ -78,8 +80,24 @@ export default function AccountCreate() {
 	}, [ hasAccountCreateForm, siteName, siteURL, timezone ] );
 
 	const { createAccount } = useDispatch( STORE_NAME );
+	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const handleSubmit = useCallback(
 		async () => {
+			// If scope not granted, trigger scope error right away. These are
+			// typically handled automatically based on API responses, but
+			// this particular case has some special handling to improve UX.
+			if ( ! hasProvisioningScope ) {
+				setPermissionScopeError( {
+					code: PERMISSION_SCOPE_ERROR_CODE,
+					message: __( 'Additional permissions are required to create a new Analytics account.', 'google-site-kit' ),
+					data: {
+						status: 403,
+						scopes: [ PROVISIONING_SCOPE ],
+					},
+				} );
+				return;
+			}
+
 			trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
 			const { error } = await createAccount();
 
@@ -87,10 +105,10 @@ export default function AccountCreate() {
 				setIsNavigating( true );
 			}
 		},
-		[ createAccount, setIsNavigating ]
+		[ createAccount, setIsNavigating, hasProvisioningScope, setPermissionScopeError ]
 	);
 
-	if ( isDoingCreateAccount || isNavigating ) {
+	if ( isDoingCreateAccount || isNavigating || undefined === hasProvisioningScope ) {
 		return <ProgressBar />;
 	}
 
@@ -125,7 +143,8 @@ export default function AccountCreate() {
 			</div>
 
 			<p>
-				{ __( 'You will be redirected to Google Analytics to accept the Terms of Service and create your new account.', 'google-site-kit' ) }
+				{ hasProvisioningScope && __( 'You will be redirected to Google Analytics to accept the terms of service and create your new account.', 'google-site-kit' ) }
+				{ ! hasProvisioningScope && __( 'You will need to give Site Kit permission to create an Analytics account on your behalf and also accept the Google Analytics terms of service.', 'google-site-kit' ) }
 			</p>
 
 			<Button
