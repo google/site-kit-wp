@@ -49,6 +49,7 @@ export default function AccountCreate() {
 	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
 	const hasAccountCreateForm = useSelect( ( select ) => select( STORE_NAME ).hasForm( FORM_ACCOUNT_CREATE ) );
 	const hasProvisioningScope = useSelect( ( select ) => select( STORE_NAME ).hasProvisioningScope() );
+	const autoSubmit = useSelect( ( select ) => select( STORE_NAME ).getForm( FORM_ACCOUNT_CREATE, 'autoSubmit' ) );
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
@@ -89,6 +90,8 @@ export default function AccountCreate() {
 			// typically handled automatically based on API responses, but
 			// this particular case has some special handling to improve UX.
 			if ( ! hasProvisioningScope ) {
+				// When state is restored, auto-submit the request again.
+				setForm( FORM_ACCOUNT_CREATE, { autoSubmit: true } );
 				setPermissionScopeError( {
 					code: PERMISSION_SCOPE_ERROR_CODE,
 					message: __( 'Additional permissions are required to create a new Analytics account.', 'google-site-kit' ),
@@ -101,6 +104,7 @@ export default function AccountCreate() {
 				return;
 			}
 
+			setForm( FORM_ACCOUNT_CREATE, { autoSubmit: false } );
 			trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
 			const { error } = await createAccount();
 
@@ -110,6 +114,14 @@ export default function AccountCreate() {
 		},
 		[ createAccount, setIsNavigating, hasProvisioningScope, setPermissionScopeError ]
 	);
+
+	// If the user ends up back on this component with the provisioning scope granted,
+	// and already submitted the form, trigger the submit again.
+	useEffect( () => {
+		if ( hasProvisioningScope && autoSubmit ) {
+			handleSubmit();
+		}
+	}, [ hasProvisioningScope, autoSubmit, handleSubmit ] );
 
 	// If the user clicks "Back", rollback settings to restore saved values, if any.
 	const { rollbackSettings } = useDispatch( STORE_NAME );
