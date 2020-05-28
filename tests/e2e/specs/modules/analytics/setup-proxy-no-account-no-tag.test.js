@@ -72,7 +72,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		await expect( page ).toMatchElement( '.mdc-dialog__title', { text: /Additional Permissions Required/i } );
 	} );
 
-	it.only( 'preserves user-filled values provided before approving additional permissions', async () => {
+	it.only( 'preserves user-filled values provided before approving additional permissions', async () => { // eslint-disable-line jest/no-focused-tests
 		await page.waitForSelector( '.googlesitekit-heading-4' );
 
 		// Unfortunately, the view does not have a `form`, otherwise we could use `.toFillForm( el, fields )`
