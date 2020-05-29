@@ -49,10 +49,12 @@ const DashboardAuthAlert = () => {
 	} );
 
 	if ( 1 < moduleNames.length ) {
+		/* translators: used between list items, there is a space after the comma. */
+		const listSeparator = __( ', ', 'google-site-kit' );
 		message = sprintf(
 			/* translators: %s: Product name */
 			__( 'Site Kit can’t access the some relevant data because you haven’t granted all API scopes requested during setup. To use Site Kit, you’ll need to redo the setup for: %s – make sure to approve all API scopes at the authentication stage.', 'google-site-kit' ),
-			moduleNames.join( ', ' )
+			moduleNames.join( listSeparator )
 		);
 	} else if ( moduleNames.length === 1 ) {
 		message = sprintf(
