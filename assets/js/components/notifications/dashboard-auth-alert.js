@@ -24,12 +24,21 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Notification from '../notifications/notification';
 import { parseUnsatisfiedScopes, getModulesData } from '../../util';
+import { STORE_NAME as CORE_USER } from '../../googlesitekit/datastore/user/constants';
+const { useSelect } = Data;
 
 const DashboardAuthAlert = () => {
+	const unsatisfiedScopes = useSelect( ( select ) => select( CORE_USER ).getUnsatisfiedScopes() );
+	const connectURL = useSelect( ( select ) => select( CORE_USER ).getConnectURL() );
+
+	if ( unsatisfiedScopes === undefined || connectURL === undefined ) {
+		return null;
+	}
+
 	let message = '';
-	const { admin: { connectURL }, setup: { unsatisfiedScopes } } = global.googlesitekit;
 	const missingScopes = parseUnsatisfiedScopes( unsatisfiedScopes );
 	const moduleData = getModulesData();
 	const moduleNames = missingScopes.map( ( scope ) => {
