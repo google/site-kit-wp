@@ -139,7 +139,7 @@ export const siteKitRequest = async ( type, identifier, datapoint, {
 		// if so and there is a data store available to dispatch on, dispatch a
 		// `setPermissionScopeError()` action.
 		// Kind of a hack, but scales to all components.
-		if ( error.code === PERMISSION_SCOPE_ERROR_CODE && global.googlesitekit && global.googlesitekit.data && global.googlesitekit.data.dispatch( CORE_USER ) ) {
+		if ( error.code === PERMISSION_SCOPE_ERROR_CODE && global.googlesitekit?.data?.dispatch?.( CORE_USER ) ) {
 			global.googlesitekit.data.dispatch( CORE_USER ).setPermissionScopeError( error );
 		}
 

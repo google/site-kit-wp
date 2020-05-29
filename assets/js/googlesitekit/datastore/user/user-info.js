@@ -238,7 +238,7 @@ export const selectors = {
 		}
 
 		// If additional scopes are provided, pass them in the dedicated query param.
-		if ( additionalScopes && additionalScopes.length ) {
+		if ( additionalScopes?.length ) {
 			return addQueryArgs( connectURL, { ...queryArgs, additional_scopes: additionalScopes } );
 		}
 
