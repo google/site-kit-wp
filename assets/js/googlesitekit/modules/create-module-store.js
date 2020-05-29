@@ -31,6 +31,9 @@ import {
 import {
 	createSettingsStore,
 } from '../data/create-settings-store';
+import {
+	createInfoStore,
+} from './create-info-store';
 
 /**
  * Creates a base store object for a Site Kit module.
@@ -70,6 +73,12 @@ export const createModuleStore = ( slug, {
 		storeName,
 	} );
 
+	const infoStore = createInfoStore( {
+		storeName,
+		adminPage,
+		// requiresSetup,
+	} );
+
 	const settingsStore = ( 'undefined' !== typeof settingSlugs )
 		? createSettingsStore( 'modules', slug, 'settings', {
 			storeName,
@@ -82,6 +91,7 @@ export const createModuleStore = ( slug, {
 	const combinedStore = Data.combineStores(
 		notificationsStore,
 		settingsStore,
+		infoStore,
 	);
 
 	combinedStore.STORE_NAME = storeName;
