@@ -57,8 +57,8 @@ before_install:
       WP_VERSION=$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//')
     fi
   - |
-    if [[ "$PHP" == "1" ]] && [[ "$WP_VERSION" == "nightly" ]]; then
-      composer require phpunit/phpunit --ignore-platform-reqs
+    if [[ "$PHP" == "1" ]] && [[ "$WP_VERSION" == "master" ]]; then
+      composer update phpunit/phpunit --ignore-platform-reqs
     fi
   - |
     if [[ "$PHP" == "1" ]]; then
