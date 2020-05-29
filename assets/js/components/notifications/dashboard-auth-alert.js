@@ -94,7 +94,7 @@ const DashboardAuthAlert = () => {
 			const listSeparator = __( ', ', 'google-site-kit' );
 			message = sprintf(
 				/* translators: %s: List of product names */
-				__( 'Site Kit can’t access the some relevant data because you haven’t granted all permissions requested during setup. To use Site Kit, you’ll need to redo the setup for: %s – make sure to approve all permissions at the authentication stage.', 'google-site-kit' ),
+				__( 'Site Kit can’t access all relevant data because you haven’t granted all permissions requested during setup. To use Site Kit, you’ll need to redo the setup for: %s – make sure to approve all permissions at the authentication stage.', 'google-site-kit' ),
 				moduleNames.join( listSeparator )
 			);
 			break;
@@ -106,7 +106,7 @@ const DashboardAuthAlert = () => {
 			);
 			break;
 		case MESSAGE_GENERIC:
-			message = __( 'Site Kit can’t access all relevant data because you haven’t granted all permissions requested during setup. Please redo setup.', 'google-site-kit' );
+			message = __( 'Site Kit can’t access all relevant data because you haven’t granted all permissions requested during setup. To use Site Kit, you’ll need to redo the setup – make sure to approve all permissions at the authentication stage.', 'google-site-kit' );
 			break;
 	}
 
