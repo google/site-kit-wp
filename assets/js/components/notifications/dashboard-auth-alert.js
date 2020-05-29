@@ -59,11 +59,9 @@ function mapScopesToModuleNames( scopes ) {
 
 const DashboardAuthAlert = () => {
 	const unsatisfiedScopes = useSelect( ( select ) => select( CORE_USER ).getUnsatisfiedScopes() );
-
-	// Selector for `getConnectURL` not merged yet.
-	// const connectURL = useSelect( ( select ) => select( CORE_USER ).getConnectURL() );
-	// TODO: replace use of global with above selector once merged.
-	const connectURL = global.googlesitekit?.admin?.connectURL;
+	const connectURL = useSelect( ( select ) => select( CORE_USER ).getConnectURL( {
+		redirectURL: global.location.href,
+	} ) );
 
 	if ( unsatisfiedScopes === undefined || connectURL === undefined ) {
 		return null;
