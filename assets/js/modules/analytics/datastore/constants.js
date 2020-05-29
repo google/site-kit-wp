@@ -29,3 +29,4 @@ export const FORM_ACCOUNT_CREATE = 'analyticsAccountCreate';
 
 // OAuth scope required for provisioning a Google Analytics account.
 export const PROVISIONING_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
+export const EDIT_SCOPE = 'https://www.googleapis.com/auth/analytics.edit';
