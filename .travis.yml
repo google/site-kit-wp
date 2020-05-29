@@ -58,7 +58,7 @@ before_install:
     fi
   - |
     if [[ "$PHP" == "1" ]] && [[ "$WP_VERSION" == "master" ]]; then
-      composer update phpunit/phpunit --ignore-platform-reqs
+      composer update phpunit/phpunit --with-dependencies --ignore-platform-reqs --no-scripts
     fi
   - |
     if [[ "$PHP" == "1" ]]; then
