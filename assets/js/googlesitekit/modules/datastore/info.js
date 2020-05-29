@@ -39,13 +39,11 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state Data store's state.
+	 * @param {string} page Admin page.
 	 * @return {string|undefined} The admin screen url.
 	 */
-	getAdminScreenURL: createRegistrySelector( ( select ) => () => {
-		const adminScreenURL = select( CORE_SITE ).getAdminURL() || {};
-
-		return adminScreenURL;
+	getAdminScreenURL: createRegistrySelector( ( select ) => ( page ) => {
+		return select( CORE_SITE ).getAdminURL( page );
 	} ),
 
 	/**
@@ -53,13 +51,11 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state Data store's state.
+	 * @param {string} page Admin page
 	 * @return {string} The admin reauth url.
 	 */
-	getAdminReauthURL: createRegistrySelector( ( select ) => () => {
-		const adminReauthURL = select( CORE_SITE ).getAdminURL() || {};
-
-		return adminReauthURL;
+	getAdminReauthURL: createRegistrySelector( ( select ) => ( page ) => {
+		return select( CORE_SITE ).getAdminURL( page );
 	} ),
 };
 
