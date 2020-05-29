@@ -57,6 +57,10 @@ before_install:
       WP_VERSION=$(grep -o '"version":"[^"]*' /tmp/wp-latest.json | sed 's/"version":"//')
     fi
   - |
+    if [[ "$PHP" == "1" ]] && [[ "$WP_VERSION" == "nightly" ]]; then
+      composer require phpunit/phpunit --ignore-platform-reqs
+    fi
+  - |
     if [[ "$PHP" == "1" ]]; then
       git clone --depth=1 --branch="$WP_VERSION" git://develop.git.wordpress.org/ /tmp/wordpress
       cp /tmp/wordpress/wp-tests-config-sample.php /tmp/wordpress/tests/phpunit/wp-tests-config.php
