@@ -47,16 +47,24 @@ const DashboardAuthAlert = () => {
 		}
 		return __( 'Generic', 'google-site-kit' );
 	} );
+
 	if ( 1 < moduleNames.length ) {
-		/* translators: %1$s: Product name */
-		message = sprintf( __( 'Site Kit can’t access the some relevant data because you haven’t granted all API scopes requested during setup. To use Site Kit, you’ll need to redo the setup for: %1$s – make sure to approve all API scopes at the authentication stage.', 'google-site-kit' ), moduleNames.join( ', ' ) );
+		message = sprintf(
+			/* translators: %s: Product name */
+			__( 'Site Kit can’t access the some relevant data because you haven’t granted all API scopes requested during setup. To use Site Kit, you’ll need to redo the setup for: %s – make sure to approve all API scopes at the authentication stage.', 'google-site-kit' ),
+			moduleNames.join( ', ' )
+		);
 	} else if ( moduleNames.length === 1 ) {
-		/* translators: %1$s: Product name */
-		message = sprintf( __( 'Site Kit can’t access the relevant data from %1$s because you haven’t granted all API scopes requested during setup. To use Site Kit, you’ll need to redo the setup for %1$s – make sure to approve all API scopes at the authentication stage.', 'google-site-kit' ), moduleNames[ 0 ] );
+		message = sprintf(
+			/* translators: %1$s: Product name */
+			__( 'Site Kit can’t access the relevant data from %1$s because you haven’t granted all API scopes requested during setup. To use Site Kit, you’ll need to redo the setup for %1$s – make sure to approve all API scopes at the authentication stage.', 'google-site-kit' ),
+			moduleNames[ 0 ]
+		);
 	} else {
 		// Generic error message here.
 		message = __( 'Site Kit can’t access the relevant data from because you haven’t granted all API scopes requested during setup. Please redo setup.', 'google-site-kit' );
 	}
+
 	return (
 		<Notification
 			id="authentication error"
