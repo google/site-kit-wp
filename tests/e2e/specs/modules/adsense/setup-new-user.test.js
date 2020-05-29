@@ -77,7 +77,7 @@ describe( 'setting up the AdSense module', () => {
 				request.respond( {
 					status: 302,
 					headers: {
-						location: createURL( '/', [
+						location: createURL( '/wp-admin/index.php', [
 							'oauth2callback=1',
 							'code=valid-test-code',
 							'e2e-site-verification=1',

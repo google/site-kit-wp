@@ -2,7 +2,7 @@
 /**
  * Plugin Name: E2E Tests Proxy Credentials Plugin
  * Plugin URI:  https://github.com/google/site-kit-wp
- * Description: Utility plugin for forcing OAuth credentials during E2E tests.
+ * Description: Utility plugin for forcing proxy OAuth credentials during E2E tests.
  * Author:      Google
  * Author URI:  https://opensource.google.com
  *

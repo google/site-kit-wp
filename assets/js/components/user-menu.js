@@ -189,6 +189,7 @@ class UserMenu extends Component {
 						subtitle={ __( 'Disconnecting Site Kit by Google will remove your access to all services. After disconnecting, you will need to re-authorize to restore service.', 'google-site-kit' ) }
 						confirmButton={ __( 'Disconnect', 'google-site-kit' ) }
 						provides={ [] }
+						danger
 					/>
 				</Modal>
 			</Fragment>

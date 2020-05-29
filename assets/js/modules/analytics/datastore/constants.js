@@ -25,4 +25,7 @@ export const PROPERTY_CREATE = 'property_create';
 // A special Profile ID value used for the "Set up a new profile" option.
 export const PROFILE_CREATE = 'profile_create';
 // Form ID for the account creation form.
-export const FORM_ACCOUNT_CREATE = 'accountCreate';
+export const FORM_ACCOUNT_CREATE = 'analyticsAccountCreate';
+
+// OAuth scope required for provisioning a Google Analytics account.
+export const PROVISIONING_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';

@@ -20,7 +20,7 @@ function stubGoogleSignIn( request ) {
 		request.respond( {
 			status: 302,
 			headers: {
-				location: createURL( '/', 'oauth2callback=1&code=valid-test-code&e2e-site-verification=1' ),
+				location: createURL( '/wp-admin/index.php', 'oauth2callback=1&code=valid-test-code&e2e-site-verification=1' ),
 			},
 		} );
 	} else if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/matched-sites' ) ) {
