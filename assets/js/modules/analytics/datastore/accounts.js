@@ -34,6 +34,7 @@ import Data from 'googlesitekit-data';
 import { isValidAccountSelection } from '../util';
 import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from './constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { actions as tagActions } from './tags';
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -215,13 +216,13 @@ export const controls = {
 		} );
 	},
 	[ FETCH_CREATE_ACCOUNT ]: createRegistryControl( ( { select } ) => () => {
-		const { getForm } = select( STORE_NAME );
+		const { getValue } = select( CORE_FORMS );
 
 		return API.set( 'modules', 'analytics', 'create-account-ticket', {
-			accountName: getForm( FORM_ACCOUNT_CREATE, 'accountName' ),
-			propertyName: getForm( FORM_ACCOUNT_CREATE, 'propertyName' ),
-			profileName: getForm( FORM_ACCOUNT_CREATE, 'profileName' ),
-			timezone: getForm( FORM_ACCOUNT_CREATE, 'timezone' ),
+			accountName: getValue( FORM_ACCOUNT_CREATE, 'accountName' ),
+			propertyName: getValue( FORM_ACCOUNT_CREATE, 'propertyName' ),
+			profileName: getValue( FORM_ACCOUNT_CREATE, 'profileName' ),
+			timezone: getValue( FORM_ACCOUNT_CREATE, 'timezone' ),
 		} );
 	} ),
 };
@@ -438,21 +439,24 @@ export const selectors = {
 	/**
 	 * Whether or not the account create form is valid to submit.
 	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
 	 * @return {boolean} True if valid, otherwise false.
 	 */
 	canSubmitAccountCreate: createRegistrySelector( ( select ) => () => {
-		const { getForm } = select( STORE_NAME );
+		const { getValue } = select( CORE_FORMS );
 
-		if ( ! getForm( FORM_ACCOUNT_CREATE, 'accountName' ) ) {
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'accountName' ) ) {
 			return false;
 		}
-		if ( ! getForm( FORM_ACCOUNT_CREATE, 'propertyName' ) ) {
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'propertyName' ) ) {
 			return false;
 		}
-		if ( ! getForm( FORM_ACCOUNT_CREATE, 'profileName' ) ) {
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'profileName' ) ) {
 			return false;
 		}
-		if ( ! getForm( FORM_ACCOUNT_CREATE, 'timezone' ) ) {
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'timezone' ) ) {
 			return false;
 		}
 		return true;

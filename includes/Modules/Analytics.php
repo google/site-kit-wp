@@ -601,7 +601,7 @@ final class Analytics extends Module
 			$map['POST:create-account-ticket'],
 			array(
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.provision' ),
-				'request_scopes_message' => __( 'Additional permissions are required to create a new Analytics account.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
 			)
 		);
 
@@ -609,7 +609,7 @@ final class Analytics extends Module
 			$map['POST:create-property'],
 			array(
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
-				'request_scopes_message' => __( 'Additional permissions are required to create a new Analytics property.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
 			)
 		);
 
@@ -617,7 +617,7 @@ final class Analytics extends Module
 			$map['POST:create-profile'],
 			array(
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
-				'request_scopes_message' => __( 'Additional permissions are required to create a new Analytics view.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics view on your behalf.', 'google-site-kit' ),
 			)
 		);
 
@@ -1485,6 +1485,7 @@ final class Analytics extends Module
 						'googlesitekit-modules',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
+						'googlesitekit-datastore-forms',
 					),
 				)
 			),

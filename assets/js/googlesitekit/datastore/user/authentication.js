@@ -95,7 +95,9 @@ export const actions = {
 
 export const controls = {
 	[ FETCH_AUTHENTICATION ]: () => {
-		return API.get( 'core', 'user', 'authentication', undefined, { useCache: false } );
+		return API.get( 'core', 'user', 'authentication', undefined, {
+			useCache: false,
+		} );
 	},
 };
 

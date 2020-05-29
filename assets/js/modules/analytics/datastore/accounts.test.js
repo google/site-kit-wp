@@ -27,6 +27,7 @@ import apiFetch from '@wordpress/api-fetch';
 import API from 'googlesitekit-api';
 import { STORE_NAME, FORM_ACCOUNT_CREATE } from './constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
 	createTestRegistry,
 	muteConsole,
@@ -78,7 +79,7 @@ describe( 'modules/analytics accounts', () => {
 						{ status: 200 }
 					);
 
-				registry.dispatch( STORE_NAME ).setForm( FORM_ACCOUNT_CREATE, { accountName, propertyName, profileName, timezone } );
+				registry.dispatch( CORE_FORMS ).setValues( FORM_ACCOUNT_CREATE, { accountName, propertyName, profileName, timezone } );
 
 				// Silence expected API errors.
 				muteConsole( 'error' ); // Request will log an error.
@@ -122,7 +123,7 @@ describe( 'modules/analytics accounts', () => {
 						{ status: 500 }
 					);
 
-				registry.dispatch( STORE_NAME ).setForm( FORM_ACCOUNT_CREATE, { accountName, propertyName, profileName, timezone } );
+				registry.dispatch( CORE_FORMS ).setValues( FORM_ACCOUNT_CREATE, { accountName, propertyName, profileName, timezone } );
 				muteConsole( 'error' ); // Request will log an error.
 				await registry.dispatch( STORE_NAME ).createAccount();
 
