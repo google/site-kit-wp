@@ -21,7 +21,7 @@ describe( 'core site notifications', () => {
 	// The proxy test cannot currently be done and needs to be skipped TODO tests need to to be fixed to handle proxy tests.
 	describe.skip( 'when using proxy', () => {
 		beforeAll( async () => {
-			await activatePlugin( 'e2e-tests-auth-plugin' );
+			await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 			await setSiteVerification();
 			await setSearchConsoleProperty();
 		} );
@@ -75,7 +75,7 @@ describe( 'core site notifications', () => {
 	} );
 	describe( 'when not using proxy', () => {
 		beforeAll( async () => {
-			await activatePlugin( 'e2e-tests-auth-plugin' );
+			await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 			await setSiteVerification();
 			await setSearchConsoleProperty();
 		} );

@@ -28,7 +28,7 @@ describe( 'PageSpeed Insights Activation', () => {
 		} );
 	} );
 	beforeEach( async () => {
-		await activatePlugin( 'e2e-tests-auth-plugin' );
+		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await setSiteVerification();
 		await setSearchConsoleProperty();
 	} );

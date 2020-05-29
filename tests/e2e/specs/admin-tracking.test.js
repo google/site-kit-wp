@@ -17,7 +17,7 @@ async function toggleOptIn() {
 
 describe( 'management of tracking opt-in/out via settings page', () => {
 	beforeAll( async () => {
-		await activatePlugin( 'e2e-tests-auth-plugin' );
+		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-plugin' );
 	} );
 

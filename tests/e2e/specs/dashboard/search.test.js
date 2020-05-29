@@ -10,7 +10,7 @@ import { setSiteVerification, setSearchConsoleProperty, useRequestInterception }
 
 describe( 'Site Kit dashboard post search', () => {
 	beforeAll( async () => {
-		await activatePlugin( 'e2e-tests-auth-plugin' );
+		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await setSiteVerification();
 		await setSearchConsoleProperty();
 

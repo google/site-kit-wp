@@ -96,7 +96,7 @@ describe( 'setting up the AdSense module', () => {
 	} );
 
 	beforeEach( async () => {
-		await activatePlugin( 'e2e-tests-auth-plugin' );
+		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await setSearchConsoleProperty();
 
 		await setClientConfig();

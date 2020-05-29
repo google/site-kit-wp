@@ -26,7 +26,7 @@ async function getTotalImpressions() {
 
 describe( 'date range filtering on dashboard views', () => {
 	beforeAll( async () => {
-		await activatePlugin( 'e2e-tests-auth-plugin' );
+		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await setSiteVerification();
 		await setSearchConsoleProperty();
 
