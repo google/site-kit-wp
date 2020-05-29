@@ -293,6 +293,7 @@ describe( 'core/user authentication', () => {
 				expect( grantedScopes ).toEqual( undefined );
 			} );
 		} );
+
 		describe( 'getRequiredScopes', () => {
 			it( 'uses a resolver get all authentication info', async () => {
 				fetch
@@ -359,6 +360,51 @@ describe( 'core/user authentication', () => {
 				const requiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
 
 				expect( requiredScopes ).toEqual( undefined );
+			} );
+		} );
+
+		describe( 'needsReauthentication', () => {
+			it( 'dispatches an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetch
+					.doMockOnceIf( coreUserDataEndpointRegExp )
+					.mockResponseOnce(
+						JSON.stringify( response ),
+						{ status: 500 }
+					);
+
+				muteConsole( 'error' );
+				registry.select( STORE_NAME ).needsReauthentication();
+				await subscribeUntil( registry,
+					// TODO: We may want a selector for this, but for now this is fine
+					// because it's internal-only.
+					() => store.getState().isFetchingAuthentication === false,
+				);
+
+				const needsReauthentication = registry.select( STORE_NAME ).needsReauthentication();
+				const error = registry.select( STORE_NAME ).getError();
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( needsReauthentication ).toEqual( undefined );
+				expect( error ).toEqual( response );
+			} );
+
+			it( 'returns undefined if reauthentication info is not available', async () => {
+				// Create a mock to avoid triggering a network request error.
+				// The return value is irrelevant to the test.
+				fetch
+					.doMockOnceIf( coreUserDataEndpointRegExp )
+					.mockResponseOnce(
+						JSON.stringify( {} ),
+						{ status: 200 }
+					);
+				const needsReauthentication = registry.select( STORE_NAME ).needsReauthentication();
+
+				expect( needsReauthentication ).toEqual( undefined );
 			} );
 		} );
 	} );
