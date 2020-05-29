@@ -124,6 +124,14 @@ const withData = (
 			}
 		}
 
+		// If error is the root of the response, ensure all expected parts are
+		// present, just to "be sure" that it is an error. All above error
+		// handlers are legacy and are likely never hit, but let's keep them
+		// because nobody will ever know.
+		if ( data.code && data.message && data.data && data.data.status ) {
+			return data.message;
+		}
+
 		// No error.
 		return false;
 	}

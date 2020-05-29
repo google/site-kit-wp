@@ -34,11 +34,11 @@ import { applyFilters } from '@wordpress/hooks';
  */
 import {
 	activateOrDeactivateModule,
-	refreshAuthentication,
 	getReAuthURL,
 	showErrorNotification,
 	moduleIcon,
 } from '../util';
+import { refreshAuthentication } from '../util/refresh-authentication';
 import data from '../components/data';
 import Spinner from '../components/spinner';
 import Link from '../components/link';
@@ -148,10 +148,16 @@ class SetupModule extends Component {
 						>
 							{
 								! blockedByParentModule
-									/* translators: %s: module name */
-									? sprintf( __( 'Set up %s', 'google-site-kit' ), name )
-									/* translators: %s: module name */
-									: sprintf( __( 'Set up Analytics to gain access to %s', 'google-site-kit' ), name )
+									? sprintf(
+										/* translators: %s: module name */
+										__( 'Set up %s', 'google-site-kit' ),
+										name
+									)
+									: sprintf(
+										/* translators: %s: module name */
+										__( 'Set up Analytics to gain access to %s', 'google-site-kit' ),
+										name
+									)
 							}
 						</Link>
 					</p>

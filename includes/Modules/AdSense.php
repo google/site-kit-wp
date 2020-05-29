@@ -20,6 +20,11 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Assets;
+use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
@@ -36,8 +41,8 @@ use WP_Error;
  * @access private
  * @ignore
  */
-final class AdSense extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields {
-	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait;
+final class AdSense extends Module implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields {
+	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Module_With_Assets_Trait;
 
 	/**
 	 * Internal flag for whether the AdSense tag has been printed.
@@ -82,9 +87,18 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 			/**
 			 * Release filter forcing unlinked state.
 			 *
-			 * @see \Google\Site_Kit\Modules\Analytics\Settings::register
+			 * This is hooked into 'init' (default priority of 10), so that it
+			 * runs after the original filter is added.
+			 *
+			 * @see \Google\Site_Kit\Modules\Analytics::register()
+			 * @see \Google\Site_Kit\Modules\Analytics\Settings::register()
 			 */
-			remove_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
+			add_action(
+				'googlesitekit_init',
+				function () {
+					remove_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
+				}
+			);
 		}
 	}
 
@@ -92,12 +106,13 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 	 * Gets required Google OAuth scopes for the module.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Changed to `adsense.readonly` variant.
 	 *
 	 * @return array List of Google OAuth scopes.
 	 */
 	public function get_scopes() {
 		return array(
-			'https://www.googleapis.com/auth/adsense',
+			'https://www.googleapis.com/auth/adsense.readonly',
 		);
 	}
 
@@ -146,7 +161,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 	public function is_connected() {
 		$settings = $this->get_settings()->get();
 
-		if ( empty( $settings['setupComplete'] ) ) {
+		if ( empty( $settings['accountSetupComplete'] ) || empty( $settings['siteSetupComplete'] ) ) {
 			return false;
 		}
 
@@ -191,7 +206,8 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 
 		// On AMP, preferably use the new 'wp_body_open' hook, falling back to 'the_content' below.
 		if ( $this->context->is_amp() ) {
-			if ( is_singular( 'amp_story' ) ) {
+			// TODO: 'amp_story' support can be phased out in the long term.
+			if ( is_singular( array( 'web-story', 'amp_story' ) ) ) {
 				return;
 			}
 			add_action(
@@ -274,7 +290,8 @@ tag_partner: "site_kit"
 	 * @return array Filtered $data.
 	 */
 	protected function amp_data_load_auto_ads_component( $data ) {
-		if ( ! $this->is_connected() ) {
+		// Bail early if we are checking for the tag presence from the back end.
+		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
 			return $data;
 		}
 
@@ -301,11 +318,13 @@ tag_partner: "site_kit"
 	 * @return string Filtered $content.
 	 */
 	protected function amp_content_add_auto_ads( $content ) {
-		if ( ! $this->context->is_amp() || is_singular( 'amp_story' ) ) {
+		// TODO: 'amp_story' support can be phased out in the long term.
+		if ( ! $this->context->is_amp() || is_singular( array( 'web-story', 'amp_story' ) ) ) {
 			return $content;
 		}
 
-		if ( ! $this->is_connected() ) {
+		// Bail early if we are checking for the tag presence from the back end.
+		if ( $this->context->input()->filter( INPUT_GET, 'tagverify', FILTER_VALIDATE_BOOLEAN ) ) {
 			return $content;
 		}
 
@@ -346,6 +365,7 @@ tag_partner: "site_kit"
 			'account-url'    => '',
 			'reports-url'    => '',
 			'notifications'  => '',
+			'tag-permission' => '',
 			'accounts'       => 'adsense',
 			'alerts'         => 'adsense',
 			'clients'        => 'adsense',
@@ -362,8 +382,9 @@ tag_partner: "site_kit"
 	 * @since 1.0.0
 	 *
 	 * @param Data_Request $data Data request object.
-	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
+	 *
+	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
@@ -440,8 +461,16 @@ tag_partner: "site_kit"
 					return true;
 				};
 			case 'GET:clients':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
 				$service = $this->get_service( 'adsense' );
-				return $service->adclients->listAdclients();
+				return $service->accounts_adclients->listAccountsAdclients( $data['accountID'] );
 			case 'GET:connection':
 				return function() {
 					$option   = $this->get_settings()->get();
@@ -518,11 +547,36 @@ tag_partner: "site_kit"
 						),
 					);
 				};
+			case 'GET:tag-permission':
+				return function() use ( $data ) {
+					if ( ! isset( $data['clientID'] ) ) {
+						return new WP_Error(
+							'missing_required_param',
+							/* translators: %s: Missing parameter name */
+							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ),
+							array( 'status' => 400 )
+						);
+					}
+					$client_id  = $data['clientID'];
+					$account_id = $this->parse_account_id( $client_id );
+					if ( empty( $account_id ) ) {
+						return new WP_Error(
+							'invalid_param',
+							__( 'The clientID parameter is not a valid AdSense client ID.', 'google-site-kit' ),
+							array( 'status' => 400 )
+						);
+					}
+					return array(
+						'accountID'  => $account_id,
+						'clientID'   => $client_id,
+						'permission' => $this->has_access_to_client( $client_id, $account_id ),
+					);
+				};
 			case 'GET:reports-url':
 				return function() {
 					$account_id = $this->get_data( 'account-id' );
 					if ( ! is_wp_error( $account_id ) && $account_id ) {
-						return sprintf( 'https://www.google.com/adsense/new/u/0/%s/main/viewreports', $account_id );
+						return sprintf( 'https://www.google.com/adsense/new/%s/main/viewreports', $account_id );
 					}
 					return 'https://www.google.com/adsense/start';
 				};
@@ -534,21 +588,34 @@ tag_partner: "site_kit"
 				return function() use ( $data ) {
 					$this->get_settings()->merge(
 						array(
-							'setupComplete' => true,
-							'clientID'      => $data['clientID'],
-							'useSnippet'    => $data['useSnippet'],
+							'accountSetupComplete' => true,
+							'siteSetupComplete'    => true,
+							'clientID'             => $data['clientID'],
+							'useSnippet'           => $data['useSnippet'],
 						)
 					);
 
 					return true;
 				};
 			case 'GET:urlchannels':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
 				if ( ! isset( $data['clientID'] ) ) {
-					/* translators: %s: Missing parameter name */
-					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ), array( 'status' => 400 ) );
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'clientID' ),
+						array( 'status' => 400 )
+					);
 				}
 				$service = $this->get_service( 'adsense' );
-				return $service->urlchannels->listUrlchannels( $data['clientID'] );
+				return $service->accounts_urlchannels->listAccountsUrlchannels( $data['accountID'], $data['clientID'] );
 			case 'GET:use-snippet':
 				return function() {
 					$option = $this->get_settings()->get();
@@ -575,7 +642,7 @@ tag_partner: "site_kit"
 				};
 		}
 
-		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
+		throw new Invalid_Datapoint_Exception();
 	}
 
 	/**
@@ -591,15 +658,14 @@ tag_partner: "site_kit"
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
-				// Store the matched account as soon as we have it.
 				$accounts = $response->getItems();
-				if ( ! empty( $accounts ) ) {
+				// TODO: Remove this ugly side-effect once no longer used.
+				if ( $data['maybeSetAccount'] && ! empty( $accounts ) ) {
 					$account_id = $this->get_data( 'account-id' );
 					if ( is_wp_error( $account_id ) || ! $account_id ) {
 						$this->set_data( 'account-id', array( 'accountID' => $accounts[0]->id ) );
 					}
 				}
-				// TODO: Parse this response to a regular array.
 				return $accounts;
 
 			// Intentional fallthrough.
@@ -783,22 +849,75 @@ tag_partner: "site_kit"
 	}
 
 	/**
-	 * Transforms an exception into a WP_Error object.
+	 * Sets up the module's assets to register.
 	 *
-	 * @since 1.4.0
+	 * @since 1.9.0
 	 *
-	 * @param Exception $e         Exception object.
-	 * @param string    $datapoint Datapoint originally requested.
-	 * @return WP_Error WordPress error object.
+	 * @return Asset[] List of Asset objects.
 	 */
-	protected function exception_to_error( Exception $e, $datapoint ) {
-		if ( in_array( $datapoint, array( 'accounts', 'alerts', 'clients', 'urlchannels' ), true ) ) {
-			$errors = json_decode( $e->getMessage() );
-			if ( $errors ) {
-				return new WP_Error( $e->getCode(), $errors, array( 'status' => 500 ) );
-			}
+	protected function setup_assets() {
+		$base_url = $this->context->url( 'dist/assets/' );
+
+		return array(
+			new Script(
+				'googlesitekit-modules-adsense',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-modules-adsense.js',
+					'dependencies' => array(
+						'googlesitekit-vendor',
+						'googlesitekit-api',
+						'googlesitekit-data',
+						'googlesitekit-modules',
+						'googlesitekit-datastore-site',
+						'googlesitekit-datastore-user',
+					),
+				)
+			),
+		);
+	}
+
+	/**
+	 * Verifies that user has access to the given client and account.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param string $client_id  Client found in the existing tag.
+	 * @param string $account_id Account ID the client belongs to.
+	 * @return bool True if the user has access, false otherwise.
+	 */
+	protected function has_access_to_client( $client_id, $account_id ) {
+		if ( empty( $client_id ) || empty( $account_id ) ) {
+			return false;
 		}
 
-		return parent::exception_to_error( $e, $datapoint );
+		// Try to get clients for that account.
+		$clients = $this->get_data( 'clients', array( 'accountID' => $account_id ) );
+		if ( is_wp_error( $clients ) ) {
+			// No access to the account.
+			return false;
+		}
+
+		// Ensure there is access to the client.
+		foreach ( $clients as $client ) {
+			if ( $client->getId() === $client_id ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Determines the AdSense account ID from a given AdSense client ID.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param string $client_id AdSense client ID.
+	 * @return string AdSense account ID, or empty string if invalid client ID.
+	 */
+	protected function parse_account_id( $client_id ) {
+		if ( ! preg_match( '/^ca-(pub-[0-9]+)$/', $client_id, $matches ) ) {
+			return '';
+		}
+		return $matches[1];
 	}
 }

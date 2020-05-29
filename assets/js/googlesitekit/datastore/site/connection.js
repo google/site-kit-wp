@@ -33,7 +33,9 @@ export const INITIAL_STATE = {
 const fetchConnectionInfrastructure = createFetchStore( {
 	baseName: 'getConnection',
 	controlCallback: () => {
-		return API.get( 'core', 'site', 'connection' );
+		return API.get( 'core', 'site', 'connection', undefined, {
+			useCache: false,
+		} );
 	},
 	reducerCallback: ( state, connection ) => {
 		return {
@@ -94,7 +96,7 @@ export const selectors = {
 	 * @since 1.5.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object|undefined} Site connection info.
+	 * @return {(Object|undefined)} Site connection info.
 	 */
 	getConnection( state ) {
 		const { connection } = state;
@@ -111,7 +113,7 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|undefined} Site connection status.
+	 * @return {(boolean|undefined)} Site connection status.
 	 */
 	isConnected: createRegistrySelector( ( select ) => () => {
 		const connection = select( STORE_NAME ).getConnection();
@@ -129,7 +131,7 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|undefined} Site reset status.
+	 * @return {(boolean|undefined)} Site reset status.
 	 */
 	isResettable: createRegistrySelector( ( select ) => () => {
 		const connection = select( STORE_NAME ).getConnection();
@@ -147,7 +149,7 @@ export const selectors = {
 	 * @since 1.7.0
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean|undefined} Site setup completion status.
+	 * @return {(boolean|undefined)} Site setup completion status.
 	 */
 	isSetupCompleted: createRegistrySelector( ( select ) => () => {
 		const connection = select( STORE_NAME ).getConnection();

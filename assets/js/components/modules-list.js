@@ -32,13 +32,13 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
-	refreshAuthentication,
 	getReAuthURL,
 	activateOrDeactivateModule,
 	showErrorNotification,
 	moduleIcon,
 	getModulesData,
 } from '../util';
+import { refreshAuthentication } from '../util/refresh-authentication';
 import Link from './link';
 import data from '../components/data';
 import GenericError from './notifications/generic-error';

@@ -22,7 +22,6 @@
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { initializeAction } from '../../data/utils';
 import { createFetchStore } from '../../data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
@@ -54,11 +53,7 @@ export const actions = {
 	 * @since 1.5.0
 	 */
 	*reset() {
-		const { error } = yield actions.fetchReset();
-
-		if ( ! error ) {
-			yield initializeAction();
-		}
+		yield actions.fetchReset();
 	},
 };
 

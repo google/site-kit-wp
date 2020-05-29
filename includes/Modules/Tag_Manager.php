@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
@@ -62,6 +63,14 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	);
 
 	/**
+	 * Internal flag set after print_gtm_no_js invoked for the first time.
+	 *
+	 * @since 1.7.1
+	 * @var bool
+	 */
+	private $did_gtm_no_js;
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -76,12 +85,14 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			}
 		);
 
-		add_action( // For non-AMP.
-			'wp_footer',
-			function() {
-				$this->print_gtm_no_js();
-			}
-		);
+		$print_gtm_no_js = function () {
+			$this->print_gtm_no_js();
+		};
+
+		// For non-AMP. WP >=5.2.
+		add_action( 'wp_body_open', $print_gtm_no_js, -9999 );
+		// For non-AMP.
+		add_action( 'wp_footer', $print_gtm_no_js );
 
 		$print_amp_gtm = function() {
 			// This hook is only available in AMP plugin version >=1.3, so if it
@@ -262,6 +273,13 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 			return;
 		}
 
+		// Bail if this has already been run.
+		if ( $this->did_gtm_no_js ) {
+			return;
+		}
+
+		$this->did_gtm_no_js = true;
+
 		?>
 		<!-- Google Tag Manager (noscript) added by Site Kit -->
 		<noscript>
@@ -411,13 +429,38 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	}
 
 	/**
+	 * Gets map of datapoint to definition data for each.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Map of datapoints to their definitions.
+	 */
+	protected function get_datapoint_definitions() {
+		$map = parent::get_datapoint_definitions();
+
+		// TODO: remove this once datapoint exists.
+		if ( isset( $map['POST:create-container'] ) ) {
+			$map['POST:create-container'] = array_merge(
+				$map['POST:create-container'],
+				array(
+					'scopes'                 => array( 'https://www.googleapis.com/auth/tagmanager.edit.containers' ),
+					'request_scopes_message' => __( 'Additional permissions are required to create a new Tag Manager container.', 'google-site-kit' ),
+				)
+			);
+		}
+
+		return $map;
+	}
+
+	/**
 	 * Creates a request object for the given datapoint.
 	 *
 	 * @since 1.0.0
 	 *
 	 * @param Data_Request $data Data request object.
-	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
+	 *
+	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
@@ -580,7 +623,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 
 		}
 
-		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
+		throw new Invalid_Datapoint_Exception();
 	}
 
 	/**

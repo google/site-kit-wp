@@ -100,6 +100,9 @@ final class Assets {
 		add_action(
 			'admin_enqueue_scripts',
 			function() {
+				if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
+					return;
+				}
 				$this->enqueue_minimal_admin_script();
 			}
 		);
@@ -341,6 +344,10 @@ final class Assets {
 			'googlesitekit-vendor',
 			'googlesitekit-commons',
 			'googlesitekit-base',
+			'googlesitekit-data',
+			'googlesitekit-datastore-forms',
+			'googlesitekit-datastore-site',
+			'googlesitekit-datastore-user',
 		);
 
 		// Register plugin scripts.
@@ -375,6 +382,15 @@ final class Assets {
 					'global'        => '_googlesitekitEntityData',
 					'data_callback' => function () {
 						return $this->get_inline_entity_data();
+					},
+				)
+			),
+			new Script_Data(
+				'googlesitekit-user-data',
+				array(
+					'global'        => '_googlesitekitUserData',
+					'data_callback' => function() {
+						return $this->get_inline_user_data();
 					},
 				)
 			),
@@ -446,6 +462,17 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-datastore-user',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-user.js',
+					'dependencies' => array(
+						'googlesitekit-data',
+						'googlesitekit-api',
+						'googlesitekit-user-data',
+					),
+				)
+			),
+			new Script(
 				'googlesitekit-datastore-site',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-datastore-site.js',
@@ -459,12 +486,30 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-datastore-forms',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-forms.js',
+					'dependencies' => array(
+						'googlesitekit-data',
+					),
+				)
+			),
+			new Script(
 				'googlesitekit-modules',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-modules.js',
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',
+						'googlesitekit-data',
+					),
+				)
+			),
+			new Script(
+				'googlesitekit-widgets',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-widgets.js',
+					'dependencies' => array(
 						'googlesitekit-data',
 					),
 				)
@@ -599,6 +644,8 @@ final class Assets {
 			'blogPrefix'       => $wpdb->get_blog_prefix(),
 			'ampMode'          => $this->context->get_amp_mode(),
 			'isNetworkMode'    => $this->context->is_network_mode(),
+			'timezone'         => get_option( 'timezone_string' ),
+			'siteName'         => get_bloginfo( 'name' ),
 		);
 
 		/**
@@ -629,6 +676,37 @@ final class Assets {
 			'currentEntityTitle' => $current_entity ? $current_entity->get_title() : null,
 			'currentEntityID'    => $current_entity ? $current_entity->get_id() : null,
 		);
+	}
+
+	/**
+	 * Gets the inline data specific to the current user
+	 *
+	 * @since 1.9.0
+	 *
+	 * @return array The user inline data to be output.
+	 */
+	private function get_inline_user_data() {
+		$current_user = wp_get_current_user();
+
+		$inline_data = array(
+			'user' => array(
+				'id'      => $current_user->ID,
+				'email'   => $current_user->user_email,
+				'name'    => $current_user->display_name,
+				'picture' => get_avatar_url( $current_user->user_email ),
+			),
+		);
+
+		/**
+		 * Filters the user inline data to pass to JS.
+		 *
+		 * This should not include anything remotely expensive to compute.
+		 *
+		 * @since 1.9.0
+		 *
+		 * @param array $data User data.
+		 */
+		return apply_filters( 'googlesitekit_user_data', $inline_data );
 	}
 
 	/**

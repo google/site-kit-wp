@@ -71,7 +71,9 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 	const fetchSettingsInfrastructure = createFetchStore( {
 		baseName: 'getSettings',
 		controlCallback: () => {
-			return API.get( type, identifier, datapoint );
+			return API.get( type, identifier, datapoint, {}, {
+				useCache: false,
+			} );
 		},
 		reducerCallback: ( state, values ) => {
 			return {
@@ -142,7 +144,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		/**
 		 * Returns the current settings back to the current saved values.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.7.1
 		 * @private
 		 *
 		 * @return {Object} Redux-style action.
@@ -159,7 +161,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 *
 		 * @since 1.6.0
 		 *
-		 * @return {Object} Redux-style action.
+		 * @return {Object} Response and error, if any.
 		 */
 		*saveSettings() {
 			const registry = yield commonActions.getRegistry();
@@ -239,7 +241,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @since 1.6.0
 		 *
 		 * @param {Object} state Data store's state.
-		 * @return {?Object} Settings with their values, or undefined.
+		 * @return {(Object|undefined)} Settings with their values, or undefined.
 		 */
 		getSettings( state ) {
 			return state.settings;

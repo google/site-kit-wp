@@ -36,13 +36,9 @@ import ProgressBar from '../../components/progress-bar';
 /**
  * Internal dependencies
  */
-import { getExistingTag } from '../../util';
+import { getExistingTag } from '../../util/tag';
 import data, { TYPE_CORE } from '../data';
 import Link from '../link';
-
-export const tagMatchers = [
-	/<meta name="googlesitekit-setup" content="([a-z0-9-]+)"/,
-];
 
 const ERROR_INVALID_HOSTNAME = 'invalid_hostname';
 const ERROR_FETCH_FAIL = 'tag_fetch_failed';
@@ -175,7 +171,7 @@ export default class CompatibilityChecks extends Component {
 
 		if ( ! complete ) {
 			inProgressFeedback = <div style={ { alignSelf: 'center', marginLeft: '1rem' } }>
-				<small>{ __( 'Checking Compatibility...', 'google-site-kit' ) }</small>
+				<small>{ __( 'Checking Compatibility…', 'google-site-kit' ) }</small>
 				<ProgressBar small compress />
 			</div>;
 		}

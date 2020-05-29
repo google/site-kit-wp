@@ -482,27 +482,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'settings--vrt-editing-settings-module',
-		kind: 'Settings',
-		name: 'VRT: Editing Settings Module',
-		story: 'VRT: Editing Settings Module',
-		parameters: {
-			fileName: './stories/settings.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				delay: 2000,
-				clickSelectors: [
-					'#googlesitekit-settings-module__header--analytics',
-					'.googlesitekit-settings-module__edit-button',
-				],
-				hoverSelector: '.googlesitekit-settings-module__title',
-				postInteractionWait: 3000,
-				onReadyScript: 'mouse.js',
-			},
-		},
-	},
-	{
 		id: 'settings--connect-more-services',
 		kind: 'Settings',
 		name: 'Connect More Services',

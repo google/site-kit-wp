@@ -25,6 +25,7 @@ const path = require( 'path' );
 /**
  * External dependencies
  */
+const CircularDependencyPlugin = require( 'circular-dependency-plugin' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
@@ -92,7 +93,14 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-api': './assets/js/googlesitekit-api.js',
 				'googlesitekit-data': './assets/js/googlesitekit-data.js',
 				'googlesitekit-datastore-site': './assets/js/googlesitekit-datastore-site.js',
-				'googlesitekit-modules': './assets/js/googlesitekit-modules.js', // TODO: Add external following 1162.
+				'googlesitekit-datastore-user': './assets/js/googlesitekit-datastore-user.js',
+				'googlesitekit-datastore-forms': './assets/js/googlesitekit-datastore-forms.js',
+				'googlesitekit-modules': './assets/js/googlesitekit-modules.js',
+				'googlesitekit-modules-adsense': './assets/js/googlesitekit-modules-adsense.js',
+				'googlesitekit-modules-analytics': './assets/js/googlesitekit-modules-analytics.js',
+				'googlesitekit-modules-pagespeed-insights': 'assets/js/googlesitekit-modules-pagespeed-insights.js',
+				'googlesitekit-modules-search-console': './assets/js/googlesitekit-modules-search-console.js',
+				'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
 				// Old Modules
 				'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
 				'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
@@ -126,6 +134,12 @@ const webpackConfig = ( mode ) => {
 				new WebpackBar( {
 					name: 'Module Entry Points',
 					color: '#fbbc05',
+				} ),
+				new CircularDependencyPlugin( {
+					exclude: /node_modules/,
+					failOnError: true,
+					allowAsyncCycles: false,
+					cwd: process.cwd(),
 				} ),
 			],
 			optimization: {

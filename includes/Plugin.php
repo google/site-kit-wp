@@ -155,8 +155,11 @@ final class Plugin {
 				( new Core\Admin\Screens( $this->context, $assets, $modules ) )->register();
 				( new Core\Admin\Notices() )->register();
 				( new Core\Admin\Dashboard( $this->context, $assets, $modules ) )->register();
-				( new Core\Notifications\Notifications( $this->context, $options ) )->register();
+				( new Core\Notifications\Notifications( $this->context, $options, $authentication ) )->register();
 				( new Core\Util\Debug_Data( $this->context, $options, $user_options, $authentication, $modules ) )->register();
+				( new Core\Admin\Standalone( $this->context ) )->register();
+				( new Core\Util\Migration_1_3_0( $this->context, $options, $user_options ) )->register();
+				( new Core\Util\Migration_1_8_1( $this->context, $options, $user_options, $authentication ) )->register();
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(
@@ -178,8 +181,16 @@ final class Plugin {
 			-999
 		);
 
+		// Register _gl parameter to be removed from the URL.
+		add_filter(
+			'removable_query_args',
+			function ( $args ) {
+				$args[] = '_gl';
+				return $args;
+			}
+		);
+
 		( new Core\Util\Activation( $this->context, $options, $assets ) )->register();
-		( new Core\Util\Migration_1_3_0( $this->context, $options ) )->register();
 		( new Core\Util\Reset( $this->context ) )->register();
 		( new Core\Util\Developer_Plugin_Installer( $this->context ) )->register();
 	}

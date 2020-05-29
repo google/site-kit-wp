@@ -11,8 +11,14 @@
 namespace Google\Site_Kit\Tests\Modules\Analytics;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\AdSense;
+use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings;
+use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 /**
@@ -38,7 +44,7 @@ class SettingsTest extends SettingsTestCase {
 			'googlesitekit_analytics_account_id',
 			function () {
 				return 'filtered-account-id';
-			} 
+			}
 		);
 		$this->assertEquals( 'filtered-account-id', get_option( Settings::OPTION )['accountID'] );
 
@@ -51,7 +57,7 @@ class SettingsTest extends SettingsTestCase {
 			'googlesitekit_analytics_property_id',
 			function () {
 				return 'filtered-property-id';
-			} 
+			}
 		);
 		$this->assertEquals( 'filtered-property-id', get_option( Settings::OPTION )['propertyID'] );
 
@@ -64,7 +70,7 @@ class SettingsTest extends SettingsTestCase {
 			'googlesitekit_analytics_internal_web_property_id',
 			function () {
 				return 'filtered-internal-web-property-id';
-			} 
+			}
 		);
 		$this->assertEquals( 'filtered-internal-web-property-id', get_option( Settings::OPTION )['internalWebPropertyID'] );
 
@@ -77,7 +83,7 @@ class SettingsTest extends SettingsTestCase {
 			'googlesitekit_analytics_view_id',
 			function () {
 				return 'filtered-profile-id';
-			} 
+			}
 		);
 		$this->assertEquals( 'filtered-profile-id', get_option( Settings::OPTION )['profileID'] );
 	}
@@ -147,6 +153,82 @@ class SettingsTest extends SettingsTestCase {
 		// Any saved value in Settings will supersede the default inherited from the legacy setting.
 		$settings->set( array( 'adsenseLinked' => false ) );
 		$this->assertFalse( $settings->get()['adsenseLinked'] );
+	}
+
+	public function test_adsense_linked_is_always_false_if_adsense_is_inactive() {
+		remove_all_filters( 'googlesitekit_analytics_adsense_linked' );
+		$context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$settings = new Settings( new Options( $context ) );
+		$settings->register();
+		$analytics = new Analytics( $context );
+		$analytics->register(); // Hooks filter to force adsenseLinked false.
+
+		$this->assertFalse( $settings->get()['adsenseLinked'] );
+
+		// Set the setting to true, but it should still return false.
+		$settings->merge( array( 'adsenseLinked' => true ) );
+
+		$this->assertFalse( $settings->get()['adsenseLinked'] );
+	}
+
+	public function test_adsense_linked_is_false_if_adsense_is_active_and_not_connected() {
+		remove_all_filters( 'googlesitekit_analytics_adsense_linked' );
+		$context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$settings = new Settings( new Options( $context ) );
+		$settings->register();
+		$adsense = new AdSense( $context );
+
+		$this->assertFalse( $settings->get()['adsenseLinked'] );
+
+		$adsense->register(); // AdSense is now active, but not connected.
+		$this->assertFalse( $adsense->is_connected() );
+
+		$this->assertFalse( $settings->get()['adsenseLinked'] );
+	}
+
+	public function test_adsense_linked_is_true_if_adsense_is_active_and_connected_once_analytics_report_with_adsense_metrics_is_requested() {
+		remove_all_filters( 'googlesitekit_analytics_adsense_linked' );
+		$context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$settings = new Settings( new Options( $context ) );
+		$settings->register();
+		$options        = new Options( $context );
+		$user_options   = new User_Options( $context );
+		$authentication = new Authentication( $context );
+		$adsense        = new AdSense( $context, $options, $user_options, $authentication );
+		$analytics      = new Analytics( $context, $options, $user_options, $authentication );
+		$authentication->get_oauth_client()->get_client()->setHttpClient(
+			new FakeHttpClient() // Returns 200 by default.
+		);
+
+		$adsense->register(); // AdSense is now active.
+		$adsense->get_settings()->register();
+		$adsense->get_settings()->merge(
+			array(
+				'accountSetupComplete' => true,
+				'siteSetupComplete'    => true,
+			)
+		);
+		$this->assertTrue( $adsense->is_connected() ); // AdSense is now connected.
+
+		$this->assertFalse( $settings->get()['adsenseLinked'] );
+
+		// Request requires Analytics settings.
+		$settings->merge( array( 'profileID' => '987654' ) );
+		// Any expression starting with `ga:adsense` should trigger the linking.
+		$data = $analytics->get_data(
+			'report',
+			array(
+				'metrics' => array(
+					array(
+						'alias'      => 'Earnings',
+						'expression' => 'ga:adsenseRevenue',
+					),
+				),
+			)
+		);
+		$this->assertNotWPError( $data );
+
+		$this->assertTrue( $settings->get()['adsenseLinked'] );
 	}
 
 	/**

@@ -23,6 +23,7 @@ import {
 } from '../utils';
 import {
 	toHaveAdSenseTag,
+	toHaveValue,
 } from '../matchers';
 
 /**
@@ -60,6 +61,7 @@ setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 500 } );
 // Add custom matchers specific to Site Kit.
 expect.extend( {
 	toHaveAdSenseTag,
+	toHaveValue,
 } );
 
 /**
@@ -119,6 +121,12 @@ function observeConsoleLogging() {
 		// Viewing posts on the front end can result in this error, which
 		// has nothing to do with Gutenberg.
 		if ( text.includes( 'net::ERR_UNKNOWN_URL_SCHEME' ) ) {
+			return;
+		}
+
+		// We log this separately now in a way which includes the URL
+		// which is much more useful than this message.
+		if ( text.startsWith( 'Failed to load resource: the server responded with a status of' ) ) {
 			return;
 		}
 
@@ -248,6 +256,15 @@ beforeAll( async () => {
 		page.on( 'request', observeRestRequest );
 		page.on( 'response', observeRestResponse );
 	}
+
+	page.on( 'response', ( res ) => {
+		if ( res.status() > 399 ) {
+			const req = res.request();
+			// eslint-disable-next-line no-console
+			console.warn( res.status(), req.method(), req.url() );
+		}
+	} );
+
 	// There's no good way to otherwise conditionally enable this logging
 	// since the code needs to be built into the e2e-utilities.js.
 	if ( '1' === process.env.DEBUG_REDUX ) {

@@ -32,10 +32,10 @@ import { __ } from '@wordpress/i18n';
  */
 import {
 	activateOrDeactivateModule,
-	refreshAuthentication,
 	getReAuthURL,
 	showErrorNotification,
 } from '../util';
+import { refreshAuthentication } from '../util/refresh-authentication';
 import data from './data';
 import CTA from './notifications/cta';
 import GenericError from './notifications/generic-error';
