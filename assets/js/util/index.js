@@ -45,8 +45,6 @@ import { addQueryArgs, getQueryString } from '@wordpress/url';
 import SvgIcon from './svg-icon';
 import { trackEvent } from './tracking';
 import { fillFilterWithComponent } from './helpers';
-import parseUnsatisfiedScopes from './parse-unsatisfied-scopes';
-export { parseUnsatisfiedScopes };
 export { trackEvent };
 export { SvgIcon };
 export * from './sanitize';
