@@ -13,7 +13,7 @@ import {
 	useRequestInterception,
 	setAuthToken,
 	setSiteVerification,
-} from '../utils';
+} from '../../utils';
 
 function stubGoogleSignIn( request ) {
 	if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {

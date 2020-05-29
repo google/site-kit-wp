@@ -11,7 +11,7 @@ import {
 	resetSiteKit,
 	useRequestInterception,
 	wpApiFetch,
-} from '../utils';
+} from '../../utils';
 
 describe( 'Site Kit set up flow for the first time with search console setup', () => {
 	beforeAll( async () => {

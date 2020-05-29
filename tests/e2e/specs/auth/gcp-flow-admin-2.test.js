@@ -19,7 +19,7 @@ import {
 	setSiteVerification,
 	useRequestInterception,
 	wpApiFetch,
-} from '../utils';
+} from '../../utils';
 
 describe( 'the set up flow for the second administrator', () => {
 	beforeAll( async () => {
