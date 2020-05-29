@@ -954,13 +954,13 @@ final class Authentication {
 				return;
 			}
 
+			if ( ! $error_message ) {
+				$error_message = 'unknown_error';
+			}
+
 			$this->user_options->set( OAuth_Client::OPTION_ERROR_CODE, $error_message );
 			wp_safe_redirect(
-				add_query_arg(
-					'error',
-					rawurlencode( $error_message ),
-					$this->context->admin_url( 'splash' )
-				)
+				$this->context->admin_url( 'splash' )
 			);
 			exit;
 		}
