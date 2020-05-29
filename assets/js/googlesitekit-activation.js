@@ -23,7 +23,6 @@
  */
 import domReady from '@wordpress/dom-ready';
 import { render } from '@wordpress/element';
-import { doAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -40,13 +39,8 @@ domReady( () => {
 		loadTranslations();
 		trackEvent( 'plugin_setup', 'plugin_activated' );
 
-		render( <Root><ActivationApp /></Root>, renderTarget );
+		render( <Root dataAPIContext="Activation"><ActivationApp /></Root>, renderTarget );
 
 		renderTarget.classList.remove( 'googlesitekit-activation--loading' );
-
-		/**
-		 * Action triggered when the ActivationApp is loaded.
-		 */
-		doAction( 'googlesitekit.moduleLoaded', 'Activation' );
 	}
 } );

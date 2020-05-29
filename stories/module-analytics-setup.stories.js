@@ -34,10 +34,10 @@ import { SetupMain as AnalyticsSetup } from '../assets/js/modules/analytics/setu
 import { fillFilterWithComponent } from '../assets/js/util';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 
-import { STORE_NAME } from '../assets/js/modules/analytics/datastore';
+import { STORE_NAME, ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../assets/js/modules/analytics/datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { WithTestRegistry } from '../tests/js/utils';
-import { ACCOUNT_CREATE } from '../assets/js/modules/analytics/datastore/constants';
 
 function filterAnalyticsSetup() {
 	global.googlesitekit.setup.moduleToSetup = 'analytics';
@@ -100,7 +100,7 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		return <Setup callback={ setupRegistry } />;
 	} )
-	.add( 'No Accounts (legacy)', () => {
+	.add( 'Create Account Legacy (no accounts)', () => {
 		filterAnalyticsSetup();
 
 		const setupRegistry = ( { dispatch } ) => {
@@ -111,24 +111,7 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		return <Setup callback={ setupRegistry } />;
 	} )
-	.add( 'No Accounts', () => {
-		filterAnalyticsSetup();
-
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( CORE_SITE ).receiveSiteInfo( {
-				usingProxy: true,
-				referenceSiteURL: 'http://example.com',
-				timezone: 'America/Detroit',
-				siteName: 'My Site Name',
-			} );
-			dispatch( STORE_NAME ).setSettings( {} );
-			dispatch( STORE_NAME ).receiveAccounts( [] );
-			dispatch( STORE_NAME ).receiveExistingTag( null );
-		};
-
-		return <Setup callback={ setupRegistry } />;
-	} )
-	.add( 'Create Account Legacy', () => {
+	.add( 'Create Account Legacy (new account option)', () => {
 		filterAnalyticsSetup();
 
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
@@ -144,7 +127,7 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		return <Setup callback={ setupRegistry } />;
 	} )
-	.add( 'Create Account', () => {
+	.add( 'Create Account (scope not granted)', () => {
 		filterAnalyticsSetup();
 
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
@@ -154,6 +137,38 @@ storiesOf( 'Analytics Module/Setup', module )
 				referenceSiteURL: 'http://example.com',
 				timezone: 'America/Detroit',
 				siteName: 'My Site Name',
+			} );
+			dispatch( CORE_USER ).receiveAuthentication( {
+				authenticated: true,
+				requiredScopes: [],
+				grantedScopes: [],
+			} );
+			dispatch( STORE_NAME ).receiveExistingTag( null );
+			dispatch( STORE_NAME ).receiveAccounts( accounts );
+			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
+			dispatch( STORE_NAME ).setSettings( {
+				accountID: ACCOUNT_CREATE,
+			} );
+		};
+
+		return <Setup callback={ setupRegistry } />;
+	} )
+	.add( 'Create Account (scope granted)', () => {
+		filterAnalyticsSetup();
+
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const setupRegistry = ( { dispatch } ) => {
+			dispatch( CORE_SITE ).receiveSiteInfo( {
+				usingProxy: true,
+				referenceSiteURL: 'http://example.com',
+				timezone: 'America/Detroit',
+				siteName: 'My Site Name',
+			} );
+			dispatch( CORE_USER ).receiveAuthentication( {
+				authenticated: true,
+				requiredScopes: [],
+				grantedScopes: [ PROVISIONING_SCOPE ],
 			} );
 			dispatch( STORE_NAME ).receiveExistingTag( null );
 			dispatch( STORE_NAME ).receiveAccounts( accounts );

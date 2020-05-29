@@ -35,8 +35,10 @@ import PropertyField from './account-create/property-field';
 import ProfileField from './account-create/profile-field';
 import CountrySelect from './account-create/country-select';
 import ErrorNotice from './error-notice';
-import { STORE_NAME, FORM_ACCOUNT_CREATE } from '../datastore/constants';
+import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { STORE_NAME as CORE_USER, PERMISSION_SCOPE_ERROR_CODE } from '../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { countryCodesByTimezone } from '../util/countries-timezones';
 import Data from 'googlesitekit-data';
 
@@ -47,6 +49,9 @@ export default function AccountCreate() {
 	const canSubmitAccountCreate = useSelect( ( select ) => select( STORE_NAME ).canSubmitAccountCreate() );
 	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
+	const hasProvisioningScope = useSelect( ( select ) => select( STORE_NAME ).hasProvisioningScope() );
+	const hasAccountCreateForm = useSelect( ( select ) => select( CORE_FORMS ).hasForm( FORM_ACCOUNT_CREATE ) );
+	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'autoSubmit' ) );
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
 	let timezone = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
@@ -61,22 +66,46 @@ export default function AccountCreate() {
 	}, [ accountTicketTermsOfServiceURL ] );
 
 	// Set form defaults on initial render.
-	const { setForm } = useDispatch( STORE_NAME );
+	const { setValues } = useDispatch( CORE_FORMS );
 	useEffect( () => {
-		const { hostname } = new URL( siteURL );
-		timezone = countryCodesByTimezone[ timezone ] ? timezone : Intl.DateTimeFormat().resolvedOptions().timeZone;
-		setForm( FORM_ACCOUNT_CREATE, {
-			accountName: siteName,
-			propertyName: hostname,
-			profileName: __( 'All website traffic', 'google-site-kit' ),
-			countryCode: countryCodesByTimezone[ timezone ],
-			timezone,
-		} );
-	}, [ siteName, siteURL, timezone ] );
+		// Only set the form if not already present in store.
+		// e.g. after a snapshot has been restored.
+		if ( ! hasAccountCreateForm ) {
+			const { hostname } = new URL( siteURL );
+			timezone = countryCodesByTimezone[ timezone ] ? timezone : Intl.DateTimeFormat().resolvedOptions().timeZone;
+			setValues( FORM_ACCOUNT_CREATE, {
+				accountName: siteName,
+				propertyName: hostname,
+				profileName: __( 'All website traffic', 'google-site-kit' ),
+				countryCode: countryCodesByTimezone[ timezone ],
+				timezone,
+			} );
+		}
+	}, [ hasAccountCreateForm, siteName, siteURL, timezone ] );
 
 	const { createAccount } = useDispatch( STORE_NAME );
+	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const handleSubmit = useCallback(
 		async () => {
+			// If scope not granted, trigger scope error right away. These are
+			// typically handled automatically based on API responses, but
+			// this particular case has some special handling to improve UX.
+			if ( ! hasProvisioningScope ) {
+				// When state is restored, auto-submit the request again.
+				setValues( FORM_ACCOUNT_CREATE, { autoSubmit: true } );
+				setPermissionScopeError( {
+					code: PERMISSION_SCOPE_ERROR_CODE,
+					message: __( 'Additional permissions are required to create a new Analytics account.', 'google-site-kit' ),
+					data: {
+						status: 403,
+						scopes: [ PROVISIONING_SCOPE ],
+						skipModal: true,
+					},
+				} );
+				return;
+			}
+
+			setValues( FORM_ACCOUNT_CREATE, { autoSubmit: false } );
 			trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
 			const { error } = await createAccount();
 
@@ -84,14 +113,22 @@ export default function AccountCreate() {
 				setIsNavigating( true );
 			}
 		},
-		[ createAccount, setIsNavigating ]
+		[ createAccount, setIsNavigating, hasProvisioningScope, setPermissionScopeError ]
 	);
+
+	// If the user ends up back on this component with the provisioning scope granted,
+	// and already submitted the form, trigger the submit again.
+	useEffect( () => {
+		if ( hasProvisioningScope && autoSubmit ) {
+			handleSubmit();
+		}
+	}, [ hasProvisioningScope, autoSubmit, handleSubmit ] );
 
 	// If the user clicks "Back", rollback settings to restore saved values, if any.
 	const { rollbackSettings } = useDispatch( STORE_NAME );
 	const handleBack = useCallback( () => rollbackSettings() );
 
-	if ( isDoingCreateAccount || isNavigating || accounts === undefined ) {
+	if ( isDoingCreateAccount || isNavigating || accounts === undefined || hasProvisioningScope === undefined ) {
 		return <ProgressBar />;
 	}
 
@@ -126,7 +163,8 @@ export default function AccountCreate() {
 			</div>
 
 			<p>
-				{ __( 'You will be redirected to Google Analytics to accept the Terms of Service and create your new account.', 'google-site-kit' ) }
+				{ hasProvisioningScope && __( 'You will be redirected to Google Analytics to accept the terms of service.', 'google-site-kit' ) }
+				{ ! hasProvisioningScope && __( 'You will need to give Site Kit permission to create an Analytics account on your behalf and also accept the Google Analytics terms of service.', 'google-site-kit' ) }
 			</p>
 
 			<div className="googlesitekit-setup-module__action">
