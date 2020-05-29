@@ -35,12 +35,12 @@ export default function SettingsView() {
 	return (
 		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 
-			<div className="googlesitekit-settings-module__meta-item-type">
+			<h5 className="googlesitekit-settings-module__meta-item-type">
 				{ __( 'Connected Property', 'google-site-kit' ) }
-			</div>
-			<div className="googlesitekit-settings-module__meta-item-data">
+			</h5>
+			<p className="googlesitekit-settings-module__meta-item-data">
 				<DisplaySetting value={ propertyID } />
-			</div>
+			</p>
 		</div>
 	);
 }
