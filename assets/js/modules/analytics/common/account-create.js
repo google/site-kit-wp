@@ -38,6 +38,7 @@ import ErrorNotice from './error-notice';
 import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE } from '../datastore/constants';
 import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME as CORE_USER, PERMISSION_SCOPE_ERROR_CODE } from '../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { countryCodesByTimezone } from '../util/countries-timezones';
 import Data from 'googlesitekit-data';
 
@@ -47,10 +48,10 @@ export default function AccountCreate() {
 	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( STORE_NAME ).getAccountTicketTermsOfServiceURL() );
 	const canSubmitAccountCreate = useSelect( ( select ) => select( STORE_NAME ).canSubmitAccountCreate() );
 	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
-	const hasAccountCreateForm = useSelect( ( select ) => select( STORE_NAME ).hasForm( FORM_ACCOUNT_CREATE ) );
-	const hasProvisioningScope = useSelect( ( select ) => select( STORE_NAME ).hasProvisioningScope() );
-	const autoSubmit = useSelect( ( select ) => select( STORE_NAME ).getForm( FORM_ACCOUNT_CREATE, 'autoSubmit' ) );
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
+	const hasProvisioningScope = useSelect( ( select ) => select( STORE_NAME ).hasProvisioningScope() );
+	const hasAccountCreateForm = useSelect( ( select ) => select( CORE_FORMS ).hasForm( FORM_ACCOUNT_CREATE ) );
+	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'autoSubmit' ) );
 	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
 	let timezone = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
@@ -65,14 +66,14 @@ export default function AccountCreate() {
 	}, [ accountTicketTermsOfServiceURL ] );
 
 	// Set form defaults on initial render.
-	const { setForm } = useDispatch( STORE_NAME );
+	const { setValues } = useDispatch( CORE_FORMS );
 	useEffect( () => {
 		// Only set the form if not already present in store.
 		// e.g. after a snapshot has been restored.
 		if ( ! hasAccountCreateForm ) {
 			const { hostname } = new URL( siteURL );
 			timezone = countryCodesByTimezone[ timezone ] ? timezone : Intl.DateTimeFormat().resolvedOptions().timeZone;
-			setForm( FORM_ACCOUNT_CREATE, {
+			setValues( FORM_ACCOUNT_CREATE, {
 				accountName: siteName,
 				propertyName: hostname,
 				profileName: __( 'All website traffic', 'google-site-kit' ),
@@ -91,7 +92,7 @@ export default function AccountCreate() {
 			// this particular case has some special handling to improve UX.
 			if ( ! hasProvisioningScope ) {
 				// When state is restored, auto-submit the request again.
-				setForm( FORM_ACCOUNT_CREATE, { autoSubmit: true } );
+				setValues( FORM_ACCOUNT_CREATE, { autoSubmit: true } );
 				setPermissionScopeError( {
 					code: PERMISSION_SCOPE_ERROR_CODE,
 					message: __( 'Additional permissions are required to create a new Analytics account.', 'google-site-kit' ),
@@ -104,7 +105,7 @@ export default function AccountCreate() {
 				return;
 			}
 
-			setForm( FORM_ACCOUNT_CREATE, { autoSubmit: false } );
+			setValues( FORM_ACCOUNT_CREATE, { autoSubmit: false } );
 			trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
 			const { error } = await createAccount();
 

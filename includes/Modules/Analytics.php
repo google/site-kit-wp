@@ -1485,6 +1485,7 @@ final class Analytics extends Module
 						'googlesitekit-modules',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
+						'googlesitekit-datastore-forms',
 					),
 				)
 			),

@@ -28,7 +28,6 @@ import properties from './properties';
 import profiles from './profiles';
 import settings from './settings';
 import tags from './tags';
-import form from './form';
 import { STORE_NAME } from './constants';
 
 export { STORE_NAME };
@@ -55,7 +54,6 @@ const store = Data.combineStores(
 	settings,
 	createSnapshotStore( STORE_NAME ),
 	tags,
-	form,
 );
 
 export const INITIAL_STATE = store.INITIAL_STATE;
