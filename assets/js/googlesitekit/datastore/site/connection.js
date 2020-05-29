@@ -106,7 +106,9 @@ export const actions = {
 
 export const controls = {
 	[ FETCH_CONNECTION ]: () => {
-		return API.get( 'core', 'site', 'connection' );
+		return API.get( 'core', 'site', 'connection', undefined, {
+			useCache: false,
+		} );
 	},
 };
 

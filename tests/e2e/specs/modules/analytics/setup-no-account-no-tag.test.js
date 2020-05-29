@@ -21,7 +21,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 				request.respond( {
 					status: 302,
 					headers: {
-						location: createURL( '/', [
+						location: createURL( '/wp-admin/index.php', [
 							'oauth2callback=1',
 							'code=valid-test-code',
 							'e2e-site-verification=1',
