@@ -115,10 +115,9 @@ const DashboardAuthAlert = () => {
 			id="authentication error"
 			title={ __( 'Site Kit can’t access necessary data', 'google-site-kit' ) }
 			description={ message }
-			handleDismiss={ () => {} }
 			format="small"
 			type="win-error"
-			isDismissable={ true }
+			isDismissable={ false }
 			ctaLink={ connectURL }
 			ctaLabel={ __( 'Redo setup', 'google-site-kit' ) }
 		/>
