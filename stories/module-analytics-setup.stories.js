@@ -138,7 +138,7 @@ storiesOf( 'Analytics Module/Setup', module )
 				timezone: 'America/Detroit',
 				siteName: 'My Site Name',
 			} );
-			dispatch( CORE_USER ).receiveAuthentication( {
+			dispatch( CORE_USER ).receiveGetAuthentication( {
 				authenticated: true,
 				requiredScopes: [],
 				grantedScopes: [],
@@ -165,7 +165,7 @@ storiesOf( 'Analytics Module/Setup', module )
 				timezone: 'America/Detroit',
 				siteName: 'My Site Name',
 			} );
-			dispatch( CORE_USER ).receiveAuthentication( {
+			dispatch( CORE_USER ).receiveGetAuthentication( {
 				authenticated: true,
 				requiredScopes: [],
 				grantedScopes: [ PROVISIONING_SCOPE ],
