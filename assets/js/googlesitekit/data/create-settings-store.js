@@ -29,7 +29,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from './create-fetch-store';
 
-const { commonActions, commonControls, createRegistrySelector } = Data;
+const { createRegistrySelector } = Data;
 
 // Actions
 const SET_SETTINGS = 'SET_SETTINGS';
@@ -43,6 +43,7 @@ const ROLLBACK_SETTINGS = 'ROLLBACK_SETTINGS';
  *
  * @since 1.6.0
  * @private
+ *
  * @param {string} type                 The data to access. One of 'core' or 'modules'.
  * @param {string} identifier           The data identifier, eg. a module slug like 'search-console'.
  * @param {string} datapoint            The endpoint to request data from, e.g. 'settings'.
@@ -120,10 +121,6 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 	const settingReducers = {};
 
 	const actions = {
-		...commonActions,
-		...fetchGetSettingsStore.actions,
-		...fetchSaveSettingsStore.actions,
-
 		/**
 		 * Sets settings for the given values.
 		 *
@@ -164,18 +161,14 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		 * @return {Object} Response and error, if any.
 		 */
 		*saveSettings() {
-			const registry = yield commonActions.getRegistry();
+			const registry = yield Data.commonStore.actions.getRegistry();
 			const values = registry.select( STORE_NAME ).getSettings();
 
-			return yield actions.fetchSaveSettings( values );
+			return yield fetchSaveSettingsStore.actions.fetchSaveSettings( values );
 		},
 	};
 
-	const controls = {
-		...commonControls,
-		...fetchGetSettingsStore.controls,
-		...fetchSaveSettingsStore.controls,
-	};
+	const controls = {};
 
 	const reducer = ( state = INITIAL_STATE, { type, payload } ) => { // eslint-disable-line no-shadow
 		switch ( type ) {
@@ -204,35 +197,23 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 					return settingReducers[ type ]( state, { type, payload } );
 				}
 
-				return fetchGetSettingsStore.reducer(
-					fetchSaveSettingsStore.reducer(
-						state,
-						{ type, payload }
-					),
-					{ type, payload }
-				);
+				return { ...state };
 			}
 		}
 	};
 
 	const resolvers = {
-		...fetchGetSettingsStore.resolvers,
-		...fetchSaveSettingsStore.resolvers,
-
 		*getSettings() {
-			const registry = yield commonActions.getRegistry();
+			const registry = yield Data.commonStore.actions.getRegistry();
 			const existingSettings = registry.select( STORE_NAME ).getSettings();
 			// If settings are already present, don't fetch them.
 			if ( ! existingSettings ) {
-				yield actions.fetchGetSettings();
+				yield fetchGetSettingsStore.actions.fetchGetSettings();
 			}
 		},
 	};
 
 	const selectors = {
-		...fetchGetSettingsStore.selectors,
-		...fetchSaveSettingsStore.selectors,
-
 		/**
 		 * Gets the current settings.
 		 *
@@ -329,13 +310,21 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		} );
 	} );
 
+	const store = Data.combineStores(
+		Data.commonStore,
+		fetchGetSettingsStore,
+		fetchSaveSettingsStore,
+		{
+			INITIAL_STATE,
+			actions,
+			controls,
+			reducer,
+			resolvers,
+			selectors,
+		}
+	);
 	return {
+		...store,
 		STORE_NAME,
-		INITIAL_STATE,
-		actions,
-		controls,
-		reducer,
-		resolvers,
-		selectors,
 	};
 };

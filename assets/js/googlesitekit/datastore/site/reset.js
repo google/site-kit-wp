@@ -26,8 +26,6 @@ import { createFetchStore } from '../../data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
 
-export const INITIAL_STATE = {};
-
 const fetchResetStore = createFetchStore( {
 	baseName: 'reset',
 	controlCallback: () => {
@@ -40,9 +38,9 @@ const fetchResetStore = createFetchStore( {
 	},
 } );
 
-export const actions = {
-	...fetchResetStore.actions,
+const BASE_INITIAL_STATE = {};
 
+const baseActions = {
 	/**
 	 * Resets the website's connection info to Site Kit.
 	 *
@@ -53,29 +51,11 @@ export const actions = {
 	 * @since 1.5.0
 	 */
 	*reset() {
-		yield actions.fetchReset();
+		yield fetchResetStore.actions.fetchReset();
 	},
 };
 
-export const controls = {
-	...fetchResetStore.controls,
-};
-
-export const reducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		default: {
-			return fetchResetStore.reducer( state, { type, payload } );
-		}
-	}
-};
-
-export const resolvers = {
-	...fetchResetStore.resolvers,
-};
-
-export const selectors = {
-	...fetchResetStore.selectors,
-
+const baseSelectors = {
 	/**
 	 * Checks if reset action is in-process.
 	 *
@@ -88,11 +68,20 @@ export const selectors = {
 	} ),
 };
 
-export default {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores(
+	fetchResetStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;

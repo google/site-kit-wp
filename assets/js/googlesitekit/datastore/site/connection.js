@@ -26,10 +26,6 @@ import { createFetchStore } from '../../data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
 
-export const INITIAL_STATE = {
-	connection: undefined,
-};
-
 const fetchGetConnectionStore = createFetchStore( {
 	baseName: 'getConnection',
 	controlCallback: () => {
@@ -45,39 +41,23 @@ const fetchGetConnectionStore = createFetchStore( {
 	},
 } );
 
-export const actions = {
-	...fetchGetConnectionStore.actions,
+const BASE_INITIAL_STATE = {
+	connection: undefined,
 };
 
-export const controls = {
-	...fetchGetConnectionStore.controls,
-};
-
-export const reducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		default: {
-			return fetchGetConnectionStore.reducer( state, { type, payload } );
-		}
-	}
-};
-
-export const resolvers = {
-	...fetchGetConnectionStore.resolvers,
-
+const baseResolvers = {
 	*getConnection() {
 		const registry = yield Data.commonActions.getRegistry();
 
 		const existingConnection = registry.select( STORE_NAME ).getConnection();
 
 		if ( ! existingConnection ) {
-			yield actions.fetchGetConnection();
+			yield fetchGetConnectionStore.actions.fetchGetConnection();
 		}
 	},
 };
 
-export const selectors = {
-	...fetchGetConnectionStore.selectors,
-
+const baseSelectors = {
 	/**
 	 * Gets the connection info for this site.
 	 *
@@ -158,11 +138,20 @@ export const selectors = {
 	} ),
 };
 
-export default {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores(
+	fetchGetConnectionStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;

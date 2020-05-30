@@ -25,6 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
 import { createFetchStore } from './create-fetch-store';
 
 // Actions
@@ -90,8 +91,6 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 	} );
 
 	const actions = {
-		...fetchGetNotificationsStore.actions,
-
 		/**
 		 * Adds a notification to the store.
 		 *
@@ -127,9 +126,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 		},
 	};
 
-	const controls = {
-		...fetchGetNotificationsStore.controls,
-	};
+	const controls = {};
 
 	const reducer = ( state = INITIAL_STATE, { type, payload } ) => { // eslint-disable-line no-shadow
 		switch ( type ) {
@@ -173,16 +170,14 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 			}
 
 			default: {
-				return fetchGetNotificationsStore.reducer( state, { type, payload } );
+				return { ...state };
 			}
 		}
 	};
 
 	const resolvers = {
-		...fetchGetNotificationsStore.resolvers,
-
 		*getNotifications() {
-			yield actions.fetchGetNotifications();
+			yield fetchGetNotificationsStore.actions.fetchGetNotifications();
 		},
 	};
 
@@ -195,8 +190,6 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 	}
 
 	const selectors = {
-		...fetchGetNotificationsStore.selectors,
-
 		/**
 		 * Gets the current notifications.
 		 *
@@ -228,13 +221,19 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 		},
 	};
 
+	const store = Data.combineStores(
+		fetchGetNotificationsStore,
+		{
+			INITIAL_STATE,
+			actions,
+			controls,
+			reducer,
+			resolvers,
+			selectors,
+		}
+	);
 	return {
+		...store,
 		STORE_NAME,
-		INITIAL_STATE,
-		actions,
-		controls,
-		reducer,
-		resolvers,
-		selectors,
 	};
 };
