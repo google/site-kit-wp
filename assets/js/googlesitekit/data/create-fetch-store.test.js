@@ -276,6 +276,40 @@ describe( 'createFetchStore store', () => {
 				expect( select.isFetchingGetSomeData( ...requestArgs ) ).toEqual( false );
 			} );
 		} );
+
+		describe( 'receive', () => {
+			it( 'requires params if argsToParams is provided', () => {
+				const fetchStoreDefinition = createFetchStore( {
+					baseName: 'SaveSomeData',
+					controlCallback: async () => true,
+					reducerCallback: ( state ) => state,
+					argsToParams: ( requiredParam ) => {
+						invariant( requiredParam, 'requiredParam is required.' );
+						return {
+							requiredParam,
+						};
+					},
+				} );
+
+				expect( () => {
+					const response = {};
+					fetchStoreDefinition.actions.receiveSaveSomeData( response );
+				} ).toThrow( 'params is required.' );
+			} );
+
+			it( 'does not require params if argsToParams is not provided', () => {
+				const fetchStoreDefinition = createFetchStore( {
+					baseName: 'SaveSomeData',
+					controlCallback: async () => true,
+					reducerCallback: ( state ) => state,
+				} );
+
+				expect( () => {
+					const response = {};
+					fetchStoreDefinition.actions.receiveSaveSomeData( response );
+				} ).not.toThrow( 'params is required.' );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {

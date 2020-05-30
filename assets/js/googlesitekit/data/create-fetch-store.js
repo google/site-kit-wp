@@ -91,7 +91,9 @@ export const createFetchStore = ( {
 		};
 	}
 
+	let requiresParams = true;
 	if ( 'function' !== typeof argsToParams ) {
+		requiresParams = false;
 		argsToParams = () => {
 			return {};
 		};
@@ -155,7 +157,11 @@ export const createFetchStore = ( {
 
 		[ receiveCreator ]: function( response, params ) { // eslint-disable-line object-shorthand
 			invariant( 'undefined' !== typeof response, 'response is required.' );
-			invariant( 'object' === typeof params, 'params is required.' );
+			if ( requiresParams ) {
+				invariant( 'object' === typeof params, 'params is required.' );
+			} else {
+				params = {};
+			}
 
 			return {
 				payload: { response, params },
