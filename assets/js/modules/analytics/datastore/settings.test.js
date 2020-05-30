@@ -81,7 +81,7 @@ describe( 'modules/analytics settings', () => {
 	describe( 'actions', () => {
 		beforeEach( () => {
 			// Receive empty settings to prevent unexpected fetch by resolver.
-			registry.dispatch( STORE_NAME ).receiveSettings( {} );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 		} );
 
 		describe( 'submitChanges', () => {
@@ -329,7 +329,7 @@ describe( 'modules/analytics settings', () => {
 	describe( 'selectors', () => {
 		describe( 'isDoingSubmitChanges', () => {
 			it( 'sets internal state while submitting changes', async () => {
-				registry.dispatch( STORE_NAME ).receiveSettings( validSettings );
+				registry.dispatch( STORE_NAME ).receiveGetSettings( validSettings );
 				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
 
 				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );

@@ -81,7 +81,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveSettings( defaultSettings );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 		};
 
@@ -91,7 +91,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveSettings( defaultSettings );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( true );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
@@ -106,7 +106,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveSettings( defaultSettings );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
@@ -125,7 +125,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveSettings( defaultSettings );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( 'ca-pub-123456789' );
 			registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
@@ -144,7 +144,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveSettings( defaultSettings );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accountsMultiple );
@@ -165,7 +165,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveSettings( defaultSettings );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
@@ -184,7 +184,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveSettings( defaultSettings );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
@@ -199,7 +199,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveSettings( defaultSettings );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
@@ -221,7 +221,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveSettings( defaultSettings );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
@@ -235,7 +235,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveSettings( {
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {
 				...defaultSettings,
 				// Previous status needs to be something other than
 				// '' or 'approved'.
@@ -255,7 +255,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveSettings( {
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {
 				...defaultSettings,
 				// Previous status needs to be something other than
 				// '' or 'approved'.
@@ -280,7 +280,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveSettings( {
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {
 				...defaultSettings,
 				// Previous status needs to be something other than
 				// '' or 'approved'.
@@ -305,7 +305,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveSettings( defaultSettings );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
@@ -320,7 +320,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveSettings( defaultSettings );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( fixtures.clients[ 0 ].id );
 			registry.dispatch( STORE_NAME ).receiveTagPermission( {
@@ -340,7 +340,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveSettings( defaultSettings );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( 'ca-pub-123456789' );
 			registry.dispatch( STORE_NAME ).receiveTagPermission( {
@@ -360,7 +360,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveSettings( accountCompleteSettings );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( accountCompleteSettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );
@@ -375,7 +375,7 @@ storiesOf( 'AdSense Module/Setup', module )
 		filterAdSenseSetup();
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveSettings( accountCompleteSettings );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( accountCompleteSettings );
 			registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accounts );

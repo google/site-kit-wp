@@ -47,7 +47,7 @@ storiesOf( 'AdSense Module', module )
 		const accounts = fixtures.accountsMultiple;
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveSettings( {} );
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
 		};
 
 		return (
@@ -64,7 +64,7 @@ storiesOf( 'AdSense Module', module )
 		const accounts = fixtures.accountsMultiple;
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
-			dispatch( STORE_NAME ).receiveSettings( {
+			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: accounts[ 0 ].id,
 			} );
 		};

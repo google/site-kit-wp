@@ -47,7 +47,7 @@ describe( 'SettingsMain', () => {
 			dispatch( CORE_USER ).receiveUserInfo( {} );
 			dispatch( CORE_USER ).receiveUserIsVerified( true );
 			dispatch( STORE_NAME ).receiveExistingTag( null );
-			dispatch( STORE_NAME ).receiveSettings( initialSettings );
+			dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
 		};
 
 		const { rerender, registry, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { setupRegistry } );
@@ -70,7 +70,7 @@ describe( 'SettingsMain', () => {
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_SITE ).receiveSiteInfo( {} );
 			dispatch( STORE_NAME ).receiveExistingTag( null );
-			dispatch( STORE_NAME ).receiveSettings( initialSettings );
+			dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
 		};
 
 		const { rerender, registry, container } = render( <SettingsMain isOpen={ true } isEditing={ false } />, { setupRegistry } );

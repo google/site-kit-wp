@@ -107,7 +107,7 @@ storiesOf( 'Analytics Module/Settings', module )
 		filterAnalyticsSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveSettings( {} );
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
 		};
 
 		return <Settings isOpen={ false } module={ completeModuleData } callback={ setupRegistry } />;
@@ -117,7 +117,7 @@ storiesOf( 'Analytics Module/Settings', module )
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveExistingTag( null );
-			dispatch( STORE_NAME ).receiveSettings( {
+			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: '1234567890',
 				propertyID: 'UA-1234567890-1',
 				profileID: '9999999',
@@ -139,7 +139,7 @@ storiesOf( 'Analytics Module/Settings', module )
 				propertyID: 'UA-1234567890-1',
 				permission: true,
 			} );
-			dispatch( STORE_NAME ).receiveSettings( {
+			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: '1234567890',
 				propertyID: 'UA-1234567890-1',
 				profileID: '9999999',
@@ -161,7 +161,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			dispatch( STORE_NAME ).receiveAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
-			dispatch( STORE_NAME ).receiveSettings( {
+			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: accountId,
 				propertyID: webPropertyId,
 				profileID,
@@ -178,7 +178,7 @@ storiesOf( 'Analytics Module/Settings', module )
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveExistingTag( null );
-			dispatch( STORE_NAME ).receiveSettings( {} );
+			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveAccounts( [] );
 		};
 

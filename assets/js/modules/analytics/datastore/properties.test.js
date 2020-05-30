@@ -48,7 +48,7 @@ describe( 'modules/analytics properties', () => {
 		store = registry.stores[ STORE_NAME ].store;
 		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 		// Receive empty settings to prevent unexpected fetch by resolver.
-		registry.dispatch( STORE_NAME ).receiveSettings( {} );
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 	} );
 
 	afterAll( () => {

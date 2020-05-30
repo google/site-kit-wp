@@ -338,9 +338,9 @@ export const reducer = ( state, { type, payload } ) => {
 		// This action is mainly handled via createSettingsStore, but here we
 		// need it to have the side effect of storing the original account
 		// status.
-		case 'RECEIVE_SETTINGS': {
-			const { values } = payload;
-			const { accountStatus } = values;
+		case 'RECEIVE_GET_SETTINGS': {
+			const { response } = payload;
+			const { accountStatus } = response;
 
 			// Only set original account status when it is really the first
 			// time that we load the settings on this pageload.
