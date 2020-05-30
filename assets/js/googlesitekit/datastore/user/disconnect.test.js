@@ -51,10 +51,10 @@ describe( 'core/user disconnect', () => {
 	} );
 
 	describe( 'receiveDisconnect', () => {
-		it( 'requires the disconnect param', () => {
+		it( 'requires the response param', () => {
 			expect( () => {
-				registry.dispatch( STORE_NAME ).receiveDisconnected();
-			} ).toThrow( 'disconnect is required.' );
+				registry.dispatch( STORE_NAME ).receiveDisconnect();
+			} ).toThrow( 'response is required.' );
 		} );
 	} );
 } );
