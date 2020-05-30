@@ -68,7 +68,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 		clientNotifications: client ? undefined : {},
 	};
 
-	const fetchNotificationsInfrastructure = createFetchStore( {
+	const fetchGetNotificationsStore = createFetchStore( {
 		baseName: 'getNotifications',
 		controlCallback: () => {
 			return API.get( type, identifier, datapoint );
@@ -90,7 +90,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 	} );
 
 	const actions = {
-		...fetchNotificationsInfrastructure.actions,
+		...fetchGetNotificationsStore.actions,
 
 		/**
 		 * Adds a notification to the store.
@@ -128,7 +128,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 	};
 
 	const controls = {
-		...fetchNotificationsInfrastructure.controls,
+		...fetchGetNotificationsStore.controls,
 	};
 
 	const reducer = ( state = INITIAL_STATE, { type, payload } ) => { // eslint-disable-line no-shadow
@@ -173,13 +173,13 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 			}
 
 			default: {
-				return fetchNotificationsInfrastructure.reducer( state, { type, payload } );
+				return fetchGetNotificationsStore.reducer( state, { type, payload } );
 			}
 		}
 	};
 
 	const resolvers = {
-		...fetchNotificationsInfrastructure.resolvers,
+		...fetchGetNotificationsStore.resolvers,
 
 		*getNotifications() {
 			yield actions.fetchGetNotifications();
@@ -195,7 +195,7 @@ export const createNotificationsStore = ( type, identifier, datapoint, {
 	}
 
 	const selectors = {
-		...fetchNotificationsInfrastructure.selectors,
+		...fetchGetNotificationsStore.selectors,
 
 		/**
 		 * Gets the current notifications.

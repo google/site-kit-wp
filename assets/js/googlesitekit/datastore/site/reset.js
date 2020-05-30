@@ -28,7 +28,7 @@ const { createRegistrySelector } = Data;
 
 export const INITIAL_STATE = {};
 
-const fetchResetInfrastructure = createFetchStore( {
+const fetchResetStore = createFetchStore( {
 	baseName: 'reset',
 	controlCallback: () => {
 		return API.set( 'core', 'site', 'reset' );
@@ -41,7 +41,7 @@ const fetchResetInfrastructure = createFetchStore( {
 } );
 
 export const actions = {
-	...fetchResetInfrastructure.actions,
+	...fetchResetStore.actions,
 
 	/**
 	 * Resets the website's connection info to Site Kit.
@@ -58,23 +58,23 @@ export const actions = {
 };
 
 export const controls = {
-	...fetchResetInfrastructure.controls,
+	...fetchResetStore.controls,
 };
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		default: {
-			return fetchResetInfrastructure.reducer( state, { type, payload } );
+			return fetchResetStore.reducer( state, { type, payload } );
 		}
 	}
 };
 
 export const resolvers = {
-	...fetchResetInfrastructure.resolvers,
+	...fetchResetStore.resolvers,
 };
 
 export const selectors = {
-	...fetchResetInfrastructure.selectors,
+	...fetchResetStore.selectors,
 
 	/**
 	 * Checks if reset action is in-process.

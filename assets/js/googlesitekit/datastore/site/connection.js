@@ -30,7 +30,7 @@ export const INITIAL_STATE = {
 	connection: undefined,
 };
 
-const fetchConnectionInfrastructure = createFetchStore( {
+const fetchGetConnectionStore = createFetchStore( {
 	baseName: 'getConnection',
 	controlCallback: () => {
 		return API.get( 'core', 'site', 'connection', undefined, {
@@ -46,23 +46,23 @@ const fetchConnectionInfrastructure = createFetchStore( {
 } );
 
 export const actions = {
-	...fetchConnectionInfrastructure.actions,
+	...fetchGetConnectionStore.actions,
 };
 
 export const controls = {
-	...fetchConnectionInfrastructure.controls,
+	...fetchGetConnectionStore.controls,
 };
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		default: {
-			return fetchConnectionInfrastructure.reducer( state, { type, payload } );
+			return fetchGetConnectionStore.reducer( state, { type, payload } );
 		}
 	}
 };
 
 export const resolvers = {
-	...fetchConnectionInfrastructure.resolvers,
+	...fetchGetConnectionStore.resolvers,
 
 	*getConnection() {
 		const registry = yield Data.commonActions.getRegistry();
@@ -76,7 +76,7 @@ export const resolvers = {
 };
 
 export const selectors = {
-	...fetchConnectionInfrastructure.selectors,
+	...fetchGetConnectionStore.selectors,
 
 	/**
 	 * Gets the connection info for this site.

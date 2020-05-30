@@ -68,7 +68,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		savedSettings: undefined,
 	};
 
-	const fetchSettingsInfrastructure = createFetchStore( {
+	const fetchGetSettingsStore = createFetchStore( {
 		baseName: 'getSettings',
 		controlCallback: () => {
 			return API.get( type, identifier, datapoint, {}, {
@@ -90,7 +90,7 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 		},
 	} );
 
-	const fetchSaveSettingsInfrastructure = createFetchStore( {
+	const fetchSaveSettingsStore = createFetchStore( {
 		baseName: 'saveSettings',
 		controlCallback: ( params ) => {
 			const { values } = params;
@@ -121,8 +121,8 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 	const actions = {
 		...commonActions,
-		...fetchSettingsInfrastructure.actions,
-		...fetchSaveSettingsInfrastructure.actions,
+		...fetchGetSettingsStore.actions,
+		...fetchSaveSettingsStore.actions,
 
 		/**
 		 * Sets settings for the given values.
@@ -173,8 +173,8 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 
 	const controls = {
 		...commonControls,
-		...fetchSettingsInfrastructure.controls,
-		...fetchSaveSettingsInfrastructure.controls,
+		...fetchGetSettingsStore.controls,
+		...fetchSaveSettingsStore.controls,
 	};
 
 	const reducer = ( state = INITIAL_STATE, { type, payload } ) => { // eslint-disable-line no-shadow
@@ -204,8 +204,8 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 					return settingReducers[ type ]( state, { type, payload } );
 				}
 
-				return fetchSettingsInfrastructure.reducer(
-					fetchSaveSettingsInfrastructure.reducer(
+				return fetchGetSettingsStore.reducer(
+					fetchSaveSettingsStore.reducer(
 						state,
 						{ type, payload }
 					),
@@ -216,8 +216,8 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 	};
 
 	const resolvers = {
-		...fetchSettingsInfrastructure.resolvers,
-		...fetchSaveSettingsInfrastructure.resolvers,
+		...fetchGetSettingsStore.resolvers,
+		...fetchSaveSettingsStore.resolvers,
 
 		*getSettings() {
 			const registry = yield commonActions.getRegistry();
@@ -230,8 +230,8 @@ export const createSettingsStore = ( type, identifier, datapoint, {
 	};
 
 	const selectors = {
-		...fetchSettingsInfrastructure.selectors,
-		...fetchSaveSettingsInfrastructure.selectors,
+		...fetchGetSettingsStore.selectors,
+		...fetchSaveSettingsStore.selectors,
 
 		/**
 		 * Gets the current settings.
