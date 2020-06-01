@@ -36,7 +36,7 @@ import Layout from '../layout/layout';
 import Notification from '../notifications/notification';
 import SettingsModule from './settings-module';
 import SettingsOverlay from './settings-overlay';
-import { PERMISSION_SCOPE_ERROR_CODE } from '../../googlesitekit/datastore/user/constants';
+import { isPermissionScopeError } from '../../googlesitekit/datastore/user/utils/is-permission-scope-error';
 
 class SettingsModules extends Component {
 	constructor( props ) {
@@ -105,7 +105,7 @@ class SettingsModules extends Component {
 				this.props.setModuleState( 'view' );
 			} ).catch( ( err ) => {
 				let error;
-				if ( err?.code === PERMISSION_SCOPE_ERROR_CODE ) {
+				if ( isPermissionScopeError( err ) ) {
 					error = false;
 				} else {
 					error = {

@@ -85,11 +85,11 @@ export default function SetupAccountApproved() {
 			__( 'Site Kit detected AdSense code for a different account %s on your site. For a better ads experience, you should remove AdSense code that’s not linked to this AdSense account.', 'google-site-kit' ),
 			parseAccountID( existingTag )
 		);
-		uncheckedMessage = __( 'By not placing the code, AdSense account will not show ads on your website unless you’ve already got some AdSense code.', 'google-site-kit' );
+		uncheckedMessage = __( 'By not placing the code, AdSense will not show ads on your website unless you’ve already got some AdSense code.', 'google-site-kit' );
 	} else {
 		// No existing tag.
 		showProfile = false;
-		uncheckedMessage = __( 'By not placing the code, AdSense account will not show ads on your website unless you’ve already got some AdSense code.', 'google-site-kit' );
+		uncheckedMessage = __( 'By not placing the code, AdSense will not show ads on your website unless you’ve already got some AdSense code.', 'google-site-kit' );
 	}
 
 	return (

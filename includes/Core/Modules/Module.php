@@ -395,7 +395,7 @@ abstract class Module {
 	 * Returns the mapping between available datapoints and their services.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t No longer abstract.
+	 * @since 1.9.0 No longer abstract.
 	 *
 	 * @return array Associative array of $datapoint => $service_identifier pairs.
 	 */
@@ -406,7 +406,7 @@ abstract class Module {
 	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
@@ -491,7 +491,7 @@ abstract class Module {
 	/**
 	 * Validates the given data request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 *
@@ -523,7 +523,7 @@ abstract class Module {
 	/**
 	 * Facilitates the creation of a request object for execution.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return RequestInterface|Closure|WP_Error
