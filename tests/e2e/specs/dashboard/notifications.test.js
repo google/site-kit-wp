@@ -19,7 +19,7 @@ const goToSiteKitDashboard = async () => {
 
 describe( 'core site notifications', () => {
 	// The proxy test cannot currently be done and needs to be skipped TODO tests need to to be fixed to handle proxy tests.
-	describe.skip( 'when using proxy', () => {
+	describe( 'when using proxy', () => {
 		beforeAll( async () => {
 			await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 			await setSiteVerification();
