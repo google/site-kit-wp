@@ -47,6 +47,7 @@ export default function SettingsEdit() {
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
 
@@ -96,7 +97,9 @@ export default function SettingsEdit() {
 	}, [] );
 
 	let viewComponent;
-	if ( isDoingGetAccounts || isDoingSubmitChanges ) {
+	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
+	// when the component initially loads and has yet to start fetching accounts.
+	if ( isDoingGetAccounts || isDoingSubmitChanges || ! hasResolvedAccounts ) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && existingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;

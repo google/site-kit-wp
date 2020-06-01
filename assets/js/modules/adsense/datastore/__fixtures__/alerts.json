@@ -1,0 +1,10 @@
+[
+  {
+    "id":"ADS_TXT_ISSUES",
+    "isDismissible":false,
+    "kind":"adsense#alert",
+    "message":"Please fix the problems with the ads.txt file to avoid negative impact on revenue.",
+    "severity":"SEVERE",
+    "type":"ADS_TXT_ISSUES"
+  }
+]

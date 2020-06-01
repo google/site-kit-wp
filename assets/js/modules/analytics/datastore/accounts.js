@@ -34,6 +34,7 @@ import Data from 'googlesitekit-data';
 import { isValidAccountSelection } from '../util';
 import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from './constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { actions as tagActions } from './tags';
 const { createRegistrySelector, createRegistryControl } = Data;
 
@@ -55,7 +56,7 @@ export const INITIAL_STATE = {
 	accounts: undefined,
 	isFetchingAccountsPropertiesProfiles: false,
 	isFetchingCreateAccount: false,
-	accountTicketTermsOfServiceURL: undefined,
+	accountTicketID: undefined,
 };
 
 export const actions = {
@@ -128,11 +129,14 @@ export const actions = {
 	},
 
 	*resetAccounts() {
-		const registry = yield Data.commonActions.getRegistry();
+		const { dispatch } = yield Data.commonActions.getRegistry();
 
-		yield { type: RESET_ACCOUNTS };
+		yield {
+			payload: {},
+			type: RESET_ACCOUNTS,
+		};
 
-		return registry.stores[ STORE_NAME ].getActions()
+		return dispatch( STORE_NAME )
 			.invalidateResolutionForStoreSelector( 'getAccounts' );
 	},
 
@@ -212,13 +216,13 @@ export const controls = {
 		} );
 	},
 	[ FETCH_CREATE_ACCOUNT ]: createRegistryControl( ( { select } ) => () => {
-		const { getForm } = select( STORE_NAME );
+		const { getValue } = select( CORE_FORMS );
 
 		return API.set( 'modules', 'analytics', 'create-account-ticket', {
-			accountName: getForm( FORM_ACCOUNT_CREATE, 'accountName' ),
-			propertyName: getForm( FORM_ACCOUNT_CREATE, 'propertyName' ),
-			profileName: getForm( FORM_ACCOUNT_CREATE, 'profileName' ),
-			timezone: getForm( FORM_ACCOUNT_CREATE, 'timezone' ),
+			accountName: getValue( FORM_ACCOUNT_CREATE, 'accountName' ),
+			propertyName: getValue( FORM_ACCOUNT_CREATE, 'propertyName' ),
+			profileName: getValue( FORM_ACCOUNT_CREATE, 'profileName' ),
+			timezone: getValue( FORM_ACCOUNT_CREATE, 'timezone' ),
 		} );
 	} ),
 };
@@ -261,7 +265,7 @@ export const reducer = ( state, { type, payload } ) => {
 		case RESET_ACCOUNTS: {
 			return {
 				...state,
-				accounts: undefined,
+				accounts: INITIAL_STATE.accounts,
 				settings: {
 					...state.settings,
 					accountID: undefined,
@@ -297,7 +301,7 @@ export const reducer = ( state, { type, payload } ) => {
 			const { accountTicket: { id } } = payload;
 			return {
 				...state,
-				accountTicketTermsOfServiceURL: `https://analytics.google.com/analytics/web/?provisioningSignup=false#management/TermsOfService/?api.accountTicketId=${ id }`,
+				accountTicketID: id,
 			};
 		}
 
@@ -416,42 +420,43 @@ export const selectors = {
 	 * @return {(string|undefined)} The terms of service URL.
 	 */
 	getAccountTicketTermsOfServiceURL: createRegistrySelector( ( select ) => ( state ) => {
-		const { accountTicketTermsOfServiceURL: url } = state;
-		if ( undefined === url ) {
+		const { accountTicketID } = state;
+		const email = select( CORE_USER ).getEmail();
+
+		if ( undefined === accountTicketID || ! email ) {
 			return undefined;
 		}
 
-		const email = select( CORE_USER ).getEmail();
-		if ( undefined === email ) {
-			return url;
-		}
-
-		// While there should only be one anchor, let's make sure we get everything.
-		const [ baseURL, ...anchors ] = url.split( '#' );
-		const userBaseURL = addQueryArgs( baseURL, {
-			authuser: email,
-		} );
-		return `${ userBaseURL }#${ anchors.join( '#' ) }`;
+		return addQueryArgs(
+			'https://analytics.google.com/analytics/web/',
+			{
+				authuser: email,
+				provisioningSignup: 'false',
+			}
+		) + `#management/TermsOfService/?api.accountTicketId=${ accountTicketID }`;
 	} ),
 
 	/**
 	 * Whether or not the account create form is valid to submit.
 	 *
+	 * @since 1.9.0
+	 * @private
+	 *
 	 * @return {boolean} True if valid, otherwise false.
 	 */
 	canSubmitAccountCreate: createRegistrySelector( ( select ) => () => {
-		const { getForm } = select( STORE_NAME );
+		const { getValue } = select( CORE_FORMS );
 
-		if ( ! getForm( FORM_ACCOUNT_CREATE, 'accountName' ) ) {
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'accountName' ) ) {
 			return false;
 		}
-		if ( ! getForm( FORM_ACCOUNT_CREATE, 'propertyName' ) ) {
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'propertyName' ) ) {
 			return false;
 		}
-		if ( ! getForm( FORM_ACCOUNT_CREATE, 'profileName' ) ) {
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'profileName' ) ) {
 			return false;
 		}
-		if ( ! getForm( FORM_ACCOUNT_CREATE, 'timezone' ) ) {
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'timezone' ) ) {
 			return false;
 		}
 		return true;
