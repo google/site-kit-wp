@@ -73,37 +73,4 @@ describe( 'core site notifications', () => {
 			expect( hasTestNotification ).toStrictEqual( false );
 		} );
 	} );
-	describe( 'when not using proxy', () => {
-		beforeAll( async () => {
-			await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
-			await setSiteVerification();
-			await setSearchConsoleProperty();
-		} );
-
-		it( 'does not display core site notifications on the main dashboard', async () => {
-			// Add the test notification (by default there are none).
-			await wpApiFetch( {
-				path: 'google-site-kit/v1/e2e/core/site/notifications',
-				method: 'post',
-				data: testSiteNotification,
-			} );
-
-			// Go to the main dashboard and wait for notifications to be requested.
-			await Promise.all( [
-				page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/core/site/data/notifications' ) ),
-				goToSiteKitDashboard(),
-			] );
-
-			// Ensure notification is not displayed.
-			const notificationTitles = await page.$$( '.googlesitekit-publisher-win__title' );
-			const notificationDescription = await page.$$( '.googlesitekit-publisher-win__desc' );
-
-			expect(
-				notificationTitles.filter( ( { textContent } ) => textContent.match( /test notification title/i ) )
-			).toHaveLength( 0 );
-			expect(
-				notificationDescription.filter( ( { textContent } ) => textContent.match( /test notification content/i ) )
-			).toHaveLength( 0 );
-		} );
-	} );
 } );
