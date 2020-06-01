@@ -77,13 +77,13 @@ export const createInfoStore = ( {
 		getAdminReauthURL: createRegistrySelector( ( select ) => ( state, queryArgs ) => {
 			const { needsReauthentication } = select( CORE_USER ).getAuthentication();
 
-			const pageSpeedQueryArgs = ! requiresSetup ? {
+			const noSetupQueryArgs = ! requiresSetup ? {
 				notification: 'authentication_success',
 				reAuth: undefined,
 			} : {};
 
 			if ( ! needsReauthentication ) {
-				return select( CORE_SITE ).getAdminURL( adminPage, pageSpeedQueryArgs );
+				return select( CORE_SITE ).getAdminURL( adminPage, noSetupQueryArgs );
 			}
 
 			return select( CORE_SITE ).getAdminURL( adminPage, queryArgs );
