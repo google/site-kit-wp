@@ -21,7 +21,6 @@
  */
 import domReady from '@wordpress/dom-ready';
 import { render, Fragment } from '@wordpress/element';
-import { doAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -60,11 +59,6 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <Root><GoogleSitekitDashboard /></Root>, renderTarget );
-
-		/**
-		 * Action triggered when the dashboard App is loaded.
-		 */
-		doAction( 'googlesitekit.moduleLoaded', 'Dashboard' );
+		render( <Root dataAPIContext="Dashboard"><GoogleSitekitDashboard /></Root>, renderTarget );
 	}
 } );

@@ -17,3 +17,6 @@
  */
 
 export const STORE_NAME = 'core/user';
+
+// Error code returned when scopes are missing.
+export const PERMISSION_SCOPE_ERROR_CODE = 'missing_required_scopes';

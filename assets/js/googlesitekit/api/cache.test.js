@@ -213,19 +213,6 @@ describe( 'googlesitekit.api.cache', () => {
 			} );
 
 			describe( 'set', () => {
-				it( 'should not save when a hard-to-serialize data is set', async () => {
-					const arrayBuffer = new ArrayBuffer( 8 );
-					const didSave = await setItem( 'arrayBuffer', arrayBuffer, 500 );
-					const storedData = JSON.stringify( {
-						timestamp: 500,
-						value: arrayBuffer,
-					} );
-
-					expect( didSave ).toEqual( false );
-					expect( storageMechanism.setItem ).not.toHaveBeenCalledWith( `${ STORAGE_KEY_PREFIX }arrayBuffer`, storedData );
-					expect( Object.keys( storageMechanism.__STORE__ ).length ).toBe( 0 );
-				} );
-
 				it( 'should save data', async () => {
 					// We specify a manual timestamp here to ensure the entire call to
 					// `setItem` can be verified. If we don't set a timestamp manually,

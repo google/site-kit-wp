@@ -21,13 +21,15 @@
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
+import { PERMISSION_SCOPE_ERROR_CODE } from '../../../googlesitekit/datastore/user/constants';
 import ErrorText from '../../../components/error-text';
 const { useSelect } = Data;
 
 export default function ErrorNotice() {
 	const error = useSelect( ( select ) => select( STORE_NAME ).getError() );
 
-	if ( ! error ) {
+	// Do not display if no error, or if the error is for missing scopes.
+	if ( ! error || error.code === PERMISSION_SCOPE_ERROR_CODE ) {
 		return null;
 	}
 

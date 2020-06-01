@@ -18,17 +18,11 @@
 add_filter(
 	'googlesitekit_oauth_secret',
 	function () {
-		return json_encode(
-			array(
-				'web' => array(
-					'client_id'                   => '1234567890-asdfasdfasdfasdfzxcvzxcvzxcvzxcv.apps.googleusercontent.com',
-					'client_secret'               => 'x_xxxxxxxxxxxxxxxxxxxxxx',
-					'auth_uri'                    => 'https://accounts.google.com/o/oauth2/auth',
-					'token_uri'                   => 'https://oauth2.googleapis.com/token',
-					'auth_provider_x509_cert_url' => 'https://www.googleapis.com/oauth2/v1/certs',
-					'redirect_uris'               => array( add_query_arg( 'oauth2callback', '1', home_url() ) ),
-				),
-			)
+		return array(
+			'web' => array(
+				'client_id'     => '1234567890-asdfasdfasdfasdfzxcvzxcvzxcvzxcv.apps.googleusercontent.com',
+				'client_secret' => 'x_xxxxxxxxxxxxxxxxxxxxxx',
+			),
 		);
 	}
 );
