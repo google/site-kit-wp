@@ -15,7 +15,7 @@ import {
 
 describe( 'Plugin Reset', () => {
 	beforeAll( async () => {
-		await activatePlugin( 'e2e-tests-gcp-credentials-plugin' );
+		await activatePlugin( 'e2e-tests-proxy-credentials-plugin' );
 		await setClientConfig();
 		await setAuthToken();
 		await setSiteVerification();
@@ -34,7 +34,7 @@ describe( 'Plugin Reset', () => {
 	} );
 
 	afterAll( async () => {
-		await deactivatePlugin( 'e2e-tests-gcp-credentials-plugin' );
+		await deactivatePlugin( 'e2e-tests-proxy-credentials-plugin' );
 	} );
 
 	it( 'displays a confirmation dialog when clicking the "Reset Site Kit" link', async () => {
