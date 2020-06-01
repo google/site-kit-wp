@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { PROVISIONING_SCOPE } from './constants';
+import { PROVISIONING_SCOPE, EDIT_SCOPE } from './constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 const { createRegistrySelector } = Data;
 
@@ -57,6 +57,26 @@ export const selectors = {
 		}
 
 		return grantedScopes.includes( PROVISIONING_SCOPE );
+	} ),
+	/**
+	 * Checks whether the current user has granted access to the scope for
+	 * Analytics edit, which is needed for property/profile creation.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} True if access granted, false if not;
+	 *                               undefined if not loaded yet.
+	 */
+	hasEditScope: createRegistrySelector( ( select ) => () => {
+		const grantedScopes = select( CORE_USER ).getGrantedScopes();
+
+		if ( undefined === grantedScopes ) {
+			return undefined;
+		}
+
+		return grantedScopes.includes( EDIT_SCOPE );
 	} ),
 };
 
