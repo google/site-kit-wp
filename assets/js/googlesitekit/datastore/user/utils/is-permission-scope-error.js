@@ -1,5 +1,5 @@
 /**
- * PageSpeed Insights module initialization.
+ * isPermissionScopeError utility.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,20 +19,17 @@
 /**
  * Internal dependencies
  */
-import './datastore';
-import { fillFilterWithComponent } from '../../util';
-import { SettingsMain as PageSpeedInsightsSettings } from './settings';
+import { PERMISSION_SCOPE_ERROR_CODE } from '../constants';
 
 /**
- * WordPress dependencies
+ * Checks if the given error is a permission scope error.
+ *
+ * @since 1.9.0
+ * @private
+ *
+ * @param {*} error Input to test as a possible permission scope error.
+ * @return {boolean} True if permission scope error, otherwise false.
  */
-import { addFilter } from '@wordpress/hooks';
-
-/**
- * Add components to the settings page.
- */
-addFilter(
-	'googlesitekit.ModuleSettingsDetails-pagespeed-insights',
-	'googlesitekit.PageSpeedInsightsModuleSettingsDetails',
-	fillFilterWithComponent( PageSpeedInsightsSettings )
-);
+export function isPermissionScopeError( error ) {
+	return error?.code === PERMISSION_SCOPE_ERROR_CODE;
+}

@@ -48,7 +48,7 @@ export const actions = {
 	/**
 	 * Stores the OAuth connection URL in the datastore.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @param {string} connectURL Full URL to the Site Kit googlesitekit_connect handler.
@@ -218,7 +218,7 @@ export const selectors = {
 	/**
 	 * Gets a URL for (re)connecting via OAuth, with optional additional scopes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object}   state                   Data store's state.
 	 * @param {Object}   [args]                  Optional arguments for the resulting URL.

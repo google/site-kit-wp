@@ -42,7 +42,7 @@ const SET_STATE_FROM_SNAPSHOT = 'SET_STATE_FROM_SNAPSHOT';
 /**
  * Creates a store object that includes actions and controls for restoring/creating state snapshots.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  * @private
  *
  * @param {string} storeName The name of the store to snapshot in the cache.
@@ -57,7 +57,7 @@ export const createSnapshotStore = ( storeName ) => {
 		/**
 		 * Deletes a snapshot of state for a storeName, using our cache API.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.9.0
 		 * @private
 		 *
 		 * @return {boolean} Cache deletion response.
@@ -74,7 +74,7 @@ export const createSnapshotStore = ( storeName ) => {
 		/**
 		 * Restores a snapshot of state for a storeName, if available, using our cache API.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.9.0
 		 * @private
 		 *
 		 * @return {boolean} Cache restoration response.
@@ -105,7 +105,7 @@ export const createSnapshotStore = ( storeName ) => {
 		/**
 		 * Creates a snapshot of the current state of this store, using our cache API.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.9.0
 		 * @private
 		 *
 		 * @return {boolean} Cache write response.
@@ -156,7 +156,7 @@ export const createSnapshotStore = ( storeName ) => {
 /**
  * Inspects a registry to find all stores that support our snapshot features.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  * @private
  *
  * @param {wp.data.registry} registry Optional. Registry object to inspect for stores that support state restoration. Defaults to `googlesitekit.data`.
@@ -171,7 +171,7 @@ export const getStoresWithSnapshots = ( registry = Data ) => {
 /**
  * Creates snapshots of all supporting stores.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  * @private
  *
  * @param {wp.data.registry} [registry] Optional. Registry object to inspect for stores that support state restoration. Defaults to `googlesitekit.data`.
@@ -190,7 +190,7 @@ export const snapshotAllStores = ( registry = Data ) => {
  * clears the snapshot afterward, so more stores will not be restored unless
  * a snapshot was saved on the last pageview.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  * @private
  *
  * @param {wp.data.registry} [registry] Optional. Registry object to inspect for stores that support state restoration. Defaults to `googlesitekit.data`.

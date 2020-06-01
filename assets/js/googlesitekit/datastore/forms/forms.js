@@ -29,7 +29,7 @@ export const actions = {
 	/**
 	 * Stores site form information.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @param {string} formName Name of the form.
@@ -72,7 +72,7 @@ export const selectors = {
 	/**
 	 * Gets the existing form by formName and key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @param {Object} state    Data store's state.
@@ -89,7 +89,7 @@ export const selectors = {
 	/**
 	 * Checks whether a form with the given formName exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @param {Object} state    Data store's state.

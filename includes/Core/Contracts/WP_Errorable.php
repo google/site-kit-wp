@@ -15,14 +15,14 @@ use WP_Error;
 /**
  * Interface for a class which can be represented as a WP_Error.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  */
 interface WP_Errorable {
 
 	/**
 	 * Gets the WP_Error representation of this entity.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return WP_Error
 	 */
