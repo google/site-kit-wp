@@ -188,6 +188,8 @@ describe( 'modules/analytics tags', () => {
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
+				fetchMock.get( { query: { tagverify: '1' } }, { status: 200 } );
+
 				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
 				expect( hasExistingTag ).toEqual( undefined );
