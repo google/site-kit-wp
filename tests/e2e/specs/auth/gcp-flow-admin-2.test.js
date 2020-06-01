@@ -29,7 +29,7 @@ describe( 'the set up flow for the second administrator', () => {
 				request.respond( {
 					status: 302,
 					headers: {
-						location: createURL( '/wp-admin/index.php', 'oauth2callback=1&code=valid-test-code' ),
+						location: createURL( '/wp-admin/index.php', 'oauth2callback=1&code=valid-test-code&e2e-proxy-auth=false' ),
 					},
 				} );
 			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
