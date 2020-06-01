@@ -31,7 +31,7 @@ import { WIDGET_STYLES } from './constants';
  * we can't store React components in our data store.
  *
  * @private
- * @since n.e.x.t
+ * @since 1.9.0
  */
 export const WidgetComponents = {};
 
@@ -59,7 +59,7 @@ export const actions = {
 	 * Does not error if the area slug provided does not exist, but will console.warn a
 	 * message about non-existent areas.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {string}         slug         Widget Area's slug.
 	 * @param {(string|Array)} contextSlugs Widget Context's slug(s).
@@ -78,7 +78,7 @@ export const actions = {
 	/**
 	 * Creates a widget area with a given name and settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {string}             slug               Widget Area's slug.
 	 * @param {Object}             settings           Widget Area's settings.
@@ -169,7 +169,7 @@ export const selectors = {
 	 * Returns `true` if the widget area has been registered.
 	 * Returns `false` if the widget area has NOT been registered.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Widget Area's slug.
@@ -188,7 +188,7 @@ export const selectors = {
 	 * The widget areas are returned in order of their priority, so can be rendered in
 	 * the order provided by the selector.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state       Data store's state.
 	 * @param {string} contextSlug Widget context to get areas for.

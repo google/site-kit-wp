@@ -106,7 +106,7 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 	 * Gets required Google OAuth scopes for the module.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Changed to `adsense.readonly` variant.
+	 * @since 1.9.0 Changed to `adsense.readonly` variant.
 	 *
 	 * @return array List of Google OAuth scopes.
 	 */

@@ -29,7 +29,7 @@ const Widgets = {
 	/**
 	 * Registers a widget area.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {string}             slug                Widget area's slug.
 	 * @param {Object}             settings            Widget area's settings.
@@ -50,7 +50,7 @@ const Widgets = {
 	/**
 	 * Registers a widget.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {string}          slug               Widget's slug.
 	 * @param {Object}          settings           Widget's settings.
@@ -73,7 +73,7 @@ const Widgets = {
 	 * (for a single context slug) or array of contexts slugs (to assign the widget area
 	 * to multiple contexts).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {string}         slug          Widget Area's slug.
 	 * @param {(string|Array)} contextSlugs  Widget context slug(s).
@@ -85,7 +85,7 @@ const Widgets = {
 	/**
 	 * Assigns an existing widget (by slug) to a widget area(s).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param  {string}         slug            Widget slug.
 	 * @param  {(string|Array)} widgetAreaSlugs Widget area slug(s).
@@ -100,7 +100,7 @@ const Widgets = {
 	 * Returns `true` if the widget area has been registered.
 	 * Returns `false` if the widget area has NOT been registered.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param  {string} slug Widget Area's slug.
 	 * @return {boolean} `true`/`false` based on whether widget area has been registered.
@@ -115,7 +115,7 @@ const Widgets = {
 	 * Returns `true` if the widget area has been registered.
 	 * Returns `false` if the widget area has NOT been registered.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param  {string}  slug  Widget's slug.
 	 * @return {boolean} `true`/`false` based on whether widget has been registered.

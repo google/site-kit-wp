@@ -24,7 +24,7 @@ import { PERMISSION_SCOPE_ERROR_CODE } from '../constants';
 /**
  * Checks if the given error is a permission scope error.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  * @private
  *
  * @param {*} error Input to test as a possible permission scope error.

@@ -17,7 +17,7 @@ use WP_Error;
 /**
  * Exception thrown when authentication scopes are insufficient for a request.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class Insufficient_Scopes_Exception extends Exception implements WP_Errorable {
 	/**
 	 * OAuth scopes that are required but not yet granted.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @var array
 	 */
@@ -37,7 +37,7 @@ class Insufficient_Scopes_Exception extends Exception implements WP_Errorable {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param string    $message  Optional. Exception message.
 	 * @param int       $code     Optional. Exception code.
@@ -52,7 +52,7 @@ class Insufficient_Scopes_Exception extends Exception implements WP_Errorable {
 	/**
 	 * Sets the missing scopes that raised this exception.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param array $scopes OAuth scopes that are required but not yet granted.
 	 */
@@ -63,7 +63,7 @@ class Insufficient_Scopes_Exception extends Exception implements WP_Errorable {
 	/**
 	 * Gets the missing scopes that raised this exception.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return array
 	 */
@@ -74,7 +74,7 @@ class Insufficient_Scopes_Exception extends Exception implements WP_Errorable {
 	/**
 	 * Gets the WP_Error representation of this exception.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return WP_Error
 	 */

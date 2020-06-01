@@ -42,7 +42,7 @@ export const selectors = {
 	 * Checks whether the current user has granted access to the scope for
 	 * provisioning a Google Analytics account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
@@ -62,7 +62,7 @@ export const selectors = {
 	 * Checks whether the current user has granted access to the scope for
 	 * Analytics edit, which is needed for property/profile creation.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
