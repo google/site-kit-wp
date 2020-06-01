@@ -51,7 +51,7 @@ describe( 'core/site reset', () => {
 				const response = true;
 				fetchMock.once(
 					/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
-					{ body: response, status: 200 }
+					{ body: JSON.stringify( response ), status: 200 }
 				);
 
 				registry.dispatch( STORE_NAME ).fetchReset();
@@ -65,7 +65,7 @@ describe( 'core/site reset', () => {
 					const response = true;
 					fetchMock.once(
 						/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
-						{ body: response, status: 200 }
+						{ body: JSON.stringify( response ), status: 200 }
 					);
 
 					await registry.dispatch( STORE_NAME ).reset();
@@ -76,7 +76,7 @@ describe( 'core/site reset', () => {
 				const response = true;
 				fetchMock.once(
 					/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
-					{ body: response, status: 200 }
+					{ body: JSON.stringify( response ), status: 200 }
 				);
 
 				registry
@@ -110,7 +110,7 @@ describe( 'core/site reset', () => {
 				};
 				fetchMock.once(
 					/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
-					{ body: response, status: 500 }
+					{ body: JSON.stringify( response ), status: 500 }
 				);
 
 				muteConsole( 'error' );

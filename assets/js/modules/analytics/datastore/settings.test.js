@@ -161,8 +161,8 @@ describe( 'modules/analytics settings', () => {
 				);
 				fetchMock.once(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
-					async ( url, opts, req ) => {
-						const { data } = await req.json();
+					( url, opts ) => {
+						const { data } = JSON.parse( opts.body );
 						return { body: data, status: 200 };
 					}
 				);
@@ -235,8 +235,8 @@ describe( 'modules/analytics settings', () => {
 				);
 				fetchMock.once(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
-					async ( url, opts, req ) => {
-						const { data } = await req.json();
+					( url, opts ) => {
+						const { data } = JSON.parse( opts.body );
 						return { body: data, status: 200 };
 					}
 				);
