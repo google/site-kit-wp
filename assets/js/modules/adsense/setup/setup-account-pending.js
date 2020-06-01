@@ -48,7 +48,7 @@ export default function SetupAccountPending() {
 	return (
 		<Fragment>
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
-				{ __( 'Let’s get your site ready for ads', 'google-site-kit' ) }
+				{ __( 'Your account is getting ready', 'google-site-kit' ) }
 			</h3>
 
 			<ErrorNotice />

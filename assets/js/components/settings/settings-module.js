@@ -449,6 +449,7 @@ class SettingsModule extends Component {
 									name
 								) + dependentModules : false
 							}
+							danger
 						/>
 					</div>
 				) : (

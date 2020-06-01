@@ -421,7 +421,7 @@ final class OAuth_Client {
 	 * Scopes are considered "additional scopes" if they were granted to perform a specific action,
 	 * rather than being granted as an overall required scope.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @see https://developers.google.com/identity/protocols/googlescopes
 	 *
 	 * @return string[] List of Google OAuth scopes.
@@ -433,7 +433,7 @@ final class OAuth_Client {
 	/**
 	 * Checks if new scopes are required that are not yet granted for the current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return bool true if any required scopes are not satisfied, otherwise false.
 	 */
@@ -448,7 +448,7 @@ final class OAuth_Client {
 	/**
 	 * Gets the list of scopes which are not satisfied by the currently granted scopes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param string[] $scopes Optional. List of scopes to test against granted scopes.
 	 *                         Default is the list of required scopes.
@@ -473,7 +473,7 @@ final class OAuth_Client {
 	/**
 	 * Checks whether or not currently granted scopes are sufficient for the given list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param string[] $scopes Optional. List of scopes to test against granted scopes.
 	 *                         Default is the list of required scopes.
@@ -609,7 +609,7 @@ final class OAuth_Client {
 	 * Gets the authentication URL.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Added $additional_scopes parameter.
+	 * @since 1.9.0 Added $additional_scopes parameter.
 	 *
 	 * @param string   $redirect_url      Redirect URL after authentication.
 	 * @param string[] $additional_scopes List of additional scopes to request.

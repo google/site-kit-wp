@@ -600,10 +600,10 @@ final class Modules {
 								$notifications = $modules[ $slug ]->get_data( 'notifications' );
 								if ( is_wp_error( $notifications ) ) {
 									// Don't consider it an error if the module does not have a 'notifications' datapoint.
-									if ( Invalid_Datapoint_Exception::WP_ERROR_CODE !== $notifications->get_error_code() ) {
-										return $notifications;
+									if ( Invalid_Datapoint_Exception::WP_ERROR_CODE === $notifications->get_error_code() ) {
+										$notifications = array();
 									}
-									$notifications = array();
+									return $notifications;
 								}
 							}
 							return new WP_REST_Response( $notifications );
