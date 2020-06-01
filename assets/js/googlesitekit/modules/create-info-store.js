@@ -21,28 +21,26 @@
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME as CORE_SITE } from '../datastore/site/constants';
+import { STORE_NAME as CORE_USER } from '../datastore/user/constants';
 
 const { createRegistrySelector } = Data;
 
 /**
- * Creates a store object that includes actions and selectors for managing notifications.
- *
- * The three required parameters hook up the store to the respective REST API endpoint.
+ * Creates a store object that has selectors for managing site info.
  *
  * @since 1.6.0
  * @private
  *
  * @param {Object}  options               Options to consider for the store.
- * @param {number}  options.storeName     Store name to use. Default is '{type}/{identifier}'.
+ * @param {number}  options.storeName     Store name to use.
  * @param {string}  options.adminPage     Store admin page. Default is 'googlesitekit-dashboard'.
- * @param {boolean} options.requiresSetup Store flag for requires setup. Default is 'true'
- * @return {Object} The info store object, with additional `STORE_NAME` and
- *                  `INITIAL_STATE` properties.
+ * @param {boolean} options.requiresSetup Store flag, for requires setup. Default is 'true'
+ * @return {Object} The info store object.
  */
 export const createInfoStore = ( {
 	storeName = undefined,
 	adminPage = undefined,
-	// requiresSetup = undefined,
+	requiresSetup = undefined,
 } = {} ) => {
 	const STORE_NAME = storeName;
 
@@ -59,8 +57,9 @@ export const createInfoStore = ( {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {string} page Admin page.
-		 * @return {string|undefined} The admin screen url.
+		 * @param {Object} state Data store's state.
+		 * @param {(Object|undefined)} queryArgs Query arguments to add to admin URL.
+		 * @return {(string|undefined)} The admin screen url.
 		 */
 		getAdminScreenURL: createRegistrySelector( ( select ) => ( state, queryArgs ) => {
 			return select( CORE_SITE ).getAdminURL( adminPage, queryArgs );
@@ -71,10 +70,22 @@ export const createInfoStore = ( {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {string} page Admin page
-		 * @return {string} The admin reauth url.
+		 * @param {Object} state Data store's state.
+		 * @param {(Object|undefined)} queryArgs Query arguments to add to admin URL.
+		 * @return {(string|undefined)} The admin reauth url.
 		 */
 		getAdminReauthURL: createRegistrySelector( ( select ) => ( state, queryArgs ) => {
+			const { needsReauthentication } = select( CORE_USER ).getAuthentication();
+
+			const pageSpeedQueryArgs = ! requiresSetup ? {
+				notification: 'authentication_success',
+				reAuth: undefined,
+			} : {};
+
+			if ( ! needsReauthentication ) {
+				return select( CORE_SITE ).getAdminURL( adminPage, pageSpeedQueryArgs );
+			}
+
 			return select( CORE_SITE ).getAdminURL( adminPage, queryArgs );
 		} ),
 	};

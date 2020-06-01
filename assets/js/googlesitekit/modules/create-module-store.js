@@ -76,7 +76,7 @@ export const createModuleStore = ( slug, {
 	const infoStore = createInfoStore( {
 		storeName,
 		adminPage,
-		// requiresSetup,
+		requiresSetup,
 	} );
 
 	const settingsStore = ( 'undefined' !== typeof settingSlugs )

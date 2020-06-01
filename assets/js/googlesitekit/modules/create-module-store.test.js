@@ -30,12 +30,9 @@ import { createRegistry } from '@wordpress/data';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import {
-	unsubscribeFromAll,
-} from 'tests/js/utils';
-import {
-	createNotificationsStore,
-} from '../data/create-notifications-store';
+import { unsubscribeFromAll } from 'tests/js/utils';
+import { createNotificationsStore } from '../data/create-notifications-store';
+import { createInfoStore } from './create-info-store';
 import { createModuleStore } from './create-module-store';
 
 const SETTING_SLUG = 'testSetting';
@@ -99,6 +96,14 @@ describe( 'createModuleStore store', () => {
 	} );
 
 	describe( 'selectors', () => {
+		it( 'includes all info store selectors', () => {
+			const createInfoStoreDefinition = createInfoStore();
+
+			expect( Object.keys( storeDefinition.selectors ) ).toEqual(
+				expect.arrayContaining( Object.keys( createInfoStoreDefinition.selectors ) )
+			);
+		} );
+
 		it( 'includes all notifications store selectors', () => {
 			const notificationsStoreDefinition = createNotificationsStore( 'modules', MODULE_SLUG, 'notifications' );
 
