@@ -109,4 +109,9 @@ storiesOf( 'PageSpeed Insights Module/Settings', module )
 
 		return <Settings module={ completeModuleData } />;
 	} )
+	.add( 'Edit, open with all settings', () => {
+		filterPageSpeedInsightsSettings();
+
+		return <Settings isEditing={ true } module={ completeModuleData } />;
+	} )
 ;
