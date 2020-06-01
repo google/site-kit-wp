@@ -27,17 +27,18 @@ import { __ } from '@wordpress/i18n';
  */
 import CreateAccountField from './create-account-field';
 import Data from 'googlesitekit-data';
-import { STORE_NAME, FORM_ACCOUNT_CREATE } from '../../datastore/constants';
+import { FORM_ACCOUNT_CREATE } from '../../datastore/constants';
+import { STORE_NAME as CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 
 const { useSelect, useDispatch } = Data;
 
 export default function AccountField() {
-	const value = useSelect( ( select ) => select( STORE_NAME ).getForm( FORM_ACCOUNT_CREATE, 'accountName' ) );
+	const value = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'accountName' ) );
 
-	const { setForm } = useDispatch( STORE_NAME );
+	const { setValues } = useDispatch( CORE_FORMS );
 	const setValue = useCallback( ( accountName ) => {
-		setForm( FORM_ACCOUNT_CREATE, { accountName } );
-	}, [ setForm ] );
+		setValues( FORM_ACCOUNT_CREATE, { accountName } );
+	}, [ setValues ] );
 
 	return (
 		<CreateAccountField

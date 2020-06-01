@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { createSnapshotStore } from '../../data/create-snapshot-store';
 import forms from './forms';
 import { STORE_NAME } from './constants';
 
@@ -28,6 +29,7 @@ export { STORE_NAME };
 const store = Data.combineStores(
 	Data.commonStore,
 	forms,
+	createSnapshotStore( STORE_NAME ),
 );
 
 export const INITIAL_STATE = store.INITIAL_STATE;

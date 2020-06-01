@@ -1,5 +1,5 @@
 /**
- * core/user data store: constants.
+ * Legacy DataAPI loading component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -16,7 +16,21 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'core/user';
+/**
+ * WordPress dependencies
+ */
+import { useEffect } from '@wordpress/element';
+import { doAction } from '@wordpress/hooks';
 
-// Error code returned when scopes are missing.
-export const PERMISSION_SCOPE_ERROR_CODE = 'missing_required_scopes';
+/**
+ * Internal dependencies
+ */
+import './index'; // Ensure dataAPI is loaded.
+
+export default function CollectModuleData( { context, args } ) {
+	useEffect( () => {
+		doAction( 'googlesitekit.moduleLoaded', context, args );
+	}, [ context, args ] );
+
+	return null;
+}
