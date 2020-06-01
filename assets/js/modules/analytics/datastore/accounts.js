@@ -439,7 +439,7 @@ export const selectors = {
 	/**
 	 * Whether or not the account create form is valid to submit.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @return {boolean} True if valid, otherwise false.
