@@ -1,5 +1,5 @@
 /**
- * PageSpeed Insights module initialization.
+ * PageSpeed Insights Settings Main component.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
@@ -19,20 +19,12 @@
 /**
  * Internal dependencies
  */
-import './datastore';
-import { fillFilterWithComponent } from '../../util';
-import { SettingsMain as PageSpeedInsightsSettings } from './settings';
+import SettingsView from './settings-view';
 
-/**
- * WordPress dependencies
- */
-import { addFilter } from '@wordpress/hooks';
+export default function SettingsMain( { isOpen } ) {
+	if ( ! isOpen ) {
+		return null;
+	}
 
-/**
- * Add components to the settings page.
- */
-addFilter(
-	'googlesitekit.ModuleSettingsDetails-pagespeed-insights',
-	'googlesitekit.PageSpeedInsightsModuleSettingsDetails',
-	fillFilterWithComponent( PageSpeedInsightsSettings )
-);
+	return <SettingsView />;
+}

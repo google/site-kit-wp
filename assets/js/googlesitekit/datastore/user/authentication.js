@@ -223,6 +223,22 @@ export const selectors = {
 		const { requiredScopes } = select( STORE_NAME ).getAuthentication() || {};
 		return requiredScopes;
 	} ),
+
+	/**
+	 * Gets the unsatisfied scopes for the user.
+	 *
+	 * Returns an array of unsatisfied scopes (required but not granted)
+	 * or undefined if authentication info is not available/loaded.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array|undefined)} Array of scopes
+	 */
+	getUnsatisfiedScopes: createRegistrySelector( ( select ) => () => {
+		const { unsatisfiedScopes } = select( STORE_NAME ).getAuthentication() || {};
+		return unsatisfiedScopes;
+	} ),
 };
 
 export default {
