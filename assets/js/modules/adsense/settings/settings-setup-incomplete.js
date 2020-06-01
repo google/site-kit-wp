@@ -27,7 +27,6 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Link from '../../../components/link';
-import { getReAuthURL } from '../../../util';
 import { STORE_NAME } from '../datastore/constants';
 import { isPendingAccountStatus } from '../util/status';
 import { AdBlockerWarning } from '../common';
@@ -48,7 +47,7 @@ export default function SettingsSetupIncomplete() {
 				className="googlesitekit-settings-module__edit-button"
 				href={
 					// TODO: Replace this function with something datastore-driven.
-					getReAuthURL( 'adsense', true )
+					useSelect( ( select ) => select( STORE_NAME ).getAdminReauthURL() )
 				}
 				inherit
 			>
