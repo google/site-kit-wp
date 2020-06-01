@@ -61,7 +61,7 @@ describe( 'Plugin Reset', () => {
 			expect( page ).toClick( '.mdc-dialog--open .mdc-button', { text: 'Reset' } ),
 		] );
 
-		// Ensure we're on the first step.
-		await expect( page ).toMatchElement( '.googlesitekit-wizard-progress-step__number--inprogress', { text: '1' } );
+		// Ensure we're on the setup page
+		await expect( page ).toMatchElement( '.googlesitekit-start-setup', { text: 'Start setup' } );
 	} );
 } );
