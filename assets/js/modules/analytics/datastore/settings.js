@@ -21,6 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import dataAPI, { TYPE_MODULES } from '../../../components/data';
 import {
 	isValidAccountID,
 	isValidInternalWebPropertyID,
@@ -101,6 +102,8 @@ export const controls = {
 		}
 
 		await API.invalidateCache( 'modules', 'analytics' );
+		// TODO: Remove once legacy dataAPI is no longer used.
+		dataAPI.invalidateCacheGroup( TYPE_MODULES, 'analytics' );
 
 		return {};
 	} ),
@@ -170,6 +173,14 @@ export const selectors = {
 		return true;
 	} ),
 
+	/**
+	 * Checks whether changes are currently being submitted.
+	 *
+	 * @since 1.8.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} `true` if submitting, `false` if not.
+	 */
 	isDoingSubmitChanges( state ) {
 		return !! state.isDoingSubmitChanges;
 	},

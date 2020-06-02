@@ -108,11 +108,7 @@ class AnalyticsTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'https://www.googleapis.com/auth/analytics',
 				'https://www.googleapis.com/auth/analytics.readonly',
-				'https://www.googleapis.com/auth/analytics.manage.users',
-				'https://www.googleapis.com/auth/analytics.edit',
-				'https://www.googleapis.com/auth/analytics.provision',
 			),
 			$analytics->get_scopes()
 		);
@@ -148,7 +144,6 @@ class AnalyticsTest extends TestCase {
 				'profiles',
 				'tag-permission',
 				'report',
-				'settings',
 				'tracking-disabled',
 				'anonymize-ip',
 				'create-property',
@@ -328,8 +323,8 @@ class AnalyticsTest extends TestCase {
 		wp_set_current_user( $logged_in ? $this->factory()->user->create() : 0 );
 
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$analytics->get_settings()->set( $settings );
 		$analytics->register();
-		$analytics->set_data( 'settings', $settings );
 
 		$head_html = $this->capture_action( 'wp_head' );
 		// Sanity check.

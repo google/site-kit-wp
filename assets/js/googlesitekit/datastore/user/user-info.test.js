@@ -31,6 +31,7 @@ import { STORE_NAME } from './constants';
 describe( 'core/user userInfo', () => {
 	const userDataGlobal = '_googlesitekitUserData';
 	const userData = {
+		connectURL: 'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&googlesitekit_connect=1&nonce=a1b2c3d4e5',
 		user: {
 			id: 1,
 			email: 'admin@fakedomain.com',
@@ -80,6 +81,60 @@ describe( 'core/user userInfo', () => {
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'getConnectURL', () => {
+			it( 'uses a resolver to load data from a global variable', async () => {
+				// Set up the global
+				global[ userDataGlobal ] = userData;
+
+				registry.select( STORE_NAME ).getConnectURL();
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getConnectURL' )
+				);
+
+				const connectURL = registry.select( STORE_NAME ).getConnectURL();
+				expect( connectURL ).toBe( userData.connectURL );
+
+				// Data must not be wiped after retrieving, as it could be used by other dependants.
+				expect( global[ userDataGlobal ] ).not.toEqual( undefined );
+			} );
+
+			it( 'will return initial state (undefined) when no data is available', async () => {
+				expect( global[ userDataGlobal ] ).toEqual( undefined );
+				muteConsole( 'error' );
+				const connectURL = registry.select( STORE_NAME ).getConnectURL();
+
+				expect( connectURL ).toEqual( INITIAL_STATE.connectURL );
+			} );
+
+			it( 'accepts an optional list of additional scopes to add as a query parameter', () => {
+				registry.dispatch( STORE_NAME ).receiveConnectURL( userData.connectURL );
+				const additionalScopes = [ 'http://example.com/test/scope/a', 'http://example.com/test/scope/b' ];
+				const connectURL = registry.select( STORE_NAME ).getConnectURL( { additionalScopes } );
+
+				expect( connectURL ).toMatchQueryParameters( {
+					'additional_scopes[0]': 'http://example.com/test/scope/a',
+					'additional_scopes[1]': 'http://example.com/test/scope/b',
+				} );
+			} );
+
+			it( 'accepts an optional redirectURL to add as a query parameter', () => {
+				registry.dispatch( STORE_NAME ).receiveConnectURL( userData.connectURL );
+				const redirectURL = 'http://example.com/test/redirect/';
+				const connectURL = registry.select( STORE_NAME ).getConnectURL( { redirectURL } );
+
+				expect( connectURL ).toMatchQueryParameters( {
+					redirect: redirectURL,
+				} );
+			} );
+
+			it( 'does not add query parameters when no options are passed', () => {
+				registry.dispatch( STORE_NAME ).receiveConnectURL( userData.connectURL );
+				const connectURL = registry.select( STORE_NAME ).getConnectURL();
+				expect( connectURL ).not.toContain( '&additional_scopes' );
+				expect( connectURL ).not.toContain( '&redirect' );
+			} );
+		} );
+
 		describe( 'getUser', () => {
 			it( 'uses a resolver to load user data from a global variable', async () => {
 				// Set up the global

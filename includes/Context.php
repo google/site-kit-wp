@@ -273,6 +273,10 @@ final class Context {
 	 * @return bool True if an AMP request, false otherwise.
 	 */
 	public function is_amp() {
+		if ( is_singular( 'web-story' ) ) {
+			return true;
+		}
+
 		return function_exists( 'is_amp_endpoint' ) && is_amp_endpoint();
 	}
 

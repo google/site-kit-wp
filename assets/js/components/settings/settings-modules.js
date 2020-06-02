@@ -36,6 +36,7 @@ import Layout from '../layout/layout';
 import Notification from '../notifications/notification';
 import SettingsModule from './settings-module';
 import SettingsOverlay from './settings-overlay';
+import { isPermissionScopeError } from '../../googlesitekit/datastore/user/utils/is-permission-scope-error';
 
 class SettingsModules extends Component {
 	constructor( props ) {
@@ -43,8 +44,6 @@ class SettingsModules extends Component {
 
 		this.state = {
 			error: false,
-			isEditing: {},
-			openModules: {},
 			isSaving: false,
 		};
 
@@ -66,16 +65,15 @@ class SettingsModules extends Component {
 	}
 
 	handleAccordion( module, e ) {
+		const { activeModule, moduleState } = this.props;
 		// Set focus on heading when clicked.
 		e.target.closest( '.googlesitekit-settings-module__header' ).focus();
 
-		this.setState( ( prevState ) => {
-			return {
-				openModules: {
-					[ module ]: ! prevState.openModules[ module ],
-				},
-			};
-		} );
+		// If same as activeModule, toggle closed, otherwise it is open.
+		const isOpen = module !== activeModule || ! moduleState;
+
+		this.props.setActiveModule( isOpen ? module : null );
+		this.props.setModuleState( isOpen ? 'view' : null );
 	}
 
 	/**
@@ -99,44 +97,44 @@ class SettingsModules extends Component {
 				// Clears session and local storage on every successful setting.
 				clearWebStorage();
 
-				this.setState( ( prevState ) => {
-					return {
-						isSaving: false,
-						error: false,
-						isEditing: {
-							...prevState.isEditing,
-							[ module ]: ! prevState.isEditing[ module ],
-						},
-					};
-				} );
-			} ).catch( ( err ) => {
 				this.setState( {
 					isSaving: false,
-					error: {
+					error: false,
+				} );
+
+				this.props.setModuleState( 'view' );
+			} ).catch( ( err ) => {
+				let error;
+				if ( isPermissionScopeError( err ) ) {
+					error = false;
+				} else {
+					error = {
 						errorCode: err.code,
 						errorMsg: err.message,
-					},
+					};
+				}
+				this.setState( {
+					isSaving: false,
+					error,
 				} );
 			} );
 		} else {
-			this.setState( ( prevState ) => {
-				return {
-					isEditing: {
-						...prevState.isEditing,
-						[ module ]: ! prevState.isEditing[ module ],
-					},
-					error: false, // Reset error state when switching modules.
-				};
+			this.setState( {
+				error: false, // Reset error state when switching modules.
 			} );
+			this.props.setModuleState(
+				this.props.moduleState === 'edit' ? 'view' : 'edit'
+			);
 		}
 	}
 
 	settingsModuleComponent( module, isSaving ) {
+		const { activeModule, moduleState } = this.props;
 		const modulesData = getModulesData();
+		const isCurrentModule = activeModule === module.slug;
 
 		const { provides } = modulesData[ module.slug ];
-		const { isEditing, openModules, error } = this.state;
-		const isOpen = openModules[ module.slug ] || false;
+		const { error } = this.state;
 
 		return (
 			<SettingsModule
@@ -147,18 +145,18 @@ class SettingsModules extends Component {
 				homepage={ module.homepage }
 				learnmore={ module.learnMore }
 				active={ module.active }
+				setupComplete={ module.setupComplete }
 				hasSettings={ !! module.settings && 'search-console' !== module.slug }
 				autoActivate={ module.autoActivate }
 				updateModulesList={ this.updateModulesList }
 				handleEdit={ this.handleButtonAction }
 				handleConfirm
-				isEditing={ isEditing }
-				isOpen={ isOpen }
+				isEditing={ { [ `${ activeModule }-module` ]: moduleState === 'edit' } }
+				isOpen={ isCurrentModule && moduleState }
 				handleAccordion={ this.handleAccordion }
 				handleDialog={ this.handleDialog }
 				provides={ provides }
 				isSaving={ isSaving }
-				screenID={ module.screenID }
 				error={ error }
 			/>
 		);

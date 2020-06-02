@@ -17,9 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -27,7 +32,8 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Button from '../../../components/button';
-import { STORE_NAME } from '../datastore/constants';
+import { STORE_NAME, FORM_SETUP } from '../datastore/constants';
+import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
 	AccountSelect,
 	ErrorNotice,
@@ -36,22 +42,38 @@ import {
 	PropertySelect,
 } from '../common/';
 import { trackEvent } from '../../../util';
+import { isPermissionScopeError } from '../../../googlesitekit/datastore/user/utils/is-permission-scope-error';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
 	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
 	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
+	const hasEditScope = useSelect( ( select ) => select( STORE_NAME ).hasEditScope() );
+	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ) );
 
+	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( STORE_NAME );
 	const submitForm = useCallback( async ( event ) => {
 		event.preventDefault();
 		const { error } = await submitChanges();
+		if ( isPermissionScopeError( error ) ) {
+			setValues( FORM_SETUP, { autoSubmit: true } );
+		}
 		if ( ! error ) {
+			setValues( FORM_SETUP, { autoSubmit: false } );
 			finishSetup();
 			trackEvent( 'analytics_setup', 'analytics_configured' );
 		}
 	}, [ canSubmitChanges, finishSetup ] );
+
+	// If the user lands back on this component with autoSubmit and the edit scope,
+	// resubmit the form.
+	useEffect( () => {
+		if ( autoSubmit && hasEditScope ) {
+			submitForm( { preventDefault: () => {} } );
+		}
+	}, [ hasEditScope, autoSubmit, submitForm ] );
 
 	return (
 		<form
@@ -84,3 +106,11 @@ export default function SetupForm( { finishSetup } ) {
 		</form>
 	);
 }
+
+SetupForm.propTypes = {
+	finishSetup: PropTypes.func,
+};
+
+SetupForm.defaultProps = {
+	finishSetup: () => {},
+};

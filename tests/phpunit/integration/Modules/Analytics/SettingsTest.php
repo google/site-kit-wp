@@ -202,7 +202,12 @@ class SettingsTest extends SettingsTestCase {
 
 		$adsense->register(); // AdSense is now active.
 		$adsense->get_settings()->register();
-		$adsense->get_settings()->merge( array( 'setupComplete' => true ) );
+		$adsense->get_settings()->merge(
+			array(
+				'accountSetupComplete' => true,
+				'siteSetupComplete'    => true,
+			)
+		);
 		$this->assertTrue( $adsense->is_connected() ); // AdSense is now connected.
 
 		$this->assertFalse( $settings->get()['adsenseLinked'] );

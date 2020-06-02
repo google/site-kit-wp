@@ -49,7 +49,7 @@ class AdSenseTest extends TestCase {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertContains(
-			'https://www.googleapis.com/auth/adsense',
+			'https://www.googleapis.com/auth/adsense.readonly',
 			$adsense->get_scopes()
 		);
 	}
@@ -95,10 +95,17 @@ class AdSenseTest extends TestCase {
 		$options  = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$settings = $options->get( Settings::OPTION );
 
-		$this->assertFalse( $settings['setupComplete'] );
+		$this->assertFalse( $settings['accountSetupComplete'] );
+		$this->assertFalse( $settings['siteSetupComplete'] );
 		$this->assertFalse( $adsense->is_connected() );
 
-		$options->set( Settings::OPTION, array( 'setupComplete' => true ) );
+		$options->set(
+			Settings::OPTION,
+			array(
+				'accountSetupComplete' => true,
+				'siteSetupComplete'    => true,
+			)
+		);
 		$this->assertTrue( $adsense->is_connected() );
 	}
 
@@ -127,6 +134,7 @@ class AdSenseTest extends TestCase {
 				'account-url',
 				'reports-url',
 				'notifications',
+				'tag-permission',
 				'accounts',
 				'alerts',
 				'clients',
@@ -135,6 +143,50 @@ class AdSenseTest extends TestCase {
 				'setup-complete',
 			),
 			$adsense->get_datapoints()
+		);
+	}
+
+	/**
+	 * @dataProvider data_parse_account_id
+	 */
+	public function test_parse_account_id( $client_id, $expected ) {
+		$class  = new \ReflectionClass( AdSense::class );
+		$method = $class->getMethod( 'parse_account_id' );
+		$method->setAccessible( true );
+
+		$result = $method->invokeArgs(
+			new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ),
+			array( $client_id )
+		);
+		$this->assertSame( $expected, $result );
+	}
+
+	public function data_parse_account_id() {
+		return array(
+			array(
+				'ca-pub-2358017',
+				'pub-2358017',
+			),
+			array(
+				'ca-pub-13572468',
+				'pub-13572468',
+			),
+			array(
+				'ca-xyz-13572468',
+				'',
+			),
+			array(
+				'ca-13572468',
+				'',
+			),
+			array(
+				'GTM-13572468',
+				'',
+			),
+			array(
+				'13572468',
+				'',
+			),
 		);
 	}
 
