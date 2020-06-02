@@ -33,6 +33,7 @@ import {
 import {
 	createTestRegistry,
 	subscribeUntil,
+	muteConsole,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
@@ -78,9 +79,9 @@ describe( 'modules/adsense settings', () => {
 				expect( async () => {
 					fetchMock.once(
 						/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/,
-						{ body: true, status: 200 }
+						{ body: JSON.stringify( true ), status: 200 }
 					);
-
+					muteConsole( 'error' );
 					// Ensure initial settings from server are present.
 					registry.dispatch( STORE_NAME ).receiveSettings( { useSnippet: false } );
 
@@ -122,7 +123,7 @@ describe( 'modules/adsense settings', () => {
 			it( 'sets isDoingSaveUseSnippet', () => {
 				fetchMock.once(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/,
-					{ body: true, status: 200 }
+					{ body: JSON.stringify( true ), status: 200 }
 				);
 
 				registry.dispatch( STORE_NAME ).fetchSaveUseSnippet( true );
@@ -199,7 +200,7 @@ describe( 'modules/adsense settings', () => {
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
 					{ body: wpError, status: 500 }
 				);
-
+				muteConsole( 'error' );
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
 				expect( registry.select( STORE_NAME ).getSettings() ).toEqual( validSettings );

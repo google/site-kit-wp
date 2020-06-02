@@ -37,7 +37,6 @@ import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
 
 describe( 'modules/analytics settings', () => {
-	fetchMock.config.fallbackToNetwork = true;
 	let registry;
 
 	const validSettings = {
@@ -324,6 +323,8 @@ describe( 'modules/analytics settings', () => {
 
 		describe( 'canSubmitChanges', () => {
 			it( 'requires a valid accountID', () => {
+				fetchMock.get( { query: { tagverify: '1' } }, { status: 200 } );
+
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 				registry.dispatch( STORE_NAME ).receiveTagPermission( tagWithPermission );
 
@@ -335,6 +336,8 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'requires a valid propertyID', () => {
+				fetchMock.get( { query: { tagverify: '1' } }, { status: 200 } );
+
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 				registry.dispatch( STORE_NAME ).receiveTagPermission( tagWithPermission );
 
@@ -346,6 +349,8 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'requires a valid profileID', () => {
+				fetchMock.get( { query: { tagverify: '1' } }, { status: 200 } );
+
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 				registry.dispatch( STORE_NAME ).receiveTagPermission( tagWithPermission );
 
@@ -383,6 +388,7 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'supports creating a property', () => {
+				fetchMock.get( { query: { tagverify: '1' } }, { status: 200 } );
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 				registry.dispatch( STORE_NAME ).setPropertyID( PROPERTY_CREATE );
 
@@ -390,6 +396,7 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'supports creating a profile', () => {
+				fetchMock.get( { query: { tagverify: '1' } }, { status: 200 } );
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 				registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
 

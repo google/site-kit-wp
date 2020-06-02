@@ -102,6 +102,7 @@ describe( 'createSettingsStore store', () => {
 		describe( 'fetchSettings', () => {
 			it( 'does not require any params', () => {
 				expect( () => {
+					fetchMock.get( /^\/google-site-kit\/v1\/core\/site\/data\/settings/, { body: {}, status: 200 } );
 					dispatch.fetchSettings();
 				} ).not.toThrow();
 			} );
@@ -110,6 +111,7 @@ describe( 'createSettingsStore store', () => {
 		describe( 'receiveSettings', () => {
 			it( 'requires the values param', () => {
 				expect( () => {
+					muteConsole( 'error' );
 					dispatch.receiveSettings();
 				} ).toThrow( 'values is required.' );
 			} );
@@ -133,7 +135,7 @@ describe( 'createSettingsStore store', () => {
 						/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
 						{ body: { setting1: 'serverside' }, status: 200 }
 					);
-
+					muteConsole( 'error' );
 					await dispatch.saveSettings();
 				} ).not.toThrow();
 			} );

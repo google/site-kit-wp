@@ -107,6 +107,10 @@ describe( 'modules/analytics properties', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{ body: response, status: 500 }
 				);
+				fetchMock.once(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+					{ body: {}, status: 200 }
+				);
 
 				muteConsole( 'error' );
 				registry.dispatch( STORE_NAME ).createProperty( accountID );
