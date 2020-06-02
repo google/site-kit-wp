@@ -80,14 +80,10 @@ function reduceAnalyticsRowsData( rows, selectedStats ) {
 		if ( row.metrics ) {
 			const { values } = row.metrics[ 0 ];
 			const dateString = row.dimensions[ 0 ];
-			const dateWithDashes =
-				dateString.slice( 0, 4 ) + '-' +
-				dateString.slice( 4, 6 ) + '-' +
-				dateString.slice( 6, 8 );
-			const timestampInSeconds = new Date( dateWithDashes ).getTime() / 1000;
-			const timezoneOffsetInSeconds = new Date().getTimezoneOffset() * 60;
-			const adjustedTimestampInSeconds = timestampInSeconds + timezoneOffsetInSeconds;
-			const date = new Date( adjustedTimestampInSeconds * 1000 );
+			const year = dateString.slice( 0, 4 );
+			const month = Number( dateString.slice( 4, 6 ) ) - 1;
+			const day = dateString.slice( 6, 8 );
+			const date = new Date( year, month.toString(), day );
 			dataMap.push( [
 				date,
 				values[ selectedStats ],
