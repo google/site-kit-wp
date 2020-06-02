@@ -318,9 +318,8 @@ describe( 'modules/analytics settings', () => {
 
 		describe( 'canSubmitChanges', () => {
 			it( 'requires a valid accountID', () => {
-				fetchMock.get( { query: { tagverify: '1' } }, { status: 200 } );
-
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( STORE_NAME ).receiveExistingTag( tagWithPermission.propertyID );
 				registry.dispatch( STORE_NAME ).receiveTagPermission( tagWithPermission );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
@@ -331,9 +330,8 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'requires a valid propertyID', () => {
-				fetchMock.get( { query: { tagverify: '1' } }, { status: 200 } );
-
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( STORE_NAME ).receiveExistingTag( tagWithPermission.propertyID );
 				registry.dispatch( STORE_NAME ).receiveTagPermission( tagWithPermission );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
@@ -344,9 +342,8 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'requires a valid profileID', () => {
-				fetchMock.get( { query: { tagverify: '1' } }, { status: 200 } );
-
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( STORE_NAME ).receiveExistingTag( tagWithPermission.propertyID );
 				registry.dispatch( STORE_NAME ).receiveTagPermission( tagWithPermission );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
@@ -383,7 +380,7 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'supports creating a property', () => {
-				fetchMock.get( { query: { tagverify: '1' } }, { status: 200 } );
+				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 				registry.dispatch( STORE_NAME ).setPropertyID( PROPERTY_CREATE );
 
@@ -391,7 +388,7 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'supports creating a profile', () => {
-				fetchMock.get( { query: { tagverify: '1' } }, { status: 200 } );
+				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 				registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
 
