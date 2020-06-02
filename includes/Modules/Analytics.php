@@ -804,7 +804,7 @@ final class Analytics extends Module
 					$option = $this->get_settings()->get();
 
 					if ( empty( $option['profileID'] ) ) {
-						return new WP_Error( 'profile_id_not_set', __( 'Analytics profile ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
+						return new WP_Error( 'profile_id_not_set', __( 'Analytics view ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}
 					return $option['profileID'];
 				};
