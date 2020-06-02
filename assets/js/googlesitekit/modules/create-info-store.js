@@ -57,12 +57,11 @@ export const createInfoStore = ( {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object} state Data store's state.
 		 * @param {(Object|undefined)} queryArgs Query arguments to add to admin URL.
 		 * @return {(string|undefined)} The admin screen url.
 		 */
 		getAdminScreenURL: createRegistrySelector( ( select ) => ( queryArgs ) => {
-			return select( CORE_SITE ).getAdminURL( adminPage, undefined, queryArgs );
+			return select( CORE_SITE ).getAdminURL( adminPage, queryArgs );
 		} ),
 
 		/**
@@ -70,11 +69,10 @@ export const createInfoStore = ( {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param {Object} state Data store's state.
 		 * @return {(string|undefined)} The admin reauth url.
 		 */
 		getAdminReauthURL: createRegistrySelector( ( select ) => () => {
-			const { needsReauthentication } = select( CORE_USER ).getAuthentication();
+			const { needsReauthentication } = select( CORE_USER ).getAuthentication() || {};
 
 			const noSetupQueryArgs = ! requiresSetup ? {
 				notification: 'authentication_success',
@@ -85,7 +83,7 @@ export const createInfoStore = ( {
 				return select( STORE_NAME ).getAdminScreenURL( noSetupQueryArgs );
 			}
 
-			return select( STORE_NAME ).getAdminScreenURL( { reAuth: true } );
+			return select( CORE_SITE ).getAdminScreenURL();
 		} ),
 	};
 
