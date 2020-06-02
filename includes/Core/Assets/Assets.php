@@ -516,9 +516,9 @@ final class Assets {
 			),
 			// End JSR Assets.
 			new Script(
-				'googlesitekit-ads-detect',
+				'googlesitekit-adsense-detect',
 				array(
-					'src' => $base_url . 'js/ads.js',
+					'src' => $base_url . 'js/adsense.js',
 				)
 			),
 			new Script(
