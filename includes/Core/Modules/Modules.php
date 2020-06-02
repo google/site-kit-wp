@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -599,10 +600,10 @@ final class Modules {
 								$notifications = $modules[ $slug ]->get_data( 'notifications' );
 								if ( is_wp_error( $notifications ) ) {
 									// Don't consider it an error if the module does not have a 'notifications' datapoint.
-									if ( 'invalid_datapoint' !== $notifications->get_error_code() ) {
-										return $notifications;
+									if ( Invalid_Datapoint_Exception::WP_ERROR_CODE === $notifications->get_error_code() ) {
+										$notifications = array();
 									}
-									$notifications = array();
+									return $notifications;
 								}
 							}
 							return new WP_REST_Response( $notifications );
@@ -765,7 +766,7 @@ final class Modules {
 
 		if ( in_array( 'settings', $module->get_datapoints(), true ) ) {
 			$result = $module->set_data( 'settings', $data );
-			if ( is_wp_error( $result ) && $result->get_error_code() !== 'invalid_datapoint' ) {
+			if ( is_wp_error( $result ) && $result->get_error_code() !== Invalid_Datapoint_Exception::WP_ERROR_CODE ) {
 				return $result;
 			} elseif ( ! is_wp_error( $result ) ) {
 				return true;

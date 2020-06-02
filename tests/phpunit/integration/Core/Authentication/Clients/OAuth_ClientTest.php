@@ -111,6 +111,67 @@ class OAuth_ClientTest extends TestCase {
 		update_user_option( $user_id, OAuth_Client::OPTION_AUTH_SCOPES, $granted_scopes );
 
 		$this->assertEquals( $granted_scopes, $client->get_granted_scopes() );
+
+		// Includes additional granted scopes when present.
+		update_user_option( $user_id, OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, array( 'extra-scope' ) );
+
+		$this->assertEqualSets(
+			array( 'test-scope', 'extra-scope' ),
+			$client->get_granted_scopes()
+		);
+	}
+
+	public function test_get_granted_additional_scopes() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		update_user_option( $user_id, OAuth_Client::OPTION_AUTH_SCOPES, array( 'test-scope' ) );
+		update_user_option( $user_id, OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, array( 'extra-scope' ) );
+
+		// Only returns additional scopes.
+
+		$this->assertEqualSets(
+			array( 'extra-scope' ),
+			$client->get_granted_additional_scopes()
+		);
+	}
+
+	public function test_needs_reauthentication() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		// False if user has no access token.
+		$this->assertEmpty( $client->get_access_token() );
+		$this->assertFalse( $client->needs_reauthentication() );
+
+		$client->set_access_token( 'test-access-token', 3600 );
+
+		// Needs authentication if scopes are required but not granted.
+		$this->assertNotEmpty( $client->get_required_scopes() );
+		$this->assertEmpty( get_user_option( OAuth_Client::OPTION_AUTH_SCOPES, $user_id ) );
+		$this->assertTrue( $client->needs_reauthentication() );
+
+		// Does not need authentication if all required scopes are granted.
+		update_user_option( $user_id, OAuth_Client::OPTION_AUTH_SCOPES, $client->get_required_scopes() );
+		$this->assertFalse( $client->needs_reauthentication() );
+	}
+
+	public function test_get_unsatisfied_scopes() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$required_scopes    = array( 'test-scope-1', 'test-scope-2' );
+		$granted_scopes     = array( 'test-scope-1' );
+		$unsatisfied_scopes = array_diff( $required_scopes, $granted_scopes );
+
+		update_user_option( $user_id, OAuth_Client::OPTION_AUTH_SCOPES, $granted_scopes );
+		$this->assertEqualSets( $unsatisfied_scopes, $client->get_unsatisfied_scopes( $required_scopes ) );
+
+		update_user_option( $user_id, OAuth_Client::OPTION_AUTH_SCOPES, $required_scopes );
+		$this->assertEmpty( $client->get_unsatisfied_scopes( $required_scopes ) );
 	}
 
 	public function test_set_granted_scopes() {
@@ -118,11 +179,26 @@ class OAuth_ClientTest extends TestCase {
 		wp_set_current_user( $user_id );
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
+		// Register a custom list of required scopes for this test.
+		add_filter(
+			'googlesitekit_auth_scopes',
+			function () {
+				return array( 'test-scope' );
+			}
+		);
+
 		$this->assertNotContains( 'test-scope', (array) get_user_option( OAuth_Client::OPTION_AUTH_SCOPES, $user_id ) );
 
-		$this->assertTrue( $client->set_granted_scopes( array( 'test-scope' ) ) );
+		$client->set_granted_scopes( array( 'test-scope' ) );
 
 		$this->assertContains( 'test-scope', (array) get_user_option( OAuth_Client::OPTION_AUTH_SCOPES, $user_id ) );
+		$this->assertEmpty( get_user_option( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, $user_id ) );
+
+		// It saves any additional (non-required) scopes into its respective user option.
+		$client->set_granted_scopes( array( 'test-scope', 'extra-scope' ) );
+
+		$this->assertContains( 'test-scope', (array) get_user_option( OAuth_Client::OPTION_AUTH_SCOPES, $user_id ) );
+		$this->assertContains( 'extra-scope', (array) get_user_option( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, $user_id ) );
 	}
 
 	public function test_get_access_token() {
@@ -210,6 +286,7 @@ class OAuth_ClientTest extends TestCase {
 		wp_set_current_user( $user_id );
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
+		$base_scopes        = $client->get_required_scopes();
 		$post_auth_redirect = 'http://example.com/test/redirect/url';
 		$authentication_url = $client->get_authentication_url( $post_auth_redirect );
 		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/auth?', $authentication_url );
@@ -220,6 +297,34 @@ class OAuth_ClientTest extends TestCase {
 		 */
 		$this->assertEquals( add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ), $params['redirect_uri'] );
 		$this->assertEquals( $fake_credentials['client_id'], $params['client_id'] );
+		$this->assertEqualSets(
+			explode( ' ', $params['scope'] ),
+			$base_scopes
+		);
+
+		// Does not include any saved additional scopes.
+		$saved_extra_scopes = array( 'http://example.com/saved/extra-scope' );
+		update_user_option( $user_id, OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, $saved_extra_scopes );
+		$authentication_url = $client->get_authentication_url( $post_auth_redirect );
+		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/auth?', $authentication_url );
+		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
+		$this->assertEqualSets(
+			explode( ' ', $params['scope'] ),
+			$base_scopes
+		);
+
+		// Accepts additional scopes via second parameter to include in the request.
+		$extra_scopes       = array(
+			'http://example.com/foo/bar',
+			'http://example.com/bar/baz',
+		);
+		$authentication_url = $client->get_authentication_url( $post_auth_redirect, $extra_scopes );
+		$this->assertStringStartsWith( 'https://accounts.google.com/o/oauth2/auth?', $authentication_url );
+		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
+		$this->assertEqualSets(
+			explode( ' ', $params['scope'] ),
+			array_merge( $base_scopes, $extra_scopes )
+		);
 	}
 
 	public function test_authorize_user() {
@@ -416,6 +521,7 @@ class OAuth_ClientTest extends TestCase {
 			OAuth_Client::OPTION_ACCESS_TOKEN_CREATED,
 			OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN,
 			OAuth_Client::OPTION_AUTH_SCOPES,
+			OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES,
 			OAuth_Client::OPTION_REDIRECT_URL,
 			OAuth_Client::OPTION_REFRESH_TOKEN,
 		);

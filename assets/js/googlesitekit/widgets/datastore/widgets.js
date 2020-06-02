@@ -34,7 +34,7 @@ const { commonActions, createRegistrySelector } = Data;
  * we can't store React components in our data store.
  *
  * @private
- * @since n.e.x.t
+ * @since 1.9.0
  */
 export const WidgetComponents = {};
 
@@ -54,7 +54,7 @@ export const actions = {
 	/**
 	 * Assigns an existing widget (by slug) to a widget area(s).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {string}         slug      Widget slug.
 	 * @param {(string|Array)} areaSlugs Widget Area slug(s).
@@ -73,7 +73,7 @@ export const actions = {
 	/**
 	 * Register a widget with a given slug and settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {string}          slug               Widget's slug.
 	 * @param {Object}          settings           Widget's settings.
@@ -187,7 +187,7 @@ export const selectors = {
 	 * Returns `true` if the widget area has been registered.
 	 * Returns `false` if the widget area has NOT been registered.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Widget's slug.
@@ -206,7 +206,7 @@ export const selectors = {
 	 * The widgets are returned in order of their priority, so can be rendered in
 	 * the order provided by the selector.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state          Data store's state.
 	 * @param {string} widgetAreaSlug Widget context to get areas for.
@@ -248,7 +248,7 @@ export const selectors = {
 	 * between registries. This allows us to access the appropriate registry global
 	 * from inside selectors.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.

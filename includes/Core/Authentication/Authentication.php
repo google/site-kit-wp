@@ -263,12 +263,16 @@ final class Authentication {
 		add_filter(
 			'googlesitekit_user_data',
 			function( $user ) {
-				$profile_data = $this->profile->get();
-				if ( $profile_data ) {
+				$user['connectURL'] = esc_url_raw( $this->get_connect_url() );
+
+				if ( $this->profile->has() ) {
+					$profile_data            = $this->profile->get();
 					$user['user']['email']   = $profile_data['email'];
 					$user['user']['picture'] = $profile_data['photo'];
 				}
+
 				$user['verified'] = $this->verification->has();
+
 				return $user;
 			}
 		);
@@ -540,9 +544,10 @@ final class Authentication {
 			}
 
 			// User is trying to authenticate, but access token hasn't been set.
+			$additional_scopes = $input->filter( INPUT_GET, 'additional_scopes', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 			wp_safe_redirect(
 				esc_url_raw(
-					$auth_client->get_authentication_url( $redirect_url )
+					$auth_client->get_authentication_url( $redirect_url, $additional_scopes )
 				)
 			);
 			exit();
@@ -632,7 +637,8 @@ final class Authentication {
 		$data['isAuthenticated']    = ! empty( $access_token );
 		$data['requiredScopes']     = $auth_client->get_required_scopes();
 		$data['grantedScopes']      = ! empty( $access_token ) ? $auth_client->get_granted_scopes() : array();
-		$data['needReauthenticate'] = $data['isAuthenticated'] && $this->need_reauthenticate();
+		$data['unsatisfiedScopes']  = ! empty( $access_token ) ? $auth_client->get_unsatisfied_scopes() : array();
+		$data['needReauthenticate'] = $auth_client->needs_reauthentication();
 
 		if ( $this->credentials->using_proxy() ) {
 			$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
@@ -730,9 +736,10 @@ final class Authentication {
 							$access_token = $oauth_client->get_access_token();
 
 							$data = array(
-								'authenticated'  => ! empty( $access_token ),
-								'requiredScopes' => $oauth_client->get_required_scopes(),
-								'grantedScopes'  => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
+								'authenticated'     => ! empty( $access_token ),
+								'requiredScopes'    => $oauth_client->get_required_scopes(),
+								'grantedScopes'     => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
+								'unsatisfiedScopes' => ! empty( $access_token ) ? $oauth_client->get_unsatisfied_scopes() : array(),
 							);
 
 							return new WP_REST_Response( $data );
@@ -816,7 +823,7 @@ final class Authentication {
 				},
 				'type'            => Notice::TYPE_SUCCESS,
 				'active_callback' => function() {
-					return $this->need_reauthenticate();
+					return $this->get_oauth_client()->needs_reauthentication();
 				},
 			)
 		);
@@ -895,29 +902,6 @@ final class Authentication {
 	}
 
 	/**
-	 * Checks if the current user needs to reauthenticate (e.g. because of new requested scopes).
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return bool TRUE if need reauthenticate and FALSE otherwise.
-	 */
-	private function need_reauthenticate() {
-		$auth_client = $this->get_oauth_client();
-
-		$access_token = $auth_client->get_access_token();
-		if ( empty( $access_token ) ) {
-			return false;
-		}
-
-		$granted_scopes  = $auth_client->get_granted_scopes();
-		$required_scopes = $auth_client->get_required_scopes();
-
-		$required_and_granted_scopes = array_intersect( $granted_scopes, $required_scopes );
-
-		return count( $required_and_granted_scopes ) < count( $required_scopes );
-	}
-
-	/**
 	 * Verifies the nonce for processing proxy setup.
 	 *
 	 * @since 1.1.2
@@ -974,13 +958,13 @@ final class Authentication {
 				return;
 			}
 
+			if ( ! $error_message ) {
+				$error_message = 'unknown_error';
+			}
+
 			$this->user_options->set( OAuth_Client::OPTION_ERROR_CODE, $error_message );
 			wp_safe_redirect(
-				add_query_arg(
-					'error',
-					rawurlencode( $error_message ),
-					$this->context->admin_url( 'splash' )
-				)
+				$this->context->admin_url( 'splash' )
 			);
 			exit;
 		}

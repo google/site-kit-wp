@@ -34,7 +34,12 @@ import {
 import { STORE_NAME } from './constants';
 
 describe( 'core/user authentication', () => {
-	const coreUserDataExpectedResponse = { authenticated: true, requiredScopes: [], grantedScopes: [] };
+	const coreUserDataExpectedResponse = {
+		authenticated: true,
+		requiredScopes: [],
+		grantedScopes: [],
+		unsatisfiedScopes: [],
+	};
 	const coreUserDataEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/authentication/;
 	let registry;
 	let store;
@@ -334,6 +339,73 @@ describe( 'core/user authentication', () => {
 
 				const requiredScopes = registry.select( STORE_NAME ).getRequiredScopes();
 				expect( requiredScopes ).toEqual( undefined );
+			} );
+		} );
+
+		describe( 'getUnsatisfiedScopes', () => {
+			it( 'uses a resolver get all authentication info', async () => {
+				fetchMock.once(
+					coreUserDataEndpointRegExp,
+					{
+						body: coreUserDataExpectedResponse,
+						status: 200,
+					}
+				);
+
+				const initialUnsatisfiedScopes = registry.select( STORE_NAME ).getUnsatisfiedScopes();
+				// The scopes will be their initial value until the data is resolved.
+				expect( initialUnsatisfiedScopes ).toEqual( undefined );
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getAuthentication' )
+				);
+
+				const unsatisfiedScopes = registry.select( STORE_NAME ).getUnsatisfiedScopes();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( unsatisfiedScopes ).toEqual( coreUserDataExpectedResponse.unsatisfiedScopes );
+			} );
+
+			it( 'dispatches an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetchMock.once(
+					coreUserDataEndpointRegExp,
+					{
+						body: JSON.stringify( response ),
+						status: 500,
+					}
+				);
+
+				muteConsole( 'error' );
+				registry.select( STORE_NAME ).getUnsatisfiedScopes();
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getAuthentication' )
+				);
+
+				const unsatisfiedScopes = registry.select( STORE_NAME ).getUnsatisfiedScopes();
+				const error = registry.select( STORE_NAME ).getError();
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( unsatisfiedScopes ).toEqual( undefined );
+				expect( error ).toEqual( response );
+			} );
+
+			it( 'returns undefined if authentication info is not available', async () => {
+				// Create a mock to avoid triggering a network request error.
+				// The return value is irrelevant to the test.
+				fetchMock.once(
+					coreUserDataEndpointRegExp,
+					{
+						body: {},
+						status: 200,
+					}
+				);
+				const unsatisfiedScopes = registry.select( STORE_NAME ).getUnsatisfiedScopes();
+
+				expect( unsatisfiedScopes ).toEqual( undefined );
 			} );
 		} );
 	} );

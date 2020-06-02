@@ -22,6 +22,7 @@ storiesOf( 'Global', module )
 				title={ __( 'Modal Dialog Title', 'google-site-kit' ) }
 				subtitle={ __( 'Modal Dialog Subtitle', 'google-site-kit' ) }
 				provides={ provides }
+				danger
 			/>
 		);
 	}, {
