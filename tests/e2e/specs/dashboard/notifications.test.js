@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { activatePlugin, visitAdminPage, deactivatePlugin } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
@@ -24,6 +24,10 @@ describe( 'core site notifications', () => {
 			await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 			await setSiteVerification();
 			await setSearchConsoleProperty();
+		} );
+
+		afterAll( async () => {
+			await deactivatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		} );
 
 		it( 'displays core site notifications on the main dashboard', async () => {
@@ -80,6 +84,9 @@ describe( 'core site notifications', () => {
 			await setSearchConsoleProperty();
 		} );
 
+		afterAll( async () => {
+			await deactivatePlugin( 'e2e-tests-gcp-auth-plugin' );
+		} );
 		it( 'does not display core site notifications on the main dashboard', async () => {
 			// Add the test notification (by default there are none).
 			await wpApiFetch( {
@@ -97,12 +104,6 @@ describe( 'core site notifications', () => {
 			// Ensure notification is not displayed.
 			const notificationTitles = await page.$$( '.googlesitekit-publisher-win__title' );
 			const notificationDescription = await page.$$( '.googlesitekit-publisher-win__desc' );
-
-			//console.log( typeof notificationTitles );
-			//console.log( notificationTitles[ 0 ] );
-			// const divCount = await page.$$eval( '.googlesitekit-publisher-win__title', ( titles ) => titles.length );
-			// console.log( divCount );
-			// await jestPuppeteer.debug();
 
 			expect(
 				notificationTitles.filter( ( { textContent } ) => textContent.match( /test notification title/i ) )
