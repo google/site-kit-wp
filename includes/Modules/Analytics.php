@@ -266,7 +266,7 @@ final class Analytics extends Module
 				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
 			'analytics_profile_id'  => array(
-				'label' => __( 'Analytics profile ID', 'google-site-kit' ),
+				'label' => __( 'Analytics view ID', 'google-site-kit' ),
 				'value' => $settings['profileID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['profileID'] ),
 			),
