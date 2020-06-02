@@ -15,13 +15,12 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Profile;
-use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
 use Google\Site_Kit\Core\Storage\Encrypted_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Modules\Search_Console;
+use Google\Site_Kit\Core\Util\Scopes;
 use Google\Site_Kit_Dependencies\Google_Service_PeopleService;
 use WP_HTTP_Proxy;
 
@@ -40,6 +39,7 @@ final class OAuth_Client {
 	const OPTION_REFRESH_TOKEN           = 'googlesitekit_refresh_token';
 	const OPTION_REDIRECT_URL            = 'googlesitekit_redirect_url';
 	const OPTION_AUTH_SCOPES             = 'googlesitekit_auth_scopes';
+	const OPTION_ADDITIONAL_AUTH_SCOPES  = 'googlesitekit_additional_auth_scopes';
 	const OPTION_ERROR_CODE              = 'googlesitekit_error_code';
 	const OPTION_PROXY_ACCESS_CODE       = 'googlesitekit_proxy_access_code';
 
@@ -205,7 +205,7 @@ final class OAuth_Client {
 	 * @return Google_Site_Kit_Client|Google_Site_Kit_Proxy_Client
 	 */
 	private function setup_client() {
-		if ( $this->using_proxy() ) {
+		if ( $this->credentials->using_proxy() ) {
 			$client = new Google_Site_Kit_Proxy_Client(
 				array( 'proxy_base_path' => $this->google_proxy->url() )
 			);
@@ -213,7 +213,7 @@ final class OAuth_Client {
 			$client = new Google_Site_Kit_Client();
 		}
 
-		$application_name = 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION;
+		$application_name = $this->get_application_name();
 		// The application name is included in the Google client's user-agent for requests to Google APIs.
 		$client->setApplicationName( $application_name );
 		// Override the default user-agent for the Guzzle client. This is used for oauth/token requests.
@@ -404,10 +404,86 @@ final class OAuth_Client {
 	 * @since 1.0.0
 	 * @see https://developers.google.com/identity/protocols/googlescopes
 	 *
-	 * @return array List of Google OAuth scopes.
+	 * @return string[] List of Google OAuth scopes.
 	 */
 	public function get_granted_scopes() {
-		return array_values( (array) $this->user_options->get( self::OPTION_AUTH_SCOPES ) );
+		$base_scopes  = $this->user_options->get( self::OPTION_AUTH_SCOPES ) ?: array();
+		$extra_scopes = $this->get_granted_additional_scopes();
+
+		return array_unique(
+			array_merge( $base_scopes, $extra_scopes )
+		);
+	}
+
+	/**
+	 * Gets the list of currently granted additional Google OAuth scopes for the current user.
+	 *
+	 * Scopes are considered "additional scopes" if they were granted to perform a specific action,
+	 * rather than being granted as an overall required scope.
+	 *
+	 * @since 1.9.0
+	 * @see https://developers.google.com/identity/protocols/googlescopes
+	 *
+	 * @return string[] List of Google OAuth scopes.
+	 */
+	public function get_granted_additional_scopes() {
+		return array_values( $this->user_options->get( self::OPTION_ADDITIONAL_AUTH_SCOPES ) ?: array() );
+	}
+
+	/**
+	 * Checks if new scopes are required that are not yet granted for the current user.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @return bool true if any required scopes are not satisfied, otherwise false.
+	 */
+	public function needs_reauthentication() {
+		if ( ! $this->get_access_token() ) {
+			return false;
+		}
+
+		return ! $this->has_sufficient_scopes();
+	}
+
+	/**
+	 * Gets the list of scopes which are not satisfied by the currently granted scopes.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param string[] $scopes Optional. List of scopes to test against granted scopes.
+	 *                         Default is the list of required scopes.
+	 * @return string[] Filtered $scopes list, only including scopes that are not satisfied.
+	 */
+	public function get_unsatisfied_scopes( array $scopes = null ) {
+		if ( null === $scopes ) {
+			$scopes = $this->get_required_scopes();
+		}
+
+		$granted_scopes     = $this->get_granted_scopes();
+		$unsatisfied_scopes = array_filter(
+			$scopes,
+			function( $scope ) use ( $granted_scopes ) {
+				return ! Scopes::is_satisfied_by( $scope, $granted_scopes );
+			}
+		);
+
+		return array_values( $unsatisfied_scopes );
+	}
+
+	/**
+	 * Checks whether or not currently granted scopes are sufficient for the given list.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param string[] $scopes Optional. List of scopes to test against granted scopes.
+	 *                         Default is the list of required scopes.
+	 * @return bool True if all $scopes are satisfied, false otherwise.
+	 */
+	public function has_sufficient_scopes( array $scopes = null ) {
+		if ( null === $scopes ) {
+			$scopes = $this->get_required_scopes();
+		}
+		return Scopes::are_satisfied_by( $scopes, $this->get_granted_scopes() );
 	}
 
 	/**
@@ -416,13 +492,23 @@ final class OAuth_Client {
 	 * @since 1.0.0
 	 * @see https://developers.google.com/identity/protocols/googlescopes
 	 *
-	 * @param array $scopes List of Google OAuth scopes.
-	 * @return bool True on success, false on failure.
+	 * @param string[] $scopes List of Google OAuth scopes.
 	 */
 	public function set_granted_scopes( $scopes ) {
-		$scopes = array_filter( $scopes, 'is_string' );
+		$required_scopes = $this->get_required_scopes();
+		$base_scopes     = array();
+		$extra_scopes    = array();
 
-		return $this->user_options->set( self::OPTION_AUTH_SCOPES, $scopes );
+		foreach ( $scopes as $scope ) {
+			if ( in_array( $scope, $required_scopes, true ) ) {
+				$base_scopes[] = $scope;
+			} else {
+				$extra_scopes[] = $scope;
+			}
+		}
+
+		$this->user_options->set( self::OPTION_AUTH_SCOPES, $base_scopes );
+		$this->user_options->set( self::OPTION_ADDITIONAL_AUTH_SCOPES, $extra_scopes );
 	}
 
 	/**
@@ -523,13 +609,18 @@ final class OAuth_Client {
 	 * Gets the authentication URL.
 	 *
 	 * @since 1.0.0
+	 * @since 1.9.0 Added $additional_scopes parameter.
 	 *
-	 * @param string $redirect_url Redirect URL after authentication.
+	 * @param string   $redirect_url      Redirect URL after authentication.
+	 * @param string[] $additional_scopes List of additional scopes to request.
 	 * @return string Authentication URL.
 	 */
-	public function get_authentication_url( $redirect_url = '' ) {
+	public function get_authentication_url( $redirect_url = '', $additional_scopes = array() ) {
 		if ( empty( $redirect_url ) ) {
 			$redirect_url = $this->context->admin_url( 'splash' );
+		}
+		if ( ! is_array( $additional_scopes ) ) {
+			$additional_scopes = array();
 		}
 
 		$redirect_url = add_query_arg( array( 'notification' => 'authentication_success' ), $redirect_url );
@@ -539,7 +630,8 @@ final class OAuth_Client {
 		$this->user_options->set( self::OPTION_REDIRECT_URL, $redirect_url );
 
 		// Ensure the latest required scopes are requested.
-		$this->get_client()->setScopes( $this->get_required_scopes() );
+		$scopes = array_merge( $this->get_required_scopes(), $additional_scopes );
+		$this->get_client()->setScopes( array_unique( $scopes ) );
 
 		return $this->get_client()->createAuthUrl();
 	}
@@ -621,7 +713,7 @@ final class OAuth_Client {
 
 		// TODO: In the future, once the old authentication mechanism no longer exists, this check can be removed.
 		// For now the below action should only fire for the proxy despite not clarifying that in the hook name.
-		if ( $this->using_proxy() ) {
+		if ( $this->credentials->using_proxy() ) {
 			/**
 			 * Fires when the current user has just been authorized to access Google APIs.
 			 *
@@ -687,23 +779,14 @@ final class OAuth_Client {
 	 * filter.
 	 *
 	 * @since 1.0.0
+	 * @deprecated 1.9.0
 	 *
 	 * @return bool True if proxy authentication is used, false otherwise.
 	 */
 	public function using_proxy() {
-		$credentials = $this->get_client_credentials();
+		_deprecated_function( __METHOD__, '1.9.0', Credentials::class . '::using_proxy' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		// If no credentials yet, assume true.
-		if ( ! is_object( $credentials ) || empty( $credentials->web->client_id ) ) {
-			return true;
-		}
-
-		// If proxy credentials, return true.
-		if ( false !== strpos( $credentials->web->client_id, '.apps.sitekit.withgoogle.com' ) ) {
-			return true;
-		}
-
-		return false;
+		return $this->credentials->using_proxy();
 	}
 
 	/**
@@ -746,7 +829,7 @@ final class OAuth_Client {
 			$site_fields  = array_map( 'rawurlencode', $this->google_proxy->get_site_fields() );
 			$query_params = array_merge( $query_params, $site_fields );
 		}
-
+		$query_params['application_name'] = rawurlencode( $this->get_application_name() );
 		return add_query_arg( $query_params, $this->google_proxy->url( Google_Proxy::SETUP_URI ) );
 	}
 
@@ -808,7 +891,20 @@ final class OAuth_Client {
 			$query_args['site_id'] = $credentials->web->client_id;
 		}
 
+		$query_args['application_name'] = rawurlencode( $this->get_application_name() );
+
 		return add_query_arg( $query_args, $this->google_proxy->url( Google_Proxy::PERMISSIONS_URI ) );
+	}
+
+	/**
+	 * Returns the application name: a combination of the namespace and version.
+	 *
+	 * @since 1.8.1
+	 *
+	 * @return string The application name.
+	 */
+	private function get_application_name() {
+		return 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION;
 	}
 
 	/**
@@ -884,6 +980,7 @@ final class OAuth_Client {
 		$this->user_options->delete( self::OPTION_REFRESH_TOKEN );
 		$this->user_options->delete( self::OPTION_REDIRECT_URL );
 		$this->user_options->delete( self::OPTION_AUTH_SCOPES );
+		$this->user_options->delete( self::OPTION_ADDITIONAL_AUTH_SCOPES );
 	}
 
 	/**

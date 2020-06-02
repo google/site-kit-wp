@@ -25,7 +25,7 @@ import './modules';
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { doAction, applyFilters } from '@wordpress/hooks';
+import { applyFilters } from '@wordpress/hooks';
 import { Component, render, Suspense, lazy } from '@wordpress/element';
 
 /**
@@ -35,7 +35,7 @@ import { loadTranslations } from './util';
 import ProgressBar from './components/progress-bar';
 import './components/data';
 import './components/notifications';
-import ErrorHandler from './components/ErrorHandler';
+import Root from './components/root';
 import ModuleApp from './components/module-app';
 
 class GoogleSitekitModule extends Component {
@@ -71,24 +71,22 @@ class GoogleSitekitModule extends Component {
 			const Setup = lazy( () => import( /* webpackChunkName: "chunk-googlesitekit-setup-wrapper" */'./components/setup/setup-wrapper' ) );
 
 			return (
-				<ErrorHandler>
-					<Suspense fallback={
-						<div className="googlesitekit-setup">
-							<div className="mdc-layout-grid">
-								<div className="mdc-layout-grid__inner">
-									<div className="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-12
-									">
-										<div className="googlesitekit-setup__wrapper">
-											<div className="mdc-layout-grid">
-												<div className="mdc-layout-grid__inner">
-													<div className="
-														mdc-layout-grid__cell
-														mdc-layout-grid__cell--span-12
-													">
-														<ProgressBar />
-													</div>
+				<Suspense fallback={
+					<div className="googlesitekit-setup">
+						<div className="mdc-layout-grid">
+							<div className="mdc-layout-grid__inner">
+								<div className="
+									mdc-layout-grid__cell
+									mdc-layout-grid__cell--span-12
+								">
+									<div className="googlesitekit-setup__wrapper">
+										<div className="mdc-layout-grid">
+											<div className="mdc-layout-grid__inner">
+												<div className="
+													mdc-layout-grid__cell
+													mdc-layout-grid__cell--span-12
+												">
+													<ProgressBar />
 												</div>
 											</div>
 										</div>
@@ -96,18 +94,14 @@ class GoogleSitekitModule extends Component {
 								</div>
 							</div>
 						</div>
-					}>
-						<Setup />
-					</Suspense>
-				</ErrorHandler>
+					</div>
+				}>
+					<Setup />
+				</Suspense>
 			);
 		}
 
-		return (
-			<ErrorHandler>
-				<ModuleApp />
-			</ErrorHandler>
-		);
+		return <ModuleApp />;
 	}
 }
 
@@ -118,12 +112,12 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <GoogleSitekitModule />, renderTarget );
-
-		/**
-		 * Action triggered when the dashboard App is loaded.
-		 */
-		doAction( 'googlesitekit.moduleLoaded', 'Single', global.googlesitekitCurrentModule );
+		render(
+			<Root dataAPIContext="Single" dataAPIModuleArgs={ global.googlesitekitCurrentModule } >
+				<GoogleSitekitModule />
+			</Root>,
+			renderTarget
+		);
 	}
 } );
 

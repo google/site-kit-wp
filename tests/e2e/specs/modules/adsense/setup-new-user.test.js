@@ -26,15 +26,23 @@ async function proceedToAdsenseSetup() {
 		expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up adsense/i } ),
 		page.waitForSelector( '.googlesitekit-setup-module--adsense' ),
 		page.waitForResponse( ( res ) => res.url().match( 'modules/adsense/data/accounts' ) ),
-		page.waitForResponse( ( res ) => res.url().match( 'modules/adsense/data/account-status' ) ),
+		page.waitForRequest( ( req ) => req.url().match( 'modules/adsense/data/settings' ) && 'POST' === req.method() ),
 	] );
 }
 
-const defaultHandler = ( request ) => request.continue();
+// Return empty array as a sane default, to avoid real requests.
+const defaultHandler = ( request ) => {
+	request.respond( {
+		status: 200,
+		body: JSON.stringify( [] ),
+	} );
+};
+
 const datapointHandlers = {
 	accounts: defaultHandler,
-	alerts: defaultHandler,
 	clients: defaultHandler,
+	alerts: defaultHandler,
+	urlchannels: defaultHandler,
 };
 
 const ADSENSE_ACCOUNT = {
@@ -45,21 +53,31 @@ const ADSENSE_ACCOUNT = {
 	timezone: 'America/Chicago',
 };
 
+const ADSENSE_CLIENT = {
+	arcOptIn: false,
+	id: `ca-${ ADSENSE_ACCOUNT.id }`,
+	kind: 'adsense#adClient',
+	productCode: 'AFC',
+	supportsReporting: true,
+};
+
 describe( 'setting up the AdSense module', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
 			if ( request.url().match( 'modules/adsense/data/accounts' ) ) {
 				datapointHandlers.accounts( request );
-			} else if ( request.url().match( 'modules/adsense/data/alerts' ) ) {
-				datapointHandlers.alerts( request );
 			} else if ( request.url().match( 'modules/adsense/data/clients' ) ) {
 				datapointHandlers.clients( request );
+			} else if ( request.url().match( 'modules/adsense/data/alerts' ) ) {
+				datapointHandlers.alerts( request );
+			} else if ( request.url().match( 'modules/adsense/data/urlchannels' ) ) {
+				datapointHandlers.urlchannels( request );
 			} else if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
 				request.respond( {
 					status: 302,
 					headers: {
-						location: createURL( '/', [
+						location: createURL( '/wp-admin/index.php', [
 							'oauth2callback=1',
 							'code=valid-test-code',
 							'e2e-site-verification=1',
@@ -95,7 +113,7 @@ describe( 'setting up the AdSense module', () => {
 		await resetSiteKit();
 	} );
 
-	it( 'displays “Let’s get your site ready for ads” when account is graylisted', async () => {
+	it( 'displays “Your account is getting ready” when account is graylisted', async () => {
 		datapointHandlers.accounts = ( request ) => {
 			request.respond( {
 				status: 200,
@@ -140,13 +158,13 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Let’s get your site ready for ads/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Your account is getting ready/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status or to complete setting up/i } );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
 	} );
 
-	it( 'displays “Let’s get your site ready for ads” when the Adsense account is missing the address or phone not verified', async () => {
+	it( 'displays “Your account is getting ready” when the Adsense account is pending review', async () => {
 		datapointHandlers.accounts = ( request ) => {
 			request.respond( {
 				status: 200,
@@ -157,24 +175,13 @@ describe( 'setting up the AdSense module', () => {
 		};
 		datapointHandlers.alerts = ( request ) => {
 			request.respond( {
-				status: 500,
+				status: 403,
 				body: JSON.stringify( {
 					code: 403,
-					message: {
-						error: {
-							errors: [
-								{
-									domain: 'global',
-									reason: 'accountPendingReview',
-									message: 'Users account is pending review.',
-								},
-							],
-							code: 403,
-							message: 'Users account is pending review.',
-						},
-					},
+					message: 'Users account is pending review.',
 					data: {
-						status: 500,
+						status: 403,
+						reason: 'accountPendingReview',
 					},
 				} ),
 			} );
@@ -183,13 +190,7 @@ describe( 'setting up the AdSense module', () => {
 			request.respond( {
 				status: 200,
 				body: JSON.stringify( [
-					{
-						arcOptIn: false,
-						id: `ca-${ ADSENSE_ACCOUNT.id }`,
-						kind: 'adsense#adClient',
-						productCode: 'AFC',
-						supportsReporting: true,
-					},
+					ADSENSE_CLIENT,
 				] ),
 			} );
 		};
@@ -198,7 +199,7 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Let’s get your site ready for ads/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Your account is getting ready/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status or to complete setting up/i } );
 
 		await expect( '/' ).toHaveAdSenseTag();
@@ -207,24 +208,13 @@ describe( 'setting up the AdSense module', () => {
 	it( 'displays “Your site isn’t ready to show ads yet” when the users account is disapproved', async () => {
 		datapointHandlers.accounts = ( request ) => {
 			request.respond( {
-				status: 200,
+				status: 403,
 				body: JSON.stringify( {
 					code: 403,
-					message: {
-						error: {
-							errors: [
-								{
-									domain: 'global',
-									reason: 'disapprovedAccount',
-									message: 'Users account has been disapproved.',
-								},
-							],
-							code: 403,
-							message: 'Users account has been disapproved.',
-						},
-					},
+					message: 'Users account has been disapproved.',
 					data: {
-						status: 500,
+						status: 403,
+						reason: 'disapprovedAccount',
 					},
 				} ),
 			} );
@@ -243,24 +233,13 @@ describe( 'setting up the AdSense module', () => {
 	it( 'displays “Create your AdSense account” when the user does not have an AdSense account', async () => {
 		datapointHandlers.accounts = ( request ) => {
 			request.respond( {
-				status: 200,
+				status: 403,
 				body: JSON.stringify( {
 					code: 403,
-					message: {
-						error: {
-							errors: [
-								{
-									domain: 'global',
-									reason: 'noAdSenseAccount',
-									message: 'User does not have an AdSense account.',
-								},
-							],
-							code: 403,
-							message: 'User does not have an AdSense account.',
-						},
-					},
+					message: 'User does not have an AdSense account.',
 					data: {
-						status: 500,
+						status: 403,
+						reason: 'noAdSenseAccount',
 					},
 				} ),
 			} );
@@ -271,10 +250,7 @@ describe( 'setting up the AdSense module', () => {
 		await proceedToAdsenseSetup();
 
 		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Create your AdSense account/i } );
-
-		await page.waitForSelector( '.googlesitekit-cta-link' );
-
-		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Create AdSense Account/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module__action', { text: /Create AdSense Account/i } );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
 	} );

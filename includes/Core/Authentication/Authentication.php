@@ -263,14 +263,16 @@ final class Authentication {
 		add_filter(
 			'googlesitekit_user_data',
 			function( $user ) {
-				$profile_data = $this->profile->get();
-				if ( $profile_data ) {
-					if ( $profile_data ) {
-						$user['user']['email']   = $profile_data['email'];
-						$user['user']['picture'] = $profile_data['photo'];
-					}
+				$user['connectURL'] = esc_url_raw( $this->get_connect_url() );
+
+				if ( $this->profile->has() ) {
+					$profile_data            = $this->profile->get();
+					$user['user']['email']   = $profile_data['email'];
+					$user['user']['picture'] = $profile_data['photo'];
 				}
+
 				$user['verified'] = $this->verification->has();
+
 				return $user;
 			}
 		);
@@ -284,7 +286,7 @@ final class Authentication {
 				// This method should run no more than once per request.
 				$this->did_sync_fields = true;
 
-				if ( $this->get_oauth_client()->using_proxy() ) {
+				if ( $this->credentials->using_proxy() ) {
 					$this->google_proxy->sync_site_fields( $this->credentials() );
 				}
 			};
@@ -391,10 +393,7 @@ final class Authentication {
 
 		// Delete all user data.
 		$user_id = $this->user_options->get_user_id();
-		$prefix  = 'googlesitekit\_%';
-		if ( ! $this->context->is_network_mode() ) {
-			$prefix = $wpdb->get_blog_prefix() . $prefix;
-		}
+		$prefix  = $this->user_options->get_meta_key( 'googlesitekit\_%' );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		$wpdb->query(
@@ -495,6 +494,10 @@ final class Authentication {
 
 		// Handles Direct OAuth client request.
 		if ( $input->filter( INPUT_GET, 'oauth2callback' ) ) {
+			if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
+				wp_die( esc_html__( 'You don\'t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
+			}
+
 			$auth_client->authorize_user();
 		}
 
@@ -509,7 +512,7 @@ final class Authentication {
 			}
 
 			if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
-				wp_die( esc_html__( 'You don\'t have permissions to perform this action.', 'google-site-kit' ), 403 );
+				wp_die( esc_html__( 'You don\'t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
 			}
 
 			$this->disconnect();
@@ -532,7 +535,7 @@ final class Authentication {
 			}
 
 			if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
-				wp_die( esc_html__( 'You don\'t have permissions to perform this action.', 'google-site-kit' ), 403 );
+				wp_die( esc_html__( 'You don\'t have permissions to authenticate with Site Kit.', 'google-site-kit' ), 403 );
 			}
 
 			$redirect_url = $input->filter( INPUT_GET, 'redirect', FILTER_VALIDATE_URL );
@@ -541,9 +544,10 @@ final class Authentication {
 			}
 
 			// User is trying to authenticate, but access token hasn't been set.
+			$additional_scopes = $input->filter( INPUT_GET, 'additional_scopes', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY );
 			wp_safe_redirect(
 				esc_url_raw(
-					$auth_client->get_authentication_url( $redirect_url )
+					$auth_client->get_authentication_url( $redirect_url, $additional_scopes )
 				)
 			);
 			exit();
@@ -570,10 +574,11 @@ final class Authentication {
 		$data['splashURL']    = esc_url_raw( $this->context->admin_url( 'splash' ) );
 
 		$auth_client = $this->get_oauth_client();
-		if ( $auth_client->using_proxy() ) {
+		if ( $this->credentials->using_proxy() ) {
 			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 			$data['proxySetupURL']       = esc_url_raw( $auth_client->get_proxy_setup_url( $access_code ) );
 			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
+			$data['usingProxy']          = true;
 		}
 
 		return $data;
@@ -602,7 +607,7 @@ final class Authentication {
 		}
 
 		$auth_client = $this->get_oauth_client();
-		if ( $auth_client->using_proxy() ) {
+		if ( $this->credentials->using_proxy() ) {
 			$access_code                 = (string) $this->user_options->get( Clients\OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 			$data['proxySetupURL']       = esc_url_raw( $auth_client->get_proxy_setup_url( $access_code ) );
 			$data['proxyPermissionsURL'] = esc_url_raw( $auth_client->get_proxy_permissions_url() );
@@ -632,9 +637,10 @@ final class Authentication {
 		$data['isAuthenticated']    = ! empty( $access_token );
 		$data['requiredScopes']     = $auth_client->get_required_scopes();
 		$data['grantedScopes']      = ! empty( $access_token ) ? $auth_client->get_granted_scopes() : array();
-		$data['needReauthenticate'] = $data['isAuthenticated'] && $this->need_reauthenticate();
+		$data['unsatisfiedScopes']  = ! empty( $access_token ) ? $auth_client->get_unsatisfied_scopes() : array();
+		$data['needReauthenticate'] = $auth_client->needs_reauthentication();
 
-		if ( $auth_client->using_proxy() ) {
+		if ( $this->credentials->using_proxy() ) {
 			$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
 			if ( ! empty( $error_code ) ) {
 				$data['errorMessage'] = $auth_client->get_error_message( $error_code );
@@ -730,9 +736,10 @@ final class Authentication {
 							$access_token = $oauth_client->get_access_token();
 
 							$data = array(
-								'authenticated'  => ! empty( $access_token ),
-								'requiredScopes' => $oauth_client->get_required_scopes(),
-								'grantedScopes'  => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
+								'authenticated'     => ! empty( $access_token ),
+								'requiredScopes'    => $oauth_client->get_required_scopes(),
+								'grantedScopes'     => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
+								'unsatisfiedScopes' => ! empty( $access_token ) ? $oauth_client->get_unsatisfied_scopes() : array(),
 							);
 
 							return new WP_REST_Response( $data );
@@ -816,7 +823,7 @@ final class Authentication {
 				},
 				'type'            => Notice::TYPE_SUCCESS,
 				'active_callback' => function() {
-					return $this->need_reauthenticate();
+					return $this->get_oauth_client()->needs_reauthentication();
 				},
 			)
 		);
@@ -850,7 +857,7 @@ final class Authentication {
 					}
 
 					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
-					if ( $auth_client->using_proxy() && $access_code ) {
+					if ( $this->credentials->using_proxy() && $access_code ) {
 						$message = sprintf(
 							/* translators: 1: error code from API, 2: URL to re-authenticate */
 							__( 'Setup Error (code: %1$s). <a href="%2$s">Re-authenticate with Google</a>', 'google-site-kit' ),
@@ -895,29 +902,6 @@ final class Authentication {
 	}
 
 	/**
-	 * Checks if the current user needs to reauthenticate (e.g. because of new requested scopes).
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return bool TRUE if need reauthenticate and FALSE otherwise.
-	 */
-	private function need_reauthenticate() {
-		$auth_client = $this->get_oauth_client();
-
-		$access_token = $auth_client->get_access_token();
-		if ( empty( $access_token ) ) {
-			return false;
-		}
-
-		$granted_scopes  = $auth_client->get_granted_scopes();
-		$required_scopes = $auth_client->get_required_scopes();
-
-		$required_and_granted_scopes = array_intersect( $granted_scopes, $required_scopes );
-
-		return count( $required_and_granted_scopes ) < count( $required_scopes );
-	}
-
-	/**
 	 * Verifies the nonce for processing proxy setup.
 	 *
 	 * @since 1.1.2
@@ -945,6 +929,10 @@ final class Authentication {
 			return;
 		}
 
+		if ( ! current_user_can( Permissions::SETUP ) ) {
+			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
+		}
+
 		try {
 			$data = $this->google_proxy->exchange_site_code( $site_code, $code );
 
@@ -970,13 +958,13 @@ final class Authentication {
 				return;
 			}
 
+			if ( ! $error_message ) {
+				$error_message = 'unknown_error';
+			}
+
 			$this->user_options->set( OAuth_Client::OPTION_ERROR_CODE, $error_message );
 			wp_safe_redirect(
-				add_query_arg(
-					'error',
-					rawurlencode( $error_message ),
-					$this->context->admin_url( 'splash' )
-				)
+				$this->context->admin_url( 'splash' )
 			);
 			exit;
 		}

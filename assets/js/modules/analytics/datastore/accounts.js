@@ -22,19 +22,32 @@
 import invariant from 'invariant';
 
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { isValidAccountSelection } from '../util';
-import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE } from './constants';
+import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from './constants';
+import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { actions as tagActions } from './tags';
+const { createRegistrySelector, createRegistryControl } = Data;
 
 // Actions
 const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
 const START_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'START_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
 const FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
 const CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
+const FETCH_CREATE_ACCOUNT = 'FETCH_CREATE_ACCOUNT';
+const RECEIVE_CREATE_ACCOUNT = 'RECEIVE_CREATE_ACCOUNT';
+const START_FETCH_CREATE_ACCOUNT = 'START_FETCH_CREATE_ACCOUNT';
+const FINISH_FETCH_CREATE_ACCOUNT = 'FINISH_FETCH_CREATE_ACCOUNT';
+const CATCH_FETCH_CREATE_ACCOUNT = 'CATCH_FETCH_CREATE_ACCOUNT';
 
 const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
@@ -42,6 +55,8 @@ const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 export const INITIAL_STATE = {
 	accounts: undefined,
 	isFetchingAccountsPropertiesProfiles: false,
+	isFetchingCreateAccount: false,
+	accountTicketID: undefined,
 };
 
 export const actions = {
@@ -114,11 +129,14 @@ export const actions = {
 	},
 
 	*resetAccounts() {
-		const registry = yield Data.commonActions.getRegistry();
+		const { dispatch } = yield Data.commonActions.getRegistry();
 
-		yield { type: RESET_ACCOUNTS };
+		yield {
+			payload: {},
+			type: RESET_ACCOUNTS,
+		};
 
-		return registry.stores[ STORE_NAME ].getActions()
+		return dispatch( STORE_NAME )
 			.invalidateResolutionForStoreSelector( 'getAccounts' );
 	},
 
@@ -143,6 +161,52 @@ export const actions = {
 		const property = properties[ 0 ] || { id: PROPERTY_CREATE };
 		registry.dispatch( STORE_NAME ).selectProperty( property.id );
 	},
+
+	/**
+	 * Creates a new Analytics account.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @return {Object} Result object with response and error keys.
+	 */
+	*createAccount() {
+		let response, error;
+
+		yield {
+			payload: {},
+			type: START_FETCH_CREATE_ACCOUNT,
+		};
+
+		try {
+			response = yield {
+				payload: {},
+				type: FETCH_CREATE_ACCOUNT,
+			};
+
+			yield actions.receiveCreateAccount( response );
+
+			yield {
+				payload: {},
+				type: FINISH_FETCH_CREATE_ACCOUNT,
+			};
+		} catch ( e ) {
+			error = e;
+			yield {
+				payload: { error },
+				type: CATCH_FETCH_CREATE_ACCOUNT,
+			};
+		}
+		return { response, error };
+	},
+
+	receiveCreateAccount( accountTicket ) {
+		invariant( accountTicket, 'accountTicket is required.' );
+
+		return {
+			payload: { accountTicket },
+			type: RECEIVE_CREATE_ACCOUNT,
+		};
+	},
 };
 
 export const controls = {
@@ -151,6 +215,16 @@ export const controls = {
 			useCache: false,
 		} );
 	},
+	[ FETCH_CREATE_ACCOUNT ]: createRegistryControl( ( { select } ) => () => {
+		const { getValue } = select( CORE_FORMS );
+
+		return API.set( 'modules', 'analytics', 'create-account-ticket', {
+			accountName: getValue( FORM_ACCOUNT_CREATE, 'accountName' ),
+			propertyName: getValue( FORM_ACCOUNT_CREATE, 'propertyName' ),
+			profileName: getValue( FORM_ACCOUNT_CREATE, 'profileName' ),
+			timezone: getValue( FORM_ACCOUNT_CREATE, 'timezone' ),
+		} );
+	} ),
 };
 
 export const reducer = ( state, { type, payload } ) => {
@@ -191,7 +265,7 @@ export const reducer = ( state, { type, payload } ) => {
 		case RESET_ACCOUNTS: {
 			return {
 				...state,
-				accounts: undefined,
+				accounts: INITIAL_STATE.accounts,
 				settings: {
 					...state.settings,
 					accountID: undefined,
@@ -199,6 +273,35 @@ export const reducer = ( state, { type, payload } ) => {
 					internalWebPropertyID: undefined,
 					profileID: undefined,
 				},
+			};
+		}
+
+		case FINISH_FETCH_CREATE_ACCOUNT:
+			return {
+				...state,
+				isFetchingCreateAccount: false,
+			};
+
+		case CATCH_FETCH_CREATE_ACCOUNT:
+			const { error } = payload;
+			return {
+				...state,
+				error,
+				isFetchingCreateAccount: false,
+			};
+
+		case START_FETCH_CREATE_ACCOUNT: {
+			return {
+				...state,
+				isFetchingCreateAccount: true,
+			};
+		}
+
+		case RECEIVE_CREATE_ACCOUNT: {
+			const { accountTicket: { id } } = payload;
+			return {
+				...state,
+				accountTicketID: id,
 			};
 		}
 
@@ -295,6 +398,69 @@ export const selectors = {
 	isDoingGetAccounts( state ) {
 		return !! state.isFetchingAccountsPropertiesProfiles;
 	},
+
+	/**
+	 * Indicates whether account creation is currently in progress.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} True if an account is being created, false otherwise.
+	 */
+	isDoingCreateAccount( state ) {
+		return !! state.isFetchingCreateAccount;
+	},
+
+	/**
+	 * Get the terms of service URL.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The terms of service URL.
+	 */
+	getAccountTicketTermsOfServiceURL: createRegistrySelector( ( select ) => ( state ) => {
+		const { accountTicketID } = state;
+		const email = select( CORE_USER ).getEmail();
+
+		if ( undefined === accountTicketID || ! email ) {
+			return undefined;
+		}
+
+		return addQueryArgs(
+			'https://analytics.google.com/analytics/web/',
+			{
+				authuser: email,
+				provisioningSignup: 'false',
+			}
+		) + `#management/TermsOfService/?api.accountTicketId=${ accountTicketID }`;
+	} ),
+
+	/**
+	 * Whether or not the account create form is valid to submit.
+	 *
+	 * @since 1.9.0
+	 * @private
+	 *
+	 * @return {boolean} True if valid, otherwise false.
+	 */
+	canSubmitAccountCreate: createRegistrySelector( ( select ) => () => {
+		const { getValue } = select( CORE_FORMS );
+
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'accountName' ) ) {
+			return false;
+		}
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'propertyName' ) ) {
+			return false;
+		}
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'profileName' ) ) {
+			return false;
+		}
+		if ( ! getValue( FORM_ACCOUNT_CREATE, 'timezone' ) ) {
+			return false;
+		}
+		return true;
+	} ),
 };
 
 export default {

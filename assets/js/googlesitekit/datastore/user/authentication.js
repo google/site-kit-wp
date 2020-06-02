@@ -76,7 +76,7 @@ export const actions = {
 	/**
 	 * Stores connection info received from the REST API.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @param {Object} authentication Authentication info from the API.
@@ -95,7 +95,9 @@ export const actions = {
 
 export const controls = {
 	[ FETCH_AUTHENTICATION ]: () => {
-		return API.get( 'core', 'user', 'authentication' );
+		return API.get( 'core', 'user', 'authentication', undefined, {
+			useCache: false,
+		} );
 	},
 };
 
@@ -165,7 +167,7 @@ export const selectors = {
 	 * ```
 	 *
 	 * @private
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} User authentication info.
@@ -180,7 +182,7 @@ export const selectors = {
 	 * Returns `true` if the user is authenticated, `false` if
 	 * not. Returns `undefined` if the authentication info is not available/loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} User authentication status.
@@ -196,7 +198,7 @@ export const selectors = {
 	 * Returns an array of granted scopes or undefined
 	 * if authentication info is not available/loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} Array of granted scopes
@@ -212,7 +214,7 @@ export const selectors = {
 	 * Returns an array of required scopes or undefined
 	 * if authentication info is not available/loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} Array of required scopes
@@ -220,6 +222,22 @@ export const selectors = {
 	getRequiredScopes: createRegistrySelector( ( select ) => () => {
 		const { requiredScopes } = select( STORE_NAME ).getAuthentication() || {};
 		return requiredScopes;
+	} ),
+
+	/**
+	 * Gets the unsatisfied scopes for the user.
+	 *
+	 * Returns an array of unsatisfied scopes (required but not granted)
+	 * or undefined if authentication info is not available/loaded.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array|undefined)} Array of scopes
+	 */
+	getUnsatisfiedScopes: createRegistrySelector( ( select ) => () => {
+		const { unsatisfiedScopes } = select( STORE_NAME ).getAuthentication() || {};
+		return unsatisfiedScopes;
 	} ),
 };
 

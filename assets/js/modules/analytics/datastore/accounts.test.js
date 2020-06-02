@@ -25,7 +25,9 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { STORE_NAME, FORM_ACCOUNT_CREATE } from './constants';
+import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
 	createTestRegistry,
 	muteConsole,
@@ -61,6 +63,74 @@ describe( 'modules/analytics accounts', () => {
 	} );
 
 	describe( 'actions', () => {
+		describe( 'createAccount', () => {
+			const accountName = fixtures.createAccount.account.name;
+			const propertyName = fixtures.createAccount.webproperty.name;
+			const profileName = fixtures.createAccount.profile.name;
+			const timezone = fixtures.createAccount.profile.timezone;
+
+			it( 'creates an account ticket and sets the account ticket ID', async () => {
+				fetch
+					.doMockIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/
+					)
+					.mockResponse(
+						JSON.stringify( fixtures.createAccount ),
+						{ status: 200 }
+					);
+
+				registry.dispatch( CORE_FORMS ).setValues( FORM_ACCOUNT_CREATE, { accountName, propertyName, profileName, timezone } );
+
+				// Silence expected API errors.
+				muteConsole( 'error' ); // Request will log an error.
+				await registry.dispatch( STORE_NAME ).createAccount();
+
+				// Ensure the proper body parameters were sent.
+				expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toMatchObject(
+					{ accountName, propertyName, profileName, timezone }
+				);
+
+				expect( store.getState().accountTicketID ).toEqual( fixtures.createAccount.id );
+			} );
+
+			it( 'sets isDoingCreateAccount ', async () => {
+				fetch
+					.doMockIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/
+					)
+					.mockResponse(
+						JSON.stringify( fixtures.createAccount ),
+						{ status: 200 }
+					);
+
+				registry.dispatch( STORE_NAME ).createAccount();
+				expect( registry.select( STORE_NAME ).isDoingCreateAccount() ).toEqual( true );
+			} );
+
+			it( 'dispatches an error if the request fails ', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetch
+					.doMockIf(
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/
+					)
+					.mockResponse(
+						JSON.stringify( response ),
+						{ status: 500 }
+					);
+
+				registry.dispatch( CORE_FORMS ).setValues( FORM_ACCOUNT_CREATE, { accountName, propertyName, profileName, timezone } );
+				muteConsole( 'error' ); // Request will log an error.
+				await registry.dispatch( STORE_NAME ).createAccount();
+
+				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( response );
+			} );
+		} );
+
 		describe( 'resetAccounts', () => {
 			it( 'sets accounts and related values back to their initial values', () => {
 				registry.dispatch( STORE_NAME ).setSettings( {
@@ -297,6 +367,34 @@ describe( 'modules/analytics accounts', () => {
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( matchedProperty.id );
 				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( matchedProperty.internalWebPropertyId );
 				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( matchedProperty.defaultProfileId );
+			} );
+		} );
+
+		describe( 'getAccountTicketTermsOfServiceURL', () => {
+			it( 'requires the accountTicketID from createAccount', () => {
+				registry.dispatch( CORE_USER ).receiveUserInfo( { email: 'test@gmail.com' } );
+
+				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toEqual( undefined );
+
+				registry.dispatch( STORE_NAME ).receiveCreateAccount( { id: 'test-account-ticket-id' } );
+
+				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toContain( 'api.accountTicketId=test-account-ticket-id' );
+			} );
+
+			it( 'requires the user’s email', () => {
+				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toEqual( undefined );
+
+				registry.dispatch( STORE_NAME ).receiveCreateAccount( { id: 'test-account-ticket-id' } );
+
+				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toEqual( undefined );
+
+				registry.dispatch( CORE_USER ).receiveUserInfo( { email: 'test@gmail.com' } );
+
+				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toMatchQueryParameters( {
+					authuser: 'test@gmail.com',
+					provisioningSignup: 'false',
+				} );
+				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toContain( 'api.accountTicketId=test-account-ticket-id' );
 			} );
 		} );
 	} );

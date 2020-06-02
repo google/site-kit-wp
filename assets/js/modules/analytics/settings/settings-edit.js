@@ -27,11 +27,13 @@ import { addFilter, removeFilter } from '@wordpress/hooks';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME, ACCOUNT_CREATE } from '../datastore/constants';
+import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import SettingsForm from './settings-form';
 import ProgressBar from '../../../components/progress-bar';
 import {
 	AccountCreate,
 	ExistingTagError,
+	AccountCreateLegacy,
 } from '../common';
 import { parsePropertyID } from '../util';
 const { useSelect, useDispatch } = Data;
@@ -45,7 +47,9 @@ export default function SettingsEdit() {
 	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
 	const isDoingGetAccounts = useSelect( ( select ) => select( STORE_NAME ).isDoingGetAccounts() );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
+	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
 
 	// Set the accountID and property if there is an existing tag.
 	// This only applies to the edit view, so we apply it here rather than in the datastore.
@@ -93,12 +97,14 @@ export default function SettingsEdit() {
 	}, [] );
 
 	let viewComponent;
-	if ( isDoingGetAccounts || isDoingSubmitChanges ) {
+	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
+	// when the component initially loads and has yet to start fetching accounts.
+	if ( isDoingGetAccounts || isDoingSubmitChanges || ! hasResolvedAccounts ) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && existingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
 	} else if ( ! accounts.length || isCreateAccount ) {
-		viewComponent = <AccountCreate />;
+		viewComponent = usingProxy ? <AccountCreate /> : <AccountCreateLegacy />;
 	} else {
 		viewComponent = <SettingsForm />;
 	}

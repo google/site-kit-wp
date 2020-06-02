@@ -344,6 +344,10 @@ final class Assets {
 			'googlesitekit-vendor',
 			'googlesitekit-commons',
 			'googlesitekit-base',
+			'googlesitekit-data',
+			'googlesitekit-datastore-forms',
+			'googlesitekit-datastore-site',
+			'googlesitekit-datastore-user',
 		);
 
 		// Register plugin scripts.
@@ -482,12 +486,30 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-datastore-forms',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-datastore-forms.js',
+					'dependencies' => array(
+						'googlesitekit-data',
+					),
+				)
+			),
+			new Script(
 				'googlesitekit-modules',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-modules.js',
 					'dependencies' => array(
 						'googlesitekit-vendor',
 						'googlesitekit-api',
+						'googlesitekit-data',
+					),
+				)
+			),
+			new Script(
+				'googlesitekit-widgets',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-widgets.js',
+					'dependencies' => array(
 						'googlesitekit-data',
 					),
 				)
@@ -622,6 +644,8 @@ final class Assets {
 			'blogPrefix'       => $wpdb->get_blog_prefix(),
 			'ampMode'          => $this->context->get_amp_mode(),
 			'isNetworkMode'    => $this->context->is_network_mode(),
+			'timezone'         => get_option( 'timezone_string' ),
+			'siteName'         => get_bloginfo( 'name' ),
 		);
 
 		/**
@@ -657,8 +681,8 @@ final class Assets {
 	/**
 	 * Gets the inline data specific to the current user
 	 *
-	 * @since n.e.x.t
-	 * 
+	 * @since 1.9.0
+	 *
 	 * @return array The user inline data to be output.
 	 */
 	private function get_inline_user_data() {
@@ -678,7 +702,7 @@ final class Assets {
 		 *
 		 * This should not include anything remotely expensive to compute.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.9.0
 		 *
 		 * @param array $data User data.
 		 */

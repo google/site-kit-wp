@@ -122,9 +122,21 @@ final class Context {
 	 * @return string Full admin screen URL.
 	 */
 	public function admin_url( $slug = 'dashboard', array $query_args = array() ) {
-		$query_args['page'] = Core\Admin\Screens::PREFIX . $slug;
+		unset( $query_args['page'] );
 
-		return add_query_arg( $query_args, self_admin_url( 'admin.php' ) );
+		if ( $this->is_network_mode() ) {
+			$base_url = network_admin_url( 'admin.php' );
+		} else {
+			$base_url = admin_url( 'admin.php' );
+		}
+
+		return add_query_arg(
+			array_merge(
+				array( 'page' => Core\Admin\Screens::PREFIX . $slug ),
+				$query_args
+			),
+			$base_url
+		);
 	}
 
 	/**
@@ -261,6 +273,10 @@ final class Context {
 	 * @return bool True if an AMP request, false otherwise.
 	 */
 	public function is_amp() {
+		if ( is_singular( 'web-story' ) ) {
+			return true;
+		}
+
 		return function_exists( 'is_amp_endpoint' ) && is_amp_endpoint();
 	}
 

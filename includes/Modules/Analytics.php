@@ -22,12 +22,18 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Modules\Analytics\Google_Service_AnalyticsProvisioning;
 use Google\Site_Kit\Modules\Analytics\Settings;
+use Google\Site_Kit\Modules\Analytics\Proxy_AccountTicket;
+use Google\Site_Kit\Modules\Analytics\Proxy_Provisioning;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_DateRangeValues;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_GetReportsResponse;
 use Google\Site_Kit_Dependencies\Google_Service_AnalyticsReporting_Report;
@@ -62,6 +68,8 @@ use Exception;
 final class Analytics extends Module
 	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Admin_Bar, Module_With_Debug_Fields {
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Module_With_Assets_Trait;
+
+	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -105,6 +113,8 @@ final class Analytics extends Module
 		add_action( 'wp_footer', $print_amp_gtag, 20 );
 		// For AMP Reader, AMP plugin version <1.3.
 		add_action( 'amp_post_template_footer', $print_amp_gtag, 20 );
+		// For Web Stories plugin.
+		add_action( 'web_stories_print_analytics', $print_amp_gtag );
 
 		add_filter( // Load amp-analytics component for AMP Reader.
 			'amp_post_template_data',
@@ -121,6 +131,13 @@ final class Analytics extends Module
 				}
 			},
 			0
+		);
+
+		add_action(
+			'admin_init',
+			function() {
+				$this->handle_provisioning_callback();
+			}
 		);
 	}
 
@@ -154,10 +171,7 @@ final class Analytics extends Module
 	 */
 	public function get_scopes() {
 		return array(
-			'https://www.googleapis.com/auth/analytics',
 			'https://www.googleapis.com/auth/analytics.readonly',
-			'https://www.googleapis.com/auth/analytics.manage.users',
-			'https://www.googleapis.com/auth/analytics.edit',
 		);
 	}
 
@@ -459,6 +473,89 @@ final class Analytics extends Module
 	}
 
 	/**
+	 * Handles the provisioning callback after the user completes the terms of service.
+	 *
+	 * @since 1.9.0
+	 */
+	protected function handle_provisioning_callback() {
+		if ( defined( 'WP_CLI' ) && WP_CLI ) {
+			return;
+		}
+
+		if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
+			return;
+		}
+
+		$input = $this->context->input();
+
+		if ( ! $input->filter( INPUT_GET, 'gatoscallback' ) ) {
+			return;
+		}
+
+		// The handler should check the received Account Ticket id parameter against the id stored in the provisioning step.
+		$account_ticket_id        = $input->filter( INPUT_GET, 'accountTicketId', FILTER_SANITIZE_STRING );
+		$stored_account_ticket_id = get_transient( self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
+		delete_transient( self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id() );
+
+		if ( $stored_account_ticket_id !== $account_ticket_id ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'account_ticket_id_mismatch' ) )
+			);
+			exit;
+		}
+
+		// Check for a returned error.
+		$error = $input->filter( INPUT_GET, 'error', FILTER_SANITIZE_STRING );
+		if ( ! empty( $error ) ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => $error ) )
+			);
+			exit;
+		}
+
+		$account_id      = $input->filter( INPUT_GET, 'accountId', FILTER_SANITIZE_STRING );
+		$web_property_id = $input->filter( INPUT_GET, 'webPropertyId', FILTER_SANITIZE_STRING );
+		$profile_id      = $input->filter( INPUT_GET, 'profileId', FILTER_SANITIZE_STRING );
+
+		if ( empty( $account_id ) || empty( $web_property_id ) || empty( $profile_id ) ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'callback_missing_parameter' ) )
+			);
+			exit;
+		}
+
+		// Retrieve the internal web property id.
+		try {
+			$web_property = $this->get_service( 'analytics' )->management_webproperties->get( $account_id, $web_property_id );
+		} catch ( Exception $e ) {
+			wp_safe_redirect(
+				$this->context->admin_url( 'module-analytics', array( 'error_code' => 'property_not_found' ) )
+			);
+			exit;
+		}
+
+		$this->get_settings()->merge(
+			array(
+				'accountID'             => $account_id,
+				'propertyID'            => $web_property_id,
+				'profileID'             => $profile_id,
+				'internalWebPropertyID' => $web_property->getInternalWebPropertyId(),
+			)
+		);
+
+		wp_safe_redirect(
+			$this->context->admin_url(
+				'dashboard',
+				array(
+					'notification' => 'authentication_success',
+					'slug'         => 'analytics',
+				)
+			)
+		);
+		exit;
+	}
+
+	/**
 	 * Returns the mapping between available datapoints and their services.
 	 *
 	 * @since 1.0.0
@@ -486,8 +583,45 @@ final class Analytics extends Module
 			// POST.
 			'create-property'              => 'analytics',
 			'create-profile'               => 'analytics',
-			'settings'                     => '',
+			'create-account-ticket'        => 'analyticsprovisioning',
 		);
+	}
+
+	/**
+	 * Gets map of datapoint to definition data for each.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @return array Map of datapoints to their definitions.
+	 */
+	protected function get_datapoint_definitions() {
+		$map = parent::get_datapoint_definitions();
+
+		$map['POST:create-account-ticket'] = array_merge(
+			$map['POST:create-account-ticket'],
+			array(
+				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.provision' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
+			)
+		);
+
+		$map['POST:create-property'] = array_merge(
+			$map['POST:create-property'],
+			array(
+				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
+			)
+		);
+
+		$map['POST:create-profile'] = array_merge(
+			$map['POST:create-profile'],
+			array(
+				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics view on your behalf.', 'google-site-kit' ),
+			)
+		);
+
+		return $map;
 	}
 
 	/**
@@ -496,8 +630,9 @@ final class Analytics extends Module
 	 * @since 1.0.0
 	 *
 	 * @param Data_Request $data Data request object.
-	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
+	 *
+	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
@@ -575,6 +710,52 @@ final class Analytics extends Module
 					);
 					return true;
 				};
+			case 'POST:create-account-ticket':
+				if ( ! isset( $data['accountName'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountName' ), array( 'status' => 400 ) );
+				}
+				if ( ! isset( $data['propertyName'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyName' ), array( 'status' => 400 ) );
+				}
+				if ( ! isset( $data['profileName'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'profileName' ), array( 'status' => 400 ) );
+				}
+				if ( ! isset( $data['timezone'] ) ) {
+					/* translators: %s: Missing parameter name */
+					return new WP_Error( 'missing_required_param', sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'timezone' ), array( 'status' => 400 ) );
+				}
+
+				if ( ! $this->authentication->credentials()->using_proxy() ) {
+					return new WP_Error( 'requires_service', __( 'Analytics provisioning requires connecting via the Site Kit Service.', 'google-site-kit' ), array( 'status' => 400 ) );
+				}
+
+				$account = new Google_Service_Analytics_Account();
+				$account->setName( $data['accountName'] );
+
+				$property = new Google_Service_Analytics_Webproperty();
+				$property->setName( $data['propertyName'] );
+				$property->setWebsiteUrl( $this->context->get_reference_site_url() );
+
+				$profile = new Google_Service_Analytics_Profile();
+				$profile->setName( $data['profileName'] );
+				$profile->setTimezone( $data['timezone'] );
+
+				$account_ticket = new Proxy_AccountTicket();
+				$account_ticket->setAccount( $account );
+				$account_ticket->setWebproperty( $property );
+				$account_ticket->setProfile( $profile );
+				$account_ticket->setRedirectUri( $this->get_provisioning_redirect_uri() );
+
+				// Add site id and secret.
+				$creds = $this->authentication->credentials()->get();
+				$account_ticket->setSiteId( $creds['oauth2_client_id'] );
+				$account_ticket->setSiteSecret( $creds['oauth2_client_secret'] );
+
+				return $this->get_service( 'analyticsprovisioning' )
+					->provisioning->createAccountTicket( $account_ticket );
 			case 'GET:goals':
 				$connection = $this->get_data( 'connection' );
 				if (
@@ -823,61 +1004,6 @@ final class Analytics extends Module
 				$profile = new Google_Service_Analytics_Profile();
 				$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
 				return $profile = $this->get_service( 'analytics' )->management_profiles->insert( $data['accountID'], $data['propertyID'], $profile );
-			case 'POST:settings':
-				return function() use ( $data ) {
-					$option          = $data->data;
-					$is_new_property = false;
-
-					if ( isset( $option['accountID'], $option['propertyID'] ) ) {
-						if ( '0' === $option['propertyID'] ) {
-							$is_new_property = true;
-							$restore_defer   = $this->with_client_defer( false );
-							$property        = new Google_Service_Analytics_Webproperty();
-							$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
-							try {
-								$property = $this->get_service( 'analytics' )->management_webproperties->insert( $option['accountID'], $property );
-							} catch ( Exception $e ) {
-								$restore_defer();
-								return $this->exception_to_error( $e, $data->datapoint );
-							}
-							$restore_defer();
-							/* @var Google_Service_Analytics_Webproperty $property Property instance. */
-							$option['propertyID']            = $property->getId();
-							$option['internalWebPropertyID'] = $property->getInternalWebPropertyId();
-						}
-						if ( isset( $option['profileID'] ) ) {
-							if ( '0' === $option['profileID'] ) {
-								$restore_defer = $this->with_client_defer( false );
-								$profile       = new Google_Service_Analytics_Profile();
-								$profile->setName( __( 'All Web Site Data', 'google-site-kit' ) );
-								try {
-									$profile = $this->get_service( 'analytics' )->management_profiles->insert( $option['accountID'], $option['propertyID'], $profile );
-								} catch ( Exception $e ) {
-									$restore_defer();
-									return $this->exception_to_error( $e, $data->datapoint );
-								}
-								$restore_defer();
-								$option['profileID'] = $profile->id;
-							}
-
-							// Set default profile for new property.
-							if ( $is_new_property ) {
-								$restore_defer = $this->with_client_defer( false );
-								$property      = new Google_Service_Analytics_Webproperty();
-								$property->setDefaultProfileId( $option['profileID'] );
-								try {
-									$property = $this->get_service( 'analytics' )->management_webproperties->patch( $option['accountID'], $option['propertyID'], $property );
-								} catch ( Exception $e ) {
-									$restore_defer();
-									return $this->exception_to_error( $e, $data->datapoint );
-								}
-								$restore_defer();
-							}
-						}
-					}
-					$this->get_settings()->merge( $option );
-					return $this->get_settings()->get();
-				};
 			case 'GET:tag-permission':
 				return function() use ( $data ) {
 					if ( ! isset( $data['propertyID'] ) ) {
@@ -925,7 +1051,7 @@ final class Analytics extends Module
 				};
 		}
 
-		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
+		throw new Invalid_Datapoint_Exception();
 	}
 
 	/**
@@ -1072,6 +1198,14 @@ final class Analytics extends Module
 				}
 
 				return $response->getReports();
+			case 'POST:create-account-ticket':
+				// Cache the create ticket id long enough to verify it upon completion of the terms of service.
+				set_transient(
+					self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id(),
+					$response->getId(),
+					15 * MINUTE_IN_SECONDS
+				);
+				return $response;
 		}
 
 		return $response;
@@ -1185,10 +1319,24 @@ final class Analytics extends Module
 	 *               instance of Google_Service.
 	 */
 	protected function setup_services( Google_Site_Kit_Client $client ) {
+		$google_proxy = new Google_Proxy( $this->context );
 		return array(
-			'analytics'          => new Google_Service_Analytics( $client ),
-			'analyticsreporting' => new Google_Service_AnalyticsReporting( $client ),
+			'analytics'             => new Google_Service_Analytics( $client ),
+			'analyticsreporting'    => new Google_Service_AnalyticsReporting( $client ),
+			'analyticsprovisioning' => new Google_Service_AnalyticsProvisioning( $client, $google_proxy->url() ),
 		);
+	}
+
+	/**
+	 * Gets the provisioning redirect URI that listens for the Terms of Service redirect.
+	 *
+	 * @since 1.9.0
+	 *
+	 * @return string Provisioning redirect URI.
+	 */
+	private function get_provisioning_redirect_uri() {
+		$google_proxy = new Google_Proxy( $this->context );
+		return $google_proxy->get_site_fields()['analytics_redirect_uri'];
 	}
 
 	/**
@@ -1336,6 +1484,8 @@ final class Analytics extends Module
 						'googlesitekit-data',
 						'googlesitekit-modules',
 						'googlesitekit-datastore-site',
+						'googlesitekit-datastore-user',
+						'googlesitekit-datastore-forms',
 					),
 				)
 			),

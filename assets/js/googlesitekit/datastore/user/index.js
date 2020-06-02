@@ -22,75 +22,32 @@
 import Data from 'googlesitekit-data';
 import authentication from './authentication';
 import disconnect from './disconnect';
-import userInfo from './user-info';
-import notifications from './notifications';
 import error from './error';
+import notifications from './notifications';
+import permissions from './permissions';
+import userInfo from './user-info';
 import { STORE_NAME } from './constants';
-
-export const INITIAL_STATE = Data.collectState(
-	authentication.INITIAL_STATE,
-	disconnect.INITIAL_STATE,
-	userInfo.INITIAL_STATE,
-	notifications.INITIAL_STATE,
-	error.INITIAL_STATE
-);
 
 export { STORE_NAME };
 
-export const actions = Data.addInitializeAction(
-	Data.collectActions(
-		Data.commonActions,
-		authentication.actions,
-		disconnect.actions,
-		userInfo.actions,
-		notifications.actions,
-		error.actions
-	)
+const store = Data.combineStores(
+	Data.commonStore,
+	authentication,
+	disconnect,
+	error,
+	notifications,
+	permissions,
+	userInfo,
 );
 
-export const controls = Data.collectControls(
-	Data.commonControls,
-	authentication.controls,
-	disconnect.controls,
-	userInfo.controls,
-	notifications.controls,
-	error.controls
-);
-
-export const reducer = Data.addInitializeReducer(
+export const {
 	INITIAL_STATE,
-	Data.collectReducers(
-		authentication.reducer,
-		disconnect.reducer,
-		userInfo.reducer,
-		notifications.reducer,
-		error.reducer
-	)
-);
-
-export const resolvers = Data.collectResolvers(
-	authentication.resolvers,
-	disconnect.resolvers,
-	userInfo.resolvers,
-	notifications.resolvers,
-	error.resolvers
-);
-
-export const selectors = Data.collectSelectors(
-	authentication.selectors,
-	disconnect.selectors,
-	userInfo.selectors,
-	notifications.selectors,
-	error.selectors
-);
-
-const store = {
 	actions,
 	controls,
 	reducer,
 	resolvers,
 	selectors,
-};
+} = store;
 
 // Register this store on the global registry.
 Data.registerStore( STORE_NAME, store );

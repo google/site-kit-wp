@@ -43,6 +43,15 @@ class TestCase extends \WP_UnitTestCase {
 	}
 
 	/**
+	 * After a test method runs, reset any state in WordPress the test method might have changed.
+	 */
+	public function tearDown() {
+		parent::tearDown();
+		// Clear screen related globals.
+		unset( $GLOBALS['current_screen'], $GLOBALS['taxnow'], $GLOBALS['typenow'] );
+	}
+
+	/**
 	 * Forcibly set a property of an object that would otherwise not be possible.
 	 *
 	 * @param object|string $class Class instance to set the property on, or class name containing the property.
@@ -155,6 +164,11 @@ class TestCase extends \WP_UnitTestCase {
 			$this->queryOption( $option ),
 			"Failed to assert that option '$option' exists."
 		);
+	}
+
+	protected function assertWPErrorWithMessage( $expected_message, $actual ) {
+		$this->assertWPError( $actual );
+		$this->assertEquals( $expected_message, $actual->get_error_message() );
 	}
 
 	protected function queryOption( $option ) {

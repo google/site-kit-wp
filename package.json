@@ -93,7 +93,7 @@
     "@material/radio": "^2.1.1",
     "@material/react-select": "^0.15.0",
     "@material/react-tab-bar": "^0.12.0",
-    "@material/react-text-field": "^0.12.1",
+    "@material/react-text-field": "^0.15.0",
     "@material/ripple": "^2.1.1",
     "@material/select": "^2.2.0",
     "@material/switch": "^2.1.1",
@@ -141,6 +141,7 @@
   "devDependencies": {
     "@babel/cli": "^7.5.0",
     "@babel/core": "^7.5.4",
+    "@babel/plugin-proposal-optional-chaining": "^7.9.0",
     "@babel/plugin-syntax-dynamic-import": "^7.2",
     "@babel/plugin-transform-runtime": "^7.6.0",
     "@babel/polyfill": "^7.6.0",
