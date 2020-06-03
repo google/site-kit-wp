@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -64,7 +65,7 @@ export const actions = {
 				type: FETCH_REPORT,
 			};
 
-			yield actions.receiveReport( options, report );
+			yield actions.receiveReport( report, options );
 
 			yield {
 				payload: { options },
@@ -90,16 +91,17 @@ export const actions = {
 	 * @since n.e.x.t
 	 * @private
 	 *
-	 * @param {Object} 	options	Options used to fetch report.
-	 * @param {Object} 	report	Report to add.
+	 * @param {Object} 	report				Report to add.
+	 * @param {Object}	[options]			Options used for generating the report.
+	 * @param {string} 	[options.strategy]	Strategy used for generating the report.
+	 * @param {string} 	[options.url]		URL used for generating the report.
 	 * @return {Object} Redux-style action.
 	 */
-	receiveReport( options, report ) {
-		invariant( 'object' === typeof options, 'options must be an object.' );
-		invariant( 'object' === typeof report, 'report must be an object.' );
+	receiveReport( report, { strategy, url } = {} ) {
+		invariant( isPlainObject( report ), 'report must be an object.' );
 
 		return {
-			payload: { options, report },
+			payload: { report, strategy, url },
 			type: RECEIVE_REPORT,
 		};
 	},
@@ -107,9 +109,7 @@ export const actions = {
 };
 
 export const controls = {
-	[ FETCH_REPORT ]: ( { payload: { options } } ) => {
-		const { strategy, url } = options;
-
+	[ FETCH_REPORT ]: ( { payload: { options: { strategy, url } = {} } } ) => {
 		return API.get( 'modules', 'pagespeed-insights', 'pagespeed', { strategy, url } );
 	},
 };
@@ -141,13 +141,13 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case RECEIVE_REPORT: {
-			const { options: { strategy, url }, report } = payload;
+			const { report, strategy, url } = payload;
 
 			return {
 				...state,
 				reports: {
 					...state.reports,
-					[ `${ strategy }::${ url }` ]: report,
+					[ `${ strategy }::${ url }` ]: { ...report },
 				},
 			};
 		}
@@ -173,22 +173,19 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getReport( options = {} ) {
-		if ( options.strategy === undefined ) {
-			options.strategy = 'mobile';
-		}
-		if ( options.url === undefined ) {
-			options.url = registry.select( CORE_SITE ).getReferenceSiteURL();
-		}
-
 		const registry = yield Data.commonActions.getRegistry();
-		const existingReport = registry.select( STORE_NAME ).getReport( options );
+		const {
+			strategy = 'mobile',
+			url = registry.select( CORE_SITE ).getReferenceSiteURL(),
+		} = options;
+		const existingReport = registry.select( STORE_NAME ).getReport( { strategy, url } );
 
 		// If there is already a report loaded in state, consider it fulfilled and don't make an API request.
 		if ( existingReport ) {
 			return;
 		}
 
-		yield actions.fetchReport( options );
+		yield actions.fetchReport( { strategy, url } );
 	},
 };
 
@@ -198,15 +195,14 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}         		state             Data store's state.
-	 * @param {(Object|undefined)}	options           Optional options for generating the report.
-	 * @param {(string|undefined)} 	options.strategy  Optional strategy. Default 'mobile'.
-	 * @param {(string|undefined)} 	options.url   	  Optional URL. Default the site's reference URL.
+	 * @param {Object}         		state				Data store's state.
+	 * @param {Object}				[options]			Optional options for generating the report.
+	 * @param {string} 				[options.strategy]	Optional strategy. Default 'mobile'.
+	 * @param {string} 				[options.url]		Optional URL. Default the site's reference URL.
 	 * @return {(Object|undefined)} A PageSpeed Insights report; `undefined` if not loaded.
 	 */
-	getReport( state, options = {} ) {
+	getReport( state, { strategy, url } = {} ) {
 		const { reports } = state;
-		const { strategy, url } = options;
 
 		return reports[ `${ strategy }::${ url }` ];
 	},

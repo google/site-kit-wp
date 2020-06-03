@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import apiFetch from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -35,14 +30,7 @@ import {
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/pagespeed-insights report', () => {
-	const baseInfoVar = '_googlesitekitBaseData';
-	const baseInfo = {
-		referenceSiteURL: 'http://sitekit.10uplabs.com/',
-	};
-	const entityInfoVar = '_googlesitekitEntityData';
-	let apiFetchSpy;
 	let registry;
-	let store;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -50,9 +38,6 @@ describe( 'modules/pagespeed-insights report', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
-
-		apiFetchSpy = jest.spyOn( { apiFetch }, 'apiFetch' );
 	} );
 
 	afterAll( () => {
@@ -60,32 +45,25 @@ describe( 'modules/pagespeed-insights report', () => {
 	} );
 
 	afterEach( () => {
-		delete global[ baseInfoVar ];
-		delete global[ entityInfoVar ];
 		unsubscribeFromAll( registry );
-		apiFetchSpy.mockRestore();
 	} );
 
 	describe( 'actions', () => {
-
 	} );
 
 	describe( 'selectors', () => {
 		describe( 'getReport', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				global[ baseInfoVar ] = baseInfo;
-				global[ entityInfoVar ] = {};
-
 				fetch
 					.doMockOnceIf(
 						/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
 					)
 					.mockResponseOnce(
-						JSON.stringify( fixtures.desktopReport ),
+						JSON.stringify( fixtures.pagespeedDesktop ),
 						{ status: 200 }
 					);
 
-				const options = { strategy: 'desktop', url: 'http://testsite.10uplabs.com/' };
+				const options = { strategy: 'desktop', url: 'http://example.com/' };
 
 				const initialReport = registry.select( STORE_NAME ).getReport( options );
 
@@ -96,36 +74,33 @@ describe( 'modules/pagespeed-insights report', () => {
 
 				expect( initialReport ).toEqual( undefined );
 				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getReport( options ) !== undefined
-					),
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ options ] )
 				);
 
 				const report = registry.select( STORE_NAME ).getReport( options );
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
-				expect( report ).toEqual( fixtures.desktopReport );
+				expect( report ).toEqual( fixtures.pagespeedDesktop );
 			} );
 
 			it( 'does not make a network request if report for given options is already present', async () => {
 				const options = {
 					strategy: 'mobile',
-					url: 'http://sitekit.10uplabs.com/',
+					url: 'http://example.com/',
 				};
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveReport( options, fixtures.mobileReport );
+				registry.dispatch( STORE_NAME ).receiveReport( fixtures.pagespeedMobile, options );
 
 				const report = registry.select( STORE_NAME ).getReport( options );
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getReport', [ options ] )
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ options ] )
 				);
 
 				expect( fetch ).not.toHaveBeenCalled();
-				expect( report ).toEqual( fixtures.mobileReport );
+				expect( report ).toEqual( fixtures.pagespeedMobile );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -145,17 +120,13 @@ describe( 'modules/pagespeed-insights report', () => {
 
 				const options = {
 					strategy: 'mobile',
-					url: 'http://sitekit.10uplabs.com/',
+					url: 'http://example.com/',
 				};
-				const { strategy, url } = options;
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getReport( options );
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					// This hash must remain stable, so hard-coding it here ensures it is the case.
-					() => store.getState().isFetchingReport[ `${ strategy }::${ url }` ] === false,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ options ] )
 				);
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );

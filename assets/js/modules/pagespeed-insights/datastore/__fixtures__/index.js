@@ -16,5 +16,6 @@
  * limitations under the License.
  */
 
-export { default as mobileReport } from './mobile-report';
-export { default as desktopReport } from './desktop-report';
+export { default as pagespeedDesktop } from './pagespeed--desktop.json';
+export { default as pagespeedMobile } from './pagespeed--mobile.json';
+
