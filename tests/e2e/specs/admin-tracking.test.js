@@ -16,12 +16,9 @@ async function toggleOptIn() {
 }
 
 describe( 'management of tracking opt-in/out via settings page', () => {
-	beforeAll( async () => {
+	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await activatePlugin( 'e2e-tests-site-verification-plugin' );
-	} );
-
-	beforeEach( async () => {
 		await setSearchConsoleProperty();
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
@@ -36,9 +33,6 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 
 	afterEach( async () => {
 		await resetSiteKit();
-	} );
-
-	afterAll( async () => {
 		await deactivatePlugin( 'e2e-tests-auth-plugin' );
 		await deactivatePlugin( 'e2e-tests-site-verification-plugin' );
 	} );
