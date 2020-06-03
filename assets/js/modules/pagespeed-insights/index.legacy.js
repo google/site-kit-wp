@@ -28,15 +28,12 @@ import { createAddToFilter } from '../../util/helpers';
 import DashboardSpeed from './dashboard/dashboard-widget-speed';
 import PageSpeedInsightsDashboardWidgetHomepageSpeed from './dashboard/dashboard-widget-homepage-speed';
 import PageSpeedInsightsCTA from './dashboard/dashboard-cta';
-import { settingsDetails as SettingsDetails } from './settings';
 import { getModulesData } from '../../util';
-
-const slug = 'pagespeed-insights';
 
 const {
 	active,
 	setupComplete,
-} = getModulesData()[ slug ];
+} = getModulesData()[ 'pagespeed-insights' ];
 
 if ( active && setupComplete ) {
 	const addDashboardSpeed = createAddToFilter( <DashboardSpeed /> );
@@ -60,7 +57,3 @@ if ( active && setupComplete ) {
 		'googlesitekit.PageSpeedInsights',
 		addPageSpeedInsightsCTA, 45 );
 }
-
-addFilter( `googlesitekit.ModuleSettingsDetails-${ slug }`,
-	'googlesitekit.PageSpeedInsightsModuleSettingsDetails',
-	createAddToFilter( <SettingsDetails /> ), 10 );

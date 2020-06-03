@@ -263,12 +263,16 @@ final class Authentication {
 		add_filter(
 			'googlesitekit_user_data',
 			function( $user ) {
-				$profile_data = $this->profile->get();
-				if ( $profile_data ) {
+				$user['connectURL'] = esc_url_raw( $this->get_connect_url() );
+
+				if ( $this->profile->has() ) {
+					$profile_data            = $this->profile->get();
 					$user['user']['email']   = $profile_data['email'];
 					$user['user']['picture'] = $profile_data['photo'];
 				}
+
 				$user['verified'] = $this->verification->has();
+
 				return $user;
 			}
 		);
@@ -633,7 +637,8 @@ final class Authentication {
 		$data['isAuthenticated']    = ! empty( $access_token );
 		$data['requiredScopes']     = $auth_client->get_required_scopes();
 		$data['grantedScopes']      = ! empty( $access_token ) ? $auth_client->get_granted_scopes() : array();
-		$data['needReauthenticate'] = $data['isAuthenticated'] && $auth_client->needs_reauthentication();
+		$data['unsatisfiedScopes']  = ! empty( $access_token ) ? $auth_client->get_unsatisfied_scopes() : array();
+		$data['needReauthenticate'] = $auth_client->needs_reauthentication();
 
 		if ( $this->credentials->using_proxy() ) {
 			$error_code = $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE );
@@ -731,9 +736,10 @@ final class Authentication {
 							$access_token = $oauth_client->get_access_token();
 
 							$data = array(
-								'authenticated'  => ! empty( $access_token ),
-								'requiredScopes' => $oauth_client->get_required_scopes(),
-								'grantedScopes'  => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
+								'authenticated'     => ! empty( $access_token ),
+								'requiredScopes'    => $oauth_client->get_required_scopes(),
+								'grantedScopes'     => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
+								'unsatisfiedScopes' => ! empty( $access_token ) ? $oauth_client->get_unsatisfied_scopes() : array(),
 							);
 
 							return new WP_REST_Response( $data );
@@ -952,13 +958,13 @@ final class Authentication {
 				return;
 			}
 
+			if ( ! $error_message ) {
+				$error_message = 'unknown_error';
+			}
+
 			$this->user_options->set( OAuth_Client::OPTION_ERROR_CODE, $error_message );
 			wp_safe_redirect(
-				add_query_arg(
-					'error',
-					rawurlencode( $error_message ),
-					$this->context->admin_url( 'splash' )
-				)
+				$this->context->admin_url( 'splash' )
 			);
 			exit;
 		}

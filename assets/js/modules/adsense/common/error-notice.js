@@ -21,6 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
+import { PERMISSION_SCOPE_ERROR_CODE } from '../../../googlesitekit/datastore/user/constants';
 import { errorToStatus } from '../util/status';
 import ErrorText from '../../../components/error-text';
 const { useSelect } = Data;
@@ -28,9 +29,9 @@ const { useSelect } = Data;
 export default function ErrorNotice() {
 	const error = useSelect( ( select ) => select( STORE_NAME ).getError() );
 
-	// Do not display if no error or if the error yields an account status,
-	// in which case it is an "expected" error.
-	if ( ! error || undefined !== errorToStatus( error ) ) {
+	// Do not display if no error, or if the error is for missing scopes, or if
+	// it yields an account status, in which case it is an "expected" error.
+	if ( ! error || error.code === PERMISSION_SCOPE_ERROR_CODE || undefined !== errorToStatus( error ) ) {
 		return null;
 	}
 

@@ -26,7 +26,6 @@ import './modules';
 /**
  * WordPress dependencies
  */
-import { doAction } from '@wordpress/hooks';
 import { Component, render, Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -138,11 +137,6 @@ export function init() {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <Root><GoogleSitekitAdminbar /></Root>, renderTarget );
-
-		/**
-		 * Action triggered when the dashboard App is loaded.
-		 */
-		doAction( 'googlesitekit.moduleLoaded', 'Adminbar' );
+		render( <Root dataAPIContext="Adminbar"><GoogleSitekitAdminbar /></Root>, renderTarget );
 	}
 }
