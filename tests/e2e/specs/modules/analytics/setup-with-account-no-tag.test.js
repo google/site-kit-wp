@@ -41,7 +41,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 				request.respond( {
 					status: 302,
 					headers: {
-						location: createURL( '/', [
+						location: createURL( '/wp-admin/index.php', [
 							'oauth2callback=1',
 							'code=valid-test-code',
 							'e2e-site-verification=1',
@@ -138,7 +138,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /set up a new property/i } );
 
 		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new property/i } );
-		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new profile/i } );
+		await expect( page ).toMatchElement( '.mdc-select__selected-text', { text: /set up a new view/i } );
 
 		// Intentionally does not submit to trigger property & profile creation requests.
 	} );

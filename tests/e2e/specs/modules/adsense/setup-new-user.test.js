@@ -77,7 +77,7 @@ describe( 'setting up the AdSense module', () => {
 				request.respond( {
 					status: 302,
 					headers: {
-						location: createURL( '/', [
+						location: createURL( '/wp-admin/index.php', [
 							'oauth2callback=1',
 							'code=valid-test-code',
 							'e2e-site-verification=1',
@@ -113,7 +113,7 @@ describe( 'setting up the AdSense module', () => {
 		await resetSiteKit();
 	} );
 
-	it( 'displays “Let’s get your site ready for ads” when account is graylisted', async () => {
+	it( 'displays “Your account is getting ready” when account is graylisted', async () => {
 		datapointHandlers.accounts = ( request ) => {
 			request.respond( {
 				status: 200,
@@ -158,13 +158,13 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Let’s get your site ready for ads/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Your account is getting ready/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status or to complete setting up/i } );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
 	} );
 
-	it( 'displays “Let’s get your site ready for ads” when the Adsense account is pending review', async () => {
+	it( 'displays “Your account is getting ready” when the Adsense account is pending review', async () => {
 		datapointHandlers.accounts = ( request ) => {
 			request.respond( {
 				status: 200,
@@ -199,7 +199,7 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Let’s get your site ready for ads/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Your account is getting ready/i } );
 		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status or to complete setting up/i } );
 
 		await expect( '/' ).toHaveAdSenseTag();

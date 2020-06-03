@@ -25,18 +25,23 @@ export const refreshAuthentication = async () => {
 	try {
 		// `timestamp` added to ensure this request is always made as it is preloaded
 		// using apiFetch's preloading middleware.
-		const response = await data.get( TYPE_CORE, 'user', 'authentication', { timestamp: Date.now() } );
-
-		const requiredAndGrantedScopes = response.grantedScopes.filter( ( scope ) => {
-			return -1 !== response.requiredScopes.indexOf( scope );
-		} );
+		const {
+			authenticated: isAuthenticated,
+			requiredScopes,
+			grantedScopes,
+			unsatisfiedScopes = [],
+		} = await data.get( TYPE_CORE, 'user', 'authentication', { timestamp: Date.now() } );
 
 		// We should really be using state management. This is terrible.
-		global.googlesitekit.setup = global.googlesitekit.setup || {};
-		global.googlesitekit.setup.isAuthenticated = response.authenticated;
-		global.googlesitekit.setup.requiredScopes = response.requiredScopes;
-		global.googlesitekit.setup.grantedScopes = response.grantedScopes;
-		global.googlesitekit.setup.needReauthenticate = requiredAndGrantedScopes.length < response.requiredScopes.length;
+		// Hang in there... we're getting to it ;)
+		global.googlesitekit.setup = {
+			...( global.googlesitekit.setup || {} ),
+			isAuthenticated,
+			requiredScopes,
+			grantedScopes,
+			unsatisfiedScopes,
+			needReauthenticate: 0 < unsatisfiedScopes.length,
+		};
 	} catch ( e ) { // eslint-disable-line no-empty
 	}
 };

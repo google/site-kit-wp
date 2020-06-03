@@ -13,7 +13,9 @@ import { createRegistry, RegistryProvider } from '@wordpress/data';
  */
 import coreSiteStore, { STORE_NAME as coreSiteStoreName } from '../../assets/js/googlesitekit/datastore/site';
 import coreUserStore, { STORE_NAME as coreUserStoreName } from '../../assets/js/googlesitekit/datastore/user';
+import coreFormsStore, { STORE_NAME as coreFormsStoreName } from '../../assets/js/googlesitekit/datastore/forms';
 import coreModulesStore, { STORE_NAME as coreModulesStoreName } from '../../assets/js/googlesitekit/modules/datastore';
+import coreWidgetsStore, { STORE_NAME as coreWidgetsStoreName } from '../../assets/js/googlesitekit/widgets/datastore';
 import modulesAdSenseStore, { STORE_NAME as modulesAdSenseStoreName } from '../../assets/js/modules/adsense/datastore';
 import modulesAnalyticsStore, { STORE_NAME as modulesAnalyticsStoreName } from '../../assets/js/modules/analytics/datastore';
 import modulesPageSpeedInsightsStore, { STORE_NAME as modulesPageSpeedInsightsStoreName } from '../../assets/js/modules/pagespeed-insights/datastore';
@@ -98,7 +100,9 @@ export const muteConsole = ( type = 'error', times = 1 ) => {
 export const registerAllStoresOn = ( registry ) => {
 	registry.registerStore( coreSiteStoreName, coreSiteStore );
 	registry.registerStore( coreUserStoreName, coreUserStore );
+	registry.registerStore( coreFormsStoreName, coreFormsStore );
 	registry.registerStore( coreModulesStoreName, coreModulesStore );
+	registry.registerStore( coreWidgetsStoreName, coreWidgetsStore );
 	registry.registerStore( modulesAdSenseStoreName, modulesAdSenseStore );
 	registry.registerStore( modulesAnalyticsStoreName, modulesAnalyticsStore );
 	registry.registerStore( modulesPageSpeedInsightsStoreName, modulesPageSpeedInsightsStore );
