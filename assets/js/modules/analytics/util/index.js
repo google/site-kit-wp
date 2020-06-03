@@ -81,9 +81,9 @@ function reduceAnalyticsRowsData( rows, selectedStats ) {
 			const { values } = row.metrics[ 0 ];
 			const dateString = row.dimensions[ 0 ];
 			const year = dateString.slice( 0, 4 );
-			const month = Number( dateString.slice( 4, 6 ) ) - 1;
+			const monthIndex = Number( dateString.slice( 4, 6 ) ) - 1;
 			const day = dateString.slice( 6, 8 );
-			const date = new Date( year, month.toString(), day );
+			const date = new Date( year, monthIndex.toString(), day );
 			dataMap.push( [
 				date,
 				values[ selectedStats ],
@@ -157,7 +157,6 @@ export const extractAnalyticsDashboardData = ( reports, selectedStats, days ) =>
 	// Split the results in two chunks of days, and process.
 	const lastMonthRows = rows.slice( rows.length - days, rows.length );
 	const previousMonthRows = rows.slice( 0, rows.length - days );
-	//correct to here
 	const lastMonthData = reduceAnalyticsRowsData( lastMonthRows, selectedStats );
 	const previousMonthData = reduceAnalyticsRowsData( previousMonthRows, selectedStats );
 	each( lastMonthData, ( row, i ) => {
