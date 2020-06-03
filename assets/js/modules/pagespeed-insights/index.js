@@ -20,3 +20,19 @@
  * Internal dependencies
  */
 import './datastore';
+import { fillFilterWithComponent } from '../../util';
+import { SettingsMain as PageSpeedInsightsSettings } from './settings';
+
+/**
+ * WordPress dependencies
+ */
+import { addFilter } from '@wordpress/hooks';
+
+/**
+ * Add components to the settings page.
+ */
+addFilter(
+	'googlesitekit.ModuleSettingsDetails-pagespeed-insights',
+	'googlesitekit.PageSpeedInsightsModuleSettingsDetails',
+	fillFilterWithComponent( PageSpeedInsightsSettings )
+);

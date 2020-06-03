@@ -266,7 +266,7 @@ final class Analytics extends Module
 				'debug' => Debug_Data::redact_debug_value( $settings['propertyID'], 7 ),
 			),
 			'analytics_profile_id'  => array(
-				'label' => __( 'Analytics profile ID', 'google-site-kit' ),
+				'label' => __( 'Analytics view ID', 'google-site-kit' ),
 				'value' => $settings['profileID'],
 				'debug' => Debug_Data::redact_debug_value( $settings['profileID'] ),
 			),
@@ -590,7 +590,7 @@ final class Analytics extends Module
 	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
@@ -601,7 +601,7 @@ final class Analytics extends Module
 			$map['POST:create-account-ticket'],
 			array(
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.provision' ),
-				'request_scopes_message' => __( 'Additional permissions are required to create a new Analytics account.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
 			)
 		);
 
@@ -609,7 +609,7 @@ final class Analytics extends Module
 			$map['POST:create-property'],
 			array(
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
-				'request_scopes_message' => __( 'Additional permissions are required to create a new Analytics property.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
 			)
 		);
 
@@ -617,7 +617,7 @@ final class Analytics extends Module
 			$map['POST:create-profile'],
 			array(
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
-				'request_scopes_message' => __( 'Additional permissions are required to create a new Analytics view.', 'google-site-kit' ),
+				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics view on your behalf.', 'google-site-kit' ),
 			)
 		);
 
@@ -804,7 +804,7 @@ final class Analytics extends Module
 					$option = $this->get_settings()->get();
 
 					if ( empty( $option['profileID'] ) ) {
-						return new WP_Error( 'profile_id_not_set', __( 'Analytics profile ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
+						return new WP_Error( 'profile_id_not_set', __( 'Analytics view ID not set.', 'google-site-kit' ), array( 'status' => 404 ) );
 					}
 					return $option['profileID'];
 				};
@@ -1485,6 +1485,7 @@ final class Analytics extends Module
 						'googlesitekit-modules',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
+						'googlesitekit-datastore-forms',
 					),
 				)
 			),

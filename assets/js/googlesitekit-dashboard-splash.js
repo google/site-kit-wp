@@ -21,7 +21,6 @@
  */
 import domReady from '@wordpress/dom-ready';
 import { render, Fragment } from '@wordpress/element';
-import { doAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -52,11 +51,6 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <Root><GoogleSitekitDashboardSplash /></Root>, renderTarget );
-
-		/**
-		 * Action triggered when the Dashboard Splash App is loaded.
-		 */
-		doAction( 'googlesitekit.moduleLoaded', 'Splash' );
+		render( <Root dataAPIContext="Splash"><GoogleSitekitDashboardSplash /></Root>, renderTarget );
 	}
 } );
