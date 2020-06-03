@@ -33,7 +33,7 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 
 	afterEach( async () => {
 		await resetSiteKit();
-		await deactivatePlugin( 'e2e-tests-auth-plugin' );
+		await deactivatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await deactivatePlugin( 'e2e-tests-site-verification-plugin' );
 	} );
 
@@ -76,7 +76,6 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 
 		// Uncheck the checkbox.
 		await toggleOptIn();
-
 		await page.waitForSelector( '.mdc-checkbox:not(.mdc-checkbox--selected) #googlesitekit-opt-in' );
 
 		// Ensure unchecked checkbox exists.
