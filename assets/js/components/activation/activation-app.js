@@ -43,15 +43,19 @@ export class ActivationApp extends Component {
 			buttonLabel = __( 'Go to Dashboard', 'google-site-kit' );
 		}
 
+		const onButtonClick = async ( event ) => {
+			event.preventDefault();
+			await trackEvent( 'plugin_setup', proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
+			global.location.assign( buttonURL );
+		};
+
 		return (
 			<Fragment>
 				<NotificationCounter />
 				<ActivationMain
 					buttonURL={ buttonURL }
 					buttonLabel={ buttonLabel }
-					onButtonClick={ () => {
-						trackEvent( 'plugin_setup', proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit' );
-					} }
+					onButtonClick={ onButtonClick }
 				/>
 			</Fragment>
 		);

@@ -483,25 +483,22 @@ export const validateOptimizeID = ( stringToValidate ) => {
  * @param {boolean} status        True if module should be activated, false if it should be deactivated.
  * @return {Promise} A promise for activating/deactivating a module.
  */
-export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) => {
-	return restApiClient.setModuleActive( moduleSlug, status ).then( ( responseData ) => {
-		const modulesData = getModulesData();
+export const activateOrDeactivateModule = async ( restApiClient, moduleSlug, status ) => {
+	const responseData = await restApiClient.setModuleActive( moduleSlug, status );
+	const modulesData = getModulesData();
 
-		// We should really be using state management. This is terrible.
-		if ( modulesData[ moduleSlug ] ) {
-			modulesData[ moduleSlug ].active = responseData.active;
-		}
+	// We should really be using state management. This is terrible.
+	if ( modulesData[ moduleSlug ] ) {
+		modulesData[ moduleSlug ].active = responseData.active;
+	}
 
-		trackEvent(
-			`${ moduleSlug }_setup`,
-			! responseData.active ? 'module_deactivate' : 'module_activate',
-			moduleSlug,
-		);
+	await trackEvent(
+		`${ moduleSlug }_setup`,
+		! responseData.active ? 'module_deactivate' : 'module_activate',
+		moduleSlug,
+	);
 
-		return new Promise( ( resolve ) => {
-			resolve( responseData );
-		} );
-	} );
+	return responseData;
 };
 
 /**
