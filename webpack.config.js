@@ -113,7 +113,7 @@ const webpackConfig = ( mode ) => {
 				'googlesitekit-admin': './assets/js/googlesitekit-admin.js',
 				'googlesitekit-module': './assets/js/googlesitekit-module.js',
 				// Needed to test if a browser extension blocks this by naming convention.
-				ads: './assets/js/adsense.js',
+				adsense: './assets/js/adsense.js',
 			},
 			externals,
 			output: {
