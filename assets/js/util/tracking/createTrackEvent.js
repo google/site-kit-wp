@@ -55,7 +55,7 @@ export default function createTrackEvent( config, dataLayerTarget ) {
 				}
 				resolved = true;
 				if ( ! eventSent ) {
-					console.warn( `Tracking event "${ eventName }" took too long to fire:`, eventData ); // eslint-disable-line no-console
+					global.console.warn( `Tracking event "${ eventName }" (category "${ eventCategory }") took too long to fire.` );
 				}
 				resolve();
 			};
