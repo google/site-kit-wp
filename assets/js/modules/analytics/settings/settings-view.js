@@ -53,71 +53,71 @@ export default function SettingsView() {
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<p className="googlesitekit-settings-module__meta-item-type">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Account', 'google-site-kit' ) }
-					</p>
-					<h5 className="googlesitekit-settings-module__meta-item-data">
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ accountID } />
-					</h5>
+					</p>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
-					<p className="googlesitekit-settings-module__meta-item-type">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Property', 'google-site-kit' ) }
-					</p>
-					<h5 className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ propertyID } />
 					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting value={ propertyID } />
+					</p>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
-					<p className="googlesitekit-settings-module__meta-item-type">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'View', 'google-site-kit' ) }
-					</p>
-					<h5 className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ profileID } />
 					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting value={ profileID } />
+					</p>
 				</div>
 			</div>
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<p className="googlesitekit-settings-module__meta-item-type">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Analytics Code Snippet', 'google-site-kit' ) }
-					</p>
-					<h5 className="googlesitekit-settings-module__meta-item-data">
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
 						{ useSnippet && __( 'Snippet is inserted', 'google-site-kit' ) }
 						{ ( ! useSnippet && ! hasExistingTag ) && __( 'Snippet is not inserted', 'google-site-kit' ) }
 						{ ( ! useSnippet && hasExistingTag ) && __( 'Inserted by another plugin or theme', 'google-site-kit' ) }
-					</h5>
+					</p>
 				</div>
 			</div>
 
 			{ ( useSnippet && ampMode !== 'primary' ) && (
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
-						<p className="googlesitekit-settings-module__meta-item-type">
+						<h5 className="googlesitekit-settings-module__meta-item-type">
 							{ __( 'IP Address Anonymization', 'google-site-kit' ) }
-						</p>
-						<h5 className="googlesitekit-settings-module__meta-item-data">
+						</h5>
+						<p className="googlesitekit-settings-module__meta-item-data">
 							{ anonymizeIP && __( 'IP addresses are being anonymized', 'google-site-kit' ) }
 							{ ! anonymizeIP && __( 'IP addresses are not being anonymized', 'google-site-kit' ) }
-						</h5>
+						</p>
 					</div>
 				</div>
 			) }
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<p className="googlesitekit-settings-module__meta-item-type">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
 						{ __( 'Excluded from Analytics', 'google-site-kit' ) }
-					</p>
-					<h5 className="googlesitekit-settings-module__meta-item-data">
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
 						{ !! trackingDisabled.length &&
 										trackingDisabled
 											.map( ( exclusion ) => trackingExclusionLabels[ exclusion ] )
 											.join( _x( ', ', 'list separator', 'google-site-kit' ) )
 						}
 						{ ! trackingDisabled.length && __( 'Analytics is currently enabled for all visitors.', 'google-site-kit' ) }
-					</h5>
+					</p>
 				</div>
 			</div>
 		</div>
