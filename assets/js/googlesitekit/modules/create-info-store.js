@@ -82,7 +82,7 @@ export const createInfoStore = ( slug, {
 			} : {};
 
 			if ( ! needsReauthentication ) {
-				return select( STORE_NAME ).getAdminScreenURL( noSetupQueryArgs );
+				return select( STORE_NAME ).getAdminScreenURL( { slug, reAuth, ...noSetupQueryArgs } );
 			}
 
 			return select( STORE_NAME ).getAdminScreenURL( { slug, reAuth } );
