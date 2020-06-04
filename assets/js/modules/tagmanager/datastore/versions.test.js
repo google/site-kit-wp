@@ -31,15 +31,13 @@ import * as fixtures from './__fixtures__';
 
 describe( 'modules/tagmanager versions', () => {
 	let registry;
-
-	// const defaultSettings = {
-	// 	accountID: '',
-	// 	ampContainerID: '',
-	// 	containerID: '',
-	// 	internalAMPContainerID: '',
-	// 	internalContainerID: '',
-	// 	useSnippet: true,
-	// };
+	// Selectors
+	let getError;
+	let getLiveContainerVersion;
+	let isDoingGetLiveContainerVersion;
+	let hasFinishedResolution;
+	// Actions
+	let receiveLiveContainerVersion;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -47,9 +45,15 @@ describe( 'modules/tagmanager versions', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		// Preload default settings to prevent the resolver from making unexpected requests
-		// as this is covered in settings store tests.
-		// registry.dispatch( STORE_NAME ).receiveSettings( defaultSettings );
+		( {
+			getError,
+			getLiveContainerVersion,
+			isDoingGetLiveContainerVersion,
+			hasFinishedResolution,
+		} = registry.select( STORE_NAME ) );
+		( {
+			receiveLiveContainerVersion,
+		} = registry.dispatch( STORE_NAME ) );
 	} );
 
 	afterAll( () => {
@@ -67,10 +71,6 @@ describe( 'modules/tagmanager versions', () => {
 	describe( 'selectors', () => {
 		describe( 'getLiveContainerVersion', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				const {
-					getLiveContainerVersion,
-					hasFinishedResolution,
-				} = registry.select( STORE_NAME );
 				const accountID = fixtures.liveContainerVersion.accountId;
 				const internalContainerID = fixtures.liveContainerVersion.containerId;
 
@@ -94,14 +94,10 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'does not make a network request if the container version is already present', async () => {
-				const {
-					getLiveContainerVersion,
-					hasFinishedResolution,
-				} = registry.select( STORE_NAME );
 				const accountID = fixtures.liveContainerVersion.accountId;
 				const internalContainerID = fixtures.liveContainerVersion.containerId;
 
-				registry.dispatch( STORE_NAME ).receiveLiveContainerVersion( fixtures.liveContainerVersion, { accountID, internalContainerID } );
+				receiveLiveContainerVersion( fixtures.liveContainerVersion, { accountID, internalContainerID } );
 
 				const liveContainerVersion = getLiveContainerVersion( accountID, internalContainerID );
 				await subscribeUntil( registry,
@@ -113,11 +109,6 @@ describe( 'modules/tagmanager versions', () => {
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
-				const {
-					getError,
-					getLiveContainerVersion,
-					hasFinishedResolution,
-				} = registry.select( STORE_NAME );
 				const accountID = fixtures.liveContainerVersion.accountId;
 				const internalContainerID = fixtures.liveContainerVersion.containerId;
 
@@ -146,11 +137,6 @@ describe( 'modules/tagmanager versions', () => {
 		} );
 		describe( 'isDoingGetLiveContainerVersion', () => {
 			it( 'returns true while the live container version fetch is in progress', async () => {
-				const {
-					isDoingGetLiveContainerVersion,
-					getLiveContainerVersion,
-					hasFinishedResolution,
-				} = registry.select( STORE_NAME );
 				const accountID = '100';
 				const internalContainerID = '200';
 				fetch
