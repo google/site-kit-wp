@@ -48,8 +48,8 @@ export const actions = {
 	 * @since n.e.x.t
 	 * @private
 	 *
-	 * @param {string}	url 		URL used for generating the report.
-	 * @param {string}	strategy	Strategy used for generating the report.
+	 * @param {string} url      URL used for generating the report.
+	 * @param {string} strategy Strategy used for generating the report.
 	 * @return {Object} Object with {response, error}
 	 */
 	*fetchReport( url, strategy ) {
@@ -93,10 +93,10 @@ export const actions = {
 	 * @since n.e.x.t
 	 * @private
 	 *
-	 * @param {Object} 	report			Report to add.
-	 * @param {Object}	args			Options used for generating the report.
-	 * @param {string} 	args.strategy		Strategy used for generating the report.
-	 * @param {string} 	args.url 		URL used for generating the report.
+	 * @param {Object} report        Report to add.
+	 * @param {Object} args          Options used for generating the report.
+	 * @param {string} args.strategy Strategy used for generating the report.
+	 * @param {string} args.url      URL used for generating the report.
 	 * @return {Object} Redux-style action.
 	 */
 	receiveReport( report, { strategy, url } ) {
@@ -195,9 +195,9 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}	state		Data store's state.
-	 * @param {string}	url 		URL used for generating the report.
-	 * @param {string}	strategy	Strategy used for generating the report.
+	 * @param {Object} state    Data store's state.
+	 * @param {string} url      URL used for generating the report.
+	 * @param {string} strategy Strategy used for generating the report.
 	 * @return {(Object|undefined)} A PageSpeed Insights report; `undefined` if not loaded.
 	 */
 	getReport( state, url, strategy ) {
