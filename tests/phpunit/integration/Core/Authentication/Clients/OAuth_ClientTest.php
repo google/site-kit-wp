@@ -440,6 +440,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'nonce=', $url );
 		$this->assertContains( 'return_uri=', $url );
 		$this->assertContains( 'action_uri=', $url );
+		$this->assertContains( 'user_roles=', $url );
 		$this->assertContains( 'application_name=', $url );
 		$this->assertNotContains( 'site_id=', $url );
 
@@ -451,6 +452,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'code=temp-code', $url );
 		$this->assertContains( 'scope=', $url );
 		$this->assertContains( 'nonce=', $url );
+		$this->assertContains( 'user_roles=', $url );
 		$this->assertContains( 'application_name=', $url );
 		$this->assertNotContains( '&name=', $url );
 		$this->assertNotContains( 'url=', $url );

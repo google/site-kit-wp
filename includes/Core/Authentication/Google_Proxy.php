@@ -79,7 +79,7 @@ class Google_Proxy {
 	 *
 	 * @since 1.5.0
 	 *
-	 * @return array
+	 * @return array Associative array of $query_arg => $value pairs.
 	 */
 	public function get_site_fields() {
 		$home_url_no_scheme = str_replace( array( 'http://', 'https://' ), '', home_url() );
@@ -93,6 +93,28 @@ class Google_Proxy {
 			// TODO: Remove admin_root once proxy is updated.
 			'admin_root'             => str_replace( array( 'http://', 'https://', $home_url_no_scheme ), '', admin_url() ),
 			'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
+		);
+	}
+
+	/**
+	 * Gets user fields.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Associative array of $query_arg => $value pairs.
+	 */
+	public function get_user_fields() {
+		$current_user = wp_get_current_user();
+
+		$user_roles = $current_user && $current_user->exists() && ! empty( $current_user->roles ) ? $current_user->roles : array();
+		// If multisite, also consider network administrators.
+		if ( is_multisite() && current_user_can( 'manage_network' ) ) {
+			$user_roles[] = 'network_administrator';
+		}
+		$user_roles = array_values( array_unique( $user_roles ) );
+
+		return array(
+			'user_roles' => implode( ',', $user_roles ),
 		);
 	}
 
