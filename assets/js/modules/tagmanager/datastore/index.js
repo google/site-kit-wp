@@ -25,6 +25,7 @@ import { STORE_NAME } from './constants';
 import accounts from './accounts';
 import containers from './containers';
 import existingTag from './existing-tag';
+import versions from './versions';
 export { STORE_NAME };
 
 let baseModuleStore = Modules.createModuleStore( 'tagmanager', {
@@ -62,6 +63,7 @@ const store = Data.combineStores(
 	accounts,
 	containers,
 	existingTag,
+	versions,
 );
 
 // Register this store on the global registry.
