@@ -433,6 +433,27 @@ describe( 'core/user authentication', () => {
 		} );
 
 		describe( 'needsReauthentication', () => {
+			it( 'uses a resolver get all reauthentication info', async () => {
+				fetch
+					.doMockOnceIf( coreUserDataEndpointRegExp )
+					.mockResponseOnce(
+						JSON.stringify( coreUserDataExpectedResponse ),
+						{ status: 200 }
+					);
+
+				const initialNeedsReauthentication = registry.select( STORE_NAME ).needsReauthentication();
+				// The scopes will be their initial value until the data is resolved.
+				expect( initialNeedsReauthentication ).toEqual( undefined );
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getAuthentication' )
+				);
+
+				const needsReauthentication = registry.select( STORE_NAME ).needsReauthentication();
+
+				expect( fetch ).toHaveBeenCalledTimes( 1 );
+				expect( needsReauthentication ).toEqual( coreUserDataExpectedResponse.needsReauthentication );
+			} );
+
 			it( 'dispatches an error if the request fails', async () => {
 				const response = {
 					code: 'internal_server_error',
