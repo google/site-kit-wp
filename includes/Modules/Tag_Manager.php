@@ -434,7 +434,6 @@ final class Tag_Manager extends Module
 			'workspaces'          => 'tagmanager',
 			// POST.
 			'create-container'    => 'tagmanager',
-			'settings'            => '',
 		);
 	}
 
@@ -624,27 +623,6 @@ final class Tag_Manager extends Module
 				$container->setUsageContext( (array) $usage_context );
 
 				return $this->get_tagmanager_service()->accounts_containers->create( "accounts/{$account_id}", $container );
-			case 'POST:settings':
-				return function() use ( $data ) {
-					$option = $data->data;
-
-					if ( isset( $option['accountID'] ) ) {
-						try {
-							if ( isset( $option['containerID'] ) && 'container_create' === $option['containerID'] ) {
-								$option['containerID'] = $this->create_container( $option['accountID'], self::USAGE_CONTEXT_WEB );
-							}
-							if ( isset( $option['ampContainerID'] ) && 'container_create' === $option['ampContainerID'] ) {
-								$option['ampContainerID'] = $this->create_container( $option['accountID'], self::USAGE_CONTEXT_AMP );
-							}
-						} catch ( Exception $e ) {
-							return $this->exception_to_error( $e, $data->datapoint );
-						}
-					}
-
-					$this->get_settings()->merge( $option );
-
-					return $this->get_settings()->get();
-				};
 			case 'GET:tag-permission':
 				return function () use ( $data ) {
 					if ( ! isset( $data['tag'] ) ) {
