@@ -25,6 +25,7 @@ import { STORE_NAME } from './constants';
 import accounts from './accounts';
 import containers from './containers';
 import existingTag from './existing-tag';
+import settings from './settings';
 import versions from './versions';
 export { STORE_NAME };
 
@@ -63,6 +64,7 @@ const store = Data.combineStores(
 	accounts,
 	containers,
 	existingTag,
+	settings,
 	versions,
 );
 
