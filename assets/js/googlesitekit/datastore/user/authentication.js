@@ -246,7 +246,7 @@ export const selectors = {
 	 * Returns true if any required scopes are not satisfied or undefined
 	 * if reauthentication info is not available/loaded.
 	 *
-	 * @since 1.9.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} User reauthentication status.

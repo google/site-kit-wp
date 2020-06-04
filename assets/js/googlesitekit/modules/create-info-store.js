@@ -28,21 +28,22 @@ const { createRegistrySelector } = Data;
 /**
  * Creates a store object that has selectors for managing site info.
  *
- * @since 1.6.0
+ * @since n.e.x.t
  * @private
  *
+ * @param {string}  slug                  Slug of the module that the store is for.
  * @param {Object}  options               Options to consider for the store.
  * @param {number}  options.storeName     Store name to use.
  * @param {string}  options.adminPage     Store admin page. Default is 'googlesitekit-dashboard'.
  * @param {boolean} options.requiresSetup Store flag, for requires setup. Default is 'true'
  * @return {Object} The info store object.
  */
-export const createInfoStore = ( {
+export const createInfoStore = ( slug, {
 	storeName = undefined,
-	adminPage = undefined,
-	requiresSetup = undefined,
+	adminPage = 'googlesitekit-dashboard',
+	requiresSetup = true,
 } = {} ) => {
-	const STORE_NAME = storeName;
+	const STORE_NAME = storeName || `modules/${ slug }`;
 
 	const INITIAL_STATE = {};
 	const actions = {};
@@ -53,23 +54,23 @@ export const createInfoStore = ( {
 	const resolvers = {};
 	const selectors = {
 		/**
-		 * Returns admin screen url.
+		 * Returns admin screen URL.
 		 *
 		 * @since n.e.x.t
 		 *
 		 * @param {(Object|undefined)} queryArgs Query arguments to add to admin URL.
-		 * @return {(string|undefined)} The admin screen url.
+		 * @return {(string|undefined)} The admin screen URL.
 		 */
 		getAdminScreenURL: createRegistrySelector( ( select ) => ( queryArgs ) => {
 			return select( CORE_SITE ).getAdminURL( adminPage, queryArgs );
 		} ),
 
 		/**
-		 * Returns admin reauth url.
+		 * Returns admin reauthentication URL.
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @return {(string|undefined)} The admin reauth url.
+		 * @return {(string|undefined)} The admin reauthentication URL.
 		 */
 		getAdminReauthURL: createRegistrySelector( ( select ) => () => {
 			const { needsReauthentication } = select( CORE_USER ).getAuthentication() || {};
@@ -83,7 +84,7 @@ export const createInfoStore = ( {
 				return select( STORE_NAME ).getAdminScreenURL( noSetupQueryArgs );
 			}
 
-			return select( CORE_SITE ).getAdminScreenURL();
+			return select( STORE_NAME ).getAdminScreenURL();
 		} ),
 	};
 

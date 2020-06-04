@@ -73,7 +73,7 @@ export const createModuleStore = ( slug, {
 		storeName,
 	} );
 
-	const infoStore = createInfoStore( {
+	const infoStore = createInfoStore( slug, {
 		storeName,
 		adminPage,
 		requiresSetup,

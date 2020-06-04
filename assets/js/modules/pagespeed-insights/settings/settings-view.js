@@ -30,7 +30,7 @@ import { STORE_NAME } from '../datastore/constants';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const dashboardPermalink = useSelect( ( select ) => select( STORE_NAME ).getAdminReauthURL() );
+	const dashboardPermalink = useSelect( ( select ) => select( STORE_NAME ).getAdminScreenURL() );
 
 	const content = sprintf(
 		/* translators: %s is the URL to the Site Kit dashboard. */

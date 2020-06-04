@@ -35,6 +35,7 @@ const { useSelect } = Data;
 export default function SettingsSetupIncomplete() {
 	const accountStatus = useSelect( ( select ) => select( STORE_NAME ).getAccountStatus() );
 	const isPendingStatus = isPendingAccountStatus( accountStatus );
+	const adminReauthURL = useSelect( ( select ) => select( STORE_NAME ).getAdminReauthURL() );
 
 	return (
 		<Fragment>
@@ -46,8 +47,7 @@ export default function SettingsSetupIncomplete() {
 			<Link
 				className="googlesitekit-settings-module__edit-button"
 				href={
-					// TODO: Replace this function with something datastore-driven.
-					useSelect( ( select ) => select( STORE_NAME ).getAdminReauthURL() )
+					adminReauthURL
 				}
 				inherit
 			>
