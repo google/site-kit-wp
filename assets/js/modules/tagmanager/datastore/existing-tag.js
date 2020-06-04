@@ -28,7 +28,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { getExistingTag } from '../../../util/tag';
-import isValidContainerID from '../util/validation';
+import { isValidContainerID } from '../util/validation';
 
 const { createRegistrySelector } = Data;
 
