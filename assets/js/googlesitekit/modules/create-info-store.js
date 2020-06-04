@@ -70,9 +70,10 @@ export const createInfoStore = ( slug, {
 		 *
 		 * @since n.e.x.t
 		 *
+		 * @param {boolean} reAuth The module activation status. Default is true.
 		 * @return {(string|undefined)} The admin reauthentication URL.
 		 */
-		getAdminReauthURL: createRegistrySelector( ( select ) => () => {
+		getAdminReauthURL: createRegistrySelector( ( select ) => ( reAuth = true ) => {
 			const { needsReauthentication } = select( CORE_USER ).getAuthentication() || {};
 
 			const noSetupQueryArgs = ! requiresSetup ? {
@@ -84,7 +85,7 @@ export const createInfoStore = ( slug, {
 				return select( STORE_NAME ).getAdminScreenURL( noSetupQueryArgs );
 			}
 
-			return select( STORE_NAME ).getAdminScreenURL();
+			return select( STORE_NAME ).getAdminScreenURL( { slug, reAuth } );
 		} ),
 	};
 
