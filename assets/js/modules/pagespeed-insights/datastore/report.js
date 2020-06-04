@@ -28,7 +28,6 @@ import { isPlainObject } from 'lodash';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { STORE_NAME as CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 
 // Actions
 const FETCH_REPORT = 'FETCH_REPORT';
@@ -48,35 +47,37 @@ export const actions = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}	options Options used for generating the report.
+	 * @param {string}	url 		URL used for generating the report.
+	 * @param {string}	strategy	Strategy used for generating the report.
 	 * @return {Object} Redux-style action.
 	 */
-	*fetchReport( options ) {
+	*fetchReport( url, strategy ) {
 		let response, error;
 
 		yield {
-			payload: { options },
+			payload: { strategy, url },
 			type: START_FETCH_REPORT,
 		};
 
 		try {
 			const report = yield {
-				payload: { options },
+				payload: { strategy, url },
 				type: FETCH_REPORT,
 			};
 
-			yield actions.receiveReport( report, options );
+			yield actions.receiveReport( report, { strategy, url } );
 
 			yield {
-				payload: { options },
+				payload: { strategy, url },
 				type: FINISH_FETCH_REPORT,
 			};
 		} catch ( e ) {
 			error = e;
 			yield {
 				payload: {
-					options,
 					error,
+					strategy,
+					url,
 				},
 				type: CATCH_FETCH_REPORT,
 			};
@@ -92,13 +93,15 @@ export const actions = {
 	 * @private
 	 *
 	 * @param {Object} 	report				Report to add.
-	 * @param {Object}	[options]			Options used for generating the report.
-	 * @param {string} 	[options.strategy]	Strategy used for generating the report.
-	 * @param {string} 	[options.url]		URL used for generating the report.
+	 * @param {Object}	[args]				Options used for generating the report.
+	 * @param {string} 	[args.strategy]		Strategy used for generating the report.
+	 * @param {string} 	[args.url]			URL used for generating the report.
 	 * @return {Object} Redux-style action.
 	 */
-	receiveReport( report, { strategy, url } = {} ) {
+	receiveReport( report, { strategy, url } ) {
 		invariant( isPlainObject( report ), 'report must be an object.' );
+		invariant( typeof strategy === 'string', 'report must be a string.' );
+		invariant( typeof url === 'string', 'report must be a string.' );
 
 		return {
 			payload: { report, strategy, url },
@@ -109,7 +112,7 @@ export const actions = {
 };
 
 export const controls = {
-	[ FETCH_REPORT ]: ( { payload: { options: { strategy, url } = {} } } ) => {
+	[ FETCH_REPORT ]: ( { payload: { strategy, url } } ) => {
 		return API.get( 'modules', 'pagespeed-insights', 'pagespeed', { strategy, url } );
 	},
 };
@@ -117,7 +120,7 @@ export const controls = {
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case START_FETCH_REPORT: {
-			const { options: { strategy, url } } = payload;
+			const { strategy, url } = payload;
 
 			return {
 				...state,
@@ -129,7 +132,7 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case FINISH_FETCH_REPORT: {
-			const { options: { strategy, url } } = payload;
+			const { strategy, url } = payload;
 
 			return {
 				...state,
@@ -153,7 +156,7 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 
 		case CATCH_FETCH_REPORT: {
-			const { options: { strategy, url }, error } = payload;
+			const { error, strategy, url } = payload;
 
 			return {
 				...state,
@@ -172,20 +175,16 @@ export const reducer = ( state, { type, payload } ) => {
 };
 
 export const resolvers = {
-	*getReport( options = {} ) {
+	*getReport( url, strategy ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const {
-			strategy = 'mobile',
-			url = registry.select( CORE_SITE ).getReferenceSiteURL(),
-		} = options;
-		const existingReport = registry.select( STORE_NAME ).getReport( { strategy, url } );
+		const existingReport = registry.select( STORE_NAME ).getReport( url, strategy );
 
 		// If there is already a report loaded in state, consider it fulfilled and don't make an API request.
 		if ( existingReport ) {
 			return;
 		}
 
-		yield actions.fetchReport( { strategy, url } );
+		yield actions.fetchReport( url, strategy );
 	},
 };
 
@@ -195,13 +194,12 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}         		state				Data store's state.
-	 * @param {Object}				[options]			Optional options for generating the report.
-	 * @param {string} 				[options.strategy]	Optional strategy. Default 'mobile'.
-	 * @param {string} 				[options.url]		Optional URL. Default the site's reference URL.
+	 * @param {Object}         		state		Data store's state.
+	 * @param {string} 				url			URL used for generating the report.
+	 * @param {string} 				strategy	Strategy used for generating the report.
 	 * @return {(Object|undefined)} A PageSpeed Insights report; `undefined` if not loaded.
 	 */
-	getReport( state, { strategy, url } = {} ) {
+	getReport( state, url, strategy ) {
 		const { reports } = state;
 
 		return reports[ `${ strategy }::${ url }` ];

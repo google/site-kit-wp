@@ -63,40 +63,39 @@ describe( 'modules/pagespeed-insights report', () => {
 						{ status: 200 }
 					);
 
-				const options = { strategy: 'desktop', url: 'http://example.com/' };
+				const strategy = 'mobile';
+				const url = 'http://example.com/';
 
-				const initialReport = registry.select( STORE_NAME ).getReport( options );
+				const initialReport = registry.select( STORE_NAME ).getReport( url, strategy );
 
 				// Ensure the proper parameters were passed.
 				expect( fetch.mock.calls[ 0 ][ 0 ] ).toMatchQueryParameters(
-					options
+					{ url, strategy }
 				);
 
 				expect( initialReport ).toEqual( undefined );
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ options ] )
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] )
 				);
 
-				const report = registry.select( STORE_NAME ).getReport( options );
+				const report = registry.select( STORE_NAME ).getReport( url, strategy );
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 				expect( report ).toEqual( fixtures.pagespeedDesktop );
 			} );
 
 			it( 'does not make a network request if report for given options is already present', async () => {
-				const options = {
-					strategy: 'mobile',
-					url: 'http://example.com/',
-				};
+				const strategy = 'mobile';
+				const url = 'http://example.com/';
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveReport( fixtures.pagespeedMobile, options );
+				registry.dispatch( STORE_NAME ).receiveReport( fixtures.pagespeedMobile, { url, strategy } );
 
-				const report = registry.select( STORE_NAME ).getReport( options );
+				const report = registry.select( STORE_NAME ).getReport( url, strategy );
 
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ options ] )
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] )
 				);
 
 				expect( fetch ).not.toHaveBeenCalled();
@@ -118,20 +117,18 @@ describe( 'modules/pagespeed-insights report', () => {
 						{ status: 500 }
 					);
 
-				const options = {
-					strategy: 'mobile',
-					url: 'http://example.com/',
-				};
+				const strategy = 'mobile';
+				const url = 'http://example.com/';
 
 				muteConsole( 'error' );
-				registry.select( STORE_NAME ).getReport( options );
+				registry.select( STORE_NAME ).getReport( url, strategy );
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ options ] )
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] )
 				);
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );
 
-				const report = registry.select( STORE_NAME ).getReport( options );
+				const report = registry.select( STORE_NAME ).getReport( url, strategy );
 				expect( report ).toEqual( undefined );
 			} );
 		} );
