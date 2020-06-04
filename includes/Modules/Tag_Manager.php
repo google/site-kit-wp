@@ -447,16 +447,13 @@ final class Tag_Manager extends Module
 	protected function get_datapoint_definitions() {
 		$map = parent::get_datapoint_definitions();
 
-		// TODO: remove this once datapoint exists.
-		if ( isset( $map['POST:create-container'] ) ) {
-			$map['POST:create-container'] = array_merge(
-				$map['POST:create-container'],
-				array(
-					'scopes'                 => array( 'https://www.googleapis.com/auth/tagmanager.edit.containers' ),
-					'request_scopes_message' => __( 'Additional permissions are required to create a new Tag Manager container.', 'google-site-kit' ),
-				)
-			);
-		}
+		$map['POST:create-container'] = array_merge(
+			$map['POST:create-container'],
+			array(
+				'scopes'                 => array( 'https://www.googleapis.com/auth/tagmanager.edit.containers' ),
+				'request_scopes_message' => __( 'Additional permissions are required to create a new Tag Manager container on your behalf.', 'google-site-kit' ),
+			)
+		);
 
 		return $map;
 	}
