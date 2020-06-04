@@ -144,5 +144,34 @@ describe( 'modules/tagmanager versions', () => {
 				expect( getLiveContainerVersion( accountID, internalContainerID ) ).toEqual( undefined );
 			} );
 		} );
+		describe( 'isDoingGetLiveContainerVersion', () => {
+			it( 'returns true while the live container version fetch is in progress', async () => {
+				const {
+					isDoingGetLiveContainerVersion,
+					getLiveContainerVersion,
+					hasFinishedResolution,
+				} = registry.select( STORE_NAME );
+				const accountID = '100';
+				const internalContainerID = '200';
+				fetch
+					.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/live-container-version/ )
+					.mockResponseOnce(
+						JSON.stringify( {} ),
+						{ status: 200 }
+					);
+
+				expect( isDoingGetLiveContainerVersion( accountID, internalContainerID ) ).toBe( false );
+
+				getLiveContainerVersion( accountID, internalContainerID );
+
+				expect( isDoingGetLiveContainerVersion( accountID, internalContainerID ) ).toBe( true );
+
+				await subscribeUntil( registry,
+					() => hasFinishedResolution( 'getLiveContainerVersion', [ accountID, internalContainerID ] )
+				);
+
+				expect( isDoingGetLiveContainerVersion( accountID, internalContainerID ) ).toBe( false );
+			} );
+		} );
 	} );
 } );

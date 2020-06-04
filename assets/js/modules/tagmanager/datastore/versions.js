@@ -175,6 +175,17 @@ export const selectors = {
 	getLiveContainerVersion( state, accountID, internalContainerID ) {
 		return state.liveContainerVersions[ `${ accountID }::${ internalContainerID }` ];
 	},
+	/**
+	 * Checks whether or not the live container version is being fetched for the given account and container IDs.
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} accountID Account ID the container belongs to.
+	 * @param {string} internalContainerID Internal container ID to get version for.
+	 * @return {(boolean|undefined)} True if the live container version is being fetched, otherwise false.
+	 */
+	isDoingGetLiveContainerVersion( state, accountID, internalContainerID ) {
+		return !! state.isFetchingLiveContainerVersion[ `${ accountID }::${ internalContainerID }` ];
+	},
 };
 
 export default {
