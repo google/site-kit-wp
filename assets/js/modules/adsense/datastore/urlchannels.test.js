@@ -48,8 +48,7 @@ describe( 'modules/adsense URL channels', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.restore();
-		fetchMock.mockClear();
+		fetchMock.reset();
 	} );
 
 	describe( 'actions', () => {

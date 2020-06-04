@@ -36,15 +36,14 @@ describe( 'core/site reset', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.restore();
-		fetchMock.mockClear();
+		fetchMock.reset();
 	} );
 
 	describe( 'actions', () => {
 		describe( 'fetchReset', () => {
 			it( 'sets isDoingReset ', async () => {
 				const response = true;
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
 					{ body: JSON.stringify( response ), status: 200 }
 				);
@@ -58,7 +57,7 @@ describe( 'core/site reset', () => {
 			it( 'does not require any params', () => {
 				expect( async () => {
 					const response = true;
-					fetchMock.once(
+					fetchMock.postOnce(
 						/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
 						{ body: JSON.stringify( response ), status: 200 }
 					);
@@ -69,7 +68,7 @@ describe( 'core/site reset', () => {
 
 			it( 'resets connection ', async () => {
 				const response = true;
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
 					{ body: JSON.stringify( response ), status: 200 }
 				);
@@ -81,7 +80,7 @@ describe( 'core/site reset', () => {
 				await registry.dispatch( STORE_NAME ).reset();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
 					{ body: { connected: false, resettable: false }, status: 200 }
 				);
@@ -103,7 +102,7 @@ describe( 'core/site reset', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
 					{ body: JSON.stringify( response ), status: 500 }
 				);

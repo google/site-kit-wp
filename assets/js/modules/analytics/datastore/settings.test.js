@@ -68,8 +68,7 @@ describe( 'modules/analytics settings', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.restore();
-		fetchMock.mockClear();
+		fetchMock.reset();
 	} );
 
 	describe( 'actions', () => {

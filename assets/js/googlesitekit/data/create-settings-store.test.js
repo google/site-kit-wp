@@ -68,8 +68,7 @@ describe( 'createSettingsStore store', () => {
 	} );
 
 	afterEach( () => {
-		fetchMock.restore();
-		fetchMock.mockClear();
+		fetchMock.reset();
 		unsubscribeFromAll( registry );
 	} );
 

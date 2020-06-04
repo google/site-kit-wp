@@ -48,8 +48,7 @@ describe( 'modules/analytics tags', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.restore();
-		fetchMock.mockClear();
+		fetchMock.reset();
 	} );
 
 	describe( 'actions', () => {

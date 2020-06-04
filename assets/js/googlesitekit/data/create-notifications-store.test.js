@@ -61,8 +61,7 @@ describe( 'createNotificationsStore store', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.restore();
-		fetchMock.mockClear();
+		fetchMock.reset();
 	} );
 
 	describe( 'name', () => {
@@ -226,7 +225,7 @@ describe( 'createNotificationsStore store', () => {
 
 			it( 'returns client notifications even if server notifications have not loaded', () => {
 				const notification = { id: 'added_notification' };
-				fetchMock.get( { query: { _locale: 'user' } }, { status: 200 } );
+				fetchMock.get( '*', { status: 200 } );
 				dispatch.addNotification( notification );
 
 				// Return client notifications even if the server notifications have not

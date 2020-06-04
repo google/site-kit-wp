@@ -52,8 +52,7 @@ describe( 'modules/analytics accounts', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.restore();
-		fetchMock.mockClear();
+		fetchMock.reset();
 	} );
 
 	describe( 'actions', () => {

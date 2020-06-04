@@ -48,18 +48,14 @@ describe( 'core/site connection', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.restore();
-		fetchMock.mockClear();
+		fetchMock.reset();
 	} );
 
 	describe( 'actions', () => {
 		describe( 'fetchConnection', () => {
 			it( 'does not require any params', () => {
 				expect( () => {
-					fetchMock.getOnce(
-						'*',
-						{ body: {}, status: 200 }
-					);
+					fetchMock.getOnce( '*', { body: {}, status: 200 } );
 					registry.dispatch( STORE_NAME ).fetchConnection();
 				} ).not.toThrow();
 			} );
@@ -86,7 +82,7 @@ describe( 'core/site connection', () => {
 	describe( 'selectors', () => {
 		describe( 'getConnection', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
 					{ body: responseConnected, status: 200 }
 				);
@@ -131,7 +127,7 @@ describe( 'core/site connection', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
 					{ body: response, status: 500 }
 				);
@@ -153,7 +149,7 @@ describe( 'core/site connection', () => {
 
 		describe( 'isConnected', () => {
 			it( 'uses a resolver get all connection info', async () => {
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
 					{ body: responseConnected, status: 200 }
 				);
@@ -180,7 +176,7 @@ describe( 'core/site connection', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
 					{ body: response, status: 500 }
 				);
@@ -202,7 +198,7 @@ describe( 'core/site connection', () => {
 			it( 'returns undefined if connection info is not available', async () => {
 				// This triggers a network request, so ignore the error.
 				muteConsole( 'error' );
-				fetchMock.get( { query: { _locale: 'user' } }, { status: 200 } );
+				fetchMock.get( '*', { status: 200 } );
 				const isConnected = registry.select( STORE_NAME ).isConnected();
 
 				expect( isConnected ).toEqual( undefined );
@@ -211,7 +207,7 @@ describe( 'core/site connection', () => {
 
 		describe( 'isResettable', () => {
 			it( 'uses a resolver get all connection info', async () => {
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
 					{ body: responseConnected, status: 200 }
 				);
@@ -238,7 +234,7 @@ describe( 'core/site connection', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
 					{ body: response, status: 500 }
 				);
@@ -260,7 +256,7 @@ describe( 'core/site connection', () => {
 			it( 'returns undefined if connection info is not available', async () => {
 				// This triggers a network request, so ignore the error.
 				muteConsole( 'error' );
-				fetchMock.get( { query: { _locale: 'user' } }, { status: 200 } );
+				fetchMock.get( '*', { status: 200 } );
 				const isResettable = registry.select( STORE_NAME ).isResettable();
 
 				expect( isResettable ).toEqual( undefined );
@@ -269,7 +265,7 @@ describe( 'core/site connection', () => {
 
 		describe( 'isSetupCompleted', () => {
 			it( 'uses a resolver get all connection info', async () => {
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
 					{ body: responseConnected, status: 200 }
 				);
@@ -296,7 +292,7 @@ describe( 'core/site connection', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
 					{ body: response, status: 500 }
 				);
@@ -318,7 +314,7 @@ describe( 'core/site connection', () => {
 			it( 'returns undefined if connection info is not available', async () => {
 				// This triggers a network request, so ignore the error.
 				muteConsole( 'error' );
-				fetchMock.get( { query: { _locale: 'user' } }, { status: 200 } );
+				fetchMock.get( '*', { status: 200 } );
 				const isSetupCompleted = registry.select( STORE_NAME ).isSetupCompleted();
 
 				expect( isSetupCompleted ).toEqual( undefined );

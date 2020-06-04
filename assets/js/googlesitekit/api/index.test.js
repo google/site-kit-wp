@@ -51,8 +51,7 @@ describe( 'googlesitekit.api', () => {
 	} );
 
 	afterEach( async () => {
-		fetchMock.restore();
-		fetchMock.mockClear();
+		fetchMock.reset();
 		getItemSpy.mockRestore();
 		setItemSpy.mockRestore();
 
@@ -114,7 +113,7 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should send query string params from data params', async () => {
-			fetchMock.mock(
+			fetchMock.get(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/search/,
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -175,9 +174,9 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should cache requests by default', async () => {
-			expect( fetchMock ).toHaveBeenCalledTimes( 0 );
+			expect( fetchMock ).not.toHaveFetched();
 
-			fetchMock.mock(
+			fetchMock.get(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/users/,
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -207,7 +206,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should not use cache if caching is disabled globally', async () => {
 			setUsingCache( false );
 
-			fetchMock.mock(
+			fetchMock.get(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/notifications/,
 				{ body: { foo: 'bar' }, status: 200 }
 			);

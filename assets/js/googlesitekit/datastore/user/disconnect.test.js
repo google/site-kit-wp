@@ -29,7 +29,7 @@ describe( 'core/user disconnect', () => {
 	beforeEach( () => {
 		// Create a mock to avoid triggering a network request error.
 		// The return value is irrelevant to the test.
-		fetchMock.once(
+		fetchMock.postOnce(
 			coreUserDataDisconnectEndpointRegExp,
 			{ body: {}, status: 200 }
 		);
@@ -38,8 +38,7 @@ describe( 'core/user disconnect', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.restore();
-		fetchMock.mockClear();
+		fetchMock.reset();
 	} );
 
 	describe( 'disconnect', () => {

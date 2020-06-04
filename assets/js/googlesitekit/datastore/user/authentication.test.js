@@ -54,8 +54,7 @@ describe( 'core/user authentication', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.restore();
-		fetchMock.mockClear();
+		fetchMock.reset();
 	} );
 
 	describe( 'actions', () => {
@@ -63,7 +62,7 @@ describe( 'core/user authentication', () => {
 			it( 'does not require any params', () => {
 				// Create a mock to avoid triggering a network request error.
 				// The return value is irrelevant to the test.
-				fetchMock.once(
+				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
 					{ body: {}, status: 200 }
 				);
@@ -85,7 +84,7 @@ describe( 'core/user authentication', () => {
 	describe( 'selectors', () => {
 		describe( 'getAuthentication', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetchMock.once(
+				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
 					{ body: coreUserDataExpectedResponse, status: 200 }
 				);
@@ -130,7 +129,7 @@ describe( 'core/user authentication', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.once(
+				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
 					{ body: response, status: 500 }
 				);
@@ -151,7 +150,7 @@ describe( 'core/user authentication', () => {
 
 		describe( 'isAuthenticated', () => {
 			it( 'uses a resolver to to load the authenticated value if not yet set.', async () => {
-				fetchMock.once(
+				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
 					{ body: coreUserDataExpectedResponse, status: 200 }
 				);
@@ -178,7 +177,7 @@ describe( 'core/user authentication', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.once(
+				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
 					{ body: response, status: 500 }
 				);
@@ -202,7 +201,7 @@ describe( 'core/user authentication', () => {
 			it( 'returns undefined if authentication info is not available', async () => {
 				// Create a mock to avoid triggering a network request error.
 				// The return value is irrelevant to the test.
-				fetchMock.once(
+				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
 					{ body: {}, status: 200 }
 				);
@@ -214,7 +213,7 @@ describe( 'core/user authentication', () => {
 
 		describe( 'getGrantedScopes', () => {
 			it( 'uses a resolver get all authentication info', async () => {
-				fetchMock.once(
+				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
 					{ body: coreUserDataExpectedResponse, status: 200 }
 				);
@@ -241,7 +240,7 @@ describe( 'core/user authentication', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.once(
+				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
 					{ body: response, status: 500 }
 				);
@@ -265,7 +264,7 @@ describe( 'core/user authentication', () => {
 			it( 'returns undefined if authentication info is not available', async () => {
 				// Create a mock to avoid triggering a network request error.
 				// The return value is irrelevant to the test.
-				fetchMock.once(
+				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
 					{ body: {}, status: 200 }
 				);
@@ -276,7 +275,7 @@ describe( 'core/user authentication', () => {
 		} );
 		describe( 'getRequiredScopes', () => {
 			it( 'uses a resolver get all authentication info', async () => {
-				fetchMock.once(
+				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
 					{ body: coreUserDataExpectedResponse, status: 200 }
 				);
@@ -303,7 +302,7 @@ describe( 'core/user authentication', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.once(
+				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
 					{ body: response, status: 500 }
 				);
@@ -327,7 +326,7 @@ describe( 'core/user authentication', () => {
 			it( 'returns undefined if authentication info is not available', async () => {
 				// Create a mock to avoid triggering a network request error.
 				// The return value is irrelevant to the test.
-				fetchMock.once(
+				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
 					{ body: {}, status: 200 }
 				);
@@ -339,7 +338,7 @@ describe( 'core/user authentication', () => {
 
 		describe( 'getUnsatisfiedScopes', () => {
 			it( 'uses a resolver get all authentication info', async () => {
-				fetchMock.once(
+				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
 					{ body: coreUserDataExpectedResponse, status: 200 }
 				);
@@ -363,7 +362,7 @@ describe( 'core/user authentication', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.once(
+				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
 					{
 						body: JSON.stringify( response ),
@@ -388,7 +387,7 @@ describe( 'core/user authentication', () => {
 			it( 'returns undefined if authentication info is not available', async () => {
 				// Create a mock to avoid triggering a network request error.
 				// The return value is irrelevant to the test.
-				fetchMock.once(
+				fetchMock.getOnce(
 					coreUserDataEndpointRegExp,
 					{
 						body: {},

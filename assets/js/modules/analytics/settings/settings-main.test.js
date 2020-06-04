@@ -37,8 +37,7 @@ describe( 'SettingsMain', () => {
 	};
 
 	afterEach( () => {
-		fetchMock.restore();
-		fetchMock.mockClear();
+		fetchMock.reset();
 	} );
 
 	it( 'rolls back settings if settings have changed and is not editing', async () => {
