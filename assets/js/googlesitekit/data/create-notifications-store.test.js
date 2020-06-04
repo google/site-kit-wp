@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock-jest';
-
-/**
  * WordPress dependencies
  */
 import { createRegistry } from '@wordpress/data';
@@ -146,7 +141,7 @@ describe( 'createNotificationsStore store', () => {
 
 			it( 'does not remove server notifications and emits a warning if they are sent to removeNotification', async () => {
 				const serverNotifications = [ { id: 'server_notification' } ];
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
 					{ body: serverNotifications, status: 200 }
 				);
@@ -205,7 +200,7 @@ describe( 'createNotificationsStore store', () => {
 		describe( 'getNotifications', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const response = [ { id: 'test_notification' } ];
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
 					{ body: response, status: 200 }
 				);
@@ -249,7 +244,7 @@ describe( 'createNotificationsStore store', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/notifications/,
 					{ body: response, status: 500 }
 				);
@@ -276,13 +271,13 @@ describe( 'createNotificationsStore store', () => {
 				const [ type, identifier, datapoint ] = STORE_ARGS;
 				const response = { type, identifier, datapoint };
 
-				fetchMock.once(
+				fetchMock.getOnce(
 					( url ) => (
 						url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` )
 					),
 					{ body: response, status: 200 }
 				);
-				fetchMock.once(
+				fetchMock.getOnce(
 					( url ) => (
 						! url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` )
 					),

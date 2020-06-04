@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock-jest';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -198,7 +193,7 @@ describe( 'modules/analytics profiles', () => {
 					.hasFinishedResolution( 'getProfiles', [ testPropertyID ] )
 				);
 
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( fetchMock ).not.toHaveFetched();
 				expect( profiles ).toEqual( fixtures.profiles );
 				expect( profiles ).toHaveLength( 1 );
 			} );

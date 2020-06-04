@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock-jest';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -223,7 +218,7 @@ describe( 'modules/analytics accounts', () => {
 				);
 
 				expect( accounts ).toEqual( fixtures.accountsPropertiesProfiles.accounts );
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'does not make a network request if accounts exist but are empty (this is a valid state)', async () => {
@@ -237,7 +232,7 @@ describe( 'modules/analytics accounts', () => {
 				);
 
 				expect( accounts ).toEqual( [] );
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {

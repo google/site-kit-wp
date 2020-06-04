@@ -17,16 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock-jest';
-
-// /**
-//  * WordPress dependencies
-//  */
-// import apiFetch from '@wordpress/api-fetch';
-
-/**
  * Internal dependencies
  */
 import { muteConsole, unexpectedSuccess } from '../../../../tests/js/test-utils';
@@ -112,7 +102,7 @@ describe( 'googlesitekit.api', () => {
 		it( 'should return a response', async () => {
 			// TODO: Maybe refactor this into a helper once we know how we usually
 			// mock requests.
-			fetchMock.once(
+			fetchMock.getOnce(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/users/,
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -151,7 +141,7 @@ describe( 'googlesitekit.api', () => {
 				data: { status: 404 },
 			};
 
-			fetchMock.once(
+			fetchMock.getOnce(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/other/,
 				{ body: errorResponse, status: 404 }
 			);
@@ -171,7 +161,7 @@ describe( 'googlesitekit.api', () => {
 				data: { status: 500 },
 			};
 
-			fetchMock.once(
+			fetchMock.getOnce(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/users/,
 				{ body: errorResponse, status: 500 }
 			);

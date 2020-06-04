@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock-jest';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -184,7 +179,7 @@ describe( 'modules/analytics tags', () => {
 				);
 
 				expect( hasExistingTag ).toEqual( false );
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
@@ -243,7 +238,7 @@ describe( 'modules/analytics tags', () => {
 				);
 
 				expect( hasPermission ).toEqual( true );
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'returns false if no existing tag exists', async () => {
@@ -264,7 +259,7 @@ describe( 'modules/analytics tags', () => {
 				);
 
 				expect( hasPermission ).toEqual( false );
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
@@ -326,7 +321,7 @@ describe( 'modules/analytics tags', () => {
 				);
 
 				expect( hasPermission ).toEqual( null );
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 		} );
 	} );

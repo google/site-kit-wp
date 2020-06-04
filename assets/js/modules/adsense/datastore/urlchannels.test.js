@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock-jest';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -100,7 +95,7 @@ describe( 'modules/adsense URL channels', () => {
 					.hasFinishedResolution( 'getURLChannels', [ clientID ] )
 				);
 
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( fetchMock ).not.toHaveFetched();
 				expect( urlchannels ).toEqual( fixtures.urlchannels );
 			} );
 
@@ -147,7 +142,7 @@ describe( 'modules/adsense URL channels', () => {
 					() => store.getState().isFetchingURLChannels[ invalidClientID ] === false,
 				);
 
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( fetchMock ).not.toHaveFetched();
 
 				const urlchannels = registry.select( STORE_NAME ).getURLChannels( invalidClientID );
 				expect( urlchannels ).toEqual( undefined );

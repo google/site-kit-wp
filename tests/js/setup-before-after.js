@@ -1,4 +1,7 @@
-import fetchMock from 'fetch-mock';
+import fetchMockJest from 'fetch-mock-jest';
+
+// Set Jest global fetchMock so we don't have to import fetchMock in every test.
+fetchMock = fetchMockJest;
 
 beforeEach( () => {
 	global.console.error.mockClear();

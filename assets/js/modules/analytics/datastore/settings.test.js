@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock-jest';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -104,6 +99,7 @@ describe( 'modules/analytics settings', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
 					( url, opts ) => {
 						const { data } = JSON.parse( opts.body );
+						// Return the same settings passed to the API.
 						return { body: data, status: 200 };
 					}
 				);

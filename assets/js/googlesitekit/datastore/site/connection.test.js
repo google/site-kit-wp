@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock-jest';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -61,7 +56,10 @@ describe( 'core/site connection', () => {
 		describe( 'fetchConnection', () => {
 			it( 'does not require any params', () => {
 				expect( () => {
-					muteConsole( 'error' );
+					fetchMock.getOnce(
+						'*',
+						{ body: {}, status: 200 }
+					);
 					registry.dispatch( STORE_NAME ).fetchConnection();
 				} ).not.toThrow();
 			} );
@@ -123,7 +121,7 @@ describe( 'core/site connection', () => {
 					.hasFinishedResolution( 'getConnection' )
 				);
 
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( fetchMock ).not.toHaveFetched();
 				expect( connection ).toEqual( responseConnected );
 			} );
 

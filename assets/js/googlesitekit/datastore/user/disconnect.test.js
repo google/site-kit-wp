@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock-jest';
-
-/**
  * Internal dependencies
  */
 import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';

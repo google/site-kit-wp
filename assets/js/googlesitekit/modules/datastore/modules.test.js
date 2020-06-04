@@ -21,11 +21,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock-jest';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -377,7 +372,7 @@ describe( 'core/modules modules', () => {
 					.hasFinishedResolution( 'getModules' )
 				);
 
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( fetchMock ).not.toHaveFetched();
 				expect( modules ).toEqual( fixturesKeyValue );
 			} );
 

@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock-jest';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -100,7 +95,7 @@ describe( 'modules/adsense report', () => {
 					.hasFinishedResolution( 'getReport', [ options ] )
 				);
 
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( fetchMock ).not.toHaveFetched();
 				expect( report ).toEqual( fixtures.report );
 			} );
 

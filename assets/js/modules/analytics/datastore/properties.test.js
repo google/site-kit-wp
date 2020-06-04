@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock-jest';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -107,6 +102,7 @@ describe( 'modules/analytics properties', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{ body: response, status: 500 }
 				);
+				// Add additional mock to avoid unmatched request warning.
 				fetchMock.once(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
 					{ body: {}, status: 200 }

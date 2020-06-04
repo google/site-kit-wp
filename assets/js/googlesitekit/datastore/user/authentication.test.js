@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock-jest';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -125,7 +120,7 @@ describe( 'core/user authentication', () => {
 					.hasFinishedResolution( 'getAuthentication' )
 				);
 
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( fetchMock ).not.toHaveFetched();
 				expect( authentication ).toEqual( coreUserDataExpectedResponse );
 			} );
 
@@ -346,10 +341,7 @@ describe( 'core/user authentication', () => {
 			it( 'uses a resolver get all authentication info', async () => {
 				fetchMock.once(
 					coreUserDataEndpointRegExp,
-					{
-						body: coreUserDataExpectedResponse,
-						status: 200,
-					}
+					{ body: coreUserDataExpectedResponse, status: 200 }
 				);
 
 				const initialUnsatisfiedScopes = registry.select( STORE_NAME ).getUnsatisfiedScopes();

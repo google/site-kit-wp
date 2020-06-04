@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock-jest';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -318,7 +313,7 @@ describe( 'modules/adsense settings', () => {
 
 				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'getOriginalAccountStatus' ) );
 
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'does not override original account status when receiving settings again', async () => {

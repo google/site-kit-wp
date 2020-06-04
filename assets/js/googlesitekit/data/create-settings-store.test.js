@@ -131,18 +131,17 @@ describe( 'createSettingsStore store', () => {
 		describe( 'saveSettings', () => {
 			it( 'does not require any params', () => {
 				expect( async () => {
-					fetchMock.once(
+					fetchMock.getOnce(
 						/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
 						{ body: { setting1: 'serverside' }, status: 200 }
 					);
-					muteConsole( 'error' );
 					await dispatch.saveSettings();
 				} ).not.toThrow();
 			} );
 
 			it( 'updates settings from server', async () => {
 				const response = { isSkyBlue: 'yes' };
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
 					{ body: response, status: 200 }
 				);
@@ -178,7 +177,7 @@ describe( 'createSettingsStore store', () => {
 			} );
 
 			it( 'sets isDoingSaveSettings', () => {
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
 					{ body: { setting1: true }, status: 200 }
 				);
@@ -263,7 +262,7 @@ describe( 'createSettingsStore store', () => {
 		describe( 'getSettings', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const response = { setting1: 'value' };
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
 					{ body: response, status: 200 }
 				);
@@ -295,7 +294,7 @@ describe( 'createSettingsStore store', () => {
 
 				await subscribeUntil( registry, () => select.hasFinishedResolution( 'getSettings' ) );
 
-				expect( fetchMock ).toHaveFetchedTimes( 0 );
+				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'returns client settings even if server settings have not loaded', () => {
@@ -314,7 +313,7 @@ describe( 'createSettingsStore store', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
 					{ body: response, status: 500 }
 				);
@@ -342,7 +341,7 @@ describe( 'createSettingsStore store', () => {
 				const serverValues = { setting1: 'serverside' };
 				const clientValues = { setting1: 'clientside' };
 
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
 					{ body: serverValues, status: 200 }
 				);
@@ -378,7 +377,7 @@ describe( 'createSettingsStore store', () => {
 
 			it( 'uses a resolver to make a network request', async () => {
 				const value = 'serverside';
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
 					{
 						body: {
@@ -426,13 +425,13 @@ describe( 'createSettingsStore store', () => {
 				const [ type, identifier, datapoint ] = STORE_ARGS;
 				const response = { type, identifier, datapoint };
 
-				fetchMock.once(
+				fetchMock.getOnce(
 					( url ) => (
 						url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` )
 					),
 					{ body: response, status: 200 }
 				);
-				fetchMock.once(
+				fetchMock.getOnce(
 					( url ) => (
 						! url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` )
 					),
@@ -459,13 +458,13 @@ describe( 'createSettingsStore store', () => {
 				const [ type, identifier, datapoint ] = STORE_ARGS;
 				const response = { type, identifier, datapoint };
 
-				fetchMock.once(
+				fetchMock.postOnce(
 					( url ) => (
 						url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` )
 					),
 					{ body: response, status: 200 }
 				);
-				fetchMock.once(
+				fetchMock.postOnce(
 					( url ) => (
 						! url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` )
 					),
