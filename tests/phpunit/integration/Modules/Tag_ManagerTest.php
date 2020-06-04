@@ -113,6 +113,7 @@ class Tag_ManagerTest extends TestCase {
 				'create-container',
 				'workspaces',
 				'tags',
+				'live-container-version',
 			),
 			$tagmanager->get_datapoints()
 		);

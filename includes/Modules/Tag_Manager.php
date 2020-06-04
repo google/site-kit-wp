@@ -422,18 +422,19 @@ final class Tag_Manager extends Module
 	protected function get_datapoint_services() {
 		return array(
 			// GET / POST.
-			'connection'          => '',
-			'account-id'          => '',
-			'container-id'        => '',
+			'connection'             => '',
+			'account-id'             => '',
+			'container-id'           => '',
 			// GET.
-			'accounts'            => 'tagmanager',
-			'accounts-containers' => 'tagmanager',
-			'containers'          => 'tagmanager',
-			'tag-permission'      => 'tagmanager',
-			'tags'                => 'tagmanager',
-			'workspaces'          => 'tagmanager',
+			'accounts'               => 'tagmanager',
+			'accounts-containers'    => 'tagmanager',
+			'containers'             => 'tagmanager',
+			'live-container-version' => 'tagmanager',
+			'tag-permission'         => 'tagmanager',
+			'tags'                   => 'tagmanager',
+			'workspaces'             => 'tagmanager',
 			// POST.
-			'create-container'    => 'tagmanager',
+			'create-container'       => 'tagmanager',
 		);
 	}
 
@@ -620,6 +621,27 @@ final class Tag_Manager extends Module
 				$container->setUsageContext( (array) $usage_context );
 
 				return $this->get_tagmanager_service()->accounts_containers->create( "accounts/{$account_id}", $container );
+			case 'GET:live-container-version':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+				if ( ! isset( $data['internalContainerID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'internalContainerID' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				return $this->get_tagmanager_service()->accounts_containers_versions->live(
+					"accounts/{$data['accountID']}/containers/{$data['internalContainerID']}"
+				);
 			case 'GET:tag-permission':
 				return function () use ( $data ) {
 					if ( ! isset( $data['tag'] ) ) {
