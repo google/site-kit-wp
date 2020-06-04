@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import isPlainObject from 'lodash/isPlainObject';
 import invariant from 'invariant';
 
 /**
@@ -80,7 +81,11 @@ export const actions = {
 
 		return { response, error };
 	},
-	receiveLiveContainerVersion( liveContainerVersion, { accountID, internalContainerID } ) {
+	receiveLiveContainerVersion( liveContainerVersion, { accountID, internalContainerID } = {} ) {
+		invariant( isPlainObject( liveContainerVersion ), 'a valid live container version is required to receive.' );
+		invariant( isValidAccountID( accountID ), 'a valid accountID is required to receive live container version.' );
+		invariant( isValidInternalContainerID( internalContainerID ), 'a valid internalContainerID is required to receive live container version.' );
+
 		return {
 			payload: {
 				liveContainerVersion,

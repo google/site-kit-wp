@@ -65,7 +65,44 @@ describe( 'modules/tagmanager versions', () => {
 	} );
 
 	describe( 'actions', () => {
+		describe( 'receiveLiveContainerVersion', () => {
+			const validContainerVersion = {};
+			const validAccountID = '100';
+			const invalidAccountID = '0000';
+			const validInternalContainerID = '200';
+			const invalidInternalContainerID = '00';
 
+			it( 'requires a liveContainerVersion object', () => {
+				expect( receiveLiveContainerVersion ).toThrow( 'a valid live container version is required to receive.' );
+			} );
+
+			it( 'requires a valid accountID', () => {
+				expect( () => {
+					receiveLiveContainerVersion( validContainerVersion, {
+						accountID: invalidAccountID,
+						internalContainerID: validInternalContainerID,
+					} );
+				} ).toThrow( 'a valid accountID is required to receive live container version.' );
+			} );
+
+			it( 'requires a valid internalContainerID', () => {
+				expect( () => {
+					receiveLiveContainerVersion( validContainerVersion, {
+						accountID: validAccountID,
+						internalContainerID: invalidInternalContainerID,
+					} );
+				} ).toThrow( 'a valid internalContainerID is required to receive live container version.' );
+			} );
+
+			it( 'does not throw with valid input', () => {
+				expect( () => {
+					receiveLiveContainerVersion( validContainerVersion, {
+						accountID: validAccountID,
+						internalContainerID: validInternalContainerID,
+					} );
+				} ).not.toThrow();
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
