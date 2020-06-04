@@ -177,4 +177,11 @@
 
 		@include screen-reader-only;
 	}
+
+	.hidden-on-mobile {
+
+		@media (max-width: $bp-mobileOnly ) {
+			display: none;
+		}
+	}
 }
