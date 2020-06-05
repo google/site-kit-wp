@@ -374,7 +374,7 @@ describe( 'modules/analytics accounts', () => {
 
 				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toEqual( undefined );
 
-				registry.dispatch( STORE_NAME ).receiveCreateAccount( { id: 'test-account-ticket-id' } );
+				registry.dispatch( STORE_NAME ).receiveCreateAccount( { id: 'test-account-ticket-id' }, { data: {} } );
 
 				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toContain( 'api.accountTicketId=test-account-ticket-id' );
 			} );
@@ -382,7 +382,7 @@ describe( 'modules/analytics accounts', () => {
 			it( 'requires the user’s email', () => {
 				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toEqual( undefined );
 
-				registry.dispatch( STORE_NAME ).receiveCreateAccount( { id: 'test-account-ticket-id' } );
+				registry.dispatch( STORE_NAME ).receiveCreateAccount( { id: 'test-account-ticket-id' }, { data: {} } );
 
 				expect( registry.select( STORE_NAME ).getAccountTicketTermsOfServiceURL() ).toEqual( undefined );
 

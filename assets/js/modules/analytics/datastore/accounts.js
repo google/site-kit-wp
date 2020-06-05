@@ -37,7 +37,7 @@ import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/c
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { actions as tagActions } from './tags';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-const { createRegistrySelector, createRegistryControl } = Data;
+const { createRegistrySelector } = Data;
 
 const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 	baseName: 'getAccountsPropertiesProfiles',
@@ -60,13 +60,25 @@ const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 	},
 } );
 
-// Actions
-const FETCH_CREATE_ACCOUNT = 'FETCH_CREATE_ACCOUNT';
-const RECEIVE_CREATE_ACCOUNT = 'RECEIVE_CREATE_ACCOUNT';
-const START_FETCH_CREATE_ACCOUNT = 'START_FETCH_CREATE_ACCOUNT';
-const FINISH_FETCH_CREATE_ACCOUNT = 'FINISH_FETCH_CREATE_ACCOUNT';
-const CATCH_FETCH_CREATE_ACCOUNT = 'CATCH_FETCH_CREATE_ACCOUNT';
+const fetchCreateAccountStore = createFetchStore( {
+	baseName: 'createAccount',
+	controlCallback: ( { data } ) => {
+		return API.set( 'modules', 'analytics', 'create-account-ticket', data );
+	},
+	reducerCallback: ( state, accountTicket ) => {
+		const { id } = accountTicket;
+		return {
+			...state,
+			accountTicketID: id,
+		};
+	},
+	argsToParams: ( data ) => {
+		invariant( 'object' === typeof data, 'data must be an object.' );
+		return { data };
+	},
+} );
 
+// Actions
 const RECEIVE_GET_ACCOUNTS = 'RECEIVE_GET_ACCOUNTS';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION';
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
@@ -74,7 +86,6 @@ const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 const BASE_INITIAL_STATE = {
 	accounts: undefined,
 	isAwaitingAccountsPropertiesProfilesCompletion: false,
-	isFetchingCreateAccount: false,
 	accountTicketID: undefined,
 };
 
@@ -131,60 +142,20 @@ const baseActions = {
 	 * Creates a new Analytics account.
 	 *
 	 * @since 1.9.0
-	 *
-	 * @return {Object} Result object with response and error keys.
 	 */
 	*createAccount() {
-		let response, error;
+		const registry = yield Data.commonActions.getRegistry();
+		const { getValue } = registry.select( CORE_FORMS );
 
-		yield {
-			payload: {},
-			type: START_FETCH_CREATE_ACCOUNT,
-		};
-
-		try {
-			response = yield {
-				payload: {},
-				type: FETCH_CREATE_ACCOUNT,
-			};
-
-			yield baseActions.receiveCreateAccount( response );
-
-			yield {
-				payload: {},
-				type: FINISH_FETCH_CREATE_ACCOUNT,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: { error },
-				type: CATCH_FETCH_CREATE_ACCOUNT,
-			};
-		}
-		return { response, error };
-	},
-
-	receiveCreateAccount( accountTicket ) {
-		invariant( accountTicket, 'accountTicket is required.' );
-
-		return {
-			payload: { accountTicket },
-			type: RECEIVE_CREATE_ACCOUNT,
-		};
-	},
-};
-
-const baseControls = {
-	[ FETCH_CREATE_ACCOUNT ]: createRegistryControl( ( { select } ) => () => {
-		const { getValue } = select( CORE_FORMS );
-
-		return API.set( 'modules', 'analytics', 'create-account-ticket', {
+		const data = {
 			accountName: getValue( FORM_ACCOUNT_CREATE, 'accountName' ),
 			propertyName: getValue( FORM_ACCOUNT_CREATE, 'propertyName' ),
 			profileName: getValue( FORM_ACCOUNT_CREATE, 'profileName' ),
 			timezone: getValue( FORM_ACCOUNT_CREATE, 'timezone' ),
-		} );
-	} ),
+		};
+
+		yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
+	},
 };
 
 const baseReducer = ( state, { type, payload } ) => {
@@ -215,35 +186,6 @@ const baseReducer = ( state, { type, payload } ) => {
 					internalWebPropertyID: undefined,
 					profileID: undefined,
 				},
-			};
-		}
-
-		case FINISH_FETCH_CREATE_ACCOUNT:
-			return {
-				...state,
-				isFetchingCreateAccount: false,
-			};
-
-		case CATCH_FETCH_CREATE_ACCOUNT:
-			const { error } = payload;
-			return {
-				...state,
-				error,
-				isFetchingCreateAccount: false,
-			};
-
-		case START_FETCH_CREATE_ACCOUNT: {
-			return {
-				...state,
-				isFetchingCreateAccount: true,
-			};
-		}
-
-		case RECEIVE_CREATE_ACCOUNT: {
-			const { accountTicket: { id } } = payload;
-			return {
-				...state,
-				accountTicketID: id,
 			};
 		}
 
@@ -381,7 +323,14 @@ const baseSelectors = {
 	 * @return {boolean} True if an account is being created, false otherwise.
 	 */
 	isDoingCreateAccount( state ) {
-		return !! state.isFetchingCreateAccount;
+		// Since isFetchingCreateAccount (via createFetchStore)
+		// holds information based on specific values but we only need
+		// generic information here, we need to check whether ANY such
+		// request is in progress.
+		if ( 'object' !== typeof state.isFetchingCreateAccount ) {
+			return false;
+		}
+		return Object.values( state.isFetchingCreateAccount ).some( ( value ) => value );
 	},
 
 	/**
@@ -438,10 +387,10 @@ const baseSelectors = {
 
 const store = Data.combineStores(
 	fetchGetAccountsPropertiesProfilesStore,
+	fetchCreateAccountStore,
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,
 		actions: baseActions,
-		controls: baseControls,
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
