@@ -42,7 +42,7 @@ describe( 'SettingsMain', () => {
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_SITE ).receiveSiteInfo( {} );
-			dispatch( STORE_NAME ).receiveExistingTag( null );
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
 		};
 
@@ -68,7 +68,7 @@ describe( 'SettingsMain', () => {
 
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( CORE_SITE ).receiveSiteInfo( {} );
-			dispatch( STORE_NAME ).receiveExistingTag( null );
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			dispatch( STORE_NAME ).receiveGetSettings( initialSettings );
 		};
 

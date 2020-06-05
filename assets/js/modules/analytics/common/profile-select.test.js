@@ -54,7 +54,7 @@ const setupRegistryWithExistingTag = ( { dispatch } ) => {
 	dispatch( STORE_NAME ).setPropertyID( existingTag.propertyID );
 	dispatch( STORE_NAME ).setProfileID( id );
 	dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { propertyID: existingTag.propertyID } );
-	dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
+	dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {

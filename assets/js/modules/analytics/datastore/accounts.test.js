@@ -190,7 +190,7 @@ describe( 'modules/analytics accounts', () => {
 	describe( 'selectors', () => {
 		describe( 'getAccounts', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 				fetch
 					.doMockOnceIf(
 						/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
@@ -268,7 +268,7 @@ describe( 'modules/analytics accounts', () => {
 						{ status: 500 }
 					);
 
-				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAccounts();
@@ -285,12 +285,11 @@ describe( 'modules/analytics accounts', () => {
 			it( 'passes existing tag ID when fetching accounts', async () => {
 				const existingPropertyID = 'UA-12345-1';
 
-				registry.dispatch( STORE_NAME ).receiveExistingTag( existingPropertyID );
-				registry.dispatch( STORE_NAME ).receiveTagPermission( {
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingPropertyID );
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
 					accountID: '12345',
-					propertyID: existingPropertyID,
 					permission: true,
-				} );
+				}, { propertyID: existingPropertyID } );
 
 				fetch
 					.doMockOnceIf(
@@ -335,7 +334,7 @@ describe( 'modules/analytics accounts', () => {
 					matchedProperty,
 				};
 
-				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
 				fetch
 					.doMockOnceIf(

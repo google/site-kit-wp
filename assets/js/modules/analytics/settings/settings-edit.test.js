@@ -52,11 +52,11 @@ describe( 'SettingsEdit', () => {
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID } );
-			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
-			dispatch( STORE_NAME ).receiveTagPermission( {
-				...existingTag,
+			dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
+			dispatch( STORE_NAME ).receiveGetTagPermission( {
+				accountID: existingTag.accountID,
 				permission: true,
-			} );
+			}, { propertyID: existingTag.propertyID } );
 			dispatch( CORE_SITE ).receiveSiteInfo( {} );
 		};
 		const { registry } = render( <SettingsEdit />, { setupRegistry } );

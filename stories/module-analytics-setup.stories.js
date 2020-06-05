@@ -65,7 +65,7 @@ storiesOf( 'Analytics Module/Setup', module )
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( STORE_NAME ).setSettings( {} );
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
-			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
+			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			registry.stores[ STORE_NAME ].store.dispatch( { type: 'START_FETCH_ACCOUNTS_PROPERTIES_PROFILES' } );
 		};
 
@@ -80,7 +80,7 @@ storiesOf( 'Analytics Module/Setup', module )
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
-			dispatch( STORE_NAME ).receiveExistingTag( null );
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		};
 
 		return <Setup callback={ setupRegistry } />;
@@ -94,7 +94,7 @@ storiesOf( 'Analytics Module/Setup', module )
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
-			dispatch( STORE_NAME ).receiveExistingTag( null );
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
 		};
 
@@ -106,7 +106,7 @@ storiesOf( 'Analytics Module/Setup', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( [] );
-			dispatch( STORE_NAME ).receiveExistingTag( null );
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		};
 
 		return <Setup callback={ setupRegistry } />;
@@ -116,7 +116,7 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveExistingTag( null );
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
@@ -143,7 +143,7 @@ storiesOf( 'Analytics Module/Setup', module )
 				requiredScopes: [],
 				grantedScopes: [],
 			} );
-			dispatch( STORE_NAME ).receiveExistingTag( null );
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
@@ -170,7 +170,7 @@ storiesOf( 'Analytics Module/Setup', module )
 				requiredScopes: [],
 				grantedScopes: [ PROVISIONING_SCOPE ],
 			} );
-			dispatch( STORE_NAME ).receiveExistingTag( null );
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
@@ -195,11 +195,11 @@ storiesOf( 'Analytics Module/Setup', module )
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
-			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
-			dispatch( STORE_NAME ).receiveTagPermission( {
-				...existingTag,
+			dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
+			dispatch( STORE_NAME ).receiveGetTagPermission( {
+				accountID: existingTag.accountID,
 				permission: true,
-			} );
+			}, { propertyID: existingTag.propertyID } );
 		};
 
 		return <Setup callback={ setupRegistry } />;
@@ -217,11 +217,11 @@ storiesOf( 'Analytics Module/Setup', module )
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
-			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
-			dispatch( STORE_NAME ).receiveTagPermission( {
-				...existingTag,
+			dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
+			dispatch( STORE_NAME ).receiveGetTagPermission( {
+				accountID: existingTag.accountID,
 				permission: false,
-			} );
+			}, { propertyID: existingTag.propertyID } );
 		};
 
 		return <Setup callback={ setupRegistry } />;

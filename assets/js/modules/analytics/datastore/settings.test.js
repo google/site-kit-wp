@@ -349,7 +349,7 @@ describe( 'modules/analytics settings', () => {
 		describe( 'canSubmitChanges', () => {
 			it( 'requires a valid accountID', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				registry.dispatch( STORE_NAME ).receiveTagPermission( tagWithPermission );
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( tagWithPermission, { propertyID: tagWithPermission.propertyID } );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
@@ -360,7 +360,7 @@ describe( 'modules/analytics settings', () => {
 
 			it( 'requires a valid propertyID', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				registry.dispatch( STORE_NAME ).receiveTagPermission( tagWithPermission );
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( tagWithPermission, { propertyID: tagWithPermission.propertyID } );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
@@ -371,7 +371,7 @@ describe( 'modules/analytics settings', () => {
 
 			it( 'requires a valid profileID', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				registry.dispatch( STORE_NAME ).receiveTagPermission( tagWithPermission );
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( tagWithPermission, { propertyID: tagWithPermission.propertyID } );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
@@ -389,18 +389,18 @@ describe( 'modules/analytics settings', () => {
 					...validSettings,
 					...existingTag, // Set automatically in resolver.
 				} );
-				registry.dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
-				registry.dispatch( STORE_NAME ).receiveTagPermission( {
-					...existingTag,
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+					accountID: existingTag.accountID,
 					permission: true,
-				} );
+				}, { propertyID: existingTag.propertyID } );
 				expect( registry.select( STORE_NAME ).hasTagPermission( existingTag.propertyID ) ).toBe( true );
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
 
-				registry.dispatch( STORE_NAME ).receiveTagPermission( {
-					...existingTag,
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+					accountID: existingTag.accountID,
 					permission: false,
-				} );
+				}, { propertyID: existingTag.propertyID } );
 				expect( registry.select( STORE_NAME ).hasTagPermission( existingTag.propertyID ) ).toBe( false );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );

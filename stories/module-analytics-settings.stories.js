@@ -116,7 +116,7 @@ storiesOf( 'Analytics Module/Settings', module )
 		filterAnalyticsSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveExistingTag( null );
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: '1234567890',
 				propertyID: 'UA-1234567890-1',
@@ -133,12 +133,11 @@ storiesOf( 'Analytics Module/Settings', module )
 		filterAnalyticsSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveExistingTag( 'UA-1234567890-1' );
-			dispatch( STORE_NAME ).receiveTagPermission( {
+			dispatch( STORE_NAME ).receiveGetExistingTag( 'UA-1234567890-1' );
+			dispatch( STORE_NAME ).receiveGetTagPermission( {
 				accountID: '1234567890',
-				propertyID: 'UA-1234567890-1',
 				permission: true,
-			} );
+			}, { propertyID: 'UA-1234567890-1' } );
 			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: '1234567890',
 				propertyID: 'UA-1234567890-1',
@@ -157,7 +156,7 @@ storiesOf( 'Analytics Module/Settings', module )
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveExistingTag( null );
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
@@ -177,7 +176,7 @@ storiesOf( 'Analytics Module/Settings', module )
 		filterAnalyticsSettings();
 
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveExistingTag( null );
+			dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			dispatch( STORE_NAME ).receiveGetSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( [] );
 		};
@@ -193,7 +192,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			propertyID: matchedProperty.id,
 		};
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
+			dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
@@ -205,10 +204,10 @@ storiesOf( 'Analytics Module/Settings', module )
 				useSnippet: true,
 				trackingDisabled: [ 'loggedinUsers' ],
 			} );
-			dispatch( STORE_NAME ).receiveTagPermission( {
-				...existingTag,
+			dispatch( STORE_NAME ).receiveGetTagPermission( {
+				accountID: existingTag.accountID,
 				permission: true,
-			} );
+			}, { propertyID: existingTag.propertyID } );
 		};
 
 		return <Settings isEditing={ true } module={ completeModuleData } callback={ setupRegistry } />;
@@ -222,11 +221,11 @@ storiesOf( 'Analytics Module/Settings', module )
 		};
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
-			dispatch( STORE_NAME ).receiveTagPermission( {
-				...existingTag,
+			dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
+			dispatch( STORE_NAME ).receiveGetTagPermission( {
+				accountID: existingTag.accountID,
 				permission: false,
-			} );
+			}, { propertyID: existingTag.propertyID } );
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
