@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -81,11 +86,15 @@ export const createInfoStore = ( slug, {
 				reAuth: undefined,
 			} : {};
 
+			const redirectURL = select( STORE_NAME ).getAdminScreenURL( { slug, reAuth, ...noSetupQueryArgs } );
+
 			if ( ! needsReauthentication ) {
-				return select( STORE_NAME ).getAdminScreenURL( { slug, reAuth, ...noSetupQueryArgs } );
+				return redirectURL;
 			}
 
-			return select( STORE_NAME ).getAdminScreenURL( { slug, reAuth } );
+			const connectURL = select( CORE_USER ).getConnectURL( { redirectURL } );
+
+			return addQueryArgs( connectURL, { status: reAuth } );
 		} ),
 	};
 
