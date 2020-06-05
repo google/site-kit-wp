@@ -21,5 +21,5 @@ beforeEach( () => {
 } );
 
 afterEach( () => {
-	fetchMock.reset();
+	fetchMock.mockReset();
 } );
