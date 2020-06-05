@@ -1,5 +1,5 @@
 /**
- * Optimixe module initialization.
+ * Optimize module initialization.
  *
  * Site Kit by Google, Copyright 2020 Google LLC
  *
