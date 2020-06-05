@@ -489,12 +489,12 @@ export const activateOrDeactivateModule = ( restApiClient, moduleSlug, status ) 
 
 		// We should really be using state management. This is terrible.
 		if ( modulesData[ moduleSlug ] ) {
-			modulesData[ moduleSlug ].active = responseData.active;
+			modulesData[ moduleSlug ].active = status;
 		}
 
 		trackEvent(
 			`${ moduleSlug }_setup`,
-			! responseData.active ? 'module_deactivate' : 'module_activate',
+			! status ? 'module_deactivate' : 'module_activate',
 			moduleSlug,
 		);
 
