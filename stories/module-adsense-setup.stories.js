@@ -96,7 +96,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-			registry.dispatch( STORE_NAME ).receiveAlerts( [], { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveGetAlerts( [], { accountID: fixtures.accounts[ 0 ].id } );
 			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
 		};
 
@@ -153,8 +153,8 @@ storiesOf( 'AdSense Module/Setup', module )
 				...fixtures.clients[ 0 ],
 				id: `ca-${ fixtures.accountsMultiple[ 1 ].id }`,
 			} ], { accountID: fixtures.accountsMultiple[ 1 ].id } );
-			registry.dispatch( STORE_NAME ).receiveAlerts( [], { accountID: fixtures.accountsMultiple[ 0 ].id } );
-			registry.dispatch( STORE_NAME ).receiveAlerts( [], { accountID: fixtures.accountsMultiple[ 1 ].id } );
+			registry.dispatch( STORE_NAME ).receiveGetAlerts( [], { accountID: fixtures.accountsMultiple[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveGetAlerts( [], { accountID: fixtures.accountsMultiple[ 1 ].id } );
 			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
 			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: `ca-${ fixtures.accountsMultiple[ 1 ].id }` } );
 		};
@@ -189,7 +189,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alertsGraylisted, { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alertsGraylisted, { accountID: fixtures.accounts[ 0 ].id } );
 			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
 		};
 
@@ -226,7 +226,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clientsNoAFC, { accountID: fixtures.accounts[ 0 ].id } );
-			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
 		};
 
 		return <Setup callback={ setupRegistry } />;
@@ -245,7 +245,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
 			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
 		};
 
@@ -270,7 +270,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			} );
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
 			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
 		};
 
@@ -295,7 +295,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			} );
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
 			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
 		};
 
@@ -310,7 +310,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
 			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
 		};
 
@@ -330,7 +330,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			} );
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
 			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
 		};
 
@@ -350,7 +350,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			} );
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
 			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
 		};
 
@@ -365,7 +365,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
 			registry.dispatch( STORE_NAME ).receiveURLChannels( [], { clientID: fixtures.clients[ 0 ].id } );
 		};
 
@@ -380,7 +380,7 @@ storiesOf( 'AdSense Module/Setup', module )
 			registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 			registry.dispatch( STORE_NAME ).receiveClients( fixtures.clients, { accountID: fixtures.accounts[ 0 ].id } );
-			registry.dispatch( STORE_NAME ).receiveAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
+			registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID: fixtures.accounts[ 0 ].id } );
 			registry.dispatch( STORE_NAME ).receiveURLChannels( fixtures.urlchannels, { clientID: fixtures.clients[ 0 ].id } );
 		};
 
