@@ -22,17 +22,11 @@
 import invariant from 'invariant';
 
 /**
- * WordPress dependencies
- */
-import { createRegistryControl } from '@wordpress/data';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
-import { STORE_NAME as CORE_USER_STORE_NAME } from '../../datastore/user/constants';
 
 const { createRegistrySelector } = Data;
 
@@ -216,9 +210,9 @@ export const controls = {
 	[ FETCH_MODULES ]: () => {
 		return API.get( 'core', 'modules', 'list', null, { useCache: false } );
 	},
-	[ REFETCH_AUTHENICATION ]: createRegistryControl( ( registry ) => () => {
-		registry.dispatch( CORE_USER_STORE_NAME ).fetchAuthentication();
-	} ),
+	[ REFETCH_AUTHENICATION ]: () => {
+		return API.get( 'core', 'user', 'authentication', null, { useCache: false, timestamp: Date.now() } );
+	},
 };
 
 export const reducer = ( state, { type, payload } ) => {
