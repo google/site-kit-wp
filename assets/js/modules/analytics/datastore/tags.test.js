@@ -48,7 +48,6 @@ describe( 'modules/analytics tags', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.reset();
 	} );
 
 	describe( 'actions', () => {
@@ -58,7 +57,7 @@ describe( 'modules/analytics tags', () => {
 	describe( 'selectors', () => {
 		describe( 'getTagPermission', () => {
 			it( 'returns true if a user has access to this tag', async () => {
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
 					{ body: fixtures.getTagPermissionsAccess, status: 200 }
 				);
@@ -96,7 +95,7 @@ describe( 'modules/analytics tags', () => {
 			} );
 
 			it( 'returns false if a user cannot access the requested tag', async () => {
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
 					{ body: fixtures.getTagPermissionsNoAccess, status: 200 }
 				);
@@ -130,7 +129,7 @@ describe( 'modules/analytics tags', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
 					{ body: response, status: 500 }
 				);
@@ -199,7 +198,7 @@ describe( 'modules/analytics tags', () => {
 
 		describe( 'hasTagPermission', () => {
 			it( 'makes a request via the getTagPermission selector if no tag has been loaded ', async () => {
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
 					{ body: fixtures.getTagPermissionsAccess, status: 200 }
 				);
@@ -262,7 +261,7 @@ describe( 'modules/analytics tags', () => {
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
 					{ body: fixtures.getTagPermissionsAccess, status: 200 }
 				);

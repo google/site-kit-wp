@@ -49,7 +49,6 @@ describe( 'modules/adsense clients', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.reset();
 	} );
 
 	describe( 'actions', () => {
@@ -59,7 +58,7 @@ describe( 'modules/adsense clients', () => {
 	describe( 'selectors', () => {
 		describe( 'getClients', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/clients/,
 					{ body: fixtures.clients, status: 200 }
 				);
@@ -105,7 +104,7 @@ describe( 'modules/adsense clients', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/clients/,
 					{ body: response, status: 500 }
 				);

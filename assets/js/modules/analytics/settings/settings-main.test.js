@@ -37,11 +37,11 @@ describe( 'SettingsMain', () => {
 	};
 
 	afterEach( () => {
-		fetchMock.reset();
+
 	} );
 
 	it( 'rolls back settings if settings have changed and is not editing', async () => {
-		fetchMock.mock(
+		fetchMock.get(
 			/accounts-properties-profiles/,
 			{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 		);
@@ -69,7 +69,7 @@ describe( 'SettingsMain', () => {
 	} );
 
 	it( 'does not roll back settings if settings have changed and is editing', async () => {
-		fetchMock.mock(
+		fetchMock.get(
 			/accounts-properties-profiles/,
 			{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 		);

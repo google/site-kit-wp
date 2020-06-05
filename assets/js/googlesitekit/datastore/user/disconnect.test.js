@@ -38,7 +38,6 @@ describe( 'core/user disconnect', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.reset();
 	} );
 
 	describe( 'disconnect', () => {

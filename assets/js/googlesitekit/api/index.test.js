@@ -51,7 +51,6 @@ describe( 'googlesitekit.api', () => {
 	} );
 
 	afterEach( async () => {
-		fetchMock.reset();
 		getItemSpy.mockRestore();
 		setItemSpy.mockRestore();
 
@@ -233,7 +232,7 @@ describe( 'googlesitekit.api', () => {
 			// Ensure global caching is enabled when we disable caching on a per-request basis.
 			setUsingCache( true );
 
-			fetchMock.mock(
+			fetchMock.get(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/other/,
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -257,7 +256,7 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should not use cache even if cached values exist', async () => {
-			fetchMock.mock(
+			fetchMock.get(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/cached/,
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -310,7 +309,7 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should send request body data from data params', async () => {
-			fetchMock.mock(
+			fetchMock.post(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -332,7 +331,7 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should send request body data from data params and query params if set', async () => {
-			fetchMock.mock(
+			fetchMock.post(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -357,7 +356,7 @@ describe( 'googlesitekit.api', () => {
 		} );
 
 		it( 'should never use the cache for set requests', async () => {
-			fetchMock.mock(
+			fetchMock.post(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
 				{ body: { foo: 'bar' }, status: 200 }
 			);
@@ -592,7 +591,7 @@ describe( 'googlesitekit.api', () => {
 
 	describe( 'siteKitRequest', () => {
 		it( 'should send a request using fetch', async () => {
-			fetchMock.mock(
+			fetchMock.get(
 				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
 				{ body: { foo: 'bar' }, status: 200 }
 			);

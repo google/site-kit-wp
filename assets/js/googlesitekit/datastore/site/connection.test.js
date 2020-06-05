@@ -48,7 +48,6 @@ describe( 'core/site connection', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.reset();
 	} );
 
 	describe( 'actions', () => {

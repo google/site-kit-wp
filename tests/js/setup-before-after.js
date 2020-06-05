@@ -18,6 +18,8 @@ beforeEach( () => {
 		localStorage[ method ].mockClear();
 		sessionStorage[ method ].mockClear();
 	} );
+} );
 
+afterEach( () => {
 	fetchMock.reset();
 } );

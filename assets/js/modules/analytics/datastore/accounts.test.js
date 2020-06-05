@@ -30,6 +30,7 @@ import {
 	unsubscribeFromAll,
 } from 'tests/js/utils';
 import * as fixtures from './__fixtures__';
+import fetchMock from 'fetch-mock';
 
 describe( 'modules/analytics accounts', () => {
 	let registry;
@@ -52,7 +53,6 @@ describe( 'modules/analytics accounts', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.reset();
 	} );
 
 	describe( 'actions', () => {
@@ -63,7 +63,7 @@ describe( 'modules/analytics accounts', () => {
 			const timezone = fixtures.createAccount.profile.timezone;
 
 			it( 'creates an account ticket and sets the account ticket ID', async () => {
-				fetchMock.mock(
+				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/,
 					{
 						body: fixtures.createAccount,
@@ -91,7 +91,7 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'sets isDoingCreateAccount ', async () => {
-				fetchMock.mock(
+				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/,
 					{ body: fixtures.createAccount, status: 200 }
 				);
@@ -106,7 +106,7 @@ describe( 'modules/analytics accounts', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.mock(
+				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-account-ticket/,
 					{ body: response, status: 500 }
 				);
@@ -121,7 +121,7 @@ describe( 'modules/analytics accounts', () => {
 
 		describe( 'resetAccounts', () => {
 			it( 'sets accounts and related values back to their initial values', () => {
-				fetchMock.get( { query: { tagverify: '1' } }, { status: 200 } );
+				fetchMock.get( { query: { tagverify: '1' } }, { body: {}, status: 200 } );
 				registry.dispatch( STORE_NAME ).setSettings( {
 					accountID: '12345',
 					propertyID: 'UA-12345-1',
@@ -140,15 +140,15 @@ describe( 'modules/analytics accounts', () => {
 				registry.dispatch( STORE_NAME ).resetAccounts();
 
 				// getAccounts() will trigger a request again.
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
 					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 				);
-
 				expect( registry.select( STORE_NAME ).getAccountID() ).toStrictEqual( undefined );
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toStrictEqual( undefined );
 				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toStrictEqual( undefined );
 				expect( registry.select( STORE_NAME ).getProfileID() ).toStrictEqual( undefined );
+				// TODO Prevent unmatched GET by getAccounts().
 				expect( registry.select( STORE_NAME ).getAccounts() ).toStrictEqual( undefined );
 				// Other settings are left untouched.
 				expect( registry.select( STORE_NAME ).getUseSnippet() ).toStrictEqual( true );
@@ -176,7 +176,7 @@ describe( 'modules/analytics accounts', () => {
 		describe( 'getAccounts', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
 					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 				);
@@ -240,7 +240,7 @@ describe( 'modules/analytics accounts', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
 					{ body: response, status: 500 }
 				);
@@ -271,7 +271,7 @@ describe( 'modules/analytics accounts', () => {
 					permission: true,
 				} );
 
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
 					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 				);
@@ -313,7 +313,7 @@ describe( 'modules/analytics accounts', () => {
 
 				registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
 					{ body: response, status: 200 }
 				);

@@ -68,7 +68,6 @@ describe( 'modules/analytics settings', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.reset();
 	} );
 
 	describe( 'actions', () => {
@@ -90,11 +89,11 @@ describe( 'modules/analytics settings', () => {
 					internalWebPropertyId: '123456789',
 				};
 
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{ body: createdProperty, status: 200 }
 				);
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
 					( url, opts ) => {
 						const { data } = JSON.parse( opts.body );
@@ -121,7 +120,7 @@ describe( 'modules/analytics settings', () => {
 					propertyID: PROPERTY_CREATE,
 				} );
 
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{ body: error, status: 500 }
 				);
@@ -149,11 +148,11 @@ describe( 'modules/analytics settings', () => {
 					...fixtures.propertiesProfiles.profiles[ 0 ],
 					id: '987654321',
 				};
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
 					{ body: createdProfile, status: 200 }
 				);
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
 					( url, opts ) => {
 						const { data } = JSON.parse( opts.body );
@@ -186,7 +185,7 @@ describe( 'modules/analytics settings', () => {
 					profileID: PROFILE_CREATE,
 				} );
 
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
 					{ body: error, status: 500 }
 				);
@@ -219,15 +218,15 @@ describe( 'modules/analytics settings', () => {
 					id: '987654321',
 				};
 
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{ body: createdProperty, status: 200 }
 				);
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
 					{ body: createdProfile, status: 200 }
 				);
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
 					( url, opts ) => {
 						const { data } = JSON.parse( opts.body );
@@ -244,7 +243,7 @@ describe( 'modules/analytics settings', () => {
 			it( 'dispatches saveSettings', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
 					{ body: validSettings, status: 200 }
 				);
@@ -262,7 +261,7 @@ describe( 'modules/analytics settings', () => {
 			it( 'returns an error if saveSettings fails', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
 					{ body: error, status: 500 }
 				);
@@ -280,7 +279,7 @@ describe( 'modules/analytics settings', () => {
 			it( 'invalidates Analytics API cache on success', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
 					{ body: validSettings, status: 200 }
 				);

@@ -68,7 +68,6 @@ describe( 'createSettingsStore store', () => {
 	} );
 
 	afterEach( () => {
-		fetchMock.reset();
 		unsubscribeFromAll( registry );
 	} );
 
@@ -425,15 +424,9 @@ describe( 'createSettingsStore store', () => {
 				const response = { type, identifier, datapoint };
 
 				fetchMock.getOnce(
-					( url ) => (
-						url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` )
-					),
+					`path:/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
 					{ body: response, status: 200 }
-				);
-				fetchMock.getOnce(
-					( url ) => (
-						! url.startsWith( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }` )
-					),
+				).catch(
 					{
 						body: {
 							code: 'incorrect_api_endpoint',

@@ -64,14 +64,13 @@ describe( 'modules/adsense settings', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.reset();
 	} );
 
 	describe( 'actions', () => {
 		describe( 'saveUseSnippet', () => {
 			it( 'does not require any params', () => {
 				expect( async () => {
-					fetchMock.once(
+					fetchMock.postOnce(
 						/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/,
 						{ body: JSON.stringify( true ), status: 200 }
 					);
@@ -85,7 +84,7 @@ describe( 'modules/adsense settings', () => {
 			} );
 
 			it( 'updates useSnippet setting from server', async () => {
-				fetchMock.mock(
+				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/,
 					{ body: JSON.stringify( true ), status: 200 }
 				);
@@ -115,7 +114,7 @@ describe( 'modules/adsense settings', () => {
 			} );
 
 			it( 'sets isDoingSaveUseSnippet', () => {
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/use-snippet/,
 					{ body: JSON.stringify( true ), status: 200 }
 				);
@@ -168,7 +167,7 @@ describe( 'modules/adsense settings', () => {
 		describe( 'submitChanges', () => {
 			it( 'dispatches saveSettings', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
 					{ body: validSettings, status: 200 }
 				);
@@ -190,7 +189,7 @@ describe( 'modules/adsense settings', () => {
 			it( 'handles an error if set while saving settings', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
 					{ body: wpError, status: 500 }
 				);
@@ -204,7 +203,7 @@ describe( 'modules/adsense settings', () => {
 			it( 'invalidates AdSense API cache on success', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
-				fetchMock.once(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
 					{ body: validSettings, status: 200 }
 				);
@@ -287,7 +286,7 @@ describe( 'modules/adsense settings', () => {
 		describe( 'getOriginalAccountStatus', () => {
 			it( 'uses a resolver to make a network request via getSettings', async () => {
 				const response = { accountStatus: 'some-status' };
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/settings/,
 					{ body: response, status: 200 }
 				);

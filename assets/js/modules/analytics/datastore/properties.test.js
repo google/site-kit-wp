@@ -50,14 +50,13 @@ describe( 'modules/analytics properties', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.reset();
 	} );
 
 	describe( 'actions', () => {
 		describe( 'createProperty', () => {
 			it( 'creates a property and adds it to the store ', async () => {
 				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
-				fetchMock.mock(
+				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{ body: fixtures.createProperty, status: 200 }
 				);
@@ -81,7 +80,7 @@ describe( 'modules/analytics properties', () => {
 
 			it( 'sets isDoingCreateProperty ', async () => {
 				const accountID = fixtures.createProperty.accountId; // Capitalization rule exception: `accountId` is a property of an API returned value.
-				fetchMock.mock(
+				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{ body: fixtures.createProperty, status: 200 }
 				);
@@ -97,12 +96,12 @@ describe( 'modules/analytics properties', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.mock(
+				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{ body: response, status: 500 }
 				);
 				// Add additional mock to avoid unmatched request warning.
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
 					{ body: {}, status: 200 }
 				);
@@ -117,7 +116,7 @@ describe( 'modules/analytics properties', () => {
 				);
 
 				expect( registry.select( STORE_NAME ).getError() ).toMatchObject( response );
-				fetchMock.mock(
+				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
 					{ body: fixtures.propertiesProfiles, status: 200 }
 				);
@@ -133,7 +132,7 @@ describe( 'modules/analytics properties', () => {
 	describe( 'selectors', () => {
 		describe( 'getProperties', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetchMock.mock(
+				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
 					{ body: fixtures.propertiesProfiles, status: 200 }
 				);
@@ -200,7 +199,7 @@ describe( 'modules/analytics properties', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
 					{ body: response, status: 500 }
 				);

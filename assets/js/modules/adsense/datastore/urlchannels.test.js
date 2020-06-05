@@ -48,7 +48,6 @@ describe( 'modules/adsense URL channels', () => {
 
 	afterEach( () => {
 		unsubscribeFromAll( registry );
-		fetchMock.reset();
 	} );
 
 	describe( 'actions', () => {
@@ -58,7 +57,7 @@ describe( 'modules/adsense URL channels', () => {
 	describe( 'selectors', () => {
 		describe( 'getURLChannels', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/,
 					{ body: fixtures.urlchannels, status: 200 }
 				);
@@ -104,7 +103,7 @@ describe( 'modules/adsense URL channels', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.once(
+				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/,
 					{ body: response, status: 500 }
 				);
