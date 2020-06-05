@@ -23,6 +23,11 @@ import invariant from 'invariant';
 import { isPlainObject } from 'lodash';
 
 /**
+ * WordPress dependencies
+ */
+import { isURL } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -100,9 +105,9 @@ export const actions = {
 	 * @return {Object} Redux-style action.
 	 */
 	receiveReport( report, { strategy, url } ) {
-		invariant( isPlainObject( report ), 'report must be an object.' );
-		invariant( typeof strategy === 'string', 'report must be a string.' );
-		invariant( typeof url === 'string', 'report must be a string.' );
+		invariant( isPlainObject( report ), 'report must be an object to receive.' );
+		invariant( typeof strategy === 'string', 'a valid strategy is required to receive report.' );
+		invariant( isURL( url ), 'a valid url is required to receive report.' );
 
 		return {
 			payload: { report, strategy, url },
