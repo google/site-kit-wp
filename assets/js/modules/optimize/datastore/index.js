@@ -25,13 +25,31 @@ import { STORE_NAME } from './constants';
 
 export { STORE_NAME };
 
-const baseModuleStore = Modules.createModuleStore( 'optimize', {
+let baseModuleStore = Modules.createModuleStore( 'optimize', {
 	storeName: STORE_NAME,
 	settingSlugs: [
 		'ampExperimentJSON',
 		'optimizeID',
 	],
 } );
+
+// Rename generated pieces to adhere to our convention.
+baseModuleStore = ( ( { actions, selectors, ...store } ) => {
+	const { setAmpExperimentJSON, ...restActions } = actions;
+	const { getAmpExperimentJSON, ...restSelectors } = selectors;
+
+	return {
+		...store,
+		actions: {
+			...restActions,
+			setAMPExperimentJSON: setAmpExperimentJSON,
+		},
+		selectors: {
+			...restSelectors,
+			getAMPExperimentJSON: getAmpExperimentJSON,
+		},
+	};
+} )( baseModuleStore );
 
 const store = Data.combineStores(
 	Data.commonStore,
