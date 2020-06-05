@@ -38,7 +38,7 @@ apiFetchMock.mockImplementation( ( ...args ) => {
 
 const setupRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accountsMultiple );
+	registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsMultiple );
 };
 
 const setupLoadingRegistry = ( registry ) => {

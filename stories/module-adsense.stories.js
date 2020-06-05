@@ -46,7 +46,7 @@ storiesOf( 'AdSense Module', module )
 	.add( 'Account Select, none selected', () => {
 		const accounts = fixtures.accountsMultiple;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveAccounts( accounts );
+			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetSettings( {} );
 		};
 
@@ -63,7 +63,7 @@ storiesOf( 'AdSense Module', module )
 	.add( 'Account Select, selected', () => {
 		const accounts = fixtures.accountsMultiple;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveAccounts( accounts );
+			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveGetSettings( {
 				accountID: accounts[ 0 ].id,
 			} );
