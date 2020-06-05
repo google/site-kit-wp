@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 /**
  * Utility class for handling generic OAuth scope functions.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Scopes {
 	/**
 	 * Mapping of requested scope to satisfying scopes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @var array
 	 */
@@ -46,7 +46,7 @@ class Scopes {
 	/**
 	 * Tests if the given scope is satisfied by the given list of granted scopes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param string   $scope          OAuth scope to test for.
 	 * @param string[] $granted_scopes Available OAuth scopes to test the individual scope against.
@@ -75,7 +75,7 @@ class Scopes {
 	/**
 	 * Tests if all the given scopes are satisfied by the list of granted scopes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @param string[] $scopes         OAuth scopes to test.
 	 * @param string[] $granted_scopes OAuth scopes to test $scopes against.

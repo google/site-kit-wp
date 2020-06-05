@@ -27,16 +27,17 @@ import { SettingsMain as AnalyticsSettings } from './settings';
 /**
  * WordPress dependencies
  */
+import { compose } from '@wordpress/compose';
 import { addFilter } from '@wordpress/hooks';
 
 addFilter(
 	'googlesitekit.ModuleSetup-analytics',
 	'googlesitekit.AnalyticsModuleSetup',
-	fillFilterWithComponent( AnalyticsSetup )
+	compose( fillFilterWithComponent )( AnalyticsSetup )
 );
 
 addFilter(
 	'googlesitekit.ModuleSettingsDetails-analytics',
 	'googlesitekit.AnalyticsModuleSettings',
-	fillFilterWithComponent( AnalyticsSettings )
+	compose( fillFilterWithComponent )( AnalyticsSettings )
 );

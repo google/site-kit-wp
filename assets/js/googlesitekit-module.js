@@ -25,7 +25,7 @@ import './modules';
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { doAction, applyFilters } from '@wordpress/hooks';
+import { applyFilters } from '@wordpress/hooks';
 import { Component, render, Suspense, lazy } from '@wordpress/element';
 
 /**
@@ -112,12 +112,12 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <Root><GoogleSitekitModule /></Root>, renderTarget );
-
-		/**
-		 * Action triggered when the dashboard App is loaded.
-		 */
-		doAction( 'googlesitekit.moduleLoaded', 'Single', global.googlesitekitCurrentModule );
+		render(
+			<Root dataAPIContext="Single" dataAPIModuleArgs={ global.googlesitekitCurrentModule } >
+				<GoogleSitekitModule />
+			</Root>,
+			renderTarget
+		);
 	}
 } );
 

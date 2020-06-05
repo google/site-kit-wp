@@ -345,6 +345,9 @@ final class Assets {
 			'googlesitekit-commons',
 			'googlesitekit-base',
 			'googlesitekit-data',
+			'googlesitekit-datastore-forms',
+			'googlesitekit-datastore-site',
+			'googlesitekit-datastore-user',
 		);
 
 		// Register plugin scripts.
@@ -515,7 +518,7 @@ final class Assets {
 			new Script(
 				'googlesitekit-ads-detect',
 				array(
-					'src' => $base_url . 'js/ads.js',
+					'src' => $base_url . 'js/pagead2.ads.js',
 				)
 			),
 			new Script(

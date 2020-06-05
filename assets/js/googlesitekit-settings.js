@@ -26,7 +26,6 @@ import './modules';
  */
 import domReady from '@wordpress/dom-ready';
 import { render } from '@wordpress/element';
-import { doAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -43,11 +42,6 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <Root><SettingsApp /></Root>, renderTarget );
-
-		/**
-		 * Action triggered when the settings App is loaded.
-		 */
-		doAction( 'googlesitekit.moduleLoaded', 'Settings' );
+		render( <Root dataAPIContext="Settings"><SettingsApp /></Root>, renderTarget );
 	}
 } );

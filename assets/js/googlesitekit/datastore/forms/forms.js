@@ -29,7 +29,7 @@ export const actions = {
 	/**
 	 * Stores site form information.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @param {string} formName Name of the form.
@@ -72,18 +72,32 @@ export const selectors = {
 	/**
 	 * Gets the existing form by formName and key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
-	 * @param {Object} state Data store's state.
+	 * @param {Object} state    Data store's state.
 	 * @param {string} formName Name of the form.
-	 * @param {string} key Get data stored in this key.
+	 * @param {string} key      Get data stored in this key.
 	 * @return {*} Value stored in state by formName and key. Returns `undefined` if formName or key isn't found.
 	 */
 	getValue( state, formName, key ) {
 		const formData = state[ formName ] || {};
 
 		return formData[ key ];
+	},
+
+	/**
+	 * Checks whether a form with the given formName exists.
+	 *
+	 * @since 1.9.0
+	 * @private
+	 *
+	 * @param {Object} state    Data store's state.
+	 * @param {string} formName Name of the form.
+	 * @return {boolean} True if the form exists, false otherwise.
+	 */
+	hasForm( state, formName ) {
+		return !! state[ formName ];
 	},
 };
 
