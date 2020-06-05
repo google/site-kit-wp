@@ -1,4 +1,4 @@
-const mockFunctions = Object.create( null );
+const mockFunctions = {};
 
 export function __setTrackEventMockFn( fn ) {
 	mockFunctions.trackEvent = fn;
