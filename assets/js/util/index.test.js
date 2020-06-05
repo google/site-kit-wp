@@ -17,11 +17,6 @@
  */
 
 /**
- * Mocked dependencies
- */
-jest.mock( './tracking/index' );
-
-/**
  * External dependencies
  */
 import { lorem, random } from 'faker';
@@ -81,91 +76,47 @@ describe( 'getModulesData', () => {
 } );
 
 describe( 'activateOrDeactivateModule', () => {
-	it( 'should call setModuleActive method of the provided restApiClient object', () => {
-		const setModuleActive = jest.fn();
+	let slug;
+	let status;
+	let restApiClient;
 
-		// use "Promise.reject()" and ".catch( () => {} )" to prevent main logic execution
-		setModuleActive.mockReturnValueOnce( Promise.reject() );
-		activateOrDeactivateModule( { setModuleActive }, '', '' ).catch( () => {} );
-
-		expect( setModuleActive ).toHaveBeenCalled();
+	beforeEach( () => {
+		slug = lorem.slug();
+		status = random.boolean();
+		restApiClient = {
+			setModuleActive: jest.fn().mockResolvedValueOnce( { success: true } ),
+		};
 	} );
 
-	it( 'should call setModuleActive method with correct arguments', () => {
-		const setModuleActive = jest.fn();
-		const slug = lorem.slug();
-		const status = random.boolean();
+	it( 'should update module "active" property to be the new status', async () => {
+		const originalStatus = ! status;
+		const originalModule = {
+			slug,
+			name: lorem.word(),
+			active: originalStatus,
+		};
 
-		// use "Promise.reject()" and ".catch( () => {} )" to prevent main logic execution
-		setModuleActive.mockReturnValueOnce( Promise.reject() );
-		activateOrDeactivateModule( { setModuleActive }, slug, status ).catch( () => {} );
+		const trackEvents = () => {};
+		const getModulesDataMock = () => ( {
+			[ slug ]: originalModule,
+		} );
 
-		expect( setModuleActive ).toHaveBeenCalledWith( slug, status );
+		await activateOrDeactivateModule( restApiClient, slug, status, trackEvents, getModulesDataMock );
+		expect( originalModule.active ).toBeDefined();
+		expect( originalModule.active ).not.toBe( originalStatus );
+		expect( originalModule.active ).toBe( status );
 	} );
 
-	describe( 'success logic', () => {
-		let _googlesitekit;
-		let slug;
-		let status;
-		let responseData;
-		let originalModule;
-		let originalStatus;
-		let restApiClient;
-		let trackEventFn;
+	it( 'should call trackEvent function to track module status change event', async () => {
+		const trackEvents = jest.fn();
+		const getModulesDataMock = () => ( {} );
 
-		beforeAll( () => {
-			_googlesitekit = global.googlesitekit;
-		} );
-
-		beforeEach( () => {
-			slug = lorem.slug();
-			status = random.boolean();
-			originalStatus = ! status;
-			responseData = random.number(); // value doesn't matter
-			trackEventFn = jest.fn();
-
-			originalModule = {
-				slug,
-				name: lorem.word(),
-				active: originalStatus,
-			};
-
-			global.googlesitekit = {
-				modules: {
-					[ slug ]: originalModule,
-				},
-			};
-
-			restApiClient = {
-				setModuleActive: jest.fn().mockResolvedValueOnce( responseData ),
-			};
-
-			require( './tracking/index' ).__setTrackEventMockFn( trackEventFn );
-		} );
-
-		afterAll( () => {
-			global.googlesitekit = _googlesitekit;
-		} );
-
-		it( 'should resolve with responseData returned from API', () => {
-			return expect( activateOrDeactivateModule( restApiClient, slug, status ) ).resolves.toBe( responseData );
-		} );
-
-		it( 'should update module "active" property to be the new status', async () => {
-			await activateOrDeactivateModule( restApiClient, slug, status );
-			expect( originalModule.active ).toBeDefined();
-			expect( originalModule.active ).not.toBe( originalStatus );
-			expect( originalModule.active ).toBe( status );
-		} );
-
-		it( 'should call trackEvent function to track module status change event', async () => {
-			await activateOrDeactivateModule( restApiClient, slug, status );
-			expect( trackEventFn ).toHaveBeenCalled();
-			expect( trackEventFn ).toHaveBeenCalledWith(
-				`${ slug }_setup`,
-				! status ? 'module_deactivate' : 'module_activate',
-				slug,
-			);
-		} );
+		await activateOrDeactivateModule( restApiClient, slug, status, trackEvents, getModulesDataMock );
+		expect( trackEvents ).toHaveBeenCalled();
+		expect( trackEvents ).toHaveBeenCalledWith(
+			`${ slug }_setup`,
+			! status ? 'module_deactivate' : 'module_activate',
+			slug,
+		);
 	} );
 } );
