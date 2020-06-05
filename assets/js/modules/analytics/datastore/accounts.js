@@ -144,6 +144,8 @@ const baseActions = {
 	 * Creates a new Analytics account.
 	 *
 	 * @since 1.9.0
+	 *
+	 * @return {Object} Object with `response` and `error`.
 	 */
 	*createAccount() {
 		const registry = yield Data.commonActions.getRegistry();
@@ -156,7 +158,8 @@ const baseActions = {
 			timezone: getValue( FORM_ACCOUNT_CREATE, 'timezone' ),
 		};
 
-		yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
+		const { response, error } = yield fetchCreateAccountStore.actions.fetchCreateAccount( data );
+		return { response, error };
 	},
 };
 

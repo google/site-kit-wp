@@ -52,20 +52,36 @@ const fetchGetPropertiesProfilesStore = createFetchStore( {
 	},
 } );
 
-// Actions
-const FETCH_CREATE_PROPERTY = 'FETCH_CREATE_PROPERTY';
-const START_FETCH_CREATE_PROPERTY = 'START_FETCH_CREATE_PROPERTY';
-const FINISH_FETCH_CREATE_PROPERTY = 'FINISH_FETCH_CREATE_PROPERTY';
-const CATCH_FETCH_CREATE_PROPERTY = 'CATCH_FETCH_CREATE_PROPERTY';
+const fetchCreatePropertyStore = createFetchStore( {
+	baseName: 'createProperty',
+	controlCallback: ( { accountID } ) => {
+		return API.set( 'modules', 'analytics', 'create-property', { accountID } );
+	},
+	reducerCallback: ( state, property, { accountID } ) => {
+		return {
+			...state,
+			properties: {
+				...state.properties || {},
+				[ accountID ]: [
+					...( state.properties || {} )[ accountID ] || [],
+					property,
+				],
+			},
+		};
+	},
+	argsToParams: ( accountID ) => {
+		invariant( accountID, 'accountID is required.' );
+		return { accountID };
+	},
+} );
 
-const RECEIVE_CREATE_PROPERTY = 'RECEIVE_CREATE_PROPERTY';
+// Actions
 const RECEIVE_MATCHED_PROPERTY = 'RECEIVE_MATCHED_PROPERTY';
 const RECEIVE_GET_PROPERTIES = 'RECEIVE_GET_PROPERTIES';
 const RECEIVE_PROPERTIES_PROFILES_COMPLETION = 'RECEIVE_PROPERTIES_PROFILES_COMPLETION';
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
 
 const BASE_INITIAL_STATE = {
-	isFetchingCreateProperty: {},
 	properties: {},
 	isAwaitingPropertiesProfilesCompletion: false,
 	matchedProperty: undefined,
@@ -79,67 +95,14 @@ const baseActions = {
 	 *
 	 * @since 1.8.0
 	 *
-	 * @param {Object} accountID Google Analytics account ID.
-	 * @return {Object} Redux-style action.
+	 * @param {string} accountID Google Analytics account ID.
+	 * @return {Object} Object with `response` and `error`.
 	 */
 	*createProperty( accountID ) {
 		invariant( accountID, 'accountID is required.' );
-		let response, error;
 
-		yield {
-			payload: { accountID },
-			type: START_FETCH_CREATE_PROPERTY,
-		};
-
-		try {
-			response = yield {
-				payload: { accountID },
-				type: FETCH_CREATE_PROPERTY,
-			};
-			const property = response;
-
-			yield baseActions.receiveCreateProperty( { accountID, property } );
-
-			yield {
-				payload: { accountID },
-				type: FINISH_FETCH_CREATE_PROPERTY,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: {
-					accountID,
-					error,
-				},
-				type: CATCH_FETCH_CREATE_PROPERTY,
-			};
-		}
-
+		const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
 		return { response, error };
-	},
-
-	/**
-	 * Adds a property to the data store.
-	 *
-	 * Adds the newly-created property to the existing properties in
-	 * the data store.
-	 *
-	 * @since 1.8.0
-	 * @private
-	 *
-	 * @param {Object} args           Argument params.
-	 * @param {string} args.accountID Google Analytics account ID.
-	 * @param {Object} args.property  Google Analytics property object.
-	 * @return {Object} Redux-style action.
-	 */
-	receiveCreateProperty( { accountID, property } ) {
-		invariant( accountID, 'accountID is required.' );
-		invariant( property, 'property is required.' );
-
-		return {
-			payload: { accountID, property },
-			type: RECEIVE_CREATE_PROPERTY,
-		};
 	},
 
 	/**
@@ -235,9 +198,6 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ FETCH_CREATE_PROPERTY ]: ( { payload: { accountID } } ) => {
-		return API.set( 'modules', 'analytics', 'create-property', { accountID } );
-	},
 	[ WAIT_FOR_PROPERTIES ]: createRegistryControl( ( registry ) => ( { payload: { accountID } } ) => {
 		const arePropertiesLoaded = () => registry.select( STORE_NAME ).getProperties( accountID ) !== undefined;
 
@@ -258,58 +218,6 @@ const baseControls = {
 
 const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case START_FETCH_CREATE_PROPERTY: {
-			const { accountID } = payload;
-
-			return {
-				...state,
-				isFetchingCreateProperty: {
-					...state.isFetchingCreateProperty,
-					[ accountID ]: true,
-				},
-			};
-		}
-
-		case FINISH_FETCH_CREATE_PROPERTY: {
-			const { accountID } = payload;
-
-			return {
-				...state,
-				isFetchingCreateProperty: {
-					...state.isFetchingCreateProperty,
-					[ accountID ]: false,
-				},
-			};
-		}
-
-		case RECEIVE_CREATE_PROPERTY: {
-			const { accountID, property } = payload;
-
-			return {
-				...state,
-				properties: {
-					...state.properties || {},
-					[ accountID ]: [
-						...( state.properties || {} )[ accountID ] || [],
-						property,
-					],
-				},
-			};
-		}
-
-		case CATCH_FETCH_CREATE_PROPERTY: {
-			const { accountID, error } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingCreateProperty: {
-					...state.isFetchingCreateProperty,
-					[ accountID ]: false,
-				},
-			};
-		}
-
 		case RECEIVE_MATCHED_PROPERTY: {
 			const { matchedProperty } = payload;
 
@@ -450,11 +358,9 @@ const baseSelectors = {
 	 * @param {string} accountID The Analytics Account ID to check for property creation.
 	 * @return {boolean} `true` if creating a property, `false` if not.
 	 */
-	isDoingCreateProperty( state, accountID ) {
-		const { isFetchingCreateProperty } = state;
-
-		return !! isFetchingCreateProperty[ accountID ];
-	},
+	isDoingCreateProperty: createRegistrySelector( ( select ) => ( state, accountID ) => {
+		return select( STORE_NAME ).isFetchingCreateProperty( accountID );
+	} ),
 
 	/**
 	 * Checks if properties are being fetched for the given account.
@@ -477,6 +383,7 @@ const baseSelectors = {
 
 const store = Data.combineStores(
 	fetchGetPropertiesProfilesStore,
+	fetchCreatePropertyStore,
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,
 		actions: baseActions,
