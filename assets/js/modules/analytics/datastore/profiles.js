@@ -57,15 +57,34 @@ const fetchGetProfilesStore = createFetchStore( {
 	},
 } );
 
-// Actions
-const FETCH_CREATE_PROFILE = 'FETCH_CREATE_PROFILE';
-const START_FETCH_CREATE_PROFILE = 'START_FETCH_CREATE_PROFILE';
-const FINISH_FETCH_CREATE_PROFILE = 'FINISH_FETCH_CREATE_PROFILE';
-const CATCH_FETCH_CREATE_PROFILE = 'CATCH_FETCH_CREATE_PROFILE';
-const RECEIVE_CREATE_PROFILE = 'RECEIVE_CREATE_PROFILE';
+const fetchCreateProfileStore = createFetchStore( {
+	baseName: 'createProfile',
+	controlCallback: ( { propertyID } ) => {
+		const { accountID } = parsePropertyID( propertyID );
+		return API.set( 'modules', 'analytics', 'create-profile', {
+			accountID,
+			propertyID,
+		} );
+	},
+	reducerCallback: ( state, profile, { propertyID } ) => {
+		return {
+			...state,
+			profiles: {
+				...state.profiles,
+				[ propertyID ]: [
+					...( state.profiles[ propertyID ] || [] ),
+					profile,
+				],
+			},
+		};
+	},
+	argsToParams: ( propertyID ) => {
+		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to create a profile.' );
+		return { propertyID };
+	},
+} );
 
 const BASE_INITIAL_STATE = {
-	isFetchingCreateProfile: {},
 	profiles: {},
 };
 
@@ -79,138 +98,14 @@ const baseActions = {
 	 * @since 1.8.0
 	 *
 	 * @param {string} propertyID Google Analytics property ID.
-	 * @return {Object} Response and error objects.
+	 * @return {Object} Object with `response` and `error`.
 	 */
 	*createProfile( propertyID ) {
 		invariant( isValidPropertyID( propertyID ), 'a valid property ID is required to create a profile.' );
-		let response, error;
 
-		yield {
-			payload: { propertyID },
-			type: START_FETCH_CREATE_PROFILE,
-		};
-
-		try {
-			response = yield {
-				payload: { propertyID },
-				type: FETCH_CREATE_PROFILE,
-			};
-			const profile = response;
-
-			yield actions.receiveCreateProfile( { propertyID, profile } );
-
-			yield {
-				payload: { propertyID },
-				type: FINISH_FETCH_CREATE_PROFILE,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: {
-					propertyID,
-					error,
-				},
-				type: CATCH_FETCH_CREATE_PROFILE,
-			};
-		}
-
+		const { response, error } = yield fetchCreateProfileStore.actions.fetchCreateProfile( propertyID );
 		return { response, error };
 	},
-
-	/**
-	 * Adds a property to the data store.
-	 *
-	 * Adds the newly-created property to the existing properties in
-	 * the data store.
-	 *
-	 * @since 1.8.0
-	 * @private
-	 *
-	 * @param {Object} args            Argument params.
-	 * @param {string} args.propertyID Google Analytics profile ID.
-	 * @param {Object} args.profile    Google Analytics profile object.
-	 * @return {Object} Redux-style action.
-	 */
-	receiveCreateProfile( { propertyID, profile } ) {
-		invariant( propertyID, 'propertyID is required.' );
-		invariant( profile, 'profile is required.' );
-
-		return {
-			payload: { propertyID, profile },
-			type: RECEIVE_CREATE_PROFILE,
-		};
-	},
-};
-
-const baseControls = {
-	[ FETCH_CREATE_PROFILE ]: ( { payload: { propertyID } } ) => {
-		const { accountID } = parsePropertyID( propertyID );
-
-		return API.set( 'modules', 'analytics', 'create-profile', {
-			accountID,
-			propertyID,
-		} );
-	},
-};
-
-const baseReducer = ( state, { type, payload } ) => {
-	switch ( type ) {
-		case START_FETCH_CREATE_PROFILE: {
-			const { propertyID } = payload;
-
-			return {
-				...state,
-				isFetchingCreateProfile: {
-					...state.isFetchingCreateProfile,
-					[ propertyID ]: true,
-				},
-			};
-		}
-
-		case FINISH_FETCH_CREATE_PROFILE: {
-			const { propertyID } = payload;
-
-			return {
-				...state,
-				isFetchingCreateProfile: {
-					...state.isFetchingCreateProfile,
-					[ propertyID ]: false,
-				},
-			};
-		}
-
-		case CATCH_FETCH_CREATE_PROFILE: {
-			const { error, propertyID } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingCreateProfile: {
-					...state.isFetchingCreateProfile,
-					[ propertyID ]: false,
-				},
-			};
-		}
-
-		case RECEIVE_CREATE_PROFILE: {
-			const { propertyID, profile } = payload;
-
-			return {
-				...state,
-				profiles: {
-					...state.profiles,
-					[ propertyID ]: [
-						...( state.profiles[ propertyID ] || [] ),
-						profile,
-					],
-				},
-			};
-		}
-
-		default: {
-			return { ...state };
-		}
-	}
 };
 
 const baseResolvers = {
@@ -265,11 +160,9 @@ const baseSelectors = {
 	 * @param {string} propertyID The Analytics Property ID to check for profile creation.
 	 * @return {boolean} `true` if creating a profile, `false` if not.
 	 */
-	isDoingCreateProfile( state, propertyID ) {
-		const { isFetchingCreateProfile } = state;
-
-		return !! isFetchingCreateProfile[ propertyID ];
-	},
+	isDoingCreateProfile: createRegistrySelector( ( select ) => ( state, propertyID ) => {
+		return select( STORE_NAME ).isFetchingCreateProfile( propertyID );
+	} ),
 
 	/**
 	 * Checks if profiles are being fetched for the given account and property.
@@ -287,11 +180,10 @@ const baseSelectors = {
 
 const store = Data.combineStores(
 	fetchGetProfilesStore,
+	fetchCreateProfileStore,
 	{
 		INITIAL_STATE: BASE_INITIAL_STATE,
 		actions: baseActions,
-		controls: baseControls,
-		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
 	}
