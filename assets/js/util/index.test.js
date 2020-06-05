@@ -16,13 +16,19 @@
  * limitations under the License.
  */
 
-// mock dependency modules
+/**
+ * Mocked dependencies
+ */
 jest.mock( './tracking/index' );
 
-// global dependecies
+/**
+ * External dependencies
+ */
 import { lorem, random } from 'faker';
 
-// Internal dependencies
+/**
+ * Internal dependencies
+ */
 import { getModulesData, activateOrDeactivateModule } from './index';
 
 describe( 'getModulesData', () => {
