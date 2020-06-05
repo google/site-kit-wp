@@ -89,7 +89,7 @@ export const controls = {
 			}
 
 			await dispatch( STORE_NAME ).setAMPContainerID( container.publicId ); // Capitalization rule exception: publicId
-			await dispatch( STORE_NAME ).setAMPInternalContainerID( container.containerId ); // Capitalization rule exception: containerId
+			await dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId ); // Capitalization rule exception: containerId
 		}
 
 		// This action shouldn't be called if settings haven't changed,
