@@ -25,7 +25,8 @@ import apiFetchMock from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import UseSnippetSwitch from './use-snippet-switch';
-import { fireEvent, render } from '../../../../../tests/js/test-utils';
+import { fireEvent, render, act } from '../../../../../tests/js/test-utils';
+import { subscribeUntil } from '../../../../../tests/js/utils';
 import { STORE_NAME } from '../datastore/constants';
 
 // Mock apiFetch so we know if it's called.
@@ -72,10 +73,14 @@ describe( 'UseSnippetSwitch', () => {
 		const originalUseSnippet = registry.select( STORE_NAME ).getUseSnippet();
 		expect( originalUseSnippet ).toBe( false );
 
+		apiFetchMock.mockImplementationOnce( () => {} );
 		// Click the switch to fire the onChange event.
 		fireEvent.click( container.querySelector( '.mdc-switch' ) );
 
 		const newUseSnippet = registry.select( STORE_NAME ).getUseSnippet();
+		await act( () => subscribeUntil( registry, () => registry
+			.select( STORE_NAME ).hasFinishedResolution( 'getSettings' ) )
+		);
 		expect( newUseSnippet ).toBe( true );
 
 		// Ensure API call is issued.
