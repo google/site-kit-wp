@@ -49,7 +49,7 @@ describe( 'SettingsEdit', () => {
 			existingTag.propertyID = profiles[ 0 ].webPropertyId;
 			const { accountID, propertyID } = existingTag;
 			dispatch( STORE_NAME ).setSettings( {} );
-			dispatch( STORE_NAME ).receiveAccounts( accounts );
+			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).receiveProperties( properties, { accountID } );
 			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID } );
 			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );

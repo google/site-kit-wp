@@ -144,7 +144,7 @@ describe( 'modules/analytics accounts', () => {
 				} );
 				const propertyID = fixtures.accountsPropertiesProfiles.properties[ 0 ].internalWebPropertyId;
 				const accountID = fixtures.accountsPropertiesProfiles.accounts[ 0 ].id;
-				registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accountsPropertiesProfiles.accounts );
+				registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 				registry.dispatch( STORE_NAME ).receiveProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
 				registry.dispatch( STORE_NAME ).receiveProfiles( fixtures.accountsPropertiesProfiles.profiles, { propertyID } );
 
@@ -172,7 +172,7 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'invalidates the resolver for getAccounts', async () => {
-				registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accountsPropertiesProfiles.accounts );
+				registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 				registry.select( STORE_NAME ).getAccounts();
 
 				await subscribeUntil(
@@ -226,7 +226,7 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'does not make a network request if accounts are already present', async () => {
-				registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accountsPropertiesProfiles.accounts );
+				registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
 
@@ -240,7 +240,7 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'does not make a network request if accounts exist but are empty (this is a valid state)', async () => {
-				registry.dispatch( STORE_NAME ).receiveAccounts( [] );
+				registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
 
@@ -273,9 +273,7 @@ describe( 'modules/analytics accounts', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getAccounts();
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingAccountsPropertiesProfiles === false,
+					() => registry.select( STORE_NAME ).isDoingGetAccounts() === false,
 				);
 
 				expect( fetch ).toHaveBeenCalledTimes( 1 );

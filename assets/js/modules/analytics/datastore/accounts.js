@@ -36,95 +36,60 @@ import { STORE_NAME, ACCOUNT_CREATE, PROPERTY_CREATE, FORM_ACCOUNT_CREATE } from
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME as CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { actions as tagActions } from './tags';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistrySelector, createRegistryControl } = Data;
 
+const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
+	baseName: 'getAccountsPropertiesProfiles',
+	controlCallback: ( { data } ) => {
+		return API.get( 'modules', 'analytics', 'accounts-properties-profiles', data, {
+			useCache: false,
+		} );
+	},
+	reducerCallback: ( state ) => {
+		// Actual accounts, properties, profiles are set by resolver with
+		// custom logic, hence here we just set a flag.
+		return {
+			...state,
+			isAwaitingAccountsPropertiesProfilesCompletion: true,
+		};
+	},
+	argsToParams: ( data ) => {
+		invariant( 'object' === typeof data, 'data must be an object.' );
+		return { data };
+	},
+} );
+
 // Actions
-const FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FETCH_ACCOUNTS_PROPERTIES_PROFILES';
-const START_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'START_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
-const FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
-const CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES = 'CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES';
 const FETCH_CREATE_ACCOUNT = 'FETCH_CREATE_ACCOUNT';
 const RECEIVE_CREATE_ACCOUNT = 'RECEIVE_CREATE_ACCOUNT';
 const START_FETCH_CREATE_ACCOUNT = 'START_FETCH_CREATE_ACCOUNT';
 const FINISH_FETCH_CREATE_ACCOUNT = 'FINISH_FETCH_CREATE_ACCOUNT';
 const CATCH_FETCH_CREATE_ACCOUNT = 'CATCH_FETCH_CREATE_ACCOUNT';
 
-const RECEIVE_ACCOUNTS = 'RECEIVE_ACCOUNTS';
+const RECEIVE_GET_ACCOUNTS = 'RECEIVE_GET_ACCOUNTS';
+const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION = 'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION';
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 
-export const INITIAL_STATE = {
+const BASE_INITIAL_STATE = {
 	accounts: undefined,
-	isFetchingAccountsPropertiesProfiles: false,
+	isAwaitingAccountsPropertiesProfilesCompletion: false,
 	isFetchingCreateAccount: false,
 	accountTicketID: undefined,
 };
 
-export const actions = {
-	*fetchAccountsPropertiesProfiles( data ) {
-		let response, error;
-
-		yield {
-			payload: { data },
-			type: START_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
-		};
-
-		try {
-			response = yield {
-				payload: { data },
-				type: FETCH_ACCOUNTS_PROPERTIES_PROFILES,
-			};
-
-			const { dispatch } = yield Data.commonActions.getRegistry();
-			yield actions.receiveAccounts( response.accounts );
-
-			if ( response.properties.length && response.properties[ 0 ] && response.properties[ 0 ].accountId ) {
-				const accountID = response.properties[ 0 ].accountId;
-				dispatch( STORE_NAME ).receiveProperties( response.properties, { accountID } );
-			}
-
-			if ( response.profiles.length && response.profiles[ 0 ] && response.profiles[ 0 ].webPropertyId ) {
-				const propertyID = response.profiles[ 0 ].webPropertyId;
-				dispatch( STORE_NAME ).receiveProfiles( response.profiles, { propertyID } );
-			}
-
-			if ( response.matchedProperty ) {
-				dispatch( STORE_NAME ).receiveMatchedProperty( response.matchedProperty );
-			}
-
-			yield {
-				payload: { data },
-				type: FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
-			};
-		} catch ( e ) {
-			error = e;
-
-			yield {
-				payload: {
-					data,
-					error,
-				},
-				type: CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES,
-			};
-		}
-
-		return { response, error };
-	},
-
-	/**
-	 * Creates an action for receiving accounts.
-	 *
-	 * @since 1.8.0
-	 * @private
-	 *
-	 * @param {Array} accounts Accounts to receive.
-	 * @return {Object} action object.
-	 */
-	receiveAccounts( accounts ) {
-		invariant( Array.isArray( accounts ), 'accounts must be an array.' );
-
+const baseActions = {
+	receiveGetAccounts( accounts ) {
 		return {
 			payload: { accounts },
-			type: RECEIVE_ACCOUNTS,
+			type: RECEIVE_GET_ACCOUNTS,
+		};
+	},
+
+	receiveAccountsPropertiesProfilesCompletion() {
+		return {
+			payload: {},
+			type: RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION,
 		};
 	},
 
@@ -183,7 +148,7 @@ export const actions = {
 				type: FETCH_CREATE_ACCOUNT,
 			};
 
-			yield actions.receiveCreateAccount( response );
+			yield baseActions.receiveCreateAccount( response );
 
 			yield {
 				payload: {},
@@ -209,12 +174,7 @@ export const actions = {
 	},
 };
 
-export const controls = {
-	[ FETCH_ACCOUNTS_PROPERTIES_PROFILES ]: ( { payload } ) => {
-		return API.get( 'modules', 'analytics', 'accounts-properties-profiles', payload.data, {
-			useCache: false,
-		} );
-	},
+const baseControls = {
 	[ FETCH_CREATE_ACCOUNT ]: createRegistryControl( ( { select } ) => () => {
 		const { getValue } = select( CORE_FORMS );
 
@@ -227,45 +187,27 @@ export const controls = {
 	} ),
 };
 
-export const reducer = ( state, { type, payload } ) => {
+const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case START_FETCH_ACCOUNTS_PROPERTIES_PROFILES: {
-			return {
-				...state,
-				isFetchingAccountsPropertiesProfiles: true,
-			};
-		}
-
-		case RECEIVE_ACCOUNTS: {
+		case RECEIVE_GET_ACCOUNTS: {
 			const { accounts } = payload;
-
 			return {
 				...state,
-				accounts: [ ...accounts ],
+				accounts,
 			};
 		}
 
-		case FINISH_FETCH_ACCOUNTS_PROPERTIES_PROFILES: {
+		case RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION: {
 			return {
 				...state,
-				isFetchingAccountsPropertiesProfiles: false,
-			};
-		}
-
-		case CATCH_FETCH_ACCOUNTS_PROPERTIES_PROFILES: {
-			const { error } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingAccountsPropertiesProfiles: false,
+				isAwaitingAccountsPropertiesProfilesCompletion: false,
 			};
 		}
 
 		case RESET_ACCOUNTS: {
 			return {
 				...state,
-				accounts: INITIAL_STATE.accounts,
+				accounts: BASE_INITIAL_STATE.accounts,
 				settings: {
 					...state.settings,
 					accountID: undefined,
@@ -311,7 +253,7 @@ export const reducer = ( state, { type, payload } ) => {
 	}
 };
 
-export const resolvers = {
+const baseResolvers = {
 	*getAccounts() {
 		const registry = yield Data.commonActions.getRegistry();
 		const existingAccounts = registry.select( STORE_NAME ).getAccounts();
@@ -321,11 +263,31 @@ export const resolvers = {
 		if ( ! existingAccounts ) {
 			yield tagActions.waitForExistingTag();
 			const existingTag = registry.select( STORE_NAME ).getExistingTag();
-			const { response } = yield actions.fetchAccountsPropertiesProfiles( {
+			const { response } = yield fetchGetAccountsPropertiesProfilesStore.actions.fetchGetAccountsPropertiesProfiles( {
 				existingPropertyID: existingTag,
 			} );
 
 			if ( response ) {
+				const { dispatch } = registry;
+
+				dispatch( STORE_NAME ).receiveGetAccounts( response.accounts );
+
+				if ( response.properties.length && response.properties[ 0 ] && response.properties[ 0 ].accountId ) {
+					const accountID = response.properties[ 0 ].accountId;
+					dispatch( STORE_NAME ).receiveProperties( response.properties, { accountID } );
+				}
+
+				if ( response.profiles.length && response.profiles[ 0 ] && response.profiles[ 0 ].webPropertyId ) {
+					const propertyID = response.profiles[ 0 ].webPropertyId;
+					dispatch( STORE_NAME ).receiveProfiles( response.profiles, { propertyID } );
+				}
+
+				if ( response.matchedProperty ) {
+					dispatch( STORE_NAME ).receiveMatchedProperty( response.matchedProperty );
+				}
+
+				dispatch( STORE_NAME ).receiveAccountsPropertiesProfilesCompletion();
+
 				( { matchedProperty } = response );
 			}
 		}
@@ -339,7 +301,7 @@ export const resolvers = {
 	},
 };
 
-export const selectors = {
+const baseSelectors = {
 	/**
 	 * Gets all Google Analytics accounts this user can access.
 	 *
@@ -396,7 +358,18 @@ export const selectors = {
 	 * @return {boolean} Whether accounts are currently being fetched or not.
 	 */
 	isDoingGetAccounts( state ) {
-		return !! state.isFetchingAccountsPropertiesProfiles;
+		// Check if dispatch calls right after fetching are still awaiting.
+		if ( state.isAwaitingAccountsPropertiesProfilesCompletion ) {
+			return true;
+		}
+		// Since isFetchingGetAccountsPropertiesProfiles (via createFetchStore)
+		// holds information based on specific values but we only need
+		// generic information here, we need to check whether ANY such
+		// request is in progress.
+		if ( 'object' !== typeof state.isFetchingGetAccountsPropertiesProfiles ) {
+			return false;
+		}
+		return Object.values( state.isFetchingGetAccountsPropertiesProfiles ).some( ( value ) => value );
 	},
 
 	/**
@@ -463,11 +436,23 @@ export const selectors = {
 	} ),
 };
 
-export default {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores(
+	fetchGetAccountsPropertiesProfilesStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
+		controls: baseControls,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;

@@ -38,7 +38,7 @@ apiFetchMock.mockImplementation( ( ...args ) => {
 
 const setupRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveAccounts( fixtures.accountsPropertiesProfiles.accounts );
+	registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 	registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 };
 
@@ -49,7 +49,7 @@ const setupLoadingRegistry = ( registry ) => {
 
 const setupEmptyRegistry = ( registry ) => {
 	registry.dispatch( STORE_NAME ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveAccounts( [] );
+	registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
 	registry.dispatch( STORE_NAME ).receiveExistingTag( null );
 };
 
