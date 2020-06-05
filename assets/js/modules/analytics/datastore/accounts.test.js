@@ -120,7 +120,7 @@ describe( 'modules/analytics accounts', () => {
 		} );
 
 		describe( 'resetAccounts', () => {
-			it( 'sets accounts and related values back to their initial values', () => {
+			it( 'sets accounts and related values back to their initial values', async () => {
 				fetchMock.get( { query: { tagverify: '1' } }, { body: {}, status: 200 } );
 				registry.dispatch( STORE_NAME ).setSettings( {
 					accountID: '12345',
@@ -148,12 +148,15 @@ describe( 'modules/analytics accounts', () => {
 				expect( registry.select( STORE_NAME ).getPropertyID() ).toStrictEqual( undefined );
 				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toStrictEqual( undefined );
 				expect( registry.select( STORE_NAME ).getProfileID() ).toStrictEqual( undefined );
-				// TODO Prevent unmatched GET by getAccounts().
+
 				expect( registry.select( STORE_NAME ).getAccounts() ).toStrictEqual( undefined );
 				// Other settings are left untouched.
 				expect( registry.select( STORE_NAME ).getUseSnippet() ).toStrictEqual( true );
 				expect( registry.select( STORE_NAME ).getTrackingDisabled() ).toStrictEqual( [] );
 				expect( registry.select( STORE_NAME ).getAnonymizeIP() ).toStrictEqual( true );
+				// Wait until selector is resolved to prevent unmatched fetch error.
+				await subscribeUntil( registry, () => registry.select( STORE_NAME )
+					.hasFinishedResolution( 'getAccounts' ) );
 			} );
 
 			it( 'invalidates the resolver for getAccounts', async () => {
