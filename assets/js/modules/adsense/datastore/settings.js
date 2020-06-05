@@ -32,20 +32,42 @@ import {
 	isValidClientID,
 } from '../util';
 import { STORE_NAME } from './constants';
+import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const { commonActions, createRegistrySelector, createRegistryControl } = Data;
+
+const fetchSaveUseSnippetStore = createFetchStore( {
+	baseName: 'saveUseSnippet',
+	controlCallback: ( { useSnippet } ) => {
+		return API.set( 'modules', 'adsense', 'use-snippet', { useSnippet } );
+	},
+	reducerCallback: ( state, response, { useSnippet } ) => {
+		// The server response in this case is simply `true`, so we need to
+		// rely on the originally passed parameter here.
+		return {
+			...state,
+			// Update saved settings.
+			savedSettings: {
+				...( state.savedSettings || {} ),
+				useSnippet,
+			},
+			// Also update client settings to ensure they're in sync.
+			settings: {
+				...( state.settings || {} ),
+				useSnippet,
+			},
+		};
+	},
+	argsToParams: ( useSnippet ) => {
+		invariant( useSnippet !== undefined, 'useSnippet is required.' );
+		return { useSnippet };
+	},
+} );
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
 const START_SUBMIT_CHANGES = 'START_SUBMIT_CHANGES';
 const FINISH_SUBMIT_CHANGES = 'FINISH_SUBMIT_CHANGES';
-
-const FETCH_SAVE_USE_SNIPPET = 'FETCH_SAVE_USE_SNIPPET';
-const START_FETCH_SAVE_USE_SNIPPET = 'START_FETCH_SAVE_USE_SNIPPET';
-const FINISH_FETCH_SAVE_USE_SNIPPET = 'FINISH_FETCH_SAVE_USE_SNIPPET';
-const CATCH_FETCH_SAVE_USE_SNIPPET = 'CATCH_FETCH_SAVE_USE_SNIPPET';
-
-const RECEIVE_SAVE_USE_SNIPPET = 'RECEIVE_SAVE_USE_SNIPPET';
 
 const COMPLETE_ACCOUNT_SETUP = 'COMPLETE_ACCOUNT_SETUP';
 const COMPLETE_SITE_SETUP = 'COMPLETE_SITE_SETUP';
@@ -54,60 +76,12 @@ const COMPLETE_SITE_SETUP = 'COMPLETE_SITE_SETUP';
 // certain parts of the AdSense setup flow.
 const RECEIVE_ORIGINAL_ACCOUNT_STATUS = 'RECEIVE_ORIGINAL_ACCOUNT_STATUS';
 
-export const INITIAL_STATE = {
+const BASE_INITIAL_STATE = {
 	isDoingSubmitChanges: false,
-	isFetchingSaveUseSnippet: false,
 	originalAccountStatus: undefined,
 };
 
-export const actions = {
-	*fetchSaveUseSnippet( useSnippet ) {
-		let response, error;
-
-		if ( undefined === useSnippet ) {
-			error = new Error( 'useSnippet is required.' );
-			global.console.error( error.message );
-			return { response, error };
-		}
-
-		yield {
-			payload: {},
-			type: START_FETCH_SAVE_USE_SNIPPET,
-		};
-
-		try {
-			response = yield {
-				payload: { useSnippet },
-				type: FETCH_SAVE_USE_SNIPPET,
-			};
-
-			yield actions.receiveSaveUseSnippet( response, { useSnippet } );
-
-			yield {
-				payload: {},
-				type: FINISH_FETCH_SAVE_USE_SNIPPET,
-			};
-		} catch ( e ) {
-			error = e;
-			yield {
-				payload: { error },
-				type: CATCH_FETCH_SAVE_USE_SNIPPET,
-			};
-		}
-
-		return { response, error };
-	},
-
-	receiveSaveUseSnippet( response, params ) {
-		invariant( response, 'response is required.' );
-		invariant( params, 'params is required.' );
-
-		return {
-			payload: { response, params },
-			type: RECEIVE_SAVE_USE_SNIPPET,
-		};
-	},
-
+const baseActions = {
 	/**
 	 * Saves the current value of the 'useSnippet' setting.
 	 *
@@ -126,7 +100,7 @@ export const actions = {
 			return;
 		}
 
-		yield actions.fetchSaveUseSnippet( useSnippet );
+		yield fetchSaveUseSnippetStore.actions.fetchSaveUseSnippet( useSnippet );
 	},
 
 	/**
@@ -203,11 +177,7 @@ export const actions = {
 	},
 };
 
-export const controls = {
-	[ FETCH_SAVE_USE_SNIPPET ]: ( { payload } ) => {
-		const { useSnippet } = payload;
-		return API.set( 'modules', 'adsense', 'use-snippet', { useSnippet } );
-	},
+const baseControls = {
 	[ SUBMIT_CHANGES ]: createRegistryControl( ( registry ) => async () => {
 		// This action shouldn't be called if settings haven't changed,
 		// but this prevents errors in tests.
@@ -263,54 +233,8 @@ export const controls = {
 	} ),
 };
 
-export const reducer = ( state, { type, payload } ) => {
+const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case START_FETCH_SAVE_USE_SNIPPET: {
-			return {
-				...state,
-				isFetchingSaveUseSnippet: true,
-			};
-		}
-
-		case FINISH_FETCH_SAVE_USE_SNIPPET: {
-			return {
-				...state,
-				isFetchingSaveUseSnippet: false,
-			};
-		}
-
-		case RECEIVE_SAVE_USE_SNIPPET: {
-			// The server response in this case is simply `true`,
-			// so this value is actually the one passed as parameter, assumed
-			// to be the saved value from the successful request.
-			const { params } = payload;
-			const { useSnippet } = params;
-
-			return {
-				...state,
-				// Update saved settings.
-				savedSettings: {
-					...( state.savedSettings || {} ),
-					useSnippet,
-				},
-				// Also update client settings to ensure they're in sync.
-				settings: {
-					...( state.settings || {} ),
-					useSnippet,
-				},
-			};
-		}
-
-		case CATCH_FETCH_SAVE_USE_SNIPPET: {
-			const { error } = payload;
-
-			return {
-				...state,
-				error,
-				isFetchingSaveUseSnippet: false,
-			};
-		}
-
 		case START_SUBMIT_CHANGES: {
 			return {
 				...state,
@@ -360,7 +284,7 @@ export const reducer = ( state, { type, payload } ) => {
 	}
 };
 
-export const resolvers = {
+const baseResolvers = {
 	*getOriginalAccountStatus() {
 		const registry = yield commonActions.getRegistry();
 
@@ -375,7 +299,7 @@ export const resolvers = {
 	},
 };
 
-export const selectors = {
+const baseSelectors = {
 	/**
 	 * Checks if changes can be submitted.
 	 *
@@ -439,7 +363,14 @@ export const selectors = {
 	 * @return {boolean} `true` if saving useSnippet, `false` if not.
 	 */
 	isDoingSaveUseSnippet( state ) {
-		return state.isFetchingSaveUseSnippet;
+		// Since isFetchingSaveUseSnippet (via createFetchStore)
+		// holds information based on specific values but we only need
+		// generic information here, we need to check whether ANY such
+		// request is in progress.
+		if ( 'object' !== typeof state.isFetchingSaveUseSnippet ) {
+			return false;
+		}
+		return Object.values( state.isFetchingSaveUseSnippet ).some( ( value ) => value );
 	},
 
 	/**
@@ -457,11 +388,23 @@ export const selectors = {
 	},
 };
 
-export default {
-	INITIAL_STATE,
-	actions,
-	controls,
-	reducer,
-	resolvers,
-	selectors,
-};
+const store = Data.combineStores(
+	fetchSaveUseSnippetStore,
+	{
+		INITIAL_STATE: BASE_INITIAL_STATE,
+		actions: baseActions,
+		controls: baseControls,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
+
+export const INITIAL_STATE = store.INITIAL_STATE;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;
