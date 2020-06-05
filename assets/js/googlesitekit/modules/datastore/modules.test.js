@@ -144,11 +144,12 @@ describe( 'core/modules modules', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.getOnce(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
 					{ body: response, status: 500 }
 				);
 
+				muteConsole( 'error' );
 				registry.dispatch( STORE_NAME ).activateModule( slug );
 
 				// Wait until this activation action has completed.
@@ -198,7 +199,7 @@ describe( 'core/modules modules', () => {
 				);
 
 				// Call a selector that triggers an HTTP request to get the modules.
-				registry.select( STORE_NAME ).isModuleActive( slug );
+				registry.select( STORE_NAME ).getModules();
 
 				// Wait until the modules have been loaded.
 				await subscribeUntil( registry, () => registry
@@ -210,7 +211,7 @@ describe( 'core/modules modules', () => {
 
 				expect( isActiveBefore ).toEqual( true );
 
-				fetchMock.postOnce(
+				fetchMock.post(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
 					{ body: { success: true }, status: 200 }
 				);
@@ -220,13 +221,7 @@ describe( 'core/modules modules', () => {
 					{ body: responseWithAnalyticsDisabled, status: 200 }
 				);
 
-				registry.dispatch( STORE_NAME ).deactivateModule( slug );
-
-				// Wait until this activation action has completed.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.isSettingModuleActivation( slug ) === false
-				);
+				await registry.dispatch( STORE_NAME ).deactivateModule( slug );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -243,9 +238,8 @@ describe( 'core/modules modules', () => {
 
 				// Analytics should no longer be active.
 				const isActiveAfter = registry.select( STORE_NAME ).isModuleActive( slug );
-
-				expect( fetchMock ).toHaveFetchedTimes( 3 );
 				expect( isActiveAfter ).toEqual( false );
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
 			} );
 
 			it( 'does not update status if the API encountered a failure', async () => {
@@ -274,18 +268,13 @@ describe( 'core/modules modules', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.getOnce(
+				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
 					{ body: response, status: 500 }
 				);
 
-				registry.dispatch( STORE_NAME ).deactivateModule( slug );
-
-				// Wait until this deactivation action has completed.
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.isSettingModuleActivation( slug ) === false
-				);
+				muteConsole( 'error' );
+				await registry.dispatch( STORE_NAME ).deactivateModule( slug );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -313,6 +302,10 @@ describe( 'core/modules modules', () => {
 		describe( 'fetchModules', () => {
 			it( 'does not require any params', () => {
 				expect( () => {
+					fetchMock.getOnce(
+						/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+						{ body: FIXTURES, status: 200 }
+					);
 					registry.dispatch( STORE_NAME ).fetchModules();
 				} ).not.toThrow();
 			} );
@@ -349,10 +342,9 @@ describe( 'core/modules modules', () => {
 				// The modules info will be its initial value while the modules
 				// info is fetched.
 				expect( initialModules ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getModules() !== undefined
-					),
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getModules' )
 				);
 
 				const modules = registry.select( STORE_NAME ).getModules();
@@ -388,10 +380,9 @@ describe( 'core/modules modules', () => {
 
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getModules();
-				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingModules === false,
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getModules' )
 				);
 
 				const modules = registry.select( STORE_NAME ).getModules();
@@ -430,18 +421,19 @@ describe( 'core/modules modules', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
+				const slug = 'analytics';
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/site\/data\/modules/,
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{ body: response, status: 500 }
 				);
+
 				muteConsole( 'error' );
-				const slug = 'analytics';
 				registry.select( STORE_NAME ).getModule( slug );
-				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingModules === false,
+
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getModules' )
 				);
 
 				const module = registry.select( STORE_NAME ).getModule( slug );
@@ -451,6 +443,10 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'returns undefined if modules is not yet available', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: FIXTURES, status: 200 }
+				);
 				// This triggers a network request, so ignore the error.
 				muteConsole( 'error' );
 				const module = registry.select( STORE_NAME ).getModule( 'analytics' );
