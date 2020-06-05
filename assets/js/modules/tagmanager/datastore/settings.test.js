@@ -20,12 +20,17 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME, ACCOUNT_CREATE, CONTAINER_CREATE } from './constants';
+import { STORE_NAME, ACCOUNT_CREATE, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import { STORE_NAME as CORE_SITE, AMP_MODE_SECONDARY, AMP_MODE_PRIMARY } from '../../../googlesitekit/datastore/site/constants';
+import * as fixtures from './__fixtures__';
+import { accountBuilder, containerBuilder } from './__factories__';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
+	muteConsole,
 } from '../../../../../tests/js/utils';
+import { getItem, setItem } from '../../../googlesitekit/api/cache';
+import { createCacheKey } from '../../../googlesitekit/api';
 
 describe( 'modules/tagmanager settings', () => {
 	let registry;
@@ -58,6 +63,12 @@ describe( 'modules/tagmanager settings', () => {
 		useSnippet: true,
 	};
 
+	const WPError = {
+		code: 'internal_error',
+		message: 'Something wrong happened.',
+		data: { status: 500 },
+	};
+
 	beforeAll( () => {
 		API.setUsingCache( false );
 	} );
@@ -85,8 +96,275 @@ describe( 'modules/tagmanager settings', () => {
 		API.setUsingCache( true );
 	} );
 
-	describe( 'actions', () => {
+	function setNoAMP() {
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: false } );
+	}
+	function setPrimaryAMP() {
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
+	}
+	function setSecondaryAMP() {
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
+	}
 
+	describe( 'actions', () => {
+		beforeEach( () => {
+			// Receive empty settings to prevent unexpected fetch by resolver.
+			receiveSettings( {} );
+		} );
+
+		describe( 'submitChanges', () => {
+			describe( 'with no AMP', () => {
+				it( 'dispatches createContainer if the "set up a new container" option is chosen', async () => {
+					setSettings( {
+						...validSettings,
+						accountID: '12345',
+						containerID: CONTAINER_CREATE,
+					} );
+					const createdContainer = {
+						...fixtures.createContainer,
+					};
+
+					fetch
+						.doMockOnceIf(
+							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/
+						)
+						.mockResponseOnce(
+							JSON.stringify( createdContainer ),
+							{ status: 200 }
+						)
+						.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/ )
+						.mockResponseOnce( async ( req ) => {
+							const { data } = await req.json();
+							// Return the same settings passed to the API.
+							return JSON.stringify( data );
+						} )
+					;
+
+					const result = await submitChanges();
+					expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ) ).toMatchObject( {
+						data: { accountID: '12345' },
+					} );
+
+					expect( result.error ).toBeFalsy();
+					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( createdContainer.publicId );
+					expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( createdContainer.containerId );
+				} );
+
+				it( 'handles an error if set while creating a container', async () => {
+					setSettings( {
+						...validSettings,
+						accountID: '12345',
+						containerID: CONTAINER_CREATE,
+					} );
+
+					fetch
+						.doMockOnceIf(
+							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/
+						)
+						.mockResponseOnce( JSON.stringify( WPError ), { status: 500 } );
+
+					muteConsole( 'error' );
+					await submitChanges();
+
+					expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toMatchObject(
+						{ accountID: '12345' }
+					);
+
+					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( CONTAINER_CREATE );
+					expect( registry.select( STORE_NAME ).getError() ).toEqual( WPError );
+				} );
+
+				it( 'dispatches saveSettings', async () => {
+					setSettings( validSettings );
+
+					fetch
+						.doMockOnceIf(
+							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/
+						)
+						.mockResponseOnce(
+							JSON.stringify( validSettings ),
+							{ status: 200 }
+						);
+
+					await submitChanges();
+
+					expect( fetch ).toHaveBeenCalled();
+					expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
+					expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
+				} );
+
+				it( 'returns an error if saveSettings fails', async () => {
+					setSettings( validSettings );
+
+					fetch
+						.doMockOnceIf(
+							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/
+						)
+						.mockResponseOnce(
+							JSON.stringify( WPError ),
+							{ status: 500 }
+						);
+
+					muteConsole( 'error' );
+					const result = await submitChanges();
+
+					expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toEqual( validSettings );
+					expect( result.error ).toEqual( WPError );
+				} );
+
+				it( 'invalidates module cache on success', async () => {
+					setSettings( validSettings );
+
+					fetch
+						.doMockOnceIf(
+							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/
+						)
+						.mockResponseOnce(
+							JSON.stringify( validSettings ),
+							{ status: 200 }
+						);
+
+					const cacheKey = createCacheKey( 'modules', 'tagmanager', 'arbitrary-datapoint' );
+					expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );
+					expect( ( await getItem( cacheKey ) ).value ).not.toBeFalsy();
+
+					await submitChanges();
+
+					expect( ( await getItem( cacheKey ) ).value ).toBeFalsy();
+				} );
+			} );
+
+			describe( 'with primary AMP', () => {
+				beforeAll( () => setPrimaryAMP() );
+				afterAll( () => setNoAMP() );
+
+				it( 'dispatches createContainer for both web and AMP containers when selected', async () => {
+					const account = accountBuilder();
+					registry.dispatch( STORE_NAME ).setSettings( {
+						...validSettings,
+						containerID: CONTAINER_CREATE,
+						ampContainerID: CONTAINER_CREATE,
+					} );
+					const createdWebContainer = containerBuilder( { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] } );
+					const createdAMPContainer = containerBuilder( { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] } );
+
+					const createContainerHandler = async ( req ) => {
+						const { data } = await req.json();
+						if ( CONTEXT_WEB === data.usageContext ) {
+							return JSON.stringify( createdWebContainer );
+						} else if ( CONTEXT_AMP === data.usageContext ) {
+							return JSON.stringify( createdAMPContainer );
+						}
+						return Promise.reject();
+					};
+
+					fetch
+						.doMockOnceIf(
+							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+							createContainerHandler
+						)
+						.doMockOnceIf(
+							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+							createContainerHandler
+						)
+						.doMockOnceIf(
+							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+							async ( req ) => {
+								const { data } = await req.json();
+								// Return the same settings passed to the API.
+								return JSON.stringify( data );
+							}
+						)
+					;
+
+					const { error } = await submitChanges();
+
+					expect( error ).toBe( undefined );
+					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( createdWebContainer.publicId );
+					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( createdAMPContainer.publicId );
+				} );
+
+				it( 'dispatches createContainer if the "set up a new container" option is chosen', async () => {
+					setSettings( {
+						...validSettings,
+						accountID: '12345',
+						ampContainerID: CONTAINER_CREATE,
+					} );
+					const createdAMPContainer = containerBuilder( { accountId: '12345', usageContext: [ CONTEXT_AMP ] } );
+
+					fetch
+						.doMockOnceIf(
+							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/
+						)
+						.mockResponseOnce( JSON.stringify( createdAMPContainer ), { status: 200 } )
+						.doMockOnceIf( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/ )
+						.mockResponseOnce( async ( req ) => {
+							const { data } = await req.json();
+							// Return the same settings passed to the API.
+							return JSON.stringify( data );
+						} )
+					;
+
+					await submitChanges();
+
+					expect( JSON.parse( fetch.mock.calls[ 0 ][ 1 ].body ).data ).toMatchObject(
+						{ accountID: '12345' }
+					);
+
+					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( createdAMPContainer.publicId );
+				} );
+			} );
+
+			describe( 'with secondary AMP', () => {
+				beforeAll( () => setSecondaryAMP() );
+				afterAll( () => setNoAMP() );
+				it( 'dispatches createContainer for both web and AMP containers when selected', async () => {
+					const account = accountBuilder();
+					registry.dispatch( STORE_NAME ).setSettings( {
+						...validSettings,
+						containerID: CONTAINER_CREATE,
+						ampContainerID: CONTAINER_CREATE,
+					} );
+					const createdWebContainer = containerBuilder( { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] } );
+					const createdAMPContainer = containerBuilder( { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] } );
+
+					const createContainerHandler = async ( req ) => {
+						const { data } = await req.json();
+						if ( CONTEXT_WEB === data.usageContext ) {
+							return JSON.stringify( createdWebContainer );
+						} else if ( CONTEXT_AMP === data.usageContext ) {
+							return JSON.stringify( createdAMPContainer );
+						}
+						return Promise.reject();
+					};
+
+					fetch
+						.doMockOnceIf(
+							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+							createContainerHandler
+						)
+						.doMockOnceIf(
+							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
+							createContainerHandler
+						)
+						.doMockOnceIf(
+							/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
+							async ( req ) => {
+								const { data } = await req.json();
+								// Return the same settings passed to the API.
+								return JSON.stringify( data );
+							}
+						)
+					;
+
+					const { error } = await submitChanges();
+
+					expect( error ).toBe( undefined );
+					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( createdWebContainer.publicId );
+					expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( createdAMPContainer.publicId );
+				} );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -109,13 +387,6 @@ describe( 'modules/tagmanager settings', () => {
 		} );
 
 		describe( 'canSubmitChanges', () => {
-			function setPrimaryAMP() {
-				registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
-			}
-			function setSecondaryAMP() {
-				registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
-			}
-
 			it( 'requires a valid accountID', () => {
 				setSettings( validSettings );
 				receiveExistingTag( null );
