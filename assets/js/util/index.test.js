@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { lorem, random } from 'faker';
-
-/**
  * Internal dependencies
  */
 import { getModulesData, activateOrDeactivateModule } from './index';
@@ -76,24 +71,15 @@ describe( 'getModulesData', () => {
 } );
 
 describe( 'activateOrDeactivateModule', () => {
-	let slug;
-	let status;
-	let restApiClient;
-
-	beforeEach( () => {
-		slug = lorem.slug();
-		status = random.boolean();
-		restApiClient = {
-			setModuleActive: jest.fn().mockResolvedValueOnce( { success: true } ),
-		};
-	} );
-
 	it( 'should update module "active" property to be the new status', async () => {
-		const originalStatus = ! status;
-		const originalModule = {
-			slug,
-			name: lorem.word(),
-			active: originalStatus,
+		const slug = 'test-module';
+		const status = false;
+
+		const originalStatus = true;
+		const originalModule = { active: originalStatus };
+
+		const restApiClient = {
+			setModuleActive: jest.fn().mockResolvedValueOnce( { success: true } ),
 		};
 
 		const trackEvents = () => {};
@@ -108,15 +94,18 @@ describe( 'activateOrDeactivateModule', () => {
 	} );
 
 	it( 'should call trackEvent function to track module status change event', async () => {
+		const slug = 'test-module';
+		const status = true;
+
+		const restApiClient = {
+			setModuleActive: jest.fn().mockResolvedValueOnce( { success: true } ),
+		};
+
 		const trackEvents = jest.fn();
 		const getModulesDataMock = () => ( {} );
 
 		await activateOrDeactivateModule( restApiClient, slug, status, trackEvents, getModulesDataMock );
 		expect( trackEvents ).toHaveBeenCalled();
-		expect( trackEvents ).toHaveBeenCalledWith(
-			`${ slug }_setup`,
-			! status ? 'module_deactivate' : 'module_activate',
-			slug,
-		);
+		expect( trackEvents ).toHaveBeenCalledWith( `test-module_setup`, 'module_activate', slug );
 	} );
 } );
