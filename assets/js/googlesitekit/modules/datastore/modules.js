@@ -51,8 +51,11 @@ const fetchGetModulesStore = createFetchStore( {
 
 const fetchSetModuleActivationStore = createFetchStore( {
 	baseName: 'setModuleActivation',
-	controlCallback: ( params ) => {
-		return API.set( 'core', 'modules', 'activation', params );
+	controlCallback: ( { slug, active } ) => {
+		return API.set( 'core', 'modules', 'activation', {
+			slug,
+			active,
+		} );
 	},
 	reducerCallback: ( state ) => {
 		// Updated module activation state is handled by re-fetching module
