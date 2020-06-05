@@ -226,7 +226,7 @@ const baseResolvers = {
 
 				if ( response.profiles.length && response.profiles[ 0 ] && response.profiles[ 0 ].webPropertyId ) {
 					const propertyID = response.profiles[ 0 ].webPropertyId;
-					dispatch( STORE_NAME ).receiveProfiles( response.profiles, { propertyID } );
+					dispatch( STORE_NAME ).receiveGetProfiles( response.profiles, { propertyID } );
 				}
 
 				if ( response.matchedProperty ) {

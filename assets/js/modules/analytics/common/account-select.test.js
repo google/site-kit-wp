@@ -118,7 +118,7 @@ describe( 'AccountSelect', () => {
 		const accountID = properties[ 0 ].accountId;
 
 		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
-		registry.dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID } );
+		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { propertyID } );
 
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
