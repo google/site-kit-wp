@@ -502,6 +502,8 @@ final class Assets {
 						'googlesitekit-vendor',
 						'googlesitekit-api',
 						'googlesitekit-data',
+						'googlesitekit-datastore-site',
+						'googlesitekit-datastore-user',
 					),
 				)
 			),
