@@ -177,6 +177,10 @@ export const reducer = ( state, { type, payload } ) => {
 
 export const resolvers = {
 	*getReport( url, strategy ) {
+		if ( ! url || ! strategy ) {
+			return;
+		}
+
 		const registry = yield Data.commonActions.getRegistry();
 		const existingReport = registry.select( STORE_NAME ).getReport( url, strategy );
 
