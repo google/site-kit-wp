@@ -58,6 +58,8 @@ export const actions = {
 	 * @return {Object} Object with {response, error}
 	 */
 	*fetchReport( url, strategy ) {
+		invariant( isURL( url ), 'a valid url is required to fetch a report.' );
+		invariant( typeof strategy === 'string', 'a valid strategy is required to fetch a report.' );
 		let response, error;
 
 		yield {
