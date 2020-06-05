@@ -6,7 +6,7 @@ import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-u
 /**
  * Internal dependencies
  */
-import { setSiteVerification, setSearchConsoleProperty, useRequestInterception } from '../../utils';
+import { setSiteVerification, setSearchConsoleProperty, useRequestInterception, deactivateUtilityPlugins } from '../../utils';
 
 describe( 'Site Kit dashboard post search', () => {
 	beforeAll( async () => {
@@ -24,6 +24,10 @@ describe( 'Site Kit dashboard post search', () => {
 				request.continue();
 			}
 		} );
+	} );
+
+	afterAll( async () => {
+		await deactivateUtilityPlugins();
 	} );
 
 	beforeEach( async () => {

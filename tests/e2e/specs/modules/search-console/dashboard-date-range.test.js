@@ -11,6 +11,7 @@ import {
 	setSearchConsoleProperty,
 	switchDateRange,
 	useRequestInterception,
+	deactivateUtilityPlugins,
 } from '../../../utils';
 import * as dashboardRequests from './fixtures/dashboard';
 import * as dashboardDetailsRequests from './fixtures/dashboard-details';
@@ -45,6 +46,10 @@ describe( 'date range filtering on dashboard views', () => {
 
 	afterEach( async () => {
 		mockBatchResponse = [];
+	} );
+
+	afterAll( async () => {
+		await deactivateUtilityPlugins();
 	} );
 
 	it( 'loads new data when the date range is changed on the Site Kit dashboard', async () => {
@@ -91,6 +96,9 @@ describe( 'date range filtering on dashboard views', () => {
 		await expect( postSearcher ).toClick( '.autocomplete__option', { text: /hello world/i } );
 
 		mockBatchResponse = last28Days;
+
+		await page.waitFor( 80 ); // I am not sure why, but we need this delay.
+
 		await Promise.all( [
 			page.waitForNavigation(),
 			expect( postSearcher ).toClick( 'button', { text: /view data/i } ),
@@ -124,6 +132,7 @@ describe( 'date range filtering on dashboard views', () => {
 		const TOTAL_IMPRESSIONS_28_DAYS = await getTotalImpressions();
 
 		mockBatchResponse = last14Days;
+
 		await Promise.all( [
 			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/data/' ) ),
 			switchDateRange( 'last 28 days', 'last 14 days' ),

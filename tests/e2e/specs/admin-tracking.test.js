@@ -22,7 +22,10 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 		await setSearchConsoleProperty();
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
-		await page.waitForSelector( '.mdc-tab-bar' );
+		await page.waitForSelector( '.mdc-tab-bar button.mdc-tab' );
+		await expect( page ).toMatchElement( 'button.mdc-tab', { text: 'Admin Settings' } );
+
+		await page.waitFor( 80 ); // I am not sure what but we need this delay before clicking on the button.
 
 		// Click on Admin Settings Tab.
 		await Promise.all( [
