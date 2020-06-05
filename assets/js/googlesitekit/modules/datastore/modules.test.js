@@ -335,24 +335,24 @@ describe( 'core/modules modules', () => {
 			} );
 		} );
 
-		describe( 'fetchModules', () => {
+		describe( 'fetchGetModules', () => {
 			it( 'does not require any params', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).fetchModules();
+					registry.dispatch( STORE_NAME ).fetchGetModules();
 				} ).not.toThrow();
 			} );
 		} );
 
-		describe( 'receiveModules', () => {
-			it( 'requires the modules param', () => {
+		describe( 'receiveGetModules', () => {
+			it( 'requires the response param', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).receiveModules();
-				} ).toThrow( 'modules is required.' );
+					registry.dispatch( STORE_NAME ).receiveGetModules();
+				} ).toThrow( 'response is required.' );
 			} );
 
 			it( 'receives and sets modules ', async () => {
 				const modules = FIXTURES;
-				await registry.dispatch( STORE_NAME ).receiveModules( modules );
+				await registry.dispatch( STORE_NAME ).receiveGetModules( modules );
 
 				const state = store.getState();
 
@@ -390,7 +390,7 @@ describe( 'core/modules modules', () => {
 			} );
 
 			it( 'does not make a network request if data is already in state', async () => {
-				registry.dispatch( STORE_NAME ).receiveModules( FIXTURES );
+				registry.dispatch( STORE_NAME ).receiveGetModules( FIXTURES );
 
 				const modules = registry.select( STORE_NAME ).getModules();
 
@@ -421,9 +421,7 @@ describe( 'core/modules modules', () => {
 				muteConsole( 'error' );
 				registry.select( STORE_NAME ).getModules();
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingModules === false,
+					() => registry.select( STORE_NAME ).isFetchingGetModules() === false,
 				);
 
 				const modules = registry.select( STORE_NAME ).getModules();
@@ -480,9 +478,7 @@ describe( 'core/modules modules', () => {
 				const slug = 'analytics';
 				registry.select( STORE_NAME ).getModule( slug );
 				await subscribeUntil( registry,
-					// TODO: We may want a selector for this, but for now this is fine
-					// because it's internal-only.
-					() => store.getState().isFetchingModules === false,
+					() => registry.select( STORE_NAME ).isFetchingGetModules() === false,
 				);
 
 				const module = registry.select( STORE_NAME ).getModule( slug );
