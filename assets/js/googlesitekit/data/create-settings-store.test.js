@@ -81,6 +81,7 @@ describe( 'createSettingsStore store', () => {
 		describe( 'setSettings', () => {
 			it( 'requires the values param', () => {
 				expect( () => {
+					muteConsole( 'error' );
 					dispatch.setSettings();
 				} ).toThrow( 'values is required.' );
 			} );
