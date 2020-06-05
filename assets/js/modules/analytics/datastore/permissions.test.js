@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { STORE_NAME, PROVISIONING_SCOPE } from './constants';
+import { STORE_NAME, PROVISIONING_SCOPE, EDIT_SCOPE } from './constants';
 import { STORE_NAME as CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
@@ -67,6 +67,38 @@ describe( 'modules/analytics profiles', () => {
 				} );
 
 				expect( registry.select( STORE_NAME ).hasProvisioningScope() ).toBe( true );
+			} );
+		} );
+
+		describe( 'hasEditScope', () => {
+			it( 'returns undefined if granted scopes not loaded yet', async () => {
+				registry.dispatch( CORE_USER ).receiveAuthentication( {
+					authenticated: true,
+					requiredScopes: [],
+					grantedScopes: undefined,
+				} );
+
+				expect( registry.select( STORE_NAME ).hasEditScope() ).toEqual( undefined );
+			} );
+
+			it( 'returns false if scope has not been granted', async () => {
+				registry.dispatch( CORE_USER ).receiveAuthentication( {
+					authenticated: true,
+					requiredScopes: [],
+					grantedScopes: [],
+				} );
+
+				expect( registry.select( STORE_NAME ).hasEditScope() ).toBe( false );
+			} );
+
+			it( 'returns true if scope has been granted', async () => {
+				registry.dispatch( CORE_USER ).receiveAuthentication( {
+					authenticated: true,
+					requiredScopes: [],
+					grantedScopes: [ 'some-scope', EDIT_SCOPE ],
+				} );
+
+				expect( registry.select( STORE_NAME ).hasEditScope() ).toBe( true );
 			} );
 		} );
 	} );

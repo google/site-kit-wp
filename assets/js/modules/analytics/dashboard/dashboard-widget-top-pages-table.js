@@ -105,6 +105,9 @@ class AnalyticsDashboardWidgetTopPagesTable extends Component {
 			hideHeader: false,
 			chartsEnabled: false,
 			links,
+			hideColumns: {
+				mobile: [ 2, 3 ],
+			},
 		};
 
 		const dataTable = getDataTableFromData( dataMapped, headers, options );

@@ -17,7 +17,7 @@ use WP_Error;
 /**
  * Exception thrown when a request to an invalid datapoint is made.
  *
- * @since n.e.x.t
+ * @since 1.9.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class Invalid_Datapoint_Exception extends Exception implements WP_Errorable {
 	/**
 	 * Gets the WP_Error representation of this exception.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return WP_Error
 	 */

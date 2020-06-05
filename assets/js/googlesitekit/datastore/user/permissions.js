@@ -33,7 +33,7 @@ export const actions = {
 	/**
 	 * Clears the permission scope error, if one was previously set.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @return {Object} Redux-style action.
@@ -48,7 +48,7 @@ export const actions = {
 	/**
 	 * Sets a permission error encountered by an API request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @param {Object} permissionError Permissions error object.
@@ -96,7 +96,7 @@ export const selectors = {
 	/**
 	 * Gets the most recent permission error encountered by this user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.

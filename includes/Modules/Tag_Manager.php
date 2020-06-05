@@ -431,7 +431,7 @@ final class Tag_Manager extends Module implements Module_With_Scopes, Module_Wit
 	/**
 	 * Gets map of datapoint to definition data for each.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.9.0
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
