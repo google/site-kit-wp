@@ -68,12 +68,12 @@ export const actions = {
 		};
 
 		try {
-			const report = yield {
+			response = yield {
 				payload: { strategy, url },
 				type: FETCH_REPORT,
 			};
 
-			yield actions.receiveReport( report, { strategy, url } );
+			yield actions.receiveReport( response, { strategy, url } );
 
 			yield {
 				payload: { strategy, url },

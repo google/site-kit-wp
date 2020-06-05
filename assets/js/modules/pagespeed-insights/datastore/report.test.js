@@ -49,6 +49,25 @@ describe( 'modules/pagespeed-insights report', () => {
 	} );
 
 	describe( 'actions', () => {
+		describe( 'fetchReport', () => {
+			it( 'fetches and returns a report as response', async () => {
+				const strategy = 'mobile';
+				const url = 'http://example.com/';
+
+				fetch
+					.doMockOnceIf(
+						/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
+					)
+					.mockResponseOnce(
+						JSON.stringify( fixtures.pagespeedDesktop ),
+						{ status: 200 }
+					);
+
+				const { response } = await registry.dispatch( STORE_NAME ).fetchReport( url, strategy );
+
+				expect( response ).toEqual( fixtures.pagespeedDesktop );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
