@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/* eslint camelcase:[0] */
 
 /**
  * External dependencies
@@ -26,26 +25,15 @@ import './modules';
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { doAction } from '@wordpress/hooks';
-import { Component, render } from '@wordpress/element';
+import { render } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { loadTranslations } from './util';
 import './components/notifications';
-import ErrorHandler from './components/ErrorHandler';
+import Root from './components/root';
 import SettingsApp from './components/settings/settings-app';
-
-class GoogleSitekitSettings extends Component {
-	render() {
-		return (
-			<ErrorHandler>
-				<SettingsApp />
-			</ErrorHandler>
-		);
-	}
-}
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
@@ -54,11 +42,6 @@ domReady( () => {
 	if ( renderTarget ) {
 		loadTranslations();
 
-		render( <GoogleSitekitSettings />, renderTarget );
-
-		/**
-		 * Action triggered when the settings App is loaded.
-		 */
-		doAction( 'googlesitekit.moduleLoaded', 'Settings' );
+		render( <Root dataAPIContext="Settings"><SettingsApp /></Root>, renderTarget );
 	}
 } );

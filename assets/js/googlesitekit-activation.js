@@ -23,7 +23,6 @@
  */
 import domReady from '@wordpress/dom-ready';
 import { render } from '@wordpress/element';
-import { doAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -31,6 +30,7 @@ import { doAction } from '@wordpress/hooks';
 import { loadTranslations, trackEvent } from './util';
 import './components/notifications';
 import { ActivationApp } from './components/activation/activation-app';
+import Root from './components/root';
 
 domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-activation' );
@@ -39,13 +39,8 @@ domReady( () => {
 		loadTranslations();
 		trackEvent( 'plugin_setup', 'plugin_activated' );
 
-		render( <ActivationApp />, renderTarget );
+		render( <Root dataAPIContext="Activation"><ActivationApp /></Root>, renderTarget );
 
 		renderTarget.classList.remove( 'googlesitekit-activation--loading' );
-
-		/**
-		 * Action triggered when the ActivationApp is loaded.
-		 */
-		doAction( 'googlesitekit.moduleLoaded', 'Activation' );
 	}
 } );

@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
@@ -105,12 +106,13 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 	 * Gets required Google OAuth scopes for the module.
 	 *
 	 * @since 1.0.0
+	 * @since 1.9.0 Changed to `adsense.readonly` variant.
 	 *
 	 * @return array List of Google OAuth scopes.
 	 */
 	public function get_scopes() {
 		return array(
-			'https://www.googleapis.com/auth/adsense',
+			'https://www.googleapis.com/auth/adsense.readonly',
 		);
 	}
 
@@ -204,7 +206,8 @@ final class AdSense extends Module implements Module_With_Screen, Module_With_Sc
 
 		// On AMP, preferably use the new 'wp_body_open' hook, falling back to 'the_content' below.
 		if ( $this->context->is_amp() ) {
-			if ( is_singular( 'amp_story' ) ) {
+			// TODO: 'amp_story' support can be phased out in the long term.
+			if ( is_singular( array( 'web-story', 'amp_story' ) ) ) {
 				return;
 			}
 			add_action(
@@ -315,7 +318,8 @@ tag_partner: "site_kit"
 	 * @return string Filtered $content.
 	 */
 	protected function amp_content_add_auto_ads( $content ) {
-		if ( ! $this->context->is_amp() || is_singular( 'amp_story' ) ) {
+		// TODO: 'amp_story' support can be phased out in the long term.
+		if ( ! $this->context->is_amp() || is_singular( array( 'web-story', 'amp_story' ) ) ) {
 			return $content;
 		}
 
@@ -378,8 +382,9 @@ tag_partner: "site_kit"
 	 * @since 1.0.0
 	 *
 	 * @param Data_Request $data Data request object.
-	 *
 	 * @return RequestInterface|callable|WP_Error Request object or callable on success, or WP_Error on failure.
+	 *
+	 * @throws Invalid_Datapoint_Exception Thrown if the datapoint does not exist.
 	 */
 	protected function create_data_request( Data_Request $data ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
@@ -637,7 +642,7 @@ tag_partner: "site_kit"
 				};
 		}
 
-		return new WP_Error( 'invalid_datapoint', __( 'Invalid datapoint.', 'google-site-kit' ) );
+		throw new Invalid_Datapoint_Exception();
 	}
 
 	/**
