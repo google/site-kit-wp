@@ -78,7 +78,7 @@ storiesOf( 'Analytics Module/Setup', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 			dispatch( STORE_NAME ).receiveExistingTag( null );
 		};
@@ -92,7 +92,7 @@ storiesOf( 'Analytics Module/Setup', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 			dispatch( STORE_NAME ).receiveExistingTag( null );
 			dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
@@ -118,7 +118,7 @@ storiesOf( 'Analytics Module/Setup', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).receiveExistingTag( null );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 			dispatch( STORE_NAME ).setSettings( {
 				accountID: ACCOUNT_CREATE,
@@ -145,7 +145,7 @@ storiesOf( 'Analytics Module/Setup', module )
 			} );
 			dispatch( STORE_NAME ).receiveExistingTag( null );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 			dispatch( STORE_NAME ).setSettings( {
 				accountID: ACCOUNT_CREATE,
@@ -172,7 +172,7 @@ storiesOf( 'Analytics Module/Setup', module )
 			} );
 			dispatch( STORE_NAME ).receiveExistingTag( null );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 			dispatch( STORE_NAME ).setSettings( {
 				accountID: ACCOUNT_CREATE,
@@ -193,7 +193,7 @@ storiesOf( 'Analytics Module/Setup', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
 			dispatch( STORE_NAME ).receiveTagPermission( {
@@ -215,7 +215,7 @@ storiesOf( 'Analytics Module/Setup', module )
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( STORE_NAME ).setSettings( {} );
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			dispatch( STORE_NAME ).receiveProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
 			dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID: profiles[ 0 ].webPropertyId } );
 			dispatch( STORE_NAME ).receiveExistingTag( existingTag.propertyID );
 			dispatch( STORE_NAME ).receiveTagPermission( {

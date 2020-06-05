@@ -91,6 +91,8 @@ const BASE_INITIAL_STATE = {
 
 const baseActions = {
 	receiveGetAccounts( accounts ) {
+		invariant( Array.isArray( accounts ), 'accounts must be an array.' );
+
 		return {
 			payload: { accounts },
 			type: RECEIVE_GET_ACCOUNTS,
@@ -216,7 +218,7 @@ const baseResolvers = {
 
 				if ( response.properties.length && response.properties[ 0 ] && response.properties[ 0 ].accountId ) {
 					const accountID = response.properties[ 0 ].accountId;
-					dispatch( STORE_NAME ).receiveProperties( response.properties, { accountID } );
+					dispatch( STORE_NAME ).receiveGetProperties( response.properties, { accountID } );
 				}
 
 				if ( response.profiles.length && response.profiles[ 0 ] && response.profiles[ 0 ].webPropertyId ) {

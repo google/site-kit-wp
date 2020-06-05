@@ -117,7 +117,7 @@ describe( 'AccountSelect', () => {
 		const propertyID = properties[ 0 ].id;
 		const accountID = properties[ 0 ].accountId;
 
-		registry.dispatch( STORE_NAME ).receiveProperties( properties, { accountID } );
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
 		registry.dispatch( STORE_NAME ).receiveProfiles( profiles, { propertyID } );
 
 		// Click the label to expose the elements in the menu.
