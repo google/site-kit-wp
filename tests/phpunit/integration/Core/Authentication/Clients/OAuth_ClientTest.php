@@ -430,6 +430,9 @@ class OAuth_ClientTest extends TestCase {
 	public function test_get_proxy_setup_url() {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
 		// If no site ID, pass site registration args.
 		$client = new OAuth_Client( $context );
 		$url    = $client->get_proxy_setup_url();

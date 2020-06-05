@@ -38,6 +38,51 @@ class Google_ProxyTest extends TestCase {
 		);
 	}
 
+	public function test_get_user_fields() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$google_proxy = new Google_Proxy( $context );
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $user_id );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'user_roles' => 'editor',
+			),
+			$google_proxy->get_user_fields()
+		);
+
+		// WordPress technically allows for multiple roles, and some plugins
+		// make use of that feature - we can just fake it like below.
+		wp_get_current_user()->roles[] = 'shop_vendor';
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'user_roles' => 'editor,shop_vendor',
+			),
+			$google_proxy->get_user_fields()
+		);
+	}
+
+	/**
+	 * @group ms-required
+	 */
+	public function test_get_user_fields_for_network_administrator() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$google_proxy = new Google_Proxy( $context );
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		grant_super_admin( $user_id );
+		wp_set_current_user( $user_id );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'user_roles' => 'administrator,network_administrator',
+			),
+			$google_proxy->get_user_fields()
+		);
+	}
+
 	public function test_sync_site_fields() {
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$google_proxy = new Google_Proxy( $context );
@@ -59,8 +104,8 @@ class Google_ProxyTest extends TestCase {
 		$pre_url  = null;
 
 		// Use pre_http_request for backwards compatibility as http_api_debug is not fired for blocked requests before WP 5.3
-		add_filter( 
-			'pre_http_request', 
+		add_filter(
+			'pre_http_request',
 			function ( $false, $args, $url ) use ( &$pre_args, &$pre_url ) {
 				$pre_args = $args;
 				$pre_url  = $url;
@@ -68,7 +113,7 @@ class Google_ProxyTest extends TestCase {
 				return $false;
 			},
 			10,
-			3 
+			3
 		);
 
 		$google_proxy->sync_site_fields( $credentials );
