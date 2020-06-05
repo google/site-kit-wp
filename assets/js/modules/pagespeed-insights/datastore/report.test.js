@@ -51,7 +51,7 @@ describe( 'modules/pagespeed-insights report', () => {
 	describe( 'actions', () => {
 		describe( 'fetchReport', () => {
 			it( 'fetches and returns a report as response', async () => {
-				const strategy = 'mobile';
+				const strategy = 'desktop';
 				const url = 'http://example.com/';
 
 				fetch
