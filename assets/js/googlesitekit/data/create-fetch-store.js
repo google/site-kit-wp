@@ -72,21 +72,21 @@ const defaultArgsToParams = () => {
  * @since n.e.x.t
  * @private
  *
- * @param {Object}   options                  Options for creating the fetch store.
- * @param {string}   options.baseName         The base name to use for all the created infrastructure.
- * @param {Function} options.controlCallback  Callback function to issue the API request. Will be used inside the
- *                                            control. The function receives a params object based on argsToParams,
- *                                            i.e. the respective values passed to the action.
- * @param {?Function} options.reducerCallback Optional. Callback function to modify state based on the API response.
- *                                            Will be used inside the reducer. The  function receives the store's state
- *                                            object as first parameter, the API response as second parameter, and the
- *                                            params object for the request (see above) as third parameter. If not
- *                                            provided, the default will return the unmodified state.
- * @param {?Function} options.argsToParams    Optional. Function that should validate expected arguments for the
- *                                            internal fetch action and parse them into an named parameters object,
- *                                            with the argument names used as keys. If not provided, the default
- *                                            function will return an empty object, essentially indicating that no
- *                                            arguments are supported/required.
+ * @param {Object}   args                   Arguments for creating the fetch store.
+ * @param {string}   args.baseName          The base name to use for all the created infrastructure.
+ * @param {Function} args.controlCallback   Callback function to issue the API request. Will be used inside the
+ *                                          control. The function receives a params object based on argsToParams,
+ *                                          i.e. the respective values passed to the action.
+ * @param {Function} [args.reducerCallback] Optional. Callback function to modify state based on the API response.
+ *                                          Will be used inside the reducer. The  function receives the store's state
+ *                                          object as first parameter, the API response as second parameter, and the
+ *                                          params object for the request (see above) as third parameter. If not
+ *                                          provided, the default will return the unmodified state.
+ * @param {Function} [args.argsToParams]    Optional. Function that should validate expected arguments for the
+ *                                          internal fetch action and parse them into an named parameters object,
+ *                                          with the argument names used as keys. If not provided, the default
+ *                                          function will return an empty object, essentially indicating that no
+ *                                          arguments are supported/required.
  * @return {Object} Partial store object with properties 'actions', 'controls', 'reducer', 'resolvers', and 'selectors'.
  */
 export const createFetchStore = ( {
